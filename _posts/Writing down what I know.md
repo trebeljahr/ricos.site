@@ -5,7 +5,7 @@ coverImage: "/assets/blog/writing-down-what-i-know.jpg"
 date: "2020-03-16T05:35:07.322Z"
 author:
   name: Rico Trebeljahr
-  picture: "/assets/blog/authors/profile.jpeg"
+  picture: "/assets/blog/profile.jpeg"
 ogImage:
   url: "/assets/blog/writing-down-what-i-know.jpg"
 ---
@@ -27,4 +27,3 @@ But somehow I am not sure if that would be the right or even a good path for me.
 In the end it probably comes down to a simple question... why not just try it? I mean how bad would it be if I spend something like a year pursuing this opportunity, writing every day, writing down my own knowledge, reading deeply, digesting, trying to build a blog and seeing where this leads me and whether or not it could be the kind of life I would want to live? Is being a content creator something that I can become content with? Even though I myself wouldn't change anything but people's minds in the hope that someday one of those people goes around and does something great...
 
 Enabling other people to do great things, igniting passions, instead of living the passion myself? Stop thinking... just try it. The worst thing that could happen is that I learned somehting about myself and that I have a bunch of articles on a webpage, that nobody ever looks at... Which sounds fine enough. Go do it.
-

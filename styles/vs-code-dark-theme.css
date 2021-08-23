@@ -28,6 +28,7 @@
 .copy-to-clipboard-button > span {
   font-size: 18px;
   padding: 5px;
+  content: "📋︁";
 }
 
 pre[class*="language-"],

@@ -1,7 +1,39 @@
+@import "~prismjs/plugins/toolbar/prism-toolbar.css";
+
+.container pre {
+  background-color: #eff0f1;
+  padding: 16px;
+  border-radius: 4px;
+  overflow: auto;
+  font-size: 14px;
+  margin-bottom: 4.1rem;
+  padding: 3.7rem 0 1.6rem 0.4rem;
+  border-radius: 12px;
+  overflow: hidden;
+  background-image: url("../public/assets/blog/mac buttons.png");
+  background-repeat: no-repeat;
+  background-size: 44px 10px;
+  background-position: 16px 14px;
+}
+
+.toolbar-item {
+  margin-right: 10px;
+}
+
+.copy-to-clipboard-button {
+  background-color: #d4d4d4 !important;
+  color: #555454;
+}
+
+.copy-to-clipboard-button > span {
+  font-size: 18px;
+  padding: 5px;
+}
+
 pre[class*="language-"],
 code[class*="language-"] {
   color: #9cdcfe;
-  font-size: 13px;
+  font-size: 20px;
   text-shadow: none;
   font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
   direction: ltr;

@@ -2,7 +2,7 @@
 title: "Writing down what I know"
 excerpt: "Something that I am playing with as a thought is to write down all of the things that I know and the knowledge that I accumulate in the form of blog posts over my lifetime."
 coverImage: "/assets/blog/writing-down-what-i-know.jpg"
-date: "2020-03-16T05:35:07.322Z"
+date: "2021-03-16T05:35:07.322Z"
 author:
   name: Rico Trebeljahr
   picture: "/assets/blog/profile.jpeg"

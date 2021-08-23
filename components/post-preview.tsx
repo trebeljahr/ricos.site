@@ -22,7 +22,7 @@ const PostPreview = ({
   slug,
 }: Props) => {
   return (
-    <div>
+    <div className="more-posts-preview">
       <div className="mb-5">
         <CoverImage slug={slug} title={title} src={coverImage} />
       </div>

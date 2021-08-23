@@ -25,6 +25,7 @@ footer > .container {
   margin-bottom: 3rem;
 }
 
+.more-posts-preview,
 .main-post > section {
   padding: 30px;
   border-radius: 5px;
@@ -32,6 +33,7 @@ footer > .container {
   transition: all 0.3s;
 }
 
+.more-posts-preview:hover,
 .main-post > section:hover {
   transform: scale(1.01);
   box-shadow: 0 0 15px rgba(44, 44, 44, 0.4);

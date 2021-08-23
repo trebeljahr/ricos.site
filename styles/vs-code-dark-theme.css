@@ -28,7 +28,7 @@ footer > .container {
 .main-post > section {
   padding: 30px;
   border-radius: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   transition: all 0.3s;
 }
 
@@ -90,7 +90,7 @@ footer > .container {
   padding: 3.7rem 0 1.6rem 0.4rem;
   border-radius: 12px;
   overflow: hidden;
-  background-image: url("../public/assets/blog/mac buttons.png");
+  background-image: url("../public/assets/blog/mac-buttons.png");
   background-repeat: no-repeat;
   background-size: 44px 10px;
   background-position: 16px 14px;

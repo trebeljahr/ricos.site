@@ -9,9 +9,9 @@ const Avatar = ({ picture }: AvatarProps) => {
       <Image
         src={picture}
         alt="Picture of the author"
-        layout="fill" // required
-        objectFit="cover" // change to suit your needs
-        className="rounded-full" // just an example
+        layout="fill"
+        objectFit="cover"
+        className="rounded-full"
       />
     </div>
   );

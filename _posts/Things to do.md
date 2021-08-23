@@ -1,6 +1,6 @@
 ---
 title: "Things to do"
-excerpt: "There are so many things in this highly complex world, that humans can devote their time to, so many new things and skills to be learned, so much to discover, to do, to invent... It is insane. Crazy. And when I come to think of all these options I get hit with FOMO attacks every single time."
+excerpt: "There are so many things in this highly complex world, that humans can devote their time to, so many new things and skills to be learned, so much to discover, to do, to invent..."
 coverImage: "/assets/blog/write-code.png"
 date: "2020-03-16T05:35:07.322Z"
 author:

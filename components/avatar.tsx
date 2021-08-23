@@ -22,7 +22,7 @@ type Props = {
   picture: string;
 };
 
-const AvatarWithAuthor = ({ name, picture }: Props) => {
+export const AvatarWithAuthor = ({ name, picture }: Props) => {
   return (
     <div className="flex items-center ">
       <Avatar picture={picture} />
@@ -30,5 +30,3 @@ const AvatarWithAuthor = ({ name, picture }: Props) => {
     </div>
   );
 };
-
-export default AvatarWithAuthor;

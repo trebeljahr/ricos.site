@@ -6,10 +6,47 @@
   margin: 0 auto;
   height: auto;
   line-height: 1.625;
+  color: #333;
 }
+
+.header,
+footer > .container {
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 2rem;
+  max-width: 936px;
+}
+
+.header {
+  margin-bottom: 5rem;
+}
+
+footer > .container {
+  margin-bottom: 3rem;
+}
+
+.main-post > section {
+  padding: 30px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  transition: all 0.3s;
+}
+
+.main-post > section:hover {
+  transform: scale(1.01);
+  box-shadow: 0 0 15px rgba(44, 44, 44, 0.4);
+}
+
 @media only screen and (max-width: 1092px) {
-  .postBody {
+  .postBody,
+  .header,
+  footer > .container {
     padding: 64px;
+  }
+  footer > .container,
+  .header {
+    margin-bottom: 0;
+    padding-bottom: 0;
   }
 }
 
@@ -26,6 +63,7 @@
   margin: -10px -10px 20px;
   font-size: 24px;
   padding: 10px;
+  line-height: 1.6em;
 }
 
 .markdown h2 {

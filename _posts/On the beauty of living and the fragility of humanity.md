@@ -1,5 +1,6 @@
 ---
-title: "On the beauty of being alive."
+title: "The beauty of being alive."
+subtitle: "And the fragility of humanity. Or why things matter."
 excerpt: "I am sitting alone in my room. It is dark outside and my speakers play some soft and mellow music. FKJ, beautiful piano, some techno mixed into it... "
 coverImage: "/assets/blog/barnsley-fern.jpg"
 date: "2021-02-16T05:35:07.322Z"
@@ -9,8 +10,6 @@ author:
 ogImage:
   url: "/assets/blog/barnsley-fern.jpg"
 ---
-
-## And the fragility of humanity. Or why things matter.
 
 I am sitting alone in my room. It is dark outside and my speakers play some soft and mellow music. FKJ, beautiful piano, some techno mixed into it. It is from one of my favorite performances - a video from Cercle where he plays in front of no audience in the middle of nowhere in Bolivia in the Salar de Uyuni - a large flooded salt flat. The sun sets in the background while he plays, the sky mirroring itself in clear body of water that stretches beyond where the eye can see. The scene is beautiful and the music serene. One day I want to go there, but I wonder when that will happen. Currently I am sitting in my room at night, my mind wandering, reading a book, enjoying a warm cup of tea. My mind drifts of from the book that I am reading because it is late and I can not properly concentrate myself anymore. There is a soft dullness that is overcoming my body as the time goes on, closing my eyes, following the music and trains of thought that plop up in the mind from seemingly nowhere. It is wonderful. Those moments where you think about things and reflect and don't want time to be continuing, where you are in your room alone at night, listening to some music that you enjoy.
 

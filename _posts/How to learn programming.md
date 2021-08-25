@@ -5,7 +5,7 @@ coverImage: "/assets/blog/how-to-learn-programming/header.jpg"
 date: "2021-02-16T05:35:07.322Z"
 author:
   name: Rico Trebeljahr
-  picture: "/assets/blog/how-to-learn-programming/header.jpg"
+  picture: "/assets/blog/profile.jpeg"
 ogImage:
   url: "/assets/blog/how-to-learn-programming/header.jpg"
 ---

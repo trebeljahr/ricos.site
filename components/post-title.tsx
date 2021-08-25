@@ -6,7 +6,7 @@ type Props = {
 
 export const PostTitle = ({ children }: Props) => {
   return (
-    <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-tight md:leading-none mb-12 text-center md:text-left">
+    <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-none md:leading-tight mb-6">
       {children}
     </h1>
   );
@@ -14,7 +14,7 @@ export const PostTitle = ({ children }: Props) => {
 
 export const PostSubTitle = ({ children }: Props) => {
   return (
-    <h2 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-tight md:leading-none mb-12 text-center md:text-left">
+    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter leading-none md:leading-tight mb-12">
       {children}
     </h2>
   );

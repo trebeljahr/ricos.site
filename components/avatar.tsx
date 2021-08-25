@@ -24,7 +24,7 @@ type Props = {
 
 export const AvatarWithAuthor = ({ name, picture }: Props) => {
   return (
-    <div className="flex items-center ">
+    <div className="hidden md:flex items-center ">
       <Avatar picture={picture} />
       <div className="text-xl font-bold">by {name}</div>
     </div>

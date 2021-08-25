@@ -35,7 +35,17 @@ footer > div {
   margin-left: 10px;
 }
 
+.markdown > * {
+  max-width: 100%;
+  height: auto;
+  font-size: 16px;
+}
+
 @media only screen and (min-width: 600px) {
+  .markdown > * {
+    font-size: 24px;
+  }
+
   .postBody,
   .header,
   footer > div {
@@ -105,18 +115,12 @@ footer > div {
   }
 }
 
-.markdown > * {
-  max-width: 100%;
-  height: auto;
-}
-
 .markdown p,
 .markdown ul,
 .markdown ol,
 .markdown blockquote {
   font-family: Helvetica;
   margin: -10px -10px 20px;
-  font-size: 24px;
   padding: 10px;
   line-height: 1.6em;
 }

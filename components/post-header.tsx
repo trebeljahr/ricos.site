@@ -25,7 +25,7 @@ const PostHeader = ({ title, subtitle, coverImage, date, author }: Props) => {
     <div className="post-header">
       <PostTitle>{title}</PostTitle>
       <PostSubTitle>{subtitle}</PostSubTitle>
-      <div className="flex flex-row items-center mb-12">
+      <div className="flex flex-row items-center mb-6 md:mb-12">
         <Date date={date} />
         <Avatar name={author.name} picture={author.picture} />
       </div>

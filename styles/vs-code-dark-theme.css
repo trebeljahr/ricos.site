@@ -4,17 +4,11 @@
   margin-bottom: 30px;
 }
 
+.mainPage,
 .more-posts-preview,
+.mainHeader,
 .main-post {
-  padding: 10px;
-}
-
-.mainPage {
-  padding: 5px 10px;
-}
-
-.mainHeader {
-  padding: 10px;
+  padding: 5px;
 }
 
 .mainPage,
@@ -32,13 +26,13 @@ footer > div {
 }
 
 .ml-30 {
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 .markdown > * {
   max-width: 100%;
   height: auto;
-  font-size: 16px;
+  font-size: 12px;
 }
 
 @media only screen and (min-width: 600px) {

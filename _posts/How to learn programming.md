@@ -34,7 +34,7 @@ First which browser are you on?
 
 Good, you have the console open? On chrome it should look something like this.
 
-<img src="./assets/blog/how-to-learn-programming/open-console.png">
+<img src="/assets/blog/how-to-learn-programming/open-console.png">
 
 ## JS-101
 
@@ -130,7 +130,7 @@ b;
 
 The answer is that this will throw an error.
 
-<img src="./assets/blog/how-to-learn-programming/variable-reference-error.png" />
+<img src="/assets/blog/how-to-learn-programming/variable-reference-error.png" />
 
 Why? The error is pretty much self explanatory. b is not defined. The code running in the console doesn't yet know what b is. Now let's do something interesting.
 

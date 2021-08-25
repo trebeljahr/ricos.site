@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <footer className="bg-accent-1 border-t border-accent-2">
+    <footer className="bg-accent-2 border-t border-accent-2">
       <div className="py-28 flex flex-col lg:flex-row items-center">
         <div className="flex flex-col">
           <h3 className="text-4xl lg:text-5xl font-bold tracking-tighter leading-tight text-center lg:text-left mb-10 lg:mb-5 lg:pr-4">

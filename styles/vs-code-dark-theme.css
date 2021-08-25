@@ -23,10 +23,6 @@ footer > div,
   width: 95%;
 }
 
-.ml-30 {
-  margin-left: 5px;
-}
-
 .markdown > * {
   max-width: 100%;
   height: auto;
@@ -52,7 +48,13 @@ footer > div,
   .more-posts-preview:hover,
   .main-post:hover {
     transform: scale(1.01);
-    box-shadow: 0 0 15px rgba(44, 44, 44, 0.4);
+    box-shadow: 0 0 14px rgba(44, 44, 44, 0.4);
+  }
+
+  .moreStories,
+  .mainHeader {
+    padding-right: 30px;
+    padding-left: 30px;
   }
   .more-posts-preview,
   .main-post {
@@ -65,10 +67,6 @@ footer > div,
 @media only screen and (min-width: 1092px) {
   .mainHeader {
     padding: 30px;
-  }
-
-  .ml-30 {
-    margin-left: 30px;
   }
 
   .postBody {
@@ -87,10 +85,6 @@ footer > div,
 
   .header {
     padding-top: 0;
-  }
-
-  footer > div {
-    margin-bottom: 3rem;
   }
 
   .mainPage {

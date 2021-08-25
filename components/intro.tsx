@@ -4,8 +4,8 @@ const Intro = () => {
       <h1 className="text-2xl md:text-4xl lg:text-8xl font-bold tracking-tighter leading-none md:pr-8">
         trebeljahr.
       </h1>
-      <h4 className="text-center hidden md:block md:text-left text-lg mt-5 md:pl-8">
-        Thoughts and Learnings from a curious mind
+      <h4 className="text-center hidden md:block md:text-left text-lg">
+        Thoughts and Learnings from a curious person
       </h4>
     </section>
   );

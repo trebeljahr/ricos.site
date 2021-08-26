@@ -108,19 +108,20 @@ footer > div,
 .markdown blockquote {
   font-family: Helvetica;
   line-height: 1.6em;
+  margin-bottom: 20px;
 }
 
 .markdown h2 {
   font-size: 40px;
-  margin-top: 12rem;
-  margin-bottom: 4rem;
+  margin-top: 20px;
+  margin-bottom: 10px;
   line-height: 1.375;
 }
 
 .markdown h3 {
   font-size: 30px;
-  margin-top: 8rem;
-  margin-bottom: 4rem;
+  margin-top: 20px;
+  margin-bottom: 10px;
   line-height: 1.375;
 }
 

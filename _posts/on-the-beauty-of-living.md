@@ -11,9 +11,9 @@ ogImage:
   url: "/assets/blog/fkj-salar-de-uyuni-cercle.jpg"
 ---
 
-I am sitting alone in my room. It is dark outside and my speakers play some soft and mellow music. FKJ, beautiful piano, with some techno mixed into it. The video is from one of my favorite performances, where FKJ plays in front of no audience, in the middle of nowhere. Nowhere in this case is the Salar de Uyuni - a large flooded salt flat in Bolivia.
+I am sitting alone in my room. It is dark outside and my speakers play some soft and mellow music. FKJ, beautiful piano, with some techno mixed into it. The video is from one of my favorite performances, where FKJ plays in the middle of the Salar de Uyuni - a large flooded salt flat in Bolivia.
 
-The sun sets in the background while he is playing. And a clear body of water stretches beyond the horizon and mirrors the sky. Music and scene are wonderful. They match each and complement each other. 
+The sun sets in the background while he is playing. A clear body of water stretches beyond the horizon and mirrors the sky. Music and scene are wonderful. They match and complement each other. 
 
 One day I want to go to that salt flat, but I wonder when that will happen. Because currently I am sitting in my room, my mind wandering, enjoying a warm cup of tea. It is late at night.
 
@@ -48,13 +48,13 @@ Is that really what I want to? The answer is no.
 
 But I digress... The name of this article suggests I will talk about two things: The beauty of living - and the fragility of humanity. So.
 
-## The Beauty of Living
+## The Beauty of Living.
 
 Beauty is everywhere around us. When we look at the world and try to understand how it works and make some progress in doing so that is just wonderful. 
 
 The exhilaration I can feel when I understand something new, while reading a book or watching a lecture. That feeling, that moment... is just pure happiness. Bliss. Those are what make life worth living.
 
-## Layers Of Complexity
+## Layers Of Complexity.
 
 The wonders of knowledge and how this world works and how massively complex it really is just excite me every single time I stop to notice and think about them. 
 
@@ -104,80 +104,70 @@ Grasping what FKJ wanted to express with his music... and in doing so transcendi
 
 Translating everything back into the realm of human feelings and emotions, where they came from.
 
-Isn't that magical?
+### Isn't that magical?
 
 Thinking of it that way it seems like simply listening to music, a pleasure of mine is pure, utter, complete magic. 
 
 And I think it is not just this that is pure magic and wonder if looked at closely with a lot of attention to the details going on. 
 
-But literally **everything** in this world is like this. Similarly beautiful and complex. Similarly magical. 
+But literally *everything* in this world is like this. Similarly beautiful and complex. Similarly magical. 
 
 ## Beauty and complexity are everywhere.
 
 And then there is the aspect of reflecting on these kinds of thoughts... Of sitting down and thinking deeply about them. 
 
-What does that even mean? 
-
 The idea that I can actually turn around and look at all the phenomenons happening around me... That I have the resources and information in my hands to understand all this magic behind what is going on in this world. 
 
-I think that is what I enjoy most, unwrapping these layers of complexity, trying to understand how this mysterious world work. Somehow that just makes me incredibly happy. 
+I think that is what I enjoy most. Unwrapping layers of complexity, trying to understand how this mysterious world works. Somehow that just makes me incredibly happy. There is a sense of childlike wonder, when I approach the world like this. And it makes me smile every single time.
 
-There is a sense of childlike wonder, when I approach the world like this. And it makes me smile every single time.
+To being able to think and understand the world around me, is the beauty of life. 
 
-So that, to me, is the beauty of being alive. That I can think and understand the world around me. 
+How I can extend little tendrils of thought into the world. Tendrils probing looking at things I know and at the same time don't understand. Being able to use knowledge that people before me have gathered. Their knowledge, built up over the centuries, I have at my fingertips to understand more about reality. I think the feeling this thought excites in me is what's called curiosity. And it makes me very happy and excited.
 
-Extending little tendrils of thought into the world. Tendrils probing out into the unknown, looking at things I know and at the same time don't understand. 
+Listening to music like this and losing myself in thoughts also makes me want to create. It inspires me to create something of beauty myself. 
 
-Using the shared resources and knowledge that all the other people before me have gathered, the knowledge they built up over the centuries, to understand more about reality.
+Not necessarily music, but something, anything... Text, code, game projects, paintings, photography... whatever. It does not matter. As long as it has the intrinsic quality of beauty. 
 
-I think that's called curiosity. And it is what makes me happy.
+I just know that I want to create things like that, because that's what all the understanding is about in the end. To understand, means being able to create. To understand is to know the elusive idea of quality that is described so beautifully by Robert Pirsig in his book 'Zen and the Art of Motorcycle Maintenance.'
 
-Listening to music like this makes me want to create. It inspires me to create something of similar beauty myself someday. 
+### The Fragility of It All.
 
-Not necessarily music, but something that I can be proud of, something that is beautiful, be that something written, code projects, games, paintings, photography... whatever. It does not even matter. 
-
-I just know that I want to create things of beauty, because that's what all that understanding is about in the end. To understand, is to be able to create. To understand is to know the elusive idea of quality that is described so beautifully by Robert Pirsig.
-
-### The Fragility of It All
-
-All this beauty and the quality of being alive however have a very dark cousin. Since having all this wonder means that there is a risk of loosing it.
+All this beauty and the quality of being alive however have a very dark cousin. We can lose it all. The buddhists and stoics figured that out centuries ago.
 
 Wonder is perishable.
 
-But because the quality of experience is so miraculous, I want it to be protected. I don't want to loose my mental state, because I love it so much. I don't want to give it away. I don't want to die. 
+But because the quality of experience is so miraculous, I want to protect it. I don't want to loose my mental state. I cling to it with all my might. Not wanting to die. To not exist, to not be able to enjoy those moments that I love so much. 
 
-And I think that is the main fragility of humanity. That our lives are perishable, that our mushy insides age and some day, eventually, die. 
+And I think that in that lies the main fragility of humanity. That our lives are perishable, that our mushy insides age and some day, eventually, die. How we are so close to gods, but yet are food for the worms. And that the beauty we can see and manifest in this world are some day going to end.
 
-That the beauty we can see and manifest in this world is some day going to end and that we can only hope to maintain it just that little bit longer.
+I think that the nature of the universe only allows intermediate solutions to this problem to be found. But at least we can find those intermediate solutions, because we can think! We can invent! And we should do so.
 
-I think that the nature of the universe seems to only allow intermediate solutions to this problem. 
-
-But at least humans can find those intermediate solutions, because we can think! We can invent! 
-
-Technology enables us to protect that beauty. Our raw ideas, our understanding of the world. We can take the patterns we see in the world around us as well as the ones we create ourselves and persist them to the next generation and into the future. Not indefinitely... But if we are smart about it for a very long time. 
+Technology can enable us to protect that beauty. The beauty of our raw ideas, our understanding of the world. We can take the patterns we see in the world around us and persist them across time into the future. Not indefinitely... but for as long as possible. 
 
 ## Technology - decreasing the fragility?
 
-That's what technology can do for us. It can enable us to share the patterns we create for longer and longer times. Furthermore it allows us to make more intricate patterns. It allows us to increase the amount of beauty in the world by both creating new kinds of it and preserving the beauty already created. 
+That's what technology can do for us. It can enable us to share the patterns we create for longer and longer times. Furthermore it allows us to make more intricate patterns. It allows us to increase the amount of beauty in the world by both creating new types of beauty never seen before and by preserving and protecting the patterns we have already created. 
 
-And it can help us to not perish forever because of some fluke cosmic incident. Like an asteroid impact or a gamma ray burst.
+And it can help us to not perish because some fluke cosmic incident wiped us out. Things like asteroid impacts or gamma ray bursts are pretty lethal to a civilization's creations that does not have technology to protect againt them...
 
-Technology allows us to gain a deep understanding of the world. An understanding that we can use to solve the fundamental problem of our own fragility. But it can also enhance that problem gravely.
+Technology allows us to gain a deep understanding of the world. An understanding that we can use to solve the fundamental problem of our own fragility. But it can also enhance that problem gravely. Atomic bombs and other weapons of mass destruction are to product of technology as well. Technology. A double edged sword that can be used to destroy and protect. 
 
-When I look at the state of the world I can not help but feel that humans are, much like me, too wrapped up in the patterns they and others have created already, to do something about the more fundamental problem.
+When I look at the state of the world I can not help but feel that humans are, much like me, too wrapped up in the state of affairs they and others have already created. 
 
-We are to busy living our lives to realize that we are losing the very beauty we are trying to protect. And we loose it both in the long and short term. Why? 
+We are to busy living our lives to realize that we are losing the very beauty we are trying to protect. And we loose it both in the long and short term. 
 
 ## What are we doing?
 
-Instead of focusing more on preserving and producing more intricate patterns, we get comfortable in our lives, earning money to survive, because we care about food and our immediate rewards and life's necessities more than we care about the long term future of our patterns and ideas.
+Instead of focusing more on preserving and producing more intricate patterns, we get comfortable in our lives, earning money to survive, giving away our precious time. Because we care more about food and our immediate rewards and life's necessities than we care about the long term future of humanity. About the future of our ideas and the beauty we could create in this world.
 
-Because in the end - even though we think it is about beauty... which we only do sometimes, rarely, when alone in our room at night... a part of our brain, very strongly disagrees.
+Because in the end - even though we think it is about beauty, patterns, the long term survival and prospering of humanity as a whole - a part of our brain, very strongly disagrees.
 
-That part of the brain screams. Hey! There are more pressing problems... Like how we pay our rent at the end of the month and what our neighbors think about the old car we still have. Or what kind of suit and tie at work. And it demands that we solve these problems, before we can return to our dreams of creating patterns of intricate beauty and helping to preserve those and ourselves for eternity. Because those puny future problems can be solved at a later time. Now... Now there are important things to attend to.
+That part of the brain screams. Hey! There are more pressing problems... Like how we pay our rent at the end of the month and what our neighbors think about the old car we still have. Or what kind of suit and tie to wear at work. And it demands that we solve these problems first, before we can return to our dreams of creating patterns of intricate beauty and helping to preserve those and ourselves for eternities. Those puny future problems can be solved at a later time the voice says... Now... Now there are important things to attend to, it nags us.
 
-Usually this part of the brain wins the argument.
+Usually this voice wins the argument.
 
-And so we mostly follow in the footsteps of what most of people did for eternities. Instead of creating patterns, finding ways to escape the fragility of it all and developing our understanding of the world, we get lost in the struggle for our version of daily "survival".
+And so we mostly follow in the footsteps of what most of people did for as long as people existed. Instead of creating patterns, finding ways to escape the fragility of it all and developing our understanding of the world, we get lost in the struggle of our version of daily "survival".
 
 Being stressed about bills we have to pay and the dentists appointments that we have missed, keeping our small jobs and small minds and never getting around to do what we are truly here for.
+
+And what a world we miss because we do that. Maybe... we shouldn't?

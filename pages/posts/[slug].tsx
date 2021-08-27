@@ -10,17 +10,26 @@ import Head from "next/head";
 import { CMS_NAME } from "../../lib/constants";
 import markdownToHtml from "../../lib/markdownToHtml";
 import PostType from "../../types/post";
+import MoreStories from "../../components/more-stories";
 
 type Props = {
   post: PostType;
   morePosts: PostType[];
 };
 
-const Post = ({ post }: Props) => {
+const ReadMore = ({ posts }: { posts: PostType[] }) => {
+  return null;
+  {
+    /* return <div>{posts.map((post) => post.title)}</div>; */
+  }
+};
+
+const Post = ({ post, morePosts }: Props) => {
   const router = useRouter();
   if (!router.isFallback && !post?.slug) {
     return <ErrorPage statusCode={404} />;
   }
+
   return (
     <Layout>
       <Header />
@@ -43,6 +52,7 @@ const Post = ({ post }: Props) => {
               author={post.author}
             />
             <PostBody content={post.content} />
+            {morePosts && <ReadMore posts={morePosts} />}
           </article>
         </>
       )}
@@ -70,6 +80,7 @@ export async function getStaticProps({ params }: Params) {
     "coverImage",
   ]);
   const content = await markdownToHtml(post.content || "");
+  const morePosts = getAllPosts(["title", "excerpt"]).slice(0, 3);
 
   return {
     props: {
@@ -77,6 +88,7 @@ export async function getStaticProps({ params }: Params) {
         ...post,
         content,
       },
+      morePosts,
     },
   };
 }

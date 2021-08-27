@@ -29,6 +29,14 @@ footer > div,
   font-size: 20px;
 }
 
+.markdown h5,
+.markdown h4,
+.markdown h3,
+.markdown h2,
+.markdown h1 {
+  font-weight: bold;
+}
+
 @media only screen and (min-width: 600px) {
   .markdown > * {
     font-size: 24px;

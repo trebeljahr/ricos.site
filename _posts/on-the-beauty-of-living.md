@@ -13,26 +13,27 @@ ogImage:
 
 I am sitting alone in my room. It is dark outside and my speakers play some soft and mellow music. FKJ, beautiful piano, with some techno mixed into it. The video is from one of my favorite performances, where FKJ plays in the middle of the Salar de Uyuni - a large flooded salt flat in Bolivia.
 
-The sun sets in the background while he is playing. A clear body of water stretches beyond the horizon and mirrors the sky. Music and scene are wonderful. They match and complement each other. 
+The sun sets in the background while he is playing, a clear body of water stretches beyond the horizon, mirroring the sky. Music and scene are wonderful. They match and complement each other. 
 
-One day I want to go to that salt flat, but I wonder when that will happen. Because currently I am sitting in my room, my mind wandering, enjoying a warm cup of tea. It is late at night.
+One day I want to go to that salt flat, but I wonder when that will happen. Because currently I am sitting in my room, with my mind wandering, enjoying a warm cup of tea. It is late at night.
 
-My mind drifts away from the book I was reading just moments ago because it is late and I can not properly concentrate anymore. There is a soft dullness in my mind. A dullness overcoming my body as the time passes. I am closing my eyes, following the music and trains of thought pop up in the mind.
+My mind drifts away from the book I was reading just moments ago because it is late and I can not properly concentrate anymore. There is a soft dullness spreading in my consciousness. A dullness overcoming my body as the time passes. I am closing my eyes, following the music and trains of thought ebb into and out of awareness. 
 
-It is wonderful.
+It is a wonderful moment.
 
-Those moments, where you think about your life and reflect inwards. Where you don't want time to continue. The moments where you are in your room alone at night, listening to some music that you enjoy. The moments where you simply stay in them. Relaxed and calm. 
-Lost in a beautiful state of consciousness.  Those are the moments I live for. 
+Those moments, where you think about your life and reflect inwards. Where you don't want time to continue. The moments where you are in your room alone at night, listening to some music that you enjoy. The moments where you simply stay. Relaxed and calm. Happy. Content. 
+
+Lost in a beautiful state of consciousness... Those are the moments I live for. 
 
 ## Disturbances. 
 
-Those states of mind are disturbed, when the usual questions pop up: What am I doing here? Where do I want to go? Why are there so many awesome things? How can I not want to try them all? 
+Sadly those don't last forever until the usual questions pop up: What am I doing with my life? Where do I want to go? Why are there so many awesome things? How can I not want to try them all? How can I decide what to invest my time into? 
 
-Only yesterday I started building a minecraft-clone, learning another technology (three.js) to do so. Why am I doing it? My mind searches for the monetary gain that the activity could produce, but the truth is, there is none.
+Only yesterday I started building a [Minecraft like game](https://mc.ricotrebeljahr.com), learning another technology (three.js) to do so. Why am I doing it? My mind searches for the monetary gain that the activity could produce, but the truth is, there is probably none.
 
-Many of the things I do have no monetary value attached to them. Yet they are more valuable than money could ever be. I do them because I enjoy the activity itself. For it's quality of experience, of consciousness, that is the whole point. 
+Many of the things I do, have no monetary value attached to them. Yet they are more valuable than money could ever be. I do them because I enjoy the activities themselves. For the quality of experience they give, for the states of consciousness they lead to. That is the whole point of doing them. 
 
-Nobody pays me to read, nobody pays me to learn, nobody pays me to maintain my body, nobody pays me to take photos. But my mind still worries about that. I want to be paid, I don't want to struggle for money in the future, but I never really stop to think why that is the case...
+Nobody pays me to read, nobody pays me to learn, nobody pays me to maintain my body and nobody pays me to take photos. But my mind still worries about getting paid... I want to be paid, I don't want to struggle for money in the future, but I never really stop to think why that is the case.
 
 ## The Value of Money.
 
@@ -44,7 +45,7 @@ Working at Klarna is not that. It is a means to an end - I am doing it because I
 
 During after hours I will read, gorge my brain on things I actually enjoy. Only to start the next day again, working my life away at something that I deep down don't care about at all. I work on something that makes people spend their money in mindless shopping... 
 
-Is that really what I want to? The answer is no.
+Is that really what I want to do? The answer is no.
 
 But I digress... The name of this article suggests I will talk about two things: The beauty of living - and the fragility of humanity. So.
 
@@ -52,17 +53,15 @@ But I digress... The name of this article suggests I will talk about two things:
 
 Beauty is everywhere around us. When we look at the world and try to understand how it works and make some progress in doing so that is just wonderful. 
 
-The exhilaration I can feel when I understand something new, while reading a book or watching a lecture. That feeling, that moment... is just pure happiness. Bliss. Those are what make life worth living.
+The exhilaration I can feel when I understand something new, while reading a book or watching a lecture. That feeling, that moment... is just pure happiness. Bliss. These moments are what make life worth living.
 
 ## Layers Of Complexity.
 
 The wonders of knowledge and how this world works and how massively complex it really is just excite me every single time I stop to notice and think about them. 
 
-Simple facts become almost magical mysteries. 
+*Simple facts become magical mysteries.* 
 
-The fact of how I can just listen to music... 
-
-Without even thinking about the fact that there was a microphone involved somewhere along the way. A device picking up vibrations from the air, which somebody playing an instrument caused. And then turning them into patterns of electric currents, which can then be stored as tiny bumps on a magnetic metal disk. 
+The fact of how I can just listen to music... without even thinking about the fact that there was a microphone involved somewhere along the way. A device picking up vibrations from the air, which somebody playing an instrument caused. And then turning them into patterns of electric currents, which can then be stored as tiny bumps on a magnetic metal disk. 
 
 A disk that is spinning around rapidly while a small arm darts back and forth across the metallic surface, changing it's polarization corresponding to the currents picked up by the microphone... Forming little bumps in the metal, which encode the information that underlie the patterns of the vibrations picked up earlier. 
 
@@ -74,7 +73,7 @@ Stored, so that my computer can request the data from that server to play back t
 
 ### Networks.
 
-Photons that dart through the glass fibre cables, communicating my intention to listen to the music. The server knowing how to answer that intention by looking at the bumps on the magnetic disc. And sending the information encoded within them back across the wire, as patterns of photons. 
+Photons that dart through the glass fiber cables, communicating my intention to listen to the music. The server knowing how to answer that intention by looking at the bumps on the magnetic disc. And sending the information encoded within them back across the wire, as patterns of photons. 
 
 As an answer that eventually reaches the wifi router in the next room, which re-encodes the signal again, changing it into electromagnetic fields and waves to send a message across the room. 
 
@@ -104,7 +103,7 @@ Grasping what FKJ wanted to express with his music... and in doing so transcendi
 
 Translating everything back into the realm of human feelings and emotions, where they came from.
 
-### Isn't that magical?
+*Isn't that magical?*
 
 Thinking of it that way it seems like simply listening to music, a pleasure of mine is pure, utter, complete magic. 
 
@@ -118,29 +117,29 @@ And then there is the aspect of reflecting on these kinds of thoughts... Of sitt
 
 The idea that I can actually turn around and look at all the phenomenons happening around me... That I have the resources and information in my hands to understand all this magic behind what is going on in this world. 
 
-I think that is what I enjoy most. Unwrapping layers of complexity, trying to understand how this mysterious world works. Somehow that just makes me incredibly happy. There is a sense of childlike wonder, when I approach the world like this. And it makes me smile every single time.
+I think that is what I enjoy most. Unwrapping layers of complexity, trying to understand how this mysterious world works. Somehow that just makes me incredibly happy. There is a sense of childlike wonder, when I approach the world like this. *And it makes me smile every single time.*
 
-To being able to think and understand the world around me, is the beauty of life. 
+The wonder of the fact that I am here, alive and able to think and understand the world around me... that is the beauty of life. 
 
-How I can extend little tendrils of thought into the world. Tendrils probing looking at things I know and at the same time don't understand. Being able to use knowledge that people before me have gathered. Their knowledge, built up over the centuries, I have at my fingertips to understand more about reality. I think the feeling this thought excites in me is what's called curiosity. And it makes me very happy and excited.
+How I can extend little tendrils of thought into the world. Tendrils probing, looking at things I know and yet don't understand. Being able to use knowledge that people before me have gathered. Their knowledge, built up over the centuries, I have at my fingertips now, to understand more about reality than almost every human that ever walked upon earth. I think the feeling this thought excites in me is what's called bafflement. But at the same time it makes me very happy and excited. And curious.
 
 Listening to music like this and losing myself in thoughts also makes me want to create. It inspires me to create something of beauty myself. 
 
-Not necessarily music, but something, anything... Text, code, game projects, paintings, photography... whatever. It does not matter. As long as it has the intrinsic quality of beauty. 
+Not necessarily music, but anything really... Websites, code, game projects, blogs, books, paintings, photography... whatever. It does not matter. *As long as it has the intrinsic quality of beauty.* 
 
 I just know that I want to create things like that, because that's what all the understanding is about in the end. To understand, means being able to create. To understand is to know the elusive idea of quality that is described so beautifully by Robert Pirsig in his book 'Zen and the Art of Motorcycle Maintenance.'
 
 ### The Fragility of It All.
 
-All this beauty and the quality of being alive however have a very dark cousin. We can lose it all. The buddhists and stoics figured that out centuries ago.
+All this beauty and the quality of being alive however have a very dark cousin. We can lose it all. The Buddhists and Stoics figured that out centuries ago.
 
-Wonder is perishable.
+*Wonder is perishable.*
 
 But because the quality of experience is so miraculous, I want to protect it. I don't want to loose my mental state. I cling to it with all my might. Not wanting to die. To not exist, to not be able to enjoy those moments that I love so much. 
 
 And I think that in that lies the main fragility of humanity. That our lives are perishable, that our mushy insides age and some day, eventually, die. How we are so close to gods, but yet are food for the worms. And that the beauty we can see and manifest in this world are some day going to end.
 
-I think that the nature of the universe only allows intermediate solutions to this problem to be found. But at least we can find those intermediate solutions, because we can think! We can invent! And we should do so.
+I think that the nature of the universe only allows intermediate solutions to this problem to be found. But at least we can find those intermediate solutions. *Because we can think! We can invent!* And we should do so.
 
 Technology can enable us to protect that beauty. The beauty of our raw ideas, our understanding of the world. We can take the patterns we see in the world around us and persist them across time into the future. Not indefinitely... but for as long as possible. 
 

@@ -8,11 +8,11 @@ type Props = {
 
 export const ReadMore = ({ posts }: { posts: Post[] }) => {
   return (
-    <div>
-      <h1>Keep reading:</h1>
+    <div className="readMore">
+      <h2>Keep reading:</h2>
       {posts.map((post) => {
         return (
-          <h3>
+          <h3 key={post.slug}>
             <Link as={`/posts/${post.slug}`} href={"/posts/[slug]"}>
               {post.title}
             </Link>

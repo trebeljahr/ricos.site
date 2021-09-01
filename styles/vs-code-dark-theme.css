@@ -23,14 +23,33 @@ footer > div,
   width: 95%;
 }
 
-.markdown > * {
-  max-width: 100%;
-  height: auto;
+body {
   font-size: 20px;
 }
 
+.markdown > * {
+  max-width: 100%;
+  height: auto;
+}
+
+.readMore {
+  margin-top: 10px;
+}
+
+:root {
+  --blue: rgb(68 160 255);
+}
+
+.header a:hover,
+.readMore a:hover {
+  color: var(--blue);
+}
+
 @media only screen and (min-width: 600px) {
-  .markdown > * {
+  .readMore {
+    margin-top: 50px;
+  }
+  body {
     font-size: 24px;
   }
 
@@ -111,17 +130,17 @@ h1 {
 }
 
 h1 {
-  font-size: 50px;
+  font-size: 4rem;
   line-height: 1.5;
 }
 
 h2 {
-  font-size: 40px;
+  font-size: 3rem;
   line-height: 1.375;
 }
 
 h3 {
-  font-size: 30px;
+  font-size: 2rem;
   line-height: 1.375;
 }
 

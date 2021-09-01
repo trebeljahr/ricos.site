@@ -29,14 +29,6 @@ footer > div,
   font-size: 20px;
 }
 
-.markdown h5,
-.markdown h4,
-.markdown h3,
-.markdown h2,
-.markdown h1 {
-  font-weight: bold;
-}
-
 @media only screen and (min-width: 600px) {
   .markdown > * {
     font-size: 24px;
@@ -110,27 +102,46 @@ footer > div,
   }
 }
 
-.markdown p,
-.markdown ul,
-.markdown ol,
-.markdown blockquote {
+h5,
+h4,
+h3,
+h2,
+h1 {
+  font-weight: bold;
+}
+
+h1 {
+  font-size: 50px;
+  line-height: 1.5;
+}
+
+h2 {
+  font-size: 40px;
+  line-height: 1.375;
+}
+
+h3 {
+  font-size: 30px;
+  line-height: 1.375;
+}
+
+p,
+ul,
+ol,
+blockquote {
   font-family: Helvetica;
   line-height: 1.6em;
   margin-bottom: 20px;
 }
 
-.markdown h2 {
-  font-size: 40px;
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
   margin-top: 20px;
   margin-bottom: 10px;
-  line-height: 1.375;
-}
-
-.markdown h3 {
-  font-size: 30px;
-  margin-top: 20px;
-  margin-bottom: 10px;
-  line-height: 1.375;
 }
 
 .markdown pre {

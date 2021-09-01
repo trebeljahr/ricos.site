@@ -7,21 +7,13 @@ import Layout from "../../components/layout";
 import { getPostBySlug, getAllPosts } from "../../lib/api";
 import { PostTitle } from "../../components/post-title";
 import Head from "next/head";
-import { CMS_NAME } from "../../lib/constants";
 import markdownToHtml from "../../lib/markdownToHtml";
 import PostType from "../../types/post";
-import MoreStories from "../../components/more-stories";
+import { ReadMore } from "../../components/more-stories";
 
 type Props = {
   post: PostType;
   morePosts: PostType[];
-};
-
-const ReadMore = ({ posts }: { posts: PostType[] }) => {
-  return null;
-  {
-    /* return <div>{posts.map((post) => post.title)}</div>; */
-  }
 };
 
 const Post = ({ post, morePosts }: Props) => {
@@ -39,9 +31,7 @@ const Post = ({ post, morePosts }: Props) => {
         <>
           <article className="postBody mb-32">
             <Head>
-              <title>
-                {post.title} | Next.js Blog Example with {CMS_NAME}
-              </title>
+              <title>{post.title}</title>
               <meta property="og:image" content={post.ogImage.url} />
             </Head>
             <PostHeader
@@ -80,7 +70,7 @@ export async function getStaticProps({ params }: Params) {
     "coverImage",
   ]);
   const content = await markdownToHtml(post.content || "");
-  const morePosts = getAllPosts(["title", "excerpt"]).slice(0, 3);
+  const morePosts = getAllPosts(["title", "slug", "excerpt"]).slice(0, 3);
 
   return {
     props: {

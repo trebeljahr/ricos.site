@@ -13,81 +13,80 @@ ogImage:
 
 This article is a consortium of things that I have learned on how or why to invest money over the years. The idea was triggered by a good friend of mine, Henry, who is one of the most knowledgeable people I know. Somebody, who is constantly reading up on this topic, spending considerable amounts of brain power on it. I wish he had a blog I could link to from here.
 
-Why is it titled 'Betting Heavy when convinced' ? 
+Why is it titled 'Betting Heavy when convinced' ?
 
 I think that diversification is good, but that if there is a considerable upside to something one should use most of the leverage one has. Never as much as to go broke and start from 0 again. Being ousted out of the game is the only thing one should really worry about and avoid. And, maybe, one should also avoid stupid amounts of risk, because those are what tend to drive one out of the game in the long term.
 
-But if one follows these two rules of thumb, one should nonetheless bet heavily on the things one believes in and has truly understood. When you know why they are worth more or less than the market currently thinks, you know more than the market and I think it is almost a form of intellectual honesty to bet on it then. 
+But if one follows these two rules of thumb, one should nonetheless bet heavily on the things one believes in and has truly understood. When you know why they are worth more or less than the market currently thinks, you know more than the market and I think it is almost a form of intellectual honesty to bet on it then.
 
-Seeing Crypto fall down this year but knowing enough about crypto currencies to also see that they are still very far from having the impact on society that they can have in the future, it seems that only putting a small amount of money into them was a stupid mistake. One could have doubled or quadrupled their money by now already, because the market crashed and mispriced crypto completely for a while. And I think that is something that I should think about more... or should I? 
+Seeing Crypto fall down this year but knowing enough about crypto currencies to also see that they are still very far from having the impact on society that they can have in the future, it seems that only putting a small amount of money into them was a stupid mistake. One could have doubled or quadrupled their money by now already, because the market crashed and mispriced crypto completely for a while. And I think that is something that I should think about more... or should I?
 
 ## Meta Investing Advice.
 
-When investing, I think one things is more important than anything else, and that is to not over-think or over-do it. 
+When investing, I think one thing is more important than anything else, and that is to not over-think or over-do it.
 
 Time is an investment and even though I might be able, especially when I invest high sums, to have the most financial impact, the most leverage, by spending all my day thinking about what to trade and how to trade it, I think it is still not what one should do.
 
-When it comes down to what I want to be doing with my time, that's not it. To be honest, it does not even come close to the top of the list. I, personally, would much rather read, write, do parkour, meditate, photograph, code, climb, hike, listen to music or podcasts, watch MIT lectures, meet friends, practice piano, play computer games or do a gazillion of other things. I would literally rather sit still and observe the working of my mind than worry about how to invest better... Think about that for a second and let it sit in. 
+When it comes down to what I want to be doing with my time, that's not it. To be honest, it does not even come close to the top of the list. I, personally, would much rather read, write, do parkour, meditate, photograph, code, climb, hike, listen to music or podcasts, watch MIT lectures, meet friends, practice piano, play computer games or do a gazillion of other things. I would literally rather sit still and observe the working of my mind than worry about how to invest better... Think about that for a second and let it sit in.
 
-And if you are honest with yourself, is analyzing market trends really the thing you want to do with your time? Especially if you already are at a point where you are in the top 1% of earners in the whole world and live a life that is better than those of almost every human that has ever walked upon this earth? Is that really the best use for your time you can come up with? 
+And if you are honest with yourself, is analyzing market trends really the thing you want to do with your time? Especially if you already are at a point where you are in the top 1% of earners in the whole world and live a life that is better than those of almost every human that has ever walked upon this earth? Is that really the best use for your time you can come up with?
 
-In the end, money is only a means to an end. It is something that has not value on its own. Owning more than I need, is, I think, a stupid thing. And worrying and aligning my life towards money (or investing for that matter) is an even stupider thing still. 
+In the end, money is only a means to an end. It is something that has not value on its own. Owning more than I need, is, I think, a stupid thing. And worrying and aligning my life towards money (or investing for that matter) is an even stupider thing still.
 
-Making some solid decisions every once in a while, sitting still and not bothering about investments too much, and using my time to instead build skills, to play, work and learn to my hearts content and forge a character that can generate wealth in the long term is the better thing to do. And funnily enough, in the long run it is the thing that will build more wealth overall. Hard but clever work, with some simple investments to gain compound interest from some of the money one earns. But those can be simple no think investments, some ETF and that's it. Leave it there. Be done with the money game forever. 
+Making some solid decisions every once in a while, sitting still and not bothering about investments too much, and using my time to instead build skills, to play, work and learn to my hearts content and forge a character that can generate wealth in the long term is the better thing to do. And funnily enough, in the long run it is the thing that will build more wealth overall. Hard but clever work, with some simple investments to gain compound interest from some of the money one earns. But those can be simple no think investments, some ETF and that's it. Leave it there. Be done with the money game forever.
 
 ## The Value of Work.
 
-Work that creates value is the best investment there is because work can pay bigger dividends than buying crypto or stock or bonds or whatnot, ever could. 
+Work that creates value is the best investment there is because work can pay bigger dividends than buying crypto or stock or bonds or whatnot, ever could.
 
-Don't think 5x or even 10x over 10 years, but think compounding effects of hard and clever work, effects that might easily make it worth a 10000x or more. The catch is that time invested, especially in learning and good execution and decision making, can have unbounded effects in an economy, where value can be created at scale and is in no way tied to anything, like time or labor, anymore. 
+Don't think 5x or even 10x over 10 years, but think compounding effects of hard and clever work, effects that might easily make it worth a 10000x or more. The catch is that time invested, especially in learning and good execution and decision making, can have unbounded effects in an economy, where value can be created at scale and is in no way tied to anything, like time or labor, anymore.
 
-An economy where knowledge and information can be instantly transmitted and the value generated by a single person sits at a un-imaginably high end of the scale. It might as well be infinite. If one looks at people like Elon Musk or Jeff Bezos it becomes pretty clear what that means. 
+An economy where knowledge and information can be instantly transmitted and the value generated by a single person sits at a un-imaginably high end of the scale. It might as well be infinite. If one looks at people like Elon Musk or Jeff Bezos it becomes pretty clear what that means.
 
-For them it would not make sense, to invest a lot of time thinking about how to "best" invest their money. For them it is about creating value in this world, not by means of moving their money around, but by actually sitting down and doing the work. 
+For them it would not make sense, to invest a lot of time thinking about how to "best" invest their money. For them it is about creating value in this world, not by means of moving their money around, but by actually sitting down and doing the work.
 
-They understand that their value is not in their bank accounts, they add value by building companies, by assembling teams and getting people together to do great, meaningful work, at scale. Instead of spending time to decide which pie to buy, they build their own bigger, better tasting pie. They learn how to do things and then execute on them and that's why they are among the richest people in the world. 
+They understand that their value is not in their bank accounts, they add value by building companies, by assembling teams and getting people together to do great, meaningful work, at scale. Instead of spending time to decide which pie to buy, they build their own bigger, better tasting pie. They learn how to do things and then execute on them and that's why they are among the richest people in the world.
 
-So instead of spending time, moving value around and focusing on small improvements, one should instead look for ways to make the pie bigger overall. Or invent entirely new forms of pie. And the first step on that way is to learn, to develop the brain, the character, the person. 
+So instead of spending time, moving value around and focusing on small improvements, one should instead look for ways to make the pie bigger overall. Or invent entirely new forms of pie. And the first step on that way is to learn, to develop the brain, the character, the person.
 
-This in the end is really the only thing anybody will ever truly own. And even that picture, of us owning ourselves, in the light of neuroscience is crumbling. But that's a topic for another time.  
+This in the end is really the only thing anybody will ever truly own. And even that picture, of us owning ourselves, in the light of neuroscience is crumbling. But that's a topic for another time.
 
-Thinking about it this way, bothering about money is a bit like bothering about clothes that one wears... It is a form of social signaling, of posturing, but fundamentally something without meaning. There is a cap after which even the returns of being more happy when having more money diminish. And that cap is when one can choose what to do and when to do it and still has enough money to afford the basic necessities of life, without worrying about them. 
+Thinking about it this way, bothering about money is a bit like bothering about clothes that one wears... It is a form of social signaling, of posturing, but fundamentally something without meaning. There is a cap after which even the returns of being more happy when having more money diminish. And that cap is when one can choose what to do and when to do it and still has enough money to afford the basic necessities of life, without worrying about them.
 
-Heck, there are even people (monks and the like) who lead immensely happy and fulfilled lives with much, much less than that. So that is what's really important: 
+Heck, there are even people (monks and the like) who lead immensely happy and fulfilled lives with much, much less than that. So that is what's really important:
 
 ## The value of Happiness.
 
-When I am able to spend my time with things that make me happy, and I don't have to worry about money anymore, than that is the place I want to be in. It to me sounds like the much better (maybe even the only?) option. It is certainly better than incessantly growing the pile of stock one sits on, by clever trading and spending their time micromanaging it. Time is too valuable to spend too much of it on matters that are only a means to an end. 
+When I am able to spend my time with things that make me happy, and I don't have to worry about money anymore, than that is the place I want to be in. It to me sounds like the much better (maybe even the only?) option. It is certainly better than incessantly growing the pile of stock one sits on, by clever trading and spending their time micromanaging it. Time is too valuable to spend too much of it on matters that are only a means to an end.
 
-If I loose that out of sight, I might as well be dead already, because I will waste my short time alive. Because I'll throw away my life for something that I don't care about. For something that I will regret in the end. 
+If I loose that out of sight, I might as well be dead already, because I will waste my short time alive. Because I'll throw away my life for something that I don't care about. For something that I will regret in the end.
 
 ## Some pointers to principles, nonetheless
 
-If you still want to invest money and think about, how best to do it, here some general pointers and things you might want to read up on, because they are important for understanding how investing works and when it fails or succeeds. 
+If you still want to invest money and think about, how best to do it, here some general pointers and things you might want to read up on, because they are important for understanding how investing works and when it fails or succeeds.
 
-So, some ideas: 
+So, some ideas:
 
-- Know of Nicolas Nassim Taleb's barbell strategy. Also diversify and make your portfolio anti-fragile. 
+- Know of Nicolas Nassim Taleb's barbell strategy. Also diversify and make your portfolio anti-fragile.
 
 - Bet heavy to use leverage, but don't go broke.
 
-- Think of optionality, things that have little downside but potential huge upsides and long term future are what makes sense. Those are anti-fragile. 
+- Think of optionality, things that have little downside but potential huge upsides and long term future are what makes sense. Those are anti-fragile.
 
-- Be aware of how the financial system works and having a general understanding of the risk inherent in it. 
-- Know about Black and White Swan events. 
-- Be aware of your own shortcomings and biases. 
-- Think about what people want and why they want it. And then figure out which companies can provide that value. 
-- And of course study the wisdom of Charlie Munger. Especially helpful is going through the ordeal and acquiring ones own version of his much loved mental models. Learning the multidisciplinary basics, that will be valuable much, even outside the world of investing. Learning them will make you a better human, better able to understand what is going on in the world outside and inside of you. 
-- Understand that value in the stock market is not necessarily tied to value in the real world and that people act irrationally and that that irrationality can move the market in violent swings, both, up and down. 
-- And keep reflecting rationally on your choices. Ask Why? 
+- Be aware of how the financial system works and having a general understanding of the risk inherent in it.
+- Know about Black and White Swan events.
+- Be aware of your own shortcomings and biases.
+- Think about what people want and why they want it. And then figure out which companies can provide that value.
+- And of course study the wisdom of Charlie Munger. Especially helpful is going through the ordeal and acquiring ones own version of his much loved mental models. Learning the multidisciplinary basics, that will be valuable much, even outside the world of investing. Learning them will make you a better human, better able to understand what is going on in the world outside and inside of you.
+- Understand that value in the stock market is not necessarily tied to value in the real world and that people act irrationally and that that irrationality can move the market in violent swings, both, up and down.
+- And keep reflecting rationally on your choices. Ask Why?
 
 ## In the end...
 
-All of this is not that important. Once again, it is not a thing that really matters. Somebody who works a job they love over everything else in the world and is happy spending their time with this job for the rest of their life, has more wealth than any investment could ever give them. Even if they made 1000x on cryptos, to them it would not matter, because they would still do the same thing they did as before. And I would much rather be that person, than the one spending all their time thinking about investment strategies, worrying about how their financial assets perform. Even if one has more money than the other... Of what use is that money to them if they regret it in the end, looking back on all the opportunities they missed. 
+All of this is not that important. Once again, it is not a thing that really matters. Somebody who works a job they love over everything else in the world and is happy spending their time with this job for the rest of their life, has more wealth than any investment could ever give them. Even if they made 1000x on cryptos, to them it would not matter, because they would still do the same thing they did as before. And I would much rather be that person, than the one spending all their time thinking about investment strategies, worrying about how their financial assets perform. Even if one has more money than the other... Of what use is that money to them if they regret it in the end, looking back on all the opportunities they missed.
 
-It would be even better, if that skill, that work you do, is something so highly sought after by society. Because then you will be drowning in wealth anyways, if you choose to do so. And furthermore you will actually give something meaningful in return. You can be happy and wealthy, without it feeling like effort, the hard part is finding out how. Reconciling your wants with those of the world and society. 
+It would be even better, if that skill, that work you do, is something so highly sought after by society. Because then you will be drowning in wealth anyways, if you choose to do so. And furthermore you will actually give something meaningful in return. You can be happy and wealthy, without it feeling like effort, the hard part is finding out how. Reconciling your wants with those of the world and society.
 
-So this is the final advice on investing. Think about what you spend your time with. Wisely. It is the most important decision you have to make. And the better your decision making is here, the better your life will be overall. 
+So this is the final advice on investing. Think about what you spend your time with. Wisely. It is the most important decision you have to make. And the better your decision making is here, the better your life will be overall.
 
-And on that I am betting heavily. I hope you do too. 
-
+And on that I am betting heavily. I hope you do too.

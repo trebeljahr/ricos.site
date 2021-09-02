@@ -1,11 +1,26 @@
-const Intro = () => {
+import Link from "next/link";
+interface Props {
+  withLink?: boolean;
+  withMotto?: boolean;
+}
+const Intro = ({ withLink = true, withMotto = true }: Props) => {
   return (
-    <section className="main-page-header">
-      <h1>trebeljahr.</h1>
-      <p className="header-motto">
-        Thoughts and Learnings from a curious person
-      </p>
-    </section>
+    <div className="header">
+      {withLink ? (
+        <Link href="/">
+          <h1>
+            <a>trebeljahr.</a>
+          </h1>
+        </Link>
+      ) : (
+        <h1>trebeljahr.</h1>
+      )}
+      {withMotto && (
+        <p className="header-motto">
+          Thoughts and Learnings from a curious person
+        </p>
+      )}
+    </div>
   );
 };
 

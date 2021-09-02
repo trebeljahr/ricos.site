@@ -1,5 +1,9 @@
 @import "~prismjs/plugins/toolbar/prism-toolbar.css";
 
+:root {
+  --blue: rgb(68 160 255);
+}
+
 footer {
   display: none;
 }
@@ -110,6 +114,7 @@ blockquote {
 }
 
 .main-page {
+  margin-top: 1rem;
   height: auto;
   line-height: 1.625;
   color: #333;
@@ -131,10 +136,12 @@ body {
   margin-top: 10px;
 }
 
-:root {
-  --blue: rgb(68 160 255);
+.header h1 {
+  cursor: pointer;
+  max-width: fit-content;
 }
 
+.header a:hover,
 .read-more a:hover {
   color: var(--blue);
 }
@@ -146,15 +153,23 @@ body {
 }
 
 @media only screen and (min-width: 600px) {
+  .hero-post-preview,
+  .post-body {
+    margin-top: 4rem;
+  }
+
   h1 {
     font-size: 4rem;
   }
+
   h2 {
     font-size: 3rem;
   }
+
   h3 {
     font-size: 2rem;
   }
+
   .hero-post-image {
     height: 50vh;
   }
@@ -167,23 +182,14 @@ body {
     font-size: 24px;
   }
 
-  .postBody,
-  footer > div {
-    padding: 64px;
-    padding-top: 10px;
-  }
-
-  footer > div {
-    margin-bottom: 0;
-    padding-bottom: 0;
-  }
   .more-posts-preview:hover,
   .hero-post-preview:hover {
     transform: scale(1.01);
     box-shadow: 0 0 14px rgba(44, 44, 44, 0.4);
   }
 
-  .main-page-header,
+  .post-body,
+  .header,
   .more-stories-title {
     padding-right: 30px;
     padding-left: 30px;
@@ -198,28 +204,14 @@ body {
 }
 
 @media only screen and (min-width: 1092px) {
-  .postBody {
-    width: 100%;
-    max-width: 936px;
-    margin: 0 auto;
-  }
-
-  footer > div {
-    width: 100%;
-    margin: 0 auto;
-    margin-top: 2rem;
-    max-width: 936px;
-  }
-
   .main-page {
     max-width: 936px;
-    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
 @media only screen and (min-width: 2500px) {
-  footer > div,
-  .postBody,
   .main-page {
     max-width: 2000px;
   }

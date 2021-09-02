@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
 import PostBody from "../../components/post-body";
-import Header from "../../components/header";
+import Intro from "../../components/intro";
 import PostHeader from "../../components/post-header";
 import Layout from "../../components/layout";
 import { getPostBySlug, getAllPosts } from "../../lib/api";
@@ -24,26 +24,24 @@ const Post = ({ post, morePosts }: Props) => {
 
   return (
     <Layout>
-      <Header />
+      <Intro withMotto={false} />
       {router.isFallback ? (
         <PostTitle>Loading…</PostTitle>
       ) : (
-        <>
-          <article>
-            <Head>
-              <title>{post.title}</title>
-              <meta property="og:image" content={post.ogImage.url} />
-            </Head>
-            <PostHeader
-              subtitle={post.subtitle}
-              title={post.title}
-              date={post.date}
-              author={post.author}
-            />
-            <PostBody content={post.content} />
-            {morePosts && <ReadMore posts={morePosts} />}
-          </article>
-        </>
+        <article className="post-body">
+          <Head>
+            <title>{post.title}</title>
+            <meta property="og:image" content={post.ogImage.url} />
+          </Head>
+          <PostHeader
+            subtitle={post.subtitle}
+            title={post.title}
+            date={post.date}
+            author={post.author}
+          />
+          <PostBody content={post.content} />
+          {morePosts && <ReadMore posts={morePosts} />}
+        </article>
       )}
     </Layout>
   );

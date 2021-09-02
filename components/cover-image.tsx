@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 
 type Props = {
@@ -7,27 +6,9 @@ type Props = {
   slug?: string;
 };
 
-const CoverImage = ({ title, src, slug }: Props) => {
-  const image = (
-    <Image
-      width={300}
-      height={150}
-      src={src}
-      layout="responsive"
-      alt={`Cover Image for ${title}`}
-    />
-  );
-  return (
-    <div className="sm:mx-0">
-      {slug ? (
-        <Link as={`/posts/${slug}`} href="/posts/[slug]">
-          <a aria-label={title}>{image}</a>
-        </Link>
-      ) : (
-        image
-      )}
-    </div>
-  );
+const CoverImage = ({ title, src }: Props) => {
+  const alt = `Cover Image for ${title}`;
+  return <Image src={src} layout="fill" objectFit="cover" alt={alt} />;
 };
 
 export default CoverImage;

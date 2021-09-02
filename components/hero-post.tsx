@@ -24,7 +24,7 @@ const HeroPost = ({
   return (
     <Link as={`/posts/${slug}`} href="/posts/[slug]">
       <section className="main-post cursor-pointer">
-        <div className="mb-8 md:mb-16">
+        <div className="mb-5 md:mb-8 hero-post-image">
           <CoverImage title={title} src={coverImage} slug={slug} />
         </div>
         <div className="md:grid md:grid-cols-2 md:gap-x-16 lg:gap-x-8">

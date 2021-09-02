@@ -1,14 +1,14 @@
 ---
 title: "Betting Heavy when convinced"
 subtitle: "And other such investment advice"
-excerpt: ""
-coverImage: "/assets/blog/write-code.png"
-date: "2020-03-16T05:35:07.322Z"
+excerpt: "This article is a consortium of things that I have learned on how or why to invest money over the years."
+coverImage: "/assets/blog/tall-buildings.jpg"
+date: "2021-09-02"
 author:
   name: Rico Trebeljahr
   picture: "/assets/blog/profile.jpeg"
 ogImage:
-  url: "/assets/blog/write-code.png"
+  url: "/assets/blog/tall-buildings.jpg"
 ---
 
 This article is a consortium of things that I have learned on how or why to invest money over the years. The idea was triggered by a good friend of mine, Henry, who is one of the most knowledgeable people I know. Somebody, who is constantly reading up on this topic, spending considerable amounts of brain power on it. I wish he had a blog I could link to from here.

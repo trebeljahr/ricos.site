@@ -5,13 +5,13 @@ type AvatarProps = {
 
 const Avatar = ({ picture }: AvatarProps) => {
   return (
-    <div className="">
+    <div className="avatar-container">
       <Image
         src={picture}
         alt="Picture of the author"
         layout="fill"
         objectFit="cover"
-        className="rounded-full"
+        className="round"
       />
     </div>
   );
@@ -24,9 +24,9 @@ type Props = {
 
 export const AvatarWithAuthor = ({ name, picture }: Props) => {
   return (
-    <div className="">
+    <div className="avatar-with-author">
       <Avatar picture={picture} />
-      <div className="">by {name}</div>
+      <div style={{ marginLeft: "10px" }}>by {name}</div>
     </div>
   );
 };

@@ -2,11 +2,11 @@ import Link from "next/link";
 
 const Header = () => {
   return (
-    <h2 className="">
+    <h1 className="header">
       <Link href="/">
         <a className="">trebeljahr.</a>
       </Link>
-    </h2>
+    </h1>
   );
 };
 

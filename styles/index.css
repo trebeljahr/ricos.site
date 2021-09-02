@@ -1,5 +1,45 @@
 @import "~prismjs/plugins/toolbar/prism-toolbar.css";
 
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+figure,
+p,
+pre {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.avatar-with-author {
+  display: flex;
+  align-items: center;
+}
+
+.round {
+  border-radius: 100%;
+}
+
+.published-date {
+  margin-bottom: 1rem;
+}
+
+.avatar-container {
+  width: 2rem;
+  height: 2rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
 .main-post {
   margin-bottom: calc(4px + 2.5rem);
 }
@@ -145,40 +185,31 @@ h3,
 h2,
 h1 {
   font-weight: bold;
+  margin-bottom: 1rem;
 }
 
 h1 {
-  font-size: 4rem;
-  line-height: 1.5;
+  font-size: 2.5rem;
+  line-height: 1.1;
 }
 
 h2 {
-  font-size: 3rem;
-  line-height: 1.375;
+  font-size: 1.6rem;
+  line-height: 1.1;
 }
 
 h3 {
-  font-size: 2rem;
-  line-height: 1.375;
+  font-size: 1.3rem;
+  line-height: 1.1;
 }
 
 p,
 ul,
 ol,
 blockquote {
-  font-family: Helvetica;
+  margin-bottom: 1rem;
   line-height: 1.6em;
-  margin-bottom: 20px;
-}
-
-.markdown h1,
-.markdown h2,
-.markdown h3,
-.markdown h4,
-.markdown h5,
-.markdown h6 {
-  margin-top: 20px;
-  margin-bottom: 10px;
+  font-family: Helvetica;
 }
 
 .markdown pre {

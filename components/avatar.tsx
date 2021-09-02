@@ -5,7 +5,7 @@ type AvatarProps = {
 
 const Avatar = ({ picture }: AvatarProps) => {
   return (
-    <div className="h-12 w-12 relative mr-4">
+    <div className="">
       <Image
         src={picture}
         alt="Picture of the author"
@@ -24,9 +24,9 @@ type Props = {
 
 export const AvatarWithAuthor = ({ name, picture }: Props) => {
   return (
-    <div className="hidden md:flex items-center ">
+    <div className="">
       <Avatar picture={picture} />
-      <div className="text-xl font-bold">by {name}</div>
+      <div className="">by {name}</div>
     </div>
   );
 };

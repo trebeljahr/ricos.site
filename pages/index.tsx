@@ -16,23 +16,21 @@ const Index = ({ allPosts }: Props) => {
   return (
     <>
       <Layout>
-        <div className="mainPage">
-          <Head>
-            <title>Thoughts and Learnings of a Curious Person</title>
-          </Head>
-          <Intro />
-          {heroPost && (
-            <HeroPost
-              title={heroPost.title}
-              coverImage={heroPost.coverImage}
-              date={heroPost.date}
-              author={heroPost.author}
-              slug={heroPost.slug}
-              excerpt={heroPost.excerpt}
-            />
-          )}
-          {morePosts.length > 0 && <MoreStories posts={morePosts} />}
-        </div>
+        <Head>
+          <title>Thoughts and Learnings of a Curious Person</title>
+        </Head>
+        <Intro />
+        {heroPost && (
+          <HeroPost
+            title={heroPost.title}
+            coverImage={heroPost.coverImage}
+            date={heroPost.date}
+            author={heroPost.author}
+            slug={heroPost.slug}
+            excerpt={heroPost.excerpt}
+          />
+        )}
+        {morePosts.length > 0 && <MoreStories posts={morePosts} />}
       </Layout>
     </>
   );

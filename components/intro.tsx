@@ -1,8 +1,10 @@
 const Intro = () => {
   return (
-    <section className="mainHeader">
-      <h1 className="">trebeljahr.</h1>
-      <h4 className="">Thoughts and Learnings from a curious person</h4>
+    <section className="main-page-header">
+      <h1>trebeljahr.</h1>
+      <p className="header-motto">
+        Thoughts and Learnings from a curious person
+      </p>
     </section>
   );
 };

@@ -8,7 +8,7 @@ type Props = {
 
 export const ReadMore = ({ posts }: { posts: Post[] }) => {
   return (
-    <div className="readMore">
+    <div className="read-more">
       <h2>Keep reading:</h2>
       {posts.map((post) => {
         return (
@@ -26,8 +26,8 @@ export const ReadMore = ({ posts }: { posts: Post[] }) => {
 const MoreStories = ({ posts }: Props) => {
   return (
     <section>
-      <h2 className="">More Stories</h2>
-      <div className="">
+      <h2 className="more-stories-title">More Stories</h2>
+      <div className="more-stories-container">
         {posts.map((post) => (
           <PostPreview
             key={post.slug}

@@ -4,9 +4,7 @@ type Props = {
 
 const PostBody = ({ content }: Props) => {
   return (
-    <div className="mx-auto font-sans">
-      <div className="markdown" dangerouslySetInnerHTML={{ __html: content }} />
-    </div>
+    <div className="markdown" dangerouslySetInnerHTML={{ __html: content }} />
   );
 };
 

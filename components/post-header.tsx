@@ -10,21 +10,13 @@ type Props = {
   subtitle?: string;
 };
 
-const Date = ({ date }: { date: string }) => {
-  return (
-    <div className="published-date">
-      <DateFormatter dateString={date} />
-    </div>
-  );
-};
-
 const PostHeader = ({ title, subtitle, date, author }: Props) => {
   return (
     <div className="post-header">
       <PostTitle>{title}</PostTitle>
       <PostSubTitle>{subtitle}</PostSubTitle>
-      <div>
-        <Date date={date} />
+      <div className="post-meta">
+        <DateFormatter dateString={date} />
         <Avatar name={author.name} picture={author.picture} />
       </div>
     </div>

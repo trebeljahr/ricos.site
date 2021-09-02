@@ -1,4 +1,3 @@
-import { AvatarWithAuthor as Avatar } from "./avatar";
 import DateFormatter from "./date-formatter";
 import CoverImage from "./cover-image";
 import Link from "next/link";
@@ -13,32 +12,16 @@ type Props = {
   slug: string;
 };
 
-const HeroPost = ({
-  title,
-  coverImage,
-  date,
-  excerpt,
-  author,
-  slug,
-}: Props) => {
+const HeroPost = ({ title, coverImage, date, excerpt, slug }: Props) => {
   return (
     <Link as={`/posts/${slug}`} href="/posts/[slug]">
-      <section className="main-post">
+      <section className="hero-post-preview">
         <div className="hero-post-image">
           <CoverImage title={title} src={coverImage} slug={slug} />
         </div>
-        <div className="">
-          <div>
-            <h3 className="">{title}</h3>
-            <div className="">
-              <DateFormatter dateString={date} />
-            </div>
-          </div>
-          <div>
-            <p className="">{excerpt}</p>
-            <Avatar name={author.name} picture={author.picture} />
-          </div>
-        </div>
+        <h2>{title}</h2>
+        <DateFormatter dateString={date} />
+        <p>{excerpt}</p>
       </section>
     </Link>
   );

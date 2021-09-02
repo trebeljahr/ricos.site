@@ -1,4 +1,4 @@
-import Footer from "./footer";
+// import Footer from "./footer";
 import Meta from "./meta";
 import { useEffect } from "react";
 import Prism from "prismjs";
@@ -17,11 +17,11 @@ const Layout = ({ children }: Props) => {
   }, []);
 
   return (
-    <>
+    <div className="main-page">
       <Meta />
       <main>{children}</main>
-      <Footer />
-    </>
+      {/* <Footer /> */}
+    </div>
   );
 };
 

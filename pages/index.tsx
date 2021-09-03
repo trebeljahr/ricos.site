@@ -19,7 +19,7 @@ const Index = ({ allPosts }: Props) => {
         <Head>
           <title>Thoughts and Learnings of a Curious Person</title>
         </Head>
-        <Intro />
+        <Intro withLink={false} />
         {heroPost && (
           <HeroPost
             title={heroPost.title}

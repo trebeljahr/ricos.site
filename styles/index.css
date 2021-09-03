@@ -1,6 +1,8 @@
 @import "~prismjs/plugins/toolbar/prism-toolbar.css";
 
 :root {
+  --darkerblue: rgb(32 128 232);
+  --steelblue: rgb(63 103 145 / 58%);
   --blue: rgb(68 160 255);
 }
 
@@ -37,8 +39,8 @@ h2,
 h1 {
   font-family: "Spartan", sans-serif;
   font-weight: bold;
-  margin-bottom: 2rem;
-  margin-top: 3rem;
+  margin-bottom: 1rem;
+  margin-top: 1.6rem;
 }
 
 h1 {
@@ -54,6 +56,20 @@ h2 {
 h3 {
   font-size: 1.3rem;
   line-height: 1.1;
+}
+
+.header-title-with-link {
+  cursor: pointer;
+  font-size: 2.5rem;
+}
+
+.header-title-with-link,
+.header-title-without-link {
+  color: var(--blue);
+}
+
+.header-title-with-link:hover {
+  color: var(--darkerblue);
 }
 
 p,
@@ -140,11 +156,10 @@ body {
 }
 
 .header h1 {
-  cursor: pointer;
+  margin-bottom: 0.5rem;
   max-width: fit-content;
 }
 
-.header a:hover,
 .read-more a:hover {
   color: var(--blue);
 }
@@ -156,9 +171,22 @@ body {
 }
 
 @media only screen and (min-width: 600px) {
+  h5,
+  h4,
+  h3,
+  h2,
+  h1 {
+    margin-bottom: 2rem;
+    margin-top: 3rem;
+  }
+
+  .hero-post-preview {
+    margin-bottom: 7rem;
+  }
+
   .hero-post-preview,
   .post-body {
-    margin-top: 4rem;
+    margin-top: 3rem;
   }
 
   h1 {

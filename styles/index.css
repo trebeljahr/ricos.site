@@ -35,8 +35,10 @@ h4,
 h3,
 h2,
 h1 {
+  font-family: "Spartan", sans-serif;
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
+  margin-top: 3rem;
 }
 
 h1 {
@@ -58,10 +60,11 @@ p,
 ul,
 ol,
 blockquote {
-  margin-bottom: 1rem;
-  line-height: 1.4em;
-  font-family: Helvetica;
+  margin-bottom: 1.5rem;
+  line-height: 1.6em;
+  font-family: "Libre Baskerville", serif;
 }
+
 .avatar-with-author {
   display: flex;
   align-items: center;
@@ -179,7 +182,7 @@ body {
   }
 
   body {
-    font-size: 24px;
+    font-size: 20px;
   }
 
   .more-posts-preview:hover,

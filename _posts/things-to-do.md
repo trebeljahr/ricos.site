@@ -1,7 +1,7 @@
 ---
-title: "Things to Do"
+title: "So many awesome things to do"
 subtitle: "And why to do them"
-excerpt: "There are so many things in this highly complex world, that humans can devote their time to, so many new things and skills to be learned, so much to discover, to do, to invent..."
+excerpt: "There are so many things in this highly complex world, that humans can devote their time to, so many new things and skills to be learned, so much to discover, to do..."
 coverImage: "/assets/blog/write-code.png"
 date: "2020-03-16T05:35:07.322Z"
 author:
@@ -11,17 +11,17 @@ ogImage:
   url: "/assets/blog/write-code.png"
 ---
 
-There are so many things in this highly complex world, that humans can devote their time to, so many new things and skills to be learned, so much to discover, to do, to invent... It is insane. Crazy. 
+There are so many things in this highly complex world, that humans can devote their time to, so many new things and skills to be learned, so much to discover, to do, to invent... It is insane. Crazy.
 
-And when I come to think of all these options I get hit with FOMO attacks every single time. Not enough time, is all I can manage to think. And then I get sad about a world where we have all the possibilities and freedoms. A world where we can pursue so many things that are worthwhile and fun to do. To me, this is the most fundamental dilemma of being alive. Especially when one is extremely curious. 
+And when I come to think of all these options I get hit with FOMO attacks every single time. Not enough time, is all I can manage to think. And then I get sad about a world where we have all the possibilities and freedoms. A world where we can pursue so many things that are worthwhile and fun to do. To me, this is the most fundamental dilemma of being alive. Especially when one is extremely curious.
 
 The internet gives access to so much information. People all over the world work to develop new things all the time. And information is increasing so fast that I can not keep up with it. There is simply not enough time for me to learn everything I would like to learn. Simply because the information out there is growing so much faster than I could ever consume it. There is not enough time.
 
-And then there are things outside of knowledge, outside of learning. There are skills to master, things to pursue and everybody tells you to focus on only one thing to be successful. 
+And then there are things outside of knowledge, outside of learning. There are skills to master, things to pursue and everybody tells you to focus on only one thing to be successful.
 
-To master only one thing because otherwise, you can never get anywhere with your skills. So it is not only the multitude of things out there that makes me sick but the depth of each and every of them. You can spend many lifetimes, perfecting this one little thing. And still... you wouldn't master it fully. 
+To master only one thing because otherwise, you can never get anywhere with your skills. So it is not only the multitude of things out there that makes me sick but the depth of each and every of them. You can spend many lifetimes, perfecting this one little thing. And still... you wouldn't master it fully.
 
-It is because skills are never capped. There is always more to learn... always something to perfect a tiny bit better. There is always something new. Something better... And thus this journey of learning, of becoming better, is an endless one. Because there is no such thing as a finish state, a state where one can sit down and rest and be complete. And that worries me, even though I know it shouldn't, because it is inevitable. 
+It is because skills are never capped. There is always more to learn... always something to perfect a tiny bit better. There is always something new. Something better... And thus this journey of learning, of becoming better, is an endless one. Because there is no such thing as a finish state, a state where one can sit down and rest and be complete. And that worries me, even though I know it shouldn't, because it is inevitable.
 
 Because when there are hundreds of things worth pursuing because they are fun and all might take a lifetime to perfect - then how the hell should I decide which one to pursue? How can I justify not missing out on all there is? Only to be able to focus on only one thing, to gain depth and understanding within this narrow scope? And the second question is - do I have to?
 
@@ -82,15 +82,15 @@ I think the theme unifying all of the points above is that I really really reall
 
 So what is the core value that I want to drive my life - the one theme unifying it all. It is curiosity and a passion for learning. But then I have to ask, why. Why do I feel that it is so important to learn new stuff constantly?
 
-Why is learning important to me? 
+Why is learning important to me?
 
 It turns out that the thing that excites me about learning is not so much the learning itself and neither is it the point of knowing more than before and neither is it the ability to then explain and share it with others. It is way simpler than that. I crave improvement. Above all.
 
-## Improvement is the Purpose of Life. 
+## Improvement is the Purpose of Life.
 
-When I think of why I want to learn and understand things it is because I want to get better over time and I think that this is the unifying theme driving the whole of evolution forward. It is what moves me to tears when I am reading about the progress of technology, what I enjoy so much when I am able to solve a problem in coding after hours of failed attempts. It is why I practice and enjoy doing parkour and sports in general. 
+When I think of why I want to learn and understand things it is because I want to get better over time and I think that this is the unifying theme driving the whole of evolution forward. It is what moves me to tears when I am reading about the progress of technology, what I enjoy so much when I am able to solve a problem in coding after hours of failed attempts. It is why I practice and enjoy doing parkour and sports in general.
 
-It is also what makes me addicted to games like Minecraft, especially the modded versions, where a sense of progress is all the game is about. The whole purpose being that you can build upon the stuff you built previously and therefore progress. 
+It is also what makes me addicted to games like Minecraft, especially the modded versions, where a sense of progress is all the game is about. The whole purpose being that you can build upon the stuff you built previously and therefore progress.
 
 Progression. That's what fundamentally all life is about. It is what life has always been about and it is what I am about and what I want to pursue during my lifetime. I want to progress and progress and progress and build myself and my surroundings into something that is better than it was before.
 
@@ -118,37 +118,37 @@ These are the worst "enemies" that I will encounter in my life. Which says a lot
 
 ## Bad Health.
 
-This one is obvious. Having a body that can support you in your endeavours of doing things you enjoy for a longer time is important and to have that body you need to be healthy. But being healthy is not just about the body, it is also about mental health because there are a few things that can kill you from the inside of your brain even though you have a tough body and are 'healthy' by all other definitions. 
+This one is obvious. Having a body that can support you in your endeavours of doing things you enjoy for a longer time is important and to have that body you need to be healthy. But being healthy is not just about the body, it is also about mental health because there are a few things that can kill you from the inside of your brain even though you have a tough body and are 'healthy' by all other definitions.
 
-Therefore to enjoy life, there exist some things that all humans need. These things have to be in place for you to be able to live happy and pursue the things you value within your life. 
+Therefore to enjoy life, there exist some things that all humans need. These things have to be in place for you to be able to live happy and pursue the things you value within your life.
 
 You need a certain amount of friends and close relationships and a certain amount of connection to a group. Because humans are tribal animals and without being part of a small group of individuals you can suffer a lot, to the point where you get depressed and your actual physical health deteriorates together with your mental health.
 
 ## Financial Shackles.
 
-This one might be the most subtle and creeping of all of the problems that are out there, yet I feel that it is so common, that I am scared of it the most. 
+This one might be the most subtle and creeping of all of the problems that are out there, yet I feel that it is so common, that I am scared of it the most.
 
-In our society we need money for everything we do. If you want to survive you will have to have a way of paying for yourself and the more time you want to spend doing stuff you love the more you will have to worry about finding a way that can pay for all the things you need. 
+In our society we need money for everything we do. If you want to survive you will have to have a way of paying for yourself and the more time you want to spend doing stuff you love the more you will have to worry about finding a way that can pay for all the things you need.
 
-Basically being able to pursue something you love is only possible, if you have enough time to do so and the more time you actually have to spend on getting around to survive the daily life, the less time there will be to actually do all of the stuff you want to do. 
+Basically being able to pursue something you love is only possible, if you have enough time to do so and the more time you actually have to spend on getting around to survive the daily life, the less time there will be to actually do all of the stuff you want to do.
 
-And that to me seems bad. Obviously the ideal would be to get paid for the stuff you like to do, but even that is dangerous, because when your interests change you have to find a way to get paid for your new interests and this might be hard or impossible. Leading to financial serfdom again. 
+And that to me seems bad. Obviously the ideal would be to get paid for the stuff you like to do, but even that is dangerous, because when your interests change you have to find a way to get paid for your new interests and this might be hard or impossible. Leading to financial serfdom again.
 
-Or you will have to keep doing things you don't like anymore, now only as a means to support yourself. 
+Or you will have to keep doing things you don't like anymore, now only as a means to support yourself.
 
-And the worst of it all. Circumstances can change, there can be hardships in your life or things you have to take care of that will tie you down. People you have to pay for (children/parents), because you have a reliability to care for them. 
+And the worst of it all. Circumstances can change, there can be hardships in your life or things you have to take care of that will tie you down. People you have to pay for (children/parents), because you have a reliability to care for them.
 
-To be able to do that will have such a high priority in life that it might end up being the only thing one does. Working in a shitty job draining you of all your energy, just so you can provide for your family or yourself, with enough food and a warm place to sleep at night. And I feel this is the most cruel things, to see happening, when things seem to go well and then turn into chaos and misery because one didn't prepare... 
+To be able to do that will have such a high priority in life that it might end up being the only thing one does. Working in a shitty job draining you of all your energy, just so you can provide for your family or yourself, with enough food and a warm place to sleep at night. And I feel this is the most cruel things, to see happening, when things seem to go well and then turn into chaos and misery because one didn't prepare...
 
-When this goes really bad it leads to more severe and even more pressing problems. Then of actual life and death. Problems of hunger and pain and thirst and cold and all the hardships that first world citizens can not even imagine which yet are a reality for so so many people out there. 
+When this goes really bad it leads to more severe and even more pressing problems. Then of actual life and death. Problems of hunger and pain and thirst and cold and all the hardships that first world citizens can not even imagine which yet are a reality for so so many people out there.
 
-So there is another point of getting rid of financial shackles as early as possible and in as robust a manner as possible. Being wealthy is a condition to have freedom to to what you want. 
+So there is another point of getting rid of financial shackles as early as possible and in as robust a manner as possible. Being wealthy is a condition to have freedom to to what you want.
 
-And inherent in doing what you want is the idea that then you can make the life of other people better as well by the things you can work on. 
+And inherent in doing what you want is the idea that then you can make the life of other people better as well by the things you can work on.
 
-At the moment I am trying to figure out my own way of providing for myself and learning the skills and doing the work necessary, so that in the future I can provide for myself with ease and take all the time I want and have, to do only the things that I actually care for and want to do. I am acquiring my freedom and try to outmaneuver the financial shackles the world tries to place on me. 
+At the moment I am trying to figure out my own way of providing for myself and learning the skills and doing the work necessary, so that in the future I can provide for myself with ease and take all the time I want and have, to do only the things that I actually care for and want to do. I am acquiring my freedom and try to outmaneuver the financial shackles the world tries to place on me.
 
-## Sloth and Procrastination. 
+## Sloth and Procrastination.
 
 Both go almost hand in hand and are something like a fundamental problem to everything. Humans and that includes you and me are very lazy beings. Again, from an evolutionary standpoint this makes a lot of sense, because in being lazy we can conserve energy and the most laziest fellows that did not die because of their inborn laziness over time flourished and passed on more of their genes out competing their other fellow humans. Hence laziness is something that almost all of us share to a certain extent. I mean of course there again are small genetic differences like there are with everything and probably some people have an easier time not being lazy who are therefore able to do more, more easily.
 
@@ -164,13 +164,13 @@ This is the unifying theme tying every problem together. When these problems ari
 
 ## Comparison to Others.
 
-This one is also a really bad problem. When comparing myself to others within the age where we live, I can always find somebody who devoted their whole life to only this purpose, somebody more gifted than me who on top of that put in all of her soul and all of her time into doing only this one thing that this person was good at. 
+This one is also a really bad problem. When comparing myself to others within the age where we live, I can always find somebody who devoted their whole life to only this purpose, somebody more gifted than me who on top of that put in all of her soul and all of her time into doing only this one thing that this person was good at.
 
 Therefore they become more than good, they become exceptionally good and so good that only if you were to try harder than they did you could overcome their legacy. And this sometimes robs me of all the motivation I can muster when thinking of it. Because I do not want to put in this much time, I want to do other stuff I like as well and living a life single mindedly oriented towards one single purpose only seems to me in the end still boring and dull - even if the price gained is that within this narrow segment of skill one can become the best.
 
 It takes the fun and the passion out of the progress of learning of becoming better. Even though I know this, I can still feel how this is a problem, because deep within me I am comparing myself to others nonetheless. No matter how hard I try not to... I still do it. And it sucks. Every single time. And therefore comparing myself to others is a problem I will have to solve, if I want to become happy living my own life, excelling only when compared to myself the day before.
 
-And that is the only metric that counts in the end. As long as I am progressing myself and giving my all to what I am doing at that very moment, being present, striving to become better, everything is alright. There is simply no point in doing the comparison and I have to remember that at all times, when I am still doing it. 
+And that is the only metric that counts in the end. As long as I am progressing myself and giving my all to what I am doing at that very moment, being present, striving to become better, everything is alright. There is simply no point in doing the comparison and I have to remember that at all times, when I am still doing it.
 
 ## Why am I ashamed when playing computer games?
 

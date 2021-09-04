@@ -119,8 +119,11 @@ blockquote {
   margin-bottom: 0;
 }
 
-.more-posts-preview,
 .hero-post-preview {
+  margin-bottom: 2rem;
+}
+
+.more-posts-preview {
   margin-bottom: 2rem;
 }
 
@@ -170,7 +173,41 @@ body {
   list-style: disc outside;
 }
 
+.more-posts-preview,
+.hero-post-preview {
+  cursor: pointer;
+}
+
 @media only screen and (min-width: 600px) {
+  .more-stories-container {
+    margin-bottom: 8rem;
+  }
+  .more-posts-preview {
+    display: grid;
+    grid-template-columns: 18.5rem auto;
+    grid-column-gap: 2rem;
+  }
+
+  .more-posts-preview-text {
+    height: 18.5rem;
+    overflow-y: hidden;
+  }
+
+  .more-posts-preview-text *:first-child {
+    margin-top: 0px;
+  }
+  .more-posts-preview-text *:last-child {
+    margin-bottom: 0px;
+  }
+  .more-posts-image {
+    height: 18.5rem;
+    margin: 0;
+  }
+
+  .more-posts-preview h2 {
+    margin-top: 1.5rem;
+  }
+
   h5,
   h4,
   h3,
@@ -243,6 +280,10 @@ body {
 }
 
 @media only screen and (min-width: 2500px) {
+  .more-stories-container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+  }
   .main-page {
     max-width: 2000px;
   }

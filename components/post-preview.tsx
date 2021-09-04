@@ -19,9 +19,11 @@ const PostPreview = ({ title, coverImage, date, excerpt, slug }: Props) => {
         <div className="more-posts-image">
           <CoverImage slug={slug} title={title} src={coverImage} />
         </div>
-        <h2>{title}</h2>
-        <DateFormatter dateString={date} />
-        <p>{excerpt}</p>
+        <div className="more-posts-preview-text">
+          <h2>{title}</h2>
+          <DateFormatter dateString={date} />
+          <p>{excerpt}</p>
+        </div>
       </div>
     </Link>
   );

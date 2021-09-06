@@ -15,16 +15,18 @@ type Props = {
 const PostPreview = ({ title, coverImage, date, excerpt, slug }: Props) => {
   return (
     <Link as={`/posts/${slug}`} href="/posts/[slug]">
-      <div className="more-posts-preview">
-        <div className="more-posts-image">
-          <CoverImage slug={slug} title={title} src={coverImage} />
+      <a>
+        <div className="more-posts-preview">
+          <div className="more-posts-image">
+            <CoverImage slug={slug} title={title} src={coverImage} />
+          </div>
+          <div className="more-posts-preview-text">
+            <h2>{title}</h2>
+            <DateFormatter dateString={date} />
+            <p>{excerpt}</p>
+          </div>
         </div>
-        <div className="more-posts-preview-text">
-          <h2>{title}</h2>
-          <DateFormatter dateString={date} />
-          <p>{excerpt}</p>
-        </div>
-      </div>
+      </a>
     </Link>
   );
 };

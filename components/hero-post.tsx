@@ -15,14 +15,16 @@ type Props = {
 const HeroPost = ({ title, coverImage, date, excerpt, slug }: Props) => {
   return (
     <Link as={`/posts/${slug}`} href="/posts/[slug]">
-      <section className="hero-post-preview">
-        <div className="hero-post-image">
-          <CoverImage title={title} src={coverImage} slug={slug} />
-        </div>
-        <h2>{title}</h2>
-        <DateFormatter dateString={date} />
-        <p>{excerpt}</p>
-      </section>
+      <a>
+        <section className="hero-post-preview">
+          <div className="hero-post-image">
+            <CoverImage title={title} src={coverImage} slug={slug} />
+          </div>
+          <h2>{title}</h2>
+          <DateFormatter dateString={date} />
+          <p>{excerpt}</p>
+        </section>
+      </a>
     </Link>
   );
 };

@@ -14,7 +14,7 @@ export const ReadMore = ({ posts }: { posts: Post[] }) => {
         return (
           <h3 key={post.slug}>
             <Link as={`/posts/${post.slug}`} href={"/posts/[slug]"}>
-              {post.title}
+              <a>{post.title}</a>
             </Link>
           </h3>
         );

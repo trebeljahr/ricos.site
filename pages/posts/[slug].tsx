@@ -21,7 +21,6 @@ const Post = ({ post, morePosts }: Props) => {
   if (!router.isFallback && !post?.slug) {
     return <ErrorPage statusCode={404} />;
   }
-
   return (
     <Layout description={post.excerpt}>
       <Intro withMotto={false} />
@@ -76,6 +75,7 @@ export async function getStaticProps({ params }: Params) {
     "date",
     "slug",
     "author",
+    "excerpt",
     "content",
     "ogImage",
     "coverImage",

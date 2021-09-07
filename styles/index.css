@@ -1,9 +1,8 @@
 @import "~prismjs/plugins/toolbar/prism-toolbar.css";
 
 :root {
-  --darkerblue: rgb(32 128 232);
-  --steelblue: rgb(63 103 145 / 58%);
-  --blue: rgb(68 160 255);
+  --darkerblue: #0f4ce5;
+  --blue: #44a0ff;
 }
 
 footer {
@@ -65,11 +64,11 @@ h3 {
 
 .header-title-with-link,
 .header-title-without-link {
-  color: var(--blue);
+  color: var(--darkerblue);
 }
 
 .header-title-with-link:hover {
-  color: var(--darkerblue);
+  color: var(--blue);
 }
 
 p,
@@ -179,15 +178,15 @@ body {
 }
 
 .read-more a:hover {
-  color: var(--blue);
+  color: var(--darkerblue);
 }
 
 .markdown a {
-  color: var(--blue);
+  color: var(--darkerblue);
 }
 
 .markdown a:hover {
-  color: var(--darkerblue);
+  color: var(--blue);
 }
 
 .markdown ul {

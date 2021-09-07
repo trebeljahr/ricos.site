@@ -31,27 +31,25 @@ When investing, I think one thing is more important than anything else, and that
 
 Time in itself is an investment. And even though I might be able to have the most financial impact by spending all my day thinking about what to trade and how to trade it, this is not what I should do. 
 
-When it comes down to what I want to be doing with my time, that's really not it. To be honest, it does not even come close to the top of the list. 
+When it comes down to what I want to be doing with my time, that's really not it. To be honest, it does not even come close to the top of the list. There are [simply too many things to do, to try out and experience](https://www.trebeljahr.com/posts/things-to-do). 
 
-I, personally, would much rather read, write, do parkour, meditate, photograph, code, climb, hike, listen to music or podcasts, watch MIT lectures, meet friends, practice piano, play computer games or do a gazillion of other things. I would literally rather sit still and observe the working of my mind than worry about how to invest better... Think about that for a second and let it sink in.
+I, personally, would much rather read, write, do parkour, meditate, photograph, code, climb, hike, listen to music or podcasts, watch MIT lectures, meet friends, practice piano, play computer games or [travel the world on a budget](https://www.trebeljahr.com/posts/why-do-i-like-traveling). I would literally rather sit still and observe the working of my mind than worry about how to invest better... Think about that for a second and let it sink in.
 
 And if you are honest with yourself, is analyzing market trends *really* the thing you want to do with your time? Especially if you already are in the top 1% of earners in the whole world and live a life that is better than those of almost every human that has ever walked upon this earth? Is that really the best use for your time you can come up with? Do you really need all that money? 
 
-In the end, money is only a means to an end. It is something that has not value on its own. Owning more than I need, is, I think, a stupid thing. And worrying and aligning my life towards money - or investing for that matter - is an even stupider thing still.
+In the end, money is only a means to an end. It is something that has not value on its own. Owning more than I need, is a stupid thing. And worrying and aligning my life towards money - or investing for that matter - is an even stupider thing still.
 
-Making some solid decisions every once in a while, sitting still and not bothering about investing, the rest of my days, instead using my time to build skills, to play, to work, to learn is more than enough. 
+Making some solid decisions every once in a while, sitting still and not bothering about investing, the rest of my days and instead using my time to build skills, to play, to work, to learn is more than enough. 
 
-And it will forge a character over time that can generate wealth in the long term. And I think that is the better thing to do. 
+And it will, over time, forge a character that can generate wealth in the long term. And I think that is the better thing to do. And funnily enough, in the long run it is probably the thing that will build more wealth overall anyways. 
 
-And funnily enough, in the long run it is probably the thing that will build more wealth overall anyways. 
-
-Hard but clever work, with some simple investments, to gain compound interest from some of the money one earns. But those can be simple no think investments, some ETF, maybe some crypto, some Google stock and that's it. Leave it there. Be done with the money game for the rest of your life. 
+Hard but clever work, with some simple investments, to gain compound interest from some of the money one earns. But those can be simple not much thinking required investments, some ETF, maybe some crypto, some Google stock and that's it. Leave it there. Be done with the money game.  
 
 ## The Value of Work.
 
 Work that creates value is the best investment there is. Because work can pay bigger dividends than buying crypto or stock or bonds or whatnot, ever could. 
 
-Don't think 5x or even 10x, not even 100x over 10 years. But think compounding effects of hard and clever work, effects that might easily make it worth a 10000x or more. The catch is that time invested, especially in learning and good execution and decision making, can have unbounded effects. Especially in our economy, where value can be created at an immense scale and is in not tied to pretty much anything, like time or labor, anymore.
+Don't think 5x or even 10x, not even 100x over 10 years. But think compounding effects of hard and clever work, effects that might easily make it worth a 10000x or more. The catch is that time invested, especially in learning and good execution and [good decision making](https://www.trebeljahr.com/posts/brain-complexity), can have unbounded effects. Especially in our economy, where value can be created at an immense scale and is in not tied to pretty much anything, like time or labor, anymore.
 
 An economy where knowledge and information can be instantly transmitted and the value generated by a single person sits at a un-imaginably high end of the scale. It might as well be without any bounds. If one looks at people like Elon Musk or Jeff Bezos, it becomes pretty clear what that means.
 
@@ -108,7 +106,7 @@ Even if they made 1000x on cryptos, to them it would not matter all that much, b
 
 And I would much rather be that person, happily working on something that matters to them, than the one spending all their time thinking about investment strategies and worrying about how their financial assets perform. Even if one has more money than the other in the end. Of what use is that money to them if they regret having spend all that time acquiring it? When they look back on all the opportunities they missed and imagine the life they could have lived, if they had spend the time to find out what they truly wanted and then followed where that path would have led them? 
 
-The only thing better than possessing a skill that you love and that can sustain your life for the rest of your days, is if that skill is highly sought after by society. Because then, you will be drowning in wealth, if you choose to do so. And furthermore you will actually give something meaningful in return. You can be happy and wealthy, without either of them feeling like effort. The hard part is finding out how to do that. It is about finding a way to reconcile your wants with those of society. And that is a difficult task. 
+The only thing better than possessing a skill that you love and that can sustain your life for the rest of your days, is if that skill is highly sought after by society. Because then, you will be drowning in wealth, if you choose to do so. And furthermore you will give something meaningful in return. You can be happy and wealthy, without either of them feeling like effort. The hard part is finding out how to do that. It is about finding a way to reconcile your wants with those of society. And that is a difficult task. Maybe, who knows, [writing down what you know is an activity like that?](https://www.trebeljahr.com/posts/writing-down-what-i-know)
 
 So this is my final advice on investing. Think about what you want to spend your time with. Wisely. It is the most important investment decision, you have to make. And the better your decision making is here, the better your life will be overall.
 

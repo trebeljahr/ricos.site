@@ -182,10 +182,22 @@ body {
   color: var(--blue);
 }
 
-.markdown ul,
-.markdown ol {
+.markdown a {
+  color: var(--blue);
+}
+
+.markdown a:hover {
+  color: var(--darkerblue);
+}
+
+.markdown ul {
   padding-left: 4%;
   list-style: disc outside;
+}
+
+.markdown ol {
+  padding-left: 4%;
+  list-style: decimal outside;
 }
 
 .more-posts-preview,

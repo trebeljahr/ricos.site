@@ -1,6 +1,13 @@
 import Head from "next/head";
 
-const Meta = () => {
+const defaultDescription = `trebeljahr - a blog where a curious person publishes posts about the things he reads and thinks about. The topics can vary widely, 
+from programming to investment advice, traveling, crypto-currencies, the brain, physics, philosophy, photography and more...`;
+
+interface Props {
+  description?: string;
+}
+
+const Meta = ({ description = defaultDescription }: Props) => {
   return (
     <Head>
       <link
@@ -32,6 +39,7 @@ const Meta = () => {
       <meta name="theme-color" content="#000" />
       <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
 
+      {/* google fonts */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" />
       <link
@@ -39,7 +47,7 @@ const Meta = () => {
         rel="stylesheet"
       />
 
-      <meta name="description" />
+      <meta name="description" content={description} />
     </Head>
   );
 };

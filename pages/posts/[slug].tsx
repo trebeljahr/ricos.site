@@ -23,7 +23,7 @@ const Post = ({ post, morePosts }: Props) => {
   }
 
   return (
-    <Layout>
+    <Layout description={post.excerpt}>
       <Intro withMotto={false} />
       {router.isFallback ? (
         <PostTitle>Loading…</PostTitle>

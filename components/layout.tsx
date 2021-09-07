@@ -3,12 +3,13 @@ import Meta from "./meta";
 
 type Props = {
   children: React.ReactNode;
+  description?: string;
 };
 
-const Layout = ({ children }: Props) => {
+const Layout = ({ children, description }: Props) => {
   return (
     <div className="main-page">
-      <Meta />
+      <Meta description={description} />
       <main>{children}</main>
       {/* <Footer /> */}
     </div>

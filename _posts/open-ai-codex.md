@@ -35,7 +35,7 @@ The job of that compiler ... it sounds familiar. Because that's pretty much exac
 
 So that, in a nutshell, is what Codex will do. It is going to enable everybody to "learn" how to code instantly when they know the English language. 
 
-## Programming is now democratized
+## Programming -> democratized
 
 What does all of this mean? It means that soon you can program... Like literally everybody who can read this text and also write English can program - period. And even better - everybody will get better at programming from now on, even without learning anything! The tool will be further developed by OpenAI therefore enabling everybody to be a "better" programmer over time, because Codex can solve problems better over time, so can you. 
 
@@ -75,9 +75,9 @@ Because when the point of complete automation comes, then, however hard you migh
 
 ## The Kantian imperative? 
 
-All of this makes me feel very gloomy and almost doomsday like. In the sense, that if everything comes to this point eventually anyways, without me doing anything for it - then why am I not spending all of my time - not working at all, but enjoying all the life I can, while the world is still the way it is now? 
+All of this makes me feel very gloomy and almost doomsday like. In the sense, that if everything comes to this point eventually anyways, without me doing anything for it - then why am I not spending all of my time - not working at all, [but enjoying all the life I can](/posts/on-the-beauty-of-living), while the world is still the way it is now? 
 
-Why do I bother about learning, about reading, about becoming really good at things? The thought crossing my mind is  to stop competing entirely, taking my money that I have now and bridge the gap of time until complete automation with stuff that I really really enjoy doing... There is enough people out there, why should I bother helping to fix the problem and help create a world of complete abundance - if I am already sure that this will happen within my lifetime anyways? 
+Why do I bother about learning, about reading, about becoming really good at things? The thought crossing my mind is  to stop competing entirely, taking my money that I have now and bridge the gap of time until complete automation with stuff that [I really really enjoy doing](/posts/things-to-do)... There is enough people out there, why should I bother helping to fix the problem and help create a world of complete abundance - if I am already sure that this will happen within my lifetime anyways? 
 
 I think this is the same problem as the fundamental problem of cooperation. Which leads to the tragedy of the commons and where the genius of the Kantian imperative lies. In a way the idea of - if everybody would do it like you would, how would the world look - is a test for the tragedy of the commons - using rationality to sift out suboptimal but evolutionarily stable solutions from ones behavior. 
 

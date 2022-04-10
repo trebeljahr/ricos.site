@@ -10,7 +10,6 @@ type Props = {
 const PostBody = ({ content }: Props) => {
   useEffect(() => {
     if (typeof window !== "undefined") {
-      console.log("Running Prism Highlight Function");
       setTimeout(Prism.highlightAll, 1000);
     }
   }, [content]);

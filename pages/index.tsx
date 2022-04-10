@@ -1,6 +1,5 @@
 import MoreStories from "../components/more-stories";
 import HeroPost from "../components/hero-post";
-import Intro from "../components/intro";
 import Layout from "../components/layout";
 import { getAllPosts } from "../lib/api";
 import Head from "next/head";
@@ -15,11 +14,10 @@ const Index = ({ allPosts }: Props) => {
   const morePosts = allPosts.slice(1);
   return (
     <>
-      <Layout>
+      <Layout navHeaderWithLink={false}>
         <Head>
           <title>Thoughts and Learnings of a Curious Person</title>
         </Head>
-        <Intro withLink={false} />
         {heroPost && (
           <HeroPost
             title={heroPost.title}

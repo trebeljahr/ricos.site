@@ -10,7 +10,7 @@ type Props = {
 };
 export default function Books({ allBooks }: Props) {
   return (
-    <Layout trebeljahr={true} fullPage={true}>
+    <Layout fullPage={true} pageTitle="Book Notes">
       <article>
         <PostHeader title={"Books Read:"} />
         <div className="allBooks">

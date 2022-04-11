@@ -1,6 +1,9 @@
 @import "~prismjs/plugins/toolbar/prism-toolbar.css";
 
 :root {
+  /* --darkerblue: #1e7900;
+  --blue: #28b264; */
+
   --darkerblue: #0f4ce5;
   --blue: #44a0ff;
   --main-width: 95vw;
@@ -13,6 +16,13 @@ html::-webkit-scrollbar {
 html {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+.colored-link {
+  color: var(--darkerblue)
+}
+.colored-link:hover {
+  color: var(--blue)
 }
 
 html,
@@ -78,7 +88,8 @@ blockquote {
 }
 
 .navbar {
-  background: lightblue;
+  background: #f4f4f4;
+  padding: 20px 0px;
 }
 
 .navbar-content {
@@ -94,10 +105,6 @@ blockquote {
   margin-left: 30px;
 }
 
-.main-page-full {
-  width: var(--main-width);
-  margin: auto;
-}
 .allBooks {
   display: flex;
   justify-content: flex-start;
@@ -188,7 +195,7 @@ blockquote {
   color: #333;
   margin-right: auto;
   margin-left: auto;
-  width: 95%;
+  width: 95vw;
 }
 
 body {
@@ -311,14 +318,14 @@ body {
 
 @media only screen and (min-width: 1092px) {
   .book-cover-image {
-    width: calc(var(--main-width) / 5);
-    height: calc(1.6 * calc(var(--main-width) / 5));
+    width: calc(var(--main-width) / 3);
+    height: calc(1.6 * calc(var(--main-width) / 3));
     position: relative;
   }
 
   .navbar-content {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
   }
 
   .navlinks {
@@ -327,7 +334,7 @@ body {
     align-items: center;
   }
   .navlinks * {
-    margin: 10px;
+    margin-left: 40px;
   }
 
   .navlinks a {
@@ -335,23 +342,26 @@ body {
     font-family: "Spartan", sans-serif;
     font-size: 1.5rem;
   }
+  .navlinks a:hover {
+    color: var(--blue);
+  }
 
   .more-stories-container {
     margin-bottom: 8rem;
   }
   .more-posts-preview {
     display: grid;
-    grid-template-columns: 18.5rem auto;
+    grid-template-columns: 20rem auto;
     grid-column-gap: 2rem;
   }
 
   .more-posts-preview-text {
-    height: 18.5rem;
+    height: 20rem;
     overflow-y: hidden;
   }
 
   .more-posts-image {
-    height: 18.5rem;
+    height: 20rem;
     margin: 0;
   }
 
@@ -360,6 +370,10 @@ body {
     margin-left: auto;
     margin-right: auto;
   }
+  :root {
+    --main-width: 936px;
+  }
+
 }
 
 @media only screen and (min-width: 2500px) {
@@ -368,12 +382,16 @@ body {
     grid-template-columns: 50% 50%;
   }
   .book-cover-image {
-    width: calc(var(--main-width) / 6);
-    height: calc(1.6 * calc(var(--main-width) / 6));
+    width: calc(var(--main-width) / 4);
+    height: calc(1.6 * calc(var(--main-width) / 4));
     position: relative;
   }
 
   .main-page {
     max-width: 2000px;
+  }
+
+  :root {
+    --main-width: 2000px;
   }
 }

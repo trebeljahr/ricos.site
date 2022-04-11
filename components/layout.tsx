@@ -21,7 +21,7 @@ const Layout = ({
     <>
       <Meta description={description} title={pageTitle} />
       <Navbar intro={intro} />
-      <main className={full ? "main-page-full" : "main-page"}>{children}</main>
+      <main className={"main-page"}>{children}</main>
       {/* <Footer /> */}
     </>
   );

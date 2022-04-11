@@ -14,7 +14,7 @@ const Index = ({ allPosts }: Props) => {
   const heroPost = allPosts[0];
   const morePosts = allPosts.slice(1);
   return (
-    <Layout trebeljahr={true}>
+    <Layout pageTitle="Posts">
       {/* <Intro withLink={false} withMotto={true}></Intro> */}
       {heroPost && (
         <HeroPost

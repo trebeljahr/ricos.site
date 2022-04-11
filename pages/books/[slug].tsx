@@ -20,14 +20,11 @@ const Book = ({ book }: Props) => {
     return <ErrorPage statusCode={404} />;
   }
   return (
-    <Layout pageTitle={book.title} trebeljahr={true}>
+    <Layout pageTitle={book.title}>
       {router.isFallback ? (
         <PostTitle>Loading…</PostTitle>
       ) : (
         <article>
-          <Head>
-            <title>{book.title}</title>
-          </Head>
           <div className="book-cover-image">
             <CoverImage title={book.title} src={book.bookCover} />
           </div>

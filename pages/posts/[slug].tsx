@@ -21,15 +21,11 @@ const Post = ({ post, morePosts }: Props) => {
     return <ErrorPage statusCode={404} />;
   }
   return (
-    <Layout description={post.excerpt} trebeljahr={true}>
+    <Layout description={post.excerpt} pageTitle={post.title}>
       {router.isFallback ? (
         <PostTitle>Loading…</PostTitle>
       ) : (
         <article>
-          <Head>
-            <title>{post.title}</title>
-            <meta property="og:image" content={post.ogImage.url} />
-          </Head>
           <PostHeader
             subtitle={post.subtitle}
             title={post.title}

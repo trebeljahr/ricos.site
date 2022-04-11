@@ -8,7 +8,6 @@ interface Props {
 
 export function Navbar({ intro = true }: Props) {
   const router = useRouter();
-  console.log(router.pathname);
   const activeStyle = (link: string) => {
     return {
       textDecoration: router.pathname === link ? "underline" : "none",

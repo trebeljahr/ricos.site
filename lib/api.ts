@@ -11,7 +11,6 @@ function getBySlug(slug: string, fields: string[] = [], directory: string) {
   const fileContents = fs.readFileSync(fullPath, "utf8");
   const { data, content } = matter(fileContents);
 
-  console.log(data);
   type Items = {
     [key: string]: string;
   };

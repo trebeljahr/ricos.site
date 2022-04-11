@@ -2,20 +2,28 @@ import Link from "next/link";
 import Intro from "./intro";
 
 interface Props {
-  withLink?: boolean;
-  withMotto?: boolean;
+  intro?: boolean;
 }
 
-export function Navbar({ withLink, withMotto }: Props) {
+export function Navbar({ intro = true }: Props) {
   return (
     <nav className="navbar">
-      <Intro withLink={withLink} withMotto={withMotto}></Intro>
-      <div className="navLinks">
-        <Link as="/books" href="/books">
-          <a>
-            <h2>Books</h2>
-          </a>
-        </Link>
+      <div className="navbar-content">
+        {intro && <Intro withLink={true} withMotto={false}></Intro>}
+        <div className="navlinks">
+          <Link as="/books" href="/books">
+            <a>books</a>
+          </Link>
+          <Link as="/about" href="/about">
+            <a>about</a>
+          </Link>
+          <Link as="/now" href="/now">
+            <a>now</a>
+          </Link>
+          <Link as="/needlestack" href="/needlestack">
+            <a>needlestack</a>
+          </Link>
+        </div>
       </div>
     </nav>
   );

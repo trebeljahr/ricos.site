@@ -21,7 +21,7 @@ const Post = ({ post, morePosts }: Props) => {
     return <ErrorPage statusCode={404} />;
   }
   return (
-    <Layout description={post.excerpt} navHeaderMotto={false}>
+    <Layout description={post.excerpt} trebeljahr={true}>
       {router.isFallback ? (
         <PostTitle>Loading…</PostTitle>
       ) : (

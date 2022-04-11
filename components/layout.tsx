@@ -5,23 +5,25 @@ import { Navbar } from "./navbar";
 type Props = {
   children: React.ReactNode;
   description?: string;
-  navHeaderWithLink?: boolean;
-  navHeaderMotto?: boolean;
+  pageTitle?: string;
+  trebeljahr?: boolean;
+  fullPage?: boolean;
 };
 
 const Layout = ({
   children,
   description,
-  navHeaderWithLink,
-  navHeaderMotto: navHeaderWithMotto,
+  trebeljahr: intro,
+  pageTitle,
+  fullPage: full = false,
 }: Props) => {
   return (
-    <div className="main-page">
-      <Navbar withLink={navHeaderWithLink} withMotto={navHeaderWithMotto} />
-      <Meta description={description} />
-      <main className="post-body">{children}</main>
+    <>
+      <Meta description={description} title={pageTitle} />
+      <Navbar intro={intro} />
+      <main className={full ? "main-page-full" : "main-page"}>{children}</main>
       {/* <Footer /> */}
-    </div>
+    </>
   );
 };
 

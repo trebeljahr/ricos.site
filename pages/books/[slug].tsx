@@ -20,7 +20,7 @@ const Book = ({ book }: Props) => {
     return <ErrorPage statusCode={404} />;
   }
   return (
-    <Layout description={book.title} navHeaderMotto={false}>
+    <Layout pageTitle={book.title} trebeljahr={true}>
       {router.isFallback ? (
         <PostTitle>Loading…</PostTitle>
       ) : (

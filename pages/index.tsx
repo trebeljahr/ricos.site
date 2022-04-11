@@ -4,6 +4,7 @@ import Layout from "../components/layout";
 import { getAllPosts } from "../lib/api";
 import Head from "next/head";
 import Post from "../types/post";
+import Intro from "../components/intro";
 
 type Props = {
   allPosts: Post[];
@@ -13,24 +14,20 @@ const Index = ({ allPosts }: Props) => {
   const heroPost = allPosts[0];
   const morePosts = allPosts.slice(1);
   return (
-    <>
-      <Layout navHeaderWithLink={false}>
-        <Head>
-          <title>Thoughts and Learnings of a Curious Person</title>
-        </Head>
-        {heroPost && (
-          <HeroPost
-            title={heroPost.title}
-            coverImage={heroPost.coverImage}
-            date={heroPost.date}
-            author={heroPost.author}
-            slug={heroPost.slug}
-            excerpt={heroPost.excerpt}
-          />
-        )}
-        {morePosts.length > 0 && <MoreStories posts={morePosts} />}
-      </Layout>
-    </>
+    <Layout trebeljahr={true}>
+      {/* <Intro withLink={false} withMotto={true}></Intro> */}
+      {heroPost && (
+        <HeroPost
+          title={heroPost.title}
+          coverImage={heroPost.coverImage}
+          date={heroPost.date}
+          author={heroPost.author}
+          slug={heroPost.slug}
+          excerpt={heroPost.excerpt}
+        />
+      )}
+      {morePosts.length > 0 && <MoreStories posts={morePosts} />}
+    </Layout>
   );
 };
 

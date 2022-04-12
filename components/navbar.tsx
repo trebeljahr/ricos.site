@@ -24,12 +24,26 @@ export function Navbar({ intro = true }: Props) {
           <Link as="/books" href="/books">
             <a style={activeStyle("/books")}>notes</a>
           </Link>
-          <Link as="/now" href="/now">
-            <a style={activeStyle("/now")}>now</a>
-          </Link>
+
           <Link as="/needlestack" href="/needlestack">
             <a style={activeStyle("/needlestack")}>needlestack</a>
           </Link>
+          <Link as="/quotes" href="/quotes">
+            <a style={activeStyle("/quotes")}>quotes</a>
+          </Link>
+          {/* 
+          <Link as="/now" href="/now">
+            <a style={activeStyle("/now")}>now</a>
+          </Link>
+          <Link as="/coding" href="/coding">
+            <a style={activeStyle("/coding")}>coding</a>
+          </Link>
+          <Link as="/photography" href="/photography">
+            <a style={activeStyle("/photography")}>photography</a>
+          </Link>
+          <Link as="/contact" href="/contact">
+            <a style={activeStyle("/contact")}>contact</a>
+          </Link> */}
         </div>
       </div>
     </nav>

@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/letters-from-a-stoic.jpg"
 slug: "letters-from-a-stoic"
 bookAuthor: "Seneca"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

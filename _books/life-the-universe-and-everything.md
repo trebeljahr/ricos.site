@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/life-the-universe-and-everything.jpg"
 slug: "life-the-universe-and-everything"
 bookAuthor: "Douglas Adams"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

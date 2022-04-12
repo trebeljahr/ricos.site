@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/six-easy-pieces.jpg"
 slug: "six-easy-pieces"
 bookAuthor: "Richard Feynman"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

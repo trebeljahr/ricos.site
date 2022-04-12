@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/the-metamorphosis-of-prime-intellect.jpg"
 slug: "the-metamorphosis-of-prime-intellect"
 bookAuthor: "Roger Williams"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

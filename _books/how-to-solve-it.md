@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/how-to-solve-it.jpg"
 slug: "how-to-solve-it"
 bookAuthor: "George Polya"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

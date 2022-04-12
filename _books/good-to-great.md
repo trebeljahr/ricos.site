@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/good-to-great.jpg"
 slug: "good-to-great"
 bookAuthor: "Jim Collins"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/momo.jpg"
 slug: "momo"
 bookAuthor: "Michal Ende"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

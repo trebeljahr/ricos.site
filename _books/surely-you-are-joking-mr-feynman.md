@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/surely-you-are-joking-mr-feynman.jpg"
 slug: "surely-you-are-joking-mr-feynman"
 bookAuthor: "Richard Feynman"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

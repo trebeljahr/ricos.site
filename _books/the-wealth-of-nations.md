@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/the-wealth-of-nations.jpg"
 slug: "the-wealth-of-nations"
 bookAuthor: "Adam Smith"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/the-singularity-is-near.jpg"
 slug: "the-singularity-is-near"
 bookAuthor: "Ray Kurzweil"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

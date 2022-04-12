@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/how-to-read-a-book.jpg"
 slug: "how-to-read-a-book"
 bookAuthor: "Mortimer Adler"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

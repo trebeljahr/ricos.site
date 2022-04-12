@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/the-4-hour-work-week.jpg"
 slug: "the-4-hour-work-week"
 bookAuthor: "Tim Ferris"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/permutation-city.jpg"
 slug: "permutation-city"
 bookAuthor: "Greg Egan"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

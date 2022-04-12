@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/forward-the-foundation.jpg"
 slug: "forward-the-foundation"
 bookAuthor: "Isaac Asimov"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

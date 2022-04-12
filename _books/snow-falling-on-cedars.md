@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/snow-falling-on-cedars.jpg"
 slug: "snow-falling-on-cedars"
 bookAuthor: "David Guterson"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

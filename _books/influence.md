@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/influence.jpg"
 slug: "influence"
 bookAuthor: "Robert B. Cialdini"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

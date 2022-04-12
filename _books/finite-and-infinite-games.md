@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/finite-and-infinite-games.jpg"
 slug: "finite-and-infinite-games"
 bookAuthor: "James P. Carse"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

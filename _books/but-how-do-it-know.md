@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/but-how-do-it-know.jpg"
 slug: "but-how-do-it-know"
 bookAuthor: "J. Clark Scott"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/the-power-of-habit.jpg"
 slug: "the-power-of-habit"
 bookAuthor: "Charles Duhigg"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

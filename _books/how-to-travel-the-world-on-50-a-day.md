@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/how-to-travel-the-world-on-50-a-day.jpg"
 slug: "how-to-travel-the-world-on-50-a-day"
 bookAuthor: "Matt Kepnes"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

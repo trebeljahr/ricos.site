@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/the-martian.jpg"
 slug: "the-martian"
 bookAuthor: "Andy Weir"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

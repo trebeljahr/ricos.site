@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/mindset.jpg"
 slug: "mindset"
 bookAuthor: "Carol Dweck"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

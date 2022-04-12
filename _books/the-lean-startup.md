@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/the-lean-startup.jpg"
 slug: "the-lean-startup"
 bookAuthor: "Eric Ries"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

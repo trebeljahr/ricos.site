@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/man-and-his-symbols.jpg"
 slug: "man-and-his-symbols"
 bookAuthor: "Carl Gustav Jung"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

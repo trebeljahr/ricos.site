@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/why-zebras-dont-get-ulcers.jpg"
 slug: "why-zebras-dont-get-ulcers"
 bookAuthor: "Robert M. Sapolsky"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

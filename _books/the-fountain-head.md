@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/the-fountain-head.jpg"
 slug: "the-fountain-head"
 bookAuthor: "Ayn Rand"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

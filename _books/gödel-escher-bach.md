@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/gödel-escher-bach.jpg"
 slug: "gödel-escher-bach"
 bookAuthor: "Douglas Hofstädter"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

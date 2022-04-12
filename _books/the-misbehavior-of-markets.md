@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/the-misbehavior-of-markets.jpg"
 slug: "the-misbehavior-of-markets"
 bookAuthor: "Benoit Mandelbrot"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

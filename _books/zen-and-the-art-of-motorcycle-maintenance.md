@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/zen-and-the-art-of-motorcycle-maintenance.jpg"
 slug: "zen-and-the-art-of-motorcycle-maintenance"
 bookAuthor: "Robert M. Pirsig"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

@@ -4,6 +4,7 @@ bookCover: "/assets/book-covers/robots-and-empire.jpg"
 slug: "robots-and-empire"
 bookAuthor: "Isaac Asimov"
 rating: 10
+done: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

@@ -8,13 +8,13 @@
 > He never changes his major opinions. He changes his minor opinions not infrequently and quite suddenly but he never doubts any of his opinions major or minor as long as he has them. He never doubts them or questions them or examines them critically. He would especially hate critical examination if he understood what that meant.
 — G. Polya
 
-> Great thinkers, icons and innovators think forward and backwards. Occasionally, they drive their brain in reverse.
+> Great thinkers, icons, and innovators think forward and backwards. Occasionally, they drive their brain in reverse.
 — James Clear
 
-> If you are homo sapiens you evolved for group combat and confirmation basis and motivated reasoning we are not really evolved to be academics or scientists searching for truth in an unbiased way we evolved to win in social competitions. But if you learn some skills you can actually be very effective as a teacher as someone who persuades as someone who changes people.
+> If you are homo sapiens, you evolved for group combat and confirmation basis and motivated reasoning we are not really evolved to be academics or scientists searching for truth in an unbiased way we evolved to win in social competitions. But if you learn some skills you can actually be very effective as a teacher as someone who persuades as someone who changes people.
 — Jonathan Haidt 
 
-> God is in the details
+> God is in the details.
 — Mis van der Rohe
 
 > People do not like to admit that they are wrong. So handing somebody a bunch of facts and then expecting them to understand that of course they were wrong does not work.

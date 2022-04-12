@@ -6,7 +6,7 @@ type BookType = {
   bookCover: string;
   bookAuthor: string;
   author: Author;
-  done: false;
+  done: boolean;
   amazonLink: string;
   rating: number;
   content: string;

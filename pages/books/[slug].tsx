@@ -55,6 +55,7 @@ export async function getStaticProps({ params }: Params) {
     "bookAuthor",
     "bookCover",
     "rating",
+    "done",
     "content",
   ]);
   const content = await markdownToHtml(book.content || "");
@@ -70,15 +71,17 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const books = getAllBookReviews(["slug"]);
+  const books = getAllBookReviews(["slug", "done"]);
   return {
-    paths: books.map((book) => {
-      return {
-        params: {
-          slug: book.slug,
-        },
-      };
-    }),
+    paths: books
+      .filter(({ done }) => done)
+      .map((book) => {
+        return {
+          params: {
+            slug: book.slug,
+          },
+        };
+      }),
     fallback: false,
   };
 }

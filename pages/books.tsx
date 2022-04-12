@@ -30,10 +30,11 @@ export const getStaticProps = async () => {
     "bookAuthor",
     "bookCover",
     "rating",
+    "done",
     "amazonLink",
   ]);
 
   return {
-    props: { allBooks },
+    props: { allBooks: allBooks.filter(({ done }) => done) },
   };
 };

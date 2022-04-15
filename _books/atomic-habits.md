@@ -5,6 +5,8 @@ slug: "atomic-habits"
 bookAuthor: "James Clear"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

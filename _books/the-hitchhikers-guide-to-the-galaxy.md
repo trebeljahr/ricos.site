@@ -5,6 +5,8 @@ slug: "the-hitchhikers-guide-to-the-galaxy"
 bookAuthor: "Douglas Adams"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

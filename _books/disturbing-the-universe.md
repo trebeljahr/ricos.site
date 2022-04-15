@@ -5,6 +5,8 @@ slug: "disturbing-the-universe"
 bookAuthor: "Freeman Dyson"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

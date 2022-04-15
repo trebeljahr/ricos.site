@@ -5,6 +5,8 @@ slug: "the-black-swan"
 bookAuthor: "Nicholas Nassim Taleb"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

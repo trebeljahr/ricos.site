@@ -5,6 +5,8 @@ slug: "discourses-and-selected-writings"
 bookAuthor: "Epictetus"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

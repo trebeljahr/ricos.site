@@ -5,6 +5,8 @@ slug: "how-to-win-friends-and-influence-people"
 bookAuthor: "Dale Carnegie"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

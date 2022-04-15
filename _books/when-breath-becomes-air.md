@@ -5,6 +5,8 @@ slug: "when-breath-becomes-air"
 bookAuthor: "Paul Kalanithi"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

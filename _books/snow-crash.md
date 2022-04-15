@@ -5,6 +5,8 @@ slug: "snow-crash"
 bookAuthor: "Neal Stephenson"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

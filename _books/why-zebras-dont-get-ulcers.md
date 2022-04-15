@@ -5,6 +5,8 @@ slug: "why-zebras-dont-get-ulcers"
 bookAuthor: "Robert M. Sapolsky"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

@@ -5,6 +5,8 @@ slug: "good-to-great"
 bookAuthor: "Jim Collins"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

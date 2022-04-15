@@ -4,17 +4,31 @@ import Layout from "../components/layout";
 import PostHeader from "../components/post-header";
 import { getAllBookReviews } from "../lib/api";
 import Book from "../types/book";
+import { Search, useSearch } from "../components/SearchBar";
+import { useState } from "react";
 
 type Props = {
   allBooks: Book[];
 };
+
+const emptySearchFilters = {
+  bookAuthor: "",
+  title: "",
+  rating: 0,
+  tags: [""],
+  detailedNotes: false,
+};
+
 export default function Books({ allBooks }: Props) {
+  const { byFilters, filters, setFilters } = useSearch(emptySearchFilters);
+  const filteredBooks = allBooks.filter(byFilters);
   return (
     <Layout fullPage={true} pageTitle="Book Notes">
       <article>
+        <Search filters={filters} setFilters={setFilters} />
         <PostHeader title={"Books Read:"} />
         <div className="allBooks">
-          {allBooks.map((book) => {
+          {filteredBooks.map((book) => {
             return <BookPreview key={book.slug} book={book} />;
           })}
         </div>
@@ -31,10 +45,12 @@ export const getStaticProps = async () => {
     "bookCover",
     "rating",
     "done",
+    "tags",
     "amazonLink",
+    "detailedNotes",
   ]);
 
   return {
-    props: { allBooks: allBooks.filter(({ done }) => done) },
+    props: { allBooks: allBooks }, // .filter(({ done }) => done) },
   };
 };

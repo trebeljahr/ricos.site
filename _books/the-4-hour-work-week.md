@@ -5,6 +5,8 @@ slug: "the-4-hour-work-week"
 bookAuthor: "Tim Ferris"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

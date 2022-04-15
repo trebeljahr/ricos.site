@@ -5,6 +5,8 @@ slug: "guns-germs-and-steel"
 bookAuthor: "Jared Diamond"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

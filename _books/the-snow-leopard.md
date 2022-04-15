@@ -5,6 +5,8 @@ slug: "the-snow-leopard"
 bookAuthor: "Peter Matthiessen"
 rating: 10
 done: true
+tags: []
+detailedNotes: false
 amazonLink: "https://amzn.to/363AXbl"
 author:
   name: Rico Trebeljahr

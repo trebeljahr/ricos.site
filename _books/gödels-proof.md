@@ -5,6 +5,8 @@ slug: "gödels-proof"
 bookAuthor: "Ernest Nagel and James R. Newman"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

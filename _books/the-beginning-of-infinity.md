@@ -5,6 +5,8 @@ slug: "the-beginning-of-infinity"
 bookAuthor: "David Deutsch"
 rating: 10
 done: true
+tags: []
+detailedNotes: false
 amazonLink: "https://amzn.to/3E6ojFd"
 author:
   name: Rico Trebeljahr

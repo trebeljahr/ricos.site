@@ -5,6 +5,8 @@ slug: "snow-falling-on-cedars"
 bookAuthor: "David Guterson"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

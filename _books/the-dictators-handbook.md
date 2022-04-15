@@ -5,6 +5,8 @@ slug: "the-dictators-handbook"
 bookAuthor: "Bruce Bueno de Mesquita"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

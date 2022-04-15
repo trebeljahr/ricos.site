@@ -5,6 +5,8 @@ slug: "what-do-you-care-what-other-people-think"
 bookAuthor: "undefined"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

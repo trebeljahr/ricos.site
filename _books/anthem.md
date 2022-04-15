@@ -5,6 +5,8 @@ slug: "anthem"
 bookAuthor: "Ayn Rand"
 rating: 10
 done: true
+tags: []
+detailedNotes: false
 amazonLink: "https://amzn.to/37a22tW"
 author:
   name: Rico Trebeljahr

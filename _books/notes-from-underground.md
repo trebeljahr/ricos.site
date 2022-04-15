@@ -5,6 +5,8 @@ slug: "notes-from-underground"
 bookAuthor: "Dostoyevski"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

@@ -5,6 +5,8 @@ slug: "7-habits-of-highly-effective-people"
 bookAuthor: "Stephen R. Covey"
 rating: 10
 done: true
+tags: ["self-help", "business", "non-fiction"]
+detailedNotes: true
 amazonLink: "https://amzn.to/3xlYAqL"
 author:
   name: Rico Trebeljahr

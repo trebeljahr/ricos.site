@@ -5,6 +5,8 @@ slug: "mindset"
 bookAuthor: "Carol Dweck"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

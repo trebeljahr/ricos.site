@@ -5,6 +5,8 @@ slug: "zero-to-one"
 bookAuthor: "Peter Thiel"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

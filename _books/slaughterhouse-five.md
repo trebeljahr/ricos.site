@@ -5,6 +5,8 @@ slug: "slaughterhouse-five"
 bookAuthor: "Kurt Vonnegut"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

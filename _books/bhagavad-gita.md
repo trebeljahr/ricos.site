@@ -5,6 +5,8 @@ slug: "bhagavad-gita"
 bookAuthor: "Stephen Mitchell"
 rating: 10
 done: true
+tags: []
+detailedNotes: false
 amazonLink: "https://amzn.to/3xlSo2b"
 author:
   name: Rico Trebeljahr

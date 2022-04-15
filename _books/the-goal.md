@@ -5,6 +5,8 @@ slug: "the-goal"
 bookAuthor: "Eliayahu M. Goldratt"
 rating: 10
 done: true
+tags: []
+detailedNotes: false
 amazonLink: "https://amzn.to/3xm560I"
 author:
   name: Rico Trebeljahr

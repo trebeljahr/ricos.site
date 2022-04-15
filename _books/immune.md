@@ -5,6 +5,8 @@ slug: "immune"
 bookAuthor: "Philipp Dettmer"
 rating: 10
 done: true
+tags: []
+detailedNotes: false
 amazonLink: "https://amzn.to/3Ky8Y2D"
 author:
   name: Rico Trebeljahr

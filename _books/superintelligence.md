@@ -5,6 +5,8 @@ slug: "superintelligence"
 bookAuthor: "Nick Bostrom"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

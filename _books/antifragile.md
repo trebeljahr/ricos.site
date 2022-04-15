@@ -5,6 +5,8 @@ slug: "antifragile"
 bookAuthor: "Nicholas Nassim Taleb"
 rating: 10
 done: false
+tags: []
+detailedNotes: true
 amazonLink: ""
 author:
   name: Rico Trebeljahr

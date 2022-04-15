@@ -5,6 +5,8 @@ slug: "a-guide-to-the-good-life-the-ancient-art-of-stoic-joy"
 bookAuthor: "William B. Irvine"
 rating: 10
 done: false
+tags: ["philosophy", "stoic", "stoicism"]
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

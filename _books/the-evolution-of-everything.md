@@ -5,6 +5,8 @@ slug: "the-evolution-of-everything"
 bookAuthor: "Matt Ridley"
 rating: 10
 done: true
+tags: []
+detailedNotes: false
 amazonLink: "https://amzn.to/3NXPOoS"
 author:
   name: Rico Trebeljahr

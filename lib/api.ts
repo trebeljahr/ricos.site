@@ -26,9 +26,7 @@ function getBySlug(slug: string, fields: string[] = [], directory: string) {
       items[field] = content;
     }
 
-    if (data[field]) {
-      items[field] = data[field];
-    }
+    items[field] = data[field] ?? "";
   });
 
   return items;

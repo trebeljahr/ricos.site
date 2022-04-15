@@ -5,6 +5,8 @@ slug: "mans-search-for-meaning"
 bookAuthor: "Viktor Frankl"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

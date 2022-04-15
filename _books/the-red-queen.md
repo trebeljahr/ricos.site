@@ -5,6 +5,8 @@ slug: "the-red-queen"
 bookAuthor: "Matt Ridley"
 rating: 10
 done: true
+tags: []
+detailedNotes: false
 amazonLink: "https://amzn.to/3xpSlCr"
 author:
   name: Rico Trebeljahr

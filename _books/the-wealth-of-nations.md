@@ -5,6 +5,8 @@ slug: "the-wealth-of-nations"
 bookAuthor: "Adam Smith"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

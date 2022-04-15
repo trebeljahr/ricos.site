@@ -5,6 +5,8 @@ slug: "the-biology-of-desire"
 bookAuthor: "Marc Lewis"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

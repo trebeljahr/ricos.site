@@ -5,6 +5,8 @@ slug: "how-to-read-a-book"
 bookAuthor: "Mortimer Adler"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

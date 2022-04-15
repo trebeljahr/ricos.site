@@ -5,6 +5,8 @@ slug: "the-vital-question"
 bookAuthor: "Nick Lane"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

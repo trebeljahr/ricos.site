@@ -5,6 +5,8 @@ slug: "12-rules-for-life"
 bookAuthor: "Jordan Peterson"
 rating: 10
 done: false
+tags: ["self-help", "business", "non-fiction"]
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

@@ -5,6 +5,8 @@ slug: "the-structure-of-scientific-revolutions"
 bookAuthor: "Thomas S. Kuhn"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

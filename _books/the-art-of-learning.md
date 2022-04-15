@@ -5,6 +5,8 @@ slug: "the-art-of-learning"
 bookAuthor: "Josh Waitzkin"
 rating: 10
 done: true
+tags: []
+detailedNotes: false
 amazonLink: "https://amzn.to/3O8RR9Y"
 author:
   name: Rico Trebeljahr

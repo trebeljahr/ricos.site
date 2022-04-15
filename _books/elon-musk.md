@@ -5,6 +5,8 @@ slug: "elon-musk"
 bookAuthor: "Ashley Vance"
 rating: 10
 done: false
+tags: ["business", "biography"]
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

@@ -5,6 +5,8 @@ slug: "the-singularity-is-near"
 bookAuthor: "Ray Kurzweil"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

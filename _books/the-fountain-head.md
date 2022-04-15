@@ -5,6 +5,8 @@ slug: "the-fountain-head"
 bookAuthor: "Ayn Rand"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

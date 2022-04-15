@@ -5,6 +5,8 @@ slug: "tao-te-ching"
 bookAuthor: "Stephen Mitchell"
 rating: 10
 done: true
+tags: []
+detailedNotes: false
 amazonLink: "https://amzn.to/3KBJUYD"
 author:
   name: Rico Trebeljahr

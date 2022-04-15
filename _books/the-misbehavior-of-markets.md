@@ -5,6 +5,8 @@ slug: "the-misbehavior-of-markets"
 bookAuthor: "Benoit Mandelbrot"
 rating: 10
 done: false
+tags: []
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

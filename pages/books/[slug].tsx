@@ -74,7 +74,7 @@ export async function getStaticPaths() {
   const books = getAllBookReviews(["slug", "done"]);
   return {
     paths: books
-      .filter(({ done }) => done)
+      // .filter(({ done }) => done)
       .map((book) => {
         return {
           params: {

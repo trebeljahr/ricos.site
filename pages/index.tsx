@@ -42,7 +42,6 @@ export const getStaticProps = async () => {
     "coverImage",
     "excerpt",
   ]);
-
   return {
     props: { allPosts },
   };

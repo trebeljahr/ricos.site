@@ -21,12 +21,11 @@ function getBySlug(slug: string, fields: string[] = [], directory: string) {
   fields.forEach((field) => {
     if (field === "slug") {
       items[field] = realSlug;
-    }
-    if (field === "content") {
+    } else if (field === "content") {
       items[field] = content;
+    } else {
+      items[field] = data[field] ?? "";
     }
-
-    items[field] = data[field] ?? "";
   });
 
   return items;

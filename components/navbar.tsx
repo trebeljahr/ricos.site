@@ -18,7 +18,7 @@ export function Navbar({ intro = true }: Props) {
       <div className="navbar-content">
         {intro && <Intro withLink={true} withMotto={false}></Intro>}
         <div className="navlinks">
-          <Link as="/" href="/">
+          <Link as="/posts" href="/posts">
             <a style={activeStyle("/")}>posts</a>
           </Link>
           <Link as="/books" href="/books">

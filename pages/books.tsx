@@ -1,11 +1,9 @@
-import Image from "next/image";
 import { BookPreview } from "../components/book-preview";
 import Layout from "../components/layout";
 import PostHeader from "../components/post-header";
 import { getAllBookReviews } from "../lib/api";
 import Book from "../types/book";
 import { Search, useSearch } from "../components/SearchBar";
-import { useState } from "react";
 
 type Props = {
   allBooks: Book[];
@@ -14,7 +12,7 @@ type Props = {
 const emptySearchFilters = {
   bookAuthor: "",
   title: "",
-  rating: 0,
+  // rating: 0,
   tags: [""],
   detailedNotes: false,
 };
@@ -51,6 +49,6 @@ export const getStaticProps = async () => {
   ]);
 
   return {
-    props: { allBooks: allBooks }, // .filter(({ done }) => done) },
+    props: { allBooks: allBooks.filter(({ done }) => done) },
   };
 };

@@ -16,175 +16,172 @@ author:
 **Book Recommendation:** The Evolution of Cooperation by Robert Axelrod
 **Book Recommendation:** The Extended Phenotype by Richard Dawkins
 
-> I have long felt that biology ought to seem as exciting as a mystery story, for a mystery story is exactly what biology is. - p. xix
+> I have long felt that biology ought to seem as exciting as a mystery story, for a mystery story is exactly what biology is.
 
-> There is a better reason to study zoology... This reason is that we animals are the most complicated and perfectly-designed pieces of machinery in the known universe. - p. xxx
+> There is a better reason to study zoology... This reason is that we animals are the most complicated and perfectly-designed pieces of machinery in the known universe.
 
 ## Chapter 1 - Why are people? 
 
-> Intelligent life on a planet comes of age when it first works out the reason for its own existence. - p. 1
+> Intelligent life on a planet comes of age when it first works out the reason for its own existence.
 
-Genes only yield cooperation under narrow circumstances and mostly focus on their own survival and lead to selfish behavior in most cases. Analogy: Genes shape body like life as Chicago gangster shapes character, the ones who make it got to have certain characteristics. - p. 3
+Genes only yield cooperation under narrow circumstances and mostly focus on their own survival and lead to selfish behavior in most cases. Analogy: Genes shape body like life as Chicago gangster shapes character, the ones who make it got to have certain characteristics.
 
-Nature vs. Nurture, evolution does not dictate morale of selfishness, culture plays a role, yet, genes and their selfishness should not be forgot and factored into the picture. - p. 4
+Nature vs. Nurture, evolution does not dictate morale of selfishness, culture plays a role, yet, genes and their selfishness should not be forgot and factored into the picture.
 
-Altruism towards the species is not a thing. Things that look like they are done for the survival of the species are done for the survival of the genes. - p. 9 
+Altruism towards the species is not a thing. Things that look like they are done for the survival of the species are done for the survival of the genes. 
 
-If it were true, dissenter could become more successful within species, therefore ending the altruism forever. Since that is not the case it has to be selection at a different level. -p. 10
+If it were true, dissenter could become more successful within species, therefore ending the altruism forever. Since that is not the case it has to be selection at a different level.
 
-> Often altruism within a group goes with selfishness between groups. - p. 12
+> Often altruism within a group goes with selfishness between groups.
 
-> The muddle in human ethics over the level at which altruism is desirable - family, nation, race, species, or all living things - is mirrored by a parallel muddle in biology over the level at which altruism is to be expected according to the theory of evolution. - p. 13
+> The muddle in human ethics over the level at which altruism is desirable - family, nation, race, species, or all living things - is mirrored by a parallel muddle in biology over the level at which altruism is to be expected according to the theory of evolution.
 
-**Book recommendation:** Adaptation and Selection by G.C. Williams - p. 14
+**Book recommendation:** Adaptation and Selection by G.C. Williams
 
 ## Chapter 2 - The replicators
 
-> In the beginning was simplicity. - p. 15
+> In the beginning was simplicity.
 
-Darwin's idea is a special case of survival of the stable. And therefore can serve as an explanation of how things grew in complexity over time. It can therefore answer the question of where we came from to a high degree of satisfaction. - p. 15
+Darwin's idea is a special case of survival of the stable. And therefore can serve as an explanation of how things grew in complexity over time. It can therefore answer the question of where we came from to a high degree of satisfaction.
 That however begs a question? Is life really stable? Because I would argue that it is the very opposite of stable. It is patterns that change all the time, and rising in complexity and therefore life is not stable? Also compared to a rock, or a star, life is very fragile and can go unstable in an instant and vanish. In a way then life is metastable. And that's what allows evolution to act. What allows things to grow and flourish. 
 
-> Darwin's theory of evolution by natural selection is satisfying because it shows us a way in which simplicity could change into complexity, how unordered atoms could group themselves into ever more complex patterns until they ended up manufacturing people. - p. 15
+> Darwin's theory of evolution by natural selection is satisfying because it shows us a way in which simplicity could change into complexity, how unordered atoms could group themselves into ever more complex patterns until they ended up manufacturing people.
 
-> If a group of atoms in the presence of energy falls into a stable pattern it will tend to stay that way. - p. 17
+> If a group of atoms in the presence of energy falls into a stable pattern it will tend to stay that way.
 
-Molecules snap into place randomly until critical complexity is reached, where they can start self replicating, that's where Darwin's theory starts to take hold. As soon as a self replicator is reached it will start to copy itself through the original material. But there might be errors, variations within the replicator chemistry can arise. Those would start competing. And that's all that is necessary for evolution to be off the races. Ones that replicate faster take over, they start to improve. Furthermore and somewhat unintuitively those that replicate more accurately also have an advantage and evolution happens besides replicators trying to be 100% accurate. - p. 18-22
+Molecules snap into place randomly until critical complexity is reached, where they can start self replicating, that's where Darwin's theory starts to take hold. As soon as a self replicator is reached it will start to copy itself through the original material. But there might be errors, variations within the replicator chemistry can arise. Those would start competing. And that's all that is necessary for evolution to be off the races. Ones that replicate faster take over, they start to improve. Furthermore and somewhat unintuitively those that replicate more accurately also have an advantage and evolution happens besides replicators trying to be 100% accurate.
 
-> Evolution is something that happens, willy-nilly in spite of all the efforts of the replicators to prevent it happening. - p. 22
+> Evolution is something that happens, willy-nilly in spite of all the efforts of the replicators to prevent it happening.
 
-> Human suffering has been caused because too many of us cannot grasp that words are only tools for our use. - p. 23
+> Human suffering has been caused because too many of us cannot grasp that words are only tools for our use.
 
-Replicators come into competition and develop strategies to scavenge other replicators for their constituents - the first "predators" are born. Others form shells and the first cells are born. - p. 24
+Replicators come into competition and develop strategies to scavenge other replicators for their constituents - the first "predators" are born. Others form shells and the first cells are born.
 
-> Replicators began not merely to exist, but to construct for themselves containers, vehicles for their continued existence. The replicators that survived where the ones that built survival machines for themselves to live in. - p. 24
+> Replicators began not merely to exist, but to construct for themselves containers, vehicles for their continued existence. The replicators that survived where the ones that built survival machines for themselves to live in.
 
-> They have come a long way, those replicators. Now they go by the name of genes and we are their survival machines. - p. 25
+> They have come a long way, those replicators. Now they go by the name of genes and we are their survival machines.
 
 ## Chapter 3 - Immortal Coils
 
-Todays replicators are DNA and we are their survival machines. We in this case are all that we consider the biosphere to contain. DNA letterering order is the pattern that is preserved and propagated. Not us.  - p. 26-27
+Todays replicators are DNA and we are their survival machines. We in this case are all that we consider the biosphere to contain. DNA letterering order is the pattern that is preserved and propagated. Not us. 
 
-Now a question: In a changing environment, wouldn't it make sense for the replicator that produces the most stable replicators in the long run to win out? There could be a point of stability existing just because of change. In such a way as that all the biosphere is just one giant replicator trying to squeeze out the most replications possible. It would be looking one level below the apparent patterns within genes at the molecule DNA itself. It is not the stability over time that makes for its success but it's malleability. The forms that it can produce, in other words all of life, make it such a great replicator, such a great molecule. - p. 28
+Now a question: In a changing environment, wouldn't it make sense for the replicator that produces the most stable replicators in the long run to win out? There could be a point of stability existing just because of change. In such a way as that all the biosphere is just one giant replicator trying to squeeze out the most replications possible. It would be looking one level below the apparent patterns within genes at the molecule DNA itself. It is not the stability over time that makes for its success but it's malleability. The forms that it can produce, in other words all of life, make it such a great replicator, such a great molecule.
 
-DNA as a replicator, genes as pages, chromosomes as volumes, the whole is an architects plan for building a machine that can make more architects plans. Do do that, the plan has to be translated into the real world, formed into a structure - DNA codons -> amino acid sequences -> proteins -> cells -> tissues -> bodies - p. 29-30
+DNA as a replicator, genes as pages, chromosomes as volumes, the whole is an architects plan for building a machine that can make more architects plans. Do do that, the plan has to be translated into the real world, formed into a structure - DNA codons -> amino acid sequences -> proteins -> cells -> tissues -> bodies
 
-> Genes have no foresight. They do not plan ahead. - p. 30
+> Genes have no foresight. They do not plan ahead.
 
-Two different copies of genes, one from father one from mother, sometimes one copy takes precedence over another, different copies are called alleles. Set of all alleles is named gene pool. Germ line cells are formed by meiosis, half of the genome is split, from 46 to 23 chromoses in humans, two germ line cells then combine at conception to form complete human. The normal cell division is called mitosis. During meiosis, the 23 chromosomes actually change - the 46 are not just separated, but shuffled, part of chromosome 1a and part of 1b are exchanged to form new 1c and 1d which each go into their separate sperm/egg cells. Each egg/sperm cell therefore is unique. This is called crossover. - p. 31-34
+Two different copies of genes, one from father one from mother, sometimes one copy takes precedence over another, different copies are called alleles. Set of all alleles is named gene pool. Germ line cells are formed by meiosis, half of the genome is split, from 46 to 23 chromoses in humans, two germ line cells then combine at conception to form complete human. The normal cell division is called mitosis. During meiosis, the 23 chromosomes actually change - the 46 are not just separated, but shuffled, part of chromosome 1a and part of 1b are exchanged to form new 1c and 1d which each go into their separate sperm/egg cells. Each egg/sperm cell therefore is unique. This is called crossover.
 
-> Any one chromosome in a sperm is a patchwork, a mosaic of maternal and paternal genes. - p. 34
+> Any one chromosome in a sperm is a patchwork, a mosaic of maternal and paternal genes.
 
-Cistrons are genetic material from start to end sequence of an encoding for a protein, short genetic material sequences can survive crossing over in tact and are therefore transmitted for more than 1 generation, those shorter sequences might be shared between multiple individuals. The shorter the higher the likelihood of it surviving intact and us maybe sharing the same sequence with say a dog. - p. 36-39
+Cistrons are genetic material from start to end sequence of an encoding for a protein, short genetic material sequences can survive crossing over in tact and are therefore transmitted for more than 1 generation, those shorter sequences might be shared between multiple individuals. The shorter the higher the likelihood of it surviving intact and us maybe sharing the same sequence with say a dog.
 
 Different kinds of changes to genes can happen, random point mutations + drift of whole chunks of DNA sequences + their inverting their order. Example of Butterflies mimicking two different other species of butterfly. But each individual only mimics one species. By inversion and reshuffling, cistrons can become tied to each other, so that they form a bigger genetic unit, a cluster of cistrons that then can be selected for. It is either mimic a or mimic b usually not both. Except in very rare cases where cross over splits the gene up and mixes variant a and b. Then one gets in between butterflies. So recap - a gene is a stretch of DNA that can survive for many generations untouched by crossover. The size is small, but can be bigger than multiple cistrons. 
-- p. 39-41
 
-> Natural Selection in its most general form means the differential survival of entities. - p. 42
+> Natural Selection in its most general form means the differential survival of entities.
 
-> Individuals are not stable things, they are fleeting. - p. 44
+> Individuals are not stable things, they are fleeting.
 
-Genes have the potential to live forever, but most only stick around for one generation because they are hazardous to the survival machine. Evolution therefore is the process of increasing the length for which genes can stick around. A central property of longer lived genes is that they are selfish. They profit for their survival at the expense of other genes. - p. 45-46
+Genes have the potential to live forever, but most only stick around for one generation because they are hazardous to the survival machine. Evolution therefore is the process of increasing the length for which genes can stick around. A central property of longer lived genes is that they are selfish. They profit for their survival at the expense of other genes.
 
-At the same time genes can cooperate to produce better results, they are part of an environment and that environment includes the presence of other genes. Only if a gene plays nicely with all other factors does it have a good chance of survival. - p. 48-50
+At the same time genes can cooperate to produce better results, they are part of an environment and that environment includes the presence of other genes. Only if a gene plays nicely with all other factors does it have a good chance of survival.
 
-Aging might be caused by genes with bad effects only visible in old age but positive effects in young age accumulating. As long as an organism can reproduce early, the gene is fine and survives in the offspring. Therefore over evolutionary times those old age lethal genes accumulate and their bad effects cumulatively are what we observe as aging. - p. 51-53
+Aging might be caused by genes with bad effects only visible in old age but positive effects in young age accumulating. As long as an organism can reproduce early, the gene is fine and survives in the offspring. Therefore over evolutionary times those old age lethal genes accumulate and their bad effects cumulatively are what we observe as aging.
 
-> The true purpose of DNA is to survive, no more and no less. - p 57
+> The true purpose of DNA is to survive, no more and no less.
 
-> Evolution is the process by which some genes become more numerous and others less numerous in the gene pool. - p. 58
+> Evolution is the process by which some genes become more numerous and others less numerous in the gene pool.
 
 ## Chapter 4 - The Gene Machine
 
-> Survival machines began as passive receptacles for the genes, providing lite more than walls to protect them from the chemical warfare of their rivals and the ravages of accidental molecular bombardment. - p. 59
+> Survival machines began as passive receptacles for the genes, providing lite more than walls to protect them from the chemical warfare of their rivals and the ravages of accidental molecular bombardment.
 
-> Subjectively I feel like a unit not a colony. - p. 60
+> Subjectively I feel like a unit not a colony.
 
-Animals can behave. That is they can move fast. They have muscles to do so, the interesting question is not how they muscle can generate force, but how groups of them can be timed correctly to produce correct behavior. Answer is ofc. neurons and nervous systems. - p. 61-63
+Animals can behave. That is they can move fast. They have muscles to do so, the interesting question is not how they muscle can generate force, but how groups of them can be timed correctly to produce correct behavior. Answer is ofc. neurons and nervous systems.
 
-> The neuron is slower than the transistor, but it has gone much further in the direction of miniaturization. -p. 62
+> The neuron is slower than the transistor, but it has gone much further in the direction of. 62
 
-> The main way in which brains actually contribute to the success of survival machines is by controlling and coordinating contractions of muscles. - p. 63
+> The main way in which brains actually contribute to the success of survival machines is by controlling and coordinating contractions of muscles.
 
-> One of the most striking properties of survival-machi esbehavior is its apparent purposiveness. -p. 64
+> One of the most striking properties of survival-machi esbehavior is its apparent purposiveness.
 
-Brains are essentially engaged in a negative feedback loop, trying to minimize the discrepancy between a desired state and an actual state. They have sensory organs to form a picture of the actual reality and muscles to act and change things withinthat reality. When they come far away from the desired state they work harder, if very close they might even stop. This simple design leads to the likeness of purposiveness of the behavior. -p. 64-66
+Brains are essentially engaged in a negative feedback loop, trying to minimize the discrepancy between a desired state and an actual state. They have sensory organs to form a picture of the actual reality and muscles to act and change things withinthat reality. When they come far away from the desired state they work harder, if very close they might even stop. This simple design leads to the likeness of purposiveness of the behavior.
 
-Problem of control - why don't genes control action directly, but instead just setup things so that there are brains capable of controlling the situation "for" the genes? Answer: Because of a time lag. Analogy to people from other galaxy trying to conquer other worlds, who send out radio waves telling how to build effectively a trojan horse machine style computer, conquering and controlling the world if somebody builds it after having received and decoded the radio message. Genes therefore have to predict the future that their survival machines are going to be in. The genes that do this generally well have a survival advantage and are going to outcompete the others. Prediction via a reward function is more general and therefore usually better adapted, a brain doesn't come equipped with all behaviors but can learn what is good/bad because of the reward function intrinsic in it. - p. 69-74
+Problem of control - why don't genes control action directly, but instead just setup things so that there are brains capable of controlling the situation "for" the genes? Answer: Because of a time lag. Analogy to people from other galaxy trying to conquer other worlds, who send out radio waves telling how to build effectively a trojan horse machine style computer, conquering and controlling the world if somebody builds it after having received and decoded the radio message. Genes therefore have to predict the future that their survival machines are going to be in. The genes that do this generally well have a survival advantage and are going to outcompete the others. Prediction via a reward function is more general and therefore usually better adapted, a brain doesn't come equipped with all behaviors but can learn what is good/bad because of the reward function intrinsic in it.
 
-> One of the most interesting medthos of predicting the future is simulation. - p. 74
+> One of the most interesting medthos of predicting the future is simulation.
 
-Brains run simulations of the world to come up with better decisions for gene survival. This is what we commonly call imagination. - p. 74-76
+Brains run simulations of the world to come up with better decisions for gene survival. This is what we commonly call imagination.
 
-> Perhaps consciousness arises when the brain's simulation of the world becomes so complete that it must include a model of itself. - p. 76
+> Perhaps consciousness arises when the brain's simulation of the world becomes so complete that it must include a model of itself.
 
-Genes can influence behaviors in direct and indirect ways. Behavior could be influenced by gene but only if certain parts of environment are there, it could also involve learning/reward/punishment stimuli to enforce/weaken certain behaviors - p.
- 79-80
+Genes can influence behaviors in direct and indirect ways. Behavior could be influenced by gene but only if certain parts of environment are there, it could also involve learning/reward/punishment stimuli to enforce/weaken certain behaviors
 
-> The genes are master programmers and they are programming for their lives. - p. 81
+> The genes are master programmers and they are programming for their lives.
 
-Communication involves an element of deception, because of conflicts of interests, not just members of different species, but even children deceiving their parents and husbands their wives make sense from an evolutionary point of view. - p. 83-84
+Communication involves an element of deception, because of conflicts of interests, not just members of different species, but even children deceiving their parents and husbands their wives make sense from an evolutionary point of view.
 
 ## Chapter 5 - Aggression, Stability and the Selfish machine
 
 Survival machines compete for resources so that their genes can persist. Intra species competition is the hardest because individuals are so similar and therefore compete for the same resources. Yet killing off all rivals and eating them is not a good tactic because there are costs associated with that killing. Like one's own death or injuries. Therefore aggression follows patterns of complex cost benefit analysis. 
 
 Populations can have stable points for different competitive behaviors showing aggression (so called ESS for evolutionarily stable strategies), since the benefit of a behavior is tied to what is common in the other individuals in the species. At a certain ratio the benefits of both aggressive and non aggressive strategies balance nicely leading to an equilibrium in behavior to evolve. The perverse thing about this equilibrium is that it is worse for everybody involved if everybody were choosing a less aggressive strategy, conspiring together, their total average success would be way higher. But cheating and being aggressive anyways would be a really good tactic then, leading to those mutations starting to gain weight again drifting the conspiracy back to the worse, but stable solution. 
- - p. 92-94
 
-> So, even in man, a species with the gift of conscious foresight, pacts or conspiracies based on long term best interests teeter constantly on the brink of collapse due to treachery from within. - p. 95 
+
+> So, even in man, a species with the gift of conscious foresight, pacts or conspiracies based on long term best interests teeter constantly on the brink of collapse due to treachery from within. 
 
 Thought: the exact same problem applies to Socialism vs. Capitism. 
 
-> Models can be very simple, like this one, and still be useful for understanding a point, or getting an idea. - p. 96
+> Models can be very simple, like this one, and still be useful for understanding a point, or getting an idea.
 
-Strategies in attrition games are also not oscillating in the spread of the population, but instead a stable solution exists, the one where contestants choose randomly and don't give away for how long they intend to wait for the resource in question. - p. 98-101
+Strategies in attrition games are also not oscillating in the spread of the population, but instead a stable solution exists, the one where contestants choose randomly and don't give away for how long they intend to wait for the resource in question.
 
-In more complex scenarios, where there are differences, asymmetric competitions, there might be multiple stable states that could evolve, acting as kinds of attractors to the genes in the population. Those stable configurations of fighting behaviors might even be paradoxical, but still stable, since defectors from the paradoxical strategy would still be punished hard for their behavior. Once enough of a population adopts a strategy, the whole population stays with that strategy. - p. 103-105
+In more complex scenarios, where there are differences, asymmetric competitions, there might be multiple stable states that could evolve, acting as kinds of attractors to the genes in the population. Those stable configurations of fighting behaviors might even be paradoxical, but still stable, since defectors from the paradoxical strategy would still be punished hard for their behavior. Once enough of a population adopts a strategy, the whole population stays with that strategy.
 
-> Selection at the low level of the single gene can give the impression of selection at some higher level. - p. 111
+> Selection at the low level of the single gene can give the impression of selection at some higher level.
 
-> The gene pool is the long term environment of the gene. - p. 112
+> The gene pool is the long term environment of the gene.
 
-Genes in the gene pool form a stable set, most new genes introduced are worse than the stable set, occasionally a variant arises that has competitive edge in the ESS, is a new form of solution in a way, and it spreads through the pool, unsettling the ESS for a while, evolutions is happening, things change and then settle into a new ESS. Evolution therefore is like jumps in between plateaus. Higher amounts of changes in short bursts of time followed by longer periods of little to no changes happening. Examples of competing teams of rowers and of hawks and doves fighting explain how things could arise as units of bodies, but more interestingly the same thing happens on the level of genes themselves. Bodies are the result of evolution at that scale. - p. 112-113
+Genes in the gene pool form a stable set, most new genes introduced are worse than the stable set, occasionally a variant arises that has competitive edge in the ESS, is a new form of solution in a way, and it spreads through the pool, unsettling the ESS for a while, evolutions is happening, things change and then settle into a new ESS. Evolution therefore is like jumps in between plateaus. Higher amounts of changes in short bursts of time followed by longer periods of little to no changes happening. Examples of competing teams of rowers and of hawks and doves fighting explain how things could arise as units of bodies, but more interestingly the same thing happens on the level of genes themselves. Bodies are the result of evolution at that scale.
 
-> Well-integrated bodies exist because they are the product of an evolutionarily stable set of selfish genes. - p. 113
+> Well-integrated bodies exist because they are the product of an evolutionarily stable set of selfish genes.
 
 ## Chapter 6 - Genesmanship
 
-> When a man throws a ball high in the air and catches I again he behaves as if he had solved a set of differential equations in predicting the trajectory of the ball. He may neither know nor care what a differential equation is, but it does not affect his skill with the ball. - p. 125
+> When a man throws a ball high in the air and catches I again he behaves as if he had solved a set of differential equations in predicting the trajectory of the ball. He may neither know nor care what a differential equation is, but it does not affect his skill with the ball.
 
-Selection for genes that make the survival of other animals sharing the same genes is evolutionarily an adaptive strategy that spreads. Hence one can observe something similar to kin selection and altruism happening the world. Organisms who do these kinds of things behave as if they were calculating the weighted sum of the risks and benefits for them and the other individuals, weighted by the relatedness and other sich factors as age, reproductive capacities etc. for all their potential behaviors and then and then choosing the maximizing option. Whether they actually do these calculations remains in doubt, only thing clear is that if genes make their survival machine behave like that, they have higher chance of survival overall and will therefore spread. - p. 115-130
+Selection for genes that make the survival of other animals sharing the same genes is evolutionarily an adaptive strategy that spreads. Hence one can observe something similar to kin selection and altruism happening the world. Organisms who do these kinds of things behave as if they were calculating the weighted sum of the risks and benefits for them and the other individuals, weighted by the relatedness and other sich factors as age, reproductive capacities etc. for all their potential behaviors and then and then choosing the maximizing option. Whether they actually do these calculations remains in doubt, only thing clear is that if genes make their survival machine behave like that, they have higher chance of survival overall and will therefore spread.
 
-> Living bodies are machines programmed by genes that have survived. - p. 127
+> Living bodies are machines programmed by genes that have survived.
 
-> In a world where other individuals are constant on the alert for opportunities to exploit kin-selected altruism, and use it for their own end, a survival machine has to consider who it can trust, who it can be really sure of. - p. 137
+> In a world where other individuals are constant on the alert for opportunities to exploit kin-selected altruism, and use it for their own end, a survival machine has to consider who it can trust, who it can be really sure of.
 
-Kin selection manifests itself in parent/child altruism, and more on the motherly side, because the certainty involved in knowing gene relatedness is greater, hence the sexual differences in child-rearin and investment into the offspring. Als certainty is hard to keep up for kin selection, when it can be exploited by other members of the species or even other species altogether, a good example are cuckoo birds here. - p. 125-140
+Kin selection manifests itself in parent/child altruism, and more on the motherly side, because the certainty involved in knowing gene relatedness is greater, hence the sexual differences in child-rearin and investment into the offspring. Als certainty is hard to keep up for kin selection, when it can be exploited by other members of the species or even other species altogether, a good example are cuckoo birds here.
 
 ## Chapter 7 - Family Planning
 
-> I use the word decision to mean unconscious strategic move. - p. 141
+> I use the word decision to mean unconscious strategic move.
 
-There are two decisions individuals have to make, one is child caring and the other bearing. Also, the birth rate in a civilization is something that leads to a lot of people quickly, accelerating the more people there already are. Interestingly, in nature, this kind of exponential growth is not what happens most of the time. Populations are often stable so a form of birth control or family planning has to evolve... This family "planning" evolves from egoistic purposes, the amount of time and resources parents can invest in their offspring is limited, so there exists an optimum, where they have the most offspring, which is the point where they bear as many as they can care for enough to maximize the overall likelihood of having the most possible offspring. This holds offspring sizes low and makes them depend on the environment. - p. 141-151
+There are two decisions individuals have to make, one is child caring and the other bearing. Also, the birth rate in a civilization is something that leads to a lot of people quickly, accelerating the more people there already are. Interestingly, in nature, this kind of exponential growth is not what happens most of the time. Populations are often stable so a form of birth control or family planning has to evolve... This family "planning" evolves from egoistic purposes, the amount of time and resources parents can invest in their offspring is limited, so there exists an optimum, where they have the most offspring, which is the point where they bear as many as they can care for enough to maximize the overall likelihood of having the most possible offspring. This holds offspring sizes low and makes them depend on the environment.
 
-> They express a preference for "natural" methods of population limitation, and a natural method is exactly what they are going to get. It is called starvation. - p. 144
+> They express a preference for "natural" methods of population limitation, and a natural method is exactly what they are going to get. It is called starvation.
 
-> Any gene for over-indulgence is immediately punished: the children containing that gene starve. - p. 152
+> Any gene for over-indulgence is immediately punished: the children containing that gene starve.
 
 > Any altruistic system is inherently unstable because it is open to abuse by selfish individuals, ready to exploit it.  
-- p. 152
 
-The idea of this planning and predicting the future business that genes seem to be doing raises one very interesting question - what is the range of it? - p. 158
+The idea of this planning and predicting the future business that genes seem to be doing raises one very interesting question - what is the range of it?
 
 ## Chapter 8 - Battle of the Generations
 
 
-> I am treating a mother as a machine programmed to do everything in its power to propagate copies of the genes which ride inside it. - p. 159
+> I am treating a mother as a machine programmed to do everything in its power to propagate copies of the genes which ride inside it.
 
 Menopause can be viewed as an adaptive strategy because the likelihood of survival of grandchildren is so much higher, that it pays off enough for the decrease in relatedness. There basically comes a point where more genes of a female survive when she invests into grandchildren rather than her own children, at which point becoming physically incapable of rearing children is an adaptive strategy and what we see happening and call menopause. Furthermore, similar arguments can be made for selfishness among siblings. It is always about the use of resources
 
-> The sight of her child smiling, or the sound of her kitten purring, is rewarding to a mother, in the same sense as food in the stomach is rewarding to a rat in a maze. - p. 180
+> The sight of her child smiling, or the sound of her kitten purring, is rewarding to a mother, in the same sense as food in the stomach is rewarding to a rat in a maze.
 
 > The phrase the "child should cheat" means that genes that tend to make children cheat have an advantage in the gene pool. If there is a human moral to be drawn, it is that we must teach our children altruism, for we cannot expect kt to be part of their biological nature. 
 

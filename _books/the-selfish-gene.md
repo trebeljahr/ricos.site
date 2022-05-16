@@ -13,15 +13,14 @@ author:
   picture: "/assets/blog/profile.jpeg"
 ---
 
-Book recommendations from beginning: 
-The Evolution of Cooperation, Robert Axelrod
-The Extended Phenotype, Richard Dawkins
+**Book Recommendation:** The Evolution of Cooperation by Robert Axelrod
+**Book Recommendation:** The Extended Phenotype by Richard Dawkins
 
 > I have long felt that biology ought to seem as exciting as a mystery story, for a mystery story is exactly what biology is. - p. xix
 
 > There is a better reason to study zoology... This reason is that we animals are the most complicated and perfectly-designed pieces of machinery in the known universe. - p. xxx
 
-Chapter 1 - Why are people? 
+## Chapter 1 - Why are people? 
 
 > Intelligent life on a planet comes of age when it first works out the reason for its own existence. - p. 1
 
@@ -37,9 +36,9 @@ If it were true, dissenter could become more successful within species, therefor
 
 > The muddle in human ethics over the level at which altruism is desirable - family, nation, race, species, or all living things - is mirrored by a parallel muddle in biology over the level at which altruism is to be expected according to the theory of evolution. - p. 13
 
-Book recommendation: Adaptation and Selection by G.C. Williams - p. 14
+**Book recommendation:** Adaptation and Selection by G.C. Williams - p. 14
 
-Chapter 2 - The replicators
+## Chapter 2 - The replicators
 
 > In the beginning was simplicity. - p. 15
 
@@ -62,7 +61,7 @@ Replicators come into competition and develop strategies to scavenge other repli
 
 > They have come a long way, those replicators. Now they go by the name of genes and we are their survival machines. - p. 25
 
-Chapter 3 - Immortal Coils
+## Chapter 3 - Immortal Coils
 
 Todays replicators are DNA and we are their survival machines. We in this case are all that we consider the biosphere to contain. DNA letterering order is the pattern that is preserved and propagated. Not us.  - p. 26-27
 
@@ -95,7 +94,7 @@ Aging might be caused by genes with bad effects only visible in old age but posi
 
 > Evolution is the process by which some genes become more numerous and others less numerous in the gene pool. - p. 58
 
-Chapter 4 - The Gene Machine
+## Chapter 4 - The Gene Machine
 
 > Survival machines began as passive receptacles for the genes, providing lite more than walls to protect them from the chemical warfare of their rivals and the ravages of accidental molecular bombardment. - p. 59
 
@@ -126,7 +125,7 @@ Genes can influence behaviors in direct and indirect ways. Behavior could be inf
 
 Communication involves an element of deception, because of conflicts of interests, not just members of different species, but even children deceiving their parents and husbands their wives make sense from an evolutionary point of view. - p. 83-84
 
-Chapter 5 - Aggression, Stability and the Selfish machine
+## Chapter 5 - Aggression, Stability and the Selfish machine
 
 Survival machines compete for resources so that their genes can persist. Intra species competition is the hardest because individuals are so similar and therefore compete for the same resources. Yet killing off all rivals and eating them is not a good tactic because there are costs associated with that killing. Like one's own death or injuries. Therefore aggression follows patterns of complex cost benefit analysis. 
 
@@ -151,7 +150,7 @@ Genes in the gene pool form a stable set, most new genes introduced are worse th
 
 > Well-integrated bodies exist because they are the product of an evolutionarily stable set of selfish genes. - p. 113
 
-Chapter 6 - Genesmanship
+## Chapter 6 - Genesmanship
 
 > When a man throws a ball high in the air and catches I again he behaves as if he had solved a set of differential equations in predicting the trajectory of the ball. He may neither know nor care what a differential equation is, but it does not affect his skill with the ball. - p. 125
 
@@ -163,7 +162,7 @@ Selection for genes that make the survival of other animals sharing the same gen
 
 Kin selection manifests itself in parent/child altruism, and more on the motherly side, because the certainty involved in knowing gene relatedness is greater, hence the sexual differences in child-rearin and investment into the offspring. Als certainty is hard to keep up for kin selection, when it can be exploited by other members of the species or even other species altogether, a good example are cuckoo birds here. - p. 125-140
 
-Chapter 7 - Family Planning
+## Chapter 7 - Family Planning
 
 > I use the word decision to mean unconscious strategic move. - p. 141
 
@@ -178,7 +177,7 @@ There are two decisions individuals have to make, one is child caring and the ot
 
 The idea of this planning and predicting the future business that genes seem to be doing raises one very interesting question - what is the range of it? - p. 158
 
-Chapter 8 - Battle of the Generations
+## Chapter 8 - Battle of the Generations
 
 
 > I am treating a mother as a machine programmed to do everything in its power to propagate copies of the genes which ride inside it. - p. 159
@@ -239,7 +238,7 @@ In raiding ant species, slaves from other colonies do all the work and here the 
 
 ### Chapter Summary:
 
-Altruistic behavior is a little bit hard to explain for the selfish gene theory, it might seem at a first glance, however often that is not the case, because there exist evolutioary stable states for different behavioral strategies and therefore there are distinct advantages to be had, when cooperating with certain patterns. And that's what we see in most organisms today, some amount of cheating, a good amount of grudging and of mechanisms to avoid being cheated and a good amount of symbiosis and cooperation as well. One especially interesting idea from the chapter is to think of the genome itself as a symbiotic relationship between different symbiotic units of single genes. Maybe we are just a different way for genes to express their symbiosis and spread, and viruses are a less symbiotic form of solving the same problem, namely that of replication. In the end, maybe humans adapted to cheating and reciprocal altruism and that's why we have such big brains. 
+Altruistic behavior is a little bit hard to explain for the selfish gene theory, it might seem at a first glance, however often that is not the case, because there exist evolutioary stable states for different behavioral strategies and therefore there are distinct advantages to be had, when cooperating with certain patterns. And that's what we see in most organisms today, some amount of cheating, a good amount of grudging and of mechanisms to avoid being cheated and a good amount of symbiosis and cooperation as well. One especially interesting idea from the ## Chapter is to think of the genome itself as a symbiotic relationship between different symbiotic units of single genes. Maybe we are just a different way for genes to express their symbiosis and spread, and viruses are a less symbiotic form of solving the same problem, namely that of replication. In the end, maybe humans adapted to cheating and reciprocal altruism and that's why we have such big brains. 
 
 ## Chapter 11: Memes - The New Replicators
 
@@ -302,7 +301,7 @@ Prisoners dilemma is characterized by the order or ranking of outcomes in how de
 Nice strategies of cooperation arise in nature of the circumstances are right - i.e. when the circumstances are similar to a prisoners dilemma game, unfolding over long periods of time, we see evolution coming up with "nice" behavioral strategies. 
 
 ### Chapter Summary:
-Nice Guys can finish first was the title and the leading idea in the whole chapter is that "niceness" as a strategy of cooperation can really pay off in a certain type of game - namely non-zero-sum long running prisoners dilemma. It then went on to explain multiple examples of where such strategies might be found in nature. The chapter ends on a high note - even in a world where evolution favors and creates utterly selfish genes, under the right circumstances - it really pays to be cooperative and invent strategies of reciprocal altruism. And so in nature in a sense nice guys can finish first under some circumstances. 
+Nice Guys can finish first was the title and the leading idea in the whole ## Chapter is that "niceness" as a strategy of cooperation can really pay off in a certain type of game - namely non-zero-sum long running prisoners dilemma. It then went on to explain multiple examples of where such strategies might be found in nature. The ## Chapter ends on a high note - even in a world where evolution favors and creates utterly selfish genes, under the right circumstances - it really pays to be cooperative and invent strategies of reciprocal altruism. And so in nature in a sense nice guys can finish first under some circumstances. 
 
 ## The Long Reach of The Gene
 

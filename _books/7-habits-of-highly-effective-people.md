@@ -13,6 +13,30 @@ author:
   picture: "/assets/blog/profile.jpeg"
 ---
 
+Seven habits is one of the most influential books I have read in my whole life. I think it's the best self-help book out there and if the habits and principles described within it are truly understood and incorporated into your life, they have the potential to change it drastically to the better, forever.It's that impactful. 
+
+# Quick Summary:
+
+There are 7 habits, that work together to enable one to live a good life. They are based out of timeless principles and are NO shortcuts. The 7 habits are organized into 2 main groups - habits of personal improvement 1-3 and habits 4-6 of interpersonal improvement. The 7th habit is tying them all together. Essentially the 7th habit is the continual practice and application of the other 6.
+**Habits 1 to 3 are:** 
+- Proactivity
+- Beginning with the end in mind
+- Putting first things first
+
+**Habits 4 to 6 are:**
+- Seeking First to Understand, then to be understood
+- Thinking Win/Win
+- Synergizing
+
+**Habit 7 is:** 
+- Sharpening the Saw
+
+The first 3 have to be mastered, before one can move on. They are the personal victory, without which it is impossible to have fulfilling and successful interpersonal relationships. Because the core of well earned self-respect is missing.
+
+At a first glance these habits might not seem like much, but wherever I look, every other advice, found in any other book can be derived from them. They are the principles, that everything else follows from and that's what makes this book so powerful. So without further ado, here are the detailed notes:
+
+## Introduction: 
+
 > We must look at the lens through which we see the world, as well as at the world we see, and that the lens itself shapes how we interpret the world. 
 
 Focus on shaping the character you have  instead of fixing short term symptoms. Longer, harder, more arduous road, but more fulfilling and worthwhile in the end. Steven Covey calls it the character ethic. 
@@ -27,30 +51,35 @@ Focus on shaping the character you have  instead of fixing short term symptoms. 
 - fidelity
 - humility
 
-In contrast there is the personality ethic, were people only focus on techniques to cure symptoms of the problems their inadequate characters create. 
+In contrast there is the personality ethic, were people only focus on techniques to cure symptoms of the problems. Problems they themselves create due to their inadequate characters. 
 
 > Perhaps, in utilizing our human capacity to build on the foundation of generations before us, we have inadvertently become so focused on our own building that we have forgotten the foundation that holds it up; or in reaping for so long where we have not sown, perhaps we have forgotten the need to sow. 
 
-Character is that foundation. If the character is not there to match, no amount of technique is going to cut it. The problems will remain, and no amount of help will ever be truly successful. Without a good foundation every house crumbles eventually, no matter the great building techniques used. 
+Character is that foundation we have forgotten. If the character is not there to match the actions we want to do, no amount of technique is going to cover that flaw. The problems will remain, and no amount of help will ever be truly successful. Without a good foundation every house crumbles eventually, no matter the great building techniques used. 
 
 Paradigms are maps we make of how the world works. If one has the wrong map, it is very hard to get to the right place. Even if one works on attitude or behavior, that will not solve the problem of getting one where one actually wants to go. The accuracy of the map is the most important thing. 
 
-This reminds me of Principles a lot. 1. Figure out what is true and 2. what you want and then find how to get 2. in light of the 1. 
-And also of WaitButWhys career map arrow, and spending time figuring out which way the arrow should actually point. Updating your map and getting a true description of how reality works is the most important thing, if you want to become effective in getting where you wants to go. 
+This reminds me of [Principles by Ray Dalio](/books/principles) a lot. 
+There is a section where he says: 
+1. Figure out what is true and 
+2. then figure out what you want and then 
+3. find out how to get 2. within the constraints setup by 1.
 
-> We interpret everything we experience through these mental maps. We self question their accuracy; we're usually even unaware that we have them. We simply assume that the way we see things is the way they really are or the way they should be. 
+And also of [WaitButWhys career map arrow](https://waitbutwhy.com/2018/04/picking-career.html), and spending time figuring out which way the arrow should actually point. Updating your map and getting a true description of how reality works is the most important thing, if you want to become effective in getting where you want to go. 
 
-Conditioning shapes our paradigms and therefore the way we interpret and act in the world. Past experience rewiring our brains to act and perceive differently in the future. 
+> We interpret everything we experience through these mental maps. We seldom question their accuracy; we're usually even unaware that we have them. We simply assume that the way we see things is the way they really are or the way they should be. 
 
-Example of short 10 seconds of conditioning on the old/young lady optical illusion and two people could argue for a long time about what they see, even though they get the exact same visual input, they see different things and therefore will have a different model of reality, shaped by their past perceptions. Updating these models to be accurate then, in other words seeing the world for what it really is, irrespective of what we think and have experienced is the goal of getting a clear map, of inducing a paradigm shift. 
+Conditioning, from the early childhood onwards, shapes our paradigms and therefore the way we interpret and act in the world. Past experiences rewire our brains to act and perceive differently in the future. That is called learning and happens involuntarily and almost all the time. We are literally the product of our whole lifetime worth of experience.
+
+In the book there is a short 10 seconds example of conditioning on the old/young lady optical illusion, to illustrate the point. Two people could argue for a long long time about what they see, even though they get the exact same visual input. They see different things and therefore will have a different model of reality, directly shaped by their past perceptions. Updating these models to be accurate then, in other words seeing the world for what it really is, irrespective of what we think and have experienced is the goal of getting a clear map. To do that we need to induce a paradigm shift. Or multiple shifts, continually.
 
 > Each person's interpretation of the facts represents prior experiences, and the facts have no meaning whatsoever apart from the interpretation. 
 
-Big changes require paradigm shifts. And paradigm shifts mean that the character changes. 
+Big changes require paradigm shifts. And when paradigm shifts happen, that usually means that the character changes, permanently. 
 
 > Being is seeing in the human dimension. And what we see is highly interrelated to what we are. We can't go very far to change our seeing without simultaneously changing our being, and vice versa. 
 
-There are fundamental paradigms in life, that are stable across time. They exist independent of persons and characters but are a product of the environment as a whole. In a way what he describes are evolutionarily stable strategies in the human realm. Certain types of behaviors that in the long run outcompete all other strategies. And he claims those are the character ethics. 
+There are fundamental paradigms in life, that are stable across time. They exist independent of persons and characters but are a product of the environment as a whole. In a way the principles are evolutionarily stable strategies (an idea nicely presented in [Richard Dawkins' Selfish Gene](/books/the-selfish-gene)) in the human realm. Certain types of behaviors that in the long run outcompete all other strategies. And he claims those are the character ethics. 
 
 > Integrity and honest create the foundation of trust which is essential to cooperation and long-term personal and interpersonal growth. 
 
@@ -89,7 +118,7 @@ Maturity moves from dependence to independence to interdependence (cooperation).
 > Private Victories preceed Public Victories. You can't invest that process any more than you can harvest a crop before you plant it. It's inside-out.
 
 
-Habit 1 - Be proactive 
+## Habit 1 - Be proactive 
 
 P/PC balance
 The idea of the product and the production capability. Again long term and short term are at odds. We want to maximize the long term amount of product so we need to live with lower short term returns so that our production capability can stay constant or even increase. If we take all the product we can each and every day, soon there will be no more product to gain at all. The whole idea is embodied by the farmer who cut open his goose that laid golden eggs to get them all in one go and thereby killed the goose, completely destroying his ability to gain more product in the future for a short term boost. 
@@ -151,7 +180,7 @@ Making and keeping promised to ourselves is a good way to build character. Being
 > Work only in your circle of influence. Make small commitments and keep them. Be a light, not a judge. Be a model not s critic. Be part of the solution, not part of the problem. 
 Don't argue for other people's weaknesses. Don't argue for your own. When you make a mistake admit it, correct it, and learn from it - immediately. Don't get into a blaming, accusing mode. Work ob things you have control over. Work on you. 
 
-Habit 2 - Begin with the end in mind
+## Habit 2 - Begin with the end in mind
 
 Short exercise - envision own funeral and imagine what you would want other people to say. What kind of person would you like to have been? This exercise reveals what we hold as our innermost values and what we should really focus our lives around. Time should be spent with things that further this goal. We should begin with the end in mind. 
 
@@ -200,7 +229,7 @@ Visualisation can also be used as a tool to clearly put into perspective what it
 
 Organizations with written mission statements can be very effective. The key is that all the people in the organization have to be a part of the mission statement. Without involvement the effectiveness of the statement is 0. Furthermore the statement has to be in alignment with the reward system. Rewarding people for the right things is key and figuring what the right things are together is what involvement cries for. 
 
-Habit 3 - Put first things first
+## Habit 3 - Put first things first
 
 Two questions: 
 
@@ -324,7 +353,7 @@ Also repairing and caring for a single relationship that's important is sometime
 
 Problems create the opportunity for growth. In resolving problems of production we can increase production capability lastingly. This is a paradigm shift from a reactive to a proactive mindset when it comes to problems. 
 
-Habit 4 - Think Win/Win
+## Habit 4 - Think Win/Win
 
 > Win/Win is a frame of mind and heart that constantly seeks mutual benefit in all human interactions. 
 
@@ -389,7 +418,7 @@ Systems of competition and contest harm Win/Win agreements within organizations.
 
 > Win/Win is not a personality technique. It's a tot paradigm of human interaction. It comes from a character or integrity, maturity and the Abundance Mentality. It grows out of high trust relationships. It is embodied I. Agreements that effectively clarify and manage expectations as well as accomplishment. It thrives in supportive systems.
 
-Habit 5 - Seek first to understand, then to be understood
+## Habit 5 - Seek first to understand, then to be understood
 
 The optometrist who gives you his glasses and then tells you done more grateful for his help even though his glasses didn't help. Prescription has to follow diagnosis. And not only at optometrists but in effective communication as well. 
 
@@ -451,7 +480,7 @@ Practicing empathic listening is important. It's a skill that has to be build. I
 
 > Set up human resource accounting or stakeholder information systems in your business to get honesty accurate feedback at every level: from customers, suppliers, and employees. Make the human element as important as the financial or the technical element. 
 
-Habit 6 - Synergize
+## Habit 6 - Synergize
 
 > What is synergy? Simply defined, it means that the whole is greater than the sum of its parts. It means that the relationship which the parts have to each other is a part in an of itself. It is not only a part, but the most catalytic, the most empowering the most unifying, and the most exciting part. 
 
@@ -471,7 +500,7 @@ Trust and understanding underlie synergy. Once those are there, even broken rela
 
 Differences in opinion should be used as opportunities. Different lenses and paradigms mean that there can be different understanding of the same facts. Two opinions can be right at the same time and if there are only two and yours is the "right" one you should really stop and try to understand the other one. Because that's when you will learn and understand and become able to find the third and higher path. The key idea is that differences should be valued, because that's where synergy can come from. If the relationship allows for it, the difference can enhance and complement each other to synergize and produce a whole greater than the parts. 
 
-Habit 7 - Sharpen the Saw - Principles of Balanced Self-Renewal
+## Habit 7 - Sharpen the Saw - Principles of Balanced Self-Renewal
 
 > Sometimes when I consider what tremendous consequences come from little things... I am tempted to think... That there are no little things. - Bruce Barton
 

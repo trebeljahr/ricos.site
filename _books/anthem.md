@@ -3,7 +3,7 @@ title: "Anthem"
 bookCover: "/assets/book-covers/anthem.jpg"
 slug: "anthem"
 bookAuthor: "Ayn Rand"
-rating: 10
+rating: 8
 done: true
 tags: []
 detailedNotes: false

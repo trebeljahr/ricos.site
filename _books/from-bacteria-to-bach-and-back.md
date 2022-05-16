@@ -3,7 +3,7 @@ title: "From Bacteria to Bach and Back"
 bookCover: "/assets/book-covers/from-bacteria-to-bach-and-back.jpg"
 slug: "from-bacteria-to-bach-and-back"
 bookAuthor: "Daniel C. Dennett"
-rating: 10
+rating: 8
 done: true
 tags: ["evolution", "mind", "made-me-think", "non-fiction"]
 detailedNotes: true

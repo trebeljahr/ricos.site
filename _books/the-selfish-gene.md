@@ -5,8 +5,8 @@ slug: "the-selfish-gene"
 bookAuthor: "Richard Dawkins"
 rating: 10
 done: true
-tags: []
-detailedNotes: false
+tags: ["curiosity", "made-me-think", "top-50", "biology", "evolution", "non-fiction"]
+detailedNotes: true
 amazonLink: "https://amzn.to/3xi1mNW"
 author:
   name: Rico Trebeljahr

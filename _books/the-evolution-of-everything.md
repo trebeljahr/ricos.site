@@ -3,10 +3,10 @@ title: "The Evolution of Everything"
 bookCover: "/assets/book-covers/the-evolution-of-everything.jpg"
 slug: "the-evolution-of-everything"
 bookAuthor: "Matt Ridley"
-rating: 10
+rating: 6
 done: true
-tags: []
-detailedNotes: false
+tags: ["curiosity", "made-me-think", "evolution", "non-fiction"]
+detailedNotes: true
 amazonLink: "https://amzn.to/3NXPOoS"
 author:
   name: Rico Trebeljahr

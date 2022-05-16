@@ -3,10 +3,10 @@ title: "Immune"
 bookCover: "/assets/book-covers/immune.jpg"
 slug: "immune"
 bookAuthor: "Philipp Dettmer"
-rating: 10
+rating: 8
 done: true
-tags: []
-detailedNotes: false
+tags: ["curiosity", "learning", "non-fiction", "immunology", "biology"]
+detailedNotes: true
 amazonLink: "https://amzn.to/3Ky8Y2D"
 author:
   name: Rico Trebeljahr

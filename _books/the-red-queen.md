@@ -3,10 +3,10 @@ title: "The Red Queen"
 bookCover: "/assets/book-covers/the-red-queen.jpg"
 slug: "the-red-queen"
 bookAuthor: "Matt Ridley"
-rating: 10
+rating: 8
 done: true
-tags: []
-detailedNotes: false
+tags: ["curiosity", "made-me-think", "biology", "evolution", "non-fiction"]
+detailedNotes: true
 amazonLink: "https://amzn.to/3xpSlCr"
 author:
   name: Rico Trebeljahr

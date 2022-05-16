@@ -6,8 +6,8 @@ slug: "the-brain"
 bookAuthor: "David Eagleman"
 rating: 10
 done: true
-tags: []
-detailedNotes: false
+tags: ["curiosity", "psychology", "non-fiction", "neuroscience", "top-50", "made-me-think"]
+detailedNotes: true
 amazonLink: "https://amzn.to/363zu4Q"
 author:
   name: Rico Trebeljahr

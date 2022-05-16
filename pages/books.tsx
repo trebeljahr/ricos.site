@@ -12,7 +12,7 @@ type Props = {
 const emptySearchFilters = {
   bookAuthor: "",
   title: "",
-  // rating: 0,
+  rating: 0,
   tags: [""],
   detailedNotes: false,
 };
@@ -20,6 +20,9 @@ const emptySearchFilters = {
 export default function Books({ allBooks }: Props) {
   const { byFilters, filters, setFilters } = useSearch(emptySearchFilters);
   const filteredBooks = allBooks.filter(byFilters);
+
+  console.log(filteredBooks);
+
   return (
     <Layout fullPage={true} pageTitle="Book Notes">
       <article>
@@ -48,6 +51,9 @@ export const getStaticProps = async () => {
     "detailedNotes",
   ]);
 
+  console.log(
+    allBooks.filter((book) => book.title === "From Bacteria to Bach and Back")
+  );
   return {
     props: { allBooks: allBooks.filter(({ done }) => done) },
   };

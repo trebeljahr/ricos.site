@@ -3,10 +3,10 @@ title: "Tao Te Ching"
 bookCover: "/assets/book-covers/tao-te-ching.jpg"
 slug: "tao-te-ching"
 bookAuthor: "Stephen Mitchell"
-rating: 10
+rating: 7
 done: true
-tags: []
-detailedNotes: false
+tags: ["taoism", "buddhism", "philosophy", "made-me-think", "art-of-living", "non-fiction", "classics"]
+detailedNotes: true
 amazonLink: "https://amzn.to/3KBJUYD"
 author:
   name: Rico Trebeljahr

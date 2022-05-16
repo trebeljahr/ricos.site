@@ -9,13 +9,35 @@ type Entries<T> = {
   [K in keyof T]: [K, T[K]];
 }[keyof T][];
 
-type Filters = Record<string, string | number | string[] | boolean>;
-export function useSearch<T extends Filters>(emptyFilters: T) {
-  const [filters, setFilters] = useState(emptyFilters);
-  const entries = Object.entries(filters) as Entries<T>;
+type FilterValue = string | number | string[] | boolean;
+type EmptyFilters = Record<string, FilterValue>;
+
+type Filter = {
+  active: boolean;
+  value: FilterValue;
+};
+type Filters = Record<string, Filter>;
+
+export function createFilters<T extends EmptyFilters>(
+  emptyFilters: T
+): Filters {
+  const filters = Object.entries(emptyFilters).map(([key, value]) => [
+    key,
+    { value, active: false },
+  ]);
+  return Object.fromEntries(filters);
+}
+
+export function useSearch<T extends EmptyFilters>(emptyFilters: T) {
+  const [filters, setFilters] = useState(createFilters(emptyFilters));
+  const entries = Object.entries(filters) as Entries<Filters>;
 
   const byFilters = (item: T) => {
-    for (let [filterKey, filterValue] of entries) {
+    for (let [filterKey, filter] of entries) {
+      const { value: filterValue, active: filterIsActive } = filter;
+
+      if (!filterIsActive) continue;
+
       const val = item[filterKey];
       if (typeof val === "string" && typeof filterValue === "string") {
         if (!val.toLowerCase().includes(filterValue.toLowerCase())) {
@@ -43,6 +65,7 @@ export function useSearch<T extends Filters>(emptyFilters: T) {
 
     return true;
   };
+  console.log(filters);
   return { byFilters, filters, setFilters };
 }
 
@@ -53,27 +76,31 @@ export function Search<T extends Filters>({
   const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
     const filter = event.target.name;
     setFilters((old) => {
-      const value = old[filter];
+      const { value } = old[filter];
+      console.log("value", value);
       return {
         ...old,
-        [filter]:
-          typeof value === "number"
-            ? Number(event.target.value)
-            : typeof value === "string" || typeof value === "boolean"
-            ? event.target.value
-            : value.map((val, index) => {
-                if (index === value.length - 1) {
-                  return event.target.value;
-                }
-                return val;
-              }),
+        [filter]: {
+          ...old[filter],
+          value:
+            typeof value === "number"
+              ? Number(event.target.value)
+              : typeof value === "string" || typeof value === "boolean"
+              ? event.target.value
+              : value.map((val, index) => {
+                  if (index === value.length - 1) {
+                    return event.target.value;
+                  }
+                  return val;
+                }),
+        },
       };
     });
   };
 
   const growArray = (filterName: string) => {
     setFilters((old) => {
-      const val = old[filterName];
+      const val = old[filterName].value;
       Array.isArray(val) && val.push("");
       return { ...old };
     });
@@ -85,65 +112,86 @@ export function Search<T extends Filters>({
       if (Array.isArray(val))
         return {
           ...old,
-          [filterName]: val.filter((_, index) => index !== indexToDelete),
+          [filterName]: {
+            ...old[filterName],
+            value: val.filter((_, index) => index !== indexToDelete),
+          },
         };
       return old;
     });
   };
 
   const toggleBoolean = (filterName: string) => {
-    setFilters((old) => ({ ...old, [filterName]: !old[filterName] }));
+    setFilters((old) => ({
+      ...old,
+      [filterName]: { ...old[filterName], value: !old[filterName].value },
+    }));
+  };
+
+  const toggleFilter = (filterName: string) => {
+    setFilters((old) => {
+      return {
+        ...old,
+        [filterName]: { ...old[filterName], active: !old[filterName].active },
+      };
+    });
   };
 
   return (
     <div className="searchBar">
-      {Object.entries(filters).map(([filterName, filterValue]) => {
-        return (
-          <div key={filterName}>
-            <label htmlFor={filterName}>{filterName}:</label>
-            {typeof filterValue === "boolean" ? (
-              <button onClick={() => toggleBoolean(filterName)}>
-                {filterValue ? "true" : "false"}
+      {Object.entries(filters).map(
+        ([filterName, { value: filterValue, active }]) => {
+          return (
+            <div key={filterName}>
+              <button onClick={() => toggleFilter(filterName)}>
+                {active ? "active" : "inactive"}
               </button>
-            ) : (
-              <input
-                id={filterName}
-                type={
-                  typeof filterValue === "string" || Array.isArray(filterValue)
-                    ? "text"
-                    : "number"
-                }
-                name={filterName}
-                onChange={handleInput}
-                onKeyPress={(event) => {
-                  event.key === "Enter" && growArray(filterName);
-                }}
-                value={
-                  Array.isArray(filterValue)
-                    ? filterValue[filterValue.length - 1]
-                    : filterValue
-                }
-              />
-            )}
-            {Array.isArray(filterValue) && (
-              <button onClick={() => growArray(filterName)}>Add tag</button>
-            )}
-            {Array.isArray(filterValue) &&
-              filterValue
-                .slice(0, filterValue.length - 1)
-                .map((filter, index) => {
-                  return (
-                    <div key={filter + index}>
-                      <p>{filter}</p>
-                      <button onClick={() => removeTag(filterName, index)}>
-                        Delete
-                      </button>
-                    </div>
-                  );
-                })}
-          </div>
-        );
-      })}
+              <label htmlFor={filterName}>{filterName}:</label>
+              {typeof filterValue === "boolean" ? (
+                <button onClick={() => toggleBoolean(filterName)}>
+                  {filterValue ? "true" : "false"}
+                </button>
+              ) : (
+                <input
+                  id={filterName}
+                  type={
+                    typeof filterValue === "string" ||
+                    Array.isArray(filterValue)
+                      ? "text"
+                      : "number"
+                  }
+                  name={filterName}
+                  onChange={handleInput}
+                  onKeyPress={(event) => {
+                    event.key === "Enter" && growArray(filterName);
+                  }}
+                  value={
+                    Array.isArray(filterValue)
+                      ? filterValue[filterValue.length - 1]
+                      : filterValue
+                  }
+                />
+              )}
+              {Array.isArray(filterValue) && (
+                <button onClick={() => growArray(filterName)}>Add tag</button>
+              )}
+              {Array.isArray(filterValue) &&
+                filterValue
+                  .slice(0, filterValue.length - 1)
+                  .map((filter, index) => {
+                    return (
+                      <div key={filter + index}>
+                        <p>{filter}</p>
+                        <button onClick={() => removeTag(filterName, index)}>
+                          Delete
+                        </button>
+                      </div>
+                    );
+                  })}
+            </div>
+          );
+        }
+      )}
     </div>
   );
 }

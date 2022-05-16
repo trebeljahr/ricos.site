@@ -6,7 +6,7 @@ bookAuthor: "Nicholas Nassim Taleb"
 rating: 10
 done: false
 tags: []
-detailedNotes: true
+detailedNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

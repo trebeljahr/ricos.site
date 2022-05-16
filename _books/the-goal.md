@@ -3,10 +3,10 @@ title: "The Goal"
 bookCover: "/assets/book-covers/the-goal.jpg"
 slug: "the-goal"
 bookAuthor: "Eliayahu M. Goldratt"
-rating: 10
+rating: 8
 done: true
-tags: []
-detailedNotes: false
+tags: ["business", "philosophy", "novel", "ideas", "non-fiction"]
+detailedNotes: true
 amazonLink: "https://amzn.to/3xm560I"
 author:
   name: Rico Trebeljahr

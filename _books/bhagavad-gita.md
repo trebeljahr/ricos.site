@@ -3,9 +3,9 @@ title: "Bhagavad Gita"
 bookCover: "/assets/book-covers/bhagavad-gita.jpg"
 slug: "bhagavad-gita"
 bookAuthor: "Stephen Mitchell"
-rating: 10
+rating: 7
 done: true
-tags: []
+tags: ["taoism", "buddhism", "philosophy", "made-me-think", "art-of-living", "non-fiction", "classics"]
 detailedNotes: false
 amazonLink: "https://amzn.to/3xlSo2b"
 author:

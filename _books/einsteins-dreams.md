@@ -3,7 +3,7 @@ title: "Einsteins Dreams"
 bookCover: "/assets/book-covers/einsteins-dreams.jpg"
 slug: "einsteins-dreams"
 bookAuthor: "Alan Lightman"
-rating: 10
+rating: 9
 done: true
 tags: ["philosophy", "fiction", "novel", "made-me-think"]
 detailedNotes: false

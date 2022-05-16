@@ -5,7 +5,7 @@ slug: "zero-to-one"
 bookAuthor: "Peter Thiel"
 rating: 10
 done: true
-tags: ["business", "philosophy", "top-50", "made-me-think", "psychology", "economy"]
+tags: ["business", "philosophy", "top-50", "made-me-think", "psychology", "economy", "non-fiction"]
 detailedNotes: true
 amazonLink: ""
 author:

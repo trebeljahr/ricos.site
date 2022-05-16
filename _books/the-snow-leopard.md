@@ -3,10 +3,10 @@ title: "The Snow Leopard"
 bookCover: "/assets/book-covers/the-snow-leopard.jpg"
 slug: "the-snow-leopard"
 bookAuthor: "Peter Matthiessen"
-rating: 10
+rating: 8
 done: true
-tags: []
-detailedNotes: false
+tags: ["novel", "made-me-think", "traveling", "philosophy", "buddhism", "art-of-living"]
+detailedNotes: true
 amazonLink: "https://amzn.to/363AXbl"
 author:
   name: Rico Trebeljahr

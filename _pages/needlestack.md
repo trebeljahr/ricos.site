@@ -1,31 +1,82 @@
 # Needlestack
 
-This is my needlestack. But hang on, what is a needlestack you might ask?
-In essence, the internet is a giant haystack of data, content, information, but a haystack that also contains some needles in between, small nuggets of gold to be found and cherished. And I collected them in the form of bookmarks, notes and more for some time now, and this collection has a name - it's my needlestack. 
+Hang on, what exactly is a needlestack you might ask?
 
-So - my needlestack is my personal collection of treasures found on the internet. Things that I am glad to have found.  
+I am glad you did! In essence, the internet is a giant haystack of data - content and information. Haystacks are filled with a lot of stuff that is mostly useless - hay. But the haystack of the internet also contains some needles in between – the literal needles in a haystack – small nuggets worth to be found and cherished. And I found and collected them in the form of bookmarks, notes and more for some time now, piling them up into what is now a **needlestack.** 
 
-Full Disclaimer: The idea of the name for it is not mine. I found it on the blog of Ethan Maurice and loved it soo much that I had to make my own list of awesome "needles". [Here's his](https://ethanmaurice.com/needlestack) in case you're curious.
+![This is a foto of a needlestack {1166x777}](/needles.jpg)
 
-## Overview:
-This needlestack will be organized into different sections. You can jump from section to section from this overview and go back up to the overview at any time. Don't be afraid if things might look like a bit much, I have been using the internet for some time now and therefore have gathered quite a few resources, that I consider to be amazing. The flood of content is dense, even if restricted to only what I likeespecially much. 
+So: A needlestack is a personal collection of treasures that somebody found on the internet. Things that they are glad to have found. Things that they want to share with others. Things that were needles, in the haystack. 
 
-**[Videos](#videos)**
-**[Lecture Series](#lecture-series)**
-**[Developer Journey](#developer-journey)**
-**[Music](#music)**
-**[Lecture Series](#lecture-series)**
-**[Lecture Series](#lecture-series)**
-**[Lecture Series](#lecture-series)**
-**[Lecture Series](#lecture-series)**
+Sometimes the things have small notes and explanations attached to them, sometimes they don't and they are just plain old links. Either way, this site is *my* needlestack and it reflects parts of the internet that I love. And I hope it will be of use to you! Enjoy browsing, and don't get overwhelmed, this is still quite long - cheers!
 
+Full Disclaimer: The idea of collecting information in this format and giving it it's unique name "Needlestack" is not mine. I found it on the blog of Ethan Maurice and loved it soo much that I had to make my own list of awesome "needles".
+
+[Here's his](https://ethanmaurice.com/needlestack) in case you're curious.
+
+This needlestack will be organized into different sections. You can jump from section to section and jump back to the overview at any time. Don't be afraid if things might look like a bit much, I have been using the internet for some time now and therefore have gathered quite a few resources, that I consider to be *amazing*. 
+
+The flood of content is dense, even if restricted to only what I like. The internet is a vast space – an endless space – I would argue. If you have something awesome you want to share with me (that is not yet on the list) [please do so](https://ricotrebeljahr.com/contact). I'll have a look and maybe even put it here!
+
+## Table of contents
 
 ## Videos 
 
-## Lecture Series
+### Single Videos
+
+### Youtube Channels I watch regularly
+1. [Vsauce]()
+2. [Kurzgesagt]()
+3. [MIT OCW]()
+### Lecture Series
 
 ## Developer journey
-[Learn your ABC - in other words - **Always Be Coding!**](https://medium.com/always-be-coding/abc-always-be-coding-d5f8051afce2)
+
+As you may or may not know – I am a developer. I consider this as one of the best jobs to have and would recommend everybody to embark on this journey. Programming is a life changing and empowering ability and it's just really fun and enjoyable too. It can give you flow like experiences and I like comparing it to playing an instrument or creating art.
+
+Coding can be deeply relaxing, while at the same time being extremely stimulating and intellectually intricate. And it is creative too. It allows you to build your own cool things, be that websites, games, apps, or things that have never existed before. 
+
+Plus, becoming a better programmer is an open ended journey. The amount of stuff people put out there and create every year is vast, so vast in fact that you can not learn it all. Coding is something that can keep you on an interesting journey of discovery and greater understanding for the rest of your life. I would argue that everybody should learn how to code. 
+
+And this section of the needlestack is filled with the things that I have found on the internet. Links and resources that are specific to this hobby of mine. This hobby that turned into a job and that is now an integral part of my life. If you don't are not interested in computers and any of these things, you can safely skip this part and [continue down here.](#stuff-on-github)
+
+### How to Learn Programming
+
+My favorite website for that: [FreeCodeCamp](https://freecodecamp.org). It has a full fledged interactive curriculum that gives you 100% of the knowledge you need to start your career as a fullstack developer. I have done their whole curriculum in 2017 and have since then worked at companies such as Softgames, Klarna, ESA (the European Nasa) and Ironhack. Freecodecamp even has [a youtube channel](https://www.youtube.com/channel/UC8butISFwT-Wl7EV0hUK0BQ), filled with an amazing amount of content. But the best idea is to do the exercises, because "learning" from videos is very different from actually coding and doing things yourself.
+
+Once you already know the basics of at least one programming language and want to quickly pick up another [you should give Exercism a try](https://exercism.org/). It's a platform, where you solve increasingly harder coding katas – small exercises – in any programming language out there, and pick up the language that way. They even have mentors that review your code - and best of all, everything here is also completely free!
+
+### Articles about Programming
+
+There is a whole flood of articles, about how to do simple things etc. and I won't give any of them here. Just mention a few blogs, and articles or meta articles that I found the be immensely useful and to which I regularly return to!
+
+Learn your ABC - in other words [Always Be Coding](https://medium.com/always-be-coding/abc-always-be-coding-d5f8051afce2). This is a central idea and I think is what people should really do. Code in your free-time on stuff that you like. This is how you grow, immensely. Following your curiosity where it leads to, picking up new languages and epic skills along the way. 
+
+I consider the [Programming Achievements](https://jasonrudolph.com/blog/2011/08/09/programming-achievements-how-to-level-up-as-a-developer/) by Jason Rudolph to be the layout for a lifelong path of curiosity and learning as a developer. Just tackling one of those achievements might take months or years, depending on your commitment. They focus on the open endedness of the space and I love that. His idea is also available as [a gist to fork](https://gist.github.com/jasonrudolph/1133830#file_programming_achievements.md), so that you can tick of the boxes of the achievements yourself.
+
+### Mindblowing AI research
+[Dalle-1](https://openai.com/blog/dall-e/) - 24th February 2021
+[Dalle-2](https://openai.com/dall-e-2/) - 13th April 2022
+[Codex Demo](https://www.youtube.com/watch?v=SGUCcjHTmGY)
+
+### Machine Learning
+
+## Stuff on Github
+
+Let's get even more meta. Github is a platform that people use to host code and other things, enabling the [version control of Git](https://git-scm.com/doc). This allows them to work together in big teams efficiently and save the history of their creations. Mostly – but not exclusively – used for code, it's a huge, open repository of knowledge. Some of the best stuff on the internet lives in spaces within Github, called repos. 
+
+There is so much awesome stuff there, that people started building repos, containing links to other awesome repos. Basically compiling lists of the best stuff on Github. 
+
+Sounds familiar? It's basically the same idea as what you are reading right now. And they don't call it needlestacks, but awesome lists.
+
+So here is the root of that awesome (pun very much intended) project: [Awesome Github - An awesome list of awesome lists](https://github.com/sindresorhus/awesome)
+
+You should also check out the person maintaining that repository: [Sindre Sorhus](https://github.com/sindresorhus). He is one of the most active open source maintainers *ever* and has some crazy cool projects in his portfolio (including the awesome list idea). 
+Some of which, you might have even used already. Like [chalk](https://github.com/chalk/chalk), [ora](https://github.com/sindresorhus/ora) or [ava](https://github.com/avajs/ava).
+
+When you browse the meta list of awesome things you will come across some cool stuff - like a list of [awesome mind-expanding books](https://github.com/hackerkid/Mind-Expanding-Books#readme), a list of [productivity resources](https://github.com/jyguyomarch/awesome-productivity#readme) or a [list of awesome computer science courses.](https://github.com/prakhar1989/awesome-courses#readme)
+
+People even built tools around those lists [helping you to search and navigate through them](https://awesomelists.top/#/). 
 
 ## Music
 
@@ -35,9 +86,6 @@ This needlestack will be organized into different sections. You can jump from se
 ## Mathematics
 
 ## Physics
-
-## How to Learn Programming Stuff
-## Machine Learning
 
 ## Philosophy
 
@@ -51,33 +99,7 @@ This needlestack will be organized into different sections. You can jump from se
 
 ## Newsletters worth subscribing to
 
-## Stuff on Github
-
-Let's get even more meta. Github is a platform that people use to host code and other things, enabling the version control of Git that allows them to work together in big teams efficiently and save the history of their creations. Mostly, but not exclusively used for code, it's a huge open repository of knowledge and code. Some of the best stuff on the internet lives in spaces within githubs, called repos. 
-
-There are even some that are so awesome, that people started building repos, that do nothing but give a listing of links to other places on Github and elsewhere on the internet - sounds familiar? It's basically the same idea as what you are reading now, but on a different platform - namely Github. 
-
-So here is the root of that awesome (pun very much intended) project: 
-[Awesome Github - A list of awesome lists](https://github.com/sindresorhus/awesome)
-
-You should also check out the persona maintaining that repository, [Sindre Sorhus](https://github.com/sindresorhus). He is one of the most active open source maintainers **ever** and has some crazy cool projects in his "portfolio", that you might have even used already if you are a developer yourself. 
-
-When you browse the meta list of awesome things you will come across some cool stuff - like a list of **[awesome mind-expanding books](https://github.com/hackerkid/Mind-Expanding-Books#readme) or a
-
-## Mindblowing AI research
-[Dalle]()
-[Dalle2]()
-[Codex Demo]()
 ## Products
-
-
-
- 
-This should keep you busy for the rest of ... your lives?  ​ I have not nearly done everything on this list, I keep working step by step on the programming achievements part because I think that's a fun way to spend my time  ​
-
-ABC - 
-Programming Achievements - https://jasonrudolph.com/blog/2011/08/09/programming-achievements-how-to-level-up-as-a-developer/
-they are also available as a Gist to fork: https://gist.github.com/jasonrudolph/1133830#file_programming_achievements.md
 
 books:
 Cracking the Coding Interview PDF: https://github.com/Avinash987/Coding/blob/master/Cracking-the-Coding-Interview-6th-Edition-189-Programming-Questions-and-Solutions.pdf

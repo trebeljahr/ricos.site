@@ -18,6 +18,10 @@ html {
   scrollbar-width: none; /* Firefox */
 }
 
+.postImgWrapper {
+  width: var(--main-width);
+}
+
 .colored-link {
   color: var(--darkerblue)
 }

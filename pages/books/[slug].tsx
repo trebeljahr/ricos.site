@@ -1,12 +1,9 @@
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
 import PostBody from "../../components/post-body";
-import PostHeader from "../../components/post-header";
 import Layout from "../../components/layout";
 import { getBookReviewBySlug, getAllBookReviews } from "../../lib/api";
 import { PostTitle } from "../../components/post-title";
-import Head from "next/head";
-import markdownToHtml from "../../lib/markdownToHtml";
 import BookType from "../../types/book";
 import CoverImage from "../../components/cover-image";
 
@@ -58,14 +55,10 @@ export async function getStaticProps({ params }: Params) {
     "done",
     "content",
   ]);
-  const content = await markdownToHtml(book.content || "");
 
   return {
     props: {
-      book: {
-        ...book,
-        content,
-      },
+      book,
     },
   };
 }

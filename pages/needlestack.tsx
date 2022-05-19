@@ -3,7 +3,6 @@ import { join } from "path";
 import matter from "gray-matter";
 import fs from "fs/promises";
 import PostBody from "../components/post-body";
-import markdownToHtml from "../lib/markdownToHtml";
 
 export default function Needlestack({ content }: { content: string }) {
   return (

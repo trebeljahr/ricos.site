@@ -1,22 +1,20 @@
 # Needlestack
 
-Hang on, what exactly is a needlestack you might ask?
-
-I am glad you did! In essence, the internet is a giant haystack of data - content and information. Haystacks are filled with a lot of stuff that is mostly useless - hay. But the haystack of the internet also contains some needles in between – the literal needles in a haystack – small nuggets worth to be found and cherished. And I found and collected them in the form of bookmarks, notes and more for some time now, piling them up into what is now a **needlestack.** 
+The internet is a giant haystack of content and information. This haystack is filled with a lot of stuff. Most of it is useless hay. But among the hay are some beautiful nuggets of information – the literal needles in a haystack. Those little bits are hard to find and when found, should be collected and shared. Over time I found and collected them for myself in the form of bookmarks and private notes. Basically piling them up into what a **needlestack.**
 
 ![This is a foto of a needlestack {1166x777}](/needles.jpg)
 
-So: A needlestack is a personal collection of treasures that somebody found on the internet. Things that they are glad to have found. Things that they want to share with others. Things that were needles, in the haystack. 
+So: A needlestack is a personal, curated collection of needles (things) that somebody found on the internet. Needles that they are glad to have found. Needles that they want to share with others. Needles carefully sifted from the hay. 
 
-Sometimes the things have small notes and explanations attached to them, sometimes they don't and they are just plain old links. Either way, this site is *my* needlestack and it reflects parts of the internet that I love. And I hope it will be of use to you! Enjoy browsing, and don't get overwhelmed, this is still quite long - cheers!
+Sometimes the needles have small notes and explanations attached to them, sometimes they don't and they are just plain old links. Either way, this site is *my* needlestack and it reflects parts of the internet that I love. And I hope it will be of use to you! Enjoy browsing, and don't get overwhelmed, this is still quite long. Even if it's a very condensed version of great stuff found on the internet. 
 
-Full Disclaimer: The idea of collecting information in this format and giving it it's unique name "Needlestack" is not mine. I found it on the blog of Ethan Maurice and loved it soo much that I had to make my own list of awesome "needles".
+The idea of collecting information in this format and giving it it's unique name "Needlestack" is not mine. I found it on the blog of Ethan Maurice and loved it so much that I had to make my own list of awesomeness.
 
 [Here's his](https://ethanmaurice.com/needlestack) in case you're curious.
 
 This needlestack will be organized into different sections. You can jump from section to section and jump back to the overview at any time. Don't be afraid if things might look like a bit much, I have been using the internet for some time now and therefore have gathered quite a few resources, that I consider to be *amazing*. 
 
-The flood of content is dense, even if restricted to only what I like. The internet is a vast space – an endless space – I would argue. If you have something awesome you want to share with me (that is not yet on the list) [please do so](https://ricotrebeljahr.com/contact). I'll have a look and maybe even put it here!
+The flood of content is dense, even if restricted to only what I like. The internet is a vast space – an endless space – I would argue. If you have something awesome you want to share with me (that is not yet on the list) [please do so](https://ricotrebeljahr.com/contact). I'll have a look and maybe end up putting it here!
 
 ## Table of contents
 
@@ -24,7 +22,7 @@ The flood of content is dense, even if restricted to only what I like. The inter
 
 ### Single Videos
 
-### Youtube Channels I watch regularly
+### Youtube Channels I watch (or used to watch) regularly
 1. [Vsauce](https://www.youtube.com/channel/UC6nSFpj9HTCZ5t-N3Rm3-HA)
 1. [Kurzgesagt](https://www.youtube.com/c/inanutshell)
 1. [MIT OCW](https://www.youtube.com/c/mitocw)
@@ -128,13 +126,13 @@ The flood of content is dense, even if restricted to only what I like. The inter
 
 ## Developer journey
 
-As you may or may not know – I am a developer. I consider this as one of the best jobs to have and would recommend everybody to embark on this journey. Programming is a life changing and empowering ability and it's just really fun and enjoyable too. It can give you flow like experiences and I like comparing it to playing an instrument or creating art.
+As you may or may not know – I am a software engineer. I consider this as one of the best jobs to have and would recommend everybody to embark on this journey. Programming is a life changing and empowering ability and it's fun and enjoyable too. It can give you flow like experiences and I like comparing it to playing an instrument or creating art.
 
-Coding can be deeply relaxing, while at the same time being extremely stimulating and intellectually intricate. And it is creative too. It allows you to build your own cool things, be that websites, games, apps, or things that have never existed before. 
+Coding can be deeply relaxing, while at the same time being extremely stimulating and intellectually intriguing. And it is creative too. It allows you to build your own things, be that websites, games, apps, or things that have never existed before. 
 
-Plus, becoming a better programmer is an open ended journey. The amount of stuff people put out there and create every year is vast, so vast in fact that you can not learn it all. Coding is something that can keep you on an interesting journey of discovery and greater understanding for the rest of your life. I would argue that everybody should learn how to code. 
+Plus, becoming a better programmer is an open ended journey. The amount of stuff people put out there and create every year is enormous, so enormous that you can not learn it all. Coding is something that can keep you on an interesting journey of discovery and greater understanding for the rest of your life. I would argue that everybody should learn how to code. 
 
-And this section of the needlestack is filled with the things that I have found on the internet. Links and resources that are specific to this hobby of mine. This hobby that turned into a job and that is now an integral part of my life. If you don't are not interested in computers and any of these things, you can safely skip this part and [continue down here.](#stuff-on-github)
+And this section of the needlestack is filled with the needles specific to this hobby of mine. A hobby that eventually turned into a job and that is now an integral part of my life. If you are not interested in computers and any of these things, you can safely skip this part and [continue down here.](#stuff-on-github)
 
 ### How to Learn Programming
 
@@ -144,9 +142,9 @@ Once you already know the basics of at least one programming language and want t
 
 ### Articles about Programming
 
-There is a whole flood of articles, about how to do simple things etc. and I won't give any of them here. Just mention a few blogs, and articles or meta articles that I found the be immensely useful and to which I regularly return to!
+There is a whole flood of articles, about how to do simple things etc. and I won't give any of them here. Just mention a few blogs, and articles that I found the be immensely useful and to which I regularly return to.
 
-Learn your ABC - in other words [Always Be Coding](https://medium.com/always-be-coding/abc-always-be-coding-d5f8051afce2). This is a central idea and I think is what people should really do. Code in your free-time on stuff that you like. This is how you grow, immensely. Following your curiosity where it leads to, picking up new languages and epic skills along the way. 
+Learn your ABC - in other words [Always Be Coding](https://medium.com/always-be-coding/abc-always-be-coding-d5f8051afce2). This is a central idea and I think is advice people should follow. Code in your free-time on stuff that you like. This is how you grow massively in a short amount of time. Follow your curiosity and see where it leads you. And pick up new languages and skills along the way. 
 
 I consider the [Programming Achievements](https://jasonrudolph.com/blog/2011/08/09/programming-achievements-how-to-level-up-as-a-developer/) by Jason Rudolph to be the layout for a lifelong path of curiosity and learning as a developer. Just tackling one of those achievements might take months or years, depending on your commitment. They focus on the open endedness of the space and I love that. His idea is also available as [a gist to fork](https://gist.github.com/jasonrudolph/1133830#file_programming_achievements.md), so that you can tick of the boxes of the achievements yourself.
 
@@ -203,7 +201,7 @@ My favorite episodes of all time are from Lex Fridman's interviews with Josha Ba
 
 Other podcasts I hop into every once in a while for good episodes, or because specific episodes have been recommended to me are these:
 1. [Tim Ferris Show](https://tim.blog/podcast/)
-1. [Naval Ravikants "Podcast"](https://nav.al/) – most of the episodes are short, dense 2-5 minute chunks of information but there are a few really good interviews in there as well, specifically The Beginning of Infinity Series: [Part 1](https://nav.al/infinity) and [Part 2](https://nav.al/infinity-2). If you haven't read the book yet, check out [my book notes on it](/books/the-beginning-of-infinity) and then go read it yourself.
+1. [Naval Ravikants "Podcast"](https://nav.al/) – most of the episodes are short, dense 2-5 minute chunks of information but there are a few really good long form ones in there as well, specifically the "The Beginning of Infinity" Series: [Part 1](https://nav.al/infinity) and [Part 2](https://nav.al/infinity-2). If you haven't read the book yet, check out [my book notes on it](/books/the-beginning-of-infinity) and then go read it yourself.
 1. [Joe Rogan Experience](https://open.spotify.com/show/4rOoJ6Egrf8K2IrywzwOMk) - especially the interviews with David Sinclair ([1](https://open.spotify.com/episode/0Gifr7mhEsQBI5oGzJomz2?si=ffa40c9ba9a84a19), [2](https://open.spotify.com/episode/4lFkgWqK3QmBH5zRvCwFNm?si=f9af90ebd6d84ff1), [3](https://open.spotify.com/episode/55UlxYWPfV46f7puMkZPeD?si=124101ce98e74593)), Elon Musk ([1](https://open.spotify.com/episode/2B07nNz3WIl7ptnCpu3TEy?si=7dcc47b47a484842), [2](https://open.spotify.com/episode/08t3BnVDXUn4YQVuDohhYg?si=181c51b636024eb1), [3](https://open.spotify.com/episode/2aB2swgyXqbFA06AxPlFmr?si=dd4d9b81f3464ca3)) and Andrew Huberman ([1](https://open.spotify.com/episode/1HnJSVAxlfZVREkojSJ39c?si=ad8aa212b2b64f03), [2](https://open.spotify.com/episode/0ScxTKuC8EaZpIxAfWZNpu?si=52fbe3cee14a4fe7)) were extremely worthwhile. 
 
 ## Blogs I read regularly
@@ -221,8 +219,24 @@ That in the end I am better of reading books instead. Especially because FS itse
 
 But still, there are a few things I think FS did for me: It enhanced and nurtured a love for reading good non-fiction. And helped me to understand how really drilling down to make sure the books that I am reading are worthwhile, is as important as reading a lot. And Shane Parrish (the creator behind FS) introduced me to Charlie Munger and Waren Buffett. Overall I think his best articles are not his articles though - to me the best one is a transcript for ["This is Water"](https://fs.blog/david-foster-wallace-this-is-water/) by David Foster Wallace, and I also love the ["Letter on Finding Your Purpose and Living a Meaningful Life"](https://fs.blog/hunter-s-thompson-to-hume-logan/) by Hunter S. Thompson
 
-
+A few more noteworthy blogs to go through are (ordered by how much I read them):
+1. [Derek Sievers](https://sive.rs/)
+1. [Kalzumeus](https://www.kalzumeus.com/)
+1. [Slatestarcodex](https://slatestarcodex.com/)
+1. [Julian Shapiro](https://www.julian.com/)
+1. [Preston Byrne](https://prestonbyrne.com/)
+1. [Minding Our Way](https://mindingourway.com/)
+1. [LessWrong](https://www.lesswrong.com/)
+1. [Joel Spolsky](https://www.joelonsoftware.com/)
+1. [Bakadesuyo](https://bakadesuyo.com/blog/)
+1. [The Art of Non-Conformity](https://archive.chrisguillebeau.com/)
+1. [Tim Ferriss](https://tim.blog/)
 ## Newsletters worth subscribing to
+To be honest, I kind of hate newsletters. There is only 3 I subscribed to and read regularly. Those are in order of how much I love them:
+
+1. [Infinite Play by Nat Eliason](https://blog.nateliason.com/)
+1. [3, 2, 1 by James Clear](https://jamesclear.com/3-2-1)
+1. [Brain Food by Shane Parrish](https://fs.blog/newsletter/)
 
 ## Products
 

@@ -1,20 +1,18 @@
 # Needlestack
 
-The internet is a giant haystack of content and information. This haystack is filled with a lot of stuff. Most of it is useless hay. But among the hay are some beautiful nuggets of information – the literal needles in a haystack. Those little bits are hard to find and when found, should be collected and shared. Over time I found and collected them for myself in the form of bookmarks and private notes. Basically piling them up into what a **needlestack.**
+The internet is a giant haystack of content and information. This haystack is filled with a lot of stuff. Most of it is useless hay. But among the hay are some beautiful nuggets of information – literal needles in a haystack. Collecting those over time leads to a stack of useful things - a needlestack.
 
-![This is a foto of a needlestack {1166x777}](/needles.jpg)
+So a needlestack is a personal, curated collection of needles (things) that somebody found on the internet. Needles that they are glad to have found. Needles that they want to share with others. Needles carefully sifted from the hay. 
 
-So: A needlestack is a personal, curated collection of needles (things) that somebody found on the internet. Needles that they are glad to have found. Needles that they want to share with others. Needles carefully sifted from the hay. 
+Sometimes the needles have small notes and explanations attached to them, sometimes they don't and they are just plain old links.
 
-Sometimes the needles have small notes and explanations attached to them, sometimes they don't and they are just plain old links. Either way, this site is *my* needlestack and it reflects parts of the internet that I love. And I hope it will be of use to you! Enjoy browsing, and don't get overwhelmed, this is still quite long. Even if it's a very condensed version of great stuff found on the internet. 
+This site is *my* needlestack and it reflects parts of the internet that *I* love. I sincerely hope it will be of use to you, that's why I put it out here on the internet, but it might not be. People are different. Enjoy browsing, and don't get overwhelmed since even a stack of needles can be quite long.
 
 The idea of collecting information in this format and giving it it's unique name "Needlestack" is not mine. I found it on the blog of Ethan Maurice and loved it so much that I had to make my own list of awesomeness.
 
 [Here's his](https://ethanmaurice.com/needlestack) in case you're curious.
 
-This needlestack will be organized into different sections. You can jump from section to section and jump back to the overview at any time. Don't be afraid if things might look like a bit much, I have been using the internet for some time now and therefore have gathered quite a few resources, that I consider to be *amazing*. 
-
-The flood of content is dense, even if restricted to only what I like. The internet is a vast space – an endless space – I would argue. If you have something awesome you want to share with me (that is not yet on the list) [please do so](https://ricotrebeljahr.com/contact). I'll have a look and maybe end up putting it here!
+This needlestack will be organized into different sections. You can jump from section to section and back to the overview at any time. If you have something awesome you want to share with me or think something is missing, [please let me know](https://ricotrebeljahr.com/contact) so that I can have a look.
 
 ## Table of contents
 
@@ -114,7 +112,7 @@ The flood of content is dense, even if restricted to only what I like. The inter
 1. [FreeCodeCamp.org](https://www.youtube.com/channel/UC8butISFwT-Wl7EV0hUK0BQ)
 1. [Flutter](https://www.youtube.com/channel/UCwXdFgeE9KYzlDdR7TG9cMw)
 1. [Firebase](https://www.youtube.com/user/Firebase)
-1. [Explosions Fire](https://www.youtube.com/channel/UCVovvq34gd0ps5cVYNZrc7A)
+1. [Explosions and Fire](https://www.youtube.com/channel/UCVovvq34gd0ps5cVYNZrc7A)
 1. [Adam Freediver](https://www.youtube.com/channel/UCzVy7DiPyVvfiOvXF_XMs4Q)
 1. [New Jazz](https://www.youtube.com/channel/UCfmAjVU0aF41zi7oWB8_TUg)
 1. [Pianote](https://www.youtube.com/c/PianoteOfficial)
@@ -136,9 +134,26 @@ And this section of the needlestack is filled with the needles specific to this 
 
 ### How to Learn Programming
 
-My favorite website for that: [FreeCodeCamp](https://freecodecamp.org). It has a full fledged interactive curriculum that gives you 100% of the knowledge you need to start your career as a fullstack developer. I have done their whole curriculum in 2017 and have since then worked at companies such as Softgames, Klarna, ESA (the European Nasa) and Ironhack. Freecodecamp even has [a youtube channel](https://www.youtube.com/channel/UC8butISFwT-Wl7EV0hUK0BQ), filled with an amazing amount of content. But the best idea is to do the exercises, because "learning" from videos is very different from actually coding and doing things yourself.
+My favorite website for that: [FreeCodeCamp](https://freecodecamp.org). It has a full fledged interactive curriculum that gives you 100% of the knowledge you need to start your career as a junior level fullstack developer. I have done their whole curriculum in 2017 and have since then worked at companies such as Softgames, Klarna, ESA and Ironhack. Freecodecamp even has [a youtube channel](https://www.youtube.com/channel/UC8butISFwT-Wl7EV0hUK0BQ), filled with an amazing amount of content. But the best idea is to do the exercises, because "learning" from videos is very different from actually coding and doing things yourself.
 
 Once you already know the basics of at least one programming language and want to quickly pick up another [you should give Exercism a try](https://exercism.org/). It's a platform, where you solve increasingly harder coding katas – small exercises – in any programming language out there, and pick up the language that way. They even have mentors that review your code - and best of all, everything here is also completely free!
+
+For anyone who wants to know more about how programming languages and compilers (with a focus on LISP) work under the hood, there is [an *awesome* but old lecture series out there](https://www.youtube.com/playlist?list=PL8FE88AA54363BC46). It's one of the few that I have watched in it's entirety.
+
+Google also has a lot of free resources you should check out if you want to learn how to code. These are the ones that I have used and liked: [Tech Guide](https://techdevguide.withgoogle.com/), [Summer of Code](https://summerofcode.withgoogle.com/get-started), and [Coding Competetitions](https://codingcompetitions.withgoogle.com/kickstart)
+
+If you already know how to program and only want some ideas on stuff to build, I think [this github repo](https://github.com/melanierichards/just-build-websites) is really awesome. 
+
+### Curriculums and roadmaps
+
+- [Coding Interview Preparation](https://github.com/jwasham/coding-interview-university#computer-science-courses)
+- [Computer Science Curriculum](https://github.com/llSourcell/Learn_Computer_Science_in_5_Months)
+- [Open Computer Science University Curriculum](https://github.com/ossu/computer-science)
+- [Preparation for Systems Design Interviews I](https://github.com/checkcheckzz/system-design-interview) 
+- [Preparation for Systems Design Interviews II](https://github.com/donnemartin/system-design-primer)
+- [Preparation for Systems Design Interviews III](https://github.com/shashank88/system_design)
+- [Curriculum for practicing algorithms](https://github.com/gaerae/awesome-algorithms-education)
+- [Developer Roadmaps for different kinds of devs](https://github.com/kamranahmedse/developer-roadmap)
 
 ### Articles about Programming
 
@@ -152,8 +167,6 @@ I consider the [Programming Achievements](https://jasonrudolph.com/blog/2011/08/
 [Dalle-1](https://openai.com/blog/dall-e/) - 24th February 2021
 [Dalle-2](https://openai.com/dall-e-2/) - 13th April 2022
 [Codex Demo](https://www.youtube.com/watch?v=SGUCcjHTmGY)
-
-### Machine Learning
 
 ## Stuff on Github
 
@@ -174,20 +187,10 @@ People even built tools around those lists [helping you to search and navigate t
 
 ## Music
 
-### Jazz - Favorites 
-### Artists I love
+### Artists
 
-## Mathematics
-
-## Physics
-
-## Philosophy
-
-## Apps I like
-
-## Books - Go see my books section, I guess ;) 
-
-## Finance / Investing
+## Books
+Go see [my books section 🤷](/books/)
 
 ## Podcasts
 
@@ -217,9 +220,9 @@ Other podcasts I hop into every once in a while for good episodes, or because sp
 
 That in the end I am better of reading books instead. Especially because FS itself is more of an aggregator for insights from good books, letters, articles and other people. So I'd rather go straight to the source these days. 
 
-But still, there are a few things I think FS did for me: It enhanced and nurtured a love for reading good non-fiction. And helped me to understand how really drilling down to make sure the books that I am reading are worthwhile, is as important as reading a lot. And Shane Parrish (the creator behind FS) introduced me to Charlie Munger and Waren Buffett. Overall I think his best articles are not his articles though - to me the best one is a transcript for ["This is Water"](https://fs.blog/david-foster-wallace-this-is-water/) by David Foster Wallace, and I also love the ["Letter on Finding Your Purpose and Living a Meaningful Life"](https://fs.blog/hunter-s-thompson-to-hume-logan/) by Hunter S. Thompson
+But still, there are a few things I think FS did for me: It enhanced and nurtured a love for reading good non-fiction. And it helped me to understand how really drilling down to make sure the books that I am reading are worthwhile, is as important as reading a lot. And Shane Parrish (the creator behind FS) introduced me to Charlie Munger and Waren Buffett. Overall I think his best articles are not his articles though - to me the best one is a transcript for ["This is Water"](https://fs.blog/david-foster-wallace-this-is-water/) by David Foster Wallace, and I also love the ["Letter on Finding Your Purpose and Living a Meaningful Life"](https://fs.blog/hunter-s-thompson-to-hume-logan/) by Hunter S. Thompson
 
-A few more noteworthy blogs to go through are (ordered by how much I read them):
+A few more noteworthy blogs to go through (ordered by how much I read them):
 1. [Derek Sievers](https://sive.rs/)
 1. [Kalzumeus](https://www.kalzumeus.com/)
 1. [Slatestarcodex](https://slatestarcodex.com/)
@@ -231,6 +234,7 @@ A few more noteworthy blogs to go through are (ordered by how much I read them):
 1. [Bakadesuyo](https://bakadesuyo.com/blog/)
 1. [The Art of Non-Conformity](https://archive.chrisguillebeau.com/)
 1. [Tim Ferriss](https://tim.blog/)
+
 ## Newsletters worth subscribing to
 To be honest, I kind of hate newsletters. There is only 3 I subscribed to and read regularly. Those are in order of how much I love them:
 
@@ -239,32 +243,3 @@ To be honest, I kind of hate newsletters. There is only 3 I subscribed to and re
 1. [Brain Food by Shane Parrish](https://fs.blog/newsletter/)
 
 ## Products
-
-books:
-Cracking the Coding Interview PDF: https://github.com/Avinash987/Coding/blob/master/Cracking-the-Coding-Interview-6th-Edition-189-Programming-Questions-and-Solutions.pdf
-A crazy book on LISP - it's quite famous and has it's own acronym -> SICP: https://web.mit.edu/6.001/6.037/sicp.pdf
-There is also a lecture series on it which is old but AWESOME: https://www.youtube.com/playlist?list=PL8FE88AA54363BC46 - it's one of the few that I have watched in it's entirety.
-just checkout the list of free programming books: https://github.com/EbookFoundation/free-programming-books
-
-curriculums and roadmaps:
-The free Coding Interview University: https://github.com/jwasham/coding-interview-university#computer-science-courses
-Another university curriculum: https://github.com/ossu/computer-science
-Preparation for System Design Interviews (had one of these at Klarna, probably as a Junior nobody will ever ask you): https://github.com/checkcheckzz/system-design-interview
-    also used this for preparation: https://github.com/donnemartin/system-design-primer
-    and this: https://github.com/shashank88/system_design
-more about algorithms and practice: https://github.com/gaerae/awesome-algorithms-education
-developer roadmap for different kinds of devs: https://github.com/kamranahmedse/developer-roadmap
-computer science curriculum for 5 months: https://github.com/llSourcell/Learn_Computer_Science_in_5_Months
-
-there is also loads of free stuff from Google:
-https://techdevguide.withgoogle.com/
-https://summerofcode.withgoogle.com/get-started
-https://codingcompetitions.withgoogle.com/kickstart
-
-website practice ideas:
-ideas for further projects/websites: https://github.com/melanierichards/just-build-websites
-
-the rabbit hole a lot of this is linked to:
-https://github.com/sindresorhus/awesome
-think of it as the "meta" list - a list about awesome lists linking to the cool stuff of the internet. if you want to learn something/practice something, whatever. Just search on it there I guess and have enough content of high quality for the next few months to chew through
-      

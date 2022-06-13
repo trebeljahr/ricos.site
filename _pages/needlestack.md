@@ -144,20 +144,31 @@ I don't think there are video lectures for
 
 I searched for them, but didn't find any videos on YouTube or on the MIT OCW website sadly...
 
-[MIT 18.06 - Linear Algebra](https://www.youtube.com/playlist?list=PLE7DDD91010BC51F8) with Gilbert Strang is one of my most cherished lecture series I have ever watched. The guy just has a knack of explaining dense mathematical concepts, making them fun to follow and easy to understand. He is enthusiastic about the topics and makes connections between different areas of mathematics that look beautiful. Gilbert Strang is just one of the best teachers out there and everything he has on MIT OCW that I have looked into is solid gold. The other lecture series of his that I am aware of are [A 2020 Vision of Linear Algebra](https://www.youtube.com/playlist?list=PLUl4u3cNGP61iQEFiWLE21EJCxwmWvvek), [Highlights of Calculus](https://www.youtube.com/playlist?list=PLBE9407EA64E2C318), [MIT Learn Differential Equations](https://www.youtube.com/playlist?list=PLUl4u3cNGP63oTpyxCMLKt_JmB0WtSZfG), [MIT 18.065 Matrix Methods in Data Analysis, Signal Processing and Machine Learning](https://www.youtube.com/playlist?list=PLUl4u3cNGP63oMNUHXqIUcrkS2PivhN3k) and [MIT 18.085 Computational Science and Engineering I](https://www.youtube.com/playlist?list=PLF706B428FB7BD52C) and [MIT 18.085 Computational Science and Engineering II](https://www.youtube.com/playlist?list=PL3A13781649466805). I still want to watch 18.065, 18.085 and 18.086 but so far didn't find the time to do it. 
+[MIT 18.06 - Linear Algebra](https://www.youtube.com/playlist?list=PLE7DDD91010BC51F8) with Gilbert Strang is one of my most cherished lecture series I have ever watched. The guy just has a knack of explaining dense mathematical concepts, making them fun to follow and easy to understand. He is enthusiastic about the topics and makes connections between different areas of mathematics that look beautiful. Gilbert Strang is just one of the best teachers out there and everything he has on MIT OCW that I have looked into is solid gold. The other lecture series of his that I am aware of are: 
+- [A 2020 Vision of Linear Algebra](https://www.youtube.com/playlist?list=PLUl4u3cNGP61iQEFiWLE21EJCxwmWvvek) 
+- [Highlights of Calculus](https://www.youtube.com/playlist?list=PLBE9407EA64E2C318), [MIT Learn Differential Equations](https://www.youtube.com/playlist?list=PLUl4u3cNGP63oTpyxCMLKt_JmB0WtSZfG) 
+- [MIT 18.065 Matrix Methods in Data Analysis](https://www.youtube.com/playlist?list=PLUl4u3cNGP63oMNUHXqIUcrkS2PivhN3k) 
+- [MIT 18.085 Computational Science and Engineering I](https://www.youtube.com/playlist?list=PLF706B428FB7BD52C) 
+- [MIT 18.085 Computational Science and Engineering II](https://www.youtube.com/playlist?list=PL3A13781649466805)
+
+I still want to watch 18.065, 18.085 and 18.086 in their entirety. But so far I didn't find the time to do that. 
 
 #### Software Engineering
-Learning about Algorithms is interesting I think that MIT has a couple of solid lecture series on this topic. [MIT 6.006 Introduction to Algorithms](https://www.youtube.com/playlist?list=PLUl4u3cNGP61Oq3tWYp6V_F-5jb5L2iHb) is one of those. There is an [updated version of these from 2020](https://www.youtube.com/playlist?list=PLUl4u3cNGP63EdVPNLG3ToM6LaEUuStEY), but I haven't watched any of those so I am not sure if they are any good yet.  
 
-One of the instructors, Erik Demaine, also taught [MIT 6.851 - Advanced Data Structures](https://www.youtube.com/playlist?list=PLUl4u3cNGP61hsJNdULdudlRL493b-XZf) where I have watched a couple of episodes from and think it's good as well. 
+Learning about Algorithms is really interesting and I think that MIT has a couple of solid lecture series on this topic. 
 
-The other one, Srinivas Devadas, also taught [MIT 6.046J Design and Analysis of Algorithms](https://www.youtube.com/playlist?list=PLUl4u3cNGP6317WaSNfmCvGym2ucw3oGp) which you might want to check out after watching MIT 6.006. Some of 6.006 has overlaps with this one though. 
+[MIT 6.006 Introduction to Algorithms](https://www.youtube.com/playlist?list=PLUl4u3cNGP61Oq3tWYp6V_F-5jb5L2iHb) is one of those. 
+There is an [updated version](https://www.youtube.com/playlist?list=PLUl4u3cNGP63EdVPNLG3ToM6LaEUuStEY) from 2020, but I haven't watched any of it yet, so I am not sure if it's better or worse than the older one.  
 
-With all of these though you should keep in mind that to learn about algorithms, you should write your own to really understand. The difference between different types of algos and strategies is best practiced with coding katas I think. 
+One of the instructors, Erik Demaine, also taught [MIT 6.851 - Advanced Data Structures](https://www.youtube.com/playlist?list=PLUl4u3cNGP61hsJNdULdudlRL493b-XZf). I have only watched a couple of episodes from it but I think it's good as well. 
 
-[The Missing Semester lectures from MIT](https://www.youtube.com/playlist?list=PLyzOVJj3bHQuloKGG59rS43e29ro7I57J) are so extremely worth it if you work as a developer or software engineer or even just want to become more of a power user of your machine. They walk through setting up tools and systems on computers that take some time to learn but ultimately will make you much more efficient at doing things. And those are the kinds of things where, if you didn't already know them, will go like: "Hmm... I wish somebody could have showed this to me sooner". It's basically a bag of tricks on how to use unix style operating systems. From tools like TLDR or fzf to Vim or TMUX, there is lots of things to take away from these lectures and each one is focused on one thing only so you can kind of watch only the ones you want/need.  
+The other instructor, Srinivas Devadas, also taught [MIT 6.046J Design and Analysis of Algorithms](https://www.youtube.com/playlist?list=PLUl4u3cNGP6317WaSNfmCvGym2ucw3oGp) which you might want to check out after watching MIT 6.006. Some of it overlaps with 6.006 though. 
 
-If you want to learn more about computer graphics and the mathematics under the hood I can not recommend watching [MIT 6.837 - Introduction to Computer Graphics](https://www.youtube.com/playlist?list=PLQ3UicqQtfNuBjzJ-KEWmG1yjiRMXYKhh) enough. It will teach you so many interesting things, it's unbelievable. How to use matrixes and affine transformations to transform different coordinate systems into each other and how to construct curves by using sets of different curve basis and how to skin meshes and animate bones etc. And it dives into it from the mathematics side of things, explaining all the key concepts along the way. 
+With all of these you should keep in mind that to learn really understand algorithms, you have to write your own versions to really understand what's going on. And besides writing your own versions you also have to practice applying different algorithms and strategies to problem solving by doing something like Code Katas.
+
+[The Missing Semester lectures from MIT](https://www.youtube.com/playlist?list=PLyzOVJj3bHQuloKGG59rS43e29ro7I57J) are so extremely worth it if you work as a developer or software engineer or even just want to become more of a power user of your machine. They walk through setting up tools and systems on computers that take some time to learn but ultimately will make you much more efficient at doing things. And those are the kinds of things where, if you didn't already know them, will go like: "Hmm... I wish somebody could have showed this to me sooner". It's basically a bag of tricks on how to use *nix style operating systems. Introducing tools like tldr or fzf to Vim or TMUX. There are lots of things to take away from these lectures. The best thing is that each lecture is somewhat separate from the others and focuses on one thing only so you can kind of watch only the ones you want or need.  
+
+If you want to learn more about computer graphics and the mathematics under the hood I can not recommend watching [MIT 6.837 - Introduction to Computer Graphics](https://www.youtube.com/playlist?list=PLQ3UicqQtfNuBjzJ-KEWmG1yjiRMXYKhh) enough. It will teach you so many interesting things, it's unbelievable. How to use matrixes and affine transformations to transform different coordinate systems into each other and how to construct curves by using sets of different curve basis and how to skin meshes and animate bones etc. And it dives into it from the mathematics side of things, explaining all the key concepts along the way.
 
 One of the best lecture series out there (and one of my favorites) is about how programming languages and compilers work under the hood (with a focus on the LISP compiler). [MIT 6.001 - Structure and Interpretation of Computer Programs](https://www.youtube.com/playlist?list=PLE18841CABEA24090) is *awesome* but old, and one of the few that I have watched in it's entirety. The best moment is when the two instructors put on wizard hats to explain the magic of the metacircular evaluator and how the language almost pulls itself out of thin air with the magic of recursion and the eval and apply procedures. 
 
@@ -167,21 +178,25 @@ As you may or may not know – I am a software engineer. I consider this one of 
 
 Coding can be deeply relaxing, extremely stimulating and intellectually intriguing at the same time. And it is creative too. It allows you to build your own things, be that websites, games, apps, or other things that have never existed before. 
 
-Plus, becoming a better programmer is an open ended journey. The amount of stuff people put out there and create every year is enormous, so enormous that you can not learn it all. Coding is something that you can keep learning and gain greater understanding of for the rest of your life.
+Plus, becoming a better programmer is an open ended journey. The amount of stuff people create and put out there every year is enormous. So enormous that you can not learn it all. Coding is something that you can keep learning and gain greater understanding of for the rest of your life.
 
 This section of the needlestack is filled with the needles specific to this hobby of mine. A hobby that eventually turned into a job and that is now an integral part of my life. If you are not interested in computers and coding, or any of these "tech" things, you can safely skip this part and [continue down here.](#stuff-on-github)
 
 ### How to Learn Programming
 
-My favorite website for that: [FreeCodeCamp](https://freecodecamp.org). It has a full fledged interactive curriculum that gives you 100% of the knowledge you need to start your career as a junior level fullstack developer. I have done their whole curriculum in 2017 and have since then worked at companies such as Softgames, Klarna, ESA and Ironhack. Freecodecamp even has [a youtube channel](https://www.youtube.com/channel/UC8butISFwT-Wl7EV0hUK0BQ), filled with an amazing amount of content. But the best idea is to do the exercises, because "learning" from videos is very different from actually coding and doing things yourself.
+My favorite website for learning how to program is by far [FreeCodeCamp](https://freecodecamp.org). It has a full fledged interactive curriculum that gives you 100% of the knowledge you need to start your career as a junior level fullstack developer. I have done their whole curriculum in 2017 and have since then worked at companies such as Softgames, Klarna, ESA and Ironhack. Freecodecamp even has [a youtube channel](https://www.youtube.com/channel/UC8butISFwT-Wl7EV0hUK0BQ), filled with an amazing amount of content. But the best idea is to do the exercises, because "learning" from videos is very different from actually coding and doing things yourself.
 
 Once you already know the basics of at least one programming language and want to quickly pick up another [you should give Exercism a try](https://exercism.org/). It's a platform, where you solve increasingly harder coding katas – small exercises – in any programming language out there, and pick up the language along the way. They even have mentors that review your code - and best of all, everything there is also completely free!
 
-Google also has a lot of free resources you should check out if you want to learn how to code. These are the ones that I have used and liked: [Tech Guide](https://techdevguide.withgoogle.com/), [Summer of Code](https://summerofcode.withgoogle.com/get-started), and [Coding Competetitions](https://codingcompetitions.withgoogle.com/kickstart)
+Google also has a lot of free resources you should check out if you want to learn how to code. These are the ones that I have used and liked: 
+- [Google's Tech Guide](https://techdevguide.withgoogle.com/)
+- [The Summer of Code](https://summerofcode.withgoogle.com/get-started) 
+- [Coding Competetitions](https://codingcompetitions.withgoogle.com/kickstart)
 
-If you already know how to program and only want some ideas on stuff to build, I think [this github repo](https://github.com/melanierichards/just-build-websites) is really awesome. 
+If you already know how to program and only want some ideas for side projects to build, I think [this github repo](https://github.com/melanierichards/just-build-websites) is really awesome.
 
-Also, all of the lecture series underneath the [Software Engineering section](#software-engineering) above are worthwhile to watch and *will* make you a more knowledgeable (and I would argue better) developer.  
+Also, all of the lecture series underneath the [Software Engineering section](#software-engineering) are worthwhile to watch and *will* make you a more knowledgeable (and I would argue better) developer.  
+
 ### Curriculums and roadmaps
 
 - [Coding Interview Preparation](https://github.com/jwasham/coding-interview-university#computer-science-courses)

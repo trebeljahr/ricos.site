@@ -81,10 +81,8 @@ const ParagraphRenderer = (paragraph: { children?: boolean; node?: any }) => {
 
 const LinkRenderer = (props: any) => {
   const href = props.href;
-  console.log(href);
   const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
 
-  console.log(href, "Is internal link?", isInternalLink);
   if (isInternalLink) {
     return (
       <Link href={href || ""}>
@@ -102,14 +100,6 @@ const LinkRenderer = (props: any) => {
     />
   );
 };
-
-// const LinkRenderer = ({ children, href }: any) => {
-//   return (
-//     <Link href={href || ""}>
-//       <a>{children}</a>
-//     </Link>
-//   );
-// };
 
 const MarkdownRenderers: object = {
   h1: HeadingRenderer,

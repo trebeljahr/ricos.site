@@ -17,8 +17,112 @@ This needlestack will be organized into different sections. You can jump from se
 ## Table of contents
 
 ## Videos 
-
 ### Single Videos
+1. [35C3 - The Ghost in the Machine](https://www.youtube.com/watch?v=e3K5UxWRRuY)
+1. [Imaginary Numbers Are Real](https://www.youtube.com/watch?v=T647CGsuOVU)
+1. [Slow Down With Snow Monkeys - Rest Mindful Escapes  BBC Earth](https://www.youtube.com/watch?v=d4c87NfCQ74)
+1. [Sam Harris & Jordan Peterson - Part 1](https://www.youtube.com/watch?v=jey_CzIOfYE)
+1. [Sam Harris & Jordan Peterson - Part 2](https://www.youtube.com/watch?v=GEf6X-FueMo)
+1. [Sam Harris, Jordan Peterson - Part 3](https://www.youtube.com/watch?v=PqpYxD71hJU)
+1. [Sam Harris, Jordan Peterson - Part 4](https://www.youtube.com/watch?v=aALsFhZKg-Q)
+1. [Cancer, Evolution and the Science of Life – with Kat Arney](https://www.youtube.com/watch?v=t0-Y3OHo7fg)
+1. [Fractals are typically not self-similar](https://www.youtube.com/watch?v=gB9n2gHsHN4)
+1. [But what is the Fourier Transform? A visual introduction.](https://www.youtube.com/watch?v=spUNpyF58BY&t=4s)
+1. [Binary, Hanoi and Sierpinski, part 1](https://www.youtube.com/watch?v=2SUvWfNJSsM)
+1. [Binary, Hanoi, and Sierpinski, part 2](https://www.youtube.com/watch?v=bdMfjfT0lKk)
+1. [Which Way Is Down?](https://www.youtube.com/watch?v=Xc4xYacTu-E&t=247s)
+1. [The Banach–Tarski Paradox](https://www.youtube.com/watch?v=s86-Z-CbaHA&t=7s)
+1. [The Zipf Mystery](https://www.youtube.com/watch?v=fCn8zs912OE)
+1. [Our Narrow Slice](https://www.youtube.com/watch?v=yNLdblFQqsw)
+1. [Buddhism is Kinda Out There, Man](https://www.youtube.com/watch?v=i2wLyhgeYsw)
+1. [Frank Abagnale | Catch Me If You Can | Talks at Google](https://www.youtube.com/watch?v=vsMydMDi3rI)
+1. [How The Economic Machine Works by Ray Dalio](https://www.youtube.com/watch?v=PHe0bXAIuk0&t=1s)
+1. [Engineering magnetics - practical introduction to BH curve](https://www.youtube.com/watch?v=4UFKl9fULkA)
+1. [Making YBCO superconductor](https://www.youtube.com/watch?v=sLFaa6RPJIU)
+1. [My First Successful Metal Coating Machine - Magnetron Sputtering](https://www.youtube.com/watch?v=Cyu7etM-0Ko)
+1. [How Does COVID-19 Testing Actually Work?](https://www.youtube.com/watch?v=s_usIkrVQwE&t=24s)
+1. [Developing a Permanent Treatment for Lactose Intolerance Using Gene Therapy](https://www.youtube.com/watch?v=J3FcbFqSoQY)
+1. [Math's Fundamental Flaw](https://www.youtube.com/watch?v=HeQX2HjkcNo)
+1. [This equation will change how you see the world (the logistic map)](https://www.youtube.com/watch?v=ovJcsL7vyrk)
+1. [Your Body's Molecular Machines](https://www.youtube.com/watch?v=X_tYrnv_o6A)
+1. [My Life Story](https://www.youtube.com/watch?v=S1tFT4smd6E)
+1. [Flamethrower vs Aerogel](https://www.youtube.com/watch?v=qnOoDE9rj6w)
+1. [Why Machines That Bend Are Better](https://www.youtube.com/watch?v=97t7Xj_iBv0)
+1. [Is This What Quantum Mechanics Looks Like?](https://www.youtube.com/watch?v=WIyTZDHuarQ)
+1. [Magnetohydrodynamics - Propelling Liquid Metal with Magnets!](https://www.youtube.com/watch?v=LS3GQk9ETRU)
+1. [Professor Eric Laithwaite: Magnetic River 1975](https://www.youtube.com/watch?v=OI_HFnNTfyU)
+1. [The Fourier Transform](https://www.youtube.com/watch?v=jVYs-GTqm5U)
+1. [The Mystery of Magnetic Worms](https://www.youtube.com/watch?v=Ms65JBrevYU)
+1. [Why Your Newsfeed Sucks](https://www.youtube.com/watch?v=MUiYglgGbos)
+1. [What is a Fourier Series? (Explained by drawing circles)](https://www.youtube.com/watch?v=ds0cmAV-Yek)
+1. [Handheld TESLA COIL GUN at 28,000fps](https://www.youtube.com/watch?v=_fTC_Ud_k3U&t=593s)
+1. [THIS IS A BUTTERFLY! (Scanning Electron Microscope) - Part 2](https://www.youtube.com/watch?v=LE2v3sUzTH4)
+1. [Manipulating the YouTube Algorithm](https://www.youtube.com/watch?v=1PGm8LslEb4)
+1. [Painting a Character with Maths](https://www.youtube.com/watch?v=8--5LwHRhjk)
+1. [The Rules for Rulers](https://www.youtube.com/watch?v=rStL7niR7gs&t=3s)
+1. [How Do Computers Remember?](https://www.youtube.com/watch?v=I0-izyq6q5s)
+1. [Learning and Memory: How it Works and When it Fails](https://www.youtube.com/watch?v=a_HfSnQqeyY&t=1803s)
+1. [Music, Magic and Mayhem with Tesla Coil](https://www.youtube.com/watch?v=L5E4NiP4hpM)
+1. [The Stuff of Thought | Steven Pinker | Talks at Google](https://www.youtube.com/watch?v=hBpetDxIEMU&t=1236s)
+1. [How To Paint Waves - Lesson 1 - Shape](https://www.youtube.com/watch?v=-9uRdBWnspY)
+1. [How To Paint Under Water Scenes](https://www.youtube.com/watch?v=f_R-217N_qg&t=150s)
+1. [Energy Systems : Transition & Innovation | Vaclav Smil](https://www.youtube.com/watch?v=szikg74kgnM)
+1. [The Art of Code - Dylan Beattie](https://www.youtube.com/watch?v=6avJHaC3C2U&t=4s)
+1. [Special Lecture: F-22 Flight Controls](https://www.youtube.com/watch?v=n068fel-W9I)
+1. [Understanding Composition](https://www.youtube.com/watch?v=O8i7OKbWmRM)
+1. [Understanding Color](https://www.youtube.com/watch?v=Qj1FK8n7WgY)
+1. [Humans Need Not Apply](https://www.youtube.com/watch?v=7Pq-S557XQU&t=12s)
+1. [Computation and the Fundamental Theory of Physics - with Stephen Wolfram](https://www.youtube.com/watch?v=qoDZKlcdPNM)
+1. [The Neuroscience of Addiction - with Marc Lewis](https://www.youtube.com/watch?v=aOSD9rTVuWc&t=19s)
+1. [World's worst video card gets better?](https://www.youtube.com/watch?v=BUTHtNrpwiI&t=103s)
+1. [How to be a Pirate Quartermaster. 📈 📓 💰 📓 📈](https://www.youtube.com/watch?v=T0fAznO1wA8)
+1. [How Machines Learn](https://www.youtube.com/watch?v=R9OHn5ZF4Uo)
+1. [7 Ways to Maximize Misery 😞](https://www.youtube.com/watch?v=LO1mTELoj6o&t=365s)
+1. [How to be a Pirate Captain! 🌈 ☠️ 🏴‍☠️ ☠️ 🌈](https://www.youtube.com/watch?v=3YFeE1eDlD0)
+1. [World Building in Blender - Ian Hubert](https://www.youtube.com/watch?v=whPWKecazgM&t=1s)
+1. [Origins of Precision](https://www.youtube.com/watch?v=gNRnrn5DE58)
+1. [Crash Course Philosophy Preview](https://www.youtube.com/watch?v=BNYJQaZUDrI&list=PL8dPuuaLjXtNgK6MZucdYldNkMybYIHKR)
+1. [How to Read Notes Fast - The Landmark System](https://www.youtube.com/watch?v=jSOU-J9KHbg)
+1. [How to Speak](https://www.youtube.com/watch?v=Unzc731iCUY)
+1. [How To Tell If We're Beating COVID-19](https://www.youtube.com/watch?v=54XLXg4fYsc)
+1. [Nanoscale Machines: Building the Future with Molecules - with Neil Champness](https://www.youtube.com/watch?v=NJW3KfjM2aw)
+1. [Richard Feynman "Tiny Machines" Nanotechnology Lecture - aka "There's Plenty of Room at the Bottom"](https://www.youtube.com/watch?v=4eRCygdW--c)
+1. [LEADERSHIP LAB: The Craft of Writing Effectively](https://www.youtube.com/watch?v=vtIzMaLkCaM)
+1. [Hammock Driven Development - Rich Hickey](https://www.youtube.com/watch?v=f84n5oFoZBc)
+1. [The Value of Values with Rich Hickey](https://www.youtube.com/watch?v=-6BsiVyC1kM)
+1. [Maybe Not - Rich Hickey](https://www.youtube.com/watch?v=YR5WdGrpoug)
+1. [A Brief Introduction to Neural Networks (unfinished series)](https://www.youtube.com/watch?v=bVQUSndDllU)
+1. [Coding Adventure: Ray Marching](https://www.youtube.com/watch?v=Cp5WWtMoeKg)
+1. [Coding Adventure: Marching Cubes](https://www.youtube.com/watch?v=M3iI2l0ltbE&t=5s)
+1. [Coding Adventure: Boids](https://www.youtube.com/watch?v=bqtqltqcQhw&t=1s)
+1. [AI and Artificially Enhanced Brains - with Susan Schneider](https://www.youtube.com/watch?v=Vz9BDIwvmTg&t=120s)
+1. [Making superconductors](https://www.youtube.com/watch?v=RS7gyZJg5nc)
+1. [What's a Tensor?](https://www.youtube.com/watch?v=f5liqUk0ZTw)
+1. [The Brain Zoo - Basics of Meditation](https://www.youtube.com/watch?v=X3rl5O_92Co)
+1. [You Will Never Do Anything Remarkable](https://www.youtube.com/watch?v=vmIUvp0e1bw)
+1. [The Neuroscience of Consciousness – with Anil Seth](https://www.youtube.com/watch?v=xRel1JKOEbI)
+1. [What the heck is the event loop anyway? | Philip Roberts | JSConf EU](https://www.youtube.com/watch?v=8aGhZQkoFbQ)
+1. [AlphaGo - The Movie | Full award-winning documentary](https://www.youtube.com/watch?v=WXuK6gekU1Y)
+1. [history of the entire world, i guess](https://www.youtube.com/watch?v=xuCn8ux2gbs&t=1s)
+1. [Nuclear 101: How Nuclear Bombs Work Part 1/2](https://www.youtube.com/watch?v=zVhQOhxb1Mc)
+1. [Nuclear 101: How Nuclear Bombs Work" Part 2/2](https://www.youtube.com/watch?v=MnW7DxsJth0)
+1. [Bjarne Stroustrup - The Essence of C++](https://www.youtube.com/watch?v=86xWVb4XIyE)
+1. [Emacs Org-mode - a system for note-taking and project planning](https://www.youtube.com/watch?v=oJTwQvgfgMM&t=2199s)
+1. [Emacs as my leader: evil-mode](https://www.youtube.com/watch?v=Uz_0i27wYbg)
+1. [Evil Mode: Or, How I Learned to Stop Worrying and Love Emacs](https://www.youtube.com/watch?v=JWD1Fpdd4Pc)
+1. [Mastering the Vim Language](https://www.youtube.com/watch?v=wlR5gYd6um0)
+1. [Spaceship You](https://www.youtube.com/watch?v=snAhsXyO3Ck)
+1. [Nanotechnology: The High-Tech Revolution - with Dave Blank](https://www.youtube.com/watch?v=Vs5j0CLPHlI)
+1. [Will Computers Ever Think Like Human Beings? - with Vint Cerf](https://www.youtube.com/watch?v=J63mKverb8w)
+1. [Machine Dreams (33c3)](https://www.youtube.com/watch?v=K5nJ5l6dl2s)
+1. [Joscha: Computational Meta-Psychology](https://www.youtube.com/watch?v=WRdJCFEqFTU)
+1. [Joscha: From Computation to Consciousness](https://www.youtube.com/watch?v=d0gUFn2OrvM)
+1. [Design, Composition, and Performance - Rich Hickey](https://www.youtube.com/watch?v=MCZ3YgeEUPg&t=1004s)
+1. [Spec-ulation Keynote - Rich Hickey](https://www.youtube.com/watch?v=oyLBGkS5ICk&t=1487s)
+1. [Maybe Not - Rich Hickey](https://www.youtube.com/watch?v=YR5WdGrpoug)
+1. [Effective Programs - 10 Years of Clojure - Rich Hickey](https://www.youtube.com/watch?v=2V1FtfBDsLU)
+1. [Clojure Concurrency - Rich Hickey](https://www.youtube.com/watch?v=dGVqrGmwOAw&t=1261s)
+1. [EG vs TL - Game 1 | Semi Finals Playoffs S12 LCS Spring 2022 | Evil Geniuses vs Team Liquid G1](https://www.youtube.com/watch?v=XzSWWJuSb9M)
 
 ### Youtube Channels I watch (or used to watch) regularly
 1. [Vsauce](https://www.youtube.com/channel/UC6nSFpj9HTCZ5t-N3Rm3-HA)
@@ -164,11 +268,11 @@ One of the instructors, Erik Demaine, also taught [MIT 6.851 - Advanced Data Str
 
 The other instructor, Srinivas Devadas, also taught [MIT 6.046J Design and Analysis of Algorithms](https://www.youtube.com/playlist?list=PLUl4u3cNGP6317WaSNfmCvGym2ucw3oGp) which you might want to check out after watching MIT 6.006. Some of it overlaps with 6.006 though. 
 
-With all of these you should keep in mind that to learn really understand algorithms, you have to write your own versions to really understand what's going on. And besides writing your own versions you also have to practice applying different algorithms and strategies to problem solving by doing something like Code Katas.
+With all of these you should keep in mind that to learn and really understand algorithms, you have to write your own versions. And besides writing your own implementations you also have to practice applying different algorithms and strategies to problem solving by doing something like Code Katas.
 
-[The Missing Semester lectures from MIT](https://www.youtube.com/playlist?list=PLyzOVJj3bHQuloKGG59rS43e29ro7I57J) are so extremely worth it if you work as a developer or software engineer or even just want to become more of a power user of your machine. They walk through setting up tools and systems on computers that take some time to learn but ultimately will make you much more efficient at doing things. And those are the kinds of things where, if you didn't already know them, will go like: "Hmm... I wish somebody could have showed this to me sooner". It's basically a bag of tricks on how to use *nix style operating systems. Introducing tools like tldr or fzf to Vim or TMUX. There are lots of things to take away from these lectures. The best thing is that each lecture is somewhat separate from the others and focuses on one thing only so you can kind of watch only the ones you want or need.  
+[The Missing Semester lectures from MIT](https://www.youtube.com/playlist?list=PLyzOVJj3bHQuloKGG59rS43e29ro7I57J) are so extremely worth it if you work as a developer or software engineer or even just want to become more of a power user of your machine. They walk through setting up tools and systems on computers that take some time to learn but ultimately will make you much more efficient at doing things. And those are the kinds of things where, if you didn't already know them, you will go like: "Hmm... I wish somebody could have showed this to me sooner". It's basically a bag of tricks on how to use *nix style operating systems. Introducing tools like tldr or fzf to Vim or TMUX. There are lots of things to take away from these lectures. The best thing is that each lecture is separate from the others and focuses on one thing only so you can kind of watch only the ones you want or need.  
 
-If you want to learn more about computer graphics and the mathematics under the hood I can not recommend watching [MIT 6.837 - Introduction to Computer Graphics](https://www.youtube.com/playlist?list=PLQ3UicqQtfNuBjzJ-KEWmG1yjiRMXYKhh) enough. It will teach you so many interesting things, it's unbelievable. How to use matrixes and affine transformations to transform different coordinate systems into each other and how to construct curves by using sets of different curve basis and how to skin meshes and animate bones etc. And it dives into it from the mathematics side of things, explaining all the key concepts along the way.
+If you want to learn more about computer graphics and the mathematics under the hood I can not recommend watching [MIT 6.837 - Introduction to Computer Graphics](https://www.youtube.com/playlist?list=PLQ3UicqQtfNuBjzJ-KEWmG1yjiRMXYKhh) enough. It will teach you so many interesting things, it's unbelievable. How to use matrixes and affine transformations to transform different coordinate systems into each other and how to construct curves by using sets of different curve basis' and how to skin meshes and animate bones etc. And it dives into it from the mathematics side of things, explaining all the key concepts along the way.
 
 One of the best lecture series out there (and one of my favorites) is about how programming languages and compilers work under the hood (with a focus on the LISP compiler). [MIT 6.001 - Structure and Interpretation of Computer Programs](https://www.youtube.com/playlist?list=PLE18841CABEA24090) is *awesome* but old, and one of the few that I have watched in it's entirety. The best moment is when the two instructors put on wizard hats to explain the magic of the metacircular evaluator and how the language almost pulls itself out of thin air with the magic of recursion and the eval and apply procedures. 
 
@@ -188,15 +292,37 @@ My favorite website for learning how to program is by far [FreeCodeCamp](https:/
 
 Once you already know the basics of at least one programming language and want to quickly pick up another [you should give Exercism a try](https://exercism.org/). It's a platform, where you solve increasingly harder coding katas – small exercises – in any programming language out there, and pick up the language along the way. They even have mentors that review your code - and best of all, everything there is also completely free!
 
+For learning new languages there's also the [learnxinyminutes website](https://learnxinyminutes.com/) 
+
 Google also has a lot of free resources you should check out if you want to learn how to code. These are the ones that I have used and liked: 
 - [Google's Tech Guide](https://techdevguide.withgoogle.com/)
 - [The Summer of Code](https://summerofcode.withgoogle.com/get-started) 
 - [Coding Competetitions](https://codingcompetitions.withgoogle.com/kickstart)
 
+Then there is also MDN. It has guides on 
+- [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML)
+- [CSS](https://developer.mozilla.org/en-US/docs/Learn/CSS)
+- [Javascript Fundamentals](https://developer.mozilla.org/en-US/docs/Learn/JavaScript)
+and is probably the #1 website to go to for documentation on how certain JS features and more generally stuff on the web works.
+
+In a similar vein there is [W3schools](https://www.w3schools.com/) which has interactive and completely free tutorials on so many things it's unbelievable. 
+
 If you already know how to program and only want some ideas for side projects to build, I think [this github repo](https://github.com/melanierichards/just-build-websites) is really awesome.
 
 Also, all of the lecture series underneath the [Software Engineering section](#software-engineering) are worthwhile to watch and *will* make you a more knowledgeable (and I would argue better) developer.  
 
+### Free books
+- [A List of Books](https://github.com/EbookFoundation/free-programming-books)
+
+And some that I like personally:
+- [SICP](https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book.html)
+- [The Art of Unix Programming](http://www.catb.org/esr/writings/taoup/html/)
+- [Mostly Adequate Guide on Functional Programming](https://mostly-adequate.gitbook.io/mostly-adequate-guide/)
+- [Deeplearning Book](https://www.deeplearningbook.org/)
+- [The Book of Shaders](https://thebookofshaders.com/)
+- [Learn you a Haskell for Great Good](http://learnyouahaskell.com/chapters)
+- [Clojure for the Brave and True](https://www.braveclojure.com/)
+- [The Dragon Book - Compiler Design](http://ce.sharif.edu/courses/94-95/1/ce414-2/resources/root/Text%20Books/Compiler%20Design/Alfred%20V.%20Aho,%20Monica%20S.%20Lam,%20Ravi%20Sethi,%20Jeffrey%20D.%20Ullman-Compilers%20-%20Principles,%20Techniques,%20and%20Tools-Pearson_Addison%20Wesley%20(2006).pdf)
 ### Curriculums and roadmaps
 
 - [Coding Interview Preparation](https://github.com/jwasham/coding-interview-university#computer-science-courses)
@@ -210,13 +336,17 @@ Also, all of the lecture series underneath the [Software Engineering section](#s
 
 ### Articles about Programming
 
-There is a whole flood of articles, about how to do simple things etc. and I won't give any of them here. Just mention a few blogs, and articles that I found the be immensely useful and to which I regularly return to.
+There is a whole flood of articles, about how to do simple things etc. and I won't give any of them here. I'll just mention a few blogs, and articles that I found the be immensely useful and to which I regularly return to.
 
 Learn your ABC - in other words [Always Be Coding](https://medium.com/always-be-coding/abc-always-be-coding-d5f8051afce2). This is a central idea and I think is advice people should follow. Code in your free-time on stuff that you like. This is how you grow massively in a short amount of time. Follow your curiosity and see where it leads you. And pick up new languages and skills along the way. 
 
 I consider the [Programming Achievements](https://jasonrudolph.com/blog/2011/08/09/programming-achievements-how-to-level-up-as-a-developer/) by Jason Rudolph to be the layout for a lifelong path of curiosity and learning as a developer. Just tackling one of those achievements might take months or years, depending on your commitment. They focus on the open endedness of the space and I love that. His idea is also available as [a gist to fork](https://gist.github.com/jasonrudolph/1133830#file_programming_achievements.md), so that you can tick of the boxes of the achievements yourself.
 
-### Mindblowing AI research
+I like blogs like these: 
+- [rwieruch](https://www.robinwieruch.de/) 
+- [flaviocopes](https://flaviocopes.com/)
+
+## Mindblowing AI research
 [Dalle-1](https://openai.com/blog/dall-e/) - 24th February 2021
 [Dalle-2](https://openai.com/dall-e-2/) - 13th April 2022
 [Codex Demo](https://www.youtube.com/watch?v=SGUCcjHTmGY)
@@ -296,3 +426,4 @@ To be honest, I kind of hate newsletters. There is only 3 I subscribed to and re
 1. [Brain Food by Shane Parrish](https://fs.blog/newsletter/)
 
 ## Products
+

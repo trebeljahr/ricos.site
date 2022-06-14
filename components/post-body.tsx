@@ -21,7 +21,7 @@ const HeadingRenderer: React.FC<HeadingResolverProps> = ({
   children,
 }) => {
   const heading = children[0]?.props?.value || children[0];
-  
+
   let anchor = (typeof heading === "string" ? heading.toLowerCase() : "")
     .replace(/[^a-zA-Z0-9 ]/g, "")
     .replace(/ /g, "-");
@@ -79,13 +79,37 @@ const ParagraphRenderer = (paragraph: { children?: boolean; node?: any }) => {
   return <p>{paragraph.children}</p>;
 };
 
-const LinkRenderer = ({ children, href }: any) => {
+const LinkRenderer = (props: any) => {
+  const href = props.href;
+  console.log(href);
+  const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
+
+  console.log(href, "Is internal link?", isInternalLink);
+  if (isInternalLink) {
+    return (
+      <Link href={href || ""}>
+        <a className="internalLink" {...props} />
+      </Link>
+    );
+  }
+
   return (
-    <Link href={href || ""}>
-      <a>{children}</a>
-    </Link>
+    <a
+      className="externalLink"
+      target="_blank"
+      rel="noopener noreferrer"
+      {...props}
+    />
   );
 };
+
+// const LinkRenderer = ({ children, href }: any) => {
+//   return (
+//     <Link href={href || ""}>
+//       <a>{children}</a>
+//     </Link>
+//   );
+// };
 
 const MarkdownRenderers: object = {
   h1: HeadingRenderer,
@@ -95,10 +119,11 @@ const MarkdownRenderers: object = {
   h5: HeadingRenderer,
   h6: HeadingRenderer,
   p: ParagraphRenderer,
-  link: LinkRenderer,
+  a: LinkRenderer,
 };
 
 const PostBody = ({ content }: Props) => {
+  console.log("Hello world");
   useEffect(() => {
     if (typeof window !== "undefined") {
       setTimeout(Prism.highlightAll, 1000);

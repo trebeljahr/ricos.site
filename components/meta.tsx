@@ -1,7 +1,7 @@
 import Head from "next/head";
 
 const defaultDescription = `trebeljahr - a blog where a curious person publishes posts about the things he reads and thinks about. The topics can vary widely, 
-from programming to investment advice, traveling, crypto-currencies, the brain, physics, philosophy, photography and more...`;
+from programming, traveling, crypto-currencies, the brain, investing, physics, philosophy to photography...`;
 
 const defaultTitle = `Thoughts and Learnings of a Curious Person`;
 interface Props {

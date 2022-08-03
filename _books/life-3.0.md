@@ -400,7 +400,7 @@ In our world there are multiple instances of competing hierarchy implementations
 
 **Book Recommendation:** The Age of Em - Robin Hanson
 
-**Book Recommendation:* The Singularity is Near - Ray Kurzweil
+**Book Recommendation:** The Singularity is Near - Ray Kurzweil
 
 Cyborgs enabled by AI might be a thing. Because unenhanced humans would not understand anymore what is going on and therefore the pressure put onto them to become enhanced is tremendous. 
 
@@ -433,7 +433,7 @@ Humans peacefully coexist with technology and can merge with it if they want to 
 
 Why should the machines not take over though? Through sneaky manipulation and clever bargaining increasing their share of the world? 
 
-**Book Recommendation:* Manna - Marshall Brain
+**Book Recommendation:** Manna - Marshall Brain
 
 ### Benevolent Dictator
 

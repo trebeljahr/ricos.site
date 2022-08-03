@@ -1,5 +1,6 @@
 ---
 title: "Enough"
+subtitle: "True Measures of Money, Business and Life"
 bookCover: "/assets/book-covers/enough.jpg"
 slug: "enough"
 bookAuthor: "John Bogle"

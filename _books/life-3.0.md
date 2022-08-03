@@ -1,5 +1,6 @@
 ---
 title: "Life 3.0"
+subtitle: "Being Human in the Age of Artifical Intelligence"
 bookCover: "/assets/book-covers/life-3.0.jpg"
 slug: "life-3.0"
 bookAuthor: "Max Tegmark"

@@ -6,7 +6,8 @@ bookAuthor: "Ashley Vance"
 rating: 10
 done: false
 tags: ["business", "biography"]
-detailedNotes: false
+summary: false
+detailesNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

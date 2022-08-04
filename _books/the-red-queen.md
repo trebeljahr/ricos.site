@@ -6,7 +6,8 @@ bookAuthor: "Matt Ridley"
 rating: 8
 done: true
 tags: ["curiosity", "made-me-think", "biology", "evolution", "non-fiction"]
-detailedNotes: true
+summary: false
+detailesNotes: true
 amazonLink: "https://amzn.to/3xpSlCr"
 author:
   name: Rico Trebeljahr

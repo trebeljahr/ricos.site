@@ -6,7 +6,8 @@ bookAuthor: "Stephen R. Covey"
 rating: 10
 done: true
 tags: ["self-help", "business", "non-fiction"]
-detailedNotes: true
+summary: false
+detailesNotes: true
 amazonLink: "https://amzn.to/3xlYAqL"
 author:
   name: Rico Trebeljahr

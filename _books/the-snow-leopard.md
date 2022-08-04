@@ -6,7 +6,8 @@ bookAuthor: "Peter Matthiessen"
 rating: 8
 done: true
 tags: ["novel", "made-me-think", "traveling", "philosophy", "buddhism", "art-of-living"]
-detailedNotes: true
+summary: false
+detailesNotes: true
 amazonLink: "https://amzn.to/363AXbl"
 author:
   name: Rico Trebeljahr

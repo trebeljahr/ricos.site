@@ -6,7 +6,8 @@ bookAuthor: "Richard Dawkins"
 rating: 10
 done: true
 tags: ["curiosity", "made-me-think", "top-50", "biology", "evolution", "non-fiction"]
-detailedNotes: true
+summary: false
+detailesNotes: true
 amazonLink: "https://amzn.to/3xi1mNW"
 author:
   name: Rico Trebeljahr

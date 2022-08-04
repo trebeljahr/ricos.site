@@ -6,7 +6,8 @@ bookAuthor: "Matt Kepnes"
 rating: 5
 done: true
 tags: ["traveling", "business", "practical", "non-fiction"]
-detailedNotes: false
+summary: false
+detailesNotes: false
 amazonLink: "https://amzn.to/3FMQgmg"
 author:
   name: Rico Trebeljahr

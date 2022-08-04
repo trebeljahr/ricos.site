@@ -6,7 +6,8 @@ bookAuthor: "Ayn Rand"
 rating: 8
 done: true
 tags: []
-detailedNotes: false
+summary: false
+detailesNotes: false
 amazonLink: "https://amzn.to/37a22tW"
 author:
   name: Rico Trebeljahr

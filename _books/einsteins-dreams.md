@@ -6,7 +6,8 @@ bookAuthor: "Alan Lightman"
 rating: 9
 done: true
 tags: ["philosophy", "fiction", "novel", "made-me-think"]
-detailedNotes: false
+summary: false
+detailesNotes: false
 amazonLink: "https://amzn.to/3FKf8Lu"
 author:
   name: Rico Trebeljahr

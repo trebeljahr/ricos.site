@@ -6,7 +6,8 @@ bookAuthor: "Jordan Peterson"
 rating: 10
 done: false
 tags: ["self-help", "business", "non-fiction"]
-detailedNotes: false
+summary: false
+detailesNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

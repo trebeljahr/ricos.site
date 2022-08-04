@@ -6,7 +6,8 @@ bookAuthor: "Stephen Mitchell"
 rating: 7
 done: true
 tags: ["taoism", "buddhism", "philosophy", "made-me-think", "art-of-living", "non-fiction", "classics"]
-detailedNotes: false
+summary: false
+detailesNotes: false
 amazonLink: "https://amzn.to/3xlSo2b"
 author:
   name: Rico Trebeljahr

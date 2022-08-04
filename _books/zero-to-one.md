@@ -6,7 +6,8 @@ bookAuthor: "Peter Thiel"
 rating: 10
 done: true
 tags: ["business", "philosophy", "top-50", "made-me-think", "psychology", "economy", "non-fiction"]
-detailedNotes: true
+summary: false
+detailesNotes: true
 amazonLink: ""
 author:
   name: Rico Trebeljahr

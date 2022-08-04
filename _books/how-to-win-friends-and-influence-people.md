@@ -6,7 +6,8 @@ bookAuthor: "Dale Carnegie"
 rating: 10
 done: true
 tags: ["self-help", "psychology", "business", "communication", "top-50"]
-detailedNotes: false
+summary: false
+detailesNotes: false
 amazonLink: "https://amzn.to/3laqOgX"
 author:
   name: Rico Trebeljahr

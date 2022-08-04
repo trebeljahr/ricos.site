@@ -14,7 +14,8 @@ const emptySearchFilters = {
   title: "",
   rating: 0,
   tags: [""],
-  detailedNotes: false,
+  summary: false
+detailesNotes: false,
 };
 
 export default function Books({ allBooks }: Props) {

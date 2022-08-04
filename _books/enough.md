@@ -7,7 +7,8 @@ bookAuthor: "John Bogle"
 rating: 8
 done: true
 tags: [ "business", "finance", "character", "investing", "non-fiction"]
-detailedNotes: true
+summary: false
+detailesNotes: true
 amazonLink: "https://amzn.to/3QgJV6B"
 author:
   name: Rico Trebeljahr

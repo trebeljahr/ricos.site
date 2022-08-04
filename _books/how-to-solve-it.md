@@ -6,7 +6,8 @@ bookAuthor: "George Polya"
 rating: 5
 done: false
 tags: ["non-fiction", "mathematics"]
-detailedNotes: false
+summary: false
+detailesNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

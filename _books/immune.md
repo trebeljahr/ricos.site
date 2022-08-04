@@ -6,7 +6,8 @@ bookAuthor: "Philipp Dettmer"
 rating: 8
 done: true
 tags: ["curiosity", "learning", "non-fiction", "immunology", "biology"]
-detailedNotes: true
+summary: false
+detailesNotes: true
 amazonLink: "https://amzn.to/3Ky8Y2D"
 author:
   name: Rico Trebeljahr

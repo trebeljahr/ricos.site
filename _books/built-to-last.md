@@ -6,7 +6,8 @@ bookAuthor: "Jim Collins"
 rating: 10
 done: false
 tags: []
-detailedNotes: false
+summary: false
+detailesNotes: false
 amazonLink: ""
 author:
   name: Rico Trebeljahr

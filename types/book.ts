@@ -8,7 +8,8 @@ type BookType = {
   author: Author;
   done: boolean;
   tags: [];
-  detailedNotes: false;
+  summary: false;
+  detailesNotes: false;
   amazonLink: string;
   rating: number;
   content: string;

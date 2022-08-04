@@ -6,7 +6,8 @@ bookAuthor: "Daniel C. Dennett"
 rating: 8
 done: true
 tags: ["evolution", "mind", "made-me-think", "non-fiction"]
-detailedNotes: true
+summary: false
+detailesNotes: true
 amazonLink: "https://amzn.to/3LhCpFw"
 author:
   name: Rico Trebeljahr

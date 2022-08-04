@@ -6,7 +6,8 @@ bookAuthor: "Eliayahu M. Goldratt"
 rating: 8
 done: true
 tags: ["business", "philosophy", "novel", "ideas", "non-fiction"]
-detailedNotes: true
+summary: false
+detailesNotes: true
 amazonLink: "https://amzn.to/3xm560I"
 author:
   name: Rico Trebeljahr

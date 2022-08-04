@@ -3,20 +3,38 @@ title: "Bhagavad Gita"
 bookCover: "/assets/book-covers/bhagavad-gita.jpg"
 slug: "bhagavad-gita"
 bookAuthor: "Stephen Mitchell"
-rating: 7
+rating: 10
 done: true
 tags: ["taoism", "buddhism", "philosophy", "made-me-think", "art-of-living", "non-fiction", "classics"]
-summary: false
-detailesNotes: false
+summary: true
+detailesNotes: true
 amazonLink: "https://amzn.to/3xlSo2b"
 author:
   name: Rico Trebeljahr
   picture: "/assets/blog/profile.jpeg"
 ---
 
+# Summary: 
+
+The Bhagavad Gita is one of the most influential books in history I would argue. And for that reason alone it's worth reading, to get a broader idea of different cultures and see where ideas come from and how old some of them actually are. It is connected in thought with lots of other philosophical directions, like Taoism or Stoicism. But besides that it's a text of deep belief and a window into the religion of Hinduism. But hidden in it are absolute gems of wisdom, eternal, never changing capital T Truths about the world, that are rediscovered time and time again by thinkers around the world. I think it's impossible to summarize the main ideas, because literally every other sentence is full with wisdom, but some of the key concept keep occuring, over and over again:
+
+Attachment is bad. Freedom is breaking free from attachments. 
+Caring about the future and how it is going to unfold is futile, is attachment. However you should *still* do your best, not for the sake of attaining a better future, but because it's the only way. 
+The self is there to be overcome, desires and pains are hindrances on the path to freedom. Wisdom and Enlightenment is when somebody has truly internalized these ideas. When their self is no longer attached, their ego has subsided, when they are no longer attached to the world, but free from it. Then they are like god. Eternal. 
+
+This same idea is the core idea of Buddhism as well. In a way Buddhism is the raw philosophy of Hinduism, stripped of the gods. 
+
+One of my most favorite quotes is from this book, I will include it here in the summary: 
+
+> The self is a friend for him who masters himself by the Self; but for him who is not self-mastered, the self is the cruelest foe.
+
+To me, struggling with an addictive and very much worldly attached self, this quote stings, every time I read it, because it hits home. 
+
+# Notes: 
+
 ## Introduction
 
-It means "The Song of the Blessed One".
+Bhagavad Gita means "The Song of the Blessed One".
 
 The backdrop is a dialogue between two armies fighting, were the leader of one side stops in the middle of the battle to discourse with his companion - Krishna - a god about the meaning of it all. 
 
@@ -44,7 +62,9 @@ The backdrop is a dialogue between two armies fighting, were the leader of one s
 
 > A man whose nature is dominated by *sattva* will be clear- thinking, radiant and truthful. A man whose nature is dominated by *rajas* will be passionate, quick to anger and greedy. A man whose nature is dominated by *tamas* will be stupid, lazy and stubborn. But most men will be found to have elements of *gunas* different from their dominating ones. 
 
-> The aim of the upward-reaching *atman*, or Self, is to transcend the *gunas*, break free of their bondage, and attain liberation. 
+> The aim of the upward-reaching *atman*, or Self, is to transcend the *gunas*, break free of their bondage, and attain liberation.
+
+This sounds very much like the ideas of Buddhism. Probably because Buddhism has taken a lot of inspiration from Hinduism back when it was created. 
 
 ## Chapter 1 - Arjuna's Despair
 
@@ -56,11 +76,13 @@ The backdrop is a dialogue between two armies fighting, were the leader of one s
 
 > Physical sensations - cold and heat, pleasure and pain - are transient: they come and go; so bear them patiently Arjuna.
 
-> Non-being can never be; being can never not be. 
+> Non-being can never be; being can never not be.
 
 > The wise man lets go of all results, whether good or bad, and is focused on the action alone. Yoga is skill in actions.
 
 > If a man keeps dwelling on sense-objects, attachment to them arises; from attachment, desire flares up; from desire, anger is born; from anger, confusion follows; from confusion, weakness of memory; weak memory - weak understanding; weak understanding - ruin. 
+
+Attaching to the outcomes of things and trying to influence them for the sake of the outcome only, will usually make things worse. The better way is to do your best, no matter what. That's the idea of the [Tao Te Ching](#TODO) as well as the idea of [Stoicists such as Markus Aurelius](#TODO) as well as that of more modern psychology/philosophy books like [Grit by Angela Duckworth](#TODO)
 
 ## Chapter 3 - The Yoga of Action
 
@@ -68,9 +90,9 @@ The backdrop is a dialogue between two armies fighting, were the leader of one s
 
 > Whatever a great man does ordinary people will do; whatever standard he sets everyone else will follow. 
 
-> If I stopped acting, these world would plunge into ruin; chaos would overpower all beings; mankind would be destroyed. 
+> If I stopped acting, these worlds would plunge into ruin; chaos would overpower all beings; mankind would be destroyed. 
 
-That above is the main idea of Atlas Shrugged in disguise. If people stopped acting, they would soon perish. So, even when we have to act, we act, without caring for the fact that we are acting and about what we accomplish. 
+That above is [the main idea of Atlas Shrugged](#TODO) in disguise. If people stopped acting, they would soon perish. So, even when we have to act, we act, without caring for the fact that we are acting and about what we accomplish.
 
 > Desire dwells in the senses, the mind, and the understanding; in all these it obscures wisdom and perplexes the embodied Self. 
 
@@ -84,7 +106,7 @@ That above is the main idea of Atlas Shrugged in disguise. If people stopped act
 
 ## Chapter 5 - The Yoga of Renunciation
 
-> A man unattached sensations, who find fulfilment in the Self, whose mind has become pure freedom, attains an imperishable joy. 
+> A man unattached to sensations, who finds fulfilment in the Self, whose mind has become pure freedom, attains an imperishable joy.
 
 > When desire, fear, and anger have left him, that man is forever free. 
 

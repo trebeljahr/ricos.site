@@ -14,6 +14,7 @@ author:
   picture: "/assets/blog/profile.jpeg"
 ---
 
+# Summary: 
 This book is truly wonderful. A quick read, filled with extremely beautiful, almost poetry like prose, and small short stories, about deeply human desires, fears and ideas, woven into small short stories about different universes, where time works completely different from how it does in ours. 
 
 The book is stimulating intelectually and heartwarming at the same time, a really tough combo to find and I almost cried a few times while I was reading it on a hot summer afternoon in the Delhi Lodhi gardens. 
@@ -21,6 +22,8 @@ The book is stimulating intelectually and heartwarming at the same time, a reall
 I think the power of this book, comes from the fact, that even though those world seem dreamy and distant and oddly weird, we can see through those dreamy visions, and take away lessons into our real world, where time works nothing like that in the fictional worlds, and yet we can learn from them and their stories a great deal. Whether that's from the people, trying to freeze time, forget the past, or the future, or the present, or those who would like to speed time up and hasten through life, from all these little stories, we can learn small but powerful lessons about our own - time.
 
 There are no "real" book notes for this one, just a collection of quotes from it, little snippets and passages, that I enjoyed a lot and wanted to keep in one place:
+
+# Notes: 
 
 > If a person holds no ambitions in this world, he suffers unknowingly. If a person holds ambitions, he suffers knowingly, but very slowly. 
 

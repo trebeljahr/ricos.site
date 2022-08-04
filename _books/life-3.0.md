@@ -7,7 +7,7 @@ bookAuthor: "Max Tegmark"
 rating: 9
 done: true
 tags: ["AI", "futurism", "future", "thought-provoking", "non-fiction"]
-summary: false
+summary: true
 detailesNotes: true
 amazonLink: "https://amzn.to/3zlRYbi"
 author:
@@ -15,9 +15,11 @@ author:
   picture: "/assets/blog/profile.jpeg"
 ---
 
-# Book Summary: 
+# Summary: 
 
 Max Tegmark wants the reader to think about the problems of AI safety and the really thorny questions related to creating machines that surpass us in intelligence someday. He reasons that this is possible and maybe even possible sooner than we think and therefore we should start working on solving these problems as soon as possible, because otherwise we might have the machines, without actually knowing what we want to do with them, and increase the potential for bad or even catastrophic outcomes by a lot. The book asks more questions than it answers but it is wonderfully thought provoking and makes you really think and envision the different futures and how they could play out. It also makes really clear, that our role in shaping and designing this future is really important, because we are ultimately the people building those machines, so we should keep in mind the question what we actually want to build and maybe answer it in depth and detail, before we actually set out to build intelligent machines. My favorite parts where honestly the ideas about consciousness and information processing/storage - specifically that computation and information storage are substrate independent. Both "take on a life of their own" and don't depend on the exact structure and properties of the matter being used to make them happen in the real life. This is why they seem a little spooky and removed from "our world" because they in fact are. Consciousness is according to Tegmark even more removed in the sense that it is a property of information processing systems - i.e. it's about the pattern of the information processing and how that happens, and therefore can exist in different systems of information processing that share those higher level patterns. It is independent of the underlying information processing system implementing it in that way. And because this system itself is substrate independent, consciousness as a whole is substrate independent twice - and that's why dealing with questions of consciousness is such a thorny and hard endeavor. It's patterns on top of patterns and that makes it really hard to grasp and outline the details as well as build experiments to measure it. Even if AI research is not your thing, you should really read this book, to open up your mind about the conversation that is going on because you can be quite sure that the results of that conversation will affect you in the coming decades, with the rise of ever smarter algorithms, helping you in your life. 
+
+# Notes
 
 ## Prelude - The Tale of the Omega Team
 

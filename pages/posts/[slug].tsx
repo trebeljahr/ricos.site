@@ -7,6 +7,7 @@ import { getPostBySlug, getAllPosts } from "../../lib/api";
 import { PostTitle } from "../../components/post-title";
 import PostType from "../../types/post";
 import { ReadMore } from "../../components/more-stories";
+import { UtteranceComments } from "../../components/comments";
 
 type Props = {
   post: PostType;
@@ -32,6 +33,7 @@ const Post = ({ post, morePosts }: Props) => {
           />
           <PostBody content={post.content} />
           {morePosts && <ReadMore posts={morePosts} />}
+          <UtteranceComments />
         </article>
       )}
     </Layout>

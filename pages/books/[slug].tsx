@@ -6,6 +6,7 @@ import { getBookReviewBySlug, getAllBookReviews } from "../../lib/api";
 import { PostTitle } from "../../components/post-title";
 import BookType from "../../types/book";
 import CoverImage from "../../components/cover-image";
+import { UtteranceComments } from "../../components/comments";
 
 type Props = {
   book: BookType;
@@ -31,6 +32,7 @@ const Book = ({ book }: Props) => {
             <h3>Rating: {book.rating}/10</h3>
           </div>
           <PostBody content={book.content} />
+          <UtteranceComments />
         </article>
       )}
     </Layout>

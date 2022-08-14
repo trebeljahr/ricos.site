@@ -3,11 +3,13 @@ import { join } from "path";
 import matter from "gray-matter";
 import fs from "fs/promises";
 import PostBody from "../components/post-body";
+import { UtteranceComments } from "../components/comments";
 
 export default function Needlestack({ content }: { content: string }) {
   return (
     <Layout pageTitle="Needlestack">
       <PostBody content={content} />
+      <UtteranceComments />
     </Layout>
   );
 }

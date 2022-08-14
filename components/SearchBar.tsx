@@ -65,7 +65,6 @@ export function useSearch<T extends EmptyFilters>(emptyFilters: T) {
 
     return true;
   };
-  console.log(filters);
   return { byFilters, filters, setFilters };
 }
 

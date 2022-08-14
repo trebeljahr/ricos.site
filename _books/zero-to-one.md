@@ -7,7 +7,7 @@ rating: 10
 done: true
 tags: ["business", "philosophy", "top-50", "made-me-think", "psychology", "economy", "non-fiction"]
 summary: false
-detailesNotes: true
+detailedNotes: true
 amazonLink: ""
 author:
   name: Rico Trebeljahr

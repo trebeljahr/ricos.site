@@ -8,7 +8,7 @@ rating: 7
 done: false
 tags: ["business", "self-help", "psychology", "success-literature", "non-fiction"]
 summary: true
-detailesNotes: false
+detailedNotes: false
 amazonLink: "https://amzn.to/3zY26sE"
 author:
   name: Rico Trebeljahr

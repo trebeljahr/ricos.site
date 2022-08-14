@@ -7,7 +7,7 @@ rating: 7
 done: true
 tags: ["taoism", "buddhism", "philosophy", "made-me-think", "art-of-living", "non-fiction", "classics"]
 summary: false
-detailesNotes: true
+detailedNotes: true
 amazonLink: "https://amzn.to/3KBJUYD"
 author:
   name: Rico Trebeljahr

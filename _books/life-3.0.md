@@ -8,7 +8,7 @@ rating: 9
 done: true
 tags: ["AI", "futurism", "future", "thought-provoking", "non-fiction"]
 summary: true
-detailesNotes: true
+detailedNotes: true
 amazonLink: "https://amzn.to/3zlRYbi"
 author:
   name: Rico Trebeljahr

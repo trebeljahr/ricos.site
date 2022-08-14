@@ -7,7 +7,7 @@ rating: 10
 done: true
 tags: ["masterpiece", "non-fiction", "top-50", "made-me-think", "curiosity", "future", "philosophy", "great-ideas"]
 summary: false
-detailesNotes: true
+detailedNotes: true
 amazonLink: "https://amzn.to/3E6ojFd"
 author:
   name: Rico Trebeljahr

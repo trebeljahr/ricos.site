@@ -113,7 +113,6 @@ const MarkdownRenderers: object = {
 };
 
 const PostBody = ({ content }: Props) => {
-  console.log("Hello world");
   useEffect(() => {
     if (typeof window !== "undefined") {
       setTimeout(Prism.highlightAll, 1000);

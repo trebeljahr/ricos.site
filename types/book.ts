@@ -9,7 +9,7 @@ type BookType = {
   done: boolean;
   tags: [];
   summary: false;
-  detailesNotes: false;
+  detailedNotes: false;
   amazonLink: string;
   rating: number;
   content: string;

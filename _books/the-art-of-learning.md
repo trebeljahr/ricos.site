@@ -7,7 +7,7 @@ rating: 9
 done: true
 tags: ["learning", "self-help", "art-of-living", "made-me-think", "self-improvement"]
 summary: false
-detailesNotes: true
+detailedNotes: true
 amazonLink: "https://amzn.to/3O8RR9Y"
 author:
   name: Rico Trebeljahr

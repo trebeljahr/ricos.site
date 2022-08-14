@@ -7,7 +7,7 @@ rating: 8
 done: true
 tags: ["evolution", "mind", "made-me-think", "non-fiction"]
 summary: false
-detailesNotes: true
+detailedNotes: true
 amazonLink: "https://amzn.to/3LhCpFw"
 author:
   name: Rico Trebeljahr

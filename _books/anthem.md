@@ -7,7 +7,7 @@ rating: 8
 done: true
 tags: []
 summary: false
-detailesNotes: false
+detailedNotes: false
 amazonLink: "https://amzn.to/37a22tW"
 author:
   name: Rico Trebeljahr

@@ -7,7 +7,7 @@ rating: 5
 done: true
 tags: ["traveling", "business", "practical", "non-fiction"]
 summary: false
-detailesNotes: false
+detailedNotes: false
 amazonLink: "https://amzn.to/3FMQgmg"
 author:
   name: Rico Trebeljahr

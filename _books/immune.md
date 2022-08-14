@@ -7,7 +7,7 @@ rating: 8
 done: true
 tags: ["curiosity", "learning", "non-fiction", "immunology", "biology"]
 summary: false
-detailesNotes: true
+detailedNotes: true
 amazonLink: "https://amzn.to/3Ky8Y2D"
 author:
   name: Rico Trebeljahr

@@ -8,7 +8,7 @@ rating: 8
 done: true
 tags: [ "business", "finance", "character", "investing", "non-fiction"]
 summary: true
-detailesNotes: true
+detailedNotes: true
 amazonLink: "https://amzn.to/3QgJV6B"
 author:
   name: Rico Trebeljahr

@@ -7,7 +7,7 @@ rating: 8
 done: true
 tags: ["novel", "made-me-think", "traveling", "philosophy", "buddhism", "art-of-living"]
 summary: false
-detailesNotes: true
+detailedNotes: true
 amazonLink: "https://amzn.to/363AXbl"
 author:
   name: Rico Trebeljahr

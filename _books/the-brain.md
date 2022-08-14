@@ -8,7 +8,7 @@ rating: 10
 done: true
 tags: ["curiosity", "psychology", "non-fiction", "neuroscience", "top-50", "made-me-think"]
 summary: false
-detailesNotes: true
+detailedNotes: true
 amazonLink: "https://amzn.to/363zu4Q"
 author:
   name: Rico Trebeljahr

@@ -7,7 +7,7 @@ rating: 10
 done: true
 tags: ["self-help", "psychology", "business", "communication", "top-50"]
 summary: false
-detailesNotes: false
+detailedNotes: false
 amazonLink: "https://amzn.to/3laqOgX"
 author:
   name: Rico Trebeljahr

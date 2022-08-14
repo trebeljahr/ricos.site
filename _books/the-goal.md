@@ -7,7 +7,7 @@ rating: 8
 done: true
 tags: ["business", "philosophy", "novel", "ideas", "non-fiction"]
 summary: false
-detailesNotes: true
+detailedNotes: true
 amazonLink: "https://amzn.to/3xm560I"
 author:
   name: Rico Trebeljahr

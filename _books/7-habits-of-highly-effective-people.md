@@ -7,7 +7,7 @@ rating: 10
 done: true
 tags: ["self-help", "business", "non-fiction"]
 summary: false
-detailesNotes: true
+detailedNotes: true
 amazonLink: "https://amzn.to/3xlYAqL"
 author:
   name: Rico Trebeljahr

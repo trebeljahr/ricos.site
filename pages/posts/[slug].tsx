@@ -1,15 +1,13 @@
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
 import PostBody from "../../components/post-body";
-import Intro from "../../components/intro";
 import PostHeader from "../../components/post-header";
 import Layout from "../../components/layout";
 import { getPostBySlug, getAllPosts } from "../../lib/api";
 import { PostTitle } from "../../components/post-title";
-import Head from "next/head";
-import markdownToHtml from "../../lib/markdownToHtml";
 import PostType from "../../types/post";
 import { ReadMore } from "../../components/more-stories";
+import { UtteranceComments } from "../../components/comments";
 
 type Props = {
   post: PostType;
@@ -22,16 +20,11 @@ const Post = ({ post, morePosts }: Props) => {
     return <ErrorPage statusCode={404} />;
   }
   return (
-    <Layout description={post.excerpt}>
-      <Intro withMotto={false} />
+    <Layout description={post.excerpt} pageTitle={post.title}>
       {router.isFallback ? (
         <PostTitle>Loading…</PostTitle>
       ) : (
-        <article className="post-body">
-          <Head>
-            <title>{post.title}</title>
-            <meta property="og:image" content={post.ogImage.url} />
-          </Head>
+        <article>
           <PostHeader
             subtitle={post.subtitle}
             title={post.title}
@@ -40,6 +33,7 @@ const Post = ({ post, morePosts }: Props) => {
           />
           <PostBody content={post.content} />
           {morePosts && <ReadMore posts={morePosts} />}
+          <UtteranceComments />
         </article>
       )}
     </Layout>
@@ -80,17 +74,13 @@ export async function getStaticProps({ params }: Params) {
     "ogImage",
     "coverImage",
   ]);
-  const content = await markdownToHtml(post.content || "");
   const bySlug = (otherPost: any) => otherPost.slug !== post.slug;
   const otherPosts = getAllPosts(["title", "slug", "excerpt"]).filter(bySlug);
   const morePosts = getRandom(otherPosts, 3);
 
   return {
     props: {
-      post: {
-        ...post,
-        content,
-      },
+      post,
       morePosts,
     },
   };

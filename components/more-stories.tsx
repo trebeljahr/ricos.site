@@ -28,17 +28,19 @@ const MoreStories = ({ posts }: Props) => {
     <section>
       <h2 className="more-stories-title">More Stories</h2>
       <div className="more-stories-container">
-        {posts.map((post) => (
-          <PostPreview
-            key={post.slug}
-            title={post.title}
-            coverImage={post.coverImage}
-            date={post.date}
-            author={post.author}
-            slug={post.slug}
-            excerpt={post.excerpt}
-          />
-        ))}
+        {posts.map((post) => {
+          return (
+            <PostPreview
+              key={post.slug}
+              title={post.title}
+              coverImage={post.coverImage}
+              date={post.date}
+              author={post.author}
+              slug={post.slug}
+              excerpt={post.excerpt}
+            />
+          );
+        })}
       </div>
     </section>
   );

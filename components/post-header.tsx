@@ -5,8 +5,8 @@ import Author from "../types/author";
 
 type Props = {
   title: string;
-  date: string;
-  author: Author;
+  date?: string;
+  author?: Author;
   subtitle?: string;
 };
 
@@ -15,10 +15,12 @@ const PostHeader = ({ title, subtitle, date, author }: Props) => {
     <div className="post-header">
       <PostTitle>{title}</PostTitle>
       <PostSubTitle>{subtitle}</PostSubTitle>
-      <div className="post-meta">
-        <DateFormatter dateString={date} />
-        <Avatar name={author.name} picture={author.picture} />
-      </div>
+      {date || author ? (
+        <div className="post-meta">
+          {date && <DateFormatter dateString={date} />}
+          {author && <Avatar name={author.name} picture={author.picture} />}
+        </div>
+      ) : null}
     </div>
   );
 };

@@ -3,6 +3,7 @@ interface Props {
   withLink?: boolean;
   withMotto?: boolean;
 }
+
 const Intro = ({ withLink = true, withMotto = true }: Props) => {
   return (
     <div className="header">

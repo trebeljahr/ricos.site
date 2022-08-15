@@ -1,11 +1,12 @@
 @import "~prismjs/plugins/toolbar/prism-toolbar.css";
 
 :root {
-  /* --darkerblue: #1e7900;
+  /* --dark-blue: #1e7900;
   --blue: #28b264; */
 
-  --darkerblue: #0f4ce5;
+  --dark-blue: #0f4ce5;
   --blue: #44a0ff;
+  --light-blue: #99ccff;
   --main-width: 95vw;
 }
 
@@ -18,15 +19,20 @@ html {
   scrollbar-width: none; /* Firefox */
 }
 
+.utterances {
+  margin-left: 0;
+  max-width: 100%;
+}
+
 .postImgWrapper {
   width: var(--main-width);
 }
 
 .colored-link {
-  color: var(--darkerblue)
+  color: var(--dark-blue);
 }
 .colored-link:hover {
-  color: var(--blue)
+  color: var(--blue);
 }
 
 html,
@@ -40,6 +46,23 @@ a {
   color: inherit;
 }
 
+#to-top-button {
+  position: fixed;
+  width: 5vmin;
+  height: 5vmin;
+  border-radius: 100%;
+  bottom: 10vmin;
+  right: 10vmin;
+  border: none;
+  color: black;
+  background-color: var(--light-blue);
+  text-align: center;
+}
+
+#to-top-button:hover {
+  background-color: var(--blue);
+}
+
 h5,
 h4,
 h3,
@@ -47,8 +70,9 @@ h2,
 h1 {
   font-family: "Spartan", sans-serif;
   font-weight: bold;
-  margin-bottom: 1rem;
-  margin-top: 1.6rem;
+  padding-bottom: 1rem;
+  padding-top: 1.6rem;
+  margin: 0;
 }
 
 h1 {
@@ -65,7 +89,7 @@ h3 {
   font-size: 1.3rem;
   line-height: 1.1;
 }
-.header  {
+.header {
   height: fit-content;
 }
 .header-title-with-link {
@@ -75,7 +99,7 @@ h3 {
 
 .header-title-with-link,
 .header-title-without-link {
-  color: var(--darkerblue);
+  color: var(--dark-blue);
 }
 
 .header-title-with-link:hover {
@@ -203,7 +227,7 @@ blockquote {
 }
 
 body {
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .markdown > * {
@@ -220,25 +244,41 @@ body {
 }
 
 .read-more a:hover {
-  color: var(--darkerblue);
+  color: var(--dark-blue);
 }
 
 .markdown a {
-  color: var(--darkerblue);
+  color: var(--dark-blue);
 }
 
 .markdown a:hover {
   color: var(--blue);
 }
 
+#table-of-contents + ul {
+  padding-left: 2vw;
+}
+
+#table-of-contents + ul ul {
+  padding-left: 40px;
+}
+
 .markdown ul {
-  padding-left: 4%;
+  padding-left: 1.2rem;
   list-style: disc outside;
 }
 
 .markdown ol {
-  padding-left: 4%;
+  padding-left: 1rem;
   list-style: decimal outside;
+}
+
+li > p {
+  display: inline;
+}
+
+li {
+  margin-bottom: 10px;
 }
 
 .more-posts-preview,
@@ -262,8 +302,9 @@ body {
   h3,
   h2,
   h1 {
-    margin-bottom: 2rem;
-    margin-top: 3rem;
+    padding-bottom: 2rem;
+    padding-top: 3rem;
+    margin: 0;
   }
 
   .hero-post-preview {
@@ -297,6 +338,16 @@ body {
 
   body {
     font-size: 22px;
+  }
+
+  .markdown ul {
+    padding-left: 1.4rem;
+    list-style: disc outside;
+  }
+
+  .markdown ol {
+    padding-left: 1.8rem;
+    list-style: decimal outside;
   }
 
   .more-posts-preview:hover,
@@ -377,7 +428,6 @@ body {
   :root {
     --main-width: 936px;
   }
-
 }
 
 @media only screen and (min-width: 2500px) {

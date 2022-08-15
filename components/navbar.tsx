@@ -14,7 +14,7 @@ export function Navbar({ intro = true }: Props) {
     };
   };
   return (
-    <nav className="navbar">
+    <nav className="navbar" id="top-navigation">
       <div className="navbar-content">
         {intro && <Intro withLink={true} withMotto={false}></Intro>}
         <div className="navlinks">

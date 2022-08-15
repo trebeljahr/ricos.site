@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 import Image from "next/image";
 import remarkToc from "remark-toc";
+import rehypeRaw from "rehype-raw";
 
 type Props = {
   content: string;
@@ -121,7 +122,11 @@ const PostBody = ({ content }: Props) => {
 
   return (
     <div className="markdown">
-      <ReactMarkdown remarkPlugins={[remarkToc]} components={MarkdownRenderers}>
+      <ReactMarkdown
+        remarkPlugins={[remarkToc]}
+        rehypePlugins={[rehypeRaw]}
+        components={MarkdownRenderers}
+      >
         {content}
       </ReactMarkdown>
     </div>

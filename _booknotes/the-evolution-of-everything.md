@@ -14,7 +14,7 @@ author:
   picture: "/assets/blog/profile.jpeg"
 ---
 
-# Prologue
+## Prologue
 
 ## The General Theory of Evolution
 

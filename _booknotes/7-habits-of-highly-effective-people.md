@@ -16,7 +16,7 @@ author:
 
 Seven habits is one of the most influential books I have read in my whole life. I think it's the best self-help book out there and if the habits and principles described within it are truly understood and incorporated into your life, they have the potential to change it drastically to the better, forever.It's that impactful. 
 
-# Quick Summary:
+## Quick Summary:
 
 There are 7 habits, that work together to enable one to live a good life. They are based out of timeless principles and are NO shortcuts. The 7 habits are organized into 2 main groups - habits of personal improvement 1-3 and habits 4-6 of interpersonal improvement. The 7th habit is tying them all together. Essentially the 7th habit is the continual practice and application of the other 6.
 **Habits 1 to 3 are:** 

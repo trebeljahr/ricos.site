@@ -15,15 +15,15 @@ author:
   picture: "/assets/blog/profile.jpeg"
 ---
 
-# Summary: 
+## Summary: 
 
 This book is a fun little read. It's about how we have lost the character values of the enlightened era and how that leads to a slow corrosion of best practices in the market as well. It's about how all of this can be transformed back to resemble more how things have been, while also making sure that we keep the good new things. It's about putting character back into the equation in business, about developing yours and acting in a way that's responsible and beneficial not only for you, but also for society on a grander scale. Think about why you do things, and choose to stop when you have "enough". In a way all those ideas are familiar, but we too easily forget them every once in a while so this book serves as a great reminder. However if you know ideas like [the character ethics from 7 habits](#TODO) or the ideas from [Poor Charlie's Almanack](#TODO) or the ideas from [the Navalmanack](#TODO) most of this book should seem very familiar to you. However it is applied to finance and the financial ecosystem, because that's where Bogle as the founder of the Vanguard index funds comes from. 
 
 To me the best thought, besides the idea of living a life filled with virtue, honesty and a good character (and developing that character to be a little better every day until the day you die), is that of how financial markets and services extract value instead of creating it. And that's fundamentally shifting things to a zero-sum game, and is therefore the wrong mental model to have. financial systems should work for their clients, not for themselves, yet that is not at all what the financial sectors do, inventing new and better ways of cleverly shuffling money around, to enrich mostly themselves and make their clients usually lose money if compared to a much simpler index fund. The value is placed on speculation in companies instead of investing in them and the marketing that comes along with it, promising people, not solid returns over years to come, but quick wins instead, is something that Bogle disagrees with so vehemently that it's infectious. Because fundamentally I think he's right.
 
-# Notes: 
+## Notes: 
 
-# Foreword
+## Foreword
 
 Future Preference - tomorrow can be better than yesterday, but we have to make it so. Same idea as [definite optimism from Zero to One](#TODO) 
 
@@ -31,7 +31,7 @@ Central Idea: Financial Systems should enable long term economic growth. They sh
 
 > Future preference still matters. 
 
-# Prologue
+## Prologue
 
 **Book Recommendation:** In Search of Excellence - Bob Waterman
 
@@ -41,7 +41,7 @@ Integrity, Trust, lasting Values, Solid Relationships, Quality and Excellence ar
 
 It's in general what [Zen and the Art of Motorcycle Maintenance refers to as "Quality"](#Todo)
 
-## A Crisis of Ethic Proportions
+### A Crisis of Ethic Proportions
 
 Capitalism fails at scale, because large corporations can game the system, gaining unfair advantages, destroying the idea of the "invisible" hand. They can evade market forces. 
 
@@ -64,7 +64,7 @@ This in a nutshell is the argument against most of the crypto scene/bubble.
 
 The main question the book poses, when is enough enough? And it poses that we are far beyond enough and that we should really go back to the core values of 18th century America. Because those were what built all the value that we are busy redistributing and extracting. 
 
-# Introduction
+## Introduction
 
 Greed, literally, is not knowing what enough is. 
 It undermines values. 
@@ -92,9 +92,9 @@ Sense of Calling > Personal "Satisfaction"
 > I might poison your minds, dear readers, with a little humanity. 
 — Kurt Vonnegut
 
-# Money 
+## Money 
 
-## Chapter 1 - Too Much Cost, Not Enough Value
+### Chapter 1 - Too Much Cost, Not Enough Value
 
 > The more the financial system takes, the less the investor makes. 
 — John Bogle
@@ -122,7 +122,7 @@ Balance, Diversification, Focus on the Long Term
 > There are questions so important that it is,or should be, hard to think about anything else. 
 — Glen Weyl
 
-## Chapter 2 - Too Much Speculation, Not Enough Investment
+### Chapter 2 - Too Much Speculation, Not Enough Investment
 
 Investing is long term ownership of businesses.
 
@@ -163,7 +163,7 @@ Timing the market is impossible, because there always has to be a bag holder, ot
 > The hazards we face now that enterprise has become a mere bubble on a whirlpool of speculation means that the job of capitalism is being ill-done.
 — John Maynard Keynes
 
-## Chapter 3 - Too Much Complexity, Not Enough Simplicity
+### Chapter 3 - Too Much Complexity, Not Enough Simplicity
 
 Complicated finance products enrich the finance sector, but always in the long run underperform a simple market based index fund. 
 
@@ -175,9 +175,9 @@ ETFs are different from other funds, like absolute return funds, commodity funds
 
 70-95% of funds fail within a time of 7 years. 
 
-# Business
+## Business
 
-## Chapter 4 - Too Much Counting, Not Enough Trust
+### Chapter 4 - Too Much Counting, Not Enough Trust
 
 **Book Recommendation:** Economic: An Introductory Analysis - Paul Samuelson
 
@@ -196,7 +196,7 @@ Accounting is necessary in a business but it shouldn't be the objective to produ
 > We must either compete or die. 
 — John Bogle
 
-## Chapter 5 - Too Much Business Conduct, Not Enough Professional Conduct
+### Chapter 5 - Too Much Business Conduct, Not Enough Professional Conduct
 
 Professionalism declines. 
 
@@ -226,7 +226,7 @@ Principles go out the window if the bottom line should be higher than it actuall
 
 In other words, capitalism breaks ethics because of greed. So capitalism can be bad for a society. 
 
-## Chapter 6 - Too Much Salesmanship, Not Enough Stewardship
+### Chapter 6 - Too Much Salesmanship, Not Enough Stewardship
 
 Fund Industry changed away from market indexing funds into more diversified products. Mostly to increase sales, not to increase actual earnings. 
 
@@ -236,7 +236,7 @@ Stocks in actively managed funds are swapped out much more often today than earl
 
 In a good world, shareholders would pay less for fund management, investors would be served for their long term interests over their entire lifetimes, and they would be the ones making decisions. 
 
-## Chapter 7 - Too Much Management, Not Enough Leadership
+### Chapter 7 - Too Much Management, Not Enough Leadership
 
 Person mentioned as management Guru - [Warren Bennis](#TODO)
 
@@ -276,9 +276,9 @@ Pressing on with something, sticking with it, working on it, diligently over lon
 
 The ability to have this kind of persistence is summarized nicely [in the book Grit](#TODO)
 
-# Life 
+## Life 
 
-## Chapter 8 - Too Much Focus on Things, Not Enough Focus on Commitment
+### Chapter 8 - Too Much Focus on Things, Not Enough Focus on Commitment
 
 Wealth is not a measure for life. 
 Instead Character is what counts. The intangibles. One of them is boldness. The other is commitment. Both together. That's what you want. 
@@ -288,7 +288,7 @@ Instead Character is what counts. The intangibles. One of them is boldness. The 
 
 Boldly commit to your work, your family and community and even to your state (or society in general)
 
-## Chapter 9 - Too Many Twenty-First-Century Values, Not Enough Eighteenth-Century Values
+### Chapter 9 - Too Many Twenty-First-Century Values, Not Enough Eighteenth-Century Values
 
 **Book Recommendation:** Building a Bridge to the Eighteenth Century - Neil Postman
 
@@ -318,7 +318,7 @@ Evening Question: What good have I done today?
 Virtue is the expression of a good character. 
 Moral values of virtue: temperance, silence, order, frugality, industry, sincerity, justice, humility
 
-## Chapter 10 - Too Much "Success", Not Enough Character
+### Chapter 10 - Too Much "Success", Not Enough Character
 
 Definitions of Success are based on wealth but our concept of wealth is flawed. It lacks the idea if when it is enough. We play games Naval Ravikant would say but we don't know where the finish lines are because we never thought about it. 
 
@@ -335,7 +335,7 @@ Consider the rabbit you chase. Ask yourself if it matters why it matters and if 
 
 Character is about that change in perspective about doing things not for your own sake only, but for "the greater good" of society. It's about careful consideration for what rabbits to chase and then chasing them, with commitment, and boldness. 
 
-# Wrapping Up: What's Enough?
+## Wrapping Up: What's Enough?
 
 > Success is not the key to happiness. Happiness is the key to success. 
 — Albert Schweitzer

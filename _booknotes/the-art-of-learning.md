@@ -14,7 +14,7 @@ author:
   picture: "/assets/blog/profile.jpeg"
 ---
 
-# Introduction
+## Introduction
 
 > Chess was my friend. 
 
@@ -24,15 +24,15 @@ author:
 
 There is an essence of learning that is shared between all things because we access all things through the same interface - our consciousness. With attention and method we can learn things from very different places and experiences, because we flow and achieve breakthrough insights. We can basically play world class chess even though we are thinking Tai Chi and it just works, because even though they are different, they are not that different somehow... At least on some level of conscious representation. This method of learning is what this book is about. 
 
-# Part I - The Foundation
+## Part I - The Foundation
 
-## Chapter 1 - Innocent Moves
+### Chapter 1 - Innocent Moves
 
 > I was unhindered by internal conflict - a state of being that I have come to see as fundamental to the learning process. 
 
 Short introduction into how Josh Waitzkin got into chess, how he learned the game in the park with a bunch of hustlers consumed by the game, broken existences, geniuses living on the street, but in love with it and a certain style of playing chess and the influence of his first teacher, showing him the manners of the game as well. 
 
-## Chapter 2 - Losing to Win
+### Chapter 2 - Losing to Win
 
 > Confidence is critical for a great competitor, but overconfidence is brittle. We are too smart for ourselves in such moments. We sense our mortality like a cancer beneath the bravado, and when things start to go out of control, there is little real resilience to fall back on. 
 
@@ -48,7 +48,7 @@ Playing chess competitively as a child has its own consequences, the emotional t
 
 Sometimes in games of chess, the unconscious, can feel situations before the conscious unravels the situation and understands. Those moments are like the primal instincts being tuned onto a game by sheer practice and preparation beforehand. 
 
-## Chapter 3 - Two Approaches to Learning 
+### Chapter 3 - Two Approaches to Learning 
 
 > Glory is a powerful incentive. Inevitably dreams are dashed, hearts are broken, most fall short of their expectations because there is little room at the top. Of course this dynamic can be found in virtually any ambitious field. 
 
@@ -62,7 +62,7 @@ Sometimes in games of chess, the unconscious, can feel situations before the con
 
 There are mainly two approaches to learning, just like Carol Dweck describes. On the one side people are focused on who they are and on the other on what they can become. From these two paradigms flow very different behaviors and emotional and psychological responses and stances to different situations. Only the approach that focuses on what one can become, on acknowledging the potential inherent in oneself if worked at persistently can lead to greatness in any subject. That's the character ethic vs. personality ethic again, in a different disguise. 
 
-## Chapter 4 - Loving the Game
+### Chapter 4 - Loving the Game
 
 > When you win, you survive another day. When you lose, it is as if someone has torn out your heart and stepped on it. No exaggeration. Losing is brutal. 
 
@@ -74,7 +74,7 @@ There are mainly two approaches to learning, just like Carol Dweck describes. On
 
 Loving the game - or anything that you do and want to excel at - is the thing that makes you work through the pain of losing, of being bad, that makes you want to improve. It is the inner guiding philosophy that helps keep the mindset tacked to an idea of growth, searching for capabilities and ever expanding outside the safety zones of our own hermit crab shells. This fascination/passion/love whatever you want to call it is the thing that really matters, because it makes winning or losing somewhat indifferent in the long run, those are not what matters. It's what you learn about the thing that you love, making losses often more valuable than wins in hindsight. That's what it really means to have a growth mindset. And the condition for that is the love for the thing you are doing. 
 
-## Chapter 5 - The Soft Zone - "Lose Yourself" 
+### Chapter 5 - The Soft Zone - "Lose Yourself" 
 
 > From one perspective the opponent is the enemy. On the other hand there is no one who knows you more intimately, no one who challenges you so profoundly or pushes you to excellence and growth so relentlessly. 
 
@@ -90,7 +90,7 @@ Loving the game - or anything that you do and want to excel at - is the thing th
 
 Going into the zone is important for highest forms of performance. But going into it requires a certain mind, one that has been trained not to be challenged by the environment but to react and adapt to whatever is thrown at it, softly and gently. It is about becoming malleable, about walking through injuries and unpleasing events, shifting ones own opinion and reaction to them, making them elements of learning and concentration. It is about being proactive and not letting the environment control and disrupt the inner state of focus, but instead to use those disruptive events to enhance the focus even more. It is about truly coping with distractions. 
 
-## Chapter 6 - The Downward Spiral
+### Chapter 6 - The Downward Spiral
 
 > Musicians, actors, athletes, philosophers, scientists and writers all understand, that brilliant creations are often born of small errors. Problems set in if the performer has a brittle dependence on the safety of absolute perfection or duplication. Then an error triggers fear, detachment, or confusion that muddies the decision making process. 
 
@@ -98,13 +98,13 @@ Going into the zone is important for highest forms of performance. But going int
 
 Errors on their own are usually not so bad, but the downward spiral resulting from the disruption in focus is. There is a powerful anecdotal story in the book of a woman who steps in front of the traffic in New York, which is her first mistake, she narrowly avoids getting hit by a bicycle by some kind of miracle but then turns over to the bicycle driver and curses at him, that is she becomes emotional and loses the chance to use this signal from the real world, of her mistake, as a wake up call. That is her second mistake. That she leaned into her feelings instead of updating her picture of reality, of resetting and getting back to safety and so she gets hit by a car a second later. That's exactly what happens to competitors in games such as chess as well. The mistake is usually not the problem at this level of performance it is the disruption to the psyche it causes, it leads directly out of the Soft Zone. 
 
-## Chapter 7 - Changing Voice
+### Chapter 7 - Changing Voice
 
 > I saw the art as a movement closer and closer to an unattainable truth, as if I were traveling through a tunnel that continuously deepened and widened as I progressed. 
 
 During intense introspection and learning of any skill there will come a moment, where the theoretical ideas, the memorized rules, become automatic, and integrated deeply within ones psyche. Once this moment has come, mistakes one makes also start to be connected to the psychological side of things, how one feels at the moment affects how good one is at the skill in weird and interesting ways. 
 
-## Chapter 8 - Breaking Stallions
+### Chapter 8 - Breaking Stallions
 
 > I think a life of ambition is like existing on a balance beam. As a child, there is no fear, no sense for the danger of falling. The beam feels wide and stable, and natural playfulness allows for creative leaps and fast learning. You can run around doing somersaults and flips, always testing yourself with a love for discovery and new challenges. If you happen to fall off - no problem, you just get back on
  But then, as you get older, you become more aware of the risk of injury. You might crack your head or twist your knee. The beam is narrow and you have to stay up there. Plunging off would be humiliating. 
@@ -113,13 +113,13 @@ During intense introspection and learning of any skill there will come a moment,
 
 > To my mind, the fields of learning and performance are an exploration of greyness - of the in-between. There is the careful balance of pushing yourself relentlessly, but not so hard that you melt down. Muscles and minds need to stretch to grow, but if stretched too thin, they will snap. 
 
-# Part II - My Second Art
+## Part II - My Second Art
 
 Chapter 9 - Beginners Mind
 
 Breathing is important, in a world where we are constantly stressed we acquire bad breathing patterns, combined with our bad postures this makes a lot of our problems. Tai Chi is a way to relax those tensed up muscles, to inhale and exhale again in a natural pattern, loosening the tight stressed body and mind. But to learn from the great masters one also has to be aware, to look closely and not miss the subtle but powerful instructions full of wisdom. 
 
-## Chapter 10 - Investment in Loss 
+### Chapter 10 - Investment in Loss 
 
 > If a big strong guy comes into a martial arts studio and someone pushes him, he wants to resist and push the guy back to prove that he is a big strong guy. The problem is that he isn't learning anything by doing this. In order to grow, he needs to give up his current mindset. He needs to lose to win. 
 
@@ -129,7 +129,7 @@ Breathing is important, in a world where we are constantly stressed we acquire b
 
 Learning lies in noticing mistakes and not repeating them, but to do that one has to be in this safe zone where one actually can do mistakes and look bad. If the ego is too wrapped up in the activity, no learning can happen because we sense territory that is unknown and where we could make mistakes and then step away from it because we don't want to make errors, we don't want to lose. But that's the point, without investments in loss, there is no growth anymore after a certain point. 
 
-## Chapter 11 - Making Smaller Circles 
+### Chapter 11 - Making Smaller Circles 
 
 > The learning principle is to plunge into the detailed mystery of the micro in order to understand what makes the macro tick. 
 
@@ -139,7 +139,7 @@ Learning lies in noticing mistakes and not repeating them, but to do that one ha
 
 The main idea of this chapter can be summed up in one sentence - do one basic thing really really well, before you move on to the next. Strength in any martial arts pursuit comes from having mastered the deeply nested basic core principles. And mastering takes subtle but hard work. But putting in that work is the idea, making smaller circles is the goal, to have such a deep understanding of a basic idea, that one can take it apart and internalize it I to the unconscious, applying it as a feeling, without having to think about it at all. That's mastery. 
 
-## Chapter 12 - Using Adversity 
+### Chapter 12 - Using Adversity 
 
 > A deep mastery of performance psychology involves the internal creation of inspiring conditions. 
 
@@ -151,7 +151,7 @@ The main idea of this chapter can be summed up in one sentence - do one basic th
 
 States of hurt or danger or loss can provoke a profound amount of learning, heightening the sense of focus the mind can achieve in an instant. The goal is to be able to trigger this type of mental state without requiring the hurt or loss beforehand. Also when one has an injury, the damage done by the injury itself is often less than the damage done to the professional pursuit by how the injured person deals with the situation. Using injuries as excuses is lame. Excuses are lame. If you want to strive for the top, strive, no matter what. Become creative in doing so, because constraints like an injured limb will make you find new angles and solutions. 
 
-## Chapter 13 - Slowing Down Time
+### Chapter 13 - Slowing Down Time
 
 > Intuition is our most valuable compass in this world. It is the bridge between the unconscious and the conscious mind, and it is hugely important to keep in touch with what makes it tick. 
 
@@ -161,23 +161,23 @@ States of hurt or danger or loss can provoke a profound amount of learning, heig
 
 The idea is to offload chunked processing of information to the unconscious. A fast but unconcentrated kind of processing of data, that after years of practice can automate things and lets humans operate on seemingly super powers. In the sense that the more chunked the information is, somebody who sees less can still process more, because what he sees is an abstract interpretation of what is going on, chunked away on a higher level of abstraction, and processed by the subconscious. Numbers to leave numbers. Making conscious effort disappear is what mastery is about. Time can slow down in moments of intense focus, because we reduce the amount of information actually taken in and process on it much more, creating seemingly longer memories of those events. 
 
-## Chapter 14 - The Illusion of the Mystical 
+### Chapter 14 - The Illusion of the Mystical 
 
 When competing at a very high level, everything becomes a kind of psychological battle. Getting into the opponents mind and controlling and manipulating it subtly by being very perceptive is the key in those situations. The idea being to move first at the slightest move of the opponent, in other words to make the opponent move predictably enough, to prepare a trap in advance. Playing games of psychology, using blinks and subconscious reflexes to gain a slight advantage in martial arts situations. 
 
-# Part III - Bringing it all Together
+## Part III - Bringing it all Together
 
-## Chapter 15 - The Power of Presence
+### Chapter 15 - The Power of Presence
 
 > In the absence of continual external reinforcement we must be our own monitor, and quality of presence is often the best gauge. We can not expect to touch excellence if "going through the motions" is the norm of our lives. On the other hand, if deep, fluid presence becomes second nature, then life, art, and learning take on a richnrdd that will continually surprise and delight. Those who excel are those who maximize each moment's creative potential - for these masters of living, presence to the day-to-day learning process is akin to that purity of focus others dream of achieving in rare climactic moments when everything is on the line. The secret is that everything is always on the line.
 
 The story of a Jaguar waiting for its attack on a guy with a machete, eroding his presence before the attack is about that same kind of focus, of presence. For humans to achieve their potential, to operate at their most capable, they have to be there, truly concentrated, in flow, present.
 
-## Chapter 16 - Searching for the Zone
+### Chapter 16 - Searching for the Zone
 
 Building mental resilience is hard, but a way to do it is by being able to relax at will. And that is something that can be trained - the ability to recharge and mentally readjust and refocus is something that distinguishes the best from the great in the end. And even though it is a mental feat, it can be trained by physical responses. I.e. getting the heart rare back down after running repeatedly, focusing on reducing the break time between sprints is an effective training for getting clearer mental focus back in times where it really matters. By breathing, concentrating, closing the eyes and then letting go. Recharging to continue at full potential. 
 
-## Chapter 17 - Building your trigger 
+### Chapter 17 - Building your trigger 
 
 > So how do we step up when your moment suddenly arises? My answer is to redefine the question. Not only do we have to be good at waitingy we have to love it. Because waiting is not waiting, it is life. Too many of us live without fully engaging our minds, waiting for that moment when our real lives begin. Years pass in boredom, but that is okay because when our true love comes around, or we discover our real calling, we will begin. Of course the sad truth is that if we are not present to the moment, our true love could come and go and we wouldn't even notice. And we will have become someone other than the you or I who would be able to embrace it. 
 
@@ -189,7 +189,7 @@ Building mental resilience is hard, but a way to do it is by being able to relax
 
 The name of this chapter - Building your Trigger - describes the contents spot on, a trigger is a routine people can use to get into their zone, it is a specific set of things that they have physically and mentally connected to a state of performance. The idea is that one can build such a routine by having something that is predictably feeling good for oneself and then doing the routine each time prior to doing that thing. Then after some time the routine will trigger the serene state on its own because one has conditioned the two together. Mental state now follows the conditioned trigger of the routine. Now the last important idea is to condense the routine to take up smaller and smaller times. But so slowly and incrementally that the brain doesn't notice the reconditioning happening. Until eventually just thinking of going through the steps of the routine will be enough. At that point it is a trigger and powerful enough to transform almost every waking moment. Whenever attention is needed, do the trigger. 
 
-## Chapter 18 - Making Sandals
+### Chapter 18 - Making Sandals
 
 > To walk a thorny road, we may cover its every inch with leather or we can make sandals. 
 
@@ -203,7 +203,7 @@ The name of this chapter - Building your Trigger - describes the contents spot o
 
 The main idea of the Making Sandals chapter is summarized in that last quote. But the stories told - of fighting against people fair and square, even when they don't play by the rules, of being so much above them emotionally that it doesn't even touch you and instead actually makes you perform even better is the truly hard thing. Truly internalizing this idea and actually going the extra mile, to make the effort and acquire the right to wear sandals is the bloody hard part and in the end it is what distinguishes the best from the merely great again. One question that comes up over and over and over again in all of this though - why this intense focus on competing? What is in it, when he is denouncing a dog-eats-dog world by his philosophy, yet thinks of everything in terms of how to win competitions? The hypocrisy is not lost on him, and he doesn't seem to be bothered because to him it is about personal growth only - but is it really? 
 
-## Chapter 19 - Bringing It All Together
+### Chapter 19 - Bringing It All Together
 
 > Learners and performers come in all shapes and sizes. Some people are aggressive, others are cautious. Some of us like questions, others prefer answers. Some bubble with confidence, always hungering for a challenge, while others break into a sweat at the notion of taking on something new. Most of us are a complicated mix of greys. 
 
@@ -213,11 +213,11 @@ The main idea of the Making Sandals chapter is summarized in that last quote. Bu
 
 Internalizing technical concepts and making them come together in the subconscious over and over is what mastery is about. It is applying the lessons of building sandals, the soft zone, numbers to leave numbers, slowing down time and investment in loss, combined together and can yield incredible results. But is tough work, mentally and physically exhausting, no matter the discipline. And in the end this whole learning process has to flow out from oneself, because at the highest levels this personal touch of creativity, of instinct, is what makes the difference. Then breaking down that instinct, really understanding it, learning and putting everything to a higher level, to be able to form a new, better instinct is the goal of the loop. Breaking free of old limitations, over and over again, learning. 
 
-## Chapter 20 - Taiwan
+### Chapter 20 - Taiwan
 
 One of the craziest descriptions of a martial arts tournament I have ever read. The experience just drips from the pages, thick and juicy...
 
-## Afterword
+### Afterword
 
 > If I have learned anything over my first twenty-nine years, it is that we cannot calculate our important contests, adventures, and great loves to the end
 The only thing we can really count on is getting surprised. No matter how much preparation we do, in the real tests of our lives we'll be in unfamiliar terrain. Conditions might not be calm or reasonable. It may feel as though the whole world is stacked against us. This is when we have to perform better than we ever conceived of performing. I believe the key is to have prepared in a manner that allows for inspiration to have laid the foundation for us to create under the wildest pressure we ever imagined. 

@@ -14,7 +14,7 @@ author:
   picture: "/assets/blog/profile.jpeg"
 ---
 
-# Summary: 
+## Summary: 
 This book is truly wonderful. A quick read, filled with extremely beautiful, almost poetry like prose, and small short stories, about deeply human desires, fears and ideas, woven into small short stories about different universes, where time works completely different from how it does in ours. 
 
 The book is stimulating intelectually and heartwarming at the same time, a really tough combo to find and I almost cried a few times while I was reading it on a hot summer afternoon in the Delhi Lodhi gardens. 
@@ -23,7 +23,7 @@ I think the power of this book, comes from the fact, that even though those worl
 
 There are no "real" book notes for this one, just a collection of quotes from it, little snippets and passages, that I enjoyed a lot and wanted to keep in one place:
 
-# Notes: 
+## Notes: 
 
 > If a person holds no ambitions in this world, he suffers unknowingly. If a person holds ambitions, he suffers knowingly, but very slowly. 
 

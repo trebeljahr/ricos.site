@@ -14,7 +14,7 @@ author:
   picture: "/assets/blog/profile.jpeg"
 ---
 
-# Summary: 
+## Summary: 
 
 The Bhagavad Gita is one of the most influential books in history I would argue. And for that reason alone it's worth reading, to get a broader idea of different cultures and see where ideas come from and how old some of them actually are. It is connected in thought with lots of other philosophical directions, like Taoism or Stoicism. But besides that it's a text of deep belief and a window into the religion of Hinduism. But hidden in it are absolute gems of wisdom, eternal, never changing capital T Truths about the world, that are rediscovered time and time again by thinkers around the world. I think it's impossible to summarize the main ideas, because literally every other sentence is full with wisdom, but some of the key concept keep occuring, over and over again:
 
@@ -30,9 +30,9 @@ One of my most favorite quotes is from this book, I will include it here in the 
 
 To me, struggling with an addictive and very much worldly attached self, this quote stings, every time I read it, because it hits home. 
 
-# Notes: 
+## Notes: 
 
-## Introduction
+### Introduction
 
 Bhagavad Gita means "The Song of the Blessed One".
 
@@ -58,7 +58,7 @@ The backdrop is a dialogue between two armies fighting, were the leader of one s
 
 > The healthiest way to begin reading and absorbing a text like the Bhagavad Gita is to understand that ultimately it has nothing to teach. 
 
-## About the Translation
+### About the Translation
 
 > A man whose nature is dominated by *sattva* will be clear- thinking, radiant and truthful. A man whose nature is dominated by *rajas* will be passionate, quick to anger and greedy. A man whose nature is dominated by *tamas* will be stupid, lazy and stubborn. But most men will be found to have elements of *gunas* different from their dominating ones. 
 
@@ -66,11 +66,11 @@ The backdrop is a dialogue between two armies fighting, were the leader of one s
 
 This sounds very much like the ideas of Buddhism. Probably because Buddhism has taken a lot of inspiration from Hinduism back when it was created. 
 
-## Chapter 1 - Arjuna's Despair
+### Chapter 1 - Arjuna's Despair
 
 > What good is kingship, of happiness, of life itself when those for whose sake we desire them - teachers, fathers, sons, grandfathers, uncles, fathers-in-law, grandsons, brothers-in-law, and other kinsmen - stand here in battle ranks, ready to give up their fortunes and their lives?
 
-## Chapter 2 - The Practice of Yoga
+### Chapter 2 - The Practice of Yoga
 
 > If I killed them, all my earthly pleasures would be smeared with blood. 
 
@@ -84,7 +84,7 @@ This sounds very much like the ideas of Buddhism. Probably because Buddhism has 
 
 Attaching to the outcomes of things and trying to influence them for the sake of the outcome only, will usually make things worse. The better way is to do your best, no matter what. That's the idea of the [Tao Te Ching](#TODO) as well as the idea of [Stoicists such as Markus Aurelius](#TODO) as well as that of more modern psychology/philosophy books like [Grit by Angela Duckworth](#TODO)
 
-## Chapter 3 - The Yoga of Action
+### Chapter 3 - The Yoga of Action
 
 > Beings arise from food; food arises from rain; rain arises from worship; worship, from ritual action; ritual action, from God; God, from the deathless Self. Thus, the all-present God requires the worship of men. 
 
@@ -96,7 +96,7 @@ That above is [the main idea of Atlas Shrugged](#TODO) in disguise. If people st
 
 > Desire dwells in the senses, the mind, and the understanding; in all these it obscures wisdom and perplexes the embodied Self. 
 
-## Chapter 4 - The Yoga of Wisdom
+### Chapter 4 - The Yoga of Wisdom
 
 > With no desire for success, no anxiety about failure, indifferent to results, he burns up his actions in the fire of wisdom. 
 
@@ -104,13 +104,13 @@ That above is [the main idea of Atlas Shrugged](#TODO) in disguise. If people st
 
 > Wisdom is the final goal of every action. 
 
-## Chapter 5 - The Yoga of Renunciation
+### Chapter 5 - The Yoga of Renunciation
 
 > A man unattached to sensations, who finds fulfilment in the Self, whose mind has become pure freedom, attains an imperishable joy.
 
 > When desire, fear, and anger have left him, that man is forever free. 
 
-## Chapter 6 - The Yoga of Meditation
+### Chapter 6 - The Yoga of Meditation
 
 > The self is a friend for him who masters himself by the Self; but for him who is not self-mastered, the self is the cruelest foe.
 
@@ -118,41 +118,41 @@ That above is [the main idea of Atlas Shrugged](#TODO) in disguise. If people st
 
 > Abandoning all desires born of his own selfish will, a man should learn to restrain his unruly senses with his mind. 
 
-## Chapter 7 - Wisdom and Realization
+### Chapter 7 - Wisdom and Realization
 
 > Men whose wisdom is darkened by desires, men who are hemmed in by the limits of their own natures, take refuge in other gods. 
 
-## Chapter 8 - Absolute Freedom
+### Chapter 8 - Absolute Freedom
 
 > Freedom is union with the deathless; the Self is the essence of all things; its creative power, called action, causes the whole world to be.
 
-## Chapter 9 - The Secret of Life
+### Chapter 9 - The Secret of Life
 
-## Chapter 10 - Divine Manifestations 
+### Chapter 10 - Divine Manifestations 
 
-## Chapter 11 - The Cosmic Vision
+### Chapter 11 - The Cosmic Vision
 
-## Chapter 12 - The Yoga of Devotion
+### Chapter 12 - The Yoga of Devotion
 
 > Knowledge is better than practice; meditation is better than knowledge; and best of all is surrender, which soon brings peace. 
 
-## Chapter 13 - The Field and Its Knower
+### Chapter 13 - The Field and Its Knower
 
 > He who sees that all actions are performed by Nature alone and thus that the self is not the doer - that man sees truly. 
 
-## Chapter 14 - The Three Gunas 
+### Chapter 14 - The Three Gunas 
 
-## Chapter 15 - The Ultimate Person
+### Chapter 15 - The Ultimate Person
 
 > Serene, with desires extinguished, released from pleasure and pain, from joy and suffering, the wise attain that eternal state. 
 
-## Chapter 16 - Divine Traits and Demonic Traits
+### Chapter 16 - Divine Traits and Demonic Traits
 
 > Fearlessness, purity of heart, persistence in the yoga of knowledge, generosity, self-control, nonviolence, gentleness, candor, integrity, disengagement, compassion for all beings, modesty, patience, a tranquil mind, dignity, kindness, courage, a benevolent, loving heart - these are the qualities of men born with divine traits. 
 
-## Chapter 17 - Three Kinds of Faith
+### Chapter 17 - Three Kinds of Faith
 
-## Chapter 18 - Freedom through Renunciation
+### Chapter 18 - Freedom through Renunciation
 
 > To give up desire-bound actions is what is meant by *renouncing*; to give up the results of all actions is what the wise call to *relinquish*. 
 
@@ -166,7 +166,7 @@ That above is [the main idea of Atlas Shrugged](#TODO) in disguise. If people st
 
 > The thing that, in your delusion, you wish not to do, you will do, even against your will, since your own karma binds you. 
 
-## Appendix
+### Appendix
 
 > Man is not at peace with himself till he has become like God. - Gandhi
 

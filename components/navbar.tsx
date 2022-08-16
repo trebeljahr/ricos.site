@@ -18,7 +18,7 @@ export function Navlinks({ expanded }: { expanded: boolean }) {
   };
   return (
     <div className={"navlinks" + (expanded ? " expanded" : "")}>
-      <Link as="/posts" href="/posts">
+      <Link as="/" href="/">
         <a style={activeStyle("/")}>posts</a>
       </Link>
       <Link as="/booknotes" href="/booknotes">

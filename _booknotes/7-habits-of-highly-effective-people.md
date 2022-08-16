@@ -60,7 +60,7 @@ Character is that foundation we have forgotten. If the character is not there to
 
 Paradigms are maps we make of how the world works. If one has the wrong map, it is very hard to get to the right place. Even if one works on attitude or behavior, that will not solve the problem of getting one where one actually wants to go. The accuracy of the map is the most important thing. 
 
-This reminds me of [Principles by Ray Dalio](/books/principles) a lot. 
+This reminds me of [Principles by Ray Dalio](/booknotes/principles) a lot. 
 There is a section where he says: 
 1. Figure out what is true and 
 2. then figure out what you want and then 
@@ -80,7 +80,7 @@ Big changes require paradigm shifts. And when paradigm shifts happen, that usual
 
 > Being is seeing in the human dimension. And what we see is highly interrelated to what we are. We can't go very far to change our seeing without simultaneously changing our being, and vice versa. 
 
-There are fundamental paradigms in life, that are stable across time. They exist independent of persons and characters but are a product of the environment as a whole. In a way the principles are evolutionarily stable strategies (an idea nicely presented in [Richard Dawkins' Selfish Gene](/books/the-selfish-gene)) in the human realm. Certain types of behaviors that in the long run outcompete all other strategies. And he claims those are the character ethics. 
+There are fundamental paradigms in life, that are stable across time. They exist independent of persons and characters but are a product of the environment as a whole. In a way the principles are evolutionarily stable strategies (an idea nicely presented in [Richard Dawkins' Selfish Gene](/booknotes/the-selfish-gene)) in the human realm. Certain types of behaviors that in the long run outcompete all other strategies. And he claims those are the character ethics. 
 
 > Integrity and honest create the foundation of trust which is essential to cooperation and long-term personal and interpersonal growth. 
 

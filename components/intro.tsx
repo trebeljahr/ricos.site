@@ -9,12 +9,10 @@ const Intro = ({ withLink = true, withMotto = true }: Props) => {
     <div className="header">
       {withLink ? (
         <Link as="/" href="/">
-          <a>
-            <h1 className="header-title-with-link">trebeljahr.</h1>
-          </a>
+          <a className="header-title-with-link">trebeljahr.</a>
         </Link>
       ) : (
-        <h1 className="header-title-without-link">trebeljahr.</h1>
+        <p className="header-title-without-link">trebeljahr.</p>
       )}
       {withMotto && (
         <p className="header-motto">

@@ -12,8 +12,8 @@ export default function Custom404() {
           <a className="colored-link">Posts</a>
         </Link>
         ,{" "}
-        <Link as="/books" href="/books">
-          <a className="colored-link">Notes</a>
+        <Link as="/booknotes" href="/booknotes">
+          <a className="colored-link">Booknotes</a>
         </Link>
         , or{" "}
         <Link as="/needlestack" href="/needlestack">

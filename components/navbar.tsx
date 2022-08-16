@@ -1,12 +1,15 @@
 import Link from "next/link";
 import Intro from "./intro";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import { faBars, faCross, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface Props {
   intro?: boolean;
 }
 
-export function Navbar({ intro = true }: Props) {
+export function Navlinks({ expanded }: { expanded: boolean }) {
   const router = useRouter();
   const activeStyle = (link: string) => {
     return {
@@ -14,24 +17,21 @@ export function Navbar({ intro = true }: Props) {
     };
   };
   return (
-    <nav className="navbar" id="top-navigation">
-      <div className="navbar-content">
-        {intro && <Intro withLink={true} withMotto={false}></Intro>}
-        <div className="navlinks">
-          <Link as="/posts" href="/posts">
-            <a style={activeStyle("/")}>posts</a>
-          </Link>
-          <Link as="/books" href="/books">
-            <a style={activeStyle("/books")}>notes</a>
-          </Link>
+    <div className={"navlinks" + (expanded ? " expanded" : "")}>
+      <Link as="/posts" href="/posts">
+        <a style={activeStyle("/")}>posts</a>
+      </Link>
+      <Link as="/booknotes" href="/booknotes">
+        <a style={activeStyle("/booknotes")}>booknotes</a>
+      </Link>
 
-          <Link as="/needlestack" href="/needlestack">
-            <a style={activeStyle("/needlestack")}>needlestack</a>
-          </Link>
-          <Link as="/quotes" href="/quotes">
-            <a style={activeStyle("/quotes")}>quotes</a>
-          </Link>
-          {/* 
+      <Link as="/needlestack" href="/needlestack">
+        <a style={activeStyle("/needlestack")}>needlestack</a>
+      </Link>
+      <Link as="/quotes" href="/quotes">
+        <a style={activeStyle("/quotes")}>quotes</a>
+      </Link>
+      {/* 
           <Link as="/now" href="/now">
             <a style={activeStyle("/now")}>now</a>
           </Link>
@@ -44,7 +44,25 @@ export function Navbar({ intro = true }: Props) {
           <Link as="/contact" href="/contact">
             <a style={activeStyle("/contact")}>contact</a>
           </Link> */}
+    </div>
+  );
+}
+
+export function Navbar({ intro = true }: Props) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <nav className="navbar">
+      <div className="navbar-content">
+        <div className="navbar-controls">
+          {intro && <Intro withLink={true} withMotto={false}></Intro>}
+          <button
+            className="navlink-expander"
+            onClick={() => setExpanded(!expanded)}
+          >
+            <FontAwesomeIcon icon={expanded ? faXmark : faBars} />
+          </button>
         </div>
+        <Navlinks expanded={expanded} />
       </div>
     </nav>
   );

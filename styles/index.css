@@ -19,6 +19,13 @@ html {
   scrollbar-width: none; /* Firefox */
 }
 
+button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
 .utterances {
   margin-left: 0;
   max-width: 100%;
@@ -41,6 +48,10 @@ body {
   padding: 0;
 }
 
+#top-navigation {
+  padding: 0;
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -48,8 +59,8 @@ a {
 
 #to-top-button {
   position: fixed;
-  width: 5vmin;
-  height: 5vmin;
+  width: 2em;
+  height: 2em;
   border-radius: 100%;
   bottom: 10vmin;
   right: 10vmin;
@@ -92,6 +103,7 @@ h3 {
 .header {
   height: fit-content;
 }
+
 .header-title-with-link {
   cursor: pointer;
   font-size: 2.5rem;
@@ -100,6 +112,8 @@ h3 {
 .header-title-with-link,
 .header-title-without-link {
   color: var(--dark-blue);
+  margin: 0;
+  padding: 0;
 }
 
 .header-title-with-link:hover {
@@ -113,20 +127,6 @@ blockquote {
   margin-bottom: 1.5rem;
   line-height: 1.6em;
   font-family: "Libre Baskerville", serif;
-}
-
-.navbar {
-  background: #f4f4f4;
-  padding: 20px 0px;
-}
-
-.navbar-content {
-  width: var(--main-width);
-  margin: auto;
-}
-
-.navbar h1 {
-  margin: 0;
 }
 
 .more-stories-title {
@@ -255,10 +255,6 @@ body {
   color: var(--blue);
 }
 
-#table-of-contents + ul {
-  padding-left: 2vw;
-}
-
 #table-of-contents + ul ul {
   padding-left: 40px;
 }
@@ -376,29 +372,6 @@ li {
     width: calc(var(--main-width) / 3);
     height: calc(1.6 * calc(var(--main-width) / 3));
     position: relative;
-  }
-
-  .navbar-content {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .navlinks {
-    min-width: fit-content;
-    display: flex;
-    align-items: center;
-  }
-  .navlinks * {
-    margin-left: 40px;
-  }
-
-  .navlinks a {
-    font-weight: 100;
-    font-family: "Spartan", sans-serif;
-    font-size: 1.5rem;
-  }
-  .navlinks a:hover {
-    color: var(--blue);
   }
 
   .more-stories-container {

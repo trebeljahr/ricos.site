@@ -164,14 +164,19 @@ I like these blogs/publications and often end up on them when looking for someth
 
 ## Mindblowing AI research
 - [Everything Open AI does](https://openai.com/blog/tags/milestones/)
-- [Dalle-1](https://openai.com/blog/dall-e/) - 24th February 2021
-- [Dalle-2](https://openai.com/dall-e-2/) - 13th April 2022
+- [Dalle-1](https://openai.com/blog/dall-e/) 
+- [Dalle-2](https://openai.com/dall-e-2/)
+- [Open AI - CLIP: Text to Image Connection](https://openai.com/blog/clip/)
 - [Codex Demo](https://www.youtube.com/watch?v=SGUCcjHTmGY)
 - [Pathways](https://blog.google/technology/ai/introducing-pathways-next-generation-ai-architecture/)
 - [PaLM](https://ai.googleblog.com/2022/04/pathways-language-model-palm-scaling-to.html)
 - [AlphaFold](https://www.deepmind.com/research/highlighted-research/alphafold)
 - [AlphaZero](https://www.deepmind.com/blog/alphazero-shedding-new-light-on-chess-shogi-and-go)
 - [Open AI Emergent Tool Use](https://openai.com/blog/emergent-tool-use/)
+- [AI Art Generator - Google Colab](https://colab.research.google.com/drive/1lx9AGsrh7MlyJhK9UrNTK8pYpARnx457?usp=sharing)
+- [AI Animator - Google Colab](https://colab.research.google.com/drive/1_MckQnU0mCF8FJ7PoV21nhVvoOeotHGy?usp=sharing)
+- [Image to 3D Model - Google Colab](https://colab.research.google.com/drive/1NzP4oI_KighbpfEEVCnYKZ0lfzDpqTyE?usp=sharing)
+- [Disco Diffusion - Google Colab](https://colab.research.google.com/github/alembics/disco-diffusion/blob/main/Disco_Diffusion.ipynb)
 ## Stuff on Github
 
 Let's get even more meta. Github is a platform that people use to host code and other things, enabling the [version control of Git](https://git-scm.com/doc). This allows them to work together in big teams efficiently and save the history of their creations. Mostly – but not exclusively – used for code, it's a huge, open repository of knowledge. Some of the best stuff on the internet lives in spaces within Github, called repos. 
@@ -234,13 +239,176 @@ A few more noteworthy blogs to go through (ordered by how much I read them):
 1. [Bakadesuyo](https://bakadesuyo.com/blog/)
 1. [The Art of Non-Conformity](https://archive.chrisguillebeau.com/)
 1. [Tim Ferriss](https://tim.blog/)
+1. [In the Pipeline - Derek Lowe](https://www.science.org/blogs/pipeline)
+
+
+## Articles
+### Entrepreneurship
+[Joel Spolsky - Fire and Motion](https://www.joelonsoftware.com/2002/01/06/fire-and-motion/)
+[Yishan Wong - Engineering Management](http://algeri-wong.com/yishan/engineering-management.html)
+[Paul English - Hiring](http://paulenglish.com/hiring.html)
+[Paul Graham - Hiring](http://www.paulgraham.com/hiring.html)
+[Eric Sink - Hazard of Hiring](https://ericsink.com/bos/Hazards_of_Hiring.html)
+[Nat Eliason - The Founder Trap](https://every.to/almanack/the-founder-trap)
+[Adam Wulf - App Launch Guide](https://github.com/adamwulf/app-launch-guide)
+[Mark Essien - Hire on Freelancer Sites](https://markessien.com/posts/hire-on-freelancer-sites/)
+[Andrew Wilkinson - Lazy Leadership](https://medium.com/flow/lazy-leadership-8ba19e34f959)
+[Michael Lynch - My First Year as a Solo Developer ](https://mtlynch.io/solo-developer-year-1/)
+[Michael Lynch - Why I quit Google](https://mtlynch.io/why-i-quit-google/)
+[Rob Walling - How to Hire Like a Startup](https://robwalling.com/2005/09/17/how-to-hire-like-a-startup/)
+[Valve - Employee Handbook](https://steamcdn-a.akamaihd.net/apps/valve/Valve_NewEmployeeHandbook.pdf)
+[Venturehacks - 1 (wo)man Startups](https://venturehacks.com/1-wo-man-startups)
+[Venturehacks - Save the World](https://venturehacks.com/save-the-world)
+[](https://www.collaborativefund.com/blog/great-products-vs-great-businesses/)
+[Joel Spolsky - The Guerilla Guide to Interviewing](https://www.joelonsoftware.com/2006/10/25/the-guerrilla-guide-to-interviewing/)
+[Kalzumeus - Running a Software Business on 5 Hours a Week](https://www.kalzumeus.com/2010/03/20/running-a-software-business-on-5-hours-a-week/)
+[Levels - Masterplan](https://www.levelshealth.com/blog/the-secret-levels-master-plan-just-between-you-and-me-cgm-glucose)
+[Netflix Talk - Culture, Freedom, Responsibility](https://www.slideshare.net/reed2001/culture-1798664/2-Netflix_CultureFreedom_Responsibility2)
+[Tesla - Masterplan I](https://www.tesla.com/blog/master-plan-part-deux)
+[Tesla - Masterplan II](https://www.tesla.com/blog/secret-tesla-motors-master-plan-just-between-you-and-me)
+[Justin Mares - The 4 Kinds of Side Businesses You Can Start](https://justinmares.com/the-4-kinds-of-side-businesses-you-can-start/)
+
+
+### Thoughts 
+[Brent Beshore - Ten Ideas That Changed Your Life](https://twitter.com/BrentBeshore/status/970661400786870272)
+[Derek Sievers - Do This Directives](https://sive.rs/d1)
+[Minding Our Way - Dive In](http://mindingourway.com/dive-in/)
+[James Clear - Personal Renewal Speech by John W. Gardner](https://jamesclear.com/great-speeches/personal-renewal-by-john-w-gardner)
+[Nat Eliason - Stupid Monkey](https://www.nateliason.com/blog/stupid-monkey)
+[Nat Eliason - Increasing the Difficulty](https://www.nateliason.com/blog/increasing-the-difficulty)
+[Nat Eliason - Not a Full Time Creator](https://www.nateliason.com/blog/not-creator)
+[Supermemo - Polyphasic Sleep](https://www.supermemo.com/en/archives1990-2015/articles/polyphasic)
+[Why Becoming A Data Scientist is not Actually Easier Than You Think](https://medium.com/cs-math/why-becoming-a-data-scientist-is-not-actually-easier-than-you-think-5b65b548069b)
+[Skeptical Inquirer - The Burden of Skepticism](https://skepticalinquirer.org/1987/10/the-burden-of-skepticism/)
+[The Guardian - Wisdom's Folly](https://www.theguardian.com/theguardian/2005/may/12/features11.g24)
+[Cracked - 6 Harsh Truths that Will Make You a Better Person](https://www.cracked.com/blog/6-harsh-truths-that-will-make-you-better-person/)
+[Cracked - The 60 Seconds Guide to a Bullshit Free Life](https://www.cracked.com/quick-fixes/the-60-second-guide-to-bullshit-free-life/)
+[Julian Shapiro - Life Planning](https://www.julian.com/blog/life-planning)
+[Taylor Pearson - The Cynefin Model](https://taylorpearson.me/cynefin/)
+[Taylor Pearson - Extremistan](https://taylorpearson.me/extremistan/)
+[Taylor Pearson - The OODA Loop](https://taylorpearson.me/ooda-loop/)
+[Chris Dixon - Climbing the Wrong Hill](https://cdixon.org/2009/09/19/climbing-the-wrong-hill)
+[Less Wrong - Politics is the Mind Killer](https://www.lesswrong.com/posts/9weLK2AJ9JEt2Tt8f/politics-is-the-mind-killer)
+[Robin Hanson - Are Beliefs like Clothes?](http://mason.gmu.edu/~rhanson/belieflikeclothes.html)
+[Less Wrong - Taboo Your Words](https://www.lesswrong.com/posts/WBdvyyHLdxZSAMmoz/taboo-your-words)
+[Elad Gil - Career Decisions](http://blog.eladgil.com/2015/03/career-decisions.html)
+[Melting Asphalt - Crony Beliefs](https://meltingasphalt.com/crony-beliefs/)
+[Richard Hamming - You and Your Research](https://www.cs.virginia.edu/~robins/YouAndYourResearch.html)
+[Ribbonfarm - The Fine Art of Opportunism](https://www.ribbonfarm.com/2007/12/05/the-fine-art-of-opportunism/)
+[Lithub - The Link Between Great Thinking and Obsessive Walking](https://lithub.com/on-the-link-between-great-thinking-and-obsessive-walking/)
+[Neil Soni - Optionality Trap](https://www.neilsoni.com/optionality-trap/)
+[The Crimson - Mihir A. Desai's Commencement Speech](https://www.thecrimson.com/article/2017/5/25/desai-commencement-ed/)
+[Andy Dunn - The Risk Not Taken](https://dunn.medium.com/the-risk-not-taken-40cf0a8919cb)
+[Dr. Jason Fung - The Salt Scam](https://drjasonfung.medium.com/the-salt-scam-1973d73dccd)
+[Collaborative Fund - Ideas That Changed My Life](https://www.collaborativefund.com/blog/ideas-that-changed-my-life/)
+[Minding Our Way - Half Assing It With Everything You've Got](https://mindingourway.com/half-assing-it-with-everything-youve-got/)
+[Common Cog - Career Moats 101](https://commoncog.com/blog/career-moats-101/)
+[Commong Cog - The Mental Model FAQ](https://commoncog.com/blog/the-mental-model-faq/)
+[Commong Cog - The 3 Kinds of Non-Fiction Books](https://commoncog.com/blog/the-3-kinds-of-non-fiction-book/)
+[Paul Stamatiou - Reading more](https://paulstamatiou.com/reading-more-kindle-oasis/)
+[FS - Finding Your Purpose and Living a Meaningful Life](https://fs.blog/hunter-s-thompson-to-hume-logan/)
+[The Challenge - Time to Call it AI again](https://medium.com/the-challenge/time-to-call-it-ai-again-6ec970961825)
+[FS - Bertrand Russell's 10 Commandments](https://fs.blog/bertrand-russell-ten-commandments/)
+
+
+### Design
+[Neil Patel - Typography Guide](https://neilpatel.com/blog/typography-guide/)
+[Inkbot Design - Font Combinations](https://inkbotdesign.com/font-combinations/)
+[Inkbot Design - Top 10 Fonts](https://inkbotdesign.com/top-10-fonts/)
+[Canva - The Ultimate Guide to Font Pairing](https://www.canva.com/learn/the-ultimate-guide-to-font-pairing/)
+[UX Planet - The Ultimate Guide to Choosing Fonts](https://uxplanet.org/the-ultimate-guide-to-choosing-fonts-cf98b1d3e5b8)
+[Prototypr - The Importance of White Space in Design](https://blog.prototypr.io/importance-of-white-space-in-design-5a40c0e65bfd)
+[Interaction Design - The Power of White Space](https://www.interaction-design.org/literature/article/the-power-of-white-space)
+
+### Blogging
+[Disqus - Why Blogs Fail and How to Make Your Blog Successful](https://blog.disqus.com/why-blogs-fail-and-how-to-make-your-blog-successful)
+[Nat Eliason - The Wiki Strategy](https://www.nateliason.com/blog/wiki-strategy)
+[Help Scout - Damn Hard Writing](https://www.helpscout.com/blog/damn-hard-writing/)
+[Taylor Pearson - Jesus Marketing](https://taylorpearson.me/jesusmarketing/)
+[Copyhackers - Monetize your Freelance Blog](https://copyhackers.com/2019/10/monetize-your-freelance-blog/)
+[Nat Eliason - Start a Blog](https://www.nateliason.com/blog/start-a-blog)
+[Coding Horror - How to Achieve Ultimate Blog Success in One Easy Step](https://blog.codinghorror.com/how-to-achieve-ultimate-blog-success-in-one-easy-step/)
+
+### Coding
+[Coding Horror - The Danger of Naivete](https://blog.codinghorror.com/the-danger-of-naivete/)
+[Paul Ford - What is Code](https://www.bloomberg.com/graphics/2015-paul-ford-what-is-code/)
+[Coding Horror - Recommended Reading For Developers](https://blog.codinghorror.com/recommended-reading-for-developers/)
+[Zach Lloyd - Code First vs. Product First](https://thezbook.com/code-first-vs-product-first/)
+[](https://medium.com/@atthedoorapp/build-your-own-email-marketing-tool-with-node-js-63310dcbc814)
+[David Hart - Sketch, Lerp, Unlerp, Remap](https://limnu.com/sketch-lerp-unlerp-remap/)
+
+### Productivity 
+[Dieter Rams - Less but Better](https://crm.org/articles/less-but-better-dieter-rams-10-principles)
+[Nat Eliason - Productiva Negativa](https://www.nateliason.com/blog/productiva-negativa)
+[Slava Akhmechet - Productivity Advice](https://www.spakhm.com/p/productivity-advice?s=r)
+
+### Health
+[Levels Health - 12 Glucose Lowering Strategies](https://www.levelshealth.com/blog/12-glucose-lowering-strategies-to-improve-metabolic-fitness)
+[New Yorker - Energy and How to Get it](https://www-newyorker-com.cdn.ampproject.org/c/s/www.newyorker.com/magazine/2021/11/08/energy-and-how-to-get-it/amp)
+[New York Times - How to Get Strong](https://www.nytimes.com/guides/year-of-living-better/how-to-build-muscle-strength)
+[Levels Health - The Ultimate Guide to Metabolic Fitness](https://www.levelshealth.com/blog/the-ultimate-guide-to-metabolic-fitness)
+
+
+### Finance
+[Kalzumeus - Moving Money Internationally](https://bam.kalzumeus.com/archive/moving-money-internationally/)
+[How Stuff Works - Stocks](https://money.howstuffworks.com/personal-finance/financial-planning/stocks.htm)
+[Byrne Hobard - Well-Behaved Bubbles Often Make History](https://future.com/well-behaved-bubbles-history-innovation/)
+
+### Crypto 
+[Nat Eliason - Why NFT's Are Valuable](https://www.nateliason.com/blog/nft-value)
+[Evan Armstrong - NFT Projects are just Multi Level Marketing Schemes for Tech Elites](https://every.to/napkin-math/nft-projects-are-just-mlms-for-tech-elites)
+[Kalzumeus - Stablecoin Mechanisms and Use Cases](https://bam.kalzumeus.com/archive/stablecoin-mechanisms-and-use-cases/)
+[Preston Byrne - Basecoin Bitshares 2 Electric Boogaloo](https://prestonbyrne.com/2017/10/13/basecoin-bitshares-2-electric-boogaloo/)
+[Kalzumeus - Tether and Bitfinex](https://www.kalzumeus.com/2019/10/28/tether-and-bitfinex/)
+
+## Random But Awesome Things
+[YCombinator Post - List of *Best* Introductory Books on Everything](https://news.ycombinator.com/item?id=30822339)
+[Tommy Collison's List of Great Books](https://tommycollison.com/greatbooks?utm_source=substack&utm_medium=email)
+[Handmade Network](https://handmade.network/manifesto)
+[Rational Wiki](https://rationalwiki.org/wiki/Main_Page)
+[Nand2Tetris - Or How to Build a Computer from Scratch](https://www.nand2tetris.org/copy-of-talks)
+[Cockroach Fund - Nuclear Winterizing Investments](https://mutinyfund.com/cockroach/)
+[Readwise - App to Make Creating Book Notes + Reviewing them Easier](https://readwise.io/)
+[Roam Research - Note Taking App](https://roamresearch.com/)
+[Easiest Website Builder](https://build.mmm.page/)
+[Compound Interest Calculator](https://www.investor.gov/financial-tools-calculators/calculators/compound-interest-calculator)
+[Anthony Gustin - Annual Review Google Doc](https://docs.google.com/document/d/1K2P_yL1Ah976P7MLicb55wgY2DY-39jP3Lvp810H6HQ/edit)
+[Instructional Design](https://www.instructionaldesign.org/)
+[Gary Provost - Writing Advice](https://www.garyprovost.com/)
+[Sendgrid - Email Marketing Campaigns](https://sendgrid.com/)
+[Contentful - CMS](https://www.contentful.com/)
+[Ghost - Best Publishing Tool out There?](https://ghost.org/)
+[Ribbonfarm's Now Reading Page](https://www.ribbonfarm.com/now-reading/)
+[Less Wrong - Post Sequences](https://www.lesswrong.com/tag/sequences)
+[Favicon.io - Favicon Generator](https://favicon.io/)
+[Gitpod - Cloud Based Development Environments](https://www.gitpod.io/)
+[Mockrocket - 3D Based Browser App Previews](https://mockrocket.io/)
+[Coolworks - Job Portal to Find Jobs in Amazing Places](https://www.coolworks.com/)
+[EXRC - Exercise Library](https://exrx.net/)
+[Rytr - AI Based Blog/Newsletter Writing Tool](https://rytr.me/)
+[Well Said Labs - Text to Voice Generation](https://wellsaidlabs.com/)
+[Pexels - Free to Use Videos](https://www.pexels.com/)
+[Unsplash - Free to Use Images](https://unsplash.com/)
+[Freesound - Free to Use Sounds](https://freesound.org/)
+[Sparktoro - Audience Research Tool](https://sparktoro.com/)
+[Photopea - Online Photo Editor](https://www.photopea.com/)
+[Copy.ai - Copywriting AI](https://www.copy.ai/)
+[HAX - Hard Tech Incubator](https://hax.co/)
+[100x Indian Incubator](https://www.100x.vc/)
+[Center for Collective Intelligence at MIT](https://cci.mit.edu/)
+[Magnum Photos - Photographers Collective](https://www.magnumphotos.com/)
+[Bench.co - Online Accounting/Book Keeping Tool](https://bench.co/)
+[Indie Hackers - Startup Development Discussion Board](https://www.indiehackers.com/)
+[Space Nerds in Space Game](https://smcameron.github.io/space-nerds-in-space/)
+[Handmade Network](https://handmade.network/)
+[Edgar Djikstra's Manuscripts](https://www.cs.utexas.edu/~EWD/)
 
 ## Newsletters
-To be honest, I kind of hate newsletters. There are only 3 I subscribed to and read regularly. Those are in order of how much I enjoy them:
+To be honest, I mostly hate newsletters because they are not worth it. By the definition of a newsletter to be regular and "news" most tend to be of that quality - namely complete trash. There are only 3 I subscribed to and those I also read regularly and enjoy every single time.
 
 1. [Infinite Play by Nat Eliason](https://blog.nateliason.com/)
 1. [3, 2, 1 by James Clear](https://jamesclear.com/3-2-1)
-1. [Brain Food by Shane Parrish](https://fs.blog/newsletter/)
+1. [Brain Food by Farnam Street/Shane Parrish](https://fs.blog/newsletter/)
 
 ## Videos 
 ### Top 15

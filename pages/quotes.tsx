@@ -4,6 +4,7 @@ import { join } from "path";
 import matter from "gray-matter";
 import { useState } from "react";
 import { Search, useSearch } from "../components/SearchBar";
+import { ToTopButton } from "../components/ToTopButton";
 
 type Quote = {
   author: string;
@@ -27,11 +28,14 @@ export default function Quotes({ quotes }: Props) {
       {filteredQuotes.map(({ author, text }, index) => {
         return (
           <div key={author + index} className="quote">
-            <h3>{text}</h3>
-            <p>by {author}</p>
+            <blockquote>
+              <p>{text}</p>
+            </blockquote>
+            <p style={{ marginLeft: "30px" }}>– {author}</p>
           </div>
         );
       })}
+      <ToTopButton />
     </Layout>
   );
 }

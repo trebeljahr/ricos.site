@@ -1,5 +1,5 @@
 import DateFormatter from "./date-formatter";
-import CoverImage from "./cover-image";
+import { PostCoverImage } from "./cover-image";
 import Link from "next/link";
 import Author from "../types/author";
 
@@ -18,7 +18,7 @@ const PostPreview = ({ title, coverImage, date, excerpt, slug }: Props) => {
       <a>
         <div className="more-posts-preview">
           <div className="more-posts-image">
-            <CoverImage slug={slug} title={title} src={coverImage} />
+            <PostCoverImage title={title} src={coverImage} />
           </div>
           <div className="more-posts-preview-text">
             <h2>{title}</h2>

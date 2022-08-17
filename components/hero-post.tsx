@@ -1,5 +1,5 @@
 import DateFormatter from "./date-formatter";
-import CoverImage from "./cover-image";
+import { PostCoverImage } from "./cover-image";
 import Link from "next/link";
 import Author from "../types/author";
 
@@ -18,7 +18,7 @@ const HeroPost = ({ title, coverImage, date, excerpt, slug }: Props) => {
       <a>
         <section className="hero-post-preview">
           <div className="hero-post-image">
-            <CoverImage title={title} src={coverImage} slug={slug} />
+            <PostCoverImage title={title} src={coverImage} />
           </div>
           <h2>{title}</h2>
           <DateFormatter dateString={date} />

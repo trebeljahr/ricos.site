@@ -11,15 +11,20 @@ interface Props {
 
 export function Navlinks({ expanded }: { expanded: boolean }) {
   const router = useRouter();
-  const activeStyle = (link: string) => {
+  const activeStyle = (link: string, { exact = false } = {}) => {
+    let isUnderlined = router.pathname.startsWith(link);
+    if (exact) {
+      isUnderlined = router.pathname === link;
+    }
+
     return {
-      textDecoration: router.pathname === link ? "underline" : "none",
+      textDecoration: isUnderlined ? "underline" : "none",
     };
   };
   return (
     <div className={"navlinks" + (expanded ? " expanded" : "")}>
-      <Link as="/" href="/">
-        <a style={activeStyle("/")}>posts</a>
+      <Link as="/posts" href="/posts">
+        <a style={activeStyle("/posts")}>posts</a>
       </Link>
       <Link as="/booknotes" href="/booknotes">
         <a style={activeStyle("/booknotes")}>booknotes</a>

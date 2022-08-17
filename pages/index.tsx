@@ -1,32 +1,16 @@
-import MoreStories from "../components/more-stories";
-import HeroPost from "../components/hero-post";
 import Layout from "../components/layout";
 import { getAllPosts } from "../lib/api";
-import Head from "next/head";
-import Post from "../types/post";
-import Intro from "../components/intro";
+import { TrySomeOfThese } from "../components/intro-links";
 
-type Props = {
-  allPosts: Post[];
-};
-
-const Index = ({ allPosts }: Props) => {
-  const heroPost = allPosts[0];
-  const morePosts = allPosts.slice(1);
+const Index = () => {
   return (
-    <Layout pageTitle="Posts">
-      {/* <Intro withLink={false} withMotto={true}></Intro> */}
-      {heroPost && (
-        <HeroPost
-          title={heroPost.title}
-          coverImage={heroPost.coverImage}
-          date={heroPost.date}
-          author={heroPost.author}
-          slug={heroPost.slug}
-          excerpt={heroPost.excerpt}
-        />
-      )}
-      {morePosts.length > 0 && <MoreStories posts={morePosts} />}
+    <Layout pageTitle="Home">
+      <h1>Welcome to my part of the internet!</h1>
+      <p>
+        This page is still under construction, but I keep adding content
+        regularly.
+      </p>
+      <TrySomeOfThese />
     </Layout>
   );
 };

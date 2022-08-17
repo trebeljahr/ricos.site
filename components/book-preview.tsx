@@ -1,4 +1,4 @@
-import CoverImage from "./cover-image";
+import { BookCover } from "./cover-image";
 import Link from "next/link";
 import BookType from "../types/book";
 
@@ -7,14 +7,12 @@ type Props = {
 };
 
 export function BookPreview({ book }: Props) {
-  const { slug, title, bookCover, bookAuthor } = book;
+  const { slug, title, bookCover } = book;
   return (
     <Link as={`/booknotes/${slug}`} href="/booknotes/[slug]">
       <a>
         <div className="book-preview">
-          <div className="book-cover-image">
-            <CoverImage slug={slug} title={title} src={bookCover} />
-          </div>
+          <BookCover title={title} src={bookCover} />
         </div>
       </a>
     </Link>

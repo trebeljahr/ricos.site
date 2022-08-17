@@ -5,11 +5,25 @@ import Layout from "../../components/layout";
 import { getBookReviewBySlug, getAllBookReviews } from "../../lib/api";
 import { PostTitle } from "../../components/post-title";
 import BookType from "../../types/book";
-import CoverImage from "../../components/cover-image";
+import { BookCover } from "../../components/cover-image";
 import { UtteranceComments } from "../../components/comments";
+import { ToTopButton } from "../../components/ToTopButton";
 
 type Props = {
   book: BookType;
+};
+
+const BuyItOnAmazon = ({ link }: { link: string }) => {
+  return (
+    <a
+      className="externalLink amazonLink"
+      target="_blank"
+      rel="noopener noreferrer"
+      href={link}
+    >
+      Buy it on Amazon
+    </a>
+  );
 };
 
 const Book = ({ book }: Props) => {
@@ -23,16 +37,25 @@ const Book = ({ book }: Props) => {
         <PostTitle>Loading…</PostTitle>
       ) : (
         <article>
-          <div className="book-cover-image">
-            <CoverImage title={book.title} src={book.bookCover} />
+          <div className="book-info">
+            <BookCover
+              title={book.title}
+              src={book.bookCover}
+              amazonLink={book.amazonLink}
+            />
+            <div className="book-preview-text">
+              <h1>{book.title}</h1>
+              <h2>by {book.bookAuthor} </h2>
+              <h3>Rating: {book.rating}/10</h3>
+              <BuyItOnAmazon link={book.amazonLink} />
+            </div>
           </div>
-          <div className="book-preview-text">
-            <h1>{book.title}</h1>
-            <h2>by {book.bookAuthor}</h2>
-            <h3>Rating: {book.rating}/10</h3>
-          </div>
+
           <PostBody content={book.content} />
+          <BuyItOnAmazon link={book.amazonLink} />
+
           <UtteranceComments />
+          <ToTopButton />
         </article>
       )}
     </Layout>
@@ -56,6 +79,7 @@ export async function getStaticProps({ params }: Params) {
     "rating",
     "done",
     "content",
+    "amazonLink",
   ]);
 
   return {

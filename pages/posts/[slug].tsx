@@ -8,6 +8,7 @@ import { PostTitle } from "../../components/post-title";
 import PostType from "../../types/post";
 import { ReadMore } from "../../components/more-stories";
 import { UtteranceComments } from "../../components/comments";
+import { ToTopButton } from "../../components/ToTopButton";
 
 type Props = {
   post: PostType;
@@ -24,17 +25,20 @@ const Post = ({ post, morePosts }: Props) => {
       {router.isFallback ? (
         <PostTitle>Loading…</PostTitle>
       ) : (
-        <article>
-          <PostHeader
-            subtitle={post.subtitle}
-            title={post.title}
-            date={post.date}
-            author={post.author}
-          />
-          <PostBody content={post.content} />
-          {morePosts && <ReadMore posts={morePosts} />}
+        <>
+          <article className="post-body">
+            <PostHeader
+              subtitle={post.subtitle}
+              title={post.title}
+              date={post.date}
+              author={post.author}
+            />
+            <PostBody content={post.content} />
+            {morePosts && <ReadMore posts={morePosts} />}
+          </article>
           <UtteranceComments />
-        </article>
+          <ToTopButton />
+        </>
       )}
     </Layout>
   );

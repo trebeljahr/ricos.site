@@ -5,8 +5,8 @@
   --blue: #28b264; */
 
   --dark-blue: #0f4ce5;
-  --blue: #44a0ff;
-  --light-blue: #99ccff;
+  --blue: rgb(68, 160, 255);
+  --light-blue: rgb(153, 204, 255);
   --main-width: 95vw;
 }
 
@@ -42,6 +42,29 @@ button {
   color: var(--blue);
 }
 
+.amazonLinkHoverBox {
+  display: none;
+}
+
+.amazonLink {
+  font-size: 1.5rem;
+}
+
+/* .book-cover-image > .externalLink:hover ~ */
+.externalLink > span:hover ~ .amazonLinkHoverBox,
+.amazonLinkHoverBox:hover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  background: rgba(153, 204, 255, 0.417);
+  width: 100%;
+  height: 100%;
+}
+
 html,
 body {
   margin: 0;
@@ -59,6 +82,7 @@ a {
 
 #to-top-button {
   position: fixed;
+  font-size: 1.2rem;
   width: 2em;
   height: 2em;
   border-radius: 100%;
@@ -73,7 +97,6 @@ a {
 #to-top-button:hover {
   background-color: var(--blue);
 }
-
 h5,
 h4,
 h3,
@@ -81,32 +104,60 @@ h2,
 h1 {
   font-family: "Spartan", sans-serif;
   font-weight: bold;
+}
+
+h5,
+h4,
+h3,
+h2,
+h1 {
   padding-bottom: 1rem;
   padding-top: 1.6rem;
   margin: 0;
 }
 
 h1 {
-  font-size: 2.5rem;
+  /* font-size: 2.5rem; */
   line-height: 1.1;
 }
 
 h2 {
-  font-size: 1.6rem;
+  /* font-size: 1.6rem; */
   line-height: 1.1;
 }
 
 h3 {
-  font-size: 1.3rem;
+  /* font-size: 1.3rem; */
   line-height: 1.1;
 }
 .header {
   height: fit-content;
 }
 
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 0px;
+  padding: 0.5em 20px;
+  quotes: "\201C""\201D";
+}
+
+/* blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+} */
+
+blockquote p {
+  display: inline;
+}
+
 .header-title-with-link {
   cursor: pointer;
-  font-size: 2.5rem;
+  font-size: 2.2rem;
 }
 
 .header-title-with-link,
@@ -124,8 +175,7 @@ p,
 ul,
 ol,
 blockquote {
-  margin-bottom: 1.5rem;
-  line-height: 1.6em;
+  line-height: 1.6;
   font-family: "Libre Baskerville", serif;
 }
 
@@ -157,8 +207,8 @@ blockquote {
 }
 
 .avatar-container {
-  width: 2rem;
-  height: 2rem;
+  width: 1.5rem;
+  height: 1.5rem;
   position: relative;
 }
 
@@ -173,7 +223,7 @@ blockquote {
   align-items: center;
 }
 .post-meta {
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 .post-meta > .publish-date {
   margin-right: 10px;
@@ -185,27 +235,23 @@ blockquote {
   margin-bottom: 0;
 }
 
+.more-posts-preview-text,
 .hero-post-preview {
-  margin-bottom: 2rem;
+  color: black;
+}
+.more-posts-preview-text:hover,
+.hero-post-preview:hover {
+  color: black;
 }
 
 .header-motto {
   display: none;
 }
 
-.hero-post-preview {
-  margin-top: 1rem;
-}
-
-.more-posts-preview {
-  margin-bottom: 2rem;
-}
-
 .hero-post-image,
 .more-posts-image {
   position: relative;
   width: 100%;
-  margin-bottom: 1rem;
 }
 
 .hero-post-image {
@@ -217,7 +263,6 @@ blockquote {
 }
 
 .main-page {
-  margin-top: 1rem;
   height: auto;
   line-height: 1.625;
   color: #333;
@@ -226,8 +271,8 @@ blockquote {
   width: 95vw;
 }
 
-body {
-  font-size: 14px;
+html {
+  font-size: 18px;
 }
 
 .markdown > * {
@@ -247,11 +292,11 @@ body {
   color: var(--dark-blue);
 }
 
-.markdown a {
+a {
   color: var(--dark-blue);
 }
 
-.markdown a:hover {
+a:hover {
   color: var(--blue);
 }
 
@@ -282,6 +327,14 @@ li {
   cursor: pointer;
 }
 
+.book-info {
+  margin-bottom: 1rem;
+}
+
+.book-preview-text {
+  margin-top: 1rem;
+}
+
 @media only screen and (min-width: 600px) {
   .header-motto {
     display: block;
@@ -297,9 +350,11 @@ li {
   h4,
   h3,
   h2,
-  h1 {
-    padding-bottom: 2rem;
-    padding-top: 3rem;
+  h1,
+  p,
+  .post-meta {
+    padding-bottom: 1rem;
+    padding-top: 1rem;
     margin: 0;
   }
 
@@ -307,17 +362,12 @@ li {
     margin-bottom: 7rem;
   }
 
-  .hero-post-preview,
-  .post-body {
-    margin-top: 3rem;
-  }
-
   h1 {
-    font-size: 4rem;
+    font-size: 3rem;
   }
 
   h2 {
-    font-size: 3rem;
+    font-size: 2rem;
   }
 
   h3 {
@@ -332,7 +382,7 @@ li {
     margin-top: 50px;
   }
 
-  body {
+  html {
     font-size: 22px;
   }
 
@@ -374,6 +424,12 @@ li {
     position: relative;
   }
 
+  .book-info {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    grid-template-rows: auto;
+  }
+
   .more-stories-container {
     margin-bottom: 8rem;
   }
@@ -394,6 +450,7 @@ li {
   }
 
   .main-page {
+    padding-top: 1rem;
     max-width: 936px;
     margin-left: auto;
     margin-right: auto;

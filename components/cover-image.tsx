@@ -22,9 +22,6 @@ const CoverImageWithLink = ({ title, src, amazonLink }: Props) => {
         href={amazonLink}
       >
         {ImageTag}
-        <div className="amazonLinkHoverBox">
-          <span>Buy it on Amazon</span>
-        </div>
       </a>
     );
   }

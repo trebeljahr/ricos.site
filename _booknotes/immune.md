@@ -9,9 +9,7 @@ tags: ["curiosity", "learning", "non-fiction", "immunology", "biology"]
 summary: false
 detailedNotes: true
 amazonLink: "https://amzn.to/3Ky8Y2D"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 ### Introduction 

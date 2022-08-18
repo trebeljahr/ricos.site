@@ -9,9 +9,7 @@ tags: ["curiosity", "made-me-think", "evolution", "non-fiction"]
 summary: false
 detailedNotes: true
 amazonLink: "https://amzn.to/3NXPOoS"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 ## Prologue

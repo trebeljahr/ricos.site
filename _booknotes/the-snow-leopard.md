@@ -9,9 +9,7 @@ tags: ["novel", "made-me-think", "traveling", "philosophy", "buddhism", "art-of-
 summary: false
 detailedNotes: true
 amazonLink: "https://amzn.to/363AXbl"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 ## Foreword

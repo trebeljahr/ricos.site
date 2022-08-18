@@ -9,9 +9,7 @@ tags: []
 summary: false
 detailedNotes: false
 amazonLink: "https://amzn.to/37a22tW"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 > There is evil in your bones for your body has grown beyond the bodies of your brothers. But we cannot change our bones nor our body. 

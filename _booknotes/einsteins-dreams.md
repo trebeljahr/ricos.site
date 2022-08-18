@@ -9,9 +9,7 @@ tags: ["philosophy", "fiction", "novel", "made-me-think"]
 summary: false
 detailedNotes: false
 amazonLink: "https://amzn.to/3FKf8Lu"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 ## Summary: 

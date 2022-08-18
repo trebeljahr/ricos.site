@@ -9,9 +9,7 @@ tags: ["masterpiece", "non-fiction", "top-50", "made-me-think", "curiosity", "fu
 summary: false
 detailedNotes: true
 amazonLink: "https://amzn.to/3E6ojFd"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 ## Introduction

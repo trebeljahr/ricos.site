@@ -9,9 +9,7 @@ tags: ["business", "philosophy", "top-50", "made-me-think", "psychology", "econo
 summary: false
 detailedNotes: true
 amazonLink: ""
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 ## Preface

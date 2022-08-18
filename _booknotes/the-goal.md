@@ -9,9 +9,7 @@ tags: ["business", "philosophy", "novel", "ideas", "non-fiction"]
 summary: false
 detailedNotes: true
 amazonLink: "https://amzn.to/3xm560I"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 ## Introduction

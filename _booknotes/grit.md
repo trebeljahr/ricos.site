@@ -10,9 +10,7 @@ tags: ["business", "self-help", "psychology", "success-literature", "non-fiction
 summary: true
 detailedNotes: false
 amazonLink: "https://amzn.to/3zY26sE"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 ## Summary: 

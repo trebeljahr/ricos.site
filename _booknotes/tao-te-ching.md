@@ -9,9 +9,7 @@ tags: ["taoism", "buddhism", "philosophy", "made-me-think", "art-of-living", "no
 summary: false
 detailedNotes: true
 amazonLink: "https://amzn.to/3KBJUYD"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 > When nothing is done, nothing is left undone. 

@@ -10,9 +10,7 @@ tags: [ "business", "finance", "character", "investing", "non-fiction"]
 summary: true
 detailedNotes: true
 amazonLink: "https://amzn.to/3QgJV6B"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 ## Summary: 

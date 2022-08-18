@@ -9,9 +9,7 @@ tags: ["traveling", "business", "practical", "non-fiction"]
 summary: false
 detailedNotes: false
 amazonLink: "https://amzn.to/3FMQgmg"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 This book is worth it if you don't yet know how to travel on a budget and still need that paradigm shift of... "Oh wait, you can travel the world, while spending less money then what you would have spent when you stayed at home in Europe or the US?" 

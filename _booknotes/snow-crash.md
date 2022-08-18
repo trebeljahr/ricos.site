@@ -9,7 +9,5 @@ tags: []
 summary: false
 detailedNotes: false
 amazonLink: ""
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---

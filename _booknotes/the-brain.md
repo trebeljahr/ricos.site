@@ -10,9 +10,7 @@ tags: ["curiosity", "psychology", "non-fiction", "neuroscience", "top-50", "made
 summary: false
 detailedNotes: true
 amazonLink: "https://amzn.to/363zu4Q"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 > All the experiences in your life - from single conversations to your broader culture - shape the microscopic details of your brain. Neurally speaking, who you are, depends on where you've been. - p. 3

@@ -9,9 +9,7 @@ tags: ["self-help", "psychology", "business", "communication", "top-50"]
 summary: false
 detailedNotes: false
 amazonLink: "https://amzn.to/3laqOgX"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 This is one of the best self helf books in existence. The insights, even though in the end, somehow basic in nature, are incredibly powerful ideas about how humans interact with one another efficiently. To me the title is one of the most misleading, because it puts a bad wrap to the whole book, because it makes it seem to be about manipulation, but that couldn't be further from the truth. In reality the book is simply about one thing - getting along with people well and building lasting, genuine relationships with them. 

@@ -9,9 +9,7 @@ tags: ["curiosity", "made-me-think", "top-50", "biology", "evolution", "non-fict
 summary: false
 detailedNotes: true
 amazonLink: "https://amzn.to/3xi1mNW"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 **Book Recommendation:** The Evolution of Cooperation by Robert Axelrod

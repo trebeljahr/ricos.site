@@ -9,9 +9,7 @@ tags: ["evolution", "mind", "made-me-think", "non-fiction"]
 summary: false
 detailedNotes: true
 amazonLink: "https://amzn.to/3LhCpFw"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 ## Part I - Turning Our World Upside Down

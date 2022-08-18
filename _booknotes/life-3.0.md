@@ -10,9 +10,7 @@ tags: ["AI", "futurism", "future", "thought-provoking", "non-fiction"]
 summary: true
 detailedNotes: true
 amazonLink: "https://amzn.to/3zlRYbi"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 ## Summary: 

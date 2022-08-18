@@ -9,9 +9,7 @@ tags: ["self-help", "business", "non-fiction"]
 summary: false
 detailedNotes: true
 amazonLink: "https://amzn.to/3xlYAqL"
-author:
-  name: Rico Trebeljahr
-  picture: "/assets/blog/profile.jpeg"
+
 ---
 
 Seven habits is one of the most influential books I have read in my whole life. I think it's the best self-help book out there and if the habits and principles described within it are truly understood and incorporated into your life, they have the potential to change it drastically to the better, forever. It's that impactful. 

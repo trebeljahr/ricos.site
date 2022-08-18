@@ -43,8 +43,6 @@ At a first glance these habits might not seem like much, but wherever I look, ev
 
 > We must look at the lens through which we see the world, as well as at the world we see, and that the lens itself shapes how we interpret the world. 
 
-— Steven Covey 
-
 Focus on shaping the character you have  instead of fixing short term symptoms. Longer, harder, more arduous road, but more fulfilling and worthwhile in the end. Steven Covey calls it the character ethic. 
 - integrity
 - modesty
@@ -61,8 +59,6 @@ In contrast there is the personality ethic, were people only focus on techniques
 
 > Perhaps, in utilizing our human capacity to build on the foundation of generations before us, we have inadvertently become so focused on our own building that we have forgotten the foundation that holds it up; or in reaping for so long where we have not sown, perhaps we have forgotten the need to sow. 
 
-— Steven Covey 
-
 Character is that foundation we have forgotten. If the character is not there to match the actions we want to do, no amount of technique is going to cover that flaw. The problems will remain, and no amount of help will ever be truly successful. Without a good foundation every house crumbles eventually, no matter the great building techniques used. 
 
 Paradigms are maps we make of how the world works. If one has the wrong map, it is very hard to get to the right place. Even if one works on attitude or behavior, that will not solve the problem of getting one where one actually wants to go. The accuracy of the map is the most important thing. 
@@ -77,35 +73,23 @@ And also of [WaitButWhys career map arrow](https://waitbutwhy.com/2018/04/pickin
 
 > We interpret everything we experience through these mental maps. We seldom question their accuracy; we're usually even unaware that we have them. We simply assume that the way we see things is the way they really are or the way they should be. 
 
-— Steven Covey 
-
 Conditioning, from the early childhood onwards, shapes our paradigms and therefore the way we interpret and act in the world. Past experiences rewire our brains to act and perceive differently in the future. That is called learning and happens involuntarily and almost all the time. We are literally the product of our whole lifetime worth of experience.
 
 In the book there is a short 10 seconds example of conditioning on the old/young lady optical illusion, to illustrate the point. Two people could argue for a long long time about what they see, even though they get the exact same visual input. They see different things and therefore will have a different model of reality, directly shaped by their past perceptions. Updating these models to be accurate then, in other words seeing the world for what it really is, irrespective of what we think and have experienced is the goal of getting a clear map. To do that we need to induce a paradigm shift. Or multiple shifts, continually.
 
 > Each person's interpretation of the facts represents prior experiences, and the facts have no meaning whatsoever apart from the interpretation. 
 
-— Steven Covey 
-
 Big changes require paradigm shifts. And when paradigm shifts happen, that usually means that the character changes, permanently. 
 
 > Being is seeing in the human dimension. And what we see is highly interrelated to what we are. We can't go very far to change our seeing without simultaneously changing our being, and vice versa. 
-
-— Steven Covey 
 
 There are fundamental paradigms in life, that are stable across time. They exist independent of persons and characters but are a product of the environment as a whole. In a way the principles are evolutionarily stable strategies (an idea nicely presented in [Richard Dawkins' Selfish Gene](/booknotes/the-selfish-gene)) in the human realm. Certain types of behaviors that in the long run outcompete all other strategies. And he claims those are the character ethics. 
 
 > Integrity and honest create the foundation of trust which is essential to cooperation and long-term personal and interpersonal growth. 
 
-— Steven Covey 
-
 > No step can be skipped. 
 
-— Steven Covey 
-
 > Admission of ignorance is often the first step in our education. 
-
-— Steven Covey 
 
 Acting on a lower level, while pretending to be on a higher level leads to disaster. Borrowing strength to do things from the outside world makes the person borrowing it weaker in the long run. They focus on technique and the easy, but long term bad way instead of the good and hard one. 
 
@@ -113,25 +97,20 @@ Trying to solve problems in this short term way, in itself is the problem. Becau
 
 > This new level of thinking is what The 7 Habits of Highly Effective People is about. It's a principle-centered, character-based, "inside-out" approach to personal and interpersonal effectiveness. 
 
-— Steven Covey 
-
 Inside out means, that one has to start within oneself to get lasting beneficial changes, not only somewhere within oneself but in the deepest layer, the one of our character. Building a character has to come first. And it is not a quick fix. Inside-Out is a paradigm shift. 
 
-> We must not cease from exploration and the end of all our exploring will be to arrive where we began and to know the place for the first time. - T.S. Eliot
+> We must not cease from exploration and the end of all our exploring will be to arrive where we began and to know the place for the first time. 
 
-— Steven Covey 
+— T.S. Eliot
 
-> We are what we repeatedly do. Excellence, then, is not an act, but a habit. - Aristotle
 
-— Steven Covey 
+> We are what we repeatedly do. Excellence, then, is not an act, but a habit. 
+
+— Aristotle
 
 > Our character, basically, is a composite of habits. 
 
-— Steven Covey 
-
 > Sow a thought, reap an action; sow an action, reap a habit; so a habit reap a character; sow a character, reap a destiny"
-
-— Steven Covey 
 
 In a way habits are what a character is. And a character is who we are, a bundle of neural networks reacting in particular ways to outside stimuli. Then changing those ways is what we call changing our habits, basically making it more or less likely to do certain things under certain circumstances. And the more we follow these input -> output mappings the stronger they get, until they become automatic and our character has changed. We became a different person, because our minds have changed forever in the way they are wired. 
 
@@ -139,21 +118,13 @@ Breaking and making habits takes a lot of effort. Until something has become aut
 
 > "Lift off" takes a tremendous effort, but once we break out of the gravity pull our freedom takes on a whole new dimension. 
 
-— Steven Covey 
-
 > A habit is the intersection of knowledge, skill and desire. Knowledge is the theoretical paradigm, the what to do and the why to do it. Skill is the how to do. And Desire is the motivation, the want to do it. 
-
-— Steven Covey 
 
 Maturity moves from dependence to independence to interdependence (cooperation). First you have to do it for me, then I can do it, then we can do even better if working together. The highest reaches of effectiveness are only available when people cooperate together successfully. But in order to do that, each of them, has to be independent first. Again - no step can be skipped. 
 
 > The dependence problem is a personal maturity issue that has little to do with circumstances. Even with better circumstances, immaturity and dependence often persist. 
 
-— Steven Covey 
-
 > Private Victories preceed Public Victories. You can't invest that process any more than you can harvest a crop before you plant it. It's inside-out.
-
-— Steven Covey 
 
 ## Habit 1 - Be proactive 
 
@@ -164,58 +135,38 @@ Just like the character vs. personality ethic short term fixes usually cause lon
 
 > Our most important financial asset is our own capacity to earn. If we don't continually invest in improving our own PC, we severely limit our options. We're locked into our present situationnning scared of our corporation or our boss's opinion of us, economically dependent and defensive. 
 
-— Steven Covey 
-
 Trust once destroyed is very hard to gain back. Building relationships takes time and effort and maintaining them is almost as hard. In a way one has to invest time and resources into relationships the same way one invests into monetary assets. Carefully, deliberately and over long time frames. Treating others justly and rightly, the way you want to be treated is the way to go, just like the Golden Rule states
 
 Importantly P/PC is about balance. Focusing on either one too much, is going to create bad effects. 
 
 > You are not your habits. You can replace old patterns of self-defeating behavior with new patterns, new habits of effectiveness, happiness, and trust-based relationships.
 
-— Steven Covey 
-
 > We are not our feelings. We are not our moods. We are not even our thoughts. 
-
-— Steven Covey 
 
 But what then are we?
 
 > Unaware, we will project our intentions on other people's behavior and call ourselves objective. 
 
-— Steven Covey 
-
 > Between stimulus and response, man has the freedom to choose. 
-
-— Steven Covey 
 
 The big question here is: What does that mean? Where does the decision actually come from if it does not arise in the brain as electrical patterns of neurons firing in the brain? Do we really have a free will? And if not, how does it change the idea of changing yourself to become a "better" person?
 
 > Look at the word responsibility - "response-ability" - the ability to choose your response. Highly proactive people recognize that responsibility. 
 
-— Steven Covey 
-
 Proactive people follow their own thought about values. They are not dependent on the outside circumstances, they can choose there response to stimuli according to their values. Reactive people on the other hand are highly dependent on the environment they are in. If something doesn't fit them, they can not choose. They will feel miserable. Being able to choose your response to the environment and being content from within is what proactivity is about. Freedom lies in that choice. And the harder the environment forces us the greater the personal growth that happens when we nonetheless resist being miserable. 
 
 > It's not what happens to us, but our response to what happens to us that hurts us. 
-
-— Steven Covey 
 
 All of this is essentially stoic and Buddhist wisdom. A paradigm shift to look at suffering through a different lense and condition yourself into a different model of responding. Recognizing that the brain's way of suffering is not really necessary and one can choose to feel differently if practiced enough. Especially in moments of disease where one is close to dying the response we choose can make all the difference in the world. 
 
 > What matters most is how we respond to what we experience in life. 
 
-— Steven Covey 
-
 > If you wait to be acted upon, you will be acted upon. 
-
-— Steven Covey 
 
 Language can reveal if we are proactive or reactive people. Phrases like, "I have to do it", "If only they were...", "That's me", "I can't do that" reveal the determined nature of a person. They are using them to push responsibility away from them to outside circumstances. It's not their fault, but somebody else's. So there never was anything they could have done better. 
 And that type of Reactive language becomes a self fulfilling prophecy. Kant: People like to not think for themselves but put the hard labor of thinking onto others so they don't have to do it for themselves. It's the same idea wrapped in a different package. Again. 
 
 > Proactive people subordinate feelings to values. 
-
-— Steven Covey 
 
 In other words proactivity is leveraging higher order control circuitry, like the prefrontal cortex in the brain to control emotional circuitry, like the limbic system, to achieve certain mental states, namely those were we have the ability to choose our actions with reason instead of emotion. Rationality trumping over emotionality. In a way it reminds me a bit of Jonathan Haidt, asking the question of whether or not that is possible at all or if it is like trying to wag a dog by it's tail... 
 
@@ -226,23 +177,15 @@ Reactive people tend to dislike proactive people because it reminds them of what
 
 > Proactive people aren't pushy. They're smart, they're value driven. They read reality and they know what's needed. 
 
-— Steven Covey 
-
 > Anytime we think the problem is "out there", that thought is the problem. We empower what's out there to control us. The change paradigm is "outside-in" - what's out there has to change before we can change. 
-
-— Steven Covey 
 
 Choices have consequences. When we choose we have to think about our values and the consequences and how they evaluate in light of our values. If we choose wrongly, and dislike the consequences of our decision, that's what we call mistakes. Mistakes need to be instantly acknowledged and corrected for. That's where we learn to avoid them in the future. Covering up mistakes is another mistake. We lie and break our characters even more, trying to self deceive us and rationalize our behavior to make us look good. Our response to our own mistakes is what can really hurt us. 
 
 > Chasing after the poisonous snake that bites is will only drive the poison through our entire system. It is far better to take measures immediately to get the poison out. 
 
-— Steven Covey 
-
 Making and keeping promised to ourselves is a good way to build character. Being able to introspect and reflect and derive a better version of ourselves and work towards that version consistently is what proactivity is all about. 
 
 > Work only in your circle of influence. Make small commitments and keep them. Be a light, not a judge. Be a model not a critic. Be part of the solution, not part of the problem.
-
-— Steven Covey 
  
 Don't argue for other people's weaknesses. Don't argue for your own. When you make a mistake admit it, correct it, and learn from it - immediately. Don't get into a blaming, accusing mode. Work ob things you have control over. Work on you. 
 
@@ -252,11 +195,7 @@ Short exercise - envision own funeral and imagine what you would want other peop
 
 > To begin with the end in mind means to start with a clear understanding of your destination. 
 
-— Steven Covey 
-
 > It's incredibly easy to get caught up in an activity trap, the busyness of life, to work harder and harder ant climbing the ladder of success only to discover it's leaning against the wrong wall. It is possible to be busy - very busy - without being very effective. 
-
-— Steven Covey 
 
 Spending time figuring out what you really want is time wisely spent. Similar to the saying, if I have 8 hours to cut down a tree with an axe I'll spend the first 7 sharpening the axe. It also reminds me of WaitButWhys idea of drawing a career direction arrow. Figuring out the where you want to go, is more important than going. It's a paradigm shift, exchanging the map, to have an accurate representation of reality and therefore know where we want to go. 
 
@@ -266,11 +205,7 @@ Things are created twice, first in the mind and then in reality. We plan before 
 
 > Management is efficiency in climbing the ladder of success; leadership is determining whether the ladder is leaning against the right wall. 
 
-— Steven Covey 
-
 > The leader is the one who climbs the tallest tree, surveys the entire situation, and yells: "Wrong jungle!" 
-
-— Steven Covey 
 
 > But how do the busy, efficient producers and managers often respond? "Shut up! We're making progress."
 
@@ -280,19 +215,13 @@ To begin with the end in mind means to write our own script. Usually families an
 
 > In developing our own self-awarenes many of us discover ineffective scripts, deey embedded habits that are totally unworthy of us, totally incongruent with the things we value in life. Habit 2 says we don't have to live with those scripts. We are respons-able to use our imagination and creativity to write new ones that are more effective, more congruent with our deepest values and with the correct principles that give our values meaning. 
 
-— Steven Covey 
-
 Reminds me of an article advising to write down the things you value in life like this: First write: "I believe in:" at the top, then the 5 things you value. After that, write down the top 5 things you spend your day to day life with. Then exchange the two lists.
 
 One way to build the end in mind is to write down a personal constitution. In other words to develop a philosophy or creed jotting down what values are most important and self evident. This can serve as a compass in difficult times and as a metric for making decisions then. It's the framework which guides the behavior. Yet another way to describe this end in mind is to find out what ones unique meaning in life is - what do I want to do and why? Yet another is the WaitButWhy metaphor of the golden bowl on the top of the shelf and the organization of the shelf as a whole - which needs of my yearning octopus have to be fulfilled? What are my values?
 
 > To many vacations that last too long, too many movies, too much TV, too much video game playing - too much undisciplined leisure time in which a person continually takes the course of least resistance gradually wastes a life. 
 
-— Steven Covey 
-
 > Principles don't react to anything. They don't get mad and treat us differently. They won't divorce us or run away with our best friend. They aren't out to get us. They can't pave our way with shortcuts or quick fixes. They don't depend on the behavior of others, the environment, or the current dad for their validity. Principles don't die. They aren't here one day and gone the next. They can't be destroyed by fire, earthquake or theft. Principles are deep fundamental truths. 
-
-— Steven Covey 
 
 People center their lives and decisions around different things. Examples for centers are Money, Status, Spouse, Family, Friends, Pleasure, Work... Choosing the right center is of most importance. All centers outside of oneself are bad since they shift the locus of control over how one is feeling and the sense of self worth to something beyond our control. Furthermore all centers that can change their values are also wrong.
 Giving up that control of who we are and how we react is against the 7 Habits. The only logical center worth it, is one built around solid self evident principles, accurate maps of effectiveness. They don't change hence we can build on them as the center and foundation of our lives. 
@@ -310,8 +239,6 @@ Visualisation can also be used as a tool to clearly put into perspective what it
 
 > Writing is a mind if psycho-neural muscular activity which helps bridge and integrate the conscious and subconscious minds. Writing distills, crystallizes, and clarifies thought and helps break the whole into parts. 
 
-— Steven Covey 
-
 Organizations with written mission statements can be very effective. The key is that all the people in the organization have to be a part of the mission statement. Without involvement the effectiveness of the statement is 0. Furthermore the statement has to be in alignment with the reward system. Rewarding people for the right things is key and figuring what the right things are together is what involvement cries for. 
 
 ## Habit 3 - Put first things first
@@ -320,11 +247,7 @@ Two questions:
 
 > What I've thing could you do (something your aren't doing now) that, if you did it on a regular basis, would make a tremendous positive difference in your personal life?
 
-— Steven Covey 
-
 > What one thing in your business or professional life would bring similar results?
-
-— Steven Covey 
 
 Habit 3 is about putting the mental creation of Habit 2 into reality. It is about implementing of the person we want to be. So to quickly summarize, know that you can change, decide what you want to change into, then change. 
 
@@ -332,19 +255,13 @@ Self awareness, imagination, conscience and independent will are the four human 
 
 > Empowerment comes from learning how to use our independent will in the decisions we make every day. 
 
-— Steven Covey 
-
 This type of will, that persists against the odds is what grit is about. In a way once we know our direction, we should implement relentlessly. Habits 1 and 2 are figuring out the direction, which jungle one is in and habit 3 is figuring out the day to day decisions. Habit 3 is walking the talk. 
 
 > Integrity is the value we place on ourselves. 
 
-— Steven Covey 
-
 Doing the things that hurt but which are necessary is what is needed for success. The people able to get themselves to do it are successful, the others aren't. If you can do something that hurts others a lot but doesn't hurt you, and is beneficial for the view of your values and principles you can create great things.  
 
 > "Time management" is really a misnomer - the challenge is not to manage time, but to manage ourselves. 
-
-— Steven Covey 
 
 I question how this idea of time management, even if it means managing ourselves relates to the story of Momo? Why is all that talk about effectiveness necessary for a good life?
 
@@ -362,17 +279,11 @@ To get time for quadrant II we need to learn to say no. In a way quadrant II has
 
 > The enemy of the "best" is often the "good". 
 
-— Steven Covey 
-
 > If you want to get something done, give it to a busy man.
-
-— Steven Covey 
 
 Being able to do Quadrant II activities only is the hard part. Steven Covey thinks it is about getting habit 2 straight. If you have the strength of conviction, if you truly have the end in mind, then the sacrifices will not feel like sacrifices anymore. Like a priest entering the celibate, the sacrifice will be worth if we get to the goal. Therefore getting the center right - having the goal in mind strong enough is the first step. 
 
 > Your independent will alone cannot effectively discipline you against your center. Form follows function. Management follows Leadership. 
-
-— Steven Covey 
 
 The above quote reminds me a lot of a section from [John Bogle's Enough.](/booknotes/enough)
 
@@ -386,21 +297,15 @@ Because fundamentally our brains are not at all wired for quadrant II activities
 
 > Only when you have the self awareness to examine your program - and the imagination, and conscience to create a new, unique, principle-centered program to which you can say "yes" - only then we you have sufficient independent will power to say "no", with a genuine smile, to the unimportant. 
 
-— Steven Covey 
-
 This sums it up succinctly. Furthermore it has some more detail inherent in it - namely you know which things to say yes and no to for the first time only after successfully completing habits 1 and 2. 
 
 Time management generations 1-3 (todo-lists, calendar, daily and biweekly priority planning) are problematic in their own ways. Even though they improve upon each other majorly. Generation 3 is essentially the modern version of agile planning and he succinctly saw its problems decades before it became as popular as it is nowadays. Here he summarizes it: 
 
 > It lacks realism, creating the tendency to over-schedulr the day, resulting in frustration and the desire to occasionally throw away the plan and escape to Quadrant IV. And its efficiency, time management focus tends to strain relationships rather than build them. 
 
-— Steven Covey 
-
 Essentially - people get annoyed with meeting culture because they can not get any work done anymore and do the important stuff during hackathons and side projects and during "work" time start procrastinating, leading to deadline slips and more planning overhead. Destroying trust and relationships and majorly decreasing efficiency. 
 
 > We accomplish all that we do through delegation - either to time or to other people. 
-
-— Steven Covey 
 
 Two ways of delegation, gofer and stewardship. Essentially micromanaging the other person vs. setting up rewards and incentives in such a way that a person can work on themselves. Only the later one can increase efficiency substantially. It takes more time to set up initially but that investment pays off later. To do it correctly one needs to be clear on 5 points. 
 - desired results
@@ -411,19 +316,13 @@ Two ways of delegation, gofer and stewardship. Essentially micromanaging the oth
 
 > Management is essentially moving the fulcrum over, and the key to effective management is delegation.
 
-— Steven Covey 
-
 > Trust is the highest form of human motivation. It brings out the very best in people. But it takes time and patience, and it doesn't preclude the necessity to train and develop people so that their competency can rise to the level of that trust. 
-
-— Steven Covey 
 
 The trick to effective management is to pick the 5 points from above to the correct level of skill and trust of the person being managed. All of the things should increase in scale slowly as a person becomes better able to boss themselves around and become an independent contributor to the greater good of the organisation that you are managing. And that is hard but rewarding work to set up correctly. 
 
 ## Part Three - Public Victory
 
 > Real self respect comes from dominion over self from true independence. Independence is an achievement. Interdependence is a choice only independent people can make. 
-
-— Steven Covey 
 
 Idea of the emotional bank account as a measure of trust in a relationship. Like money in a bank, you can add to it by hard work, and deplete it, even very fast, by bad choices and mistakes. Building and maintening a high emotional bank account is the key to successful relationships with other humans. 
 Deposits are: 
@@ -434,25 +333,17 @@ When trust account is overdrawn, flexibility in the relationships gets smaller. 
 
 > A relationship may end up in a cold wat at home, sustained only by children, sex, social pressure, or image protection. Or it may end up in open warfare in the courts, where bitter ego-destroying legal battles can be carried out for years as people endlessly confess the sins of the former spouse. 
 
-— Steven Covey 
-
 ### 6 ways of making deposits: 
 
 1. Truly understanding is the most important relationship building activity one can have. Everything else builds on it, because to understand what is taxing or building trust with a person you need to know the person well. You have to make what is important to the other person, as important to you as the other person is to you. 
 
 > Our tendency is to project out of our own autobiographies what we think other people want or need. 
 
-— Steven Covey 
-
 #### 2. Attend to details 
 
 > In relationships the little things are the big things.
 
-— Steven Covey 
-
 > Inside, even with the most toughened and calloused exteriors, are the tender feelings and emotions of the heart. 
-
-— Steven Covey 
 
 #### 3. Keep Commitments
 
@@ -462,8 +353,6 @@ Promises are assurances of trust and breaking them is the most sure way to loose
 
 > Unclear expectations in the are of goals also undermine communication and trust. 
 
-— Steven Covey 
-
 In a way this is a rehash of the first idea, understanding others. If you misunderstood, that means you should pay more attention the next time and ask more about things that might be unclear. But also make your own expectations clear, to make it easy to be understood. 
 
 #### 5. Showing Personal Integrity
@@ -471,8 +360,6 @@ In a way this is a rehash of the first idea, understanding others. If you misund
 Integrity means to live up to our words. To keep promises and live up to clear expectations set. Defending those who are absent is important. Don't talk about others badly in a way that you wouldn't do if they were there. Similarly don't talk secrets of others, because that removes trust.
 
 > Integrity is simply this: Treat everyone by the same set of principles. 
-
-— Steven Covey 
 
 After a mistake that damages a relationship apologize immediately and genuinely. 
 
@@ -491,15 +378,11 @@ Problems create the opportunity for growth. In resolving problems of production 
 
 > Win/Win is a frame of mind and heart that constantly seeks mutual benefit in all human interactions. 
 
-— Steven Covey 
-
 Win/Win is playing a positive sum game. Increasing the pie, finding a better way that doesn't need compromises. A way that favors cooperation above competition. 
 
 Win/Lose is the default way we are scripted though. Society is built mostly around win/lose. Academics, Education, Law, Athletics etc. all have only one winner. Even the games children play have the same principle at their heart. The problem is, that the natural world is organized into hierarchies and adverserial games which are of course zero sum games. Thinking win/win means breaking out of this cycle of "I win, you lose" and seeing the bigger picture, namely that we can change reality and both win more than we alone ever could. 
 
 > Lose/Lose is the philosophy of adversarial conflict, the philosophy of war. 
-
-— Steven Covey 
 
 People can become blind to what they could have and just want to see others ruined, hurting themselves, just to see the other hurt as well. The husband selling things for ridiculous prices just so the wife doesn't get any money from him in the divorce. 
 
@@ -510,38 +393,27 @@ But in most realities, where long term consequences of second and third orders a
 
 > If you can't reach a true Win/Win, you're very often better off to go for No Deal. 
 
-— Steven Covey 
-
 Win/Win has requirements on the parties involved: 
 Character - namely 3 Traits 
 - Integrity - if either party doesn't have it they can not know and communicate what is a win for them, hence win/win is impossible
 - Maturity 
 > The ability to express one's own feelings and convictions balanced with consideration for the thoughts and feelings of others.
 
-— Steven Covey 
-
 > The basic task of leadership is to increase the standard of living and the quality of life for all stakeholders. 
-
-— Steven Covey 
 
 Maturity is balancing the right amounts of courage and consideration which is necessary to create a win to both parties in a relationship. 
 - Abundance Mentality
 > Most people are deeply scripted in the Scarcity Mentality. The Scarcity Mentality is the zero-zum paradigm of life. To win simply means to beat.
 
-— Steven Covey 
-
-
 > Often people with a Scarcity Mentality harbor secret hopes that others might suffer misfortune - not terrible misfortune, but acceptable misfortune, that would keep them "in their place". They're always comparing. Always competing. They give their energies to possessing things or other people in order to increase their sense of worth.
 
-— Steven Covey 
+— Steven Covey
 
 I have a strong feeling of suspicion that I am scripted in the Scarcity Mentality as well. Sometimes I want to see other people lose, just to feel better myself, and observing that fact about me is a bit creepy and something that I have to change. Maybe ask yourself if you are similar?
 
 If sharing flows from the abundance mentality it is critical to draw clear lines and boundaries. To not be taken advantage of from other trying to push on their Win/Lose scarcity mentality. But in doing so one has to be extremely careful, to not fool oneself into the scarcity mentality again, finding rationalizations that make it seem okay.The balance between courage and consideration - i e. maturity is the key here. 
 
 > A character rich in integrity, maturity, and the Abundance Mentality has a genuineness that goes far beyond technique, or lack of it, in human interaction. 
-
-— Steven Covey 
 
 This description makes me think of: 
 - [Naval Ravikant](/booknotes/navalmanack),
@@ -554,8 +426,6 @@ The second thing necessary for Win/Win are relationships. Character builds those
 
 > Trust is the essence of Win/Win. Without it, the best we can do is compromise; without trust we lack the credibility for open, mutual learning and communication and real creativity. 
 
-— Steven Covey 
-
 The third ingredient to Win/Win are Agreements, which solid relationships make possible. Again the five things need to be clear. 
 - Desired Results (expectations) 
 - Guidelines
@@ -567,8 +437,6 @@ When they are set up correctly, Win/Win agreements enable each party to manage t
 
 > It is much more ennobling to the human spirit to let people judge themselves than to judge them. 
 
-— Steven Covey 
-
 Win/Win management and agreements are about results, not methods. That's a paradigm shift. To stewardship delegate is the real benefit of Win/Win. It creates production capability and therefore makes the pie bigger. Creating the positive sum necessary so that both parties can win. 
 
 In Win/Win agreements there are 4 kinds of consequences - financial, psychological, opportunity, responsibility.
@@ -577,11 +445,7 @@ Systems of competition and contest harm Win/Win agreements within organizations.
 
 > So often the problem is in the system, not in the people. If you put good people in bad systems, you get bad results. You have to water the flowers you want to grow. 
 
-— Steven Covey 
-
 > Win/Win is not a personality technique. It's a tot paradigm of human interaction. It comes from a character or integrity, maturity and the Abundance Mentality. It grows out of high trust relationships. It is embodied I. Agreements that effectively clarify and manage expectations as well as accomplishment. It thrives in supportive systems.
-
-— Steven Covey 
 
 ## Habit 5 - Seek first to understand, then to be understood
 
@@ -591,19 +455,13 @@ Reading, writing, speaking and listening are the four fundamental forms of commu
 
 > The ability to do them well is absolutely critical to your effectiveness. 
 
-— Steven Covey 
-
 Communication is the most important skill there is in an interdependent reality. Yet we have not spent a considerable amount of time really learning it. How to do it really well, especially in the realm of listening and understanding other people properly. And the problem is really that people in the realm of communication sense duplicity and manipulation. Quick fixes can not cut it and effective communication has to start with a solid character. 
 
 > Unless you're influenced by my uniqueness, I'm not going to be influenced by your advice. 
 
-— Steven Covey 
-
 To be able to listen well we need to know what comes first. And it's not our ego that we are centered on, but principles. Therefore we have to subdue our ego when listening and stop projecting our own autobiography onto the circumstances of others. Our presentation of ourselves in communication matters less than the health of the relationship. And so listening is an act of giving up our representation. 
 
 > Most people do not listen with the intent to understand; theyjdgen with the intent to reply. They're either speaking or preparing to speak. They're filtering everything through their own paradigms, reading their autobiography into other people's lives. 
-
-— Steven Covey 
 
 I think the skill necessary to do this is humility, which is a form of ego dissolution. Giving up oneself, to emulate what the other person thinks and feels is to truly understand. 
 
@@ -611,13 +469,9 @@ Question to myself: Did I ever really listen empathetically? What must it feel l
 
 > Empathic listening is so powerful because it gives you accurate data to work with. Instead if projecting your own autobiography and assuming thoughts, feelings, motives and interpretations, you're dealing with the reality inside another person's head and heart. You're listening to understand. You're focused on receiving the deep communication of another human soul. 
 
-— Steven Covey 
-
 How can you do that in group contexts? Where communication has other purposes, like quipping and peer signaling and such zero sum game stuff?
 
 > Satisfied needs don't motivate. Its only the unsatisfied need that motivated. Next to physical survival, the greatest need of a human being is psychological survival - to be understood, to be affirmed, to be validated, to be appreciated. 
-
-— Steven Covey 
 
 What happens if two seven habit style listeners encounter each other? In other words - when to switch roles from empathic listening to empathic storytelling, to advice giving, go counseling, to lecturing etc.
 When to broadcast? Or how do you know that you listened enough and should respond?
@@ -626,13 +480,9 @@ Also, how do you know that you really have the character that makes you perceive
 
 > Empathic listening is also risky. It takes a great deal of security to go into a deep listening experience because you open yourself up to be influenced. You become vulnerable. It's a paradox, in a sense, because in other to have influence, you have to be influenced. That means that you have to really understand. 
 
-— Steven Covey 
-
 Again the question is how to amalgamate that deep understanding with advice - if you influence, that means that you see things as the other person sees them + something more from your experience, that can help to solve the problem. How then can you truly understand and then snap out of that understanding, pushing in just enough of yourself to solve the problem of the other person by providing them a paradigm shift?
 
 > The key to good judgement is understanding. By judging first, a person will never fully understand. 
-
-— Steven Covey 
 
 Four stages of empathic listening
 
@@ -642,60 +492,38 @@ Really taking the time to learn how to listen empathically and then to listen an
 
 > People want to be understood. And whatever investment of time it takes to do that will bring much greater returns of time as you work from an accurate understanding of the problems and issues and from the high Emotional Bank Account that results when a person feel deeply understood. 
 
-— Steven Covey 
-
 People are very different and can see the world through their lenses very differently yet both be right. Empathic listening and habit 5 are a way of countering that strong bias, to always believe what we think and perceive is right. 
 
 > Our perceptions can be vastly different. And yet we both have lived with our paradigms for years, thinking they are "facts", and questioning the character or the mental competence or anyone who can't "see the facts."
-
-— Steven Covey 
 
 The second half of habit 5 - seeking to be understood - maturity is the balance between courage and consideration. Understanding others is consideration. Seeking to be understood is courage. 
 Greeks already had that figured out - ethos, pathos, logos. Integrity and trust, followed by empathy and relationships and then logical reasoning to also get what you want. 
 
 > Who do they send back to school when the salesman doesn't sell - the buyer?
 
-— Steven Covey 
-
 > If you can present your own ideas clearly, specifically, visually and most important, contextually - in the context of a deep understanding of other people's paradigms and concerns - you significantly increase the credibility of your ideas. 
 
-— Steven Covey 
-
 > And watch what happens to you. The more deeply you understand other people, the more you will appreciate them, the more reverent you will feel about them. To touch the soul of another human being is to walk on holy ground. 
-
-— Steven Covey 
 
 Practicing empathic listening is important. It's a skill that has to be build. In the beginning maybe even tell people why you are doing it, so it doesn't seem manipulative but genuine, which it is. Have one on ones, where you listen and understand, in your important roles in life, in family, friends and business.
 
 > Set up human resource accounting or stakeholder information systems in your business to get honesty accurate feedback at every level: from customers, suppliers, and employees. Make the human element as important as the financial or the technical element. 
 
-— Steven Covey 
-
 ## Habit 6 - Synergize
 
 > What is synergy? Simply defined, it means that the whole is greater than the sum of its parts. It means that the relationship which the parts have to each other is a part in an of itself. It is not only a part, but the most catalytic, the most empowering the most unifying, and the most exciting part. 
-
-— Steven Covey 
 
 Synergy is everywhere in nature, it means adventure and not knowing where you are heading, trailblazing, adventuring. It can build more than the sum of the parts. And it is still to start with the end in mind even if one doesn't know where one is going. Because the end in mind is the highest reaches of human effectiveness. It is also leaving the room for the unexpected, the creative. That's why people need the first five habits to be able to properly synergize. The character core and strong interdepend relationships have to be there first, to have the security to explore what's creatively possible. 
 
 > Synergy is almost as if a group collectively agrees to subordinate old scripts and to write a new one. 
 
-— Steven Covey 
-
 > Once people have experienced real synergy, they are never quite the same again. They know the possibility of having other such mind-expanding adventures in the future. 
-
-— Steven Covey 
 
 Synergy is about seeking the higher, middle way. The one that is a better solution for everybody involved. It's not about finding a compromise but about producing a novel creative win/win situation, one in which the pie actually got bigger. 
 
 > Unity, or oneness is complementariness, not sameness. Sameness is uncreative... And boring. The essence of synergy is to value the differences. 
 
-— Steven Covey 
-
 > The person who is truly effective has the humility and reverence to recognize his own perceptual limitations and to appreciate the rich resources available through interaction with the hearts and minds of other human beings. That person values the differences because those differences add to his knowledge, to his understanding of reality. When were left to our own experiences, we constantly suffer from a shortage of data. 
-
-— Steven Covey 
 
 Trust and understanding underlie synergy. Once those are there, even broken relationships can be mended and creative solutions found, that are truly win/win. 
 
@@ -703,9 +531,9 @@ Differences in opinion should be used as opportunities. Different lenses and par
 
 ## Habit 7 - Sharpen the Saw - Principles of Balanced Self-Renewal
 
-> Sometimes when I consider what tremendous consequences come from little things... I am tempted to think... That there are no little things. - Bruce Barton
+> Sometimes when I consider what tremendous consequences come from little things... I am tempted to think... That there are no little things. 
 
-— Steven Covey 
+— Bruce Barton
 
 There are four aspects of a good life - or philosophy of life. They are:
 physical, social, mental and spiritual. Habit 7 is about expressing all of them over and over again throughout life, regularly putting in work into the biggest and only asset one has - oneself. 
@@ -718,11 +546,7 @@ The mental renewal is about continuing education and learning throughout life. I
 
 > It is extremely valuable to train the mind to stand apart and examine its own  program. That, to me, is the definition of a liberal education - the ability to examine the programs of life against larger questions and purposes and other paradigms. 
 
-— Steven Covey 
-
 > Proactive people can figure out many, many ways to educate themselves. 
-
-— Steven Covey 
 
 Reading is one of the most effective ways of doing this. Because one can learn from the best of the last centuries and pick apart and contrast their paradigms with ones owns and that of others, teasing out what is really good and true. Other ways to mentally renew are writing, keeping a clear, concise flow of thoughts, as well as planning and organizing ones life. 
 
@@ -732,42 +556,28 @@ The social renewal is about Habits 4,5 and 6.
 
 > The social and the emotional dimensions of our lives are tied together because our emotional life is primarily, but not exclusively, developed out of and manifested in our relationships with others. 
 
-— Steven Covey 
-
 > Peace of mind comes when your life is in harmony with true principles and values and in no other way.
-
-— Steven Covey 
 
 We can script other people to become principle centered as well and he would see that as a good thing. As a service to them. Truly seeing the best what another can be and then showing it to them and believing they can achieve that dream, their potential, is rescripting them to believe into themselves and what they can become. In a way they are self fulfilling prophecies. 
 
-> Treat a man as he is and he will remain as he is. Treat a man as he can and should be and he will become as he can and should be. - Goethe
+> Treat a man as he is and he will remain as he is. Treat a man as he can and should be and he will become as he can and should be. 
 
-— Steven Covey 
+— Goethe
 
 Effective fenewal is about balancing the four aspects of it. 
 
 > We can't effectively thrive without making money, but that's not sufficient reason for organizational existence. We can't live without eating, but we don't live to eat. 
 
-— Steven Covey 
-
 > Your economic security does not lie in your job; it lies in your own power to produce - to think, to learn, to create to adapt. That's true financial independence. It's not having wealth; it's having the power to produce wealth. It's intrinsic. 
-
-— Steven Covey 
 
 There is an upward spiral of the 7 Habits. They synergize with each other and are guided by the voice of conscience. That's what makes us different from animals and is what empowers us to do the good and correct thing, what helps us to learn right from wrong and then consistently act out the good, making our lifes centered on principles and accurate maps of reality. People who don't use this human endowment behave like animals, because in a way they are, they don't take the responsibility to rescript their reaction to stimuli, they in other words, don't listen to their conscience. They are "being lived" by the world around them. 
 
 > To become divine is the aim of life. Then only can truth be said to be ours beyond the possibility of loss. It is no longer outside us, not in a sense even in us, but we are it, and it is we. 
 
-— Steven Covey 
-
 This idea in a way is reflected in different philosophies under different names, the Buddhists call it awakening or enlightenment, but the same idea exists as the Greek Eudaimonia or the philosophers king, or even as the Stoic Sage. That is to say that different religions and philosophies have discovered the same underlying principles of effectiveness, independent fr each other, and interpreted them in their different value systems. But the principles are the same.
 
 > There is an internal sense of the principle of justice or win/win. There is an internal moral sense of the principles of responsibility, of the principle of purpose, of integrity, of respect, of cooperation, of communication, of renewal. These are universal. But practices are not. They are situationally specific. Every culture interprets universal principles in unique ways. 
 
-— Steven Covey 
-
 Words are boxes of abstractions put around complex ideas. It makes those ideas usable in a shorthand form, similar to abstractions of an API layer interface. One can drill down into the details of those words, but usually that's not necessary. Seven Habits is about creating those words around effectiveness. Win/Win, Proactivity, End in Mind, Understand First, Synergize, First Things First, Sharpen the Saw... All of them are just boxes to make the concepts easier to communicate and stick in mind. That's what makes them so powerful, because a complex thing can become better integrated into behavior that way. 
 
 > High tech without high touch does not work. 
-
-— Steven Covey 

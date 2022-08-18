@@ -43,7 +43,10 @@ const HeadingRenderer: React.FC<HeadingResolverProps> = ({
   }
 };
 
-const ParagraphRenderer = (paragraph: { children?: boolean; node?: any }) => {
+const ParagraphRenderer = (paragraph: {
+  children?: JSX.Element[];
+  node?: any;
+}) => {
   const { node } = paragraph;
 
   if (node.children[0].tagName === "img") {
@@ -77,7 +80,14 @@ const ParagraphRenderer = (paragraph: { children?: boolean; node?: any }) => {
       </div>
     );
   }
-  return <p>{paragraph.children}</p>;
+
+  const className =
+    paragraph.children?.length &&
+    (paragraph.children[0] as unknown as string)[0] === "—"
+      ? "quote-author"
+      : "";
+
+  return <p className={className}>{paragraph.children}</p>;
 };
 
 const LinkRenderer = (props: any) => {

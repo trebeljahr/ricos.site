@@ -149,13 +149,16 @@ h3 {
 blockquote {
   background: #f9f9f9;
   border-left: 10px solid #ccc;
-  margin: 1.5em 0px 0px 0px;
+  margin: 1.5em 0px;
   padding: 0.5em 20px;
   quotes: "\201C""\201D";
 }
 
-blockquote + p {
+blockquote + .quote-author {
+  margin-top: -1.5em;
+  margin-bottom: 1.5em;
   padding-top: 5px;
+  padding-bottom: 0px;
   padding-left: 0px;
 }
 

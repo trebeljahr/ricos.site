@@ -6,11 +6,48 @@ bookAuthor: "Daniel C. Dennett"
 rating: 8
 done: true
 tags: ["evolution", "mind", "made-me-think", "non-fiction"]
-summary: false
+summary: true
 detailedNotes: true
 amazonLink: "https://amzn.to/3LhCpFw"
-
 ---
+
+## Summary: 
+
+This is a book about a few very deep and important question - how can physics give rise to life... and how can life give rise to intelligent, comprehending minds? 
+
+The short answer to both of these questions is ... *handwave* ... evolution. 
+
+Core ideas of the book:
+- Comprehension is not necessary for competence to arise. 
+- Competence can give rise to comprehension. 
+- Dualism is the thought that there is a divide between mind and matter
+- The "Cartesian wound" -> people don't like thinking of the mind as physical
+- Shannon's Information !== Dennett's Information
+- Dennett's information is "Design worth Stealing" -> same idea as in [Life 3.0 by Max Tegmark](/booknotes/life-3.0) namely that information processing systems can encode patterns about the world, and those systems which use those extracted patterns survive. Exactly the same idea also crops up again in [Complexity by Mitchell Waldrop](/booknotes/complexity) as the idea that life is encoding and exploiting regularities of the world (designs worth stealing). And it is also there in [The Beginning of Infinity](/booknotes/the-beginning-of-infinity) and [The Fabric of Reality](/booknotes/the-fabric-of-reality). David Deutsch defines life as physical phenomena that exploit information about the laws of physics and therefore persist within the physical world. 
+- All of those ideas boil down to the same thing though: Finding patterns in the world helps organisms survive and the search for better patterns is evolution.
+- In other words: Evolution finds reasons to organize matter into different shapes
+- One such arrangement are brains.
+- Brains can adapt to circumstances in "real" time.
+- Brains can build competences, based on feedback loops.
+- Brains are built out of neurons. 
+- Neurons act independently, like agents in a free market economy, competing for resources, like neurotransmitters and glucose. 
+- Those resources are rewarded to neurons that did things deemed good for survival. DNA only specifies ideas of reward functions (things deemed good vs. bad to the organism). 
+- Neurons can still cooperate. Neurons which do, perform better. Cooperating neurons form brains.
+- Brains don't need comprehension to be useful. Feedback loops and reflexes are more than useful on their own to steer behavior of organisms. 
+- Brains, however, can produce comprehension (minds), by evolving together with words.
+- Words "want" to reproduce in the brains of their users
+- Initial Words have no purpose, they are just good at reproducing in human brains
+- Brains adapt to use words, thereby shaping the further evolution of words
+- Words improve their usefulness, they get better tools for reasoning over time
+- Words evolve in an ecosystem of other words
+- Words that act together in cooperation are more useful, hence words that act together have a higher likelyhood of survival
+- Words evolve together, forming bigger groups (eventually languages) over time
+- Words then again, influence brains, extending their usefulness and opening up further uses for new/different words as well. 
+- Words and brains evolve together.
+- Words change brains into minds. Eventually minds can have comprehension, because they are brains that have words and language that helps them comprehend.
+ 
+
+## Notes: 
 
 ## Part I - Turning Our World Upside Down
 
@@ -69,7 +106,7 @@ Dualism is wrong. Consciousness is not something supernatural or different from 
 
 **Book Recommendation** - Scientific Realism and the Plasticity of Mind
 
-> When you think about it, it is just amazing how much we human beings have figured out in the few centuries since Descartes. We know how atoms are structured, how chemical elements interact, how plants and animals propagate, how microscopic pathogens thrive and spread, how continents drift, how hurricanes are born, and much, much more. We know our brains are made of these same ingredients as all other things we've explained, and we know that we belong to an evolved lineage that can be traced back to the dawn oof life. 
+> When you think about it, it is just amazing how much we human beings have figured out in the few centuries since Descartes. We know how atoms are structured, how chemical elements interact, how plants and animals propagate, how microscopic pathogens thrive and spread, how continents drift, how hurricanes are born, and much, much more. We know our brains are made of these same ingredients as all other things we've explained, and we know that we belong to an evolved lineage that can be traced back to the dawn oof life.
 
 The idea of Cartesian Gravity is that there happens a flip when one gets to close to the first person perspective of consciousness, a paradigm shift, away from scientific thinking, to the dualistic idea of a "soul" within the mind, because that's how it feels like. Dennett compares it to the way one can look at the Necker cube illusion and never see both things in focus at the same time. Cartesian Gravity is just like that. Some people call it the "explanatory" gap. 
 
@@ -118,11 +155,11 @@ The real question though is:
 
 Design Stance -> Design is abundant in nature. Everything is teleological. 
 
-Contrasted with the physical stance, everything just *happens* according to the laws of physics. (I think this is beautifully dismantled already as impossible by David Deutsch - emergent phenomena have simply no place in physics and govern large scale physical things more than the physical laws themselves. Intelligent life and it's creations can alter the way physics would "normally" unfold)
+Contrasted with the physical stance, everything just *happens* according to the laws of physics. (I think this is beautifully dismantled already as impossible by David Deutsch in [The Beginning of Infinity](/booknotes/the-beginning-of-infinity)- emergent phenomena have simply no place in physics and govern large scale physical things more than the physical laws themselves. Intelligent life and it's creations can alter the way physics would "normally" unfold)
 
-> Evolution is a set of processes that "find" and "track" reasons for things to be arranged one way rather than another. 
+> Evolution is a set of processes that "find" and "track" reasons for things to be arranged one way rather than another.
 
-Evolution gradually brought reasons for functionality and structural arrangements of matter into being. It is turning the physics stance into the design stance. And since it only needs simply physics, evolution is bound to happen gradually in our universe. 
+Evolution gradually brought reasons for functionality and structural arrangements of matter into being. It is turning the physics stance into the design stance. And since it only needs simply physics, evolution is bound to happen gradually in our universe.
 
 > I want to defend the claim that there are reasons for what proteins do, and there are reasons for what bacteria do, what trees do, what animals do, and what we do. 
 
@@ -364,7 +401,7 @@ Neurons might recover traits from older generations adapting to new circumstance
 
 > Brains are computers but they are very unlike the computers in use today. Composed of billions of idiosyncratic neurons that evolved to feed for themselves, the brain's functional architecture is more like a free market than a "politburo" hierarchy where all tasks are assigned from on high. The fundamental architecture of animal brains (including human brains) is probably composed of Bayesian Networks that are highly competent expectation-generators that don't have to comprehend what they are doing. Comprehension — *our* kind of comprehension — is only made possible by the arrival on the scene quite recently of a new kind of evolutionary replicator — culturally transmitted informational entities: memes. 
 
-Brains are different from computers, neurons live and compete for resources in a free market. Forming a learning structure in the form of expectation matching bayesian machines from the bottom up. These structures can 'comprehend', but *real* comprehension is enabled only by memes. 
+Brains are different from computers, neurons live and compete for resources in a free market. Forming a learning structure in the form of expectation matching bayesian machines from the bottom up. These structures can 'comprehend', but *real* comprehension is enabled only by memes. There is a section in [Complexity by Mitchell Waldrop](/booknotes/complexity) that details that same topic beautifully.
 
 ### Chapter 9 - The Role of Words in Cultural Evolution
 

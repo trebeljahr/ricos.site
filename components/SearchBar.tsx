@@ -53,7 +53,7 @@ export function useSearch<T extends EmptyFilters>(emptyFilters: T) {
           return false;
         }
       } else if (Array.isArray(filterValue) && Array.isArray(val)) {
-        for (let tag of filterValue.slice(0, -1)) {
+        for (let tag of filterValue) {
           let tagsToSearch = val as unknown as string[];
           if (
             !tagsToSearch.some((tags) => tags.includes(tag.tag)) &&
@@ -120,7 +120,9 @@ export function Search<T extends Filters>({
   const growArray = (filterName: string) => {
     setFilters((old) => {
       const val = old[filterName].value;
-      Array.isArray(val) && val.push({ tag: "", id: nanoid() });
+      if (Array.isArray(val) && val[val.length - 1]?.tag !== "") {
+        val.push({ tag: "", id: nanoid() });
+      }
       return { ...old };
     });
   };
@@ -203,10 +205,10 @@ export function Search<T extends Filters>({
                 filterValue.map((tag, index) => {
                   if (index === filterValue.length - 1) return null;
                   return (
-                    <div key={tag.id}>
+                    <div className="tag-filter" key={tag.id}>
                       <p>{tag.tag}</p>
                       <button onClick={() => removeTag(filterName, tag.id)}>
-                        Delete
+                        <FontAwesomeIcon icon={faXmark} />
                       </button>
                     </div>
                   );

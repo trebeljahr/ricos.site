@@ -6,11 +6,35 @@ bookAuthor: "Philipp Dettmer"
 rating: 8
 done: true
 tags: ["curiosity", "learning", "non-fiction", "immunology", "biology"]
-summary: false
+summary: true
 detailedNotes: true
 amazonLink: "https://amzn.to/3Ky8Y2D"
-
 ---
+
+## Summary: 
+
+A book about how the human immune system works. It goes over the different cell types and how they work together to fight off infections, and covers how cancer and autoimmune diseases work. The main bits of understanding I came away with are these: 
+
+Your body is made up out of cells, those are made up out of proteins. Proteins are chains of amino acid, basically chemicals, twisted into complicated shapes, that do very specific things in your body, there are many proteins and they all do different things. There are a lot of cells and even more proteins. 
+
+The main problem of the immune system is to distinguish "self" from "other". This is a hard task, but the body has clever ways of doing it. One of those is that the surface of your cells is covered in specific glyco-proteins, that can show the immune sysytem if a cell belongs to your body or not. 
+
+These proteins are presented as tests to many cells in the immune system, so that they don't match them and try to attack and destroy those proteins. If immune cells fail those tests, they don't get activated and die. Sometimes this process goes wrong, hence sometimes we get auto-immune diseases.
+
+Everything in the immune system sits behind safety switches, because if things go wrong the immune system can easily kill you. 
+
+Lymphatic system is a major component of the immune system, it's draining fluids from in between cells. When infections happen, it carries immune cells to the correct location. It also carries around debris from infection sites, such as broken cells and fragments of pathogens back to lymph nodes, where strong immune cells (T-cells and B-Cells) are waiting to be activated for fighting off infections.
+
+Protein based weapons (the complement system), chemokines, cytokines and antibodies work together with different kinds of cells like T-Helper Cells, Memory Cells, Dendritic Cells, B-Cells, Plasma Cells, Neutrophiles and Macrophages to fight off infections together. The body has a multilayered defense. 
+
+The Immune System can be grouped into the Adaptive and the Innate Immune System. 
+Generally an infection is fought first with the complement system (proteins that make holes in bacteria), macrophages (that "eat" pathogens) and neutrophiles (that just kill everything at the site of infection). All of this buys time for the adaptive immune system to kick in. Here Dendritic Cells take information from the ongoing battle through the lymph system, to find T-Cells and B-Cells matching the antigens (protein bits and pieces) collected from the pathogens. T-Cells and B-Cells for literally every variant of virus, bacteria or "whatever" proteins can be found in your body, hence it takes time to find the right match. Once that happens though, the adaptive immune response kicks in, producing antibodies that specifically target and kill the specific infection within.
+
+Cells with viruses are extra hard for the immune system to detect. Luckily cells have little "windows" into the cells, that can show immune system cells outside, what is going on, inside, by showcasing proteins the cell has produced on it's surface, this way, if lots of virus proteins are produced the immune system will find it out and order the cell to destroy itself.
+
+Some pathogens are good at avoiding detection or even using the immune system as a means to an end (HIV or Covid are examples). And in certain areas, like the digestive tract or the lungs, certain measures of the immune system (like swelling up of lymph) are normally blocked, because they would cause other problems.
+
+The immune system is incredibly complex, and it's marvelous that we have one that works as good as it does. And the Immune Book does a wonderful job at showcasing the whole complexity, without being overly long and dense. Though at times I personally wish it could have gone even deeper into the nitty gritty details of the processes involved. 
 
 ### Introduction 
 

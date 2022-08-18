@@ -10,12 +10,20 @@ tags: ["AI", "futurism", "future", "thought-provoking", "non-fiction"]
 summary: true
 detailedNotes: true
 amazonLink: "https://amzn.to/3zlRYbi"
-
 ---
 
 ## Summary: 
 
-Max Tegmark wants the reader to think about the problems of AI safety and the really thorny questions related to creating machines that surpass us in intelligence someday. He reasons that this is possible and maybe even possible sooner than we think and therefore we should start working on solving these problems as soon as possible, because otherwise we might have the machines, without actually knowing what we want to do with them, and increase the potential for bad or even catastrophic outcomes by a lot. The book asks more questions than it answers but it is wonderfully thought provoking and makes you really think and envision the different futures and how they could play out. It also makes really clear, that our role in shaping and designing this future is really important, because we are ultimately the people building those machines, so we should keep in mind the question what we actually want to build and maybe answer it in depth and detail, before we actually set out to build intelligent machines. My favorite parts where honestly the ideas about consciousness and information processing/storage - specifically that computation and information storage are substrate independent. Both "take on a life of their own" and don't depend on the exact structure and properties of the matter being used to make them happen in the real life. This is why they seem a little spooky and removed from "our world" because they in fact are. Consciousness is according to Tegmark even more removed in the sense that it is a property of information processing systems - i.e. it's about the pattern of the information processing and how that happens, and therefore can exist in different systems of information processing that share those higher level patterns. It is independent of the underlying information processing system implementing it in that way. And because this system itself is substrate independent, consciousness as a whole is substrate independent twice - and that's why dealing with questions of consciousness is such a thorny and hard endeavor. It's patterns on top of patterns and that makes it really hard to grasp and outline the details as well as build experiments to measure it. Even if AI research is not your thing, you should really read this book, to open up your mind about the conversation that is going on because you can be quite sure that the results of that conversation will affect you in the coming decades, with the rise of ever smarter algorithms, helping you in your life. 
+Max Tegmark wants the reader to think about the problems of AI safety and the really thorny questions related to creating machines that surpass us in intelligence someday. He reasons that this is possible and maybe even possible sooner than we think and therefore we should start working on solving these problems as soon as possible, because otherwise we might have the machines, without actually knowing what we want to do with them, and increase the potential for bad or even catastrophic outcomes by a lot. 
+
+The book asks more questions than it answers but it is wonderfully thought provoking and makes you really think and envision the different futures and how they could play out. It also makes really clear, that our role in shaping and designing this future is really important, because we are ultimately the people building those machines, so we should keep in mind the question what we actually want to build and maybe answer it in depth and detail, before we actually set out to build intelligent machines. 
+
+My favorite parts where the ideas about consciousness and information processing/storage - specifically that computation and information storage are substrate independent. Both "take on a life of their own" and don't depend on the exact structure and properties of the matter being used to make them happen in the real life. This is why they seem a little spooky and removed from "our world" because they in fact are. 
+
+Consciousness (according to Tegmark) is even more removed in the sense that it is a property of information processing systems - i.e. it's about the pattern of the information processing and how that happens, and therefore can exist in different systems of information processing that share those higher level patterns. It is independent of the underlying information processing system implementing it in that way. And because this system itself is substrate independent, consciousness as a whole is substrate independent twice - and that's why dealing with questions of consciousness is such a thorny and hard endeavor. It's patterns on top of patterns and that makes it really hard to grasp and outline the details as well as build experiments to measure it. 
+
+Even if AI safety research is not your thing, you should really read this book, to open up your mind about the conversation that is going on because you can be quite sure that the results of that conversation will affect you in the coming decades, with the rise of ever smarter algorithms, helping you in your life.
+If AI research is your thing (after reading this book it might very well be) you should also go an read [Nick Bostrom's Superintelligence book](/booknotes/superintelligence).
 
 ## Notes
 
@@ -73,6 +81,7 @@ Even though that was a story the rest of the book is about - us. And how we woul
 ### Chapter 1 - Welcome to the Most Important Conversation of Our Time
 
 > Before our universe awoke there was no beauty. 
+
 — Max Tegmark
 
 The universe is meaningless without consciousness. Without it's just a"gigantic waste of space". 
@@ -84,6 +93,7 @@ Elementary particles after the big bang, turn into atoms, turn into stars, turn 
 #### The Three Stages of Life
 
 > Life is a process that can retain it's complexity and replicate. 
+
 — Max Tegmark
 
 Life is self-replicating information processing instantiated in the real world. The hardware is determined by the replicated information. 
@@ -132,6 +142,7 @@ Furthermore what life advice do you give them? How do you face living in a world
 The question is really - what would we like our future to look like? Because AI gives us, potentially, what we wish for. 
 
 > Intelligence is the ability to accomplish complex goals. 
+
 — Max Tegmark
 
 **Book Recommendation:** Neuromancer - Willi Gibson
@@ -175,6 +186,7 @@ Techno Skeptics think it won't happen anytime soon, AI Utopians think it will be
 ### Chapter 2 - Matter Turns Intelligent
 
 > Hydrogen given enough time, turns into people. 
+
 — Edward Robert Harrison
 
 #### What is Intelligence?
@@ -191,9 +203,10 @@ Generalization is much more important. The dream is perfect generalization - AGI
 
 Image of Hans Moravecs landscape of human competence that gets flooded by the capacities of computers slowly submerging human skills under water. 
 
-Idea of universal intelligence, once a certain intelligence threshold is reached, any goal is within reach, with enough time and resources to spend on achieving the goal. Humans are universally intelligent in that way. We are a [Beginning of Infinity in that regard](#TODO)
+Idea of universal intelligence, once a certain intelligence threshold is reached, any goal is within reach, with enough time and resources to spend on achieving the goal. Humans are universally intelligent in that way. We are a [Beginning of Infinity in that regard](/booknotes/the-beginning-of-infinity)
 
 > How can a bunch of dumb particles moving around according to the laws of physics exhibit behavior that we'd call intelligent?
+
 — Max Tegmark
 
 This is asking also, how can we think, as in how does the brain actually work? An as of yet unanswered question. 
@@ -209,6 +222,7 @@ Information storage is unique because it's a physical system that can be in a lo
 Bits are atoms of information, the smallest indivisible chunks of information. 
 
 > If you email your friend a document to print, the information may get copied in rapid succession from magnetizations on your hard drive to electric charges in your computer's working memory, radio waves in your wireless network, voltages in your router, laser pulses in an optical fiber and, final, molecules on a piece of paper. Information can take on a life of its own, independent of its physical substrate!
+
 — Max Tegmark
 
 Information is substrate independent. 
@@ -220,6 +234,7 @@ Human memory is auto associative. We don't remember where things are stored but 
 #### What Is Computation?
 
 > A computation is a transformation of one memory state into another. 
+
 — Max Tegmark
 
 Computations transform information, mathematicians call such a thing a function. 
@@ -235,9 +250,11 @@ Matter that can do any function, i.e. arbitrary computation, is turing complete 
 Computronium and Turing universality means that computation is substrate independent, you can translate any computation across all substrates, given the right instructions. If something in the real world can do NAND gates somehow, it can do everything, if scaled big enough. 
 
 > Computation is substrate independent, it can take on a life of its own. 
+
 — Max Tegmark
 
 > In short, computation is a pattern in the spacetime arrangement of particles, and it's not the particles but the pattern that really matters! Matter doesn't matter. 
+
 — Max Tegmark
 
 What is Computation? Beautiful. 
@@ -261,6 +278,7 @@ Backprop and stochastic gradient descent are used instead of Hebbian Learning in
 Networks can be recurrent, i.e. results of past computations can form input of the network. Thereby ongoing computations can be influenced by past computations. That makes the size of the networks much smaller. 
 
 > How long will it take until machines can out-compete us at *all* cognitive tasks? 
+
 — Max Tegmark
 
 Problems arise long before that point. 
@@ -305,7 +323,7 @@ Natural language ability processing is accessed on the basis of Winograd Schema 
 
 When relying on technology it better be robust otherwise the damage it can do is equal to the good it can do. 
 
-If technology is powerful enough a single bad one can wipe humans out. Nick Bostrom calls that [the black ball in the urn.](#TODO)
+If technology is powerful enough a single bad one can wipe humans out. Nick Bostrom calls that [the black ball in the urn.](https://nickbostrom.com/papers/vulnerable.pdf)
 
 With powerful enough tech, trial and error is not a good method anymore. 
 
@@ -315,7 +333,7 @@ With powerful enough tech, trial and error is not a good method anymore.
 - security -> protection against hacking
 - control 
 
-[Landscape of Security Research Map](#TODO)
+[Landscape of Security Research Map](https://futureoflife.org/landscape/)
 
 #### Laws
 
@@ -357,6 +375,7 @@ General advice be the human connection between the clever algorithm solving the 
 There will be a point where no job can be done by humans competitively cheap enough anymore. What happens at that point?
 
 > Work keeps at bay three great evils: Boredom, Vice and Need.
+
 — Voltaire
 
 #### Human Level Intelligence?
@@ -418,6 +437,7 @@ Human Level AGI might create an intelligence explosion. If humans control the ne
 ### Chapter 5 - Aftermath: The Next 10.000 Years
 
 > Humans will become as irrelevant as cockroaches. 
+
 — Marshall Brain
 
 Different outcomes characterized by 6 questions. 
@@ -509,6 +529,7 @@ Kill a lot of people, destroy the technology and records and teach people only i
 #### Self-Destruction 
 
 > In the long run we are all dead. 
+
 — John Maynard Keynes
 
 Just waiting leads to disaster eventually. Technological progress is necessary for long term survival of the human species. With incompetence or simple bad luck and technology we could eradicate ourselves sooner. 
@@ -546,6 +567,7 @@ Everything else? Doesn't matter because if you have energy and compute you can f
 #### Gaining Resources Through Cosmic Settlement
 
 > Our planet is currently 99.999999% dead. 
+
 — Max Tegmark
 
 Maximum particles possible for use - entire universe - 10^78
@@ -559,6 +581,7 @@ Speed matters a lot in colonizing, because the colonization window is closing be
 Another way would he to broadcast information on building a self replicating Probe into the cosmos and hope that other civilizations pick up the signal, build the thing and then get assimilated by it. This way, the wave of colonies would expand truly at the speed of light. We should learn from this - don't build machines, where the instructions came from outer space...
 
 > There are good scientific reasons for taking seriously the possibility that life and intelligence can succeed in molding this universe of ours to their own purposes. 
+
 — Freeman Dyson
 
 There are different ways the universe might end as well, Big Chill, Big Crunch, Big Rip, Big Snap and Death Bubbles. 
@@ -568,6 +591,7 @@ The question of how the universe will end and how long it will last is mainly im
 #### Cosmic Hierarchies
 
 > If much of our cosmos eventually comes alive, what will this life be like?
+
 — Max Tegmark
 
 Hierarchical strategies can be used to have local fast systems, and global slow ones, to together get better performance than each on their own. 
@@ -587,6 +611,7 @@ Extraterrestrial life other than us might or might not exist, however we haven't
 #### Outlook
 
 > If our current AI development eventually triggers an intelligence explosion and optimized space settlement, it will be an explosion in a truly cosmic sense: after spending billions of years as an almost neglibly small perturbation on am indifferent lifeless cosmos, life suddenly exploded onto the cosmic arena as a spherical blast wave expanding near the speed of life, never slowing down, and igniting everything in its path with the spark of life. 
+
 — Max Tegmark
 
 Embracing technology opens up that chance. But also heightens the risk of going extinct sooner. But without embracing it the extinction will also happen, the question then is not if but how. 
@@ -675,6 +700,7 @@ Truth and beauty might be linked. Searching for truth is a form of art then. It'
 What arrangement of particles should exist at the end of the universe? Should it exist earlier already?
 
 > To program a friendly AI, we need to capture the meaning of life. 
+
 — Max Tegmark
 
 #### The Bottom Line 
@@ -749,6 +775,7 @@ Human brains have free will in the sense that there are computations being run i
 #### Meaning
 
 > It's not our Universe giving meaning to conscious beings, but conscious beings giving meaning to our Universe. 
+
 — Max Tegmark
 
 Rebrand humans as Homo sentiens, the subjectively experiencing man, not the smart man, because sentience is more important than raw intelligence. 
@@ -760,6 +787,7 @@ Consciousness means having conscious experiences. Rise of AI asks questions abou
 ### Epilogue - The Tale of the FLI Team
 
 > The saddest aspect of life right now is that science gathers knowledge faster than society gathers wisdom. 
+
 — Isaac Asimov
 
 #### FLI Is Born
@@ -777,6 +805,7 @@ Result of all of the conferences and funding story: A list of agreed upon AI pri
 #### Mindful Optimism
 
 > Good things will happen if you plan carefully and work hard for them. 
+
 — Max Tegmark
 
 Similar idea as [the optimist/pessimist spectrum from Zero to One](#TODO)

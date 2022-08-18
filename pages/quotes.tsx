@@ -30,7 +30,7 @@ export default function Quotes({ quotes }: Props) {
             <blockquote>
               <p>{text}</p>
             </blockquote>
-            <p style={{ marginLeft: "30px" }}>– {author}</p>
+            <p>— {author}</p>
           </div>
         );
       })}

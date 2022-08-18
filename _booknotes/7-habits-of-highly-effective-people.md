@@ -6,17 +6,21 @@ bookAuthor: "Stephen R. Covey"
 rating: 10
 done: true
 tags: ["self-help", "business", "non-fiction"]
-summary: false
+summary: true
 detailedNotes: true
 amazonLink: "https://amzn.to/3xlYAqL"
-
 ---
 
-Seven habits is one of the most influential books I have read in my whole life. I think it's the best self-help book out there and if the habits and principles described within it are truly understood and incorporated into your life, they have the potential to change it drastically to the better, forever. It's that impactful. 
+## Summary:
 
-## Quick Summary:
+Seven habits is one of the most influential books I have read in my whole life. I think it's the best self-help book out there and if internalized and incorporated into your life, the principles from this book have the potential to change your life drastically.
 
-There are 7 habits, that work together to enable one to live a good life. They are based out of timeless principles and are NO shortcuts. The 7 habits are organized into 2 main groups - habits of personal improvement 1-3 and habits 4-6 of interpersonal improvement. The 7th habit is tying them all together. Essentially the 7th habit is the continual practice and application of the other 6.
+The core idea of the book is that there are 7 habits, that work together and are central to living a good, productive life. The 7 habits are deduced from timeless, re-occuring ideas and involve heavy character building. They are NO shortcuts. Steven Covey organizes the book into 2 main parts: 
+
+- Part 1 is about habits 1-3, dealing with personal development.
+- Part 2 is about habits 4-6, dealing with interpersonal development. 
+
+The 7th habit is the glue tying the other habits together. Essentially the 7th habit is about the continual practice and application of the other 6.
 
 **Habits 1 to 3 are:** 
 - Proactivity
@@ -38,6 +42,8 @@ At a first glance these habits might not seem like much, but wherever I look, ev
 ## Introduction: 
 
 > We must look at the lens through which we see the world, as well as at the world we see, and that the lens itself shapes how we interpret the world. 
+
+— Steven Covey 
 
 Focus on shaping the character you have  instead of fixing short term symptoms. Longer, harder, more arduous road, but more fulfilling and worthwhile in the end. Steven Covey calls it the character ethic. 
 - integrity

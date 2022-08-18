@@ -9,7 +9,6 @@ tags: ["taoism", "buddhism", "philosophy", "made-me-think", "art-of-living", "no
 summary: true
 detailedNotes: true
 amazonLink: "https://amzn.to/3xlSo2b"
-
 ---
 
 ## Summary: 

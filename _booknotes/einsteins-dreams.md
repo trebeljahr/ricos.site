@@ -6,13 +6,13 @@ bookAuthor: "Alan Lightman"
 rating: 9
 done: true
 tags: ["philosophy", "fiction", "novel", "made-me-think"]
-summary: false
-detailedNotes: false
+summary: true
+detailedNotes: true
 amazonLink: "https://amzn.to/3FKf8Lu"
-
 ---
 
 ## Summary: 
+
 This book is truly wonderful. A quick read, filled with extremely beautiful, almost poetry like prose, and small short stories, about deeply human desires, fears and ideas, woven into small short stories about different universes, where time works completely different from how it does in ours. 
 
 The book is stimulating intelectually and heartwarming at the same time, a really tough combo to find and I almost cried a few times while I was reading it on a hot summer afternoon in the Delhi Lodhi gardens. 

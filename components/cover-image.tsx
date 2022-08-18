@@ -3,38 +3,9 @@ import Image from "next/image";
 type Props = {
   title: string;
   src: string;
-  amazonLink?: string;
 };
 
-const CoverImageWithLink = ({ title, src, amazonLink }: Props) => {
-  const alt = `Bookcover - ${title}`;
-
-  const ImageTag = (
-    <Image src={src} layout="fill" objectFit="cover" alt={alt} />
-  );
-
-  if (amazonLink) {
-    return (
-      <a
-        className="externalLink"
-        target="_blank"
-        rel="noopener noreferrer"
-        href={amazonLink}
-      >
-        {ImageTag}
-      </a>
-    );
-  }
-  return ImageTag;
-};
-
-export const PostCoverImage = ({
-  src,
-  title,
-}: {
-  src: string;
-  title: string;
-}) => {
+export const PostCoverImage = ({ src, title }: Props) => {
   return (
     <Image
       src={src}
@@ -45,10 +16,15 @@ export const PostCoverImage = ({
   );
 };
 
-export const BookCover = ({ title, src, amazonLink }: Props) => {
+export const BookCover = ({ title, src }: Props) => {
   return (
     <div className="book-cover-image">
-      <CoverImageWithLink title={title} src={src} amazonLink={amazonLink} />
+      <Image
+        src={src}
+        layout="fill"
+        objectFit="cover"
+        alt={`Bookcover - ${title}`}
+      />
     </div>
   );
 };

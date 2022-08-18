@@ -14,6 +14,10 @@ type Props = {
 };
 
 const BuyItOnAmazon = ({ link }: { link: string }) => {
+  if (!link) {
+    return null;
+  }
+
   return (
     <a
       className="externalLink amazonLink"
@@ -38,11 +42,7 @@ const Book = ({ book }: Props) => {
       ) : (
         <article>
           <div className="book-info">
-            <BookCover
-              title={book.title}
-              src={book.bookCover}
-              amazonLink={book.amazonLink}
-            />
+            <BookCover title={book.title} src={book.bookCover} />
             <div className="book-preview-text">
               <h1>{book.title}</h1>
               <h2>by {book.bookAuthor} </h2>

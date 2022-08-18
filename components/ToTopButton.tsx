@@ -7,14 +7,12 @@ export function ToTopButton() {
   const [visible, setVisible] = useState(false);
 
   const toggleVisible = () => {
-    console.log("Scrolling!");
     const scrolled = document.documentElement.scrollTop;
     const visibleWhenScrolled = scrolled > window.innerHeight * 1.6;
     setVisible(visibleWhenScrolled);
   };
 
   useEffect(() => {
-    console.log("Attaching event listener");
     window.addEventListener("scroll", toggleVisible);
     return () => window.removeEventListener("scroll", toggleVisible);
   }, []);

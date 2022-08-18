@@ -2,7 +2,6 @@ import Layout from "../components/layout";
 import fs from "fs/promises";
 import { join } from "path";
 import matter from "gray-matter";
-import { useState } from "react";
 import { Search, useSearch } from "../components/SearchBar";
 import { ToTopButton } from "../components/ToTopButton";
 

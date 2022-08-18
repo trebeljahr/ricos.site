@@ -1,4 +1,7 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { nanoid } from "nanoid";
 
 type SearchProps<Filters> = {
   setFilters: Dispatch<SetStateAction<Filters>>;
@@ -9,9 +12,15 @@ type Entries<T> = {
   [K in keyof T]: [K, T[K]];
 }[keyof T][];
 
-type FilterValue = string | number | string[] | boolean;
-type EmptyFilters = Record<string, FilterValue>;
+export interface Tag {
+  tag: string;
+  id: string;
+}
 
+type EmptyFilterValue = string | number | string[] | boolean;
+type EmptyFilters = Record<string, EmptyFilterValue>;
+
+type FilterValue = string | number | Tag[] | boolean;
 type Filter = {
   active: boolean;
   value: FilterValue;
@@ -44,10 +53,11 @@ export function useSearch<T extends EmptyFilters>(emptyFilters: T) {
           return false;
         }
       } else if (Array.isArray(filterValue) && Array.isArray(val)) {
-        for (let filter of filterValue as string[]) {
+        for (let tag of filterValue.slice(0, -1)) {
+          let tagsToSearch = val as unknown as string[];
           if (
-            !val.some((valString) => valString.includes(filter)) &&
-            filter !== ""
+            !tagsToSearch.some((tags) => tags.includes(tag.tag)) &&
+            tag.tag !== ""
           ) {
             return false;
           }
@@ -72,26 +82,36 @@ export function Search<T extends Filters>({
   setFilters,
   filters,
 }: SearchProps<T>) {
-  const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleInput = (event: ChangeEvent<HTMLInputElement>, id = "") => {
     const filter = event.target.name;
     setFilters((old) => {
-      const { value } = old[filter];
-      console.log("value", value);
+      const { value: oldValue } = old[filter];
+      let newValue;
+      switch (typeof oldValue) {
+        case "number":
+          newValue = Number(event.target.value);
+          break;
+        case "string":
+        case "boolean":
+          newValue = event.target.value;
+          break;
+        default:
+          newValue =
+            oldValue.length >= 1
+              ? oldValue.map((val, index) => {
+                  if (index === oldValue.length - 1) {
+                    return { tag: event.target.value, id: val.id };
+                  }
+                  return val;
+                })
+              : [{ tag: "", id: nanoid() }];
+      }
+
       return {
         ...old,
         [filter]: {
           ...old[filter],
-          value:
-            typeof value === "number"
-              ? Number(event.target.value)
-              : typeof value === "string" || typeof value === "boolean"
-              ? event.target.value
-              : value.map((val, index) => {
-                  if (index === value.length - 1) {
-                    return event.target.value;
-                  }
-                  return val;
-                }),
+          value: newValue,
         },
       };
     });
@@ -100,22 +120,27 @@ export function Search<T extends Filters>({
   const growArray = (filterName: string) => {
     setFilters((old) => {
       const val = old[filterName].value;
-      Array.isArray(val) && val.push("");
+      Array.isArray(val) && val.push({ tag: "", id: nanoid() });
       return { ...old };
     });
   };
 
-  const removeTag = (filterName: string, indexToDelete: number) => {
+  const removeTag = (filterName: string, idToDelete: string) => {
     setFilters((old) => {
-      const val = old[filterName];
-      if (Array.isArray(val))
+      const val = old[filterName].value;
+
+      if (Array.isArray(val)) {
         return {
           ...old,
           [filterName]: {
             ...old[filterName],
-            value: val.filter((_, index) => index !== indexToDelete),
+            value: (val as Tag[]).filter(({ id }) => {
+              return id !== idToDelete;
+            }),
           },
         };
+      }
+
       return old;
     });
   };
@@ -137,14 +162,12 @@ export function Search<T extends Filters>({
   };
 
   return (
-    <div className="searchBar">
-      {Object.entries(filters).map(
-        ([filterName, { value: filterValue, active }]) => {
+    <div className="search">
+      {Object.entries(filters)
+        .filter(([, { active }]) => active)
+        .map(([filterName, { value: filterValue }]) => {
           return (
-            <div key={filterName}>
-              <button onClick={() => toggleFilter(filterName)}>
-                {active ? "active" : "inactive"}
-              </button>
+            <div key={filterName} className="search-filter">
               <label htmlFor={filterName}>{filterName}:</label>
               {typeof filterValue === "boolean" ? (
                 <button onClick={() => toggleBoolean(filterName)}>
@@ -160,37 +183,55 @@ export function Search<T extends Filters>({
                       : "number"
                   }
                   name={filterName}
-                  onChange={handleInput}
+                  onChange={(event) => handleInput(event)}
                   onKeyPress={(event) => {
                     event.key === "Enter" && growArray(filterName);
                   }}
                   value={
                     Array.isArray(filterValue)
-                      ? filterValue[filterValue.length - 1]
+                      ? filterValue[filterValue.length - 1]?.tag ?? ""
                       : filterValue
                   }
                 />
               )}
               {Array.isArray(filterValue) && (
-                <button onClick={() => growArray(filterName)}>Add tag</button>
+                <button onClick={() => growArray(filterName)}>
+                  <FontAwesomeIcon icon={faPlus} />
+                </button>
               )}
               {Array.isArray(filterValue) &&
-                filterValue
-                  .slice(0, filterValue.length - 1)
-                  .map((filter, index) => {
-                    return (
-                      <div key={filter + index}>
-                        <p>{filter}</p>
-                        <button onClick={() => removeTag(filterName, index)}>
-                          Delete
-                        </button>
-                      </div>
-                    );
-                  })}
+                filterValue.map((tag, index) => {
+                  if (index === filterValue.length - 1) return null;
+                  return (
+                    <div key={tag.id}>
+                      <p>{tag.tag}</p>
+                      <button onClick={() => removeTag(filterName, tag.id)}>
+                        Delete
+                      </button>
+                    </div>
+                  );
+                })}
+              <button
+                className="remove-filter-button"
+                onClick={() => toggleFilter(filterName)}
+              >
+                <FontAwesomeIcon icon={faXmark} />
+              </button>
             </div>
           );
-        }
-      )}
+        })}
+      <div>
+        <p>Add filter?</p>
+        {Object.entries(filters)
+          .filter(([, { active }]) => !active)
+          .map(([filterName]) => {
+            return (
+              <button key={filterName} onClick={() => toggleFilter(filterName)}>
+                + {filterName}
+              </button>
+            );
+          })}
+      </div>
     </div>
   );
 }

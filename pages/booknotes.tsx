@@ -3,7 +3,8 @@ import Layout from "../components/layout";
 import PostHeader from "../components/post-header";
 import { getAllBookReviews } from "../lib/api";
 import Book from "../types/book";
-import { Search, useSearch } from "../components/SearchBar";
+import { Search, Tag, useSearch } from "../components/SearchBar";
+import { nanoid } from "nanoid";
 
 type Props = {
   allBooks: Book[];
@@ -13,7 +14,7 @@ const emptySearchFilters = {
   bookAuthor: "",
   title: "",
   rating: 0,
-  tags: [""],
+  tags: [],
   summary: false,
   detailedNotes: false,
 };
@@ -21,8 +22,6 @@ const emptySearchFilters = {
 export default function Books({ allBooks }: Props) {
   const { byFilters, filters, setFilters } = useSearch(emptySearchFilters);
   const filteredBooks = allBooks.filter(byFilters);
-
-  console.log(filteredBooks);
 
   return (
     <Layout fullPage={true} pageTitle="Book Notes">
@@ -51,10 +50,6 @@ export const getStaticProps = async () => {
     "amazonLink",
     "detailedNotes",
   ]);
-
-  console.log(
-    allBooks.filter((book) => book.title === "From Bacteria to Bach and Back")
-  );
   return {
     props: { allBooks: allBooks.filter(({ done }) => done) },
   };

@@ -3,8 +3,10 @@
 :root {
   /* --dark-blue: #1e7900;
   --blue: #28b264; */
+  --red: rgb(232, 83, 83);
+  --light-red: rgb(242, 145, 145);
 
-  --dark-blue: #0f4ce5;
+  --dark-blue: rgb(15, 76, 229);
   --blue: rgb(68, 160, 255);
   --light-blue: rgb(153, 204, 255);
   --main-width: 95vw;
@@ -83,6 +85,21 @@ a {
 #to-top-button:hover {
   background-color: var(--blue);
 }
+
+.search-filter {
+  display: flex;
+  align-items: center;
+}
+
+.search-filter > label {
+  margin-right: 0.5rem;
+}
+
+.remove-filter-button {
+  margin: 0px 0.5rem;
+  font-size: 1rem;
+}
+
 h5,
 h4,
 h3,

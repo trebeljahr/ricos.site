@@ -15,6 +15,7 @@
     "classnames": "2.3.1",
     "date-fns": "2.21.3",
     "gray-matter": "4.0.3",
+    "nanoid": "^4.0.0",
     "next": "latest",
     "next-seo": "^4.26.0",
     "prismjs": "^1.24.1",

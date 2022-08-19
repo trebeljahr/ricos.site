@@ -591,7 +591,8 @@ li {
   }
 
   .post-preview-text {
-    height: 20rem;
+    height: fit-content;
+    max-height: 20rem;
     overflow-y: hidden;
   }
 

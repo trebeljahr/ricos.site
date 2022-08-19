@@ -123,6 +123,7 @@ a {
 .add-filter-button > p,
 .search-filter > p {
   padding: 0px;
+  margin: 0px;
   margin-left: 0.4rem;
 }
 
@@ -154,7 +155,7 @@ a {
   cursor: pointer;
 }
 
-.search-filter-equal-sign {
+.search-filter > .search-filter-equal-sign {
   margin: 0px 0.3rem;
 }
 

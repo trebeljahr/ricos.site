@@ -29,7 +29,10 @@ const Index = () => {
         <Link as={`/now`} href="/now">
           <a>/now</a>
         </Link>
+        .
       </p>
+
+      <h3>Webpages</h3>
       <p>
         You can also find me on other places around the internet, like{" "}
         <ExternalLink href="https://www.instagram.com/ricotrebeljahr/">
@@ -45,6 +48,7 @@ const Index = () => {
         <ExternalLink href="https://twitter.com/ricotrebeljahr">
           Twitter
         </ExternalLink>
+        .
       </p>
       <p>
         I also used to write a travel blog with a friend of mine, which you can

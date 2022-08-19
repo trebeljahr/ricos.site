@@ -20,9 +20,11 @@ const HeroPost = ({ title, coverImage, date, excerpt, slug }: Props) => {
           <div className="hero-post-image">
             <PostCoverImage title={title} src={coverImage} />
           </div>
-          <h2>{title}</h2>
-          <DateFormatter dateString={date} />
-          <p>{excerpt}</p>
+          <div className="post-preview-text">
+            <h2>{title}</h2>
+            <DateFormatter dateString={date} />
+            <p>{excerpt}</p>
+          </div>
         </section>
       </a>
     </Link>

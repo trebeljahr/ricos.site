@@ -13,6 +13,7 @@ const Posts = ({ allPosts }: Props) => {
   const morePosts = allPosts.slice(1);
   return (
     <Layout pageTitle="Posts">
+      <h1 className="posts-page-title">Latest Posts:</h1>
       {heroPost && (
         <HeroPost
           title={heroPost.title}

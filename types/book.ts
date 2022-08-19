@@ -1,6 +1,7 @@
 type BookType = {
   slug: string;
   title: string;
+  subtitle?: string;
   bookCover: string;
   bookAuthor: string;
   done: boolean;

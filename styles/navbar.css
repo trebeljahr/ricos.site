@@ -1,5 +1,6 @@
 .navbar {
-  background: #f4f4f4;
+  width: 100%;
+  background: var(--light-grey-blue);
   padding: 10px 0px;
 }
 

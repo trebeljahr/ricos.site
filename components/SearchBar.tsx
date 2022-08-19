@@ -230,7 +230,9 @@ export function Search<T extends Filters>({
           );
         })}
       <div>
-        <p>Add filter?</p>
+        {Object.entries(filters).filter(([, { active }]) => !active).length ? (
+          <p>Add filter?</p>
+        ) : null}
         <div className="add-filter-container">
           {Object.entries(filters)
             .filter(([, { active }]) => !active)

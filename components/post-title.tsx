@@ -5,9 +5,9 @@ type Props = {
 };
 
 export const PostTitle = ({ children }: Props) => {
-  return <h1>{children}</h1>;
+  return children ? <h1>{children}</h1> : null;
 };
 
 export const PostSubTitle = ({ children }: Props) => {
-  return <h2>{children}</h2>;
+  return children ? <h2>{children}</h2> : null;
 };

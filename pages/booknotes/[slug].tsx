@@ -3,7 +3,7 @@ import ErrorPage from "next/error";
 import PostBody from "../../components/post-body";
 import Layout from "../../components/layout";
 import { getBookReviewBySlug, getAllBookReviews } from "../../lib/api";
-import { PostTitle } from "../../components/post-title";
+import { PostSubTitle, PostTitle } from "../../components/post-title";
 import BookType from "../../types/book";
 import { BookCover } from "../../components/cover-image";
 import { UtteranceComments } from "../../components/comments";
@@ -27,6 +27,7 @@ const BuyItOnAmazon = ({ link }: { link: string }) => {
 };
 
 const Book = ({ book }: Props) => {
+  console.log(book);
   const router = useRouter();
   if (!router.isFallback && !book?.slug) {
     return <ErrorPage statusCode={404} />;
@@ -40,8 +41,9 @@ const Book = ({ book }: Props) => {
           <div className="book-info">
             <BookCover title={book.title} src={book.bookCover} />
             <div className="book-preview-text">
-              <h1>{book.title}</h1>
-              <h2>by {book.bookAuthor} </h2>
+              <PostTitle>{book.title}</PostTitle>
+              <PostSubTitle>{book.subtitle}</PostSubTitle>
+              <p>by {book.bookAuthor} </p>
               <h3>Rating: {book.rating}/10</h3>
               <BuyItOnAmazon link={book.amazonLink} />
             </div>
@@ -70,6 +72,7 @@ export async function getStaticProps({ params }: Params) {
   const book = getBookReviewBySlug(params.slug, [
     "title",
     "slug",
+    "subtitle",
     "bookAuthor",
     "bookCover",
     "rating",

@@ -26,7 +26,7 @@ export const ReadMore = ({ posts }: { posts: Post[] }) => {
 const MoreStories = ({ posts }: Props) => {
   return (
     <section>
-      <h2 className="more-stories-title">More Stories</h2>
+      <h2 className="posts-page-title">More Stories</h2>
       <div className="more-stories-container">
         {posts.map((post) => {
           return (

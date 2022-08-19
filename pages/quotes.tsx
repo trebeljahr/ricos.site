@@ -4,6 +4,7 @@ import { join } from "path";
 import matter from "gray-matter";
 import { Search, useSearch } from "../components/SearchBar";
 import { ToTopButton } from "../components/ToTopButton";
+import { UtteranceComments } from "../components/comments";
 
 type Quote = {
   author: string;
@@ -35,6 +36,7 @@ export default function Quotes({ quotes }: Props) {
         );
       })}
       <ToTopButton />
+      <UtteranceComments />
     </Layout>
   );
 }

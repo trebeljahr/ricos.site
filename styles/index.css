@@ -6,10 +6,12 @@
   --red: rgb(232, 83, 83);
   --light-red: rgb(242, 145, 145);
 
-  --dark-blue: rgb(15, 76, 229);
-  --blue: rgb(68, 160, 255);
-  --light-blue: rgb(153, 204, 255);
+  --light-grey-blue: rgb(233, 241, 249);
+
   --ultra-light-blue: rgb(184, 216, 249);
+  --light-blue: rgb(153, 204, 255);
+  --blue: rgb(68, 160, 255);
+  --dark-blue: rgb(15, 76, 229);
 
   --main-width: 95vw;
 }
@@ -58,6 +60,7 @@ html,
 body {
   margin: 0;
   padding: 0;
+  width: 100%;
 }
 
 #top-navigation {
@@ -71,6 +74,7 @@ a {
 
 #to-top-button {
   position: fixed;
+  cursor: pointer;
   font-size: 1.2rem;
   font-size: 1.2rem;
   width: 2em;
@@ -128,11 +132,13 @@ a {
 }
 
 .search {
-  padding-bottom: 3rem;
+  padding-bottom: 1rem;
 }
 
 .search-filter {
   width: fit-content;
+  max-width: var(--main-width);
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   background: var(--light-blue);
@@ -162,6 +168,8 @@ a {
 .search-filter > input {
   border: none;
   margin-right: 0.7rem;
+  flex: 1 1 auto;
+  width: 40%;
 }
 
 .search-filter > input:focus {
@@ -220,6 +228,10 @@ h1 {
   padding-bottom: 1rem;
   padding-top: 1.6rem;
   margin: 0;
+}
+
+h1 {
+  font-size: 2rem;
 }
 
 h1 {
@@ -284,10 +296,6 @@ button {
   font-family: "Libre Baskerville", serif;
 }
 
-.more-stories-title {
-  margin-left: 30px;
-}
-
 .allBooks {
   display: flex;
   justify-content: flex-start;
@@ -317,12 +325,6 @@ button {
   position: relative;
 }
 
-.publish-date,
-.more-posts-preview h2,
-.hero-post-preview h2 {
-  margin-bottom: 10px;
-}
-
 .post-meta {
   display: flex;
   align-items: center;
@@ -340,12 +342,15 @@ button {
   margin-bottom: 0;
 }
 
-.more-posts-preview-text,
-.more-posts-preview-text,
+.post-preview-text {
+  padding-right: 0.5rem;
+}
+
+.post-preview-text,
 .hero-post-preview {
   color: black;
 }
-.more-posts-preview-text:hover,
+.post-preview-text:hover,
 .hero-post-preview:hover {
   color: black;
 }
@@ -369,6 +374,8 @@ button {
 }
 
 .main-page {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   height: auto;
   line-height: 1.625;
   color: #333;
@@ -428,6 +435,11 @@ li {
   margin-bottom: 10px;
 }
 
+.more-posts-preview {
+  display: block;
+  margin-bottom: 2rem;
+}
+
 .more-posts-preview,
 .hero-post-preview {
   cursor: pointer;
@@ -449,9 +461,17 @@ li {
   margin-top: 1rem;
 }
 
+.post-preview-text > h2 {
+  padding-bottom: 0.5rem;
+}
+
 @media only screen and (min-width: 600px) {
   .header-motto {
     display: block;
+  }
+
+  .search {
+    padding-bottom: 3rem;
   }
 
   .book-cover-image {
@@ -522,20 +542,25 @@ li {
 
   .more-posts-preview,
   .hero-post-preview {
-    padding: 30px;
-    border-radius: 5px;
+    margin-bottom: 2rem;
+    border-radius: 0.5rem;
     transition: all 0.3s;
+    overflow: hidden;
   }
 
-  .more-posts-preview-text *:first-child {
+  .post-preview-text *:first-child {
     margin-top: 0px;
   }
-  .more-posts-preview-text *:last-child {
+  .post-preview-text *:last-child {
     margin-bottom: 0px;
   }
 }
 
 @media only screen and (min-width: 1092px) {
+  .main-page {
+    padding-top: 2rem;
+  }
+
   .book-cover-image {
     width: calc(var(--main-width) / 3);
     height: calc(1.6 * calc(var(--main-width) / 3));
@@ -565,7 +590,7 @@ li {
     grid-column-gap: 2rem;
   }
 
-  .more-posts-preview-text {
+  .post-preview-text {
     height: 20rem;
     overflow-y: hidden;
   }
@@ -576,7 +601,6 @@ li {
   }
 
   .main-page {
-    padding-top: 2rem;
     max-width: 936px;
     margin-left: auto;
     margin-right: auto;

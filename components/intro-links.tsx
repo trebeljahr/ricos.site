@@ -15,6 +15,7 @@ export const TrySomeOfThese = () => {
       <Link as="/needlestack" href="/needlestack">
         <a className="colored-link">/needlestack</a>
       </Link>
+      .
     </p>
   );
 };

@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
-import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { nanoid } from "nanoid";
 
 type SearchProps<Filters> = {
@@ -169,70 +169,84 @@ export function Search<T extends Filters>({
         .filter(([, { active }]) => active)
         .map(([filterName, { value: filterValue }]) => {
           return (
-            <div key={filterName} className="search-filter">
-              <label htmlFor={filterName}>{filterName}:</label>
-              {typeof filterValue === "boolean" ? (
-                <button onClick={() => toggleBoolean(filterName)}>
-                  {filterValue ? "true" : "false"}
+            <>
+              <div className="search-filter">
+                <button
+                  className="remove-filter-button"
+                  onClick={() => toggleFilter(filterName)}
+                >
+                  <FontAwesomeIcon icon={faXmark} />
                 </button>
-              ) : (
-                <input
-                  id={filterName}
-                  type={
-                    typeof filterValue === "string" ||
-                    Array.isArray(filterValue)
-                      ? "text"
-                      : "number"
-                  }
-                  name={filterName}
-                  onChange={(event) => handleInput(event)}
-                  onKeyPress={(event) => {
-                    event.key === "Enter" && growArray(filterName);
-                  }}
-                  value={
-                    Array.isArray(filterValue)
-                      ? filterValue[filterValue.length - 1]?.tag ?? ""
-                      : filterValue
-                  }
-                />
-              )}
-              {Array.isArray(filterValue) && (
-                <button onClick={() => growArray(filterName)}>
-                  <FontAwesomeIcon icon={faPlus} />
-                </button>
-              )}
-              {Array.isArray(filterValue) &&
-                filterValue.map((tag, index) => {
-                  if (index === filterValue.length - 1) return null;
-                  return (
-                    <div className="tag-filter" key={tag.id}>
-                      <p>{tag.tag}</p>
-                      <button onClick={() => removeTag(filterName, tag.id)}>
-                        <FontAwesomeIcon icon={faXmark} />
-                      </button>
-                    </div>
-                  );
-                })}
-              <button
-                className="remove-filter-button"
-                onClick={() => toggleFilter(filterName)}
-              >
-                <FontAwesomeIcon icon={faXmark} />
-              </button>
-            </div>
+                <p>{filterName}</p>
+                <p className="search-filter-equal-sign">=</p>
+                {typeof filterValue === "boolean" ? (
+                  <button onClick={() => toggleBoolean(filterName)}>
+                    {filterValue ? "true" : "false"}
+                  </button>
+                ) : (
+                  <input
+                    id={filterName}
+                    type={
+                      typeof filterValue === "string" ||
+                      Array.isArray(filterValue)
+                        ? "text"
+                        : "number"
+                    }
+                    min={typeof filterValue === "number" ? 0 : undefined}
+                    max={typeof filterValue === "number" ? 10 : undefined}
+                    name={filterName}
+                    onChange={(event) => handleInput(event)}
+                    onKeyPress={(event) => {
+                      event.key === "Enter" && growArray(filterName);
+                    }}
+                    value={
+                      Array.isArray(filterValue)
+                        ? filterValue[filterValue.length - 1]?.tag ?? ""
+                        : filterValue
+                    }
+                  />
+                )}
+                {Array.isArray(filterValue) && (
+                  <button onClick={() => growArray(filterName)}>
+                    <FontAwesomeIcon icon={faPlus} />
+                  </button>
+                )}
+              </div>
+              <div className="tag-filter-container">
+                {Array.isArray(filterValue) &&
+                  filterValue.map((tag, index) => {
+                    if (index === filterValue.length - 1) return null;
+                    return (
+                      <div className="tag-filter" key={tag.id}>
+                        <p>{tag.tag}</p>
+                        <button onClick={() => removeTag(filterName, tag.id)}>
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </div>
+                    );
+                  })}
+              </div>
+            </>
           );
         })}
       <div>
         <p>Add filter?</p>
-        {Object.entries(filters)
-          .filter(([, { active }]) => !active)
-          .map(([filterName]) => {
-            return (
-              <button key={filterName} onClick={() => toggleFilter(filterName)}>
-                + {filterName}
-              </button>
-            );
-          })}
+        <div className="add-filter-container">
+          {Object.entries(filters)
+            .filter(([, { active }]) => !active)
+            .map(([filterName]) => {
+              return (
+                <button
+                  key={filterName}
+                  className="add-filter-button"
+                  onClick={() => toggleFilter(filterName)}
+                >
+                  <FontAwesomeIcon icon={faPlus} />
+                  <p> {filterName}</p>
+                </button>
+              );
+            })}
+        </div>
       </div>
     </div>
   );

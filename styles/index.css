@@ -9,6 +9,8 @@
   --dark-blue: rgb(15, 76, 229);
   --blue: rgb(68, 160, 255);
   --light-blue: rgb(153, 204, 255);
+  --ultra-light-blue: rgb(184, 216, 249);
+
   --main-width: 95vw;
 }
 
@@ -86,21 +88,109 @@ a {
   background-color: var(--blue);
 }
 
-.search-filter {
+.add-filter {
   display: flex;
   align-items: center;
+}
+
+.add-filter-button {
+  background: var(--light-blue);
+  border-radius: 1em;
+  padding: 0.2rem 0.6rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.add-filter-button > svg {
+  margin-left: 0.4rem;
+}
+
+.add-filter-container,
+.tag-filter-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.add-filter-button:hover {
+  background: var(--blue);
+}
+.add-filter-button > p,
+.search-filter > p {
+  padding: 0px;
+  margin-left: 0.4rem;
+}
+
+.search {
+  padding-bottom: 3rem;
+}
+
+.search-filter {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  background: var(--light-blue);
+  border-radius: 1em;
+  padding: 0.2rem 0.6rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 .search-filter > label {
   margin-right: 0.5rem;
 }
 
+.search-filter > * {
+  font-size: 1rem;
+}
+
+.search-filter > button {
+  cursor: pointer;
+}
+
+.search-filter-equal-sign {
+  margin: 0px 0.3rem;
+}
+
+.search-filter > input {
+  border: none;
+  margin-right: 0.7rem;
+}
+
+.search-filter > input:focus {
+  border: none;
+  outline: solid black;
+}
+
 .tag-filter {
+  margin-right: 0.2rem;
+}
+
+.tag-filter {
+  width: fit-content;
   display: flex;
   align-items: center;
-  background: var(--light-blue);
-  padding: 5px 10px;
+  justify-content: center;
+  background: var(--blue);
+  padding: 0.2rem 0.6rem;
+  margin-top: 0.2rem;
+  margin-right: 0.2rem;
   border-radius: 1em;
+}
+
+.tag-filter > button {
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.tag-filter > * {
+  margin: 0 5px;
 }
 
 .tag-filter > p {
@@ -108,7 +198,7 @@ a {
 }
 
 .remove-filter-button {
-  margin: 0px 0.5rem;
+  margin-left: 0.5rem;
   font-size: 1rem;
 }
 
@@ -162,15 +252,6 @@ blockquote + .quote-author {
   padding-left: 0px;
 }
 
-/* blockquote:before {
-  color: #ccc;
-  content: open-quote;
-  font-size: 4em;
-  line-height: 0.1em;
-  margin-right: 0.25em;
-  vertical-align: -0.4em;
-} */
-
 blockquote p {
   display: inline;
 }
@@ -194,8 +275,11 @@ blockquote p {
 p,
 ul,
 ol,
-blockquote {
+blockquote,
+button {
   line-height: 1.6;
+  /* font-size: 1rem; */
+  font-weight: normal;
   font-family: "Libre Baskerville", serif;
 }
 

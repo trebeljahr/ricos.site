@@ -13,7 +13,7 @@ type Props = {
 const emptySearchFilters = {
   bookAuthor: "",
   title: "",
-  rating: 0,
+  rating: 10,
   tags: [],
   summary: false,
   detailedNotes: false,
@@ -44,6 +44,7 @@ export const getStaticProps = async () => {
     "slug",
     "bookAuthor",
     "bookCover",
+    "summary",
     "rating",
     "done",
     "tags",

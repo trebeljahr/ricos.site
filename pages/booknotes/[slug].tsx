@@ -8,6 +8,7 @@ import BookType from "../../types/book";
 import { BookCover } from "../../components/cover-image";
 import { UtteranceComments } from "../../components/comments";
 import { ToTopButton } from "../../components/ToTopButton";
+import { ExternalLink } from "../../components/ExternalLink";
 
 type Props = {
   book: BookType;
@@ -19,14 +20,9 @@ const BuyItOnAmazon = ({ link }: { link: string }) => {
   }
 
   return (
-    <a
-      className="externalLink amazonLink"
-      target="_blank"
-      rel="noopener noreferrer"
-      href={link}
-    >
+    <ExternalLink className="amazonLink" href={link}>
       Buy it on Amazon
-    </a>
+    </ExternalLink>
   );
 };
 

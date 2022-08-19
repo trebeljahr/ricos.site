@@ -3,17 +3,17 @@ import Link from "next/link";
 export const TrySomeOfThese = () => {
   return (
     <p>
-      Maybe try one of these:{" "}
+      For now, you can try one of these:{" "}
       <Link as="/posts" href="/posts">
-        <a className="colored-link">Posts</a>
+        <a className="colored-link">/posts</a>
       </Link>
       ,{" "}
       <Link as="/booknotes" href="/booknotes">
-        <a className="colored-link">Booknotes</a>
+        <a className="colored-link">/booknotes</a>
       </Link>
       , or{" "}
       <Link as="/needlestack" href="/needlestack">
-        <a className="colored-link">Needlestack</a>
+        <a className="colored-link">/needlestack</a>
       </Link>
     </p>
   );

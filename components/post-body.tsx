@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import remarkToc from "remark-toc";
 import rehypeRaw from "rehype-raw";
+import { ExternalLink } from "./ExternalLink";
 
 type Props = {
   content: string;
@@ -102,14 +103,7 @@ const LinkRenderer = (props: any) => {
     );
   }
 
-  return (
-    <a
-      className="externalLink"
-      target="_blank"
-      rel="noopener noreferrer"
-      {...props}
-    />
-  );
+  return <ExternalLink {...props} />;
 };
 
 const MarkdownRenderers: object = {

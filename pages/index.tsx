@@ -7,7 +7,6 @@ import { ExternalLink } from "../components/ExternalLink";
 const Index = () => {
   return (
     <Layout pageTitle="Home">
-      <h1></h1>
       <h2>Hi there 👋🏻</h2>
       <p>
         I am Rico. A programmer, traveler, photographer, writer and fellow

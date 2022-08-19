@@ -1,7 +1,7 @@
 ---
 title: "7 Habits of Highly Effective People"
-bookCover: "/assets/book-covers/7-habits-of-highly-effective-people.jpg"
-slug: "7-habits-of-highly-effective-people"
+bookCover: "/assets/book-covers/7-habits.jpg"
+slug: "7-habits"
 bookAuthor: "Stephen R. Covey"
 rating: 10
 done: true

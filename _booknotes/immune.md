@@ -370,11 +370,11 @@ Natural Killer Cells order apoptosis when they find cells that lack MHC I or sho
 
 #### An Aside - Why Don't We Have Better Medication Against Viruses?
 
-> *Viruses are too similar to our own cells.* 
+> *Viruses are too similar to our cells.* 
 
 Antibiotics are essentially proteins or other chemicals designed to specifically target and destroy or otherwise disable or inhibit the proteins or chemistry of bacteria in their reproductive cycles. Since the shapes of proteins from bacteria are often different enough from the proteins used in humans the antibiotics don't have any effect. But targeting viruses this way would mean to interrupt the workings of normal human cells as well, because viruses hijack already present cells. Therefore the biochemistry of an infected cell is much closer to a healthy cell than that of an bacteria is to either of them. 
 
-> A virus is in a perverse way very similar to us because it uses our own parts to make more of itself. 
+> A virus is in a perverse way very similar to us because it uses our parts to make more of itself. 
 
 ### Chapter 34 - Shutting the Immunes System Down
 

@@ -41,7 +41,7 @@
 > Have you come to understand a little of what pain is? Unless you know the same pain you cannot truly know another. And even if you get to know others there can be no understanding. 
 — Pain
 
-> We each act according to our own sense of justice. 
+> We each act according to our sense of justice. 
 — Pain
 
 > I mean, I think we should take the actions, the set of actions that are most likely to make the future better. And then reevaluate those actions to make sure they are true.
@@ -670,7 +670,7 @@
 > Passing experimental tests is only one of many things a theory has to do to achieve the real purpose of science, which is to explain the world.
 — David Deutsch
 
-> We are as good at recognizing biases in others as we are bad at acknowledging our own.
+> We are as good at recognizing biases in others as we are bad at acknowledging our.
 — Hugo Mercier
 
 > Even geniuses need people to argue with to develop their best ideas.
@@ -706,7 +706,7 @@
 > Never fool yourself and remember that you are the easiest person to fool.
 — Richard Feynman
 
-> The task of a man is not to see what lies dimly in the distance but to do what lies clearly at hand.
+> The task of a man is not to see what lies dimly in the distance but to do what lies at hand.
 — Thomas Carlyle
 
 > A human being is a part of the whole, called by us 'Universe', a part limited in time and space. He experiences himself, his thoughts and feelings as something separate from the rest - a kind of optical delusion of his consciousness. This delusion is a kind of prison for us, restricting us to our personal desires and to affection for a few persons nearest us. Our task must be to free ourselves from this prison by widening our circle of compassion to embrace all living creatures and the whole of nature in its beauty.

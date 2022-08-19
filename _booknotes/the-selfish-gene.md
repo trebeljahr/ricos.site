@@ -334,7 +334,7 @@ If parasite genes happen to be spread through the same mechanism as the hosts bo
 
 > A parasite whose genes aspire to the same destiny as the genes of its host shares all the interests of its host and will eventually cease to act parasitically.
 
-> We can take this argument to its logical conclusion and apply it to normal, "own" genes. Our own genes cooperate with one another, not because they *are* our own but because they share the same outlet - sperm or egg - into the future. 
+> We can take this argument to its logical conclusion and apply it to normal, "own" genes. our genes cooperate with one another, not because they *are* our but because they share the same outlet - sperm or egg - into the future. 
 
 Some types of DNA such as plasmids, might  opt out of this shared reproductive step and just float around through cells randomly slicing open fragments of DNA and inserting itself, starting to multiply and then hitching another ride in another cell. What we describe here - is a way of how viruses could form from "normal" living things. It's just genes that found a different way to manipulate their environment into cloning them. 
 
@@ -360,7 +360,7 @@ Vehicles can combine together, if the means of reproduction (how the replicators
 
 A vehicle needs an exit for its replicators. That's what makes it a vehicle. 
 
-The main question remains though - why are vehicles so crazy complicated as our own bodies are? 
+The main question remains though - why are vehicles so crazy complicated as our bodies are? 
 
 3 questions arise from it: 
 Why do genes form cells? Why do cells do multicellular life? And why do vehicles have a "bottlenecked" life cycle - i.e. why is there only one exit for the genes?

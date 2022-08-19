@@ -114,7 +114,7 @@ The idea of Cartesian Gravity is that there happens a flip when one gets to clos
 Cartesian Gravity is a force distorting our views of the universe with a strength proportional to how much that part of view is necessary for evolutionarily successful life. Anything that messes with consciousness in the wrong way gets neglected and turned away and not looked at too closely. 
 
 #### Chapter Summary:
-Cartesian Wound leading to Dualism between mind and matter, people still stuck with that thinking model, even as it becomes more apparent that minds  only are physical processes. The problem is that consciousness feels so real and we are all experts on it in our own way that we distort our own thinking because we can't accept perfectly logical conclusions because they attack something so fundamental in our lives. Our notions of our own volition, free will and consciousness. And so we try hard not to see the truth - which Dennett dubs Cartesian Gravity - a generic term for a force that pushes our thinking into a different direction. 
+Cartesian Wound leading to Dualism between mind and matter, people still stuck with that thinking model, even as it becomes more apparent that minds  only are physical processes. The problem is that consciousness feels so real and we are all experts on it in our way that we distort our thinking because we can't accept perfectly logical conclusions because they attack something so fundamental in our lives. Our notions of our volition, free will and consciousness. And so we try hard not to see the truth - which Dennett dubs Cartesian Gravity - a generic term for a force that pushes our thinking into a different direction. 
 
 ### Chapter 2 - Before Bacteria And Bach
 
@@ -325,7 +325,7 @@ Any nonrandomness in the flux is a real pattern that is *potentially useful* inf
 
 #### Chapter Summary: 
 
-The main idea of the chapter is that of semantic information - the product of sifting information for the parts that are  useful. It is distinct from Shannon's type of information in the sense that it is hard to acquire and that we don't yet understand what it  is and how it is produced. But it is the thing that makes us special, because we can create it on our own, sifting through ideas and keeping only the ones of use. We can do R & D much faster than evolution can. Semantic information does not need to be of use to the one carrying it. One could have a design worth stealing without knowing that it is valuable. Because semantic information is dependent on the context - the Shannon information is there and doesn't change when you view it from different angles, with different backgrounds, but the semantic information contained might change a great deal, depending on who is looking at the information presented and how. At the extremes a tree has access to the same light and therefore the same information as an animal, yet the tree can't access it - so the semantic information content for the tree is 0, all of the information is lost on it, whereas the animal can react to it. Humans are rather good in this context creation and switching, uncovering semantic information where there previously was none. Evolution does the same thing, but at a much slower pace. 
+The main idea of the chapter is that of semantic information - the product of sifting information for the parts that are  useful. It is distinct from Shannon's type of information in the sense that it is hard to acquire and that we don't yet understand what it  is and how it is produced. But it is the thing that makes us special, because we can create it on our, sifting through ideas and keeping only the ones of use. We can do R & D much faster than evolution can. Semantic information does not need to be of use to the one carrying it. One could have a design worth stealing without knowing that it is valuable. Because semantic information is dependent on the context - the Shannon information is there and doesn't change when you view it from different angles, with different backgrounds, but the semantic information contained might change a great deal, depending on who is looking at the information presented and how. At the extremes a tree has access to the same light and therefore the same information as an animal, yet the tree can't access it - so the semantic information content for the tree is 0, all of the information is lost on it, whereas the animal can react to it. Humans are rather good in this context creation and switching, uncovering semantic information where there previously was none. Evolution does the same thing, but at a much slower pace. 
 
 ### Chapter 7 - Darwinian Spaces: An Interlude
 
@@ -759,7 +759,7 @@ Crazy Chapter. Memes can exist in humans without comprehension of humans. Once m
 
 Can animals appreciate the reasons of why they are doing certain things? How would they show that they do? Do animals even have a consciousness that goes along with being them instead of just reacting to things on autopilot? 
 
-The problem is in drawing the exact boundary if there even is any, to show clearly what it means to be conscious, versus not being conscious.
+The problem is in drawing the exact boundary if there even is any, to show what it means to be conscious, versus not being conscious.
 
 When we see animal behavior, we put our intentional stance heads on and see the reasons for why - what for - the animal does the behavior. Often overendowing the animals with comprehension where there in fact is nothing but simple stimulus response patterns. 
 
@@ -790,9 +790,9 @@ The self is an "end user interface" something that has access to a nice represen
 
 When we experience something, that experience is only a small sliver of what's  going on "under the hood". All the neural activity is hidden beneath an "easy to use" abstraction, that hides away all the messy details. 
 
-When studying consciousness it's better to adopt a "second person view" in experimental design, instead of looking at our own experience, you look at those of others and then try to manipulate them into different directions. This approach is called *heterophenomenology* compared to the self inspection approach of *autophenomenology*.
+When studying consciousness it's better to adopt a "second person view" in experimental design, instead of looking at our experience, you look at those of others and then try to manipulate them into different directions. This approach is called *heterophenomenology* compared to the self inspection approach of *autophenomenology*.
 
-It is hard to study and reliably test conscious experiences. If somebody says they see something and that's why they think it's real, we don't question them about it because this ability is part of our own manifest images as well and therefore plausible. If people claim magical feats of consciousness however it becomes much much harder to test those claims. 
+It is hard to study and reliably test conscious experiences. If somebody says they see something and that's why they think it's real, we don't question them about it because this ability is part of our manifest images as well and therefore plausible. If people claim magical feats of consciousness however it becomes much much harder to test those claims. 
 
 #### Hume's strange inversion of reasoning
 
@@ -811,7 +811,7 @@ Properties of the world cause properties in our brains to change so that we have
 
 Colors, tastes, sounds and all other things that we call conscious qualia are benign illusions, not properties of the physical universe at all. The brain is a dark and silent place and so is the universe. 
 
- Our brains build these bayesian models of how things ought to behave, based on real world experiences. We are wired to pay attention to when things don't go the way we expect. One of the things we have a model for and expect to do certain things in certain circumstances is ourselves - i.e. our own behavior (especially in social contexts). We probably use the same machinery to also generate expectations about how other people will act. Reflecting our own biases out there onto them. 
+ Our brains build these bayesian models of how things ought to behave, based on real world experiences. We are wired to pay attention to when things don't go the way we expect. One of the things we have a model for and expect to do certain things in certain circumstances is ourselves - i.e. our behavior (especially in social contexts). We probably use the same machinery to also generate expectations about how other people will act. Reflecting our biases out there onto them. 
 
 #### A red stripe as an intentional object
 
@@ -903,7 +903,7 @@ We are loosing skills because they are no longer necessary because of superior t
 
 Not , the problem arises when we give to much autonomy to machines that are not competent enough yet. Because of the intentional stance we tend to give too much credit to something that albeit impressive, is not yet enough to replace human labor. 
 
-To give something power because we think it comprehends and then see that comprehension fail and backfire in unexpected ways might lead to avoidable catastrophe. There is a need to be vigilant about AI and not over hyping it's capacities, clearly drawing the boundary around what is and what isn't possible at the moment. 
+To give something power because we think it comprehends and then see that comprehension fail and backfire in unexpected ways might lead to avoidable catastrophe. There is a need to be vigilant about AI and not over hyping it's capacities, drawing the boundary around what is and what isn't possible at the moment. 
 
 Machines that try to think to correct mistakes (like spelling errors) without real comprehension are annoying and misleading. Because a machine should behave like a machine, the same input leading to the same output. It should be predictable and not "smart". In other words there are places where I don't want a machine to be clever, but just mechanically do what it has been told to do. And only and exactly that. 
 
@@ -915,7 +915,7 @@ There is a practical reason for comprehension of the machines we use. They can b
 
 But societies also depend on nobody comprehending everything, single humans only see their small bit of the bigger picture and cooperate with others to produce society. This cooperation is facilitated by trust between humans. Trust is evolutionarily extremely new and uniquely human. We can spend time with strangers, not related to us, without going mad, just passing them by on the street. 
 
-> Evolution in two realms, genetic and cultural, has created in us the capacity to know ourselves. But in spite of several millennia of ever-expanding intelligent design, we still are just staying afloat in a flood of puzzles and problems, many of them created by our own efforts of comprehension, and there are dangers that could cut short our quest before we — or our descendants — can satisfy our ravenous curiosity. 
+> Evolution in two realms, genetic and cultural, has created in us the capacity to know ourselves. But in spite of several millennia of ever-expanding intelligent design, we still are just staying afloat in a flood of puzzles and problems, many of them created by our efforts of comprehension, and there are dangers that could cut short our quest before we — or our descendants — can satisfy our ravenous curiosity. 
 
 And that... Would be a pity. 
 

@@ -60,7 +60,7 @@ At least for the medium term future, that's the way out I can see. Because I can
 
 ## A very weird future. 
 
-When codex can generate and implement its own ideas and develop its own notion of "where to go" the world might collapse into a singularity anyways. That's the nature of the exponential progress that can happen when a machine can generate its own completely novel ideas, then implement them with amazing speed and upgrade itself over and over again, in an upward spiral of exponential growth. At that time, worrying about a job or almost anything becomes kind of meaningless. Because we will have created our own version of something that might deserve the label "god". 
+When codex can generate and implement its own ideas and develop its own notion of "where to go" the world might collapse into a singularity anyways. That's the nature of the exponential progress that can happen when a machine can generate its own completely novel ideas, then implement them with amazing speed and upgrade itself over and over again, in an upward spiral of exponential growth. At that time, worrying about a job or almost anything becomes kind of meaningless. Because we will have created our version of something that might deserve the label "god". 
 
 And even if that doesn't happen, there will definitely be enough tools like Codex around that can do everything better than humans can. Including science and engineering and even the generation of ideas. Sure the whole thing doesn't explode into a singularity where everything changes, but the world would still have to look vastly different.
 

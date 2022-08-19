@@ -18,7 +18,7 @@ This book is truly wonderful. A quick read, filled with extremely beautiful, alm
 
 The book is stimulating intelectually and heartwarming at the same time, a  tough combo to find and I almost cried a few times while I was reading it on a hot summer afternoon in the Delhi Lodhi gardens. 
 
-I think the power of this book, comes from the fact, that even though those world seem dreamy and distant and oddly weird, we can see through those dreamy visions, and take away lessons into our real world, where time works nothing like that in the fictional worlds, and yet we can learn from them and their stories a great deal. Whether that's from the people, trying to freeze time, forget the past, or the future, or the present, or those who would like to speed time up and hasten through life, from all these little stories, we can learn small but powerful lessons about our own - time.
+I think the power of this book, comes from the fact, that even though those world seem dreamy and distant and oddly weird, we can see through those dreamy visions, and take away lessons into our real world, where time works nothing like that in the fictional worlds, and yet we can learn from them and their stories a great deal. Whether that's from the people, trying to freeze time, forget the past, or the future, or the present, or those who would like to speed time up and hasten through life, from all these little stories, we can learn small but powerful lessons about our - time.
 
 There are no "real" book notes for this one, just a collection of quotes from it, little snippets and passages, that I enjoyed a lot and wanted to keep in one place:
 
@@ -32,7 +32,7 @@ There are no "real" book notes for this one, just a collection of quotes from it
 
 > A world without memory is a world of the present. 
 
-In this world, some people can clearly see their future in visions, but only randomly and not always:
+In this world, some people can see their future in visions, but only randomly and not always:
 > Who would fare better in this world of fitful time? Those who have seen the future and live only one life? Or those who have not seen the future and wait to live life? Or those who deny the future and live two lives?
 
 > Time is too precious. A life is a moment in season. A life is one snowfall. A life is one autumn day. A life is the delicate, rapid edge of a closing door's shadow. A life is a brief movement of arms and legs. 

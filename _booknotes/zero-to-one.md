@@ -46,7 +46,7 @@ Startups need to question things and to think of new ways to do things.
 
 > Companies exist to make money, not to lose it. 
 
-> The first step to thinking clearly is to question what we think we know about the past. 
+> The first step to thinking is to question what we think we know about the past. 
 
 ### A Quick History of the 90's
 

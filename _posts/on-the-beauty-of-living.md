@@ -150,7 +150,7 @@ That's what technology can do for us. It can enable us to share the patterns we 
 
 And it can help us to not perish because some fluke cosmic incident wiped us out. Things like asteroid impacts or gamma ray bursts are pretty lethal to a civilization's creations that does not have technology to protect againt them...
 
-Technology allows us to gain a deep understanding of the world. An understanding that we can use to solve the fundamental problem of our own fragility. But it can also enhance that problem gravely. Atomic bombs and other weapons of mass destruction are to product of technology as well. Technology. A double edged sword that can be used to destroy and protect. 
+Technology allows us to gain a deep understanding of the world. An understanding that we can use to solve the fundamental problem of our fragility. But it can also enhance that problem gravely. Atomic bombs and other weapons of mass destruction are to product of technology as well. Technology. A double edged sword that can be used to destroy and protect. 
 
 When I look at the state of the world I can not help but feel that humans are, much like me, too wrapped up in the state of affairs they and others have already created. 
 

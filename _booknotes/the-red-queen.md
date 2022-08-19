@@ -365,7 +365,7 @@ Rape accompanies human societies and sex is often tied to male to male violence 
 
 ### The Herod Effect
 
-Infanticide happens a lot, especially males killing other males children. This might provoke an evolutionary answer from females, namely to mate with more than one male, this way a male can not clearly know if the children are his own and can't kill them easily. 
+Infanticide happens a lot, especially males killing other males children. This might provoke an evolutionary answer from females, namely to mate with more than one male, this way a male can not know if the children are his own and can't kill them easily. 
 
 > The best strategy for a male Bonobo intent on genetic eternity is to eat his greens, get a good night's sleep and prepare for a long day of fornication. 
 
@@ -542,7 +542,7 @@ Fashion is not about an abstract ideal of beauty, just about standing out.
 
 > Beauty cannot exist without ugliness. Sexual selection, Red-Queen-style, is inevitably a cause of dissatisfaction, vain striving and misery to individuals. 
 
-> We measure our own relative desirability from other's reactions to us. 
+> We measure our relative desirability from other's reactions to us. 
 
 ## Chapter Ten - The Intellectual Chess Game
 
@@ -596,7 +596,7 @@ Neoteny - human adults look like baby apes because they develop a lot slower, he
 
 > Gossip is one of the most universal human habits.
 
-Social problems alone can not be the driving advantage selecting for intelligence since other animals have those to. But clearly a big part of human intelligence is devoted to social problems and reading other people's minds. That's what psychology is about, and even more what most novels and plays are about. Condensed forms of human drama show the kinds of social problems people solve and how they do it. Shakespeare and co. were all very adept but unconscious psychologists.
+Social problems alone can not be the driving advantage selecting for intelligence since other animals have those to. But a big part of human intelligence is devoted to social problems and reading other people's minds. That's what psychology is about, and even more what most novels and plays are about. Condensed forms of human drama show the kinds of social problems people solve and how they do it. Shakespeare and co. were all very adept but unconscious psychologists.
 
 ### Wittiness and Sexiness
 

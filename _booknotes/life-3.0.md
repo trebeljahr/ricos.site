@@ -757,7 +757,7 @@ According to this view, 4 principles of consciousness emerge - something conscio
 
 #### Controversies of Consciousness
 
-Can consciousness be splintered? Isn't it? Or is it gradually shifting? Even in our own heads, isn't the subjective experience highly misleading? Especially when looking at people meditating?
+Can consciousness be splintered? Isn't it? Or is it gradually shifting? Even in our heads, isn't the subjective experience highly misleading? Especially when looking at people meditating?
 
 Can you trust people who tell you how they feel to be accurate? [Thinking fast and Slow by Daniel Kahnemann](#TODO) has an interesting spin on this. I think you  can't be trusted, because there are a bunch of biases that severely distort your reported feelings depending on how you are asked exactly...
 

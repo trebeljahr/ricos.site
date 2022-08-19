@@ -14,7 +14,7 @@ amazonLink: "https://amzn.to/3xlYAqL"
 
 ## Summary:
 
-"Seven Habits" is one of the most influential books I have read in my whole life. I think it's the best self-help book out there and if internalized and incorporated into your life, the principles from this book have the potential to change your life drastically.
+Seven Habits is one of the most influential books I have read in my whole life. I think it's the best self-help book out there and if internalized and incorporated into your life, the principles from this book have the potential to change your life drastically.
 
 The core idea of the book is that there are 7 habits, that work together and are central to living a good, productive life. The 7 habits are deduced from timeless, re-occurring ideas and involve heavy character building. They are NO shortcuts. Steven Covey organizes the book into 2 main parts: 
 
@@ -58,7 +58,7 @@ Focus on shaping the character you have, instead of fixing short-term symptoms. 
 
 In contrast, there is the personality ethic, where people only focus on techniques to cure symptoms of the problems. Problems they, themselves, create due to their inadequate characters. 
 
-> Perhaps, in utilizing our human capacity to build on the foundation of generations before us, we have inadvertently become so focused on our own building that we have forgotten the foundation that holds it up; or in reaping for so long where we have not sown, perhaps we have forgotten the need to sow. 
+> Perhaps, in utilizing our human capacity to build on the foundation of generations before us, we have inadvertently become so focused on our building that we have forgotten the foundation that holds it up; or in reaping for so long where we have not sown, perhaps we have forgotten the need to sow. 
 
 Character is that foundation we have forgotten. If the character is not there to match the actions we want to do, no amount of technique is going to cover that flaw. The problems will remain, and no amount of help will ever be truly successful. Without a good foundation, every house crumbles eventually, no matter the great building techniques used. 
 
@@ -129,7 +129,7 @@ The idea of the product and the production capability. Again long-term and short
 
 Just like the character vs. personality ethic short-term fixes usually cause long-term harm and long-term thinking, needs to be what drives decisions and ultimately behavior to be effective. 
 
-> Our most important financial asset is our own capacity to earn. If we don't continually invest in improving our own PC, we severely limit our options. We're locked into our present situationnning scared of our corporation or our boss's opinion of us, economically dependent and defensive. 
+> Our most important financial asset is our capacity to earn. If we don't continually invest in improving our PC, we severely limit our options. We're locked into our present situationnning scared of our corporation or our boss's opinion of us, economically dependent and defensive. 
 
 Trust once destroyed is very hard to gain back. Building relationships takes time and effort and maintaining them is almost as hard. In a way, one has to invest time and resources into relationships the same way one invests in monetary assets. Carefully, deliberately and over long time frames. Treating others justly and rightly, the way you want to be treated is the way to go, just like the Golden Rule states
 
@@ -171,7 +171,7 @@ Reactive people tend to dislike proactive people because it reminds them of what
 
 > Anytime we think the problem is "out there", that thought is the problem. We empower what's out there to control us. The change paradigm is "outside-in" - what's out there has to change before we can change. 
 
-Choices have consequences. When we choose we have to think about our values and the consequences and how they evaluate in light of our values. If we choose wrongly and dislike the consequences of our decision, that's what we call mistakes. Mistakes need to be instantly acknowledged and corrected. That's where we learn to avoid them in the future. Covering up mistakes is another mistake. We lie and break our characters, even more, trying to self-deceive us and rationalize our behavior to make us look good. Our response to our own mistakes is what can hurt us. 
+Choices have consequences. When we choose we have to think about our values and the consequences and how they evaluate in light of our values. If we choose wrongly and dislike the consequences of our decision, that's what we call mistakes. Mistakes need to be instantly acknowledged and corrected. That's where we learn to avoid them in the future. Covering up mistakes is another mistake. We lie and break our characters, even more, trying to self-deceive us and rationalize our behavior to make us look good. Our response to our mistakes is what can hurt us. 
 
 > Chasing after the poisonous snake that bites is will only drive the poison through our entire system. It is far better to take measures immediately to get the poison out. 
 
@@ -183,17 +183,17 @@ Don't argue about other people's weaknesses. Don't argue for your. When you make
 
 ## Habit 2 - Begin with the end in mind
 
-Short exercise - envision your funeral and imagine what you would want other people to say. What kind of person would you like to have been? This exercise reveals what we hold as our innermost values and what we should focus our lives around. Time should be spent with things that further this goal. We should begin with the end in mind. 
+Short exercise - envision your funeral and imagine what you would want other people to say. What kind of person would you like to have been? This exercise reveals what we hold as our innermost values and what we should focus our lives around. Time should be spent on things that further this goal. We should begin with the end in mind. 
 
 > To begin with the end in mind means to start with a clear understanding of your destination. 
 
 > It's incredibly easy to get caught up in an activity trap, the busyness of life, to work harder and harder ant climbing the ladder of success only to discover it's leaning against the wrong wall. It is possible to be busy - very busy - without being very effective. 
 
-Spending time figuring out what you want is time wisely spent. Similar to the saying, if I have 8 hours to cut down a tree with an axe I'll spend the first 7 sharpening the axe. It also reminds me of WaitButWhys idea of drawing a career direction arrow. Figuring out the where you want to go, is more important than going. It's a paradigm shift, exchanging the map, to have an accurate representation of reality and therefore know where we want to go. 
+Spending time figuring out what you want is time wisely spent. Similar to the saying, if I have 8 hours to cut down a tree with an ax I'll spend the first 7 sharpening the ax. It also reminds me of WaitButWhy's idea of drawing a career direction arrow. Figuring out where you want to go, is more important than going. It's a paradigm shift, exchanging the map, to have an accurate representation of reality and therefore know where we want to go. 
 
 ### Principle of Two Creations
 
-Things are created twice, first in the mind and then in reality. We plan before we execute and if we don't, the results are usually worse. One counterexample is evolution and agile processes. In a way minimal planning with a good measure of something being good or bad over many iterations can provide far better solutions than planning could. In a way, planning is such an evolutionary process only done in the mind, going unconsciously through different versions and testing them in our imagination to see what might work best, before we build it. 
+Things are created twice, first in the mind and then in reality. We plan before we execute and if we don't, the results are usually worse. One counterexample is evolution and agile processes. In a way, minimal planning with a good measure of something being good or bad over many iterations can provide far better solutions than planning could. In a way, planning is such an evolutionary process only done in the mind, going unconsciously through different versions and testing them in our imagination to see what might work best, before we build it. 
 
 > Management is efficiency in climbing the ladder of success; leadership is determining whether the ladder is leaning against the right wall. 
 
@@ -203,35 +203,34 @@ Things are created twice, first in the mind and then in reality. We plan before 
 
 — Steven Covey
 
-To begin with the end in mind means to write our own script. Usually families and common sense have handed us scripts that we live by without asking why? It's not our values, we are cooks and not chefs as WaitButWhy would call it. If we were to sit down and think about what we want to do in life, sit down to write our own script, we would do the first creation, of imagining the life we want to be living. The rest then, is implementation. But at least once writing the script is done, we have a sense of direction, a place where we are heading that we know is right. 
+To begin with, the end in mind means writing our script. Usually, families and common sense have handed us scripts that we live by without asking why. It's not our values, we are cooks and not chefs as WaitButWhy would call it. If we were to sit down and think about what we want to do in life and sit down to write our script, we would do the first creation, by imagining the life we want to be living. The rest then is implementation. But at least once writing the script is done, we have a sense of direction, a place where we are heading that we know is right. 
 
-> In developing our own self-awarenes many of us discover ineffective scripts, deey embedded habits that are unworthy of us, incongruent with the things we value in life. Habit 2 says we don't have to live with those scripts. We are respons-able to use our imagination and creativity to write new ones that are more effective, more congruent with our deepest values and with the correct principles that give our values meaning. 
+> In developing our self-awarenes many of us discover ineffective scripts, deey embedded habits that are unworthy of us, incongruent with the things we value in life. Habit 2 says we don't have to live with those scripts. We are respons-able to use our imagination and creativity to write new ones that are more effective, more congruent with our deepest values and with the correct principles that give our values meaning. 
 
-Reminds me of an article advising to write down the things you value in life like this: First write: "I believe in:" at the top, then the 5 things you value. After that, write down the top 5 things you spend your day to day life with. Then exchange the two lists.
+Reminds me of an article advising you to write down the things you value in life like this: First write: "I believe in:" at the top, then the 5 things you value. After that, write down the top 5 things you spend your day-to-day life with. Then exchange the two lists.
 
-One way to build the end in mind is to write down a personal constitution. In other words to develop a philosophy or creed jotting down what values are most important and self evident. This can serve as a compass in difficult times and as a metric for making decisions then. It's the framework which guides the behavior. Yet another way to describe this end in mind is to find out what ones unique meaning in life is - what do I want to do and why? Yet another is the WaitButWhy metaphor of the golden bowl on the top of the shelf and the organization of the shelf as a whole - which needs of my yearning octopus have to be fulfilled? What are my values?
+One way to build the end in mind is to write down a personal constitution. In other words to develop a philosophy or creed jotting down what values are most important and self-evident. This can serve as a compass in difficult times and as a metric for making decisions then. It's the framework that guides the behavior. Yet another way to describe this end in mind is to find out what your unique meaning in life is - what do I want to do and why? Yet another is the WaitButWhy metaphor of the golden bowl on the top of the shelf and the organization of the shelf as a whole - which needs, of the yearning octopus, have to be fulfilled? What are my values?
 
 > To many vacations that last too long, too many movies, too much TV, too much video game playing - too much undisciplined leisure time in which a person continually takes the course of least resistance gradually wastes a life. 
 
 > Principles don't react to anything. They don't get mad and treat us differently. They won't divorce us or run away with our best friend. They aren't out to get us. They can't pave our way with shortcuts or quick fixes. They don't depend on the behavior of others, the environment, or the current dad for their validity. Principles don't die. They aren't here one day and gone the next. They can't be destroyed by fire, earthquake or theft. Principles are deep fundamental truths. 
 
-People center their lives and decisions around different things. Examples for centers are Money, Status, Spouse, Family, Friends, Pleasure, Work... Choosing the right center is of most importance. All centers outside of oneself are bad since they shift the locus of control over how one is feeling and the sense of self worth to something beyond our control. Furthermore all centers that can change their values are also wrong.
-Giving up that control of who we are and how we react is against the 7 Habits. The only logical center worth it, is one built around solid self evident principles, accurate maps of effectiveness. They don't change hence we can build on them as the center and foundation of our lives. 
-
-Principle centeredness in a way is being centered around all centers equally, taking into account all factors that contribute to making a decision and then coming up with creative solutions to resolve the constraints put upon us. 
+People center their lives and decisions around different things. Examples of centers are Money, Status, Spouse, Family, Friends, Pleasure, Work... Choosing the right center is of most importance. All centers outside of oneself are bad since they shift the locus of control over how one is feeling and the sense of self-worth to something beyond our control. Furthermore, all centers that can change their values are also wrong.
+Giving up that control of who we are and how we react is against the 7 Habits. The only logical center worth it is one built around solid self-evident principles and accurate maps of effectiveness. They don't change hence we can build on them as the center and foundation of our lives. 
+Principle-centeredness in a way is being centered around all centers equally, taking into account all factors that contribute to making a decision and then coming up with creative solutions to resolve the constraints put upon us. 
 
 ### Habit 1 - Be the programmer
 ### Habit 2 - Write the program
 
-Principals and values of an effective person -> the end in mind, should be put down in writing to be better remembered and as a point of reference. Memories can change and deceive, a written statement can not. Similar to a written constitution it is something that shows who we are and how we want to decide. It communicates to ourselves what person we want to be. 
+Principals and values of an effective person -> the end in mind should be put down in writing to be better remembered and as a point of reference. Memories can change and deceive, a written statement can not. Similar to a written constitution it is something that shows who we are and how we want to decide. It communicates to ourselves what person we want to be. 
 
-It helps to visualize how a life like this would look. Thinking about what one wants to have been when one is dead is not enough, visualizing it can tap into the power of imagination and thereby show us our values much more clearly. Also writing the mission statement is an ongoing process. Revising and looking it over should be a routine, that's part of habit 7.
+It helps to visualize how life like this would look. Thinking about what one wants to have been when one is dead is not enough, visualizing it can tap into the power of imagination and thereby show us our values much more clearly. Also writing the mission statement is an ongoing process. Revising and looking it over should be a routine, that's part of habit 7.
 
-Visualisation can also be used as a tool to put into perspective what it would mean to act in light with ones own values. Specific situations might trigger certain scripts on autopilot that are still old unwanted behavior. Imagining those situations in detail, but with the positive outcome and reasoning can help to produce the desired behavior more often. In a way it is practicing the behavior in the imagination and thereby pre strengthening the synaptic connections necessary to perform the right motor outputs when the stimulus come in. 
+Visualization can also be used as a tool to put into perspective what it would mean to act in light of one's values. Specific situations might trigger certain scripts on autopilot that are still old unwanted behavior. Imagining those situations in detail, but with a positive outcome and reasoning can help to produce the desired behavior more often. In a way, it is practicing the behavior in the imagination and thereby pre-strengthening the synaptic connections necessary to perform the right motor outputs when the stimulus comes in. 
 
 > Writing is a mind if psycho-neural muscular activity which helps bridge and integrate the conscious and subconscious minds. Writing distills, crystallizes, and clarifies thought and helps break the whole into parts. 
 
-Organizations with written mission statements can be very effective. The key is that all the people in the organization have to be a part of the mission statement. Without involvement the effectiveness of the statement is 0. Furthermore the statement has to be in alignment with the reward system. Rewarding people for the right things is key and figuring what the right things are together is what involvement cries for. 
+Organizations with written mission statements can be very effective. The key is that all the people in the organization have to be a part of the mission statement. Without involvement, the effectiveness of the statement is 0. Furthermore, the statement has to be in alignment with the reward system. Rewarding people for the right things is key and figuring out what the right things are together is what involvement cries for. 
 
 ## Habit 3 - Put first things first
 
@@ -241,55 +240,54 @@ Two questions:
 
 > What one thing in your business or professional life would bring similar results?
 
-Habit 3 is about putting the mental creation of Habit 2 into reality. It is about implementing of the person we want to be. So to quickly summarize, know that you can change, decide what you want to change into, then change. 
-
-Self awareness, imagination, conscience and independent will are the four human endowments necessary for living habits 1-3. 
+Habit 3 is about putting the mental creation of Habit 2 into reality. It is about implementing the person we want to be. So to quickly summarize, know that you can change, decide what you want to change into, then change. 
+Self-awareness, imagination, conscience and independent will are the four human endowments necessary for living habits 1-3. 
 
 > Empowerment comes from learning how to use our independent will in the decisions we make every day. 
 
-This type of will, that persists against the odds is what grit is about. In a way once we know our direction, we should implement relentlessly. Habits 1 and 2 are figuring out the direction, which jungle one is in and habit 3 is figuring out the day to day decisions. Habit 3 is walking the talk. 
+This type of will, that persists against the odds is what grit is about. In a way, once we know our direction, we should work towards it relentlessly. Habits 1 and 2 are figuring out the direction. Habit 3 is figuring out the day-to-day decisions. Habit 3 is walking the talk. 
 
 > Integrity is the value we place on ourselves. 
 
-Doing the things that hurt but which are necessary is what is needed for success. The people able to get themselves to do it are successful, the others aren't. If you can do something that hurts others a lot but doesn't hurt you, and is beneficial for the view of your values and principles you can create great things. 
+Doing the things that hurt but which are necessary is what is needed for success. The people able to get themselves to do it are successful, the others aren't. If you can do something that hurts others a lot but doesn't hurt you and is beneficial for the view of your values and principles you can create great things. 
 
 > "Time management" is a misnomer - the challenge is not to manage time, but to manage ourselves. 
 
-I question how this idea of time management, even if it means managing ourselves relates to the story of Momo? Why is all that talk about effectiveness necessary for a good life?
+I question how this idea of time management, even if it means managing ourselves This insight deeply relates to [the story of Momo](/booknotes/momo). Why is all that talk about effectiveness necessary for a good life?
 
 The matrix of time management - the Eisenhower Matrix - Urgent/Important and the 4 quadrants. 
 
-Quadrant I is urgent and important, crises and immediate problems fall here. However an ounce of prevention is worth a pound of cure, so the most effective actions lie in quadrant II. Non urgent but important activities. These are the activities that can prevent fires. People who are very busy yet don't get things done tend to spend a lot of time in Quadrant III, urgent but not important matters. They have lots to do, like the Red Queen having to keep running at full speed just to stay still in the world. 
+Quadrant I is urgent and important, crises and immediate problems fall here. However an ounce of prevention is worth a pound of cure, so the most effective actions lie in quadrant II. Nonurgent but important activities. These are the activities that can prevent fires. People who are very busy yet don't get things done tend to spend a lot of time in Quadrant III, urgent but not important matters. They have lots to do, like the Red Queen having to keep running at full speed just to stay still in the world. 
 
-Knowing how to place activities into different quadrants is of utmost importance. That's what prioritization is about. 
-
-In a way the whole idea of those quadrantd expresses the idea of long-term/short term consequence trade offs in a very succinct way. Quadrant II activities being the sweet spot of high impact long-term decisions that don't have immediate consequences and therefore tend to get postponed. There could be an idea added on top of that, quadrant II activities are so abundant that one needs to sort them by priority even more. Some things in quadrant two are simply more important than others. 
+Knowing how to place activities into different quadrants is of utmost importance. That's what prioritization is about. In a way, the whole idea of those quadrants expresses the idea of long-term/short-term consequence trade-offs in a very succinct way. Quadrant II activities are at the sweet spot of high-impact long-term decisions that don't have immediate consequences and therefore tend to get postponed. There could be an idea added on top of that, quadrant II activities are so abundant that one needs to sort them by priority even more. Some things in quadrant two are simply more important than others. 
 
 Or in yet other words quadrant II activities are the ones most likely to be procrastinated. They don't offer immediate gratification of solving a real problem, the consequences of acting on things in this quadrant are not directly visible and they are still very hard problems. It's like the deck of cards is stacked against humans and their natural biases here. Quadrant II is something we haven't adapted to live with because it is a quite modern invention. Hence we need to tune our brains ourselves to get ourselves to do these things.
 
-To get time for quadrant II we need to learn to say no. In a way quadrant II has to be cleaned. We need to put a lot less in quadrant III and IV by working more on our definition of values. That is what habit 2 is about. Knowing what exactly is to be put in the top bowl on the shelf means to know what is to be put into quadrant II at all. It is to know which things are important at all. Now if one has set this straight everything not in quadrant 2 should get a straight and forward - No. Like Derek Sievers idea of hell yeah or no or his idea of keeping only one pet and giving it all the love, or the idea of essentialism or minimalism... This is what all of them are about. Get to know what you want, pick only the top 1-3 and let the rest go to hell. 
+To get time for quadrant II we need to learn to say no. In a way quadrant II has to be cleaned. We need to put a lot less in quadrants III and IV by working more on our definition of values. That is what habit 2 is about. Knowing what exactly is to be put in the top bowl on the shelf means knowing what is to be put into quadrant II at all. It is to know which things are important at all. Now if one has set this straight everything, not in quadrant 2 should get a straight and forward - No. 
+
+Like [Derek Sievers's idea of hell yeah or no](https://sive.rs/n) or [his idea of keeping only one pet and giving it all the love](https://sive.rs/pets), or the ideas of essentialism or minimalism... This is what all of them are about. Get to know what you want, pick only the top 1-3 and let the rest go to hell. 
 
 > The enemy of the "best" is often the "good". 
 
 > If you want to get something done, give it to a busy man.
 
-Being able to do Quadrant II activities only is the hard part. Steven Covey thinks it is about getting habit 2 straight. If you have the strength of conviction, if you truly have the end in mind, then the sacrifices will not feel like sacrifices anymore. Like a priest entering the celibate, the sacrifice will be worth if we get to the goal. Therefore getting the center right - having the goal in mind strong enough is the first step. 
+Being able to do Quadrant II activities only is the hard part. Steven Covey thinks it is about getting habit 2 straight. If you have the strength of conviction, if you truly have the end in mind, then the sacrifices will not feel like sacrifices anymore. Like a priest entering the celibate, the sacrifice will be worth it if we get to the goal. Therefore getting the center right - having the goal in mind strong enough is the first step. 
 
 > Your independent will alone cannot effectively discipline you against your center. Form follows function. Management follows Leadership. 
 
 The above quote reminds me a lot of a section from [John Bogle's Enough.](/booknotes/enough)
 
-Sacrificing things from quadrant III and IV to quadrant II is the thing that all of habits 1,2 and 3 want you to do. That's what effectiveness is all about in the end. Foregoing short term pleasures to pursue long-term goals that are clearly thought out and rationalized. That what [Naval Ravikant points out all self help can be boiled down to.](/booknotes/navalmanack) 
+Sacrificing things from quadrant III and IV to quadrant II is the thing that all habits (1,2 and 3) want you to do. That's what effectiveness is all about in the end. Foregoing short-term pleasures to pursue long-term goals that are thought out and rationalized. That is what [Naval Ravikant points out too.](/booknotes/navalmanack) All self-help can be boiled down to this insight. 
 
 Now the question is - why doesn't that work for most people? Why is there a personality ethic in the first place? 
 
-The problem is, that change like Steven Covey describes it is just goddamn hard to pull off. There is no secret, everybody knows that this would be the better way to live, yet most lose the dogfight with their mind in the day to day and end up fat, lazy and unhappy with their lives. 
+The problem is, that change like Steven Covey describes it is just goddamn hard to pull off. There is no secret, that everybody knows that this would be the better way to live, yet most lose the dogfight with their mind in the day-to-day and end up fat, lazy and unhappy with their lives. 
 
 Because fundamentally our brains are not at all wired for quadrant II activities and getting them to that place is still a mystery, even after reading 7 Habits. He has no good strategy to offer the poor soul, who can not fight his inner demons and develop this strong sense of self-direction and end in mind that is enough to propel him towards good actions. People can read 7 Habits and yet don't change at all. Because people don't want to change. They want to stick with unhealthy eating habits, unhealthy relationships and so on. Because they can not bear the hardness of the good life in the short term because their neural networks are acting against those interests influencing what they do day in and day out. 
 
 > Only when you have the self awareness to examine your program - and the imagination, and conscience to create a new, unique, principle-centered program to which you can say "yes" - only then we you have sufficient independent will power to say "no", with a genuine smile, to the unimportant. 
 
-This sums it up succinctly. Furthermore, it has some more detail inherent in it - namely you know which things to say yes and no to for the first time only after successfully completing habits 1 and 2. 
+This sums it up succinctly. Furthermore, it has some more detail inherent in it - namely you know which things to say yes and no to for the first time only after completing habits 1 and 2. 
 
 Time management generations 1-3 (todo-lists, calendar, daily and biweekly priority planning) are problematic in their ways. Even though they improve upon each other majorly. Generation 3 is essentially the modern version of agile planning and he succinctly saw its problems decades before it became as popular as it is nowadays. Here he summarizes it: 
 
@@ -325,7 +323,7 @@ When the trust account is overdrawn, flexibility in the relationships gets small
 
 1. Truly understanding is the most important relationship-building activity one can have. Everything else builds on it because to understand what is taxing or building trust with a person you need to know the person well. You have to make what is important to the other person, as important to you as the other person is to you. 
 
-> Our tendency is to project out of our own autobiographies what we think other people want or need. 
+> Our tendency is to project out of our autobiographies what we think other people want or need. 
 
 #### 2. Attend to details 
 
@@ -335,7 +333,7 @@ When the trust account is overdrawn, flexibility in the relationships gets small
 
 #### 3. Keep Commitments
 
-Promises are assurances of trust and breaking them is the surest way to lose it quickly. Therefore if committing to something, don't let others down and be wary and careful what to commit to. 
+Promises are assurances of trust and breaking them is the surest way to lose it quickly. Therefore if committing to something, don't let others down and be wary and careful about what to commit to. 
 
 #### 4. Clarifying Expectations 
 
@@ -438,7 +436,7 @@ Systems of competition and contest harm Win/Win agreements within organizations.
 
 ## Habit 5 - Seek first to understand, then to be understood
 
-The optometrist who gives you his glasses and then tells you done more grateful for his help even though his glasses didn't help. Prescription has to follow diagnosis. And not only at optometrists but in efficient communication as well. 
+The optometrist who gives you his glasses and then tells you done more grateful for his help even though his glasses didn't help. Prescription has to follow diagnosis. And not only at optometrists but at effective communication as well. 
 
 Reading, writing, speaking and listening are the four fundamental forms of communication. 
 
@@ -448,7 +446,7 @@ Communication is the most important skill there is in an interdependent reality.
 
 > Unless you're influenced by my uniqueness, I'm not going to be influenced by your advice. 
 
-To be able to listen well we need to know what comes first. And it's not our ego that we are centered on, but principles. Therefore we have to subdue our ego when listening and stop projecting our own autobiography onto the circumstances of others. Our presentation of ourselves in communication matters less than the health of the relationship. And so listening is an act of giving up our representation. 
+To be able to listen well we need to know what comes first. And it's not our ego that we are centered on, but principles. Therefore we have to subdue our ego when listening and stop projecting our autobiography onto the circumstances of others. Our presentation of ourselves in communication matters less than the health of the relationship. And so listening is an act of giving up our representation. 
 
 > Most people do not listen with the intent to understand; theyjdgen with the intent to reply. They're either speaking or preparing to speak. They're filtering everything through their paradigms, reading their autobiography into other people's lives. 
 
@@ -512,7 +510,7 @@ Synergy is about seeking the higher, middle way. The one that is a better soluti
 
 > Unity, or oneness is complementariness, not sameness. Sameness is uncreative... And boring. The essence of synergy is to value the differences. 
 
-> The person who is truly effective has the humility and reverence to recognize his own perceptual limitations and to appreciate the rich resources available through interaction with the hearts and minds of other human beings. That person values the differences because those differences add to his knowledge, to his understanding of reality. When were left to our own experiences, we constantly suffer from a shortage of data. 
+> The person who is truly effective has the humility and reverence to recognize his own perceptual limitations and to appreciate the rich resources available through interaction with the hearts and minds of other human beings. That person values the differences because those differences add to his knowledge, to his understanding of reality. When were left to our experiences, we constantly suffer from a shortage of data. 
 
 Trust and understanding underlie synergy. Once those are there, even broken relationships can be mended and creative solutions found, which is truly "win/win" thinking. 
 
@@ -529,15 +527,15 @@ physical, social, mental and spiritual. Habit 7 is about expressing all of them 
 
 The physical dimension is about taking care of the body. Exercise, healthy foods and rest are what we need to have enough of to fulfill that aspect. 
 
-Spiritual renewal is about our inner peace. Sitting and reading good literature or listening to nice music can be renewal. Meditation, prayer or simply being in nature could be that renewal. It's also about reflecting on core values. Of taking the time to think and internalize what is important - what our centers and principles are. Mental renewal is about continuing education and learning throughout life. In a way it can be summarized as Warren Buffets' idea of - going to bed a little wiser than when you woke up. But it is also about looking inward. 
+Spiritual renewal is about our inner peace. Sitting and reading good literature or listening to nice music can be renewal. Meditation, prayer or simply being in nature could be that renewal. It's also about reflecting on core values. Of taking the time to think and internalize what is important - what our centers and principles are. Mental renewal is about continuing education and learning throughout life. In a way, it can be summarized as Warren Buffets' idea of - going to bed a little wiser than when you woke up. But it is also about looking inward. 
 
 > It is extremely valuable to train the mind to stand apart and examine its own program. That, to me, is the definition of a liberal education - the ability to examine the programs of life against larger questions and purposes and other paradigms. 
 
 > Proactive people can figure out many, many ways to educate themselves. 
 
-Reading is one of the most effective ways of doing this. Because one can learn from the best of the last centuries and pick apart and contrast their paradigms with ones owns and that of others, teasing out what is good and true. Other ways to mentally renew are writing, keeping a clear, concise flow of thoughts, as well as planning and organizing ones life. 
+Reading is one of the most effective ways of doing this. Because one can learn from the best of the last centuries and pick apart and contrast their paradigms with one's own and those of others, teasing out what is good and true. Other ways to mentally renew are writing, keeping a clear, concise flow of thoughts, as well as planning and organizing ones life. 
 
-Spending an hour renewing each and every of those 4 aspects a day is what builds a strong character over time. 
+Spending an hour renewing every one of those 4 aspects a day is what builds a strong character over time. 
 
 The social renewal is about Habits 4,5 and 6. 
 
@@ -545,26 +543,26 @@ The social renewal is about Habits 4,5 and 6.
 
 > Peace of mind comes when your life is in harmony with true principles and values and in no other way.
 
-We can script other people to become principle centered as well and he would see that as a good thing. As a service to them. Truly seeing the best what another can be and then showing it to them and believing they can achieve that dream, their potential, is rescripting them to believe into themselves and what they can become. In a way they are self fulfilling prophecies. 
+We can script other people to become principle-centered as well and he would see that as a good thing. As a service to them. Truly seeing the best what another can be and then showing it to them and believing they can achieve that dream, their potential, is rescripting them to believe in themselves and what they can become. In a way, they are self-fulfilling prophecies. 
 
 > Treat a man as he is and he will remain as he is. Treat a man as he can and should be and he will become as he can and should be. 
 
 — Goethe
 
-Effective fenewal is about balancing the four aspects of it. 
+Effective renewal is about balancing the four aspects of it. 
 
 > We can't effectively thrive without making money, but that's not sufficient reason for organizational existence. We can't live without eating, but we don't live to eat. 
 
 > Your economic security does not lie in your job; it lies in your power to produce - to think, to learn, to create to adapt. That's true financial independence. It's not having wealth; it's having the power to produce wealth. It's intrinsic. 
 
-There is an upward spiral of the 7 Habits. They synergize with each other and are guided by the voice of conscience. That's what makes us different from animals and is what empowers us to do the good and correct thing, what helps us to learn right from wrong and then consistently act out the good, making our lifes centered on principles and accurate maps of reality. People who don't use this human endowment behave like animals, because in a way they are, they don't take the responsibility to rescript their reaction to stimuli, they in other words, don't listen to their conscience. They are "being lived" by the world around them. 
+There is an upward spiral of the 7 Habits. They synergize with each other and are guided by the voice of conscience. That's what makes us different from animals and is what empowers us to do the good and correct thing, what helps us to learn right from wrong and then consistently act out the good, making our lives centered on principles and accurate maps of reality. People who don't use this human endowment behave like animals, because, in a way they are, they don't take the responsibility to rescript their reaction to stimuli, they, in other words, don't listen to their conscience. They are "being lived" by the world around them. 
 
 > To become divine is the aim of life. Then only can truth be said to be ours beyond the possibility of loss. It is no longer outside us, not in a sense even in us, but we are it, and it is we. 
 
-This idea in a way is reflected in different philosophies under different names, the Buddhists call it awakening or enlightenment, but the same idea exists as the Greek Eudaimonia or the philosophers king, or even as the Stoic Sage. That is to say that different religions and philosophies have discovered the same underlying principles of effectiveness, independent fr each other, and interpreted them in their different value systems. But the principles are the same.
+This idea in a way is reflected in different philosophies under different names, the Buddhists call it awakening or enlightenment, but the same idea exists in the Greek Eudaimonia or the philosopher's king, or even as the Stoic Sage. That is to say that different religions and philosophies have discovered the same underlying principles of effectiveness, independent fr each other, and interpreted them in their different value systems. But the principles are the same.
 
 > There is an internal sense of the principle of justice or win/win. There is an internal moral sense of the principles of responsibility, of the principle of purpose, of integrity, of respect, of cooperation, of communication, of renewal. These are universal. But practices are not. They are situationally specific. Every culture interprets universal principles in unique ways. 
 
-Words are boxes of abstractions put around complex ideas. It makes those ideas usable in a shorthand form, similar to abstractions of an API layer interface. One can drill down into the details of those words, but usually that's not necessary. Seven Habits is about creating those words around effectiveness. Win/Win, Proactivity, End in Mind, Understand First, Synergize, First Things First, Sharpen the Saw... All of them are just boxes to make the concepts easier to communicate and stick in mind. That's what makes them so powerful, because a complex thing can become better integrated into behavior that way. 
+Words are boxes of abstractions put around complex ideas. It makes those ideas usable in a shorthand form, similar to abstractions of an API layer interface. One can drill down into the details of those words, but usually, that's not necessary. Seven Habits is about creating those words around effectiveness. Win/Win, Proactivity, End in Mind, Understand First, Synergize, First Things First, Sharpen the Saw... All of them are just boxes to make the concepts easier to communicate and stick in mind. That's what makes them so powerful because a complex thing can become better integrated into behavior that way. 
 
 > High tech without high touch does not work. 

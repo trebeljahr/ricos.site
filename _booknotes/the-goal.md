@@ -187,7 +187,7 @@ This reminds me of the Tao somehow. The idea is that not brute force is the way 
 
 > You *assumed* that if you trim capacity to balance with market demand you won't affect throughput or inventory. But, in fact, that assumption - which is practically universal in the western business world - is wrong. 
 
-> There is a mathematical proof which could clearly show that when capacity is trimmed exactly to marketing demands, no more and no less, throughput goes down, while inventory goes through the roof.
+> There is a mathematical proof which could show that when capacity is trimmed exactly to marketing demands, no more and no less, throughput goes down, while inventory goes through the roof.
 
 > Most of the factors critical to running your plant successfully cannot be determined precisely ahead of time. 
 
@@ -351,11 +351,11 @@ Another tense moment arises during the performance review, because one of the op
 
 ## Chapter 32
 
-> We refer to something as common sense only if it is in line with our own intuition. 
+> We refer to something as common sense only if it is in line with our intuition. 
 
 ### Chapter Summary: 
 
-The protagonist eats with his wife to celebrate, but their discussion is highly interesting, about how to change people to see things more clearly and to challenge common practice and replace it with well thought out ones. And one question remains - how did the physicist know all that stuff?
+The protagonist eats with his wife to celebrate, but their discussion is highly interesting, about how to change people to see things more and to challenge common practice and replace it with well thought out ones. And one question remains - how did the physicist know all that stuff?
 
 ## Chapter 33
 

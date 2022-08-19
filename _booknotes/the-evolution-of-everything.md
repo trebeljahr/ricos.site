@@ -172,7 +172,7 @@ DNA that is good at getting itself copied, without killing the host, has  great 
 
 #### Chapter Summary: 
 
-DNA as a cause of itself is a hard concept to grasp. It doesn't serve it's body, the body is more of a side effect. The same is true for adaptions in cancer cells or adaptions of pathogens or any adaptions . They don't happen for any purpose, they happen randomly and are then sifted by what works and what doesn't. This leads to seemingly insensible things in our own DNA - junk. Well, for the purposes of our bodies it is junk, but for the purpose of multiplying itself from generation to generation it does a  good job. Genetic parasites are real and a lot of our genome happens to take their shape. 
+DNA as a cause of itself is a hard concept to grasp. It doesn't serve it's body, the body is more of a side effect. The same is true for adaptions in cancer cells or adaptions of pathogens or any adaptions . They don't happen for any purpose, they happen randomly and are then sifted by what works and what doesn't. This leads to seemingly insensible things in our DNA - junk. Well, for the purposes of our bodies it is junk, but for the purpose of multiplying itself from generation to generation it does a  good job. Genetic parasites are real and a lot of our genome happens to take their shape. 
 
 ## Chapter 5 - The Evolution of Culture
 
@@ -184,7 +184,7 @@ DNA as a cause of itself is a hard concept to grasp. It doesn't serve it's body,
 
 Languages behave like species density. In more species rich places, people have lots of different languages and vice versa. So language density changes with altitude and coming closer to the equator just as species become denser at the equator and less denser in the mountains and close to the poles. 
 
-> Languages are clearly human products, but they are not consciously designed. 
+> Languages are human products, but they are not consciously designed. 
 
 > There are intensely close parallels between the evolution of languages and species. 
 
@@ -685,7 +685,7 @@ The Idea of Fragile and Antifragile Systems shines through these pages clear as 
 
 ### The Cult of Cereology
 
-Example of Crop Circles, and people firmly believing in their supernatural causes even though other people are the ones who clearly made them. 
+Example of Crop Circles, and people firmly believing in their supernatural causes even though other people are the ones who made them. 
 
 ### The Temptations of Superstition
 

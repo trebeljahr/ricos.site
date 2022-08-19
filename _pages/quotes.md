@@ -11,7 +11,7 @@
 > Great thinkers, icons, and innovators think forward and backwards. Occasionally, they drive their brain in reverse.
 — James Clear
 
-> If you are homo sapiens, you evolved for group combat and confirmation basis and motivated reasoning we are not really evolved to be academics or scientists searching for truth in an unbiased way we evolved to win in social competitions. But if you learn some skills you can actually be very effective as a teacher as someone who persuades as someone who changes people.
+> If you are homo sapiens, you evolved for group combat and confirmation basis and motivated reasoning we are not  evolved to be academics or scientists searching for truth in an unbiased way we evolved to win in social competitions. But if you learn some skills you can  be very effective as a teacher as someone who persuades as someone who changes people.
 — Jonathan Haidt 
 
 > God is in the details.
@@ -128,7 +128,7 @@
 > You cannot understand good design if you do not understand people.
 — Dieter Rams
 
-> So perhaps the point of personal productivity is not to minimize work or maximize efficiency, but rather to reach some level of financial security. And though the idea of early retirement is absurd, no one who can achieve it will actually take it, perhaps the better idea of early retirement is to retire from the need to force yourself to be productive. It's to give yourself permission to enjoy what you do and take your time on it, and not be under the gun to keep shipping as fast as possible.
+> So perhaps the point of personal productivity is not to minimize work or maximize efficiency, but rather to reach some level of financial security. And though the idea of early retirement is absurd, no one who can achieve it will  take it, perhaps the better idea of early retirement is to retire from the need to force yourself to be productive. It's to give yourself permission to enjoy what you do and take your time on it, and not be under the gun to keep shipping as fast as possible.
 — Nat Eliason
 
 > Every perception is to some degree an act of creation, and every act of memory is to some degree an act of imagination.
@@ -231,7 +231,7 @@
 > These are the five principles to keep in mind as you go forward. Write the best content online. Don't make readers leave. Be keyword informed but not driven. Get other people involved. And make sure you're doing good sourcing. 
 — Nat Eliason
 
-> Ideas ride us into battle like warhorses. We can witness, participate in, and even lead these battles, but their true meaning eludes us. We don't really know where ideas come from, nor how to control them. 
+> Ideas ride us into battle like warhorses. We can witness, participate in, and even lead these battles, but their true meaning eludes us. We don't  know where ideas come from, nor how to control them. 
 — Nadia Eghbal
 
 > But if I'm right about the acceleration of addictiveness, then this kind of lonely squirming to avoid it will increasingly be the fate of anyone who wants to get things done. We'll increasingly be defined by what we say no to. 
@@ -270,7 +270,7 @@
 > Dave in his life took the risk of traveling first and then the risk of quitting a job he grew tired of second. He was an inspiration when it comes to avoiding the risk not taken. He is also a past tense person, because he's gone. Unfathomably we lost Dave in 2011. Too bright a light to go out at thirty-five, and yet on he went. He was too alive to die, and yet that's not how it works.
 — Andy Dunn
 
-> What does count is a perspective on what wealth really is. Wealth is the substance in you, it's the people that care for you and that you care for, it is experiences had and perspective acquired.
+> What does count is a perspective on what wealth  is. Wealth is the substance in you, it's the people that care for you and that you care for, it is experiences had and perspective acquired.
 — Andy Dunn
 
 > There are a lot of good excuses for not helping someone.
@@ -348,7 +348,7 @@
 > The acquisition of wisdom is a moral duty. 
 — Charlie Munger
 
-> If you can get really good at destroying your own ideas, that's a great gift.
+> If you can get  good at destroying your ideas, that's a great gift.
 — Charlie Munger
 
 > Few things are harder to put up with than the annoyance of a good example.
@@ -387,7 +387,7 @@
 > Any book which is at all important should be reread immediately.
 — Arthur Schopenhauer
 
-> The silly question is the first intimation of some totally new development.
+> The silly question is the first intimation of some new development.
 — Alfred North Whitehead
 
 > No one who achieves success does so without acknowledging the help of others. The wise and confident acknowledge this help with gratitude.
@@ -501,7 +501,7 @@
 > What a man wishes that he also believes. 
 — Demosthenes
 
-> Ideology does some strange things and distorts cognition terribly. If you get a lot of heavy ideology young and then you start expressing it you are really locking your brain into a very unfortunate pattern. And you are going to distort your general cognition. 
+> Ideology does some strange things and distorts cognition terribly. If you get a lot of heavy ideology young and then you start expressing it you are  locking your brain into a very unfortunate pattern. And you are going to distort your general cognition. 
 — Charlie Munger
 
 > So to win in the game of life, get the needed models into your head and think it through forward and backward. What works in bridge will work in life. 
@@ -535,7 +535,7 @@
 > So some edges can be acquired. And the game of life to some extent for most of us is trying to be something like a good plumbing contractor in Bemidji. Very few of us are chosen to win the world's chess tournaments.
 — Charlie Munger 
 
-> So you have to figure out what your own aptitudes are. If you play games where other people have the aptitudes and you don't you're going to lose. And that's as close to certain as any prediction that you can make. You have to figure out where you've got an edge. And you've got to play within your own circle of competence.
+> So you have to figure out what your aptitudes are. If you play games where other people have the aptitudes and you don't you're going to lose. And that's as close to certain as any prediction that you can make. You have to figure out where you've got an edge. And you've got to play within your circle of competence.
 — Charlie Munger
 
 > So life is an everlasting battle between those two forces - to get these advantages of scale on one side and a tendency to get a lot like the U.S. agriculture department on the other side - where they just sit and so forth. I don't know exactly what they do. However I do know that they do very little useful work.
@@ -556,7 +556,7 @@
 > Learning is not compulsory... Neither is survival.
 — Dr. W. Edwards Deming
 
-> That's why Erik says it is the most destructive type of work. It's not really work like the others. The other are what you planned on doing allegedly because you needed to do it. Unplanned work is what prevents you from doing it. Like matter and antimatter in the presence of unplanned work all planned work ignites with incandescent fury incinerating everything around it.
+> That's why Erik says it is the most destructive type of work. It's not  work like the others. The other are what you planned on doing allegedly because you needed to do it. Unplanned work is what prevents you from doing it. Like matter and antimatter in the presence of unplanned work all planned work ignites with incandescent fury incinerating everything around it.
 — Gene Kim
 
 > It's not a good sign when they're still attaching parts to the space shuttle at liftoff time.
@@ -583,7 +583,7 @@
 > We have code for design, we have code for fabrication, we need code for construction.
 — Skylar Tibbits
 
-> Fall in love with some activity, and do it! Nobody ever figures out what life is all about, and it doesn't matter. Explore the world. Nearly everything is really interesting if you go into it deeply enough. Work as hard and as much as you want to on the things you like to do the best. Don't think about what you want to be, but what you want to do. Keep up some kind of a minimum with other things so that society doesn't stop you from doing anything at all.
+> Fall in love with some activity, and do it! Nobody ever figures out what life is all about, and it doesn't matter. Explore the world. Nearly everything is  interesting if you go into it deeply enough. Work as hard and as much as you want to on the things you like to do the best. Don't think about what you want to be, but what you want to do. Keep up some kind of a minimum with other things so that society doesn't stop you from doing anything at all.
 — Richard Feynman
 
 > Spacetime is sometimes referred to as the block universe because within it the whole of physical reality, past, present and future is laid out once and for all frozen in a single four dimensional block. Relative to spacetime nothing ever moves and what we call moments are certain slices through spacetime and when the contents of such slices are different from one another we call it change or motion through space.
@@ -616,7 +616,7 @@
 > If the earth were enveloped in a large solar flare, itself an insignificant event astrophysically, our biosphere would be instantly sterilized, and that catastrophe would have as little effect on the sun as a raindrop has on an erupting volcano.
 — David Deutsch
 
-> In everyday parlance we speak of organisms reproducing themselves, indeed this was one of the supposed characteristics of living things. In other words we think of organisms as replicators. But this is inaccurate. Organisms are not copied during reproduction, far less do they cause their own copying. They are constructed afresh according to blueprints embodied in the parent organisms DNA.
+> In everyday parlance we speak of organisms reproducing themselves, indeed this was one of the supposed characteristics of living things. In other words we think of organisms as replicators. But this is inaccurate. Organisms are not copied during reproduction, far less do they cause their copying. They are constructed afresh according to blueprints embodied in the parent organisms DNA.
 — David Deutsch
 
 > It is a fact of life that there exist molecules which cause certain environments to make copies of those molecules. Such molecules are called replicators.
@@ -733,7 +733,7 @@
 > The dinosaurs became extinct because they didn't have a space program. And if we become extinct because we don't have a space program, it'll serve us right! 
 — Larry Niven
 
-> Today, many people have heard of SpaceX. Few know what SpaceX does. And even fewer know what SpaceX really does. Here's what SpaceX does: It takes things to space for people, for money. And as we established, here's what SpaceX really does: It's an innovation machine, trying to solve one big problem — the astronomical cost of space travel — because that's the key to making humanity a space-faring civilization that can become multi-planetary and back itself up on other hard drives. It supports itself by taking things to space for people, for money.
+> Today, many people have heard of SpaceX. Few know what SpaceX does. And even fewer know what SpaceX  does. Here's what SpaceX does: It takes things to space for people, for money. And as we established, here's what SpaceX  does: It's an innovation machine, trying to solve one big problem — the astronomical cost of space travel — because that's the key to making humanity a space-faring civilization that can become multi-planetary and back itself up on other hard drives. It supports itself by taking things to space for people, for money.
 — Tim Urban
 
 

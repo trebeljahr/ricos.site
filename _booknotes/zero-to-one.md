@@ -104,13 +104,13 @@ Both types of company lie about the state of things, hence there is a divide bet
 
 > Monopolists lie to protect themselves. 
 
-Google has a monopoly on search engine traffic (that's why the word "to google" exists) and is monetizing that really well. But it's  framing itself as "just another tech company" to avoid attention. 
+Google has a monopoly on search engine traffic (that's why the word "to google" exists) and is monetizing that  well. But it's  framing itself as "just another tech company" to avoid attention. 
 
 ### Competitive Lies
 
-Non-monopolists say the opposite. They are exceptional, in a "league of their own". They bend the market definition they play in, to look as if they are dominating it, even if they don't dominate the real market at all and only make up a very small fraction of it. 
+Non-monopolists say the opposite. They are exceptional, in a "league of their". They bend the market definition they play in, to look as if they are dominating it, even if they don't dominate the real market at all and only make up a very small fraction of it. 
 
-> Starting a new South Indian restaurant is a really hard way to make money. If you lose sight if competitive reality and focus on trivial differentiating factors — maybe you think your naan is superior because of your great-grandmothers recipe — your business is unlikely to survive. 
+> Starting a new South Indian restaurant is a  hard way to make money. If you lose sight if competitive reality and focus on trivial differentiating factors — maybe you think your naan is superior because of your great-grandmothers recipe — your business is unlikely to survive. 
 
 Monopolies frame their markets as unions of several large markets. Non-monopolists as intersections of small markets. 
 
@@ -221,7 +221,7 @@ We can't run controlled experiments about the past and whether companies were ju
 
 > Statistics doesn't work when the sample size is one.
 
-> No one pretended that misfortune didn't exist, but prior generations believed in making their own luck by working hard. 
+> No one pretended that misfortune didn't exist, but prior generations believed in making their luck by working hard. 
 
 If luck is all there is, what's the point in reading books and acquiring skills?
 
@@ -245,11 +245,11 @@ Future will be better, but only if planned and worked hard for. That's the enlig
 > Big plans for the future have become archaic curiosities. 
  
 4. Indefinite Optimism
-The future will be better, but we don't know *how exactly* it will be better... The prevalent thinking in America. Because people grew up in a society where things got better "on their own" and never questioned how things actually got better and never realized the hard work, their previous generations and parents put into making things better. They just know how to reorganize wealth, not how to create it from the ground up. Following a career that holds "options open" became a respectable and then an almost necessary thing.
+The future will be better, but we don't know *how exactly* it will be better... The prevalent thinking in America. Because people grew up in a society where things got better "on their" and never questioned how things  got better and never realized the hard work, their previous generations and parents put into making things better. They just know how to reorganize wealth, not how to create it from the ground up. Following a career that holds "options open" became a respectable and then an almost necessary thing.
 
 > A whole generation learned from childhood to overrate the power of chance and underrate the importance of planning. 
 
-Malcolm Gladwell is given as an example, but others such as Matt Ridley with his " The Evolution of Everything" or even Daniel Dennett thinking about the end of "top-down" design come to mind. Or the craziness of the movie Interstellar, where people stopped dreaming about a crazy future and stopped acting on that future as well. I think I am myself quite guilty of that attitude. Falling in-between different of these camps, mostly hovering between indefinite optimism and indefinite pessimism. My thinking is distorted by the things I have read and I don't really believe I can make a difference anymore. I don't believe in my own power to change the future for the better. And that's crazy. That's the allure of a book like Atlas Shrugged. It keeps this thought of Definite Optimism at the top of awareness. It's what makes it so powerful. Another thing that comes to mind is Finite and Infinite Games and the idea of zero vs. positive sum games. As well as the cock-sure attitude of people like Raval Navikant. They *know* they can create wealth and they have the confidence because they know how to plan for the future. The same is true for Elon Musk and all the other successful people like him. This type of human activity, of daring to venture further, of hard work and ethos, that's what's awesome about humans. That's the kind of spirit I want to get back in myself. I want to turn into a definite optimist again.
+Malcolm Gladwell is given as an example, but others such as Matt Ridley with his " The Evolution of Everything" or even Daniel Dennett thinking about the end of "top-down" design come to mind. Or the craziness of the movie Interstellar, where people stopped dreaming about a crazy future and stopped acting on that future as well. I think I am myself quite guilty of that attitude. Falling in-between different of these camps, mostly hovering between indefinite optimism and indefinite pessimism. My thinking is distorted by the things I have read and I don't  believe I can make a difference anymore. I don't believe in my own power to change the future for the better. And that's crazy. That's the allure of a book like Atlas Shrugged. It keeps this thought of Definite Optimism at the top of awareness. It's what makes it so powerful. Another thing that comes to mind is Finite and Infinite Games and the idea of zero vs. positive sum games. As well as the cock-sure attitude of people like Raval Navikant. They *know* they can create wealth and they have the confidence because they know how to plan for the future. The same is true for Elon Musk and all the other successful people like him. This type of human activity, of daring to venture further, of hard work and ethos, that's what's awesome about humans. That's the kind of spirit I want to get back in myself. I want to turn into a definite optimist again.
 
 ### Our Indefinitely Optimistic World
 
@@ -261,7 +261,7 @@ Money is an means to an end in a definite future. In an indefinite future there 
 
 #### Indefinite Politics
 
-The government has become incompetent to organize plans to improve the long term definite future of its society. It just hatches risk, like people do in finance. 
+The government has become incompetent to organize plans to improve the long-term definite future of its society. It just hatches risk, like people do in finance. 
 
 The more I think about what he's writing here, the more I have to think about how crazily analogous the world we live in is to the one described in Atlas Shrugged and how that is a bitter pill to swallow. There is an extreme shortage of humans of the likes described in Atlas Shrugged... And that's a pity, and I am part of the problem, clever enough to become such a person, but too scared to dare it. That's the scary part of the Shadow Careers article by Nat Eliason and the question posed by it. 
 
@@ -291,7 +291,7 @@ Darwinian evolution of ideas? Probably not.
 
 > Leanness is a methodology, not a goal. Making small changes to things that already exist might lead you to a local maximum, but it won't help you find the global maximum. 
 
-> A company is the strangest place of all for an indefinite optimist: why should you expect your own business to succeed without a plan to make it happen?
+> A company is the strangest place of all for an indefinite optimist: why should you expect your business to succeed without a plan to make it happen?
 
 > In startups, intelligent design works best.
 
@@ -303,7 +303,7 @@ Startups only get sold, when the founders lack the definite plan to take the com
 
 ### You are not a lottery ticket
 
-> A startup is the largest endeavor over which you can have definite mastery. You can have agency not just over your own life, but over a small and important part of the world. It begins by rejecting the unjust tyranny of Chance. You are not a lottery ticket. 
+> A startup is the largest endeavor over which you can have definite mastery. You can have agency not just over your life, but over a small and important part of the world. It begins by rejecting the unjust tyranny of Chance. You are not a lottery ticket. 
 
 In other words, you're responsible for your life, act on that responsibility. In the words of 7 Habits - Be proactive and have the end in mind. It's crazy to see it in that context as well. 7 habits is everywhere. Over and over and over again.
 
@@ -342,7 +342,7 @@ Power Law hides in plain sight. Companies don't "feel" that different in their s
 
 ### What to do with the Power Law
 
-Everybody is an investor of their own time. Investors should reduce their portfolio size as much as possible and use planning to identify which things fall under the power law distribution and which don't. Investing heavy on a few things, which have good reasons to be invested in is key. 
+Everybody is an investor of their time. Investors should reduce their portfolio size as much as possible and use planning to identify which things fall under the power law distribution and which don't. Investing heavy on a few things, which have good reasons to be invested in is key. 
 
 > But life is not a portfolio: not for a startup founder, and not for any individual. An entrepreneur cannot "diversify" herself: you cannot run dozens of companies at the same time and then hope that one of them works out well. 
 
@@ -430,7 +430,7 @@ Choosing cofounders is like choosing who to marry, relying on luck and marrying 
 - Possession: who runs the company? Managers and employees
 - Control: who formally governs company affairs? Board of directors, usually founders and investors
 
-Misalignment is a problem that results from this split. People have incentives to do things in their own and not in the companies best interests.
+Misalignment is a problem that results from this split. People have incentives to do things in their and not in the companies best interests.
 
 Effective boards are small. Small means better communication. There are usually diverging interests between board members and founders.
 
@@ -442,7 +442,7 @@ No gradient, either involved full-time or not at all.
 
 > A company does better the less it pays the CEO.
 
-Paying people in cash incentivizes them away from the long term future of the company.
+Paying people in cash incentivizes them away from the long-term future of the company.
 
 ### Vested Interests
 
@@ -500,7 +500,7 @@ Advertising works. And people who think it doesn't work on them are fools. Adver
 
 > All salesmen are actors: their priority is persuasion, not sincerity.
 
-Sales are hidden because people don't like being sold to. They want to believe they are in control of their own actions and being sold to undermines that agency. Because sales are eternally hidden that way, it's very easy to underestimate it's importance. Salespeople have names that have nothing to do with selling. Investment bankers, account executives, politicians. Everybody has to sell something. Usually themselves or their work. 
+Sales are hidden because people don't like being sold to. They want to believe they are in control of their actions and being sold to undermines that agency. Because sales are eternally hidden that way, it's very easy to underestimate it's importance. Salespeople have names that have nothing to do with selling. Investment bankers, account executives, politicians. Everybody has to sell something. Usually themselves or their work. 
 
 > The most fundamental reason that even businesspeople underestimate the importance of sales is the systematic effort to hide it at every level of every field in a world secretly driven by it.
 
@@ -588,7 +588,7 @@ Until the point where the human input is no longer necessary, because there is n
 
 Strong Ai, machines that are better than humans in every dimension. 
 
-> Technology is supposed to *increase* our mastery over nature and *reduce* the role of chance in our lives; building smarter-than-human computers could actually bring chance back with a vengeance. Strong AI is like a cosmic lottery ticket: if we win, we get utopia; if we lose, Skynet substitutes us out of existence. 
+> Technology is supposed to *increase* our mastery over nature and *reduce* the role of chance in our lives; building smarter-than-human computers could  bring chance back with a vengeance. Strong AI is like a cosmic lottery ticket: if we win, we get utopia; if we lose, Skynet substitutes us out of existence. 
 
 ## Chapter 13 - Seeing Green
 
@@ -620,7 +620,7 @@ Cleantech startups didn't dominate a small market and built their advantage from
 
 > Never invest in a tech CEO that wears a suit. 
 
-> There's nothing wrong with a CEO who can sell, but if he actually *looks* like a salesman, he's probably bad at sales and worse at tech. 
+> There's nothing wrong with a CEO who can sell, but if he  *looks* like a salesman, he's probably bad at sales and worse at tech. 
 
 ### The Distribution Question
 
@@ -640,7 +640,7 @@ Cleantech startups didn't dominate a small market and built their advantage from
 
 ### Tesla: 7 for 7
 
-Tesla had all 7 questions answered amazingly. Small niche market of high end electric cars, driven team, long term vision, 10x improvements in core technologies for electric vehicles, owning the entire distribution chain, like Apple, and the secret that green tech was a social phenomenon more than a engineering necessity.
+Tesla had all 7 questions answered amazingly. Small niche market of high end electric cars, driven team, long-term vision, 10x improvements in core technologies for electric vehicles, owning the entire distribution chain, like Apple, and the secret that green tech was a social phenomenon more than a engineering necessity.
 
 ### Energy 2.0
 
@@ -674,9 +674,9 @@ The idea of people being insider/outsider - i.e. at both ends of the spectrum at
 
 > The lesson for business is that we need founders. 
 
-Only founders can make long term decisions and have a vision and the power to execute it. 
+Only founders can make long-term decisions and have a vision and the power to execute it. 
 
-While founders are special, they are special because they can motivate people to work for a common cause. It's not the solitary Ayn Rand superhero type that's reality. Founders can achieve great things mainly because they can assemble great teams and give them a long term plan to execute. 
+While founders are special, they are special because they can motivate people to work for a common cause. It's not the solitary Ayn Rand superhero type that's reality. Founders can achieve great things mainly because they can assemble great teams and give them a long-term plan to execute. 
 
 ## Conclusion - Stagnation or Singularity?
 

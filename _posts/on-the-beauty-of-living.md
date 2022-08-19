@@ -9,6 +9,7 @@ author:
   picture: "/assets/blog/profile.jpeg"
 ogImage:
   url: "/assets/blog/fkj-salar-de-uyuni-cercle.jpg"
+
 ---
 
 I am sitting alone in my room. It is dark outside and my speakers play some soft and mellow music. FKJ, beautiful piano, with some techno mixed into it. The video is from one of my favorite performances, where FKJ plays in the middle of the Salar de Uyuni - a large flooded salt flat in Bolivia.
@@ -33,19 +34,19 @@ Only yesterday I started building a [Minecraft like game](https://mc.ricotrebelj
 
 Many of the things I do, have no monetary value attached to them. Yet they are more valuable than money could ever be. I do them because I enjoy the activities themselves. For the quality of experience they give, for the states of consciousness they lead to. That is the whole point of doing them. 
 
-Nobody pays me to read, nobody pays me to learn, nobody pays me to maintain my body and nobody pays me to take photos. But my mind still worries about getting paid... I want to be paid, I don't want to struggle for money in the future, but I never really stop to think why that is the case.
+Nobody pays me to read, nobody pays me to learn, nobody pays me to maintain my body and nobody pays me to take photos. But my mind still worries about getting paid... I want to be paid, I don't want to struggle for money in the future, but I never  stop to think why that is the case.
 
 ## The Value of Money.
 
-Why do I actually want to have money? What is the value of it, when everything is going to be over in the end anyways? Won't I always have enough to live? And isn't that reason enough to not worry about it too much? 
+Why do I  want to have money? What is the value of it, when everything is going to be over in the end anyways? Won't I always have enough to live? And isn't that reason enough to not worry about it too much? 
 
 I want to create something of beauty, something that I can enjoy, something that I am proud of having done. 
 
 Working at Klarna is not that. It is a means to an end - I am doing it because I want to see the number in my ETF account grow so that I can retire early and do what ever I want to do with my time.
 
-During after hours I will read, gorge my brain on things I actually enjoy. Only to start the next day again, working my life away at something that I deep down don't care about at all. I work on something that makes people spend their money in mindless shopping... 
+During after hours I will read, gorge my brain on things I  enjoy. Only to start the next day again, working my life away at something that I deep down don't care about at all. I work on something that makes people spend their money in mindless shopping... 
 
-Is that really what I want to do? The answer is no.
+Is that  what I want to do? The answer is no.
 
 But I digress... The name of this article suggests I will talk about two things: The beauty of living - and the fragility of humanity. So.
 
@@ -57,7 +58,7 @@ The exhilaration I can feel when I understand something new, while reading a boo
 
 ## Layers Of Complexity.
 
-The wonders of knowledge and how this world works and how massively complex it really is just excite me every single time I stop to notice and think about them. 
+The wonders of knowledge and how this world works and how massively complex it  is just excite me every single time I stop to notice and think about them. 
 
 *Simple facts become magical mysteries.* 
 
@@ -99,7 +100,7 @@ Hairs that bend which are attached to nerve cells, which in turn produce an elec
 
 Melodies that can affect my mood. Melodies and music that can make me happy. The magic of sounds that gives me goosebumps and lead to me wondering about the beauty of the universe.
 
-Grasping what FKJ wanted to express with his music... and in doing so transcending yet another level of complexity, beyond what notes and melodies really are, vibrations in the air, into what they represent for us humans. 
+Grasping what FKJ wanted to express with his music... and in doing so transcending yet another level of complexity, beyond what notes and melodies  are, vibrations in the air, into what they represent for us humans. 
 
 Translating everything back into the realm of human feelings and emotions, where they came from.
 
@@ -109,13 +110,13 @@ Thinking of it that way it seems like simply listening to music, a pleasure of m
 
 And I think it is not just this that is pure magic and wonder if looked at closely with a lot of attention to the details going on. 
 
-But literally *everything* in this world is like this. Similarly beautiful and complex. Similarly magical. 
+But *everything* in this world is like this. Similarly beautiful and complex. Similarly magical. 
 
 ## Beauty and complexity are everywhere.
 
 And then there is the aspect of reflecting on these kinds of thoughts... Of sitting down and thinking deeply about them. 
 
-The idea that I can actually turn around and look at all the phenomenons happening around me... That I have the resources and information in my hands to understand all this magic behind what is going on in this world. 
+The idea that I can  turn around and look at all the phenomenons happening around me... That I have the resources and information in my hands to understand all this magic behind what is going on in this world. 
 
 I think that is what I enjoy most. Unwrapping layers of complexity, trying to understand how this mysterious world works. Somehow that just makes me incredibly happy. There is a sense of childlike wonder, when I approach the world like this. *And it makes me smile every single time.*
 
@@ -125,7 +126,7 @@ How I can extend little tendrils of thought into the world. Tendrils probing, lo
 
 Listening to music like this and losing myself in thoughts also makes me want to create. It inspires me to create something of beauty myself. 
 
-Not necessarily music, but anything really... Websites, code, game projects, blogs, books, paintings, photography... whatever. It does not matter. *As long as it has the intrinsic quality of beauty.* 
+Not necessarily music, but anything ... Websites, code, game projects, blogs, books, paintings, photography... whatever. It does not matter. *As long as it has the intrinsic quality of beauty.* 
 
 I just know that I want to create things like that, because that's what all the understanding is about in the end. To understand, means being able to create. To understand is to know the elusive idea of quality that is described so beautifully by Robert Pirsig in his book 'Zen and the Art of Motorcycle Maintenance.'
 
@@ -157,9 +158,9 @@ We are to busy living our lives to realize that we are losing the very beauty we
 
 ## What are we doing?
 
-Instead of focusing more on preserving and producing more intricate patterns, we get comfortable in our lives, earning money to survive, giving away our precious time. Because we care more about food and our immediate rewards and life's necessities than we care about the long term future of humanity. About the future of our ideas and the beauty we could create in this world.
+Instead of focusing more on preserving and producing more intricate patterns, we get comfortable in our lives, earning money to survive, giving away our precious time. Because we care more about food and our immediate rewards and life's necessities than we care about the long-term future of humanity. About the future of our ideas and the beauty we could create in this world.
 
-Because in the end - even though we think it is about beauty, patterns, the long term survival and prospering of humanity as a whole - a part of our brain, very strongly disagrees.
+Because in the end - even though we think it is about beauty, patterns, the long-term survival and prospering of humanity as a whole - a part of our brain, very strongly disagrees.
 
 That part of the brain screams. Hey! There are more pressing problems... Like how we pay our rent at the end of the month and what our neighbors think about the old car we still have. Or what kind of suit and tie to wear at work. And it demands that we solve these problems first, before we can return to our dreams of creating patterns of intricate beauty and helping to preserve those and ourselves for eternities. Those puny future problems can be solved at a later time the voice says... Now... Now there are important things to attend to, it nags us.
 

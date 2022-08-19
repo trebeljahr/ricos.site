@@ -1,6 +1,6 @@
 >"Ignorance is pleased" 
 
->"Playing God is actually the highest expression of human nature"
+>"Playing God is  the highest expression of human nature"
 
 >"If all you have is a hammer, everything looks like a nail." 
 

@@ -92,7 +92,7 @@ Enlightenment got triggered by Lucretius in a way and people started to replace 
 
 **Book Recommendation** - The Bourgeois Virtue by Deirdre McCloskey
 
-The world gets less violent, but nobody is really causing that. One driver is trade and capitalism, but the whole phenomenon is emergent. Once again. 
+The world gets less violent, but nobody is  causing that. One driver is trade and capitalism, but the whole phenomenon is emergent. Once again. 
 
 ### The Evolution of Law
 
@@ -140,7 +140,7 @@ Still people try to teach creationism in schools in the US. But their arguments 
 
 #### Chapter Summary:
 
-Life has evolved and we know it, yet people can't really fathom that something as complex as life could have arisen simply out of randomness. And so we keep searching for agency and planners and even the best of thinkers often put a planner or skyhook up in the end, swerving left and right when they are faced with the sheer incredibility of their discoveries.
+Life has evolved and we know it, yet people can't  fathom that something as complex as life could have arisen simply out of randomness. And so we keep searching for agency and planners and even the best of thinkers often put a planner or skyhook up in the end, swerving left and right when they are faced with the sheer incredibility of their discoveries.
 
 ## Chapter 4 - The Evolution of Genes
 
@@ -162,7 +162,7 @@ Coal + the steam engine converting it to work, made surplus energy available and
 
 > The commonest gene in the human genome is the recipe for reverse transcriptase, an enzyme that the human body has little or no need for, and whose main function is usually to help the spread of retroviruses. 
 
-DNA that is good at getting itself copied, without killing the host, has really great chances of "survival" and can therefore be viewn as a form of digital parasite. Hence a lot of code in the human DNA might not serve any purpose - other than ensuring its own replication. 
+DNA that is good at getting itself copied, without killing the host, has  great chances of "survival" and can therefore be viewn as a form of digital parasite. Hence a lot of code in the human DNA might not serve any purpose - other than ensuring its own replication. 
 
 ### Junk is not the same as garbage
 
@@ -172,7 +172,7 @@ DNA that is good at getting itself copied, without killing the host, has really 
 
 #### Chapter Summary: 
 
-DNA as a cause of itself is a hard concept to grasp. It doesn't serve it's body, the body is more of a side effect. The same is true for adaptions in cancer cells or adaptions of pathogens or any adaptions really. They don't happen for any purpose, they happen randomly and are then sifted by what works and what doesn't. This leads to seemingly insensible things in our own DNA - junk. Well, for the purposes of our bodies it is junk, but for the purpose of multiplying itself from generation to generation it does a really good job. Genetic parasites are real and a lot of our genome happens to take their shape. 
+DNA as a cause of itself is a hard concept to grasp. It doesn't serve it's body, the body is more of a side effect. The same is true for adaptions in cancer cells or adaptions of pathogens or any adaptions . They don't happen for any purpose, they happen randomly and are then sifted by what works and what doesn't. This leads to seemingly insensible things in our own DNA - junk. Well, for the purposes of our bodies it is junk, but for the purpose of multiplying itself from generation to generation it does a  good job. Genetic parasites are real and a lot of our genome happens to take their shape. 
 
 ## Chapter 5 - The Evolution of Culture
 
@@ -188,7 +188,7 @@ Languages behave like species density. In more species rich places, people have 
 
 > There are intensely close parallels between the evolution of languages and species. 
 
-### The Human Revolution was actually an Evolution
+### The Human Revolution was  an Evolution
 
 > In people, genes are probably the slaves, not the masters, of culture. 
 
@@ -198,7 +198,7 @@ Languages behave like species density. In more species rich places, people have 
 
 > Societies that chose "normative monogamy", or an insistence upon sex within exclusive marriage, tended to tame their young men, improve social cohesion, balance the sex ratio, reduce the crime rate, and encourage men to work rather than fight. This made such societies more productive and less destructive, so they tended to expand at the expense of other societies. 
 
-> Marriage is not redesigned; it evolves. We don't really notice it happening till afterwards. But the change is far from random.
+> Marriage is not redesigned; it evolves. We don't  notice it happening till afterwards. But the change is far from random.
 
 ### The evolution of cities
 
@@ -260,7 +260,7 @@ Question: Are there such things as biological parasites as adaptive solutions in
 
 #### Chapter Summary: 
 
-The arguments by Darwin and Smith are essentially the same, but applied and derived in different circumstances. Ones ideas govern markets, the others species. However the results are the same, better adaption and innovation without anyone doing it. An emergent phenomenon. Nowadays we are much richer and better off than before, and nobody really knows why, just like how nobody knows how to feed Paris and yet, it is happening every day, magically, mythically, unfolding on its own.
+The arguments by Darwin and Smith are essentially the same, but applied and derived in different circumstances. Ones ideas govern markets, the others species. However the results are the same, better adaption and innovation without anyone doing it. An emergent phenomenon. Nowadays we are much richer and better off than before, and nobody  knows why, just like how nobody knows how to feed Paris and yet, it is happening every day, magically, mythically, unfolding on its own.
 
 ## Chapter 7 - The Evolution of Technology
 
@@ -327,7 +327,7 @@ Science without use cases doesn't progress. Problem solving breeds science, not 
 
 #### Chapter Summary: 
 
-Technology too evolves. Progress is largely let loose on its own, not tied to single individuals but directed by the wants of everyone. Tinkering, trial and error and a strong selective process by free markets and free exchange of ideas leads to a gradualism in inventions. No inventions are really late, public spending in science doesn't do much, things get discovered at the "right" time and then by a lot of people at the same time. There is path dependence between different technologies and in a way the unfolding has an uncanny resemblance of being alive. Of wanting to continue, to prosper. The invisible hand of Smith is at work again, helping the unfolding, the sea itself fashions boats and our tastes fashion technology and where it goes. 
+Technology too evolves. Progress is largely let loose on its own, not tied to single individuals but directed by the wants of everyone. Tinkering, trial and error and a strong selective process by free markets and free exchange of ideas leads to a gradualism in inventions. No inventions are  late, public spending in science doesn't do much, things get discovered at the "right" time and then by a lot of people at the same time. There is path dependence between different technologies and in a way the unfolding has an uncanny resemblance of being alive. Of wanting to continue, to prosper. The invisible hand of Smith is at work again, helping the unfolding, the sea itself fashions boats and our tastes fashion technology and where it goes. 
 
 ## Chapter 8 - The Evolution of the Mind
 
@@ -364,11 +364,11 @@ Harris arguing with Dennett about free will being an illusion or the product of 
 
 **Book Recommendation** - Freedom Evolves by Daniel Dennett
 
-> Freedom to influence your own fate is an almost infinitely variable thing that is the product of biology. The ability to move is a step towards freedom; the ability to move farther or faster is a farther or faster step. The ability to see, to hear, to smell and to think provide still more freedom to alter your fate. Technology, science, knowledge, human rights, the weather forecast - they all increase your freedom to alter your fate.
+> Freedom to influence your fate is an almost infinitely variable thing that is the product of biology. The ability to move is a step towards freedom; the ability to move farther or faster is a farther or faster step. The ability to see, to hear, to smell and to think provide still more freedom to alter your fate. Technology, science, knowledge, human rights, the weather forecast - they all increase your freedom to alter your fate.
 
 #### Chapter Summary: 
 
-Free Will is a product of actions of cells in the human mind, not something separate from it. Activity in the mind leads to decisions, way before we become conscious of them, consciousness is a reconstruction of the world at a later time, and maybe an emergent phenomenon without any causing structure. Unfolding from the interactions of billions of synapses. Whether free will is an illusion, or our freedom actually increases because we have this complex machinery in our head is yet to be debated, but whatever the result it will have huge implications on our society and how we handle punishment for crimes and praise for people doing good deeds. If nobody is free - why do our "choices" matter? Thinking about it this way - if people get punished for crimes, that's an influence on the synapses, causing those that prevent crime to be firing more often, since they know about these consequences and take them into account. 
+Free Will is a product of actions of cells in the human mind, not something separate from it. Activity in the mind leads to decisions, way before we become conscious of them, consciousness is a reconstruction of the world at a later time, and maybe an emergent phenomenon without any causing structure. Unfolding from the interactions of billions of synapses. Whether free will is an illusion, or our freedom  increases because we have this complex machinery in our head is yet to be debated, but whatever the result it will have huge implications on our society and how we handle punishment for crimes and praise for people doing good deeds. If nobody is free - why do our "choices" matter? Thinking about it this way - if people get punished for crimes, that's an influence on the synapses, causing those that prevent crime to be firing more often, since they know about these consequences and take them into account. 
 
 
 ## Chapter 9 - The Evolution of Personality
@@ -454,7 +454,7 @@ Private schools outcompete public ones by a lot, since the demands put on them c
 
 ### The Technology of Education
 
-> The traditional university will surely be gone in fifty years, swept away by technology. Why pay huge fees to spend three years on one campus, earning the right to be paid not very much more in the real world than non- graduates, rather than putting together your own combination of online courses, marked and graded online, using the lectures if the best teachers in the field, wherever they happen to be?
+> The traditional university will surely be gone in fifty years, swept away by technology. Why pay huge fees to spend three years on one campus, earning the right to be paid not very much more in the real world than non- graduates, rather than putting together your combination of online courses, marked and graded online, using the lectures if the best teachers in the field, wherever they happen to be?
 
 **Thing to Research** - SOLE self organised learning environment
 
@@ -556,7 +556,7 @@ And China was congratulated for that! What?!
 
 #### Chapter Summary: 
 
-Human disasters of grand scale had a common theme since some time now, the ideas of overpopulation as formed originally by Malthus and the resulting need to control population by direct means of policy. The Potato Famine, Nazi Holocaust, Sterilisation Camps in India and the One Child Policy in China have that in common. And while we today look at those stories and ideas in absolute horror back then the people who promoted and pushed them were really convinced of doing the right thing for the right reasons and cheered on by the general public. And that is the scary bit. How can we be sure that the same is not happening to us right now in other areas? 
+Human disasters of grand scale had a common theme since some time now, the ideas of overpopulation as formed originally by Malthus and the resulting need to control population by direct means of policy. The Potato Famine, Nazi Holocaust, Sterilisation Camps in India and the One Child Policy in China have that in common. And while we today look at those stories and ideas in absolute horror back then the people who promoted and pushed them were  convinced of doing the right thing for the right reasons and cheered on by the general public. And that is the scary bit. How can we be sure that the same is not happening to us right now in other areas? 
 
 ## Chapter 12 - The Evolution of Leadership
 
@@ -583,7 +583,7 @@ Human disasters of grand scale had a common theme since some time now, the ideas
 ### The Evolution Of Hong Kong
 
 #### Chapter Summary: 
-Leadership is a tricky concept in an evolving world, since claiming causation of something becomes quite difficult and hard. Many things would have happened on their own anyways and people who just were at the right place at the right time reaped the benefits. However sometimes people's actions still changed the world, single handedly, but usually for the worse.  Also, once again, putting to much emphasis on top down design in contrast to bottom up growth leads to desasters or generally worse outcomes then free systems, let go to evolve on their own. 
+Leadership is a tricky concept in an evolving world, since claiming causation of something becomes quite difficult and hard. Many things would have happened on their anyways and people who just were at the right place at the right time reaped the benefits. However sometimes people's actions still changed the world, single handedly, but usually for the worse.  Also, once again, putting to much emphasis on top down design in contrast to bottom up growth leads to desasters or generally worse outcomes then free systems, let go to evolve on their. 
 
 ## Chapter 13 - The Evolution of Government
 
@@ -661,7 +661,7 @@ dirigisme, an approach to economic development emphasizing the positive role of 
 
 #### Chapter Summary: 
 
-The Idea of Fragile and Antifragile Systems shines through these pages clear as day. Planned systems are fragile, they can't react and adapt to new circumstances, that are inevitably going to show up on reality and so they break, fatally and in a big unanticipated way. Because everything was figured out, except that one black swan event! Instead, small, incremental improvement, failing on the smallest possible scale, but continuously happening, hardens the system. Much like chaos engineering in computer systems. Most of the chapter was about the history of Governments though, and how they originally came to be organically from growing populations, by crime and monopolistic use of force within those populations to control the use of force. And how those systems then started to go back and forth between capitalistic freedom and free markets and intense periods of growth, and back to centralized planning and economic failure and problems. And that's what the chapter concludes with: big ambitious plans, are basically doomed to fail. No matter their name and that's what all the famous *isms have in common. 
+The Idea of Fragile and Antifragile Systems shines through these pages clear as day. Planned systems are fragile, they can't react and adapt to new circumstances, that are inevitably going to show up on reality and so they break, fatally and in a big unanticipated way. Because everything was figured out, except that one black swan event! Instead, small, incremental improvement, failing on the smallest possible scale, but continuously happening, hardens the system. Much like chaos engineering in computer systems. Most of the chapter was about the history of Governments though, and how they originally came to be organically from growing populations, by crime and monopolistic use of force within those populations to control the use of force. And how those systems then started to go back and forth between capitalistic freedom and free markets and intense periods of growth, and back to centralized planning and economic failure and problems. And that's what the chapter concludes with: big ambitious plans, are  doomed to fail. No matter their name and that's what all the famous *isms have in common. 
 
 ## Chapter 14 - The Evolution of Religion 
 
@@ -695,13 +695,13 @@ Example of Crop Circles, and people firmly believing in their supernatural cause
 
 People detect agency almost everywhere. We are wired to do so. 
 
-> The paradox is that if belief is universal, then no amount of argument can extinguish it, and in a sense therefore, gods really do exist - but inside our heads rather than outside. 
+> The paradox is that if belief is universal, then no amount of argument can extinguish it, and in a sense therefore, gods  do exist - but inside our heads rather than outside. 
 
 ### Vital Delusions 
 
 > For me, the characteristic features of a mystical and therefore untrustworthy, theory are that it is not refutable, that it appels to authority, that it relies heavily on anecdote, that it makes a virtue of consensus (look how many people believe like me!), and that it takes the moral high ground. You will notice that this applies to most religions.
 
-> The secret of life, unexpectedly, turned out to be an infinitely combinatorial message written in digital form in three-letter words in a four-letter alphabet. This was very much not what vitalists had expected; it seemed to mundane - though actually it is one of the most beautiful ideas ever to cross a human mind - that life is information. 
+> The secret of life, unexpectedly, turned out to be an infinitely combinatorial message written in digital form in three-letter words in a four-letter alphabet. This was very much not what vitalists had expected; it seemed to mundane - though  it is one of the most beautiful ideas ever to cross a human mind - that life is information. 
 
 ### The Climate God
 
@@ -713,13 +713,13 @@ In a lot of aspects, climate change has gotten to the point where it to closely 
 
 #### Chapter Summary: 
 
-Gods and their depictions have evolved in predictable patterns and so did religions. They are all man-made fictions following patterns that allow them to spread and that make use of the "intentional stance" a basic human assumption about how reality works, that is common to basically everybody. We assume agency wherever we see things change and hence are extremely prone to superstition, where we suspect causations between our behavior and random events that happened after it. We can see gods where there is nothing but randomn fluctuation or even provably human agency involved. Something mind bending though is that a lot of the characteristics shared by religions can be found in the realm of climate science, justifying that one could call it climate belief or religion. 
+Gods and their depictions have evolved in predictable patterns and so did religions. They are all man-made fictions following patterns that allow them to spread and that make use of the "intentional stance" a basic human assumption about how reality works, that is common to  everybody. We assume agency wherever we see things change and hence are extremely prone to superstition, where we suspect causations between our behavior and random events that happened after it. We can see gods where there is nothing but randomn fluctuation or even provably human agency involved. Something mind bending though is that a lot of the characteristics shared by religions can be found in the realm of climate science, justifying that one could call it climate belief or religion. 
 
 ## Chapter 15 - The Evolution of Money
 
 **Book Recommendation** - Good Money by George Selgin
 
-In the 19th century people were minting their own coins privately, because the government didn't supply enough medium of exchange and their coins were better. 
+In the 19th century people were minting their coins privately, because the government didn't supply enough medium of exchange and their coins were better. 
 
 ### The Scottish Experiment
 
@@ -761,7 +761,7 @@ Government putting pressure onto banks to increase sub prime loans, because of n
 
 #### Chapter Summary:
 
-Money being organized by governments or central banks top down is a really bad idea. Because when planning monetary systems one almost certainly overlooks some form of loophole that breaks the whole complicated thing. It is not an Antifragile way of doing it. Instead history has shown over and over that monetary systems should evolve, bottom up and freely, through competitive selection and therefore become much more resilient over time. That's how monetary systems became Antifragile and that's the way forward in the future as well. The role Bitcoin and other such advances in IT will play will become clear in the next decades. 
+Money being organized by governments or central banks top down is a  bad idea. Because when planning monetary systems one almost certainly overlooks some form of loophole that breaks the whole complicated thing. It is not an Antifragile way of doing it. Instead history has shown over and over that monetary systems should evolve, bottom up and freely, through competitive selection and therefore become much more resilient over time. That's how monetary systems became Antifragile and that's the way forward in the future as well. The role Bitcoin and other such advances in IT will play will become clear in the next decades. 
 
 ## Chapter 16 - The Evolution of the Internet
 
@@ -776,7 +776,7 @@ Money being organized by governments or central banks top down is a really bad i
 
 ### The Balkanisation of the Web
 
-The internet is under attack by governments wanting to take away the freedom of its use as a means of controlling what people can see and therefore think and believe, turning the whole thing into a medium of controlled propaganda of sorts. That thought is really scaring the shit put of me. 
+The internet is under attack by governments wanting to take away the freedom of its use as a means of controlling what people can see and therefore think and believe, turning the whole thing into a medium of controlled propaganda of sorts. That thought is  scaring the shit put of me. 
 
 ### The Bizarre Evolution of Blockchains
 
@@ -796,7 +796,7 @@ The internet is under attack by governments wanting to take away the freedom of 
 
 > Imagine in the future summoning a taxi that not only has no driver, but that belongs to a computer network, not to a human being. That network had raised funds, signed contracts and taken delivery of vehicles, even though its 'headquarters' is distributed all over the net. 
 
-> Something as radical as language or government is emerging from the internet. Officials, lawyers, politicians, businessman may come together to try to stop this, glimpsing their own redundancy, and for a while they may succeed. But the inexorable, inevitable, implacable nature of evolution will eventually defeat them. 
+> Something as radical as language or government is emerging from the internet. Officials, lawyers, politicians, businessman may come together to try to stop this, glimpsing their redundancy, and for a while they may succeed. But the inexorable, inevitable, implacable nature of evolution will eventually defeat them. 
 
 ### Re-Evolving Politics
 
@@ -804,7 +804,7 @@ The internet is under attack by governments wanting to take away the freedom of 
 
 #### Chapter Summary: 
 
-The internet has transformed our society and basically every life of every human on the planet. But it too has evolved and is under threat from top down imposed rules of government, trying to seize control over it's free nature and make it do their bidding. But so far it has stayed mostly free and even continued evolving new ideas such as cryptocurrencies and the more abstract idea oof a Blockchain, that could disrupt the top down grasp of power from governments for good. Revolutionizing public service and turning it into something that is evolving to meet the people's demands better, faster and more efficient, enabling the same benefits that markets had on things we purchase but this time the benefits go to things that we pay for by taxes. Roads, public infrastructure and other public services where we take their mediocricy for granted. 
+The internet has transformed our society and  every life of every human on the planet. But it too has evolved and is under threat from top down imposed rules of government, trying to seize control over it's free nature and make it do their bidding. But so far it has stayed mostly free and even continued evolving new ideas such as cryptocurrencies and the more abstract idea oof a Blockchain, that could disrupt the top down grasp of power from governments for good. Revolutionizing public service and turning it into something that is evolving to meet the people's demands better, faster and more efficient, enabling the same benefits that markets had on things we purchase but this time the benefits go to things that we pay for by taxes. Roads, public infrastructure and other public services where we take their mediocricy for granted. 
 
 ## Epilogue - The Evolution of the Future
 

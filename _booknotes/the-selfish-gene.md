@@ -23,7 +23,7 @@ amazonLink: "https://amzn.to/3xi1mNW"
 
 > Intelligent life on a planet comes of age when it first works out the reason for its own existence.
 
-Genes only yield cooperation under narrow circumstances and mostly focus on their own survival and lead to selfish behavior in most cases. Analogy: Genes shape body like life as Chicago gangster shapes character, the ones who make it got to have certain characteristics.
+Genes only yield cooperation under narrow circumstances and mostly focus on their survival and lead to selfish behavior in most cases. Analogy: Genes shape body like life as Chicago gangster shapes character, the ones who make it got to have certain characteristics.
 
 Nature vs. Nurture, evolution does not dictate morale of selfishness, culture plays a role, yet, genes and their selfishness should not be forgot and factored into the picture.
 
@@ -42,7 +42,7 @@ If it were true, dissenter could become more successful within species, therefor
 > In the beginning was simplicity.
 
 Darwin's idea is a special case of survival of the stable. And therefore can serve as an explanation of how things grew in complexity over time. It can therefore answer the question of where we came from to a high degree of satisfaction.
-That however begs a question? Is life really stable? Because I would argue that it is the very opposite of stable. It is patterns that change all the time, and rising in complexity and therefore life is not stable? Also compared to a rock, or a star, life is very fragile and can go unstable in an instant and vanish. In a way then life is metastable. And that's what allows evolution to act. What allows things to grow and flourish. 
+That however begs a question? Is life  stable? Because I would argue that it is the very opposite of stable. It is patterns that change all the time, and rising in complexity and therefore life is not stable? Also compared to a rock, or a star, life is very fragile and can go unstable in an instant and vanish. In a way then life is metastable. And that's what allows evolution to act. What allows things to grow and flourish. 
 
 > Darwin's theory of evolution by natural selection is satisfying because it shows us a way in which simplicity could change into complexity, how unordered atoms could group themselves into ever more complex patterns until they ended up manufacturing people.
 
@@ -70,7 +70,7 @@ DNA as a replicator, genes as pages, chromosomes as volumes, the whole is an arc
 
 > Genes have no foresight. They do not plan ahead.
 
-Two different copies of genes, one from father one from mother, sometimes one copy takes precedence over another, different copies are called alleles. Set of all alleles is named gene pool. Germ line cells are formed by meiosis, half of the genome is split, from 46 to 23 chromoses in humans, two germ line cells then combine at conception to form complete human. The normal cell division is called mitosis. During meiosis, the 23 chromosomes actually change - the 46 are not just separated, but shuffled, part of chromosome 1a and part of 1b are exchanged to form new 1c and 1d which each go into their separate sperm/egg cells. Each egg/sperm cell therefore is unique. This is called crossover.
+Two different copies of genes, one from father one from mother, sometimes one copy takes precedence over another, different copies are called alleles. Set of all alleles is named gene pool. Germ line cells are formed by meiosis, half of the genome is split, from 46 to 23 chromoses in humans, two germ line cells then combine at conception to form complete human. The normal cell division is called mitosis. During meiosis, the 23 chromosomes  change - the 46 are not just separated, but shuffled, part of chromosome 1a and part of 1b are exchanged to form new 1c and 1d which each go into their separate sperm/egg cells. Each egg/sperm cell therefore is unique. This is called crossover.
 
 > Any one chromosome in a sperm is a patchwork, a mosaic of maternal and paternal genes.
 
@@ -102,7 +102,7 @@ Animals can behave. That is they can move fast. They have muscles to do so, the 
 
 > The neuron is slower than the transistor, but it has gone much further in the direction of. 62
 
-> The main way in which brains actually contribute to the success of survival machines is by controlling and coordinating contractions of muscles.
+> The main way in which brains  contribute to the success of survival machines is by controlling and coordinating contractions of muscles.
 
 > One of the most striking properties of survival-machi esbehavior is its apparent purposiveness.
 
@@ -126,10 +126,10 @@ Communication involves an element of deception, because of conflicts of interest
 
 Survival machines compete for resources so that their genes can persist. Intra species competition is the hardest because individuals are so similar and therefore compete for the same resources. Yet killing off all rivals and eating them is not a good tactic because there are costs associated with that killing. Like one's own death or injuries. Therefore aggression follows patterns of complex cost benefit analysis. 
 
-Populations can have stable points for different competitive behaviors showing aggression (so called ESS for evolutionarily stable strategies), since the benefit of a behavior is tied to what is common in the other individuals in the species. At a certain ratio the benefits of both aggressive and non aggressive strategies balance nicely leading to an equilibrium in behavior to evolve. The perverse thing about this equilibrium is that it is worse for everybody involved if everybody were choosing a less aggressive strategy, conspiring together, their total average success would be way higher. But cheating and being aggressive anyways would be a really good tactic then, leading to those mutations starting to gain weight again drifting the conspiracy back to the worse, but stable solution. 
+Populations can have stable points for different competitive behaviors showing aggression (so called ESS for evolutionarily stable strategies), since the benefit of a behavior is tied to what is common in the other individuals in the species. At a certain ratio the benefits of both aggressive and non aggressive strategies balance nicely leading to an equilibrium in behavior to evolve. The perverse thing about this equilibrium is that it is worse for everybody involved if everybody were choosing a less aggressive strategy, conspiring together, their total average success would be way higher. But cheating and being aggressive anyways would be a  good tactic then, leading to those mutations starting to gain weight again drifting the conspiracy back to the worse, but stable solution. 
 
 
-> So, even in man, a species with the gift of conscious foresight, pacts or conspiracies based on long term best interests teeter constantly on the brink of collapse due to treachery from within. 
+> So, even in man, a species with the gift of conscious foresight, pacts or conspiracies based on long-term best interests teeter constantly on the brink of collapse due to treachery from within. 
 
 Thought: the exact same problem applies to Socialism vs. Capitism. 
 
@@ -141,7 +141,7 @@ In more complex scenarios, where there are differences, asymmetric competitions,
 
 > Selection at the low level of the single gene can give the impression of selection at some higher level.
 
-> The gene pool is the long term environment of the gene.
+> The gene pool is the long-term environment of the gene.
 
 Genes in the gene pool form a stable set, most new genes introduced are worse than the stable set, occasionally a variant arises that has competitive edge in the ESS, is a new form of solution in a way, and it spreads through the pool, unsettling the ESS for a while, evolutions is happening, things change and then settle into a new ESS. Evolution therefore is like jumps in between plateaus. Higher amounts of changes in short bursts of time followed by longer periods of little to no changes happening. Examples of competing teams of rowers and of hawks and doves fighting explain how things could arise as units of bodies, but more interestingly the same thing happens on the level of genes themselves. Bodies are the result of evolution at that scale.
 
@@ -151,11 +151,11 @@ Genes in the gene pool form a stable set, most new genes introduced are worse th
 
 > When a man throws a ball high in the air and catches I again he behaves as if he had solved a set of differential equations in predicting the trajectory of the ball. He may neither know nor care what a differential equation is, but it does not affect his skill with the ball.
 
-Selection for genes that make the survival of other animals sharing the same genes is evolutionarily an adaptive strategy that spreads. Hence one can observe something similar to kin selection and altruism happening the world. Organisms who do these kinds of things behave as if they were calculating the weighted sum of the risks and benefits for them and the other individuals, weighted by the relatedness and other sich factors as age, reproductive capacities etc. for all their potential behaviors and then and then choosing the maximizing option. Whether they actually do these calculations remains in doubt, only thing clear is that if genes make their survival machine behave like that, they have higher chance of survival overall and will therefore spread.
+Selection for genes that make the survival of other animals sharing the same genes is evolutionarily an adaptive strategy that spreads. Hence one can observe something similar to kin selection and altruism happening the world. Organisms who do these kinds of things behave as if they were calculating the weighted sum of the risks and benefits for them and the other individuals, weighted by the relatedness and other sich factors as age, reproductive capacities etc. for all their potential behaviors and then and then choosing the maximizing option. Whether they  do these calculations remains in doubt, only thing clear is that if genes make their survival machine behave like that, they have higher chance of survival overall and will therefore spread.
 
 > Living bodies are machines programmed by genes that have survived.
 
-> In a world where other individuals are constant on the alert for opportunities to exploit kin-selected altruism, and use it for their own end, a survival machine has to consider who it can trust, who it can be really sure of.
+> In a world where other individuals are constant on the alert for opportunities to exploit kin-selected altruism, and use it for their end, a survival machine has to consider who it can trust, who it can be  sure of.
 
 Kin selection manifests itself in parent/child altruism, and more on the motherly side, because the certainty involved in knowing gene relatedness is greater, hence the sexual differences in child-rearin and investment into the offspring. Als certainty is hard to keep up for kin selection, when it can be exploited by other members of the species or even other species altogether, a good example are cuckoo birds here.
 
@@ -178,7 +178,7 @@ The idea of this planning and predicting the future business that genes seem to 
 
 > I am treating a mother as a machine programmed to do everything in its power to propagate copies of the genes which ride inside it.
 
-Menopause can be viewed as an adaptive strategy because the likelihood of survival of grandchildren is so much higher, that it pays off enough for the decrease in relatedness. There basically comes a point where more genes of a female survive when she invests into grandchildren rather than her own children, at which point becoming physically incapable of rearing children is an adaptive strategy and what we see happening and call menopause. Furthermore, similar arguments can be made for selfishness among siblings. It is always about the use of resources
+Menopause can be viewed as an adaptive strategy because the likelihood of survival of grandchildren is so much higher, that it pays off enough for the decrease in relatedness. There  comes a point where more genes of a female survive when she invests into grandchildren rather than her own children, at which point becoming physically incapable of rearing children is an adaptive strategy and what we see happening and call menopause. Furthermore, similar arguments can be made for selfishness among siblings. It is always about the use of resources
 
 > The sight of her child smiling, or the sound of her kitten purring, is rewarding to a mother, in the same sense as food in the stomach is rewarding to a rat in a maze.
 
@@ -190,7 +190,7 @@ Menopause can be viewed as an adaptive strategy because the likelihood of surviv
 
 > Sperms and eggs contribute equal numbers of genes, but eggs contribute far more in the way of food reserves: indeed sperms make no contribution at all and are simply concerned with transporting their genes as fast as possible to an egg. At the moment of conception, therefore, the father has invested less than his fair share of resources in the offspring. Since each sperm is so tiny, a male can afford to make many millions of them every day. This means he is potentially able to beget a very large number of children in a very short period of time, using different females. This is only possible because each new embryo is endowed with adequate food by the mother in each case. This therefore places a limit on the number of children a female can have, but the number of children a male can have is virtually unlimited. Female exploitation begins here. 
 
-> A body is really a machine blindly programmed by its selfish genes. 
+> A body is  a machine blindly programmed by its selfish genes. 
 
 > The female sex is exploited, and the fundamental evolutionary basis for the exploitation is the fact that eggs are larger than sperms. 
 
@@ -264,7 +264,7 @@ Language and culture evolve.
 > We are built as gene machines, and nurtured as meme machines, but we have the power to turn against our creators. We, alone on Earth, can rebel against the tyrannyof the selfish replicators. 
 
 ### Chapter Summary:
-The Important part of a gene is that it is self-replicating when in the right environment -the key insight is that this applies to things other than genes as well. Dawkins calls these memes, from memetics - in other words things that imitate. Memes can exist in human brains, or any other system capable of copying information around and are simply a phenomenon of information that is really good at manipulating the system to propagate and copy it. In humans - the whole of culture and language can be thought of as memes. Memes can, much like genes, form complexes that work together very well in transmitting themselves and so - much like bodies - form concrete almost physical systems, that propagate themselves very nicely. Religions and all the Ritual and stuff attached to it, are one example for such memeplexes. In the end though, even though there exists memes and genes that are programming and nurturing and controlling us for their own selfish purposes, we have the power to break lose from these constraints and invent things that are truly not-selfish and truly altruistic. 
+The Important part of a gene is that it is self-replicating when in the right environment -the key insight is that this applies to things other than genes as well. Dawkins calls these memes, from memetics - in other words things that imitate. Memes can exist in human brains, or any other system capable of copying information around and are simply a phenomenon of information that is  good at manipulating the system to propagate and copy it. In humans - the whole of culture and language can be thought of as memes. Memes can, much like genes, form complexes that work together very well in transmitting themselves and so - much like bodies - form concrete almost physical systems, that propagate themselves very nicely. Religions and all the Ritual and stuff attached to it, are one example for such memeplexes. In the end though, even though there exists memes and genes that are programming and nurturing and controlling us for their selfish purposes, we have the power to break lose from these constraints and invent things that are truly not-selfish and truly altruistic. 
 
 ## Chapter 12 - Nice Guys Finish First
 
@@ -297,7 +297,7 @@ Prisoners dilemma is characterized by the order or ranking of outcomes in how de
 Nice strategies of cooperation arise in nature of the circumstances are right - i.e. when the circumstances are similar to a prisoners dilemma game, unfolding over long periods of time, we see evolution coming up with "nice" behavioral strategies. 
 
 ### Chapter Summary:
-Nice Guys can finish first was the title and the leading idea in the whole ## Chapter is that "niceness" as a strategy of cooperation can really pay off in a certain type of game - namely non-zero-sum long running prisoners dilemma. It then went on to explain multiple examples of where such strategies might be found in nature. The ## Chapter ends on a high note - even in a world where evolution favors and creates utterly selfish genes, under the right circumstances - it really pays to be cooperative and invent strategies of reciprocal altruism. And so in nature in a sense nice guys can finish first under some circumstances. 
+Nice Guys can finish first was the title and the leading idea in the whole ## Chapter is that "niceness" as a strategy of cooperation can  pay off in a certain type of game - namely non-zero-sum long running prisoners dilemma. It then went on to explain multiple examples of where such strategies might be found in nature. The ## Chapter ends on a high note - even in a world where evolution favors and creates utterly selfish genes, under the right circumstances - it  pays to be cooperative and invent strategies of reciprocal altruism. And so in nature in a sense nice guys can finish first under some circumstances. 
 
 ## The Long Reach of The Gene
 
@@ -309,7 +309,7 @@ What about genes which are bad for the body but good at spreading themselves? Ma
 
 Genes can cheat other genes with which they share a body. 
 
-If the effects of these cheating genes are really bad to the body, but still really effective at getting spread, mutations like them can drive whole populations extinct. 
+If the effects of these cheating genes are  bad to the body, but still  effective at getting spread, mutations like them can drive whole populations extinct. 
 
 Why do organisms exist? Why does living matter group itself into nice units of organization that works together as an organism?
 
@@ -330,13 +330,13 @@ Certain parasitic worms can increase the thickness of a snails shell. Normally s
 
 > Genes reach outside their "own" body to influence phenotypes in other bodies. 
 
-If parasite genes happen to be spread through the same mechanism as the hosts bodies genes happen to be spread, closer and closer cooperation starts to develop until the parasite actually "merges" with the body of the host and the two become so closely linked that we start to think of them as only one body. There is a multitude of stages of symbiosis and cooperation between a hostile parasite and a completely merged "single" body. 
+If parasite genes happen to be spread through the same mechanism as the hosts bodies genes happen to be spread, closer and closer cooperation starts to develop until the parasite  "merges" with the body of the host and the two become so closely linked that we start to think of them as only one body. There is a multitude of stages of symbiosis and cooperation between a hostile parasite and a completely merged "single" body. 
 
 > A parasite whose genes aspire to the same destiny as the genes of its host shares all the interests of its host and will eventually cease to act parasitically.
 
 > We can take this argument to its logical conclusion and apply it to normal, "own" genes. Our own genes cooperate with one another, not because they *are* our own but because they share the same outlet - sperm or egg - into the future. 
 
-Some types of DNA such as plasmids, might actually opt out of this shared reproductive step and just float around through cells randomly slicing open fragments of DNA and inserting itself, starting to multiply and then hitching another ride in another cell. What we describe here - is a way of how viruses could form from "normal" living things. It's just genes that found a different way to manipulate their environment into cloning them. 
+Some types of DNA such as plasmids, might  opt out of this shared reproductive step and just float around through cells randomly slicing open fragments of DNA and inserting itself, starting to multiply and then hitching another ride in another cell. What we describe here - is a way of how viruses could form from "normal" living things. It's just genes that found a different way to manipulate their environment into cloning them. 
 
 > Beaver lakes are extended phenotypic effects of beaver genes, and they can extend over several hundreds of yards. 
 
@@ -384,7 +384,7 @@ Another thing to keep in mind is the relatedness of the cells. In an organism wh
 ### Chapter Summary: 
 1. Read "The Extended Phenotype" ;) 
 There are two distinct concepts - vehicles and replicators. Replicators construct vehicles that help them replicate. Our genes are replicators, while our bodies are vehicles. The reach of replicators goes beyond their vehicles - in a sense the whole environment can be manipulated into helping the reproduction of the replicator. This includes the vehicles that other replicators built themselves, as is the case in parasites such as cuckoos, but also inanimate matter like stones and sticks as is the case for caddis flies and beavers. The only reason to call something a "body" / a vehicle for a certain replicator - belonging to that replicator - is that it has an exit for the replicator - i.e. it has to have a mechanism to make more of the replicator and then release that more into the environment in some form (for example another vehicle/body). Therefore vehicles from different replicators can become entangled and merge, when they start sharing the same exit for their respective replicators. That is when parasites and host become indistinguishable from another and merge into one, which happened a lot in evolutionary history. In a way our cells are collections of mergers like that. One question remained to be answered and that is - why built complicated bodies in the first place? The question is split into three parts - why do cells exist, why do cells form tissues and multicelled organisms and why do bodies go through a single celled bottleneck in their development? 
-The answer to all of them is very similar - it increases the adaptation of the replicators to the environment. Cells - i.e. collections of replicators working together in a complex allow for different sources of chemical pathways to be used for replication. The same is true for the step up to multicelled vehicles. The bottleneck now becomes important because multicelled life still needs to have the same exit for the replicators, otherwise mutations couldn't accumulate in the whole organism because they would never spread and so slowly the complex cooperation necessary for organs and tissues to work properly would slowly break down (that's what we call cancer btw.) Finally it allows bodies to coordinate even more effectively to grow highly specialized tissues and organs, because there is a clear phase of when things happens that can coordinate the efforts of the replicating complex. So the answer is really this - complexity allows harvesting of otherwise unattainable energy sources. Hence replicators, in a struggle to survive and replicate as much as possible, create ever more ingenuous and more complex ways to do so. Bodies tend to become more complex over time. 
+The answer to all of them is very similar - it increases the adaptation of the replicators to the environment. Cells - i.e. collections of replicators working together in a complex allow for different sources of chemical pathways to be used for replication. The same is true for the step up to multicelled vehicles. The bottleneck now becomes important because multicelled life still needs to have the same exit for the replicators, otherwise mutations couldn't accumulate in the whole organism because they would never spread and so slowly the complex cooperation necessary for organs and tissues to work properly would slowly break down (that's what we call cancer btw.) Finally it allows bodies to coordinate even more effectively to grow highly specialized tissues and organs, because there is a clear phase of when things happens that can coordinate the efforts of the replicating complex. So the answer is  this - complexity allows harvesting of otherwise unattainable energy sources. Hence replicators, in a struggle to survive and replicate as much as possible, create ever more ingenuous and more complex ways to do so. Bodies tend to become more complex over time. 
 
 ## Epilogue 
 

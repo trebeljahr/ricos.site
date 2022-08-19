@@ -9,6 +9,7 @@ tags: ["traveling", "business", "practical", "non-fiction"]
 summary: true
 detailedNotes: false
 amazonLink: "https://amzn.to/3FMQgmg"
+
 ---
 
 ## Summary: 

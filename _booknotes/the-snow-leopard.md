@@ -74,7 +74,7 @@ amazonLink: "https://amzn.to/363AXbl"
 
 > We have outsmarted ourselves, like greedy monkeys, and now we are full of dread. 
 
-> Today most scientists would agree with the ancient Hindus that nothing exists or is destroyed, things merely change shape or form; that matter is insubstantial in origin, a temporary aggregate of the pervasive energy that animated the electron. And what is this infinitesimal non-thing — to a speck of dust what the dust speck is to the whole earth? Do we really know what electricity is? By knowing the laws according to which it acts and by making use of them, we still do not know the origin or the real nature of this force, which ultimately may be the very source of life, and consciousness, the divine power and mover of all that exists. 
+> Today most scientists would agree with the ancient Hindus that nothing exists or is destroyed, things merely change shape or form; that matter is insubstantial in origin, a temporary aggregate of the pervasive energy that animated the electron. And what is this infinitesimal non-thing — to a speck of dust what the dust speck is to the whole earth? Do we  know what electricity is? By knowing the laws according to which it acts and by making use of them, we still do not know the origin or the real nature of this force, which ultimately may be the very source of life, and consciousness, the divine power and mover of all that exists. 
 
 Energy is god. Is the Tao, is all there is, interconnected in a multidimensional fabric of void, of spacetime. 
 

@@ -9,32 +9,30 @@ tags: ["curiosity", "learning", "non-fiction", "immunology", "biology"]
 summary: true
 detailedNotes: true
 amazonLink: "https://amzn.to/3Ky8Y2D"
+
 ---
 
 ## Summary: 
 
-A book about how the human immune system works. It goes over the different cell types and how they work together to fight off infections, and covers how cancer and autoimmune diseases work. The main bits of understanding I came away with are these: 
+A book about how the human immune system works. It goes over the different cell types and how they work together to fight off infections and covers how cancer and autoimmune diseases work. The main bits of understanding I came away with are these: 
 
-Your body is made up out of cells, those are made up out of proteins. Proteins are chains of amino acid, basically chemicals, twisted into complicated shapes, that do very specific things in your body, there are many proteins and they all do different things. There are a lot of cells and even more proteins. 
+Your body is made up of cells, which are made up of proteins. Proteins are chains of amino acids, and chemicals, twisted into complicated shapes, that do very specific things in your body, there are many proteins and they all do different things. There are a lot of cells and even more proteins. 
 
-The main problem of the immune system is to distinguish "self" from "other". This is a hard task, but the body has clever ways of doing it. One of those is that the surface of your cells is covered in specific glyco-proteins, that can show the immune sysytem if a cell belongs to your body or not. 
+The main problem of the immune system is to distinguish "self" from "other". This is a hard task, but the body has clever ways of doing it. One of those is that the surface of your cells is covered in specific glycoproteins, that can show the immune system if a cell belongs to your body or not. 
 
-These proteins are presented as tests to many cells in the immune system, so that they don't match them and try to attack and destroy those proteins. If immune cells fail those tests, they don't get activated and die. Sometimes this process goes wrong, hence sometimes we get auto-immune diseases.
+These proteins are presented as tests to many cells in the immune system so that they don't match them and try to attack and destroy those proteins. If immune cells fail those tests, they don't get activated and die. Sometimes this process goes wrong, hence sometimes we get auto-immune diseases.
 
-Everything in the immune system sits behind safety switches, because if things go wrong the immune system can easily kill you. 
+Everything in the immune system sits behind safety switches because if things go wrong the immune system can easily kill you. The lymphatic system is a major component of the immune system, it's draining fluids from in between cells. When infections happen, it carries immune cells to the correct location. It also carries around debris from infection sites, such as broken cells and fragments of pathogens back to lymph nodes, where strong immune cells (T-cells and B-Cells) are waiting to be activated for fighting off infections.
 
-Lymphatic system is a major component of the immune system, it's draining fluids from in between cells. When infections happen, it carries immune cells to the correct location. It also carries around debris from infection sites, such as broken cells and fragments of pathogens back to lymph nodes, where strong immune cells (T-cells and B-Cells) are waiting to be activated for fighting off infections.
+Protein-based weapons (the complement system), chemokines, cytokines and antibodies work together with different kinds of cells like T-Helper Cells, Memory Cells, Dendritic Cells, B-Cells, Plasma Cells, Neutrophiles and Macrophages to fight off infections together. The body has a multilayered defense. 
 
-Protein based weapons (the complement system), chemokines, cytokines and antibodies work together with different kinds of cells like T-Helper Cells, Memory Cells, Dendritic Cells, B-Cells, Plasma Cells, Neutrophiles and Macrophages to fight off infections together. The body has a multilayered defense. 
+The Immune System can be grouped into the adaptive- and innate immune systems. Generally, the body fights infections with the complement system (proteins that make holes in bacteria), macrophages (that "eat" pathogens) and neutrophils (that just kill everything at the site of infection) first. All of this buys time for the adaptive immune system to kick in. Here Dendritic Cells take information from the ongoing battle through the lymph system, to find T-Cells and B-Cells matching the antigens (protein bits and pieces) collected from the pathogens. T-Cells and B-Cells for every variant of virus, bacteria or "whatever" proteins can be found in your body, hence it takes time to find the right match. Once that happens though, the adaptive immune response kicks in, producing antibodies that specifically target and kill the specific infection within.
 
-The Immune System can be grouped into the Adaptive and the Innate Immune System. 
-Generally an infection is fought first with the complement system (proteins that make holes in bacteria), macrophages (that "eat" pathogens) and neutrophiles (that just kill everything at the site of infection). All of this buys time for the adaptive immune system to kick in. Here Dendritic Cells take information from the ongoing battle through the lymph system, to find T-Cells and B-Cells matching the antigens (protein bits and pieces) collected from the pathogens. T-Cells and B-Cells for literally every variant of virus, bacteria or "whatever" proteins can be found in your body, hence it takes time to find the right match. Once that happens though, the adaptive immune response kicks in, producing antibodies that specifically target and kill the specific infection within.
-
-Cells with viruses are extra hard for the immune system to detect. Luckily cells have little "windows" into the cells, that can show immune system cells outside, what is going on, inside, by showcasing proteins the cell has produced on it's surface, this way, if lots of virus proteins are produced the immune system will find it out and order the cell to destroy itself.
+Cells with viruses are extra hard for the immune system to detect. Luckily cells have little "windows" into the cells, that can show immune system cells outside, what is going on, inside, by showcasing proteins the cell has produced on its surface, this way if lots of virus proteins are produced the immune system will find it out and order the cell to destroy itself.
 
 Some pathogens are good at avoiding detection or even using the immune system as a means to an end (HIV or Covid are examples). And in certain areas, like the digestive tract or the lungs, certain measures of the immune system (like swelling up of lymph) are normally blocked, because they would cause other problems.
 
-The immune system is incredibly complex, and it's marvelous that we have one that works as good as it does. And the Immune Book does a wonderful job at showcasing the whole complexity, without being overly long and dense. Though at times I personally wish it could have gone even deeper into the nitty gritty details of the processes involved. 
+The immune system is incredibly complex, and it's marvelous that we have one that works as well as it does. And the Immune Book does a wonderful job at showcasing the whole complexity, without being overly long and dense. Though at times I personally wish it could have gone even deeper into the nitty gritty details of the processes involved. 
 
 ### Introduction 
 
@@ -50,7 +48,7 @@ The immune system is incredibly complex, and it's marvelous that we have one tha
 
 #### Chapter Summary: 
 
-The immune system distinguishes self from other and makes sure that the stuff designated self can thrive while the stuff designated other is terminated quickly. Doing so is a tightrope walk between too much aggression and too little of it, a tightrope walk the immune system usually excels at. 
+The immune system distinguishes self from other and makes sure that the stuff designated self can thrive while the stuff designated other is terminated quickly. Doing so is a tightrope walk between too much aggression and too little of it, a "tightrope walk" the immune system usually excels at. 
 
 ### Chapter 2 - What is there to defend?
 
@@ -58,7 +56,7 @@ The immune system distinguishes self from other and makes sure that the stuff de
 
 #### Chapter Summary: 
 
-You are essentially a tube, consisting of lots of very specialized cells, that do incredible things each day and that needs an army to defend against vast amounts of pathogens every day. The idea of a human, with human sized cells is introduced as a fancy imagination to get a better feel of how crazy everything inside the body really is. 
+You are essentially a tube, consisting of lots of very specialized cells, that do incredible things each day and that need an army to defend against vast amounts of pathogens every day. The idea of a human, with human-sized cells, is introduced as a fancy imagination to get a better feel of how crazy everything inside the body is. 
 
 ### Chapter 3 - What are your cells?
 
@@ -66,19 +64,19 @@ You are essentially a tube, consisting of lots of very specialized cells, that d
 
 > In the world of proteins shape determines what they can and can't do. Shape is everything.
 
-I think this idea applies to *everything*, not just Proteins. The difference between different things is really just the shape in which energy is organized. 
+I think this idea applies to *everything*, not just Proteins. The difference between different things is just the shape in which energy is organized. 
 
 > Your cells are nothing but bags of proteins guided by chemistry. 
 
 #### Chapter Summary:
 
-Cells make up the body, proteins make up cells, everything is governed by biochemistry, each cell, while complex, follows "simple" rules, butt together they form things that they alone couldn't. You. But still the question remains, how can, essentially somewhat stupid things, defend your body - and do such a good job at it?
+Cells make up the body, proteins make up cells, and everything is governed by biochemistry, each cell, while complex, follows "simple" rules, but together they form things that they alone couldn't. You. But still, the question remains, how can, essentially somewhat stupid things, defend your body - and do such a good job at it?
 
 ### Chapter 4 - The Empires and Kingdoms of the Immune System
 
 #### Chapter Summary: 
 
-The Immune System is made up of two distinct parts that play together nicely - the Innate Immune System and the Adaptive Immune System, the first is generic first line, broad defenses while the other is highly specialized on specific strains of pathogens. 
+The Immune System is made up of two distinct parts that play together nicely - the Innate Immune System and the Adaptive Immune System, the first is a generic first line, broad defenses while the other is highly specialized on specific strains of pathogens. 
 
 ## Part II - Catastrophic Damage
 
@@ -86,7 +84,7 @@ The Immune System is made up of two distinct parts that play together nicely - t
 
 #### Chapter Summary: 
 
-Pathogens are things that make you sick, Bacteria are everywhere, your body doesn't even defend against some of them but accepts them as part of life and actually cooperates with those good bacteria. The main challenge for the immune system is their ability to rapidly reproduce and thereby consume nutrients and by doing so kill cells of your body. 
+Pathogens are things that make you sick, Bacteria are everywhere, your body doesn't even defend against some of them but accepts them as part of life and cooperates with those good bacteria. The main challenge for the immune system is the bacteria's ability to rapidly reproduce and thereby consume nutrients and by doing so kill cells of your body. 
 
 ### Chapter 6 - The Desert Kingdom of the Skin
 
@@ -96,7 +94,7 @@ Pathogens are things that make you sick, Bacteria are everywhere, your body does
 
 #### Chapter Summary: 
 
-The skin is made up of dead cells, has a low pH and is relatively dry, but covered in fat and oils, and a natural antibiotic called defensins. It is also inhabited by lots of bacteria, working together with the immune system, allowed to live on the skin, but not to get into the body. Those take up space and even communicate with the inside and immune system to tell what is going on at the outside. 
+The skin is made up of dead cells, has a low pH and is relatively dry, but covered in fat and oils, and a natural antibiotic called defensins. It is also inhabited by lots of bacteria, working together with the immune system, allowed to live on the skin, but not get into the body. Those take up space and even communicate with the inside and immune system to tell what is going on on the outside. 
 
 ### Chapter 7 - The Cut
 
@@ -104,7 +102,7 @@ The skin is made up of dead cells, has a low pH and is relatively dry, but cover
 
 #### Chapter Summary:
 
-A simple cut is a lot of work for your body, and a lot happens to push back the intruding bacteria, fungi and viruses from the opening in the skin, to kill and trap them, and keep them at all costs from going further into the body. But some strains of pathogens are strong enough to resist those defenses and that's when one needs antibiotics or other forms of treatment. 
+A simple cut is a lot of work for your body, and a lot happens to push back the intruding bacteria, fungi and viruses from the opening in the skin, kill and trap them, and keep them at all costs from going further into the body. But some strains of pathogens are strong enough to resist those defenses and that's when one needs antibiotics or other forms of treatment. 
 
 ### Chapter 8 - The Soldiers of the Innate Immune System: Macrophages and Neutrophils
 
@@ -112,7 +110,7 @@ A simple cut is a lot of work for your body, and a lot happens to push back the 
 
 #### Chapter Summary: 
 
-Neutrophils are "crazy" soldiers, killing friend and foe alike, thereby living only for a short period of time because otherwise the risk of them doing unnecessary harm is to high for the body to tolerate. Macrophages are the other type of immune cell introduced. Basically they eat dead cells and pathogens alike, but also communicate the status of an infection and clean up normal debris from cell apoptosis every day. 
+Neutrophils are "crazy" soldiers, killing friend and foe alike, thereby living only for a short period because otherwise the risk of them doing unnecessary harm is too high for the body to tolerate. Macrophages are the other type of immune cell introduced.  they eat dead cells and pathogens alike, but also communicate the status of the infection and clean up normal debris from cell apoptosis every day. 
 
 ### Chapter 9 - Inflammation: Playing with Fire
 
@@ -139,7 +137,7 @@ Receptors for Cytokines are dense on immune cell surfaces to distinguish between
 
 > Cells are protein robots guided by biochemistry. 
 
-Proteins cascade information through changing their shapes from the outside to the inside of the cell, thereby changing the inside of the cell can lead to different behavior - i.e. proteins within the cell doing different things based on the surrounding of the cell. 
+Proteins cascade information by changing their shapes from the outside to the inside of the cell, thereby changing the inside of the cell can lead to different behavior - i.e. proteins within the cell doing different things based on the surrounding of the cell. 
 
 > Cells can react to information without being conscious or having the ability to think, guided by the biochemistry of life. 
 
@@ -151,36 +149,36 @@ Where chemical gradients get denser, more receptors "fire" (read change their sh
 
 > The shape of a protein determines what it can do and how it can interact with other proteins, what structure it can build, and what information it can convey. 
 
-Proteins are like puzzle pieces - magnetic puzzle pieces! That snap together and can change shape because of the closeness of other puzzle pieces. Uh, and parts of those protein puzzle pieces are quite flexible, so the whole shape can actually wiggle around and bend and twist, because of ambient heat! 
+Proteins are like puzzle pieces - magnetic puzzle pieces! They snap together and can change shape because of the closeness of other puzzle pieces. Uh, and parts of those protein puzzle pieces are quite flexible, so the whole shape can wiggle around and bend and twist, because of ambient heat! 
 
 > Innate immune cells have receptors that can recognize the protein puzzle shapes that make up flagella, and enable the immune cells to eliminate them. 
 
 #### Chapter Summary: 
-Toll-like receptors can detect specific protein structures that pathogens can't get rid of and that human cells don't have. This way these receptors only react to things that don't belong into your body and can therefore help the immune system to do it's main task - distinguish *self* from *other*!
+Toll-like receptors can detect specific protein structures that pathogens can't get rid of and that human cells don't have. This way these receptors only react to things that don't belong in your body and can therefore help the immune system to do its main task - distinguish *self* from *others*!
 
 ### Chapter 12 - The Invisible Killer Army: The Complement System
 
 #### Chapter Summary
-The Complement System has been around with only little changes for **over** 500 million years. A long time, so it must be *really* useful. 
+The Complement System has been around with only a few changes for **over** 500 million years. A long time, so it must be ** useful. 
 
-It's a set of proteins, working together in complementary fashion to cripple enemies and activate the rest of the immune system. They can also rip holes into intruding pathogens to destroy them. Usually these proteins are inactive. But when one activates, it can activate others in a coordinated dance. 
+It's a set of proteins, working together in a complementary fashion to cripple enemies and activate the rest of the immune system. They can also rip holes into intruding pathogens to destroy them. Usually, these proteins are inactive. But when one activates, it can activate others in a coordinated dance. 
 
-C3 -> C3a (flooded away, activating rest of immune responses) + C3b (attaching to bacterial cell) -> another complement B attached together with complement P to form C3 convertase on the bacteria cell surface. This protein assembly activates more C3 units and soon the bacterias surface is full of these proteins. Complement unit is positively charged making it easier for phagocytes to grab pathogens. The assembly can mutate once more, into something called Membrane Attack Complex that creates holes in the bacterial cell membrane, literally killing it. 
+C3 -> C3a (flooded away, activating rest of immune responses) + C3b (attaching to bacterial cell) -> another complement B attaches to complement P to form C3 convertase on the bacteria cell surface. This protein assembly activates more C3 units and soon the bacteria's surface is full of these proteins. The complement unit is positively charged making it easier for phagocytes to grab pathogens. The assembly can mutate once more, into something called Membrane Attack Complex that creates holes in the bacterial cell membrane, killing it. 
 
 ### Chapter 13 - Cell Intelligence: The Dendritic Cell
 
 #### Chapter Summary:
-Dendritic Cells have starfish like flopping arms and they sample bodily fluids constantly looking out for unfamiliar proteins and other signs of infection. When they find some, they gather and store it, basically creating something like a protein imagery of what the pathogen looks like. They deliver that information to the adaptive immune system, and they get there via the lymphatic system. 
+Dendritic Cells have starfish-like flopping arms and they sample bodily fluids constantly looking out for unfamiliar proteins and other signs of infection. When they find some, they gather and store it,  creating something like protein imagery of what the pathogen looks like. They deliver that information to the adaptive immune system, and they get there via the lymphatic system. 
 
 ### Chapter 14 - Superhighways and Megacities
 
 > Your network of *lymphatic vessels* is miles long and covers your entire body. 
 
-One job is to drain excess fluid from tissues that was left behind because of blood. In this fluid - called lymph - there is a lot of detritus as well, dead and living cells, proteins, sometimes bacteria etc. The Lymph system even transports fats around in its lymph as well. 
+One job is to drain excess fluid, that was left behind because of blood, from the tissue. In this fluid - called lymph - there is a lot of detritus as well, dead and living cells, proteins, sometimes bacteria etc. The Lymph system even transports fats around in its lymph as well. 
 
 Dendritic cells arrive in lymph nodes with the protein parts from the infection. 
 
-Spleen - stores extra blood, recycles old blood cells, and holds reserves of platelets and red blood cells as well as so called Monocytes. Basically spare part macrophages that can customer to fit certain situations better. 
+Spleen - stores extra blood, recycles old blood cells and holds reserves of platelets and red blood cells as well as so-called Monocytes. Spare part macrophages that can be customized to fit certain situations better. 
 
 Lymph nodes filter the lymph detritus. The spleen does the same but for blood instead of lymph. 
 
@@ -232,7 +230,7 @@ MHC is necessary for activation of T-Helper cells. Only if presented with antige
 
 Dendritic cells die after some time, taking the gathered antigen information with them. So if there is no more infection the adaptive immune system response will also fizzle out. 
 
-Humans have different MHC proteins, and find sexual attraction in others with different MHC proteins. We can actually smell the difference because we have receptors that trigger on the proteins related to the MHCs. We can literally smell the immune system of somebody else. 
+Humans have different MHC proteins, and find sexual attraction in others with different MHC proteins. We can  smell the difference because we have receptors that trigger on the proteins related to the MHCs. We can smell the immune system of somebody else. 
 
 ### Chapter 20 - Awakening the Adaptive Immune System: T Cells
 
@@ -250,11 +248,11 @@ The other half of the T-Helper Cells goes to a different place than the infectio
 #### Chapter Summary: 
 B Cells can recognize antigens and produce fitting antibodies, they go through the same test of self and other in the bone marrow that T-Helper cells go through in the thymus. They need two steps of activation. One by an antigen floating in the lymph from the fight of the Innate Immune System at the site of infection and then another one by an activated T-Helper Cell. 
 
-Why not use a dendritic cell for that? Because the MHC protein limits the size of the antigens that could be presented. For the activation of the T-Helper cells that's alright, but if the body should produce really useful antibodies these small antigen protein pieces are not enough, it needs less processed, bigger protein pieces to build truly effective weapons against those. And that's why B cells sample the lymph directly and get their first activation from antigens in the lymph specifically. 
+Why not use a dendritic cell for that? Because the MHC protein limits the size of the antigens that could be presented. For the activation of the T-Helper cells that's alright, but if the body should produce  useful antibodies these small antigen protein pieces are not enough, it needs less processed, bigger protein pieces to build truly effective weapons against those. And that's why B cells sample the lymph directly and get their first activation from antigens in the lymph specifically. 
 
 Complement System proteins on antigens in the lymph make it 100x more likely to trigger B Cell activation. First activation means moving of the B Cell and cloning, to around 20k and producing less effective antibodies, without second activation they die again within a day. 
 
-B Cell also has MHC on its surface, and basically can grind up the first activation "big complicated" antigen into lots of small variants and then present all of those together on the surface on the MHC similar to a dendritic cell. Now if a T-Helper cell comes along and recognizes one of those, the activation happens. That's also why there is the need of the second protein receptor binding for the activation of the T-Helper cell by the extra route of the dendritic cell. So they don't accidentally activate when finding an activated B Cell that was gorging on lymph. 
+B Cell also has MHC on its surface, and  can grind up the first activation "big complicated" antigen into lots of small variants and then present all of those together on the surface on the MHC similar to a dendritic cell. Now if a T-Helper cell comes along and recognizes one of those, the activation happens. That's also why there is the need of the second protein receptor binding for the activation of the T-Helper cell by the extra route of the dendritic cell. So they don't accidentally activate when finding an activated B Cell that was gorging on lymph. 
 
 Once both activations happened the B Cell turns into a plasma cell and produces LOTS (2000 per second per cell) of antibodies.
 
@@ -292,7 +290,7 @@ Mucosa are at the intersection between inside and outside, we have to get in cer
 
 ### Chapter 25 - The Weird and Special Immune System of Your Gut
 
-> Your gut immune system really is a peacekeeping force. 
+> Your gut immune system  is a peacekeeping force. 
 
 #### Chapter Summary:
 Commensal bacteria live in the gut and break down parts of food we can't digest and in return get a pretty comfy place to live. Epithelial cells connect to each other, bonding closely to prevent anything from getting inside, but still sometimes commensal bacteria do enter all this way through the deadly layer of mucus filled with deadly proteins, defensins and antibodies, and then try to get past the Epithelial cells as well. After the epithelium comes the Lamina Propria which hosts slightly different versions of B Cells, Dendritic cells and macrophages. All a bit more tuned down and adapted to not cause inflammation too easily. 
@@ -307,7 +305,7 @@ Viruses are immensely successful but rely on other living cells to reproduce the
 ### Chapter 27 - The Immune System of Your Lungs
 
 #### Chapter Summary: 
-Lungs need special defense mechanisms since inflammation would quickly drown you in your own liquid. There is no mucus on the alveoli, since they need to exchange gases but there are Alveolar macrophages patrolling the surface of the epithelial cells there, cleaning up. There might exist a microbiome in the lungs but finding out more about it is hard, since taking samples from the inner workings of the lungs is hard without killing or injuring people while doing so. 
+Lungs need special defense mechanisms since inflammation would quickly drown you in your liquid. There is no mucus on the alveoli, since they need to exchange gases but there are Alveolar macrophages patrolling the surface of the epithelial cells there, cleaning up. There might exist a microbiome in the lungs but finding out more about it is hard, since taking samples from the inner workings of the lungs is hard without killing or injuring people while doing so. 
 
 ### Chapter 28 - The Flu - The "Harmless" Virus You Don't Respect Enough
 
@@ -332,7 +330,7 @@ Plasmacytoid Dendritic Cells are "Antivirus Alarm Cells" - they detect the Inter
 In a viral infection, immune cells release a special form of Cytokines called Pyrogens - the name means molecules that "generate heat", these are what cause fever. Pyrogens directly manipulate your brain into doing things like shivering and constricting blood flow on the body skin surface. Fever makes it harder for pathogens to live, but is also a very taxing investment of the body, because it uses up lots of energy to heat itself. 
 Even cold blooded animals have fever. But behavioral fever, they search out extra hot places when infected. 
 
-To effectively fight viral infections the immune system has to fight and kill infected cells. It has to quite literally kill parts of **you!**
+To effectively fight viral infections the immune system has to fight and kill infected cells. It has to quite kill parts of **you!**
 
 #### Chapter Summary: 
 Interferons -> Plasmacytoid Dendritic Cell -> Immune Response -> Pyrogens -> Fever.
@@ -353,7 +351,7 @@ MHC I is unqiue to each person. This is the reason why organ transplants are "re
 > "Killer" T Cell is a perfect name considering what it does: *It kills*, efficiently, fast and without mercy. 
 
 #### Chapter Summary:
-Dendritic cells do *cross-presentation* they put antigens from their collection of the infected site not only in their MHC II receptors, but also into their MHC I receptors. These MHC I receptor bound antigens can then, together with a second receptor binding to the Killer T Cell at the same time, activate it. The same security mechanism as with Helper T Cells but on a different MHC protein. Also similar to B Cells - Killer T Cells then need another activation from an activated Helper T Cell, before they become really active. Cloning a lot, and killing lots of civilian cells that happen to present virus infection antigens through their MHC I receptor windows. Ok, technically the Killer T Cells don't kill the infected cell, but just tells them to undergo apoptosis. This way the virus filled inside of the cell don't spill, but get packaged into little cell wall bags that are picked up by macrophages. This process of checking and ordering apoptosis is called "serial killing". Problem - viruses often force the cells to stop producing MHC I proteins so this strategy might be hindered a lot, depending on the virus. 
+Dendritic cells do *cross-presentation* they put antigens from their collection of the infected site not only in their MHC II receptors, but also into their MHC I receptors. These MHC I receptor bound antigens can then, together with a second receptor binding to the Killer T Cell at the same time, activate it. The same security mechanism as with Helper T Cells but on a different MHC protein. Also similar to B Cells - Killer T Cells then need another activation from an activated Helper T Cell, before they become  active. Cloning a lot, and killing lots of civilian cells that happen to present virus infection antigens through their MHC I receptor windows. Ok, technically the Killer T Cells don't kill the infected cell, but just tells them to undergo apoptosis. This way the virus filled inside of the cell don't spill, but get packaged into little cell wall bags that are picked up by macrophages. This process of checking and ordering apoptosis is called "serial killing". Problem - viruses often force the cells to stop producing MHC I proteins so this strategy might be hindered a lot, depending on the virus. 
 
 ### Chapter 32 - Natural Killers 
 
@@ -394,7 +392,7 @@ Plasma Cells turn into Memory Cells and there are ofc different types of memory 
 > A single drop of your blood contains about 13.000.000.000.000 Antibodies. 
 
 There are also Memory B Cells which just sit down in the lymph and chill, waiting for the sign of another antigen they match to, if they find one, the immediately start multiplying and immediately become plasma cells producing antibodies without T Helper Cell activation!
-Basically this forms a shortcut to the Adaptive Immune System activation which means it kicks into gear much earlier and therefore before the infection had much time to spread and therefore no symptoms will really be caused by re-infections. 
+ this forms a shortcut to the Adaptive Immune System activation which means it kicks into gear much earlier and therefore before the infection had much time to spread and therefore no symptoms will  be caused by re-infections. 
 
 T Cells can also turn into different types of memory cells. Tissue Resident Memory T Cells, that stay locally and will wake up the immune system again if they detect signs of another infection as well as Effector Memory T Cells that look for the antigens from their infection in the lymph. There are also Central Memory T Cells, that when finding the same antigen again, produce Effector Memory T Cells en masse to help against a new infection of the same pathogen. 
 
@@ -412,10 +410,10 @@ Human Body has living memory of diseases encountered in the past in the form of 
 #### Chapter Summary: 
 Variolation - take some infected skin or pus from somebody ill, grind it and stick it in your nose and have a 1-2% to contract the real full blown thing or a 98% chance of having a very mild form of it, but becoming immune from the real thing... Early but quite mad attempts of "vaccination" so to speak. 
 
-There are multiple ways for vaccinating and it's actually quite hard to provoke an immune response without actually contracting the disease itself, because the immune system makes so damn sure to not activate without good reason to do so! 
+There are multiple ways for vaccinating and it's  quite hard to provoke an immune response without  contracting the disease itself, because the immune system makes so damn sure to not activate without good reason to do so! 
 
 #### Passive Immunization - Free Fish
-Antibodies can also attack toxins, since toxins are mostly proteins themselves, there can be antibodies against specific toxins. Antivenoms are basically those antibodies in concentrated form. Similarly one could take antibodies from other people or animals that contracted the disease and use those as a medicamentation. However the protection is time limited since the antibodies decay over time. In that sense it is like giving somebody a fish, they will use it up and become hungry again. 
+Antibodies can also attack toxins, since toxins are mostly proteins themselves, there can be antibodies against specific toxins. Antivenoms are  those antibodies in concentrated form. Similarly one could take antibodies from other people or animals that contracted the disease and use those as a medicamentation. However the protection is time limited since the antibodies decay over time. In that sense it is like giving somebody a fish, they will use it up and become hungry again. 
 
 #### Active Immunization - Learning How To Fish
 
@@ -431,13 +429,13 @@ Antibodies can also attack toxins, since toxins are mostly proteins themselves, 
 
 ### Chapter 37 - When Your Immune System Is Too Weak: HIV and AIDS
 
-HIV attacks Helper T Cells. It is a retrovirus - which means that it merges genetic code with yours. So HIV stays inside your DNA as long as you're alive. Actually it's not the first virus to end up there, around 8% of the total genome are thought to be that kind of retrovirus. 
+HIV attacks Helper T Cells. It is a retrovirus - which means that it merges genetic code with yours. So HIV stays inside your DNA as long as you're alive.  it's not the first virus to end up there, around 8% of the total genome are thought to be that kind of retrovirus. 
 
 #### Chapter Summary 
-HIV does not spread like an ordinary virus only, first it infects a dendritic cell, which carries it to a lymph node, where it infects it's main target - T Helper cells, then it sneakily hides itself in the infected immune cells and only if those have direct contact to another cell, to activate it for example, will the virus be transmitted further.  This way it stays hidden and under the radar, but keeps spreading through the immune system slowly but surely. HIV is also really good at scrambling (mutating) it's antigen surface as well so even if your immune system produces antibodies against it, those will quickly become ineffective since new strains of the virus arise. 
+HIV does not spread like an ordinary virus only, first it infects a dendritic cell, which carries it to a lymph node, where it infects it's main target - T Helper cells, then it sneakily hides itself in the infected immune cells and only if those have direct contact to another cell, to activate it for example, will the virus be transmitted further.  This way it stays hidden and under the radar, but keeps spreading through the immune system slowly but surely. HIV is also  good at scrambling (mutating) it's antigen surface as well so even if your immune system produces antibodies against it, those will quickly become ineffective since new strains of the virus arise. 
 Over time it kills more and more Helper T cells until there are so little left, that the adaptive immune system collapses and the HIV virus count explodes. That's the last stage - also known as AIDS. For Acquired Immune Deficiency Syndrome. 
 
-> Another testament to the fact that humans really could solve all of their major problems if they were better at prioritizing. 
+> Another testament to the fact that humans  could solve all of their major problems if they were better at prioritizing. 
 
 ### Chapter 38 - When the Immune System Is Too Aggressive: Allergies
 
@@ -448,7 +446,7 @@ Over time it kills more and more Helper T cells until there are so little left, 
 > You now have to live with the information that people can just suddenly become allergic to things they ate all their lives with no warning. 
 
 #### Chapter Summary: 
-Mast cells carry histamines, small molecules that basically trigger instant and massive inflammation when spilled. IgE antibodies can trigger mast cells. For some reason, sometimes B cells start producing IgE antibodies for foods or pollen or what not, but harmless things, that attach to mast cells and make them trigger to antigens of the appropriate type much more easily and therefore en masse locally - leading to the typical symptoms of allergies. 
+Mast cells carry histamines, small molecules that trigger instant and massive inflammation when spilled. IgE antibodies can trigger mast cells. For some reason, sometimes B cells start producing IgE antibodies for foods or pollen or what not, but harmless things, that attach to mast cells and make them trigger to antigens of the appropriate type much more easily and therefore en masse locally - leading to the typical symptoms of allergies. 
 
 Histamine release also causes more mucus to be created and contracts the smooth muscle of the lungs, making it hard to breathe out normally. 
 
@@ -461,10 +459,10 @@ Worms were and still are a problem for humans world wide, without good sanitatio
 
 ### Chapter 40 - Autoimmune Disease
 
-> In a nutshell, in autoimmunity, your T and B cells are able to recognize proteins that are used by your own cells. *Self-antigens*. The antigens of *self. You*. 
+> In a nutshell, in autoimmunity, your T and B cells are able to recognize proteins that are used by your cells. *Self-antigens*. The antigens of *self. You*. 
 
 #### Chapter Summary: 
-Self Recognizing T Helper and B cells were accidentally created and survived the Thymus and they get activated, also accidentally, when an infection occurs where some antigen is similar to the self-antigens these T Helper and B cells are primed to. Then they spring into action, and start killing of healthy normal body cells as if they were other, as if they were disease. If these become memory cells the autoimmune disease becomes chronic, especially with long lived plasma cells - this is very very bad. Treatment is basically immunosuppressants. 
+Self Recognizing T Helper and B cells were accidentally created and survived the Thymus and they get activated, also accidentally, when an infection occurs where some antigen is similar to the self-antigens these T Helper and B cells are primed to. Then they spring into action, and start killing of healthy normal body cells as if they were other, as if they were disease. If these become memory cells the autoimmune disease becomes chronic, especially with long lived plasma cells - this is very very bad. Treatment is  immunosuppressants. 
 
 *Molecular Mimicry* - sometimes certain pathogens purposefully copy antigens from body cells to hide and make it harder for the immune system to find and kill them. 
 
@@ -473,7 +471,7 @@ Dendritic Cells collect samples all the time, when they collect things while eve
 
 ### Chapter 41 - The Hygiene Hypothesis and Old Friends
 
-> Nature is cruel and without any form of care for you. The notion that "natural is better" is something only people who are not actually living in nature can say and who have forgotten why our ancestors worked so hard to escape it. 
+> Nature is cruel and without any form of care for you. The notion that "natural is better" is something only people who are not  living in nature can say and who have forgotten why our ancestors worked so hard to escape it. 
 
 > Hygiene is incredibly important to protect us from all of these diseases. 
 
@@ -491,7 +489,7 @@ Allergies are more likely in urban societies because the microbiome one encounte
 > If you want to "boost" your immune system do that it is healthy, start by taking better care of yourself by living a healthy lifestyle, and the complex concert of your immune system, with all its billions of different parts, will run properly for a longer time. 
 
 #### Chapter Summary: 
-Things "boosting" the immune system are something sold by quacks everywhere, but the scientific truth is, boosting the immune system is not really a thing - it has to be well balanced if anything. If you boost it, it becomes to active, you get inflammation everywhere and die from that, so a "boosted" immune system is definitely not something you would really want. Still people make good money selling wonder cures to the uneducated. The only thing one can really do for the immune system is a sort of tautology and that is to eat healthily and live and overall healthy lifestyle, with a good amount of movement, enough sleep and not too much stress.
+Things "boosting" the immune system are something sold by quacks everywhere, but the scientific truth is, boosting the immune system is not  a thing - it has to be well balanced if anything. If you boost it, it becomes to active, you get inflammation everywhere and die from that, so a "boosted" immune system is definitely not something you would  want. Still people make good money selling wonder cures to the uneducated. The only thing one can  do for the immune system is a sort of tautology and that is to eat healthily and live and overall healthy lifestyle, with a good amount of movement, enough sleep and not too much stress.
 
 ### Chapter 43 - Stress and the Immune System
 
@@ -500,13 +498,13 @@ Reacting very strongly to stressors in an evolutionary context is something bene
 > Psychological stress and actual and immediate physical consequences for the immune system, many of them not helpful. 
 
 #### Chapter Summary: 
-Stress over long times affects the immune system in really bad ways. One hormone it releases is cortisol, which actively suppresses the immune system. And stress over longer times is a modern thing, back in the day, the lion either ate you or it didn't. Either way stress was over soon.  
+Stress over long times affects the immune system in  bad ways. One hormone it releases is cortisol, which actively suppresses the immune system. And stress over longer times is a modern thing, back in the day, the lion either ate you or it didn't. Either way stress was over soon.  
 
 ### Chapter 44 - Cancer and The Immune System
 
 > Cancer is when cells in a certain part of your body begin to grow and multiply uncontrollably. 
 
-> You can imagine Tumore basically like cells starting a new small village that eventually grows into a metropolitan area. 
+> You can imagine Tumore  like cells starting a new small village that eventually grows into a metropolitan area. 
 
 1 in 4 people gets cancer during their lifetime. 
 
@@ -515,10 +513,10 @@ Cells accumulate damage to their DNA over time. Cancer is when that damage leads
 > The easiest way to get cancer is to be alive long enough. 
 
 Minimum three mutations are needed for cancer 1. In oncogenes - switching on rapid growth. 
-2. In tumor suppressor genes - which normally handle DNA surveillance and repair, basically never repair the DNA damaga that leads to abnormal growth
+2. In tumor suppressor genes - which normally handle DNA surveillance and repair,  never repair the DNA damaga that leads to abnormal growth
 3. In apoptosis genes - stop doing apoptosis as well. Don't stop anymore when things are going wrong. 
 
-Cancer cells are more like egoistic individuals, putting their own fate over that of the body. 
+Cancer cells are more like egoistic individuals, putting their fate over that of the body. 
 
 Immune system kills cancer cells all the time. 
 
@@ -539,7 +537,7 @@ One way they could mutate is to inhibit killer cells by showing the correct prot
 
 #### An Aside - Smoking and the Immune System
 
-Nicotine suppresses the immune system. Especially in the lungs. Alveolar macrophages get turned down and release their enzymes that start breaking down lung tissue. This is what causes the scar tissue in long term smokers. 
+Nicotine suppresses the immune system. Especially in the lungs. Alveolar macrophages get turned down and release their enzymes that start breaking down lung tissue. This is what causes the scar tissue in long-term smokers. 
 It also suppresses Natural Killer Cells. Which are then not as good at defending against cancer. The main reason why the cancer numbers for lung cancer are so high in smokers. 
 
 #### Chapter Summary: 
@@ -552,11 +550,11 @@ Cancer are cells gone rogue, via at least three mutations that allow them to gro
 > At this point we simply don't know yet if the coronavirus pandemic will cause irreversible damage or not. 
 
 Corona targets ACE2 receptor. ACE2 regulates Blood pressure and we have these receptors all over the place. So the coronavirus can infect much more than just lungs and throat and nose. 
-Corona stops or delays interferon production. Hence immune system response is less deadly to the virus, but inflammation still happens at a normal rate. The virus can go on its exponential growth rate pretty much undisturbed, provoking huge widespread inflammation but without the interferons messing with it's replication. At lot of epithelial lining dies, opening up the alveoli for further infection by other pathogens - bacteria etc. Immune response is so strong at this point in the lungs that chemicals used by immune cells literally rip holes in the lung tissue, scarring the lungs for a long time. 
+Corona stops or delays interferon production. Hence immune system response is less deadly to the virus, but inflammation still happens at a normal rate. The virus can go on its exponential growth rate pretty much undisturbed, provoking huge widespread inflammation but without the interferons messing with it's replication. At lot of epithelial lining dies, opening up the alveoli for further infection by other pathogens - bacteria etc. Immune response is so strong at this point in the lungs that chemicals used by immune cells rip holes in the lung tissue, scarring the lungs for a long time. 
 
 #### Chapter Summary: 
 Corona Virus sucks because of the immune response it triggers but also suppresses enough not to be killed which leads to further immune response in a downward spiral. 
 
 ### A Final Word
 
-> You are incredibly lucky to be alive and to have a body that you can call your own. 
+> You are incredibly lucky to be alive and to have a body that you can call your. 

@@ -8,7 +8,7 @@ First what do I mean when I say "Capitalism"? The word can be widely used and pe
 
 ## Isn't Capitalism supposed to be good?
 
-As the story goes, in such a capitalist world, companies are competing to create the "best" products and those companies will create technological progress and prosperity for the society they operate in along the way. I think this part, which goes back to thinkers like Adam Smith or John Maynard Keynes and a lot of others, is not the problem. I even think fundamentally this picture of Capitalism is right. Capitalism and free trade are the driving forces behind why our world is in the place it is right now, with prosperity for many of the people in the world and climbing standards of living across all measures across the whole globe. This is something that most people actually don't even believe in, yet is factually true. For a good account of why and how this is true I can only recommend you go and read [The Better Angels of our Nature by Steven Pinker](#TODO).
+As the story goes, in such a capitalist world, companies are competing to create the "best" products and those companies will create technological progress and prosperity for the society they operate in along the way. I think this part, which goes back to thinkers like Adam Smith or John Maynard Keynes and a lot of others, is not the problem. I even think fundamentally this picture of Capitalism is right. Capitalism and free trade are the driving forces behind why our world is in the place it is right now, with prosperity for many of the people in the world and climbing standards of living across all measures across the whole globe. This is something that most people  don't even believe in, yet is f true. For a good account of why and how this is true I can only recommend you go and read [The Better Angels of our Nature by Steven Pinker](#TODO).
 
 Yet, while we largely live in such a world, a world governed by free trade, and competing corporations, it's not the heaven that you would hope it would be. Smith's invisible hand (an idea introduced by him in his famous work [On the Wealth of Nations](#TODO)) works wonders, but somewhere along the way it also does quite a few horrible things. What are those things?
 
@@ -16,7 +16,7 @@ Yet, while we largely live in such a world, a world governed by free trade, and 
 
 There are some disturbing trends visible in our world right now:
 
-Our attention spans are shrinking. I personally feel like it's getting increasingly harder for me to do solid focused work. And intellectually demanding feats too often seem impossible to pull off, instead I *chill* and watch YouTube. Even reading a good book for a few hours is not something I regularly do anymore and sometimes it even feels like work to me, like something hard and painful to do, something that I don't really enjoy anymore, something that I don't want to do. Why?
+Our attention spans are shrinking. I personally feel like it's getting increasingly harder for me to do solid focused work. And intellectually demanding feats too often seem impossible to pull off, instead I *chill* and watch YouTube. Even reading a good book for a few hours is not something I regularly do anymore and sometimes it even feels like work to me, like something hard and painful to do, something that I don't  enjoy anymore, something that I don't want to do. Why?
 
 Addictions especially to new formats of media, like porn, TikTok, YouTube, Netflix or games, are a huge problem for almost everybody, at least in my generation. Including me. Why?
 
@@ -36,13 +36,13 @@ Before we get to that let me paint a picture of my own struggles with those tren
 
 To me the two I am most affected is addiction. I feel like I suffer from addictions of various kinds very much. And I know enough of my friends who struggle in just the same way.
 
-I am addicted to computer games, pornography and YouTube to a certain extent, which is scary if I actually stop to think about how much time I spend doing these things on a week to week basis. Sometimes I just feel like I have no choice but to do these things, despite not enjoying them all that much anymore. Sometimes I can even sit there in front of my computer, detached, and observing myself in my own mind, thinking: "Why the heck are you doing *this* right now? Didn't you want to do something much more important?"
+I am addicted to computer games, pornography and YouTube to a certain extent, which is scary if I  stop to think about how much time I spend doing these things on a week to week basis. Sometimes I just feel like I have no choice but to do these things, despite not enjoying them all that much anymore. Sometimes I can even sit there in front of my computer, detached, and observing myself in my own mind, thinking: "Why the heck are you doing *this* right now? Didn't you want to do something much more important?"
 
 And all too often I catch myself even coming up with excuses to answer that question, lingering in my own mind: "Nah... I am tired today, or I am not that well, my energy is low, so it's fine to watch YouTube just today."
 
 Those are excuses to keep a destructive behavior in my life, excuses concocted by an addicted brain, where the addicted part hijacks the thinking part to come up with creative ways to explain that behavior and rationalize it so that it doesn't feel as bad (more on how that works exactly will come later). 
 
-I literally lie to myself so that I can "enjoy" the pleasures of addiction again or for longer, suffering all the while, because it's not what *I* really want to do. Anybody who has suffered from something like this should resonate with a quote from the Bhagavad Gita:
+I lie to myself so that I can "enjoy" the pleasures of addiction again or for longer, suffering all the while, because it's not what *I*  want to do. Anybody who has suffered from something like this should resonate with a quote from the Bhagavad Gita:
 
 > The self is a friend for him who masters himself by the Self; but for him who is not self-mastered, the self is the cruelest foe.
 
@@ -52,7 +52,7 @@ That's what it means to struggle with addiction. I still consider myself lucky, 
 
 My claim is, all of these problems, especially addiction (and their prevalence today) come from the interaction between Capitalism and our human brains. Now, ok, Capitalism itself is just an emergent phenomenon of people (brains) interacting with each other in the world, but what I mean is that Capitalism changes the ways we behave and also the underlying reasons of why we behave in any particular way at all. Because capitalism builds artifacts (products) and Capitalism is very good at finding ways to build products that exploit our brains. 
 
-To understand what that means though, let's have a look at addiction more in depth, to learn a bit about how the human (or brains in general, it turns out the neural circuitry is quite conserved, hence rats can still become addicted to Cocaine or "porn" just as humans do) brain *actually* works. 
+To understand what that means though, let's have a look at addiction more in depth, to learn a bit about how the human (or brains in general, it turns out the neural circuitry is quite conserved, hence rats can still become addicted to Cocaine or "porn" just as humans do) brain ** works. 
 
 We want to find out and understand what addiction is on a neurological level. First of, while some people consider it a disease not everybody would agree. As we'll see, in a way, an addiction is *just* learning gone wrong and too far. What do  I mean by that? Let me explain.
 
@@ -70,7 +70,7 @@ However in the end, all of those can be broken down to some association with a t
 
 Our brains are prediction machines, neural networks firing in response to stimuli from the world (let's call stimuli from world simply input). 
 
-They not only respond directly and immediately but also adapt and change their structure. Brains literally rewire in response to inputs. So the same input presented to our brains twice, doesn't necessarily produce the same output, because the first time it arrived it might have changed the brain a little bit. This is the basis of all learning.
+They not only respond directly and immediately but also adapt and change their structure. Brains rewire in response to inputs. So the same input presented to our brains twice, doesn't necessarily produce the same output, because the first time it arrived it might have changed the brain a little bit. This is the basis of all learning.
 
 We are always trying to capture spatial and temporal patterns. Those patterns are useful, because us human reproduction machines can then exploit those patterns to find ways to sustain and reproduce ourselves. 
 

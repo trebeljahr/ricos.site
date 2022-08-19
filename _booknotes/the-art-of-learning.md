@@ -20,7 +20,7 @@ amazonLink: "https://amzn.to/3O8RR9Y"
 
 > All coalesced around the theme of tapping into one and all activities. My growth became defined by barrierlesness. 
 
-There is an essence of learning that is shared between all things because we access all things through the same interface - our consciousness. With attention and method we can learn things from very different places and experiences, because we flow and achieve breakthrough insights. We can basically play world class chess even though we are thinking Tai Chi and it just works, because even though they are different, they are not that different somehow... At least on some level of conscious representation. This method of learning is what this book is about. 
+There is an essence of learning that is shared between all things because we access all things through the same interface - our consciousness. With attention and method we can learn things from very different places and experiences, because we flow and achieve breakthrough insights. We can  play world class chess even though we are thinking Tai Chi and it just works, because even though they are different, they are not that different somehow... At least on some level of conscious representation. This method of learning is what this book is about. 
 
 ## Part I - The Foundation
 
@@ -50,7 +50,7 @@ Sometimes in games of chess, the unconscious, can feel situations before the con
 
 > Glory is a powerful incentive. Inevitably dreams are dashed, hearts are broken, most fall short of their expectations because there is little room at the top. Of course this dynamic can be found in virtually any ambitious field. 
 
-> The key to pursuing excellence is to embrace an organic, long term learning process, and not to live in a shell of static, safe mediocrity. Usually, growth comes at the expense of previous comfort or safety. 
+> The key to pursuing excellence is to embrace an organic, long-term learning process, and not to live in a shell of static, safe mediocrity. Usually, growth comes at the expense of previous comfort or safety. 
 
 -> like a hermit crab, that needs to lose its shell in order to grow, humans have to lose their shells in order to grow and that is painful. 
 
@@ -64,13 +64,13 @@ There are mainly two approaches to learning, just like Carol Dweck describes. On
 
 > When you win, you survive another day. When you lose, it is as if someone has torn out your heart and stepped on it. No exaggeration. Losing is brutal. 
 
-> I have seen many people in diverse fields take some version of the process-first philosophy and transform it into an excuse for never putting themselves on the line or pretending not to care about results. They claim to be egoless, to care only about learning, but really this is an excuse to avoid confronting themselves. 
+> I have seen many people in diverse fields take some version of the process-first philosophy and transform it into an excuse for never putting themselves on the line or pretending not to care about results. They claim to be egoless, to care only about learning, but  this is an excuse to avoid confronting themselves. 
 
 > When we have worked hard and succeed at something, we should be allowed to smell the roses. The key, in my opinion, is to recognize that the beauty of those roses lies in their transience. It is drifting away even as we inhale. We enjoy the win fully while taking a deep breath, then we exhale, note the lesson learned, and move on to the next adventure. 
 
-> As adults, we have to take responsibility for ourselves and nurture a healthy, liberated mind-set. We need to put ourselves out there, give it our all, and reap the lesson, win or lose. The fact of the matter is that there will be nothing learned from any challenge in which we don't try our hardest. Growth comes at the point of resistance. We learn by pushing ourselves and finding what really lies at the outer reaches of our abilities. 
+> As adults, we have to take responsibility for ourselves and nurture a healthy, liberated mind-set. We need to put ourselves out there, give it our all, and reap the lesson, win or lose. The fact of the matter is that there will be nothing learned from any challenge in which we don't try our hardest. Growth comes at the point of resistance. We learn by pushing ourselves and finding what  lies at the outer reaches of our abilities. 
 
-Loving the game - or anything that you do and want to excel at - is the thing that makes you work through the pain of losing, of being bad, that makes you want to improve. It is the inner guiding philosophy that helps keep the mindset tacked to an idea of growth, searching for capabilities and ever expanding outside the safety zones of our own hermit crab shells. This fascination/passion/love whatever you want to call it is the thing that really matters, because it makes winning or losing somewhat indifferent in the long run, those are not what matters. It's what you learn about the thing that you love, making losses often more valuable than wins in hindsight. That's what it really means to have a growth mindset. And the condition for that is the love for the thing you are doing. 
+Loving the game - or anything that you do and want to excel at - is the thing that makes you work through the pain of losing, of being bad, that makes you want to improve. It is the inner guiding philosophy that helps keep the mindset tacked to an idea of growth, searching for capabilities and ever expanding outside the safety zones of our own hermit crab shells. This fascination/passion/love whatever you want to call it is the thing that  matters, because it makes winning or losing somewhat indifferent in the long run, those are not what matters. It's what you learn about the thing that you love, making losses often more valuable than wins in hindsight. That's what it  means to have a growth mindset. And the condition for that is the love for the thing you are doing. 
 
 ### Chapter 5 - The Soft Zone - "Lose Yourself" 
 
@@ -94,7 +94,7 @@ Going into the zone is important for highest forms of performance. But going int
 
 > After making an error, it is so easy to cling to the emotional comfort zone of what was, but there is also the unsettling sense that things have changed for the worse. The clear thinker is suddenly at war with himself and flow is lost. 
 
-Errors on their own are usually not so bad, but the downward spiral resulting from the disruption in focus is. There is a powerful anecdotal story in the book of a woman who steps in front of the traffic in New York, which is her first mistake, she narrowly avoids getting hit by a bicycle by some kind of miracle but then turns over to the bicycle driver and curses at him, that is she becomes emotional and loses the chance to use this signal from the real world, of her mistake, as a wake up call. That is her second mistake. That she leaned into her feelings instead of updating her picture of reality, of resetting and getting back to safety and so she gets hit by a car a second later. That's exactly what happens to competitors in games such as chess as well. The mistake is usually not the problem at this level of performance it is the disruption to the psyche it causes, it leads directly out of the Soft Zone. 
+Errors on their are usually not so bad, but the downward spiral resulting from the disruption in focus is. There is a powerful anecdotal story in the book of a woman who steps in front of the traffic in New York, which is her first mistake, she narrowly avoids getting hit by a bicycle by some kind of miracle but then turns over to the bicycle driver and curses at him, that is she becomes emotional and loses the chance to use this signal from the real world, of her mistake, as a wake up call. That is her second mistake. That she leaned into her feelings instead of updating her picture of reality, of resetting and getting back to safety and so she gets hit by a car a second later. That's exactly what happens to competitors in games such as chess as well. The mistake is usually not the problem at this level of performance it is the disruption to the psyche it causes, it leads directly out of the Soft Zone. 
 
 ### Chapter 7 - Changing Voice
 
@@ -125,7 +125,7 @@ Breathing is important, in a world where we are constantly stressed we acquire b
 
 > We must take responsibility for ourselves, and not expect the rest of the world to understand what it takes to become the best that we can become. Great ones are willing to get burned time and again as they sharpen their swords in the fire. 
 
-Learning lies in noticing mistakes and not repeating them, but to do that one has to be in this safe zone where one actually can do mistakes and look bad. If the ego is too wrapped up in the activity, no learning can happen because we sense territory that is unknown and where we could make mistakes and then step away from it because we don't want to make errors, we don't want to lose. But that's the point, without investments in loss, there is no growth anymore after a certain point. 
+Learning lies in noticing mistakes and not repeating them, but to do that one has to be in this safe zone where one  can do mistakes and look bad. If the ego is too wrapped up in the activity, no learning can happen because we sense territory that is unknown and where we could make mistakes and then step away from it because we don't want to make errors, we don't want to lose. But that's the point, without investments in loss, there is no growth anymore after a certain point. 
 
 ### Chapter 11 - Making Smaller Circles 
 
@@ -135,7 +135,7 @@ Learning lies in noticing mistakes and not repeating them, but to do that one ha
 
 > Depth beats breadth any day of the week, because it opens a channel for the intangible, unconscious, creative components of our hidden potential. 
 
-The main idea of this chapter can be summed up in one sentence - do one basic thing really really well, before you move on to the next. Strength in any martial arts pursuit comes from having mastered the deeply nested basic core principles. And mastering takes subtle but hard work. But putting in that work is the idea, making smaller circles is the goal, to have such a deep understanding of a basic idea, that one can take it apart and internalize it I to the unconscious, applying it as a feeling, without having to think about it at all. That's mastery. 
+The main idea of this chapter can be summed up in one sentence - do one basic thing   well, before you move on to the next. Strength in any martial arts pursuit comes from having mastered the deeply nested basic core principles. And mastering takes subtle but hard work. But putting in that work is the idea, making smaller circles is the goal, to have such a deep understanding of a basic idea, that one can take it apart and internalize it I to the unconscious, applying it as a feeling, without having to think about it at all. That's mastery. 
 
 ### Chapter 12 - Using Adversity 
 
@@ -157,7 +157,7 @@ States of hurt or danger or loss can provoke a profound amount of learning, heig
 
 > The chunks of information that have been put together in the mind of a grandmaster allow him to see much more with much less conscious thought. He is looking at very little and seeing quite a lot. 
 
-The idea is to offload chunked processing of information to the unconscious. A fast but unconcentrated kind of processing of data, that after years of practice can automate things and lets humans operate on seemingly super powers. In the sense that the more chunked the information is, somebody who sees less can still process more, because what he sees is an abstract interpretation of what is going on, chunked away on a higher level of abstraction, and processed by the subconscious. Numbers to leave numbers. Making conscious effort disappear is what mastery is about. Time can slow down in moments of intense focus, because we reduce the amount of information actually taken in and process on it much more, creating seemingly longer memories of those events. 
+The idea is to offload chunked processing of information to the unconscious. A fast but unconcentrated kind of processing of data, that after years of practice can automate things and lets humans operate on seemingly super powers. In the sense that the more chunked the information is, somebody who sees less can still process more, because what he sees is an abstract interpretation of what is going on, chunked away on a higher level of abstraction, and processed by the subconscious. Numbers to leave numbers. Making conscious effort disappear is what mastery is about. Time can slow down in moments of intense focus, because we reduce the amount of information  taken in and process on it much more, creating seemingly longer memories of those events. 
 
 ### Chapter 14 - The Illusion of the Mystical 
 
@@ -173,7 +173,7 @@ The story of a Jaguar waiting for its attack on a guy with a machete, eroding hi
 
 ### Chapter 16 - Searching for the Zone
 
-Building mental resilience is hard, but a way to do it is by being able to relax at will. And that is something that can be trained - the ability to recharge and mentally readjust and refocus is something that distinguishes the best from the great in the end. And even though it is a mental feat, it can be trained by physical responses. I.e. getting the heart rare back down after running repeatedly, focusing on reducing the break time between sprints is an effective training for getting clearer mental focus back in times where it really matters. By breathing, concentrating, closing the eyes and then letting go. Recharging to continue at full potential. 
+Building mental resilience is hard, but a way to do it is by being able to relax at will. And that is something that can be trained - the ability to recharge and mentally readjust and refocus is something that distinguishes the best from the great in the end. And even though it is a mental feat, it can be trained by physical responses. I.e. getting the heart rare back down after running repeatedly, focusing on reducing the break time between sprints is an effective training for getting clearer mental focus back in times where it  matters. By breathing, concentrating, closing the eyes and then letting go. Recharging to continue at full potential. 
 
 ### Chapter 17 - Building your trigger 
 
@@ -199,7 +199,7 @@ The name of this chapter - Building your Trigger - describes the contents spot o
 
 > First, we cultivate the Soft Zone, we sit with our emotions, observe the work with theme learn how to let them float away if they are rocking our boat, and how to use them when they are fueling our creativity. Then we turn our weaknesses into strengths until there is no fenjal of our natural eruptions and nerves sharpen our game, fear alerts us, anger funnels I to focus. Next we discover what emotional states trigger our greatest performances. This is a truly personal question. Some of us will be most creative when ebullient, others when morose. To each his own. Introspect. Then Make Sandals. 
 
-The main idea of the Making Sandals chapter is summarized in that last quote. But the stories told - of fighting against people fair and square, even when they don't play by the rules, of being so much above them emotionally that it doesn't even touch you and instead actually makes you perform even better is the truly hard thing. Truly internalizing this idea and actually going the extra mile, to make the effort and acquire the right to wear sandals is the bloody hard part and in the end it is what distinguishes the best from the merely great again. One question that comes up over and over and over again in all of this though - why this intense focus on competing? What is in it, when he is denouncing a dog-eats-dog world by his philosophy, yet thinks of everything in terms of how to win competitions? The hypocrisy is not lost on him, and he doesn't seem to be bothered because to him it is about personal growth only - but is it really? 
+The main idea of the Making Sandals chapter is summarized in that last quote. But the stories told - of fighting against people fair and square, even when they don't play by the rules, of being so much above them emotionally that it doesn't even touch you and instead  makes you perform even better is the truly hard thing. Truly internalizing this idea and  going the extra mile, to make the effort and acquire the right to wear sandals is the bloody hard part and in the end it is what distinguishes the best from the merely great again. One question that comes up over and over and over again in all of this though - why this intense focus on competing? What is in it, when he is denouncing a dog-eats-dog world by his philosophy, yet thinks of everything in terms of how to win competitions? The hypocrisy is not lost on him, and he doesn't seem to be bothered because to him it is about personal growth only - but is it ? 
 
 ### Chapter 19 - Bringing It All Together
 
@@ -209,7 +209,7 @@ The main idea of the Making Sandals chapter is summarized in that last quote. Bu
 
 > The technical afterthought of a truly great one can appear to be divine inspiration to the lesser artist. 
 
-Internalizing technical concepts and making them come together in the subconscious over and over is what mastery is about. It is applying the lessons of building sandals, the soft zone, numbers to leave numbers, slowing down time and investment in loss, combined together and can yield incredible results. But is tough work, mentally and physically exhausting, no matter the discipline. And in the end this whole learning process has to flow out from oneself, because at the highest levels this personal touch of creativity, of instinct, is what makes the difference. Then breaking down that instinct, really understanding it, learning and putting everything to a higher level, to be able to form a new, better instinct is the goal of the loop. Breaking free of old limitations, over and over again, learning. 
+Internalizing technical concepts and making them come together in the subconscious over and over is what mastery is about. It is applying the lessons of building sandals, the soft zone, numbers to leave numbers, slowing down time and investment in loss, combined together and can yield incredible results. But is tough work, mentally and physically exhausting, no matter the discipline. And in the end this whole learning process has to flow out from oneself, because at the highest levels this personal touch of creativity, of instinct, is what makes the difference. Then breaking down that instinct,  understanding it, learning and putting everything to a higher level, to be able to form a new, better instinct is the goal of the loop. Breaking free of old limitations, over and over again, learning. 
 
 ### Chapter 20 - Taiwan
 
@@ -218,6 +218,6 @@ One of the craziest descriptions of a martial arts tournament I have ever read. 
 ### Afterword
 
 > If I have learned anything over my first twenty-nine years, it is that we cannot calculate our important contests, adventures, and great loves to the end
-The only thing we can really count on is getting surprised. No matter how much preparation we do, in the real tests of our lives we'll be in unfamiliar terrain. Conditions might not be calm or reasonable. It may feel as though the whole world is stacked against us. This is when we have to perform better than we ever conceived of performing. I believe the key is to have prepared in a manner that allows for inspiration to have laid the foundation for us to create under the wildest pressure we ever imagined. 
+The only thing we can  count on is getting surprised. No matter how much preparation we do, in the real tests of our lives we'll be in unfamiliar terrain. Conditions might not be calm or reasonable. It may feel as though the whole world is stacked against us. This is when we have to perform better than we ever conceived of performing. I believe the key is to have prepared in a manner that allows for inspiration to have laid the foundation for us to create under the wildest pressure we ever imagined. 
 
-> If my approach feels right, take it, hone it, give it your own flavor. Leave my numbers behind. In the end, mastery involves discovering the most resonant information and integrating it do deeply and fully it disappears and allows us to fly free. 
+> If my approach feels right, take it, hone it, give it your flavor. Leave my numbers behind. In the end, mastery involves discovering the most resonant information and integrating it do deeply and fully it disappears and allows us to fly free. 

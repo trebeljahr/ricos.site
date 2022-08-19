@@ -9,6 +9,7 @@ author:
   picture: "/assets/blog/profile.jpeg"
 ogImage:
   url: "/assets/blog/writing-down-what-i-know.jpg"
+
 ---
 
 Something that I am playing with as a thought is to write down all of the things I know and the knowledge I accumulate in the form of blog posts.
@@ -19,7 +20,7 @@ Since I read broadly I can also connect distant things from different books and 
 
 ## What to write about?
 
-Topics that I want to cover are - nutrition, the workings of the brain, ideas and what knowledge is, technology and how computers actually work... There I would like to unwrap layers of complexity, starting with something as low level as transistors and working my way up towards higher level programming languages, eventually, operating systems, and web-servers and the way a normal user interacts with a smartphone in their day to day life, biochemistry and the way things in the body work, how cells do their job and how the insides of a cell are really complex factories with things like tiny conveyor belts moving raw materials around, manufacturing sites producing complex things from those materials and power plants and planning offices running the whole operation...
+Topics that I want to cover are - nutrition, the workings of the brain, ideas and what knowledge is, technology and how computers  work... There I would like to unwrap layers of complexity, starting with something as low level as transistors and working my way up towards higher level programming languages, eventually, operating systems, and web-servers and the way a normal user interacts with a smartphone in their day to day life, biochemistry and the way things in the body work, how cells do their job and how the insides of a cell are  complex factories with things like tiny conveyor belts moving raw materials around, manufacturing sites producing complex things from those materials and power plants and planning offices running the whole operation...
 
 ## Committing to it.
 
@@ -27,7 +28,7 @@ I have to make an actual commitment and start. Take this idea of writing all tho
 
 And I mean why not... Writing is a good shot at doing something that is both meaningful and valuable, therefore something rewarding.
 
-So maybe that is what I want to become as a person - even long term? A writer?
+So maybe that is what I want to become as a person - even long-term? A writer?
 
 ## Teachers and Amplifiers
 
@@ -43,7 +44,7 @@ So maybe that's what I want to do then?
 
 I am still unsure whether that will be a good path for me... Can I be content with producing content, and believe in the value of that content?
 
-Or do I have to produce something more tangible, a real product and try to build a company that is pushing innovation in an area important to me? Also, how much of this is actually hybris on my side? Dreams of grandeur of a person, that still lives at home, has no job, no degree, just a thinking brain, a pile of books on his shelf and a lot of (crazy?) ideas?
+Or do I have to produce something more tangible, a real product and try to build a company that is pushing innovation in an area important to me? Also, how much of this is  hybris on my side? Dreams of grandeur of a person, that still lives at home, has no job, no degree, just a thinking brain, a pile of books on his shelf and a lot of (crazy?) ideas?
 
 In the end it probably comes down to a simple question... Why not? I can just try it...
 
@@ -53,7 +54,7 @@ I mean how bad would it be if I spend something like a year pursuing this opport
 
 This is what I am going to do now. This is what this blog is going to be.
 
-Is being a content creator something that I can become content with? I really don't know. 🤷‍♂️
+Is being a content creator something that I can become content with? I  don't know. 🤷‍♂️
 
 But I'll try and see. The worst thing that could happen is that I learn something about myself and that I have a bunch of articles on a webpage, that nobody ever looks at, and that I stop writing more... Which sounds fine enough. So let's go!
 

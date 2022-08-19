@@ -8,6 +8,7 @@ author:
   picture: "/assets/blog/profile.jpeg"
 ogImage:
   url: "/assets/blog/tall-buildings.jpg"
+
 ---
 
 The [first post in this series](/posts/feynman-note-everything-1) was all about why it's important to not only consume content but to write Feynman notes about everything. Now this idea of "Feynman noting everything" is still quite nebulous and a big question remains - how do I go about breaking down content I consume into Feynman notes? This post is going to answer that.
@@ -18,13 +19,13 @@ There are two distinct types of Feynman notes.
 
 First you can summarize single pieces of content. Writing summaries for the main ideas in a book, or for a YouTube video, or for a podcast episode would be examples of this. These summaries have to break down the concepts so that even a child with no prior knowledge could understand them. 
 
-Second you can synthesize across different pieces of content (even different Feynman Notes of your own) and combine them together into longer form articles. This way you organize information across different sources and write something like a cross source Feynman Note. These are tied to a specific topic like, let's say, compilers or general relativity or CRISPR/CAS.
+Second you can synthesize across different pieces of content (even different Feynman Notes of your) and combine them together into longer form articles. This way you organize information across different sources and write something like a cross source Feynman Note. These are tied to a specific topic like, let's say, compilers or general relativity or CRISPR/CAS.
 
 To sum this section up - there are two distinct types of Feynman Notes:
 1. **Summaries** - Feynman notes tied to a specific piece of content. 
 2. **Deep Dives** - Feynman notes tied to a specific topic or idea. 
 
-Now the result we are going for are deep dives. While individual summaries are inevitable byproducts of "Feynman Noting Everything", they only act as building blocks towards creating your own deep dives in the end. They are just tools to make sure that you fully engage your mind while consuming a piece of content. They are a sort of crutch designed to help you digest content better. 
+Now the result we are going for are deep dives. While individual summaries are inevitable byproducts of "Feynman Noting Everything", they only act as building blocks towards creating your deep dives in the end. They are just tools to make sure that you fully engage your mind while consuming a piece of content. They are a sort of crutch designed to help you digest content better. 
 
 The deep dives on the other hand are how the Feynman Notes are going to fit together into a tightly knit web of concepts and ideas.
 
@@ -43,13 +44,13 @@ Two "rules" will help us in this process:
 Let's call the application of those rules, *guided curiosity*. 
 
 ## The Process
-Everything starts with picking something you are curious about and want to spend some time learning more about. Going in depth with it. These things should be picked carefully because to really understand something and write a proper deep dive on it is going to take a lot of time. But in the end not more time than what you would have wasted otherwise on watching videos without remembering anything. 
+Everything starts with picking something you are curious about and want to spend some time learning more about. Going in depth with it. These things should be picked carefully because to  understand something and write a proper deep dive on it is going to take a lot of time. But in the end not more time than what you would have wasted otherwise on watching videos without remembering anything. 
 
 Once you have found something you are curious about and want to learn more about you start exploring different sources and angles of that topic. On your way to that long form article you build multiple smaller summaries of the content consumed, to engage your mind, while doing so.
 
-While writing the summaries, you build a papertrail, that slowly circles in on the main ideas. Your understanding of the topic grows, with each summary written. You can even publish and link between different parts of that papertrail to later show where the understanding of the deep dive actually comes from.
+While writing the summaries, you build a papertrail, that slowly circles in on the main ideas. Your understanding of the topic grows, with each summary written. You can even publish and link between different parts of that papertrail to later show where the understanding of the deep dive  comes from.
 
-When you have written enough summaries, you want to drill down into the specifics of how the thing you are studying works, and then unpack the most important details about it and write them down in your own terms *from memory* into a first initial draft of your Feynman Deep Dive. 
+When you have written enough summaries, you want to drill down into the specifics of how the thing you are studying works, and then unpack the most important details about it and write them down in your terms *from memory* into a first initial draft of your Feynman Deep Dive. 
 
 Then refine that initial draft, by looking at your original Feynman summaries until you have a finished deep dive. 
 

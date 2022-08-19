@@ -9,6 +9,7 @@ tags: ["evolution", "mind", "made-me-think", "non-fiction"]
 summary: true
 detailedNotes: true
 amazonLink: "https://amzn.to/3LhCpFw"
+
 ---
 
 ## Summary: 
@@ -33,7 +34,7 @@ Core ideas of the book:
 - Neurons act independently, like agents in a free market economy, competing for resources, like neurotransmitters and glucose. 
 - Those resources are rewarded to neurons that did things deemed good for survival. DNA only specifies ideas of reward functions (things deemed good vs. bad to the organism). 
 - Neurons can still cooperate. Neurons which do, perform better. Cooperating neurons form brains.
-- Brains don't need comprehension to be useful. Feedback loops and reflexes are more than useful on their own to steer behavior of organisms. 
+- Brains don't need comprehension to be useful. Feedback loops and reflexes are more than useful on their to steer behavior of organisms. 
 - Brains, however, can produce comprehension (minds), by evolving together with words.
 - Words "want" to reproduce in the brains of their users
 - Initial Words have no purpose, they are just good at reproducing in human brains
@@ -59,7 +60,7 @@ Core ideas of the book:
 
 Words are one such tool, such is written language. 
 
-12 concepts to twist logic and help to let go of thought concepts dear to us to grasp the whole picture, whole idea of the book is to present a different view about what consciousness actually is. 
+12 concepts to twist logic and help to let go of thought concepts dear to us to grasp the whole picture, whole idea of the book is to present a different view about what consciousness  is. 
 
 1. Darwin's strange inversion of reasoning
 2. Reasons without reasoners 
@@ -113,7 +114,7 @@ The idea of Cartesian Gravity is that there happens a flip when one gets to clos
 Cartesian Gravity is a force distorting our views of the universe with a strength proportional to how much that part of view is necessary for evolutionarily successful life. Anything that messes with consciousness in the wrong way gets neglected and turned away and not looked at too closely. 
 
 #### Chapter Summary:
-Cartesian Wound leading to Dualism between mind and matter, people still stuck with that thinking model, even as it becomes more apparent that minds really only are physical processes. The problem is that consciousness feels so real and we are all experts on it in our own way that we distort our own thinking because we can't accept perfectly logical conclusions because they attack something so fundamental in our lives. Our notions of our own volition, free will and consciousness. And so we try hard not to see the truth - which Dennett dubs Cartesian Gravity - a generic term for a force that pushes our thinking into a different direction. 
+Cartesian Wound leading to Dualism between mind and matter, people still stuck with that thinking model, even as it becomes more apparent that minds  only are physical processes. The problem is that consciousness feels so real and we are all experts on it in our own way that we distort our own thinking because we can't accept perfectly logical conclusions because they attack something so fundamental in our lives. Our notions of our own volition, free will and consciousness. And so we try hard not to see the truth - which Dennett dubs Cartesian Gravity - a generic term for a force that pushes our thinking into a different direction. 
 
 ### Chapter 2 - Before Bacteria And Bach
 
@@ -197,7 +198,7 @@ Evolution can produce things with reasons for their existence without ever knowi
 
 > Reasons exited long before there were reasoners.
 
-Things can have reasons without comprehending them. But humans can actually comprehend and unravel reasons. 
+Things can have reasons without comprehending them. But humans can  comprehend and unravel reasons. 
 
 Excellent designs without designers, free floating reasons without representation of them in the things that produce them.
 
@@ -250,9 +251,9 @@ Elevators are therefore competent without having any comprehension. The same can
 
 #### The intelligent designers of Oak Ridge and GOFAI
 
-The production of the first atom bomb during the Manhattan project showed that it is very possible to create competence without comprehension. People working there didn't understand what their work was for, yet they were really good at it. 
+The production of the first atom bomb during the Manhattan project showed that it is very possible to create competence without comprehension. People working there didn't understand what their work was for, yet they were  good at it. 
 
-Humans are really good at generalized problem solving, in our brains we can add and manipulate ontologies in a general fashion. We made the leap to the universality of intelligent replicators and that's where the power of our artifices comes from. Because we can intend reasons. 
+Humans are  good at generalized problem solving, in our brains we can add and manipulate ontologies in a general fashion. We made the leap to the universality of intelligent replicators and that's where the power of our artifices comes from. Because we can intend reasons. 
 
 **Question that tickles the mind:** Intelligence is incredibly bottom up and we don't understand the flow of data yet at all. How does our brain represent real world facts in memory? And create new concepts by merging old ones? How does information get translated into a form that is storable by the electric sensory weightings of synapses in the brain? 
 
@@ -263,7 +264,7 @@ Humans are really good at generalized problem solving, in our brains we can add 
 In a way we are a mixture of both. 
 
 #### Chapter Summary:
-Turing and Darwin dismantled the idea that comprehension is necessary for competence and inverted that it is actually the other way around. Competencies create comprehension. Evolution is a process that does that, so is human forward engineering. Ontologies are inherent in everything, machines, animals etc. but only very few things have their ontology as part of their ontology and are aware of it. In a way humans are the only thing we know of that is truly capable of that meta feat.
+Turing and Darwin dismantled the idea that comprehension is necessary for competence and inverted that it is  the other way around. Competencies create comprehension. Evolution is a process that does that, so is human forward engineering. Ontologies are inherent in everything, machines, animals etc. but only very few things have their ontology as part of their ontology and are aware of it. In a way humans are the only thing we know of that is truly capable of that meta feat.
 
 ### Chapter 5 - The Evolution of Understanding
 
@@ -283,7 +284,7 @@ Nature "writes" buggy spaghetti code by trial and error that gets the job done b
 
 **Book Recommendation:** The Hidden Life of Dogs - Elizabeth Marshall Thomas
 
-> Learning can take over where natural selection left off, optimizing the individuals in their own lifetimes by extracting information from the world encountered and using it to make local improvements. 
+> Learning can take over where natural selection left off, optimizing the individuals in their lifetimes by extracting information from the world encountered and using it to make local improvements. 
 
 #### Comprehension comes in degrees
 
@@ -299,7 +300,7 @@ Things that are adapted completely randomly and can't configure while alive, onl
 
 #### Chapter Summary
 
-Organisms can have designs adapted to their affordances, their environments, without comprehending those designs. They can even have something like a proto form of design in the form of their very own and internal Darwinian idea generation process to try out new things in a simulation running in their nervous systems before actually trying it out in the real world. Still, humans are different. Because we can systematically understand the world around us using thinking about tools that allow for the generalization of knowledge (information) generation and processing. So far, no other organism seems to have that ability, in a way it makes us unique. But still, there is no consciousness involved. We could be that way, without comprehending why we are that way. And for the most part we are, we use our thinking tools without ever comprehending the how come questions in detail. Why is a difficult question to answer. 
+Organisms can have designs adapted to their affordances, their environments, without comprehending those designs. They can even have something like a proto form of design in the form of their very own and internal Darwinian idea generation process to try out new things in a simulation running in their nervous systems before  trying it out in the real world. Still, humans are different. Because we can systematically understand the world around us using thinking about tools that allow for the generalization of knowledge (information) generation and processing. So far, no other organism seems to have that ability, in a way it makes us unique. But still, there is no consciousness involved. We could be that way, without comprehending why we are that way. And for the most part we are, we use our thinking tools without ever comprehending the how come questions in detail. Why is a difficult question to answer. 
 
 ## Part II - From Evolution to Intelligent Design
 
@@ -324,7 +325,7 @@ Any nonrandomness in the flux is a real pattern that is *potentially useful* inf
 
 #### Chapter Summary: 
 
-The main idea of the chapter is that of semantic information - the product of sifting information for the parts that are actually useful. It is distinct from Shannon's type of information in the sense that it is hard to acquire and that we don't yet understand what it really is and how it is produced. But it is the thing that makes us special, because we can create it on our own, sifting through ideas and keeping only the ones of use. We can do R & D much faster than evolution can. Semantic information does not need to be of use to the one carrying it. One could have a design worth stealing without knowing that it is valuable. Because semantic information is dependent on the context - the Shannon information is there and doesn't change when you view it from different angles, with different backgrounds, but the semantic information contained might change a great deal, depending on who is looking at the information presented and how. At the extremes a tree has access to the same light and therefore the same information as an animal, yet the tree can't access it - so the semantic information content for the tree is 0, all of the information is lost on it, whereas the animal can react to it. Humans are rather good in this context creation and switching, uncovering semantic information where there previously was none. Evolution does the same thing, but at a much slower pace. 
+The main idea of the chapter is that of semantic information - the product of sifting information for the parts that are  useful. It is distinct from Shannon's type of information in the sense that it is hard to acquire and that we don't yet understand what it  is and how it is produced. But it is the thing that makes us special, because we can create it on our own, sifting through ideas and keeping only the ones of use. We can do R & D much faster than evolution can. Semantic information does not need to be of use to the one carrying it. One could have a design worth stealing without knowing that it is valuable. Because semantic information is dependent on the context - the Shannon information is there and doesn't change when you view it from different angles, with different backgrounds, but the semantic information contained might change a great deal, depending on who is looking at the information presented and how. At the extremes a tree has access to the same light and therefore the same information as an animal, yet the tree can't access it - so the semantic information content for the tree is 0, all of the information is lost on it, whereas the animal can react to it. Humans are rather good in this context creation and switching, uncovering semantic information where there previously was none. Evolution does the same thing, but at a much slower pace. 
 
 ### Chapter 7 - Darwinian Spaces: An Interlude
 
@@ -354,7 +355,7 @@ Brains are designed to extract semantic information.
 
 #### Competition and Coalition in the brain
 
-> Any living organ is really just a very sophisticated bit of carbon-based machinery that can be replaced, piece by piece or all at once, by a nonliving substitute that has the same Input-Output profile. 
+> Any living organ is  just a very sophisticated bit of carbon-based machinery that can be replaced, piece by piece or all at once, by a nonliving substitute that has the same Input-Output profile. 
 
 **Book Recommendation:** Incomplete Nature: How Mind Emerged from Matter by Terrence Deacon
 
@@ -362,7 +363,7 @@ Eric Baum - What Is Thought?
 
 #### Neurons, mules, and termites
 
-Neurons have their own agency, they are not like a transistor in a machine but have their own agenda of survival and competition, which somehow helps organize the brain into a working whole. 
+Neurons have their agency, they are not like a transistor in a machine but have their agenda of survival and competition, which somehow helps organize the brain into a working whole. 
 
 > A neuron is always hungry for work; it reaches out exploratory dendritic branches, seeking to network with its neighbors in ways that will be beneficial *to it*. 
 
@@ -456,7 +457,7 @@ Phonemes are digitized, because the audio processing of our brains creates speci
 
 #### Chapter Summary: 
 
-Language is a necessity for humans, infants pay close attention to words, repeating sounds and learning a language by reinforcement entirely on their own. Our brains are designed that way to bootstrap language. Phonemes make the information in words available, by essentially digitizing and tokenizing it. The infinite variability of vocal chords is reduced to a few sounds that are recognized easily. This allows for mutations in words to accumulate (hence language can evolve over time). The purpose of words is to replicate, they underlie evolutionary pressure because of that, only useful words get replicated. This way reasons can start to invade human brains together with words, evolving comprehension. 
+Language is a necessity for humans, infants pay close attention to words, repeating sounds and learning a language by reinforcement entirely on their. Our brains are designed that way to bootstrap language. Phonemes make the information in words available, by essentially digitizing and tokenizing it. The infinite variability of vocal chords is reduced to a few sounds that are recognized easily. This allows for mutations in words to accumulate (hence language can evolve over time). The purpose of words is to replicate, they underlie evolutionary pressure because of that, only useful words get replicated. This way reasons can start to invade human brains together with words, evolving comprehension. 
 
 ### Chapter 10 - The Meme's Eye Point of View
 
@@ -508,13 +509,13 @@ Humans can have reasons for their behavior, reasons they are aware of, and can c
 
 #### Chapter Summary: 
 
-Words are memes, and memes are informational units in human brains, that can evolve and undergo natural selection. Therefore memes are akin to genes and can produce comprehension and reasons where there previously was none. The action of memes on humans is not tied to the reproductive fitness of humans, memes have their own metrics of reproductive success. We have a lot of examples of memes that are actively harmful to the reproductive success of humans (think celibacy). Memes can therefore take on a life of their own, evolving much faster than genes can, and becoming better abstractions of reasons over time. Hence humans can reason about their actions, because they have memes (one of them words and language) that enables them to do so. Memes can have huge influence over our actions. In a way they are our actions that are learned and not dictated by our genes. 
+Words are memes, and memes are informational units in human brains, that can evolve and undergo natural selection. Therefore memes are akin to genes and can produce comprehension and reasons where there previously was none. The action of memes on humans is not tied to the reproductive fitness of humans, memes have their metrics of reproductive success. We have a lot of examples of memes that are actively harmful to the reproductive success of humans (think celibacy). Memes can therefore take on a life of their, evolving much faster than genes can, and becoming better abstractions of reasons over time. Hence humans can reason about their actions, because they have memes (one of them words and language) that enables them to do so. Memes can have huge influence over our actions. In a way they are our actions that are learned and not dictated by our genes. 
 
 ### Chapter 11 - What's Wrong with Memes? Objections and Replies
 
 #### Memes don't exist! 
 
-Things besides the scientific image, i.e. quantum fields, don't really exist, they are useful illusions, like the user illusions of desktop icons. 
+Things besides the scientific image, i.e. quantum fields, don't  exist, they are useful illusions, like the user illusions of desktop icons. 
 
 These illusions are different ways of structuring reality in a useful way. In that way they are all real and all exist. Michael is a collection of atoms michaeling. 
 
@@ -559,7 +560,7 @@ Dismantling some of the arguments put forth against the meme point of view, maki
 
 #### The chicken-egg problem
 
-Languages might have started out as unwieldy beasts, more imposed by the words wanting to spread through the human mind population, than by actual utility to the humans, basically proto language babbling for no good reason, slowly turning into a better and better structured system over time, gradually unfolding. 
+Languages might have started out as unwieldy beasts, more imposed by the words wanting to spread through the human mind population, than by actual utility to the humans,  proto language babbling for no good reason, slowly turning into a better and better structured system over time, gradually unfolding. 
 
 > No other species has a faculty remotely like human language in its power. 
 
@@ -607,7 +608,7 @@ Rules of language can be acquired without comprehending them. That's how we all 
 
 There might be a language acquisition area in the brain, that is special because it cuts down the complexity of finding and extracting patterns from language. But this area of specialized hardware has to have evolved somehow as well. 
 
-Language according to Chomsky relies on something called a "Merger" which is basically a process for infinite recursion in the brain that bootstraps language. 
+Language according to Chomsky relies on something called a "Merger" which is  a process for infinite recursion in the brain that bootstraps language. 
 
 Information is in the sound but some of it needs to be in the machinery in the brain as well to decode the sound into information properly - the real question is - how much of which? 
 
@@ -648,7 +649,7 @@ Gricean communication:
 
 When children learn a language for the most time they probably don't *comprehend* what they are doing until much later. 
 
-Even adults can speak without actually being aware of what it is that they are saying. Speaking can run on autopilot, which is the best sign that it doesn't need active comprehension at all. 
+Even adults can speak without  being aware of what it is that they are saying. Speaking can run on autopilot, which is the best sign that it doesn't need active comprehension at all. 
 
 Words and language can be used as a tool unconsciously, without users of the words being aware of what they are doing. But still, automatically, they extract new information from the heard and use that, also automatically, to do things differently. A meme reproduced. 
 
@@ -658,11 +659,11 @@ The real question is: isn't **all** communication like that? The human brain and
 
 Self-monitoring while talking is a good way to think. 
 
-> Whether nonhuman animals can think about thinking or in any way go "meta" on their own mental states, is an empirical question that is not yet answered. 
+> Whether nonhuman animals can think about thinking or in any way go "meta" on their mental states, is an empirical question that is not yet answered. 
 
 Knowledge that is not retrievable is not useful, like a person owning an island with a hidden treasure they don't know about is not wealthy. 
 
-Humans can retrieve their thoughts, they know about the treasure and can use it on their own, making use of information they encountered in the past in novel ways. That's really what comprehension boils down to. 
+Humans can retrieve their thoughts, they know about the treasure and can use it on their, making use of information they encountered in the past in novel ways. That's  what comprehension boils down to. 
 
 > Nature enhanced by Bayesian learning to capitalize on patterns in the environment, provide a wealth of competence for all locomotors from insects and worms to elephants and dolphins. 
 
@@ -692,7 +693,7 @@ Code shouldn't run on a machine if you don't trust it. Similarly memes shouldn't
 
 > The adoption and use of new memes to solve problems typically generates greater comprehension in those who are doing the solving, but not always.
 
-Rationality is there in humans but the intentional stance often distorts how much of it is really there into the *magical and mystical*. Humans are rational, but they are not *that rational* either. Markets move due to the "laws" of supply and demand because humans act like rational agents would (sometimes they don't because of biases) 
+Rationality is there in humans but the intentional stance often distorts how much of it is  there into the *magical and mystical*. Humans are rational, but they are not *that rational* either. Markets move due to the "laws" of supply and demand because humans act like rational agents would (sometimes they don't because of biases) 
 
 Infectious cultural junk — something that sticks around even if we deem it "stupid" and "unnecessary". 
 
@@ -738,7 +739,7 @@ The age of creative "geniuses" is coming to an end, teams of researchers do the 
 
 Humans at the beginning didn't need understanding for memes, but as more memes spread in the minds of people, it added more and more thinking tools - ways of behaving and organizing information (via words) to those early humans, strengthening their top down design skills gradually over time. 
 
-Eventually people came up with the idea of making use of words outside their brains, starting to write and to further symbolize their worlds. And before long that turns into the thinking age of intelligent design we now have. Where our thinking tools are powerful enough to do fully meta recursive thinking and we can actually design and invent new memes and do so continuously (i.e. we have technology). 
+Eventually people came up with the idea of making use of words outside their brains, starting to write and to further symbolize their worlds. And before long that turns into the thinking age of intelligent design we now have. Where our thinking tools are powerful enough to do fully meta recursive thinking and we can  design and invent new memes and do so continuously (i.e. we have technology). 
 
 I think this is the generality/universality that David Deutsch meant in his book the Beginning of Infinity.
 
@@ -746,7 +747,7 @@ I think this is the generality/universality that David Deutsch meant in his book
 
 #### Chapter Summary:
 
-Crazy Chapter. Memes can exist in humans without comprehension of humans. Once memes exist they compete and improve because of that competition, the improving introduces thinking tools over time, leading to words and language that eventually become powerful enough to go truly meta. Once language evolved by natural selection and has reached that point, comprehension can start to take over, because then humans have the capacity to actually think and reason about language and use their brains to gain new benefits from the evolved memes. They have essentially made the jump into universality by going meta. Thinking about thinking becomes a thing and then thinking about language and words and what they mean, and what information actually is etc. and improving the very memes by comprehending them become things. Humans can now start to consciously select and improve, combine and take away parts of memes they already know, to come up with new and better ones. The darwinistic form of evolution in memes is gradually altered by the addition of these newly designed meme variants. These variants form the basis of all human culture, science and technology. Reasons have entered the picture that way, memes becoming better at reproducing themselves also adding the thinking tools of reasoning itself. But even though humans can reason, often memes might still spread on their own and humans just invent reasons for their behavior post hoc.
+Crazy Chapter. Memes can exist in humans without comprehension of humans. Once memes exist they compete and improve because of that competition, the improving introduces thinking tools over time, leading to words and language that eventually become powerful enough to go truly meta. Once language evolved by natural selection and has reached that point, comprehension can start to take over, because then humans have the capacity to  think and reason about language and use their brains to gain new benefits from the evolved memes. They have essentially made the jump into universality by going meta. Thinking about thinking becomes a thing and then thinking about language and words and what they mean, and what information  is etc. and improving the very memes by comprehending them become things. Humans can now start to consciously select and improve, combine and take away parts of memes they already know, to come up with new and better ones. The darwinistic form of evolution in memes is gradually altered by the addition of these newly designed meme variants. These variants form the basis of all human culture, science and technology. Reasons have entered the picture that way, memes becoming better at reproducing themselves also adding the thinking tools of reasoning itself. But even though humans can reason, often memes might still spread on their and humans just invent reasons for their behavior post hoc.
 
 ## Part III - Turning Our Minds Inside Out
 
@@ -787,7 +788,7 @@ The self is an "end user interface" something that has access to a nice represen
 
 #### Why do we experience things the way we do?
 
-When we experience something, that experience is only a small sliver of what's really going on "under the hood". All the neural activity is hidden beneath an "easy to use" abstraction, that hides away all the messy details. 
+When we experience something, that experience is only a small sliver of what's  going on "under the hood". All the neural activity is hidden beneath an "easy to use" abstraction, that hides away all the messy details. 
 
 When studying consciousness it's better to adopt a "second person view" in experimental design, instead of looking at our own experience, you look at those of others and then try to manipulate them into different directions. This approach is called *heterophenomenology* compared to the self inspection approach of *autophenomenology*.
 
@@ -814,7 +815,7 @@ Colors, tastes, sounds and all other things that we call conscious qualia are be
 
 #### A red stripe as an intentional object
 
-Qualia are not a real thing in the sense that there are *things out there* that have these properties. Qualia instead are just spike trains running through our neurons in a given pattern leading to the benign user facing illusion of things *out there* even if the *out there* doesn't really look or feel like anything at all because it is all in your head.
+Qualia are not a real thing in the sense that there are *things out there* that have these properties. Qualia instead are just spike trains running through our neurons in a given pattern leading to the benign user facing illusion of things *out there* even if the *out there* doesn't  look or feel like anything at all because it is all in your head.
 
 #### What is Cartesian Gravity and why does it persist? 
 
@@ -822,25 +823,25 @@ Qualia are not a real thing in the sense that there are *things out there* that 
 
 **Book Recommendation:** Meditations by René Descartes
 
-People used the first person point of view as an infallible source of truth for too long. But now we can transition to real actual data, that is much less fallible, and unravel with neuroscience how the brain really works. 
+People used the first person point of view as an infallible source of truth for too long. But now we can transition to real actual data, that is much less fallible, and unravel with neuroscience how the brain  works. 
 
 > The *Hard Problem of Consciousness* is nothing but an artifact of the failure to recognize that evolution has given us a gift that sacrificed literal truth for utility.
 
 > When a teacher urges you to "use your brain", you'd be utterly stymied if you didn't interpret this as the directive to "use your *mind*", that thinking thing with which you are so intimately acquainted that it is hardly indistinguishable from you yourself. No wonder we are reluctant to see it as illusory; if *it* is illusory, so are *we*. 
 
-If all we are is an illusion inside our minds (and those of others) does anything really matter? The answer is a clear yes. Because the world as we experience it is the thing that matters to us, our illusions matter to us as well, because that's all we have, that's really all we are and hence it's a matter of life and death **to us**. Nothing could be more important than our manifest image, because that's all there ever is for us (by definition) because that's our window into the "real" world. Our window into the scientific image. 
+If all we are is an illusion inside our minds (and those of others) does anything  matter? The answer is a clear yes. Because the world as we experience it is the thing that matters to us, our illusions matter to us as well, because that's all we have, that's  all we are and hence it's a matter of life and death **to us**. Nothing could be more important than our manifest image, because that's all there ever is for us (by definition) because that's our window into the "real" world. Our window into the scientific image. 
 
 **Book Recommendation:** Rationality by Jonathan Bennett
 
 The interesting question of neuroscience is about aligning the manifest and the scientific image - i.e. how does the physics of the brain correspond and map onto our manifest image reality?
 
-Is there free will? No. Free will is a user facing illusion, but so is the rest of reality, so we shouldn't really change our whole legal system around based on that insight. Bad behavior stays bad, even if there isn't any room for good or bad (or free will for that matter) in the scientific image. And that is because bad behaviour is bad, only within our manifest image, which is informed by the affordances we acquired, the memes and culture we have learned. And since that's the only thing that will ever really exist for us, free will is still an important illusion, playing a role in our lives...
+Is there free will? No. Free will is a user facing illusion, but so is the rest of reality, so we shouldn't  change our whole legal system around based on that insight. Bad behavior stays bad, even if there isn't any room for good or bad (or free will for that matter) in the scientific image. And that is because bad behaviour is bad, only within our manifest image, which is informed by the affordances we acquired, the memes and culture we have learned. And since that's the only thing that will ever  exist for us, free will is still an important illusion, playing a role in our lives...
 
 **Book Recommendation:** Soul Searching: Human Nature and Supernatural Belief by Nicholas Humphrey** 
 
 #### Chapter Summary: 
 
-Human consciousness is different because we have a recursive manifest image due to evolved memetic culture and language. This rich manifest image allows us to actually think, search the design space top down, and have reasons for our behavior. Because of those memes we also have a simpliefied user facing illusion (like icons on a desktop) of how our brains work. In other words, part of our manifest image is the meme of ourselves and a bayesian model of what we should and shouldn't do. The feedback between this model and reality and all the other memes creates the rich conscious experience of qualia for us, projecting a rich inner world, into a cold scientific image, of physical quantum wave patterns "evolving" over time (not really since time itself is an illusion in a multidimensional block universe - see David Deutsch). Finally this user facing illusion matters and so does the illusions of free will and other things such as love, the dollar or sweetness. Qualia is all there is, our manifest image is important to us, because that's all we are in the end. Us, the perception of us that we have, our consciousness is an illusion running on physical brain hardware. And the universe doesn't care, but our manifest image illusion does. And so do we. Because we are that illusion. The really interesting question this reminds me of is that of Josha Bach - namely if consciousness is not needed any longer once sufficient automated solutions for problems have been found. I.e. a vastly more intelligent machine might not need consciousness like ours at all, because all it's problems would be solved optimally without that user facing illusion, the utility of it would be gone and therefore it would be unnecessary to have. This in a way is frightening because it would make all that we care about go extinct and replace it by something that simply doesn't care about - well anything. 
+Human consciousness is different because we have a recursive manifest image due to evolved memetic culture and language. This rich manifest image allows us to  think, search the design space top down, and have reasons for our behavior. Because of those memes we also have a simpliefied user facing illusion (like icons on a desktop) of how our brains work. In other words, part of our manifest image is the meme of ourselves and a bayesian model of what we should and shouldn't do. The feedback between this model and reality and all the other memes creates the rich conscious experience of qualia for us, projecting a rich inner world, into a cold scientific image, of physical quantum wave patterns "evolving" over time (not  since time itself is an illusion in a multidimensional block universe - see David Deutsch). Finally this user facing illusion matters and so does the illusions of free will and other things such as love, the dollar or sweetness. Qualia is all there is, our manifest image is important to us, because that's all we are in the end. Us, the perception of us that we have, our consciousness is an illusion running on physical brain hardware. And the universe doesn't care, but our manifest image illusion does. And so do we. Because we are that illusion. The  interesting question this reminds me of is that of Josha Bach - namely if consciousness is not needed any longer once sufficient automated solutions for problems have been found. I.e. a vastly more intelligent machine might not need consciousness like ours at all, because all it's problems would be solved optimally without that user facing illusion, the utility of it would be gone and therefore it would be unnecessary to have. This in a way is frightening because it would make all that we care about go extinct and replace it by something that simply doesn't care about - well anything. 
 
 ### Chapter 15 - The Age of Post-Intelligent Design 
 
@@ -870,7 +871,7 @@ The even crazier idea is that most successes today have to be of that nature sin
 
 > *Practice makes perfect*, and we have invented games that encourage us to rehearse our mind-moves, such as chess and Go and poker, as well as prosthetic devices — telescopes, maps, calculators, clocks, and thousands of others — that permit us to apply our mind-moves in ever more artificial and sophisticated environments. 
 
-Proteins can be "designed" by an evolutionary method, basically differentially replicating them, selecting the ones that are closer to what we want, gradually improving them. 
+Proteins can be "designed" by an evolutionary method,  differentially replicating them, selecting the ones that are closer to what we want, gradually improving them. 
 
 Over time, data gathering drudgery work and other tasks like it were automated away so now humans can spend more time doing creative design work. 
 
@@ -892,7 +893,7 @@ Machine learning algorithms do bayesian style knowledge extraction, without comp
 
 AI's knowledge is currently parasitic - in the sense that it derives it from the vast dataset that was generated by comprehension from humans. 
 
--> I actually don't think that this argument is true. Specifically, algorithms like AlphaZero learn through self-play, which doesn't involve any human games at all, just the rules of the game and time. Hence it can't be parasitic. 
+-> I  don't think that this argument is true. Specifically, algorithms like AlphaZero learn through self-play, which doesn't involve any human games at all, just the rules of the game and time. Hence it can't be parasitic. 
 
 The question is whether AI can generate new insights, future scenarios that are not derivable from past data. In other words the key question is if AI can become creative. 
 
@@ -900,7 +901,7 @@ The question is whether AI can generate new insights, future scenarios that are 
 
 We are loosing skills because they are no longer necessary because of superior technology. Should we be worried about that?
 
-Not really, the problem arises when we give to much autonomy to machines that are not competent enough yet. Because of the intentional stance we tend to give too much credit to something that albeit impressive, is not yet enough to replace human labor. 
+Not , the problem arises when we give to much autonomy to machines that are not competent enough yet. Because of the intentional stance we tend to give too much credit to something that albeit impressive, is not yet enough to replace human labor. 
 
 To give something power because we think it comprehends and then see that comprehension fail and backfire in unexpected ways might lead to avoidable catastrophe. There is a need to be vigilant about AI and not over hyping it's capacities, clearly drawing the boundary around what is and what isn't possible at the moment. 
 
@@ -924,4 +925,4 @@ And that... Would be a pity.
 
 #### Chapter Summary 
 
-Humans design things that take away the necessary comprehensive work from them, we design machines to remove the cognitively demanding drudgery of sciencitific endeavours. Over time this leads to less comprehension within humans, we know how to operate a machine, with which we can uncover how the universe works, but we don't understand the machine in detail anymore. The machines (especially machine learning based systems) are mostly uncomprehending. Very competent at what they do, but they often lack the comprehension (and creativity/agency) we have. They can extract patterns from data, but can not decide on a novel path of action outside their competence, something humans do routinely. In a way we move back from the age of comprehension into an "era of post-intelligent design" because our machines extract their reasons from data as free floating rationales (sometimes even using Darwinian evolution or Bayesian methods, similar to the ones that shaped our brains) The problem of that increasing reliance on not understood machines is that we can't really fix them if they break, and our society could collapse as well if they do. And that would cut short the journey of comprehension we are on. The quest to eventually understand everything would come to a premature end. 
+Humans design things that take away the necessary comprehensive work from them, we design machines to remove the cognitively demanding drudgery of sciencitific endeavours. Over time this leads to less comprehension within humans, we know how to operate a machine, with which we can uncover how the universe works, but we don't understand the machine in detail anymore. The machines (especially machine learning based systems) are mostly uncomprehending. Very competent at what they do, but they often lack the comprehension (and creativity/agency) we have. They can extract patterns from data, but can not decide on a novel path of action outside their competence, something humans do routinely. In a way we move back from the age of comprehension into an "era of post-intelligent design" because our machines extract their reasons from data as free floating rationales (sometimes even using Darwinian evolution or Bayesian methods, similar to the ones that shaped our brains) The problem of that increasing reliance on not understood machines is that we can't  fix them if they break, and our society could collapse as well if they do. And that would cut short the journey of comprehension we are on. The quest to eventually understand everything would come to a premature end. 

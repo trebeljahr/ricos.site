@@ -30,7 +30,7 @@ The idea is that the reach of science into business and industry is much the sam
 
 ## Chapter 1 
 
-> Machines. The plant is really just one vast room, acres of space, filled with machines. They are organized in blocks and blocks are separated by aisles. 
+> Machines. The plant is  just one vast room, acres of space, filled with machines. They are organized in blocks and blocks are separated by aisles. 
 
 ### Chapter Summary
 
@@ -46,7 +46,7 @@ Setup of the main parts of the story, manufacturing plant with a mad, raving bos
 
 > If we could just get our backlog out the door. Sometimes it's like little gremlins out there. Every time we start to get it right, they sneak around between shifts when nobody is looking and they change things just enough so everything gets screwed up. 
 
-> I took all the crap [... my company] could give me and said, "I can't get enough! Give me more!" Boy, am I glad I did! Here I am, thirty-eight years old, and I'm a crummy plant manager! Isn't that wonderful? I'm really having fun now. Time to get the hell out of here. I've had enough for for one day. 
+> I took all the crap [... my company] could give me and said, "I can't get enough! Give me more!" Boy, am I glad I did! Here I am, thirty-eight years old, and I'm a crummy plant manager! Isn't that wonderful? I'm  having fun now. Time to get the hell out of here. I've had enough for for one day. 
 
 ### Chapter Summary:
 
@@ -70,7 +70,7 @@ The scale of disaster increases even more. His whole division, not only his plan
 
 > You *think* you're running an efficient plant... But your thinking is wrong. 
 
-> If you're like nearly everybody else in the world, you've accepted so many things without question that you're not really thinking at all. 
+> If you're like nearly everybody else in the world, you've accepted so many things without question that you're not  thinking at all. 
 
 > Productivity is the act of bringing a company closer to its goal. Every action that brings a company closer to its goal is productive. Every action that does not bring a company closer to its goal is not productive. 
 
@@ -95,7 +95,7 @@ And what is Productivity? Since it's defined by doing actions towards that goal 
 
 > A list of all the items people thinks of as being goals: cost-effective purchasing, employing good people, high technology, producing products, capturing market share, communications, customer satisfaction. [...] What do they all do? They enable the company to make money. 
 
-Actually, that's not quite right even yet. Money is like the blood that exists, something that keeps the company alive and has to be made for it to exist. But that's not the goal itself. The goal is to keep the company running, to keep playing the company game, without dying out. And one of the necessary things that have to happen for this to be true is that the company is profitable or else it will soon die. 
+, that's not quite right even yet. Money is like the blood that exists, something that keeps the company alive and has to be made for it to exist. But that's not the goal itself. The goal is to keep the company running, to keep playing the company game, without dying out. And one of the necessary things that have to happen for this to be true is that the company is profitable or else it will soon die. 
 
 ### Chapter Summary 
 
@@ -105,7 +105,7 @@ Taking a stroll to think about the lessons of the physicist, the protagonist dis
 
 > How would I know if that work is helping us make money? 
 
-> How do I really know if I what happens here is making money for us, or whether we're just playing accounting games? There must be a connection, but how do I define it?
+> How do I  know if I what happens here is making money for us, or whether we're just playing accounting games? There must be a connection, but how do I define it?
 
 > Suppose you're going to rewrite the textbooks. Suppose you don't have all those terms and you have to make them up as you go along. What would be the minimum number of measurements you would need in order to know if we are making money?
 
@@ -115,13 +115,13 @@ This reminds me a lot about the "This is Water" metaphor somehow. In a way then 
 
 There are 3 measures for if a company makes money - one is cash flow, the other is ROI, the last is net profit. 
 
-> I wonder why it is that we're slipping minute by minute toward oblivion, if we're really so smart. 
+> I wonder why it is that we're slipping minute by minute toward oblivion, if we're  so smart. 
 
 > So this is the goal: to make money by increasing net profit, while simultaneously increasing return on investment, and simultaneously increasing cash flow. 
 
 ### Chapter Summary
 
-The protagonist talks about his findings with his financial officer, his numbers guy and tries to tell him about what he has discovered about how the world of his plant might work. And together they refine their ideas of what the goal really means, in terms of money, and how to measure that metric of "making money" more accurately. They come up with the ideas of ROI, cash flow and absolute net profit. 
+The protagonist talks about his findings with his financial officer, his numbers guy and tries to tell him about what he has discovered about how the world of his plant might work. And together they refine their ideas of what the goal  means, in terms of money, and how to measure that metric of "making money" more accurately. They come up with the ideas of ROI, cash flow and absolute net profit. 
 
 ## Chapter 7
 
@@ -129,7 +129,7 @@ The protagonist talks about his findings with his financial officer, his numbers
 
 ### Chapter Summary
 
-This chapter was really short. The protagonist spends time with his daughter and then gets back to thinking about his plant and how to pull it out of the misery it's facing, doubting that he will be able to do it in time. 
+This chapter was  short. The protagonist spends time with his daughter and then gets back to thinking about his plant and how to pull it out of the misery it's facing, doubting that he will be able to do it in time. 
 
 ## Chapter 8
 
@@ -171,7 +171,7 @@ The hero of the story now gets the other people in his plant into the boat, shar
 
 ### Chapter Summary: 
 
-The team brainstorms about where all this new thinking about how things hang together and work might lead and further develop their ideas about what productivity actually means on the plant floor in light of the physicists thinking framework. And they start to see the bigger picture, namely that they have been running their plant in the wrong way all the time and that things that they thought of as "increasing" efficiency, in the big picture do nothing of that sort and actually lead to a decrease in productivity, since they actively stop them from making money, since they increase operational expenses and inventory, without increasing throughput. And finally the protagonist arranges another meeting with the physicist guru.
+The team brainstorms about where all this new thinking about how things hang together and work might lead and further develop their ideas about what productivity  means on the plant floor in light of the physicists thinking framework. And they start to see the bigger picture, namely that they have been running their plant in the wrong way all the time and that things that they thought of as "increasing" efficiency, in the big picture do nothing of that sort and  lead to a decrease in productivity, since they actively stop them from making money, since they increase operational expenses and inventory, without increasing throughput. And finally the protagonist arranges another meeting with the physicist guru.
 
 ## Chapter 11
 
@@ -185,7 +185,7 @@ This reminds me of the Tao somehow. The idea is that not brute force is the way 
 
 > A balanced plant is essentially what every manufacturing manager in the whole western world had struggled to achieve. It's a plant where the capacity of each and every resource is balanced exactly with demand from the market. 
 
-> You *assumed* that if you trim capacity to balance with market demand you won't affect throughput or inventory. But, in fact, that assumption - which is practically universal in the western business world - is totally wrong. 
+> You *assumed* that if you trim capacity to balance with market demand you won't affect throughput or inventory. But, in fact, that assumption - which is practically universal in the western business world - is wrong. 
 
 > There is a mathematical proof which could clearly show that when capacity is trimmed exactly to marketing demands, no more and no less, throughput goes down, while inventory goes through the roof.
 
@@ -219,7 +219,7 @@ Playing a game with the kids from the hiking trail, about logistics in a plant, 
 
 ### Chapter Summary
 
-The hike continues and the protagonist figures out another key thing - namely that the group as a whole has to arrive and is limited by its slowest member, but if one reverses the march order, so that the slowest lead and the fastest follow, the group stays together. Next it really makes clear, that the only performance gains that really can be had are at the slowest member of the group, as long as they don't improve - the whole group doesn't. So in the end they take weight from his shoulders so that the group as a whole can move faster. The main idea hinted at here is the idea behind a constraint... Effectiveness can only increase at a very few, select points in any company (or group working together to achieve a goal) and those points are the constraints. Any productivity increase at other points than the constraints is worth 0. 
+The hike continues and the protagonist figures out another key thing - namely that the group as a whole has to arrive and is limited by its slowest member, but if one reverses the march order, so that the slowest lead and the fastest follow, the group stays together. Next it  makes clear, that the only performance gains that  can be had are at the slowest member of the group, as long as they don't improve - the whole group doesn't. So in the end they take weight from his shoulders so that the group as a whole can move faster. The main idea hinted at here is the idea behind a constraint... Effectiveness can only increase at a very few, select points in any company (or group working together to achieve a goal) and those points are the constraints. Any productivity increase at other points than the constraints is worth 0. 
 
 ## Chapter 16
 
@@ -261,7 +261,7 @@ The idea of constraints (or bottlenecks) is further flashed out and the people g
 
 ### Chapter Summary
 
-The physicist comes to the plant, and shows how to save time from bottlenecks and how to shift the frame of mind into a more accurate position to think about them and their effectiveness. Namely the problem is that when they stop, the whole plant looses time and that's a very important difference. While the running cost of the single machine is kind of marginal, the running cost of the whole plant is enormous and so it actually starts to make sense to offload work to other companies to reduce load on the bottleneck. Other ideas are the repositioning of quality assurance before the bottleneck and the structuring of breaks around the working times of the bottleneck machines. The chapter rings a litt bit more hopeful, a little light shimmering at the end of the tunnel.
+The physicist comes to the plant, and shows how to save time from bottlenecks and how to shift the frame of mind into a more accurate position to think about them and their effectiveness. Namely the problem is that when they stop, the whole plant looses time and that's a very important difference. While the running cost of the single machine is kind of marginal, the running cost of the whole plant is enormous and so it  starts to make sense to offload work to other companies to reduce load on the bottleneck. Other ideas are the repositioning of quality assurance before the bottleneck and the structuring of breaks around the working times of the bottleneck machines. The chapter rings a litt bit more hopeful, a little light shimmering at the end of the tunnel.
 
 ## Chapter 20
 
@@ -287,7 +287,7 @@ They got one of the old machines back and are now able to increase the capacity 
 
 ### Chapter Summary:
 
-Things really start coming together know, and change is happening, upwards progress, the tone of the book, changing. Solutions, to improve the bottlenecks turn up left and right and people feel that, they become motivated and have ideas of their own!
+Things  start coming together know, and change is happening, upwards progress, the tone of the book, changing. Solutions, to improve the bottlenecks turn up left and right and people feel that, they become motivated and have ideas of their!
 
 ## Chapter 24
 
@@ -321,7 +321,7 @@ The kids of the protagonist figure out the way the physicist told them to get ri
 
 ### Chapter Summary:
 
-His wife is still living at her parents and doesn't want to go back to "normal", afraid that she will be neglected again, meanwhile the protagonist promised another crazy improvement to his boss because he thinks he could handle it, but in reality he might run into problems of not finding enough people to sell to, his plant basically already runs at almost market capacity!
+His wife is still living at her parents and doesn't want to go back to "normal", afraid that she will be neglected again, meanwhile the protagonist promised another crazy improvement to his boss because he thinks he could handle it, but in reality he might run into problems of not finding enough people to sell to, his plant  already runs at almost market capacity!
 
 ## Chapter 28
 
@@ -329,13 +329,13 @@ His wife is still living at her parents and doesn't want to go back to "normal",
 
 ### Chapter Summary:
 
-The next idea introduced to them by the physicist is to cut batch sizes in half and thereby massively reduce their turnaround time and be able to fulfill contracts much quicker and adapt to the market on rather short notice. It feels like they have turned the plant around and actually the protagonist bets against marketing that they can go from contract to fulfiment in 4 weeks of time instead of the 6 months it used to take them. 
+The next idea introduced to them by the physicist is to cut batch sizes in half and thereby massively reduce their turnaround time and be able to fulfill contracts much quicker and adapt to the market on rather short notice. It feels like they have turned the plant around and  the protagonist bets against marketing that they can go from contract to fulfiment in 4 weeks of time instead of the 6 months it used to take them. 
 
 ## Chapter 29
 
 ### Chapter Summary:
 
-Things start to look really bright now. The chapter started with his wife and him being home again, alone, the kids still at the grandparents, enjoying time, together. And at the plant things are even better, because their new strategies allow them to get a million dollar contract, because they are the only ones to fulfill it in time. And they plan to halve their batch sizes yet again. The only problem they face is that their accounting is not on par with their new efficiency model, because from the old model, which doesn't account for idle time, it looks like costs per part went up, even though they didn't, simply because they are utilizing idle time now instead of hiring new people to do the job.
+Things start to look  bright now. The chapter started with his wife and him being home again, alone, the kids still at the grandparents, enjoying time, together. And at the plant things are even better, because their new strategies allow them to get a million dollar contract, because they are the only ones to fulfill it in time. And they plan to halve their batch sizes yet again. The only problem they face is that their accounting is not on par with their new efficiency model, because from the old model, which doesn't account for idle time, it looks like costs per part went up, even though they didn't, simply because they are utilizing idle time now instead of hiring new people to do the job.
 
 ## Chapter 30
 
@@ -361,7 +361,7 @@ The protagonist eats with his wife to celebrate, but their discussion is highly 
 
 ### Chapter Summary: 
 
-The protagonist goes around in his team and hands out promotions and discovers that he didn't know all the people as well as he thought he did... Everybody has their own pet projects in the plant, and it's like an avalanche of creativity has come lose. What is described is the thing that Steven Covey would call synergy. It's effects are crazy and show that what they have done is only the beginning. There will always be problems and they'll always be soluble is the motto here. And the people from the book are solving them. 
+The protagonist goes around in his team and hands out promotions and discovers that he didn't know all the people as well as he thought he did... Everybody has their pet projects in the plant, and it's like an avalanche of creativity has come lose. What is described is the thing that Steven Covey would call synergy. It's effects are crazy and show that what they have done is only the beginning. There will always be problems and they'll always be soluble is the motto here. And the people from the book are solving them. 
 
 ## Chapter 34
 
@@ -377,7 +377,7 @@ The protagonist prepares with his teammates for his new role, asking basic, almo
 
 ### Chapter Summary: 
 
-The protagonist and his team keep preparing for his new role, basically they try to find an approach to order things, by their intrinsic properties, instead of playing number and word games with them. They are basically trying to understand what they are doing, from first principles for the first time and the protagonist basically has nailed it quite nicely, they need a scientific approach to handle the chaos and reveal its intrinsic order. 
+The protagonist and his team keep preparing for his new role,  they try to find an approach to order things, by their intrinsic properties, instead of playing number and word games with them. They are  trying to understand what they are doing, from first principles for the first time and the protagonist  has nailed it quite nicely, they need a scientific approach to handle the chaos and reveal its intrinsic order. 
 
 ## Chapter 36
 
@@ -423,7 +423,7 @@ The protagonist takes his time free from emergencies at work and starts reading 
 
 ### Chapter Summary: 
 
-Just when everything looked perfect and they thought they had it all figured out, they find out that that's not the case really. Somewhere along the way they did a mistake that now makes them drop their promised lead times on the products. It's still not like they are planning but more of an reaction game. Changing the throughput means changing the dynamics of their complex system, and that means they have to change the way they do things, buffering up more or less inventory, depending on the throughput they actually have. 
+Just when everything looked perfect and they thought they had it all figured out, they find out that that's not the case . Somewhere along the way they did a mistake that now makes them drop their promised lead times on the products. It's still not like they are planning but more of an reaction game. Changing the throughput means changing the dynamics of their complex system, and that means they have to change the way they do things, buffering up more or less inventory, depending on the throughput they  have. 
 
 ## Chapter 40
 

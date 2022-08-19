@@ -36,7 +36,7 @@ amazonLink: "https://amzn.to/3KBJUYD"
 
 > Governing a large country is like frying a small fish. You spoil it with too much poking. 
 
-> If you want to learn how to govern, avoid being clever or rich. The simplest pattern is the clearest. Content with an ordinary life, you can show all peoe the way back to their own true nature. 
+> If you want to learn how to govern, avoid being clever or rich. The simplest pattern is the clearest. Content with an ordinary life, you can show all peoe the way back to their true nature. 
 
 > All streams flow to the sea because it is lower than they are. Humility gives it its power. 
 

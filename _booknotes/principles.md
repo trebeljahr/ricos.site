@@ -9,6 +9,7 @@ tags: ["self-help", "business", "wisdom", "psychology", "finance", "non-fiction"
 summary: true
 detailedNotes: false
 amazonLink: "https://amzn.to/3QTvS7j"
+
 ---
 
 ## Summary: 

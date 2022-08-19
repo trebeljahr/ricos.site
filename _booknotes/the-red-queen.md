@@ -32,7 +32,7 @@ amazonLink: "https://amzn.to/3xpSlCr"
 
 > How can there be a universal, species-specific human nature when every human being is unique?
 
-> The genetic differences between the average members of different races are actually tiny and mostly confined to a few genes that affect skin colour, physiognomy or physique. 
+> The genetic differences between the average members of different races are  tiny and mostly confined to a few genes that affect skin colour, physiognomy or physique. 
 
 ### Ours to Reason Why?
 
@@ -58,7 +58,7 @@ That's exactly what David Deutsch means by beginning of Infinity. The capabiliti
 
 #### Chapter Summary: 
 
-Organisms live in a constant struggle with their also evolving environment, consisting of a lot of other animals, it's like two countries stockpiling ever greater arsenals. Counterintuitively they are in this Red Queen struggle with members of the other sex, essentially, they want different things and try to exploit the other member of the species for their own genes good, leading to an arms race between the genders. This arms race shapes the way animals look, and behave. And that includes humans. Humans are the way they are right now, because of this ongoing evolutionary struggle. Even though there is this underlying human nature, culture, which is influenced by this underlying nature, can change aspects of it. As well as individuality, both on the side of genetic changes, as well as on the side of experiential changes. In this regard, humans are somewhat unique, because they can look back at their evolutionarily programmed behavior and decide to overwrite those tendencies, producing new behavior. But even this form of high level intellect, has been selected for in the first place because of the ongoing Red Queen game of evolution, and has been shaped by sexual selection in turn as well. So humans are the way they are, because they evolved that way - sprinkled with some emergent phenomena, properties that arise from that complex dynamic system - such as society, ideas etc. that in turn intermix their effects with the strictly evolutionary ones.
+Organisms live in a constant struggle with their also evolving environment, consisting of a lot of other animals, it's like two countries stockpiling ever greater arsenals. Counterintuitively they are in this Red Queen struggle with members of the other sex, essentially, they want different things and try to exploit the other member of the species for their genes good, leading to an arms race between the genders. This arms race shapes the way animals look, and behave. And that includes humans. Humans are the way they are right now, because of this ongoing evolutionary struggle. Even though there is this underlying human nature, culture, which is influenced by this underlying nature, can change aspects of it. As well as individuality, both on the side of genetic changes, as well as on the side of experiential changes. In this regard, humans are somewhat unique, because they can look back at their evolutionarily programmed behavior and decide to overwrite those tendencies, producing new behavior. But even this form of high level intellect, has been selected for in the first place because of the ongoing Red Queen game of evolution, and has been shaped by sexual selection in turn as well. So humans are the way they are, because they evolved that way - sprinkled with some emergent phenomena, properties that arise from that complex dynamic system - such as society, ideas etc. that in turn intermix their effects with the strictly evolutionary ones.
 
 ## Chapter 2 - The Enigma
 
@@ -82,7 +82,7 @@ Organisms live in a constant struggle with their also evolving environment, cons
 
 > We use our intellect not to solve practical problems, but to outwit each other. 
 
-> Animal altruism is a myth; even in the most spectacular cases of selflessness, it turns out that animals are serving the selfish interests of their own genes. 
+> Animal altruism is a myth; even in the most spectacular cases of selflessness, it turns out that animals are serving the selfish interests of their genes. 
 
 ### The Rediscovery of the Individual
 
@@ -98,7 +98,7 @@ The central question building up - the enigma the chapter refers to is - how can
 
 #### Chapter Summary: 
 
-Explains the core enigma of sex, namely what advantage does it have for the individual, over simply reproducing much faster asexually? Why don't genes of asexual mutant spread through the gene pool immediately and really quickly once they arise? Then an introduction of different ideas of how to solve the enigma of sex: 
+Explains the core enigma of sex, namely what advantage does it have for the individual, over simply reproducing much faster asexually? Why don't genes of asexual mutant spread through the gene pool immediately and  quickly once they arise? Then an introduction of different ideas of how to solve the enigma of sex: 
 - the molecular biologist, geneticist and ecologist approach. 
 
 ## Chapter Three - The Power of Parasites
@@ -165,7 +165,7 @@ The chapter ends with a very interesting, cliff hanger question: why, if sex is 
 
 > Just as human society is an uneasy coexistence of free Enterprise and social cooperation, so is the activity of genes within a body. Without cooperation the town would not be a community. 
 
-> Natural Selection means the enhanced survival of genes that enhance their own survival. 
+> Natural Selection means the enhanced survival of genes that enhance their survival. 
 
 > The line between a rogue gene and an infectious virus is a blurry one. 
 
@@ -337,7 +337,7 @@ The territory attracts a certain density of females, depending on this, males ca
 
 > In other words, mating was a trade: male power and resources for female reproductive potential. 
 
-Crazy human history, about emperor's that had thousands of concubines, and designing their harems not for sexual pleasure but for conceiving many many children. And stories of the Romans, buying virgin female slaves at a premium, also to get them pregnant. From nowadays perspective it just seems really really weird. Were those people really motivated by wanting to have as many children as possible and not simple "lust"? 
+Crazy human history, about emperor's that had thousands of concubines, and designing their harems not for sexual pleasure but for conceiving many many children. And stories of the Romans, buying virgin female slaves at a premium, also to get them pregnant. From nowadays perspective it just seems   weird. Were those people  motivated by wanting to have as many children as possible and not simple "lust"? 
 
 ### The Rewards of Violence
 
@@ -476,7 +476,7 @@ Cynical? Not half as cynical as most accounts of human history.
 
 ### Choosy Men
 
-Why do men choose? Instead of being *really* promiscuous?
+Why do men choose? Instead of being ** promiscuous?
 
 > Man's choosiness reflects once more the fact that men does indeed form a pair bond and invest in his young, unlike some of his undiscriminating ape cousins.
 

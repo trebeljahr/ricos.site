@@ -8,6 +8,7 @@ author:
   picture: "/assets/blog/profile.jpeg"
 ogImage:
   url: "/assets/blog/laos-rice-field.jpg"
+
 ---
 
 
@@ -30,7 +31,7 @@ I like that thought. Traveling is a way of building memories that make you happy
 
 ## Media as a way of telling stories.
 
-Another thought that waves around in my head is about the role that photography, writing and film-making (and other kinds of "documentation" efforts) play because they are an important aspect of traveling. Without them memories can fade more easily and grow cold. It will become harder and harder to actually retrieve the experiences and the feelings stirred up back then. Photos, texts and videos help remember them because they build up a reservoir of external evidence of what has happened. They are like time capsules for experiences. Transmitting adventures through the depths of time. 
+Another thought that waves around in my head is about the role that photography, writing and film-making (and other kinds of "documentation" efforts) play because they are an important aspect of traveling. Without them memories can fade more easily and grow cold. It will become harder and harder to  retrieve the experiences and the feelings stirred up back then. Photos, texts and videos help remember them because they build up a reservoir of external evidence of what has happened. They are like time capsules for experiences. Transmitting adventures through the depths of time. 
 
 But they do not only act as a reminder but also as a way of communication. Of showing others, as a means to share the internal change, as a way to share the experience itself. Those media are used to communicate the change that happens and to show and tell the stories of adventures. To let others take part in the mystery that is traveling. The mystery of other cultures, of human connections and friends made and of the lessons learned. 
 

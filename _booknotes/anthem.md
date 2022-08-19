@@ -9,6 +9,7 @@ tags: ["fiction", "thought-provoking", "dystopia", "philosophy"]
 summary: true
 detailedNotes: true
 amazonLink: "https://amzn.to/37a22tW"
+
 ---
 
 ## Summary:

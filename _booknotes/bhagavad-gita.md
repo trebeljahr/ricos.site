@@ -9,11 +9,12 @@ tags: ["taoism", "buddhism", "philosophy", "made-me-think", "art-of-living", "no
 summary: true
 detailedNotes: true
 amazonLink: "https://amzn.to/3xlSo2b"
+
 ---
 
 ## Summary: 
 
-The Bhagavad Gita is one of the most influential books in history I would argue. And for that reason alone it's worth reading, to get a broader idea of different cultures and see where ideas come from and how old some of them actually are. It is connected in thought with lots of other philosophical directions, like Taoism or Stoicism. But besides that it's a text of deep belief and a window into the religion of Hinduism. But hidden in it are absolute gems of wisdom, eternal, never changing capital T Truths about the world, that are rediscovered time and time again by thinkers around the world. I think it's impossible to summarize the main ideas, because literally every other sentence is full with wisdom, but some of the key concept keep occuring, over and over again:
+The Bhagavad Gita is one of the most influential books in history I would argue. And for that reason alone it's worth reading, to get a broader idea of different cultures and see where ideas come from and how old some of them  are. It is connected in thought with lots of other philosophical directions, like Taoism or Stoicism. But besides that it's a text of deep belief and a window into the religion of Hinduism. But hidden in it are absolute gems of wisdom, eternal, never changing capital T Truths about the world, that are rediscovered time and time again by thinkers around the world. I think it's impossible to summarize the main ideas, because every other sentence is full with wisdom, but some of the key concept keep occuring, over and over again:
 
 Attachment is bad. Freedom is breaking free from attachments. 
 Caring about the future and how it is going to unfold is futile, is attachment. However you should *still* do your best, not for the sake of attaining a better future, but because it's the only way. 
@@ -79,7 +80,7 @@ This sounds very much like the ideas of Buddhism. Probably because Buddhism has 
 
 > If a man keeps dwelling on sense-objects, attachment to them arises; from attachment, desire flares up; from desire, anger is born; from anger, confusion follows; from confusion, weakness of memory; weak memory - weak understanding; weak understanding - ruin. 
 
-Attaching to the outcomes of things and trying to influence them for the sake of the outcome only, will usually make things worse. The better way is to do your best, no matter what. That's the idea of the [Tao Te Ching](#TODO) as well as the idea of [Stoicists such as Markus Aurelius](#TODO) as well as that of more modern psychology/philosophy books like [Grit by Angela Duckworth](#TODO)
+Attaching to the outcomes of things and trying to influence them for the sake of the outcome only, will usually make things worse. The better way is to do your best, no matter what. That's the idea of the [Tao Te Ching](/booknotes/tao-te-ching) as well as the idea of [Stoics such as Markus Aurelius](/booknotes/meditations) as well as that of more modern psychology/philosophy books like [Grit by Angela Duckworth](/booknotes/grit)
 
 ### Chapter 3 - The Yoga of Action
 
@@ -89,7 +90,7 @@ Attaching to the outcomes of things and trying to influence them for the sake of
 
 > If I stopped acting, these worlds would plunge into ruin; chaos would overpower all beings; mankind would be destroyed. 
 
-That above is [the main idea of Atlas Shrugged](#TODO) in disguise. If people stopped acting, they would soon perish. So, even when we have to act, we act, without caring for the fact that we are acting and about what we accomplish.
+That above is [the main idea of Atlas Shrugged](/booknotes/atlas-shrugged) in disguise. If people stopped acting, they would soon perish. So, even when we have to act, we act, without caring about the fact that we are acting and about what we accomplish.
 
 > Desire dwells in the senses, the mind, and the understanding; in all these it obscures wisdom and perplexes the embodied Self. 
 
@@ -117,7 +118,7 @@ That above is [the main idea of Atlas Shrugged](#TODO) in disguise. If people st
 
 ### Chapter 7 - Wisdom and Realization
 
-> Men whose wisdom is darkened by desires, men who are hemmed in by the limits of their own natures, take refuge in other gods. 
+> Men whose wisdom is darkened by desires, men who are hemmed in by the limits of their natures, take refuge in other gods. 
 
 ### Chapter 8 - Absolute Freedom
 
@@ -161,7 +162,7 @@ That above is [the main idea of Atlas Shrugged](#TODO) in disguise. If people st
 
 > With a purified understanding, fully mastering himself, relinquishing all sense-objects, released from aversion and craving, solitary, eating lightly, controlling speech, mind, and body, absorbed in deep meditation at all times, calm, impartial, free from the "I" and "mine", from aggression, arrogance, greed, desire, and anger, he is fit for the state of absolute freedom. 
 
-> The thing that, in your delusion, you wish not to do, you will do, even against your will, since your own karma binds you. 
+> The thing that, in your delusion, you wish not to do, you will do, even against your will, since your karma binds you. 
 
 ### Appendix
 

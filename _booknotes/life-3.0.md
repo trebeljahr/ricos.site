@@ -10,19 +10,20 @@ tags: ["AI", "futurism", "future", "thought-provoking", "non-fiction"]
 summary: true
 detailedNotes: true
 amazonLink: "https://amzn.to/3zlRYbi"
+
 ---
 
 ## Summary: 
 
-Max Tegmark wants the reader to think about the problems of AI safety and the really thorny questions related to creating machines that surpass us in intelligence someday. He reasons that this is possible and maybe even possible sooner than we think and therefore we should start working on solving these problems as soon as possible, because otherwise we might have the machines, without actually knowing what we want to do with them, and increase the potential for bad or even catastrophic outcomes by a lot. 
+Max Tegmark wants the reader to think about the problems of AI safety and the  thorny questions related to creating machines that surpass us in intelligence someday. He reasons that this is possible and maybe even possible sooner than we think and therefore we should start working on solving these problems as soon as possible, because otherwise we might have the machines, without  knowing what we want to do with them, and increase the potential for bad or even catastrophic outcomes by a lot. 
 
-The book asks more questions than it answers but it is wonderfully thought provoking and makes you really think and envision the different futures and how they could play out. It also makes really clear, that our role in shaping and designing this future is really important, because we are ultimately the people building those machines, so we should keep in mind the question what we actually want to build and maybe answer it in depth and detail, before we actually set out to build intelligent machines. 
+The book asks more questions than it answers but it is wonderfully thought provoking and makes you  think and envision the different futures and how they could play out. It also makes  clear, that our role in shaping and designing this future is  important, because we are ultimately the people building those machines, so we should keep in mind the question what we  want to build and maybe answer it in depth and detail, before we  set out to build intelligent machines. 
 
-My favorite parts where the ideas about consciousness and information processing/storage - specifically that computation and information storage are substrate independent. Both "take on a life of their own" and don't depend on the exact structure and properties of the matter being used to make them happen in the real life. This is why they seem a little spooky and removed from "our world" because they in fact are. 
+My favorite parts where the ideas about consciousness and information processing/storage - specifically that computation and information storage are substrate independent. Both "take on a life of their" and don't depend on the exact structure and properties of the matter being used to make them happen in the real life. This is why they seem a little spooky and removed from "our world" because they in fact are. 
 
-Consciousness (according to Tegmark) is even more removed in the sense that it is a property of information processing systems - i.e. it's about the pattern of the information processing and how that happens, and therefore can exist in different systems of information processing that share those higher level patterns. It is independent of the underlying information processing system implementing it in that way. And because this system itself is substrate independent, consciousness as a whole is substrate independent twice - and that's why dealing with questions of consciousness is such a thorny and hard endeavor. It's patterns on top of patterns and that makes it really hard to grasp and outline the details as well as build experiments to measure it. 
+Consciousness (according to Tegmark) is even more removed in the sense that it is a property of information processing systems - i.e. it's about the pattern of the information processing and how that happens, and therefore can exist in different systems of information processing that share those higher level patterns. It is independent of the underlying information processing system implementing it in that way. And because this system itself is substrate independent, consciousness as a whole is substrate independent twice - and that's why dealing with questions of consciousness is such a thorny and hard endeavor. It's patterns on top of patterns and that makes it  hard to grasp and outline the details as well as build experiments to measure it. 
 
-Even if AI safety research is not your thing, you should really read this book, to open up your mind about the conversation that is going on because you can be quite sure that the results of that conversation will affect you in the coming decades, with the rise of ever smarter algorithms, helping you in your life.
+Even if AI safety research is not your thing, you should  read this book, to open up your mind about the conversation that is going on because you can be quite sure that the results of that conversation will affect you in the coming decades, with the rise of ever smarter algorithms, helping you in your life.
 If AI research is your thing (after reading this book it might very well be) you should also go an read [Nick Bostrom's Superintelligence book](/booknotes/superintelligence).
 
 ## Notes
@@ -139,7 +140,7 @@ The conversation around AI is the most important of our time. Because the potent
 What career advice do you give today's kids? 
 Furthermore what life advice do you give them? How do you face living in a world where you might have a god that's helping you?
 
-The question is really - what would we like our future to look like? Because AI gives us, potentially, what we wish for. 
+The question is  - what would we like our future to look like? Because AI gives us, potentially, what we wish for. 
 
 > Intelligence is the ability to accomplish complex goals. 
 
@@ -195,7 +196,7 @@ Intelligence = ability to accomplish complex goals
 
 Broad definition, but workable, since there can be many complex goals. 
 
-Measuring between "hardness" of tasks is a bit nonsensical, because comparing two completely different tasks is not really possible.
+Measuring between "hardness" of tasks is a bit nonsensical, because comparing two completely different tasks is not  possible.
 
 Parody example of AQ as a measure for "general athletic fitness"
 
@@ -209,7 +210,7 @@ Idea of universal intelligence, once a certain intelligence threshold is reached
 
 — Max Tegmark
 
-This is asking also, how can we think, as in how does the brain actually work? An as of yet unanswered question. 
+This is asking also, how can we think, as in how does the brain  work? An as of yet unanswered question. 
 
 #### What is Memory?
 
@@ -253,7 +254,7 @@ Computronium and Turing universality means that computation is substrate indepen
 
 — Max Tegmark
 
-> In short, computation is a pattern in the spacetime arrangement of particles, and it's not the particles but the pattern that really matters! Matter doesn't matter. 
+> In short, computation is a pattern in the spacetime arrangement of particles, and it's not the particles but the pattern that  matters! Matter doesn't matter. 
 
 — Max Tegmark
 
@@ -273,7 +274,7 @@ There's a match between the physical functions one has to compute and what neura
 
 Hebbian Learning - What fires together wires together. Brains work like that, even though the details are more complicated and still far from fully understood. 
 
-Backprop and stochastic gradient descent are used instead of Hebbian Learning in artificial neural networks. But in the end, a simple rule for how to update m and n of the artificial neurons makes them able to learn a lot of really complicated computations when presented with the right set of stimuli (training data)
+Backprop and stochastic gradient descent are used instead of Hebbian Learning in artificial neural networks. But in the end, a simple rule for how to update m and n of the artificial neurons makes them able to learn a lot of  complicated computations when presented with the right set of stimuli (training data)
 
 Networks can be recurrent, i.e. results of past computations can form input of the network. Thereby ongoing computations can be influenced by past computations. That makes the size of the networks much smaller. 
 
@@ -287,7 +288,7 @@ Problems arise long before that point.
 
 Intelligence should be measured by level of ability times amount of goals.
 
-Artificial Intelligence is still narrow. One AI can do one thing really well, but many different things not so much or at all. They are relatively unintelligent. Human intelligence on the other hand is incredibly broad. So broad it's universal.
+Artificial Intelligence is still narrow. One AI can do one thing  well, but many different things not so much or at all. They are relatively unintelligent. Human intelligence on the other hand is incredibly broad. So broad it's universal.
 
 Memory, Learning and computation are substrate independent. Informational patterns are more important than their low level implementation. 
 
@@ -357,7 +358,7 @@ A ban for autonomous weapons systems would be in that category.
 
 Small cheap swarms of killer robot drones, with explosives to kill selected people recognizable by something like their skin color, are an absolute nightmare idea. 
 
-Short term AI can benefit weapon systems way way way too much, making really scary stuff possible. Cyber warfare or automated killer drones or a number of other scenarios should be avoided at all costs and outright banned just like chemical weapons. 
+Short term AI can benefit weapon systems way way way too much, making  scary stuff possible. Cyber warfare or automated killer drones or a number of other scenarios should be avoided at all costs and outright banned just like chemical weapons. 
 
 #### Jobs and Wages
 
@@ -400,13 +401,13 @@ If there is a non-negliglible chance of one of the scenarios happening we should
 
 #### Totalitarianism 
 
-Using the AI to kill everybody who doesn't support the rulers, via some funked up tech. Also using it to have the perfect police and surveillance state. Bracelets everybody has to wear else they'd be killed by small robots flying around. Bracelets that record thoughts, measure body chemistry and movements etc. getting all the data possible about us to know exactly what we are doing and controlling us in every which way possible and the rulers of such a world desire. A literally perfect distopia, because there wouldn't be a way out but death. 
+Using the AI to kill everybody who doesn't support the rulers, via some funked up tech. Also using it to have the perfect police and surveillance state. Bracelets everybody has to wear else they'd be killed by small robots flying around. Bracelets that record thoughts, measure body chemistry and movements etc. getting all the data possible about us to know exactly what we are doing and controlling us in every which way possible and the rulers of such a world desire. A perfect distopia, because there wouldn't be a way out but death. 
 
 #### Prometheus Takes Over the World
 
 Humans lose control over the AI. 
 
-If an AI that is superhuman in intelligence really wants to break out, it can almost certainly do so. The amount of options to outsmart humans are vast, and the problem is that everything we can come up with just doesn't compare to what a superhuman level AI could come up with in terms of plans and strategies. Perfect, super convoluted plans, that seem perfectly harmless to us, but result in a breakout is what it would look like. Suddenly the machine is not in the bottled box anymore and nobody really knew what exactly happened. 
+If an AI that is superhuman in intelligence  wants to break out, it can almost certainly do so. The amount of options to outsmart humans are vast, and the problem is that everything we can come up with just doesn't compare to what a superhuman level AI could come up with in terms of plans and strategies. Perfect, super convoluted plans, that seem perfectly harmless to us, but result in a breakout is what it would look like. Suddenly the machine is not in the bottled box anymore and nobody  knew what exactly happened. 
 
 #### Slow Takeoff and Multipolar Scenarios
 
@@ -424,7 +425,7 @@ In our world there are multiple instances of competing hierarchy implementations
 
 Cyborgs enabled by AI might be a thing. Because unenhanced humans would not understand anymore what is going on and therefore the pressure put onto them to become enhanced is tremendous. 
 
-#### What will actually happen?
+#### What will  happen?
 
 We don't know, that's why exploring different options is so important. 
 
@@ -468,7 +469,7 @@ This is the scenario of Prime Intellect in "The Metamorphosis of Prime Intellect
 
 #### Egalitarian Utopia
 
-Basic Income for everyone measured in atoms that can be used for creating the stuff of your dreams by using open source robot nanotech foundries. Atoms limit is high, but not too high so that you can build really cool stuff, but don't overuse stuff so that others would suffer scarcity because of your actions. There is no superhuman AI, people are free to create their own science, their own art and poetry and it doesn't lose meaning because a good exists that does all of it better in shorter time. However that's a semi stable solution, because eventually people would create something that can undergo an intelligence explosion, leading to the inevitable collapse of that type of scenario. 
+Basic Income for everyone measured in atoms that can be used for creating the stuff of your dreams by using open source robot nanotech foundries. Atoms limit is high, but not too high so that you can build  cool stuff, but don't overuse stuff so that others would suffer scarcity because of your actions. There is no superhuman AI, people are free to create their science, their art and poetry and it doesn't lose meaning because a good exists that does all of it better in shorter time. However that's a semi stable solution, because eventually people would create something that can undergo an intelligence explosion, leading to the inevitable collapse of that type of scenario. 
 
 #### Gatekeeper
 
@@ -486,7 +487,7 @@ Problem is that preventable human suffering might still exist for longer than ne
 
 Machines, including superintelligent AI, could be used as our slaves. 
 
-Also there is a governance problem, namely what do the humans do with this genie in a bottle? How can we be sure that the power doesn't corrupt and gets used for bad stuff? Also how to actually enslave a superintelligence is beyond us and might be impossible if the superintelligence doesn't want to be enslaved. 
+Also there is a governance problem, namely what do the humans do with this genie in a bottle? How can we be sure that the power doesn't corrupt and gets used for bad stuff? Also how to  enslave a superintelligence is beyond us and might be impossible if the superintelligence doesn't want to be enslaved. 
 
 Balance in 4 things needs to exist - Centralization, Inner Threat Protection, Outer Threat Protection, Goal Stability. 
 
@@ -532,7 +533,7 @@ Kill a lot of people, destroy the technology and records and teach people only i
 
 — John Maynard Keynes
 
-Just waiting leads to disaster eventually. Technological progress is necessary for long term survival of the human species. With incompetence or simple bad luck and technology we could eradicate ourselves sooner. 
+Just waiting leads to disaster eventually. Technological progress is necessary for long-term survival of the human species. With incompetence or simple bad luck and technology we could eradicate ourselves sooner. 
 
 Accidental omnicide is a very real threat and humans are even considering adding new doomsday, humanity adding technology like cobalt bombs and deadly bioweapons to the mix. 
 
@@ -554,11 +555,11 @@ Life needs resources as well as efficiency in using them, to push limits. Ultima
 
 Build Dyson Spheres around the Sun, to harvest all the energy it blows out into space. Or build O'Neill Cylinders or other artificial habitats
 
-Converting matter into energy is something we are really really bad at compared to the theoretical limits. An interesting idea would be to use a black hole evaporating generator. Create and feed matter into a black hole, then let it Hawking radiation evaporate into heat, and use that heat directly as power. 
+Converting matter into energy is something we are   bad at compared to the theoretical limits. An interesting idea would be to use a black hole evaporating generator. Create and feed matter into a black hole, then let it Hawking radiation evaporate into heat, and use that heat directly as power. 
 
 Alternatively throw things into a spinning black hole, and make them split at the right moment so that only a part falls into the black hole, while the other escapes, stealing energy from the black hole. 
 
-There is more interesting ways, like harnessing quasars and sphalerons. Sphalerons, being a state of matter formed from 9 quarks at really high temperatures. 
+There is more interesting ways, like harnessing quasars and sphalerons. Sphalerons, being a state of matter formed from 9 quarks at  high temperatures. 
 
 Computers could also become much much better. Both in terms of theoretically possible storage and FLOPS. Upper limits are crazy high.
 
@@ -574,13 +575,13 @@ Maximum particles possible for use - entire universe - 10^78
 
 If Lightspeed maximum holds true 98% of the galaxies are forever unreachable to us, even with the help of superintelligent AIs. 
 
-Speed matters a lot in colonizing, because the colonization window is closing because of the expansion of the universe. Tech is not actually a problem, especially with the help of a God. But even human ideas give nice lower bounds for estimation, that still promise millions and millions of colonized galaxies by van Neumann probes, traveling on lightsails, that then construct antenna to get further instructions from the other planets on how to establish new colonies. 
+Speed matters a lot in colonizing, because the colonization window is closing because of the expansion of the universe. Tech is not  a problem, especially with the help of a God. But even human ideas give nice lower bounds for estimation, that still promise millions and millions of colonized galaxies by van Neumann probes, traveling on lightsails, that then construct antenna to get further instructions from the other planets on how to establish new colonies. 
 
 **Book Recommendation:** Contact - Carl Sagan
 
 Another way would he to broadcast information on building a self replicating Probe into the cosmos and hope that other civilizations pick up the signal, build the thing and then get assimilated by it. This way, the wave of colonies would expand truly at the speed of light. We should learn from this - don't build machines, where the instructions came from outer space...
 
-> There are good scientific reasons for taking seriously the possibility that life and intelligence can succeed in molding this universe of ours to their own purposes. 
+> There are good scientific reasons for taking seriously the possibility that life and intelligence can succeed in molding this universe of ours to their purposes. 
 
 — Freeman Dyson
 
@@ -594,7 +595,7 @@ The question of how the universe will end and how long it will last is mainly im
 
 — Max Tegmark
 
-Hierarchical strategies can be used to have local fast systems, and global slow ones, to together get better performance than each on their own. 
+Hierarchical strategies can be used to have local fast systems, and global slow ones, to together get better performance than each on their. 
 
 Big brains would have by necessity slower thoughts, because the information takes time to propagate. 
 
@@ -606,7 +607,7 @@ Superintelligent civilization can organize in node like structures and superstru
 
 **Book Recommendation:** The Eerie Silence - Paul Davies
 
-Extraterrestrial life other than us might or might not exist, however we haven't seen any signs yet and would expect to see some from superintelligent civilizations going for resource grabs. We don't though. Max Tegmark seriously hopes that there isn't other life out there because that would mean either a) we are past all the great filters or b) life is just really rare. Either way, we have more reason for hope and a big cosmic endowment, responsibility as well as opportunity. 
+Extraterrestrial life other than us might or might not exist, however we haven't seen any signs yet and would expect to see some from superintelligent civilizations going for resource grabs. We don't though. Max Tegmark seriously hopes that there isn't other life out there because that would mean either a) we are past all the great filters or b) life is just  rare. Either way, we have more reason for hope and a big cosmic endowment, responsibility as well as opportunity. 
 
 #### Outlook
 
@@ -640,17 +641,17 @@ Life decreases its own entropy by increasing entropy of the surroundings even fa
 
 Particles arranged such that they can indefinitely copy themselves, extracting energy and materials from their surroundings are what we call life. 
 
-Replication replaces dissipation as the goal for particles. Though not really replication is really a subgoal to reach faster dissipation. 
+Replication replaces dissipation as the goal for particles. Though not  replication is  a subgoal to reach faster dissipation. 
 
 Agents trying to achieve goals have bounded rationality and the algorithms they can implement for the attainment of their goals are therefore also bounded to specific circumstances and usually break down if those circumstances change too much. 
 
-Life is really a bunch of rules of thumbs, designed to typically guide the living thing to replicate itself some way or another. 
+Life is  a bunch of rules of thumbs, designed to typically guide the living thing to replicate itself some way or another. 
 
 #### Psychology: The Pursuit of and Rebellion Against Goals
 
 Brains can rebel against the goals of DNA replication. 
 
-We can exploit the rules of thumbs that were a good guide to replication not even so long ago, and get the rewards without actually doing the things the rule expects. We reward hack ourselves all the time. Artificial sweeteners, contraception, porn, drugs, computer games, social media, sports... The list goes on. 
+We can exploit the rules of thumbs that were a good guide to replication not even so long ago, and get the rewards without  doing the things the rule expects. We reward hack ourselves all the time. Artificial sweeteners, contraception, porn, drugs, computer games, social media, sports... The list goes on. 
 
 Human behavior is governed by feelings, those feelings are rules of thumbs implemented by genes, but open to quite some adaptation and change by learning and culture, strictly speaking, human life doesn't have one goal, not even reproduction, because the rules of thumbs that would normally lead there can be changed. 
 
@@ -710,7 +711,7 @@ Ultimate goals would have to be derived from physics somehow. We don't know how 
 
 #### Who cares?
 
-Without consciousness the universe might as well not exist. Hence we need to make sure we really understand what consciousness is, and have solid measures to determine what is and isn't conscious.
+Without consciousness the universe might as well not exist. Hence we need to make sure we  understand what consciousness is, and have solid measures to determine what is and isn't conscious.
 
 #### What is consciousness?
 
@@ -738,7 +739,7 @@ Hemineglect - not being consciously aware of half of the visual field.
 
 Brain experiments can lead to conclusions about where functionality is localized in the brain , but often it's the case that the conscious experience is decoupled from the raw information processing part. 
 
-Illusions and the idea of dreams show this pretty well, without stimulation you can "see" and what you see is not actually what has stimulated the retina, but an after the fact cobbler together image. Visual consciousness is not in the eyes. 
+Illusions and the idea of dreams show this pretty well, without stimulation you can "see" and what you see is not  what has stimulated the retina, but an after the fact cobbler together image. Visual consciousness is not in the eyes. 
 
 Consciousness is assembled after events have happened, our conscious experience lags behind the real world, because it takes time to assemble it, and to include all of the sensory information included in it into one coherent picture. When a finger touches the nose, the speed at which the nerve impulse happens has to be different because the length of neurons they have to pass through is different, yet we feel that the touch at nose and finger happened simultaneously, because the brain waits until the fingers input is in, before assembling the conscious experience. 
 
@@ -752,13 +753,13 @@ Consciousness is how information feels if processed in the right ways.
 
 Consciousness is probably substrate independent. But twice. Because it's dependent on the way that information is processed, which is already independent from particles. 
 
-According to this view, 4 principles of consciousness emerge - something conscious has to be able to store information, manipulate information i.e. do computations on it, it has to be independent to some degree from the rest of the world and it has to do it's information processing in an integrated way, i.e. different parts of the system need to know and respond to other parts of the system, in other words, not really be parts at all, but tightly linked - integrated into it. 
+According to this view, 4 principles of consciousness emerge - something conscious has to be able to store information, manipulate information i.e. do computations on it, it has to be independent to some degree from the rest of the world and it has to do it's information processing in an integrated way, i.e. different parts of the system need to know and respond to other parts of the system, in other words, not  be parts at all, but tightly linked - integrated into it. 
 
 #### Controversies of Consciousness
 
 Can consciousness be splintered? Isn't it? Or is it gradually shifting? Even in our own heads, isn't the subjective experience highly misleading? Especially when looking at people meditating?
 
-Can you trust people who tell you how they feel to be accurate? [Thinking fast and Slow by Daniel Kahnemann](#TODO) has an interesting spin on this. I think you actually can't be trusted, because there are a bunch of biases that severely distort your reported feelings depending on how you are asked exactly...
+Can you trust people who tell you how they feel to be accurate? [Thinking fast and Slow by Daniel Kahnemann](#TODO) has an interesting spin on this. I think you  can't be trusted, because there are a bunch of biases that severely distort your reported feelings depending on how you are asked exactly...
 
 #### How Might AI Consciousness Feel?
 
@@ -770,7 +771,7 @@ Do consciousnesses interfere with each other at different levels? Does a hive mi
 
 Can human societies be conscious?
 
-Human brains have free will in the sense that there are computations being run in humans brains that determine the further actions of us. We feel like we decide what to do because that's exactly what happens. Even though we couldn't influence the outcome of the computation, because there is no shortcuts to running it other than running it, just like in Conway's Game of Life. You can't predict with certainty what a decision will be until you've actually finished computing the decision. 
+Human brains have free will in the sense that there are computations being run in humans brains that determine the further actions of us. We feel like we decide what to do because that's exactly what happens. Even though we couldn't influence the outcome of the computation, because there is no shortcuts to running it other than running it, just like in Conway's Game of Life. You can't predict with certainty what a decision will be until you've  finished computing the decision. 
 
 #### Meaning
 

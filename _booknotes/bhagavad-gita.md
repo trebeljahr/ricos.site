@@ -14,19 +14,19 @@ amazonLink: "https://amzn.to/3xlSo2b"
 
 ## Summary: 
 
-The Bhagavad Gita is one of the most influential books in history I would argue. And for that reason alone it's worth reading, to get a broader idea of different cultures and see where ideas come from and how old some of them  are. It is connected in thought with lots of other philosophical directions, like Taoism or Stoicism. But besides that it's a text of deep belief and a window into the religion of Hinduism. But hidden in it are absolute gems of wisdom, eternal, never changing capital T Truths about the world, that are rediscovered time and time again by thinkers around the world. I think it's impossible to summarize the main ideas, because every other sentence is full with wisdom, but some of the key concept keep occuring, over and over again:
+The Bhagavad Gita is one of the most influential books in history I would argue. And for that reason alone it's worth reading, to get a broader idea of different cultures and see where ideas come from and how old some of them are. It is connected in thought with lots of other philosophical directions, like Taoism or Stoicism. But besides that, it's a text of deep belief and a window into the religion of Hinduism. But hidden in it are absolute gems of wisdom, eternal, never changing capital T Truths about the world, that are rediscovered time and time again by thinkers around the world. I think it's impossible to summarize the main ideas because every other sentence is full of wisdom, but some of the key concepts keep occurring, over and over again:
 
 Attachment is bad. Freedom is breaking free from attachments. 
 Caring about the future and how it is going to unfold is futile, is attachment. However you should *still* do your best, not for the sake of attaining a better future, but because it's the only way. 
 The self is there to be overcome, desires and pains are hindrances on the path to freedom. Wisdom and Enlightenment is when somebody has truly internalized these ideas. When their self is no longer attached, their ego has subsided, when they are no longer attached to the world, but free from it. Then they are like god. Eternal. 
 
-This same idea is the core idea of Buddhism as well. In a way Buddhism is the raw philosophy of Hinduism, stripped of the gods. 
+This same idea is the core idea of Buddhism as well. In a way, Buddhism is the raw philosophy of Hinduism, stripped of the gods. 
 
-One of my most favorite quotes is from this book, I will include it here in the summary: 
+One of my favorite quotes is from this book, I will include it here in the summary: 
 
 > The self is a friend for him who masters himself by the Self; but for him who is not self-mastered, the self is the cruelest foe.
 
-To me, struggling with an addictive and very much worldly attached self, this quote stings, every time I read it, because it hits home. 
+To me, struggling with an addictive and very much worldly attached self, this quote stings, every time I read it because it hits home. 
 
 ## Notes: 
 
@@ -34,7 +34,7 @@ To me, struggling with an addictive and very much worldly attached self, this qu
 
 Bhagavad Gita means "The Song of the Blessed One".
 
-The backdrop is a dialogue between two armies fighting, were the leader of one side stops in the middle of the battle to discourse with his companion - Krishna - a god about the meaning of it all. 
+The backdrop is a dialogue between two armies fighting, where the leader of one side stops in the middle of the battle to discourse with his companion - Krishna - a god about the meaning of it all. 
 
 > Not only is there nothing to overcome, there is no one in particular to overcome it.
 
@@ -90,7 +90,7 @@ Attaching to the outcomes of things and trying to influence them for the sake of
 
 > If I stopped acting, these worlds would plunge into ruin; chaos would overpower all beings; mankind would be destroyed. 
 
-That above is [the main idea of Atlas Shrugged](/booknotes/atlas-shrugged) in disguise. If people stopped acting, they would soon perish. So, even when we have to act, we act, without caring about the fact that we are acting and about what we accomplish.
+The above is [the main idea of Atlas Shrugged](/booknotes/atlas-shrugged) in disguise. If people stopped acting, they would soon perish. So, even when we have to act, we act, without caring about the fact that we are acting and about what we accomplish.
 
 > Desire dwells in the senses, the mind, and the understanding; in all these it obscures wisdom and perplexes the embodied Self. 
 

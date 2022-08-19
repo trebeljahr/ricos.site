@@ -36,7 +36,7 @@ The internet gives instantaneous access to this vast unexplored territory. It's 
 
 > We have broken the law, but we have never doubted it. Yet now, as we walk the forest, we are learning to doubt.
 
-In the book at some point there is a change from the protagonist always using the word "we", to always using the word "I" and my hairs stood on end when it happened. It's like the main figure awoke from a bad dream and found out that there is something worth to live and fight for, they have found their identity. 
+In the book at some point, there is a change from the protagonist always using the word "we", to always using the word "I" and my hairs stood on end when it happened. It's like the main figure awoke from a bad dream and found out that there is something worth living and fighting for, they have found their identity. 
 
 > Neither am I the means to any end others may wish to accomplish. I am not a tool for their use. I am not a servant of their needs. I am not a bandage for their wounds. I am not a sacrifice on their altars.
 

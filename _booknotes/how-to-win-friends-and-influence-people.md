@@ -46,7 +46,7 @@ And that's what this book is about in the end, it is trying to make you a better
 1. Begin in a friendly way.
 1. Get the other person to say yes. 
 1. Get the other person to talk mostly. 
-1. Let other people claim ideas as their if you want that they believe them. 
+1. Let other people claim ideas as theirs if you want that they believe them. 
 1. See things from the perspectives of others. 
 1. Sympathize. 
 1. Appeal to nobler motives.

@@ -253,7 +253,7 @@ Elevators are therefore competent without having any comprehension. The same can
 
 The production of the first atom bomb during the Manhattan project showed that it is very possible to create competence without comprehension. People working there didn't understand what their work was for, yet they were  good at it. 
 
-Humans are  good at generalized problem solving, in our brains we can add and manipulate ontologies in a general fashion. We made the leap to the universality of intelligent replicators and that's where the power of our artifices comes from. Because we can intend reasons. 
+Humans are  good at generalized problem-solving, in our brains we can add and manipulate ontologies in a general fashion. We made the leap to the universality of intelligent replicators and that's where the power of our artifices comes from. Because we can intend reasons. 
 
 **Question that tickles the mind:** Intelligence is incredibly bottom up and we don't understand the flow of data yet at all. How does our brain represent real world facts in memory? And create new concepts by merging old ones? How does information get translated into a form that is storable by the electric sensory weightings of synapses in the brain? 
 

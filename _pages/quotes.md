@@ -643,7 +643,7 @@
 > Explanations are not justified by the means by which they were derived they are justified by the superior ability relative to rival explanations to solve the problems they address.
 — David Deutsch
 
-> As I have said the Inquisition were realists. Yet their theory has this in common with solipsism. Both of them draw an arbitrary boundary beyond which they claim human reason has no access or at least beyond which problem solving is no oath to understanding.
+> As I have said the Inquisition were realists. Yet their theory has this in common with solipsism. Both of them draw an arbitrary boundary beyond which they claim human reason has no access or at least beyond which problem-solving is no oath to understanding.
 — David Deutsch
 
 > Do not complicate explanations beyond necessity.

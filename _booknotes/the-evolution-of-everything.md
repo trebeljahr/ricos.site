@@ -317,7 +317,7 @@ Kevin Kelly - the idea of the "technium" a living "organism" comprised of all of
 
 ### Science is the Daughter of Technology
 
-Science without use cases doesn't progress. Problem solving breeds science, not vice versa.
+Science without use cases doesn't progress. problem-solving breeds science, not vice versa.
 
 > Scientific breakthroughs are the effect, not the cause, of technological change. 
 

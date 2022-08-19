@@ -60,7 +60,7 @@ In contrast, there is the personality ethic, where people only focus on techniqu
 
 > Perhaps, in utilizing our human capacity to build on the foundation of generations before us, we have inadvertently become so focused on our building that we have forgotten the foundation that holds it up; or in reaping for so long where we have not sown, perhaps we have forgotten the need to sow. 
 
-Character is that foundation we have forgotten. If the character is not there to match the actions we want to do, no amount of technique is going to cover that flaw. The problems will remain, and no amount of help will ever be truly successful. Without a good foundation, every house crumbles eventually, no matter the great building techniques used. 
+Character is that foundation we have forgotten. If the character is not there to match the actions we want to do, no amount of techniques is going to cover that flaw. The problems will remain, and no amount of help will ever be truly successful. Without a good foundation, every house crumbles eventually, no matter the great building techniques used. 
 
 Paradigms are maps we make of how the world works. If one has the wrong map, it is very hard to get to the right place. Even if one works on attitude or behavior, that will not solve the problem of getting one where one wants to go. The accuracy of the map is the most important thing. 
 
@@ -74,7 +74,7 @@ And also of [WaitButWhys career map arrow](https://waitbutwhy.com/2018/04/pickin
 
 > We interpret everything we experience through these mental maps. We seldom question their accuracy; we're usually even unaware that we have them. We simply assume that the way we see things is the way they are or the way they should be. 
 
-Conditioning, from early childhood onwards, shapes our paradigms and therefore the way we interpret and act in the world. Past experiences rewire our brains to act and perceive differently in the future. That is called learning and happens involuntarily and almost all the time. We are the product of our whole lifetime's worth of experience.
+Conditioning, from early childhood onwards, shapes our paradigms and therefore the way we interpret and act in the world. Past experiences rewire our brains to act and perceive, differently, in the future. That is called learning and happens involuntarily and almost all the time. We are the product of our whole lifetime's worth of experience.
 
 In the book there is a short 10 seconds example of conditioning on the old/young lady optical illusion, to illustrate the point. Two people could argue for a long long time about what they see, even though they get the same visual input. They see different things and therefore will have a different model of reality, directly shaped by their past perceptions. Updating these models to be accurate then, in other words seeing the world for what it is, irrespective of what we think and have experienced is the goal of getting a clear map. To do that we need to induce a paradigm shift. Or multiple shifts, continually.
 
@@ -179,7 +179,7 @@ Making and keeping promises to ourselves is a good way to build character. Being
 
 > Work only in your circle of influence. Make small commitments and keep them. Be a light, not a judge. Be a model not a critic. Be part of the solution, not part of the problem.
  
-Don't argue about other people's weaknesses. Don't argue for your. When you make a mistake admit it, correct it, and learn from it - immediately. Don't get into a blaming, accusing mode. Work on things you have control over. Work on you. 
+Don't make excuses for your mistakes and weaknesses. When you make a mistake admit it, correct it, and learn from it - immediately. Don't get into a blaming, accusing mode. Work on things you have control over. Work on you. 
 
 ## Habit 2 - Begin with the end in mind
 
@@ -413,7 +413,7 @@ The second thing necessary for Win/Win thinking are relationships. Character bui
 
 > Trust is the essence of Win/Win. Without it, the best we can do is compromise; without trust we lack the credibility for open, mutual learning and communication and real creativity. 
 
-The third ingredient to Win/Win thinking are agreements, which solid relationships make possible. Again the five things need to be clear. 
+The third ingredient to Win/Win thinking is coming to agreements. This is made possible by solid relationships. Again the five things need to be clear. 
 - Desired Results (expectations) 
 - Guidelines
 - Available Resources
@@ -527,7 +527,7 @@ physical, social, mental and spiritual. Habit 7 is about expressing all of them 
 
 The physical dimension is about taking care of the body. Exercise, healthy foods and rest are what we need to have enough of to fulfill that aspect. 
 
-Spiritual renewal is about our inner peace. Sitting and reading good literature or listening to nice music can be renewal. Meditation, prayer or simply being in nature could be that renewal. It's also about reflecting on core values. Of taking the time to think and internalize what is important - what our centers and principles are. Mental renewal is about continuing education and learning throughout life. In a way, it can be summarized as Warren Buffets' idea of - going to bed a little wiser than when you woke up. But it is also about looking inward. 
+Spiritual renewal is about our inner peace. Sitting and reading good literature or listening to nice music can be renewal. Meditation, prayer or simply being in nature could be that renewal. It's also about reflecting on core values. Of taking the time to think and internalize what is important - what our centers and principles are. Mental renewal is about continuing education and learning throughout life. In a way, it can be summarized as Warren Buffet's idea of - going to bed a little wiser than when you woke up. But it is also about looking inward.
 
 > It is extremely valuable to train the mind to stand apart and examine its own program. That, to me, is the definition of a liberal education - the ability to examine the programs of life against larger questions and purposes and other paradigms. 
 

@@ -17,8 +17,8 @@ export default function Needlestack({ content }: { content: string }) {
 }
 
 export async function getStaticProps() {
-  const quotesSrc = join(process.cwd(), "_pages", "needlestack");
-  const fileContents = await fs.readFile(quotesSrc, "utf-8");
+  const needlestackSrc = join(process.cwd(), "page-content", "needlestack");
+  const fileContents = await fs.readFile(needlestackSrc, "utf-8");
   return {
     props: {
       content: matter(fileContents).content || "",

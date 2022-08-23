@@ -42,9 +42,9 @@ export default function Quotes({ quotes }: Props) {
 }
 
 export async function getStaticProps() {
-  const quotesSrc = join(process.cwd(), "page-content", "quotes");
+  const quotesSrc = join(process.cwd(), "page-content", "quotes.md");
   const fileContents = await fs.readFile(quotesSrc, "utf-8");
-  const { data, content } = matter(fileContents);
+  const { content } = matter(fileContents);
   const [, ...quotes] = content.split("\n> ");
   const quoteData = quotes.map((quote) => {
     const [text, author] = quote

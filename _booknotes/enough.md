@@ -196,8 +196,7 @@ Accounting is necessary for a business but it shouldn't be the objective to prod
 
 Professionalism declines. 
 
-Professionalism is this: Commitment to clients' interests, as well as societies interests
-2. Special Knowledge
+Professionalism is this: Commitment to clients' interests, as well as society's interests 2. Special Knowledge
 3. Specific Skills/Practices
 4. Capacity for Ethical Judgement
 5. Organized Learning from Experience
@@ -233,7 +232,7 @@ In a good world, shareholders would pay less for fund management, investors woul
 
 ### Chapter 7 - Too Much Management, Not Enough Leadership
 
-Person mentioned as a management Guru: [Warren Bennis](https://en.wikipedia.org/wiki/Warren_Bennis)
+Management Guru - [Warren Bennis](https://en.wikipedia.org/wiki/Warren_Bennis).
 
 Managers administer, they are copies. They imitate, focus on systems, rely on control, think about the short term and accept the status quo. 
 

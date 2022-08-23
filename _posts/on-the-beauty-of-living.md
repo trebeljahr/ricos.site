@@ -2,13 +2,14 @@
 title: "The beauty of being alive."
 subtitle: "And the fragility of humanity. Or why things matter."
 excerpt: "I am sitting alone in my room. It is dark outside and my speakers play some soft and mellow music. FKJ, beautiful piano, some techno mixed into it... "
-coverImage: "/assets/blog/fkj-salar-de-uyuni-cercle.jpg"
 date: "2021-02-16T05:35:07.322Z"
 author:
   name: Rico Trebeljahr
   picture: "/assets/blog/profile.jpeg"
 ogImage:
   url: "/assets/blog/fkj-salar-de-uyuni-cercle.jpg"
+coverImage: "/assets/blog/fkj-salar-de-uyuni-cercle.jpg"
+
 ---
 
 I am sitting alone in my room. It is dark outside and my speakers play some soft and mellow music. FKJ, beautiful piano, with some techno mixed into it. The video is from one of my favorite performances, where FKJ plays in the middle of the Salar de Uyuni - a large flooded salt flat in Bolivia.

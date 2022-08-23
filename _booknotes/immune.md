@@ -413,7 +413,7 @@ Variolation - take some infected skin or pus from somebody ill, grind it and sti
 There are multiple ways for vaccinating and it's quite hard to provoke an immune response without contracting the disease itself because the immune system makes so damn sure to not activate without good reason to do so! 
 
 #### Passive Immunization - Free Fish
-Antibodies can also attack toxins, since toxins are mostly proteins themselves, there can be antibodies against specific toxins. Antivenoms are those antibodies in concentrated form. Similarly one could take antibodies from other people or animals that contracted the disease and use those as a medicamentation. However, the protection is time limited since the antibodies decay over time. In that sense it is like giving somebody a fish, they will use it up and become hungry again. 
+Antibodies can also attack toxins, since toxins are mostly proteins themselves, there can be antibodies against specific toxins. Antivenoms are those antibodies in concentrated form. Similarly one could take antibodies from other people or animals that contracted the disease and use those as medicine. However, the protection is time limited since the antibodies decay over time. In that sense it is like giving somebody a fish, they will use it up and become hungry again. 
 
 #### Active Immunization - Learning How to Fish
 

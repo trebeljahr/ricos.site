@@ -374,7 +374,7 @@ Why didn't CRISPR-style gene drive genes evolve that would force themselves to b
 
 When people think of new ideas to make life better that leads to the evolution of those ideas and a "Beginning of Infinity". Except that there are taboos in place which effectively prevent this upward spiral of growth! The idea of those taboos is that one has a metric to judge oneself and others and disable the generation of new ideas in the brain. Ideas that can spread and then stop people from having new ideas are very good memes.
 
-Another important question: How can one protect oneself from dangerous memes? And even more important - how could one design a meme that has a distinct positive benefit for society **and** also is a good meme?
+Another important question: How can one protect oneself from dangerous memes? And even more important - how could one design a meme that has a distinct positive benefit for society **and** also is good at reproducing itself?
 
 > This destruction of human minds makes static societies almost unimaginable from our perspective. Countless human beings, hoping throughout lifetimes, and for generations, for their suffering to be relieved, not only fail to make progress in realizing any such hope: they largely fail even to try to make any, or even to think about trying.
 

@@ -14,11 +14,11 @@ amazonLink: "https://amzn.to/3FKf8Lu"
 
 ## Summary: 
 
-This book is truly wonderful. A quick read, filled with extremely beautiful, almost poetry like prose, and small short stories, about deeply human desires, fears and ideas, woven into small short stories about different universes, where time works completely different from how it does in ours. 
+This book is truly wonderful. A quick read, filled with extremely beautiful, almost poetry-like prose, and small short stories, about deeply human desires, fears and ideas, woven into small short stories about different universes, where time works completely different from how it does in ours. 
 
-The book is stimulating intelectually and heartwarming at the same time, a  tough combo to find and I almost cried a few times while I was reading it on a hot summer afternoon in the Delhi Lodhi gardens. 
+The book is stimulating intellectually and heartwarming at the same time, a  tough combo to find and I almost cried a few times while I was reading it on a hot summer afternoon in the Delhi Lodhi gardens. 
 
-I think the power of this book, comes from the fact, that even though those world seem dreamy and distant and oddly weird, we can see through those dreamy visions, and take away lessons into our real world, where time works nothing like that in the fictional worlds, and yet we can learn from them and their stories a great deal. Whether that's from the people, trying to freeze time, forget the past, or the future, or the present, or those who would like to speed time up and hasten through life, from all these little stories, we can learn small but powerful lessons about our - time.
+I think the power of this book, comes from the fact, that even though those worlds seem dreamy and distant and oddly weird, we can see through those dreamy visions, and take away lessons into our real world, where time works nothing like that in the fictional worlds, and yet we can learn from them and their stories a great deal. Whether that's from the people, trying to freeze time, forget the past, or the future, or the present, or those who would like to speed time up and hasten through life, from all these little stories, we can learn small but powerful lessons about our - time.
 
 There are no "real" book notes for this one, just a collection of quotes from it, little snippets and passages, that I enjoyed a lot and wanted to keep in one place:
 
@@ -51,7 +51,8 @@ Here the future is already known:
 
 > He breathes the moist air and feels oddly free to do as he pleases, free in a world without freedom.
 
-In this universe, time exists as flying nightingales that when captured, slow time to a halt, freezing in the moment, whence it was caught: 
+In this universe, time exists as flying nightingales that when captured, slow time to a halt, freezing at the moment, when it was caught: 
+
 > The catchers delight in the moment so frozen but soon discover that the nightingale expires, its clear, flutelike song diminishes to silence, the trapped moment grows withered and without life. 
 
 > He feels empty. He has no interest in reviewing patents or talking to Besso or thinking of Physics. He feels empty, and he stares without interest at the tiny black speck and the Alps.

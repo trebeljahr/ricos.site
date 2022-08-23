@@ -7,7 +7,7 @@ const bookReviewsDirectory = join(process.cwd(), "booknotes");
 
 function getBySlug(slug: string, fields: string[] = [], directory: string) {
   const realSlug = slug.replace(/\.md$/, "");
-  const fullPath = join(directory, `${realSlug}.md`);
+  const fullPath = join(directory, `${realSlug}`);
   const fileContents = fs.readFileSync(fullPath, "utf8");
   const { data, content } = matter(fileContents);
 

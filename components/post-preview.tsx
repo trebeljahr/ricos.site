@@ -1,32 +1,80 @@
+import Link from "next/link";
 import DateFormatter from "./date-formatter";
 import { PostCoverImage } from "./cover-image";
-import Link from "next/link";
-import Author from "../types/author";
+import { Post } from "../types/post";
 
-type Props = {
+interface PreviewTextProps {
   title: string;
-  coverImage: string;
-  date: string;
   excerpt: string;
-  author: Author;
-  slug: string;
+  date: string;
+}
+
+export const PostPreviewText = ({
+  title,
+  excerpt,
+  date: date,
+}: PreviewTextProps) => {
+  return (
+    <div className="post-preview-text">
+      <h2>{title}</h2>
+      <DateFormatter date={date} />
+      <p>{excerpt}</p>
+    </div>
+  );
 };
 
-const PostPreview = ({ title, coverImage, date, excerpt, slug }: Props) => {
+interface PreviewImageProps {
+  title: string;
+  src: string;
+}
+
+export const PostPreviewImage = ({ title, src }: PreviewImageProps) => {
+  return (
+    <div className="post-preview-image">
+      <PostCoverImage title={title} src={src} />
+    </div>
+  );
+};
+
+type Props = {
+  post: Post;
+  isHeroPost?: boolean;
+};
+
+export const PostPreview = ({
+  post: { title, coverImage, date, excerpt, slug },
+  isHeroPost = false,
+}: Props) => {
   return (
     <Link as={`/posts/${slug}`} href="/posts/[slug]">
-      <a className="more-posts-preview">
-        <div className="more-posts-image">
-          <PostCoverImage title={title} src={coverImage} />
-        </div>
-        <div className="post-preview-text">
-          <h2>{title}</h2>
-          <DateFormatter dateString={date} />
-          <p>{excerpt}</p>
-        </div>
+      <a className={isHeroPost ? "hero-post-preview" : "post-preview"}>
+        <PostPreviewImage title={title} src={coverImage} />
+        <PostPreviewText title={title} date={date} excerpt={excerpt} />
       </a>
     </Link>
   );
 };
 
-export default PostPreview;
+export const HeroPostPreview = ({ post }: { post: Post }) => {
+  return (
+    <section>
+      <h1 className="posts-page-title">Latest Post:</h1>
+      <div className="hero-post-container">
+        <PostPreview post={post} isHeroPost={true} />
+      </div>
+    </section>
+  );
+};
+
+export const OtherPostsPreview = ({ posts }: { posts: Post[] }) => {
+  return (
+    <section>
+      <h2 className="posts-page-title">More Posts:</h2>
+      <div className="other-posts-container">
+        {posts.map((post) => {
+          return <PostPreview key={post.slug} post={post} />;
+        })}
+      </div>
+    </section>
+  );
+};

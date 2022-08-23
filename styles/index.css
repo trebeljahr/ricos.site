@@ -322,6 +322,10 @@ button {
   align-items: center;
 }
 
+.header-motto {
+  display: none;
+}
+
 .round {
   border-radius: 100%;
 }
@@ -347,37 +351,6 @@ button {
   text-align: center;
   line-height: 1;
   margin-bottom: 0;
-}
-
-.post-preview-text {
-  padding-right: 0.5rem;
-}
-
-.post-preview-text,
-.hero-post-preview {
-  color: black;
-}
-.post-preview-text:hover,
-.hero-post-preview:hover {
-  color: black;
-}
-
-.header-motto {
-  display: none;
-}
-
-.hero-post-image,
-.more-posts-image {
-  position: relative;
-  width: 100%;
-}
-
-.hero-post-image {
-  height: 50vh;
-}
-
-.more-posts-image {
-  height: 30vh;
 }
 
 .main-page {
@@ -442,16 +415,6 @@ li {
   margin-bottom: 10px;
 }
 
-.more-posts-preview {
-  display: block;
-  margin-bottom: 2rem;
-}
-
-.more-posts-preview,
-.hero-post-preview {
-  cursor: pointer;
-}
-
 .book-info {
   margin-bottom: 1rem;
 }
@@ -466,10 +429,6 @@ li {
 
 .book-preview-text {
   margin-top: 1rem;
-}
-
-.post-preview-text > h2 {
-  padding-bottom: 0.5rem;
 }
 
 @media only screen and (min-width: 600px) {
@@ -503,14 +462,6 @@ li {
     margin: 0;
   }
 
-  .hero-post-preview {
-    margin-bottom: 7rem;
-  }
-
-  .hero-post-image {
-    height: 50vh;
-  }
-
   .read-more {
     margin-top: 50px;
   }
@@ -527,27 +478,6 @@ li {
   .markdown ol {
     padding-left: 1.8rem;
     list-style: decimal outside;
-  }
-
-  .more-posts-preview:hover,
-  .hero-post-preview:hover {
-    transform: scale(1.01);
-    box-shadow: 0 0 14px rgba(44, 44, 44, 0.4);
-  }
-
-  .more-posts-preview,
-  .hero-post-preview {
-    margin-bottom: 2rem;
-    border-radius: 0.5rem;
-    transition: all 0.3s;
-    overflow: hidden;
-  }
-
-  .post-preview-text *:first-child {
-    margin-top: 0px;
-  }
-  .post-preview-text *:last-child {
-    margin-bottom: 0px;
   }
 }
 
@@ -576,26 +506,6 @@ li {
     grid-template-rows: auto;
   }
 
-  .more-stories-container {
-    margin-bottom: 8rem;
-  }
-  .more-posts-preview {
-    display: grid;
-    grid-template-columns: 20rem auto;
-    grid-column-gap: 2rem;
-  }
-
-  .post-preview-text {
-    height: fit-content;
-    max-height: 20rem;
-    overflow-y: hidden;
-  }
-
-  .more-posts-image {
-    height: 20rem;
-    margin: 0;
-  }
-
   .main-page {
     max-width: 936px;
     margin-left: auto;
@@ -607,10 +517,6 @@ li {
 }
 
 @media only screen and (min-width: 2500px) {
-  .more-stories-container {
-    display: grid;
-    grid-template-columns: 50% 50%;
-  }
   .book-cover-image {
     width: calc(var(--main-width) / 4);
     height: calc(1.6 * calc(var(--main-width) / 4));

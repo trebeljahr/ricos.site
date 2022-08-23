@@ -1,6 +1,6 @@
 import Author from "./author";
 
-type PostType = {
+export type Post = {
   subtitle?: string;
   slug: string;
   title: string;
@@ -13,5 +13,3 @@ type PostType = {
   };
   content: string;
 };
-
-export default PostType;

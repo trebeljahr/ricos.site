@@ -1,0 +1,96 @@
+.post-preview-text {
+  color: black;
+  padding-right: 0.5rem;
+}
+.post-preview-text:hover {
+  color: black;
+}
+
+.post-preview-text > h2 {
+  padding-bottom: 0.5rem;
+}
+
+.post-preview {
+  display: block;
+  margin-bottom: 2rem;
+}
+
+.post-preview,
+.hero-post-preview {
+  cursor: pointer;
+}
+
+.post-preview-image {
+  position: relative;
+  width: 100%;
+}
+
+.hero-post-preview > .post-preview-image {
+  height: 50vh;
+}
+
+.post-preview > .post-preview-image {
+  height: 30vh;
+}
+
+@media only screen and (min-width: 600px) {
+  .hero-post-container {
+    margin-bottom: 5rem;
+  }
+
+  .hero-post-preview {
+    display: block;
+  }
+
+  .hero-post-preview > .post-preview-image {
+    height: 50vh;
+  }
+
+  .post-preview,
+  .hero-post-preview {
+    margin-bottom: 2rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s;
+    overflow: hidden;
+  }
+
+  .post-preview:hover,
+  .hero-post-preview:hover {
+    transform: scale(1.01);
+    box-shadow: 0 0 14px rgba(44, 44, 44, 0.4);
+  }
+
+  .hero-post-preview > .post-preview-text {
+    margin: 1rem;
+  }
+}
+
+@media only screen and (min-width: 1092px) {
+  .other-posts-container {
+    margin-bottom: 8rem;
+  }
+
+  .post-preview {
+    display: grid;
+    grid-template-columns: 20rem auto;
+    grid-column-gap: 2rem;
+  }
+
+  .post-preview > .post-preview-image {
+    height: 20rem;
+    margin: 0;
+  }
+
+  .post-preview-text {
+    height: fit-content;
+    max-height: 20rem;
+    overflow-y: hidden;
+  }
+}
+
+@media only screen and (min-width: 2500px) {
+  .other-posts-container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+  }
+}

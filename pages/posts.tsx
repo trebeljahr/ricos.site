@@ -1,30 +1,19 @@
-import MoreStories from "../components/more-stories";
-import HeroPost from "../components/hero-post";
 import Layout from "../components/layout";
 import { getAllPosts } from "../lib/api";
-import Post from "../types/post";
+import { Post } from "../types/post";
+import { HeroPostPreview, OtherPostsPreview } from "../components/post-preview";
 
 type Props = {
-  allPosts: Post[];
+  posts: Post[];
 };
 
-const Posts = ({ allPosts }: Props) => {
-  const heroPost = allPosts[0];
-  const morePosts = allPosts.slice(1);
+const Posts = ({ posts }: Props) => {
+  const heroPost = posts[0];
+  const morePosts = posts.slice(1);
   return (
     <Layout pageTitle="Posts">
-      <h1 className="posts-page-title">Latest Posts:</h1>
-      {heroPost && (
-        <HeroPost
-          title={heroPost.title}
-          coverImage={heroPost.coverImage}
-          date={heroPost.date}
-          author={heroPost.author}
-          slug={heroPost.slug}
-          excerpt={heroPost.excerpt}
-        />
-      )}
-      {morePosts.length > 0 && <MoreStories posts={morePosts} />}
+      {heroPost && <HeroPostPreview post={heroPost} />}
+      {morePosts.length > 0 && <OtherPostsPreview posts={morePosts} />}
     </Layout>
   );
 };
@@ -32,7 +21,7 @@ const Posts = ({ allPosts }: Props) => {
 export default Posts;
 
 export const getStaticProps = async () => {
-  const allPosts = getAllPosts([
+  const posts = getAllPosts([
     "title",
     "date",
     "slug",
@@ -41,6 +30,6 @@ export const getStaticProps = async () => {
     "excerpt",
   ]);
   return {
-    props: { allPosts },
+    props: { posts },
   };
 };

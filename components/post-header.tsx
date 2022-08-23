@@ -17,7 +17,7 @@ const PostHeader = ({ title, subtitle, date, author }: Props) => {
       <PostSubTitle>{subtitle}</PostSubTitle>
       {date || author ? (
         <div className="post-meta">
-          {date && <DateFormatter dateString={date} />}
+          {date && <DateFormatter date={date} />}
           {author && <Avatar name={author.name} picture={author.picture} />}
         </div>
       ) : null}

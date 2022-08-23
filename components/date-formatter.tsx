@@ -1,10 +1,10 @@
 import { parseISO, format } from "date-fns";
 
 type Props = {
-  dateString: string;
+  date: string;
 };
 
-const DateFormatter = ({ dateString }: Props) => {
+const DateFormatter = ({ date: dateString }: Props) => {
   const date = parseISO(dateString);
   return (
     <div className="publish-date">

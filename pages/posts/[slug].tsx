@@ -5,10 +5,10 @@ import PostHeader from "../../components/post-header";
 import Layout from "../../components/layout";
 import { getPostBySlug, getAllPosts } from "../../lib/api";
 import { PostTitle } from "../../components/post-title";
-import PostType from "../../types/post";
 import { ReadMore } from "../../components/more-stories";
 import { UtteranceComments } from "../../components/comments";
 import { ToTopButton } from "../../components/ToTopButton";
+import { Post as PostType } from "../../types/post";
 
 type Props = {
   post: PostType;

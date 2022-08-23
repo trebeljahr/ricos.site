@@ -6,13 +6,13 @@
 
 The internet is a giant haystack of content and information. This haystack is filled with a lot of stuff. Most of it is useless hay. But among the hay are some beautiful nuggets of information – literal needles in a haystack. Collecting those over time leads to a stack of useful things - a needlestack.
 
-So a needlestack is a personal, curated collection of needles (websites) that somebody found on the internet. Needles that they are glad to have found. Needles that they want to share with others. Needles carefully sifted from the hay. 
+So a needlestack is a personal, curated collection of needles (websites) that somebody found on the internet. Needles that they are glad to have found. Needles that they want to share with others. Needles, that were carefully sifted from the hay. 
 
 Sometimes the needles have small notes and explanations attached to them, sometimes they don't and they are just plain old links.
 
 This site is *my* needlestack and it reflects parts of the internet that *I love*. I sincerely hope it will be of use to you, that's why I put it out here on the internet, but it might not be. People are different. So, enjoy browsing, and don't get overwhelmed, since even a stack of needles can be quite big.
 
-The idea of collecting information in this format and giving it it's unique name "Needlestack" is not mine. I found it on the blog of Ethan Maurice and loved it so much that I had to make my own list of awesomeness.
+The idea of collecting information in this format and giving it its unique name "Needlestack" is not mine. I found it on the blog of Ethan Maurice and loved it so much that I had to make my list of awesomeness.
 
 [Here's his](https://ethanmaurice.com/needlestack) in case you're curious.
 
@@ -22,29 +22,29 @@ This needlestack will be organized into different sections. You can jump from se
 
 ### Brain Stuff
 
-My all time favorite lecture series has to be the [Lecture Collection on Human Behavioral Biology by Robert Sapolsky](https://www.youtube.com/playlist?list=PL848F2368C90DDC3D). I have learned countless things from it. About how the human brain works and what kinds of biases are at play when we think and how nature and nurture work together to produce our unique behaviors. The best and the worst sides of humans can be explained by neuroscience. 
+My all-time favorite lecture series has to be the [Lecture Collection on Human Behavioral Biology by Robert Sapolsky](https://www.youtube.com/playlist?list=PL848F2368C90DDC3D). I have learned countless things from it. About how the human brain works and what kinds of biases are at play when we think and how nature and nurture work together to produce our unique behaviors. The best and the worst sides of humans can be explained by neuroscience. 
 
-What I love the most about these lectures is that everything Professor Sapolsky looks at everything from multiple different angles, and dissects ideas carefully to see where they hold true and where they don't. Sure, that makes things wildly more complicated, but it is much closer to the real world and helps to put ideas into perspective. There are a lot of things that go into human behavior and all of them are interesting and get an introductory treatment in this series. It's simply – amazing.
+What I love the most about these lectures is that everything Professor Sapolsky looks at everything from multiple different angles, and dissects ideas carefully to see where they hold and where they don't. Sure, that makes things wildly more complicated, but it is much closer to the real world and helps to put ideas into perspective. There are a lot of things that go into human behavior and all of them are interesting and get an introductory treatment in this series. It's simply – amazing.
 
-[MIT 9.13 - The Human Brain](https://www.youtube.com/playlist?list=PLUl4u3cNGP60IKRN_pFptIBxeiMc0MCJP) is entirely about how the human brain works and how people set up clever experiments using high and low tech methods to find out more about it. It's fascinating to learn about how people come up with different ways of teasing apart whether or not a certain structure in the brain plays a role in face perception or language production or not. The instructor, Nancy Kanwisher, is *amazing* at explaining the subtle differences in experimental setup, that can make or break results. And she underlines every point she makes with *tons* of examples from studies of her colleagues.
+[MIT 9.13 - The Human Brain](https://www.youtube.com/playlist?list=PLUl4u3cNGP60IKRN_pFptIBxeiMc0MCJP) is entirely about how the human brain works and how people set up clever experiments using high and low-tech methods to find out more about it. It's fascinating to learn about how people come up with different ways of teasing apart whether or not a certain structure in the brain plays a role in face perception or language production or not. The instructor, Nancy Kanwisher, is *amazing* at explaining the subtle differences in an experimental setup, that can make or break results. And she underlines every point she makes with *tons* of examples from studies of her colleagues.
 
-[Personality and Its Transformations by Jordan Peterson](https://www.youtube.com/playlist?list=PL22J3VaeABQApSdW8X71Ihe34eKN6XhCi) is a solid introduction to psychology and thinking about the human brain. I watched and enjoyed the whole 2017 edition of these lectures and liked all of them except one, where he was bashing some feminist video for no good reason. The recommended reading from in between the lectures is also huge and availabe in the footnotes of the videos (and worth reading).  
+[Personality and Its Transformations by Jordan Peterson](https://www.youtube.com/playlist?list=PL22J3VaeABQApSdW8X71Ihe34eKN6XhCi) is a solid introduction to psychology and thinking about the human brain. I watched and enjoyed the whole 2017 edition of these lectures and liked all of them except one, where he was bashing some feminist video for no good reason. The recommended reading in between the lectures is also huge and available in the footnotes of the videos (and worth reading).  
 
 ### Mathematics 
 
 - [MIT 18.01 - Single Variable Calculus](https://www.youtube.com/playlist?list=PL590CCC2BC5AF3BC1) 
-- [MIT 18.02 - Multi Variable Calculus](https://www.youtube.com/playlist?list=PL4C4C8A7D06566F38) 
+- [MIT 18.02 - Multi-Variable Calculus](https://www.youtube.com/playlist?list=PL4C4C8A7D06566F38) 
 - [MIT 18.03 - Differential Equations](https://www.youtube.com/playlist?list=PL4C4C8A7D06566F38)
 
-All of these are  useful to brush up on the fundamental topics underlying many other concepts in a lot of different fields (engineering, physics, machine learning, software engineering). You can also use these lectures, to learn these things from scratch. In fact that's kind of what I did. There is one important thing to remember though - without practicing these mathematical tools, you will very likely not  understand them. So it's a good idea to take notes and then even more importantly to look at and solve some or all of the problem sets. Maybe even pick up some of the syllabus books to go along with the videos if you truly want to understand and be able to use the mathematics explained. 
+All of these are useful to brush up on the fundamental topics underlying many other concepts in a lot of different fields (engineering, physics, machine learning, software engineering). You can also use these lectures, to learn these things from scratch. That's kind of what I did. There is one important thing to remember though - without practicing these mathematical tools, you will very likely not understand them. So it's a good idea to take notes and then even more important to look at and solve some or all of the problem sets. Maybe even pick up some of the syllabus books to go along with the videos if you truly want to understand and be able to use the mathematics explained. 
 
 I don't think there are video lectures for 
 - [MIT 18.04 - Complex Variables with Applications](https://ocw.mit.edu/courses/18-04-complex-variables-with-applications-spring-2018/) 
 - [MIT 18.05 - Introduction to Probability and Statistics](https://ocw.mit.edu/courses/18-05-introduction-to-probability-and-statistics-spring-2014/). 
 
-I searched for them, but didn't find any videos on YouTube or on the MIT OCW website sadly...
+I searched for them but didn't find any videos on YouTube or the MIT OCW website sadly...
 
-[MIT 18.06 - Linear Algebra](https://www.youtube.com/playlist?list=PLE7DDD91010BC51F8) with Gilbert Strang is one of my most cherished lecture series I have ever watched. The guy just has a knack of explaining dense mathematical concepts, making them fun to follow and easy to understand. He is enthusiastic about the topics and makes connections between different areas of mathematics that look absolutely beautiful. Gilbert Strang is just one of the best teachers out there and everything he has on MIT OCW that I have watched, is solid gold. There are a few other lecture series of his that I am aware of: 
+[MIT 18.06 - Linear Algebra](https://www.youtube.com/playlist?list=PLE7DDD91010BC51F8) with Gilbert Strang is one of the most cherished lecture series I have ever watched. The guy just has a knack for explaining dense mathematical concepts, making them fun to follow and easy to understand. He is enthusiastic about the topics and makes connections between different areas of mathematics that look beautiful. Gilbert Strang is just one of the best teachers out there and everything he has on MIT OCW that I have watched, is solid gold. There are a few other lecture series of his that I am aware of: 
 - [A 2020 Vision of Linear Algebra](https://www.youtube.com/playlist?list=PLUl4u3cNGP61iQEFiWLE21EJCxwmWvvek) 
 - [Highlights of Calculus](https://www.youtube.com/playlist?list=PLBE9407EA64E2C318), [MIT Learn Differential Equations](https://www.youtube.com/playlist?list=PLUl4u3cNGP63oTpyxCMLKt_JmB0WtSZfG) 
 - [MIT 18.065 Matrix Methods in Data Analysis](https://www.youtube.com/playlist?list=PLUl4u3cNGP63oMNUHXqIUcrkS2PivhN3k) 
@@ -55,7 +55,7 @@ I still want to watch 18.065, 18.085 and 18.086 in their entirety. But so far I 
 
 ### Software Engineering
 
-Learning about Algorithms is  interesting and I think that MIT has a couple of solid lecture series on this topic. 
+Learning about Algorithms is interesting and I think that MIT has a couple of solid lecture series on this topic. 
 
 [MIT 6.006 Introduction to Algorithms](https://www.youtube.com/playlist?list=PLUl4u3cNGP61Oq3tWYp6V_F-5jb5L2iHb) is one of those. 
 There is an [updated version](https://www.youtube.com/playlist?list=PLUl4u3cNGP63EdVPNLG3ToM6LaEUuStEY) from 2020, but I haven't watched any of it yet, so I am not sure if it's better or worse than the older one.  
@@ -64,48 +64,48 @@ One of the instructors, Erik Demaine, also taught [MIT 6.851 - Advanced Data Str
 
 The other instructor, Srinivas Devadas, also taught [MIT 6.046J Design and Analysis of Algorithms](https://www.youtube.com/playlist?list=PLUl4u3cNGP6317WaSNfmCvGym2ucw3oGp) which you might want to check out after watching MIT 6.006. Some of it overlaps with 6.006 though. 
 
-With all of these you should keep in mind that to learn and  understand algorithms, you have to write your versions. And besides writing your implementations you also have to practice applying different algorithms and strategies to real world problem-solving or by doing something like Code Katas.
+With all of these you should keep in mind that to learn and understand algorithms, you have to write your versions. And besides writing your implementations you also have to practice applying different algorithms and strategies to real-world problem-solving or by doing something like Code Katas.
 
-[The Missing Semester lectures from MIT](https://www.youtube.com/playlist?list=PLyzOVJj3bHQuloKGG59rS43e29ro7I57J) are so extremely worth it if you work as a developer or software engineer! They are a must watch even if you just want to become more of a power user. They walk through setting up tools and systems on computers that take some time to learn but ultimately will make you much more efficient at doing things. And those are the kinds of things where, if you didn't already know them, you will go like: "Huh... I wish somebody could have showed this to me sooner". It's  a bag of tricks on how to use *nix style operating systems. Introducing tools like tldr, fzf, vim, screen or tmux. There are lots of things to take away from these lectures. The best thing is that each lecture is separate from the others and focuses on one thing only. So you can kind of watch only the ones you want or need. 
+[The Missing Semester lectures from MIT](https://www.youtube.com/playlist?list=PLyzOVJj3bHQuloKGG59rS43e29ro7I57J) are so extremely worth it if you work as a developer or software engineer! They are a must-watch even if you just want to become more of a power user. They walk through setting up tools and systems on computers that take some time to learn but ultimately will make you much more efficient at doing things. And those are the kinds of things where, if you didn't already know them, you will go like: "Huh... I wish somebody could have shown this to me sooner". It's a bag of tricks on how to use *nix style operating systems. Introducing tools like tldr, fzf, vim, screen or tmux. There are lots of things to take away from these lectures. The best thing is that each lecture is separate from the others and focuses on one thing only. So you can kind of watch only the ones you want or need. 
 
-If you want to learn more about computer graphics and the mathematics under the hood I can not recommend watching [MIT 6.837 - Introduction to Computer Graphics](https://www.youtube.com/playlist?list=PLQ3UicqQtfNuBjzJ-KEWmG1yjiRMXYKhh) enough. It will teach you so many interesting things, it's unbelievable. How to use matrices and affine transformations to transform different coordinate systems into each other. Or how to construct curves by using different sets of basis equations and how to skin meshes and animate bones etc. And it dives into it from the mathematics side of things, explaining all the key concepts along the way.
+If you want to learn more about computer graphics and the mathematics under the hood I can not recommend watching [MIT 6.837 - Introduction to Computer Graphics](https://www.youtube.com/playlist?list=PLQ3UicqQtfNuBjzJ-KEWmG1yjiRMXYKhh) enough. It will teach you so many interesting things, it's unbelievable. How to use matrices and affine transformations to transform different coordinate systems into each other. Or how to construct curves by using different sets of basic equations and how to skin meshes and animate bones etc. And it dives into it from the mathematics side of things, explaining all the key concepts along the way.
 
-One of the best lecture series out there (and one of my favorites) is about how programming languages and compilers work under the hood (with a focus on the LISP compiler). [MIT 6.001 - Structure and Interpretation of Computer Programs](https://www.youtube.com/playlist?list=PLE18841CABEA24090) is *awesome* but old, and one that I have watched completely. The best moment is when the two instructors put on wizard hats to explain the magic of the metacircular evaluator and how the language almost pulls itself out of thin air using the magic of recursion and the eval and apply procedures. It's just dope stuff. 
+One of the best lecture series out there (and one of my favorites) is about how programming languages and compilers work under the hood (with a focus on the LISP compiler). [The MIT 6.001 - Structure and Interpretation of Computer Programs - Lecture Series](https://www.youtube.com/playlist?list=PLE18841CABEA24090) is *awesome* but old, and one that I have watched completely. The best moment is when the two instructors put on wizard hats to explain the magic of the metacircular evaluator and how the language almost pulls itself out of thin air using the magic of recursion and the eval and apply procedures. It's just dope stuff. 
 
-## Developer journey
+## Developer Journey
 
-As you may or may not know – I am a software engineer. I consider this one of the best jobs to have and would recommend everybody to learn at least some programming in their lifetime. Programming is a life changing and empowering ability and it's so fun and enjoyable too. It can give you flow like experiences and I like comparing it to playing an instrument or creating art.
+As you may or may not know – I am a software engineer. I consider this one of the best jobs to have and would recommend everybody to learn at least some programming in their lifetime. Programming is a life-changing and empowering ability and it's so enjoyable too. It can give you flow-like experiences and I like comparing it to playing an instrument or creating art.
 
 Coding can be deeply relaxing, extremely stimulating and intellectually intriguing, *all* at the same time. And it is creative too. It allows you to build your things, be that websites, games, apps, or other things. Things that have never existed before. 
 
-Plus, becoming a better programmer is an open ended journey. The amount of stuff people create and put out there every year is just enormous. So enormous that you can not learn it all. Coding is something that you can keep learning and gain greater understanding of for the rest of your life.
+Plus, becoming a better programmer is an open-ended journey. People create and put so much stuff out there every year, it is just enormous. So enormous that you can not learn it all. Coding is something that you can keep learning and gain a greater understanding of for the rest of your life. It's an open-ended journey.
 
-This section of the needlestack is filled with the needles specific to this hobby of mine. A hobby that eventually turned into a job and that is now an integral part of my life. If you are not interested in computers and coding, or any of these "tech" things, you can safely skip this part and [continue down here.](#stuff-on-github)
+This section of the needlestack is filled with needles specific to this hobby of mine. A hobby that eventually turned into a job and that is now an integral part of my life. If you are not interested in computers and coding, or any of these "tech" things, you can safely skip this part and [continue down here.](#stuff-on-github)
 
 ### How to Learn Programming
 
-My favorite website for learning how to program is by far [FreeCodeCamp](https://freecodecamp.org). It has a full fledged interactive curriculum that gives you 100% of the knowledge you need to start your career as a junior level fullstack developer. I have done their whole curriculum in 2017 and have since then worked at companies such as Softgames, Klarna, ESA and Ironhack. Freecodecamp even has [a youtube channel](https://www.youtube.com/channel/UC8butISFwT-Wl7EV0hUK0BQ), filled with an amazing amount of content. But the best idea is to do the exercises on their website, because "learning" from videos is very different from  coding and doing things yourself.
+My favorite website for learning how to program is by far [FreeCodeCamp](https://freecodecamp.org). It has a full-fledged interactive curriculum that gives you 100% of the knowledge you need to start your career as a junior-level full-stack developer. I have done their whole curriculum in 2017 and have since then worked at companies such as Softgames, Klarna, ESA and Ironhack. Freecodecamp even has [a youtube channel](https://www.youtube.com/channel/UC8butISFwT-Wl7EV0hUK0BQ), filled with an amazing amount of content. But the best idea is to do the exercises on their website, because "learning" from videos is very different from coding and doing things yourself.
 
-Once you already know the basics of at least one programming language and want to quickly pick up another [you should give Exercism a try](https://exercism.org/). It's a platform, where you solve increasingly harder exercises in any programming language out there, and pick up the languages along the way. They even have mentors that review your code - and best of all, everything there is completely free!
+Once you already know the basics of at least one programming language and want to quickly pick up another [you should give Exercism a try](https://exercism.org/). It's a platform, where you solve increasingly harder exercises in any programming language out there and pick up the languages along the way. They even have mentors that review your code - and best of all, everything there is completely free!
 
 For learning new languages there's also the [learnxinyminutes website](https://learnxinyminutes.com/) 
 
 Google also has a lot of free resources you should check out if you want to learn how to code. These are the ones that I have used myself : 
 - [Google's Tech Guide](https://techdevguide.withgoogle.com/)
 - [The Summer of Code](https://summerofcode.withgoogle.com/get-started) 
-- [Coding Competetitions](https://codingcompetitions.withgoogle.com/kickstart)
+- [Coding Competitions](https://codingcompetitions.withgoogle.com/kickstart)
 
 Then there is also MDN. It has guides on 
 - [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML)
 - [CSS](https://developer.mozilla.org/en-US/docs/Learn/CSS)
 - [Javascript Fundamentals](https://developer.mozilla.org/en-US/docs/Learn/JavaScript)
-and is probably the #1 website to go to for documentation on how certain JS features and more generally stuff on the web works.
+is probably the #1 website to go to for documentation on how certain JS features and more general stuff on the web works.
 
-In a similar vein there is [W3schools](https://www.w3schools.com/) which has interactive and completely free tutorials on so many things it's unbelievable. 
+In a similar vein, there is [W3schools](https://www.w3schools.com/) which has interactive and completely free tutorials on so many things it's unbelievable. 
 
-If you already know how to program and only want some ideas for side projects to build, I think [this github repo](https://github.com/melanierichards/just-build-websites) is  awesome.
+If you already know how to program and only want some ideas for side projects to build, I think [this GitHub repo](https://github.com/melanierichards/just-build-websites) is awesome.
 
-Also, all of the lecture series underneath the [Software Engineering section](#software-engineering) are worthwhile to watch and *will* make you a more knowledgeable (and I would argue better) developer.  
+Also, all of the lecture series videos underneath the [Software Engineering section](#software-engineering) are worthwhile to watch and *will* make you a more knowledgeable (and I would argue better) developer.  
 
 ### Programming books
 - [A List of Free Books](https://github.com/EbookFoundation/free-programming-books)
@@ -132,11 +132,11 @@ And some that I like personally:
 
 ### Articles about Programming
 
-There is a whole flood of amazing tutorials out there and I won't tell you about any of them here, because most often they are just something you stumble upon when trying to solve a very specific problem. I'll just mention a few blogs, and articles that I found to be immensely useful and to which I regularly return to.
+There is a whole flood of amazing tutorials out there and I won't tell you about any of them here, because most often they are just something you stumble upon when trying to solve a very specific problem. I'll just mention a few blogs, and articles that I found to be immensely useful and to which I regularly return.
 
-Learn your ABC - in other words: [Always Be Coding](https://medium.com/always-be-coding/abc-always-be-coding-d5f8051afce2). This is a central idea and I think is advice people should follow. Code in your free-time on stuff that you like. This is how you grow massively in a short amount of time. Follow your curiosity and see where it leads you. And pick up new languages and skills along the way.
+Learn your ABC - in other words: [Always Be Coding](https://medium.com/always-be-coding/abc-always-be-coding-d5f8051afce2). This is a central idea and I think is advice people should follow. Code in your free time on stuff that you like. This is how you grow massively in a short amount of time. Follow your curiosity and see where it leads you. And pick up new languages and skills along the way.
 
-I consider the [Programming Achievements](https://jasonrudolph.com/blog/2011/08/09/programming-achievements-how-to-level-up-as-a-developer/) by Jason Rudolph to be the layout for a lifelong path of curiosity and learning. Just tackling one of those achievements might take months or years of work, depending on your commitment to it. They focus on the open endedness of the developer journey and I love that. His idea is also available as [a gist to fork](https://gist.github.com/jasonrudolph/1133830#file_programming_achievements.md), so that you can tick of the boxes of the achievements yourself.
+I consider the [Programming Achievements](https://jasonrudolph.com/blog/2011/08/09/programming-achievements-how-to-level-up-as-a-developer/) by Jason Rudolph to be the layout for a lifelong path of curiosity and learning. Just tackling one of those achievements might take months or years of work, depending on your commitment to it. They focus on the open-ended character of the developer's journey and I love that. His idea is also available as [a gist to fork](https://gist.github.com/jasonrudolph/1133830#file_programming_achievements.md), so that you can tick off the boxes of the achievements yourself.
 
 There are LOTS of different sites for coding katas - a few I have used: 
 - [HackerRank](https://www.hackerrank.com/)
@@ -179,11 +179,11 @@ I like these blogs/publications and often end up on them when looking for someth
 - [Disco Diffusion - Google Colab](https://colab.research.google.com/github/alembics/disco-diffusion/blob/main/Disco_Diffusion.ipynb)
 ## Stuff on Github
 
-Let's get even more meta. Github is a platform that people use to host code and other things, enabling the [version control of Git](https://git-scm.com/doc). This allows them to work together in big teams efficiently and save the history of their creations. Mostly – but not exclusively – used for code, it's a huge, open repository of knowledge. Some of the best stuff on the internet lives in spaces within Github, called repos. 
+Let's get even more meta. Github is a platform that people use to host code and other things, enabling the [version control of Git](https://git-scm.com/doc). This allows them to work together in big teams efficiently and save the history of their creations. Mostly – but not exclusively – used for code, it's a huge, open repository of knowledge. Some of the best stuff on the internet lives in spaces within Github called repos. 
 
-There is so much awesome stuff there, that people started building repos, containing links to other awesome repos.  compiling lists of the best stuff on Github. 
+There is so much awesome stuff there, that people started building repos, containing links to other awesome repos, basically compiling lists of the best stuff on Github. 
 
-Sounds familiar? It's  the same idea as what you are reading right now. And they don't call it needlestacks, but awesome lists.
+Sounds familiar? It's the same idea as what you are reading right now. And they don't call it needlestacks, but awesome lists.
 
 So here is the root of that awesome (pun very much intended) project: [Awesome Github - An awesome list of awesome lists](https://github.com/sindresorhus/awesome)
 
@@ -205,27 +205,27 @@ In order of importance to me:
 1. [Huberman Lab](https://hubermanlab.com/)
 1. [Farnam Street](https://fs.blog/knowledge-project-podcast/)
 
-My favorite episodes of all time are from Lex Fridman's interviews with Josha Bach. Currently there are Episodes [#101](https://lexfridman.com/joscha-bach/) and [#212](https://lexfridman.com/joscha-bach-2/). I am a huge fan of Josha Bach's way of explaining things and his talks on the CCC ([1](https://www.youtube.com/watch?v=d0gUFn2OrvM), [2](https://www.youtube.com/watch?v=WRdJCFEqFTU), [3](https://www.youtube.com/watch?v=K5nJ5l6dl2s), [4](https://www.youtube.com/watch?v=e3K5UxWRRuY)) are absolutely amazing. If you are in any way interested in how the brain might work and how we might be able to build brains in silicon by using AI, you absolutely have to check them out. They are extremely fast paced and full of information, be prepared and don't be afraid to rewatch them. I also link to those same videos up in the [Videos section](#videos) with a little more description attached to each of the talks and what they are about.
+My favorite episodes of all time are from Lex Fridman's interviews with Josha Bach. Currently, there are Episodes [#101](https://lexfridman.com/joscha-bach/) and [#212](https://lexfridman.com/joscha-bach-2/). I am a huge fan of Josha Bach's way of explaining things and his talks on the CCC ([1](https://www.youtube.com/watch?v=d0gUFn2OrvM), [2](https://www.youtube.com/watch?v=WRdJCFEqFTU), [3](https://www.youtube.com/watch?v=K5nJ5l6dl2s), [4](https://www.youtube.com/watch?v=e3K5UxWRRuY)) are amazing. If you are in any way interested in how the brain might work and how we might be able to build brains in silicon by using AI, you have to check them out. They are extremely fast-paced and full of information, be prepared and don't be afraid to rewatch them. I also link to those same videos up in the [Videos section](#videos) with a little more description attached to each of the talks and what they are about.
 
 Other podcasts I hop into every once in a while for good episodes, or because specific episodes have been recommended to me are these:
-1. [Naval Ravikants "Podcast"](https://nav.al/) – most of the episodes are short, dense 2-5 minute chunks of information but there are a few  good long form ones in there as well, specifically the "The Beginning of Infinity" Series: [Part 1](https://nav.al/infinity) and [Part 2](https://nav.al/infinity-2). If you haven't read the book yet, check out [my book notes on The Beginning of Infinity by David Deutsch](/booknotes/the-beginning-of-infinity).
+1. [Naval Ravikants "Podcast"](https://nav.al/) – most of the episodes are short, dense 2-5 minute chunks of information but there are a few good long-form ones in there as well, specifically the "The Beginning of Infinity" Series: [Part 1](https://nav.al/infinity) and [Part 2](https://nav.al/infinity-2). If you haven't read the book yet, check out [my book notes on The Beginning of Infinity by David Deutsch](/booknotes/the-beginning-of-infinity).
 1. [Joe Rogan Experience](https://open.spotify.com/show/4rOoJ6Egrf8K2IrywzwOMk) - especially the interviews with David Sinclair ([1](https://open.spotify.com/episode/0Gifr7mhEsQBI5oGzJomz2?si=ffa40c9ba9a84a19), [2](https://open.spotify.com/episode/4lFkgWqK3QmBH5zRvCwFNm?si=f9af90ebd6d84ff1), [3](https://open.spotify.com/episode/55UlxYWPfV46f7puMkZPeD?si=124101ce98e74593)), Elon Musk ([1](https://open.spotify.com/episode/2B07nNz3WIl7ptnCpu3TEy?si=7dcc47b47a484842), [2](https://open.spotify.com/episode/08t3BnVDXUn4YQVuDohhYg?si=181c51b636024eb1), [3](https://open.spotify.com/episode/2aB2swgyXqbFA06AxPlFmr?si=dd4d9b81f3464ca3)) and Andrew Huberman ([1](https://open.spotify.com/episode/1HnJSVAxlfZVREkojSJ39c?si=ad8aa212b2b64f03), [2](https://open.spotify.com/episode/0ScxTKuC8EaZpIxAfWZNpu?si=52fbe3cee14a4fe7)) are extremely good.
-1. [Tim Ferriss Show](https://tim.blog/podcast/) – My favorite episodes have to be [My Life Extension Pilgrimmage to the Easter Islands](https://open.spotify.com/episode/5ppn5wnuPcL3BGQLAFSgc4?si=Ua8_36hmRFGeZoPSkI4Arw) and [Naval Ravikant on Happiness](https://open.spotify.com/episode/5IIMmgac27IaeChTYQMKIn?si=A-x5VDB4SP-zGaXuUFQLSw). With Tim Ferriss there are simply too many episodes, just like with Joe Rogan. 
+1. [Tim Ferriss Show](https://tim.blog/podcast/) – My favorite episodes have to be [My Life Extension Pilgrimmage to the Easter Islands](https://open.spotify.com/episode/5ppn5wnuPcL3BGQLAFSgc4?si=Ua8_36hmRFGeZoPSkI4Arw) and [Naval Ravikant on Happiness](https://open.spotify.com/episode/5IIMmgac27IaeChTYQMKIn?si=A-x5VDB4SP-zGaXuUFQLSw). With Tim Ferriss, there are simply too many episodes, just like with Joe Rogan. 
 
 ## Blogs
 
-1. [WaitButWhy](https://waitbutwhy.com/) - this is hands down my favorite blog. The best I know on the internet. And the reason I love it so much is because Tim Urban creates masterpieces that help to break down and understand  complex topics. And he adds a good amount of humor and stick figure drawings too, some of them so memorizable that it is just insane. On top of that he tries to be objective and  drill down and understand things. All of this adds up to reads, that sometimes take a day, with lots of resources attached to it. When you open all the links from one of his posts, you might easily end up spending a few weeks on reading all of them. I had over a 100 different tabs open after reading his [Artificial Intelligence](https://waitbutwhy.com/2015/01/artificial-intelligence-revolution-1.html), [SpaceX](https://waitbutwhy.com/2015/08/how-and-why-spacex-will-colonize-mars.html), and [Neuralink](https://waitbutwhy.com/2017/04/neuralink.html) Articles. 100+ different resources for further reading – each! But the best of all, he coins terminology that abstracts away hard concepts into neat, easy to remember boxes. Like the [yearning octopus](https://waitbutwhy.com/2018/04/picking-career.html), the [panic monster and the procrastination monkey](https://waitbutwhy.com/2013/10/why-procrastinators-procrastinate.html), the [thinking ladder](https://waitbutwhy.com/2019/09/thinking-ladder.html) as well as [echo chambers and idea labs](https://waitbutwhy.com/2019/10/idea-labs-echo-chambers.html)... The list goes on. So yeah, if I had to recommend only one blog to read - that would be the one for sure. The next ones get much harder to order though.
+1. [WaitButWhy](https://waitbutwhy.com/) - this is hands down my favorite blog. The best I know on the internet. And the reason I love it so much is that Tim Urban creates masterpieces that help to break down and understand complex topics. And he adds a good amount of humor and stick-figure drawings too, some of them so memorizable that it is just insane. On top of that, he tries to be objective and drill down and understand things. All of this adds up to reads, that sometimes take a day, with lots of resources attached to it. When you open all the links from one of his posts, you might easily end up spending a few weeks reading all of them. I had over 100 different tabs open after reading his [Artificial Intelligence](https://waitbutwhy.com/2015/01/artificial-intelligence-revolution-1.html), [SpaceX](https://waitbutwhy.com/2015/08/how-and-why-spacex-will-colonize-mars.html), and [Neuralink](https://waitbutwhy.com/2017/04/neuralink.html) Articles. 100+ different resources for further reading – each! But best of all, he coins terminology that abstracts away hard concepts into neat, easy-to-remember boxes. Like the [yearning octopus](https://waitbutwhy.com/2018/04/picking-career.html), the [panic monster and the procrastination monkey](https://waitbutwhy.com/2013/10/why-procrastinators-procrastinate.html), the [thinking ladder](https://waitbutwhy.com/2019/09/thinking-ladder.html) as well as [echo chambers and idea labs](https://waitbutwhy.com/2019/10/idea-labs-echo-chambers.html)... The list goes on. So yeah, if I had to recommend only one blog to read - that would be the one for sure. The next ones get much harder to order though.
 
-1. [Paul Graham](http://www.paulgraham.com/articles.html) - Paul Graham has to be on the top of this list. I think his pieces combine technology and startup thinking from one of the best persons in the field. He loves Lisp and has his reasons for it, and almost everything on his blog has a unique spin and blend of his own. Even the old school look, with the crappy layout, is his own and his own alone. Some of the best pieces of his that I re-read regularly are [How to Think for Yourself](http://www.paulgraham.com/think.html), [Life Is Short](http://www.paulgraham.com/vb.html), [The Acceleration Of Addictiveness](http://www.paulgraham.com/addiction.html) and [Hiring Is Obsolete](http://www.paulgraham.com/hiring.html). Reading his blog is like reading a good book. His work makes you think, and there is always a little takeaway or some new angle to be found. Even after reading a piece for the 3rd or 4th time. And that makes his blog extremely worthwhile.
+1. [Paul Graham](http://www.paulgraham.com/articles.html) - Paul Graham has to be on the top of this list. I think his pieces combine technology and startup thinking from one of the best persons in the field. He loves Lisp and has his reasons for it, and almost everything on his blog has a unique spin and blend of his own. Even the old-school look, with the crappy layout, is his own and his own alone. Some of the best pieces of his that I re-read regularly are [How to Think for Yourself](http://www.paulgraham.com/think.html), [Life Is Short](http://www.paulgraham.com/vb.html), [The Acceleration Of Addictiveness](http://www.paulgraham.com/addiction.html) and [Hiring Is Obsolete](http://www.paulgraham.com/hiring.html). Reading his blog is like reading a good book. His work makes you think, and there is always a little takeaway or some new angle to be found. Even after reading a piece for the 3rd or 4th time. And that makes his blog extremely worthwhile.
 
-1. [Nat Eliason](https://www.nateliason.com/blog) - Nat Eliason's blog has probably shaped me a lot as well. Many of the ideas I share, he addressed, further clarifying them in my mind. Reading his posts has an addictive quality to it. Similar to blogs by Paul Graham, his essay style often looks at things from a different vantage point and gives them a slightyl different spin. Some of the pieces I liked a lot: 
-[Not a full time creator](https://www.nateliason.com/blog/not-creator), [I am a stupid monkey and you are too](https://www.nateliason.com/blog/stupid-monkey), [How to start a blog that changes your life](https://www.nateliason.com/blog/start-a-blog) and [Forget Commitment, Invest in Something](https://www.nateliason.com/blog/invest-in-something). Some of his stuff is a little junky and not  worth reading, and he is a pro content marketer, so he makes you keep reading be exploiting the eck out o your curiosity gap, which is a bit annoying as well, but the multitude of ideas in his good pieces makes up for that. 
+1. [Nat Eliason](https://www.nateliason.com/blog) - Nat Eliason's blog has probably shaped me a lot as well. Many of the ideas I share, he addressed, further clarifying them in my mind. Reading his posts has an addictive quality to it. Similar to blogs by Paul Graham, his essay style often looks at things from a different vantage point and gives them a slightly different spin. Some of the pieces I liked a lot: 
+[Not a full-time creator](https://www.nateliason.com/blog/not-creator), [I am a stupid monkey and you are too](https://www.nateliason.com/blog/stupid-monkey), [How to start a blog that changes your life](https://www.nateliason.com/blog/start-a-blog) and [Forget Commitment, Invest in Something](https://www.nateliason.com/blog/invest-in-something). Some of his stuff is a little junky and not worth reading, and he is a pro content marketer, so he makes you keep reading by exploiting the heck out your curiosity gap, which is a bit annoying as well, but the multitude of ideas in his good pieces makes up for that. 
 
-1. [Farnam Street](https://fs.blog/) - FS is a blog I used to love *a lot*. But it has grown a little boring over time, because I know most of their concepts and ideas from the books they recommend by now. It feels like after having read FS for some time, the usefulness declines. 
+1. [Farnam Street](https://fs.blog/) - FS is a blog I used to love *a lot*. But it has grown a little boring over time because I know most of their concepts and ideas from the books they recommend by now. It feels like after having read FS for some time, the usefulness declines. 
 
-That in the end I am better of reading books instead. Especially because FS itself is more of an aggregator for insights from good books, letters, articles and other people. So I'd rather go straight to the source these days. 
+That in the end, it's better if I am reading books instead. Especially because FS itself is more of an aggregator for insights from good books, letters, articles and other people. So I'd rather go straight to the source these days. 
 
-But still, there are a few things I think FS did for me: It enhanced and nurtured a love for reading good non-fiction. And it helped me to understand how  drilling down to make sure the books that I am reading are worthwhile, is as important as reading a lot. And Shane Parrish (the creator behind FS) introduced me to Charlie Munger and Waren Buffett. Overall I think his best articles are not his articles though - to me the best one is a transcript for ["This is Water"](https://fs.blog/david-foster-wallace-this-is-water/) by David Foster Wallace, and I also love the ["Letter on Finding Your Purpose and Living a Meaningful Life"](https://fs.blog/hunter-s-thompson-to-hume-logan/) by Hunter S. Thompson
+But still, there are a few things I think FS did for me: It enhanced and nurtured a love for reading good non-fiction. And it helped me to understand how drilling down to make sure the books that I am reading are worthwhile, is as important as reading a lot. And Shane Parrish (the creator behind FS) introduced me to Charlie Munger and Waren Buffett. Overall I think his best articles are not his articles though - to me the best one is a transcript for ["This is Water"](https://fs.blog/david-foster-wallace-this-is-water/) by David Foster Wallace, and I also love the ["Letter on Finding Your Purpose and Living a Meaningful Life"](https://fs.blog/hunter-s-thompson-to-hume-logan/) by Hunter S. Thompson
 
 A few more noteworthy blogs to go through (ordered by how much I read them):
 1. [Derek Sievers](https://sive.rs/)
@@ -280,7 +280,7 @@ A few more noteworthy blogs to go through (ordered by how much I read them):
 - [James Clear - Personal Renewal Speech by John W. Gardner](https://jamesclear.com/great-speeches/personal-renewal-by-john-w-gardner)
 - [Nat Eliason - Stupid Monkey](https://www.nateliason.com/blog/stupid-monkey)
 - [Nat Eliason - Increasing the Difficulty](https://www.nateliason.com/blog/increasing-the-difficulty)
-- [Nat Eliason - Not a Full Time Creator](https://www.nateliason.com/blog/not-creator)
+- [Nat Eliason - Not a Full-Time Creator](https://www.nateliason.com/blog/not-creator)
 - [Supermemo - Polyphasic Sleep](https://www.supermemo.com/en/archives1990-2015/articles/polyphasic)
 - [Why Becoming A Data Scientist is not  Easier Than You Think](https://medium.com/cs-math/why-becoming-a-data-scientist-is-not--easier-than-you-think-5b65b548069b)
 - [Skeptical Inquirer - The Burden of Skepticism](https://skepticalinquirer.org/1987/10/the-burden-of-skepticism/)
@@ -374,7 +374,7 @@ A few more noteworthy blogs to go through (ordered by how much I read them):
 - [Nand2Tetris - Or How to Build a Computer from Scratch](https://www.nand2tetris.org/copy-of-talks)
 - [Cockroach Fund - Nuclear Winterizing Investments](https://mutinyfund.com/cockroach/)
 - [Readwise - App to Make Creating Book Notes + Reviewing them Easier](https://readwise.io/)
-- [Roam Research - Note Taking App](https://roamresearch.com/)
+- [Roam Research - Note-Taking App](https://roamresearch.com/)
 - [Easiest Website Builder](https://build.mmm.page/)
 - [Compound Interest Calculator](https://www.investor.gov/financial-tools-calculators/calculators/compound-interest-calculator)
 - [Anthony Gustin - Annual Review Google Doc](https://docs.google.com/document/d/1K2P_yL1Ah976P7MLicb55wgY2DY-39jP3Lvp810H6HQ/edit)
@@ -386,11 +386,11 @@ A few more noteworthy blogs to go through (ordered by how much I read them):
 - [Ribbonfarm's Now Reading Page](https://www.ribbonfarm.com/now-reading/)
 - [Less Wrong - Post Sequences](https://www.lesswrong.com/tag/sequences)
 - [Favicon.io - Favicon Generator](https://favicon.io/)
-- [Gitpod - Cloud Based Development Environments](https://www.gitpod.io/)
+- [Gitpod - Cloud-Based Development Environments](https://www.gitpod.io/)
 - [Mockrocket - 3D Based Browser App Previews](https://mockrocket.io/)
 - [Coolworks - Job Portal to Find Jobs in Amazing Places](https://www.coolworks.com/)
 - [EXRC - Exercise Library](https://exrx.net/)
-- [Rytr - AI Based Blog/Newsletter Writing Tool](https://rytr.me/)
+- [Rytr - AI-Based Blog/Newsletter Writing Tool](https://rytr.me/)
 - [Well Said Labs - Text to Voice Generation](https://wellsaidlabs.com/)
 - [Pexels - Free to Use Videos](https://www.pexels.com/)
 - [Unsplash - Free to Use Images](https://unsplash.com/)
@@ -409,7 +409,7 @@ A few more noteworthy blogs to go through (ordered by how much I read them):
 - [Edgar Djikstra's Manuscripts](https://www.cs.utexas.edu/~EWD/)
 
 ## Newsletters
-To be honest, I mostly hate newsletters because they are not worth it. By the definition of a newsletter to be regular and "news" most tend to be of that quality - namely complete trash. There are only 3 I subscribed to and those I also read regularly and enjoy every single time.
+To be honest, I mostly hate newsletters because they are not worth it. The definition of a newsletter to be regular and "news" means, that most tend to be of that quality - namely trash. There are only 3 I subscribed to and those I also read regularly and enjoy every single time.
 
 1. [Infinite Play by Nat Eliason](https://blog.nateliason.com/)
 1. [3, 2, 1 by James Clear](https://jamesclear.com/3-2-1)
@@ -418,20 +418,20 @@ To be honest, I mostly hate newsletters because they are not worth it. By the de
 ## Videos 
 ### Top 15
 1. [Which Way Is Down?](https://www.youtube.com/watch?v=Xc4xYacTu-E&t=247s) This is hands down the best explanation of General Relativity out there. It's Michael from Vsauce at his absolute best... Or is it?
-1. [The Rules for Rulers](https://www.youtube.com/watch?v=rStL7niR7gs&t=3s) captures how our world works, and why rulers act the way they do, and why they *have* to.
+1. [The Rules for Rulers](https://www.youtube.com/watch?v=rStL7niR7gs&t=3s) captures how our world works, why rulers act the way they do, and why they *have* to.
 1. [Our Narrow Slice](https://www.youtube.com/watch?v=yNLdblFQqsw) - Shivers run down my spine at the end, when I see, how little I am. A Pale Blue Dot experience in video form.
-1. [Timelapse of the Future](https://www.youtube.com/watch?v=uD4izuDMUQA) - Just beautifully made, a little long at times, but the animations and just the vastness of the future ahead is mindboggling. 
+1. [Timelapse of the Future](https://www.youtube.com/watch?v=uD4izuDMUQA) - Just beautifully made, a little long at times, but the animations and just the vastness of the future ahead are mindboggling. 
 1. [Do Chairs exist?](https://www.youtube.com/watch?v=fXW-QjBsruE&t=208s) This is *mindbending*. I think I'll rewatch this video over and over again, and will still learn new things about philosophy every time I do. 
 1. [Fractals are typically not self-similar](https://www.youtube.com/watch?v=gB9n2gHsHN4) This is the best introduction to Fractal Geometry out there. 
 1. [AlphaGo - The Movie](https://www.youtube.com/watch?v=WXuK6gekU1Y) is not just a great documentary of an exceptional project. It's a piece of art. How the documentary portrays the human side. How Lee Sedol is losing in a competition against the AI. It's about how humanity will forever be worse than the machines in Go. And it's scary to realize that this will be our fate in everything we do eventually. 
 1. [Buddhism is Kinda Out There, Man.](https://www.youtube.com/watch?v=i2wLyhgeYsw) Exurbia... the existential dread turtle as somebody called him in the comments, at his best. And I like his dark humor. 
 1. [Cicada3301 - An Internet Mystery.](https://www.youtube.com/watch?v=I2O7blSSzpI) This is probably the greatest internet mystery hunt out there, documented, and the music is haunting, whenever I watch it my hairs stand on end. 
-1. [Prof. Eric Laithwaite: Magnetic River 1975](https://www.youtube.com/watch?v=OI_HFnNTfyU) - Old, but soo good. I think this is the best introduction to electromagnetism out there. The demo's are simply amazing. 
+1. [Prof. Eric Laithwaite: Magnetic River 1975](https://www.youtube.com/watch?v=OI_HFnNTfyU) - Old, but soo good. I think this is the best introduction to electromagnetism out there. The demos are simply amazing. 
 1. [Handheld TESLA COIL GUN](https://www.youtube.com/watch?v=_fTC_Ud_k3U&t=593s) Tesla Coils are awesome, Smarter Every Day is Awesome and this video is perfection.
-1. [The Art of Code](https://www.youtube.com/watch?v=6avJHaC3C2U&t=4s) This Talk is just insanely good. It  shows why programming is beautiful and the insane creativity people show when creating interesting things with technology.
+1. [The Art of Code](https://www.youtube.com/watch?v=6avJHaC3C2U&t=4s) This Talk is just insanely good. It shows why programming is beautiful and the insane creativity people show when creating interesting things with technology.
 1. [How The Economic Machine Works](https://www.youtube.com/watch?v=PHe0bXAIuk0&t=1s) Hands Down the best explanation of how the economic world runs. 
 1. [Veritasium's Life Story](https://www.youtube.com/watch?v=S1tFT4smd6E) - This video is so honest, so beautiful. Veritasium just talking about how he became who he is now, his failures, and the lessons he learned about life along the way.
-1. [The Neuroscience of Addiction](https://www.youtube.com/watch?v=aOSD9rTVuWc&t=19s) My most favorite lecture from the Royal Institution.
+1. [The Neuroscience of [Addiction](https://www.youtube.com/watch?v=aOSD9rTVuWc&t=19s) My favorite lecture from the Royal Institution.
 
 
 <details>
@@ -493,7 +493,7 @@ To be honest, I mostly hate newsletters because they are not worth it. By the de
 - [How to Read Notes Fast - The Landmark System](https://www.youtube.com/watch?v=jSOU-J9KHbg)
 - [How to Speak](https://www.youtube.com/watch?v=Unzc731iCUY)
 - [How To Tell If We're Beating COVID-19](https://www.youtube.com/watch?v=54XLXg4fYsc)
-- [Richard Feynman "There's Plenty of Room at the Bottom"](https://www.youtube.com/watch?v=4eRCygdW--c)
+- [Richard Feynman's "There's Plenty of Room at the Bottom"](https://www.youtube.com/watch?v=4eRCygdW--c)
 - [LEADERSHIP LAB: The Craft of Writing Effectively](https://www.youtube.com/watch?v=vtIzMaLkCaM)
 - [A Brief Introduction to Neural Networks](https://www.youtube.com/watch?v=bVQUSndDllU)
 - [Coding Adventure: Ray Marching](https://www.youtube.com/watch?v=Cp5WWtMoeKg)
@@ -544,9 +544,8 @@ I am glad that these exist. Simply because they are so beautiful and have made m
 
 - [Vsauce](https://www.youtube.com/channel/UC6nSFpj9HTCZ5t-N3Rm3-HA)
 - [Kurzgesagt](https://www.youtube.com/c/inanutshell)
-- [CGPGrey](https://www.youtube.com/user/CGPGrey)
-
-Best for long form learning content:
+- [CGPGrey]
+Best for long-form learning content:
 - [Crash Course](https://www.youtube.com/user/crashcourse)
 - [MIT OCW](https://www.youtube.com/c/mitocw)
 - [Steve Brunton](https://www.youtube.com/channel/UCm5mt-A4w61lknZ9lCsZtBw)
@@ -663,7 +662,7 @@ I like to listen far and wide. Mostly a mix of Jazz, Ambient, Indie, Blues, Clas
 
 ### Music Videos:
 
-My favorite formats for music videos are probably Cercle, Tiny Desk, KEXP, a Colors Show and Keyscape Sessions. Just about everything they produce together with all kinds of different artists is worth watching/listening. Some handpicked videos I love:  
+My favorite formats for music videos are probably Cercle, Tiny Desk, KEXP, a Colors Show and Keyscape Sessions. Just about everything they produce together with all kinds of different artists is worth watching/listening to. Some handpicked videos I love:  
 
 - [Mind's Eye - Jordan Rakei](https://music.youtube.com/watch?v=3OVYBL0Jpzs&feature=share)
 - [Tiny Desk Concert - Lianne LaHavas](https://music.youtube.com/watch?v=9HUV5a7MgS4&feature=share)

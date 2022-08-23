@@ -52,10 +52,10 @@ Ok now without further ado, here's my list:
 10. Exercise skills regularly so they do not atrophy. Piano, Painting, Programming, Writing, Thinking. Or whatever it is that you do and value as a skill. 
 
 
-11. Recognize addictions and lost control. Determine their impacts and then stop them. Nothing is as bad as losing control over what you can do. 
+11. Recognize addictions and lost control. Determine their impacts and then stop them. Nothing is as bad as losing control over what you can do.
 
 
-12. The universe is a stressful place and to err, fail and be hostile towards others is sadly very human. Be aware of that. Smile, greet and appreciate, where you can. If something bad happens to you, attribute it to bad luck instead of malice and understand that other people are only human and err the same way you do.
+12. Our universe is a stressful place and to err, fail and be hostile towards others is sadly very human. Be aware of that. Smile, greet and appreciate, where you can. If something bad happens to you, attribute it to bad luck instead of malice and understand that other people are only human and err the same way you do.
 
 
 13. If sad/bogged down, think about the crazy facts of wonderfully, marvelous physical reality. The complexity that governs entities interacting with each other and the scale of it all. Also, comprehend the utter meaninglessness of it all. As well as the beauty and grandiosity of it all. Remember the blue dot picture, the life calendar, our tiny slice of time, the photons hitting your eyes, the blind card magician, the connectedness of mathematics and physics and the craziness of the Fermi Paradox, and that we might very well be alone in an (almost) infinite universe. 

@@ -124,20 +124,20 @@ const titles = [];
 
 for (const link of links) {
   titles.push(await getTitle(link));
-  console.log("Success");
+  console.info("Success");
 }
 
 function combineTitleAndLink(title, link) {
   return `[${title}](${link})`;
 }
 
-console.log(titles);
+console.info(titles);
 
 const output = titles.map((title, i) => {
   const link = links[i];
   return combineTitleAndLink(title, link);
 });
 
-console.log(output);
+console.info(output);
 
 fs.writeFile("youtube-titles-with-links.md", output.join("\n"));

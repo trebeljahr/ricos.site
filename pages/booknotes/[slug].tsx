@@ -27,7 +27,6 @@ const BuyItOnAmazon = ({ link }: { link: string }) => {
 };
 
 const Book = ({ book }: Props) => {
-  console.log(book);
   const router = useRouter();
   if (!router.isFallback && !book?.slug) {
     return <ErrorPage statusCode={404} />;

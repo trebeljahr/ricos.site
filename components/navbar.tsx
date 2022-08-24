@@ -36,10 +36,11 @@ export function Navlinks({ expanded }: { expanded: boolean }) {
       <Link as="/quotes" href="/quotes">
         <a style={activeStyle("/quotes")}>quotes</a>
       </Link>
+      <Link as="/now" href="/now">
+        <a style={activeStyle("/now")}>now</a>
+      </Link>
       {/* 
-          <Link as="/now" href="/now">
-            <a style={activeStyle("/now")}>now</a>
-          </Link>
+          
           <Link as="/coding" href="/coding">
             <a style={activeStyle("/coding")}>coding</a>
           </Link>

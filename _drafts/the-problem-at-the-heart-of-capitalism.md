@@ -66,7 +66,7 @@ Those rules include feeling good when doing things like eating, tending to child
 
 Something interesting to note is that those rules are somewhat malleable to our experience. Therefore culture can play a role in modulating and changing those rules to a certain extent, influencing how and when and why we feel happy. Education, therefore, plays a huge role in adding rules on top. Meta rules so to speak, like:  "Hey, money is good, because it can buy us food and gives us status" so that when we earn money we feel good.
 
-However, in the end, all of those can be broken down to some association with a type of behavior that has been evolutionarily useful. How exactly this works and how culture and experience influence the things we want and desire or fear and abhor is a much more complicated topic ( [and a topic for another post](#TODO)).
+However, in the end, all of those can be broken down to some association with a type of behavior that has been evolutionarily useful. How exactly this works and how culture and experience influence the things we want and desire or fear and abhor is a much more complicated topic ( [and a topic for another post](/todo)).
 
 ## Prediction Machines
 

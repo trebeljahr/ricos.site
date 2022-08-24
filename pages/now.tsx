@@ -17,8 +17,8 @@ export default function Now({ content }: { content: string }) {
 }
 
 export async function getStaticProps() {
-  const needlestackSrc = join(process.cwd(), "page-content", "now.md");
-  const fileContents = await fs.readFile(needlestackSrc, "utf-8");
+  const todoSrc = join(process.cwd(), "page-content", "now.md");
+  const fileContents = await fs.readFile(todoSrc, "utf-8");
   return {
     props: {
       content: matter(fileContents).content || "",

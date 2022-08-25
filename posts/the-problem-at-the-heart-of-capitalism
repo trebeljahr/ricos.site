@@ -1,4 +1,15 @@
-# The Problem at the Heart of Capitalism
+---
+title: "The Problem at the Heart of Capitalism"
+excerpt: "I think something is wrong with our world and I have not seen this thought expressed anywhere else in quite that way yet, that's why I sat down to write this blog post. It will be a deep dive..."
+coverImage: "/assets/blog/cuckoo.jpeg"
+date: "2022-08-25T09:48:02Z"
+author:
+  name: Rico Trebeljahr
+  picture: "/assets/blog/profile.jpeg"
+ogImage:
+  url: "/assets/blog/cuckoo.jpeg"
+
+---
 
 I think something is wrong with our world and I have not seen this thought expressed anywhere else in quite that way yet, that's why I sat down to write this blog post. It will be a deep dive, covering lots of different topics, like social media, economics, neuroanatomy, education, AI research and addiction. By the end, you hopefully will understand what I mean when I say that there exists a problem at the "heart" of Capitalism. And the problem is a big one, causing a lot of unnecessary human suffering. So let us at least stop to think about it.
 
@@ -18,7 +29,7 @@ Yet, while we largely live in such a world, a world governed by free trade, and 
 
 There are some disturbing trends visible in our world right now:
 
-Our attention spans are shrinking. I feel like it's getting increasingly harder for me to do solid focused work. And intellectually demanding feats too often seem impossible to pull off, instead, I _chill_* and watch YouTube. Even reading a good book for a few hours is not something I regularly do anymore and sometimes it even feels like work to me, like something hard and painful to do, something that I don't enjoy anymore, something that I don't want to do. Why?
+Our attention spans are shrinking. I feel like it's getting increasingly harder for me to do solid focused work. And intellectually demanding feats too often seem impossible to pull off, instead, I *chill* and watch YouTube. Even reading a good book for a few hours is not something I regularly do anymore and sometimes it even feels like work to me, like something hard and painful to do, something that I don't enjoy anymore, something that I don't want to do. Why?
 
 Addictions especially to new formats of media, like porn, TikTok, YouTube, Netflix or games, are a huge problem for almost everybody, at least in my generation. Including me. Why?
 
@@ -26,7 +37,7 @@ There is an obesity pandemic. Ok, I am not a part of that yet, because I am youn
 
 And whenever I read the news, I can not help but feel anxious, feel threatened by the world around me, how broken it is, how large the big problems loom and also about how stupid "the others" are. It feels like everything is a black and white picture, those are the good guys, those are the bad guys, and they are only 100% good or 100% bad. There is no nuance to the news anymore and whenever I read either of the sides, I feel enraged at how the other side can think *that*?! 
 
-Why?
+**Why?**
 
 What a diverse set of things huh? Anxiety, polarization, obesity, shrinking attention spans, addictions...
 
@@ -80,27 +91,62 @@ Patterns found we find are always evaluated by the rules of thumb mentioned abov
 
 Judging by these patterns, brains then try to find regularities in the world. Regularities that we can learn and that fundamentally help us to survive better. 
 
-When we find those regularities, our brains motivate us to exploit them. It's a simple pattern of "I did a) in a context of b) and then I felt *good* hence let's do more of a) the next time we are in context a". Or I felt bad, and therefore I should not do a) or even avoid context b) entirely. This is what psychologists refer to as conditioning. Put a rat in a box and teach it to associate food with the ringing of a bell followed by it pressing a lever. The rat will go and press the lever every time a bell rings because it has learned that it can get food that way. Humans work in much the same way, only that our levers and bells are more complicated, and that we are much smarter than rats (or so we think). 
+When we find those regularities, our brains motivate us to exploit them. It's a simple pattern of "I did a) in a context of b) and then I felt *good* hence let's do more of a) the next time we are in context a". Or I felt bad, and therefore I should not do a) or even avoid context b) entirely. This is what psychologists refer to as conditioning. Put a rat in a box and teach it to associate food with the ringing of a bell followed by it pressing a lever. The rat will soon go and press the lever every time a bell rings because it has learned that it can get food that way. Humans work in very much the same way. The main difference is that our levers and bells are more complicated, and that we are much smarter than rats (or so we think). 
 
-This is also the basic pattern of all addictions. Certain stimuli produce certain behavior. Behavior is linked to stimuli and we learn to associate the stimulus with the behavior. The main neurotransmitter involved in all of this is Dopamine. We release Dopamine in anticipation of a reward, that we learned because of past stimuli -> behavior -> reward loops. This release of Dopamine further strengthens the connection between stimulus and behavior, because our brains get increasingly more confident that *this* is the right thing to do when presented with that particular stimulus. Just *look* at all the rewards we got in the past, the brain seems to say. This anticipatory release of Dopamine is at the heart of addiction. It's what people feel as cravings and it is what also hijacks your motor neurons to make you perform the actions necessary to get your "fix". However, there are a few problems with this.
+This type of stimulus based learning is also the basic pattern underlying all addictions. 
+
+## Stimulus/Behavior/Reward Loop
+
+Certain stimuli produce certain behavior. Behavior is linked to stimuli and we learn to associate the stimulus with the behavior. The main neurotransmitter involved in all of this is Dopamine. We release Dopamine in anticipation of a reward. We anticipate reward, because that's what we learned from past stimuli that were similar. Stimuli -> Behavior -> Reward. All mediated by Dopamine. Over and over. The release of Dopamine further strengthens the connection between stimulus and behavior, because our brains get increasingly more confident that *this* is the right thing to do when presented with that particular stimulus. Just *look* at all the rewards we got in the past, the brain seems to say. This anticipatory release of Dopamine is at the heart of addiction. It's what people feel as cravings and it is what also hijacks your motor neurons to make you perform the actions necessary to get your "fix". However, there are a few problems with this.
+
+## Super-Normal-Stimuli
 
 First, not all stimuli are equal to each other in their strengthening effects. They depend on the reward. Its strength and frequency as well as the rewards chance of happening. And this is bad. In the end, all that the human brain wants us to do is survive and reproduce. To that end, we have the rules of thumb we talked about earlier. Now the problem is that modern stimuli/reward pairs are *designed* to be amazingly good at releasing Dopamine within your brain. To explain that point better, I want to detail an example from the bird world first. 
 
 Seagulls have a red dot on their beaks. Did you ever ask yourself - why? The reason is surprisingly simple. Baby seagulls use the red dot as a rule of thumb to "know" where the mouth of their mother is. And that worked fine in evolutionary history until some clever behavioral biology researchers came up with the idea of painting big red circles and stripes and all kinds of shape on cardboard and presenting those to the chicks. And the chicks tried to be fed from pieces of cardboard, even more so than they would try to get food from their parents. Because the bigger, better red dots, were in effect hijacking the rules of thumb, built into the seagull chicks' brains, by saying: "Look, what a wonderfully big and shiny red dot I have, I must have a *lot* of food for you".
 
-These over-the-top stimuli are also known as "super-stimuli". 
+These over-the-top stimuli are also known as "super" or "super-normal" stimuli. 
 
 It turns out, that not just researchers know about these kinds of stimuli. Evolution found out about them long ago and has exploited them ever since. 
 
-Another example from the bird world to illustrate this is the cuckoo bird. Here evolution figured out the stimuli that make birds feed their young. Specifically, birds look out for the saturated red colors of the open mouths of their chicks. Cuckoos have immensely colorful mouths, forcing the brains of the poor birds to feed them over their very own children. The birds are so helpless for it, that they continue to feed a cuckoo "child" even if that bird is already much bigger than themselves and the only one left in the nest. 
+Another example from the bird world illustrates this beautifully: The cuckoo bird. Here, evolution figured out the stimulus that makes birds feed their young. Specifically, birds look out for the saturated colors of the open mouths of their chicks. Cuckoos have immensely colorful mouths, forcing the brains of the poor birds to feed them over their very own children. The birds are so helpless for it, that they continue to feed a cuckoo "child" even if that "child" is already much bigger than themselves and the only one left in the nest. Sometimes, birds *just flying by* will stop to give food to the cuckoo. 
 
-![/assets/cuckoo.jpg]
+To me this is insane and it should give you a good feeling for how strong these stimulus/reward loops can be. It's like the birds are hypnothized by the overly strong stimulus and just have to follow it with some behavior. It's the very same story with humans and addiction.
 
-For a longer discussion on these topics from the biological side, I can recommend quite a few interesting books: [Behave by Robert Sapolsky](/booknotes/behave), [The Selfish Gene by Richard Dawkins](/booknotes/the-selfish-gene) and [The Red Queen by Matt Ridley](/booknotes/the-red-queen)
+For a longer discussion on these topics and examples, especially from the biological side, I can recommend all of these books tremendously: [Behave by Robert Sapolsky](/booknotes/behave), [The Selfish Gene by Richard Dawkins](/booknotes/the-selfish-gene) and [The Red Queen by Matt Ridley](/booknotes/the-red-queen)
 
-The crazy idea is that not only evolution can find such super-stimuli but that we can do so too, and that it is something that we have been doing for millenia! 
+## Designing Super-Normal Stimuli
 
-We can start with a naturally occurring stimulus, then find out what exactly makes it "work" at producing the behavior, and then supercharge only that quality. Turning that stimulus into a grotesque immensely effective version of its origin. This process is something that needs a certain amount of intelligence and design (or a lot of trial and error in the case of evolution). But we have an ample amount of both at work in economic markets.  
+The crazy idea now is that not only evolution can find and exploit such super-stimuli but that we can do so too. And that it is something that we have been doing for millenia! But unlike nature, we can not just find them. We can go one step further and *design* them.
+
+We can start with a naturally occurring stimulus, then find out what exactly makes it "work" at producing the behavior, and then crank up only that property. 
+
+This way we turn that stimulus into a grotesque immensely effective version of its original. Does this remind you of anything? Industrial food, pornography, computer games, TikTok, YouTube thumbnails? The process of designing super-stimuli is something that needs a certain amount of intelligence and design (or a lot of trial and error in the case of evolution). But we have an ample amount of intelligence and evolution at work in economic markets.
+
+There is another bridge I want to build between a connected idea. Not only do we have the power to change stimuli we encounter and super-charge them into crazy versions of themselves. We have an incentive to do so.
+
+## AI Safety Research
+
+To explain what I mean, I want to introduce a concept that comes from AI safety research. In AI safety there are many many problems - for a list and discussion you can read [Max Tegmark's Life 3.0](/booknotes/life-3-0) or [Nick Bostrom's Superintelligence](/booknotes/superintelligence). 
+
+The concept I want to focus on is that of *reward hacking*. Mainly the problem is the following: If we create an AI that is more intelligent, how do we motivate it to do our bidding? Currently people use a *reward function* - a mathematical equation, relating how "good" or "bad" the AI is performing it's goal. However using such a function can lead to unexpected, weird and in the case of superintelligent AI very much undesired outcomes. The problem is, that this reward function is just a proxy, a metric, a rule of thumb, for what we really want the AI to do. It is a number that can be measured, but a number that can also be gamed. Reward functions fall under the umbrella of Goodhart's Law: 
+
+> When a measure becomes a target, it ceases to be a good measure.
+
+Cool, so AI, can perfectly maximize it's reward function, without actually achieving the goal. Like a kid cramming for a test, but not *really* learning anything... In most goal/problem/reward function combinations, the best way to maximize reward is usually not to pursue the goal directly at all. Instead it is better to find a way to trigger the reward directly with much less work. This idea of "bypassing" the work necessary, of exploiting the rule of thumb, of exploiting the reward function - that is the idea known as *reward hacking*. The fear in AI research is that superintelligence is by definition very very good at reward hacking.
+
+Now, what has that to do with us and "The Problem at the Heart of Capitalism"?
+
+## Reward Hacking and Our Brains
+
+In a way, we are intelligent machines. Just like superintelligent AI we are good at the process of reward hacking. And just like AI was designed, we were designed by the process of evolution. Evolution built in reward functions in the form of dopamine and other neurotransmitters that are released innately, based on certain stimuli. When we have sex we feel good. When we eat we feel good. When we explore we feel good. When we rest we feel good. Etc. Now all of these are proxied by numbers. Some measurable quality of experience that our nerve cells can register and input into our brain. It's not really the fact that we eat food that makes us feel good, but the fact that neurons from our eyes fire, reporting on the color of the food, that neurons from our nose fire, reporting on the smell, that receptors on the tongue fire, reporting on the sugar content, the saltiness, the fat content, and that even in our guts, receptors fire, reporting on the absorption rate of sugar into the blood and a myriad of other things. Within our brains, there is now a bunch of rules of thumb, that evaluate *all* of that input and sums it up into, yeah, that was a *reaaally* good meal you just had there. And this feeling is as we have seen earlier, accompanied and followed by a strengthening of the connection between stimulus and behavior. 
+
+So basically we are an AI, designed by evolution with reward functions hard-wired into the neurobiological circuitry of our brains, and the means (intelligence) to hack those reward functions.
+
+And guess what we have been doing. 
+
+## Back to Capitalism
+
 
 
 

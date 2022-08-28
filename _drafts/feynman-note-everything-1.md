@@ -1,13 +1,11 @@
 ---
 title: "Feynman Note Everything - Part I"
 excerpt: "Why to consume content in a way that helps you understand by leaving a paper trail"
-coverImage: "/assets/blog/tall-buildings.jpg"
+cover: "/assets/blog/tall-buildings.jpg"
 date: "2022-16-22"
 author:
   name: Rico Trebeljahr
   picture: "/assets/blog/profile.jpeg"
-ogImage:
-  url: "/assets/blog/tall-buildings.jpg"
 
 ---
 

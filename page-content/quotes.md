@@ -1,4 +1,9 @@
+> You create the world by the way you live it. 
+– Lex Fridman
 
+> That's your life. The mundane things you repeat every day.
+– Jordan Peterson
+ 
 > An investment in knowledge always pays best interest
 — Benjamin Franklin
 

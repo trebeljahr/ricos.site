@@ -10,14 +10,12 @@ const Index = () => {
       <h2>Hi there 👋🏻</h2>
       <p>
         I am Rico. A programmer, traveler, photographer, writer and fellow
-        human. This is my personal website. It will be filled with lots of
-        different things. But is <em>currently</em> still under construction.
+        human. This is my personal website.
       </p>
       <p>
-        Here is where I want to collect thoughts, booknotes, quotes, ideas,
-        useful links to my favorite places in the internet, traveling stories,
-        photography and my side projects. For now I still have an old - second
-        site - over at{" "}
+        Here is where I collect thoughts, booknotes, quotes, ideas, traveling
+        stories, photography, side projects and links to my favorite places in
+        the internet. For now I still have an old - second site - over at{" "}
         <ExternalLink href="https://ricotrebeljahr.com">
           ricotrebeljahr.com
         </ExternalLink>{" "}
@@ -25,7 +23,7 @@ const Index = () => {
       </p>
       <TrySomeOfThese />
       <p>
-        If you want to know what I am doing now, head over to{" "}
+        If you want to know what I am doing currently, head over to{" "}
         <Link as={`/now`} href="/now">
           <a>/now</a>
         </Link>
@@ -70,7 +68,7 @@ export const getStaticProps = async () => {
     "date",
     "slug",
     "author",
-    "coverImage",
+    "cover",
     "excerpt",
   ]);
   return {

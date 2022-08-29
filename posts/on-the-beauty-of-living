@@ -6,9 +6,7 @@ date: "2021-02-16T05:35:07.322Z"
 author:
   name: Rico Trebeljahr
   picture: "/assets/blog/profile.jpeg"
-ogImage:
-  url: "/assets/blog/fkj-salar-de-uyuni-cercle.jpg"
-coverImage: "/assets/blog/fkj-salar-de-uyuni-cercle.jpg"
+cover: "/assets/blog/fkj-salar-de-uyuni-cercle.jpg"
 
 ---
 

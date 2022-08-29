@@ -42,13 +42,13 @@ type Props = {
 };
 
 export const PostPreview = ({
-  post: { title, coverImage, date, excerpt, slug },
+  post: { title, cover, date, excerpt, slug },
   isHeroPost = false,
 }: Props) => {
   return (
     <Link as={`/posts/${slug}`} href="/posts/[slug]">
       <a className={isHeroPost ? "hero-post-preview" : "post-preview"}>
-        <PostPreviewImage title={title} src={coverImage} />
+        <PostPreviewImage title={title} src={cover} />
         <PostPreviewText title={title} date={date} excerpt={excerpt} />
       </a>
     </Link>

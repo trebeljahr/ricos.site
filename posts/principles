@@ -2,13 +2,11 @@
 title: "Some principles."
 subtitle: "Learnings in a listicle form"
 excerpt: "These are some of the ideas I found useful, condensed into a list so that they are easily useable for me. I can only recommend compiling your list of principles like this one."
-coverImage: "/assets/blog/morning-dew-in-grass.jpg"
+cover: "/assets/blog/morning-dew-in-grass.jpg"
 date: "2020-05-20"
 author:
   name: Rico Trebeljahr
   picture: "/assets/blog/profile.jpeg"
-ogImage:
-  url: "/assets/blog/morning-dew-in-grass.jpg"
 
 ---
 

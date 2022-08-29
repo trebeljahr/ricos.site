@@ -48,7 +48,7 @@ export async function getStaticProps() {
   const [, ...quotes] = content.split("\n> ");
   const quoteData = quotes.map((quote) => {
     const [text, author] = quote
-      .split("\n— ")
+      .split("\n– ")
       .map((str) => str.replace("\n", "").trim());
     return { text, author };
   });

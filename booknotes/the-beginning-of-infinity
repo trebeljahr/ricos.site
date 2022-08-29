@@ -17,11 +17,41 @@ tags:
     "philosophy",
     "great-ideas",
   ]
-summary: false
+summary: true
 detailedNotes: true
 amazonLink: "https://amzn.to/3E6ojFd"
 
 ---
+
+## Summary 
+
+The Beginning of Infinity is jam-packed with amazing ideas. It's so dense, that these book notes are a source of a vast amount of thoughts and models of how the world works. To me, this book is simply insane. It's not without reason that [Naval Ravikant thinks](/booknotes/navalmanack) of this as one of the best books out there.
+
+The book introduces a single concept - The Beginnings of Infinity - from many different angles. What the book means by Infinity is the open-ended journey of cosmic exploration. Other people might call this the "Cosmic Endowment" of humanity. And we are at the beginning of It.
+
+Conscious beings, like us, with a certain amount of intelligence, are a beginning of infinity, because they can undertake this journey. Multicellular life and the enlightenment movement are also Beginnings of Infinity. Generally, things that can become sentient and intelligent and do something about their continued existence in the universe are Beginnings of Infinity. 
+
+Deutsch also argues that the large-scale organization of the cosmos in the future will be determined less by the laws of physics, and more by the actions of the conscious agents (life) within it. Deutsch uses the word "people" to describe such agents. People to him mean any form of intelligent organization that can explore the cosmos. People of any kind are a Beginning of Infinity. Humankind is such a people.
+
+Another idea from this book I enjoyed a lot, is the explanation of scientific theory as the quest for better explanations. And that the only worth of a theory is measured by its explanatory power. Theories that explain more with less are generally better and this quest for more understanding and simplicity is at the heart of science. 
+
+According to Deutsch, who borrows heavily from Karl Popper's ideas of what science is, this quest can be ongoing and endless. We just improve our guesses and our conjectures over time. And we can even find new branches of science that explore our creations. An example would be computer science, something that wouldn't exist without us having built computers. Deutsch thinks that there will always be more to discover, layers to unpeel, and things to find out and learn about. Because we will keep building increasingly complicated machines, just like we built computers, for which we will need new sciences to understand them. And in that sense science is also a Beginning of Infinity.
+
+Another important idea from the book is the idea of comprehensibility and compressibility. Our universe can be comprehended and we can store this comprehension in physical matter. We can map ideas about the universe to material states and thereby store information and develop ways of processing it. Without this property of the universe computation therefore life would be impossible. Life is just a mapping of facts about the universe that help reproduction into a form that can not only store but exploit those facts. Life is carrying out computation and derives new ideas because it undergoes evolution.
+
+Evolution and creative thought are fundamentally the same things. They operate on the same principle, permutation of information and then selection of that information according to some metric of "usefulness". Thought is much faster at this iterative process and can therefore extract and generate knowledge much more quickly than evolution can. In the future, there will be more processes akin to thought and evolution, that work yet faster at knowledge generation. Both are Beginnings of Infinity.
+
+Computational Machines can achieve a state of generality. This is illustrated by the idea of Turing's Completeness. Everything a Turing Machine can do, any other computer can do as well. All computers at a certain level are equivalent. They are "general". There is one exception though. Quantum Computers, can use quantum interactions to do computations a normal Turing Machine can't do. Human brains are at the level of universality. We are Turing complete. Language is also universal. It can express and code for any idea out there. Including ideas about language itself. 
+
+The last idea I want to mention in the summary is one of the most hopeful views out there. I would like to quote Deutsch himself: 
+
+> Every putative physical transformation, to be performed in a given time with given resources or under any other conditions, is either 1. Impossible because it is forbidden by the laws of nature; or 2. Achievable given the right knowledge.
+
+In other words, given the right knowledge, we can do everything possible. It's just a question of finding the explanations. Elon Musk has a very similar idea - if you had a magic wand that could assemble a rocket from the raw materials it would be very very cheap to produce rockets. Science and engineering are the processes, where we search for and create and build those magical wands.
+
+This book is one of the best I have ever read. On the likes of [Behave by Robert Sapolsky](/booknotes/behave) and [Gödel, Escher, Bach by Douglas Hofstadter](/booknotes/goedel-escher-bach). 
+
+I like the stuff David Deutsch writes in general. You should check out his other book [The Fabric of Reality](/booknotes/the-fabric-of-reality) as well. 
 
 ## Introduction
 
@@ -37,7 +67,7 @@ The beginning of Infinity is the facet of reality that allows people to make unb
 
 > Nor is nature a book: one could try to "read" the dots in the sky for a lifetime - many lifetimes - without learning anything about what they  are.
 
-> Far from providing direct or untainted access to reality, even they themselves are never experienced for what they  are - namely crackles of electrical activity. Nor, for the most part, do we experience them as being _where_ they  are - inside our brains. Instead, we place them in the reality beyond, we do not just see blue: we see a blue sky up there, far away. We do not just feel pain: we experience a headache or a stomach ache. The brain attaches those interpretations -"head", "stomach" and "up there" - to events that are in fact within the brain itself.
+> Far from providing direct or untainted access to reality, even they themselves are never experienced for what they  are - namely crackles of electrical activity. Nor, for the most part, do we experience them as being *where* they  are - inside our brains. Instead, we place them in the reality beyond, we do not just see blue: we see a blue sky up there, far away. We do not just feel pain: we experience a headache or a stomach ache. The brain attaches those interpretations -"head", "stomach" and "up there" - to events that are in fact within the brain itself.
 
 > Science is what we have learned about how to keep from fooling ourselves. - Richard Feynman
 
@@ -45,7 +75,7 @@ The beginning of Infinity is the facet of reality that allows people to make unb
 
 > The better an explanation is, the more rigidly its reach is determined - because the harder it is to vary an explanation, the harder it is in particular to construct a variant with a different reach, whether larger or smaller, that is still an explanation.
 
-> But - so what? Gold is important _to us_, but in the cosmic scheme of things it has little significance. Explanations are important to us: we need them to survive. But is there anything significant, in the cosmic scheme of things, about explanations, that apparently puny physical process that happens inside brains?
+> But - so what? Gold is important *to us*, but in the cosmic scheme of things it has little significance. Explanations are important to us: we need them to survive. But is there anything significant, in the cosmic scheme of things, about explanations, that apparently puny physical process that happens inside brains?
 
 > We create theories by rearranging, combining, altering and adding to existing ideas with the intention of improving upon them. The role of experiment and observation is to choose between existing theoriesy not to be the source of new ones.
 
@@ -53,7 +83,7 @@ The beginning of Infinity is the facet of reality that allows people to make unb
 
 ## Chapter 2 - Closer to Reality
 
-> I was wrong to be impressed by the mere scale of what I was looking at. Some people become depressed at the scale of the universe, because it makes them feel insignificant. Other people are _relieved_ to feel insignificant, which is even worse. [...] Feeling insignificant because the universe is large has exactly the same logic as feeling inadequate for not being a cow. Or a herd of cows. The universe is not there to overwhelm us; it is our home, and our resource. The bigger the better.
+> I was wrong to be impressed by the mere scale of what I was looking at. Some people become depressed at the scale of the universe, because it makes them feel insignificant. Other people are *relieved* to feel insignificant, which is even worse. [...] Feeling insignificant because the universe is large has exactly the same logic as feeling inadequate for not being a cow. Or a herd of cows. The universe is not there to overwhelm us; it is our home, and our resource. The bigger the better.
 
 > It is a marvellous fact that objects can exist which, when we observe them, accurately take on the appearance and other attributes of other objects that are elsewhere and very differently constituted. Our sensory systems are such objects too, for it is only they that are directly affecting our brains when we perceive anything. Such instruments are rare and fragile configurations of matter.
 
@@ -67,31 +97,31 @@ The idea is that reality is never something we can have any idea about directly.
 
 > So it may seem that human beings and their wishes and actions are extremely insignificant in the universe at large.
 
-> We _should not_ consider ourselves significant, they assert, we _should_ not expect the world to submit indefinitely to our depredations. [...] they are both false, even in the straightforward factual sense.
+> We *should not* consider ourselves significant, they assert, we *should* not expect the world to submit indefinitely to our depredations. [...] they are both false, even in the straightforward factual sense.
 
-> There _is_ a Life-Support system in Oxfordshire today, but it is not provided by the biosphere. It has been built by humans. It consists of clothes, houses, farms, hospitals, an electrical grid, a sewage system and so on. Nearly the whole of Earth's biosphere in its primeval state was likewise incapable of keeping an unprotected human alive for long. It would be much more accurate to call it a death trap for humans rather than a Life-Support system.
+> There *is* a Life-Support system in Oxfordshire today, but it is not provided by the biosphere. It has been built by humans. It consists of clothes, houses, farms, hospitals, an electrical grid, a sewage system and so on. Nearly the whole of Earth's biosphere in its primeval state was likewise incapable of keeping an unprotected human alive for long. It would be much more accurate to call it a death trap for humans rather than a Life-Support system.
 
 > The biosphere only ever achieves stability - and only temporarily at that - by continually neglecting, harming, disabling and killing individuals.
 
 > To the extent we are on a "spaceship", we have never been merely its passengers, nor (as is often said) its stewards, nor even its maintenance crew: we are its designers and builders. Before the designs created by humans, it was not a vehicle, but only a heap of dangerous raw materials.
 
-Dawkins proposes that there is a limit to understanding, while Deutsch argues that there is no such limit and that potentially the mind can construct infinitely better explanations over time - my question would be about fundamental problems of mathematics, such as the Halting Problem or Gödels Incompleteness Theorem? And what about the set of all possible theories and mathematical worlds that _could_ potentially exist, but make no sense to us? Aren't those proofs of Dawkins' point?
+Dawkins proposes that there is a limit to understanding, while Deutsch argues that there is no such limit and that potentially the mind can construct infinitely better explanations over time - my question would be about fundamental problems of mathematics, such as the Halting Problem or Gödels Incompleteness Theorem? And what about the set of all possible theories and mathematical worlds that *could* potentially exist, but make no sense to us? Aren't those proofs of Dawkins' point?
 
 > Every putative physical transformation, to be performed in a given time with given resources or under any other conditions, is either 1. Impossible because it is forbidden by the laws of nature; or 2. Achievable given the right knowledge.
 
 This raises an all-important question, how many natural laws are there truly if an entity would exist that had infinite knowledge? What are the absolute, unbreakable boundaries?
 
-> The ability to create and use explanatory knowledge gives _people_ a power to transform nature which is ultimately not limited by parochial factors, as all other adaptations are, but only by universal laws. This is the cosmic significance of explanatory knowledge - and hence of people, whom I shall henceforward define as entities that can create explanatory knowledge.
+> The ability to create and use explanatory knowledge gives *people* a power to transform nature which is ultimately not limited by parochial factors, as all other adaptations are, but only by universal laws. This is the cosmic significance of explanatory knowledge - and hence of people, whom I shall henceforward define as entities that can create explanatory knowledge.
 
 > Using knowledge to cause automated physical transformations is, in itself, not unique to humans. It is the basic method, by which all organisms keep themselves alive: every cell is a chemical factory. The difference between humans and other species is in what kind of knowledge they can use (explanatory instead of rule-of-thumb) and in how they create it (conjecture and criticism of ideas, rather than the variation and selection of genes).
 
-> And, while every other organism is a factory for converting resources of a fixed type into more such organisms, human bodies (including their brains) are factories for transforming _anything into anything_ that the laws of nature allow. They are 'universal constructors'.
+> And, while every other organism is a factory for converting resources of a fixed type into more such organisms, human bodies (including their brains) are factories for transforming *anything into anything* that the laws of nature allow. They are 'universal constructors'.
 
 > You do not become less of a person if you lose a limb in an accident; it is only if you lose your brain that you do.
 
 > Human reach is essentially the same as the reach of explanatory knowledge itself. An environment is within human reach if it is possible to create an open-ended stream of explanatory knowledge there.
 
-> Because humans are universal constructors, _every_ problem of finding or transforming resources can be no more than a transient factor limiting the creation of knowledge in a given environment.
+> Because humans are universal constructors, *every* problem of finding or transforming resources can be no more than a transient factor limiting the creation of knowledge in a given environment.
 
 > An unproblematic state is a state without creative thought. Its other name is death.
 
@@ -99,13 +129,13 @@ This reminds me a lot of the description of Joscha Bach of an AI automating all 
 
 Carving maxims into stone - Problems are inevitable but also soluble. What a crazy way to think about the world. Fundamentally right, but at the same time, the devil is in the details. Because the question is always, can humans not do it in theory but in practice? That means are there constraints that limit our reach? Constraints, that kill us before we acquire the knowledge necessary to overcome them?
 
-> The rule is person-friendliness _to people who have the relevant knowledge._ Death is the rule for those who do not.
+> The rule is person-friendliness *to people who have the relevant knowledge.* Death is the rule for those who do not.
 
 The question here is - into which group do we belong over time? Can we stay ahead far enough on the knowledge curve to ward off extinction forever? How far is our reach in practice? How urgent is action necessary and needed?
 
-> Many things are more _obviously_ significant than people. Space and time are significant because they appear in almost all explanations of other physical phenomena. Similarly, electrons and atoms are significant. Humans seem to have no place in that exalted company. Our history and politics, our science, art and philosophy, our aspirations and moral values - all these are tiny side effects of a supernova explosion a few billion years ago, which could be extinguished tomorrow by another such explosion.
+> Many things are more *obviously* significant than people. Space and time are significant because they appear in almost all explanations of other physical phenomena. Similarly, electrons and atoms are significant. Humans seem to have no place in that exalted company. Our history and politics, our science, art and philosophy, our aspirations and moral values - all these are tiny side effects of a supernova explosion a few billion years ago, which could be extinguished tomorrow by another such explosion.
 
-> Knowledge is a significant phenomenon in the universe, because to make almost any prediction about astrophysics one must _take a position_ about what types of knowledge will or will not be present near the phenomena in question. So all explanations of what is out there in the physical world mention knowledge and people, if only implicitly.
+> Knowledge is a significant phenomenon in the universe, because to make almost any prediction about astrophysics one must *take a position* about what types of knowledge will or will not be present near the phenomena in question. So all explanations of what is out there in the physical world mention knowledge and people, if only implicitly.
 
 The moon, rebuilding itself into a habitable environment, and generating more knowledge, would have originated from one thing only, the arrival of a bit of knowledge at its surface. That's the only thing necessary to create a "Beginning of Infinity".
 
@@ -121,9 +151,9 @@ We can build knowledge-creation machines, out of the thin vacuum of space, given
 
 ## Chapter 4 - Creation
 
-> The knowledge in human brains and the knowledge in biological adaptations are both created by _evolution_ in the broad sense: the variation of existing information, alternating with selection.
+> The knowledge in human brains and the knowledge in biological adaptations are both created by *evolution* in the broad sense: the variation of existing information, alternating with selection.
 
-> The two types of information that they respectively evolved to store have a property of cosmic significance in common: _once they are physically embodied in a suitable environment, they tend to cause themselves to remain so_. Such information- which I call knowledge - is very unlikely to come into existence other than through the error-correcting process of evolution or thought.
+> The two types of information that they respectively evolved to store have a property of cosmic significance in common: *once they are physically embodied in a suitable environment, they tend to cause themselves to remain so*. Such information- which I call knowledge - is very unlikely to come into existence other than through the error-correcting process of evolution or thought.
 
 > From the point of view of both the species and all its members, the change brought about by this period of its evolution has been a disaster. But evolution does not 'care' about that. It favours only the genes that spread best through the population.
 
@@ -133,11 +163,11 @@ We can build knowledge-creation machines, out of the thin vacuum of space, given
 
 > What is a scientiest, or any sort of thinking person, in a universe in which only bad explanations are true?
 
-> The problem has been not that the world is so complex that we cannot understand why it looks as it does, but it is that it is so _simple_ that we cannot yet understand it. But this will be noticeable only with hindsight.
+> The problem has been not that the world is so complex that we cannot understand why it looks as it does, but it is that it is so *simple* that we cannot yet understand it. But this will be noticeable only with hindsight.
 
 > Before a discovery is made, no predictive process could reveal the content or the consequences of that discovery. For if it could, it would be that discovery. So scientific discovery is profoundly unpredictable, despite the fact that it is determined by the laws of physics.
 
-> What science - and creative thought in general - achieves is unpredictable creation _ex nihilo_. So does biological evolution. No other process does.
+> What science - and creative thought in general - achieves is unpredictable creation *ex nihilo*. So does biological evolution. No other process does.
 
 ### Chapter Summary:
 
@@ -151,21 +181,21 @@ The main difference between the evolution of genes and species and the evolution
 
 > We can let our theories die in our place. - Karl Popper
 
-> You know that if your computer beats you at chess, it is  the _program_ that has beaten you, not the silicon atoms or the computer as such. The abstract program is instantiated physically as a high level behavior of vast numbers of atoms, but the _explanation_ of why it has beaten you cannot be expressed without also referring to the program in its own right.
+> You know that if your computer beats you at chess, it is  the *program* that has beaten you, not the silicon atoms or the computer as such. The abstract program is instantiated physically as a high level behavior of vast numbers of atoms, but the *explanation* of why it has beaten you cannot be expressed without also referring to the program in its own right.
 
 > If you were suddenly the last human on Earth, you would be wondering what sort of life to want. Deciding "I should do whatever pleases me most" would give you very little clue, because what pleases you depends on your moral judgement of what constitutes a good life, not vice versa.
 
-> A theory can have infinite reach even if the person who originated it is unaware that it does. However, a _person_ is an abstraction too. And there is a kind of infinite reach that is unique to people: the reach of the ability to understand explanations. And this ability is itself an instance of the wider phenomenon of _universality_.
+> A theory can have infinite reach even if the person who originated it is unaware that it does. However, a *person* is an abstraction too. And there is a kind of infinite reach that is unique to people: the reach of the ability to understand explanations. And this ability is itself an instance of the wider phenomenon of *universality*.
 
 Emergence causes abstractions to arise and those abstractions have to be factored in when designing and thinking of good explanations. To develop a solid understanding of the universe we have to factor in emergent entities- abstractions. Such as intelligence, causation, people, life etc. and we can even study those scientifically. It also shows that only knowing physics is not even close to enough for a theory of everything, because even though everything could be reduced to quantum mechanics, those explanations would be a lot worse and less "explaining" than ones that do involve higher order concepts and abstractions.
 
 ## Chapter 6 - The Jump to Universality
 
-> Indeed it seems to be a recurring theme in the early history of many fields that universality, when it was achieved, was not the primary objective, if it was an objective at all. A small change in a system to meet a parochial purpose just happened to make the system universal as well. This is the _jump to universality_.
+> Indeed it seems to be a recurring theme in the early history of many fields that universality, when it was achieved, was not the primary objective, if it was an objective at all. A small change in a system to meet a parochial purpose just happened to make the system universal as well. This is the *jump to universality*.
 
 > Knowledge is information, which, when it is physically embodied in a suitable environment, tends to cause itself to remain so.
 
-> To appreciate universality at the time of its discovery, one must either value abstract knowledge for its own sake or expect it to yield unforeseeable benefits. In a societx that rarely experienced change, both those attitudes would be quite unnatural. But that was reversed with the Enlightenment, whose quintessential idea is, as I have said, that _progress_ is both desirable and attainable. And so, therefore, is universality.
+> To appreciate universality at the time of its discovery, one must either value abstract knowledge for its own sake or expect it to yield unforeseeable benefits. In a societx that rarely experienced change, both those attitudes would be quite unnatural. But that was reversed with the Enlightenment, whose quintessential idea is, as I have said, that *progress* is both desirable and attainable. And so, therefore, is universality.
 
 > The philosopher John Searle had placed the AI project in the following historical perspective: for centuries, some people have tried to explain the mind in mechanical terms, using similes and metaphors based on the most complex machines of the day. First the brain was supposed to be like an immensely complicated set of gears and levers. Then it was hydraulic pipes, then steam engines, then telephone exchanges - and, now that computers are our most impressive technology, brains are said to be computers. But this is still no more than a metaphor, says Searle, and there is no more reason to expect the brain to be a computer than a steam engine.
 > But there is. A steam engine is not a universal simulator. But s computer is, so expecting it to be able to do whatever neurons can is not a metaphor: it is a known and property of the laws of physics as best we know them.
@@ -184,13 +214,13 @@ Emergence causes abstractions to arise and those abstractions have to be factore
 
 Without explaining where the knowledge that an AI generates comes from we can have neither a successful Turing test nor the AI in the first place. However, those explanations start to exist when one looks at neural networks and the state of the art of research there! I.e. they start to show that knowledge is indeed being generated by something that wasn't coded in already! They are about to make the jump to universality and then - who knows what's going to happen... We start to have those explanations of how computer programs can generate intelligent replies, images and more.
 
-> In fact, if we had _only_ such an explanation but had not yet seen any output from the program - and even if it had not been written yet - we should still conclude that it was a genuine AI program. So there would be no need for a Turing test.
+> In fact, if we had *only* such an explanation but had not yet seen any output from the program - and even if it had not been written yet - we should still conclude that it was a genuine AI program. So there would be no need for a Turing test.
 
-> If the program  is thinking, then in the course of such a conversation it will _explain itself_ - in one of countless, unpredictable ways - just as you or I would.
+> If the program  is thinking, then in the course of such a conversation it will *explain itself* - in one of countless, unpredictable ways - just as you or I would.
 
 > In any case, we should expect AI to be achieved in a jump to universality, starting from something much less powerful.
 
-This is the exact point in time we are at... Isn't it? When is that jump going to occur at OpenAIs labs?! And how the heck will the world look like after that jump has happened?
+This is the exact point in time we are at... Isn't it? When is that jump going to occur at OpenAIs or DeepMinds labs?! And what the heck will the world look like after that jump has happened?
 
 > The analogue of evolutionary change in a species is creative thought in a person. The analogue of the idea that AI could be achieved by an accumulation of chatbot tricks is Lamarckism, the theory that new adaptations could be explained by changes that are in reality just a manifestation of existing knowledge.
 
@@ -208,11 +238,11 @@ The question of this chapter is where does knowledge come from - when trying to 
 
 > The Principle of Mediocrity set out to escape parochialism and to reach for infinity, but ends up confining science to an infinitesimal and unrepresentative bubble of comprehensibility.
 
-> Was Cantor experiencing Infinity when he proved theorems about it? Or was he experiencing only symbols? But we only _ever_ experience symbols.
+> Was Cantor experiencing Infinity when he proved theorems about it? Or was he experiencing only symbols? But we only *ever* experience symbols.
 
-> Almost all mathematical _truths_ have no _proofs_. They are unprovable truths. It also follows that almost all mathematical statements are _undecidable_: there is no proof that they are true, and no proof that they are false. Each of them _is_ either true or false, but there is no way of using physical objects such as brains or computer to discover which is which. The laws of physics provide us with only a narrow window through which we can look out on the world of abstractions.
+> Almost all mathematical *truths* have no *proofs*. They are unprovable truths. It also follows that almost all mathematical statements are *undecidable*: there is no proof that they are true, and no proof that they are false. Each of them *is* either true or false, but there is no way of using physical objects such as brains or computer to discover which is which. The laws of physics provide us with only a narrow window through which we can look out on the world of abstractions.
 
-> Our _knowledge_ of whether or not a proposition is true or false _always_ depends on knowledge about how physical objects behave.
+> Our *knowledge* of whether or not a proposition is true or false *always* depends on knowledge about how physical objects behave.
 
 > There is no such thing as abstractly proving something, just as there is no such thing as abstractly knowing something.
 
@@ -230,11 +260,11 @@ Definitely one of the harder chapters. A lot of ideas about mathematical infinit
 
 > We cannot even predict most of the problems that we shall encounter, or most of the opportunities to solve them, let alone the solutions and attempted solutions and how they will affect events.
 
-> People in 1900 did not consider the internet or nuclear power _unlikely_: they did not conceive of them at all.
+> People in 1900 did not consider the internet or nuclear power *unlikely*: they did not conceive of them at all.
 
 > In the meantime we have no option but to see the world through our best existing explanations - which include our existing misconceptions. And that biases our intuition. Among other things, it inhibits us from conceiving of significant changes.
 
-> _Blind_ optimism _is_ a stance towards the future. It consists of proceeding as if one knows that the bad outcomes will not happen.
+> *Blind* optimism *is* a stance towards the future. It consists of proceeding as if one knows that the bad outcomes will not happen.
 
 > The harm that can flow from any innovation that does not destroy the growth of knowledge is always finite; the good can be unlimited. There would be no existing ship designs to stick with, nor records to stay within, if no one had ever violated the precautionary principle.
 
@@ -242,20 +272,20 @@ In other words - the only way - is the way forward. Burn the ship, be careful, a
 
 > So would it casually wipe out billions of people? Would we seem like insects to it? This can seem plausible only if one forgets that there can be only one type of person: universal examiners and constructors. The idea that there could be brings that are to us as we are to animals is a belief in the supernatural.
 
-> _We do not yet know what we have not yet discovered._
+> *We do not yet know what we have not yet discovered.*
 
 > Prior to every natural disaster that people once used to think of as 'just happening', or being ordained by the gods, we now see many options that the people affected failed to take - or, rather, to create.
 
 > We shall never be able to afford to sit back and hope for the best.
 
-> Induction, Instrumentalism and even Lamarckism all make the same mistake: they expect _explanationless progress_. They expect knowledge to be created by fiat with few errors, and not by a process of variation and selection that is making a continual stream of errors and correcting them.
+> Induction, Instrumentalism and even Lamarckism all make the same mistake: they expect *explanationless progress*. They expect knowledge to be created by fiat with few errors, and not by a process of variation and selection that is making a continual stream of errors and correcting them.
 
 > Systems of government are to be judged not for their prophetic ability to choose and install good leaders and policies, but for their ability to remove bad ones that are already there.
 
 > Unless a society is expecting its own future choices to be better than its present ones, it will strive to make its present policies and institutions as immutable as possible.
 
 > **The Principle of Optimism**
-> _All evils are caused by insufficient knowledge._
+> *All evils are caused by insufficient knowledge.*
 
 > The end of pessimism is potentially a beginning of Infinity.
 
@@ -273,11 +303,11 @@ But the idea is that we can keep playing the game if we only generate enough kno
 
 > But as for certain truth, no man has known it, Nor will he know it; neither the gods, Nor yet of all things of which I speak. And even if by chance he were to utter The perfect truth, he would himself not know it - For all is but a woven web of guesses.
 
-> When we hear something being said, we _guess_ what it means, without realizing what we are doing.
+> When we hear something being said, we *guess* what it means, without realizing what we are doing.
 
 > We guess what is there and then we hone our guesses, and then fashion the best ones into a sort of waking dream of reality.
 
-> Here we sit, for ever imprisoned in the dark, almost-sealef cave of our skull, _guessing_. We weave stories of an outside world - _worlds_, : a physical world, a moral world, a world of abstract geometrical shapes, and so on - but we are not satisfied with merely weaving, nor with mere stories. We want true explanations.
+> Here we sit, for ever imprisoned in the dark, almost-sealef cave of our skull, *guessing*. We weave stories of an outside world - *worlds*, : a physical world, a moral world, a world of abstract geometrical shapes, and so on - but we are not satisfied with merely weaving, nor with mere stories. We want true explanations.
 
 > The default assumption should be that misunderstandings are ubiquitous and that neither intelligence nor the intention to be accurate is any guarantee against them.
 
@@ -317,7 +347,7 @@ Philosophy affects science - in bad and good ways. Philosophies that make scienc
 
 ## Chapter 13 - Choices
 
-> A decision making system moderated by civic responsibility has the defect that it gives disproportionate weight tot the opinions of people who _lack_ civic responsibility and are willing to lie.
+> A decision making system moderated by civic responsibility has the defect that it gives disproportionate weight tot the opinions of people who *lack* civic responsibility and are willing to lie.
 
 > At the heart of decision-making is the creation of new options and the abandonment or modification of existing ones.
 
@@ -327,7 +357,7 @@ Philosophy affects science - in bad and good ways. Philosophies that make scienc
 
 > In the advanced political cultures of the Enlightenment tradition the creation of knowledge can and should be paramount, and the idea that representative government depends on proportionate representation in the legislature is unequivocally a mistake.
 
-> Creatively _changing the options_ is what allows people in real life to cooperate in ways that no-go theorems seem to say are impossible; and it is what allows individual minds to choose at all.
+> Creatively *changing the options* is what allows people in real life to cooperate in ways that no-go theorems seem to say are impossible; and it is what allows individual minds to choose at all.
 
 ### Chapter Summary:
 
@@ -343,9 +373,9 @@ However, that's not a problem, since the main problem of choosing good political
 
 > Humans often act in ways that are contrary to any preferences that might plausibly have been built into our genes. People fast - sometimes for aesthetic reasons. Some abstain from sex. People act in very diverse ways for religious reasons or for any number of other reasons, philosophical or scientific, practical or whimsical.
 
-> During that biological co-evolution, just we in the history of art, _criteria_ evolved, and _means of meeting those criteria_ co-evolved with them. That is what gave flowers the knowledge of how to attract insects, and insects the knowledge of how to recognize those flowers and the propensity to fly towards them. But what is surprising is that these same flowers _also attract humans._
+> During that biological co-evolution, just we in the history of art, *criteria* evolved, and *means of meeting those criteria* co-evolved with them. That is what gave flowers the knowledge of how to attract insects, and insects the knowledge of how to recognize those flowers and the propensity to fly towards them. But what is surprising is that these same flowers *also attract humans.*
 
-> We are universal explainers and can create knowledge about anything. But still, why did we want to create aesthetic knowledge in particular? It is because we _did_ face the same problem as the flowers and insects. Signalling across the gap between two humans is analogous to signalling across the gap between two entire species. A human being, in terms of knowledge content and creative individuality, is like a species.
+> We are universal explainers and can create knowledge about anything. But still, why did we want to create aesthetic knowledge in particular? It is because we *did* face the same problem as the flowers and insects. Signalling across the gap between two humans is analogous to signalling across the gap between two entire species. A human being, in terms of knowledge content and creative individuality, is like a species.
 
 > The other kind of problem, the pure kind, which has no analogue in biology, is that of creating beauty for its own sake - which includes creating improved criteria for beauty: new artistic standards or styles. This is the analogue of pure scientific research. The states of kind involved in that sort of science and that sort of art are fundamentally the same. Both are seeking universal, objective truth.
 
@@ -355,11 +385,11 @@ Beautiful things are objectively beautiful because they have to bridge a communi
 
 ## Chapter 15 - The Evolution of Culture
 
-> A _culture_ is a set of ideas that cause their holders to behave alike in some ways.
+> A *culture* is a set of ideas that cause their holders to behave alike in some ways.
 
 > Cultures change. People modify cultural ideas in their minds, and sometimes they pass on the modified versions.
 
-> The overwhelming majority of ideas disappear within a lifetime or less. The behavior of people in a long-lived culture is therefore determined partly by recent ideas that will soon become extinct, and partly by _long-lived memes_: exceptional ideas that have been accurately replicated many times in succession.
+> The overwhelming majority of ideas disappear within a lifetime or less. The behavior of people in a long-lived culture is therefore determined partly by recent ideas that will soon become extinct, and partly by *long-lived memes*: exceptional ideas that have been accurately replicated many times in succession.
 
 > What is it about a long-livef meme that gives it this exceptional ability to resist change throughout many replications?
 
@@ -378,7 +408,7 @@ Another important question: How can one protect oneself from dangerous memes? An
 
 > This destruction of human minds makes static societies almost unimaginable from our perspective. Countless human beings, hoping throughout lifetimes, and for generations, for their suffering to be relieved, not only fail to make progress in realizing any such hope: they largely fail even to try to make any, or even to think about trying.
 
-Aside from here: isn't our society pretty much still like that? Most humans are _just_ the way he described. So there is still important work to be done inventing more effective memes to enable change in society. His book is an attempt to create such a meme then! Something that can convert people to the idea of fallibilism and therefore makes them better explainers and scientists, enabling better chances of human progress and prosperity! Another thought around this is about the effects of social media and interconnectedness in memes. Could there evolve a meme by accident that kills human society in its tracks? Could that even be a solution to the Fermi paradox - a great filter?
+Aside from here: isn't our society pretty much still like that? Most humans are *just* the way he described. So there is still important work to be done inventing more effective memes to enable change in society. His book is an attempt to create such a meme then! Something that can convert people to the idea of fallibilism and therefore makes them better explainers and scientists, enabling better chances of human progress and prosperity! Another thought around this is about the effects of social media and interconnectedness in memes. Could there evolve a meme by accident that kills human society in its tracks? Could that even be a solution to the Fermi paradox - a great filter?
 
 > Static societies tend to sacrifice the welfare of individuals for the "good" of (that is to say, for the prevention of changes in) society.
 
@@ -388,7 +418,7 @@ Memes that can exist unchanged in a changing environment are hard to think of. T
 
 > A true, deep idea has an objective reason to be considered useful by people with diverse purposes over long periods.
 
-Introduces the idea of anti-rational vs. rational memes. Each thrives only in their society. Rational ones can only exist in dynamic and anti-rational ones only in static societies. The one thrives on criticism and adversity and benefits from uncertainty and changes the other tries to completely suppress change and keep the environment stable for its survival. In a way one of them is anti-fragile and the other is fragile. They have completely different reproductive strategies and completely different ecological niches. Static societies do evolve - on time scales too slow for anti-rational memes to notice though. Over many human generations, things become better until enough momentum has been gathered that the society has to switch from being static to being dynamic. An Enlightenment movement has occurred, and the "Beginning of Infinity" has happened.
+Introduces the idea of anti-rational vs. rational memes. Each thrives only in their society. Rational ones can only exist in dynamic and anti-rational ones only in static societies. The one thrives on criticism and adversity and benefits from uncertainty and changes the other tries to completely suppress change and keep the environment stable for its survival. In a way one of them is anti-fragile and the other is fragile. They have completely different reproductive strategies and completely different ecological niches. Static societies do evolve - on time scales too slow for anti-rational memes to notice though. Over many human generations, things become better until enough momentum has been gathered that society has to switch from being static to being dynamic. An Enlightenment movement has occurred, and the "Beginning of Infinity" has happened.
 
 > The Enlightenment today is nowhere near complete. [...] In many [...] areas memes are still replicated in the old manner, by means that suppress the recipients' critical faculties and ignore their preferences.
 
@@ -415,7 +445,7 @@ A whirlwind chapter. Probably the best so far from the whole book, blistering wi
 
 > The creativity that humans use to improve ideas is what pre-eminentlx set us apart from other species.
 
-> Can enhanced creativity help one to be _less_ innovative than other people?
+> Can enhanced creativity help one to be *less* innovative than other people?
 
 > The ape avoids the infinite ambiguity of copying by already knowing, inexplicitly, the meaning of every action that it is capable of copying.
 
@@ -434,7 +464,7 @@ Because humans copy without copying actions directly. The abstract meaning from 
 
 In my words - static societies breed better creativity by making people better copiers of others' behavior because they have to conform to their behavior as best as possible to have evolutionary success themselves. And the only way to truly replicate is to understand what's going on, which is a fundamentally creative process.
 
-> Paradoxically, it requires creativity to thrive in a static society - creativity that enables one to be _less_ innovative than other people.
+> Paradoxically, it requires creativity to thrive in a static society - creativity that enables one to be *less* innovative than other people.
 
 > The beginning of creativity was, in that sense, the beginning of Infinity.
 
@@ -452,13 +482,13 @@ Two questions that lead to the idea of where creativity could come from:
 
 > The Soviet System lost because its ideology wasn't true, and all the biogeography in the world cannot explain what was false about it.
 
-> The landscape we live in is the _product_ of ideas.
+> The landscape we live in is the *product* of ideas.
 
-> The contrast [is] between two different conceptions of what _people_ are. In the pessimistic conception, they are wasters: they take precious resources and madly concert them into useless coloured pictures. This is _true_ of static societies: those statues [on the Easter Islands]  were what my colleague thought color televisions are - which is why comparing our society with the "old culture" of Easter Island is exactly wrong. In the optimistic conception - the one that was unforeseeable vindicated by events - people are problem-solvers: creators of the unsustainable solution and hence also the next problem. In the pessimistic conception, that distinctive ability of people is a disease for which sustainability is the cure. In the optimistic one, sustainability is the disease and people are the cure.
+> The contrast [is] between two different conceptions of what *people* are. In the pessimistic conception, they are wasters: they take precious resources and madly concert them into useless coloured pictures. This is *true* of static societies: those statues [on the Easter Islands]  were what my colleague thought color televisions are - which is why comparing our society with the "old culture" of Easter Island is exactly wrong. In the optimistic conception - the one that was unforeseeable vindicated by events - people are problem-solvers: creators of the unsustainable solution and hence also the next problem. In the pessimistic conception, that distinctive ability of people is a disease for which sustainability is the cure. In the optimistic one, sustainability is the disease and people are the cure.
 
-> There are ideas that reliably _cause_ disasters, and one if them is, notoriously, the idea that the future can be scientifically planned.
+> There are ideas that reliably *cause* disasters, and one if them is, notoriously, the idea that the future can be scientifically planned.
 
-> _All_ triumphs are temporary.
+> *All* triumphs are temporary.
 
 Reminds me a lot of the idea of personal mastery from the Art of Learning. They essentially amount to the same ideas, only that Deutsch in this book, advocates the ideas for the whole of humanity, while Waitzkin uses it only on a per person level as a means of personal growth in given expertise.
 In short, we need not just engineering-driven companies but engineering-driven societies.

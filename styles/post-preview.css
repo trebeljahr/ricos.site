@@ -63,9 +63,17 @@
   .hero-post-preview > .post-preview-text {
     margin: 1rem;
   }
+  .post-preview-text {
+    padding: 1rem;
+  }
 }
 
 @media only screen and (min-width: 1092px) {
+  .post-preview-text {
+    padding: 0;
+    padding-right: 0.5rem;
+  }
+
   .other-posts-container {
     margin-bottom: 8rem;
   }

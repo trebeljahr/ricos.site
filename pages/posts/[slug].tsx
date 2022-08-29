@@ -75,8 +75,7 @@ export async function getStaticProps({ params }: Params) {
     "author",
     "excerpt",
     "content",
-    "ogImage",
-    "coverImage",
+    "cover",
   ]);
   const bySlug = (otherPost: any) => otherPost.slug !== post.slug;
   const otherPosts = getAllPosts(["title", "slug", "excerpt"]).filter(bySlug);

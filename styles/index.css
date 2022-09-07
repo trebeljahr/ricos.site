@@ -368,7 +368,7 @@ html {
   font-size: 18px;
 }
 
-.markdown > * {
+.main-text > * {
   max-width: 100%;
   height: auto;
 }
@@ -397,12 +397,12 @@ a:hover {
   padding-left: 40px;
 }
 
-.markdown ul {
+.main-text ul {
   padding-left: 1.2rem;
   list-style: disc outside;
 }
 
-.markdown ol {
+.main-text ol {
   padding-left: 1rem;
   list-style: decimal outside;
 }
@@ -470,12 +470,12 @@ li {
     font-size: 22px;
   }
 
-  .markdown ul {
+  .main-text ul {
     padding-left: 1.4rem;
     list-style: disc outside;
   }
 
-  .markdown ol {
+  .main-text ol {
     padding-left: 1.8rem;
     list-style: decimal outside;
   }

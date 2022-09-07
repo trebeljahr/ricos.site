@@ -125,7 +125,7 @@ const PostBody = ({ content }: Props) => {
   }, [content]);
 
   return (
-    <div className="markdown">
+    <div className="main-text">
       <ReactMarkdown
         remarkPlugins={[remarkToc]}
         rehypePlugins={[rehypeRaw]}

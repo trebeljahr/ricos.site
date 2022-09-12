@@ -1,4 +1,4 @@
-> You create the world by the way you live it. 
+> You create the world by the way you live it.
 – Lex Fridman
 
 > That's your life. The mundane things you repeat every day.
@@ -16,7 +16,7 @@
 > Great thinkers, icons, and innovators think forward and backwards. Occasionally, they drive their brain in reverse.
 – James Clear
 
-> If you are homo sapiens, you evolved for group combat and confirmation basis and motivated reasoning we are not  evolved to be academics or scientists searching for truth in an unbiased way we evolved to win in social competitions. But if you learn some skills you can  be very effective as a teacher as someone who persuades as someone who changes people.
+> If you are homo sapiens, you evolved for group combat and confirmation basis and motivated reasoning we are not evolved to be academics or scientists searching for truth in an unbiased way we evolved to win in social competitions. But if you learn some skills you can  be very effective as a teacher as someone who persuades as someone who changes people.
 – Jonathan Haidt 
 
 > God is in the details.
@@ -153,7 +153,6 @@
 
 > O, the trouble with women, I repeat it again and again From Kalamazoo to Kamchatka The trouble with women is - men. 
 – Ogden Nash
-
 
 > Never forget that a bunch of humans are waking up every day just to listen to you with the hope that you will have the answers to their questions and help them change their lives. Give it your 3000%. Touch their hearts. Improve their brains. 
 – Manish Poduval
@@ -523,7 +522,6 @@
 
 > Spend each day trying to be a little wider than you were when you woke up. Discharge your duties faithfully and well. Step by step you get ahead but not necessarily in fast spurts. But you build discipline by preparing for fast spurts. Slug it out one inch at a time, day by day and at the end of the day if you live long enough like most people you will get out of life what you deserve. Life and its various passages can be hard, brutally hard. The three things I have found helpful in coping with its challenges are: \n- Have low Expectations \n- Have a sense of humor \n- Surround yourself with the love of friends and family \n- Above all live with change and adapt to it. If the world didn't change I'd still have a twelve handicap. 
 – Charlie Munger
-
 
 > Don't sell anything you wouldn't buy yourself. Don't work for anyone you don't respect and admire. Work only with people you enjoy. 
 – Charlie Munger

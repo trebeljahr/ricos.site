@@ -169,47 +169,31 @@ export function Search<T extends Filters>({
 
       {Object.entries(filters)
         .filter(([, { active }]) => active)
-        .map(([filterName, { value: filterValue }]) => {
+        .map(([filterKey, { value: filterValue }]) => {
           return (
             <>
               <div className="search-filter">
                 <button
                   className="remove-filter-button"
-                  onClick={() => toggleFilter(filterName)}
+                  onClick={() => toggleFilter(filterKey)}
                 >
                   <FontAwesomeIcon icon={faXmark} />
                 </button>
-                <p>{filterName}</p>
-                <p className="search-filter-equal-sign">=</p>
-                {typeof filterValue === "boolean" ? (
-                  <button onClick={() => toggleBoolean(filterName)}>
-                    {filterValue ? "true" : "false"}
-                  </button>
-                ) : (
-                  <input
-                    id={filterName}
-                    type={
-                      typeof filterValue === "string" ||
-                      Array.isArray(filterValue)
-                        ? "text"
-                        : "number"
-                    }
-                    min={typeof filterValue === "number" ? 0 : undefined}
-                    max={typeof filterValue === "number" ? 10 : undefined}
-                    name={filterName}
-                    onChange={(event) => handleInput(event)}
-                    onKeyPress={(event) => {
-                      event.key === "Enter" && growArray(filterName);
-                    }}
-                    value={
-                      Array.isArray(filterValue)
-                        ? filterValue[filterValue.length - 1]?.tag ?? ""
-                        : filterValue
-                    }
-                  />
-                )}
+                <p>
+                  {beautifyCamelCase(filterKey, {
+                    capitalize: true,
+                  })}
+                </p>
+                <p className="search-filter-equal-sign">:</p>
+                <InputField
+                  growArray={growArray}
+                  filterKey={filterKey}
+                  filterValue={filterValue}
+                  toggleBoolean={toggleBoolean}
+                  handleInput={handleInput}
+                />
                 {Array.isArray(filterValue) && (
-                  <button onClick={() => growArray(filterName)}>
+                  <button onClick={() => growArray(filterKey)}>
                     <FontAwesomeIcon icon={faPlus} />
                   </button>
                 )}
@@ -221,7 +205,7 @@ export function Search<T extends Filters>({
                     return (
                       <div className="tag-filter" key={tag.id}>
                         <p>{tag.tag}</p>
-                        <button onClick={() => removeTag(filterName, tag.id)}>
+                        <button onClick={() => removeTag(filterKey, tag.id)}>
                           <FontAwesomeIcon icon={faTrash} />
                         </button>
                       </div>
@@ -235,15 +219,19 @@ export function Search<T extends Filters>({
         <div className="add-filter-container">
           {Object.entries(filters)
             .filter(([, { active }]) => !active)
-            .map(([filterName]) => {
+            .map(([filterKey]) => {
               return (
                 <button
-                  key={filterName}
+                  key={filterKey}
                   className="add-filter-button"
-                  onClick={() => toggleFilter(filterName)}
+                  onClick={() => toggleFilter(filterKey)}
                 >
                   <FontAwesomeIcon icon={faPlus} />
-                  <p> {filterName}</p>
+                  <p>
+                     {beautifyCamelCase(filterKey, {
+                      capitalize: true,
+                    })}
+                  </p>
                 </button>
               );
             })}
@@ -252,3 +240,102 @@ export function Search<T extends Filters>({
     </div>
   );
 }
+
+function beautifyCamelCase(filterKey: string, { capitalize = false }) {
+  const filterName = filterKey
+    .split(/(?=[A-Z])/)
+    .map((str) => str.toLowerCase())
+    .map((str) =>
+      capitalize ? str.charAt(0).toUpperCase() + str.slice(1) : str
+    )
+    .join(" ");
+  return filterName;
+}
+
+type InputFieldProps = {
+  filterValue: boolean | string | number | Tag[];
+  toggleBoolean(filterName: string): void;
+  filterKey: string;
+  handleInput(event: ChangeEvent<HTMLInputElement>): void;
+  growArray(filterName: string): void;
+};
+
+const InputField = ({
+  filterValue,
+  toggleBoolean,
+  filterKey,
+  handleInput,
+  growArray,
+}: InputFieldProps) => {
+  if (typeof filterValue === "boolean")
+    return (
+      <button onClick={() => toggleBoolean(filterKey)}>
+        {filterValue ? "yes" : "no"}
+      </button>
+    );
+
+  if (typeof filterValue === "number")
+    return (
+      <input
+        id={filterKey}
+        type="number"
+        min={0}
+        max={10}
+        name={filterKey}
+        onChange={(event) => handleInput(event)}
+        value={filterValue}
+      />
+    );
+
+  if (typeof filterValue === "string")
+    return (
+      <input
+        id={filterKey}
+        type={"text"}
+        name={filterKey}
+        onChange={(event) => handleInput(event)}
+        value={filterValue}
+      />
+    );
+
+  if (Array.isArray(filterValue))
+    return (
+      <input
+        id={filterKey}
+        type={"text"}
+        name={filterKey}
+        onChange={(event) => handleInput(event)}
+        onKeyPress={(event) => {
+          event.key === "Enter" && growArray(filterKey);
+        }}
+        value={filterValue[filterValue.length - 1]?.tag ?? ""}
+      />
+    );
+
+  return null;
+};
+
+type AutoCompleteInputProps = {
+  name: string;
+  options: string[];
+};
+
+const AutoCompleteInput = ({ name, options }: AutoCompleteInputProps) => {
+  return (
+    <>
+      <input
+        type="text"
+        list={`auto-complete-${name}`}
+        placeholder="Enter Here"
+      />
+      <datalist id={`auto-complete-${name}`}>
+        {options.map((val) => (
+          <option key={val} value={val}>
+            {val}
+          </option>
+        ))}
+      </datalist>
+      ;
+    </>
+  );
+};

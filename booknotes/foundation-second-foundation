@@ -4,7 +4,7 @@ bookCover: "/assets/book-covers/second-foundation.jpg"
 slug: "foundation-second-foundation"
 bookAuthor: "Isaac Asimov"
 rating: 9
-done: true
+done: false
 tags: []
 summary: false
 detailedNotes: false

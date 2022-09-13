@@ -1,5 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  Fragment,
+  SetStateAction,
+  useState,
+} from "react";
 import { faPlus, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { nanoid } from "nanoid";
 
@@ -18,26 +24,64 @@ export interface Tag {
 }
 
 type EmptyFilterValue = string | number | string[] | boolean;
-type EmptyFilters = Record<string, EmptyFilterValue>;
+type EmptyFilters = Record<string, EmptyFilterValue>[];
 
 type FilterValue = string | number | Tag[] | boolean;
 type Filter = {
   active: boolean;
   value: FilterValue;
+  options: string[] | number[] | boolean[];
 };
+
 type Filters = Record<string, Filter>;
+
+function makeEmptyForType(value: string | number | boolean | string[]) {
+  if (typeof value === "string") return "";
+  if (typeof value === "boolean") return false;
+  if (typeof value === "number") return 10;
+  if (Array.isArray(value)) return [];
+  throw new TypeError("Filter Type is not supported!");
+}
 
 export function createFilters<T extends EmptyFilters>(
   emptyFilters: T
 ): Filters {
-  const filters = Object.entries(emptyFilters).map(([key, value]) => [
-    key,
-    { value, active: false },
-  ]);
-  return Object.fromEntries(filters);
+  const filters = emptyFilters.reduce<Filters>((agg, filterableObject) => {
+    for (let [key, value] of Object.entries(filterableObject)) {
+      if (!agg[key]) {
+        if (Array.isArray(value)) {
+          const tagArray = value.map<Tag>((val) => ({
+            tag: val,
+            id: nanoid(),
+          }));
+          agg[key] = {
+            value: makeEmptyForType(value),
+            active: false,
+            options: [],
+          };
+          agg[key].options = value;
+        } else {
+          agg[key] = {
+            value: makeEmptyForType(value),
+            active: false,
+            options: [value] as string[] | number[] | boolean[],
+          };
+        }
+      } else {
+        agg[key] = {
+          ...agg[key],
+          options: [...new Set([...agg[key].options, value])] as [],
+        };
+      }
+    }
+    return agg;
+  }, {});
+  return filters;
 }
 
-export function useSearch<T extends EmptyFilters>(emptyFilters: T) {
+export function useSearch<T extends Record<string, EmptyFilterValue>>(
+  emptyFilters: T[]
+) {
   const [filters, setFilters] = useState(createFilters(emptyFilters));
   const entries = Object.entries(filters) as Entries<Filters>;
 
@@ -169,9 +213,9 @@ export function Search<T extends Filters>({
 
       {Object.entries(filters)
         .filter(([, { active }]) => active)
-        .map(([filterKey, { value: filterValue }]) => {
+        .map(([filterKey, { value: filterValue, options }]) => {
           return (
-            <>
+            <Fragment key={filterKey}>
               <div className="search-filter">
                 <button
                   className="remove-filter-button"
@@ -179,13 +223,9 @@ export function Search<T extends Filters>({
                 >
                   <FontAwesomeIcon icon={faXmark} />
                 </button>
-                <p>
-                  {beautifyCamelCase(filterKey, {
-                    capitalize: true,
-                  })}
-                </p>
-                <p className="search-filter-equal-sign">:</p>
+                <p>{beautify(filterKey, { capitalize: true })}:</p>
                 <InputField
+                  options={options}
                   growArray={growArray}
                   filterKey={filterKey}
                   filterValue={filterValue}
@@ -212,7 +252,7 @@ export function Search<T extends Filters>({
                     );
                   })}
               </div>
-            </>
+            </Fragment>
           );
         })}
       <div>
@@ -227,11 +267,7 @@ export function Search<T extends Filters>({
                   onClick={() => toggleFilter(filterKey)}
                 >
                   <FontAwesomeIcon icon={faPlus} />
-                  <p>
-                     {beautifyCamelCase(filterKey, {
-                      capitalize: true,
-                    })}
-                  </p>
+                  <p>{beautify(filterKey, { capitalize: true })}</p>
                 </button>
               );
             })}
@@ -241,7 +277,7 @@ export function Search<T extends Filters>({
   );
 }
 
-function beautifyCamelCase(filterKey: string, { capitalize = false }) {
+function beautify(filterKey: string, { capitalize = false }) {
   const filterName = filterKey
     .split(/(?=[A-Z])/)
     .map((str) => str.toLowerCase())
@@ -258,6 +294,7 @@ type InputFieldProps = {
   filterKey: string;
   handleInput(event: ChangeEvent<HTMLInputElement>): void;
   growArray(filterName: string): void;
+  options: string[] | number[] | boolean[];
 };
 
 const InputField = ({
@@ -266,6 +303,7 @@ const InputField = ({
   filterKey,
   handleInput,
   growArray,
+  options,
 }: InputFieldProps) => {
   if (typeof filterValue === "boolean")
     return (
@@ -289,12 +327,11 @@ const InputField = ({
 
   if (typeof filterValue === "string")
     return (
-      <input
-        id={filterKey}
-        type={"text"}
-        name={filterKey}
-        onChange={(event) => handleInput(event)}
-        value={filterValue}
+      <AutoCompleteInput
+        filterKey={filterKey}
+        options={options as string[]}
+        handleInput={handleInput}
+        filterValue={filterValue}
       />
     );
 
@@ -316,26 +353,35 @@ const InputField = ({
 };
 
 type AutoCompleteInputProps = {
-  name: string;
+  filterKey: string;
   options: string[];
+  filterValue: string;
+  handleInput(event: ChangeEvent<HTMLInputElement>): void;
 };
 
-const AutoCompleteInput = ({ name, options }: AutoCompleteInputProps) => {
+const AutoCompleteInput = ({
+  options,
+  filterValue,
+  filterKey,
+  handleInput,
+}: AutoCompleteInputProps) => {
   return (
     <>
       <input
+        id={filterKey}
+        name={filterKey}
+        list={`auto-complete-${filterKey}`}
         type="text"
-        list={`auto-complete-${name}`}
-        placeholder="Enter Here"
+        value={filterValue}
+        onChange={(event) => handleInput(event)}
       />
-      <datalist id={`auto-complete-${name}`}>
+      <datalist id={`auto-complete-${filterKey}`}>
         {options.map((val) => (
           <option key={val} value={val}>
             {val}
           </option>
         ))}
       </datalist>
-      ;
     </>
   );
 };

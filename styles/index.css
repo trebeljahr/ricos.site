@@ -161,8 +161,8 @@ a {
   cursor: pointer;
 }
 
-.search-filter > .search-filter-equal-sign {
-  margin: 0px 0.3rem;
+.search-filter > p {
+  margin-right: 0.3rem;
 }
 
 .search-filter > input {
@@ -309,6 +309,7 @@ button {
   flex-wrap: wrap;
   width: var(--main-width);
   margin: auto;
+  margin-top: 1.5rem;
 }
 
 .book-cover-image {

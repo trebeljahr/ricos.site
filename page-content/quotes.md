@@ -736,7 +736,7 @@
 > The dinosaurs became extinct because they didn't have a space program. And if we become extinct because we don't have a space program, it'll serve us right! 
 – Larry Niven
 
-> Today, many people have heard of SpaceX. Few know what SpaceX does. And even fewer know what SpaceX  does. Here's what SpaceX does: It takes things to space for people, for money. And as we established, here's what SpaceX  does: It's an innovation machine, trying to solve one big problem – the astronomical cost of space travel – because that's the key to making humanity a space-faring civilization that can become multi-planetary and back itself up on other hard drives. It supports itself by taking things to space for people, for money.
+> Today, many people have heard of SpaceX. Few know what SpaceX does. And even fewer know what SpaceX really does. Here's what SpaceX does: It takes things to space for people, for money. And as we established, here's what SpaceX really does: It's an innovation machine, trying to solve one big problem – the astronomical cost of space travel – because that's the key to making humanity a space-faring civilization that can become multi-planetary and back itself up on other hard drives. It supports itself by taking things to space for people, for money.
 – Tim Urban
 
 

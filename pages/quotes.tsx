@@ -6,6 +6,10 @@ import { Search, useSearch } from "../components/SearchBar";
 import { ToTopButton } from "../components/ToTopButton";
 import { UtteranceComments } from "../components/comments";
 
+function toFilters({ author }: Quote) {
+  return { author };
+}
+
 type Quote = {
   author: string;
   text: string;
@@ -15,9 +19,8 @@ type Props = {
   quotes: Quote[];
 };
 
-const emptySearchFilters = { author: "", text: "" };
 export default function Quotes({ quotes }: Props) {
-  const { byFilters, filters, setFilters } = useSearch(emptySearchFilters);
+  const { byFilters, filters, setFilters } = useSearch(quotes.map(toFilters));
   const filteredQuotes = quotes.filter(byFilters);
 
   return (

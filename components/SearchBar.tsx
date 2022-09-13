@@ -50,16 +50,11 @@ export function createFilters<T extends EmptyFilters>(
     for (let [key, value] of Object.entries(filterableObject)) {
       if (!agg[key]) {
         if (Array.isArray(value)) {
-          const tagArray = value.map<Tag>((val) => ({
-            tag: val,
-            id: nanoid(),
-          }));
           agg[key] = {
             value: makeEmptyForType(value),
             active: false,
-            options: [],
+            options: value,
           };
-          agg[key].options = value;
         } else {
           agg[key] = {
             value: makeEmptyForType(value),
@@ -70,12 +65,14 @@ export function createFilters<T extends EmptyFilters>(
       } else {
         agg[key] = {
           ...agg[key],
-          options: [...new Set([...agg[key].options, value])] as [],
+          options: [...new Set([...agg[key].options, value].flat())] as [],
         };
       }
     }
     return agg;
   }, {});
+
+  console.log(filters);
   return filters;
 }
 
@@ -337,16 +334,23 @@ const InputField = ({
 
   if (Array.isArray(filterValue))
     return (
-      <input
-        id={filterKey}
-        type={"text"}
-        name={filterKey}
-        onChange={(event) => handleInput(event)}
-        onKeyPress={(event) => {
-          event.key === "Enter" && growArray(filterKey);
-        }}
-        value={filterValue[filterValue.length - 1]?.tag ?? ""}
+      <AutoCompleteInput
+        filterKey={filterKey}
+        options={options as string[]}
+        handleInput={handleInput}
+        filterValue={filterValue[filterValue.length - 1]?.tag ?? ""}
+        growArray={growArray}
       />
+      // <input
+      //   id={filterKey}
+      //   type={"text"}
+      //   name={filterKey}
+      //   onChange={(event) => handleInput(event)}
+      //   onKeyPress={(event) => {
+      //     event.key === "Enter" && growArray(filterKey);
+      //   }}
+      //   value={filterValue[filterValue.length - 1]?.tag ?? ""}
+      // />
     );
 
   return null;
@@ -357,6 +361,7 @@ type AutoCompleteInputProps = {
   options: string[];
   filterValue: string;
   handleInput(event: ChangeEvent<HTMLInputElement>): void;
+  growArray?: (filterName: string) => void;
 };
 
 const AutoCompleteInput = ({
@@ -364,9 +369,10 @@ const AutoCompleteInput = ({
   filterValue,
   filterKey,
   handleInput,
+  growArray,
 }: AutoCompleteInputProps) => {
   return (
-    <>
+    <Fragment key={filterKey}>
       <input
         id={filterKey}
         name={filterKey}
@@ -374,6 +380,9 @@ const AutoCompleteInput = ({
         type="text"
         value={filterValue}
         onChange={(event) => handleInput(event)}
+        onKeyPress={(event) => {
+          event.key === "Enter" && growArray && growArray(filterKey);
+        }}
       />
       <datalist id={`auto-complete-${filterKey}`}>
         {options.map((val) => (
@@ -382,6 +391,6 @@ const AutoCompleteInput = ({
           </option>
         ))}
       </datalist>
-    </>
+    </Fragment>
   );
 };

@@ -54,6 +54,6 @@ export const getStaticProps = async () => {
     "detailedNotes",
   ]);
   return {
-    props: { allBooks: allBooks.filter(({ done }) => done) },
+    props: { allBooks }, // { allBooks: allBooks.filter(({ done }) => done) },
   };
 };

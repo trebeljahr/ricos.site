@@ -16,7 +16,11 @@ export default async function handler(
     };
     await addNewMemberToEmailList(newMember);
 
-    const link = `${process.env.HOST}/api/confirm-email?hash=${newMember.vars.hash}&email=${newMember.email}`;
+    const HOST =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000"
+        : "https://trebeljahr.com";
+    const link = `${HOST}/api/confirm-email?hash=${newMember.vars.hash}&email=${newMember.email}`;
     const data = {
       from: "Rico Trebeljahr <rico@newsletter.trebeljahr.com>",
       to: newMember.email,

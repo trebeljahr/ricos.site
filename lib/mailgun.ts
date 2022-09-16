@@ -5,7 +5,7 @@ import { CreateUpdateMailListMembers } from "mailgun.js/interfaces/mailListMembe
 // @ts-ignore:next-line
 const mailgun = new Mailgun(formData);
 
-const DOMAIN = process.env.DOMAIN || "";
+const DOMAIN = "newsletter.trebeljahr.com";
 export const newsletterListMail = `hi@${DOMAIN}`;
 
 const mg = mailgun.client({

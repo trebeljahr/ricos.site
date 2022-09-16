@@ -5,12 +5,8 @@ import Mailgun from "mailgun.js";
 
 config();
 
-console.log(typeof Mailgun);
-console.log(Mailgun);
-
 // @ts-ignore:next-line
 const mailgun = new Mailgun(formData);
-console.log(mailgun);
 
 const DOMAIN = process.env.DOMAIN || "";
 export const newsletterListMail = `hi@${DOMAIN}`;
@@ -20,16 +16,6 @@ const mg = mailgun.client({
   key: process.env.API_KEY || "",
   url: "https://api.eu.mailgun.net",
 });
-
-// console.log("Sending mail with mailgun...");
-// console.log(process.env.API_KEY, process.env.DOMAIN);
-
-// const data = {
-//   from: "Rico Trebeljahr <rico@newsletter.trebeljahr.com>",
-//   to: "ricotrebeljahr@gmail.com",
-//   subject: "Hello",
-//   text: "Testing some Mailgun awesomness!",
-// };
 
 type EmailData = {
   from: string;
@@ -93,14 +79,11 @@ export async function activateEmailListMember(email: string) {
   console.log(newMember);
 }
 
-export async function unsubscribeFromList(email: string) {
-  await mg.lists.members.destroyMember(DOMAIN, email);
-}
-
 export async function sendEmail(data: EmailData) {
   await mg.messages.create(DOMAIN, data);
 }
 
 export async function sendToNewsletterList(data: EmailData) {
+  data.to = newsletterListMail;
   await mg.messages.create(DOMAIN, data);
 }

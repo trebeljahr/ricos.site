@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import express from "express";
+import express, { Request, Response } from "express";
 import {
   activateEmailListMember,
   addNewMemberToEmailList,
@@ -7,9 +7,11 @@ import {
 } from "./mailgun.js";
 import crypto from "crypto";
 import { promisify } from "util";
+import cors from "cors";
 
 config();
 const app = express();
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -37,6 +39,8 @@ async function checkHash(str: string, hashFromUrl: string) {
 
 app.post("/signup", async (req, res) => {
   try {
+    console.log(req.body);
+
     const newMember = {
       email: req.body.email,
       name: req.body.name || "",
@@ -68,7 +72,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.get("/confirm-email", async (req, res) => {
+async function confirmEmail(req: Request, res: Response) {
   if (!checkHash(req.query.email as string, req.query.hash as string)) {
     return res.status(400).json({
       error: "An error occured...",
@@ -78,18 +82,33 @@ app.get("/confirm-email", async (req, res) => {
   }
 
   await activateEmailListMember(req.query.email as string);
-  res.send(
-    `Email successfully confirmed... Enjoy the newsletter! 
+}
+
+app.get("/confirm-email", async (req, res) => {
+  try {
+    await confirmEmail(req, res);
+    res.send(
+      `Email successfully confirmed... Enjoy the newsletter! 
     You can head back to <a href="trebeljahr.com">trebeljahr.com/posts</a> and read some more posts!`
-  );
+    );
+  } catch (err) {
+    res.status(400).json({
+      error: "An error occured...",
+      errorMessage: getErrorMessage(err),
+    });
+  }
 });
 
-app.post("/confirm-email/:id", (req, res) => {
-  res.json({ success: "Confirmed email address for newsletter" });
-});
-
-app.post("/unsubscribe", (req, res) => {
-  res.json({ success: "Unsubscribed user from newsletter" });
+app.post("/confirm-email", async (req, res) => {
+  try {
+    await confirmEmail(req, res);
+    res.json({ success: "Confirmed email address for newsletter" });
+  } catch (err) {
+    res.status(400).json({
+      error: "An error occured...",
+      errorMessage: getErrorMessage(err),
+    });
+  }
 });
 
 app.listen(process.env.PORT, () => {

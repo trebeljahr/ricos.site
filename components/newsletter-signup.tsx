@@ -13,7 +13,6 @@ export const NewsletterForm = () => {
 
   const handleSubmit = async (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    const baseUrl = process.env.NEXT_PUBLIC_EMAIL_NEWSLETTER_HOST;
     setLoading(true);
 
     const headers = new Headers();
@@ -21,7 +20,7 @@ export const NewsletterForm = () => {
     headers.append("Accept", "application/json, text/plain, */*");
     headers.append("Content-Type", "application/json");
 
-    await fetch(baseUrl + "/signup", {
+    await fetch("/api/signup", {
       method: "POST",
       body: JSON.stringify({ email }),
       headers: headers,

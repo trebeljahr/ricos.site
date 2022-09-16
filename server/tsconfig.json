@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "module": "node16",
+    "module": "NodeNext",
     "lib": ["es6"],
     "allowJs": true,
     "outDir": "build",

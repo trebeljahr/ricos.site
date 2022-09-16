@@ -22,12 +22,17 @@ const data = {
   to: newsletterListMail,
   subject: "Newsletter Trebeljahr.com 1",
   html: htmlEmail,
-  text:
-    placeholder.content +
-    placeholder.secondHeader +
-    placeholder.secondContent +
-    placeholder.thirdHeader +
-    placeholder.thirdContent,
+  text: `Trebeljahr Newsletter
+    ${placeholder.content}
+
+    ${placeholder.secondHeader}
+    ${placeholder.secondContent}
+
+    ${placeholder.thirdHeader}
+    ${placeholder.thirdContent}
+
+    "To unsubscribe click: <%mailing_list_unsubscribe_url%>"
+  `,
 };
 
 await sendToNewsletterList(data);

@@ -1,7 +1,6 @@
 import { config } from "dotenv";
 
 import formData from "form-data";
-import { Signup } from "./Signup.model.js";
 import Mailgun from "mailgun.js";
 
 config();
@@ -62,25 +61,39 @@ export async function createNewMailingList() {
   console.log(newList);
 }
 
-export type Signup = {
-  address: string;
+export type Member = {
+  email: string;
   name: string;
-  vars: {};
+  vars: {
+    hash: string;
+  };
 };
 
-export async function addSignupToEmailList(signup: Signup) {
-  const newMember = await mg.lists.members.createMember(newsletterListMail, {
-    address: signup.address,
-    name: signup.name,
-    subscribed: "yes",
+export async function addNewMemberToEmailList(newMember: Member) {
+  const member = await mg.lists.members.createMember(newsletterListMail, {
+    address: newMember.email,
+    name: newMember.name || "",
+    vars: JSON.stringify(newMember.vars),
+    subscribed: "no",
     upsert: "yes",
   });
+
+  console.log(member);
+}
+
+export async function activateEmailListMember(email: string) {
+  const newMember = await mg.lists.members.updateMember(
+    newsletterListMail,
+    email,
+    {
+      subscribed: "yes",
+    }
+  );
 
   console.log(newMember);
 }
 
 export async function unsubscribeFromList(email: string) {
-  // await Signup.findOneAndDelete({ email });
   await mg.lists.members.destroyMember(DOMAIN, email);
 }
 

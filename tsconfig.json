@@ -16,5 +16,12 @@
     "incremental": true
   },
   "exclude": ["node_modules"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "scripts/sendNewsletter.js",
+    "scripts/createMailingList.js",
+    "scripts/deleteDomain.js"
+  ]
 }

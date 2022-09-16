@@ -7,7 +7,6 @@ import {
 } from "./mailgun.js";
 import crypto from "crypto";
 import { promisify } from "util";
-import cors from "cors";
 
 config();
 const app = express();

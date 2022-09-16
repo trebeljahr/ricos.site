@@ -1,9 +1,6 @@
-import { config } from "dotenv";
-
 import formData from "form-data";
 import Mailgun from "mailgun.js";
-
-config();
+import { CreateUpdateMailListMembers } from "mailgun.js/interfaces/mailListMembers";
 
 // @ts-ignore:next-line
 const mailgun = new Mailgun(formData);
@@ -35,7 +32,7 @@ export async function createNewMailingList() {
   const existingLists = await mg.lists.list();
   console.log(existingLists.items);
 
-  if (existingLists.length !== 0) return;
+  if (existingLists.items.length !== 0) return;
 
   const newList = await mg.lists.create({
     address: newsletterListMail,
@@ -73,7 +70,7 @@ export async function activateEmailListMember(email: string) {
     email,
     {
       subscribed: "yes",
-    }
+    } as unknown as CreateUpdateMailListMembers
   );
 
   console.log(newMember);

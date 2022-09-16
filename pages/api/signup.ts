@@ -7,7 +7,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    console.log(req.body);
+    console.log("New signup:", req.body);
 
     const newMember = {
       email: req.body.email,

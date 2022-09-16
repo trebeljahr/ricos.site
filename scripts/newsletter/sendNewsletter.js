@@ -14,9 +14,6 @@ const placeholder = {
 };
 
 const htmlEmail = template(placeholder);
-
-console.log(htmlEmail);
-
 const data = {
   from: "Rico Trebeljahr <rico@newsletter.trebeljahr.com>",
   to: newsletterListMail,
@@ -35,4 +32,7 @@ const data = {
   `,
 };
 
+console.log("Sending email...");
 await sendToNewsletterList(data);
+
+console.log("Done!");

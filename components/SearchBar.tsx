@@ -72,7 +72,6 @@ export function createFilters<T extends EmptyFilters>(
     return agg;
   }, {});
 
-  console.log(filters);
   return filters;
 }
 

@@ -17,7 +17,3 @@ await writeFile(
   "../page-content/quotes.json",
   JSON.stringify(allQuotes, undefined, 2)
 );
-
-console.log(quotes);
-console.log(quotes.length / 2);
-console.log(allQuotes);

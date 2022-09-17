@@ -1,5 +1,25 @@
-import ConvertKitForm from "convertkit-react/bin/convertkit-react.esm";
 import { ChangeEvent, MouseEvent, useState } from "react";
+import { CircleLoader, ClimbingBoxLoader, ClipLoader } from "react-spinners";
+
+async function fetchData(input: RequestInfo | URL, init?: RequestInit) {
+  const response = await fetch(input, init);
+  if (!response.ok) {
+    let err = new Error("HTTP status code: " + response.status + response);
+
+    console.log(response);
+    const errorMessage = await response.json();
+    console.log(errorMessage);
+
+    throw err;
+  }
+  return response;
+}
+
+async function sleep() {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 1000);
+  });
+}
 
 export const NewsletterForm = () => {
   const [email, setEmail] = useState("");
@@ -8,7 +28,7 @@ export const NewsletterForm = () => {
   const [error, setError] = useState(false);
 
   if (error) {
-    return <p>An error occurred</p>;
+    return <p>An error occurred...</p>;
   }
 
   const handleSubmit = async (event: MouseEvent<HTMLButtonElement>) => {
@@ -20,13 +40,18 @@ export const NewsletterForm = () => {
     headers.append("Accept", "application/json, text/plain, */*");
     headers.append("Content-Type", "application/json");
 
-    await fetch("/api/signup", {
-      method: "POST",
-      body: JSON.stringify({ email }),
-      headers: headers,
-    }).catch((err) => setError(err));
+    // await fetchData("/api/signup", {
+    //   method: "POST",
+    //   body: JSON.stringify({ email }),
+    //   headers: headers,
+    // }).catch((err) => {
+    //   console.log(err);
+    //   setError(err);
+    // });
 
-    setSuccess(true);
+    await sleep();
+
+    // setSuccess(true);
     setLoading(false);
   };
 
@@ -35,24 +60,42 @@ export const NewsletterForm = () => {
   };
 
   if (success) {
-    return <p>Success... now check your mail to confirm your subscription!</p>;
+    return (
+      <div className="emailNewsletter">
+        <p>Success... now check your mail to confirm your subscription!</p>
+      </div>
+    );
   }
 
   return (
-    <div>
+    <div className="newsletter">
+      <h2>
+        Subscribe to 1<sup>4</sup>
+      </h2>
       <p>
-        <label htmlFor="email">Enter your email address</label>
+        Once a month. 1 Booknote. 1 Photo. 1 Link. 1 Post. Bundled together in
+        one heck of a Newsletter.
       </p>
-      <input
-        id="email"
-        name="email"
-        type="text"
-        value={email}
-        onChange={handleInput}
-      />
-      <button type="submit" onClick={handleSubmit}>
-        {loading ? "Loading..." : "Submit"}
-      </button>
+      <div className="form">
+        <input
+          name="email"
+          type="email"
+          required
+          value={email}
+          placeholder="Your very best email"
+          onChange={handleInput}
+        />
+        <button
+          className={loading ? "inactive" : "active"}
+          onClick={handleSubmit}
+        >
+          {loading ? (
+            <ClipLoader color={"rgb(68, 160, 255)"} loading={true} size={20} />
+          ) : (
+            "Subscribe"
+          )}
+        </button>
+      </div>
     </div>
   );
 };

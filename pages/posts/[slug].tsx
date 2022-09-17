@@ -9,6 +9,7 @@ import { ReadMore } from "../../components/more-stories";
 import { UtteranceComments } from "../../components/comments";
 import { ToTopButton } from "../../components/ToTopButton";
 import { Post as PostType } from "../../types/post";
+import { NewsletterForm } from "../../components/newsletter-signup";
 
 type Props = {
   post: PostType;
@@ -34,9 +35,12 @@ const Post = ({ post, morePosts }: Props) => {
               author={post.author}
             />
             <PostBody content={post.content} />
+            <NewsletterForm />
+
             {morePosts && <ReadMore posts={morePosts} />}
           </article>
           <UtteranceComments />
+
           <ToTopButton />
         </>
       )}

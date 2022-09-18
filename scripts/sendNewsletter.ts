@@ -1,12 +1,16 @@
-import Handlebars from "handlebars";
 import { readFile } from "fs/promises";
-// import { read } from "to-vfile";
-// import { newsletterListMail } from "../lib/mailgun";
+import { newsletterListMail, sendEmail } from "./mailgun.js";
+import { unified } from "unified";
 import path from "path";
 import remarkHtml from "remark-html";
 import remarkParse from "remark-parse";
-import { unified } from "unified";
-import { read } from "to-vfile";
+import Handlebars from "handlebars";
+
+const newsletterNumber = 1;
+const HOST =
+  process.env.NODE_ENV === "production"
+    ? "https://trebeljahr.com"
+    : "http://localhost:3000";
 
 async function main() {
   const emailHandlebarsFile = await readFile(
@@ -14,46 +18,33 @@ async function main() {
     "utf-8"
   );
 
-  // const content = await readFile();
-  // console.log(content);
+  const mdFileRaw = await readFile(
+    path.join(process.cwd(), "..", "newsletters", `${newsletterNumber}`),
+    "utf-8"
+  );
   const file = await unified()
     .use(remarkParse)
     .use(remarkHtml)
-    .process(await read(path.join(process.cwd(), "..", "newsletters", "1.md")));
-  console.log(file);
+    .process(mdFileRaw);
 
-  // const template = Handlebars.compile(emailHandlebarsFile);
+  const template = Handlebars.compile(emailHandlebarsFile);
 
-  // const placeholder = {
-  //   content: "Hello World, this is a newsletter!",
-  //   secondHeader: "Second Headline",
-  //   secondContent: "Some more content",
-  //   thirdHeader: "Third Headline",
-  //   thirdContent: "And some more content... ",
-  // };
+  const image = `${HOST}/assets/newsletter/${newsletterNumber}.jpg`;
+  const webversion = `${HOST}/newsletters/${newsletterNumber}`;
 
-  // const htmlEmail = template(placeholder);
-  // const data = {
-  //   from: "Rico Trebeljahr <rico@newsletter.trebeljahr.com>",
-  //   to: newsletterListMail,
-  //   subject: "Newsletter Trebeljahr.com 1",
-  //   html: htmlEmail,
-  //   text: `Trebeljahr Newsletter
-  //     ${placeholder.content}
+  const htmlEmail = template({ content: file.value, image, webversion });
 
-  //     ${placeholder.secondHeader}
-  //     ${placeholder.secondContent}
+  const data = {
+    from: "Rico Trebeljahr <rico@newsletter.trebeljahr.com>",
+    to: newsletterListMail,
+    subject: "Newsletter Trebeljahr.com 1",
+    html: htmlEmail,
+    text: mdFileRaw,
+  };
 
-  //     ${placeholder.thirdHeader}
-  //     ${placeholder.thirdContent}
-
-  //     "To unsubscribe click: <%mailing_list_unsubscribe_url%>"
-  //   `,
-  // };
-
-  // console.log("Sending email...");
-  // await sendToNewsletterList(data);
-  // console.log("Done!");
+  console.log("Sending email...");
+  await sendEmail(data);
+  console.log("Done!");
 }
 
 main();

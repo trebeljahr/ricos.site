@@ -4,6 +4,7 @@ import matter from "gray-matter";
 
 const postsDirectory = join(process.cwd(), "posts");
 const bookReviewsDirectory = join(process.cwd(), "booknotes");
+const newsletterDirectory = join(process.cwd(), "newsletters");
 
 function getBySlug(slug: string, fields: string[] = [], directory: string) {
   const realSlug = slug.replace(/\.md$/, "");
@@ -39,8 +40,16 @@ export function getBookSlugs() {
   return fs.readdirSync(bookReviewsDirectory);
 }
 
+export function getNewsletterSlugs() {
+  return fs.readdirSync(newsletterDirectory);
+}
+
 export function getPostBySlug(slug: string, fields: string[] = []) {
   return getBySlug(slug, fields, postsDirectory);
+}
+
+export function getNewsletterBySlug(slug: string, fields: string[] = []) {
+  return getBySlug(slug, fields, newsletterDirectory);
 }
 
 export function getBookReviewBySlug(slug: string, fields: string[] = []) {
@@ -59,4 +68,10 @@ export function getAllBookReviews(fields: string[] = []) {
   const slugs = getBookSlugs();
   const books = slugs.map((slug) => getBookReviewBySlug(slug, fields));
   return books;
+}
+
+export function getAllNewsletters(fields: string[] = []) {
+  const slugs = getNewsletterSlugs();
+  const newsletters = slugs.map((slug) => getNewsletterBySlug(slug, fields));
+  return newsletters;
 }

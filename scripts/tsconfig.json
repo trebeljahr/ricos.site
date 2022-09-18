@@ -4,5 +4,5 @@
     "moduleResolution": "node16"
   },
   "exclude": ["node_modules"],
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts", "../lib/mailgun.ts"]
 }

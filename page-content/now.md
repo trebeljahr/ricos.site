@@ -4,7 +4,7 @@ I am currently in Berlin, at home, working at [Ironhack](https://ironhack.com) a
 a part-time web development lead teacher, where I teach people how to program. 
 
 This means I only work for 12 hours a week and have the rest of my time free for working on this blog. I read a lot and you can find the results within the 
-[/booknotes of this site](/booknotes)
+[/booknotes of this site](/booknotes).
 
 The plan for this blog is an idea I call "1-month projects". 
 

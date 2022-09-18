@@ -7,11 +7,8 @@ export default async function handler(
 ) {
   try {
     await confirmEmail(req, res);
-    res.json({ success: "Confirmed email address for newsletter" });
+    res.redirect("/email-signup-success");
   } catch (err) {
-    res.status(400).json({
-      error: "An error occured...",
-      errorMessage: getErrorMessage(err),
-    });
+    res.redirect("/email-signup-error");
   }
 }

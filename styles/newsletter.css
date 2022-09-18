@@ -9,6 +9,10 @@
   margin-left: -20px;
 }
 
+.newsletter .error {
+  color: var(--dark-red);
+}
+
 .newsletter * {
   margin: 0;
   padding: 0;

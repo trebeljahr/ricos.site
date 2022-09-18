@@ -8,7 +8,7 @@
     "node": ">=14.16"
   },
   "scripts": {
-    "sendNewsletter": "ts-node ./sendNewsletter.ts"
+    "sendNewsletter": "ts-node-esm ./sendNewsletter.ts"
   },
   "keywords": [],
   "author": "",

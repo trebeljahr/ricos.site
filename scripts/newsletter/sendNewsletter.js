@@ -1,6 +1,6 @@
 import Handlebars from "handlebars";
 import { readFile } from "fs/promises";
-import { newsletterListMail, sendToNewsletterList } from "./mailgun.js";
+import { newsletterListMail } from "./mailgun.js";
 
 const emailHandlebarsFile = await readFile("./src/emailTemplate.hbs", "utf-8");
 const template = Handlebars.compile(emailHandlebarsFile);

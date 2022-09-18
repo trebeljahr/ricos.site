@@ -5,12 +5,14 @@ import { ToTopButton } from "../components/ToTopButton";
 import { join } from "path";
 import fs from "fs/promises";
 import matter from "gray-matter";
+import { NewsletterForm } from "../components/newsletter-signup";
 
 export default function Now({ content }: { content: string }) {
   return (
     <Layout pageTitle="Now">
       <PostBody content={content} />
       <ToTopButton />
+      <NewsletterForm />
       <UtteranceComments />{" "}
     </Layout>
   );

@@ -3,6 +3,7 @@
 :root {
   /* --dark-blue: #1e7900;
   --blue: #28b264; */
+  --dark-red: rgb(204, 9, 9);
   --red: rgb(232, 83, 83);
   --light-red: rgb(242, 145, 145);
 
@@ -296,7 +297,8 @@ p,
 ul,
 ol,
 blockquote,
-button {
+button,
+input {
   line-height: 1.6;
   /* font-size: 1rem; */
   font-weight: normal;

@@ -3,15 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, MouseEvent, useState } from "react";
 import { ClipLoader } from "react-spinners";
 
-async function fetchData(input: RequestInfo | URL, init?: RequestInit) {
+async function fetchData(input: RequestInfo, init?: RequestInit) {
   const response = await fetch(input, init);
-  console.log(response);
   if (!response.ok || response.status !== 200) {
     let err = new Error("HTTP status code: " + response.status + response);
 
     const errorMessage = await response.json();
-    console.log(errorMessage);
-
     throw err;
   }
 

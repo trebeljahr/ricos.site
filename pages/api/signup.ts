@@ -37,7 +37,6 @@ export default async function handler(
     };
 
     const htmlEmail = template(placeholder);
-    console.log(htmlEmail);
 
     const data = {
       from: "Rico Trebeljahr <rico@newsletter.trebeljahr.com>",

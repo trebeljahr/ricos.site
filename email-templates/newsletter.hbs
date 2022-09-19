@@ -108,7 +108,7 @@
           <tr>
             <td style="background-color: #ffffff">
               <img
-                src="https://www.trebeljahr.com/_next/image?url=%2Fassets%2Fblog%2Flaos-rice-field.jpg&w=1920&q=75"
+                src="{{image}}"
                 width="600"
                 height=""
                 alt="alt_text"
@@ -149,7 +149,7 @@
                       color: #555555;
                     "
                   >
-                    <h1
+                    {{!-- <h1
                       style="
                         margin: 0 0 10px 0;
                         font-family: sans-serif;
@@ -160,12 +160,12 @@
                       "
                     >
                       Trebeljahr – Newsletter.
-                    </h1>
+                    </h1> --}}
 
-                    <p style="margin: 0">{{content}}</p>
+                    <p style="margin: 0">{{{content}}}</p>
                   </td>
                 </tr>
-
+{{!-- 
                 <tr>
                   <td
                     style="
@@ -225,7 +225,7 @@
                 </tr>
               </table>
             </td>
-          </tr>
+          </tr> --}}
 
           <tr>
             <td
@@ -260,7 +260,7 @@
             >
               <br />
               <br />
-              <h3>trebeljahr.com</h3>
+              <h3><a href="{{webversion}}">Web Version</a></h3>
               <br />
               <span class="unstyle-auto-detected-links"></span>
               <h4>

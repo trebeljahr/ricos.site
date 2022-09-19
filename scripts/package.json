@@ -2,9 +2,13 @@
   "name": "scripts",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "type": "module",
+  "exports": "./index.js",
+  "engines": {
+    "node": ">=14.16"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "sendNewsletter": "ts-node-esm ./sendNewsletter.ts"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +18,16 @@
     "cheerio": "^1.0.0-rc.11",
     "dotenv": "^16.0.2",
     "htmlparser2": "^8.0.1",
-    "jsdom": "^19.0.0"
+    "jsdom": "^19.0.0",
+    "remark-html": "^15.0.1",
+    "remark-parse": "^10.0.1",
+    "to-vfile": "^7.2.3",
+    "unified": "^10.1.2"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/node": "^18.7.18",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.3"
   }
 }

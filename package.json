@@ -29,7 +29,6 @@
     "react-spinners": "^0.13.4",
     "rehype-raw": "^6.1.1",
     "remark": "13.0.0",
-    "remark-html": "^13.0.2",
     "remark-toc": "^8.0.1"
   },
   "devDependencies": {

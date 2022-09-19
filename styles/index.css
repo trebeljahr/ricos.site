@@ -38,6 +38,12 @@ button {
   max-width: 100%;
 }
 
+.header-image-container {
+  position: relative;
+  height: 70vh;
+  margin-bottom: 3rem;
+}
+
 .postImgWrapper {
   width: var(--main-width);
 }

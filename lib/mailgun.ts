@@ -6,7 +6,8 @@ import { CreateUpdateMailListMembers } from "mailgun.js/interfaces/mailListMembe
 const mailgun = new Mailgun(formData);
 
 const DOMAIN = "newsletter.trebeljahr.com";
-export const newsletterListMail = `test@${DOMAIN}`;
+export const newsletterListMail =
+  process.env.NODE_ENV === "production" ? `hi@${DOMAIN}` : `test@${DOMAIN}`;
 
 const mg = mailgun.client({
   username: "api",
@@ -52,17 +53,19 @@ export type Member = {
   };
 };
 
-export async function addNewMemberToEmailList(newMember: Member) {
-  const existingMember = await mg.lists.members.getMember(
-    newsletterListMail,
-    newMember.email
-  );
-
-  if (existingMember.subscribed) {
-    console.log("Member already subscribed", newMember.email);
-    return;
+export async function isAlreadySubscribed(email: string) {
+  try {
+    const existingMember = await mg.lists.members.getMember(
+      newsletterListMail,
+      email
+    );
+    return existingMember.subscribed;
+  } catch (err) {
+    return false;
   }
+}
 
+export async function addNewMemberToEmailList(newMember: Member) {
   const member = await mg.lists.members.createMember(newsletterListMail, {
     address: newMember.email,
     name: newMember.name || "",

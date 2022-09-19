@@ -1,5 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { addNewMemberToEmailList, sendEmail } from "../../lib/mailgun";
+import {
+  addNewMemberToEmailList,
+  isAlreadySubscribed,
+  sendEmail,
+} from "../../lib/mailgun";
 import { getErrorMessage, getHash } from "../../lib/utils";
 import { readFile } from "fs/promises";
 import Handlebars from "handlebars";
@@ -17,6 +21,14 @@ export default async function handler(
       name: req.body.name || "",
       vars: { hash: await getHash(req.body.email) },
     };
+
+    if (await isAlreadySubscribed(newMember.email)) {
+      console.log("Member already subscribed", newMember.email);
+      return res.json({
+        success: "You were already signed up to the newsletter.",
+      });
+    }
+
     await addNewMemberToEmailList(newMember);
 
     const HOST =
@@ -49,7 +61,7 @@ export default async function handler(
     await sendEmail(data);
 
     res.json({
-      success: "Signed up email for newsletter. Waiting for confirmation!",
+      success: "Now check your mail to confirm your subscription!",
     });
   } catch (err) {
     console.error(err);

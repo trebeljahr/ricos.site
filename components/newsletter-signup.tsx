@@ -8,11 +8,10 @@ async function fetchData(input: RequestInfo, init?: RequestInit) {
   if (!response.ok || response.status !== 200) {
     let err = new Error("HTTP status code: " + response.status + response);
 
-    const errorMessage = await response.json();
     throw err;
   }
 
-  return response;
+  return await response.json();
 }
 
 function isValidEmail(email: string) {
@@ -22,7 +21,7 @@ function isValidEmail(email: string) {
 export const NewsletterForm = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (event: MouseEvent<HTMLButtonElement>) => {
@@ -41,13 +40,14 @@ export const NewsletterForm = () => {
     headers.append("Content-Type", "application/json");
 
     try {
-      await fetchData("/api/signup", {
+      const data = await fetchData("/api/signup", {
         method: "POST",
         body: JSON.stringify({ email }),
         headers: headers,
       });
+      console.log(data);
 
-      setSuccess(true);
+      setSuccess(data.success);
       setLoading(false);
     } catch (err) {
       setError("Something went wrong while signing up... maybe, try again?");
@@ -66,7 +66,7 @@ export const NewsletterForm = () => {
           <h2>
             Success <FontAwesomeIcon icon={faCheckCircle} color={"#1fd655"} />
           </h2>
-          <p>Now check your mail to confirm your subscription!</p>
+          <p>{success}</p>
         </>
       ) : (
         <>

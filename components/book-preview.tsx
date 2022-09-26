@@ -10,10 +10,8 @@ export function BookPreview({ book }: Props) {
   const { slug, title, bookCover } = book;
   return (
     <Link as={`/booknotes/${slug}`} href="/booknotes/[slug]">
-      <a>
-        <div className="book-preview">
-          <BookCover title={title} src={bookCover} />
-        </div>
+      <a className="book-preview book-cover-image">
+        <BookCover title={title} src={bookCover} />
       </a>
     </Link>
   );

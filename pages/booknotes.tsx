@@ -4,6 +4,8 @@ import PostHeader from "../components/post-header";
 import { getAllBookReviews } from "../lib/api";
 import Book from "../types/book";
 import { Search, useSearch } from "../components/SearchBar";
+import { NewsletterForm } from "../components/newsletter-signup";
+import { ToTopButton } from "../components/ToTopButton";
 
 type Props = {
   allBooks: Book[];
@@ -27,14 +29,28 @@ export default function Books({ allBooks }: Props) {
   return (
     <Layout fullPage={true} pageTitle="Book Notes">
       <article>
-        <Search filters={filters} setFilters={setFilters} />
-        <PostHeader title={`Booknotes:`} />
-        <p>Amount: {filteredBooks.length}</p>
-        <div className="allBooks">
+        <section className="main-section">
+          <Search filters={filters} setFilters={setFilters} />
+          <PostHeader title={`Booknotes:`} />
+          <p>Amount: {filteredBooks.length}</p>
+          {!filters.detailedNotes.value && !filters.summary.value ? (
+            <p>
+              Fair warning: Many of these books still do not have detailed notes
+              or even summaries. I am still working on adding them, but it takes
+              time. If you want to see only those with descriptions or summaries
+              you can add a filter above!
+            </p>
+          ) : null}
+        </section>
+        <section className="allBooks">
           {filteredBooks.map((book) => {
             return <BookPreview key={book.slug} book={book} />;
           })}
-        </div>
+        </section>
+        <section className="main-section">
+          <NewsletterForm />
+          <ToTopButton />
+        </section>
       </article>
     </Layout>
   );

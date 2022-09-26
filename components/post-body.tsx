@@ -8,6 +8,8 @@ import Image from "next/image";
 import remarkToc from "remark-toc";
 import rehypeRaw from "rehype-raw";
 import { ExternalLink } from "./ExternalLink";
+import { NewsletterForm } from "./newsletter-signup";
+import { UtteranceComments } from "./comments";
 
 type Props = {
   content: string;
@@ -44,51 +46,53 @@ const HeadingRenderer: React.FC<HeadingResolverProps> = ({
   }
 };
 
-const ParagraphRenderer = (paragraph: {
-  children?: JSX.Element[];
-  node?: any;
-}) => {
-  const { node } = paragraph;
+const ImageRenderer = (props: { children?: any; node?: any }) => {
+  const { node } = props;
+  console.log(node);
+  const image = node;
+  const metastring = image.properties.alt;
+  const alt = metastring?.replace(/ *\{[^)]*\} */g, "");
 
-  if (node.children[0].tagName === "img") {
-    const image = node.children[0];
-    const metastring = image.properties.alt;
-    const alt = metastring?.replace(/ *\{[^)]*\} */g, "");
-    const metaWidth = metastring.match(/{([^}]+)x/);
-    const metaHeight = metastring.match(/x([^}]+)}/);
-    const width = metaWidth ? metaWidth[1] : "768";
-    const height = metaHeight ? metaHeight[1] : "432";
-    const isPriority = metastring?.toLowerCase().match("{priority}");
-    const hasCaption = metastring?.toLowerCase().includes("{caption:");
-    const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
+  const isPriority = metastring?.toLowerCase().match("{priority}");
+  const hasCaption = metastring?.toLowerCase().includes("{caption:");
+  const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
 
-    return (
-      <div className="postImgWrapper">
+  return (
+    <>
+      <span className="postImgWrapper">
         <Image
           src={image.properties.src}
-          layout="responsive"
-          width={width}
-          height={height}
-          className="postImg"
+          layout="fill"
+          objectFit="cover"
           alt={alt}
           priority={isPriority}
+          // placeholder="blur"
         />
-        {hasCaption ? (
-          <div className="caption" aria-label={caption}>
-            {caption}
-          </div>
-        ) : null}
-      </div>
-    );
+      </span>
+      {hasCaption ? (
+        <div className="caption" aria-label={caption}>
+          {caption}
+        </div>
+      ) : null}
+    </>
+  );
+};
+
+const ParagraphRenderer = (props: { children?: JSX.Element[]; node?: any }) => {
+  const { node } = props;
+
+  if (node.children[0].tagName === "img") {
+    console.log("Rendering image!!!");
+    return ImageRenderer(props);
   }
 
   const className =
-    paragraph.children?.length &&
-    (paragraph.children[0] as unknown as string)[0] === "—"
+    props.children?.length &&
+    (props.children[0] as unknown as string)[0] === "—"
       ? "quote-author"
-      : "";
+      : "paragraph";
 
-  return <p className={className}>{paragraph.children}</p>;
+  return <p className={className}>{props.children}</p>;
 };
 
 const LinkRenderer = (props: any) => {
@@ -115,6 +119,7 @@ const MarkdownRenderers: object = {
   h6: HeadingRenderer,
   p: ParagraphRenderer,
   a: LinkRenderer,
+  img: ImageRenderer,
 };
 
 const PostBody = ({ content }: Props) => {

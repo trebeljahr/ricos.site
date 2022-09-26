@@ -431,7 +431,7 @@ To be honest, I mostly hate newsletters because they are not worth it. The defin
 1. [The Art of Code](https://www.youtube.com/watch?v=6avJHaC3C2U&t=4s) This Talk is just insanely good. It shows why programming is beautiful and the insane creativity people show when creating interesting things with technology.
 1. [How The Economic Machine Works](https://www.youtube.com/watch?v=PHe0bXAIuk0&t=1s) Hands Down the best explanation of how the economic world runs. 
 1. [Veritasium's Life Story](https://www.youtube.com/watch?v=S1tFT4smd6E) - This video is so honest, so beautiful. Veritasium just talking about how he became who he is now, his failures, and the lessons he learned about life along the way.
-1. [The Neuroscience of [Addiction](https://www.youtube.com/watch?v=aOSD9rTVuWc&t=19s) My favorite lecture from the Royal Institution.
+1. [The Neuroscience of Addiction](https://www.youtube.com/watch?v=aOSD9rTVuWc&t=19s) My favorite lecture from the Royal Institution.
 
 
 <details>
@@ -544,7 +544,8 @@ I am glad that these exist. Simply because they are so beautiful and have made m
 
 - [Vsauce](https://www.youtube.com/channel/UC6nSFpj9HTCZ5t-N3Rm3-HA)
 - [Kurzgesagt](https://www.youtube.com/c/inanutshell)
-- [CGPGrey]
+- [CGPGrey](https://www.youtube.com/user/CGPGrey)
+
 Best for long-form learning content:
 - [Crash Course](https://www.youtube.com/user/crashcourse)
 - [MIT OCW](https://www.youtube.com/c/mitocw)

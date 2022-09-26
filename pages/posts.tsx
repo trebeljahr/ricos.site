@@ -12,8 +12,12 @@ const Posts = ({ posts }: Props) => {
   const morePosts = posts.slice(1);
   return (
     <Layout pageTitle="Posts">
-      {heroPost && <HeroPostPreview post={heroPost} />}
-      {morePosts.length > 0 && <OtherPostsPreview posts={morePosts} />}
+      <article>
+        <section className="main-section">
+          {heroPost && <HeroPostPreview post={heroPost} />}
+          {morePosts.length > 0 && <OtherPostsPreview posts={morePosts} />}
+        </section>
+      </article>
     </Layout>
   );
 };

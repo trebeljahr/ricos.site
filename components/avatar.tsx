@@ -12,6 +12,7 @@ const Avatar = ({ picture }: AvatarProps) => {
         layout="fill"
         objectFit="cover"
         className="round"
+        // placeholder="blur"
       />
     </div>
   );

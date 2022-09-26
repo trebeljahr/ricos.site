@@ -5,6 +5,7 @@ import matter from "gray-matter";
 import { Search, useSearch } from "../components/SearchBar";
 import { ToTopButton } from "../components/ToTopButton";
 import { UtteranceComments } from "../components/comments";
+import { NewsletterForm } from "../components/newsletter-signup";
 
 function toFilters({ author }: Quote) {
   return { author };
@@ -25,21 +26,30 @@ export default function Quotes({ quotes }: Props) {
 
   return (
     <Layout>
-      <Search setFilters={setFilters} filters={filters} />
-      <h1>Quotes</h1>
-      <p>Amount: {filteredQuotes.length}</p>
-      {filteredQuotes.map(({ author, text }, index) => {
-        return (
-          <div key={author + index} className="quote">
-            <blockquote>
-              <p>{text}</p>
-            </blockquote>
-            <p>— {author}</p>
-          </div>
-        );
-      })}
-      <ToTopButton />
-      <UtteranceComments />
+      <article>
+        <section className="main-section">
+          <Search setFilters={setFilters} filters={filters} />
+          <h1>Quotes</h1>
+          <p>Amount: {filteredQuotes.length}</p>
+        </section>
+        <section className="main-section">
+          {filteredQuotes.map(({ author, text }, index) => {
+            return (
+              <div key={author + index} className="quote">
+                <blockquote>
+                  <p>{text}</p>
+                </blockquote>
+                <p>— {author}</p>
+              </div>
+            );
+          })}
+        </section>
+        <section className="main-section">
+          <NewsletterForm />
+          <ToTopButton />
+          <UtteranceComments />
+        </section>
+      </article>
     </Layout>
   );
 }

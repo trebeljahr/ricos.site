@@ -9,6 +9,7 @@ import { BookCover } from "../../components/cover-image";
 import { UtteranceComments } from "../../components/comments";
 import { ToTopButton } from "../../components/ToTopButton";
 import { ExternalLink } from "../../components/ExternalLink";
+import { NewsletterForm } from "../../components/newsletter-signup";
 
 type Props = {
   book: BookType;
@@ -30,10 +31,12 @@ const BookNotesWithDefault = ({ book }: Props) => {
   if (book.content) return <PostBody content={book.content} />;
   return (
     <div className="main-text">
-      I have read this book, but did not write booknotes or summaries for it
-      when I read it. If it is a book with a rating of 9 or 10, I will re-read
-      this book for sure. Hopefully soon. And add my booknotes to it then, but
-      for now, this is all there is.
+      <p>
+        I have read this book, but did not write booknotes or summaries for it
+        when I read it. If it is a book with a rating of 9 or 10, I will re-read
+        this book for sure. Hopefully soon. And add my booknotes to it then, but
+        for now, this is all there is.
+      </p>
     </div>
   );
 };
@@ -49,8 +52,9 @@ const Book = ({ book }: Props) => {
         <PostTitle>Loading…</PostTitle>
       ) : (
         <article>
-          <div className="book-info">
+          <section className="book-info">
             <BookCover title={book.title} src={book.bookCover} />
+
             <div className="book-preview-text">
               <PostTitle>{book.title}</PostTitle>
               <PostSubTitle>{book.subtitle}</PostSubTitle>
@@ -58,13 +62,16 @@ const Book = ({ book }: Props) => {
               <h3>Rating: {book.rating}/10</h3>
               <BuyItOnAmazon link={book.amazonLink} />
             </div>
-          </div>
-
-          <BookNotesWithDefault book={book} />
-          <BuyItOnAmazon link={book.amazonLink} />
-
-          <UtteranceComments />
-          <ToTopButton />
+          </section>
+          <section className="main-section">
+            <BookNotesWithDefault book={book} />
+            <BuyItOnAmazon link={book.amazonLink} />
+          </section>
+          <section className="main-section">
+            <ToTopButton />
+            <NewsletterForm />
+            <UtteranceComments />
+          </section>
         </article>
       )}
     </Layout>

@@ -1,6 +1,8 @@
 import Layout from "../components/layout";
 import { getAllNewsletters, getAllPosts } from "../lib/api";
 import Link from "next/link";
+import { ToTopButton } from "../components/ToTopButton";
+import { NewsletterForm } from "../components/newsletter-signup";
 
 type Props = {
   newsletterSlugs: { slug: string }[];
@@ -10,18 +12,24 @@ const Newsletters = ({ newsletterSlugs }: Props) => {
   return (
     <Layout pageTitle="Newsletters">
       <article>
-        {newsletterSlugs.map(({ slug: number }) => {
-          return (
-            <h3 key={number}>
-              <Link
-                as={`/newsletters/${number}`}
-                href={`/newsletters/${number}`}
-              >
-                <a> Newsletter #{number}</a>
-              </Link>
-            </h3>
-          );
-        })}
+        <section className="main-section">
+          {newsletterSlugs.map(({ slug: number }) => {
+            return (
+              <h3 key={number}>
+                <Link
+                  as={`/newsletters/${number}`}
+                  href={`/newsletters/${number}`}
+                >
+                  <a> Newsletter #{number}</a>
+                </Link>
+              </h3>
+            );
+          })}
+        </section>
+        <section className="main-section">
+          <NewsletterForm />
+          <ToTopButton />
+        </section>
       </article>
     </Layout>
   );

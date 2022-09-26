@@ -6,6 +6,8 @@ import { PostTitle } from "../../components/post-title";
 import { ToTopButton } from "../../components/ToTopButton";
 import { Post as PostType } from "../../types/post";
 import Image from "next/image";
+import { NewsletterForm } from "../../components/newsletter-signup";
+import { UtteranceComments } from "../../components/comments";
 
 type Props = {
   newsletter: PostType;
@@ -13,29 +15,27 @@ type Props = {
 };
 
 const Newsletter = ({ newsletter, slug }: Props) => {
-  const router = useRouter();
-
   return (
     <Layout description={newsletter.excerpt} pageTitle={`Newsletter ${slug}`}>
-      {router.isFallback ? (
-        <PostTitle>Loading…</PostTitle>
-      ) : (
-        <>
-          <article className="post-body">
-            <div className="header-image-container">
-              <Image
-                src={`/assets/newsletter/${slug}.jpg`}
-                layout="fill"
-                objectFit="cover"
-                alt={`Cover for Newsletter #${slug}`}
-              />
-            </div>
-            <PostBody content={newsletter.content} />
-          </article>
-
+      <article>
+        <div className="header-image-container">
+          <Image
+            src={`/assets/newsletter/${slug}.jpg`}
+            layout="fill"
+            objectFit="cover"
+            alt={`Cover for Newsletter #${slug}`}
+            // placeholder="blur"
+          />
+        </div>
+        <section className="post-body main-section">
+          <PostBody content={newsletter.content} />
+        </section>
+        <section className="main-section">
+          <NewsletterForm />
+          <UtteranceComments />
           <ToTopButton />
-        </>
-      )}
+        </section>
+      </article>
     </Layout>
   );
 };

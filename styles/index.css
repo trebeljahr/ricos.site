@@ -26,6 +26,10 @@ html {
   scrollbar-width: none; /* Firefox */
 }
 
+* {
+  box-sizing: border-box;
+}
+
 button {
   background: transparent;
   border: none;
@@ -40,12 +44,15 @@ button {
 
 .header-image-container {
   position: relative;
-  height: 70vh;
-  margin-bottom: 3rem;
+  height: 40vh;
 }
 
 .postImgWrapper {
-  width: var(--main-width);
+  display: block;
+  width: 100%;
+  position: relative;
+  height: 40vh;
+  margin: 1rem 0;
 }
 
 .colored-link {
@@ -63,11 +70,17 @@ button {
   font-size: 1.5rem;
 }
 
+/* 
+* {
+  border: solid 1px red;
+} */
+
 html,
 body {
   margin: 0;
   padding: 0;
   width: 100%;
+  font-size: 14px;
 }
 
 #top-navigation {
@@ -81,6 +94,7 @@ a {
 
 #to-top-button {
   position: fixed;
+  z-index: 100;
   cursor: pointer;
   font-size: 1.2rem;
   font-size: 1.2rem;
@@ -238,7 +252,7 @@ h1 {
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 1.8rem;
 }
 
 h1,
@@ -247,16 +261,12 @@ h3 {
   line-height: 1.1;
 }
 
-h1 {
-  font-size: 3rem;
-}
-
 h2 {
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
 h3 {
-  font-size: 1.5rem;
+  font-size: 1rem;
 }
 
 .header {
@@ -306,7 +316,7 @@ blockquote,
 button,
 input {
   line-height: 1.6;
-  /* font-size: 1rem; */
+  font-size: 1rem;
   font-weight: normal;
   font-family: "Libre Baskerville", serif;
 }
@@ -315,14 +325,14 @@ input {
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
-  width: var(--main-width);
-  margin: auto;
+  width: 100%;
   margin-top: 1.5rem;
+  margin-bottom: 3rem;
 }
 
 .book-cover-image {
-  width: var(--main-width);
-  height: calc(1.6 * var(--main-width));
+  width: 100%;
+  height: calc(1.6 * 100vw);
   position: relative;
 }
 
@@ -348,10 +358,10 @@ input {
 .post-meta {
   display: flex;
   align-items: center;
-}
-.post-meta {
+  font-size: 1rem;
   margin-bottom: 2rem;
 }
+
 .post-meta > .publish-date {
   margin-right: 10px;
 }
@@ -363,18 +373,21 @@ input {
 }
 
 .main-page {
-  padding-top: 1rem;
   padding-bottom: 1rem;
   height: auto;
   line-height: 1.625;
   color: #333;
-  margin-right: auto;
-  margin-left: auto;
-  width: 95vw;
+  width: 100%;
+  margin-bottom: 3rem;
 }
 
 html {
   font-size: 18px;
+}
+
+.main-section {
+  width: 95%;
+  margin: auto;
 }
 
 .main-text > * {
@@ -410,9 +423,12 @@ a:hover {
   padding-left: 1.2rem;
   list-style: disc outside;
 }
+.needlestack .main-text ol {
+  padding-left: 1.4rem;
+}
 
 .main-text ol {
-  padding-left: 1rem;
+  padding-left: 1.7rem;
   list-style: decimal outside;
 }
 
@@ -430,6 +446,9 @@ li {
 
 .book-preview-text {
   margin-top: 1rem;
+  width: 95%;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .book-info {
@@ -441,8 +460,26 @@ li {
 }
 
 @media only screen and (min-width: 600px) {
+  .allBooks {
+    width: var(--main-width);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .main-section {
+    width: var(--main-width);
+  }
+
   .header-motto {
     display: block;
+  }
+
+  .header-image-container {
+    height: 70vh;
+  }
+
+  .postImgWrapper {
+    height: 70vh;
   }
 
   .search {

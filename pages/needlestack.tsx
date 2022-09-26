@@ -5,13 +5,21 @@ import fs from "fs/promises";
 import PostBody from "../components/post-body";
 import { UtteranceComments } from "../components/comments";
 import { ToTopButton } from "../components/ToTopButton";
+import { NewsletterForm } from "../components/newsletter-signup";
 
 export default function Needlestack({ content }: { content: string }) {
   return (
     <Layout pageTitle="Needlestack">
-      <PostBody content={content} />
-      <ToTopButton />
-      <UtteranceComments />
+      <article>
+        <section className="needlestack main-section">
+          <PostBody content={content} />
+        </section>
+        <section className="main-section">
+          <NewsletterForm />
+          <ToTopButton />
+          <UtteranceComments />
+        </section>
+      </article>
     </Layout>
   );
 }

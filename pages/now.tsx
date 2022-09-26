@@ -1,4 +1,3 @@
-import { UtteranceComments } from "../components/comments";
 import Layout from "../components/layout";
 import PostBody from "../components/post-body";
 import { ToTopButton } from "../components/ToTopButton";
@@ -6,14 +5,21 @@ import { join } from "path";
 import fs from "fs/promises";
 import matter from "gray-matter";
 import { NewsletterForm } from "../components/newsletter-signup";
+import { UtteranceComments } from "../components/comments";
 
 export default function Now({ content }: { content: string }) {
   return (
     <Layout pageTitle="Now">
-      <PostBody content={content} />
-      <ToTopButton />
-      <NewsletterForm />
-      <UtteranceComments />{" "}
+      <article>
+        <section className="main-section">
+          <PostBody content={content} />
+        </section>
+        <section className="main-section">
+          <NewsletterForm />
+          <UtteranceComments />
+          <ToTopButton />
+        </section>
+      </article>
     </Layout>
   );
 }

@@ -105,14 +105,3 @@ export const NewsletterForm = () => {
     </div>
   );
 };
-
-// export const NewsletterFormConvertKit = () => {
-//   const config = {
-//     formId: "3619182",
-//     template: "mills",
-//     emailPlaceholder: "Enter an email address",
-//     submitText: "Sign up",
-//     disclaimerText: "",
-//   };
-//   return <ConvertKitForm {...config} />;
-// };

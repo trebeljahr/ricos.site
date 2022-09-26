@@ -23,27 +23,23 @@ const Post = ({ post, morePosts }: Props) => {
   }
   return (
     <Layout description={post.excerpt} pageTitle={post.title}>
-      {router.isFallback ? (
-        <PostTitle>Loading…</PostTitle>
-      ) : (
-        <>
-          <article className="post-body">
-            <PostHeader
-              subtitle={post.subtitle}
-              title={post.title}
-              date={post.date}
-              author={post.author}
-            />
-            <PostBody content={post.content} />
-            <NewsletterForm />
-
-            {morePosts && <ReadMore posts={morePosts} />}
-          </article>
+      <article className="post-body">
+        <section className="main-section">
+          <PostHeader
+            subtitle={post.subtitle}
+            title={post.title}
+            date={post.date}
+            author={post.author}
+          />
+          <PostBody content={post.content} />
+        </section>
+        <section className="main-section">
+          {morePosts && <ReadMore posts={morePosts} />}
+          <NewsletterForm />
           <UtteranceComments />
-
           <ToTopButton />
-        </>
-      )}
+        </section>
+      </article>
     </Layout>
   );
 };

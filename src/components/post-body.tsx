@@ -47,7 +47,6 @@ const HeadingRenderer: React.FC<HeadingResolverProps> = ({
 
 const ImageRenderer = (props: { children?: any; node?: any }) => {
   const { node } = props;
-  console.log(node);
   const image = node;
   const metastring = image.properties.alt;
   const alt = metastring?.replace(/ *\{[^)]*\} */g, "");
@@ -81,7 +80,6 @@ const ParagraphRenderer = (props: { children?: JSX.Element[]; node?: any }) => {
   const { node } = props;
 
   if (node.children[0].tagName === "img") {
-    console.log("Rendering image!!!");
     return ImageRenderer(props);
   }
 

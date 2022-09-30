@@ -4,7 +4,6 @@ import matter from "gray-matter";
 
 const contentDir = join(process.cwd(), "src", "content");
 const postsDirectory = join(contentDir, "posts");
-console.log(postsDirectory);
 const bookReviewsDirectory = join(contentDir, "booknotes");
 const newsletterDirectory = join(contentDir, "newsletters");
 

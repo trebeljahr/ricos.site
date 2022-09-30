@@ -43,7 +43,6 @@ export const NewsletterForm = () => {
         body: JSON.stringify({ email }),
         headers: headers,
       });
-      console.log(data);
 
       setSuccess(data.success);
       setLoading(false);

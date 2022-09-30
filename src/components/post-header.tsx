@@ -1,7 +1,7 @@
 import { AvatarWithAuthor as Avatar } from "./avatar";
 import DateFormatter from "./date-formatter";
 import { PostTitle, PostSubTitle } from "./post-title";
-import Author from "../types/author";
+import Author from "../@types/author";
 
 type Props = {
   title: string;

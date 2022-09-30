@@ -4,7 +4,7 @@ import PostBody from "../../components/post-body";
 import Layout from "../../components/layout";
 import { getBookReviewBySlug, getAllBookReviews } from "../../lib/api";
 import { PostSubTitle, PostTitle } from "../../components/post-title";
-import BookType from "../../types/book";
+import BookType from "../../@types/book";
 import { BookCover } from "../../components/cover-image";
 import { UtteranceComments } from "../../components/comments";
 import { ToTopButton } from "../../components/ToTopButton";

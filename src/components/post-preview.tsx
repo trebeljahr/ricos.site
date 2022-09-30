@@ -1,7 +1,7 @@
 import Link from "next/link";
 import DateFormatter from "./date-formatter";
 import { PostCoverImage } from "./cover-image";
-import { Post } from "../types/post";
+import { Post } from "../@types/post";
 
 interface PreviewTextProps {
   title: string;

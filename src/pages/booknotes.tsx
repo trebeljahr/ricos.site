@@ -2,7 +2,7 @@ import { BookPreview } from "../components/book-preview";
 import Layout from "../components/layout";
 import PostHeader from "../components/post-header";
 import { getAllBookReviews } from "../lib/api";
-import Book from "../types/book";
+import Book from "../@types/book";
 import { Search, useSearch } from "../components/SearchBar";
 import { NewsletterForm } from "../components/newsletter-signup";
 import { ToTopButton } from "../components/ToTopButton";

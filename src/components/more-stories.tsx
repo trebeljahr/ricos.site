@@ -1,4 +1,4 @@
-import { Post } from "../types/post";
+import { Post } from "../@types/post";
 import Link from "next/link";
 
 export const ReadMore = ({ posts }: { posts: Post[] }) => {

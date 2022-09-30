@@ -1,6 +1,6 @@
 import { BookCover } from "./cover-image";
 import Link from "next/link";
-import BookType from "../types/book";
+import BookType from "../@types/book";
 
 type Props = {
   book: BookType;

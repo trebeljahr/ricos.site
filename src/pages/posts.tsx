@@ -1,6 +1,6 @@
 import Layout from "../components/layout";
 import { getAllPosts } from "../lib/api";
-import { Post } from "../types/post";
+import { Post } from "../@types/post";
 import { HeroPostPreview, OtherPostsPreview } from "../components/post-preview";
 
 type Props = {

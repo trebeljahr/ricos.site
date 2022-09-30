@@ -8,7 +8,7 @@ import { PostTitle } from "../../components/post-title";
 import { ReadMore } from "../../components/more-stories";
 import { UtteranceComments } from "../../components/comments";
 import { ToTopButton } from "../../components/ToTopButton";
-import { Post as PostType } from "../../types/post";
+import { Post as PostType } from "../../@types/post";
 import { NewsletterForm } from "../../components/newsletter-signup";
 
 type Props = {

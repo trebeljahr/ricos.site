@@ -4,7 +4,7 @@ import Layout from "../../components/layout";
 import { getAllNewsletters, getNewsletterBySlug } from "../../lib/api";
 import { PostTitle } from "../../components/post-title";
 import { ToTopButton } from "../../components/ToTopButton";
-import { Post as PostType } from "../../types/post";
+import { Post as PostType } from "../../@types/post";
 import Image from "next/image";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import { UtteranceComments } from "../../components/comments";

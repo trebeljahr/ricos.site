@@ -8,8 +8,7 @@ import Image from "next/image";
 import remarkToc from "remark-toc";
 import rehypeRaw from "rehype-raw";
 import { ExternalLink } from "./ExternalLink";
-import { NewsletterForm } from "./newsletter-signup";
-import { UtteranceComments } from "./comments";
+import remarkGfm from "remark-gfm";
 
 type Props = {
   content: string;
@@ -132,7 +131,7 @@ const PostBody = ({ content }: Props) => {
   return (
     <div className="main-text">
       <ReactMarkdown
-        remarkPlugins={[remarkToc]}
+        remarkPlugins={[remarkToc, remarkGfm]}
         rehypePlugins={[rehypeRaw]}
         components={MarkdownRenderers}
       >

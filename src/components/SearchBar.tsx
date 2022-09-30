@@ -1,4 +1,3 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   ChangeEvent,
   Dispatch,
@@ -6,7 +5,6 @@ import {
   SetStateAction,
   useState,
 } from "react";
-import { faPlus, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { nanoid } from "nanoid";
 
 type SearchProps<Filters> = {
@@ -217,7 +215,7 @@ export function Search<T extends Filters>({
                   className="remove-filter-button"
                   onClick={() => toggleFilter(filterKey)}
                 >
-                  <FontAwesomeIcon icon={faXmark} />
+                  <span className="icon-cross"></span>
                 </button>
                 <p>{beautify(filterKey, { capitalize: true })}:</p>
                 <InputField
@@ -230,7 +228,7 @@ export function Search<T extends Filters>({
                 />
                 {Array.isArray(filterValue) && (
                   <button onClick={() => growArray(filterKey)}>
-                    <FontAwesomeIcon icon={faPlus} />
+                    <span className="icon-plus"></span>
                   </button>
                 )}
               </div>
@@ -242,7 +240,7 @@ export function Search<T extends Filters>({
                       <div className="tag-filter" key={tag.id}>
                         <p>{tag.tag}</p>
                         <button onClick={() => removeTag(filterKey, tag.id)}>
-                          <FontAwesomeIcon icon={faTrash} />
+                          <span className="icon-bin"></span>
                         </button>
                       </div>
                     );
@@ -262,7 +260,8 @@ export function Search<T extends Filters>({
                   className="add-filter-button"
                   onClick={() => toggleFilter(filterKey)}
                 >
-                  <FontAwesomeIcon icon={faPlus} />
+                  <span className="icon-arrow-up2"></span>
+
                   <p>{beautify(filterKey, { capitalize: true })}</p>
                 </button>
               );

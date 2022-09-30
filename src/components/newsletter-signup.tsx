@@ -1,5 +1,3 @@
-import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, MouseEvent, useState } from "react";
 import { ClipLoader } from "react-spinners";
 
@@ -64,7 +62,7 @@ export const NewsletterForm = () => {
       {success ? (
         <>
           <h2>
-            Success <FontAwesomeIcon icon={faCheckCircle} color={"#1fd655"} />
+            Success <span className="icon-check-circle"></span>
           </h2>
           <p>{success}</p>
         </>

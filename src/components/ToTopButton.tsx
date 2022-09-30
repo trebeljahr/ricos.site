@@ -1,8 +1,5 @@
 import { useState, useEffect } from "react";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
-
 export function ToTopButton() {
   const [visible, setVisible] = useState(false);
 
@@ -27,7 +24,8 @@ export function ToTopButton() {
         display: visible ? "inline" : "none",
       }}
     >
-      <FontAwesomeIcon icon={faArrowUp} />
+      <span className="icon-arrow-up2"></span>
+      <span className="icon-plus"></span>
     </button>
   );
 }

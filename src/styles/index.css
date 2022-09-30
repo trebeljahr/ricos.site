@@ -533,6 +533,83 @@ li {
   }
 }
 
+@font-face {
+  font-family: "icomoon";
+  src: url("/fonts/icomoon.eot");
+  src: url("/fonts/icomoon.eot") format("embedded-opentype"),
+    url("/fonts/icomoon.ttf") format("truetype"),
+    url("/fonts/icomoon.woff") format("woff"),
+    url("/fonts/icomoon.svg") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"],
+[class*=" icon-"] {
+  font-family: "icomoon" !important;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-check-circle:before {
+  content: "\e904";
+}
+.icon-bars:before {
+  content: "\e901";
+}
+.icon-home:before {
+  content: "\e900";
+}
+.icon-headphones:before {
+  content: "\e910";
+}
+.icon-search:before {
+  content: "\e986";
+}
+.icon-mug:before {
+  content: "\e9a2";
+}
+.icon-bin:before {
+  content: "\e9ac";
+}
+.icon-download3:before {
+  content: "\e9c7";
+}
+.icon-link:before {
+  content: "\e9cb";
+}
+.icon-cross:before {
+  content: "\ea0f";
+}
+.icon-arrow-up2:before {
+  content: "\ea3a";
+}
+.icon-amazon:before {
+  content: "\ea87";
+}
+.icon-twitter:before {
+  content: "\ea96";
+}
+.icon-youtube:before {
+  content: "\ea9d";
+}
+.icon-youtube2:before {
+  content: "\ea9e";
+}
+.icon-github:before {
+  content: "\eab0";
+}
+.icon-linkedin:before {
+  content: "\eac9";
+}
+
 @media only screen and (min-width: 1092px) {
   .main-page {
     padding-top: 2rem;

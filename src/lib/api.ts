@@ -2,9 +2,11 @@ import fs from "fs";
 import { join } from "path";
 import matter from "gray-matter";
 
-const postsDirectory = join(process.cwd(), "posts");
-const bookReviewsDirectory = join(process.cwd(), "booknotes");
-const newsletterDirectory = join(process.cwd(), "newsletters");
+const contentDir = join(process.cwd(), "src", "content");
+const postsDirectory = join(contentDir, "posts");
+console.log(postsDirectory);
+const bookReviewsDirectory = join(contentDir, "booknotes");
+const newsletterDirectory = join(contentDir, "newsletters");
 
 function getBySlug(slug: string, fields: string[] = [], directory: string) {
   const realSlug = slug.replace(/\.md$/, "");

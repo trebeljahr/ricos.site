@@ -2,8 +2,6 @@ import Link from "next/link";
 import Intro from "./intro";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { faBars, faCross, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface Props {
   intro?: boolean;
@@ -65,7 +63,7 @@ export function Navbar({ intro = true }: Props) {
             className="navlink-expander"
             onClick={() => setExpanded(!expanded)}
           >
-            <FontAwesomeIcon icon={expanded ? faXmark : faBars} />
+            <span className={expanded ? "icon-cross" : "icon-bars"} />
           </button>
         </div>
         <Navlinks expanded={expanded} />

@@ -39,7 +39,13 @@ export default async function handler(
     const confirmLink = `${HOST}/api/confirm-email?hash=${newMember.vars.hash}&email=${newMember.email}`;
 
     const emailHandlebarsFile = await readFile(
-      path.join(process.cwd(), "email-templates", "confirmSubscription.hbs"),
+      path.join(
+        process.cwd(),
+        "src",
+        "content",
+        "email-templates",
+        "confirmSubscription.hbs"
+      ),
       "utf-8"
     );
     const template = Handlebars.compile(emailHandlebarsFile);

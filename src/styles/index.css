@@ -15,6 +15,7 @@
   --dark-blue: rgb(15, 76, 229);
 
   --main-width: 95vw;
+  --success-green: rgb(31, 214, 85);
 }
 
 html::-webkit-scrollbar {
@@ -552,12 +553,20 @@ li {
   font-weight: normal;
   font-variant: normal;
   text-transform: none;
-  line-height: 1;
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-close:before {
+  content: "\e905";
+}
+.icon-plus:before {
+  content: "\e903";
+}
+.icon-plus1:before {
+  content: "\e902";
+}
 .icon-check-circle:before {
   content: "\e904";
 }
@@ -579,16 +588,13 @@ li {
 .icon-bin:before {
   content: "\e9ac";
 }
-.icon-download3:before {
+.icon-download:before {
   content: "\e9c7";
 }
 .icon-link:before {
   content: "\e9cb";
 }
-.icon-cross:before {
-  content: "\ea0f";
-}
-.icon-arrow-up2:before {
+.icon-arrow-up:before {
   content: "\ea3a";
 }
 .icon-amazon:before {

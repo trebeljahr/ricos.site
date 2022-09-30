@@ -24,8 +24,7 @@ export function ToTopButton() {
         display: visible ? "inline" : "none",
       }}
     >
-      <span className="icon-arrow-up2"></span>
-      <span className="icon-plus"></span>
+      <span className="icon-arrow-up"></span>
     </button>
   );
 }

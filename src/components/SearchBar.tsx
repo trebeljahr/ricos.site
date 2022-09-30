@@ -215,7 +215,7 @@ export function Search<T extends Filters>({
                   className="remove-filter-button"
                   onClick={() => toggleFilter(filterKey)}
                 >
-                  <span className="icon-cross"></span>
+                  <span className="icon-close"></span>
                 </button>
                 <p>{beautify(filterKey, { capitalize: true })}:</p>
                 <InputField
@@ -260,7 +260,7 @@ export function Search<T extends Filters>({
                   className="add-filter-button"
                   onClick={() => toggleFilter(filterKey)}
                 >
-                  <span className="icon-arrow-up2"></span>
+                  <span className="icon-plus"></span>
 
                   <p>{beautify(filterKey, { capitalize: true })}</p>
                 </button>

@@ -63,7 +63,7 @@ export function Navbar({ intro = true }: Props) {
             className="navlink-expander"
             onClick={() => setExpanded(!expanded)}
           >
-            <span className={expanded ? "icon-cross" : "icon-bars"} />
+            <span className={expanded ? "icon-close" : "icon-bars"} />
           </button>
         </div>
         <Navlinks expanded={expanded} />

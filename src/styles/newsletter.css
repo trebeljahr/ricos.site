@@ -47,6 +47,10 @@
   background-color: var(--dark-blue);
 }
 
+.newsletter-success {
+  color: var(--success-green);
+}
+
 .newsletter button.inactive {
   cursor: default;
   background-color: var(--light-blue);

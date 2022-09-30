@@ -62,7 +62,8 @@ export const NewsletterForm = () => {
       {success ? (
         <>
           <h2>
-            Success <span className="icon-check-circle"></span>
+            Success{" "}
+            <span className="icon-check-circle newsletter-success"></span>
           </h2>
           <p>{success}</p>
         </>

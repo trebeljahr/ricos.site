@@ -10,7 +10,6 @@ import rehypeRewrite from "rehype-rewrite";
 import rehypeUrls from "rehype-urls";
 import rehypePresetMinify from "rehype-preset-minify";
 import rehypeStringify from "rehype-stringify";
-import { Root } from "remark-parse/lib/index.js";
 
 const newsletterNumber = 1;
 const LIVE_HOST = "https://trebeljahr.com";
@@ -19,12 +18,26 @@ const HOST =
 
 async function main() {
   const emailHandlebarsFile = await readFile(
-    path.join(process.cwd(), "..", "email-templates", "newsletter.hbs"),
+    path.join(
+      process.cwd(),
+      "..",
+      "src",
+      "content",
+      "email-templates",
+      "newsletter.hbs"
+    ),
     "utf-8"
   );
 
   const mdFileRaw = await readFile(
-    path.join(process.cwd(), "..", "newsletters", `${newsletterNumber}`),
+    path.join(
+      process.cwd(),
+      "..",
+      "src",
+      "content",
+      "newsletters",
+      `${newsletterNumber}`
+    ),
     "utf-8"
   );
 

@@ -14,7 +14,6 @@ The idea is that I am making time to write about things that interest me and tic
 
 During those 1-month projects, I will pick a topic and then detail the progress weekly so that at the end of every month, I have built a nice and beautiful demo to showcase here, on this site. Along with posts, documenting the process.
 
-
 ## Currently Working on: 
 
 No. 2 - Deep Dive into Collision Detection
@@ -23,7 +22,7 @@ A list of other possible 1-month project ideas is below, as of now they are rand
 
 ## The Long List 
 
-1. ~~Create a Fractal Garden Webpage~~ Done! Result is at [fractal.garden](fractal.garden) (September 2022)
+1. ~~Create a Fractal Garden Webpage~~ Done! Result is at [fractal.garden](https://fractal.garden) (September 2022)
 1. Deep Dive into Collision Detection (October 2022 - currently working on it!)
 1. Write a custom CMS that integrates nicely with this GitHub and Markdown-powered blog.
 1. Create a real-life photo gallery/exhibition

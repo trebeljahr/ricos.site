@@ -1,7 +1,7 @@
 .newsletter {
   min-height: fit-content;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+  margin-top: 4rem;
+  margin-bottom: 4rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -74,7 +74,7 @@
 
 @media only screen and (min-width: 1092px) {
   .newsletter .form {
-    width: auto;
+    width: 70%;
     display: grid;
     grid-gap: 2em;
     grid-template-columns: 2fr 1fr;
@@ -83,7 +83,7 @@
   .newsletter {
     box-sizing: content-box;
     padding: 50px;
-    margin: 2.5em 0em;
+    margin: 5rem 0em;
     box-shadow: 0 0 14px rgb(44 44 44 / 40%);
     margin-left: -50px;
   }

@@ -10,7 +10,7 @@ During those 1-month projects, I work on something, pushing myself to my limit. 
 
 My main goal with all of this is to explore the wild space of possibilities that exist out there and live a life filled with "adventures" and learning. A life where I can follow my curiosity and maybe find something that I like so incredibly much, that I want to pursue it for a much much longer time (maybe even the rest of my life). But that's entirely optional.
 
-The idea that I am trying to fight with these 1-month projects, is that you can **only** do one thing if you want to succeed "in life". It somehow goes so against my grain, that I don't want to accept it. There are too many aspects to me, as a person, too many things I love, just for the heck of them, that I hate this idea to its core. Even if success lies in only ever working on one thing, I won't accept it. This is my attempt at raging against it and proving it wrong by example. 
+The idea that I am trying to fight with these 1-month projects, is that you can **only** do one thing if you want to "succeed in life". It somehow goes so against my grain, that I don't want to accept it. There are too many aspects to me, as a person, too many things I love, just for the heck of them, that I hate this idea to its core. Even if success lies in only ever working on one thing, I won't accept it. This is my attempt at raging against it and proving it wrong by example. 
 
 ## Not another bucket list...
 
@@ -18,13 +18,13 @@ Something I realize is that the below is a bucket list of sorts. And I also know
 
 My plan to protect myself from this phenomenon is to put this bucket list out here on the internet, because having it publicly visible, acts as a very potent reminder to my monkey brain. It keeps me accountable. 
 
-The second "hack" I employ is to share this with my best friends. People such as [Marc Nitzsche](https://www.marcnitzsche.de/). People who can and will keep me directly accountable for it. I don't want to regret not having seized life to its fullest. Life is precious and time is short. I try to keep that in mind. See also my [/principles](/principles)
+The second "hack" I employ is to share this with my best friends. People such as [Marc Nitzsche](https://www.marcnitzsche.de/). People who can and will keep me directly accountable for it. I don't want to regret not having seized life to its fullest. Life is precious and time is short. I try to keep that in mind. See also my [/principles](/principles).
 
 ## The Long List of Ideas
 
 ### Currently Working On
 
-**No. 3** – Build an Interactive Deep Dive Article showcasing different Collision Detection Algorithms.
+**No. 3**–Build an Interactive Deep Dive Article showcasing different Collision Detection Algorithms.
 
 ### Done
 - ~~Build up this blog (/needlestack, /posts, /library)~~ => Done! The result is online at. Well. Here. (August 2022)
@@ -51,11 +51,10 @@ The second "hack" I employ is to share this with my best friends. People such as
 - Build a "simple" 3D Rendering Engine
 - Build a mobile app/game using React Native
 - Finish writing Minecraft Clone (Lighting, Biomes, Save/Restore world)
-- Write a Minecraft Mod
 - Write a custom CMS that integrates nicely with this GitHub and Markdown-powered blog.
 - Participate in a Ludum Dare -> produce a Game within a month (and learn Unreal Engine along the way) and then earn at least 1$ from it
 
-#### Building a computer from scratch
+### Building a computer from scratch
 - Build a very simple CPU from soldered-together transistors
 - Build a computer, using integrated circuits for components (memory, CPU etc.)
 - Build a compiler for that computer
@@ -90,4 +89,7 @@ The second "hack" I employ is to share this with my best friends. People such as
 <!-- ### Hmm...
 - Automate EC2 setup for Modded Minecraft Server + build a website interface to sell them
 - Learn and play around with Blender
-- Network in the Berlin Startup Community  -->
+- Network in the Berlin Startup Community 
+- Write a Minecraft Mod
+
+ -->

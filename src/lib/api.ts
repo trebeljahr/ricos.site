@@ -4,7 +4,7 @@ import matter from "gray-matter";
 
 const contentDir = join(process.cwd(), "src", "content");
 const postsDirectory = join(contentDir, "posts");
-const bookReviewsDirectory = join(contentDir, "booknotes");
+const bookReviewsDirectory = join(contentDir, "library");
 const newsletterDirectory = join(contentDir, "newsletters");
 
 function getBySlug(slug: string, fields: string[] = [], directory: string) {

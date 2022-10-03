@@ -9,7 +9,7 @@ type Props = {
 export function BookPreview({ book }: Props) {
   const { slug, title, bookCover } = book;
   return (
-    <Link as={`/booknotes/${slug}`} href="/booknotes/[slug]">
+    <Link as={`/library/${slug}`} href="/library/[slug]">
       <a className="book-preview book-cover-image">
         <BookCover title={title} src={bookCover} />
       </a>

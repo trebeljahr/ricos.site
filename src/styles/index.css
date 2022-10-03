@@ -558,6 +558,27 @@ li {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-triangle-up:before {
+  content: "\e90b";
+}
+.icon-chevron-up:before {
+  content: "\e90c";
+}
+.icon-triangle-down:before {
+  content: "\e906";
+}
+.icon-chevron-down:before {
+  content: "\e907";
+}
+.icon-cheveron-up1:before {
+  content: "\e90a";
+}
+.icon-cheveron-down:before {
+  content: "\e908";
+}
+.icon-cheveron-up:before {
+  content: "\e909";
+}
 .icon-close:before {
   content: "\e905";
 }
@@ -616,7 +637,7 @@ li {
   content: "\eac9";
 }
 
-@media only screen and (min-width: 1092px) {
+@media only screen and (min-width: 1030px) {
   .main-page {
     padding-top: 2rem;
   }
@@ -648,21 +669,5 @@ li {
   }
   :root {
     --main-width: 936px;
-  }
-}
-
-@media only screen and (min-width: 2500px) {
-  .book-cover-image {
-    width: calc(var(--main-width) / 4);
-    height: calc(1.6 * calc(var(--main-width) / 4));
-    position: relative;
-  }
-
-  .main-page {
-    max-width: 2000px;
-  }
-
-  :root {
-    --main-width: 2000px;
   }
 }

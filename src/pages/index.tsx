@@ -16,10 +16,9 @@ const Index = () => {
             human. This is my personal website.
           </p>
           <p>
-            Here is where I collect thoughts, booknotes, quotes, ideas,
-            traveling stories, photography, side projects and links to my
-            favorite places in the internet. For now I still have an old -
-            second site - over at{" "}
+            Here is where I collect thoughts, books, quotes, ideas, traveling
+            stories, photography, side projects and links to my favorite places
+            in the internet. For now I still have an old - second site - over at{" "}
             <ExternalLink href="https://ricotrebeljahr.com">
               ricotrebeljahr.com
             </ExternalLink>{" "}

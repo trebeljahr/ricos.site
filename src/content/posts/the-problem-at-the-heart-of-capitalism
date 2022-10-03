@@ -21,9 +21,9 @@ Let's just define "best" products as those that sell the most, which is usually 
 
 As the story goes, in such a capitalist world, companies are competing to create the "best" products and those companies will create technological progress and prosperity for the society they operate in along the way. 
 
-I think this part, which goes back to thinkers like Adam Smith or John Maynard Keynes and a lot of others, is not the problem. I even think fundamentally this picture of Capitalism is right. Capitalism and free trade are the driving forces behind why our world is in the place it is right now, with prosperity for many of the people in the world and climbing standards of living across all measures across the whole globe. This is something that most people don't even believe in, yet is f true. For a good account of why and how this is true, I can only recommend you go and read [The Better Angels of our Nature by Steven Pinker](/booknotes/better-angels).
+I think this part, which goes back to thinkers like Adam Smith or John Maynard Keynes and a lot of others, is not the problem. I even think fundamentally this picture of Capitalism is right. Capitalism and free trade are the driving forces behind why our world is in the place it is right now, with prosperity for many of the people in the world and climbing standards of living across all measures across the whole globe. This is something that most people don't even believe in, yet is f true. For a good account of why and how this is true, I can only recommend you go and read [The Better Angels of our Nature by Steven Pinker](/library/better-angels).
 
-Yet, while we largely live in such a world, a world governed by free trade, and competing corporations, it's not the heaven that you would hope it would be. Smith's invisible hand (an idea introduced by him in his famous work [On the Wealth of Nations](/booknotes/wealth-of-nations) works wonders, but somewhere along the way it also does quite a few horrible things. What are those things?
+Yet, while we largely live in such a world, a world governed by free trade, and competing corporations, it's not the heaven that you would hope it would be. Smith's invisible hand (an idea introduced by him in his famous work [On the Wealth of Nations](/library/wealth-of-nations) works wonders, but somewhere along the way it also does quite a few horrible things. What are those things?
 
 ## The Symptoms
 
@@ -135,7 +135,7 @@ Another example from the bird world illustrates this beautifully: The cuckoo bir
 
 To me this is insane and it should give you a good feeling of how strong these stimulus/reward loops can be. It's like the birds are hypnotized by the overly strong stimulus and just have to follow it with some behavior. It's the very same story with humans and addiction.
 
-For a longer discussion on these topics and examples, especially from the biological side, I can recommend all of these books tremendously: [Behave by Robert Sapolsky](/booknotes/behave), [The Selfish Gene by Richard Dawkins](/booknotes/the-selfish-gene) and [The Red Queen by Matt Ridley](/booknotes/the-red-queen)
+For a longer discussion on these topics and examples, especially from the biological side, I can recommend all of these books tremendously: [Behave by Robert Sapolsky](/library/behave), [The Selfish Gene by Richard Dawkins](/library/the-selfish-gene) and [The Red Queen by Matt Ridley](/library/the-red-queen)
 
 ## Designing Super-Normal Stimuli
 
@@ -149,7 +149,7 @@ There is another bridge I want to build between a connected idea. Not only do we
 
 ## AI Safety Research
 
-To explain what I mean, I want to introduce a concept that comes from AI safety research. In AI safety there are many many problems - for a list and discussion you can read [Max Tegmark's Life 3.0](/booknotes/life-3-0) or [Nick Bostrom's Superintelligence](/booknotes/superintelligence). 
+To explain what I mean, I want to introduce a concept that comes from AI safety research. In AI safety there are many many problems - for a list and discussion you can read [Max Tegmark's Life 3.0](/library/life-3-0) or [Nick Bostrom's Superintelligence](/library/superintelligence). 
 
 The concept I want to focus on is *reward hacking*. Mainly the problem is the following: If we [create a more intelligent AI](/posts/open-ai-codex), how do we motivate it to do our bidding? Currently, people use a *reward function* - a mathematical equation, relating how "good" or "bad" the AI is performing its goal. However using such a function can lead to unexpected, weird and in the case of superintelligent AI very much undesired outcomes. The problem is, that this reward function is just a proxy, a metric, a rule of thumb, for what we really want the AI to do. It is a number that can be measured, but a number that can also be gamed. Reward functions fall under the umbrella of Goodhart's Law: 
 

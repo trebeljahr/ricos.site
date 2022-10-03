@@ -31,7 +31,7 @@ export default function Books({ allBooks }: Props) {
       <article>
         <section className="main-section">
           <Search filters={filters} setFilters={setFilters} />
-          <PostHeader title={`Booknotes:`} />
+          <PostHeader title={`books:`} />
           <p>Amount: {filteredBooks.length}</p>
           {!filters.detailedNotes.value && !filters.summary.value ? (
             <p>

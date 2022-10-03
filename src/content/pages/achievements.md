@@ -12,7 +12,7 @@
 - [ ] Write a nontrivial desktop app
 - [ ] Write a nontrivial mobile app
 - [ ] Write an embedded app
-- [ ] Write a realtime system
+- [ ] Write a real-time system
 
 **Enhance your understanding of the building blocks that we use as developers:**
 
@@ -36,7 +36,7 @@
 - [ ] Contribute to an open source project
 - [ ] Have a patch accepted
 - [ ] Earn commit rights on a significant open source project
-- [ ] Publish an open source project
+- [ ] Publish an open-source project
 - [ ] Perform a [Refactotum](http://thinkrelevance.com/blog/2007/04/03/twir.html "Refactotum") of an open source project
 
 **Learn by teaching others:**
@@ -44,7 +44,7 @@
 - [ ] Present a lightning talk
 - [ ] Present at a local user group
 - [ ] Present at a conference
-- [ ] Deliver a training course
+- [ X ] Deliver a training course
 - [ ] Publish a tutorial
 - [ ] Publish a constructive code review of an open source project
 - [ ] Write a programming book

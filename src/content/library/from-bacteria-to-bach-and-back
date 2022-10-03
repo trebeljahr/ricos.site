@@ -24,7 +24,7 @@ Core ideas of the book:
 - Dualism is the thought that there is a divide between mind and matter
 - The "Cartesian wound" -> people don't like thinking of the mind as physical
 - Shannon's Information !== Dennett's Information
-- Dennett's information is "Design worth Stealing" -> same idea as in [Life 3.0 by Max Tegmark](/booknotes/life-3-0) namely that information processing systems can encode patterns about the world, and those systems which use those extracted patterns survive. Exactly the same idea also crops up again in [Complexity by Mitchell Waldrop](/booknotes/complexity) as the idea that life is encoding and exploiting regularities of the world (designs worth stealing). And it is also there in [The Beginning of Infinity](/booknotes/the-beginning-of-infinity) and [The Fabric of Reality](/booknotes/the-fabric-of-reality). David Deutsch defines life as physical phenomena that exploit information about the laws of physics and therefore persist within the physical world. 
+- Dennett's information is "Design worth Stealing" -> same idea as in [Life 3.0 by Max Tegmark](/library/life-3-0) namely that information processing systems can encode patterns about the world, and those systems which use those extracted patterns survive. Exactly the same idea also crops up again in [Complexity by Mitchell Waldrop](/library/complexity) as the idea that life is encoding and exploiting regularities of the world (designs worth stealing). And it is also there in [The Beginning of Infinity](/library/the-beginning-of-infinity) and [The Fabric of Reality](/library/the-fabric-of-reality). David Deutsch defines life as physical phenomena that exploit information about the laws of physics and therefore persist within the physical world. 
 - All of those ideas boil down to the same thing though: Finding patterns in the world helps organisms survive and the search for better patterns is evolution.
 - In other words: Evolution finds reasons to organize matter into different shapes
 - One such arrangement are brains.
@@ -156,7 +156,7 @@ The real question though is:
 
 Design Stance -> Design is abundant in nature. Everything is teleological. 
 
-Contrasted with the physical stance, everything just *happens* according to the laws of physics. (I think this is beautifully dismantled already as impossible by David Deutsch in [The Beginning of Infinity](/booknotes/the-beginning-of-infinity)- emergent phenomena have simply no place in physics and govern large scale physical things more than the physical laws themselves. Intelligent life and it's creations can alter the way physics would "normally" unfold)
+Contrasted with the physical stance, everything just *happens* according to the laws of physics. (I think this is beautifully dismantled already as impossible by David Deutsch in [The Beginning of Infinity](/library/the-beginning-of-infinity)- emergent phenomena have simply no place in physics and govern large scale physical things more than the physical laws themselves. Intelligent life and it's creations can alter the way physics would "normally" unfold)
 
 > Evolution is a set of processes that "find" and "track" reasons for things to be arranged one way rather than another.
 
@@ -402,7 +402,7 @@ Neurons might recover traits from older generations adapting to new circumstance
 
 > Brains are computers but they are very unlike the computers in use today. Composed of billions of idiosyncratic neurons that evolved to feed for themselves, the brain's functional architecture is more like a free market than a "politburo" hierarchy where all tasks are assigned from on high. The fundamental architecture of animal brains (including human brains) is probably composed of Bayesian Networks that are highly competent expectation-generators that don't have to comprehend what they are doing. Comprehension — *our* kind of comprehension — is only made possible by the arrival on the scene quite recently of a new kind of evolutionary replicator — culturally transmitted informational entities: memes. 
 
-Brains are different from computers, neurons live and compete for resources in a free market. Forming a learning structure in the form of expectation matching bayesian machines from the bottom up. These structures can 'comprehend', but *real* comprehension is enabled only by memes. There is a section in [Complexity by Mitchell Waldrop](/booknotes/complexity) that details that same topic beautifully.
+Brains are different from computers, neurons live and compete for resources in a free market. Forming a learning structure in the form of expectation matching bayesian machines from the bottom up. These structures can 'comprehend', but *real* comprehension is enabled only by memes. There is a section in [Complexity by Mitchell Waldrop](/library/complexity) that details that same topic beautifully.
 
 ### Chapter 9 - The Role of Words in Cultural Evolution
 

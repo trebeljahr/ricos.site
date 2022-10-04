@@ -1,4 +1,7 @@
-# Principles
+---
+title: Principles
+description: "These are some of the ideas and principles I found useful in life so far. Things I want to remember. Condensed into a list so that they are easily useable for me. I can only recommend compiling your list of principles like this one. Pay attention to the things you think are important to your life. Pick and choose from my list if you feel like it, but also distill your experiences and learnings, the things that are specifically important to you."
+---
 
 These are some of the ideas and principles I found useful in life so far. Things I want to remember. Condensed into a list so that they are easily useable for me. I can only recommend compiling your list of principles like this one. Pay attention to the things you think are important to your life. Pick and choose from my list if you feel like it, but also distill your experiences and learnings, the things that are specifically important to you. 
 
@@ -46,7 +49,7 @@ Ok now without further ado, here's my list:
 12. Our universe is a stressful place and to err, fail and be hostile towards others is sadly, very very human. Be aware of that. Smile, greet and appreciate, where you can. If something bad happens to you, attribute it to bad luck instead of malice and understand that other people are only human and err the same way you do.
 
 
-13. If sad/bogged down, think about the crazy fact of how wonderful and marvelous physical reality *really* is. The complexity that governs even the most "simple" entities interacting with each other. And then the absurd scale of it all. Then, try to comprehend the utter meaninglessness of it all. As well as the beauty and grandiosity of it all. Remember the [blue dot picture](/assets/blog/pale-blue-dot.jpg), [the life calendar], [our tiny slice of time](https://www.youtube.com/watch?v=yNLdblFQqsw), the photons hitting your eyes, [the blind card magician](https://www.youtube.com/watch?v=YVDwKxlcx-4), the [connectedness of mathematics](https://www.3blue1brown.com/lessons/hanoi-and-sierpinski) and [physics](https://www.youtube.com/watch?v=P1ww1IXRfTA) and the craziness of the Fermi Paradox, and that we might very well be alone in an (almost) infinite universe. 
+13. If sad/bogged down, think about the crazy fact of how wonderful and marvelous physical reality *really* is. The complexity that governs even the most "simple" entities interacting with each other. And then the absurd scale of it all. Then, try to comprehend the utter meaninglessness of it all. As well as the beauty and grandiosity of it all. Remember the [pale blue dot picture](/assets/blog/pale-blue-dot.jpg), the [ shortness of life](https://waitbutwhy.com/2014/05/life-weeks.html), [how tiny a slice of time our lives make up in relation to the universe](https://www.youtube.com/watch?v=yNLdblFQqsw), the [blind card magician](https://www.youtube.com/watch?v=YVDwKxlcx-4), the [connectedness of mathematics](https://www.3blue1brown.com/lessons/hanoi-and-sierpinski), and [the wonderous nature of physics](https://www.youtube.com/watch?v=P1ww1IXRfTA).
 Also, remember the [atrocities and cruelty](https://en.wikipedia.org/wiki/List_of_genocides_by_death_toll) humans and by extension, you, are capable of and put them into perspective to what you have to endure. 
 
 

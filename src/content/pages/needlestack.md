@@ -1,4 +1,7 @@
-# Needlestack
+---
+title: Needlestack
+description: "The internet is a giant haystack of content and information. This haystack is filled with a lot of stuff. Most of it is useless hay. But among the hay are some beautiful nuggets of information – literal needles in a haystack. Collecting those over time leads to a stack of useful things - a needlestack."
+---
 
 ## Table of contents
 

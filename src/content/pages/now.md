@@ -1,4 +1,7 @@
-# Now
+---
+title: 'Now'
+description: 'I am currently in Berlin, at home, working for Ironhack as a "part-time web development lead teacher". This means that I teach people how to program to earn a living. It also means that I only work for 12 hours a week and have the rest of my time free for working on personal projects.'
+---
 
 I am currently in Berlin, at home, working for [Ironhack](https://ironhack.com) as
 a "part-time web development lead teacher". This means that I teach people how to program to earn a living.

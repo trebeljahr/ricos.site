@@ -1,5 +1,5 @@
 ---
-title: '1-Month Projects'
+title: '1-Month Projects - the plan for how I want to spend my time'
 description: 'The plan for how I want to spend my time for the next years is following an idea I call "1-month projects".
 
 The idea is simple. I want to spend a month at a time pursuing a single project. Things that interest me and that I always wanted to do, but never gave myself the time to do. Now I take that time.'

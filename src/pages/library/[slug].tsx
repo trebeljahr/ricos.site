@@ -48,7 +48,7 @@ const Book = ({ book }: Props) => {
   }
   return (
     <Layout
-      pageTitle={book.title}
+      title={book.title}
       description={`These are the book Notes for ${book.title} by ${book.bookAuthor}`}
     >
       {router.isFallback ? (

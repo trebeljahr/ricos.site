@@ -11,7 +11,7 @@ type Props = {
 const Newsletters = ({ newsletterSlugs }: Props) => {
   return (
     <Layout
-      pageTitle="Newsletter - Archive"
+      title="Newsletters - an archive of newsletters"
       description="An archive overview page of all the Newsletters I have published in the past at trebeljahr.com."
     >
       <article>

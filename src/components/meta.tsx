@@ -8,7 +8,7 @@ interface Props {
 const Meta = ({ description, title }: Props) => {
   return (
     <Head>
-      <title>{title}</title>
+      <title>{title} | trebeljahr.com</title>
       <meta name="description" content={description} />
     </Head>
   );

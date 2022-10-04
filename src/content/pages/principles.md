@@ -1,5 +1,5 @@
 ---
-title: Principles
+title: "Principles - personal principles for a happy and fulfilled life"
 description: "These are some of the ideas and principles I found useful in life so far. Things I want to remember. Condensed into a list so that they are easily useable for me. I can only recommend compiling your list of principles like this one. Pay attention to the things you think are important to your life. Pick and choose from my list if you feel like it, but also distill your experiences and learnings, the things that are specifically important to you."
 ---
 

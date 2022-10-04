@@ -1,8 +1,6 @@
-import { useRouter } from "next/router";
 import PostBody from "../../components/post-body";
 import Layout from "../../components/layout";
 import { getAllNewsletters, getNewsletterBySlug } from "../../lib/api";
-import { PostTitle } from "../../components/post-title";
 import { ToTopButton } from "../../components/ToTopButton";
 import { Post as PostType } from "../../@types/post";
 import Image from "next/image";
@@ -16,7 +14,7 @@ type Props = {
 
 const Newsletter = ({ newsletter, slug }: Props) => {
   return (
-    <Layout description={newsletter.excerpt} pageTitle={`Newsletter ${slug}`}>
+    <Layout description={newsletter.excerpt} title={`Newsletter ${slug}`}>
       <article>
         <div className="header-image-container">
           <Image
@@ -24,7 +22,6 @@ const Newsletter = ({ newsletter, slug }: Props) => {
             layout="fill"
             objectFit="cover"
             alt={`Cover for Newsletter #${slug}`}
-            // placeholder="blur"
           />
         </div>
         <section className="post-body main-section">

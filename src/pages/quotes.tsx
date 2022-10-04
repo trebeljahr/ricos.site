@@ -26,7 +26,7 @@ export default function Quotes({ quotes }: Props) {
 
   return (
     <Layout
-      pageTitle="Quotes"
+      title="Quotes - a collection of quotes from a curious person"
       description="Here, on this page, I collect quotes I have found from all kinds of different sources. Books, movies, series, blog posts, whenever I find a phrase I really like, I put it here eventually."
     >
       <article>

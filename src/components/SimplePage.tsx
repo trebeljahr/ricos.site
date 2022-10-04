@@ -13,7 +13,7 @@ type Props = {
 
 export function SimplePage({ content, description, title }: Props) {
   return (
-    <Layout pageTitle={title} description={description}>
+    <Layout title={title} description={description}>
       <article>
         <section className="main-section">
           <PostTitle>{title}</PostTitle>

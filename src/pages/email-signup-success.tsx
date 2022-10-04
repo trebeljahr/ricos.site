@@ -33,7 +33,7 @@ export default function EmailSignupSuccess() {
 
   return (
     <Layout
-      pageTitle="Email Signup Success"
+      title="Email Signup Success"
       description="This page is displayed when a user has successfully completed signup for the trebeljahr.com newsletter"
     >
       {width && height && <Confetti width={width} height={height} />}

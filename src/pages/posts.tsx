@@ -12,7 +12,7 @@ const Posts = ({ posts }: Props) => {
   const morePosts = posts.slice(1);
   return (
     <Layout
-      pageTitle="Posts"
+      title="Posts - writings of a curious person, about life, the universe and everything"
       description="An overview page about all the posts that I have written so far on trebeljahr.com, ordered by the date that they were published."
     >
       <article>

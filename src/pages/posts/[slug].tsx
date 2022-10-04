@@ -4,7 +4,6 @@ import PostBody from "../../components/post-body";
 import PostHeader from "../../components/post-header";
 import Layout from "../../components/layout";
 import { getPostBySlug, getAllPosts } from "../../lib/api";
-import { PostTitle } from "../../components/post-title";
 import { ReadMore } from "../../components/more-stories";
 import { UtteranceComments } from "../../components/comments";
 import { ToTopButton } from "../../components/ToTopButton";
@@ -22,7 +21,10 @@ const Post = ({ post, morePosts }: Props) => {
     return <ErrorPage statusCode={404} />;
   }
   return (
-    <Layout description={post.excerpt} pageTitle={post.title}>
+    <Layout
+      description={post.excerpt}
+      title={post.title + " – " + post.subtitle}
+    >
       <article className="post-body">
         <section className="main-section">
           <PostHeader

@@ -5,13 +5,13 @@ import { Navbar } from "./navbar";
 type Props = {
   children: React.ReactNode;
   description: string;
-  pageTitle: string;
+  title: string;
 };
 
-const Layout = ({ children, description, pageTitle }: Props) => {
+const Layout = ({ children, description, title }: Props) => {
   return (
     <>
-      <Meta description={description} title={pageTitle} />
+      <Meta description={description} title={title} />
       <Navbar />
       <main className={"main-page"}>{children}</main>
     </>

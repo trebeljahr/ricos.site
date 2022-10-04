@@ -6,11 +6,14 @@ import { ExternalLink } from "../components/ExternalLink";
 import { NewsletterForm } from "../components/newsletter-signup";
 
 const Index = () => {
-  const description = `trebeljahr - a blog where a curious person publishes posts about the things he reads and thinks about. The topics can vary widely, 
-from programming, traveling, crypto-currencies, the brain, investing, physics, philosophy to photography...`;
+  const description = `trebeljahr - a website about the things Rico Trebeljahr does, reads and thinks about. The topics can vary widely, 
+from programming, bio-chemistry, the brain, investing, physics, philosophy to photography, traveling and back...`;
 
   return (
-    <Layout pageTitle="trebeljahr - home" description={description}>
+    <Layout
+      title="home - Hi there 👋🏻 I am Rico. A programmer, traveler, photographer..."
+      description={description}
+    >
       <article>
         <section className="main-section">
           <h2>Hi there 👋🏻</h2>

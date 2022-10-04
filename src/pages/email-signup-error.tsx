@@ -3,7 +3,7 @@ import Layout from "../components/layout";
 export default function EmailSignupSuccess() {
   return (
     <Layout
-      pageTitle="Email Signup Success"
+      title="Email Signup Success"
       description="This page is displayed when a user couldn't complete signing up to the newsletter of trebeljahr.com"
     >
       <h1>Hmm... seems like something went wrong. </h1>

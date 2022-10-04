@@ -28,7 +28,7 @@ export default function Books({ allBooks }: Props) {
 
   return (
     <Layout
-      pageTitle="Library"
+      title="Library - books of a curious person"
       description={
         "An overview of what I have read, with a filterable list of books and booknotes for those books"
       }

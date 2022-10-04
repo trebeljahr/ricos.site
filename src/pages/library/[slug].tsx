@@ -47,7 +47,10 @@ const Book = ({ book }: Props) => {
     return <ErrorPage statusCode={404} />;
   }
   return (
-    <Layout pageTitle={book.title}>
+    <Layout
+      pageTitle={book.title}
+      description={`These are the book Notes for ${book.title} by ${book.bookAuthor}`}
+    >
       {router.isFallback ? (
         <PostTitle>Loading…</PostTitle>
       ) : (

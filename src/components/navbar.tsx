@@ -1,43 +1,8 @@
 import Link from "next/link";
 import Intro from "./intro";
 import { useRouter } from "next/router";
-import {
-  CSSProperties,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useWindowSize } from "../hooks/useWindowSize";
-
-interface Props {
-  intro?: boolean;
-}
-
-function Dropdown({ children }: { children?: JSX.Element[] }) {
-  const [expanded, setExpanded] = useState(false);
-
-  const toggle = () => {
-    setExpanded((old) => !old);
-  };
-
-  return (
-    <div className="navbarDropdown">
-      <button onClick={toggle}>
-        {expanded ? (
-          <>
-            less <span className="icon-triangle-up"></span>
-          </>
-        ) : (
-          <>
-            more <span className="icon-triangle-down"></span>
-          </>
-        )}
-      </button>
-      {expanded && <div className="navbarDropdownContent">{children}</div>}
-    </div>
-  );
-}
 
 type NavlinksProps = {
   expanded: boolean;
@@ -89,7 +54,7 @@ export function Navlinks({ expanded, setExpanded }: NavlinksProps) {
   );
 }
 
-export function Navbar({ intro = true }: Props) {
+export function Navbar() {
   const { width } = useWindowSize();
   const [expanded, setExpanded] = useState(true);
   useEffect(() => {
@@ -98,7 +63,7 @@ export function Navbar({ intro = true }: Props) {
   return (
     <nav role="navigation" className="primary-navigation">
       <div className="navbar-controls">
-        {intro && <Intro withLink={true} withMotto={false}></Intro>}
+        <Intro withLink={true} withMotto={false}></Intro>
 
         <button
           className="navlink-expander"

@@ -25,7 +25,10 @@ export default function Quotes({ quotes }: Props) {
   const filteredQuotes = quotes.filter(byFilters);
 
   return (
-    <Layout>
+    <Layout
+      pageTitle="Quotes"
+      description="Here, on this page, I collect quotes I have found from all kinds of different sources. Books, movies, series, blog posts, whenever I find a phrase I really like, I put it here eventually."
+    >
       <article>
         <section className="main-section">
           <Search setFilters={setFilters} filters={filters} />

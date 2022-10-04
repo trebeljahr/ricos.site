@@ -4,25 +4,16 @@ import { Navbar } from "./navbar";
 
 type Props = {
   children: React.ReactNode;
-  description?: string;
-  pageTitle?: string;
-  trebeljahr?: boolean;
-  fullPage?: boolean;
+  description: string;
+  pageTitle: string;
 };
 
-const Layout = ({
-  children,
-  description,
-  trebeljahr: intro,
-  pageTitle,
-  fullPage: full = false,
-}: Props) => {
+const Layout = ({ children, description, pageTitle }: Props) => {
   return (
     <>
       <Meta description={description} title={pageTitle} />
-      <Navbar intro={intro} />
+      <Navbar />
       <main className={"main-page"}>{children}</main>
-      {/* <Footer /> */}
     </>
   );
 };

@@ -10,7 +10,10 @@ type Props = {
 
 const Newsletters = ({ newsletterSlugs }: Props) => {
   return (
-    <Layout pageTitle="Newsletters">
+    <Layout
+      pageTitle="Newsletter - Archive"
+      description="An archive overview page of all the Newsletters I have published in the past at trebeljahr.com."
+    >
       <article>
         <section className="main-section">
           {newsletterSlugs.map(({ slug: number }) => {

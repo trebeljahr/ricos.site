@@ -11,7 +11,10 @@ const Posts = ({ posts }: Props) => {
   const heroPost = posts[0];
   const morePosts = posts.slice(1);
   return (
-    <Layout pageTitle="Posts">
+    <Layout
+      pageTitle="Posts"
+      description="An overview page about all the posts that I have written so far on trebeljahr.com, ordered by the date that they were published."
+    >
       <article>
         <section className="main-section">
           {heroPost && <HeroPostPreview post={heroPost} />}

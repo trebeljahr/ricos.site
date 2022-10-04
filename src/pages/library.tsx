@@ -27,7 +27,12 @@ export default function Books({ allBooks }: Props) {
   const filteredBooks = allBooks.filter(byFilters);
 
   return (
-    <Layout fullPage={true} pageTitle="Book Notes">
+    <Layout
+      pageTitle="Library"
+      description={
+        "An overview of what I have read, with a filterable list of books and booknotes for those books"
+      }
+    >
       <article>
         <section className="main-section">
           <Search filters={filters} setFilters={setFilters} />

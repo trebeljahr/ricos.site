@@ -6,8 +6,11 @@ import { ExternalLink } from "../components/ExternalLink";
 import { NewsletterForm } from "../components/newsletter-signup";
 
 const Index = () => {
+  const description = `trebeljahr - a blog where a curious person publishes posts about the things he reads and thinks about. The topics can vary widely, 
+from programming, traveling, crypto-currencies, the brain, investing, physics, philosophy to photography...`;
+
   return (
-    <Layout pageTitle="Home">
+    <Layout pageTitle="trebeljahr - home" description={description}>
       <article>
         <section className="main-section">
           <h2>Hi there 👋🏻</h2>

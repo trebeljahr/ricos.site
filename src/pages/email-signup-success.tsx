@@ -32,7 +32,10 @@ export default function EmailSignupSuccess() {
   const { width, height } = useWindowSize();
 
   return (
-    <Layout fullPage={true} pageTitle="Email Signup Success">
+    <Layout
+      pageTitle="Email Signup Success"
+      description="This page is displayed when a user has successfully completed signup for the trebeljahr.com newsletter"
+    >
       {width && height && <Confetti width={width} height={height} />}
       <h1>Success</h1>
       <p>

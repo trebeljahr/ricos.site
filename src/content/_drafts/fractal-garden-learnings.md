@@ -60,7 +60,7 @@ How  IFS's work
 
 That many fractals have infinite length and 0 area or some other crazy properties like it 
 
-How connected Fractals really are with each other 
+How connected Fractals really are with each other.
 
 ### The Big List of Resources 
 

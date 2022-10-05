@@ -9,12 +9,12 @@ export function getStaticPropsGetter(pageName: string) {
   return async () => {
     const fileContents = await fs.readFile(path, "utf-8");
     const {
-      data: { description, title },
+      data: { description, title, subtitle },
       content,
     } = matter(fileContents);
 
     return {
-      props: { content, description, title },
+      props: { content, description, title, subtitle },
     };
   };
 }

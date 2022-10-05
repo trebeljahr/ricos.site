@@ -9,11 +9,12 @@ type Props = {
   content: string;
   description: string;
   title: string;
+  subtitle: string;
 };
 
-export function SimplePage({ content, description, title }: Props) {
+export function SimplePage({ content, description, title, subtitle }: Props) {
   return (
-    <Layout title={title} description={description}>
+    <Layout title={title + " – " + subtitle} description={description}>
       <article>
         <section className="main-section">
           <PostTitle>{title}</PostTitle>

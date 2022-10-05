@@ -1,5 +1,6 @@
 ---
-title: 'Now - Answering the Question - What am I doing right now?'
+title: 'Now'
+subtitle: 'Answering the Question: What am I doing right now?'
 description: 'I am currently in Berlin, at home, working for Ironhack as a "part-time web development lead teacher". This means that I teach people how to program to earn a living. It also means that I only work for 12 hours a week and have the rest of my time free for working on personal projects.'
 ---
 

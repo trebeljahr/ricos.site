@@ -1,6 +1,6 @@
 ---
-title: "Fractal Garden – Meta Learnings"
-subtitle: "What I have learned about how I work"
+title: "Fractal Learnings – Part 1"
+subtitle: "Ideas on how to work on 1-month projects"
 excerpt: "In September I finished my first 1-month project. During the process I learned a lot about how I approach work and this post is a reflection and documentation on the process."
 cover: "/assets/blog/mandelbrot.jpg"
 date: "2022-10-05"
@@ -10,11 +10,11 @@ author:
 
 ---
 
-In September I finished my first [1-month project](/1-month-projects). During the process I learned a lot of little things and this post is a re-collection and documentation of these learnings. You can check out what I've built at [fractal.garden](https://fractal.garden). 
+In September I finished my first [1-month project](/1-month-projects). During the process I learned many things and this post is a re-collection and documentation of this process. You can check out what I've built at [fractal.garden](https://fractal.garden).
 
 This is part 1 of a series. It's about meta learnings such as how to manage time, how to let go from a project and live with the imperfections of it and why marketing matters.
 
-[Part 2 on the other hand](/posts/fractal-garden-technical-learnings) is all about the technical learnings and problems I encountered. It contains code, mathematics and a lot of links to resources.
+[Part 2 on the other hand](/posts/fractal-learnings-2) is all about the technical learnings and problems I encountered. It contains code, mathematics and a lot of links to resources.
 
 So let's dive in.
 
@@ -84,5 +84,5 @@ As of now, still an unsolved problem... But I know that some of the 1-month proj
 
 Because this was the first 1-month project, the amount of learnings I took from it was tremendous. I don't think there will be that many "meta insights" to write about during the next projects, but let's see. This process, of sitting down after the project and reflecting and putting into words, what I've learned from it, is something that I want to keep either way. 
 
-If you are more interested in the technical learnings, go have a look at [Part 2 of this series of posts](/posts/fractal-garden-technical-learnings). And either way, take care.
+If you are more interested in the technical learnings, go have a look at [Part 2 of this series of posts](/posts/fractal-learnings-2). And either way, take care.
 

@@ -1,5 +1,5 @@
 ---
-title: "Fractal Learnings – Part 1"
+title: "Fractal Garden Learnings – Part 1"
 subtitle: "Ideas on how to work on 1-month projects"
 excerpt: "In September I finished my first 1-month project. During the process I learned a lot about how I approach work and this post is a reflection and documentation on the process."
 cover: "/assets/blog/mandelbrot.jpg"
@@ -10,15 +10,23 @@ author:
 
 ---
 
-In September I finished my first [1-month project](/1-month-projects). During the process I learned many things and this post is a re-collection and documentation of this process. You can check out what I've built at [fractal.garden](https://fractal.garden).
+This is part 1 of a series of posts on building the [fractal.garden](https://fractal.garden), my first [1-month project](/1-month-projects).
 
-This is part 1 of a series. It's about meta learnings such as how to manage time, how to let go from a project and live with the imperfections of it and why marketing matters.
 
-[Part 2 on the other hand](/posts/fractal-learnings-2) is all about the technical learnings and problems I encountered. It contains code, mathematics and a lot of links to resources.
+This post focuses on learnings about the process of working on 1-month projects. Such as how to manage time, how to let go from a project and live with the imperfections and why marketing matters.
 
-So let's dive in.
+[Part 2 on the other hand](/posts/fractal-learnings-2) is all about the technical problems and details on Fractals.
 
 ## Insights
+
+TLDR: 
+- Marketing is hard and the fear of failure stands in the way of self-promotion and personal growth.
+- Accepting imperfections in a project is a necessary evil. Perfect is the enemy of getting things done. 
+- Giving up control and letting projects take on a life of their own feels weird, because of egoistic tendencies.
+- 1-month is a long time for staying motivated, but still not enough time to "really" finish things.
+- Using time trackers and a process of accountability to others helps stay productive.
+
+There is more down below, so keep reading. 
 
 ### Marketing
 
@@ -52,7 +60,7 @@ I think that this is equally important in a company or management setting. This 
 
 ### Imperfections
 
-Living with the imperfections from the projects and moving on is really really tough. There are a bunch of little things that I would like to fix with the fractal.garden, and I've created issues for them on the [project's GitHub](), but I have to *restrain* myself from actually fixing them, because I want to spend my time doing other things. And this is really really tough for me. I know something is wrong, but I don't have the time to fix it, because I want to spend my time on the next 1-month project.
+Living with the imperfections from the projects and moving on is really really tough. There are a bunch of little things that I would like to fix with the fractal.garden, and I've created issues for them on the [project's GitHub](https://github.com/trebeljahr/fractal-garden), but I have to *restrain* myself from actually fixing them, because I want to spend my time doing other things. And this is really really tough for me. I know something is wrong, but I don't have the time to fix it, because I want to spend my time on the next 1-month project.
 
 ### Timeframe
 

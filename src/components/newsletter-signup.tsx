@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ChangeEvent, MouseEvent, useState } from "react";
 import { ClipLoader } from "react-spinners";
 
@@ -65,14 +66,20 @@ export const NewsletterForm = () => {
             <span className="icon-check-circle newsletter-success"></span>
           </h2>
           <p>{success}</p>
+          <p>
+            <Link as="/newsletters" href="/newsletters">
+              <a>You can read past editions in the archive!</a>
+            </Link>
+          </p>
         </>
       ) : (
         <>
           <h2>Subscribe to my newsletter</h2>
           <p>
-            Twice a month. 1 Booknote. 1 Photo. 1 Post. 1 Status Update. A few
-            links. Bundled together in one heck of a Newsletter.
+            Twice a month. 1 Booknote. 1 Photo. 1 Post. Awesomeness bundled
+            together in one heck of a Newsletter. No spam. No noise.{" "}
           </p>
+
           {error && <p className="error">{error}</p>}
           <div className="form">
             <input

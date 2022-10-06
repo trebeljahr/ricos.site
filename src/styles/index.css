@@ -15,7 +15,7 @@
   --main-width: 95vw;
   --success-green: rgb(31, 214, 85);
 
-  font-size: 14px;
+  font-size: 16px;
 }
 
 html::-webkit-scrollbar {
@@ -318,7 +318,7 @@ input {
   line-height: 1.6;
   font-size: 1rem;
   font-weight: normal;
-  font-family: "Libre Baskerville", serif;
+  font-family: arvo, serif;
 }
 
 .allBooks {
@@ -516,7 +516,7 @@ li {
   }
 
   :root {
-    font-size: 19px;
+    font-size: 21px;
   }
 
   .main-text ul {

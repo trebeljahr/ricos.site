@@ -59,6 +59,10 @@ ul li ul li a {
   .navlink-expander {
     display: none;
   }
+  nav.primary-navigation ul > :nth-last-child(-n + 1) {
+    border-right: 2px solid #3ca0e7;
+  }
+
   .navbar-controls {
     justify-content: center;
   }

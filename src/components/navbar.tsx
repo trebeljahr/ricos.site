@@ -49,7 +49,6 @@ export function Navlinks({ expanded, setExpanded }: NavlinksProps) {
       <SingleNavLink to="principles" />
       <SingleNavLink to="quotes" />
       <SingleNavLink to="now" />
-      <SingleNavLink to="1-month-projects" />
     </>
   );
 }

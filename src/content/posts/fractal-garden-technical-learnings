@@ -1,6 +1,6 @@
 ---
 title: "Fractal Garden – Technical Learnings"
-subtitle: "Interesting technical details I've learned from my first 1-month project"
+subtitle: "Interesting technical details and a bunch of links"
 excerpt: "This is part 2 of a series of posts on building the fractal.garden, my first 1-month project. It will dive into the technical learnings and decisions that went into making the fractal.garden website."
 cover: "/assets/blog/fractal-garden.png"
 date: "2022-10-06"
@@ -9,7 +9,7 @@ author:
   picture: "/assets/blog/profile.jpeg"
 ---
 
-This is part 2 of a series of posts on building the [fractal.garden](https://fractal.garden), my first 1-month project. While [Part 1](/posts/fractal-garden-meta-learnings) focused more on the general meta lessons I took from this project about how to approach working and improving my efficiency, this post will dive into the technical learnings and decisions behind the project.
+This is part 2 of a series of posts on building the [fractal.garden](https://fractal.garden), my first 1-month project. While [Part 1](/posts/fractal-garden-meta-learnings) focused more on the general meta lessons I took from this project about how to approach working and improving my efficiency, this post will dive into the technical learnings and decisions behind the project and share a bunch of links that I found useful while building this project.
 
 ### Technical Challenges
 

@@ -1,0 +1,103 @@
+---
+title: "Fractal Garden – Technical Learnings"
+subtitle: "Interesting technical details I've learned from my first 1-month project"
+excerpt: "This is part 2 of a series of posts on building the fractal.garden, my first 1-month project. It will dive into the technical learnings and decisions that went into making the fractal.garden website."
+cover: "/assets/blog/fractal-garden.png"
+date: "2022-10-06"
+author:
+  name: Rico Trebeljahr
+  picture: "/assets/blog/profile.jpeg"
+---
+
+This is part 2 of a series of posts on building the [fractal.garden](https://fractal.garden), my first 1-month project. While [Part 1](/posts/fractal-garden-meta-learnings) focused more on the general meta lessons I took from this project about how to approach working and improving my efficiency, this post will dive into the technical learnings and decisions behind the project.
+
+### Technical Challenges
+
+Technical Challenges: WebGL and learning about shaders.
+
+Design, and how much I suck at it. Luckily there is [lawsofux](https://lawsofux.com/) and I copied some of their design because it looks so good. 
+
+A lot of work is rework. You do something, then you find out, hmm, I should do it this way instead, because I really want feature X, or run into a bug that was unanticipated. For this particular project of the Fractal Garden two big things and refactors come to my mind. 
+1. Changing from only using HTML and JS files without a build process to setting up a next.js project with TS.
+2. Ditching p5.js because it doesn't play with next.js and react. 
+
+I think both could have been avoided, because they resulted from the same mistake, picking the route that is easier to setup at first but then starts breaking down and slowing down, when the complexity of the project increases. Next time, just start with a solid tooling/dev experience setup from the beginning. 
+
+### Facts about Fractals
+
+Now I understand what the [Chaos Game](https://en.wikipedia.org/wiki/Chaos_game) is and how it works, and what [L-Systems](https://en.wikipedia.org/wiki/L-system) are and how they work, and what an [IFS - iterated function system](https://en.wikipedia.org/wiki/Iterated_function_system) is and how it works.
+
+I also learned that many fractals have funky properties – like infinite length or 0 area and that fractals are often intrically connected with each other. 
+
+A few that come to mind: Pythagoras Tree and Lévy Curve, Sierpinski Triangle and Arrowhead Curve, Sierpinski Triangle and Fractal Canopy, all L-Systems...
+
+The coolest factoid I learned, is that Sierpinski Triangles or Pythagoras Trees can be generated from *any* initial shape. They are "super-fractals". And to prove that point, Sierpinski created his famous triangle [out of a fish](https://www.researchgate.net/profile/Michael-Barnsley-2/publication/2110189/figure/fig1/AS:279520268570624@1443654233046/Convergent-or-Backward-Process-Beginning-from-any-set-fish-T-0.png)! There is also the Pythagoras Tree created from [an image of Pythagoras](https://larryriddle.agnesscott.org/ifs/pythagorean/45TreeWithPythagorus.jpg), which to me is just the most wonderfully recursive nerd humor.
+
+### Libraries I considered using: 
+- [Overview of possibilities](https://gist.github.com/dmnsgn/76878ba6903cf15789b712464875cfdc)
+- [p5.js](https://p5js.org/)
+- [two.js](https://two.js.org/)
+- [d3.js](https://d3js.org/)
+- [pixi.js](https://pixijs.com/)
+- [konva.js](https://konvajs.org/docs/react/index.html)
+- [react-canvas](https://github.com/Flipboard/react-canvas)
+- [react-pixi](https://reactpixi.org/)
+- [fabric.js](http://fabricjs.com/)
+- [pencil.js](https://pencil.js.org/)
+- [mesh.js](https://meshjs.webgl.group/#/)
+- [create.js](https://createjs.com/)
+- [pts.js](https://ptsjs.org/)
+
+In the end I decided for p5.js because I am the most familiar with it, then regretted that decision because p5 is breaking a lot when trying to use it in conjunction with react + next.js and that's why I ditched it in the end, opting for a completely "native" canvas only approach instead. One thing I've learned from this is to start with a next.js setup from the beginning... This was one of the most painful points during the whole project, when I decided to switch from building everything out in raw HTML + JS without a build process as static pages deployed on Github Pages, to something using next.js. But the ability to render Markdown into the pages and not having to put up with ugly white screens popping up when navigating between pages and optimizing the whole thing for SEO made that choice and the pain of refactoring worthwhile.
+
+Also the pain of not having TypeScript in the project or being able to use any NPM project was too much to bear. Sometimes I wanted to use a certain tool or re-use some code across different HTML files and it was just a drag to write the boilerplate for it. Don't sacrifice Developer Experience for upfront speed improvements. It's going to bite you in the end. 
+
+The [webglfundamentals series of tutorials](https://webglfundamentals.org/webgl/lessons/webgl-2d-drawimage.html) are an invaluable help for understanding shaders. Now I know enough to make them work for the Mandelbrot Set (and a lot of other things!).
+
+### Inspiration
+- [Beautiful Images - Dr. Wooho: Turbulence](https://www.flickr.com/photos/drwoohoo/sets/72157635283159594/)
+- [Algorithmic Botany of Plants (ABOP) book](http://algorithmicbotany.org/)
+- [Daniel Shiffman's Series on Algorithmic Botany](https://www.youtube.com/playlist?list=PLRqwX-V7Uu6bxNsa_3SfCPyF9Md9XvXhR)
+- [Specifically the video on L-Systems](https://www.youtube.com/watch?v=E1B4UoSQMFw&list=PLRqwX-V7Uu6bxNsa_3SfCPyF9Md9XvXhR&index=4)
+- [Paul Bourke's site on Fractals in general](http://paulbourke.net/fractals/)
+- [Paul Bourke's site on L-System fractals](http://paulbourke.net/fractals/lsys/)
+- [Larry Riddle's site on Fractals](https://larryriddle.agnesscott.org/ifs/ifs.htm)
+
+- [A List of Fractal Generating Software](https://en.wikipedia.org/wiki/Fractal-generating_software)
+
+- [Mathworld - Dragon Curve](https://mathworld.wolfram.com/DragonCurve.html)
+- [Mathworld - Sierpinski Sieve](https://mathworld.wolfram.com/SierpinskiSieve.html)
+- [Mathworld - Menger Sponge](https://mathworld.wolfram.com/MengerSponge.html)
+- [Mathworld - Koch Snowflake](https://mathworld.wolfram.com/KochSnowflake.html)
+
+- [Algorithm Archive - Iterated Function Systems](https://www.algorithm-archive.org/contents/IFS/IFS.html)
+
+### Details
+
+The Barnsley Fern Matrices came from these two: 
+- https://www.chradams.co.uk/fern/maker.html
+- https://www.dcnicholls.com/byzantium/ferns/fractal.html
+
+And the Algorithm Archive visualization of the Barnsley Fern transformations is *epic* and you should check it out! 
+- https://www.algorithm-archive.org/contents/barnsley/barnsley.html
+
+The Mandelbrot Shader is largely based on understanding and stitching together these two implementations, Wikipedia also helped:
+- https://gpfault.net/posts/mandelbrot-webgl.txt.html
+- https://www.unindented.org/playground/mandelbrot-set-with-webgl-shaders/
+- https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set
+
+Some more research + other cool Mandelbrot viewers I found: 
+- https://project-archive.inf.ed.ac.uk/ug4/20201796/ug4_proj.pdf
+- https://www.shadertoy.com/view/4df3Rn
+- http://hvidtfeldts.net/WebGL/webgl.html
+- https://math.hws.edu/eck/js/mandelbrot/MB.html
+- https://mandelbrot.ophir.dev/#
+- https://www.shadertoy.com/view/ttVSDW
+- https://www.shadertoy.com/view/fs33zM
+- https://mandelbrot.robertolechowski.com/#
+
+There are some problems with resizing the Canvas and Pixel Density that you have when using Canvas natively and not from some library like p5. These helped in solving those:
+- [webglfundamentals - WebGL and Resizing the Canvas](https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html)
+- [doomgoober - Understanding Canvas Scaling and Sizing](https://medium.com/@doomgoober/understanding-html-canvas-scaling-and-sizing-c04925d9a830)
+- [pahund - How to Fix Blurry Text on HTML Canvases on Phones](https://dev.to/pahund/how-to-fix-blurry-text-on-html-canvases-on-mobile-phones-3iep)
+

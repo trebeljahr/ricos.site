@@ -33,7 +33,7 @@ The second "hack" I employ is to share this with my best friends. People such as
 **No. 3**–Build an Interactive Deep Dive Article showcasing different Collision Detection Algorithms.
 
 ### Done
-- ~~Build up this blog (/needlestack, /posts, /library)~~ => Done! The result is online at. Well. Here. (August 2022)
+- ~~Build up this blog (/needlestack, /posts, /booknotes)~~ => Done! The result is online at. Well. Here. (August 2022)
 - ~~Create a Fractal Garden Webpage~~ => Done! The result is online at [fractal.garden](https://fractal.garden) (September 2022)
 
 ### Writing

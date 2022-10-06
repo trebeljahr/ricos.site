@@ -10,7 +10,7 @@ That will help to clarify your values and distill and extract what you have lear
 
 I, personally, come back here regularly. Simply to check in with my brain from the past, and refresh what I have already figured out. So that I don't forget. I want to keep these insights in my brain, because I feel like if they stick there and remain, I'll be a better person, living a better, more fulfilled life. 
 
-If you compile a similar list to this please let me know. The idea is to spread them similar to [/now](/now) or [/needlestack](/needlestack) pages. Something like [/principles](/principles) should be a thing that exists on the internet. This is heavily inspired by [Ray Dalio's book Principles](/library/principles), which you should totally go buy a copy and read if you haven't yet. 
+If you compile a similar list to this please let me know. The idea is to spread them similar to [/now](/now) or [/needlestack](/needlestack) pages. Something like [/principles](/principles) should be a thing that exists on the internet. This is heavily inspired by [Ray Dalio's book Principles](/booknotes/principles), which you should totally go buy a copy and read if you haven't yet. 
 
 Ok now without further ado, here's my list: 
 
@@ -84,5 +84,5 @@ Also, remember the [atrocities and cruelty](https://en.wikipedia.org/wiki/List_o
 24. Remember that predicting the future from past data is often impossibly hard and eventually bound to fail in this messy chaotic world. There are black swans. So tread with the necessary caution and handle risks accordingly. 
 
 
-25. And: Don't Panic. For those who don't know it, this is from [Hitchhiker's Guide to the Galaxy](/library/the-hitchhikers-guide-to-the-galaxy). One of the most hilarious books ever to be written.
+25. And: Don't Panic. For those who don't know it, this is from [Hitchhiker's Guide to the Galaxy](/booknotes/the-hitchhikers-guide-to-the-galaxy). One of the most hilarious books ever to be written.
 

@@ -1,8 +1,6 @@
 @import "~prismjs/plugins/toolbar/prism-toolbar.css";
 
 :root {
-  /* --dark-blue: #1e7900;
-  --blue: #28b264; */
   --dark-red: rgb(204, 9, 9);
   --red: rgb(232, 83, 83);
   --light-red: rgb(242, 145, 145);
@@ -16,6 +14,8 @@
 
   --main-width: 95vw;
   --success-green: rgb(31, 214, 85);
+
+  font-size: 16px;
 }
 
 html::-webkit-scrollbar {
@@ -80,7 +80,6 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  font-size: 14px;
   overflow-x: hidden;
 }
 
@@ -319,7 +318,7 @@ input {
   line-height: 1.6;
   font-size: 1rem;
   font-weight: normal;
-  font-family: "Libre Baskerville", serif;
+  font-family: arvo, serif;
 }
 
 .allBooks {
@@ -331,10 +330,17 @@ input {
   margin-bottom: 3rem;
 }
 
+.placeholder-text {
+  padding: 10px;
+  background-color: rgb(197, 201, 203);
+}
+
 .book-cover-image {
-  width: 100%;
-  height: calc(1.6 * 100vw);
+  margin: 1rem auto;
+  width: calc(var(--main-width));
+  height: calc(1.6 * calc(var(--main-width)));
   position: relative;
+  display: block;
 }
 
 .avatar-with-author {
@@ -380,10 +386,6 @@ input {
   color: #333;
   width: 100%;
   margin-bottom: 3rem;
-}
-
-html {
-  font-size: 18px;
 }
 
 .main-section {
@@ -520,8 +522,8 @@ li {
     margin-top: 50px;
   }
 
-  html {
-    font-size: 22px;
+  :root {
+    font-size: 21px;
   }
 
   .main-text ul {
@@ -644,6 +646,7 @@ li {
   }
 
   .book-cover-image {
+    margin: auto;
     width: calc(var(--main-width) / 3);
     height: calc(1.6 * calc(var(--main-width) / 3));
     position: relative;
@@ -663,12 +666,19 @@ li {
     grid-template-rows: auto;
   }
 
+  .placeholder-text {
+    padding: 30px;
+    background-color: rgb(197, 201, 203);
+  }
+
   .main-page {
-    max-width: 936px;
+    position: relative;
+    max-width: var(--main-width);
     margin-left: auto;
     margin-right: auto;
   }
+
   :root {
-    --main-width: 936px;
+    --main-width: 750px;
   }
 }

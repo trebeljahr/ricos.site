@@ -44,12 +44,11 @@ export function Navlinks({ expanded, setExpanded }: NavlinksProps) {
   return (
     <>
       <SingleNavLink to="posts" />
-      <SingleNavLink to="library" />
+      <SingleNavLink to="booknotes" />
       <SingleNavLink to="needlestack" />
       <SingleNavLink to="principles" />
       <SingleNavLink to="quotes" />
       <SingleNavLink to="now" />
-      <SingleNavLink to="1-month-projects" />
     </>
   );
 }

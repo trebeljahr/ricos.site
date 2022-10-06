@@ -31,11 +31,9 @@ const BooknotesWithDefault = ({ book }: Props) => {
   if (book.content) return <PostBody content={book.content} />;
   return (
     <div className="main-text">
-      <p>
-        I have read this book, but did not write books or summaries for it when
-        I read it. If it is a book with a rating of 9 or 10, I will re-read this
-        book for sure. Hopefully soon. And add my books to it then, but for now,
-        this is all there is.
+      <p className="placeholder-text">
+        I have read this book, but did not write booknotes or a summary for it
+        yet. For now, this is all there is.
       </p>
     </div>
   );

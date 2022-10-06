@@ -330,10 +330,17 @@ input {
   margin-bottom: 3rem;
 }
 
+.placeholder-text {
+  padding: 10px;
+  background-color: rgb(197, 201, 203);
+}
+
 .book-cover-image {
-  width: 100%;
-  height: calc(1.6 * 100vw);
+  margin: 1rem auto;
+  width: calc(var(--main-width));
+  height: calc(1.6 * calc(var(--main-width)));
   position: relative;
+  display: block;
 }
 
 .avatar-with-author {
@@ -639,6 +646,7 @@ li {
   }
 
   .book-cover-image {
+    margin: auto;
     width: calc(var(--main-width) / 3);
     height: calc(1.6 * calc(var(--main-width) / 3));
     position: relative;
@@ -656,6 +664,11 @@ li {
     display: grid;
     grid-template-columns: 2fr 3fr;
     grid-template-rows: auto;
+  }
+
+  .placeholder-text {
+    padding: 30px;
+    background-color: rgb(197, 201, 203);
   }
 
   .main-page {

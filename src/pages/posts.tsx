@@ -15,7 +15,7 @@ const Posts = ({ posts }: Props) => {
       title="Posts - writings of a curious person, about life, the universe and everything"
       description="An overview page about all the posts that I have written so far on trebeljahr.com, ordered by the date that they were published."
     >
-      <article>
+      <article className="posts-overview">
         <section className="main-section">
           {heroPost && <HeroPostPreview post={heroPost} />}
           {morePosts.length > 0 && <OtherPostsPreview posts={morePosts} />}

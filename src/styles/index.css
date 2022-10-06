@@ -659,11 +659,13 @@ li {
   }
 
   .main-page {
-    max-width: 700px;
+    position: relative;
+    max-width: var(--main-width);
     margin-left: auto;
     margin-right: auto;
   }
+
   :root {
-    --main-width: 700px;
+    --main-width: 750px;
   }
 }

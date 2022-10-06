@@ -1,8 +1,6 @@
 @import "~prismjs/plugins/toolbar/prism-toolbar.css";
 
 :root {
-  /* --dark-blue: #1e7900;
-  --blue: #28b264; */
   --dark-red: rgb(204, 9, 9);
   --red: rgb(232, 83, 83);
   --light-red: rgb(242, 145, 145);
@@ -16,6 +14,8 @@
 
   --main-width: 95vw;
   --success-green: rgb(31, 214, 85);
+
+  font-size: 14px;
 }
 
 html::-webkit-scrollbar {
@@ -80,7 +80,6 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  font-size: 14px;
   overflow-x: hidden;
 }
 
@@ -382,10 +381,6 @@ input {
   margin-bottom: 3rem;
 }
 
-html {
-  font-size: 18px;
-}
-
 .main-section {
   width: 95%;
   margin: auto;
@@ -520,8 +515,8 @@ li {
     margin-top: 50px;
   }
 
-  html {
-    font-size: 22px;
+  :root {
+    font-size: 19px;
   }
 
   .main-text ul {
@@ -664,11 +659,11 @@ li {
   }
 
   .main-page {
-    max-width: 936px;
+    max-width: 700px;
     margin-left: auto;
     margin-right: auto;
   }
   :root {
-    --main-width: 936px;
+    --main-width: 700px;
   }
 }

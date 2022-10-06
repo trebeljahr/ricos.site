@@ -13,6 +13,6 @@ When not working for Ironhack, I spend my time working on one of my [1-month pro
 
 This month (October 2022) I am working on building an interactive deep dive article/demo showcasing different Collision Detection Algorithms.
 
-I also try to read a lot and you can find what I have read, some of it with notes at the [/library](/library) of this site.
+I also try to read a lot and you can find what I have read, some of it with notes at the [/booknotes](/booknotes) of this site.
 
 Besides this, I regularly have long, drawn-out discussions with friends, play a lot of beach volleyball and go to Hell Night, a parkour-focused strength/endurance training in Berlin, every week. 

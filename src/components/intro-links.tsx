@@ -8,8 +8,8 @@ export const TrySomeOfThese = () => {
         <a className="colored-link">/posts</a>
       </Link>
       ,{" "}
-      <Link as="/library" href="/library">
-        <a className="colored-link">/library</a>
+      <Link as="/booknotes" href="/booknotes">
+        <a className="colored-link">/booknotes</a>
       </Link>
       , or{" "}
       <Link as="/needlestack" href="/needlestack">

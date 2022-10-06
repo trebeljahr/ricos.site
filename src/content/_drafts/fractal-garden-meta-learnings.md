@@ -72,7 +72,7 @@ This is for now, still an unsolved problem... But I know that some of the 1-mont
 
 ### Conclusion
 
-Because this was the first 1-month projects, the amount of learning I took from it was tremendous. I don't think there will be that much "Meta insights" to write about during the next projects, but let's see. But this process, of sitting down after the project is done and reflecting and putting into words, what I've learned from it, is something that I want to keep. 
+Because this was the first 1-month project, the amount of learning I took from it was tremendous. I don't think there will be that many "meta insights" to write about during the next projects, but let's see. This process, of sitting down after the project and reflecting and putting into words, what I've learned from it, is something that I want to keep either way. 
 
 If you are more interested in the technical learnings, go have a look at [Part 2 of this series of posts](/posts/fractal-garden-technical-learnings). 
 

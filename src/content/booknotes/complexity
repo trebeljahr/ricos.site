@@ -377,7 +377,7 @@ Use boid like agent based code to simulate economies.
 
 #### The Santa Fe Approach
 
-Agents can improve rationality in economic settings, they learn to make better decisions if that's what's necessary to survive. Interestingly, to produce [Zero to One kind](/library/zero-to-one) of decisions one sometimes needs to think "outside the box" in other words, one has to act semi randomly. 
+Agents can improve rationality in economic settings, they learn to make better decisions if that's what's necessary to survive. Interestingly, to produce [Zero to One kind](/booknotes/zero-to-one) of decisions one sometimes needs to think "outside the box" in other words, one has to act semi randomly. 
 
 **Book Recommendation:** The Eight Day of Creation [#TODO]
 
@@ -389,13 +389,13 @@ In real life, people have to make decisions in a complicated, muddled world, wit
 
 [Paper on Spontaneous Emergence](#TODO)
 
-Co-Evolution is an important property of evolutionary systems. It's dynamics create the richness of ecosystems, the subtle and beautiful interactions between organisms. Things like symbiosis and the ideas from [Matt Ridley's "The Red Queen"](/library/the-red-queen) come into play here. 
+Co-Evolution is an important property of evolutionary systems. It's dynamics create the richness of ecosystems, the subtle and beautiful interactions between organisms. Things like symbiosis and the ideas from [Matt Ridley's "The Red Queen"](/booknotes/the-red-queen) come into play here. 
 
 **Book Recommendation:** The Evolution of Cooperation - Robert Axelrod
 
 Tit for Tat as a stable and successful strategy in extended prisoners dilemma games. And it is self reinforcing over time. 
 
-See also [Richard Dawkins book "The Selfish Gene"](/library/selfish-gene) for a much more extended discussion of this topic. 
+See also [Richard Dawkins book "The Selfish Gene"](/booknotes/selfish-gene) for a much more extended discussion of this topic. 
 
 [Simulation Programm for evolution called Echo](#TODO) 
 
@@ -409,7 +409,7 @@ The Stock Market is a form of artificial life.
 
 **Book Recommendation:** Santa Fe Institute Book on Complexity - Foreword by Chris Langton
 
-Computation is substrate independent. It's not tied to a particular implementation within matter, any matter suffices to do it, as long as it is organized in a way that corresponds (models/stores) the information. Hence computers can do computations but so can DNA, or neural networks. That idea is also heavily treated in [Max Tegmark's Life 3.0](/library/life-3-0)
+Computation is substrate independent. It's not tied to a particular implementation within matter, any matter suffices to do it, as long as it is organized in a way that corresponds (models/stores) the information. Hence computers can do computations but so can DNA, or neural networks. That idea is also heavily treated in [Max Tegmark's Life 3.0](/booknotes/life-3-0)
 
 > The "machineness" of the machine is in the software, not the hardware. 
 
@@ -442,7 +442,7 @@ Paper: [Artificial Life - The Coming Evolution - Doyne Farmer](https://sfi-edu.s
 
 Norbert Wiener - Cybernetics, Ilya Prigogines - self-organization, Hermann Haken - synergetics
 
-Why does the universe give rise to order, even though the 2nd law of thermodynamics works against it? Possible answer from [Max Tegmark's Life 3.0](/library/life-3-0) - Structure is a Subgoal of Replication, and Replication is a Subgoal of Dissipation. 
+Why does the universe give rise to order, even though the 2nd law of thermodynamics works against it? Possible answer from [Max Tegmark's Life 3.0](/booknotes/life-3-0) - Structure is a Subgoal of Replication, and Replication is a Subgoal of Dissipation. 
 
 #### Emergence
 
@@ -513,7 +513,7 @@ The universe is unfolding, simple parts, always changing, recombining, shuffling
 
 Observe then act, maximize for [non-wasted motion](https://mindingourway.com/half-assing-it-with-everything-youve-got/).
 
-It's not man against nature. People coexist within nature and therefore "maximizing" gain from it changes the ecosystem and we have to adapt to those changes. You forego optimization for robustness. In a way that difference sounds very familiar, from [Nicholas Nassim Taleb's Antifragile](/library/antifragile).
+It's not man against nature. People coexist within nature and therefore "maximizing" gain from it changes the ecosystem and we have to adapt to those changes. You forego optimization for robustness. In a way that difference sounds very familiar, from [Nicholas Nassim Taleb's Antifragile](/booknotes/antifragile).
 
 #### The Hair Shirt
 

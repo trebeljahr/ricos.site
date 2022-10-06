@@ -18,7 +18,7 @@ This article is about an idea of how we can solve this problem and it's going to
 
 ## Enter - the Feynman Technique 
 
-Richard Feynman was a famous, Nobel-Prize-winning physicist who advocated understanding over rote memorization. He excelled at diving deep into fields foreign to his pursuits in physics and questioned the authoritative views held in those fields. Venturing into biology, biochemistry, drawing, playing bongos or lockpicking with this attitude made him quite the character. You should read his biography [Surely You Are Joking Mr. Feynman](/library/surely-you-are-joking-mr-feynman).
+Richard Feynman was a famous, Nobel-Prize-winning physicist who advocated understanding over rote memorization. He excelled at diving deep into fields foreign to his pursuits in physics and questioned the authoritative views held in those fields. Venturing into biology, biochemistry, drawing, playing bongos or lockpicking with this attitude made him quite the character. You should read his biography [Surely You Are Joking Mr. Feynman](/booknotes/surely-you-are-joking-mr-feynman).
 
 So, back to Feynman Notes. When he approached new subjects he didn't know anything about, he would try to understand them on his terms. This meant that he would try to ditch the common jargon (which are just complicated names for things anyways) and would instead boil down the truly important concepts behind those names into simple words and language. Then he would try to write down those concepts, laying them out on paper, as if trying to write a textbook that explains the topic to a young child. This approach is now known as Feynman Note Taking. 
 

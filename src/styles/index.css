@@ -393,6 +393,10 @@ input {
   margin: auto;
 }
 
+.main-text {
+  margin-top: 1rem;
+}
+
 .main-text > * {
   max-width: 100%;
   height: auto;

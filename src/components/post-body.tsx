@@ -1,7 +1,4 @@
 import React, { useEffect } from "react";
-import Prism from "prismjs";
-import "prismjs/plugins/toolbar/prism-toolbar";
-import "prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,6 +6,7 @@ import remarkToc from "remark-toc";
 import rehypeRaw from "rehype-raw";
 import { ExternalLink } from "./ExternalLink";
 import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
 
 type Props = {
   content: string;
@@ -120,17 +118,11 @@ const MarkdownRenderers: object = {
 };
 
 const PostBody = ({ content }: Props) => {
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setTimeout(Prism.highlightAll, 1000);
-    }
-  }, [content]);
-
   return (
     <div className="main-text">
       <ReactMarkdown
         remarkPlugins={[remarkToc, remarkGfm]}
-        rehypePlugins={[rehypeRaw]}
+        rehypePlugins={[rehypeRaw, rehypeHighlight]}
         components={MarkdownRenderers}
       >
         {content}

@@ -8,6 +8,7 @@
     "node": ">=14.16"
   },
   "scripts": {
+    "tweet": "ts-node-esm tweet.ts",
     "sendNewsletter": "ts-node-esm ./sendNewsletter.ts"
   },
   "keywords": [],
@@ -29,6 +30,7 @@
     "remark-parse": "^10.0.1",
     "remark-rehype": "^10.1.0",
     "to-vfile": "^7.2.3",
+    "twitter-api-v2": "^1.12.7",
     "unified": "^10.1.2"
   },
   "devDependencies": {

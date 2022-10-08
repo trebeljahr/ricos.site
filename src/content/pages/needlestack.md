@@ -247,10 +247,6 @@ A few more noteworthy blogs to go through (ordered by how much I read them):
 
 
 ## Single Articles
-
-<details>
-<summary>Down the rabbit hole...</summary>
-
 ### Entrepreneurship
 - [Joel Spolsky - Fire and Motion](https://www.joelonsoftware.com/2002/01/06/fire-and-motion/)
 - [Yishan Wong - Engineering Management](http://algeri-wong.com/yishan/engineering-management.html)
@@ -368,7 +364,6 @@ A few more noteworthy blogs to go through (ordered by how much I read them):
 - [Preston Byrne - Basecoin Bitshares 2 Electric Boogaloo](https://prestonbyrne.com/2017/10/13/basecoin-bitshares-2-electric-boogaloo/)
 - [Kalzumeus - Tether and Bitfinex](https://www.kalzumeus.com/2019/10/28/tether-and-bitfinex/)
 
-</details>
 
 ## Random But Awesome Things
 - [YCombinator Post - List of *Best* Introductory Books on Everything](https://news.ycombinator.com/item?id=30822339)
@@ -437,10 +432,7 @@ To be honest, I mostly hate newsletters because they are not worth it. The defin
 1. [Veritasium's Life Story](https://www.youtube.com/watch?v=S1tFT4smd6E) - This video is so honest, so beautiful. Veritasium just talking about how he became who he is now, his failures, and the lessons he learned about life along the way.
 1. [The Neuroscience of Addiction](https://www.youtube.com/watch?v=aOSD9rTVuWc&t=19s) My favorite lecture from the Royal Institution.
 
-
-<details>
-<summary>A lot more (100+)</summary>
-<br>
+### A lot more...
 
 - [But what is the Fourier Transform?](https://www.youtube.com/watch?v=spUNpyF58BY&t=4s)
 - [Binary, Hanoi and Sierpinski, part 1](https://www.youtube.com/watch?v=2SUvWfNJSsM)
@@ -540,7 +532,6 @@ To be honest, I mostly hate newsletters because they are not worth it. The defin
 - [Scanning Electron Microscope + Butterflies - Part 1](https://www.youtube.com/watch?v=zsjyWg-Lhek)
 - [Scanning Electron Microscope + Butterflies - Part 2](https://www.youtube.com/watch?v=LE2v3sUzTH4)
 
-</details>
 
 ### Youtube Channels
 
@@ -557,8 +548,7 @@ Best for long-form learning content:
 - [Ben Eater](https://www.youtube.com/user/eaterbc)
 - [The Royal Institution](https://www.youtube.com/user/TheRoyalInstitution)
 
-<details>
-<summary>A lot more...</summary>
+### All the YouTube channels I like or used to like:
 
 - [3Blue1Brown](https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw)
 - [Adam Freediver](https://www.youtube.com/channel/UCzVy7DiPyVvfiOvXF_XMs4Q)
@@ -659,7 +649,6 @@ Best for long-form learning content:
 - [Vsauce](https://www.youtube.com/channel/UC6nSFpj9HTCZ5t-N3Rm3-HA)
 - [Welch Labs](https://www.youtube.com/user/Taylorns34)
 
-</details>
 
 ## Music
 

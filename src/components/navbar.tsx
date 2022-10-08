@@ -55,10 +55,11 @@ export function Navlinks({ expanded, setExpanded }: NavlinksProps) {
 
 export function Navbar() {
   const { width } = useWindowSize();
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(width ? width > 1030 : false);
   useEffect(() => {
     setExpanded(width ? width > 1030 : false);
   }, [width]);
+
   return (
     <nav role="navigation" className="primary-navigation">
       <div className="navbar-controls">

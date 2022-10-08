@@ -1,5 +1,3 @@
-@import "~prismjs/plugins/toolbar/prism-toolbar.css";
-
 :root {
   --dark-red: rgb(204, 9, 9);
   --red: rgb(232, 83, 83);
@@ -454,6 +452,7 @@ li {
 
 .book-preview span,
 .book-preview {
+  margin: 0;
   display: block;
   width: 100%;
 }
@@ -471,74 +470,6 @@ li {
 
 .book-preview-text {
   margin-top: 1rem;
-}
-
-@media only screen and (min-width: 600px) {
-  .allBooks {
-    width: var(--main-width);
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .main-section {
-    width: var(--main-width);
-  }
-
-  .header-motto {
-    display: block;
-  }
-
-  .header-image-container {
-    height: 70vh;
-  }
-
-  .postImgWrapper {
-    height: 70vh;
-  }
-
-  .search {
-    padding-bottom: 3rem;
-  }
-
-  .book-cover-image {
-    width: calc(var(--main-width) / 4);
-    height: calc(1.6 * calc(var(--main-width) / 4));
-    position: relative;
-  }
-
-  p {
-    padding: 0.5rem 0px;
-    margin: 0;
-  }
-
-  h5,
-  h4,
-  h3,
-  h2,
-  h1,
-  .post-meta {
-    padding-bottom: 1rem;
-    padding-top: 1rem;
-    margin: 0;
-  }
-
-  .read-more {
-    margin-top: 50px;
-  }
-
-  :root {
-    font-size: 21px;
-  }
-
-  .main-text ul {
-    padding-left: 1.4rem;
-    list-style: disc outside;
-  }
-
-  .main-text ol {
-    padding-left: 1.8rem;
-    list-style: decimal outside;
-  }
 }
 
 @font-face {
@@ -644,6 +575,87 @@ li {
   content: "\eac9";
 }
 
+@media only screen and (min-width: 600px) {
+  .allBooks {
+    width: var(--main-width);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .main-section {
+    width: var(--main-width);
+  }
+
+  .header-motto {
+    display: block;
+  }
+
+  .header-image-container {
+    height: 70vh;
+  }
+
+  .postImgWrapper {
+    height: 70vh;
+  }
+
+  .search {
+    padding-bottom: 3rem;
+  }
+
+  .book-cover-image {
+    width: calc(var(--main-width) / 4);
+    height: calc(1.6 * calc(var(--main-width) / 4));
+    position: relative;
+  }
+
+  p {
+    padding: 0.5rem 0px;
+    margin: 0;
+  }
+
+  h5,
+  h4,
+  h3,
+  h2,
+  h1,
+  .post-meta {
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+    margin: 0;
+  }
+
+  .read-more {
+    margin-top: 50px;
+  }
+
+  :root {
+    font-size: 21px;
+  }
+
+  .main-text ul {
+    padding-left: 1.4rem;
+    list-style: disc outside;
+  }
+
+  .main-text ol {
+    padding-left: 1.8rem;
+    list-style: decimal outside;
+  }
+
+  .book-info {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    grid-template-rows: auto;
+    justify-items: start;
+    align-items: start;
+  }
+
+  .book-info > * {
+    justify-self: start;
+    align-self: start;
+  }
+}
+
 @media only screen and (min-width: 1030px) {
   .main-page {
     padding-top: 2rem;
@@ -662,12 +674,6 @@ li {
 
   .book-preview-text > h1 {
     padding-top: 0;
-  }
-
-  .book-info {
-    display: grid;
-    grid-template-columns: 2fr 3fr;
-    grid-template-rows: auto;
   }
 
   .placeholder-text {

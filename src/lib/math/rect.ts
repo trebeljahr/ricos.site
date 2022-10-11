@@ -38,3 +38,30 @@ export class Rect {
     ctx.closePath();
   }
 }
+
+export class Polygon {
+  public vertices: Vector2[];
+
+  constructor(points: [number, number][]) {
+    this.vertices = points.map(([x, y]) => new Vector2(x, y));
+  }
+
+  transform(matrix: Matrix) {
+    this.vertices = this.vertices.map((vertex) => vertex.transform(matrix));
+  }
+
+  draw(ctx: CanvasRenderingContext2D, fill?: boolean) {
+    ctx.strokeStyle = "black";
+    ctx.beginPath();
+    const [first, ...rest] = this.vertices;
+    ctx.moveTo(first.x, first.y);
+    for (let vertex of rest) {
+      ctx.lineTo(vertex.x, vertex.y);
+    }
+    ctx.lineTo(first.x, first.y);
+
+    fill && ctx.fill();
+    ctx.stroke();
+    ctx.closePath();
+  }
+}

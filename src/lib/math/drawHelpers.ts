@@ -44,6 +44,30 @@ export function line(
   ctx.closePath();
 }
 
+export function insidePoly({ x, y }: Vector2, vertices: Vector2[]) {
+  let inside = false;
+
+  for (let i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
+    const xi = vertices[i].x,
+      yi = vertices[i].y;
+    const xj = vertices[j].x,
+      yj = vertices[j].y;
+
+    const intersect =
+      yi > y != yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+    if (intersect) inside = !inside;
+  }
+
+  return inside;
+}
+
+export function getScalingMatrix(x: number, y: number) {
+  return new Matrix([
+    [x, 0, 0],
+    [0, y, 0],
+    [0, 0, 1],
+  ]);
+}
 export function getTranslationMatrix(x: number, y: number) {
   return new Matrix([
     [1, 0, x],
@@ -70,6 +94,5 @@ export function circle(ctx: CanvasRenderingContext2D, p: Vector2, d: number) {
   ctx.beginPath();
   ctx.arc(p.x, p.y, d, 0, 2 * Math.PI);
   ctx.fill();
-  ctx.stroke();
   ctx.closePath();
 }

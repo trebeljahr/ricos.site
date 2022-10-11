@@ -47,7 +47,7 @@ const ProjectionDemo = () => {
       ctx.strokeStyle = "blue";
 
       const p1 = new Vector2(0, 0);
-      const p2 = new Vector2(1, 1);
+      const p2 = new Vector2(1, -2);
 
       const d1 = p1.sub(p2);
       const d2 = p2.sub(p1);
@@ -66,8 +66,8 @@ const ProjectionDemo = () => {
 
       line(ctx, unitV2.x, unitV2.y, unitV.x, unitV.y);
 
-      const projectedS1 = s1.project([unitV, unitV2]);
-      const projectedS2 = s2.project([unitV, unitV2]);
+      const projectedS1 = s1.project(unitV, unitV2);
+      const projectedS2 = s2.project(unitV, unitV2);
 
       ctx.fillStyle = "red";
       ctx.strokeStyle = "red";

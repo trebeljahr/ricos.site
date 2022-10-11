@@ -46,6 +46,17 @@ export class Polygon {
     this.vertices = points.map(([x, y]) => new Vector2(x, y));
   }
 
+  edgeNormals() {
+    return this.vertices.map((_, i) => {
+      let p1 = this.vertices[i];
+      let p2 = this.vertices[i + 1] || this.vertices[0];
+
+      let edge = new Vector2(p2.x - p1.x, p2.y - p1.y);
+      let normal = edge.getNormal();
+      return normal;
+    });
+  }
+
   transform(matrix: Matrix) {
     this.vertices = this.vertices.map((vertex) => vertex.transform(matrix));
   }

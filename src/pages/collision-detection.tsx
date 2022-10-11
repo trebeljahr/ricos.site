@@ -33,12 +33,6 @@ function isSeparatingAxis(
   const rangeA = flattenPointsOn(pointsA, axis);
   const rangeB = flattenPointsOn(pointsB, axis);
 
-  const offset = pointsB[0].sub(pointsA[0]);
-
-  const projectedOffset = offset.dot(axis);
-
-  rangeB[0] += projectedOffset;
-  rangeB[1] += projectedOffset;
   const separating = rangeA[0] > rangeB[1] || rangeB[0] > rangeA[1];
 
   if (separating) {
@@ -49,14 +43,14 @@ function isSeparatingAxis(
 }
 
 function checkCollision(poly1: Polygon, poly2: Polygon) {
-  for (let vertex of poly1.vertices) {
-    if (isSeparatingAxis(vertex.getNormal(), poly1.vertices, poly2.vertices)) {
+  for (let normal of poly1.edgeNormals()) {
+    if (isSeparatingAxis(normal, poly1.vertices, poly2.vertices)) {
       return false;
     }
   }
 
-  for (let vertex of poly2.vertices) {
-    if (isSeparatingAxis(vertex.getNormal(), poly1.vertices, poly2.vertices)) {
+  for (let normal of poly2.edgeNormals()) {
+    if (isSeparatingAxis(normal, poly1.vertices, poly2.vertices)) {
       return false;
     }
   }

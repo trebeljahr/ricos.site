@@ -5,7 +5,6 @@ import { Rect } from "../lib/math/rect";
 import { Vector2 } from "../lib/math/vector";
 import {
   circle,
-  getProjectionMatrix,
   getRotationMatrix,
   getSupportPoint,
   getTranslationMatrix,
@@ -22,15 +21,21 @@ const ProjectionDemo = () => {
     let mouseX = 0;
     let mouseY = 0;
     let angle = 0.1;
+    let angleIncrement = 0;
+    let animationFrameId = 0;
 
     const drawFn = () => {
       ctx.fillStyle = "rgb(210, 210, 210)";
       ctx.fillRect(0, 0, cnv.width, cnv.height);
 
-      ctx.save();
-      angle += 0.01;
+      ctx.strokeStyle = "red";
+      line(ctx, 0, cnv.height / 2, cnv.width, cnv.height / 2);
+      line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
 
-      const myRect = new Rect(0, 0, 100, 100);
+      ctx.save();
+      angle += angleIncrement;
+
+      const myRect = new Rect(50, 50, 100, 100);
       const origin = new Vector2(cnv.width / 2, cnv.height / 2);
       const toOrigin = getTranslationMatrix(origin.x, origin.y);
       myRect.transform(toOrigin);
@@ -39,13 +44,10 @@ const ProjectionDemo = () => {
 
       myRect.draw(ctx);
 
-      ctx.strokeStyle = "red";
-      line(ctx, 0, cnv.height / 2, cnv.width, cnv.height / 2);
-      line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
-
       ctx.strokeStyle = "blue";
-      const p1 = new Vector2(-100, cnv.height);
-      const p2 = new Vector2(200, 0);
+
+      const p1 = new Vector2(0, 0);
+      const p2 = new Vector2(1, -1);
 
       const d1 = p1.sub(p2);
       const d2 = p2.sub(p1);
@@ -54,25 +56,23 @@ const ProjectionDemo = () => {
       const s2 = getSupportPoint(myRect.vertices, d2);
 
       ctx.fillStyle = "blue";
-      circle(ctx, s1, 5);
-      circle(ctx, s2, 5);
+      circle(ctx, s1, 2);
+      circle(ctx, s2, 2);
 
-      // line(ctx, p1.x, p1.y, p2.x, p2.y);
-
-      const unitV = d2.unit().multScalar(200).transform(toOrigin);
-      const unitV2 = d2.unit().multScalar(-200).transform(toOrigin);
+      const unitV = d2.unit().multScalar(cnv.width).transform(toOrigin);
+      const unitV2 = d2.unit().multScalar(-cnv.width).transform(toOrigin);
 
       line(ctx, unitV2.x, unitV2.y, unitV.x, unitV.y);
 
-      const projectedS1 = s1.project(d1);
-      const projectedS2 = s2.project(d1);
+      const projectedS1 = s1.project(d2);
+      const projectedS2 = s2.project(d2);
 
       console.log(projectedS1);
       ctx.fillStyle = "red";
-
+      ctx.strokeStyle = "red";
       circle(ctx, projectedS1.transform(toOrigin), 5);
       circle(ctx, projectedS2.transform(toOrigin), 5);
-      requestAnimationFrame(drawFn);
+      animationFrameId = requestAnimationFrame(drawFn);
     };
 
     drawFn();
@@ -84,10 +84,23 @@ const ProjectionDemo = () => {
       return false;
     };
 
+    const handleMouseDown = (event: MouseEvent) => {
+      angleIncrement = event.ctrlKey ? -0.01 : 0.01;
+    };
+
+    const handleMouseUp = () => {
+      angleIncrement = 0;
+    };
+
     cnv.addEventListener("click", handleMouseMove);
+    cnv.addEventListener("mousedown", handleMouseDown);
+    cnv.addEventListener("mouseup", handleMouseUp);
 
     return () => {
       cnv.removeEventListener("click", handleMouseMove);
+      cnv.removeEventListener("mousedown", handleMouseDown);
+      cnv.removeEventListener("mouseup", handleMouseUp);
+      cancelAnimationFrame(animationFrameId);
     };
   }, [cnv]);
 

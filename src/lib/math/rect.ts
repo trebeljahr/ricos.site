@@ -26,7 +26,7 @@ export class Rect {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = "green";
+    ctx.strokeStyle = "black";
     ctx.beginPath();
     ctx.moveTo(this.topLeft.x, this.topLeft.y);
     ctx.lineTo(this.topRight.x, this.topRight.y);
@@ -34,7 +34,7 @@ export class Rect {
     ctx.lineTo(this.bottomLeft.x, this.bottomLeft.y);
     ctx.lineTo(this.topLeft.x, this.topLeft.y);
 
-    ctx.fill();
+    ctx.stroke();
     ctx.closePath();
   }
 }

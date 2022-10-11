@@ -20,10 +20,11 @@ export class Vector2 {
   }
 
   mag() {
-    return Math.sqrt(this.x * this.x + this.y * this.y);
+    return Math.sqrt(this.mag2());
   }
 
-  len2() {
+  mag2() {
+    // this.dot(this) is equal to => this.x² + this.y²
     return this.dot(this);
   }
 
@@ -36,7 +37,20 @@ export class Vector2 {
   }
 
   project(other: Vector2) {
-    return other.multScalar(this.dot(other) / other.len2());
+    //   double valDp = dotProduct(e1, e2);
+    // // get squared length of e1
+    // double len2 = e1.x * e1.x + e1.y * e1.y;
+
+    const len2 = other.mag2();
+    const val = this.dot(other);
+    return new Vector2(
+      other.x + (val * other.x) / len2,
+      other.y + (val * other.x) / len2
+    );
+    // Point p = new Point((int)(v1.x + (val * e1.x) / len2),
+    //                     (int)(v1.y + (val * e1.y) / len2));
+
+    // return other.multScalar(this.dot(other) / other.mag2());
   }
 
   unit() {

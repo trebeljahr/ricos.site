@@ -25,14 +25,14 @@ const ProjectionDemo = () => {
     let animationFrameId = 0;
 
     const drawFn = () => {
-      ctx.fillStyle = "rgb(210, 210, 210)";
+      console.log("Drawing");
+      ctx.fillStyle = "rgb(240, 240, 240)";
       ctx.fillRect(0, 0, cnv.width, cnv.height);
 
       ctx.strokeStyle = "red";
       line(ctx, 0, cnv.height / 2, cnv.width, cnv.height / 2);
       line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
 
-      ctx.save();
       angle += angleIncrement;
 
       const myRect = new Rect(50, 50, 100, 100);
@@ -46,8 +46,8 @@ const ProjectionDemo = () => {
 
       ctx.strokeStyle = "blue";
 
-      const p1 = new Vector2(0, 0);
-      const p2 = new Vector2(1, -1);
+      const p1 = new Vector2(0, 0).transform(toOrigin);
+      const p2 = new Vector2(1, 1).transform(toOrigin);
 
       const d1 = p1.sub(p2);
       const d2 = p2.sub(p1);
@@ -59,20 +59,19 @@ const ProjectionDemo = () => {
       circle(ctx, s1, 2);
       circle(ctx, s2, 2);
 
-      const unitV = d2.unit().multScalar(cnv.width).transform(toOrigin);
-      const unitV2 = d2.unit().multScalar(-cnv.width).transform(toOrigin);
+      const unitV = d2.unit().multScalar(cnv.width);
+      const unitV2 = d2.unit().multScalar(-cnv.width);
 
       line(ctx, unitV2.x, unitV2.y, unitV.x, unitV.y);
 
       const projectedS1 = s1.project(d2);
       const projectedS2 = s2.project(d2);
 
-      console.log(projectedS1);
       ctx.fillStyle = "red";
       ctx.strokeStyle = "red";
-      circle(ctx, projectedS1.transform(toOrigin), 5);
-      circle(ctx, projectedS2.transform(toOrigin), 5);
-      animationFrameId = requestAnimationFrame(drawFn);
+      circle(ctx, projectedS1, 5);
+      circle(ctx, projectedS2, 5);
+      if (angleIncrement !== 0) requestAnimationFrame(drawFn);
     };
 
     drawFn();
@@ -85,7 +84,8 @@ const ProjectionDemo = () => {
     };
 
     const handleMouseDown = (event: MouseEvent) => {
-      angleIncrement = event.ctrlKey ? -0.01 : 0.01;
+      angleIncrement = event.ctrlKey ? -0.03 : 0.03;
+      drawFn();
     };
 
     const handleMouseUp = () => {

@@ -1,3 +1,4 @@
+import { Rect, Polygon } from "./rect";
 import { Matrix } from "./matrix";
 import { Vector2 } from "./vector";
 
@@ -59,6 +60,44 @@ export function insidePoly({ x, y }: Vector2, vertices: Vector2[]) {
   }
 
   return inside;
+}
+
+export function drawProjection(
+  cnv: HTMLCanvasElement,
+  rect: Rect | Polygon,
+  p1: Vector2,
+  p2: Vector2
+) {
+  const ctx = cnv.getContext("2d");
+  if (!ctx) return;
+
+  const origin = new Vector2(cnv.width / 2, cnv.height / 2);
+  const toOrigin = getTranslationMatrix(origin.x, origin.y);
+
+  const d1 = p1.sub(p2);
+  const d2 = p2.sub(p1);
+
+  const s1 = getSupportPoint(rect.vertices, d1);
+  const s2 = getSupportPoint(rect.vertices, d2);
+
+  ctx.fillStyle = "blue";
+  circle(ctx, s1, 2);
+  circle(ctx, s2, 2);
+
+  const unitV = d2.unit().multScalar(cnv.width).transform(toOrigin);
+  const unitV2 = d2.unit().multScalar(-cnv.width).transform(toOrigin);
+
+  line(ctx, unitV2.x, unitV2.y, unitV.x, unitV.y);
+
+  const projectedS1 = s1.project(unitV, unitV2);
+  const projectedS2 = s2.project(unitV, unitV2);
+
+  ctx.fillStyle = "red";
+  circle(ctx, projectedS1, 5);
+  circle(ctx, projectedS2, 5);
+
+  line(ctx, s1.x, s1.y, projectedS1.x, projectedS1.y);
+  line(ctx, s2.x, s2.y, projectedS2.x, projectedS2.y);
 }
 
 export function getScalingMatrix(x: number, y: number) {

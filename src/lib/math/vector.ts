@@ -74,6 +74,14 @@ export class Vector2 {
     return this.divScalar(this.mag());
   }
 
+  perp() {
+    return new Vector2(this.y, -this.x);
+  }
+
+  getNormal() {
+    return this.perp().unit();
+  }
+
   sub(other: Vector2) {
     return new Vector2(this.x - other.x, this.y - other.y);
   }

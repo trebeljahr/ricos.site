@@ -5,6 +5,7 @@ import { Polygon, Rect } from "../lib/math/rect";
 import { Vector2 } from "../lib/math/vector";
 import {
   circle,
+  drawProjection,
   getRotationMatrix,
   getScalingMatrix,
   getSupportPoint,
@@ -13,43 +14,150 @@ import {
   line,
 } from "../lib/math/drawHelpers";
 
-function drawProjection(
-  cnv: HTMLCanvasElement,
-  rect: Rect | Polygon,
-  p1: Vector2,
-  p2: Vector2
-) {
-  const ctx = cnv.getContext("2d");
-  if (!ctx) return;
-
-  const origin = new Vector2(cnv.width / 2, cnv.height / 2);
-  const toOrigin = getTranslationMatrix(origin.x, origin.y);
-
-  const d1 = p1.sub(p2);
-  const d2 = p2.sub(p1);
-
-  const s1 = getSupportPoint(rect.vertices, d1);
-  const s2 = getSupportPoint(rect.vertices, d2);
-
-  ctx.fillStyle = "blue";
-  circle(ctx, s1, 2);
-  circle(ctx, s2, 2);
-
-  const unitV = d2.unit().multScalar(cnv.width).transform(toOrigin);
-  const unitV2 = d2.unit().multScalar(-cnv.width).transform(toOrigin);
-
-  line(ctx, unitV2.x, unitV2.y, unitV.x, unitV.y);
-
-  const projectedS1 = s1.project(unitV, unitV2);
-  const projectedS2 = s2.project(unitV, unitV2);
-
-  ctx.fillStyle = "red";
-  circle(ctx, projectedS1, 5);
-  circle(ctx, projectedS2, 5);
-
-  line(ctx, s1.x, s1.y, projectedS1.x, projectedS1.y);
-  line(ctx, s2.x, s2.y, projectedS2.x, projectedS2.y);
+function flattenPointsOn(points: Vector2[], axis: Vector2) {
+  let min = Number.MAX_VALUE;
+  let max = -Number.MAX_VALUE;
+  for (let point of points) {
+    const dot = point.dot(axis);
+    if (dot < min) min = dot;
+    if (dot > max) max = dot;
+  }
+  return [min, max];
 }
+
+function isSeparatingAxis(
+  axis: Vector2,
+  pointsA: Vector2[],
+  pointsB: Vector2[]
+) {
+  const rangeA = flattenPointsOn(pointsA, axis);
+  const rangeB = flattenPointsOn(pointsB, axis);
+
+  const offset = pointsB[0].sub(pointsA[0]);
+
+  const projectedOffset = offset.dot(axis);
+
+  rangeB[0] += projectedOffset;
+  rangeB[1] += projectedOffset;
+  const separating = rangeA[0] > rangeB[1] || rangeB[0] > rangeA[1];
+
+  if (separating) {
+    return true;
+  }
+
+  return false;
+}
+
+function checkCollision(poly1: Polygon, poly2: Polygon) {
+  for (let vertex of poly1.vertices) {
+    if (isSeparatingAxis(vertex.getNormal(), poly1.vertices, poly2.vertices)) {
+      return false;
+    }
+  }
+
+  for (let vertex of poly2.vertices) {
+    if (isSeparatingAxis(vertex.getNormal(), poly1.vertices, poly2.vertices)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+const SAT = () => {
+  const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
+  useEffect(() => {
+    if (!cnv) return;
+
+    const ctx = cnv.getContext("2d");
+    if (!ctx) return;
+
+    let animationFrameId = 0;
+    let mousePos: Vector2 | undefined = undefined;
+    let mouseDown = false;
+    let axis = 1;
+
+    const myPoly1 = new Polygon([
+      [0, 0],
+      [1, 0],
+      [1, 1],
+      [0, 1],
+    ]);
+
+    const myPoly2 = new Polygon([
+      [0, 0],
+      [1, 0],
+      [0, 1],
+    ]);
+
+    const origin = new Vector2(cnv.width / 2, cnv.height / 2);
+    const toOrigin = getTranslationMatrix(origin.x, origin.y);
+
+    myPoly1.transform(getScalingMatrix(80, 80));
+    myPoly1.transform(toOrigin);
+
+    myPoly2.transform(getScalingMatrix(80, 80));
+    myPoly2.transform(toOrigin);
+
+    const drawFn = () => {
+      ctx.fillStyle = "rgb(240, 240, 240)";
+
+      ctx.fillRect(0, 0, cnv.width, cnv.height);
+
+      ctx.strokeStyle = "red";
+      line(ctx, 0, cnv.height / 2, cnv.width, cnv.height / 2);
+      line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
+
+      ctx.fillStyle = "blue";
+      const isColliding = checkCollision(myPoly1, myPoly2);
+      console.log(isColliding);
+      myPoly1.draw(ctx, isColliding);
+      myPoly2.draw(ctx, isColliding);
+    };
+
+    const updateMousePos = (event: MouseEvent) => {
+      mousePos = new Vector2(event.offsetX, event.offsetY);
+      if (mouseDown && insidePoly(mousePos, myPoly1.vertices)) {
+        myPoly1.transform(
+          getTranslationMatrix(event.movementX, event.movementY)
+        );
+        drawFn();
+      } else if (mouseDown && insidePoly(mousePos, myPoly2.vertices)) {
+        myPoly2.transform(
+          getTranslationMatrix(event.movementX, event.movementY)
+        );
+        drawFn();
+      }
+      // console.log(mousePos.x, mousePos.y);
+    };
+
+    const handleMouseDown = () => {
+      mouseDown = true;
+    };
+
+    const handleMouseUp = () => {
+      mouseDown = false;
+    };
+
+    cnv.addEventListener("mousemove", updateMousePos);
+    cnv.addEventListener("mousedown", handleMouseDown);
+    cnv.addEventListener("mouseup", handleMouseUp);
+
+    drawFn();
+
+    return () => {
+      cnv.removeEventListener("mousemove", updateMousePos);
+      cnv.removeEventListener("mousedown", handleMouseDown);
+      cnv.removeEventListener("mouseup", handleMouseUp);
+
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [cnv]);
+
+  return (
+    <SimpleReactCanvasComponent setCnv={setCnv} width={780} height={500} />
+  );
+};
 
 const MoveByMouse = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
@@ -347,6 +455,7 @@ const CollisionDetectionDemo = () => {
           <ProjectionDemo />
           <ProjectionAxisByAxis />
           <MoveByMouse />
+          <SAT />
           {/* <Canvas
             drawFn={(ctx, width, height) => {
               ctx.fillStyle = "blue";

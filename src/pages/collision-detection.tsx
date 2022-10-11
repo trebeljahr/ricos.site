@@ -1,164 +1,15 @@
 import Layout from "../components/layout";
 import SimpleReactCanvasComponent from "simple-react-canvas-component";
 import { useEffect, useState } from "react";
-
-// const toDegrees = (radians: number) => (radians * 180) / Math.PI;
-// const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
-const sum = (arr: number[]) => arr.reduce((acc, value) => acc + value, 0);
-
-class Matrix {
-  public rows: [number, number, number][];
-  constructor(rows: [number, number, number][]) {
-    this.rows = rows;
-  }
-  get a() {
-    return this.rows[0][0];
-  }
-  get b() {
-    return this.rows[0][1];
-  }
-  get c() {
-    return this.rows[0][2];
-  }
-
-  get d() {
-    return this.rows[1][0];
-  }
-  get e() {
-    return this.rows[1][1];
-  }
-  get f() {
-    return this.rows[1][2];
-  }
-  columns() {
-    return this.rows[0].map((_, i) => this.rows.map((r) => r[i]));
-  }
-}
-
-class Vector2 {
-  public x: number;
-  public y: number;
-  public z: number;
-  public components: [number, number, number];
-
-  constructor(x: number, y: number) {
-    this.x = x;
-    this.y = y;
-    this.z = 1;
-    this.components = [x, y, this.z];
-  }
-
-  dot(other: Vector2) {
-    return this.x * other.x + this.y + other.y;
-  }
-
-  transform(matrix: Matrix) {
-    const columns = matrix.columns();
-    if (columns.length !== this.components.length) {
-      throw new Error(
-        "Matrix columns length should be equal to vector components length."
-      );
-    }
-
-    const newX = matrix.a * this.x + matrix.b * this.y + matrix.c;
-    const newY = matrix.d * this.x + matrix.e * this.y + matrix.f;
-    this.x = newX;
-    this.y = newY;
-    return this;
-  }
-
-  *[Symbol.iterator](): IterableIterator<number> {
-    yield this.x;
-    yield this.y;
-  }
-}
-
-class Rect {
-  public vertices: Vector2[];
-  public topLeft: Vector2;
-  public topRight: Vector2;
-  public bottomRight: Vector2;
-  public bottomLeft: Vector2;
-
-  constructor(x: number, y: number, width: number, height: number) {
-    this.topLeft = new Vector2(x, y);
-    this.topRight = new Vector2(x + width, y);
-    this.bottomRight = new Vector2(x + width, y + height);
-    this.bottomLeft = new Vector2(x, y + height);
-    this.vertices = [
-      this.topLeft,
-      this.topRight,
-      this.bottomRight,
-      this.bottomLeft,
-    ];
-  }
-
-  transform(matrix: Matrix) {
-    this.vertices = this.vertices.map((vertex) => vertex.transform(matrix));
-  }
-
-  draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = "green";
-    ctx.beginPath();
-    ctx.moveTo(this.topLeft.x, this.topLeft.y);
-    ctx.lineTo(this.topRight.x, this.topRight.y);
-    ctx.lineTo(this.bottomRight.x, this.bottomRight.y);
-    ctx.lineTo(this.bottomLeft.x, this.bottomLeft.y);
-    ctx.lineTo(this.topLeft.x, this.topLeft.y);
-
-    ctx.fill();
-    ctx.closePath();
-  }
-}
-
-function getSupportPoint(vertices: Vector2[], d: Vector2) {
-  let highest = -Infinity;
-  let support = new Vector2(0, 0);
-
-  for (let vertex of vertices) {
-    const dot = vertex.dot(d);
-
-    if (dot > highest) {
-      highest = dot;
-      support = vertex;
-    }
-  }
-
-  return support;
-}
-
-function line(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  x2: number,
-  y2: number
-) {
-  ctx.beginPath();
-  ctx.moveTo(x, y);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-  ctx.closePath();
-}
-
-function getTranslationMatrix(x: number, y: number) {
-  return new Matrix([
-    [1, 0, x],
-    [0, 1, y],
-    [0, 0, 1],
-  ]);
-}
-
-const sin = Math.sin;
-const cos = Math.cos;
-
-function getRotationMatrix(θ: number, { x, y }: Vector2 = new Vector2(0, 0)) {
-  return new Matrix([
-    [cos(θ), -1 * sin(θ), -x * cos(θ) + y * sin(θ) + x],
-    [sin(θ), cos(θ), -x * sin(θ) - y * cos(θ) + y],
-    [0, 0, 1],
-  ]);
-}
+import { Rect } from "../lib/math/rect";
+import { Vector2 } from "../lib/math/vector";
+import {
+  circle,
+  getRotationMatrix,
+  getSupportPoint,
+  getTranslationMatrix,
+  line,
+} from "../lib/math/drawHelpers";
 
 const ProjectionDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
@@ -167,8 +18,8 @@ const ProjectionDemo = () => {
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
-    let mouseX = 0;
-    let mouseY = 0;
+    // let mouseX = 0;
+    // let mouseY = 0;
     let angle = 0.1;
 
     const drawFn = () => {
@@ -176,20 +27,7 @@ const ProjectionDemo = () => {
       ctx.fillRect(0, 0, cnv.width, cnv.height);
 
       ctx.save();
-      angle += 0.1;
-
-      // const translateToMouse = new Matrix([
-      //   [1, 0, mouseX],
-      //   [0, 1, mouseY],
-      //   [0, 0, 1],
-      // ]);
-
-      // const origin = new Vector2(0, 0);
-      // origin.transform(translationMatrix);
-      // origin.transform(rotationMatrix);
-      // ctx.fillStyle = "blue";
-      // ctx.arc(origin.x, origin.y, 10, 0, 2 * Math.PI);
-      // ctx.fill();
+      angle += 0.01;
 
       const myRect = new Rect(0, 0, 100, 100);
       const origin = new Vector2(cnv.width / 2, cnv.height / 2);
@@ -202,13 +40,32 @@ const ProjectionDemo = () => {
       ctx.strokeStyle = "red";
       line(ctx, 0, cnv.height / 2, cnv.width, cnv.height / 2);
       line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
+
+      ctx.strokeStyle = "blue";
+      const p1 = new Vector2(-100, cnv.height);
+      const p2 = new Vector2(200, 0);
+
+      const d1 = p1.sub(p2);
+      const d2 = p2.sub(p1);
+
+      const s1 = getSupportPoint(myRect.vertices, d1);
+      const s2 = getSupportPoint(myRect.vertices, d2);
+
+      ctx.fillStyle = "red";
+      circle(ctx, s1, 10);
+      ctx.fillStyle = "blue";
+      circle(ctx, s2, 10);
+      line(ctx, p1.x, p1.y, p2.x, p2.y);
+      requestAnimationFrame(drawFn);
     };
 
     drawFn();
     const handleMouseMove = (event: MouseEvent) => {
-      mouseX = event.offsetX;
-      mouseY = event.offsetY;
-      drawFn();
+      event.preventDefault();
+      // mouseX = event.offsetX;
+      // mouseY = event.offsetY;
+
+      return false;
     };
 
     cnv.addEventListener("click", handleMouseMove);

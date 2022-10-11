@@ -6,7 +6,10 @@ nav.primary-navigation {
   font-size: 16px;
 }
 nav.primary-navigation ul {
-  padding-left: 2.5vw;
+  width: var(--main-width);
+  margin: auto;
+  box-sizing: border-box;
+  padding: 0;
 }
 
 nav.primary-navigation ul li {

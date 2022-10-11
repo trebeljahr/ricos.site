@@ -51,16 +51,11 @@ const ProjectionDemo = () => {
 
       const s1 = getSupportPoint(myRect.vertices, d1);
 
-      const projection = getProjectionMatrix(d1);
-      const projectedS1 = new Vector2(s1.x, s1.y).transform(projection);
-      console.log(projectedS1);
       const s2 = getSupportPoint(myRect.vertices, d2);
 
       ctx.fillStyle = "blue";
       circle(ctx, s1, 5);
       circle(ctx, s2, 5);
-      ctx.fillStyle = "red";
-      circle(ctx, projectedS1, 5);
 
       line(ctx, p1.x, p1.y, p2.x, p2.y);
 
@@ -70,6 +65,17 @@ const ProjectionDemo = () => {
         .transform(getTranslationMatrix(origin.x, origin.y));
 
       line(ctx, origin.x, origin.y, unitV.x, unitV.y);
+
+      const projection = getProjectionMatrix(
+        d2.unit().transform(getTranslationMatrix(origin.x, origin.y))
+      );
+      const projectedS1 = new Vector2(s1.x, s1.y).transform(projection);
+      const projectedS2 = new Vector2(s2.x, s2.y).transform(projection);
+
+      console.log(projectedS1);
+      ctx.fillStyle = "red";
+      circle(ctx, projectedS1, 5);
+      circle(ctx, projectedS2, 5);
       // requestAnimationFrame(drawFn);
     };
 

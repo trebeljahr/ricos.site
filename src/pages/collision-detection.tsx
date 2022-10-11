@@ -32,7 +32,8 @@ const ProjectionDemo = () => {
 
       const myRect = new Rect(0, 0, 100, 100);
       const origin = new Vector2(cnv.width / 2, cnv.height / 2);
-      myRect.transform(getTranslationMatrix(origin.x, origin.y));
+      const toOrigin = getTranslationMatrix(origin.x, origin.y);
+      myRect.transform(toOrigin);
       const rotateAroundOrigin = getRotationMatrix(angle, origin);
       myRect.transform(rotateAroundOrigin);
 
@@ -50,33 +51,28 @@ const ProjectionDemo = () => {
       const d2 = p2.sub(p1);
 
       const s1 = getSupportPoint(myRect.vertices, d1);
-
       const s2 = getSupportPoint(myRect.vertices, d2);
 
       ctx.fillStyle = "blue";
       circle(ctx, s1, 5);
       circle(ctx, s2, 5);
 
-      line(ctx, p1.x, p1.y, p2.x, p2.y);
+      // line(ctx, p1.x, p1.y, p2.x, p2.y);
 
-      const unitV = d2
-        .unit()
-        .multScalar(100)
-        .transform(getTranslationMatrix(origin.x, origin.y));
+      const unitV = d2.unit().multScalar(200).transform(toOrigin);
+      const unitV2 = d2.unit().multScalar(-200).transform(toOrigin);
 
-      line(ctx, origin.x, origin.y, unitV.x, unitV.y);
+      line(ctx, unitV2.x, unitV2.y, unitV.x, unitV.y);
 
-      const projection = getProjectionMatrix(
-        d2.unit().transform(getTranslationMatrix(origin.x, origin.y))
-      );
-      const projectedS1 = new Vector2(s1.x, s1.y).transform(projection);
-      const projectedS2 = new Vector2(s2.x, s2.y).transform(projection);
+      const projectedS1 = s1.project(d1);
+      const projectedS2 = s2.project(d1);
 
       console.log(projectedS1);
       ctx.fillStyle = "red";
-      circle(ctx, projectedS1, 5);
-      circle(ctx, projectedS2, 5);
-      // requestAnimationFrame(drawFn);
+
+      circle(ctx, projectedS1.transform(toOrigin), 5);
+      circle(ctx, projectedS2.transform(toOrigin), 5);
+      requestAnimationFrame(drawFn);
     };
 
     drawFn();

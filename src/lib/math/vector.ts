@@ -23,12 +23,20 @@ export class Vector2 {
     return Math.sqrt(this.x * this.x + this.y * this.y);
   }
 
+  len2() {
+    return this.dot(this);
+  }
+
   divScalar(scalar: number) {
     return new Vector2(this.x / scalar, this.y / scalar);
   }
 
   multScalar(scalar: number) {
     return new Vector2(this.x * scalar, this.y * scalar);
+  }
+
+  project(other: Vector2) {
+    return other.multScalar(this.dot(other) / other.len2());
   }
 
   unit() {

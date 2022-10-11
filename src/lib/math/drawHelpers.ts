@@ -70,5 +70,6 @@ export function circle(ctx: CanvasRenderingContext2D, p: Vector2, d: number) {
   ctx.beginPath();
   ctx.arc(p.x, p.y, d, 0, 2 * Math.PI);
   ctx.fill();
+  ctx.stroke();
   ctx.closePath();
 }

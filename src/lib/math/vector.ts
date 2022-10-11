@@ -36,10 +36,13 @@ export class Vector2 {
     return new Vector2(this.x * scalar, this.y * scalar);
   }
 
-  project(other: Vector2) {
+  project(line: [Vector2, Vector2]) {
     //   double valDp = dotProduct(e1, e2);
     // // get squared length of e1
     // double len2 = e1.x * e1.x + e1.y * e1.y;
+    // Point e1 = new Point(v2.x - v1.x, v2.y - v1.y);
+
+    const other = new Vector2(line[1].x - line[0].x, line[1].y - line[0].y);
 
     const len2 = other.mag2();
     const val = this.dot(other);

@@ -46,11 +46,13 @@ const ProjectionDemo = () => {
 
       ctx.strokeStyle = "blue";
 
-      const p1 = new Vector2(0, 0).transform(toOrigin);
-      const p2 = new Vector2(1, 1).transform(toOrigin);
+      const p1 = new Vector2(0, 0);
+      const p2 = new Vector2(1, 1);
 
       const d1 = p1.sub(p2);
       const d2 = p2.sub(p1);
+
+      console.log(d1, d2);
 
       const s1 = getSupportPoint(myRect.vertices, d1);
       const s2 = getSupportPoint(myRect.vertices, d2);
@@ -59,13 +61,13 @@ const ProjectionDemo = () => {
       circle(ctx, s1, 2);
       circle(ctx, s2, 2);
 
-      const unitV = d2.unit().multScalar(cnv.width);
-      const unitV2 = d2.unit().multScalar(-cnv.width);
+      const unitV = d2.unit().multScalar(cnv.width).transform(toOrigin);
+      const unitV2 = d2.unit().multScalar(-cnv.width).transform(toOrigin);
 
       line(ctx, unitV2.x, unitV2.y, unitV.x, unitV.y);
 
-      const projectedS1 = s1.project(d2);
-      const projectedS2 = s2.project(d2);
+      const projectedS1 = s1.project([unitV, unitV2]);
+      const projectedS2 = s2.project([unitV, unitV2]);
 
       ctx.fillStyle = "red";
       ctx.strokeStyle = "red";

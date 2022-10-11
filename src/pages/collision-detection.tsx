@@ -71,6 +71,10 @@ const ProjectionDemo = () => {
       ctx.strokeStyle = "red";
       circle(ctx, projectedS1, 5);
       circle(ctx, projectedS2, 5);
+
+      line(ctx, s1.x, s1.y, projectedS1.x, projectedS1.y);
+      line(ctx, s2.x, s2.y, projectedS2.x, projectedS2.y);
+
       if (angleIncrement !== 0) requestAnimationFrame(drawFn);
     };
 

@@ -141,6 +141,25 @@ function line(
   ctx.closePath();
 }
 
+function getTranslationMatrix(x: number, y: number) {
+  return new Matrix([
+    [1, 0, x],
+    [0, 1, y],
+    [0, 0, 1],
+  ]);
+}
+
+const sin = Math.sin;
+const cos = Math.cos;
+
+function getRotationMatrix(θ: number, { x, y }: Vector2 = new Vector2(0, 0)) {
+  return new Matrix([
+    [cos(θ), -1 * sin(θ), -x * cos(θ) + y * sin(θ) + x],
+    [sin(θ), cos(θ), -x * sin(θ) - y * cos(θ) + y],
+    [0, 0, 1],
+  ]);
+}
+
 const ProjectionDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   useEffect(() => {
@@ -152,23 +171,12 @@ const ProjectionDemo = () => {
     let mouseY = 0;
     let angle = 0.1;
 
-    const translationMatrix = new Matrix([
-      [1, 0, cnv.width / 2 - 10],
-      [0, 1, cnv.height / 2 - 10],
-      [0, 0, 1],
-    ]);
-    const rotationMatrix = new Matrix([
-      [Math.cos(angle), -1 * Math.sin(angle), 0],
-      [Math.sin(angle), Math.cos(angle), 0],
-      [0, 0, 1],
-    ]);
-
     const drawFn = () => {
       ctx.fillStyle = "rgb(210, 210, 210)";
       ctx.fillRect(0, 0, cnv.width, cnv.height);
 
       ctx.save();
-      // angle += 0.1;
+      angle += 0.1;
 
       // const translateToMouse = new Matrix([
       //   [1, 0, mouseX],
@@ -184,8 +192,11 @@ const ProjectionDemo = () => {
       // ctx.fill();
 
       const myRect = new Rect(0, 0, 100, 100);
-      myRect.transform(translationMatrix);
-      myRect.transform(rotationMatrix);
+      const origin = new Vector2(cnv.width / 2, cnv.height / 2);
+      myRect.transform(getTranslationMatrix(origin.x, origin.y));
+      const rotateAroundOrigin = getRotationMatrix(angle, origin);
+      myRect.transform(rotateAroundOrigin);
+
       myRect.draw(ctx);
 
       ctx.strokeStyle = "red";

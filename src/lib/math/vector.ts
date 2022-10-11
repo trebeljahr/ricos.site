@@ -1,16 +1,40 @@
 import { Matrix } from "./matrix";
 export class Vector2 {
-  public x: number;
-  public y: number;
-  public z: number;
   public components: [number, number, number];
 
   constructor(x: number, y: number) {
-    this.x = x;
-    this.y = y;
-    this.z = 1;
-    this.components = [x, y, this.z];
+    this.components = [x, y, 1];
   }
+
+  get x() {
+    return this.components[0];
+  }
+  set x(newX: number) {
+    this.components[0] = newX;
+  }
+  get y() {
+    return this.components[1];
+  }
+  set y(newY: number) {
+    this.components[1] = newY;
+  }
+
+  mag() {
+    return Math.sqrt(this.x * this.x + this.y * this.y);
+  }
+
+  divScalar(scalar: number) {
+    return new Vector2(this.x / scalar, this.y / scalar);
+  }
+
+  multScalar(scalar: number) {
+    return new Vector2(this.x * scalar, this.y * scalar);
+  }
+
+  unit() {
+    return this.divScalar(this.mag());
+  }
+
   sub(other: Vector2) {
     return new Vector2(this.x - other.x, this.y - other.y);
   }

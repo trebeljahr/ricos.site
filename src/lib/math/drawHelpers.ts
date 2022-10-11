@@ -5,6 +5,15 @@ export const toDegrees = (radians: number) => (radians * 180) / Math.PI;
 export const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 export const sum = (arr: number[]) => arr.reduce((acc, val) => acc + val, 0);
 
+export function getProjectionMatrix(v: Vector2) {
+  const u = v.unit();
+  return new Matrix([
+    [u.x * u.x, u.x * u.y, 0],
+    [u.x * u.y, u.y * u.y, 0],
+    [0, 0, 1],
+  ]);
+}
+
 export function getSupportPoint(vertices: Vector2[], d: Vector2) {
   let highest = -Infinity;
   let support = new Vector2(0, 0);

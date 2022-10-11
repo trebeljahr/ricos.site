@@ -5,6 +5,7 @@ import { Rect } from "../lib/math/rect";
 import { Vector2 } from "../lib/math/vector";
 import {
   circle,
+  getProjectionMatrix,
   getRotationMatrix,
   getSupportPoint,
   getTranslationMatrix,
@@ -18,8 +19,8 @@ const ProjectionDemo = () => {
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
-    // let mouseX = 0;
-    // let mouseY = 0;
+    let mouseX = 0;
+    let mouseY = 0;
     let angle = 0.1;
 
     const drawFn = () => {
@@ -49,21 +50,34 @@ const ProjectionDemo = () => {
       const d2 = p2.sub(p1);
 
       const s1 = getSupportPoint(myRect.vertices, d1);
+
+      const projection = getProjectionMatrix(d1);
+      const projectedS1 = new Vector2(s1.x, s1.y).transform(projection);
+      console.log(projectedS1);
       const s2 = getSupportPoint(myRect.vertices, d2);
 
-      ctx.fillStyle = "red";
-      circle(ctx, s1, 10);
       ctx.fillStyle = "blue";
-      circle(ctx, s2, 10);
+      circle(ctx, s1, 5);
+      circle(ctx, s2, 5);
+      ctx.fillStyle = "red";
+      circle(ctx, projectedS1, 5);
+
       line(ctx, p1.x, p1.y, p2.x, p2.y);
-      requestAnimationFrame(drawFn);
+
+      const unitV = d2
+        .unit()
+        .multScalar(100)
+        .transform(getTranslationMatrix(origin.x, origin.y));
+
+      line(ctx, origin.x, origin.y, unitV.x, unitV.y);
+      // requestAnimationFrame(drawFn);
     };
 
     drawFn();
     const handleMouseMove = (event: MouseEvent) => {
       event.preventDefault();
-      // mouseX = event.offsetX;
-      // mouseY = event.offsetY;
+      mouseX = event.offsetX;
+      mouseY = event.offsetY;
 
       return false;
     };

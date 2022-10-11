@@ -61,7 +61,35 @@ const MoveByMouse = () => {
 
     let animationFrameId = 0;
     let mousePos: Vector2 | undefined = undefined;
+    let mouseDown = false;
     let axis = 1;
+
+    const myPoly1 = new Polygon([
+      [91.3853, 72.056],
+      [91.0849, 56.344],
+      [61.4993, 61.451],
+      [51.9736, 78.969],
+      [81.2159, 83.447],
+    ]);
+
+    const myPoly2 = new Polygon([
+      [-2, 0],
+      [-2, 1],
+      [-3, 1],
+      [-3, 0],
+    ]);
+
+    const origin = new Vector2(cnv.width / 2, cnv.height / 2);
+    const toOrigin = getTranslationMatrix(origin.x, origin.y);
+    const rotateAroundOrigin = getRotationMatrix(Math.PI / 3, origin);
+
+    myPoly1.transform(getScalingMatrix(2, 2));
+    myPoly1.transform(toOrigin);
+    myPoly1.transform(rotateAroundOrigin);
+
+    myPoly2.transform(getScalingMatrix(80, 80));
+    myPoly2.transform(toOrigin);
+    myPoly2.transform(rotateAroundOrigin);
 
     const drawFn = () => {
       ctx.fillStyle = "rgb(240, 240, 240)";
@@ -71,33 +99,6 @@ const MoveByMouse = () => {
       ctx.strokeStyle = "red";
       line(ctx, 0, cnv.height / 2, cnv.width, cnv.height / 2);
       line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
-
-      const myPoly1 = new Polygon([
-        [91.3853, 72.056],
-        [91.0849, 56.344],
-        [61.4993, 61.451],
-        [51.9736, 78.969],
-        [81.2159, 83.447],
-      ]);
-
-      const myPoly2 = new Polygon([
-        [-2, 0],
-        [-2, 1],
-        [-3, 1],
-        [-3, 0],
-      ]);
-
-      const origin = new Vector2(cnv.width / 2, cnv.height / 2);
-      const toOrigin = getTranslationMatrix(origin.x, origin.y);
-      const rotateAroundOrigin = getRotationMatrix(Math.PI / 3, origin);
-
-      myPoly1.transform(getScalingMatrix(2, 2));
-      myPoly1.transform(toOrigin);
-      myPoly1.transform(rotateAroundOrigin);
-
-      myPoly2.transform(getScalingMatrix(80, 80));
-      myPoly2.transform(toOrigin);
-      myPoly2.transform(rotateAroundOrigin);
 
       ctx.fillStyle = "blue";
       myPoly1.draw(ctx, mousePos && insidePoly(mousePos, myPoly1.vertices));
@@ -130,18 +131,39 @@ const MoveByMouse = () => {
       );
     };
 
-    function updateMousePos(event: MouseEvent) {
+    const updateMousePos = (event: MouseEvent) => {
       mousePos = new Vector2(event.offsetX, event.offsetY);
+      if (mouseDown && insidePoly(mousePos, myPoly1.vertices)) {
+        myPoly1.transform(
+          getTranslationMatrix(event.movementX, event.movementY)
+        );
+      } else if (mouseDown && insidePoly(mousePos, myPoly2.vertices)) {
+        myPoly2.transform(
+          getTranslationMatrix(event.movementX, event.movementY)
+        );
+      }
       drawFn();
       // console.log(mousePos.x, mousePos.y);
-    }
+    };
+
+    const handleMouseDown = () => {
+      mouseDown = true;
+    };
+
+    const handleMouseUp = () => {
+      mouseDown = false;
+    };
 
     cnv.addEventListener("mousemove", updateMousePos);
+    cnv.addEventListener("mousedown", handleMouseDown);
+    cnv.addEventListener("mouseup", handleMouseUp);
 
     drawFn();
 
     return () => {
       cnv.removeEventListener("mousemove", updateMousePos);
+      cnv.removeEventListener("mousedown", handleMouseDown);
+      cnv.removeEventListener("mouseup", handleMouseUp);
 
       cancelAnimationFrame(animationFrameId);
     };

@@ -235,11 +235,25 @@ export type State = {
   rotationChange: number;
 };
 
+function handleRotations(polys: Polygon[], amount: number) {
+  polys.forEach((poly) => {
+    if (poly.selected) {
+      poly.rotate(amount);
+    }
+  });
+}
+
 export function instrument(
   cnv: HTMLCanvasElement,
   polys: Polygon[],
-  state: State
+  drawFn: () => void
 ) {
+  const rotationSpeed = 3;
+  let state: State = {
+    draggedPoly: null,
+    rotationChange: 0,
+  };
+
   const updateMousePos = (event: MouseEvent) => {
     if (!state.draggedPoly) return;
     state.draggedPoly.transform(
@@ -269,10 +283,10 @@ export function instrument(
   const handleRotation = (event: KeyboardEvent) => {
     switch (event.code) {
       case "KeyA":
-        state.rotationChange = 1;
+        state.rotationChange = rotationSpeed;
         break;
       case "KeyD":
-        state.rotationChange = -1;
+        state.rotationChange = -rotationSpeed;
         break;
     }
   };
@@ -280,10 +294,10 @@ export function instrument(
   const stopRotation = (event: KeyboardEvent) => {
     switch (event.code) {
       case "KeyA":
-        if (state.rotationChange === 1) state.rotationChange = 0;
+        if (state.rotationChange === rotationSpeed) state.rotationChange = 0;
         break;
       case "KeyD":
-        if (state.rotationChange === -1) state.rotationChange = 0;
+        if (state.rotationChange === -rotationSpeed) state.rotationChange = 0;
         break;
     }
   };
@@ -294,11 +308,24 @@ export function instrument(
   cnv.addEventListener("mousedown", handleMouseDown);
   cnv.addEventListener("mouseup", handleMouseUp);
 
-  return () => {
-    cnv.removeEventListener("keyup", stopRotation);
-    cnv.removeEventListener("keydown", handleRotation);
-    cnv.removeEventListener("mousemove", updateMousePos);
-    cnv.removeEventListener("mousedown", handleMouseDown);
-    cnv.removeEventListener("mouseup", handleMouseUp);
+  let frameId = 0;
+  const loop = () => {
+    frameId = requestAnimationFrame(() => {
+      handleRotations(polys, state.rotationChange);
+      drawFn();
+      loop();
+    });
+  };
+  loop();
+
+  return {
+    cleanup: () => {
+      cnv.removeEventListener("keyup", stopRotation);
+      cnv.removeEventListener("keydown", handleRotation);
+      cnv.removeEventListener("mousemove", updateMousePos);
+      cnv.removeEventListener("mousedown", handleMouseDown);
+      cnv.removeEventListener("mouseup", handleMouseUp);
+      cancelAnimationFrame(frameId);
+    },
   };
 }

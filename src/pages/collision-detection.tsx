@@ -79,13 +79,6 @@ function checkCollision(poly1: Polygon, poly2: Polygon) {
   return true;
 }
 
-function handleRotations(polys: Polygon[], amount: number) {
-  polys.forEach((poly) => {
-    if (poly.selected) {
-      poly.rotate(amount);
-    }
-  });
-}
 function drawBackground(ctx: CanvasRenderingContext2D) {
   const [w, h] = [ctx.canvas.width, ctx.canvas.height];
 
@@ -106,34 +99,17 @@ const SAT = () => {
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
 
-    let state: State = {
-      draggedPoly: null,
-      rotationChange: 0,
-    };
-    let frameId = 0;
     const [myPoly1, myPoly2] = initPolygons(cnv);
-
     const drawFn = () => {
       drawBackground(ctx);
-
-      ctx.fillStyle = "blue";
       const collision = checkCollision(myPoly1, myPoly2);
       drawAllProjections(cnv, myPoly1, myPoly2);
-
       myPoly1.draw(ctx, { collision });
       myPoly2.draw(ctx, { collision });
-
-      handleRotations([myPoly1, myPoly2], state.rotationChange);
-      frameId = requestAnimationFrame(drawFn);
     };
 
-    drawFn();
-
-    const cleanup = instrument(cnv, [myPoly1, myPoly2], state);
-    return () => {
-      cleanup();
-      cancelAnimationFrame(frameId);
-    };
+    const { cleanup } = instrument(cnv, [myPoly1, myPoly2], drawFn);
+    return cleanup;
   }, [cnv]);
 
   return (
@@ -149,11 +125,6 @@ const MoveByMouse = () => {
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
-
-    let state: State = {
-      draggedPoly: null,
-      rotationChange: 0,
-    };
 
     let axis = 1;
 
@@ -186,21 +157,13 @@ const MoveByMouse = () => {
         new Vector2(p1.y, -p1.x),
         new Vector2(p2.y, -p2.x)
       );
-      [myPoly1, myPoly2].forEach((poly) => {
-        if (poly.selected) {
-          poly.rotate(state.rotationChange);
-        }
-      });
-      frameId = requestAnimationFrame(drawFn);
     };
 
-    const cleanup = instrument(cnv, [myPoly1, myPoly2], state);
+    const { cleanup } = instrument(cnv, [myPoly1, myPoly2], drawFn);
+
     drawFn();
 
-    return () => {
-      cleanup();
-      cancelAnimationFrame(frameId);
-    };
+    return cleanup;
   }, [cnv]);
 
   return (
@@ -242,29 +205,14 @@ const ProjectionAxisByAxis = () => {
 
       drawProjection(
         cnv,
-        myPoly1,
-        new Vector2(p1.y, -p1.x),
-        new Vector2(p2.y, -p2.x)
-      );
-      drawProjection(
-        cnv,
-        myPoly2,
+        [myPoly1, myPoly2],
         new Vector2(p1.y, -p1.x),
         new Vector2(p2.y, -p2.x)
       );
     };
 
-    function selectNextAxis() {
-      axis = axis + 1;
-      drawFn();
-    }
-
-    cnv.addEventListener("click", selectNextAxis);
-    drawFn();
-
-    return () => {
-      cnv.removeEventListener("click", selectNextAxis);
-    };
+    const { cleanup } = instrument(cnv, [myPoly1, myPoly2], drawFn);
+    return cleanup;
   }, [cnv]);
 
   return (
@@ -280,42 +228,18 @@ const ProjectionDemo = () => {
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
-    let angleIncrement = 0;
-    let animationFrameId = 0;
-
     const [poly1] = initPolygons(cnv);
 
     const drawFn = () => {
       drawBackground(ctx);
-
-      poly1.rotate(angleIncrement);
       poly1.draw(ctx);
-
       const p1 = new Vector2(0, 2);
       const p2 = new Vector2(1, -2);
       drawProjection(cnv, poly1, p1, p2);
-      if (angleIncrement !== 0) requestAnimationFrame(drawFn);
     };
 
-    drawFn();
-
-    const handleMouseDown = (event: MouseEvent) => {
-      angleIncrement = event.ctrlKey ? -3 : 3;
-      drawFn();
-    };
-
-    const handleMouseUp = () => {
-      angleIncrement = 0;
-    };
-
-    cnv.addEventListener("mousedown", handleMouseDown);
-    cnv.addEventListener("mouseup", handleMouseUp);
-
-    return () => {
-      cnv.removeEventListener("mousedown", handleMouseDown);
-      cnv.removeEventListener("mouseup", handleMouseUp);
-      cancelAnimationFrame(animationFrameId);
-    };
+    const { cleanup } = instrument(cnv, [poly1], drawFn);
+    return cleanup;
   }, [cnv]);
 
   return (

@@ -7,16 +7,12 @@ import {
   drawProjection,
   getScalingMatrix,
   getTranslationMatrix,
+  initPolygons,
   insidePoly,
   instrument,
   line,
   State,
-  toRadians,
 } from "../lib/math/drawHelpers";
-import { eventNames } from "process";
-
-const niceBlue = "#4763ad";
-const niceGreen = "#63ad47";
 
 function flattenPointsOn(points: Vector2[], axis: Vector2): Projection {
   let min = Number.MAX_VALUE;
@@ -87,6 +83,17 @@ function checkCollision(poly1: Polygon, poly2: Polygon) {
   return true;
 }
 
+function drawBackground(ctx: CanvasRenderingContext2D) {
+  const [w, h] = [ctx.canvas.width, ctx.canvas.height];
+
+  ctx.fillStyle = "rgb(240, 240, 240)";
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.strokeStyle = "red";
+  line(ctx, 0, h / 2, w, h / 2);
+  line(ctx, w / 2, 0, w / 2, h);
+}
+
 const SAT = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   useEffect(() => {
@@ -96,47 +103,16 @@ const SAT = () => {
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
 
-    let mousePos: Vector2 | undefined = undefined;
-    let mouseDown = false;
-
-    const myPoly1 = new Polygon(
-      [
-        [0, 0],
-        [1, 0],
-        [1, 1],
-        [0, 1],
-      ],
-      niceGreen
-    );
-
-    const myPoly2 = new Polygon(
-      [
-        [0, 0],
-        [1, 0],
-        [0, 1],
-      ],
-      niceBlue
-    );
-
-    const origin = new Vector2(cnv.width / 2, cnv.height / 2);
-    const toOrigin = getTranslationMatrix(origin.x, origin.y);
-
-    myPoly1.transform(getScalingMatrix(80, 80));
-    myPoly1.transform(toOrigin);
-    myPoly1.rotate(30);
-
-    myPoly2.transform(getScalingMatrix(80, 80));
-    myPoly2.transform(toOrigin);
-    myPoly2.rotate(40);
+    let state: State = {
+      draggedPoly: null,
+      selectedPoly: null,
+      rotationChange: 0,
+    };
+    let frameId = 0;
+    const [myPoly1, myPoly2] = initPolygons(cnv);
 
     const drawFn = () => {
-      ctx.fillStyle = "rgb(240, 240, 240)";
-
-      ctx.fillRect(0, 0, cnv.width, cnv.height);
-
-      ctx.strokeStyle = "red";
-      line(ctx, 0, cnv.height / 2, cnv.width, cnv.height / 2);
-      line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
+      drawBackground(ctx);
 
       ctx.fillStyle = "blue";
       const collision = checkCollision(myPoly1, myPoly2);
@@ -144,41 +120,17 @@ const SAT = () => {
 
       myPoly1.draw(ctx, { collision });
       myPoly2.draw(ctx, { collision });
+      state.selectedPoly?.rotate(state.rotationChange);
+      state.selectedPoly?.draw(ctx, { selected: true, collision });
+      frameId = requestAnimationFrame(drawFn);
     };
-
-    const updateMousePos = (event: MouseEvent) => {
-      mousePos = new Vector2(event.offsetX, event.offsetY);
-      if (mouseDown && insidePoly(mousePos, myPoly1.vertices)) {
-        myPoly1.transform(
-          getTranslationMatrix(event.movementX, event.movementY)
-        );
-        drawFn();
-      } else if (mouseDown && insidePoly(mousePos, myPoly2.vertices)) {
-        myPoly2.transform(
-          getTranslationMatrix(event.movementX, event.movementY)
-        );
-        drawFn();
-      }
-    };
-
-    const handleMouseDown = () => {
-      mouseDown = true;
-    };
-
-    const handleMouseUp = () => {
-      mouseDown = false;
-    };
-
-    cnv.addEventListener("mousemove", updateMousePos);
-    cnv.addEventListener("mousedown", handleMouseDown);
-    cnv.addEventListener("mouseup", handleMouseUp);
 
     drawFn();
 
+    const cleanup = instrument(cnv, [myPoly1, myPoly2], state);
     return () => {
-      cnv.removeEventListener("mousemove", updateMousePos);
-      cnv.removeEventListener("mousedown", handleMouseDown);
-      cnv.removeEventListener("mouseup", handleMouseUp);
+      cleanup();
+      cancelAnimationFrame(frameId);
     };
   }, [cnv]);
 
@@ -206,45 +158,10 @@ const MoveByMouse = () => {
 
     let frameId = 0;
 
-    const myPoly1 = new Polygon(
-      [
-        [91.3853, 72.056],
-        [91.0849, 56.344],
-        [61.4993, 61.451],
-        [51.9736, 78.969],
-        [81.2159, 83.447],
-      ],
-      niceGreen
-    );
+    const [myPoly1, myPoly2] = initPolygons(cnv);
 
-    const myPoly2 = new Polygon(
-      [
-        [-2, 0],
-        [-2, 1],
-        [-3, 1],
-        [-3, 0],
-      ],
-      niceBlue
-    );
-
-    const origin = new Vector2(cnv.width / 2, cnv.height / 2);
-    const toOrigin = getTranslationMatrix(origin.x, origin.y);
-
-    myPoly1.transform(getScalingMatrix(2, 2));
-    myPoly1.transform(toOrigin);
-    myPoly1.rotate(20);
-
-    myPoly2.transform(getScalingMatrix(80, 80));
-    myPoly2.transform(toOrigin);
-    myPoly2.rotate(45);
     const drawFn = () => {
-      ctx.fillStyle = "rgb(240, 240, 240)";
-
-      ctx.fillRect(0, 0, cnv.width, cnv.height);
-
-      ctx.strokeStyle = "red";
-      line(ctx, 0, cnv.height / 2, cnv.width, cnv.height / 2);
-      line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
+      drawBackground(ctx);
 
       myPoly1.draw(ctx);
       myPoly2.draw(ctx);
@@ -306,54 +223,18 @@ const ProjectionAxisByAxis = () => {
 
     let axis = 0;
 
-    const myPoly = new Polygon(
-      [
-        [91.3853, 72.056],
-        [91.0849, 56.344],
-        [61.4993, 61.451],
-        [51.9736, 78.969],
-        [81.2159, 83.447],
-      ],
-      niceGreen
-    );
-
-    const myPoly2 = new Polygon(
-      [
-        [-2, 0],
-        [-2, 1],
-        [-3, 1],
-        [-3, 0],
-      ],
-      niceBlue
-    );
-
-    const origin = new Vector2(cnv.width / 2, cnv.height / 2);
-    const toOrigin = getTranslationMatrix(origin.x, origin.y);
-
-    myPoly.transform(getScalingMatrix(2, 2));
-    myPoly.transform(toOrigin);
-    myPoly.rotate(10);
-
-    myPoly2.transform(getScalingMatrix(80, 80));
-    myPoly2.transform(toOrigin);
-    myPoly2.rotate(45);
+    const [myPoly1, myPoly2] = initPolygons(cnv);
 
     const drawFn = () => {
-      ctx.fillStyle = "rgb(240, 240, 240)";
+      drawBackground(ctx);
 
-      ctx.fillRect(0, 0, cnv.width, cnv.height);
-
-      ctx.strokeStyle = "red";
-      line(ctx, 0, cnv.height / 2, cnv.width, cnv.height / 2);
-      line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
-
-      myPoly.draw(ctx);
+      myPoly1.draw(ctx);
       myPoly2.draw(ctx);
 
       const pickVertices = () => {
-        const i = axis % myPoly.vertices.length;
-        const i2 = (i + 1) % myPoly.vertices.length;
-        return [myPoly.vertices[i], myPoly.vertices[i2]];
+        const i = axis % myPoly1.vertices.length;
+        const i2 = (i + 1) % myPoly1.vertices.length;
+        return [myPoly1.vertices[i], myPoly1.vertices[i2]];
       };
 
       const [p1, p2] = pickVertices();
@@ -365,7 +246,7 @@ const ProjectionAxisByAxis = () => {
 
       drawProjection(
         cnv,
-        myPoly,
+        myPoly1,
         new Vector2(p1.y, -p1.x),
         new Vector2(p2.y, -p2.x)
       );
@@ -406,33 +287,17 @@ const ProjectionDemo = () => {
     let angleIncrement = 0;
     let animationFrameId = 0;
 
-    const myRect = new Polygon(
-      [
-        [0, 0],
-        [1, 0],
-        [1, 1],
-        [0, 1],
-      ],
-      niceGreen
-    );
-    const origin = new Vector2(cnv.width / 2, cnv.height / 2);
-    myRect.transform(getScalingMatrix(60, 60));
-    const toOrigin = getTranslationMatrix(origin.x, origin.y);
-    myRect.transform(toOrigin);
+    const [poly1] = initPolygons(cnv);
 
     const drawFn = () => {
-      ctx.fillStyle = "rgb(240, 240, 240)";
-      ctx.fillRect(0, 0, cnv.width, cnv.height);
+      drawBackground(ctx);
 
-      ctx.strokeStyle = "red";
-      line(ctx, 0, cnv.height / 2, cnv.width, cnv.height / 2);
-      line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
-      myRect.rotate(angleIncrement);
-      myRect.draw(ctx);
+      poly1.rotate(angleIncrement);
+      poly1.draw(ctx);
 
       const p1 = new Vector2(0, 2);
       const p2 = new Vector2(1, -2);
-      drawProjection(cnv, myRect, p1, p2);
+      drawProjection(cnv, poly1, p1, p2);
       if (angleIncrement !== 0) requestAnimationFrame(drawFn);
     };
 

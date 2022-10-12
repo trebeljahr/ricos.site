@@ -143,6 +143,45 @@ export function circle(ctx: CanvasRenderingContext2D, p: Vector2, d: number) {
   ctx.closePath();
 }
 
+const niceBlue = "#4763ad";
+const niceGreen = "#63ad47";
+
+export function initPolygons(cnv: HTMLCanvasElement) {
+  const myPoly1 = new Polygon(
+    [
+      [91.3853, 72.056],
+      [91.0849, 56.344],
+      [61.4993, 61.451],
+      [51.9736, 78.969],
+      [81.2159, 83.447],
+    ],
+    niceGreen
+  );
+
+  const myPoly2 = new Polygon(
+    [
+      [-2, 0],
+      [-2, 1],
+      [-3, 1],
+      [-3, 0],
+    ],
+    niceBlue
+  );
+
+  const origin = new Vector2(cnv.width / 2, cnv.height / 2);
+  const toOrigin = getTranslationMatrix(origin.x, origin.y);
+
+  myPoly1.transform(getScalingMatrix(2, 2));
+  myPoly1.transform(toOrigin);
+  myPoly1.rotate(20);
+
+  myPoly2.transform(getScalingMatrix(80, 80));
+  myPoly2.transform(toOrigin);
+  myPoly2.rotate(45);
+
+  return [myPoly1, myPoly2];
+}
+
 export type State = {
   draggedPoly: Polygon | null;
   selectedPoly: Polygon | null;

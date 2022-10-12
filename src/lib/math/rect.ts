@@ -57,10 +57,12 @@ const niceRed = "#dd292c";
 export class Polygon {
   public vertices: Vector2[];
   public color: string;
+  public selected: boolean;
 
   constructor(points: [number, number][], color?: string) {
     this.vertices = points.map(([x, y]) => new Vector2(x, y));
     this.color = color || randomColor();
+    this.selected = false;
   }
 
   centroid() {
@@ -92,10 +94,10 @@ export class Polygon {
 
   draw(
     ctx: CanvasRenderingContext2D,
-    { collision, selected }: { collision?: boolean; selected?: boolean } = {}
+    { collision }: { collision?: boolean } = {}
   ) {
+    ctx.save();
     ctx.strokeStyle = "black";
-
     ctx.beginPath();
     const [first, ...rest] = this.vertices;
     ctx.moveTo(first.x, first.y);
@@ -103,13 +105,15 @@ export class Polygon {
       ctx.lineTo(vertex.x, vertex.y);
     }
     ctx.lineTo(first.x, first.y);
-    ctx.fillStyle = collision ? niceRed : selected ? "yellow" : this.color;
+    ctx.fillStyle = collision ? niceRed : this.color;
     ctx.fill();
+    ctx.lineWidth = this.selected ? 2 : 1;
     ctx.stroke();
     ctx.closePath();
 
     ctx.fillStyle = "black";
     const centroid = this.centroid();
     circle(ctx, centroid, 1);
+    ctx.restore();
   }
 }

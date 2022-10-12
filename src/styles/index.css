@@ -656,6 +656,11 @@ li {
   }
 }
 
+canvas {
+  box-sizing: border-box;
+  outline: none;
+}
+
 @media only screen and (min-width: 1030px) {
   .main-page {
     padding-top: 2rem;

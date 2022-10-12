@@ -5,10 +5,7 @@ import { Polygon } from "../lib/math/rect";
 import { Vector2 } from "../lib/math/vector";
 import {
   drawProjection,
-  getScalingMatrix,
-  getTranslationMatrix,
   initPolygons,
-  insidePoly,
   instrument,
   line,
   State,
@@ -82,15 +79,22 @@ function checkCollision(poly1: Polygon, poly2: Polygon) {
   return true;
 }
 
+function handleRotations(polys: Polygon[], amount: number) {
+  polys.forEach((poly) => {
+    if (poly.selected) {
+      poly.rotate(amount);
+    }
+  });
+}
 function drawBackground(ctx: CanvasRenderingContext2D) {
   const [w, h] = [ctx.canvas.width, ctx.canvas.height];
 
   ctx.fillStyle = "rgb(240, 240, 240)";
   ctx.fillRect(0, 0, w, h);
 
-  ctx.strokeStyle = "red";
-  line(ctx, 0, h / 2, w, h / 2);
-  line(ctx, w / 2, 0, w / 2, h);
+  // ctx.strokeStyle = "red";
+  // line(ctx, 0, h / 2, w, h / 2);
+  // line(ctx, w / 2, 0, w / 2, h);
 }
 
 const SAT = () => {
@@ -104,7 +108,6 @@ const SAT = () => {
 
     let state: State = {
       draggedPoly: null,
-      selectedPoly: null,
       rotationChange: 0,
     };
     let frameId = 0;
@@ -119,8 +122,8 @@ const SAT = () => {
 
       myPoly1.draw(ctx, { collision });
       myPoly2.draw(ctx, { collision });
-      state.selectedPoly?.rotate(state.rotationChange);
-      state.selectedPoly?.draw(ctx, { selected: true, collision });
+
+      handleRotations([myPoly1, myPoly2], state.rotationChange);
       frameId = requestAnimationFrame(drawFn);
     };
 
@@ -149,7 +152,6 @@ const MoveByMouse = () => {
 
     let state: State = {
       draggedPoly: null,
-      selectedPoly: null,
       rotationChange: 0,
     };
 
@@ -164,8 +166,6 @@ const MoveByMouse = () => {
 
       myPoly1.draw(ctx);
       myPoly2.draw(ctx);
-
-      state.selectedPoly?.draw(ctx, { selected: true });
 
       const pickVertices = () => {
         const i = axis % myPoly1.vertices.length;
@@ -182,18 +182,15 @@ const MoveByMouse = () => {
 
       drawProjection(
         cnv,
-        myPoly1,
+        [myPoly1, myPoly2],
         new Vector2(p1.y, -p1.x),
         new Vector2(p2.y, -p2.x)
       );
-      drawProjection(
-        cnv,
-        myPoly2,
-        new Vector2(p1.y, -p1.x),
-        new Vector2(p2.y, -p2.x)
-      );
-
-      state.selectedPoly?.rotate(state.rotationChange);
+      [myPoly1, myPoly2].forEach((poly) => {
+        if (poly.selected) {
+          poly.rotate(state.rotationChange);
+        }
+      });
       frameId = requestAnimationFrame(drawFn);
     };
 

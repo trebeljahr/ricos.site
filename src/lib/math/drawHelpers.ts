@@ -74,14 +74,6 @@ function onSegment(p: Vector2, q: Vector2, r: Vector2) {
   return false;
 }
 
-function orientation(p: Vector2, q: Vector2, r: Vector2) {
-  const val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
-
-  if (val == 0) return 0;
-
-  return val > 0 ? 1 : 2;
-}
-
 function doIntersect(a1: Vector2, a2: Vector2, b1: Vector2, b2: Vector2) {
   if (onSegment(a1, b1, a2)) return true;
   if (onSegment(a1, b2, a2)) return true;
@@ -110,7 +102,7 @@ export function drawProjection(
   const l1 = d2.unit().multScalar(len).transform(toOrigin);
   const l2 = d2.unit().multScalar(-len).transform(toOrigin);
 
-  ctx.strokeStyle = "black";
+  ctx.strokeStyle = "rgba(100, 100, 100, 0.5)";
   line(ctx, l2.x, l2.y, l1.x, l1.y);
 
   const projectionHelper = (poly: Polygon) => {
@@ -136,8 +128,8 @@ export function drawProjection(
   ) => {
     ctx.save();
     ctx.fillStyle = color;
-    circle(ctx, projectedS1, 5);
-    circle(ctx, projectedS2, 5);
+    circle(ctx, projectedS1, 3);
+    circle(ctx, projectedS2, 3);
     ctx.strokeStyle = color;
     ctx.lineWidth = 3;
     line(ctx, projectedS1.x, projectedS1.y, projectedS2.x, projectedS2.y);
@@ -240,7 +232,6 @@ export function initPolygons(cnv: HTMLCanvasElement) {
 
 export type State = {
   draggedPoly: Polygon | null;
-  selectedPoly: Polygon | null;
   rotationChange: number;
 };
 
@@ -261,12 +252,14 @@ export function instrument(
     for (let poly of polys) {
       if (insidePoly(mousePos, poly.vertices)) {
         state.draggedPoly = poly;
-        state.selectedPoly = poly;
+        polys.forEach((poly) => (poly.selected = false));
+
+        poly.selected = true;
         return;
       }
     }
 
-    state.selectedPoly = null;
+    polys.forEach((poly) => (poly.selected = false));
   };
 
   const handleMouseUp = () => {
@@ -274,15 +267,13 @@ export function instrument(
   };
 
   const handleRotation = (event: KeyboardEvent) => {
-    if (state.selectedPoly) {
-      switch (event.code) {
-        case "KeyA":
-          state.rotationChange = 1;
-          break;
-        case "KeyD":
-          state.rotationChange = -1;
-          break;
-      }
+    switch (event.code) {
+      case "KeyA":
+        state.rotationChange = 1;
+        break;
+      case "KeyD":
+        state.rotationChange = -1;
+        break;
     }
   };
 

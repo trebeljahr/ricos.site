@@ -8,9 +8,12 @@ import {
   getScalingMatrix,
   getTranslationMatrix,
   insidePoly,
+  instrument,
   line,
+  State,
   toRadians,
 } from "../lib/math/drawHelpers";
+import { eventNames } from "process";
 
 const niceBlue = "#4763ad";
 const niceGreen = "#63ad47";
@@ -193,11 +196,14 @@ const MoveByMouse = () => {
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
 
-    let draggedPoly: Polygon | null = null;
-    let selectedPoly: Polygon | null = null;
+    let state: State = {
+      draggedPoly: null,
+      selectedPoly: null,
+      rotationChange: 0,
+    };
 
     let axis = 1;
-    let rotationChange = 0;
+
     let frameId = 0;
 
     const myPoly1 = new Polygon(
@@ -243,7 +249,7 @@ const MoveByMouse = () => {
       myPoly1.draw(ctx);
       myPoly2.draw(ctx);
 
-      selectedPoly?.draw(ctx, { selected: true });
+      state.selectedPoly?.draw(ctx, { selected: true });
 
       const pickVertices = () => {
         const i = axis % myPoly1.vertices.length;
@@ -271,77 +277,15 @@ const MoveByMouse = () => {
         new Vector2(p2.y, -p2.x)
       );
 
-      selectedPoly?.rotate(rotationChange);
+      state.selectedPoly?.rotate(state.rotationChange);
       frameId = requestAnimationFrame(drawFn);
     };
 
-    const updateMousePos = (event: MouseEvent) => {
-      if (!draggedPoly) return;
-      draggedPoly.transform(
-        getTranslationMatrix(event.movementX, event.movementY)
-      );
-    };
-
-    const handleMouseDown = (event: MouseEvent) => {
-      const mousePos = new Vector2(event.offsetX, event.offsetY);
-
-      if (insidePoly(mousePos, myPoly1.vertices)) {
-        draggedPoly = myPoly1;
-        selectedPoly = myPoly1;
-        return;
-      }
-
-      if (insidePoly(mousePos, myPoly2.vertices)) {
-        draggedPoly = myPoly2;
-        selectedPoly = myPoly2;
-        return;
-      }
-
-      selectedPoly = null;
-    };
-
-    const handleMouseUp = () => {
-      draggedPoly = null;
-    };
-
-    const handleRotation = (event: KeyboardEvent) => {
-      if (selectedPoly) {
-        switch (event.code) {
-          case "KeyA":
-            rotationChange = 1;
-            break;
-          case "KeyD":
-            rotationChange = -1;
-            break;
-        }
-      }
-    };
-
-    const stopRotation = (event: KeyboardEvent) => {
-      switch (event.code) {
-        case "KeyA":
-          if (rotationChange === 1) rotationChange = 0;
-          break;
-        case "KeyD":
-          if (rotationChange === -1) rotationChange = 0;
-          break;
-      }
-    };
-
-    cnv.addEventListener("keyup", stopRotation);
-    cnv.addEventListener("keydown", handleRotation);
-    cnv.addEventListener("mousemove", updateMousePos);
-    cnv.addEventListener("mousedown", handleMouseDown);
-    cnv.addEventListener("mouseup", handleMouseUp);
-
+    const cleanup = instrument(cnv, [myPoly1, myPoly2], state);
     drawFn();
 
     return () => {
-      cnv.removeEventListener("keyup", stopRotation);
-      cnv.removeEventListener("keydown", handleRotation);
-      cnv.removeEventListener("mousemove", updateMousePos);
-      cnv.removeEventListener("mousedown", handleMouseDown);
-      cnv.removeEventListener("mouseup", handleMouseUp);
+      cleanup();
       cancelAnimationFrame(frameId);
     };
   }, [cnv]);

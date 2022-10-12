@@ -142,3 +142,77 @@ export function circle(ctx: CanvasRenderingContext2D, p: Vector2, d: number) {
   ctx.fill();
   ctx.closePath();
 }
+
+export type State = {
+  draggedPoly: Polygon | null;
+  selectedPoly: Polygon | null;
+  rotationChange: number;
+};
+
+export function instrument(
+  cnv: HTMLCanvasElement,
+  polys: Polygon[],
+  state: State
+) {
+  const updateMousePos = (event: MouseEvent) => {
+    if (!state.draggedPoly) return;
+    state.draggedPoly.transform(
+      getTranslationMatrix(event.movementX, event.movementY)
+    );
+  };
+
+  const handleMouseDown = (event: MouseEvent) => {
+    const mousePos = new Vector2(event.offsetX, event.offsetY);
+    for (let poly of polys) {
+      if (insidePoly(mousePos, poly.vertices)) {
+        state.draggedPoly = poly;
+        state.selectedPoly = poly;
+        return;
+      }
+    }
+
+    state.selectedPoly = null;
+  };
+
+  const handleMouseUp = () => {
+    state.draggedPoly = null;
+  };
+
+  const handleRotation = (event: KeyboardEvent) => {
+    if (state.selectedPoly) {
+      switch (event.code) {
+        case "KeyA":
+          state.rotationChange = 1;
+          break;
+        case "KeyD":
+          state.rotationChange = -1;
+          break;
+      }
+    }
+  };
+
+  const stopRotation = (event: KeyboardEvent) => {
+    switch (event.code) {
+      case "KeyA":
+        if (state.rotationChange === 1) state.rotationChange = 0;
+        break;
+      case "KeyD":
+        if (state.rotationChange === -1) state.rotationChange = 0;
+        break;
+    }
+  };
+
+  cnv.addEventListener("keyup", stopRotation);
+  cnv.addEventListener("keydown", handleRotation);
+  cnv.addEventListener("mousemove", updateMousePos);
+  cnv.addEventListener("mousedown", handleMouseDown);
+  cnv.addEventListener("mouseup", handleMouseUp);
+
+  return () => {
+    cnv.removeEventListener("keyup", stopRotation);
+    cnv.removeEventListener("keydown", handleRotation);
+    cnv.removeEventListener("mousemove", updateMousePos);
+    cnv.removeEventListener("mousedown", handleMouseDown);
+    cnv.removeEventListener("mouseup", handleMouseUp);
+  };
+}

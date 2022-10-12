@@ -1,5 +1,6 @@
 import { Vector2 } from "./vector";
 import { Matrix } from "./matrix";
+import { circle, getRotationMatrix, toRadians } from "./drawHelpers";
 
 export class Rect {
   public vertices: Vector2[];
@@ -62,6 +63,14 @@ export class Polygon {
     this.color = color || randomColor();
   }
 
+  centroid() {
+    return this.vertices
+      .reduce((agg, val) => {
+        return agg.add(val);
+      }, new Vector2(0, 0))
+      .divScalar(this.vertices.length);
+  }
+
   edgeNormals() {
     return this.vertices.map((_, i) => {
       let p1 = this.vertices[i];
@@ -77,8 +86,16 @@ export class Polygon {
     this.vertices = this.vertices.map((vertex) => vertex.transform(matrix));
   }
 
-  draw(ctx: CanvasRenderingContext2D, collision?: boolean) {
+  rotate(angle: number) {
+    this.transform(getRotationMatrix(toRadians(angle), this.centroid()));
+  }
+
+  draw(
+    ctx: CanvasRenderingContext2D,
+    { collision, selected }: { collision?: boolean; selected?: boolean } = {}
+  ) {
     ctx.strokeStyle = "black";
+
     ctx.beginPath();
     const [first, ...rest] = this.vertices;
     ctx.moveTo(first.x, first.y);
@@ -86,9 +103,13 @@ export class Polygon {
       ctx.lineTo(vertex.x, vertex.y);
     }
     ctx.lineTo(first.x, first.y);
-    ctx.fillStyle = collision ? niceRed : this.color;
+    ctx.fillStyle = collision ? niceRed : selected ? "yellow" : this.color;
     ctx.fill();
     ctx.stroke();
     ctx.closePath();
+
+    ctx.fillStyle = "black";
+    const centroid = this.centroid();
+    circle(ctx, centroid, 1);
   }
 }

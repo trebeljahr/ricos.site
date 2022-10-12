@@ -5,7 +5,6 @@ import { Polygon } from "../lib/math/rect";
 import { Vector2 } from "../lib/math/vector";
 import {
   drawProjection,
-  getRotationMatrix,
   getScalingMatrix,
   getTranslationMatrix,
   insidePoly,
@@ -89,11 +88,11 @@ const SAT = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   useEffect(() => {
     if (!cnv) return;
+    cnv.tabIndex = 0;
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
 
-    let animationFrameId = 0;
     let mousePos: Vector2 | undefined = undefined;
     let mouseDown = false;
 
@@ -121,11 +120,11 @@ const SAT = () => {
 
     myPoly1.transform(getScalingMatrix(80, 80));
     myPoly1.transform(toOrigin);
-    myPoly1.transform(getRotationMatrix(toRadians(30)));
+    myPoly1.rotate(30);
 
     myPoly2.transform(getScalingMatrix(80, 80));
     myPoly2.transform(toOrigin);
-    myPoly2.transform(getRotationMatrix(toRadians(40)));
+    myPoly2.rotate(40);
 
     const drawFn = () => {
       ctx.fillStyle = "rgb(240, 240, 240)";
@@ -137,12 +136,11 @@ const SAT = () => {
       line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
 
       ctx.fillStyle = "blue";
-      const isColliding = checkCollision(myPoly1, myPoly2);
-      console.log(isColliding);
+      const collision = checkCollision(myPoly1, myPoly2);
       drawAllProjections(cnv, myPoly1, myPoly2);
 
-      myPoly1.draw(ctx, isColliding);
-      myPoly2.draw(ctx, isColliding);
+      myPoly1.draw(ctx, { collision });
+      myPoly2.draw(ctx, { collision });
     };
 
     const updateMousePos = (event: MouseEvent) => {
@@ -178,8 +176,6 @@ const SAT = () => {
       cnv.removeEventListener("mousemove", updateMousePos);
       cnv.removeEventListener("mousedown", handleMouseDown);
       cnv.removeEventListener("mouseup", handleMouseUp);
-
-      cancelAnimationFrame(animationFrameId);
     };
   }, [cnv]);
 
@@ -192,14 +188,17 @@ const MoveByMouse = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   useEffect(() => {
     if (!cnv) return;
+    cnv.tabIndex = 0;
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
 
-    let animationFrameId = 0;
-    let mousePos: Vector2 | undefined = undefined;
-    let mouseDown = false;
+    let draggedPoly: Polygon | null = null;
+    let selectedPoly: Polygon | null = null;
+
     let axis = 1;
+    let rotationChange = 0;
+    let frameId = 0;
 
     const myPoly1 = new Polygon(
       [
@@ -224,16 +223,14 @@ const MoveByMouse = () => {
 
     const origin = new Vector2(cnv.width / 2, cnv.height / 2);
     const toOrigin = getTranslationMatrix(origin.x, origin.y);
-    const rotateAroundOrigin = getRotationMatrix(Math.PI / 3, origin);
 
     myPoly1.transform(getScalingMatrix(2, 2));
     myPoly1.transform(toOrigin);
-    myPoly1.transform(rotateAroundOrigin);
+    myPoly1.rotate(20);
 
     myPoly2.transform(getScalingMatrix(80, 80));
     myPoly2.transform(toOrigin);
-    myPoly2.transform(rotateAroundOrigin);
-
+    myPoly2.rotate(45);
     const drawFn = () => {
       ctx.fillStyle = "rgb(240, 240, 240)";
 
@@ -243,9 +240,10 @@ const MoveByMouse = () => {
       line(ctx, 0, cnv.height / 2, cnv.width, cnv.height / 2);
       line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
 
-      ctx.fillStyle = "blue";
       myPoly1.draw(ctx);
       myPoly2.draw(ctx);
+
+      selectedPoly?.draw(ctx, { selected: true });
 
       const pickVertices = () => {
         const i = axis % myPoly1.vertices.length;
@@ -272,30 +270,66 @@ const MoveByMouse = () => {
         new Vector2(p1.y, -p1.x),
         new Vector2(p2.y, -p2.x)
       );
+
+      selectedPoly?.rotate(rotationChange);
+      frameId = requestAnimationFrame(drawFn);
     };
 
     const updateMousePos = (event: MouseEvent) => {
-      mousePos = new Vector2(event.offsetX, event.offsetY);
-      if (mouseDown && insidePoly(mousePos, myPoly1.vertices)) {
-        myPoly1.transform(
-          getTranslationMatrix(event.movementX, event.movementY)
-        );
-      } else if (mouseDown && insidePoly(mousePos, myPoly2.vertices)) {
-        myPoly2.transform(
-          getTranslationMatrix(event.movementX, event.movementY)
-        );
-      }
-      drawFn();
+      if (!draggedPoly) return;
+      draggedPoly.transform(
+        getTranslationMatrix(event.movementX, event.movementY)
+      );
     };
 
-    const handleMouseDown = () => {
-      mouseDown = true;
+    const handleMouseDown = (event: MouseEvent) => {
+      const mousePos = new Vector2(event.offsetX, event.offsetY);
+
+      if (insidePoly(mousePos, myPoly1.vertices)) {
+        draggedPoly = myPoly1;
+        selectedPoly = myPoly1;
+        return;
+      }
+
+      if (insidePoly(mousePos, myPoly2.vertices)) {
+        draggedPoly = myPoly2;
+        selectedPoly = myPoly2;
+        return;
+      }
+
+      selectedPoly = null;
     };
 
     const handleMouseUp = () => {
-      mouseDown = false;
+      draggedPoly = null;
     };
 
+    const handleRotation = (event: KeyboardEvent) => {
+      if (selectedPoly) {
+        switch (event.code) {
+          case "KeyA":
+            rotationChange = 1;
+            break;
+          case "KeyD":
+            rotationChange = -1;
+            break;
+        }
+      }
+    };
+
+    const stopRotation = (event: KeyboardEvent) => {
+      switch (event.code) {
+        case "KeyA":
+          if (rotationChange === 1) rotationChange = 0;
+          break;
+        case "KeyD":
+          if (rotationChange === -1) rotationChange = 0;
+          break;
+      }
+    };
+
+    cnv.addEventListener("keyup", stopRotation);
+    cnv.addEventListener("keydown", handleRotation);
     cnv.addEventListener("mousemove", updateMousePos);
     cnv.addEventListener("mousedown", handleMouseDown);
     cnv.addEventListener("mouseup", handleMouseUp);
@@ -303,11 +337,12 @@ const MoveByMouse = () => {
     drawFn();
 
     return () => {
+      cnv.removeEventListener("keyup", stopRotation);
+      cnv.removeEventListener("keydown", handleRotation);
       cnv.removeEventListener("mousemove", updateMousePos);
       cnv.removeEventListener("mousedown", handleMouseDown);
       cnv.removeEventListener("mouseup", handleMouseUp);
-
-      cancelAnimationFrame(animationFrameId);
+      cancelAnimationFrame(frameId);
     };
   }, [cnv]);
 
@@ -320,11 +355,10 @@ const ProjectionAxisByAxis = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   useEffect(() => {
     if (!cnv) return;
+    cnv.tabIndex = 0;
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
-
-    let animationFrameId = 0;
 
     let axis = 0;
 
@@ -351,15 +385,14 @@ const ProjectionAxisByAxis = () => {
 
     const origin = new Vector2(cnv.width / 2, cnv.height / 2);
     const toOrigin = getTranslationMatrix(origin.x, origin.y);
-    const rotateAroundOrigin = getRotationMatrix(Math.PI / 3, origin);
 
     myPoly.transform(getScalingMatrix(2, 2));
     myPoly.transform(toOrigin);
-    myPoly.transform(rotateAroundOrigin);
+    myPoly.rotate(10);
 
     myPoly2.transform(getScalingMatrix(80, 80));
     myPoly2.transform(toOrigin);
-    myPoly2.transform(rotateAroundOrigin);
+    myPoly2.rotate(45);
 
     const drawFn = () => {
       ctx.fillStyle = "rgb(240, 240, 240)";
@@ -376,7 +409,6 @@ const ProjectionAxisByAxis = () => {
       const pickVertices = () => {
         const i = axis % myPoly.vertices.length;
         const i2 = (i + 1) % myPoly.vertices.length;
-        console.log(i, i2);
         return [myPoly.vertices[i], myPoly.vertices[i2]];
       };
 
@@ -411,8 +443,6 @@ const ProjectionAxisByAxis = () => {
 
     return () => {
       cnv.removeEventListener("click", selectNextAxis);
-
-      cancelAnimationFrame(animationFrameId);
     };
   }, [cnv]);
 
@@ -425,6 +455,7 @@ const ProjectionDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   useEffect(() => {
     if (!cnv) return;
+    cnv.tabIndex = 0;
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
@@ -452,10 +483,7 @@ const ProjectionDemo = () => {
       ctx.strokeStyle = "red";
       line(ctx, 0, cnv.height / 2, cnv.width, cnv.height / 2);
       line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
-
-      const rotateAroundOrigin = getRotationMatrix(angleIncrement, origin);
-      myRect.transform(rotateAroundOrigin);
-
+      myRect.rotate(angleIncrement);
       myRect.draw(ctx);
 
       const p1 = new Vector2(0, 2);
@@ -467,8 +495,7 @@ const ProjectionDemo = () => {
     drawFn();
 
     const handleMouseDown = (event: MouseEvent) => {
-      console.log("MouseDown");
-      angleIncrement = event.ctrlKey ? -0.1 : 0.1;
+      angleIncrement = event.ctrlKey ? -3 : 3;
       drawFn();
     };
 

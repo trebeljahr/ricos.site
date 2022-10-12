@@ -101,6 +101,9 @@ export function drawProjection(
   ctx.fillStyle = poly.color;
   circle(ctx, projectedS1, 5);
   circle(ctx, projectedS2, 5);
+  ctx.strokeStyle = poly.color;
+  ctx.lineWidth = 3;
+  line(ctx, projectedS1.x, projectedS1.y, projectedS2.x, projectedS2.y);
   ctx.restore();
 }
 

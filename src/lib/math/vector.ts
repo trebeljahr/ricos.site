@@ -36,38 +36,15 @@ export class Vector2 {
     return new Vector2(this.x * scalar, this.y * scalar);
   }
 
-  project(line1: Vector2, line2: Vector2) {
-    const r = new Vector2(0, 0);
+  project(l1: Vector2, l2: Vector2) {
+    const diff = l2.sub(l1);
+    const len2 = diff.mag2();
 
-    let U =
-      (this.x - line1.x) * (line2.x - line1.x) +
-      (this.y - line1.y) * (line2.y - line1.y);
+    const diffToL1 = this.sub(l1);
+    const U = diff.dot(diffToL1) / len2;
 
-    const Udenom =
-      Math.pow(line2.x - line1.x, 2) + Math.pow(line2.y - line1.y, 2);
-
-    U /= Udenom;
-
-    r.x = line1.x + U * (line2.x - line1.x);
-    r.y = line1.y + U * (line2.y - line1.y);
+    const r = l1.add(diff.multScalar(U));
     return r;
-    //   double valDp = dotProduct(e1, e2);
-    // // get squared length of e1
-    // double len2 = e1.x * e1.x + e1.y * e1.y;
-    // Point e1 = new Point(v2.x - v1.x, v2.y - v1.y);
-
-    // const other = new Vector2(line[1].x - line[0].x, line[1].y - line[0].y);
-
-    // const len2 = other.mag2();
-    // const val = this.dot(other);
-    // return new Vector2(
-    //   other.x + (val * other.x) / len2,
-    //   other.y + (val * other.x) / len2
-    // );
-    // Point p = new Point((int)(v1.x + (val * e1.x) / len2),
-    //                     (int)(v1.y + (val * e1.y) / len2));
-
-    // return other.multScalar(this.dot(other) / other.mag2());
   }
 
   unit() {
@@ -84,6 +61,10 @@ export class Vector2 {
 
   sub(other: Vector2) {
     return new Vector2(this.x - other.x, this.y - other.y);
+  }
+
+  add(other: Vector2) {
+    return new Vector2(this.x + other.x, this.y + other.y);
   }
 
   dot(other: Vector2) {

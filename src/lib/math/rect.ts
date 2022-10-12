@@ -70,8 +70,8 @@ export class Polygon {
       ctx.lineTo(vertex.x, vertex.y);
     }
     ctx.lineTo(first.x, first.y);
-
-    fill && ctx.fill();
+    ctx.fillStyle = fill ? "red" : "blue";
+    ctx.fill();
     ctx.stroke();
     ctx.closePath();
   }

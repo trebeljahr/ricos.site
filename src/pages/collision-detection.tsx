@@ -55,9 +55,15 @@ function getDistance(projection1: Projection, projection2: Projection) {
   else return projection1.min - projection2.max;
 }
 
-function drawAxes(cnv: HTMLCanvasElement, normals: Vector2[]) {
+function drawAllProjections(
+  cnv: HTMLCanvasElement,
+  poly1: Polygon,
+  poly2: Polygon
+) {
   let ctx = cnv.getContext("2d");
   if (!ctx) return;
+
+  let normals = [...poly1.edgeNormals(), ...poly2.edgeNormals()];
 
   normals.forEach((e) => {
     if (!ctx) return;
@@ -67,57 +73,8 @@ function drawAxes(cnv: HTMLCanvasElement, normals: Vector2[]) {
       cnv.height / 2 + -e.y * 1e4
     );
 
-    ctx.beginPath();
-    ctx.strokeStyle = "grey";
-    ctx.moveTo(p1.x, p1.y);
-    ctx.lineTo(p2.x, p2.y);
-    ctx.stroke();
-    ctx.closePath();
-  });
-}
-function drawAllProjections(
-  cnv: HTMLCanvasElement,
-  poly1: Polygon,
-  poly2: Polygon
-) {
-  let ctx = cnv.getContext("2d");
-  if (!ctx) return;
-
-  let axes = [...poly1.edgeNormals(), ...poly2.edgeNormals()];
-  drawAxes(cnv, axes);
-
-  axes.forEach((e) => {
-    let projection1 = flattenPointsOn(poly1.vertices, e);
-    let projection2 = flattenPointsOn(poly2.vertices, e);
-
-    let distance = getDistance(projection1, projection2);
-
-    [projection1, projection2].forEach((p) => {
-      if (!ctx) return;
-
-      let projectionP1 = new Vector2(
-        cnv.width / 2 + e.x * p.min,
-        cnv.height / 2 + e.y * p.min
-      );
-      let projectionP2 = new Vector2(
-        cnv.width / 2 + e.x * p.max,
-        cnv.height / 2 + e.y * p.max
-      );
-      ctx.save();
-      ctx.beginPath();
-      ctx.lineWidth = 3;
-
-      distance = distance > 100 ? 100 : distance;
-
-      if (distance > 0) ctx.strokeStyle = `green`;
-      else ctx.strokeStyle = "red";
-
-      ctx.moveTo(projectionP1.x, projectionP1.y);
-      ctx.lineTo(projectionP2.x, projectionP2.y);
-      ctx.stroke();
-      ctx.closePath();
-      ctx.restore();
-    });
+    drawProjection(cnv, poly1, p1, p2);
+    drawProjection(cnv, poly2, p1, p2);
   });
 }
 

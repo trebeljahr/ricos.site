@@ -39,11 +39,24 @@ export class Rect {
   }
 }
 
+const randomBetween = (min: number, max: number) => {
+  return min + Math.floor(Math.random() * (max - min + 1));
+};
+
+function randomColor() {
+  const r = randomBetween(0, 255);
+  const g = randomBetween(0, 255);
+  const b = randomBetween(0, 255);
+  const rgb = `rgb(${r},${g},${b})`;
+  return rgb;
+}
 export class Polygon {
   public vertices: Vector2[];
+  public color: string;
 
-  constructor(points: [number, number][]) {
+  constructor(points: [number, number][], color?: string) {
     this.vertices = points.map(([x, y]) => new Vector2(x, y));
+    this.color = color || randomColor();
   }
 
   edgeNormals() {
@@ -70,7 +83,7 @@ export class Polygon {
       ctx.lineTo(vertex.x, vertex.y);
     }
     ctx.lineTo(first.x, first.y);
-    ctx.fillStyle = fill ? "red" : "blue";
+    ctx.fillStyle = fill ? "red" : this.color;
     ctx.fill();
     ctx.stroke();
     ctx.closePath();

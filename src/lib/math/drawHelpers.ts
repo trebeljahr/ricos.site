@@ -64,7 +64,7 @@ export function insidePoly({ x, y }: Vector2, vertices: Vector2[]) {
 
 export function drawProjection(
   cnv: HTMLCanvasElement,
-  rect: Rect | Polygon,
+  poly: Polygon,
   p1: Vector2,
   p2: Vector2
 ) {
@@ -77,27 +77,30 @@ export function drawProjection(
   const d1 = p1.sub(p2);
   const d2 = p2.sub(p1);
 
-  const s1 = getSupportPoint(rect.vertices, d1);
-  const s2 = getSupportPoint(rect.vertices, d2);
-
-  ctx.fillStyle = "blue";
-  circle(ctx, s1, 2);
-  circle(ctx, s2, 2);
+  const s1 = getSupportPoint(poly.vertices, d1);
+  const s2 = getSupportPoint(poly.vertices, d2);
 
   const unitV = d2.unit().multScalar(cnv.width).transform(toOrigin);
   const unitV2 = d2.unit().multScalar(-cnv.width).transform(toOrigin);
 
-  line(ctx, unitV2.x, unitV2.y, unitV.x, unitV.y);
-
   const projectedS1 = s1.project(unitV, unitV2);
   const projectedS2 = s2.project(unitV, unitV2);
 
-  ctx.fillStyle = "red";
-  circle(ctx, projectedS1, 5);
-  circle(ctx, projectedS2, 5);
-
+  ctx.save();
+  ctx.setLineDash([5, 15]);
+  ctx.strokeStyle = "rgb(150, 150, 150)";
   line(ctx, s1.x, s1.y, projectedS1.x, projectedS1.y);
   line(ctx, s2.x, s2.y, projectedS2.x, projectedS2.y);
+  ctx.restore();
+
+  ctx.strokeStyle = "black";
+  line(ctx, unitV2.x, unitV2.y, unitV.x, unitV.y);
+
+  ctx.save();
+  ctx.fillStyle = poly.color;
+  circle(ctx, projectedS1, 5);
+  circle(ctx, projectedS2, 5);
+  ctx.restore();
 }
 
 export function getScalingMatrix(x: number, y: number) {

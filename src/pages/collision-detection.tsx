@@ -1,20 +1,17 @@
 import Layout from "../components/layout";
 import SimpleReactCanvasComponent from "simple-react-canvas-component";
 import { useEffect, useState } from "react";
-import { Polygon, Rect } from "../lib/math/rect";
+import { Polygon } from "../lib/math/rect";
 import { Vector2 } from "../lib/math/vector";
 import {
-  circle,
   drawProjection,
   getRotationMatrix,
   getScalingMatrix,
-  getSupportPoint,
   getTranslationMatrix,
   insidePoly,
   line,
   toRadians,
 } from "../lib/math/drawHelpers";
-import { Matrix } from "../lib/math/matrix";
 
 function flattenPointsOn(points: Vector2[], axis: Vector2): Projection {
   let min = Number.MAX_VALUE;
@@ -48,12 +45,6 @@ type Projection = {
   max: number;
   min: number;
 };
-
-function getDistance(projection1: Projection, projection2: Projection) {
-  if (projection1.max < projection2.min)
-    return projection2.min - projection1.max;
-  else return projection1.min - projection2.max;
-}
 
 function drawAllProjections(
   cnv: HTMLCanvasElement,
@@ -105,7 +96,6 @@ const SAT = () => {
     let animationFrameId = 0;
     let mousePos: Vector2 | undefined = undefined;
     let mouseDown = false;
-    let axis = 1;
 
     const myPoly1 = new Polygon([
       [0, 0],
@@ -143,9 +133,10 @@ const SAT = () => {
       ctx.fillStyle = "blue";
       const isColliding = checkCollision(myPoly1, myPoly2);
       console.log(isColliding);
+      drawAllProjections(cnv, myPoly1, myPoly2);
+
       myPoly1.draw(ctx, isColliding);
       myPoly2.draw(ctx, isColliding);
-      drawAllProjections(cnv, myPoly1, myPoly2);
     };
 
     const updateMousePos = (event: MouseEvent) => {
@@ -161,7 +152,6 @@ const SAT = () => {
         );
         drawFn();
       }
-      // console.log(mousePos.x, mousePos.y);
     };
 
     const handleMouseDown = () => {
@@ -284,7 +274,6 @@ const MoveByMouse = () => {
         );
       }
       drawFn();
-      // console.log(mousePos.x, mousePos.y);
     };
 
     const handleMouseDown = () => {
@@ -327,6 +316,33 @@ const ProjectionAxisByAxis = () => {
 
     let axis = 0;
 
+    const myPoly = new Polygon([
+      [91.3853, 72.056],
+      [91.0849, 56.344],
+      [61.4993, 61.451],
+      [51.9736, 78.969],
+      [81.2159, 83.447],
+    ]);
+
+    const myPoly2 = new Polygon([
+      [-2, 0],
+      [-2, 1],
+      [-3, 1],
+      [-3, 0],
+    ]);
+
+    const origin = new Vector2(cnv.width / 2, cnv.height / 2);
+    const toOrigin = getTranslationMatrix(origin.x, origin.y);
+    const rotateAroundOrigin = getRotationMatrix(Math.PI / 3, origin);
+
+    myPoly.transform(getScalingMatrix(2, 2));
+    myPoly.transform(toOrigin);
+    myPoly.transform(rotateAroundOrigin);
+
+    myPoly2.transform(getScalingMatrix(80, 80));
+    myPoly2.transform(toOrigin);
+    myPoly2.transform(rotateAroundOrigin);
+
     const drawFn = () => {
       ctx.fillStyle = "rgb(240, 240, 240)";
 
@@ -335,33 +351,6 @@ const ProjectionAxisByAxis = () => {
       ctx.strokeStyle = "red";
       line(ctx, 0, cnv.height / 2, cnv.width, cnv.height / 2);
       line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
-
-      const myPoly = new Polygon([
-        [91.3853, 72.056],
-        [91.0849, 56.344],
-        [61.4993, 61.451],
-        [51.9736, 78.969],
-        [81.2159, 83.447],
-      ]);
-
-      const myPoly2 = new Polygon([
-        [-2, 0],
-        [-2, 1],
-        [-3, 1],
-        [-3, 0],
-      ]);
-
-      const origin = new Vector2(cnv.width / 2, cnv.height / 2);
-      const toOrigin = getTranslationMatrix(origin.x, origin.y);
-      const rotateAroundOrigin = getRotationMatrix(Math.PI / 3, origin);
-
-      myPoly.transform(getScalingMatrix(2, 2));
-      myPoly.transform(toOrigin);
-      myPoly.transform(rotateAroundOrigin);
-
-      myPoly2.transform(getScalingMatrix(80, 80));
-      myPoly2.transform(toOrigin);
-      myPoly2.transform(rotateAroundOrigin);
 
       myPoly.draw(ctx);
       myPoly2.draw(ctx);
@@ -421,9 +410,19 @@ const ProjectionDemo = () => {
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
-    let angle = 0.1;
     let angleIncrement = 0;
     let animationFrameId = 0;
+
+    const myRect = new Polygon([
+      [0, 0],
+      [1, 0],
+      [1, 1],
+      [0, 1],
+    ]);
+    const origin = new Vector2(cnv.width / 2, cnv.height / 2);
+    myRect.transform(getScalingMatrix(60, 60));
+    const toOrigin = getTranslationMatrix(origin.x, origin.y);
+    myRect.transform(toOrigin);
 
     const drawFn = () => {
       ctx.fillStyle = "rgb(240, 240, 240)";
@@ -433,13 +432,7 @@ const ProjectionDemo = () => {
       line(ctx, 0, cnv.height / 2, cnv.width, cnv.height / 2);
       line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
 
-      angle += angleIncrement;
-
-      const myRect = new Rect(50, 50, 100, 100);
-      const origin = new Vector2(cnv.width / 2, cnv.height / 2);
-      const toOrigin = getTranslationMatrix(origin.x, origin.y);
-      myRect.transform(toOrigin);
-      const rotateAroundOrigin = getRotationMatrix(angle, origin);
+      const rotateAroundOrigin = getRotationMatrix(angleIncrement, origin);
       myRect.transform(rotateAroundOrigin);
 
       myRect.draw(ctx);
@@ -453,7 +446,8 @@ const ProjectionDemo = () => {
     drawFn();
 
     const handleMouseDown = (event: MouseEvent) => {
-      angleIncrement = event.ctrlKey ? -0.03 : 0.03;
+      console.log("MouseDown");
+      angleIncrement = event.ctrlKey ? -0.1 : 0.1;
       drawFn();
     };
 

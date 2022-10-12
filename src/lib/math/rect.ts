@@ -50,6 +50,9 @@ function randomColor() {
   const rgb = `rgb(${r},${g},${b})`;
   return rgb;
 }
+
+const niceRed = "#dd292c";
+
 export class Polygon {
   public vertices: Vector2[];
   public color: string;
@@ -74,7 +77,7 @@ export class Polygon {
     this.vertices = this.vertices.map((vertex) => vertex.transform(matrix));
   }
 
-  draw(ctx: CanvasRenderingContext2D, fill?: boolean) {
+  draw(ctx: CanvasRenderingContext2D, collision?: boolean) {
     ctx.strokeStyle = "black";
     ctx.beginPath();
     const [first, ...rest] = this.vertices;
@@ -83,7 +86,7 @@ export class Polygon {
       ctx.lineTo(vertex.x, vertex.y);
     }
     ctx.lineTo(first.x, first.y);
-    ctx.fillStyle = fill ? "red" : this.color;
+    ctx.fillStyle = collision ? niceRed : this.color;
     ctx.fill();
     ctx.stroke();
     ctx.closePath();

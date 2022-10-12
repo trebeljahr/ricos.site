@@ -77,14 +77,18 @@ export function drawProjection(
   const d1 = p1.sub(p2);
   const d2 = p2.sub(p1);
 
+  const len = Math.max(cnv.width, cnv.height);
+  const l1 = d2.unit().multScalar(len).transform(toOrigin);
+  const l2 = d2.unit().multScalar(-len).transform(toOrigin);
+
+  ctx.strokeStyle = "black";
+  line(ctx, l2.x, l2.y, l1.x, l1.y);
+
   const s1 = getSupportPoint(poly.vertices, d1);
   const s2 = getSupportPoint(poly.vertices, d2);
 
-  const unitV = d2.unit().multScalar(cnv.width).transform(toOrigin);
-  const unitV2 = d2.unit().multScalar(-cnv.width).transform(toOrigin);
-
-  const projectedS1 = s1.project(unitV, unitV2);
-  const projectedS2 = s2.project(unitV, unitV2);
+  const projectedS1 = s1.project(l1, l2);
+  const projectedS2 = s2.project(l1, l2);
 
   ctx.save();
   ctx.setLineDash([5, 15]);
@@ -92,9 +96,6 @@ export function drawProjection(
   line(ctx, s1.x, s1.y, projectedS1.x, projectedS1.y);
   line(ctx, s2.x, s2.y, projectedS2.x, projectedS2.y);
   ctx.restore();
-
-  ctx.strokeStyle = "black";
-  line(ctx, unitV2.x, unitV2.y, unitV.x, unitV.y);
 
   ctx.save();
   ctx.fillStyle = poly.color;

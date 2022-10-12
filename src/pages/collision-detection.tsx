@@ -13,6 +13,9 @@ import {
   toRadians,
 } from "../lib/math/drawHelpers";
 
+const niceBlue = "#4763ad";
+const niceGreen = "#63ad47";
+
 function flattenPointsOn(points: Vector2[], axis: Vector2): Projection {
   let min = Number.MAX_VALUE;
   let max = -Number.MAX_VALUE;
@@ -58,11 +61,8 @@ function drawAllProjections(
 
   normals.forEach((e) => {
     if (!ctx) return;
-    let p1 = new Vector2(cnv.width / 2 + e.x * 1e4, cnv.height / 2 + e.y * 1e4);
-    let p2 = new Vector2(
-      cnv.width / 2 - e.x * 1e4,
-      cnv.height / 2 + -e.y * 1e4
-    );
+    let p1 = new Vector2(e.x, e.y);
+    let p2 = p1.multScalar(-1);
 
     drawProjection(cnv, poly1, p1, p2);
     drawProjection(cnv, poly2, p1, p2);
@@ -97,18 +97,24 @@ const SAT = () => {
     let mousePos: Vector2 | undefined = undefined;
     let mouseDown = false;
 
-    const myPoly1 = new Polygon([
-      [0, 0],
-      [1, 0],
-      [1, 1],
-      [0, 1],
-    ]);
+    const myPoly1 = new Polygon(
+      [
+        [0, 0],
+        [1, 0],
+        [1, 1],
+        [0, 1],
+      ],
+      niceGreen
+    );
 
-    const myPoly2 = new Polygon([
-      [0, 0],
-      [1, 0],
-      [0, 1],
-    ]);
+    const myPoly2 = new Polygon(
+      [
+        [0, 0],
+        [1, 0],
+        [0, 1],
+      ],
+      niceBlue
+    );
 
     const origin = new Vector2(cnv.width / 2, cnv.height / 2);
     const toOrigin = getTranslationMatrix(origin.x, origin.y);
@@ -195,20 +201,26 @@ const MoveByMouse = () => {
     let mouseDown = false;
     let axis = 1;
 
-    const myPoly1 = new Polygon([
-      [91.3853, 72.056],
-      [91.0849, 56.344],
-      [61.4993, 61.451],
-      [51.9736, 78.969],
-      [81.2159, 83.447],
-    ]);
+    const myPoly1 = new Polygon(
+      [
+        [91.3853, 72.056],
+        [91.0849, 56.344],
+        [61.4993, 61.451],
+        [51.9736, 78.969],
+        [81.2159, 83.447],
+      ],
+      niceGreen
+    );
 
-    const myPoly2 = new Polygon([
-      [-2, 0],
-      [-2, 1],
-      [-3, 1],
-      [-3, 0],
-    ]);
+    const myPoly2 = new Polygon(
+      [
+        [-2, 0],
+        [-2, 1],
+        [-3, 1],
+        [-3, 0],
+      ],
+      niceBlue
+    );
 
     const origin = new Vector2(cnv.width / 2, cnv.height / 2);
     const toOrigin = getTranslationMatrix(origin.x, origin.y);
@@ -232,8 +244,8 @@ const MoveByMouse = () => {
       line(ctx, cnv.width / 2, 0, cnv.width / 2, cnv.height);
 
       ctx.fillStyle = "blue";
-      myPoly1.draw(ctx, mousePos && insidePoly(mousePos, myPoly1.vertices));
-      myPoly2.draw(ctx, mousePos && insidePoly(mousePos, myPoly2.vertices));
+      myPoly1.draw(ctx);
+      myPoly2.draw(ctx);
 
       const pickVertices = () => {
         const i = axis % myPoly1.vertices.length;
@@ -316,20 +328,26 @@ const ProjectionAxisByAxis = () => {
 
     let axis = 0;
 
-    const myPoly = new Polygon([
-      [91.3853, 72.056],
-      [91.0849, 56.344],
-      [61.4993, 61.451],
-      [51.9736, 78.969],
-      [81.2159, 83.447],
-    ]);
+    const myPoly = new Polygon(
+      [
+        [91.3853, 72.056],
+        [91.0849, 56.344],
+        [61.4993, 61.451],
+        [51.9736, 78.969],
+        [81.2159, 83.447],
+      ],
+      niceGreen
+    );
 
-    const myPoly2 = new Polygon([
-      [-2, 0],
-      [-2, 1],
-      [-3, 1],
-      [-3, 0],
-    ]);
+    const myPoly2 = new Polygon(
+      [
+        [-2, 0],
+        [-2, 1],
+        [-3, 1],
+        [-3, 0],
+      ],
+      niceBlue
+    );
 
     const origin = new Vector2(cnv.width / 2, cnv.height / 2);
     const toOrigin = getTranslationMatrix(origin.x, origin.y);
@@ -413,12 +431,15 @@ const ProjectionDemo = () => {
     let angleIncrement = 0;
     let animationFrameId = 0;
 
-    const myRect = new Polygon([
-      [0, 0],
-      [1, 0],
-      [1, 1],
-      [0, 1],
-    ]);
+    const myRect = new Polygon(
+      [
+        [0, 0],
+        [1, 0],
+        [1, 1],
+        [0, 1],
+      ],
+      niceGreen
+    );
     const origin = new Vector2(cnv.width / 2, cnv.height / 2);
     myRect.transform(getScalingMatrix(60, 60));
     const toOrigin = getTranslationMatrix(origin.x, origin.y);

@@ -36,15 +36,12 @@ export class Vector2 {
     return new Vector2(this.x * scalar, this.y * scalar);
   }
 
-  project(l1: Vector2, l2: Vector2) {
-    const diff = l2.sub(l1);
-    const len2 = diff.mag2();
-
-    const diffToL1 = this.sub(l1);
-    const U = diff.dot(diffToL1) / len2;
-
-    const r = l1.add(diff.multScalar(U));
-    return r;
+  projectOnLine(A: Vector2, B: Vector2) {
+    // https://gamedev.stackexchange.com/a/72529/163341
+    // A + (dot(AP, AB) / dot(AB, AB)) * AB;
+    const AP = this.sub(A);
+    const AB = B.sub(A);
+    return A.add(AB.multScalar(AP.dot(AB) / AB.mag2()));
   }
 
   unit() {

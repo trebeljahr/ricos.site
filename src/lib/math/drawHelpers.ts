@@ -87,8 +87,8 @@ export function drawProjection(
   const s1 = getSupportPoint(poly.vertices, d1);
   const s2 = getSupportPoint(poly.vertices, d2);
 
-  const projectedS1 = s1.project(l1, l2);
-  const projectedS2 = s2.project(l1, l2);
+  const projectedS1 = s1.projectOnLine(l1, l2);
+  const projectedS2 = s2.projectOnLine(l1, l2);
 
   ctx.save();
   ctx.setLineDash([5, 15]);

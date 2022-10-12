@@ -62,8 +62,7 @@ function drawAllProjections(
     let p1 = new Vector2(e.x, e.y);
     let p2 = p1.multScalar(-1);
 
-    drawProjection(cnv, poly1, p1, p2);
-    drawProjection(cnv, poly2, p1, p2);
+    drawProjection(cnv, [poly1, poly2], p1, p2);
   });
 }
 

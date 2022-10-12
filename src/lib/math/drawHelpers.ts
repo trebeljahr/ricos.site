@@ -62,9 +62,38 @@ export function insidePoly({ x, y }: Vector2, vertices: Vector2[]) {
   return inside;
 }
 
+function onSegment(p: Vector2, q: Vector2, r: Vector2) {
+  if (
+    q.x <= Math.max(p.x, r.x) &&
+    q.x >= Math.min(p.x, r.x) &&
+    q.y <= Math.max(p.y, r.y) &&
+    q.y >= Math.min(p.y, r.y)
+  )
+    return true;
+
+  return false;
+}
+
+function orientation(p: Vector2, q: Vector2, r: Vector2) {
+  const val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+
+  if (val == 0) return 0;
+
+  return val > 0 ? 1 : 2;
+}
+
+function doIntersect(a1: Vector2, a2: Vector2, b1: Vector2, b2: Vector2) {
+  if (onSegment(a1, b1, a2)) return true;
+  if (onSegment(a1, b2, a2)) return true;
+  if (onSegment(b1, a1, b2)) return true;
+  if (onSegment(b1, a2, b2)) return true;
+
+  return false;
+}
+
 export function drawProjection(
   cnv: HTMLCanvasElement,
-  poly: Polygon,
+  polys: Polygon | [Polygon, Polygon],
   p1: Vector2,
   p2: Vector2
 ) {
@@ -74,8 +103,8 @@ export function drawProjection(
   const origin = new Vector2(cnv.width / 2, cnv.height / 2);
   const toOrigin = getTranslationMatrix(origin.x, origin.y);
 
-  const d1 = p1.sub(p2);
   const d2 = p2.sub(p1);
+  const d1 = p1.sub(p2);
 
   const len = Math.max(cnv.width, cnv.height);
   const l1 = d2.unit().multScalar(len).transform(toOrigin);
@@ -84,27 +113,54 @@ export function drawProjection(
   ctx.strokeStyle = "black";
   line(ctx, l2.x, l2.y, l1.x, l1.y);
 
-  const s1 = getSupportPoint(poly.vertices, d1);
-  const s2 = getSupportPoint(poly.vertices, d2);
+  const projectionHelper = (poly: Polygon) => {
+    const s1 = getSupportPoint(poly.vertices, d1);
+    const s2 = getSupportPoint(poly.vertices, d2);
 
-  const projectedS1 = s1.projectOnLine(l1, l2);
-  const projectedS2 = s2.projectOnLine(l1, l2);
+    const projectedS1 = s1.projectOnLine(l1, l2);
+    const projectedS2 = s2.projectOnLine(l1, l2);
 
-  ctx.save();
-  ctx.setLineDash([5, 15]);
-  ctx.strokeStyle = "rgb(150, 150, 150)";
-  line(ctx, s1.x, s1.y, projectedS1.x, projectedS1.y);
-  line(ctx, s2.x, s2.y, projectedS2.x, projectedS2.y);
-  ctx.restore();
+    ctx.save();
+    ctx.setLineDash([5, 15]);
+    ctx.strokeStyle = "rgb(150, 150, 150)";
+    line(ctx, s1.x, s1.y, projectedS1.x, projectedS1.y);
+    line(ctx, s2.x, s2.y, projectedS2.x, projectedS2.y);
+    ctx.restore();
 
-  ctx.save();
-  ctx.fillStyle = poly.color;
-  circle(ctx, projectedS1, 5);
-  circle(ctx, projectedS2, 5);
-  ctx.strokeStyle = poly.color;
-  ctx.lineWidth = 3;
-  line(ctx, projectedS1.x, projectedS1.y, projectedS2.x, projectedS2.y);
-  ctx.restore();
+    return [projectedS1, projectedS2] as [Vector2, Vector2];
+  };
+
+  const drawProjectionOnLine = (
+    color: string,
+    [projectedS1, projectedS2]: [Vector2, Vector2]
+  ) => {
+    ctx.save();
+    ctx.fillStyle = color;
+    circle(ctx, projectedS1, 5);
+    circle(ctx, projectedS2, 5);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 3;
+    line(ctx, projectedS1.x, projectedS1.y, projectedS2.x, projectedS2.y);
+    ctx.restore();
+  };
+
+  if (polys instanceof Polygon) {
+    const projection1 = projectionHelper(polys);
+    drawProjectionOnLine(polys.color, projection1);
+    return;
+  }
+
+  const [poly1, poly2] = polys;
+
+  const projection1 = projectionHelper(poly1);
+  const projection2 = projectionHelper(poly2);
+
+  const projectionColliding = doIntersect(...projection1, ...projection2);
+  const color1 = projectionColliding ? "red" : poly1.color;
+  const color2 = projectionColliding ? "red" : poly2.color;
+
+  drawProjectionOnLine(color1, projection1);
+  drawProjectionOnLine(color2, projection2);
 }
 
 export function getScalingMatrix(x: number, y: number) {

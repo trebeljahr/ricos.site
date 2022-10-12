@@ -12,9 +12,11 @@ import {
   getTranslationMatrix,
   insidePoly,
   line,
+  toRadians,
 } from "../lib/math/drawHelpers";
+import { Matrix } from "../lib/math/matrix";
 
-function flattenPointsOn(points: Vector2[], axis: Vector2) {
+function flattenPointsOn(points: Vector2[], axis: Vector2): Projection {
   let min = Number.MAX_VALUE;
   let max = -Number.MAX_VALUE;
   for (let point of points) {
@@ -22,7 +24,7 @@ function flattenPointsOn(points: Vector2[], axis: Vector2) {
     if (dot < min) min = dot;
     if (dot > max) max = dot;
   }
-  return [min, max];
+  return { min, max };
 }
 
 function isSeparatingAxis(
@@ -33,13 +35,90 @@ function isSeparatingAxis(
   const rangeA = flattenPointsOn(pointsA, axis);
   const rangeB = flattenPointsOn(pointsB, axis);
 
-  const separating = rangeA[0] > rangeB[1] || rangeB[0] > rangeA[1];
+  const separating = rangeA.min > rangeB.max || rangeB.min > rangeA.max;
 
   if (separating) {
     return true;
   }
 
   return false;
+}
+
+type Projection = {
+  max: number;
+  min: number;
+};
+
+function getDistance(projection1: Projection, projection2: Projection) {
+  if (projection1.max < projection2.min)
+    return projection2.min - projection1.max;
+  else return projection1.min - projection2.max;
+}
+
+function drawAxes(cnv: HTMLCanvasElement, normals: Vector2[]) {
+  let ctx = cnv.getContext("2d");
+  if (!ctx) return;
+
+  normals.forEach((e) => {
+    if (!ctx) return;
+    let p1 = new Vector2(cnv.width / 2 + e.x * 1e4, cnv.height / 2 + e.y * 1e4);
+    let p2 = new Vector2(
+      cnv.width / 2 - e.x * 1e4,
+      cnv.height / 2 + -e.y * 1e4
+    );
+
+    ctx.beginPath();
+    ctx.strokeStyle = "grey";
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.stroke();
+    ctx.closePath();
+  });
+}
+function drawAllProjections(
+  cnv: HTMLCanvasElement,
+  poly1: Polygon,
+  poly2: Polygon
+) {
+  let ctx = cnv.getContext("2d");
+  if (!ctx) return;
+
+  let axes = [...poly1.edgeNormals(), ...poly2.edgeNormals()];
+  drawAxes(cnv, axes);
+
+  axes.forEach((e) => {
+    let projection1 = flattenPointsOn(poly1.vertices, e);
+    let projection2 = flattenPointsOn(poly2.vertices, e);
+
+    let distance = getDistance(projection1, projection2);
+
+    [projection1, projection2].forEach((p) => {
+      if (!ctx) return;
+
+      let projectionP1 = new Vector2(
+        cnv.width / 2 + e.x * p.min,
+        cnv.height / 2 + e.y * p.min
+      );
+      let projectionP2 = new Vector2(
+        cnv.width / 2 + e.x * p.max,
+        cnv.height / 2 + e.y * p.max
+      );
+      ctx.save();
+      ctx.beginPath();
+      ctx.lineWidth = 3;
+
+      distance = distance > 100 ? 100 : distance;
+
+      if (distance > 0) ctx.strokeStyle = `green`;
+      else ctx.strokeStyle = "red";
+
+      ctx.moveTo(projectionP1.x, projectionP1.y);
+      ctx.lineTo(projectionP2.x, projectionP2.y);
+      ctx.stroke();
+      ctx.closePath();
+      ctx.restore();
+    });
+  });
 }
 
 function checkCollision(poly1: Polygon, poly2: Polygon) {
@@ -89,9 +168,11 @@ const SAT = () => {
 
     myPoly1.transform(getScalingMatrix(80, 80));
     myPoly1.transform(toOrigin);
+    myPoly1.transform(getRotationMatrix(toRadians(30)));
 
     myPoly2.transform(getScalingMatrix(80, 80));
     myPoly2.transform(toOrigin);
+    myPoly2.transform(getRotationMatrix(toRadians(40)));
 
     const drawFn = () => {
       ctx.fillStyle = "rgb(240, 240, 240)";
@@ -107,6 +188,7 @@ const SAT = () => {
       console.log(isColliding);
       myPoly1.draw(ctx, isColliding);
       myPoly2.draw(ctx, isColliding);
+      drawAllProjections(cnv, myPoly1, myPoly2);
     };
 
     const updateMousePos = (event: MouseEvent) => {

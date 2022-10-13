@@ -1,10 +1,6 @@
 import fs from "fs/promises";
 import { join } from "path";
-import remarkGfm from "remark-gfm";
-import remarkToc from "remark-toc";
-import rehypeHighlight from "rehype-highlight";
-// import rehypeRaw from "rehype-raw";
-import { serialize } from "next-mdx-remote/serialize";
+import matter from "gray-matter";
 
 const contentDir = join(process.cwd(), "src", "content");
 const postsDirectory = join(contentDir, "posts");
@@ -17,27 +13,19 @@ export async function getBySlug(
   directory: string
 ) {
   const realSlug = slug.replace(/\.(mdx|md)$/, "");
-  console.log({ realSlug, slug });
   const fullPath = join(directory, `${slug}`);
-  const fileContents = await fs.readFile(fullPath, "utf8");
 
   type Items = { [key: string]: string };
   const items: Items = {};
 
-  const mdxSrc = await serialize(fileContents, {
-    mdxOptions: {
-      remarkPlugins: [remarkGfm, remarkToc],
-      rehypePlugins: [rehypeHighlight],
-    },
-    parseFrontmatter: true,
-  });
+  const fileContents = await fs.readFile(fullPath, "utf8");
+  const { data, content } = matter(fileContents);
 
-  const data = mdxSrc.frontmatter || {};
   fields.forEach(async (field) => {
     if (field === "slug") {
       items[field] = realSlug;
     } else if (field === "content") {
-      items.content = mdxSrc.compiledSource;
+      items.content = content;
     } else {
       items[field] = data[field] ?? "";
     }

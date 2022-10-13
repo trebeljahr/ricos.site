@@ -23,11 +23,28 @@ author:
 Lorem Ipsum...
 Here is the epic SAT Demo.
 
-```js template="react" filename="App.js"
-export default function App() {
-  return <h1>Just some text...</h1>
+<SandpackEditor>
+
+```tsx Index.tsx active
+import App from './App'
+
+export default () => {
+  return (
+    <div>
+      <h1>Hello World</h1>
+      <p>Play with me!</p>
+    </div>
+  );
+};
+```
+
+```tsx App.tsx
+const App = () => {
+  return <div>I'm the app, but I'm in a different file!</div>
 }
 ```
+
+</SandpackEditor>
 
 
 

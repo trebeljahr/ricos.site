@@ -16,7 +16,7 @@ const withMDX = nextMDX({
       remarkMdxFrontmatter,
       remarkGfm,
       remarkToc,
-      remarkMdxCodeMeta,
+      // remarkMdxCodeMeta,
     ],
     rehypePlugins: [],
   },

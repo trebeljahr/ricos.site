@@ -227,7 +227,7 @@ export function initPolygons(cnv: HTMLCanvasElement) {
   myPoly2.transform(toOrigin);
   myPoly2.rotate(45);
 
-  return [myPoly1, myPoly2];
+  return [myPoly1, myPoly2] as [Polygon, Polygon];
 }
 
 export type State = {

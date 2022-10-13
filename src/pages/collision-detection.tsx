@@ -117,7 +117,15 @@ const SAT = () => {
   );
 };
 
-const MoveByMouse = () => {
+function colorEdge(ctx: CanvasRenderingContext2D, p1: Vector2, p2: Vector2) {
+  ctx.save();
+  ctx.strokeStyle = "yellow";
+  ctx.lineWidth = 5;
+  line(ctx, p1.x, p1.y, p2.x, p2.y);
+  ctx.restore();
+}
+
+const ExampleWith2 = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   useEffect(() => {
     if (!cnv) return;
@@ -126,10 +134,6 @@ const MoveByMouse = () => {
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
 
-    let axis = 1;
-
-    let frameId = 0;
-
     const [myPoly1, myPoly2] = initPolygons(cnv);
 
     const drawFn = () => {
@@ -137,20 +141,8 @@ const MoveByMouse = () => {
 
       myPoly1.draw(ctx);
       myPoly2.draw(ctx);
-
-      const pickVertices = () => {
-        const i = axis % myPoly1.vertices.length;
-        const i2 = (i + 1) % myPoly1.vertices.length;
-        return [myPoly1.vertices[i], myPoly1.vertices[i2]];
-      };
-
-      const [p1, p2] = pickVertices();
-      ctx.save();
-      ctx.strokeStyle = "green";
-      ctx.lineWidth = 5;
-      line(ctx, p1.x, p1.y, p2.x, p2.y);
-      ctx.restore();
-
+      const [p1, p2] = [myPoly1.vertices[0], myPoly1.vertices[1]];
+      colorEdge(ctx, p1, p2);
       drawProjection(
         cnv,
         [myPoly1, myPoly2],
@@ -171,7 +163,7 @@ const MoveByMouse = () => {
   );
 };
 
-const ProjectionAxisByAxis = () => {
+const AxisByAxis = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   useEffect(() => {
     if (!cnv) return;
@@ -181,38 +173,45 @@ const ProjectionAxisByAxis = () => {
     if (!ctx) return;
 
     let axis = 0;
+    let current = 0;
 
-    const [myPoly1, myPoly2] = initPolygons(cnv);
+    const polys = initPolygons(cnv);
 
     const drawFn = () => {
       drawBackground(ctx);
 
-      myPoly1.draw(ctx);
-      myPoly2.draw(ctx);
+      polys.forEach((poly) => poly.draw(ctx));
 
-      const pickVertices = () => {
-        const i = axis % myPoly1.vertices.length;
-        const i2 = (i + 1) % myPoly1.vertices.length;
-        return [myPoly1.vertices[i], myPoly1.vertices[i2]];
+      const pickEdge = (poly: Polygon) => {
+        const i = axis;
+        const i2 = (i + 1) % poly.vertices.length;
+        return [poly.vertices[i], poly.vertices[i2]];
       };
 
-      const [p1, p2] = pickVertices();
-      ctx.save();
-      ctx.strokeStyle = "green";
-      ctx.lineWidth = 5;
-      line(ctx, p1.x, p1.y, p2.x, p2.y);
-      ctx.restore();
+      const [p1, p2] = pickEdge(polys[current]);
 
       drawProjection(
         cnv,
-        [myPoly1, myPoly2],
+        polys,
         new Vector2(p1.y, -p1.x),
         new Vector2(p2.y, -p2.x)
       );
+      colorEdge(ctx, p1, p2);
     };
 
-    const { cleanup } = instrument(cnv, [myPoly1, myPoly2], drawFn);
-    return cleanup;
+    const { cleanup } = instrument(cnv, polys, drawFn);
+    const intervalId = setInterval(() => {
+      axis++;
+      if (axis >= polys[current].vertices.length) {
+        current++;
+        current = current >= polys.length ? 0 : current;
+        axis = 0;
+      }
+    }, 1000);
+    return () => {
+      clearInterval(intervalId);
+      cleanup;
+    };
   }, [cnv]);
 
   return (
@@ -257,21 +256,9 @@ const CollisionDetectionDemo = () => {
         <section className="main-section">
           <h1>Collision Detection Demo!</h1>
           <ProjectionDemo />
-          <ProjectionAxisByAxis />
-          <MoveByMouse />
+          <ExampleWith2 />
+          <AxisByAxis />
           <SAT />
-          {/* <Canvas
-            drawFn={(ctx, width, height) => {
-              ctx.fillStyle = "blue";
-              ctx.fillRect(0, 0, width, height);
-            }}
-          />
-          <Canvas
-            drawFn={(ctx, width, height) => {
-              ctx.fillStyle = "red";
-              ctx.fillRect(0, 0, width, height);
-            }}
-          /> */}
         </section>
       </article>
     </Layout>

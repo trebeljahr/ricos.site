@@ -1,13 +1,20 @@
 import remarkGfm from "remark-gfm";
+import remarkFrontmatter from "remark-frontmatter";
+import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
 import rehypeHighlight from "rehype-highlight";
 import nextMDX from "@next/mdx";
 
 const withMDX = nextMDX({
   options: {
-    extension: /\.(md|mdx)$/,
+    extension: /\.mdx$/,
     providerImportSource: "@mdx-js/react",
-    remarkPlugins: [remarkGfm, remarkToc],
+    remarkPlugins: [
+      remarkFrontmatter,
+      remarkMdxFrontmatter,
+      remarkGfm,
+      remarkToc,
+    ],
     rehypePlugins: [rehypeHighlight],
   },
 });

@@ -16,8 +16,9 @@ export async function getBySlug(
   fields: string[] = [],
   directory: string
 ) {
-  const realSlug = slug.replace(/\.md$/, "");
-  const fullPath = join(directory, `${realSlug}`);
+  const realSlug = slug.replace(/\.(mdx|md)$/, "");
+  console.log({ realSlug, slug });
+  const fullPath = join(directory, `${slug}`);
   const fileContents = await fs.readFile(fullPath, "utf8");
 
   type Items = { [key: string]: string };
@@ -32,7 +33,6 @@ export async function getBySlug(
   });
 
   const data = mdxSrc.frontmatter || {};
-  // Ensure only the minimal needed data is exposed
   fields.forEach(async (field) => {
     if (field === "slug") {
       items[field] = realSlug;
@@ -68,6 +68,16 @@ export function getNewsletterBySlug(slug: string, fields: string[] = []) {
 
 export function getBookReviewBySlug(slug: string, fields: string[] = []) {
   return getBySlug(slug, fields, bookReviewsDirectory);
+}
+
+export async function getAllMarkdownPosts(fields: string[] = []) {
+  const slugs = await getPostSlugs();
+  const postsPromises = slugs
+    .filter((slug) => slug.endsWith(".md"))
+    .map((slug) => getPostBySlug(slug, fields));
+  const posts = await Promise.all(postsPromises);
+  posts.sort((post1, post2) => (post1.date > post2.date ? -1 : 1));
+  return posts;
 }
 
 export async function getAllPosts(fields: string[] = []) {

@@ -3,7 +3,7 @@ import ErrorPage from "next/error";
 import PostBody from "../../components/post-body";
 import PostHeader from "../../components/post-header";
 import Layout from "../../components/layout";
-import { getPostBySlug, getAllPosts } from "../../lib/api";
+import { getPostBySlug, getAllPosts, getAllMarkdownPosts } from "../../lib/api";
 import { ReadMore } from "../../components/more-stories";
 import { UtteranceComments } from "../../components/comments";
 import { ToTopButton } from "../../components/ToTopButton";
@@ -69,7 +69,7 @@ function getRandom(arr: any[], n: number) {
 }
 
 export async function getStaticProps({ params }: Params) {
-  const post = await getPostBySlug(params.slug, [
+  const post = await getPostBySlug(params.slug + ".md", [
     "title",
     "subtitle",
     "date",
@@ -94,7 +94,7 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const posts = await getAllPosts(["slug"]);
+  const posts = await getAllMarkdownPosts(["slug"]);
 
   return {
     paths: posts.map((post) => {

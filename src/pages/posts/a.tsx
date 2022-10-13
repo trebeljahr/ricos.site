@@ -6,9 +6,9 @@ import { SAT } from "../../components/collision-detection/SAT";
 import { ProjectionDemo } from "../../components/collision-detection/ProjectionDemo";
 import { AxisByAxis } from "../../components/collision-detection/AxisByAxis";
 import { ExampleWith2Polygons } from "../../components/collision-detection/ExampleWith2Polygons";
-import CollisionDetectionPost from "../../content/posts/collision-detection.mdx";
+import CollisionDetectionPost from "../../content/posts/a.mdx";
 
-export default function Post() {
+const Post = () => {
   return (
     <Layout title="Collisions" description="Stuff about Collisions">
       <main>
@@ -27,4 +27,6 @@ export default function Post() {
       </main>
     </Layout>
   );
-}
+};
+
+export default Post;

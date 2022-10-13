@@ -112,7 +112,7 @@ function drawSequence(sequence) {
 
 This is a little more complicated, but allows for the generation of very pretty patterns, because the sequences we generate can do all kinds of stuff now. Like increasing the line width or weight or changing the direction into which a line is drawn. 
 
-The only thing missing is the instruction set for each of the fractals we would like to generate. For each one we at least need a starting sequence and replacement rules. Usually we would also like to rotate by a certain angle. And so we can generate another object that holds this information for each of our fractals. Here's the one for the [Lévy Curve from the Garden]()
+The only thing missing is the instruction set for each of the fractals we would like to generate. For each one we at least need a starting sequence and replacement rules. Usually we would also like to rotate by a certain angle. And so we can generate another object that holds this information for each of our fractals. Here's the one for the [Lévy Curve from the Garden](https://www.fractal.garden/l-system/levy-curve)
 
 ```ts
 const levyCurveRules: Ruleset = {

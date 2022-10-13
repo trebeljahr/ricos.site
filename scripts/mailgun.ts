@@ -7,7 +7,10 @@ config();
 const mailgun = new Mailgun(formData);
 
 const DOMAIN = "newsletter.trebeljahr.com";
-export const newsletterListMail = `test@${DOMAIN}`;
+export const newsletterListMail =
+  process.env.NODE_ENV === "production" ? `hi@${DOMAIN}` : `test@${DOMAIN}`;
+
+console.log(`Sending Newsletter to ${newsletterListMail}`);
 
 const mg = mailgun.client({
   username: "api",

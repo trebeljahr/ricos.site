@@ -13,8 +13,11 @@ import rehypeStringify from "rehype-stringify";
 
 const newsletterNumber = 2;
 const LIVE_HOST = "https://trebeljahr.com";
+
 const HOST =
-  process.env.NODE_ENV === "production" ? LIVE_HOST : "http://localhost:3000";
+  process.env.NODE_ENV === "production" || process.env.NODE_ENV === "testing"
+    ? LIVE_HOST
+    : "http://localhost:3000";
 
 async function main() {
   const emailHandlebarsFile = await readFile(
@@ -41,12 +44,9 @@ async function main() {
     "utf-8"
   );
 
-  function addHost(url: any, node: any) {
-    console.log(url.href.startsWith("/"));
+  function addHost(url: any) {
     if (url.href.startsWith("/")) {
-      console.log(url);
-      console.log(node);
-      return LIVE_HOST + url.path;
+      return HOST + url.path;
     }
   }
 
@@ -78,7 +78,6 @@ async function main() {
     .use(remarkParse)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeUrls, addHost)
-    // .use(rehypeUrls, logUrls)
     .use(rehypeRewrite, {
       rewrite: rewriteImages,
     })
@@ -96,14 +95,13 @@ async function main() {
   const data = {
     from: "Rico Trebeljahr <rico@newsletter.trebeljahr.com>",
     to: newsletterListMail,
-    subject: "Newsletter #2 | trebeljahr.com",
+    subject: `Newsletter #${newsletterNumber} | trebeljahr.com`,
     html: htmlEmail,
     text: mdFileRaw,
   };
 
-  console.log("Sending email...");
   await sendEmail(data);
-  console.log("Done!");
+  console.log("Successfully sent email!");
 }
 
 main();

@@ -1,17 +1,15 @@
-import matter from "gray-matter";
 import fs from "fs/promises";
 import { join } from "path";
+import { getBySlug } from "./api";
 
 export function getStaticPropsGetter(pageName: string) {
-  const content = join(process.cwd(), "src", "content");
-  const path = join(content, "pages", pageName);
-
   return async () => {
-    const fileContents = await fs.readFile(path, "utf-8");
-    const {
-      data: { description, title, subtitle },
-      content,
-    } = matter(fileContents);
+    const dir = join(process.cwd(), "src", "content", "pages");
+    const { content, description, title, subtitle } = await getBySlug(
+      pageName,
+      ["content", "description", "title", "subtitle"],
+      dir
+    );
 
     return {
       props: { content, description, title, subtitle },

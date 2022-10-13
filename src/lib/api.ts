@@ -12,7 +12,7 @@ const postsDirectory = join(contentDir, "posts");
 const bookReviewsDirectory = join(contentDir, "booknotes");
 const newsletterDirectory = join(contentDir, "newsletters");
 
-async function getBySlug(
+export async function getBySlug(
   slug: string,
   fields: string[] = [],
   directory: string

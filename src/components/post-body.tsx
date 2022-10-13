@@ -14,8 +14,7 @@ type HeadingResolverProps = {
 
 type ChildrenProps = { children: JSX.Element[] };
 
-function getAnchor(children: JSX.Element[]) {
-  const heading = children[0]?.props?.value || children[0];
+function getAnchor(heading: JSX.Element[] | string) {
   let anchor = (typeof heading === "string" ? heading.toLowerCase() : "")
     .replace(/[^a-zA-Z0-9 ]/g, "")
     .replace(/ /g, "-");

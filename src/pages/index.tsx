@@ -79,7 +79,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
 export default Index;
 
 export const getStaticProps = async () => {
-  const allPosts = getAllPosts([
+  const allPosts = await getAllPosts([
     "title",
     "date",
     "slug",

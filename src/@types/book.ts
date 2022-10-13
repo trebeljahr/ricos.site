@@ -12,7 +12,7 @@ type BookType = {
   detailedNotes: false;
   amazonLink: string;
   rating: number;
-  content: MDXRemoteSerializeResult<Record<string, unknown>>;
+  content: string;
 };
 
 export default BookType;

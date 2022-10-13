@@ -28,8 +28,8 @@ const BuyItOnAmazon = ({ link }: { link: string }) => {
 };
 
 const BooknotesWithDefault = ({ book }: Props) => {
-  console.log(book.content);
-  if (book.content.compiledSource) return <PostBody content={book.content} />;
+  if (book.done || book.summary || book.detailedNotes)
+    return <PostBody content={book.content} />;
   return (
     <div className="main-text">
       <p className="placeholder-text">

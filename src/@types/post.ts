@@ -9,5 +9,5 @@ export type Post = {
   cover: string;
   author: Author;
   excerpt: string;
-  content: MDXRemoteSerializeResult<Record<string, unknown>>;
+  content: string;
 };

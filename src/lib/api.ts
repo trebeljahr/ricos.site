@@ -1,6 +1,5 @@
 import fs from "fs/promises";
 import { join } from "path";
-import matter from "gray-matter";
 import remarkGfm from "remark-gfm";
 import remarkToc from "remark-toc";
 import rehypeHighlight from "rehype-highlight";
@@ -21,26 +20,25 @@ async function getBySlug(
   const realSlug = slug.replace(/\.md$/, "");
   const fullPath = join(directory, `${realSlug}`);
   const fileContents = await fs.readFile(fullPath, "utf8");
-  // const { data, content } = matter(fileContents);
 
-  type Items = Omit<{ [key: string]: string }, "content"> & {
-    content?: MDXRemoteSerializeResult<Record<string, unknown>>;
-  };
-
+  type Items = { [key: string]: string };
   const items: Items = {};
 
+  const mdxSrc = await serialize(fileContents, {
+    mdxOptions: {
+      remarkPlugins: [remarkGfm, remarkToc],
+      rehypePlugins: [rehypeRaw, rehypeHighlight],
+    },
+    parseFrontmatter: true,
+  });
+
+  const data = mdxSrc.frontmatter || {};
   // Ensure only the minimal needed data is exposed
   fields.forEach(async (field) => {
     if (field === "slug") {
       items[field] = realSlug;
     } else if (field === "content") {
-      items[field] = await serialize(fileContents, {
-        mdxOptions: {
-          remarkPlugins: [remarkGfm, remarkToc],
-          rehypePlugins: [rehypeRaw, rehypeHighlight],
-        },
-        parseFrontmatter: true,
-      });
+      items.content = mdxSrc.compiledSource;
     } else {
       items[field] = data[field] ?? "";
     }

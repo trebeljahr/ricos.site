@@ -9,7 +9,6 @@ import { UtteranceComments } from "../../components/comments";
 import { ToTopButton } from "../../components/ToTopButton";
 import { Post as PostType } from "../../@types/post";
 import { NewsletterForm } from "../../components/newsletter-signup";
-import { serialize } from "next-mdx-remote/serialize";
 
 type Props = {
   post: PostType;
@@ -70,9 +69,17 @@ function getRandom(arr: any[], n: number) {
 }
 
 export async function getStaticProps({ params }: Params) {
-  const post = await getPostBySlug(params.slug);
-  const bySlug = (otherPost: any) =>
-    otherPost.frontmatter.slug !== post.frontmatter.slug;
+  const post = await getPostBySlug(params.slug, [
+    "title",
+    "subtitle",
+    "date",
+    "slug",
+    "author",
+    "excerpt",
+    "content",
+    "cover",
+  ]);
+  const bySlug = (otherPost: any) => otherPost.slug !== post.slug;
   const otherPosts = (await getAllPosts(["title", "slug", "excerpt"])).filter(
     bySlug
   );

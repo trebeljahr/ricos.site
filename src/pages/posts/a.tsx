@@ -6,9 +6,12 @@ import { SAT } from "../../components/collision-detection/SAT";
 import { ProjectionDemo } from "../../components/collision-detection/ProjectionDemo";
 import { AxisByAxis } from "../../components/collision-detection/AxisByAxis";
 import { ExampleWith2Polygons } from "../../components/collision-detection/ExampleWith2Polygons";
+import * as frontmatter from "../../content/posts/a.mdx";
 import CollisionDetectionPost from "../../content/posts/a.mdx";
 
 const Post = () => {
+  console.log({ ...frontmatter });
+
   return (
     <Layout title="Collisions" description="Stuff about Collisions">
       <main>

@@ -3,9 +3,8 @@ import { join } from "path";
 import remarkGfm from "remark-gfm";
 import remarkToc from "remark-toc";
 import rehypeHighlight from "rehype-highlight";
-import rehypeRaw from "rehype-raw";
+// import rehypeRaw from "rehype-raw";
 import { serialize } from "next-mdx-remote/serialize";
-import { MDXRemoteSerializeResult } from "next-mdx-remote";
 
 const contentDir = join(process.cwd(), "src", "content");
 const postsDirectory = join(contentDir, "posts");
@@ -27,7 +26,7 @@ export async function getBySlug(
   const mdxSrc = await serialize(fileContents, {
     mdxOptions: {
       remarkPlugins: [remarkGfm, remarkToc],
-      rehypePlugins: [rehypeRaw, rehypeHighlight],
+      rehypePlugins: [rehypeHighlight],
     },
     parseFrontmatter: true,
   });

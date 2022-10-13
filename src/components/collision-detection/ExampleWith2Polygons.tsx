@@ -8,7 +8,7 @@ import {
 import { Vector2 } from "../../lib/math/vector";
 import { colorEdge, drawBackground } from "./helpers";
 
-export const ExampleWith2 = () => {
+export const ExampleWith2Polygons = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   useEffect(() => {
     if (!cnv) return;

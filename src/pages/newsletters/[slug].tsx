@@ -46,7 +46,9 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const newsletter = await getNewsletterBySlug(params.slug, ["content"]);
+  const newsletter = await getNewsletterBySlug(params.slug + ".md", [
+    "content",
+  ]);
 
   return {
     props: {

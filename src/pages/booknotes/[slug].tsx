@@ -89,7 +89,7 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const book = await getBookReviewBySlug(params.slug, [
+  const book = await getBookReviewBySlug(params.slug + ".md", [
     "title",
     "slug",
     "subtitle",

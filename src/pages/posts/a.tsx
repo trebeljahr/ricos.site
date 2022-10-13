@@ -10,7 +10,7 @@ import * as frontmatter from "../../content/posts/a.mdx";
 import CollisionDetectionPost from "../../content/posts/a.mdx";
 
 const Post = () => {
-  console.log({ ...frontmatter });
+  // console.log({ ...frontmatter });
 
   return (
     <Layout title="Collisions" description="Stuff about Collisions">

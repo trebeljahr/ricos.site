@@ -60,6 +60,9 @@ export function Navbar() {
     setExpanded(width ? width > 1030 : false);
   }, [width]);
 
+  const setExpandedOnMobile = () => {
+    setExpanded(width ? width > 1030 : false);
+  };
   return (
     <nav role="navigation" className="primary-navigation">
       <div className="navbar-controls">
@@ -73,7 +76,7 @@ export function Navbar() {
         </button>
       </div>
       <ul>
-        <Navlinks expanded={expanded} setExpanded={setExpanded} />
+        <Navlinks expanded={expanded} setExpanded={setExpandedOnMobile} />
       </ul>
     </nav>
   );

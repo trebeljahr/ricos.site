@@ -16,10 +16,6 @@ type Props = {
 };
 
 const Post = ({ post, morePosts }: Props) => {
-  const router = useRouter();
-  if (!router.isFallback && !post?.slug) {
-    return <ErrorPage statusCode={404} />;
-  }
   return (
     <Layout
       description={post.excerpt}

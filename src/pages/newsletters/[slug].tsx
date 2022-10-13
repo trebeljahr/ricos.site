@@ -46,7 +46,7 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const newsletter = getNewsletterBySlug(params.slug, ["content"]);
+  const newsletter = await getNewsletterBySlug(params.slug, ["content"]);
 
   return {
     props: {
@@ -57,7 +57,7 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const newsletter = getAllNewsletters(["slug"]);
+  const newsletter = await getAllNewsletters(["slug"]);
 
   return {
     paths: newsletter.map((newsletter) => {

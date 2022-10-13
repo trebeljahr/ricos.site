@@ -1,15 +1,13 @@
-import React, { useEffect } from "react";
-import ReactMarkdown from "react-markdown";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import remarkToc from "remark-toc";
-import rehypeRaw from "rehype-raw";
+
 import { ExternalLink } from "./ExternalLink";
-import remarkGfm from "remark-gfm";
-import rehypeHighlight from "rehype-highlight";
+
+import { MDXProvider } from "@mdx-js/react";
 
 type Props = {
-  content: string;
+  content: MDXRemoteSerializeResult<Record<string, unknown>>;
 };
 
 type HeadingResolverProps = {
@@ -43,44 +41,17 @@ const HeadingRenderer: React.FC<HeadingResolverProps> = ({
   }
 };
 
-const ImageRenderer = (props: { children?: any; node?: any }) => {
-  const { node } = props;
-  const image = node;
-  const metastring = image.properties.alt;
-  const alt = metastring?.replace(/ *\{[^)]*\} */g, "");
-
-  const isPriority = metastring?.toLowerCase().match("{priority}");
-  const hasCaption = metastring?.toLowerCase().includes("{caption:");
-  const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
-
+const ImageRenderer = (props: any) => {
   return (
     <>
       <span className="postImgWrapper">
-        <Image
-          src={image.properties.src}
-          layout="fill"
-          objectFit="cover"
-          alt={alt}
-          priority={isPriority}
-          // placeholder="blur"
-        />
+        <Image alt={props.alt} layout="fill" objectFit="cover" {...props} />
       </span>
-      {hasCaption ? (
-        <div className="caption" aria-label={caption}>
-          {caption}
-        </div>
-      ) : null}
     </>
   );
 };
 
-const ParagraphRenderer = (props: { children?: JSX.Element[]; node?: any }) => {
-  const { node } = props;
-
-  if (node.children[0].tagName === "img") {
-    return ImageRenderer(props);
-  }
-
+const ParagraphRenderer = (props: { children?: JSX.Element[] }) => {
   const className =
     props.children?.length &&
     (props.children[0] as unknown as string)[0] === "—"
@@ -105,7 +76,7 @@ const LinkRenderer = (props: any) => {
   return <ExternalLink {...props} />;
 };
 
-const MarkdownRenderers: object = {
+const MarkdownRenderers: any = {
   h1: HeadingRenderer,
   h2: HeadingRenderer,
   h3: HeadingRenderer,
@@ -117,16 +88,13 @@ const MarkdownRenderers: object = {
   img: ImageRenderer,
 };
 
+import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
+
 const PostBody = ({ content }: Props) => {
   return (
     <div className="main-text">
-      <ReactMarkdown
-        remarkPlugins={[remarkToc, remarkGfm]}
-        rehypePlugins={[rehypeRaw, rehypeHighlight]}
-        components={MarkdownRenderers}
-      >
-        {content}
-      </ReactMarkdown>
+      <MDXRemote {...content} components={MarkdownRenderers} />
+      {/* <MDXProvider components={MarkdownRenderers}>{content}</MDXProvider> */}
     </div>
   );
 };

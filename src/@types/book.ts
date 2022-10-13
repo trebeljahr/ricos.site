@@ -1,3 +1,5 @@
+import { MDXRemoteSerializeResult } from "next-mdx-remote";
+
 type BookType = {
   slug: string;
   title: string;
@@ -10,7 +12,7 @@ type BookType = {
   detailedNotes: false;
   amazonLink: string;
   rating: number;
-  content: string;
+  content: MDXRemoteSerializeResult<Record<string, unknown>>;
 };
 
 export default BookType;

@@ -1,3 +1,4 @@
+import { MDXRemoteSerializeResult } from "next-mdx-remote";
 import Author from "./author";
 
 export type Post = {
@@ -8,5 +9,5 @@ export type Post = {
   cover: string;
   author: Author;
   excerpt: string;
-  content: string;
+  content: MDXRemoteSerializeResult<Record<string, unknown>>;
 };

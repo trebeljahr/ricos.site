@@ -28,7 +28,8 @@ const BuyItOnAmazon = ({ link }: { link: string }) => {
 };
 
 const BooknotesWithDefault = ({ book }: Props) => {
-  if (book.content) return <PostBody content={book.content} />;
+  console.log(book.content);
+  if (book.content.compiledSource) return <PostBody content={book.content} />;
   return (
     <div className="main-text">
       <p className="placeholder-text">
@@ -88,7 +89,7 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const book = getBookReviewBySlug(params.slug, [
+  const book = await getBookReviewBySlug(params.slug, [
     "title",
     "slug",
     "subtitle",
@@ -108,7 +109,7 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const books = getAllBookReviews(["slug", "done"]);
+  const books = await getAllBookReviews(["slug", "done"]);
   return {
     paths: books
       // .filter(({ done }) => done)

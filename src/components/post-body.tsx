@@ -5,11 +5,7 @@ import { ExternalLink } from "./ExternalLink";
 
 type Props = {
   content: string;
-};
-
-type HeadingResolverProps = {
-  level: number;
-  children: JSX.Element[];
+  components: Components;
 };
 
 type ChildrenProps = { children: JSX.Element[] };
@@ -87,7 +83,8 @@ const MarkdownRenderers: any = {
   img: ImageRenderer,
 };
 
-import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
+import { MDXRemote } from "next-mdx-remote";
+import { Components } from "react-markdown";
 
 const PostBody = ({ content }: Props) => {
   return (

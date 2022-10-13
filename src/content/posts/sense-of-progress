@@ -1,8 +1,7 @@
 ---
 title: "A Sense of Progress"
 subtitle: "And why we have it"
-excerpt: "Most people think of progress as a good thing. We want to be better than we were before, we want to push our limits, and we want to invent, create and thrive. We have a sense of progress, and that sense makes us feel good. 
-But, why?"
+excerpt: "Most people think of progress as a good thing. We want to be better than we were before, we want to push our limits, and we want to invent, create and thrive. We have a sense of progress, and that sense makes us feel good. But, why?"
 cover: "/assets/blog/hike.jpg"
 date: "2020-03-05T05:35:07.322Z"
 author:

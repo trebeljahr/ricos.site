@@ -5,7 +5,6 @@ import { ExternalLink } from "./ExternalLink";
 
 type Props = {
   content: string;
-  components: Components;
 };
 
 type ChildrenProps = { children: JSX.Element[] };
@@ -84,7 +83,6 @@ const MarkdownRenderers: any = {
 };
 
 import { MDXRemote } from "next-mdx-remote";
-import { Components } from "react-markdown";
 
 const PostBody = ({ content }: Props) => {
   return (

@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import { MDXProvider } from "@mdx-js/react";
 import Layout from "../../components/layout";
 
@@ -7,13 +6,34 @@ import { ProjectionDemo } from "../../components/collision-detection/ProjectionD
 import { AxisByAxis } from "../../components/collision-detection/AxisByAxis";
 import { ExampleWith2Polygons } from "../../components/collision-detection/ExampleWith2Polygons";
 import * as frontmatter from "../../content/posts/a.mdx";
-import CollisionDetectionPost from "../../content/posts/a.mdx";
+import { Post } from "../../@types/post";
+import { MDXProps } from "mdx/types";
+import { CodeBlock } from "../../components/CodeBlock";
 
-const Post = () => {
-  // console.log({ ...frontmatter });
+interface MDXPost extends Post {
+  default(props: MDXProps): JSX.Element;
+}
+const {
+  title,
+  excerpt,
+  default: CollisionDetectionPost,
+} = frontmatter as MDXPost;
 
+import { Sandpack } from "@codesandbox/sandpack-react";
+
+const CustomMDXCode = (props: any) => {
+  console.log(props);
   return (
-    <Layout title="Collisions" description="Stuff about Collisions">
+    <Sandpack
+      template={props.template}
+      files={{ [`/${props.filename}`]: props.children.props.children }}
+    />
+  );
+};
+
+const PostComponent = () => {
+  return (
+    <Layout title={title} description={excerpt}>
       <main>
         <article>
           <MDXProvider
@@ -22,6 +42,11 @@ const Post = () => {
               ProjectionDemo,
               AxisByAxis,
               ExampleWith2Polygons,
+              CodeBlock,
+              pre: (props) => {
+                console.log(props);
+                return <CustomMDXCode {...props} />;
+              },
             }}
           >
             <CollisionDetectionPost />
@@ -32,4 +57,4 @@ const Post = () => {
   );
 };
 
-export default Post;
+export default PostComponent;

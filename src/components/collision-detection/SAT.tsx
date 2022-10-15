@@ -21,7 +21,7 @@ export const SAT = () => {
       myPoly2.draw(ctx, { collision });
     };
 
-    const { cleanup } = instrument(cnv, [myPoly1, myPoly2], drawFn);
+    const { cleanup } = instrument(ctx, [myPoly1, myPoly2], drawFn);
     return cleanup;
   }, [cnv]);
 

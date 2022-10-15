@@ -40,6 +40,7 @@ export class Polygon {
   public color: string;
   public selected: boolean;
   public hover: boolean;
+  public hoveredVertex: Vector2 | undefined;
 
   constructor(points: [number, number][], color?: string) {
     this.vertices = points.map(([x, y]) => new Vector2(x, y));
@@ -89,6 +90,7 @@ export class Polygon {
     const [first, ...rest] = this.vertices;
     ctx.moveTo(first.x, first.y);
     for (let vertex of rest) {
+      ctx.fillStyle = "blue";
       ctx.lineTo(vertex.x, vertex.y);
     }
     ctx.lineTo(first.x, first.y);
@@ -101,6 +103,15 @@ export class Polygon {
     ctx.fillStyle = "black";
     const centroid = this.centroid();
     circle(ctx, centroid, 1);
+
+    for (let vertex of this.vertices) {
+      ctx.fillStyle = "blue";
+
+      circle(ctx, vertex, 7);
+    }
+    ctx.fillStyle = "red";
+    this.hoveredVertex && circle(ctx, this.hoveredVertex, 7);
+
     ctx.restore();
   }
 }

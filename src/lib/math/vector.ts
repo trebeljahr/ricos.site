@@ -1,4 +1,6 @@
 import { Matrix } from "./matrix";
+
+const precision = 0.000001;
 export class Vector2 {
   public components: [number, number, number];
 
@@ -78,6 +80,12 @@ export class Vector2 {
     this.x = newX;
     this.y = newY;
     return this;
+  }
+  equals(other: Vector2) {
+    return (
+      Math.abs(other.x - this.x) < precision &&
+      Math.abs(other.y - this.y) < precision
+    );
   }
 
   *[Symbol.iterator](): IterableIterator<number> {

@@ -204,10 +204,12 @@ export function getRotationMatrix(
 }
 
 export function circle(ctx: CanvasRenderingContext2D, p: Vector2, d: number) {
+  ctx.save();
   ctx.beginPath();
   ctx.arc(p.x, p.y, d, 0, 2 * Math.PI);
   ctx.fill();
   ctx.closePath();
+  ctx.restore();
 }
 
 const niceBlue = "#4763ad";
@@ -250,7 +252,8 @@ export function initPolygons(cnv: HTMLCanvasElement) {
 }
 
 export type State = {
-  draggedPoly: Polygon | null;
+  draggedPoly: Polygon | undefined;
+  draggedPoint: Vector2 | undefined;
   rotationChange: number;
 };
 
@@ -263,35 +266,48 @@ function handleRotations(polys: Polygon[], amount: number) {
 }
 
 export function instrument(
-  cnv: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D,
   polys: Polygon[],
   drawFn: () => void
 ) {
   const rotationSpeed = 3;
   let state: State = {
     draggedPoly: null,
+    draggedPoint: null,
     rotationChange: 0,
   };
 
   const updateMousePos = (event: MouseEvent) => {
     const mousePos = new Vector2(event.offsetX, event.offsetY);
-    polys.forEach((poly) => (poly.hover = false));
 
     for (let poly of polys) {
+      poly.hover = false;
+
       if (insidePoly(mousePos, poly.vertices)) {
         poly.hover = true;
-        return;
       }
+      poly.hoveredVertex = poly.vertices.find((pos) => {
+        return mousePos.sub(pos).mag() <= 7 || state?.draggedPoint?.equals(pos);
+      });
     }
-    if (!state.draggedPoly) return;
-    state.draggedPoly.transform(
-      getTranslationMatrix(event.movementX, event.movementY)
-    );
+    state.draggedPoly &&
+      state.draggedPoly.transform(
+        getTranslationMatrix(event.movementX, event.movementY)
+      );
+
+    state.draggedPoint &&
+      state.draggedPoint.transform(
+        getTranslationMatrix(event.movementX, event.movementY)
+      );
   };
 
   const handleMouseDown = (event: MouseEvent) => {
     const mousePos = new Vector2(event.offsetX, event.offsetY);
     for (let poly of polys) {
+      if (poly.hoveredVertex) {
+        state.draggedPoint = poly.hoveredVertex;
+        return;
+      }
       if (insidePoly(mousePos, poly.vertices)) {
         state.draggedPoly = poly;
         polys.forEach((poly) => (poly.selected = false));
@@ -300,12 +316,12 @@ export function instrument(
         return;
       }
     }
-
     polys.forEach((poly) => (poly.selected = false));
   };
 
   const handleMouseUp = () => {
-    state.draggedPoly = null;
+    state.draggedPoly = undefined;
+    state.draggedPoint = undefined;
   };
 
   const handleRotation = (event: KeyboardEvent) => {
@@ -330,11 +346,11 @@ export function instrument(
     }
   };
 
-  cnv.addEventListener("keyup", stopRotation);
-  cnv.addEventListener("keydown", handleRotation);
-  cnv.addEventListener("mousemove", updateMousePos);
-  cnv.addEventListener("mousedown", handleMouseDown);
-  cnv.addEventListener("mouseup", handleMouseUp);
+  ctx.canvas.addEventListener("keyup", stopRotation);
+  ctx.canvas.addEventListener("keydown", handleRotation);
+  ctx.canvas.addEventListener("mousemove", updateMousePos);
+  ctx.canvas.addEventListener("mousedown", handleMouseDown);
+  ctx.canvas.addEventListener("mouseup", handleMouseUp);
 
   let frameId = 0;
   const loop = () => {
@@ -348,11 +364,11 @@ export function instrument(
 
   return {
     cleanup: () => {
-      cnv.removeEventListener("keyup", stopRotation);
-      cnv.removeEventListener("keydown", handleRotation);
-      cnv.removeEventListener("mousemove", updateMousePos);
-      cnv.removeEventListener("mousedown", handleMouseDown);
-      cnv.removeEventListener("mouseup", handleMouseUp);
+      ctx.canvas.removeEventListener("keyup", stopRotation);
+      ctx.canvas.removeEventListener("keydown", handleRotation);
+      ctx.canvas.removeEventListener("mousemove", updateMousePos);
+      ctx.canvas.removeEventListener("mousedown", handleMouseDown);
+      ctx.canvas.removeEventListener("mouseup", handleMouseUp);
       cancelAnimationFrame(frameId);
     },
   };

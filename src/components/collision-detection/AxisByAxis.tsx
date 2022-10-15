@@ -45,7 +45,7 @@ export const AxisByAxis = () => {
       colorEdge(ctx, p1, p2);
     };
 
-    const { cleanup } = instrument(cnv, polys, drawFn);
+    const { cleanup } = instrument(ctx, polys, drawFn);
     const intervalId = setInterval(() => {
       axis++;
       if (axis >= polys[current].vertices.length) {

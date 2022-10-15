@@ -1,4 +1,4 @@
-import { Rect, Polygon } from "./rect";
+import { Polygon } from "./Poly";
 import { Matrix } from "./matrix";
 import { Vector2 } from "./vector";
 
@@ -83,6 +83,39 @@ function doIntersect(a1: Vector2, a2: Vector2, b1: Vector2, b2: Vector2) {
   return false;
 }
 
+export function drawProjectionOnLine(
+  ctx: CanvasRenderingContext2D,
+  color: string,
+  [projectedS1, projectedS2]: [Vector2, Vector2]
+) {
+  ctx.save();
+  ctx.fillStyle = color;
+  circle(ctx, projectedS1, 3);
+  circle(ctx, projectedS2, 3);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 3;
+  line(ctx, projectedS1.x, projectedS1.y, projectedS2.x, projectedS2.y);
+  ctx.restore();
+}
+
+export function drawInfiniteLine(
+  ctx: CanvasRenderingContext2D,
+  p1: Vector2,
+  p2: Vector2
+) {
+  ctx.save();
+  const d = p1.sub(p2);
+
+  const len = Math.max(ctx.canvas.width, ctx.canvas.height);
+  const l1 = p1.add(d.multScalar(len));
+  const l2 = p1.add(d.multScalar(-len));
+
+  console.log(l1, l2);
+  ctx.strokeStyle = "rgba(100, 100, 100, 0.5)";
+  line(ctx, l2.x, l2.y, l1.x, l1.y);
+  ctx.restore();
+}
+
 export function drawProjection(
   cnv: HTMLCanvasElement,
   polys: Polygon | [Polygon, Polygon],
@@ -122,23 +155,9 @@ export function drawProjection(
     return [projectedS1, projectedS2] as [Vector2, Vector2];
   };
 
-  const drawProjectionOnLine = (
-    color: string,
-    [projectedS1, projectedS2]: [Vector2, Vector2]
-  ) => {
-    ctx.save();
-    ctx.fillStyle = color;
-    circle(ctx, projectedS1, 3);
-    circle(ctx, projectedS2, 3);
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 3;
-    line(ctx, projectedS1.x, projectedS1.y, projectedS2.x, projectedS2.y);
-    ctx.restore();
-  };
-
   if (polys instanceof Polygon) {
     const projection1 = projectionHelper(polys);
-    drawProjectionOnLine(polys.color, projection1);
+    drawProjectionOnLine(ctx, polys.color, projection1);
     return;
   }
 
@@ -151,8 +170,8 @@ export function drawProjection(
   const color1 = projectionColliding ? "red" : poly1.color;
   const color2 = projectionColliding ? "red" : poly2.color;
 
-  drawProjectionOnLine(color1, projection1);
-  drawProjectionOnLine(color2, projection2);
+  drawProjectionOnLine(ctx, color1, projection1);
+  drawProjectionOnLine(ctx, color2, projection2);
 }
 
 export function getScalingMatrix(x: number, y: number) {
@@ -255,6 +274,15 @@ export function instrument(
   };
 
   const updateMousePos = (event: MouseEvent) => {
+    const mousePos = new Vector2(event.offsetX, event.offsetY);
+    polys.forEach((poly) => (poly.hover = false));
+
+    for (let poly of polys) {
+      if (insidePoly(mousePos, poly.vertices)) {
+        poly.hover = true;
+        return;
+      }
+    }
     if (!state.draggedPoly) return;
     state.draggedPoly.transform(
       getTranslationMatrix(event.movementX, event.movementY)

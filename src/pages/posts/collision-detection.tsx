@@ -7,7 +7,7 @@ import { ExampleWith2Polygons } from "../../components/collision-detection/Examp
 import * as frontmatter from "../../content/posts/collision-detection.mdx";
 import { Post } from "../../@types/post";
 import { MDXProps } from "mdx/types";
-
+import { MatrixDemo } from "../../components/collision-detection/MatrixDemo";
 interface MDXPost extends Post {
   default(props: MDXProps): JSX.Element;
 }
@@ -28,6 +28,7 @@ const PostComponent = () => {
               ProjectionDemo,
               AxisByAxis,
               ExampleWith2Polygons,
+              MatrixDemo,
             }}
           >
             <CollisionDetectionPost />

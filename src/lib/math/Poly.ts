@@ -2,44 +2,6 @@ import { Vector2 } from "./vector";
 import { Matrix } from "./matrix";
 import { circle, getRotationMatrix, toRadians } from "./drawHelpers";
 
-export class Rect {
-  public vertices: Vector2[];
-  public topLeft: Vector2;
-  public topRight: Vector2;
-  public bottomRight: Vector2;
-  public bottomLeft: Vector2;
-
-  constructor(x: number, y: number, width: number, height: number) {
-    this.topLeft = new Vector2(x, y);
-    this.topRight = new Vector2(x + width, y);
-    this.bottomRight = new Vector2(x + width, y + height);
-    this.bottomLeft = new Vector2(x, y + height);
-    this.vertices = [
-      this.topLeft,
-      this.topRight,
-      this.bottomRight,
-      this.bottomLeft,
-    ];
-  }
-
-  transform(matrix: Matrix) {
-    this.vertices = this.vertices.map((vertex) => vertex.transform(matrix));
-  }
-
-  draw(ctx: CanvasRenderingContext2D) {
-    ctx.strokeStyle = "black";
-    ctx.beginPath();
-    ctx.moveTo(this.topLeft.x, this.topLeft.y);
-    ctx.lineTo(this.topRight.x, this.topRight.y);
-    ctx.lineTo(this.bottomRight.x, this.bottomRight.y);
-    ctx.lineTo(this.bottomLeft.x, this.bottomLeft.y);
-    ctx.lineTo(this.topLeft.x, this.topLeft.y);
-
-    ctx.stroke();
-    ctx.closePath();
-  }
-}
-
 const randomBetween = (min: number, max: number) => {
   return min + Math.floor(Math.random() * (max - min + 1));
 };
@@ -54,15 +16,40 @@ function randomColor() {
 
 const niceRed = "#dd292c";
 
+function isHex(hex: string) {
+  return hex.match(/#[a-fA-F0-9]{6}$/);
+}
+
+function convertHexToRgb(hex: string) {
+  if (!isHex) throw Error("Not a Hex Color!");
+  return `rgb(
+    ${parseInt(hex.substring(1, 3), 16)},
+    ${parseInt(hex.substring(3, 5), 16)},
+    ${parseInt(hex.substring(5, 7), 16)})`;
+}
+function makeBrighter(color: string) {
+  if (isHex(color)) color = convertHexToRgb(color);
+
+  color = color.replace("rgb(", "rgba(");
+  color = color.substring(0, color.length - 2) + ", 0.5)";
+  return color;
+}
+
 export class Polygon {
   public vertices: Vector2[];
   public color: string;
   public selected: boolean;
+  public hover: boolean;
 
   constructor(points: [number, number][], color?: string) {
     this.vertices = points.map(([x, y]) => new Vector2(x, y));
     this.color = color || randomColor();
     this.selected = false;
+    this.hover = false;
+  }
+
+  get hoverColor() {
+    return makeBrighter(this.color);
   }
 
   centroid() {
@@ -107,7 +94,7 @@ export class Polygon {
     ctx.lineTo(first.x, first.y);
     ctx.fillStyle = collision ? niceRed : this.color;
     ctx.fill();
-    ctx.lineWidth = this.selected ? 2 : 1;
+    ctx.lineWidth = this.selected ? 3 : this.hover ? 2 : 1;
     ctx.stroke();
     ctx.closePath();
 

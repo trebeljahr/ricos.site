@@ -6,7 +6,7 @@ import {
   instrument,
 } from "../../lib/math/drawHelpers";
 import { Vector2 } from "../../lib/math/vector";
-import { colorEdge, drawBackground } from "./helpers";
+import { drawBackground } from "./helpers";
 
 export const ProjectionDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

@@ -68,14 +68,11 @@ export class Vector2 {
     return this.x * other.x + this.y * other.y;
   }
 
-  transform(matrix: Matrix) {
-    const columns = matrix.columns();
-    if (columns.length !== this.components.length) {
-      throw new Error(
-        "Matrix columns length should be equal to vector components length."
-      );
-    }
+  copy() {
+    return new Vector2(this.x, this.y);
+  }
 
+  transform(matrix: Matrix) {
     const newX = matrix.a * this.x + matrix.b * this.y + matrix.c;
     const newY = matrix.d * this.x + matrix.e * this.y + matrix.f;
     this.x = newX;

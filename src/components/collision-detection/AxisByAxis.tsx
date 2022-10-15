@@ -5,7 +5,7 @@ import {
   initPolygons,
   instrument,
 } from "../../lib/math/drawHelpers";
-import { Polygon } from "../../lib/math/rect";
+import { Polygon } from "../../lib/math/Poly";
 import { Vector2 } from "../../lib/math/vector";
 import { colorEdge, drawBackground } from "./helpers";
 

@@ -1,9 +1,36 @@
-import Layout from "../layout";
-import SimpleReactCanvasComponent from "simple-react-canvas-component";
-import { useEffect, useState } from "react";
-import { Polygon } from "../../lib/math/rect";
+import { Polygon } from "../../lib/math/Poly";
 import { Vector2 } from "../../lib/math/vector";
-import { drawProjection, line } from "../../lib/math/drawHelpers";
+import {
+  drawProjection,
+  getRotationMatrix,
+  getTranslationMatrix,
+  line,
+} from "../../lib/math/drawHelpers";
+
+export function drawArrow(
+  ctx: CanvasRenderingContext2D,
+  from: Vector2,
+  to: Vector2,
+  arrowHeadLength = 20
+) {
+  const dir = from.sub(to).perp().unit().multScalar(arrowHeadLength);
+  console.log(dir);
+
+  const arrow1 = dir
+    .copy()
+    .transform(getTranslationMatrix(to.x, to.y))
+    .transform(getRotationMatrix(20, to));
+
+  const arrow2 = dir
+    .copy()
+    .multScalar(-1)
+    .transform(getTranslationMatrix(to.x, to.y))
+    .transform(getRotationMatrix(-20, to));
+
+  line(ctx, from.x, from.y, to.x, to.y);
+  line(ctx, to.x, to.y, arrow1.x, arrow1.y);
+  line(ctx, to.x, to.y, arrow2.x, arrow2.y);
+}
 
 function flattenPointsOn(points: Vector2[], axis: Vector2): Projection {
   let min = Number.MAX_VALUE;

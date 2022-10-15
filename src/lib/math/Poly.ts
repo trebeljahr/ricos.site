@@ -35,6 +35,8 @@ function makeBrighter(color: string) {
   return color;
 }
 
+const TWO_PI = 2 * Math.PI;
+
 export class Polygon {
   public vertices: Vector2[];
   public color: string;
@@ -113,5 +115,74 @@ export class Polygon {
     this.hoveredVertex && circle(ctx, this.hoveredVertex, 7);
 
     ctx.restore();
+  }
+  isConvex() {
+    const N = this.vertices.length;
+    const points = this.vertices;
+    let prev = 0;
+    let curr = 0;
+    for (let i = 0; i < N; i++) {
+      const P1toP2 = points[i].sub(points[(i + 1) % N]);
+      const P2toP3 = points[(i + 1) % N].sub(points[(i + 2) % N]);
+      curr = P1toP2.perpDot(P2toP3);
+
+      if (curr != 0) {
+        if (curr * prev < 0) {
+          return true;
+        } else {
+          prev = curr;
+        }
+      }
+    }
+    return false;
+  }
+
+  is_convex_polygon() {
+    try {
+      const polygon = this.vertices;
+      if (polygon.length < 3) {
+        return false;
+      }
+      let { x: old_x, y: old_y } = polygon[polygon.length - 2];
+      let { x: new_x, y: new_y } = polygon[polygon.length - 1];
+      let new_direction = Math.atan2(new_y - old_y, new_x - old_x);
+      let angle_sum = 0.0;
+      let orientation = 0;
+      for (let i = 0; i < polygon.length; i++) {
+        const newpoint = polygon[i];
+        let old_x = new_x;
+        let old_y = new_y;
+        let old_direction = new_direction;
+        new_x = newpoint.x;
+        new_y = newpoint.y;
+        new_direction = Math.atan2(new_y - old_y, new_x - old_x);
+
+        if (old_x == new_x && old_y == new_y) {
+          return false;
+        }
+
+        let angle = new_direction - old_direction;
+        if (angle <= -Math.PI) {
+          angle += TWO_PI; // make it in half-open interval (-Pi, Pi]
+        } else if (angle > Math.PI) {
+          angle -= TWO_PI;
+        }
+        if (i === 0) {
+          if (angle === 0.0) {
+            return false;
+          }
+          orientation = angle > 0 ? 1 : -1.0;
+        } else {
+          if (orientation * angle <= 0.0) {
+            return false;
+          }
+        }
+        angle_sum += angle;
+      }
+
+      return Math.abs(Math.round(angle_sum / TWO_PI)) == 1;
+    } catch (error) {
+      return false;
+    }
   }
 }

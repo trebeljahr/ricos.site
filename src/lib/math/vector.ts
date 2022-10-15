@@ -88,6 +88,10 @@ export class Vector2 {
     );
   }
 
+  perpDot(other: Vector2) {
+    return this.perp().dot(other);
+  }
+
   *[Symbol.iterator](): IterableIterator<number> {
     yield this.x;
     yield this.y;

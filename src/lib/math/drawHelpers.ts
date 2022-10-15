@@ -253,7 +253,7 @@ export function initPolygons(cnv: HTMLCanvasElement) {
 
 export type State = {
   draggedPoly: Polygon | undefined;
-  draggedPoint: Vector2 | undefined;
+  draggedPoint: { poly: Polygon; point: Vector2 } | undefined;
   rotationChange: number;
 };
 
@@ -281,13 +281,11 @@ export function instrument(
     const mousePos = new Vector2(event.offsetX, event.offsetY);
 
     for (let poly of polys) {
-      poly.hover = false;
-
-      if (insidePoly(mousePos, poly.vertices)) {
-        poly.hover = true;
-      }
       poly.hoveredVertex = poly.vertices.find((pos) => {
-        return mousePos.sub(pos).mag() <= 7 || state?.draggedPoint?.equals(pos);
+        return (
+          mousePos.sub(pos).mag() <= 7 ||
+          state?.draggedPoint?.point?.equals(pos)
+        );
       });
     }
     state.draggedPoly &&
@@ -295,17 +293,24 @@ export function instrument(
         getTranslationMatrix(event.movementX, event.movementY)
       );
 
-    state.draggedPoint &&
-      state.draggedPoint.transform(
+    if (state.draggedPoint) {
+      state.draggedPoint.point.transform(
         getTranslationMatrix(event.movementX, event.movementY)
       );
+      if (!state.draggedPoint.poly.is_convex_polygon()) {
+        console.log("Not convex!!!");
+        state.draggedPoint.point.transform(
+          getTranslationMatrix(-event.movementX, -event.movementY)
+        );
+      }
+    }
   };
 
   const handleMouseDown = (event: MouseEvent) => {
     const mousePos = new Vector2(event.offsetX, event.offsetY);
     for (let poly of polys) {
       if (poly.hoveredVertex) {
-        state.draggedPoint = poly.hoveredVertex;
+        state.draggedPoint = { poly: poly, point: poly.hoveredVertex };
         return;
       }
       if (insidePoly(mousePos, poly.vertices)) {

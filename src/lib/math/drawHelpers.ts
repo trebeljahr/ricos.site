@@ -297,7 +297,7 @@ export function instrument(
       state.draggedPoint.point.transform(
         getTranslationMatrix(event.movementX, event.movementY)
       );
-      if (!state.draggedPoint.poly.is_convex_polygon()) {
+      if (!state.draggedPoint.poly.isConvex()) {
         console.log("Not convex!!!");
         state.draggedPoint.point.transform(
           getTranslationMatrix(-event.movementX, -event.movementY)

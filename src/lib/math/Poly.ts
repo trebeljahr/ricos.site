@@ -117,7 +117,7 @@ export class Polygon {
     ctx.restore();
   }
 
-  is_convex_polygon() {
+  isConvex() {
     try {
       const polygon = this.vertices;
       if (polygon.length < 3) {

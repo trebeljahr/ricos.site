@@ -116,26 +116,6 @@ export class Polygon {
 
     ctx.restore();
   }
-  isConvex() {
-    const N = this.vertices.length;
-    const points = this.vertices;
-    let prev = 0;
-    let curr = 0;
-    for (let i = 0; i < N; i++) {
-      const P1toP2 = points[i].sub(points[(i + 1) % N]);
-      const P2toP3 = points[(i + 1) % N].sub(points[(i + 2) % N]);
-      curr = P1toP2.perpDot(P2toP3);
-
-      if (curr != 0) {
-        if (curr * prev < 0) {
-          return true;
-        } else {
-          prev = curr;
-        }
-      }
-    }
-    return false;
-  }
 
   is_convex_polygon() {
     try {

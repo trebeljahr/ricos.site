@@ -26,7 +26,7 @@ export const ProjectionDemo = () => {
       drawProjection(cnv, poly1, p1, p2);
     };
 
-    const { cleanup } = instrument(cnv, [poly1], drawFn);
+    const { cleanup } = instrument(ctx, [poly1], drawFn);
     return cleanup;
   }, [cnv]);
 

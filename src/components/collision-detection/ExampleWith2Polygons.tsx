@@ -34,7 +34,7 @@ export const ExampleWith2Polygons = () => {
       );
     };
 
-    const { cleanup } = instrument(cnv, [myPoly1, myPoly2], drawFn);
+    const { cleanup } = instrument(ctx, [myPoly1, myPoly2], drawFn);
 
     drawFn();
 

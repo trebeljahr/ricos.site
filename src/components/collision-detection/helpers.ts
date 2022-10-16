@@ -14,7 +14,6 @@ export function drawArrow(
   arrowHeadLength = 20
 ) {
   const dir = from.sub(to).perp().unit().multScalar(arrowHeadLength);
-  console.log(dir);
 
   const arrow1 = dir
     .copy()
@@ -27,9 +26,9 @@ export function drawArrow(
     .transform(getTranslationMatrix(to.x, to.y))
     .transform(getRotationMatrix(-20, to));
 
-  line(ctx, from.x, from.y, to.x, to.y);
-  line(ctx, to.x, to.y, arrow1.x, arrow1.y);
-  line(ctx, to.x, to.y, arrow2.x, arrow2.y);
+  line(ctx, from, to);
+  line(ctx, to, arrow1);
+  line(ctx, to, arrow2);
 }
 
 function flattenPointsOn(points: Vector2[], axis: Vector2): Projection {
@@ -66,21 +65,17 @@ type Projection = {
 };
 
 export function drawAllProjections(
-  cnv: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D,
   poly1: Polygon,
   poly2: Polygon
 ) {
-  let ctx = cnv.getContext("2d");
-  if (!ctx) return;
-
   let normals = [...poly1.edgeNormals(), ...poly2.edgeNormals()];
 
   normals.forEach((e) => {
-    if (!ctx) return;
     let p1 = new Vector2(e.x, e.y);
     let p2 = p1.multScalar(-1);
 
-    drawProjection(cnv, [poly1, poly2], p1, p2);
+    drawProjection(ctx, [poly1, poly2], p1, p2);
   });
 }
 
@@ -119,6 +114,6 @@ export function colorEdge(
   ctx.save();
   ctx.strokeStyle = "yellow";
   ctx.lineWidth = 5;
-  line(ctx, p1.x, p1.y, p2.x, p2.y);
+  line(ctx, p1, p2);
   ctx.restore();
 }

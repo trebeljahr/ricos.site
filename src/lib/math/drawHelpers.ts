@@ -31,16 +31,10 @@ export function getSupportPoint(vertices: Vector2[], d: Vector2) {
   return support;
 }
 
-export function line(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  x2: number,
-  y2: number
-) {
+export function line(ctx: CanvasRenderingContext2D, p1: Vector2, p2: Vector2) {
   ctx.beginPath();
-  ctx.moveTo(x, y);
-  ctx.lineTo(x2, y2);
+  ctx.moveTo(p1.x, p1.y);
+  ctx.lineTo(p2.x, p2.y);
   ctx.stroke();
   ctx.closePath();
 }
@@ -94,7 +88,7 @@ export function drawProjectionOnLine(
   circle(ctx, projectedS2, 3);
   ctx.strokeStyle = color;
   ctx.lineWidth = 3;
-  line(ctx, projectedS1.x, projectedS1.y, projectedS2.x, projectedS2.y);
+  line(ctx, projectedS1, projectedS2);
   ctx.restore();
 }
 
@@ -110,33 +104,31 @@ export function drawInfiniteLine(
   const l1 = p1.add(d.multScalar(len));
   const l2 = p1.add(d.multScalar(-len));
 
-  console.log(l1, l2);
   ctx.strokeStyle = "rgba(100, 100, 100, 0.5)";
-  line(ctx, l2.x, l2.y, l1.x, l1.y);
+  line(ctx, l2, l1);
   ctx.restore();
+
+  return [l1, l2];
 }
 
 export function drawProjection(
-  cnv: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D,
   polys: Polygon | [Polygon, Polygon],
   p1: Vector2,
   p2: Vector2
 ) {
-  const ctx = cnv.getContext("2d");
-  if (!ctx) return;
-
-  const origin = new Vector2(cnv.width / 2, cnv.height / 2);
+  const origin = new Vector2(ctx.canvas.width / 2, ctx.canvas.height / 2);
   const toOrigin = getTranslationMatrix(origin.x, origin.y);
 
   const d2 = p2.sub(p1);
   const d1 = p1.sub(p2);
 
-  const len = Math.max(cnv.width, cnv.height);
+  const len = Math.max(ctx.canvas.width, ctx.canvas.height);
   const l1 = d2.unit().multScalar(len).transform(toOrigin);
   const l2 = d2.unit().multScalar(-len).transform(toOrigin);
 
   ctx.strokeStyle = "rgba(100, 100, 100, 0.5)";
-  line(ctx, l2.x, l2.y, l1.x, l1.y);
+  line(ctx, l2, l1);
 
   const projectionHelper = (poly: Polygon) => {
     const s1 = getSupportPoint(poly.vertices, d1);
@@ -148,8 +140,8 @@ export function drawProjection(
     ctx.save();
     ctx.setLineDash([5, 15]);
     ctx.strokeStyle = "rgb(150, 150, 150)";
-    line(ctx, s1.x, s1.y, projectedS1.x, projectedS1.y);
-    line(ctx, s2.x, s2.y, projectedS2.x, projectedS2.y);
+    line(ctx, s1, projectedS1);
+    line(ctx, s2, projectedS2);
     ctx.restore();
 
     return [projectedS1, projectedS2] as [Vector2, Vector2];
@@ -298,7 +290,6 @@ export function instrument(
         getTranslationMatrix(event.movementX, event.movementY)
       );
       if (!state.draggedPoint.poly.isConvex()) {
-        console.log("Not convex!!!");
         state.draggedPoint.point.transform(
           getTranslationMatrix(-event.movementX, -event.movementY)
         );

@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
 import SimpleReactCanvasComponent from "simple-react-canvas-component";
-import {
-  circle,
-  drawInfiniteLine,
-  drawProjection,
-  drawProjectionOnLine,
-  line,
-} from "../../lib/math/drawHelpers";
+import { circle, drawInfiniteLine, line } from "../../lib/math/drawHelpers";
 import { Vector2 } from "../../lib/math/vector";
 import { drawArrow, drawBackground } from "./helpers";
 
@@ -31,7 +25,7 @@ export const MatrixDemo = () => {
     circle(ctx, projection, 3);
 
     ctx.strokeStyle = "rgba(20, 20, 20, 0.2)";
-    line(ctx, p2.x, p2.y, projection.x, projection.y);
+    line(ctx, p2, projection);
   }, [cnv]);
 
   return (

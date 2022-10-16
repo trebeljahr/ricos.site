@@ -29,6 +29,8 @@ const PostComponent = () => {
               AxisByAxis,
               ExampleWith2Polygons,
               MatrixDemo,
+              DotProductDemo: () => null,
+              ShowWhatANormalIs: () => null,
             }}
           >
             <CollisionDetectionPost />

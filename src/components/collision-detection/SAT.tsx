@@ -16,7 +16,7 @@ export const SAT = () => {
     const drawFn = () => {
       drawBackground(ctx);
       const collision = checkCollision(myPoly1, myPoly2);
-      drawAllProjections(cnv, myPoly1, myPoly2);
+      drawAllProjections(ctx, myPoly1, myPoly2);
       myPoly1.draw(ctx, { collision });
       myPoly2.draw(ctx, { collision });
     };

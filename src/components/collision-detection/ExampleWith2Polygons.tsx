@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import SimpleReactCanvasComponent from "simple-react-canvas-component";
 import {
   drawProjection,
+  getTranslationMatrix,
   initPolygons,
   instrument,
 } from "../../lib/math/drawHelpers";
@@ -20,6 +21,7 @@ export const ExampleWith2Polygons = () => {
     const [myPoly1, myPoly2] = initPolygons(cnv);
 
     const drawFn = () => {
+      if (!ctx) return;
       drawBackground(ctx);
 
       myPoly1.draw(ctx);
@@ -27,7 +29,7 @@ export const ExampleWith2Polygons = () => {
       const [p1, p2] = [myPoly1.vertices[0], myPoly1.vertices[1]];
       colorEdge(ctx, p1, p2);
       drawProjection(
-        cnv,
+        ctx,
         [myPoly1, myPoly2],
         new Vector2(p1.y, -p1.x),
         new Vector2(p2.y, -p2.x)

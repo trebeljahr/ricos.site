@@ -16,6 +16,7 @@ export const ProjectionDemo = () => {
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
+
     const [poly1] = initPolygons(cnv);
 
     const drawFn = () => {
@@ -23,7 +24,7 @@ export const ProjectionDemo = () => {
       poly1.draw(ctx);
       const p1 = new Vector2(0, 2);
       const p2 = new Vector2(1, -2);
-      drawProjection(cnv, poly1, p1, p2);
+      drawProjection(ctx, poly1, p1, p2);
     };
 
     const { cleanup } = instrument(ctx, [poly1], drawFn);

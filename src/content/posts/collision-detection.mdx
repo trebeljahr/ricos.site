@@ -16,20 +16,178 @@ author:
 
 {excerpt}
 
-<MatrixDemo />
+The main idea behind the Separating Axis Theorem is to find a line that can be drawn between two shapes without intersecting with either of them. If you can find any such line that means the two shapes don't intersect, which means that they don't collide. To efficiently find such a line – a separating axis – one has to get a little bit creative and that's exactly what this demos are trying to show. 
 
 ## How to Project a Line
 
+The main piece of linear algebra necessary is the projection of a point onto a line. The idea is pretty straightforward. Points are vectors, you can think of them as little arrows in space. A straight line can be defined by two points. The direction of the line can be calculated by getting the difference between the points. A projection in mathematical term is the position on the line if there would be a light source shining down onto the vector, making it cast a shadow onto the line. The point where the shadow ends up, would be the "projection" of that point. There is a mathematical expression for how to calculate this point.
+
+Given the Points A, B, and C, where C is the point we want to project and A and B are the two points defining the line, we can find the projection by using the following formula. 
+
+projectionOfC = *A + (dot(AC, AB) / mag2(AB, AB)) \* AB;*
+
+The dot product of a vector is defined as adding up the multiples of it's components. Vectors can have multiple components, x,y,z etc. based on how many dimensions of space the vector is in. Dot Products are extremely useful in mathematics and computer graphics. Mainly because they can be used to find out how far along one vector is if projected onto the other. This property is why we can see it appear in the above formula and why it will appear a lot more throughout this article.
+
+<DotProductDemo />
+
+Magnitude is just the length of the vector, that could be found out by the Pythagorean theorem. 
+
+Where the x and y components form a right angle triangle and the hypotenuse of that triangle is the vector we are interested in. Hence the formula for the length of a vector is simply the Pythagorean theorem. 
+
+mag(v) = sqrt(v.x² + v.y²)
+
+In the formula above we use the squared magnitude, so the sqrt, can drop from the term. If we just implement the above in code and draw the results of a line and a vector, you get the below. You can try dragging around the points A, B, and C to change the direction, position and length of the vector and the line.
+
+```typescript
+function projectOnLine(A: Vector2, B: Vector2, C: Vector2) {
+    const AC = C.sub(A);
+    const AB = B.sub(A);
+    return A.add(AB.multScalar(AC.dot(AB) / AB.mag2()));
+}
+```
+
+<MatrixDemo />
+
+A few notes on controls: For all the demos you should be able to drag around the polygons as well as the points making up the polygons. You can also click on a polygon to "select" it and then rotate it by holding down the A and D keys on your keyboard! 
+
+## Projecting a Whole Polygon
+
+The main idea for the SAT, is that these projections of points can become very useful, because they can help determine whether or not a single ray of light could shine through in between two polygons. The cool thing is, if there could be a light shone through two polygons, that means that they can not intersect. If there is place between the shadows of the polygons, there will be place between the polygons themselves as well which means that we would have found our separating axis and can safely conclude that the two polygons don't intersect! Because we can shine a light through between them.
+
+However to get there, we first need to be able to project a whole polygon. Luckily, a polygon is just a set of points. Usually these points are called vertices (singular vertex) in computer graphics. But if we simply project all the points we would still have to figure out which points actually are the "left" and "right" edge of the shadow.  
+
+There are multiple approaches to do this, but one I find particularly fascinating and which is the one used down below in the demo is that of using a support function. 
+
+Essentially a support function finds a point among a set of points (here the vertices of the polygon we want to project), that is furthest along in a particular direction. Now vectors can be thought of not only as points, but also as directions. Hence the idea of an arrow – "pointing" into a direction in space. 
+
+The trick here is to run the polygon through the finding of support points for the two different directions of the line. AB and BA –> which will result in the two points furthest along these direction => which we can then use to project onto the line for getting the shadow. Here is the code for the support point function (it will be very useful for other algorithms in collision detection, like the GJK algorithm, later on) : 
+
+```js
+export function getSupportPoint(vertices: Vector2[], d: Vector2) {
+  // initialize variables
+  let highest = -Infinity;
+  let support = new Vector2(0, 0);
+  
+  // loop over the vertices of the polygon
+  for (let vertex of vertices) {
+    // compute the dot product between the vertex and the direction
+    const dot = vertex.dot(d);
+	
+    // keep track of the highest dot product and thereby the furthest point along the direction
+    if (dot > highest) {
+      highest = dot;
+      support = vertex;
+    }
+  }
+  
+  // return the point with the highest dot product with the direction!
+  return support;
+}
+```
+
+We can then use those points to draw a polygon and it's projection onto the screen.
+
+```typescript
+export function drawProjection(
+  polys: Polygon | [Polygon, Polygon],
+  p1: Vector2,
+  p2: Vector2
+) {
+ 
+
+  // get directions for "up" and "down" the line
+  const d2 = p2.sub(p1);
+  const d1 = p1.sub(p2);
+
+  // create translation matrix
+  const origin = new Vector2(ctx.canvas.width / 2, ctx.canvas.height / 2);
+  const toOrigin = getTranslationMatrix(origin.x, origin.y);
+ 
+  // use translation matrix + scaling to create far apart line points
+  // which goes through origin in the middle of the canvas 
+  const len = Math.max(ctx.canvas.width, ctx.canvas.height);
+  const l1 = d2.unit().multScalar(len).transform(toOrigin);
+  const l2 = d2.unit().multScalar(-len).transform(toOrigin);
+
+  // draw line onto which should be projected
+  ctx.strokeStyle = "rgba(100, 100, 100, 0.5)";
+  line(ctx, l2, l1);
+  
+  // get support points for each direction
+  const s1 = getSupportPoint(poly.vertices, d1);
+  const s2 = getSupportPoint(poly.vertices, d2);
+  
+  // get projection for each support point
+  const projectedS1 = projectOnLine(l1, l2, s1);
+  const projectedS2 = projectOnLine(l1, l2, s2);
+  
+  // draw shadow based on projections
+  line(ctx, projectedS1, projectedS2);
+
+  // also draw a dashed line between the projected and support points
+  ctx.save();
+  ctx.setLineDash([5, 15]);
+  ctx.strokeStyle = "rgb(150, 150, 150)";
+  line(ctx, s1, projectedS1);
+  line(ctx, s2, projectedS2);
+  ctx.restore();
+}
+```
+
+
+
 <ProjectionDemo />
+
+
 
 ## Project for 2 Polygons 
 
+All of this also works for 2 Polygons at once of course! The question we would like to answer given the two shadows is whether or not they overlap. Since the shadows are two line segments, that we know to be collinear we can use a simply test like the one below to check whether or not they overlap. 
+
+```typescript
+function onSegment(p: Vector2, q: Vector2, r: Vector2) {
+  if (
+    q.x <= Math.max(p.x, r.x) &&
+    q.x >= Math.min(p.x, r.x) &&
+    q.y <= Math.max(p.y, r.y) &&
+    q.y >= Math.min(p.y, r.y)
+  )
+    return true;
+
+  return false;
+}
+
+function doIntersect(a1: Vector2, a2: Vector2, b1: Vector2, b2: Vector2) {
+  if (onSegment(a1, b1, a2)) return true;
+  if (onSegment(a1, b2, a2)) return true;
+  if (onSegment(b1, a1, b2)) return true;
+  if (onSegment(b1, a2, b2)) return true;
+
+  return false;
+}
+```
+
+There are also versions of this test, which use the dot product to determine how far along the line the points are and by comparing the minimum and maximum against each other determine whether or not they overlap. Which algorithm we use doesn't matter so much in the end, the important thing is that we can test for the two shadows "overlapping" or not. In the example below, if the shadows overlap we change the color to red.
+
 <ExampleWith2Polygons />
 
-## The Core Idea – Can you Separate Them? 
+## The Last Idea
+
+How should we pick the lines that we project onto? Isn't there an infinity of possible lines we could chose from? While this is technically correct, we only need to check a few lines to make sure that the shapes don't collide, namely the normal for each edge of the polygon. The concept of a normal is very very useful in computer graphics and linear algebra in general. The main idea of a normal is a vector that is perpendicular (at 90°) to another vector (or line). Usually each line has two normals – one in each direction, however when working with polygons one is usually interested in the normals facing out of the polygon. In a lot of computer graphics applications there are sometimes bugs where normals are inverted for some reason, which usually messes up the lighting calculations, because the shape is "wrapped" onto the outside.
+
+<ShowWhatANormalIs/>
+
+But for SAT, we can simply have a loop that goes over each of the normals of our Polygons in turn, and checks if the two shadows overlap. You can see and example, cycling through the different normals, one by one. The only thing we are interested in from the normal is the direction, so we displace it towards the origin and draw a line passing in the same general direction that the normal was facing. Usually normals would be directly on the edge of the polygon. 
 
 <AxisByAxis />
 
+
+
 ## Complete SAT
 
+The loop we did, step by step with a delay above was just for visualization purposes, instead we can just check all of the normals at once and see: if all shadows overlap, then the shapes overlap and we can color them red to! 
+
 <SAT/>
+
+Now, there is one important thing left over here... namely that we don't yet prevent the shapes from intersecting with each other. This is an important distinction in collision detection algorithms, and it is usually known as collision response, and a whole different problem! Luckily for us, SAT is relatively easy to adapt to give us a collision response – namely, if you find that all shadows overlap, find the one that overlaps the least, and push the two shapes apart in that direction until the shadows don't touch anymore! Let's see how we could implement that idea in code as well...
+

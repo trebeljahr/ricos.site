@@ -92,7 +92,6 @@ export class Polygon {
     const [first, ...rest] = this.vertices;
     ctx.moveTo(first.x, first.y);
     for (let vertex of rest) {
-      ctx.fillStyle = "blue";
       ctx.lineTo(vertex.x, vertex.y);
     }
     ctx.lineTo(first.x, first.y);
@@ -107,12 +106,9 @@ export class Polygon {
     circle(ctx, centroid, 1);
 
     for (let vertex of this.vertices) {
-      ctx.fillStyle = "blue";
-
-      circle(ctx, vertex, 7);
+      ctx.fillStyle = this.hoveredVertex?.equals(vertex) ? "red" : "black";
+      circle(ctx, vertex, this.hoveredVertex?.equals(vertex) ? 8 : 2);
     }
-    ctx.fillStyle = "red";
-    this.hoveredVertex && circle(ctx, this.hoveredVertex, 7);
 
     ctx.restore();
   }

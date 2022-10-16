@@ -24,6 +24,7 @@ export const AxisByAxis = () => {
     const polys = initPolygons(cnv);
 
     const drawFn = () => {
+      if (!ctx || !ctx.canvas) return;
       drawBackground(ctx);
 
       polys.forEach((poly) => poly.draw(ctx));
@@ -37,7 +38,7 @@ export const AxisByAxis = () => {
       const [p1, p2] = pickEdge(polys[current]);
 
       drawProjection(
-        cnv,
+        ctx,
         polys,
         new Vector2(p1.y, -p1.x),
         new Vector2(p2.y, -p2.x)

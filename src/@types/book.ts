@@ -1,5 +1,3 @@
-import { MDXRemoteSerializeResult } from "next-mdx-remote";
-
 type BookType = {
   slug: string;
   title: string;

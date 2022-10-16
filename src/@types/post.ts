@@ -1,4 +1,3 @@
-import { MDXRemoteSerializeResult } from "next-mdx-remote";
 import Author from "./author";
 
 export type Post = {

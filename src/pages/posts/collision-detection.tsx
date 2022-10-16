@@ -31,6 +31,8 @@ const PostComponent = () => {
               MatrixDemo,
               DotProductDemo: () => null,
               ShowWhatANormalIs: () => null,
+              PointAndLineDemo: () => null,
+              SATWithConvexShapes: () => null,
             }}
           >
             <CollisionDetectionPost />

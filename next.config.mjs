@@ -4,8 +4,7 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
 import nextMDX from "@next/mdx";
 import rehypeHighlight from "rehype-highlight";
-import rehypeMathjax from "rehype-mathjax";
-
+import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 
 const withMDX = nextMDX({
@@ -19,7 +18,7 @@ const withMDX = nextMDX({
       remarkToc,
       remarkMath,
     ],
-    rehypePlugins: [rehypeHighlight, rehypeMathjax],
+    rehypePlugins: [rehypeHighlight, rehypeKatex],
   },
 });
 

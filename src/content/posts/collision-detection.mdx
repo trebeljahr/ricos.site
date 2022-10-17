@@ -155,62 +155,155 @@ export class Vector2 {
 }
 ```
 
-
 Now there are a lot of little things in there that are necessary to understand before moving on: 
 What are all these methods doing? perp, unit, dot, mag, mag2, transform, perpDot?!
 
 Ok. Let's start disassembling them 1 by 1 and explain what each of them does along the way: 
 
-mag is short for Magnitude which is just mathematical jargon for the length of a vector. If you imagine the vector giving you a location in space you could say, hmmm, if I were to walk there, how long would I have to walk? The answer to that can be easily found out by using the Pythagorean theorem. 
+The mag method is short for magnitude which is just mathematical jargon for getting the length of a vector. This is also called the "Norm" of a vector. 
 
-Where the x and y components form a right angle triangle and the hypotenuse of that triangle is the vector we are interested in. Hence the formula for the length of a vector is simply the Pythagorean theorem. 
+If you imagine the vector giving you a location in space you could say, hmmm, if I were to walk there, how long would I have to walk? The answer to that can be easily found out by using the Pythagorean theorem. 
+
+Think of the x and y components and how they form the two sides of a right angled triangle and how the hypotenuse of that triangle is the vector (and the length) we are interested in. Hence the formula for the length of a vector is simply the Pythagorean theorem. 
 
 $$
-\begin{Vmatrix}
-  x \\
-  y
-\end{Vmatrix} = \sqrt{x² + y²}
+\lVert
+  v 
+\rVert = \sqrt{x² + y²} = v \, \cdotp v
 $$
 
-In the formula above we use the squared magnitude, so the sqrt, can drop from the term. If we just implement the above in code, we get the below. 
+Sometimes we don't need the actual length but the squared length, and so we can drop the $\sqrt{}$ from the formula above. If we implement these two ideas mag and mag2 (squared norm/length) ideas in code, we get the below. 
+```typescript
+function mag2(v: Vector2) {
+  return dot(v, v);
+}
+
+function mag(v: Vector2) {
+  return Math.sqrt(mag2(v));
+}
+```
+
+It's often useful to have the mag2 version because taking the square root is an expensive operation and for some applications we don't actually need the "correct" length of the vector, because the squared length suffices. 
+
+Hence you can also find both methods on the Vector2 implementation!
+
+## Unit Vectors
+
+The norm or magnitude of a vector is also often used to construct a "unit" vector. 
+
+Unit vectors are "raw" directions. You get them if you divide the vector by it's norm you get a vector of length 1. But you are preserving the direction of the vector!
+And the name stems from the "unit" circle, a circle of a radius of length 1. Just like the radius of the circle, unit vectors have a length of 1. 
+$$
+\hat{v} = \frac{v}{\lVert v \rVert} 
+$$
+
+In code this would look something like this:
+```typescript
+function unit(b: Vector2) {
+  return b.divScalar(b.mag());
+}
+```
+
+## The "Perp" or Perpendicular 
+
+In 2D getting a vector rotated by exactly 90° is very easy! You can simply swap the x and y components, and then negate the swapped x!
+$$
+\begin{bmatrix}
+x \\
+y 
+\end{bmatrix}
+
+\xrightarrow[\circlearrowright]{\, \, 90°}
+
+\begin{bmatrix}
+y \\
+-x 
+\end{bmatrix}
+$$
+
+The reason for this has to do with the trigonometric functions sin and cos – and how they relate angles and vectors. All of this can be combined with rotational matrices and is used a lot in computer graphics!
+
+```typescript
+function perp(v: Vector2) {
+  return new Vector2(v.y, -v.x);
+}
+``` 
 
 ## The Dot Product
 
 The dot product of a vector is defined as adding up the multiples of it's components. Vectors can have multiple components, x,y,z etc. based on how many dimensions of space the vector is in, for these demos we keep everything super simple, and only worry about vectors in 2D. Those only have 2 components – x and y. 
 
-Dot Products are extremely useful in mathematics and computer graphics. Mainly because they can be used to find out how far along one vector is if projected onto the other. This property is why we can see it appear in the above formula and why it will appear a lot more throughout this article.
+Dot Products are extremely useful in mathematics and computer graphics. Mainly because they can be used to find out how far along one vector is if it were projected onto another. This property is why we can see it appear in the above formula and why it will appear a lot more throughout this article.
 
+$$ 
+v \, \cdotp a = x_a * x_v + y_a * y_v 
+$$
+
+```typescript
+function dot(v: Vector2) {
+  return v.x * v.x + v.y * v.y
+}
+``` 
 <DotProductDemo />
 
 
+## Projections 
 
+In case you had to refresh your knowledge on vectors – welcome back!
 
+Now that these basic ideas are out of the way, let's tackle casting some shadows! Luckily there is a mathematical expression for how to calculate a shadow that a point would cast onto a line! In mathematics this is called a projection!
 
-Now that these basic ideas are out of the way, let's tackle casting shadows! Luckily there is a mathematical expression for how to calculate a projection from a point onto a line!
+Given the Points a, b, and c, where c is the point we want to project and a and b are the two points defining the line $\overline{ab}$, we can find the projection of c onto the line $\overline{ab}$ by using the following formula. 
 
-Given the Points A, B, and C, where C is the point we want to project and A and B are the two points defining the line, we can find the projection of C onto the line AB by using the following formula. 
+$$
+p = c - a
+$$
+$$
+q = b - a
+$$
+$$
+proj_c \, q = \frac{a + p \, \cdotp	q}{\lVert q \rVert^2}* q
+$$
 
-projectionOfC = *A + (dot(AC, AB) / mag2(AB, AB)) \* AB*
-
-The same formula can be also expressed in code:
+The same formula expressed in code:
 
 ```typescript
-function projectOnLine(A: Vector2, B: Vector2, C: Vector2) {
-    const AC = C.sub(A);
-    const AB = B.sub(A);
-    return A.add(AB.multScalar(AC.dot(AB) / AB.mag2()));
+function projectOnLine(a: Vector2, b: Vector2, c: Vector2) {
+    const p = c.sub(a);
+    const q = b.sub(a);
+    return a.add(q.multScalar(p.dot(q) / q.mag2()));
 }
 ```
 
-Drawing this out onto a canvas – a line going through A and B and an arrow going from A to C you would get the below! You can try dragging around the points A, B, and C to change the direction, position and length of the vector and the line.
+Drawing this out onto the canvas yields a line going through a and b and an arrow going from A to C casting a shadow like below! You can try dragging around the points A, B, and C to change the direction, position and length of the vector and the line.
+A few notes on controls: For all the demos you should be able to drag around the shapes themselves as well as single points. You can also click on a polygon to "select" it and then rotate it by holding down the A and D keys on your keyboard! 
 
 <MatrixDemo />
 
-A few notes on controls: For all the demos you should be able to drag around the polygons (shapes) themselves as well as the points making up the polygons. You can also click on a polygon to "select" it and then rotate it by holding down the A and D keys on your keyboard! 
+In a way the above can be done for any 2 vectors. For a line, we needed 2 points to get the direction of the line *and* to shift the result onto the line by adding on the vector/point a! 
+The whole idea for only two vectors can be expressed more shortly and is also a useful operation to have in general. 
+
+$$
+proj_b \, a = \frac{a \, \cdotp b}{\lVert b \rVert^2} * b
+$$
+
+The same idea in Typescript:
+```typescript
+function project(a: Vector2, b: Vector2) {
+  return b.multScalar(a.dot(b) / b.mag2());
+}
+```
+
+There is also the idea of using a "scalar" projection. A scalar is "just" a number, and the result of scalar projections are just numbers. A scalar projection calculates the length of the projection of vector a in the direction of vector b. And it can be computed like so:
+$$
+s = \lVert a \rVert	* cos(\theta) = a \, \cdotp \hat{b}
+$$
+Notice the little hat on the b, that means that this is a unit vector!
+
 
 ## Projecting a Whole Polygon
 
-The main idea for the SAT, is that these projections of points can become very useful, because they can help determine whether or not a single ray of light could shine through in between two polygons. The cool thing is, if there could be a light ray between two polygons, that means that they can not intersect! Otherwise, how could the light get through?
+The main idea for the SAT algorithm, is that these projections of points can become very useful, because they can help determine whether or not a single ray of light could shine through in between two polygons. The cool thing is, if there could be a light ray between two polygons, that means that they can not intersect! Otherwise, how could the light get through?
 
 This means, that if there is place between the shadows of two polygons, there will be a place between the polygons themselves where the light can pass through which means that there is a separating axis (the ray of light) and we can safely say that the two polygons don't touch each other! Because we can shine a light through between them. So the goal now is this: find two shadows (projections) that don't overlap for the two polygons.
 

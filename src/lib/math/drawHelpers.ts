@@ -239,17 +239,15 @@ export function initPolygons(cnv: HTMLCanvasElement) {
     niceBlue
   );
 
-  const origin = new Vector2(
-    parseFloat(cnv.style.width) / 2,
-    parseFloat(cnv.style.height) / 2
-  );
-  const toOrigin = getTranslationMatrix(origin.x, origin.y);
+  const [w, h] = [parseFloat(cnv.style.width), parseFloat(cnv.style.height)];
+  const toOrigin = getTranslationMatrix(w / 2, h / 2);
+  const byScalingUp = getScalingMatrix(w * 0.1, w * 0.1);
 
-  myPoly1.transform(getScalingMatrix(40, 40));
+  myPoly1.transform(byScalingUp);
   myPoly1.transform(toOrigin);
   myPoly1.rotate(20);
 
-  myPoly2.transform(getScalingMatrix(80, 80));
+  myPoly2.transform(byScalingUp);
   myPoly2.transform(toOrigin);
   myPoly2.rotate(45);
 
@@ -284,72 +282,6 @@ export function instrument(
     rotationChange: 0,
   };
 
-  const moveThingsOnCanvas = (event: {
-    offsetX: number;
-    offsetY: number;
-    movementX: number;
-    movementY: number;
-  }) => {
-    const mousePos = new Vector2(event.offsetX, event.offsetY);
-
-    for (let poly of polys) {
-      poly.hoveredVertex = poly.vertices.find((pos) => {
-        return (
-          mousePos.sub(pos).mag() <= 7 ||
-          state?.draggedPoint?.point?.equals(pos)
-        );
-      });
-    }
-    state.draggedPoly &&
-      state.draggedPoly.transform(
-        getTranslationMatrix(event.movementX, event.movementY)
-      );
-
-    if (state.draggedPoint) {
-      state.draggedPoint.point.transform(
-        getTranslationMatrix(event.movementX, event.movementY)
-      );
-      if (!state.draggedPoint.poly.isConvex()) {
-        state.draggedPoint.point.transform(
-          getTranslationMatrix(-event.movementX, -event.movementY)
-        );
-      }
-    }
-  };
-
-  let previousTouch: null | Touch = null;
-
-  const handleTouchMove = (event: TouchEvent) => {
-    event.preventDefault();
-    const touch = event.touches[0];
-
-    if (previousTouch) {
-      moveThingsOnCanvas({
-        movementX: touch.pageX - previousTouch.pageX,
-        movementY: touch.pageY - previousTouch.pageY,
-        offsetX: touch.pageX,
-        offsetY: touch.pageY,
-      });
-    }
-
-    previousTouch = touch;
-  };
-
-  const handleTouchStart = (event: TouchEvent) => {
-    event.preventDefault();
-
-    const touch = event.touches[0];
-    console.log(event);
-    console.log(touch);
-    previousTouch = touch;
-    selectPolygon({ offsetX: touch.pageX, offsetY: touch.pageY });
-  };
-
-  const handleTouchEnd = (event: TouchEvent) => {
-    event.preventDefault();
-    reset();
-  };
-
   const selectPolygon = (event: { offsetX: number; offsetY: number }) => {
     const mousePos = new Vector2(event.offsetX, event.offsetY);
     for (let poly of polys) {
@@ -370,7 +302,38 @@ export function instrument(
 
   const updateMousePos = (event: PointerEvent) => {
     event.preventDefault();
-    moveThingsOnCanvas(event);
+    ctx.canvas.style.touchAction = "none";
+
+    const mousePos = new Vector2(event.offsetX, event.offsetY);
+
+    for (let poly of polys) {
+      poly.hoveredVertex = poly.vertices.find((pos) => {
+        return (
+          mousePos.sub(pos).mag() <= 7 ||
+          state?.draggedPoint?.point?.equals(pos)
+        );
+      });
+    }
+    if (state.draggedPoly) {
+      state.draggedPoly.transform(
+        getTranslationMatrix(event.movementX, event.movementY)
+      );
+      return;
+    }
+
+    if (state.draggedPoint) {
+      state.draggedPoint.point.transform(
+        getTranslationMatrix(event.movementX, event.movementY)
+      );
+      if (!state.draggedPoint.poly.isConvex()) {
+        state.draggedPoint.point.transform(
+          getTranslationMatrix(-event.movementX, -event.movementY)
+        );
+      }
+      return;
+    }
+
+    ctx.canvas.style.touchAction = "pan-y";
   };
 
   const handleMouseDown = (event: PointerEvent) => {
@@ -384,8 +347,6 @@ export function instrument(
   };
 
   const reset = () => {
-    previousTouch = null;
-    console.log("resetting");
     state.draggedPoly = undefined;
     state.draggedPoint && (state.draggedPoint.poly.hoveredVertex = undefined);
     state.draggedPoint = undefined;

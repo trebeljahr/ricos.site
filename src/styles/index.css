@@ -312,11 +312,19 @@ ul,
 ol,
 blockquote,
 button,
-input {
+input,
+pre,
+li,
+code {
   line-height: 1.6;
   font-size: 1rem;
   font-weight: normal;
-  font-family: arvo, serif;
+  font-family: "Noto Sans", Helvetica, sans-serif;
+}
+
+pre,
+code {
+  font-family: "Fira Code", monospace;
 }
 
 .allBooks {

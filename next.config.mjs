@@ -4,6 +4,9 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
 import nextMDX from "@next/mdx";
 import rehypeHighlight from "rehype-highlight";
+import rehypeMathjax from "rehype-mathjax";
+
+import remarkMath from "remark-math";
 
 const withMDX = nextMDX({
   options: {
@@ -14,8 +17,9 @@ const withMDX = nextMDX({
       remarkMdxFrontmatter,
       remarkGfm,
       remarkToc,
+      remarkMath,
     ],
-    rehypePlugins: [rehypeHighlight],
+    rehypePlugins: [rehypeHighlight, rehypeMathjax],
   },
 });
 

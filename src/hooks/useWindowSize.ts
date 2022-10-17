@@ -33,7 +33,7 @@ export function useActualSize(): Size {
 
   useEffect(() => {
     const aspectRatio = maxWidth / maxHeight;
-    const newWidth = Math.min(maxWidth, width || Infinity * 0.95);
+    const newWidth = Math.min(maxWidth, (width || Infinity) * 0.95);
 
     setActualWidth(newWidth);
     setActualHeight(Math.min(maxHeight, newWidth * aspectRatio));

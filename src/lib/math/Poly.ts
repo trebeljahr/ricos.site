@@ -1,6 +1,12 @@
 import { Vector2 } from "./vector";
 import { Matrix } from "./matrix";
-import { circle, getRotationMatrix, toRadians } from "./drawHelpers";
+import {
+  circle,
+  getRotationMatrix,
+  getScalingMatrix,
+  getTranslationMatrix,
+  toRadians,
+} from "./drawHelpers";
 
 const randomBetween = (min: number, max: number) => {
   return min + Math.floor(Math.random() * (max - min + 1));
@@ -76,6 +82,14 @@ export class Polygon {
 
   transform(matrix: Matrix) {
     this.vertices = this.vertices.map((vertex) => vertex.transform(matrix));
+  }
+
+  scale(x: number, y: number) {
+    this.transform(getScalingMatrix(x, y));
+  }
+
+  translate(displacement: Vector2) {
+    this.transform(getTranslationMatrix(displacement.x, displacement.y));
   }
 
   rotate(angle: number) {

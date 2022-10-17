@@ -20,7 +20,6 @@ nav.primary-navigation ul li {
   position: relative;
   text-decoration: none;
   text-align: left;
-  font-family: arvo;
   display: flex;
   flex-direction: column;
 }

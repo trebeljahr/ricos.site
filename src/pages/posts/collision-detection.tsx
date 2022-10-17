@@ -21,7 +21,7 @@ const PostComponent = () => {
   return (
     <Layout title={title} description={excerpt}>
       <main>
-        <article>
+        <article className="main-section">
           <MDXProvider
             components={{
               SAT,

@@ -1,7 +1,7 @@
 ---
 title: "SAT Collision Detection"
 subtitle: "An explanation of the Separating Axis Theorem"
-excerpt: ""
+excerpt: 'Have you ever played a computer game and started asking yourself... Wait a second, how does the computer actually know how to stop moving my character when I hit the ground? Or when I run into an obstacle? It is quite awesome that all of this "just" works... but how exactly does the computer do it?'
 cover: "/assets/blog/tall-buildings.jpg"
 date: "2022-10-13"
 author:
@@ -14,41 +14,185 @@ author:
 
 #### {subtitle}
 
-{excerpt}
+<p>{excerpt}</p>
 
-The main idea behind the Separating Axis Theorem is to find a line that can be drawn between two shapes without intersecting (a fancy word for "passing through") either of them. If you can find any line that can go between the two shapes – you've found yourself a separating axis. That means the two shapes don't intersect, which means that they don't collide. To efficiently find such a separating axis – one has to get a little bit creative and that's exactly what the SAT algorithm is all about and what these demos are trying to showcase step by step.
+This post is going to answer that question, by explaining one particular algorithm that can be used to tackle this sort of problem. That Algorithm is based on a mathematical idea known as the "Separating Axis Theorem". 
+
+The main idea behind this theorem is simple. If you can draw a line *between* two shapes, without touching either shape, the two shapes don't collide. This line, that separates the two shapes is known as a "separating axis", and hence the name: "Separating Axis Theorem". But how does the computer search for these lines? Shadows!
 
 ## How to Project a Line
 
-The main idea necessary to pull all of this off is the idea of shadows! 
+In linear algebra a projection is essentially what happens if you were to shine a light onto an object from very far away. The object would cast a shadow onto the wall – this shadow is mathematically known as a "projection".
 
-In linear algebra a projection is essentially what happens to a ball if you were to shine a light onto it from very far away. The ball would cast a shadow onto a wall at a specific location. 
+Because for the demo's of this article we will work only in two dimensions the "wall" becomes a simple line and the object is just a point, but the idea, of shining a light onto the point and tracking where the shadow falls onto the line stays the same. That is what a projection is!
 
-The same idea can be applied to cast a shadow from a point (ball) onto a line (wall). The idea is pretty straightforward. 
+Points can be modeled with vectors, you can think of the vectors as little arrows pointing to a location somewhere in space. 
 
-Points are vectors, you can think of them as little arrows in space. A straight line can be defined by two points. 
+Usually vectors are notated like this:
+
+$$
+\begin{bmatrix}
+   x \\
+   y
+\end{bmatrix}
+or 
+\begin{bmatrix}
+   2 \\
+   5
+\end{bmatrix}
+or
+\begin{bmatrix}
+   -1 \\
+   20
+\end{bmatrix}
+or 
+\begin{bmatrix}
+   a \\
+   b
+\end{bmatrix}
+$$
+
+Which is useful since this way we can see the amount that the vector goes into each of the directions x and y.
+
+A straight line can be defined by two points. Please try dragging around the points in the demo below to move the lines and the arrows around!
 
 <PointAndLineDemo/>
 
-The direction of the line can be calculated by getting the difference between the points. A projection in mathematical term is the position on the line if there would be a light source shining down onto the vector, making it cast a shadow onto the line. The point where the shadow ends up, would be the "projection" of that point. There is a mathematical expression for how to calculate this point.
+The direction of the line can be calculated by getting the difference between two of the points it is passing through. Each line has two directions – depending on the order of subtraction of the points. If you subtract A from B you get one direction and B from A gives you the other. The only difference between the two directions are the signs in front of the vector components, flip both signs and you would get the "opposite" direction. 
 
-Given the Points A, B, and C, where C is the point we want to project and A and B are the two points defining the line, we can find the projection by using the following formula. 
+There are a lot of fancy things that can be done with vectors, even just in 2D, so let's write a class that implements those functionalities: 
 
-projectionOfC = *A + (dot(AC, AB) / mag2(AB, AB)) \* AB*
+```typescript
+const precision = 0.000001;
+export class Vector2 {
+  public components: [number, number, number];
 
-The dot product of a vector is defined as adding up the multiples of it's components. Vectors can have multiple components, x,y,z etc. based on how many dimensions of space the vector is in, for these demos we keep everything super simple, and only worry about very simple 2D vectors with two components – x and y. 
+  constructor(x: number, y: number) {
+    this.components = [x, y, 1];
+  }
+
+  get x() {
+    return this.components[0];
+  }
+  set x(newX: number) {
+    this.components[0] = newX;
+  }
+  get y() {
+    return this.components[1];
+  }
+  set y(newY: number) {
+    this.components[1] = newY;
+  }
+
+  mag() {
+    return Math.sqrt(this.mag2());
+  }
+
+  mag2() {
+    return this.dot(this);
+  }
+
+  divScalar(scalar: number) {
+    return new Vector2(this.x / scalar, this.y / scalar);
+  }
+
+  multScalar(scalar: number) {
+    return new Vector2(this.x * scalar, this.y * scalar);
+  }
+
+  projectOnLine(A: Vector2, B: Vector2) {
+    const AP = this.sub(A);
+    const AB = B.sub(A);
+    return A.add(AB.multScalar(AP.dot(AB) / AB.mag2()));
+  }
+
+  unit() {
+    return this.divScalar(this.mag());
+  }
+
+  perp() {
+    return new Vector2(this.y, -this.x);
+  }
+
+  getNormal() {
+    return this.perp().unit();
+  }
+
+  sub(other: Vector2) {
+    return new Vector2(this.x - other.x, this.y - other.y);
+  }
+
+  add(other: Vector2) {
+    return new Vector2(this.x + other.x, this.y + other.y);
+  }
+
+  dot(other: Vector2) {
+    return this.x * other.x + this.y * other.y;
+  }
+
+  copy() {
+    return new Vector2(this.x, this.y);
+  }
+
+  transform(matrix: Matrix) {
+    const newX = matrix.a * this.x + matrix.b * this.y + matrix.c;
+    const newY = matrix.d * this.x + matrix.e * this.y + matrix.f;
+    this.x = newX;
+    this.y = newY;
+    return this;
+  }
+
+  equals(other: Vector2) {
+    return (
+      Math.abs(other.x - this.x) < precision &&
+      Math.abs(other.y - this.y) < precision
+    );
+  }
+
+  perpDot(other: Vector2) {
+    return this.perp().dot(other);
+  }
+}
+```
+
+
+Now there are a lot of little things in there that are necessary to understand before moving on: 
+What are all these methods doing? perp, unit, dot, mag, mag2, transform, perpDot?!
+
+Ok. Let's start disassembling them 1 by 1 and explain what each of them does along the way: 
+
+mag is short for Magnitude which is just mathematical jargon for the length of a vector. If you imagine the vector giving you a location in space you could say, hmmm, if I were to walk there, how long would I have to walk? The answer to that can be easily found out by using the Pythagorean theorem. 
+
+Where the x and y components form a right angle triangle and the hypotenuse of that triangle is the vector we are interested in. Hence the formula for the length of a vector is simply the Pythagorean theorem. 
+
+$$
+\begin{Vmatrix}
+  x \\
+  y
+\end{Vmatrix} = \sqrt{x² + y²}
+$$
+
+In the formula above we use the squared magnitude, so the sqrt, can drop from the term. If we just implement the above in code, we get the below. 
+
+## The Dot Product
+
+The dot product of a vector is defined as adding up the multiples of it's components. Vectors can have multiple components, x,y,z etc. based on how many dimensions of space the vector is in, for these demos we keep everything super simple, and only worry about vectors in 2D. Those only have 2 components – x and y. 
 
 Dot Products are extremely useful in mathematics and computer graphics. Mainly because they can be used to find out how far along one vector is if projected onto the other. This property is why we can see it appear in the above formula and why it will appear a lot more throughout this article.
 
 <DotProductDemo />
 
-Magnitude is just the length of the vector, that could be found out by the Pythagorean theorem. 
 
-Where the x and y components form a right angle triangle and the hypotenuse of that triangle is the vector we are interested in. Hence the formula for the length of a vector is simply the Pythagorean theorem. 
 
-mag(v) = sqrt(v.x² + v.y²)
 
-In the formula above we use the squared magnitude, so the sqrt, can drop from the term. If we just implement the above in code, we get the below. 
+
+Now that these basic ideas are out of the way, let's tackle casting shadows! Luckily there is a mathematical expression for how to calculate a projection from a point onto a line!
+
+Given the Points A, B, and C, where C is the point we want to project and A and B are the two points defining the line, we can find the projection of C onto the line AB by using the following formula. 
+
+projectionOfC = *A + (dot(AC, AB) / mag2(AB, AB)) \* AB*
+
+The same formula can be also expressed in code:
 
 ```typescript
 function projectOnLine(A: Vector2, B: Vector2, C: Vector2) {

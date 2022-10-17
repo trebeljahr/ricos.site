@@ -301,7 +301,7 @@ export function instrument(
   };
 
   const updateMousePos = (event: PointerEvent) => {
-    event.preventDefault();
+    // event.preventDefault();
     ctx.canvas.style.touchAction = "none";
 
     const mousePos = new Vector2(event.offsetX, event.offsetY);
@@ -337,12 +337,12 @@ export function instrument(
   };
 
   const handleMouseDown = (event: PointerEvent) => {
-    event.preventDefault();
+    // event.preventDefault();
     selectPolygon(event);
   };
 
   const handleMouseUp = (event: PointerEvent) => {
-    event.preventDefault();
+    // event.preventDefault();
     reset();
   };
 
@@ -386,6 +386,7 @@ export function instrument(
   let frameId = 0;
   const loop = () => {
     frameId = requestAnimationFrame(() => {
+      // console.log(state.rotationChange);
       handleRotations(polys, state.rotationChange);
       drawFn();
       loop();

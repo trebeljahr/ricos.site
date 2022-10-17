@@ -81,6 +81,7 @@ export class Vector2 {
     this.y = newY;
     return this;
   }
+
   equals(other: Vector2) {
     return (
       Math.abs(other.x - this.x) < precision &&

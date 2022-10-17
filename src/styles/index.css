@@ -27,6 +27,8 @@ html {
 
 * {
   box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 button {
@@ -52,6 +54,11 @@ button {
   position: relative;
   height: 40vh;
   margin: 1rem 0;
+}
+
+.markdown-image {
+  width: var(--main-width);
+  position: relative;
 }
 
 .colored-link {
@@ -230,25 +237,6 @@ a {
   font-size: 1rem;
 }
 
-h5,
-h4,
-h3,
-h2,
-h1 {
-  font-family: "Spartan", sans-serif;
-  font-weight: bold;
-}
-
-h5,
-h4,
-h3,
-h2,
-h1 {
-  padding-bottom: 1rem;
-  padding-top: 1.6rem;
-  margin: 0;
-}
-
 h1 {
   font-size: 1.8rem;
 }
@@ -307,19 +295,37 @@ blockquote p {
   color: var(--blue);
 }
 
-p,
+hgroup,
 ul,
 ol,
+dd,
 blockquote,
 button,
 input,
 pre,
 li,
-code {
+code,
+p,
+figure,
+pre,
+table,
+fieldset,
+hr {
+  margin-bottom: 1.5rem;
   line-height: 1.6;
-  font-size: 1rem;
   font-weight: normal;
   font-family: "Noto Sans", Helvetica, sans-serif;
+}
+
+h5,
+h4,
+h3,
+h2,
+h1 {
+  font-family: "Spartan", sans-serif;
+  font-weight: bold;
+  padding-top: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 pre,
@@ -583,7 +589,15 @@ li {
   content: "\eac9";
 }
 
+:root {
+  --main-width: 300px;
+}
+
 @media only screen and (min-width: 600px) {
+  :root {
+    --main-width: 440px;
+  }
+
   .allBooks {
     width: var(--main-width);
     margin-left: auto;
@@ -617,19 +631,7 @@ li {
   }
 
   p {
-    padding: 0.5rem 0px;
-    margin: 0;
-  }
-
-  h5,
-  h4,
-  h3,
-  h2,
-  h1,
-  .post-meta {
-    padding-bottom: 1rem;
-    padding-top: 1rem;
-    margin: 0;
+    margin-bottom: 1rem;
   }
 
   .read-more {

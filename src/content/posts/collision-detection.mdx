@@ -18,24 +18,30 @@ author:
 
 This post is going to answer that question, by explaining one particular algorithm that can be used to tackle this sort of problem. That Algorithm is based on a mathematical idea known as the "Separating Axis Theorem". 
 
-The main idea behind this theorem is simple. If you can draw a line *between* two shapes, without touching either shape, the two shapes don't collide. This line, that separates the two shapes is known as a "separating axis", and hence the name: "Separating Axis Theorem". But how does the computer search for these lines? Shadows!
+The main idea behind this theorem is simple. 
 
-## How to Project a Line
+>  If you can draw a line *between* two shapes, without touching either of them, then the two shapes do *not* collide. 
 
-In linear algebra a projection is essentially what happens if you were to shine a light onto an object from very far away. The object would cast a shadow onto the wall – this shadow is mathematically known as a "projection".
+If you can find such a line, you know for sure, that the two shapes are separated from each other by that line! And that's why this line is called a "separating axis", and hence the name of the theorem: "Separating Axis Theorem". But how does the computer search for these lines that separate two shapes? 
 
-Because for the demo's of this article we will work only in two dimensions the "wall" becomes a simple line and the object is just a point, but the idea, of shining a light onto the point and tracking where the shadow falls onto the line stays the same. That is what a projection is!
+It's using shadows!
+
+## Shadows?
+
+In linear algebra a projection is essentially what happens if you were to shine a light onto an object from very, very far away. The object would cast a shadow onto the wall and this shadow on the wall is what is mathematically known as a "projection".
+
+The demo's of this article will only be in two dimensions and hence the "wall" becomes a simple line and the object becomes a single point.
+
+But the idea, of shining a light onto that point and tracking where the shadow will fall on the line stays exactly the same. For the next section you should be comfortable with some basic concepts of vectors and "linear algebra", if you aren't [here's a quick overview of the concepts necessary](/posts/vectors-101).
 
 
+## Projections
 
+In case you had to refresh your knowledge on vectors – welcome back! Now that these basic ideas are out of the way, let's tackle casting some shadows! 
 
-## Projections 
+Luckily there is a mathematical expression for how to calculate a shadow that a point would cast onto a line! 
 
-In case you had to refresh your knowledge on vectors – welcome back!
-
-Now that these basic ideas are out of the way, let's tackle casting some shadows! Luckily there is a mathematical expression for how to calculate a shadow that a point would cast onto a line! In mathematics this is called a projection!
-
-Given the Points a, b, and c, where c is the point we want to project and a and b are the two points defining the line $\overline{ab}$, we can find the projection of c onto the line $\overline{ab}$ by using the following formula. 
+Given the Points a, b, and c, where c is the point we want to project and a and b are the two points defining the line $\overline{ab}$, we can find the projection of c onto the line $\overline{ab}$ it: 
 
 $$
 p = c - a
@@ -47,7 +53,7 @@ $$
 proj_c \, q = \frac{a + p \, \cdotp	q}{\lVert q \rVert^2}* q
 $$
 
-The same formula expressed in code:
+The same formula can be expressed in code:
 
 ```typescript
 function projectOnLine(a: Vector2, b: Vector2, c: Vector2) {
@@ -57,14 +63,12 @@ function projectOnLine(a: Vector2, b: Vector2, c: Vector2) {
 }
 ```
 
-Drawing this out onto the canvas yields a line going through a and b and an arrow going from A to C casting a shadow like below! You can try dragging around the points A, B, and C to change the direction, position and length of the vector and the line.
-A few notes on controls: For all the demos you should be able to drag around the shapes themselves as well as single points. You can also click on a polygon to "select" it and then rotate it by holding down the A and D keys on your keyboard! 
+Drawing this out onto the canvas yields a line going through a and b and an arrow p, going from a to c, which casts a shadow on the line from b to a! There's a demo below, where you can try dragging around the points A, B, and C to change the direction, position and length of the vector and the line. For all the demos in the rest of this article, you should be able to drag around the shapes themselves as well as the points making up the shapes. You can also click on shapes to "select" them and then rotate them by holding down the A and D keys on your keyboard! 
 
 <MatrixDemo />
 
-In a way the above can be done for any 2 vectors. For a line, we needed 2 points to get the direction of the line *and* to shift the result onto the line by adding on the vector/point a! 
+In a way the above can be done for any 2 vectors. For a line, we needed 2 points to get the direction of the line *and* to shift the result onto the line by adding on the vector/point a!
 The whole idea for only two vectors can be expressed more shortly and is also a useful operation to have in general. 
-
 $$
 proj_b \, a = \frac{a \, \cdotp b}{\lVert b \rVert^2} * b
 $$
@@ -80,22 +84,34 @@ There is also the idea of using a "scalar" projection. A scalar is "just" a numb
 $$
 s = \lVert a \rVert	* cos(\theta) = a \, \cdotp \hat{b}
 $$
-Notice the little hat on the b, that means that this is a unit vector!
+Notice the little hat on the b, that means that this is [a unit vector](/posts/vectors-101)!
+
+
 
 
 ## Projecting a Whole Polygon
 
-The main idea for the SAT algorithm, is that these projections of points can become very useful, because they can help determine whether or not a single ray of light could shine through in between two polygons. The cool thing is, if there could be a light ray between two polygons, that means that they can not intersect! Otherwise, how could the light get through?
+The main idea for the SAT algorithm, is that these projections of points can become very useful, because they can help determine whether or not a single ray of light could shine through in between two polygons. 
 
-This means, that if there is place between the shadows of two polygons, there will be a place between the polygons themselves where the light can pass through which means that there is a separating axis (the ray of light) and we can safely say that the two polygons don't touch each other! Because we can shine a light through between them. So the goal now is this: find two shadows (projections) that don't overlap for the two polygons.
+The cool thing is, if there *could* be a light ray between two polygons, that means that they can not intersect! 
 
-However to get there, we first need to be able to project a whole polygon onto a line. Luckily, a polygon is just a set of points. Usually these points are called vertices (singular vertex) in computer graphics. But if we project all the points we would still have to figure out which points actually are the "left" and "right" edge of the shadow.  
+Otherwise, how could the light get through?
+
+This means, that if there is light between the shadows of two polygons, there also has to be a separating axis (the ray of light itself!) and we can safely say that the two polygons don't touch each other! Because we can shine a light through in between them. 
+
+So the goal now is this: find two shadows (projections) that don't overlap for the two polygons. If all the shadows overlap, then the two polygons will overlap.
+
+However to get there, we first need to be able to project a whole polygon onto a line. Casting the shadow for a whole object, not just for a single point... 
+
+Luckily, a polygon is just a set of points. Usually the points of a polygon are called vertices in computer graphics. The singular vertices is vertex. 
+
+If we were to simply project all the vertices of a polygon we would still have to figure out which points are the "left" and "right" edge of the shadow.
 
 There are multiple approaches to do this, but one I find particularly fascinating and which is the one used down below in the demos is that of using a support function. 
 
 Essentially a support function finds a point among a set of points (here the vertices of the polygon we want to project), that is furthest along in a particular direction. 
 
-The trick here is to run the polygon through the finding of support points for the two different directions of the line. AB and BA –> which will result in the two points furthest along these directions => which we can then use to project onto the line for getting the shadow. Here is the code for the support point function (it will be very useful for other algorithms in collision detection, like the GJK algorithm, later on) : 
+The trick here is to run the polygon through the finding of support points for the two different directions of the line, which will result in the two points furthest along these directions. In the code below for the getting the support point in a specific direction notice, how we use the dot product to keep track of the distance for the scalar projections between of the vertex onto b?
 
 ```js
 export function getSupportPoint(vertices: Vector2[], d: Vector2) {
@@ -120,7 +136,7 @@ export function getSupportPoint(vertices: Vector2[], d: Vector2) {
 }
 ```
 
-We can then use those points to draw a polygon and it's projection onto the screen.
+We can then use these support points to project them onto the line for creating the "left" and "right" edge of the shadow.
 
 ```typescript
 export function drawProjection(
@@ -205,11 +221,14 @@ There are also versions of this test, which use the dot product to determine how
 
 ## The Last Idea
 
-How should we pick the lines that we project onto? Isn't there an infinity of possible lines we could chose from? While this is technically correct, we only need to check a few lines to make sure that the shapes don't collide, namely the normal for each edge of the polygon. The concept of a normal is very very useful in computer graphics and linear algebra in general. The main idea of a normal is a vector that is perpendicular (at 90°) to another vector (or line). Usually each line has two normals – one in each direction, however when working with polygons one is usually interested in the normals facing out of the polygon. In a lot of computer graphics applications there are sometimes bugs where normals are inverted for some reason, which usually messes up the lighting calculations, because the shape is "wrapped" onto the outside.
+How should we pick the lines that we project onto? Isn't there an infinity of possible lines we could chose from? 
 
-<ShowWhatANormalIs/>
+Luckily for us, there is a last insight for the SAT algorithm to work, namely that we only have to check a single axis for every edge of the polygons we want to check for collisions. 
+Namely, need to check each of the normals of the edges, and see if the shadows projected onto that normal overlap. You can see that in the example below, where we are slowly cycling through the different normals, one by one! 
 
-But for SAT, we can simply have a loop that goes over each of the normals of our Polygons in turn, and checks if the two shadows overlap. You can see that in the example below it cycling through the different normals, one by one. The only thing we are interested in from the normal is the direction, so we displace it towards the origin and draw a line passing in the same general direction that the normal was facing. Usually normals would be directly on the edge of the polygon. 
+The only thing we are interested in from the normal is the direction, so we displace it towards the origin and draw a line passing in the same general direction that the normal was pointing in. Usually normals would be directly on the edge of the polygon. 
+
+The edge to which the normal belongs to is colored yellow in the example and you can see how the line drawn through the origin is always perpendicular to the yellow edge (because the direction is taken from the normal that has to be the case)!
 
 <AxisByAxis />
 
@@ -247,5 +266,17 @@ Luckily for us, SAT is relatively easy to adapt to give a collision response –
 
 
 
-For now, this is it, with something like the above, you could have collision detection of arbitrary shapes, by carving them up into neat little triangles and then running collision detection on those. You could even constrain and stop the shapes from moving into each other by adding a collision response. However... Collision detection is a tricky business and there are still edge cases where the above breaks down. The first would be objects that move very very quickly. If they move quickly enough they could simply pass through other objects. In games, usually bullets would show this kind of behavior. The other problem is that of having lots of shapes. We only checked if two polygons were colliding with each other... what about 10, 100, 1000? These kinds of collision detection algorithms are expensive and if we have to check every single polygon against every single other polygon the amount of computations we have to do grows with O(n²) complexity which is really not good. Which means we would need to use yet more tricks to divide up shapes spatially. Because two shapes which are very very far apart can not intersect (unless one of them is really really big) therefore we could cut down on the number of collision detections we actually have to do by a whole lot. The general idea algorithm that would be used for that is called a Quadtree (in 2D) or and Octtree  (in 3d). But coding these is reserved for Part II of this article!
+For now, this is it, with something like the above, you could have collision detection of arbitrary shapes, by carving them up into neat little triangles and then running collision detection on those. You could even constrain and stop the shapes from moving into each other by adding a collision response. 
+
+However... Collision detection is a tricky business and there are still edge cases where the above breaks down. 
+
+The first would be objects that move very very quickly. If they move quickly enough they could simply pass through other objects. In games, usually bullets would show this kind of behavior. 
+
+The other problem is that of having lots of shapes. We only checked if two polygons were colliding with each other... what about 10, 100, 1000? These kinds of collision detection algorithms are expensive and if we have to check every single polygon against every single other polygon the amount of computations we have to do grows with O(n²) complexity which is really not good. 
+
+Which means we would need to use yet more tricks to divide up shapes spatially. Because two shapes which are very very far apart can not intersect (unless one of them is really really big) therefore we could cut down on the number of collision detections we actually have to do by a whole lot. The general idea algorithm that would be used for that is called a Quadtree (in 2D) or and Octree (in 3d). 
+
+![octree visualization](/assets/blog/octree.png)
+
+But coding these is reserved for Part II of this article!
 

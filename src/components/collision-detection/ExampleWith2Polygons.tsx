@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import SimpleReactCanvasComponent from "simple-react-canvas-component";
+import { useActualSize } from "../../hooks/useWindowSize";
 import {
   drawProjection,
   getTranslationMatrix,
@@ -11,6 +12,8 @@ import { colorEdge, drawBackground } from "./helpers";
 
 export const ExampleWith2Polygons = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
+  const { width, height } = useActualSize();
+
   useEffect(() => {
     if (!cnv) return;
     cnv.tabIndex = 0;
@@ -44,6 +47,6 @@ export const ExampleWith2Polygons = () => {
   }, [cnv]);
 
   return (
-    <SimpleReactCanvasComponent setCnv={setCnv} width={780} height={500} />
+    <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />
   );
 };

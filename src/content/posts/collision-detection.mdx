@@ -117,12 +117,12 @@ export function drawProjection(
   const d1 = p1.sub(p2);
 
   // create translation matrix
-  const origin = new Vector2(ctx.canvas.width / 2, ctx.canvas.height / 2);
+  const origin = new Vector2(parseFloat(ctx.canvas.style.width) / 2, parseFloat(ctx.canvas.style.height) / 2);
   const toOrigin = getTranslationMatrix(origin.x, origin.y);
  
   // use translation matrix + scaling to create far apart line points
   // which goes through origin in the middle of the canvas 
-  const len = Math.max(ctx.canvas.width, ctx.canvas.height);
+  const len = Math.max(parseFloat(ctx.canvas.style.width), parseFloat(ctx.canvas.style.height));
   const l1 = d2.unit().multScalar(len).transform(toOrigin);
   const l2 = d2.unit().multScalar(-len).transform(toOrigin);
 

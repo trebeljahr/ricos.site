@@ -100,7 +100,10 @@ export function drawInfiniteLine(
   ctx.save();
   const d = p1.sub(p2);
 
-  const len = Math.max(ctx.canvas.width, ctx.canvas.height);
+  const len = Math.max(
+    parseFloat(ctx.canvas.style.width),
+    parseFloat(ctx.canvas.style.height)
+  );
   const l1 = p1.add(d.multScalar(len));
   const l2 = p1.add(d.multScalar(-len));
 
@@ -117,13 +120,19 @@ export function drawProjection(
   p1: Vector2,
   p2: Vector2
 ) {
-  const origin = new Vector2(ctx.canvas.width / 2, ctx.canvas.height / 2);
+  const origin = new Vector2(
+    parseFloat(ctx.canvas.style.width) / 2,
+    parseFloat(ctx.canvas.style.height) / 2
+  );
   const toOrigin = getTranslationMatrix(origin.x, origin.y);
 
   const d2 = p2.sub(p1);
   const d1 = p1.sub(p2);
 
-  const len = Math.max(ctx.canvas.width, ctx.canvas.height);
+  const len = Math.max(
+    parseFloat(ctx.canvas.style.width),
+    parseFloat(ctx.canvas.style.height)
+  );
   const l1 = d2.unit().multScalar(len).transform(toOrigin);
   const l2 = d2.unit().multScalar(-len).transform(toOrigin);
 
@@ -210,11 +219,11 @@ const niceGreen = "#63ad47";
 export function initPolygons(cnv: HTMLCanvasElement) {
   const myPoly1 = new Polygon(
     [
-      [91.3853, 72.056],
-      [91.0849, 56.344],
-      [61.4993, 61.451],
-      [51.9736, 78.969],
-      [81.2159, 83.447],
+      [0, 0],
+      [5, 5],
+      [10, 5],
+      [7, 7],
+      [2, 5],
     ],
     niceGreen
   );
@@ -229,10 +238,13 @@ export function initPolygons(cnv: HTMLCanvasElement) {
     niceBlue
   );
 
-  const origin = new Vector2(cnv.width / 2, cnv.height / 2);
+  const origin = new Vector2(
+    parseFloat(cnv.style.width) / 2,
+    parseFloat(cnv.style.height) / 2
+  );
   const toOrigin = getTranslationMatrix(origin.x, origin.y);
 
-  myPoly1.transform(getScalingMatrix(2, 2));
+  myPoly1.transform(getScalingMatrix(20, 20));
   myPoly1.transform(toOrigin);
   myPoly1.rotate(20);
 
@@ -269,9 +281,15 @@ export function instrument(
     rotationChange: 0,
   };
 
-  const updateMousePos = (event: MouseEvent) => {
+  const moveThingsOnCanvas = (event: {
+    offsetX: number;
+    offsetY: number;
+    movementX: number;
+    movementY: number;
+  }) => {
     const mousePos = new Vector2(event.offsetX, event.offsetY);
 
+    console.log(event.movementX, event.movementY);
     for (let poly of polys) {
       poly.hoveredVertex = poly.vertices.find((pos) => {
         return (
@@ -296,8 +314,45 @@ export function instrument(
       }
     }
   };
+  const updateMousePos = (event: MouseEvent) => {
+    event.preventDefault();
+    moveThingsOnCanvas(event);
+  };
 
-  const handleMouseDown = (event: MouseEvent) => {
+  let previousTouch: null | Touch = null;
+
+  const handleTouchMove = (event: TouchEvent) => {
+    event.preventDefault();
+    const touch = event.touches[0];
+
+    if (previousTouch) {
+      moveThingsOnCanvas({
+        movementX: touch.pageX - previousTouch.pageX,
+        movementY: touch.pageY - previousTouch.pageY,
+        offsetX: touch.pageX,
+        offsetY: touch.pageY,
+      });
+    }
+
+    previousTouch = touch;
+  };
+
+  const handleTouchStart = (event: TouchEvent) => {
+    event.preventDefault();
+
+    const touch = event.touches[0];
+    console.log(event);
+    console.log(touch);
+    previousTouch = touch;
+    selectPolygon({ offsetX: touch.pageX, offsetY: touch.pageY });
+  };
+
+  const handleTouchEnd = (event: TouchEvent) => {
+    event.preventDefault();
+    reset();
+  };
+
+  const selectPolygon = (event: { offsetX: number; offsetY: number }) => {
     const mousePos = new Vector2(event.offsetX, event.offsetY);
     for (let poly of polys) {
       if (poly.hoveredVertex) {
@@ -315,9 +370,20 @@ export function instrument(
     polys.forEach((poly) => (poly.selected = false));
   };
 
-  const handleMouseUp = () => {
+  const handleMouseDown = (event: MouseEvent) => {
+    event.preventDefault();
+    selectPolygon(event);
+  };
+
+  const reset = () => {
+    previousTouch = null;
     state.draggedPoly = undefined;
     state.draggedPoint = undefined;
+  };
+
+  const handleMouseUp = (event: MouseEvent) => {
+    event.preventDefault();
+    reset();
   };
 
   const handleRotation = (event: KeyboardEvent) => {
@@ -347,6 +413,9 @@ export function instrument(
   ctx.canvas.addEventListener("mousemove", updateMousePos);
   ctx.canvas.addEventListener("mousedown", handleMouseDown);
   ctx.canvas.addEventListener("mouseup", handleMouseUp);
+  ctx.canvas.addEventListener("touchstart", handleTouchStart);
+  ctx.canvas.addEventListener("touchmove", handleTouchMove);
+  ctx.canvas.addEventListener("touchend", handleTouchEnd);
 
   let frameId = 0;
   const loop = () => {
@@ -365,6 +434,10 @@ export function instrument(
       ctx.canvas.removeEventListener("mousemove", updateMousePos);
       ctx.canvas.removeEventListener("mousedown", handleMouseDown);
       ctx.canvas.removeEventListener("mouseup", handleMouseUp);
+
+      ctx.canvas.removeEventListener("touchstart", handleTouchStart);
+      ctx.canvas.removeEventListener("touchmove", handleTouchMove);
+      ctx.canvas.removeEventListener("touchend", handleTouchEnd);
       cancelAnimationFrame(frameId);
     },
   };

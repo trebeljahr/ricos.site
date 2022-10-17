@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import SimpleReactCanvasComponent from "simple-react-canvas-component";
+import { useActualSize } from "../../hooks/useWindowSize";
 import {
   drawProjection,
   initPolygons,
@@ -11,6 +12,8 @@ import { colorEdge, drawBackground } from "./helpers";
 
 export const AxisByAxis = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
+  const { width, height } = useActualSize();
+
   useEffect(() => {
     if (!cnv) return;
     cnv.tabIndex = 0;
@@ -62,6 +65,6 @@ export const AxisByAxis = () => {
   }, [cnv]);
 
   return (
-    <SimpleReactCanvasComponent setCnv={setCnv} width={780} height={500} />
+    <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />
   );
 };

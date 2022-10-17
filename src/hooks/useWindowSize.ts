@@ -20,5 +20,24 @@ export function useWindowSize(): Size {
     handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   return windowSize;
+}
+
+export function useActualSize(): Size {
+  const { width } = useWindowSize();
+  const maxWidth = 780;
+  const maxHeight = 500;
+  const [actualWidth, setActualWidth] = useState<number>();
+  const [actualHeight, setActualHeight] = useState<number>();
+
+  useEffect(() => {
+    const aspectRatio = maxWidth / maxHeight;
+    const newWidth = Math.min(maxWidth, width || Infinity * 0.95);
+
+    setActualWidth(newWidth);
+    setActualHeight(Math.min(maxHeight, newWidth * aspectRatio));
+  }, [width]);
+
+  return { width: actualWidth, height: actualHeight };
 }

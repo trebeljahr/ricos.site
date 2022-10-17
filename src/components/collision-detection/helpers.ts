@@ -96,7 +96,10 @@ export function checkCollision(poly1: Polygon, poly2: Polygon) {
 }
 
 export function drawBackground(ctx: CanvasRenderingContext2D) {
-  const [w, h] = [ctx.canvas.width, ctx.canvas.height];
+  const [w, h] = [
+    parseFloat(ctx.canvas.style.width),
+    parseFloat(ctx.canvas.style.height),
+  ];
 
   ctx.fillStyle = "rgb(240, 240, 240)";
   ctx.fillRect(0, 0, w, h);

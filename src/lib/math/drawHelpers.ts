@@ -220,10 +220,10 @@ export function initPolygons(cnv: HTMLCanvasElement) {
   const myPoly1 = new Polygon(
     [
       [0, 0],
-      [5, 5],
-      [10, 5],
-      [7, 7],
-      [2, 5],
+      [1, 0],
+      [2, 1],
+      [1, 3],
+      [-1, 1],
     ],
     niceGreen
   );
@@ -232,7 +232,8 @@ export function initPolygons(cnv: HTMLCanvasElement) {
     [
       [-2, 0],
       [-2, 1],
-      [-3, 1],
+      [-3, 2],
+      [-4, 1],
       [-3, 0],
     ],
     niceBlue
@@ -244,7 +245,7 @@ export function initPolygons(cnv: HTMLCanvasElement) {
   );
   const toOrigin = getTranslationMatrix(origin.x, origin.y);
 
-  myPoly1.transform(getScalingMatrix(20, 20));
+  myPoly1.transform(getScalingMatrix(40, 40));
   myPoly1.transform(toOrigin);
   myPoly1.rotate(20);
 
@@ -274,6 +275,8 @@ export function instrument(
   polys: Polygon[],
   drawFn: () => void
 ) {
+  ctx.canvas.style.touchAction = "none";
+
   const rotationSpeed = 3;
   let state: State = {
     draggedPoly: undefined,
@@ -289,7 +292,6 @@ export function instrument(
   }) => {
     const mousePos = new Vector2(event.offsetX, event.offsetY);
 
-    console.log(event.movementX, event.movementY);
     for (let poly of polys) {
       poly.hoveredVertex = poly.vertices.find((pos) => {
         return (
@@ -313,10 +315,6 @@ export function instrument(
         );
       }
     }
-  };
-  const updateMousePos = (event: MouseEvent) => {
-    event.preventDefault();
-    moveThingsOnCanvas(event);
   };
 
   let previousTouch: null | Touch = null;
@@ -370,20 +368,27 @@ export function instrument(
     polys.forEach((poly) => (poly.selected = false));
   };
 
-  const handleMouseDown = (event: MouseEvent) => {
+  const updateMousePos = (event: PointerEvent) => {
+    event.preventDefault();
+    moveThingsOnCanvas(event);
+  };
+
+  const handleMouseDown = (event: PointerEvent) => {
     event.preventDefault();
     selectPolygon(event);
   };
 
-  const reset = () => {
-    previousTouch = null;
-    state.draggedPoly = undefined;
-    state.draggedPoint = undefined;
-  };
-
-  const handleMouseUp = (event: MouseEvent) => {
+  const handleMouseUp = (event: PointerEvent) => {
     event.preventDefault();
     reset();
+  };
+
+  const reset = () => {
+    previousTouch = null;
+    console.log("resetting");
+    state.draggedPoly = undefined;
+    state.draggedPoint && (state.draggedPoint.poly.hoveredVertex = undefined);
+    state.draggedPoint = undefined;
   };
 
   const handleRotation = (event: KeyboardEvent) => {
@@ -410,12 +415,12 @@ export function instrument(
 
   ctx.canvas.addEventListener("keyup", stopRotation);
   ctx.canvas.addEventListener("keydown", handleRotation);
-  ctx.canvas.addEventListener("mousemove", updateMousePos);
-  ctx.canvas.addEventListener("mousedown", handleMouseDown);
-  ctx.canvas.addEventListener("mouseup", handleMouseUp);
-  ctx.canvas.addEventListener("touchstart", handleTouchStart);
-  ctx.canvas.addEventListener("touchmove", handleTouchMove);
-  ctx.canvas.addEventListener("touchend", handleTouchEnd);
+  ctx.canvas.addEventListener("pointermove", updateMousePos);
+  ctx.canvas.addEventListener("pointerdown", handleMouseDown);
+  ctx.canvas.addEventListener("pointerup", handleMouseUp);
+  // ctx.canvas.addEventListener("touchstart", handleTouchStart);
+  // ctx.canvas.addEventListener("touchmove", handleTouchMove);
+  // ctx.canvas.addEventListener("touchend", handleTouchEnd);
 
   let frameId = 0;
   const loop = () => {
@@ -431,13 +436,13 @@ export function instrument(
     cleanup: () => {
       ctx.canvas.removeEventListener("keyup", stopRotation);
       ctx.canvas.removeEventListener("keydown", handleRotation);
-      ctx.canvas.removeEventListener("mousemove", updateMousePos);
-      ctx.canvas.removeEventListener("mousedown", handleMouseDown);
-      ctx.canvas.removeEventListener("mouseup", handleMouseUp);
+      ctx.canvas.removeEventListener("pointermove", updateMousePos);
+      ctx.canvas.removeEventListener("pointerdown", handleMouseDown);
+      ctx.canvas.removeEventListener("pointerup", handleMouseUp);
 
-      ctx.canvas.removeEventListener("touchstart", handleTouchStart);
-      ctx.canvas.removeEventListener("touchmove", handleTouchMove);
-      ctx.canvas.removeEventListener("touchend", handleTouchEnd);
+      // ctx.canvas.removeEventListener("touchstart", handleTouchStart);
+      // ctx.canvas.removeEventListener("touchmove", handleTouchMove);
+      // ctx.canvas.removeEventListener("touchend", handleTouchEnd);
       cancelAnimationFrame(frameId);
     },
   };

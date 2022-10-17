@@ -1,0 +1,256 @@
+---
+title: "Vectors 101"
+subtitle: "A practical intro to Vector Mathematics"
+excerpt: 'This post is an exploration of many different and important vector concepts and how they can be implemented in code. After reading it you should walk away with an understanding of how and why these operations work and where they could be useful.'
+cover: "/assets/blog/tall-buildings.jpg"
+date: "2022-10-13"
+author:
+  name: Rico Trebeljahr
+  picture: "/assets/blog/profile.jpeg"
+
+---
+
+# {title}
+
+#### {subtitle}
+
+<p>{excerpt}</p>
+
+## The Confusion between Points and Vectors
+
+Points can be modeled with vectors, you can think of the vectors as little arrows pointing to a location somewhere in space. 
+
+$$
+\overrightharpoon v 
+or 
+\overrightarrow v
+or just
+v
+$$
+
+But vectors usually are made up out of components so they can also be written like this:
+
+$$
+\begin{bmatrix}
+   x \\
+   y
+\end{bmatrix}
+or 
+\begin{bmatrix}
+   2 \\
+   5
+\end{bmatrix}
+or
+\begin{bmatrix}
+   -1 \\
+   20
+\end{bmatrix}
+or 
+\begin{bmatrix}
+   a \\
+   b
+\end{bmatrix}
+$$
+
+Thinking of vectors in this way of components is very useful since this way we can see the amount that the vector goes into each of the directions x and y.
+Vectors are not just points, they can be thought of also as directions. Hence the idea of an arrow – "pointing" into a direction in space, and the idea of representing vectors as arrows. 
+
+A straight line can be defined by two points (or two vectors). Please try dragging around the points in the demo below to move the lines and the arrows around!
+
+<PointAndLineDemo/>
+
+The direction of the line can be calculated by getting the difference between two of the points it is passing through. Each line has two directions – depending on the order of subtraction of the points. If you subtract A from B you get one direction and B from A gives you the other. The only difference between the two directions are the signs in front of the vector components, flip both signs and you would get the "opposite" direction. 
+
+## Subtraction, Addition, Multiplication and Division of Vectors
+
+All of these are easy to do for vectors! Since vectors are just made up of components, to calculate with them, you simply add, subtract, multiply or divide on all the components simultaneously. 
+$$
+\overrightharpoon{v} * a = 
+\begin{bmatrix}
+x * a \\
+y * a
+\end{bmatrix}
+$$
+
+However what happens if you want to calculate with two vectors at once? 
+$$
+v * a = 
+\begin{bmatrix}
+x * a \\
+y * a
+\end{bmatrix}
+$$
+## Magnitude, Norm and length
+
+The magnitude or norm is just mathematical jargon for "the length" of a vector. 
+
+If you imagine that a vector is giving you a location in space you could say, hmmm, if I were to walk there, how long would I have to walk? The answer to that can be found out by using the Pythagorean theorem. 
+
+Think of the x and y components and how they form the two sides of a right angled triangle and how the hypotenuse of that triangle is the vector (and the length) we are interested in. Hence the formula for the length of a vector is simply the Pythagorean theorem. 
+
+$$
+\lVert
+  v 
+\rVert = \sqrt{x² + y²} = v \, \cdotp v
+$$
+
+Sometimes we don't need the actual length but the squared length, and so we can drop the $\sqrt{}$ from the formula above. If we implement these two ideas mag and mag2 (squared norm/length) ideas in code, we get the below. 
+```typescript
+function mag2(v: Vector2) {
+  return dot(v, v);
+}
+
+function mag(v: Vector2) {
+  return Math.sqrt(mag2(v));
+}
+```
+
+It's often useful to have the mag2 version because taking the square root is an expensive operation and for some applications we don't actually need the "correct" length of the vector, because the squared length suffices. 
+
+Hence you can also find both methods on the Vector2 implementation!
+
+## Unit Vectors
+
+The norm or magnitude of a vector is also often used to construct a "unit" vector. 
+
+Unit vectors are "raw" directions. You get them if you divide the vector by it's norm you get a vector of length 1. But you are preserving the direction of the vector!
+And the name stems from the "unit" circle, a circle of a radius of length 1. Just like the radius of the circle, unit vectors have a length of 1. 
+$$
+\hat{v} = \frac{v}{\lVert v \rVert} 
+$$
+
+In code this would look something like this:
+```typescript
+function unit(b: Vector2) {
+  return b.divScalar(b.mag());
+}
+```
+
+## The "Perp" or Perpendicular 
+
+In 2D getting a vector rotated by exactly 90° is very easy! You can simply swap the x and y components, and then negate the swapped x!
+$$
+\begin{bmatrix}
+x \\
+y 
+\end{bmatrix}
+
+\xrightarrow[\circlearrowright]{\, \, 90°}
+
+\begin{bmatrix}
+y \\
+-x 
+\end{bmatrix}
+$$
+
+The reason for this has to do with the trigonometric functions sin and cos – and how they relate angles and vectors. All of this can be combined with rotational matrices and is used a lot in computer graphics!
+
+```typescript
+function perp(v: Vector2) {
+  return new Vector2(v.y, -v.x);
+}
+``` 
+
+## The Dot Product
+
+The dot product of a vector is defined as adding up the multiples of it's components. Vectors can have multiple components, x,y,z etc. based on how many dimensions of space the vector is in, for these demos we keep everything super simple, and only worry about vectors in 2D. Those only have 2 components – x and y. 
+
+Dot Products are extremely useful in mathematics and computer graphics. Mainly because they can be used to find out how far along one vector is if it were projected onto another. This property is why we can see it appear in the above formula and why it will appear a lot more throughout this article.
+
+$$ 
+v \, \cdotp a = x_a * x_v + y_a * y_v 
+$$
+
+```typescript
+function dot(v: Vector2) {
+  return v.x * v.x + v.y * v.y
+}
+``` 
+<DotProductDemo />
+
+As we have seen, there are a lot of fancy things that can be done with vectors, even just in 2D, so let's write a class that implements all of those functionalities and methods from above and use that for demos such as the SAT or GJK algorithms!
+
+```typescript
+const precision = 0.000001;
+export class Vector2 {
+  public components: [number, number];
+
+  constructor(x: number, y: number) {
+    this.components = [x, y];
+  }
+
+  get x() {
+    return this.components[0];
+  }
+  set x(newX: number) {
+    this.components[0] = newX;
+  }
+  get y() {
+    return this.components[1];
+  }
+  set y(newY: number) {
+    this.components[1] = newY;
+  }
+
+  mag() {
+    return Math.sqrt(this.mag2());
+  }
+
+  mag2() {
+    return this.dot(this);
+  }
+
+  divScalar(scalar: number) {
+    return new Vector2(this.x / scalar, this.y / scalar);
+  }
+
+  multScalar(scalar: number) {
+    return new Vector2(this.x * scalar, this.y * scalar);
+  }
+
+  sub(other: Vector2) {
+    return new Vector2(this.x - other.x, this.y - other.y);
+  }
+
+  add(other: Vector2) {
+    return new Vector2(this.x + other.x, this.y + other.y);
+  }
+
+  projectOnLine(A: Vector2, B: Vector2) {
+    const AP = this.sub(A);
+    const AB = B.sub(A);
+    return A.add(AB.multScalar(AP.dot(AB) / AB.mag2()));
+  }
+
+  unit() {
+    return this.divScalar(this.mag());
+  }
+
+  perp() {
+    return new Vector2(this.y, -this.x);
+  }
+
+  getNormal() {
+    return this.perp().unit();
+  }
+
+  dot(other: Vector2) {
+    return this.x * other.x + this.y * other.y;
+  }
+
+  copy() {
+    return new Vector2(this.x, this.y);
+  }
+
+  equals(other: Vector2) {
+    return (
+      Math.abs(other.x - this.x) < precision &&
+      Math.abs(other.y - this.y) < precision
+    );
+  }
+
+  perpDot(other: Vector2) {
+    return this.perp().dot(other);
+  }
+}
+```

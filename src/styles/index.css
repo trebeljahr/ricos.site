@@ -257,6 +257,7 @@ h3 {
 
 .header {
   height: fit-content;
+  margin-bottom: 1rem;
 }
 
 blockquote {
@@ -300,8 +301,6 @@ ul,
 ol,
 dd,
 blockquote,
-button,
-input,
 pre,
 li,
 code,
@@ -313,6 +312,24 @@ fieldset,
 hr {
   margin-bottom: 1.5rem;
   line-height: 1.6;
+}
+
+hgroup,
+ul,
+ol,
+dd,
+blockquote,
+pre,
+li,
+code,
+p,
+figure,
+pre,
+table,
+fieldset,
+hr,
+button,
+input {
   font-weight: normal;
   font-family: "Noto Sans", Helvetica, sans-serif;
 }

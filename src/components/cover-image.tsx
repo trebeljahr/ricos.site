@@ -24,8 +24,9 @@ export const BookCover = ({ title, src }: Props) => {
     <span className="book-cover-image">
       <Image
         src={src}
-        layout="fill"
-        objectFit="cover"
+        layout="responsive"
+        width={1}
+        height={1.6}
         alt={`Bookcover - ${title}`}
         // placeholder="blur"
       />

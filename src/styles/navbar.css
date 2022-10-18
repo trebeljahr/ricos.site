@@ -14,7 +14,6 @@ nav.primary-navigation ul {
 
 nav.primary-navigation ul li {
   list-style: none;
-  margin: 0 auto;
   border-left: 2px solid #3ca0e7;
   padding: 0 10px;
   position: relative;
@@ -48,6 +47,11 @@ a:hover {
 ul li ul li a {
   transition: all 0.5s ease;
 }
+.navlinks {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
 .navbar-controls {
   display: flex;
@@ -61,6 +65,13 @@ ul li ul li a {
   .navlink-expander {
     display: none;
   }
+
+  .navlinks {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
   nav.primary-navigation ul > :nth-last-child(-n + 1) {
     border-right: 2px solid #3ca0e7;
   }

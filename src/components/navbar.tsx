@@ -75,7 +75,7 @@ export function Navbar() {
           <span className={expanded ? "icon-close" : "icon-bars"} />
         </button>
       </div>
-      <ul>
+      <ul className="navlinks">
         <Navlinks expanded={expanded} setExpanded={setExpandedOnMobile} />
       </ul>
     </nav>

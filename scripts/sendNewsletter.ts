@@ -11,13 +11,11 @@ import rehypeUrls from "rehype-urls";
 import rehypePresetMinify from "rehype-preset-minify";
 import rehypeStringify from "rehype-stringify";
 
-const newsletterNumber = 2;
+const newsletterNumber = 3;
 const LIVE_HOST = "https://trebeljahr.com";
 
 const HOST =
-  process.env.NODE_ENV === "production" || process.env.NODE_ENV === "testing"
-    ? LIVE_HOST
-    : "http://localhost:3000";
+  process.env.NODE_ENV === "production" ? LIVE_HOST : "http://localhost:3000";
 
 async function main() {
   const emailHandlebarsFile = await readFile(

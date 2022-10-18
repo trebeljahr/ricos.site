@@ -3,7 +3,6 @@ import fs from "fs/promises";
 import { join } from "path";
 import { Search, useSearch } from "../components/SearchBar";
 import { ToTopButton } from "../components/ToTopButton";
-import { UtteranceComments } from "../components/comments";
 import { NewsletterForm } from "../components/newsletter-signup";
 import quotesJSON from "../content/pages/quotes.json";
 
@@ -49,7 +48,6 @@ export default function Quotes() {
         <section className="main-section">
           <NewsletterForm />
           <ToTopButton />
-          <UtteranceComments />
         </section>
       </article>
     </Layout>

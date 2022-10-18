@@ -5,7 +5,6 @@ import { ToTopButton } from "../../components/ToTopButton";
 import { Post as PostType } from "../../@types/post";
 import Image from "next/image";
 import { NewsletterForm } from "../../components/newsletter-signup";
-import { UtteranceComments } from "../../components/comments";
 
 type Props = {
   newsletter: PostType;
@@ -29,7 +28,6 @@ const Newsletter = ({ newsletter, slug }: Props) => {
         </section>
         <section className="main-section">
           <NewsletterForm />
-          <UtteranceComments />
           <ToTopButton />
         </section>
       </article>

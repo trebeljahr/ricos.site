@@ -5,7 +5,6 @@ import PostHeader from "../../components/post-header";
 import Layout from "../../components/layout";
 import { getPostBySlug, getAllPosts, getAllMarkdownPosts } from "../../lib/api";
 import { ReadMore } from "../../components/more-stories";
-import { UtteranceComments } from "../../components/comments";
 import { ToTopButton } from "../../components/ToTopButton";
 import { Post as PostType } from "../../@types/post";
 import { NewsletterForm } from "../../components/newsletter-signup";
@@ -34,7 +33,6 @@ const Post = ({ post, morePosts }: Props) => {
         <section className="main-section">
           {morePosts && <ReadMore posts={morePosts} />}
           <NewsletterForm />
-          <UtteranceComments />
           <ToTopButton />
         </section>
       </article>

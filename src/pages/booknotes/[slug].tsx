@@ -6,7 +6,6 @@ import { getBookReviewBySlug, getAllBookReviews } from "../../lib/api";
 import { PostSubTitle, PostTitle } from "../../components/post-title";
 import BookType from "../../@types/book";
 import { BookCover } from "../../components/cover-image";
-import { UtteranceComments } from "../../components/comments";
 import { ToTopButton } from "../../components/ToTopButton";
 import { ExternalLink } from "../../components/ExternalLink";
 import { NewsletterForm } from "../../components/newsletter-signup";
@@ -72,7 +71,6 @@ const Book = ({ book }: Props) => {
           <section className="main-section">
             <ToTopButton />
             <NewsletterForm />
-            <UtteranceComments />
           </section>
         </article>
       )}

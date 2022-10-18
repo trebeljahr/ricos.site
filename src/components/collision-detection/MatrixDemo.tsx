@@ -29,7 +29,7 @@ export const MatrixDemo = () => {
 
     ctx.strokeStyle = "rgba(20, 20, 20, 0.2)";
     line(ctx, p2, projection);
-  }, [cnv]);
+  }, [cnv, width, height]);
 
   return (
     <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />

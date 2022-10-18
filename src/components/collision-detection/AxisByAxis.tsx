@@ -62,7 +62,7 @@ export const AxisByAxis = () => {
       clearInterval(intervalId);
       cleanup;
     };
-  }, [cnv]);
+  }, [cnv, width, height]);
 
   return (
     <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />

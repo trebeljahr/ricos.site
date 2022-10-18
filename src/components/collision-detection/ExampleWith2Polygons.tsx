@@ -44,7 +44,7 @@ export const ExampleWith2Polygons = () => {
     drawFn();
 
     return cleanup;
-  }, [cnv]);
+  }, [cnv, width, height]);
 
   return (
     <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />

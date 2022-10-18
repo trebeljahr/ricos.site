@@ -372,6 +372,16 @@ code {
   display: block;
 }
 
+.SATWithResponseContainer {
+  position: relative;
+}
+
+.SATWithResponseContainer > button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
 .avatar-with-author {
   display: flex;
   align-items: center;

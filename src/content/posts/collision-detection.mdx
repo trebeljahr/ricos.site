@@ -246,21 +246,19 @@ Well... that didn't go to well huh? The problem is that what you just saw where 
 
 Convex and concave are just two words to express that something bulges outwards or inwards. I remember them with the word "cave" as in concave. A cave goes inward, so does a concave object. In other words, concave shapes are shapes that have some kind of indentation in them. A star would be a concave shape, or a something like a V etc. To handle collisions with concave shapes is usually very tricky... Usually people just chop them up into simpler – convex – shapes and then make collision detection happening with them. Mostly people chop them up into triangles using a process called triangulation (which has many different algorithms for it...) So let's look at some.
 
+## Adding a Collision Response
+
+Luckily for us, SAT is relatively easy to adapt to give a collision response – namely, if you find that all shadows (and therefore the shapes) overlap, you can find the pair of shadows that overlaps the least, and push the two shapes apart in that direction until the shadows don't touch anymore! Let's see how we could implement that idea in code as well: 
+
+<SATWithResponse />
+
 ### Triangulating Concave Shapes
-
-
 
 Ok. Cool. We are done now. Right?
 
 Well... almost.
 
 There is still another loose end here! Namely, we don't yet prevent the shapes from intersecting with each other. This is an important distinction in collision detection algorithms, and it is usually known as a collision response. Collision responses and how to do them is a whole different problem from simply detecting whether or not two shapes collide with one another!
-
-## Adding a Collision Response
-
-Luckily for us, SAT is relatively easy to adapt to give a collision response – namely, if you find that all shadows (and therefore the shapes) overlap, you can find the pair of shadows that overlaps the least, and push the two shapes apart in that direction until the shadows don't touch anymore! Let's see how we could implement that idea in code as well: 
-
-<SATWithResponse />
 
 For now, this is it, with something like the above, you could have collision detection of arbitrary shapes, by carving them up into neat little triangles and then running collision detection on those. You could even constrain and stop the shapes from moving into each other by adding a collision response. 
 

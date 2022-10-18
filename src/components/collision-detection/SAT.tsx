@@ -26,7 +26,7 @@ export const SAT = () => {
 
     const { cleanup } = instrument(ctx, [myPoly1, myPoly2], drawFn);
     return cleanup;
-  }, [cnv]);
+  }, [cnv, width, height]);
 
   return (
     <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />

@@ -32,7 +32,7 @@ export const ProjectionDemo = () => {
 
     const { cleanup } = instrument(ctx, [poly1], drawFn);
     return cleanup;
-  }, [cnv]);
+  }, [cnv, width, height]);
 
   return (
     <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />

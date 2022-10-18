@@ -458,17 +458,12 @@ li {
 }
 
 .book-preview-text {
-  margin-top: 1rem;
-  margin-right: auto;
-  margin-left: auto;
+  width: 45%;
+  margin: 0 auto;
 }
 
 .book-info {
   margin-bottom: 1rem;
-}
-
-.book-preview-text {
-  margin-top: 1rem;
 }
 
 @font-face {
@@ -664,14 +659,6 @@ li {
     height: calc(1.52 * var(--main-width) / 2);
 
     position: relative;
-  }
-
-  .book-preview-text {
-    margin-top: 0;
-  }
-
-  .book-preview-text > h1 {
-    padding-top: 0;
   }
 
   .placeholder-text {

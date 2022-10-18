@@ -18,6 +18,7 @@ export const SATWithResponse = () => {
   const toggleResponse = () => {
     setResponse((old) => !old);
   };
+
   useEffect(() => {
     if (!cnv) return;
     cnv.tabIndex = 0;

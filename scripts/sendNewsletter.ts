@@ -15,7 +15,9 @@ const newsletterNumber = 3;
 const LIVE_HOST = "https://trebeljahr.com";
 
 const HOST =
-  process.env.NODE_ENV === "production" ? LIVE_HOST : "http://localhost:3000";
+  process.env.NODE_ENV === "production"
+    ? LIVE_HOST
+    : "https://trebeljahr.vercel.app/";
 
 async function main() {
   const emailHandlebarsFile = await readFile(

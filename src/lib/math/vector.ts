@@ -1,3 +1,4 @@
+import { getRotationMatrix } from "./drawHelpers";
 import { Matrix } from "./matrix";
 
 const precision = 0.000001;

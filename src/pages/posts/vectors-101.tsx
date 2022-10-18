@@ -1,33 +1,28 @@
 import { MDXProvider } from "@mdx-js/react";
 import Layout from "../../components/layout";
-import { SAT } from "../../components/collision-detection/SAT";
-import { ProjectionDemo } from "../../components/collision-detection/ProjectionDemo";
-import { AxisByAxis } from "../../components/collision-detection/AxisByAxis";
-import { ExampleWith2Polygons } from "../../components/collision-detection/ExampleWith2Polygons";
-import { SATWithResponse } from "../../components/collision-detection/SATWithResponse";
-import * as post from "../../content/posts/collision-detection.mdx";
+import * as frontmatter from "../../content/posts/vectors-101.mdx";
 import { Post } from "../../@types/post";
 import { MDXProps } from "mdx/types";
-import { MatrixDemo } from "../../components/collision-detection/MatrixDemo";
 import { ImageRenderer } from "../../components/ImageRenderer";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import PostHeader from "../../components/post-header";
+
 interface MDXPost extends Post {
   default(props: MDXProps): JSX.Element;
 }
 
 const {
   title,
+  excerpt,
   subtitle,
   date,
   author,
-  excerpt,
-  default: CollisionDetectionPost,
-} = post as MDXPost;
+  default: Vectors101Post,
+} = frontmatter as MDXPost;
 
 const PostComponent = () => {
   return (
-    <Layout title={title + " – " + subtitle} description={excerpt}>
+    <Layout title={title} description={excerpt}>
       <main>
         <article className="main-section">
           <PostHeader
@@ -36,20 +31,15 @@ const PostComponent = () => {
             date={date}
             author={author}
           />
-
           <MDXProvider
             components={{
               img: ImageRenderer,
-              SAT,
-              ProjectionDemo,
-              AxisByAxis,
-              ExampleWith2Polygons,
-              MatrixDemo,
-              SATWithConvexShapes: () => null,
-              SATWithResponse,
+              DotProductDemo: () => null,
+              ShowWhatANormalIs: () => null,
+              PointAndLineDemo: () => null,
             }}
           >
-            <CollisionDetectionPost />
+            <Vectors101Post />
           </MDXProvider>
         </article>
         <article className="main-section">

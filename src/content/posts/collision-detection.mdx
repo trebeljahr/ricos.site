@@ -2,17 +2,13 @@
 title: "SAT Collision Detection"
 subtitle: "An explanation of the Separating Axis Theorem"
 excerpt: 'Have you ever played a computer game and started asking yourself... Wait a second, how does the computer actually know how to stop moving my character when I hit the ground? Or when I run into an obstacle? It is quite awesome that all of this "just" works... but how exactly does the computer do it?'
-cover: "/assets/blog/tall-buildings.jpg"
+cover: "/assets/blog/sat.png"
 date: "2022-10-13"
 author:
   name: Rico Trebeljahr
   picture: "/assets/blog/profile.jpeg"
 
 ---
-
-# {title}
-
-#### {subtitle}
 
 <p>{excerpt}</p>
 
@@ -264,7 +260,7 @@ There is still another loose end here! Namely, we don't yet prevent the shapes f
 
 Luckily for us, SAT is relatively easy to adapt to give a collision response – namely, if you find that all shadows (and therefore the shapes) overlap, you can find the pair of shadows that overlaps the least, and push the two shapes apart in that direction until the shadows don't touch anymore! Let's see how we could implement that idea in code as well: 
 
-
+<SATWithResponse />
 
 For now, this is it, with something like the above, you could have collision detection of arbitrary shapes, by carving them up into neat little triangles and then running collision detection on those. You could even constrain and stop the shapes from moving into each other by adding a collision response. 
 

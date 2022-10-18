@@ -2,7 +2,7 @@
 title: "Vectors 101"
 subtitle: "A practical intro to Vector Mathematics"
 excerpt: 'This post is an exploration of many different and important vector concepts and how they can be implemented in code. After reading it you should walk away with an understanding of how and why these operations work and where they could be useful.'
-cover: "/assets/blog/tall-buildings.jpg"
+cover: "/assets/blog/vector-demo.png"
 date: "2022-10-13"
 author:
   name: Rico Trebeljahr
@@ -20,15 +20,9 @@ author:
 
 Points can be modeled with vectors, you can think of the vectors as little arrows pointing to a location somewhere in space. 
 
-$$
-\overrightharpoon v 
-or 
-\overrightarrow v
-or just
-v
-$$
+In mathematics vectors are often noted down as variables, like this $\overrightharpoon v$ or this $\overrightarrow v$ or this $v$.
 
-But vectors usually are made up out of components so they can also be written like this:
+But vectors are made up out of components so they can also be written like this:
 
 $$
 \begin{bmatrix}
@@ -52,8 +46,9 @@ or
 \end{bmatrix}
 $$
 
-Thinking of vectors in this way of components is very useful since this way we can see the amount that the vector goes into each of the directions x and y.
-Vectors are not just points, they can be thought of also as directions. Hence the idea of an arrow – "pointing" into a direction in space, and the idea of representing vectors as arrows. 
+A component is a part of a vector that points into a certain direction. These directions depend on the coordinate system. Usually the vector components mean distance in the x – the horizontal direction and y – the vertical direction.
+Thinking of vectors in components in that way is very useful since we can see the amount that the vector goes into each of the directions x and y, at a glance. It's like saying, go x steps along this direction, then turn 90° and go y steps this way and voila, you reached the correct place I wanted you to go to. This is what makes vectors so highly useful, it's a way of describing coordinates, positions and directions with mathematics!
+So a vector can be a point and a direction. Hence the idea of the little arrow in the notation $\hat{v}$ – the arrow/the vector is "pointing" into a direction in space, just like an arrow does!
 
 A straight line can be defined by two points (or two vectors). Please try dragging around the points in the demo below to move the lines and the arrows around!
 

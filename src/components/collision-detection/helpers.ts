@@ -3,6 +3,7 @@ import { Vector2 } from "../../lib/math/vector";
 import {
   drawProjection,
   getRotationMatrix,
+  getScalingMatrix,
   getTranslationMatrix,
   line,
 } from "../../lib/math/drawHelpers";
@@ -26,9 +27,13 @@ export function drawArrow(
     .transform(getTranslationMatrix(to.x, to.y))
     .transform(getRotationMatrix(-20, to));
 
+  ctx.save();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "black";
   line(ctx, from, to);
   line(ctx, to, arrow1);
   line(ctx, to, arrow2);
+  ctx.restore();
 }
 
 function flattenPointsOn(points: Vector2[], axis: Vector2): Projection {
@@ -77,6 +82,54 @@ export function drawAllProjections(
 
     drawProjection(ctx, [poly1, poly2], p1, p2);
   });
+}
+
+function getShadowOverlap(
+  axis: Vector2,
+  pointsA: Vector2[],
+  pointsB: Vector2[]
+) {
+  const rangeA = flattenPointsOn(pointsA, axis);
+  const rangeB = flattenPointsOn(pointsB, axis);
+
+  let overlap = 0;
+  if (rangeA.min < rangeB.min) {
+    if (rangeA.max < rangeB.max) {
+      overlap = rangeA.max - rangeB.min;
+    } else {
+      const option1 = rangeA.max - rangeB.min;
+      const option2 = rangeB.max - rangeA.min;
+      overlap = option1 < option2 ? option1 : -option2;
+    }
+  } else {
+    if (rangeA.max > rangeB.max) {
+      overlap = rangeA.min - rangeB.max;
+    } else {
+      const option1 = rangeA.max - rangeB.min;
+      const option2 = rangeB.max - rangeA.min;
+      overlap = option1 < option2 ? option1 : -option2;
+    }
+  }
+
+  return overlap;
+}
+
+export function getResponseForCollision(poly1: Polygon, poly2: Polygon) {
+  let smallestOverlap = Infinity;
+  let axis = new Vector2(0, 0);
+  for (let normal of [...poly1.edgeNormals(), ...poly2.edgeNormals()]) {
+    const overlap = getShadowOverlap(normal, poly1.vertices, poly2.vertices);
+    const absOverlap = Math.abs(overlap);
+    if (absOverlap < smallestOverlap) {
+      smallestOverlap = absOverlap;
+      axis = normal.copy();
+      if (overlap < 0) {
+        axis.multScalar(-1);
+      }
+    }
+  }
+
+  return axis.transform(getScalingMatrix(smallestOverlap, smallestOverlap));
 }
 
 export function checkCollision(poly1: Polygon, poly2: Polygon) {

@@ -168,6 +168,7 @@ export function drawProjection(
   const projection2 = projectionHelper(poly2);
 
   const projectionColliding = doIntersect(...projection1, ...projection2);
+
   const color1 = projectionColliding ? "red" : poly1.color;
   const color2 = projectionColliding ? "red" : poly2.color;
 

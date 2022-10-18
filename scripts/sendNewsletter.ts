@@ -50,8 +50,8 @@ async function main() {
     }
   }
 
-  function rewriteImages(node: any) {
-    if (node.type == "element" && node.tagName == "img") {
+  function rewrite(node: any) {
+    if (node.type === "element" && node.tagName === "img") {
       node.properties = {
         ...node.properties,
         width: "600",
@@ -71,6 +71,27 @@ async function main() {
         `,
         class: "g-img",
       };
+    } else if (
+      node.type === "element" &&
+      node.tagName.startsWith("h") &&
+      node.tagName.length === 2
+    ) {
+      node.properties = {
+        ...node.properties,
+        style: `
+          margin: 0;
+          margin-top: 3rem;
+          margin-bottom: 1rem;
+        `,
+      };
+    } else if (node.type === "element" && node.tagName === "p") {
+      node.properties = {
+        ...node.properties,
+        style: `
+          margin: 0;
+          margin-bottom: 1.5rem;
+        `,
+      };
     }
   }
 
@@ -78,16 +99,14 @@ async function main() {
     .use(remarkParse)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeUrls, addHost)
-    .use(rehypeRewrite, {
-      rewrite: rewriteImages,
-    })
+    .use(rehypeRewrite, { rewrite })
     .use(rehypePresetMinify)
     .use(rehypeStringify)
     .process(mdFileRaw);
 
   const template = Handlebars.compile(emailHandlebarsFile);
 
-  const image = `${LIVE_HOST}/assets/newsletter/${newsletterNumber}.jpg`;
+  const image = `${HOST}/assets/newsletter/${newsletterNumber}.jpg`;
   const webversion = `${HOST}/newsletters/${newsletterNumber}`;
 
   const htmlEmail = template({ content: file.value, image, webversion });

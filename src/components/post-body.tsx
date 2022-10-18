@@ -44,8 +44,6 @@ const HeadingRenderer: React.FC<HeadingResolverProps> = ({
 };
 
 const ImageRenderer = (props: { children?: any; node?: any }) => {
-  console.log("Running Image Renderer");
-  console.log(props);
   const { node } = props;
   const image = node;
   const metastring = image.properties.alt;
@@ -77,13 +75,6 @@ const ImageRenderer = (props: { children?: any; node?: any }) => {
 };
 
 const ParagraphRenderer = (props: { children?: JSX.Element[]; node?: any }) => {
-  // const { node } = props;
-
-  console.log("Running paragraph renderer");
-  // if (node.children[0].tagName === "img") {
-  //   return ImageRenderer(props);
-  // }
-
   const className =
     props.children?.length &&
     (props.children[0] as unknown as string)[0] === "—"
@@ -117,13 +108,7 @@ const MarkdownRenderers: object = {
   h6: HeadingRenderer,
   p: ParagraphRenderer,
   a: LinkRenderer,
-  img: (props: any) => {
-    console.log("Running img renderer from Markdown Renderers");
-    console.log(props);
-    const result = ImageRenderer(props);
-    console.log(result);
-    return result;
-  },
+  img: ImageRenderer,
 };
 
 const PostBody = ({ content }: Props) => {

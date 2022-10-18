@@ -459,7 +459,6 @@ li {
 
 .book-preview-text {
   margin-top: 1rem;
-  width: 95%;
   margin-right: auto;
   margin-left: auto;
 }
@@ -643,16 +642,7 @@ li {
   }
 
   .book-info {
-    display: grid;
-    grid-template-columns: 2fr 3fr;
-    grid-template-rows: auto;
-    justify-items: start;
-    align-items: start;
-  }
-
-  .book-info > * {
-    justify-self: start;
-    align-self: start;
+    display: flex;
   }
 }
 
@@ -664,7 +654,15 @@ li {
   .book-cover-image {
     margin: auto;
     width: calc(var(--main-width) / 3);
-    height: calc(1.6 * calc(var(--main-width) / 3));
+    height: calc(1.52 * calc(var(--main-width) / 3));
+    position: relative;
+  }
+
+  .book-info > .book-cover-image {
+    margin: 0;
+    width: calc(var(--main-width) / 2);
+    height: calc(1.52 * var(--main-width) / 2);
+
     position: relative;
   }
 

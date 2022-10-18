@@ -120,8 +120,8 @@ export function getResponseForCollision(poly1: Polygon, poly2: Polygon) {
   for (let normal of [...poly1.edgeNormals(), ...poly2.edgeNormals()]) {
     const overlap = getShadowOverlap(normal, poly1.vertices, poly2.vertices);
     const absOverlap = Math.abs(overlap);
-    if (absOverlap < smallestOverlap) {
-      smallestOverlap = absOverlap;
+    if (absOverlap < Math.abs(smallestOverlap)) {
+      smallestOverlap = overlap;
       axis = normal.copy();
       if (overlap < 0) {
         axis.multScalar(-1);

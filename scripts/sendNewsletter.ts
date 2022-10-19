@@ -10,6 +10,7 @@ import rehypeRewrite from "rehype-rewrite";
 import rehypeUrls from "rehype-urls";
 import rehypePresetMinify from "rehype-preset-minify";
 import rehypeStringify from "rehype-stringify";
+import matter from "gray-matter";
 
 const newsletterNumber = 3;
 const LIVE_HOST = "https://trebeljahr.com";
@@ -44,6 +45,11 @@ async function main() {
     "utf-8"
   );
 
+  const {
+    content,
+    data: { cover, title },
+  } = matter(mdFileRaw);
+
   function addHost(url: any) {
     if (url.href.startsWith("/")) {
       return HOST + url.path;
@@ -61,11 +67,11 @@ async function main() {
           width: 100%;
           max-width: 600px;
           height: auto;
-          background: #dddddd;
+          background: #ffffff;
           font-family: sans-serif;
           font-size: 15px;
           line-height: 15px;
-          color: #555555;
+          color: #333333;
           margin: 10px auto;
           display: block;
         `,
@@ -84,14 +90,6 @@ async function main() {
           margin-bottom: 1rem;
         `,
       };
-    } else if (node.type === "element" && node.tagName === "p") {
-      node.properties = {
-        ...node.properties,
-        style: `
-          margin: 0;
-          margin-bottom: 1.5rem;
-        `,
-      };
     }
   }
 
@@ -102,19 +100,25 @@ async function main() {
     .use(rehypeRewrite, { rewrite })
     .use(rehypePresetMinify)
     .use(rehypeStringify)
-    .process(mdFileRaw);
+    .process(content);
 
   const template = Handlebars.compile(emailHandlebarsFile);
 
-  const image = `${HOST}/assets/newsletter/${newsletterNumber}.jpg`;
   const webversion = `${HOST}/newsletters/${newsletterNumber}`;
+  const realTitle = `${title} | #${newsletterNumber}`;
 
-  const htmlEmail = template({ content: file.value, image, webversion });
+  const htmlEmail = template({
+    content: file.value,
+    title,
+    coverImageSrc: `${HOST}${cover.src}`,
+    coverImageAlt: cover.alt,
+    webversion,
+  });
 
   const data = {
-    from: "Rico Trebeljahr <rico@newsletter.trebeljahr.com>",
+    from: "Rico Trebeljahr <rico@trebeljahr.com>",
     to: newsletterListMail,
-    subject: `Newsletter #${newsletterNumber} | trebeljahr.com`,
+    subject: `${realTitle}`,
     html: htmlEmail,
     text: mdFileRaw,
   };

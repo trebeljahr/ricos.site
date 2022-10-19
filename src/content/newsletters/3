@@ -1,18 +1,25 @@
-# Newsletter #3
+---
+title: "Creativity, AlphaTensor and Motivation"
+cover:
+    src: "/assets/newsletter/3.jpg"
+    alt: "Portal door leading into the forest"
+---
 
 Welcome to the Awesomeness from the last 2 weeks, bundled together in a newsletter!
 
-## Quote 💬
+## ✨ Quote ✨
 
 > The history and the future of humanity can be seen as just the aggregate of all the individual life stories evolving through time.
 
 — Ray Dalio (in [Principles for Dealing with the Changing World Order](https://www.amazon.com/dp/1982160276))
 
-## Book Note 📖
-[Creativity Inc. – Ed Catmull](/booknotes/creativity-inc)
+## 📖 Book Notes 📖 
+[Creativity Inc. – Ed Catmull](/booknotes/creativity-inc). This book was filled with so many ideas on how to foster creativity and create original work, it's insane. Ed Catmull walks on this thin line, between "here is advice for you" and *stop* – "think this through for yourself", masterfully. I tried to capture this thinking in the book notes.
 
-## Status Update 💻
-This month's [1-month project](/1-month-projects) is going well. I have been working a lot on collision-detection algorithms and interactive demos to explain how they work.
+## 💻 Status Update 💻 
+This month the [1-month project](/1-month-projects) is all about Collision Detection Algorithms. The topic is so vast, that I already had to cut back on the scope of what I originally wanted to do. It's an endless rabbit hole to go down into. But the main algorithm I am focusing on now is called SAT – Separating Axis Theorem.
+
+I've also built a primer article on Linear Algebra to explain some of the background necessary for understanding the algorithm.
 
 My midjourney subscription ran out, but here are some more pictures:
 
@@ -21,33 +28,30 @@ My midjourney subscription ran out, but here are some more pictures:
 ![Person working creatively](/assets/midjourney/creative-work.jpg)
 ![Sky with northern lights](/assets/midjourney/northern-lights.jpg)
 
-I simply love this tool and playing around with it, though I found out it's very bad at creating dinosaurs and dragons. 🥲 
+I simply love this tool and playing around with it, though I found out it's very bad at creating dinosaurs and dragons. 🥲
 
-## Song 🎶
-Carolina in my Mind – Jacob Collier
+## 🎶 Song 🎶 
+Carolina in my Mind – Jacob Collier. 
+
+Jacob Collier's concerts are something magical and this song is from an album of live concert recordings. The whole album is wonderful. But if I had to pick one song, that would be the one. Check it out at: 
  
-[YouTube Music](https://music.youtube.com/watch?v=vm7jE9SRCl0)
+[YouTube Music](https://music.youtube.com/watch?v=vm7jE9SRCl0) | [Spotify](https://open.spotify.com/track/6kAx8h71q3ER1iEL9folun)
 
-[Spotify](https://open.spotify.com/track/6kAx8h71q3ER1iEL9folun)
 
-The whole album is wonderful. But if I had to pick one song, that would be the one.
+## 🖇️ Links 🖇️
 
-## Links 🖇️
+[AlphaTensor – Deepmind](https://www.deepmind.com/blog/discovering-novel-algorithms-with-alphatensor). AI, at this point, can start to improve the algorithms it's based on. This is a gargantuan step towards recursive self-improvement and the Singularity might be closer than we think.
 
-[AlphaTensor – Deepmind](https://www.deepmind.com/blog/discovering-novel-algorithms-with-alphatensor). Basically AI is at the point where it can start to improve the algorithms it's based on (in this case matrix multiplications). Reading this paper feels scary because this is a gargantuan step towards recursive self-improvement and therefore the Singularity might be closer than we think.
+[AlphaTensor Paper Breakdown – Yannic Kilcher](https://www.youtube.com/watch?v=3N3Bl5AA5QU). If you want to understand more about how AlphaTensor works, I highly recommend checking out this video, where Yannic Kilcher breaks down the paper, explaining the most important bits and pieces of how this algorithm actually works.
 
-[Better Thinking Tools – Adam Amran](https://untools.co/). A nice collection of thinking tools and mental models, very similar in spirit to Farnam Streets Mental models, but more concise and (unlike the FS books) entirely free!
+[Better Thinking Tools – Adam Amran](https://untools.co/). A collection of thinking tools and mental models. Very similar in spirit to Farnam Streets Mental models, but more concise. And – unlike the FS books – this is entirely free!
 
-[Screw motivation – Zbyhnev](https://www.wisdomination.com/screw-motivation-what-you-need-is-discipline/). On why motivation comes from discipline and not the other way around. And why habits are necessary for a productive life. I found it a bit hardcore, but it hit home nonetheless. 
+[Screw motivation – Zbyhnev](https://www.wisdomination.com/screw-motivation-what-you-need-is-discipline/). On why motivation comes from discipline and not the other way around. And why habits are necessary for a productive life. I found it a bit hardcore because it's basically saying: "Work, even if you don't feel like it". Which is at odds with some of my beliefs about psychological wellbeing. But the article hit home nonetheless, because it tackles a problem – struggling with motivation – that I personally have. And the solution the article proposes (discipline and habits) is what helps me overcome this problem, whenever I implement it. The hard part (for me at least) is sticking with the habits long enough for them to become automatic. And funnily enough, the thing I think I am lacking is motivation, whereas the article would say: "This is wrong, you are lacking discipline, not motivation".
 
-[Useful Interweb – Johnny Webber](https://usefulinterweb.com/). This is like a giant needlestack assembled over a few years. A lot of the links are to books on Amazon.
+[Useful Interweb – Johnny Webber](https://usefulinterweb.com/). A giant needlestack, filled with useful links, filterable by categories. You can probably spend hours browsing this and finding *a lot* of awesome stuff.
 
-[Consistency before Quality – Mike Crittenden](https://critter.blog/2021/01/18/consistency-beats-quality/). Found this blog and been browsing through some of his writing and liking it a lot so far.
+---
 
-## Feedback 😊
-
-I hope you enjoyed reading!
-
-If there's anything you would like to add, see changed, have complaints about or anything else, [let me know](https://airtable.com/shro1VeyG4lkNXkx2)!
+I hope you found something useful reading this newsletter! If you did, or have ideas for improving it, [please let me know](https://airtable.com/shro1VeyG4lkNXkx2)!
 
 Take care and enjoy your day!

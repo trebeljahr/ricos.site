@@ -68,6 +68,13 @@
         margin: 1.5em 0px;
         padding: 0.5em 20px;
         quotes: "\201C""\201D";
+      } 
+      p {
+        margin: 0;
+        margin-bottom: 1.5rem
+      }
+      blockquote > p {
+        margin-bottom: 0;
       }
     </style>
 
@@ -115,20 +122,20 @@
           <tr>
             <td style="background-color: #ffffff">
               <img
-                src="{{image}}"
+                src="{{coverImageSrc}}"
                 width="600"
-                height=""
-                alt="newsletter banner"
+                height="600"
+                alt="{{coverImageAlt}}"
                 border="0"
                 style="
                   width: 100%;
                   max-width: 600px;
-                  height: auto;
-                  background: #dddddd;
+                  height: 600px;
+                  background: #ffffff;
                   font-family: sans-serif;
                   font-size: 15px;
                   line-height: 15px;
-                  color: #555555;
+                  color: #333333;
                   margin: auto;
                   display: block;
                 "
@@ -156,7 +163,10 @@
                     color: #555555;
                   "
                 >
-                  <p style="margin: 0">{{{content}}}</p>
+                <h1 style="line-height: 1.4;">
+                  {{title}}
+                </h1>
+                {{{content}}}
                 </td>
               </tr>
           <tr>

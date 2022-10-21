@@ -203,7 +203,11 @@ export class Polygon {
     let triangles = [totalTriangleIndexCount];
     let triangleIndexCount = 0;
 
+    let i = 0;
     while (indexList.length > 3) {
+      if (i++ > 1000) {
+        break;
+      }
       for (let i = 0; i < indexList.length; i++) {
         let a = indexList[i];
         let b = getItem(indexList, i - 1);
@@ -286,44 +290,6 @@ export class Polygon {
       );
     });
   }
-}
-
-function area(p: Vector2, q: Vector2, r: Vector2) {
-  return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
-}
-
-function filterPoints(vertices: Vector2[]) {
-  let end = 0;
-  let p = 0;
-  let again;
-  let i = 100;
-
-  do {
-    if (i++ > 100) {
-      break;
-    }
-    again = false;
-
-    const prev = getItem(vertices, p - 1);
-    const curr = getItem(vertices, p);
-    const next = getItem(vertices, p + 1);
-
-    console.log(prev, curr, next);
-    console.log(vertices);
-    if (
-      vertices[p] === getItem(vertices, p + 1) ||
-      area(prev, curr, next) === 0
-    ) {
-      vertices.splice(p, 1);
-      p = p - 1;
-      if (vertices[p] === getItem(vertices, p + 1)) break;
-      again = true;
-    } else {
-      p = p + 1;
-    }
-  } while (again || p !== end);
-
-  return end;
 }
 
 function group<T>(array: T[], n: number) {

@@ -7,6 +7,7 @@ import {
   getTranslationMatrix,
   toRadians,
 } from "./drawHelpers";
+import Delaunator from "delaunator";
 
 const randomBetween = (min: number, max: number) => {
   return min + Math.floor(Math.random() * (max - min + 1));
@@ -193,37 +194,24 @@ export class Polygon {
       const i1 = avl[(i + 1) % al];
       const i2 = avl[(i + 2) % al];
 
-      const a = p[i0];
-      const b = p[i1];
-      const c = p[i2];
+  triangulateDelaunay() {
+    const delaunay = new Delaunator(
+      this.vertices.map((v) => [v.x, v.y]).flat()
+    );
+    return group([...delaunay.triangles], 3).map((tri) => {
+      const a = this.vertices[tri[0]];
+      const b = this.vertices[tri[1]];
+      const c = this.vertices[tri[2]];
 
-      let earFound = false;
-      if (
-        new Polygon([
+      return new Polygon(
+        [
           [a.x, a.y],
           [b.x, b.y],
           [c.x, c.y],
-        ])
-      ) {
-        earFound = true;
-        for (let j = 0; j < al; j++) {
-          const vi = avl[j];
-          if (vi === i0 || vi === i1 || vi === i2) continue;
-          if (isPointInTriangle({ p: p[vi], triangle: { a, b, c } })) {
-            earFound = false;
-            break;
-          }
-        }
-      }
-      if (earFound) {
-        tgs.push(i0, i1, i2);
-        avl.splice((i + 1) % al, 1);
-        al--;
-        i = 0;
-      } else if (i++ > 3 * al) break;
-    }
-    tgs.push(avl[0], avl[1], avl[2]);
-    return tgs;
+        ],
+        makeBrighter(this.color)
+      );
+    });
   }
 }
 

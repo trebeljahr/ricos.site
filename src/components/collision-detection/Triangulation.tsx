@@ -23,15 +23,20 @@ export const Triangulation = () => {
     const drawFn = () => {
       drawBackground(ctx);
       // poly1.draw(ctx);
-      poly2.draw(ctx);
+
+      let collision = false;
       if (poly1.isConvex()) {
-        poly1.draw(ctx);
+        collision = checkCollision(poly1, poly2);
+        poly1.draw(ctx, { collision });
       } else {
+        poly1.draw(ctx);
         poly1.triangles.forEach((tri) => {
           const collision = checkCollision(tri, poly2);
           tri.draw(ctx, { collision });
         });
       }
+
+      poly2.draw(ctx, { collision });
     };
 
     const { cleanup } = instrument(ctx, [poly1, poly2], drawFn, {

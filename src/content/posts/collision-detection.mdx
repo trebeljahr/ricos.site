@@ -423,22 +423,26 @@ function triangulate(p: Vector2[]) {
   triangles[triangleIndexCount++] = indexList[0];
   triangles[triangleIndexCount++] = indexList[1];
   triangles[triangleIndexCount++] = indexList[2];
+  return triangles;
+}
 
-  const tris = group(triangles, 3).map((tri) => {
-    const a = this.vertices[tri[0]];
-    const b = this.vertices[tri[1]];
-    const c = this.vertices[tri[2]];
+type Triangle = { a: Vector2; b: Vector2; c: Vector2 }
+function isPointInTriangle({p, triangle: { a, b, c }}: { p: Vector2; triangle: Triangle }) {
+  const v0 = c.sub(a);
+  const v1 = b.sub(a);
+  const v2 = p.sub(a);
 
-    return new Polygon(
-      [
-        [a.x, a.y],
-        [b.x, b.y],
-        [c.x, c.y],
-      ],
-      makeBrighter(this.color)
-    );
-  });
-  return tris;
+  const dot00 = v0.dot(v0);
+  const dot01 = v0.dot(v1);
+  const dot02 = v0.dot(v2);
+  const dot11 = v1.dot(v1);
+  const dot12 = v1.dot(v2);
+
+  const denom = dot00 * dot11 - dot01 * dot01;
+  const u = (dot11 * dot02 - dot01 * dot12) / denom;
+  const v = (dot00 * dot12 - dot01 * dot02) / denom;
+
+  return u >= 0 && v >= 0 && u + v < 1;
 }
 ```
 

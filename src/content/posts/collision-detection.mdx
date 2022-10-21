@@ -331,7 +331,7 @@ if (response) {
   drawArrow(ctx, poly1.centroid(), poly1.centroid().add(halfNeg));
   drawArrow(ctx, poly2.centroid(), poly2.centroid().add(half));
 }
-``` 
+```
 
 And here is the demo:
 
@@ -347,9 +347,100 @@ Well... that didn't go to well huh? The problem is that what you just saw were s
 
 Convex and concave are just two words to express that something bulges outwards or inwards. I remember them with the word "cave" as in con*cave*. A cave goes inward, so does a concave object. In other words, concave shapes are shapes that have some kind of indentation in them. A star would be a concave shape, or a something like a V etc. To handle collisions with concave shapes is very tricky... And usually people don't bother and just chop their concave shapes up into simpler, convex shapes and then run collision detection algorithms on them. 
 
-Mostly people chop them up into triangles using a process called triangulation (which has many different algorithms for it...) So let's look at some.
+Mostly people chop them up into triangles using a process called triangulation (which has many different algorithms for it...) So let's look at one in particular.
 
-## Triangulating Concave Shapes
+## The Ear Clipping Algorithm, or how to triangulate Polygons
+
+Triangulating Polygons is a tough business, because there are so many weird edge cases to deal with. There have been whole papers written about how to efficiently do it and I won't go into to much detail here, nor fix all the possible edge cases. The algorithm we are going to use for triangulating concave shapes into a bunch of convex triangles is known as Ear Clipping. 
+
+Ear Clipping? The basic idea is to find "ears" – triangular pieces of the polygon that "stick out", like an ear, then "clip" them out of the polygon, reducing the problem to a smaller polygon – for which to find the next ear, until only a last triangle is left. 
+
+Let's define what an ear is more formally. An "ear" is a set of 3 consecutive vertices, v1, v2 and v3, if 3 conditions are met:
+
+1. The interior angle between v1, v2, and v3 has to be smaller than 180°. 
+2. The triangle formed by the 3 vertices can not contain any other vertices of the polygon. 
+3. The line between v1 and v3 has to be completely inside the polygon. 
+
+When an ear is found, we put it into our list of triangles for the triangulation, remove the vertices from the list of vertices to check, and keep looping over the rest of the vertices left and check for another ear. We can keep doing this until just 3 vertices are left – those will form the last ear. In code this would look something like this: 
+
+```typescript
+function triangulate(p: Vector2[]) {
+  const n = vertices.length - 1;
+  if (n < 3) return [];
+
+  let indexList: number[] = [];
+  for (let i = 0; i < vertices.length; i++) {
+    indexList.push(i);
+  }
+
+  let triangles = [];
+  let triangleIndexCount = 0;
+
+  let i = 0;
+  while (indexList.length > 3) {
+    if (i++ > 1000) {
+      break;
+    }
+    for (let i = 0; i < indexList.length; i++) {
+      let a = indexList[i];
+      let b = getItem(indexList, i - 1);
+      let c = getItem(indexList, i + 1);
+
+      let va = vertices[a];
+      let vb = vertices[b];
+      let vc = vertices[c];
+
+      let va_to_vb = vb.sub(va);
+      let va_to_vc = vc.sub(va);
+
+      if (va_to_vb.perpDot(va_to_vc) < 0) {
+        continue;
+      }
+
+      let isEar = true;
+      for (let j = 0; j < vertices.length; j++) {
+        if (j === a || j === b || j === c) {
+          continue;
+        }
+
+
+        if (isPointInTriangle({ p: vertices[j], triangle: { b: vb, a: va, c: vc } })) {
+          isEar = false;
+          break;
+        }
+      }
+
+      if (isEar) {
+        triangles[triangleIndexCount++] = b;
+        triangles[triangleIndexCount++] = a;
+        triangles[triangleIndexCount++] = c;
+        indexList.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  triangles[triangleIndexCount++] = indexList[0];
+  triangles[triangleIndexCount++] = indexList[1];
+  triangles[triangleIndexCount++] = indexList[2];
+
+  const tris = group(triangles, 3).map((tri) => {
+    const a = this.vertices[tri[0]];
+    const b = this.vertices[tri[1]];
+    const c = this.vertices[tri[2]];
+
+    return new Polygon(
+      [
+        [a.x, a.y],
+        [b.x, b.y],
+        [c.x, c.y],
+      ],
+      makeBrighter(this.color)
+    );
+  });
+  return tris;
+}
+```
 
 <Triangulation />
 

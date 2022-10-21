@@ -55,12 +55,23 @@ export class Polygon {
   public selected: boolean;
   public hover: boolean;
   public hoveredVertex: Vector2 | undefined;
+  public triangles: Polygon[];
 
-  constructor(points: [number, number][], color?: string) {
-    this.vertices = points.map(([x, y]) => new Vector2(x, y));
+  constructor(points: Vector2[], color?: string);
+  constructor(points: [number, number][], color?: string);
+
+  constructor(points: [number, number][] | Vector2[], color?: string) {
+    this.vertices =
+      points[0] instanceof Vector2
+        ? (points as Vector2[])
+        : points.map(([x, y]) => new Vector2(x, y));
     this.color = color || randomColor();
     this.selected = false;
     this.hover = false;
+    this.triangles = [] as Polygon[];
+    if (!this.isConvex()) {
+      this.triangulate();
+    }
   }
 
   get hoverColor() {
@@ -188,8 +199,7 @@ export class Polygon {
   }
 
   triangulate() {
-    const p = this.vertices;
-    const n = p.length - 1;
+    const n = this.vertices.length - 1;
     if (n < 3) return [];
 
     let indexList: number[] = [];
@@ -197,10 +207,6 @@ export class Polygon {
       indexList.push(i);
     }
 
-    let totalTriangleCount = this.vertices.length - 2;
-    let totalTriangleIndexCount = totalTriangleCount * 3;
-
-    let triangles = [totalTriangleIndexCount];
     let triangleIndexCount = 0;
 
     let i = 0;
@@ -232,70 +238,37 @@ export class Polygon {
             continue;
           }
 
-          let p = this.vertices[j];
-
-          if (isPointInTriangle({ p, triangle: { b: vb, a: va, c: vc } })) {
+          if (
+            isPointInTriangle({
+              p: this.vertices[j],
+              triangle: { b: vb, a: va, c: vc },
+            })
+          ) {
             isEar = false;
             break;
           }
         }
 
         if (isEar) {
-          triangles[triangleIndexCount++] = b;
-          triangles[triangleIndexCount++] = a;
-          triangles[triangleIndexCount++] = c;
-
+          this.triangles[triangleIndexCount++] = new Polygon(
+            [va, vb, vc],
+            makeBrighter(this.color)
+          );
           indexList.splice(i, 1);
           break;
         }
       }
     }
 
-    triangles[triangleIndexCount++] = indexList[0];
-    triangles[triangleIndexCount++] = indexList[1];
-    triangles[triangleIndexCount++] = indexList[2];
-
-    const tris = group(triangles, 3).map((tri) => {
-      const a = this.vertices[tri[0]];
-      const b = this.vertices[tri[1]];
-      const c = this.vertices[tri[2]];
-
-      return new Polygon(
-        [
-          [a.x, a.y],
-          [b.x, b.y],
-          [c.x, c.y],
-        ],
-        makeBrighter(this.color)
-      );
-    });
-    return tris;
-  }
-  triangulateDelaunay() {
-    const delaunay = new Delaunator(
-      this.vertices.map((v) => [v.x, v.y]).flat()
+    this.triangles[triangleIndexCount++] = new Polygon(
+      [
+        this.vertices[indexList[0]],
+        this.vertices[indexList[1]],
+        this.vertices[indexList[2]],
+      ],
+      makeBrighter(this.color)
     );
-    return group([...delaunay.triangles], 3).map((tri) => {
-      const a = this.vertices[tri[0]];
-      const b = this.vertices[tri[1]];
-      const c = this.vertices[tri[2]];
-
-      return new Polygon(
-        [
-          [a.x, a.y],
-          [b.x, b.y],
-          [c.x, c.y],
-        ],
-        makeBrighter(this.color)
-      );
-    });
   }
-}
-
-function group<T>(array: T[], n: number) {
-  return [...Array(Math.ceil(array.length / n))].map((_, i) =>
-    array.slice(i * n, (i + 1) * n)
-  );
 }
 
 function getItem<T>(arr: T[], i: number) {

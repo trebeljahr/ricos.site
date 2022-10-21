@@ -330,11 +330,16 @@ export function instrument(
       state.draggedPoint.point.transform(
         getTranslationMatrix(event.movementX, event.movementY)
       );
-      if (convexityCheck && !state.draggedPoint.poly.isConvex()) {
-        state.draggedPoint.point.transform(
-          getTranslationMatrix(-event.movementX, -event.movementY)
-        );
+      if (!state.draggedPoint.poly.isConvex()) {
+        if (convexityCheck) {
+          state.draggedPoint.point.transform(
+            getTranslationMatrix(-event.movementX, -event.movementY)
+          );
+        } else {
+          state.draggedPoint.poly.triangulate();
+        }
       }
+
       return;
     }
 

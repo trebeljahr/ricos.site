@@ -1,12 +1,12 @@
 import { Polygon } from "./Poly";
 import { Matrix } from "./matrix";
-import { Vector2 } from "./vector";
+import { Vec2 } from "./vector";
 
 export const toDegrees = (radians: number) => (radians * 180) / Math.PI;
 export const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 export const sum = (arr: number[]) => arr.reduce((acc, val) => acc + val, 0);
 
-export function getProjectionMatrix(v: Vector2) {
+export function getProjectionMatrix(v: Vec2) {
   const u = v.unit();
   return new Matrix([
     [u.x * u.x, u.x * u.y, 0],
@@ -15,9 +15,9 @@ export function getProjectionMatrix(v: Vector2) {
   ]);
 }
 
-export function getSupportPoint(vertices: Vector2[], d: Vector2) {
+export function getSupportPoint(vertices: Vec2[], d: Vec2) {
   let highest = -Infinity;
-  let support = new Vector2(0, 0);
+  let support = new Vec2(0, 0);
 
   for (let vertex of vertices) {
     const dot = vertex.dot(d);
@@ -31,7 +31,7 @@ export function getSupportPoint(vertices: Vector2[], d: Vector2) {
   return support;
 }
 
-export function line(ctx: CanvasRenderingContext2D, p1: Vector2, p2: Vector2) {
+export function line(ctx: CanvasRenderingContext2D, p1: Vec2, p2: Vec2) {
   ctx.beginPath();
   ctx.moveTo(p1.x, p1.y);
   ctx.lineTo(p2.x, p2.y);
@@ -39,7 +39,7 @@ export function line(ctx: CanvasRenderingContext2D, p1: Vector2, p2: Vector2) {
   ctx.closePath();
 }
 
-export function insidePoly({ x, y }: Vector2, vertices: Vector2[]) {
+export function insidePoly({ x, y }: Vec2, vertices: Vec2[]) {
   let inside = false;
 
   for (let i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
@@ -56,7 +56,7 @@ export function insidePoly({ x, y }: Vector2, vertices: Vector2[]) {
   return inside;
 }
 
-function onSegment(p: Vector2, q: Vector2, r: Vector2) {
+function onSegment(p: Vec2, q: Vec2, r: Vec2) {
   if (
     q.x <= Math.max(p.x, r.x) &&
     q.x >= Math.min(p.x, r.x) &&
@@ -68,7 +68,7 @@ function onSegment(p: Vector2, q: Vector2, r: Vector2) {
   return false;
 }
 
-function doIntersect(a1: Vector2, a2: Vector2, b1: Vector2, b2: Vector2) {
+function doIntersect(a1: Vec2, a2: Vec2, b1: Vec2, b2: Vec2) {
   if (onSegment(a1, b1, a2)) return true;
   if (onSegment(a1, b2, a2)) return true;
   if (onSegment(b1, a1, b2)) return true;
@@ -80,7 +80,7 @@ function doIntersect(a1: Vector2, a2: Vector2, b1: Vector2, b2: Vector2) {
 export function drawProjectionOnLine(
   ctx: CanvasRenderingContext2D,
   color: string,
-  [projectedS1, projectedS2]: [Vector2, Vector2]
+  [projectedS1, projectedS2]: [Vec2, Vec2]
 ) {
   ctx.save();
   ctx.fillStyle = color;
@@ -94,8 +94,8 @@ export function drawProjectionOnLine(
 
 export function drawInfiniteLine(
   ctx: CanvasRenderingContext2D,
-  p1: Vector2,
-  p2: Vector2
+  p1: Vec2,
+  p2: Vec2
 ) {
   ctx.save();
   const d = p1.sub(p2);
@@ -117,10 +117,10 @@ export function drawInfiniteLine(
 export function drawProjection(
   ctx: CanvasRenderingContext2D,
   polys: Polygon | [Polygon, Polygon],
-  p1: Vector2,
-  p2: Vector2
+  p1: Vec2,
+  p2: Vec2
 ) {
-  const origin = new Vector2(
+  const origin = new Vec2(
     parseFloat(ctx.canvas.style.width) / 2,
     parseFloat(ctx.canvas.style.height) / 2
   );
@@ -153,7 +153,7 @@ export function drawProjection(
     line(ctx, s2, projectedS2);
     ctx.restore();
 
-    return [projectedS1, projectedS2] as [Vector2, Vector2];
+    return [projectedS1, projectedS2] as [Vec2, Vec2];
   };
 
   if (polys instanceof Polygon) {
@@ -194,10 +194,7 @@ export function getTranslationMatrix(x: number, y: number) {
 const sin = Math.sin;
 const cos = Math.cos;
 
-export function getRotationMatrix(
-  θ: number,
-  { x, y }: Vector2 = new Vector2(0, 0)
-) {
+export function getRotationMatrix(θ: number, { x, y }: Vec2 = new Vec2(0, 0)) {
   return new Matrix([
     [cos(θ), -1 * sin(θ), -x * cos(θ) + y * sin(θ) + x],
     [sin(θ), cos(θ), -x * sin(θ) - y * cos(θ) + y],
@@ -205,7 +202,7 @@ export function getRotationMatrix(
   ]);
 }
 
-export function circle(ctx: CanvasRenderingContext2D, p: Vector2, d: number) {
+export function circle(ctx: CanvasRenderingContext2D, p: Vec2, d: number) {
   ctx.save();
   ctx.beginPath();
   ctx.arc(p.x, p.y, d, 0, 2 * Math.PI);
@@ -244,15 +241,15 @@ export function initPolygons(cnv: HTMLCanvasElement) {
   );
 
   const [w, h] = [parseFloat(cnv.style.width), parseFloat(cnv.style.height)];
-  const origin = new Vector2(w / 2, h / 2);
+  const origin = new Vec2(w / 2, h / 2);
   const byScalingUp = getScalingMatrix(w * 0.1, w * 0.1);
 
   poly1.transform(byScalingUp);
-  poly1.centerOnPoint(origin.add(new Vector2(w / 4, 0)));
+  poly1.centerOnPoint(origin.add(new Vec2(w / 4, 0)));
   poly1.rotate(20);
 
   poly2.transform(byScalingUp);
-  poly2.centerOnPoint(origin.add(new Vector2(-w / 4, 0)));
+  poly2.centerOnPoint(origin.add(new Vec2(-w / 4, 0)));
   poly2.rotate(45);
 
   return [poly1, poly2] as [Polygon, Polygon];
@@ -260,7 +257,7 @@ export function initPolygons(cnv: HTMLCanvasElement) {
 
 export type State = {
   draggedPoly: Polygon | undefined;
-  draggedPoint: { poly: Polygon; point: Vector2 } | undefined;
+  draggedPoint: { poly: Polygon; point: Vec2 } | undefined;
   rotationChange: number;
 };
 
@@ -288,7 +285,7 @@ export function instrument(
   };
 
   const selectPolygon = (event: { offsetX: number; offsetY: number }) => {
-    const mousePos = new Vector2(event.offsetX, event.offsetY);
+    const mousePos = new Vec2(event.offsetX, event.offsetY);
     for (let poly of polys) {
       if (poly.hoveredVertex) {
         state.draggedPoint = { poly: poly, point: poly.hoveredVertex };
@@ -309,7 +306,7 @@ export function instrument(
     // event.preventDefault();
     ctx.canvas.style.touchAction = "none";
 
-    const mousePos = new Vector2(event.offsetX, event.offsetY);
+    const mousePos = new Vec2(event.offsetX, event.offsetY);
 
     for (let poly of polys) {
       poly.hoveredVertex = poly.vertices.find((pos) => {

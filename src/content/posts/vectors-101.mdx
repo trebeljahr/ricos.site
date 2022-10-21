@@ -92,18 +92,18 @@ $$
 
 Sometimes we don't need the actual length but the squared length, and so we can drop the $\sqrt{}$ from the formula above. If we implement these two ideas mag and mag2 (squared norm/length) ideas in code, we get the below. 
 ```typescript
-function mag2(v: Vector2) {
+function mag2(v: Vec2) {
   return dot(v, v);
 }
 
-function mag(v: Vector2) {
+function mag(v: Vec2) {
   return Math.sqrt(mag2(v));
 }
 ```
 
 It's often useful to have the mag2 version because taking the square root is an expensive operation and for some applications we don't actually need the "correct" length of the vector, because the squared length suffices. 
 
-Hence you can also find both methods on the Vector2 implementation!
+Hence you can also find both methods on the Vec2 implementation!
 
 ## Unit Vectors
 
@@ -117,7 +117,7 @@ $$
 
 In code this would look something like this:
 ```typescript
-function unit(b: Vector2) {
+function unit(b: Vec2) {
   return b.divScalar(b.mag());
 }
 ```
@@ -142,8 +142,8 @@ $$
 The reason for this has to do with the trigonometric functions sin and cos – and how they relate angles and vectors. All of this can be combined with rotational matrices and is used a lot in computer graphics!
 
 ```typescript
-function perp(v: Vector2) {
-  return new Vector2(v.y, -v.x);
+function perp(v: Vec2) {
+  return new Vec2(v.y, -v.x);
 }
 ``` 
 
@@ -158,7 +158,7 @@ v \, \cdotp a = x_a * x_v + y_a * y_v
 $$
 
 ```typescript
-function dot(v: Vector2) {
+function dot(v: Vec2) {
   return v.x * v.x + v.y * v.y
 }
 ``` 
@@ -181,7 +181,7 @@ As we have seen, there are a lot of fancy things that can be done with vectors, 
 
 ```typescript
 const precision = 0.000001;
-export class Vector2 {
+export class Vec2 {
   public components: [number, number];
 
   constructor(x: number, y: number) {
@@ -210,22 +210,22 @@ export class Vector2 {
   }
 
   divScalar(scalar: number) {
-    return new Vector2(this.x / scalar, this.y / scalar);
+    return new Vec2(this.x / scalar, this.y / scalar);
   }
 
   multScalar(scalar: number) {
-    return new Vector2(this.x * scalar, this.y * scalar);
+    return new Vec2(this.x * scalar, this.y * scalar);
   }
 
-  sub(other: Vector2) {
-    return new Vector2(this.x - other.x, this.y - other.y);
+  sub(other: Vec2) {
+    return new Vec2(this.x - other.x, this.y - other.y);
   }
 
-  add(other: Vector2) {
-    return new Vector2(this.x + other.x, this.y + other.y);
+  add(other: Vec2) {
+    return new Vec2(this.x + other.x, this.y + other.y);
   }
 
-  projectOnLine(A: Vector2, B: Vector2) {
+  projectOnLine(A: Vec2, B: Vec2) {
     const AP = this.sub(A);
     const AB = B.sub(A);
     return A.add(AB.multScalar(AP.dot(AB) / AB.mag2()));
@@ -236,29 +236,29 @@ export class Vector2 {
   }
 
   perp() {
-    return new Vector2(this.y, -this.x);
+    return new Vec2(this.y, -this.x);
   }
 
   getNormal() {
     return this.perp().unit();
   }
 
-  dot(other: Vector2) {
+  dot(other: Vec2) {
     return this.x * other.x + this.y * other.y;
   }
 
   copy() {
-    return new Vector2(this.x, this.y);
+    return new Vec2(this.x, this.y);
   }
 
-  equals(other: Vector2) {
+  equals(other: Vec2) {
     return (
       Math.abs(other.x - this.x) < precision &&
       Math.abs(other.y - this.y) < precision
     );
   }
 
-  perpDot(other: Vector2) {
+  perpDot(other: Vec2) {
     return this.perp().dot(other);
   }
 }

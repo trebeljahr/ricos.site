@@ -1,5 +1,5 @@
 import { Polygon } from "../../lib/math/Poly";
-import { Vector2 } from "../../lib/math/vector";
+import { Vec2 } from "../../lib/math/vector";
 import {
   drawProjection,
   getRotationMatrix,
@@ -10,8 +10,8 @@ import {
 
 export function drawArrow(
   ctx: CanvasRenderingContext2D,
-  from: Vector2,
-  to: Vector2,
+  from: Vec2,
+  to: Vec2,
   arrowHeadLength = 20
 ) {
   const dir = from.sub(to).perp().unit().multScalar(arrowHeadLength);
@@ -36,7 +36,7 @@ export function drawArrow(
   ctx.restore();
 }
 
-function flattenPointsOn(points: Vector2[], axis: Vector2): Projection {
+function flattenPointsOn(points: Vec2[], axis: Vec2): Projection {
   let min = Number.MAX_VALUE;
   let max = -Number.MAX_VALUE;
   for (let point of points) {
@@ -47,11 +47,7 @@ function flattenPointsOn(points: Vector2[], axis: Vector2): Projection {
   return { min, max };
 }
 
-function isSeparatingAxis(
-  axis: Vector2,
-  pointsA: Vector2[],
-  pointsB: Vector2[]
-) {
+function isSeparatingAxis(axis: Vec2, pointsA: Vec2[], pointsB: Vec2[]) {
   const rangeA = flattenPointsOn(pointsA, axis);
   const rangeB = flattenPointsOn(pointsB, axis);
 
@@ -77,18 +73,14 @@ export function drawAllProjections(
   let normals = [...poly1.edgeNormals(), ...poly2.edgeNormals()];
 
   normals.forEach((e) => {
-    let p1 = new Vector2(e.x, e.y);
+    let p1 = new Vec2(e.x, e.y);
     let p2 = p1.multScalar(-1);
 
     drawProjection(ctx, [poly1, poly2], p1, p2);
   });
 }
 
-function getShadowOverlap(
-  axis: Vector2,
-  pointsA: Vector2[],
-  pointsB: Vector2[]
-) {
+function getShadowOverlap(axis: Vec2, pointsA: Vec2[], pointsB: Vec2[]) {
   const rangeA = flattenPointsOn(pointsA, axis);
   const rangeB = flattenPointsOn(pointsB, axis);
 
@@ -134,7 +126,7 @@ export function visualizeCollision(
 
 export function getResponseForCollision(poly1: Polygon, poly2: Polygon) {
   let smallestOverlap = Infinity;
-  let axis = new Vector2(0, 0);
+  let axis = new Vec2(0, 0);
   for (let normal of [...poly1.edgeNormals(), ...poly2.edgeNormals()]) {
     const overlap = getShadowOverlap(normal, poly1.vertices, poly2.vertices);
     const absOverlap = Math.abs(overlap);
@@ -180,11 +172,7 @@ export function drawBackground(ctx: CanvasRenderingContext2D) {
   // line(ctx, w / 2, 0, w / 2, h);
 }
 
-export function colorEdge(
-  ctx: CanvasRenderingContext2D,
-  p1: Vector2,
-  p2: Vector2
-) {
+export function colorEdge(ctx: CanvasRenderingContext2D, p1: Vec2, p2: Vec2) {
   ctx.save();
   ctx.strokeStyle = "yellow";
   ctx.lineWidth = 5;

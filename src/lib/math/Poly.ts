@@ -1,4 +1,4 @@
-import { Vector2 } from "./vector";
+import { Vec2 } from "./vector";
 import { Matrix } from "./matrix";
 import {
   circle,
@@ -50,21 +50,21 @@ function makeBrighter(color: string) {
 const TWO_PI = 2 * Math.PI;
 
 export class Polygon {
-  public vertices: Vector2[];
+  public vertices: Vec2[];
   public color: string;
   public selected: boolean;
   public hover: boolean;
-  public hoveredVertex: Vector2 | undefined;
+  public hoveredVertex: Vec2 | undefined;
   public triangles: Polygon[];
 
-  constructor(points: Vector2[], color?: string);
+  constructor(points: Vec2[], color?: string);
   constructor(points: [number, number][], color?: string);
 
-  constructor(points: [number, number][] | Vector2[], color?: string) {
+  constructor(points: [number, number][] | Vec2[], color?: string) {
     this.vertices =
-      points[0] instanceof Vector2
-        ? (points as Vector2[])
-        : points.map(([x, y]) => new Vector2(x, y));
+      points[0] instanceof Vec2
+        ? (points as Vec2[])
+        : points.map(([x, y]) => new Vec2(x, y));
     this.color = color || randomColor();
     this.selected = false;
     this.hover = false;
@@ -82,7 +82,7 @@ export class Polygon {
     return this.vertices
       .reduce((agg, val) => {
         return agg.add(val);
-      }, new Vector2(0, 0))
+      }, new Vec2(0, 0))
       .divScalar(this.vertices.length);
   }
 
@@ -91,7 +91,7 @@ export class Polygon {
       let p1 = this.vertices[i];
       let p2 = this.vertices[i + 1] || this.vertices[0];
 
-      let edge = new Vector2(p2.x - p1.x, p2.y - p1.y);
+      let edge = new Vec2(p2.x - p1.x, p2.y - p1.y);
       let normal = edge.getNormal();
       return normal;
     });
@@ -105,7 +105,7 @@ export class Polygon {
     this.transform(getScalingMatrix(x, y));
   }
 
-  translate(displacement: Vector2) {
+  translate(displacement: Vec2) {
     this.transform(getTranslationMatrix(displacement.x, displacement.y));
   }
 
@@ -193,7 +193,7 @@ export class Polygon {
     }
   }
 
-  centerOnPoint(p: Vector2) {
+  centerOnPoint(p: Vec2) {
     const offset = p.sub(this.centroid());
     this.translate(offset);
   }
@@ -284,8 +284,8 @@ function isPointInTriangle({
   p,
   triangle: { a, b, c },
 }: {
-  p: Vector2;
-  triangle: { a: Vector2; b: Vector2; c: Vector2 };
+  p: Vec2;
+  triangle: { a: Vec2; b: Vec2; c: Vec2 };
 }) {
   const v0 = c.sub(a);
   const v1 = b.sub(a);

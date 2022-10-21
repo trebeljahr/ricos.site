@@ -59,7 +59,7 @@ $$
 The same formula can be expressed in code:
 
 ```typescript
-function projectOnLine(a: Vector2, b: Vector2, c: Vector2) {
+function projectOnLine(a: Vec2, b: Vec2, c: Vec2) {
     const p = c.sub(a);
     const q = b.sub(a);
     return a.add(q.multScalar(p.dot(q) / q.mag2()));
@@ -78,7 +78,7 @@ $$
 
 The same idea in Typescript:
 ```typescript
-function project(a: Vector2, b: Vector2) {
+function project(a: Vec2, b: Vec2) {
   return b.multScalar(a.dot(b) / b.mag2());
 }
 ```
@@ -117,10 +117,10 @@ Essentially a support function finds a point among a set of points (here the ver
 The trick here is to run the polygon through the finding of support points for the two different directions of the line, which will result in the two points furthest along these directions. In the code below for the getting the support point in a specific direction notice, how we use the dot product to keep track of the distance for the scalar projections between of the vertex onto b?
 
 ```js
-export function getSupportPoint(vertices: Vector2[], d: Vector2) {
+export function getSupportPoint(vertices: Vec2[], d: Vec2) {
   // initialize variables
   let highest = -Infinity;
-  let support = new Vector2(0, 0);
+  let support = new Vec2(0, 0);
   
   // loop over the vertices of the polygon
   for (let vertex of vertices) {
@@ -145,8 +145,8 @@ We can then use these support points to project them onto the line for creating 
 export function drawProjection(
   ctx: CanvasRenderingContext2D,
   polys: Polygon | [Polygon, Polygon],
-  p1: Vector2,
-  p2: Vector2
+  p1: Vec2,
+  p2: Vec2
 ) {
  
 
@@ -155,7 +155,7 @@ export function drawProjection(
   const d1 = p1.sub(p2);
 
   // create translation matrix
-  const origin = new Vector2(parseFloat(ctx.canvas.style.width) / 2, parseFloat(ctx.canvas.style.height) / 2);
+  const origin = new Vec2(parseFloat(ctx.canvas.style.width) / 2, parseFloat(ctx.canvas.style.height) / 2);
   const toOrigin = getTranslationMatrix(origin.x, origin.y);
  
   // use translation matrix + scaling to create far apart line points
@@ -196,7 +196,7 @@ export function drawProjection(
 All of this also works for 2 Polygons at once of course! The question we would like to answer given the two shadows is whether or not they overlap. Since the shadows are two line segments, that we know to be collinear we can use a simple test like the one below to check whether or not they overlap. 
 
 ```typescript
-function onSegment(p: Vector2, q: Vector2, r: Vector2) {
+function onSegment(p: Vec2, q: Vec2, r: Vec2) {
   if (
     q.x <= Math.max(p.x, r.x) &&
     q.x >= Math.min(p.x, r.x) &&
@@ -208,7 +208,7 @@ function onSegment(p: Vector2, q: Vector2, r: Vector2) {
   return false;
 }
 
-function doIntersect(a1: Vector2, a2: Vector2, b1: Vector2, b2: Vector2) {
+function doIntersect(a1: Vec2, a2: Vec2, b1: Vec2, b2: Vec2) {
   if (onSegment(a1, b1, a2)) return true;
   if (onSegment(a1, b2, a2)) return true;
   if (onSegment(b1, a1, b2)) return true;
@@ -263,9 +263,9 @@ Let's see how we could implement that idea in code:
 
 ```typescript
 function getShadowOverlap(
-  axis: Vector2,
-  pointsA: Vector2[],
-  pointsB: Vector2[]
+  axis: Vec2,
+  pointsA: Vec2[],
+  pointsB: Vec2[]
 ) {
   const rangeA = flattenPointsOn(pointsA, axis);
   const rangeB = flattenPointsOn(pointsB, axis);
@@ -294,7 +294,7 @@ function getShadowOverlap(
 
 export function getResponseForCollision(poly1: Polygon, poly2: Polygon) {
   let smallestOverlap = Infinity;
-  let axis = new Vector2(0, 0);
+  let axis = new Vec2(0, 0);
   // loop over all the polygon normals
   for (let normal of [...poly1.edgeNormals(), ...poly2.edgeNormals()]) {
     // get the overlap between the shadows
@@ -364,7 +364,7 @@ Let's define what an ear is more formally. An "ear" is a set of 3 consecutive ve
 When an ear is found, we put it into our list of triangles for the triangulation, remove the vertices from the list of vertices to check, and keep looping over the rest of the vertices left and check for another ear. We can keep doing this until just 3 vertices are left – those will form the last ear. In code this would look something like this: 
 
 ```typescript
-function triangulate(p: Vector2[]) {
+function triangulate(p: Vec2[]) {
   const n = vertices.length - 1;
   if (n < 3) return [];
 
@@ -426,8 +426,8 @@ function triangulate(p: Vector2[]) {
   return triangles;
 }
 
-type Triangle = { a: Vector2; b: Vector2; c: Vector2 }
-function isPointInTriangle({p, triangle: { a, b, c }}: { p: Vector2; triangle: Triangle }) {
+type Triangle = { a: Vec2; b: Vec2; c: Vec2 }
+function isPointInTriangle({p, triangle: { a, b, c }}: { p: Vec2; triangle: Triangle }) {
   const v0 = c.sub(a);
   const v1 = b.sub(a);
   const v2 = p.sub(a);

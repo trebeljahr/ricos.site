@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import SimpleReactCanvasComponent from "simple-react-canvas-component";
 import { useActualSize } from "../../hooks/useWindowSize";
 import { circle, drawInfiniteLine, line } from "../../lib/math/drawHelpers";
-import { Vector2 } from "../../lib/math/vector";
+import { Vec2 } from "../../lib/math/vector";
 import { drawArrow, drawBackground } from "./helpers";
 
 export const MatrixDemo = () => {
@@ -17,9 +17,9 @@ export const MatrixDemo = () => {
     if (!ctx) return;
     drawBackground(ctx);
 
-    const p1 = new Vector2(200, 200);
-    const p2 = new Vector2(500, 50);
-    const p3 = new Vector2(300, 300);
+    const p1 = new Vec2(200, 200);
+    const p2 = new Vec2(500, 50);
+    const p3 = new Vec2(300, 300);
     drawArrow(ctx, p1, p2);
     drawInfiniteLine(ctx, p1, p3);
 

@@ -6,7 +6,7 @@ import {
   initPolygons,
   instrument,
 } from "../../lib/math/drawHelpers";
-import { Vector2 } from "../../lib/math/vector";
+import { Vec2 } from "../../lib/math/vector";
 import { drawBackground } from "./helpers";
 
 export const ProjectionDemo = () => {
@@ -25,8 +25,8 @@ export const ProjectionDemo = () => {
     const drawFn = () => {
       drawBackground(ctx);
       poly1.draw(ctx);
-      const p1 = new Vector2(0, 2);
-      const p2 = new Vector2(1, -2);
+      const p1 = new Vec2(0, 2);
+      const p2 = new Vec2(1, -2);
       drawProjection(ctx, poly1, p1, p2);
     };
 

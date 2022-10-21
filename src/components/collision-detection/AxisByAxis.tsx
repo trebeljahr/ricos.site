@@ -7,7 +7,7 @@ import {
   instrument,
 } from "../../lib/math/drawHelpers";
 import { Polygon } from "../../lib/math/Poly";
-import { Vector2 } from "../../lib/math/vector";
+import { Vec2 } from "../../lib/math/vector";
 import { colorEdge, drawBackground } from "./helpers";
 
 export const AxisByAxis = () => {
@@ -40,12 +40,7 @@ export const AxisByAxis = () => {
 
       const [p1, p2] = pickEdge(polys[current]);
 
-      drawProjection(
-        ctx,
-        polys,
-        new Vector2(p1.y, -p1.x),
-        new Vector2(p2.y, -p2.x)
-      );
+      drawProjection(ctx, polys, new Vec2(p1.y, -p1.x), new Vec2(p2.y, -p2.x));
       colorEdge(ctx, p1, p2);
     };
 

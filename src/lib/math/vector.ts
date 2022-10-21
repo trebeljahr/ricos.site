@@ -2,7 +2,7 @@ import { getRotationMatrix } from "./drawHelpers";
 import { Matrix } from "./matrix";
 
 const precision = 0.000001;
-export class Vector2 {
+export class Vec2 {
   public components: [number, number, number];
 
   constructor(x: number, y: number) {
@@ -32,14 +32,14 @@ export class Vector2 {
   }
 
   divScalar(scalar: number) {
-    return new Vector2(this.x / scalar, this.y / scalar);
+    return new Vec2(this.x / scalar, this.y / scalar);
   }
 
   multScalar(scalar: number) {
-    return new Vector2(this.x * scalar, this.y * scalar);
+    return new Vec2(this.x * scalar, this.y * scalar);
   }
 
-  projectOnLine(A: Vector2, B: Vector2) {
+  projectOnLine(A: Vec2, B: Vec2) {
     // https://gamedev.stackexchange.com/a/72529/163341
     // A + (dot(AP, AB) / dot(AB, AB)) * AB;
     const AP = this.sub(A);
@@ -52,27 +52,27 @@ export class Vector2 {
   }
 
   perp() {
-    return new Vector2(this.y, -this.x);
+    return new Vec2(this.y, -this.x);
   }
 
   getNormal() {
     return this.perp().unit();
   }
 
-  sub(other: Vector2) {
-    return new Vector2(this.x - other.x, this.y - other.y);
+  sub(other: Vec2) {
+    return new Vec2(this.x - other.x, this.y - other.y);
   }
 
-  add(other: Vector2) {
-    return new Vector2(this.x + other.x, this.y + other.y);
+  add(other: Vec2) {
+    return new Vec2(this.x + other.x, this.y + other.y);
   }
 
-  dot(other: Vector2) {
+  dot(other: Vec2) {
     return this.x * other.x + this.y * other.y;
   }
 
   copy() {
-    return new Vector2(this.x, this.y);
+    return new Vec2(this.x, this.y);
   }
 
   transform(matrix: Matrix) {
@@ -83,14 +83,14 @@ export class Vector2 {
     return this;
   }
 
-  equals(other: Vector2) {
+  equals(other: Vec2) {
     return (
       Math.abs(other.x - this.x) < precision &&
       Math.abs(other.y - this.y) < precision
     );
   }
 
-  perpDot(other: Vector2) {
+  perpDot(other: Vec2) {
     return this.perp().dot(other);
   }
 

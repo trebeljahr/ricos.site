@@ -7,7 +7,7 @@ import {
   initPolygons,
   instrument,
 } from "../../lib/math/drawHelpers";
-import { Vector2 } from "../../lib/math/vector";
+import { Vec2 } from "../../lib/math/vector";
 import { colorEdge, drawBackground } from "./helpers";
 
 export const ExampleWith2Polygons = () => {
@@ -34,8 +34,8 @@ export const ExampleWith2Polygons = () => {
       drawProjection(
         ctx,
         [poly1, poly2],
-        new Vector2(p1.y, -p1.x),
-        new Vector2(p2.y, -p2.x)
+        new Vec2(p1.y, -p1.x),
+        new Vec2(p2.y, -p2.x)
       );
     };
 

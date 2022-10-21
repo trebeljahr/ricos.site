@@ -9,11 +9,20 @@ import {
 } from "../../lib/math/drawHelpers";
 import { Polygon } from "../../lib/math/Poly";
 import { Vec2 } from "../../lib/math/vector";
-import { checkCollision, drawBackground } from "./helpers";
+import {
+  checkCollision,
+  drawBackground,
+  getResponseForCollision,
+  visualizeCollision,
+} from "./helpers";
 
-export const Triangulation = () => {
+export const Triangulation = ({ responseToggle = true }) => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();
+  const [response, setResponse] = useState(!responseToggle);
+  const toggleResponse = () => {
+    setResponse((old) => !old);
+  };
 
   useEffect(() => {
     if (!cnv) return;
@@ -31,7 +40,6 @@ export const Triangulation = () => {
 
     const drawFn = () => {
       drawBackground(ctx);
-      // poly1.draw(ctx);
 
       let collision = false;
       if (poly1.isConvex()) {
@@ -42,6 +50,15 @@ export const Triangulation = () => {
         poly1.triangles.forEach((tri) => {
           const collision = checkCollision(tri, poly2);
           tri.draw(ctx, { collision });
+          if (collision && response) {
+            const responseVector = getResponseForCollision(tri, poly2);
+            const half = responseVector.multScalar(0.51);
+            const halfNeg = responseVector.multScalar(-0.51);
+            if (response) {
+              poly1.translate(halfNeg);
+              poly2.translate(half);
+            }
+          }
         });
       }
 
@@ -52,7 +69,7 @@ export const Triangulation = () => {
       convexityCheck: false,
     });
     return cleanup;
-  }, [cnv]);
+  }, [cnv, response]);
 
   return (
     <div className="SATWithResponseContainer">
@@ -61,6 +78,11 @@ export const Triangulation = () => {
         width={width}
         height={height}
       />
+      {responseToggle && (
+        <button onClick={toggleResponse}>
+          Response: {response ? "ON" : "OFF"}
+        </button>
+      )}
     </div>
   );
 };

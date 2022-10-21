@@ -114,6 +114,24 @@ function getShadowOverlap(
   return overlap;
 }
 
+export function visualizeCollision(
+  ctx: CanvasRenderingContext2D,
+  poly1: Polygon,
+  poly2: Polygon,
+  response = true
+) {
+  const responseVector = getResponseForCollision(poly1, poly2);
+  const half = responseVector.multScalar(0.51);
+  const halfNeg = responseVector.multScalar(-0.51);
+  if (response) {
+    poly1.translate(halfNeg);
+    poly2.translate(half);
+  } else {
+    drawArrow(ctx, poly1.centroid(), poly1.centroid().add(halfNeg));
+    drawArrow(ctx, poly2.centroid(), poly2.centroid().add(half));
+  }
+}
+
 export function getResponseForCollision(poly1: Polygon, poly2: Polygon) {
   let smallestOverlap = Infinity;
   let axis = new Vector2(0, 0);

@@ -175,4 +175,78 @@ export class Polygon {
       return false;
     }
   }
+
+  triangulate() {
+    const p = this.vertices;
+    const n = p.length - 1;
+    if (n < 3) return [];
+    const tgs = [];
+    const avl = [];
+    for (let count = 0; count < n; count++) {
+      avl.push(count);
+    }
+
+    let i = 0;
+    let al = n;
+    while (al > 3) {
+      const i0 = avl[(i + 0) % al];
+      const i1 = avl[(i + 1) % al];
+      const i2 = avl[(i + 2) % al];
+
+      const a = p[i0];
+      const b = p[i1];
+      const c = p[i2];
+
+      let earFound = false;
+      if (
+        new Polygon([
+          [a.x, a.y],
+          [b.x, b.y],
+          [c.x, c.y],
+        ])
+      ) {
+        earFound = true;
+        for (let j = 0; j < al; j++) {
+          const vi = avl[j];
+          if (vi === i0 || vi === i1 || vi === i2) continue;
+          if (isPointInTriangle({ p: p[vi], triangle: { a, b, c } })) {
+            earFound = false;
+            break;
+          }
+        }
+      }
+      if (earFound) {
+        tgs.push(i0, i1, i2);
+        avl.splice((i + 1) % al, 1);
+        al--;
+        i = 0;
+      } else if (i++ > 3 * al) break;
+    }
+    tgs.push(avl[0], avl[1], avl[2]);
+    return tgs;
+  }
+}
+
+function isPointInTriangle({
+  p,
+  triangle: { a, b, c },
+}: {
+  p: Vector2;
+  triangle: { a: Vector2; b: Vector2; c: Vector2 };
+}) {
+  const v0 = c.sub(a);
+  const v1 = b.sub(a);
+  const v2 = p.sub(a);
+
+  const dot00 = v0.dot(v0);
+  const dot01 = v0.dot(v1);
+  const dot02 = v0.dot(v2);
+  const dot11 = v1.dot(v1);
+  const dot12 = v1.dot(v2);
+
+  const denom = dot00 * dot11 - dot01 * dot01;
+  const u = (dot11 * dot02 - dot01 * dot12) / denom;
+  const v = (dot00 * dot12 - dot01 * dot02) / denom;
+
+  return u >= 0 && v >= 0 && u + v < 1;
 }

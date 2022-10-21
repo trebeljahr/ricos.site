@@ -8,12 +8,19 @@ import {
   drawArrow,
   drawBackground,
   getResponseForCollision,
+  visualizeCollision,
 } from "./helpers";
 
-export const SATWithResponse = () => {
+export const SATWithResponse = ({
+  drawProjections = true,
+  responseToggle = true,
+}: {
+  drawProjections?: boolean;
+  responseToggle?: boolean;
+}) => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();
-  const [response, setResponse] = useState(false);
+  const [response, setResponse] = useState(!responseToggle);
 
   const toggleResponse = () => {
     setResponse((old) => !old);
@@ -26,30 +33,21 @@ export const SATWithResponse = () => {
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
 
-    const [myPoly1, myPoly2] = initPolygons(cnv);
+    const [poly1, poly2] = initPolygons(cnv);
     const drawFn = () => {
       drawBackground(ctx);
-      const collision = checkCollision(myPoly1, myPoly2);
-      drawAllProjections(ctx, myPoly1, myPoly2);
-      myPoly1.draw(ctx, { collision });
-      myPoly2.draw(ctx, { collision });
+      const collision = checkCollision(poly1, poly2);
+      drawProjections && drawAllProjections(ctx, poly1, poly2);
+      poly1.draw(ctx, { collision: drawProjections && collision });
+      poly2.draw(ctx, { collision: drawProjections && collision });
       if (collision) {
-        const responseVector = getResponseForCollision(myPoly1, myPoly2);
-        const half = responseVector.multScalar(0.51);
-        const halfNeg = responseVector.multScalar(-0.51);
-        if (response) {
-          myPoly1.translate(halfNeg);
-          myPoly2.translate(half);
-        } else {
-          drawArrow(ctx, myPoly1.centroid(), myPoly1.centroid().add(halfNeg));
-          drawArrow(ctx, myPoly2.centroid(), myPoly2.centroid().add(half));
-        }
+        visualizeCollision(ctx, poly1, poly2, response);
       }
     };
 
-    const { cleanup } = instrument(ctx, [myPoly1, myPoly2], drawFn);
+    const { cleanup } = instrument(ctx, [poly1, poly2], drawFn);
     return cleanup;
-  }, [cnv, width, height, response, width, height]);
+  }, [cnv, width, height, response, drawProjections]);
 
   return (
     <div className="SATWithResponseContainer">
@@ -58,9 +56,11 @@ export const SATWithResponse = () => {
         width={width}
         height={height}
       />
-      <button onClick={toggleResponse}>
-        Response: {response ? "ON" : "OFF"}
-      </button>
+      {responseToggle && (
+        <button onClick={toggleResponse}>
+          Response: {response ? "ON" : "OFF"}
+        </button>
+      )}
     </div>
   );
 };

@@ -9,6 +9,7 @@ import * as post from "../../content/posts/collision-detection.mdx";
 import { Post } from "../../@types/post";
 import { MDXProps } from "mdx/types";
 import { MatrixDemo } from "../../components/collision-detection/MatrixDemo";
+import { Triangulation } from "../../components/collision-detection/Triangulation";
 import { ImageRenderer } from "../../components/ImageRenderer";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import PostHeader from "../../components/post-header";
@@ -45,7 +46,8 @@ const PostComponent = () => {
               AxisByAxis,
               ExampleWith2Polygons,
               MatrixDemo,
-              SATWithConvexShapes: () => null,
+              Triangulation,
+              SATWithConcaveShapes: () => null,
               SATWithResponse,
             }}
           >

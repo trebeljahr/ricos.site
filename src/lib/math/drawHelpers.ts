@@ -218,7 +218,7 @@ const niceBlue = "#4763ad";
 const niceGreen = "#63ad47";
 
 export function initPolygons(cnv: HTMLCanvasElement) {
-  const myPoly1 = new Polygon(
+  const poly1 = new Polygon(
     [
       [0, 0],
       [1, 0],
@@ -229,7 +229,7 @@ export function initPolygons(cnv: HTMLCanvasElement) {
     niceGreen
   );
 
-  const myPoly2 = new Polygon(
+  const poly2 = new Polygon(
     [
       [-2, 0],
       [-2, 1],
@@ -244,15 +244,15 @@ export function initPolygons(cnv: HTMLCanvasElement) {
   const toOrigin = getTranslationMatrix(w / 2, h / 2);
   const byScalingUp = getScalingMatrix(w * 0.1, w * 0.1);
 
-  myPoly1.transform(byScalingUp);
-  myPoly1.transform(toOrigin);
-  myPoly1.rotate(20);
+  poly1.transform(byScalingUp);
+  poly1.transform(toOrigin);
+  poly1.rotate(20);
 
-  myPoly2.transform(byScalingUp);
-  myPoly2.transform(toOrigin);
-  myPoly2.rotate(45);
+  poly2.transform(byScalingUp);
+  poly2.transform(toOrigin);
+  poly2.rotate(45);
 
-  return [myPoly1, myPoly2] as [Polygon, Polygon];
+  return [poly1, poly2] as [Polygon, Polygon];
 }
 
 export type State = {

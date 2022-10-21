@@ -12,7 +12,13 @@ author:
 
 <p>{excerpt}</p>
 
-This post is going to answer that question, by explaining one particular algorithm that can be used to tackle this sort of problem. That Algorithm is based on a mathematical idea known as the "Separating Axis Theorem". 
+This post is going to answer that question, by explaining one particular algorithm that can be used to tackle this sort of problem. 
+
+In all the demos below, you can drag around the polygons (and the points), as well as rotate the polygons around their centers by pressing the A or D keys! 
+
+<SATWithResponse drawProjections={false} responseToggle={false}/>
+
+What you see in the demo above is based on a mathematical idea known as the "Separating Axis Theorem". We'll derive this idea and how it can be used for collision detections, in code, step by step. 
 
 The main idea behind this theorem is simple. 
 
@@ -184,7 +190,7 @@ export function drawProjection(
 
 <ProjectionDemo />
 
-## Project for 2 Polygons 
+## Projection for 2 Polygons 
 
 All of this also works for 2 Polygons at once of course! The question we would like to answer given the two shadows is whether or not they overlap. Since the shadows are two line segments, that we know to be collinear we can use a simple test like the one below to check whether or not they overlap. 
 
@@ -238,27 +244,114 @@ The loop we did, step by step with a delay above was just for visualization purp
 
 This is all there is to a simple SAT collision detection algorithm. To sum up the algorithm: Cast shadows (projections) onto the normals of two polygons and check if the projections overlap. If you find a pair of projections that doesn't overlap, there is no collision. If all projections overlap, there is a collision.
 
-Cool, so we are done now, right? Well, check this out: 
+Now you might say, wait a second... we don't yet prevent the shapes from intersecting with each other, do we? 
 
-<SATWithConvexShapes />
+And you would be right. 
 
-Well... that didn't go to well huh? The problem is that what you just saw where so called "concave" shapes... All the polygons you've seen so far up to this point were "convex", and I took some precautions so that this is always the case.
+This is an important distinction in collision detection algorithms, between calculating *if* two shapes collide, and then *what to do* to deal with that collision. 
 
-Convex and concave are just two words to express that something bulges outwards or inwards. I remember them with the word "cave" as in concave. A cave goes inward, so does a concave object. In other words, concave shapes are shapes that have some kind of indentation in them. A star would be a concave shape, or a something like a V etc. To handle collisions with concave shapes is usually very tricky... Usually people just chop them up into simpler – convex – shapes and then make collision detection happening with them. Mostly people chop them up into triangles using a process called triangulation (which has many different algorithms for it...) So let's look at some.
+This second problem is usually known as calculating a collision response. So, how could we appropriately respond to the collision? 
 
 ## Adding a Collision Response
 
-Luckily for us, SAT is relatively easy to adapt to give a collision response – namely, if you find that all shadows (and therefore the shapes) overlap, you can find the pair of shadows that overlaps the least, and push the two shapes apart in that direction until the shadows don't touch anymore! Let's see how we could implement that idea in code as well: 
+Luckily for us, SAT is relatively easy to adapt to give a collision response – namely, if you find that all shadows (and therefore the shapes) overlap, you can find the pair of shadows that overlaps the least, and push the two shapes apart in that direction until the shadows don't touch anymore! 
+
+This idea of the "overlap" between the two shadows is related to an idea known as the MTV – the Minimum Translation Vector. In a way the smallest overlap of the shadows of the two polygons projected onto their normals is a vector that tells us exactly how far and in which direction the two shapes have to move so that at least one pair of shadows stops overlapping. It represents the minimum amount of work necessary to push the shapes apart. So we just apply half of the vector as a translation transformation to one shape and the opposite of that to the other shape. 
+
+Let's see how we could implement that idea in code:
+
+```typescript
+function getShadowOverlap(
+  axis: Vector2,
+  pointsA: Vector2[],
+  pointsB: Vector2[]
+) {
+  const rangeA = flattenPointsOn(pointsA, axis);
+  const rangeB = flattenPointsOn(pointsB, axis);
+
+  let overlap = 0;
+  if (rangeA.min < rangeB.min) {
+    if (rangeA.max < rangeB.max) {
+      overlap = rangeA.max - rangeB.min;
+    } else {
+      const option1 = rangeA.max - rangeB.min;
+      const option2 = rangeB.max - rangeA.min;
+      overlap = option1 < option2 ? option1 : -option2;
+    }
+  } else {
+    if (rangeA.max > rangeB.max) {
+      overlap = rangeA.min - rangeB.max;
+    } else {
+      const option1 = rangeA.max - rangeB.min;
+      const option2 = rangeB.max - rangeA.min;
+      overlap = option1 < option2 ? option1 : -option2;
+    }
+  }
+
+  return overlap;
+}
+
+export function getResponseForCollision(poly1: Polygon, poly2: Polygon) {
+  let smallestOverlap = Infinity;
+  let axis = new Vector2(0, 0);
+  // loop over all the polygon normals
+  for (let normal of [...poly1.edgeNormals(), ...poly2.edgeNormals()]) {
+    // get the overlap between the shadows
+    const overlap = getShadowOverlap(normal, poly1.vertices, poly2.vertices);
+    const absOverlap = Math.abs(overlap);
+    // check if overlap is smallest so far
+    if (absOverlap < Math.abs(smallestOverlap)) {
+      smallestOverlap = overlap;
+      axis = normal.copy();
+      if (overlap < 0) {
+        axis.multScalar(-1);
+      }
+    }
+  }
+
+  return axis.transform(getScalingMatrix(smallestOverlap, smallestOverlap));
+}
+```
+
+Then we can use that getResponseForCollision function like so: 
+
+```typescript
+// get MTV
+const responseVector = getResponseForCollision(poly1, poly2);
+// scale MTV by 0.51 or -0.51 respectively.
+const half = responseVector.multScalar(0.51);
+const halfNeg = responseVector.multScalar(-0.51);
+if (response) {
+  // if response should happen, translate polygons by MTVs
+  poly1.translate(halfNeg);
+  poly2.translate(half);
+} else {
+  // if response should not happen – draw the MTV arrows
+  drawArrow(ctx, poly1.centroid(), poly1.centroid().add(halfNeg));
+  drawArrow(ctx, poly2.centroid(), poly2.centroid().add(half));
+}
+``` 
+
+And here is the demo:
 
 <SATWithResponse />
 
-### Triangulating Concave Shapes
+Cool, so we are done now, right? Well, check this out: 
 
-Ok. Cool. We are done now. Right?
+<SATWithConcaveShapes />
 
-Well... almost.
+## The Problem of Concavity
 
-There is still another loose end here! Namely, we don't yet prevent the shapes from intersecting with each other. This is an important distinction in collision detection algorithms, and it is usually known as a collision response. Collision responses and how to do them is a whole different problem from simply detecting whether or not two shapes collide with one another!
+Well... that didn't go to well huh? The problem is that what you just saw were so called "concave" shapes... All the polygons you've seen so far up to this point were "convex", and I took some precautions so that this is always the case.
+
+Convex and concave are just two words to express that something bulges outwards or inwards. I remember them with the word "cave" as in con*cave*. A cave goes inward, so does a concave object. In other words, concave shapes are shapes that have some kind of indentation in them. A star would be a concave shape, or a something like a V etc. To handle collisions with concave shapes is very tricky... And usually people don't bother and just chop their concave shapes up into simpler, convex shapes and then run collision detection algorithms on them. 
+
+Mostly people chop them up into triangles using a process called triangulation (which has many different algorithms for it...) So let's look at some.
+
+## Triangulating Concave Shapes
+
+<Triangulation />
+
 
 For now, this is it, with something like the above, you could have collision detection of arbitrary shapes, by carving them up into neat little triangles and then running collision detection on those. You could even constrain and stop the shapes from moving into each other by adding a collision response. 
 

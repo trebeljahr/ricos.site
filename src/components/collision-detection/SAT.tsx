@@ -15,16 +15,16 @@ export const SAT = () => {
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
 
-    const [myPoly1, myPoly2] = initPolygons(cnv);
+    const [poly1, poly2] = initPolygons(cnv);
     const drawFn = () => {
       drawBackground(ctx);
-      const collision = checkCollision(myPoly1, myPoly2);
-      drawAllProjections(ctx, myPoly1, myPoly2);
-      myPoly1.draw(ctx, { collision });
-      myPoly2.draw(ctx, { collision });
+      const collision = checkCollision(poly1, poly2);
+      drawAllProjections(ctx, poly1, poly2);
+      poly1.draw(ctx, { collision });
+      poly2.draw(ctx, { collision });
     };
 
-    const { cleanup } = instrument(ctx, [myPoly1, myPoly2], drawFn);
+    const { cleanup } = instrument(ctx, [poly1, poly2], drawFn);
     return cleanup;
   }, [cnv, width, height]);
 

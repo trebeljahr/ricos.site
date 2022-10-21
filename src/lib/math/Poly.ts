@@ -37,9 +37,14 @@ function convertHexToRgb(hex: string) {
 function makeBrighter(color: string) {
   if (isHex(color)) color = convertHexToRgb(color);
 
-  color = color.replace("rgb(", "rgba(");
-  color = color.substring(0, color.length - 2) + ", 0.5)";
-  return color;
+  const rgbs = color
+    .match(/(\d{1,})/g)
+    ?.map(parseFloat)
+    .map((a) => Math.min(255, a + 50));
+  if (!rgbs) return color;
+  const brighterColor = `rgb(${rgbs[0]},${rgbs[1]},${rgbs[2]})`;
+
+  return brighterColor;
 }
 
 const TWO_PI = 2 * Math.PI;
@@ -177,23 +182,91 @@ export class Polygon {
     }
   }
 
+  centerOnPoint(p: Vector2) {
+    const offset = p.sub(this.centroid());
+    this.translate(offset);
+  }
+
   triangulate() {
     const p = this.vertices;
     const n = p.length - 1;
     if (n < 3) return [];
-    const tgs = [];
-    const avl = [];
-    for (let count = 0; count < n; count++) {
-      avl.push(count);
+
+    let indexList: number[] = [];
+    for (let i = 0; i < this.vertices.length; i++) {
+      indexList.push(i);
     }
 
-    let i = 0;
-    let al = n;
-    while (al > 3) {
-      const i0 = avl[(i + 0) % al];
-      const i1 = avl[(i + 1) % al];
-      const i2 = avl[(i + 2) % al];
+    let totalTriangleCount = this.vertices.length - 2;
+    let totalTriangleIndexCount = totalTriangleCount * 3;
 
+    let triangles = [totalTriangleIndexCount];
+    let triangleIndexCount = 0;
+
+    while (indexList.length > 3) {
+      for (let i = 0; i < indexList.length; i++) {
+        let a = indexList[i];
+        let b = getItem(indexList, i - 1);
+        let c = getItem(indexList, i + 1);
+
+        let va = this.vertices[a];
+        let vb = this.vertices[b];
+        let vc = this.vertices[c];
+
+        let va_to_vb = vb.sub(va);
+        let va_to_vc = vc.sub(va);
+
+        if (va_to_vb.perpDot(va_to_vc) < 0) {
+          continue;
+        }
+
+        let isEar = true;
+
+        // Does test ear contain any polygon vertices?
+        for (let j = 0; j < this.vertices.length; j++) {
+          if (j === a || j === b || j === c) {
+            continue;
+          }
+
+          let p = this.vertices[j];
+
+          if (isPointInTriangle({ p, triangle: { b: vb, a: va, c: vc } })) {
+            isEar = false;
+            break;
+          }
+        }
+
+        if (isEar) {
+          triangles[triangleIndexCount++] = b;
+          triangles[triangleIndexCount++] = a;
+          triangles[triangleIndexCount++] = c;
+
+          indexList.splice(i, 1);
+          break;
+        }
+      }
+    }
+
+    triangles[triangleIndexCount++] = indexList[0];
+    triangles[triangleIndexCount++] = indexList[1];
+    triangles[triangleIndexCount++] = indexList[2];
+
+    const tris = group(triangles, 3).map((tri) => {
+      const a = this.vertices[tri[0]];
+      const b = this.vertices[tri[1]];
+      const c = this.vertices[tri[2]];
+
+      return new Polygon(
+        [
+          [a.x, a.y],
+          [b.x, b.y],
+          [c.x, c.y],
+        ],
+        makeBrighter(this.color)
+      );
+    });
+    return tris;
+  }
   triangulateDelaunay() {
     const delaunay = new Delaunator(
       this.vertices.map((v) => [v.x, v.y]).flat()
@@ -213,6 +286,22 @@ export class Polygon {
       );
     });
   }
+}
+
+
+function group<T>(array: T[], n: number) {
+  return [...Array(Math.ceil(array.length / n))].map((_, i) =>
+    array.slice(i * n, (i + 1) * n)
+  );
+}
+
+function getItem<T>(arr: T[], i: number) {
+  if (i >= arr.length) {
+    return arr[i % arr.length];
+  } else if (i < 0) {
+    return arr[(i % arr.length) + arr.length];
+  }
+  return arr[i];
 }
 
 function isPointInTriangle({

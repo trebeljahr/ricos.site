@@ -12,29 +12,30 @@ author:
 
 <p>{excerpt}</p>
 
-This post is going to answer that question, by explaining one particular algorithm that can be used to tackle this sort of problem. 
+This post is going to answer that question, by explaining one particular algorithm that can be used to tackle this sort of problem – the SAT Algorithm. 
 
-In all the demos below, you can drag around the polygons (and the points), as well as rotate the polygons around their centers by pressing the A or D keys! 
+In all the demos of this article, you can drag around the polygons (and their points), as well as rotate polygons around their centers by pressing the A or D keys! 
 
 <SATWithResponse drawProjections={false} responseToggle={false}/>
 
-What you see in the demo above is based on a mathematical idea known as the "Separating Axis Theorem". We'll derive this idea and how it can be used for collision detections, in code, step by step. 
+What you see in the demo above is based this SAT (Separating Axis Theorem) Algorithm. We'll derive this idea and how it can be used for collision detections, with mathematics and in code, step by step. 
 
-The main idea behind this theorem is simple. 
+The main idea behind it is simple. 
 
 >  If you can draw a line *between* two shapes, without touching either of them, then the two shapes do *not* collide. 
 
-If you can find such a line, you know for sure, that the two shapes are separated from each other by that line! And that's why this line is called a "separating axis", and hence the name of the theorem: "Separating Axis Theorem". But how does the computer search for these lines that separate two shapes? 
+If you can find such a line, you know for sure, that the two shapes are separated from each other by that line! And that's why this line can be called a "separating axis", and that's exactly where the name of the theorem comes from. 
 
+But how does the computer search for the lines that separate two shapes? 
 It's using shadows!
 
 ## Shadows?
 
-In linear algebra a projection is essentially what happens if you were to shine a light onto an object from very, very far away. The object would cast a shadow onto the wall and this shadow on the wall is what is mathematically known as a "projection".
+In linear algebra a projection is essentially what happens if you were to shine a light onto an object from very, very far away. The object would cast a shadow onto the wall and this shadow on the wall is what is mathematically known as a "projection". You could also think of it as "flattening" the shape with a giant press that is aligned with the line.
 
 The demo's of this article will only be in two dimensions and hence the "wall" becomes a simple line and the object becomes a single point.
 
-But the idea, of shining a light onto that point and tracking where the shadow will fall on the line stays exactly the same. For the next section you should be comfortable with some basic concepts of vectors and "linear algebra", if you aren't [here's a quick overview of the concepts necessary](/posts/vectors-101).
+But the idea, of shining a light onto that point and tracking where the shadow will fall on the line (or flattening the object onto the line) stays exactly the same. For the next section you should be comfortable with some basic concepts of vectors and "linear algebra", if you aren't [here's a quick summary of the concepts necessary](/posts/vectors-101).
 
 
 ## Projections
@@ -43,7 +44,7 @@ In case you had to refresh your knowledge on vectors – welcome back! Now that 
 
 Luckily there is a mathematical expression for how to calculate a shadow that a point would cast onto a line! 
 
-Given the Points a, b, and c, where c is the point we want to project and a and b are the two points defining the line $\overline{ab}$, we can find the projection of c onto the line $\overline{ab}$ it: 
+Given the Points a, b, and c, where c is the point we want to project and a and b are the two points defining the line $\overline{ab}$, we can find the projection of c onto the line $\overline{ab}$ like so: 
 
 $$
 p = c - a

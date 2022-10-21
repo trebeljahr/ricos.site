@@ -217,17 +217,20 @@ export function circle(ctx: CanvasRenderingContext2D, p: Vector2, d: number) {
 const niceBlue = "#4763ad";
 const niceGreen = "#63ad47";
 
+function regularPolygonVerts(n: number) {
+  const verts = [];
+  for (let i = 0; i < n; i++) {
+    verts.push([
+      Math.cos((2 * Math.PI * i) / n),
+      Math.sin((2 * Math.PI * i) / n),
+    ] as [number, number]);
+  }
+
+  return verts;
+}
+
 export function initPolygons(cnv: HTMLCanvasElement) {
-  const poly1 = new Polygon(
-    [
-      [0, 0],
-      [1, 0],
-      [2, 1],
-      [1, 3],
-      [-1, 1],
-    ],
-    niceGreen
-  );
+  const poly1 = new Polygon(regularPolygonVerts(10), niceGreen);
 
   const poly2 = new Polygon(
     [
@@ -241,15 +244,15 @@ export function initPolygons(cnv: HTMLCanvasElement) {
   );
 
   const [w, h] = [parseFloat(cnv.style.width), parseFloat(cnv.style.height)];
-  const toOrigin = getTranslationMatrix(w / 2, h / 2);
+  const origin = new Vector2(w / 2, h / 2);
   const byScalingUp = getScalingMatrix(w * 0.1, w * 0.1);
 
   poly1.transform(byScalingUp);
-  poly1.transform(toOrigin);
+  poly1.centerOnPoint(origin.add(new Vector2(w / 4, 0)));
   poly1.rotate(20);
 
   poly2.transform(byScalingUp);
-  poly2.transform(toOrigin);
+  poly2.centerOnPoint(origin.add(new Vector2(-w / 4, 0)));
   poly2.rotate(45);
 
   return [poly1, poly2] as [Polygon, Polygon];
@@ -272,7 +275,8 @@ function handleRotations(polys: Polygon[], amount: number) {
 export function instrument(
   ctx: CanvasRenderingContext2D,
   polys: Polygon[],
-  drawFn: () => void
+  drawFn: () => void,
+  { convexityCheck = true } = {}
 ) {
   ctx.canvas.style.touchAction = "none";
 
@@ -326,7 +330,7 @@ export function instrument(
       state.draggedPoint.point.transform(
         getTranslationMatrix(event.movementX, event.movementY)
       );
-      if (!state.draggedPoint.poly.isConvex()) {
+      if (convexityCheck && !state.draggedPoint.poly.isConvex()) {
         state.draggedPoint.point.transform(
           getTranslationMatrix(-event.movementX, -event.movementY)
         );
@@ -387,7 +391,6 @@ export function instrument(
   let frameId = 0;
   const loop = () => {
     frameId = requestAnimationFrame(() => {
-      // console.log(state.rotationChange);
       handleRotations(polys, state.rotationChange);
       drawFn();
       loop();

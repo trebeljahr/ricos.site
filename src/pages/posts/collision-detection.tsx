@@ -47,7 +47,13 @@ const PostComponent = () => {
               ExampleWith2Polygons,
               MatrixDemo,
               Triangulation,
-              SATWithConcaveShapes: () => null,
+              SATWithConcaveShapes: () => (
+                <SATWithResponse
+                  drawProjections={false}
+                  changeColorOnCollision={true}
+                  withStar={true}
+                />
+              ),
               SATWithResponse,
             }}
           >

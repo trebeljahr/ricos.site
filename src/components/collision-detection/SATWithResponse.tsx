@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import SimpleReactCanvasComponent from "simple-react-canvas-component";
 import { useActualSize } from "../../hooks/useWindowSize";
-import { initPolygons, instrument } from "../../lib/math/drawHelpers";
+import {
+  initPolygons,
+  instrument,
+  niceGreen,
+  starPoints,
+} from "../../lib/math/drawHelpers";
+import { Polygon } from "../../lib/math/Poly";
 import {
   checkCollision,
   drawAllProjections,
@@ -13,10 +19,9 @@ import {
 
 export const SATWithResponse = ({
   drawProjections = true,
+  changeColorOnCollision = true,
   responseToggle = true,
-}: {
-  drawProjections?: boolean;
-  responseToggle?: boolean;
+  withStar = false,
 }) => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();
@@ -33,21 +38,34 @@ export const SATWithResponse = ({
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
 
-    const [poly1, poly2] = initPolygons(cnv);
+    const [poly1, poly2] = initPolygons(
+      cnv,
+      withStar ? new Polygon(starPoints(), niceGreen) : undefined
+    );
     const drawFn = () => {
       drawBackground(ctx);
       const collision = checkCollision(poly1, poly2);
       drawProjections && drawAllProjections(ctx, poly1, poly2);
-      poly1.draw(ctx, { collision: drawProjections && collision });
-      poly2.draw(ctx, { collision: drawProjections && collision });
+      poly1.draw(ctx, { collision: changeColorOnCollision && collision });
+      poly2.draw(ctx, { collision: changeColorOnCollision && collision });
       if (collision) {
         visualizeCollision(ctx, poly1, poly2, response);
       }
     };
 
-    const { cleanup } = instrument(ctx, [poly1, poly2], drawFn);
+    const { cleanup } = instrument(ctx, [poly1, poly2], drawFn, {
+      convexityCheck: !withStar,
+    });
     return cleanup;
-  }, [cnv, width, height, response, drawProjections]);
+  }, [
+    cnv,
+    width,
+    height,
+    response,
+    drawProjections,
+    changeColorOnCollision,
+    withStar,
+  ]);
 
   return (
     <div className="SATWithResponseContainer">

@@ -368,16 +368,14 @@ function triangulate(p: Vec2[]) {
   const n = vertices.length - 1;
   if (n < 3) return [];
 
-  let indexList: number[] = [];
-  for (let i = 0; i < vertices.length; i++) {
-    indexList.push(i);
-  }
-
+  // assemble a list of indeces for verts
+  let indexList: number[] = vertices.map((_, i) => i)
   let triangles = [];
   let triangleIndexCount = 0;
 
   let i = 0;
   while (indexList.length > 3) {
+    // this is a safety hack –> in case the internal angle is exactly 180° – the loop would run forever
     if (i++ > 1000) {
       break;
     }
@@ -390,26 +388,32 @@ function triangulate(p: Vec2[]) {
       let vb = vertices[b];
       let vc = vertices[c];
 
+      // calculate edges
       let va_to_vb = vb.sub(va);
       let va_to_vc = vc.sub(va);
 
+      // check the inner angle between the two edges
+      // this uses the "perpendicular dot product" – the 2D analog of the cross product.
+      // if this is 0 or smaller than 0 the angle is greater than 180° 
       if (va_to_vb.perpDot(va_to_vc) < 0) {
         continue;
       }
 
       let isEar = true;
       for (let j = 0; j < vertices.length; j++) {
+        // skip if vertex is part of ear
         if (j === a || j === b || j === c) {
           continue;
         }
 
-
+        // check if vertex is in triangle
         if (isPointInTriangle({ p: vertices[j], triangle: { b: vb, a: va, c: vc } })) {
           isEar = false;
           break;
         }
       }
 
+      // add ear vertex indeces to triangulation
       if (isEar) {
         triangles[triangleIndexCount++] = b;
         triangles[triangleIndexCount++] = a;
@@ -420,9 +424,11 @@ function triangulate(p: Vec2[]) {
     }
   }
 
+  // loop is done, one triangle remaining, add it to the list as well.
   triangles[triangleIndexCount++] = indexList[0];
   triangles[triangleIndexCount++] = indexList[1];
   triangles[triangleIndexCount++] = indexList[2];
+  
   return triangles;
 }
 
@@ -443,6 +449,15 @@ function isPointInTriangle({p, triangle: { a, b, c }}: { p: Vec2; triangle: Tria
   const v = (dot00 * dot12 - dot01 * dot02) / denom;
 
   return u >= 0 && v >= 0 && u + v < 1;
+}
+
+function getItem<T>(arr: T[], i: number) {
+  if (i >= arr.length) {
+    return arr[i % arr.length];
+  } else if (i < 0) {
+    return arr[(i % arr.length) + arr.length];
+  }
+  return arr[i];
 }
 ```
 

@@ -211,8 +211,8 @@ export function circle(ctx: CanvasRenderingContext2D, p: Vec2, d: number) {
   ctx.restore();
 }
 
-const niceBlue = "#4763ad";
-const niceGreen = "#63ad47";
+export const niceBlue = "#4763ad";
+export const niceGreen = "#63ad47";
 
 function regularPolygonVerts(n: number) {
   const verts = [];
@@ -226,8 +226,25 @@ function regularPolygonVerts(n: number) {
   return verts;
 }
 
-export function initPolygons(cnv: HTMLCanvasElement) {
-  const poly1 = new Polygon(regularPolygonVerts(10), niceGreen);
+export function starPoints() {
+  const pts: Vec2[] = [];
+  const step = Math.PI / 5;
+
+  let n = 0;
+
+  for (let a = -Math.PI / 2; a < (3 * Math.PI) / 2; a += step) {
+    let r = n % 2 == 0 ? 2 : 1;
+    let x = r * Math.cos(a);
+    let y = r * Math.sin(a);
+    pts.push(new Vec2(x, y));
+    n++;
+  }
+
+  return pts;
+}
+
+export function initPolygons(cnv: HTMLCanvasElement, providedPoly?: Polygon) {
+  const poly1 = providedPoly || new Polygon(regularPolygonVerts(10), niceGreen);
 
   const poly2 = new Polygon(
     [

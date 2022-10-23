@@ -68,6 +68,13 @@
         margin: 1.5em 0px;
         padding: 0.5em 20px;
         quotes: "\201C""\201D";
+      } 
+      p {
+        margin: 0;
+        margin-bottom: 1.5rem
+      }
+      blockquote > p {
+        margin-bottom: 0;
       }
     </style>
 
@@ -84,14 +91,14 @@
       margin: 0;
       padding: 0 !important;
       mso-line-height-rule: exactly;
-      background-color: #222222;
+      background-color: #ffffff;
     "
   >
     <center
       role="article"
       aria-roledescription="email"
       lang="en"
-      style="width: 100%; background-color: #222222"
+      style="width: 100%; background-color: #ffffff"
     >
 
       <div style="max-width: 600px; margin: 0 auto" class="email-container">
@@ -115,20 +122,20 @@
           <tr>
             <td style="background-color: #ffffff">
               <img
-                src="{{image}}"
+                src="{{coverImageSrc}}"
                 width="600"
                 height=""
-                alt="newsletter banner"
+                alt="{{coverImageAlt}}"
                 border="0"
                 style="
                   width: 100%;
                   max-width: 600px;
                   height: auto;
-                  background: #dddddd;
+                  background: #ffffff;
                   font-family: sans-serif;
                   font-size: 15px;
                   line-height: 15px;
-                  color: #555555;
+                  color: #333333;
                   margin: auto;
                   display: block;
                 "
@@ -146,94 +153,22 @@
                 border="0"
                 width="100%"
               >
-                <tr>
-                  <td
-                    style="
-                      padding: 20px;
-                      font-family: sans-serif;
-                      font-size: 15px;
-                      line-height: 20px;
-                      color: #555555;
-                    "
-                  >
-                    {{!-- <h1
-                      style="
-                        margin: 0 0 10px 0;
-                        font-family: sans-serif;
-                        font-size: 25px;
-                        line-height: 30px;
-                        color: #333333;
-                        font-weight: normal;
-                      "
-                    >
-                      Trebeljahr – Newsletter.
-                    </h1> --}}
-
-                    <p style="margin: 0">{{{content}}}</p>
-                  </td>
-                </tr>
-{{!-- 
-                <tr>
-                  <td
-                    style="
-                      padding: 20px;
-                      font-family: sans-serif;
-                      font-size: 15px;
-                      line-height: 20px;
-                      color: #555555;
-                    "
-                  >
-                    <h2
-                      style="
-                        margin: 0 0 10px 0;
-                        font-family: sans-serif;
-                        font-size: 18px;
-                        line-height: 22px;
-                        color: #333333;
-                        font-weight: bold;
-                      "
-                    >
-                      {{secondHeader}}
-                    </h2>
-
-                    <p style="margin: 0">
-                      {{secondContent}}
-                    </p>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td
-                    style=" 
-                      padding: 20px;
-                      font-family: sans-serif;
-                      font-size: 15px;
-                      line-height: 20px;
-                      color: #555555;
-                    "
-                  >
-                    <h2
-                      style="
-                        margin: 0 0 10px 0;
-                        font-family: sans-serif;
-                        font-size: 18px;
-                        line-height: 22px;
-                        color: #333333;
-                        font-weight: bold;
-                      "
-                    >
-                      {{thirdHeader}}
-                    </h2>
-
-                    <p style="margin: 0">
-                      {{thirdContent}}
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr> --}}
-
+              <tr>
+                <td
+                  style="
+                    padding: 20px;
+                    font-family: sans-serif;
+                    font-size: 15px;
+                    line-height: 20px;
+                    color: #555555;
+                  "
+                >
+                <h1 style="line-height: 1.4;">
+                  {{title}}
+                </h1>
+                {{{content}}}
+                </td>
+              </tr>
           <tr>
             <td
               aria-hidden="true"

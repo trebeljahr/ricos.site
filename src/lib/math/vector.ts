@@ -1,4 +1,4 @@
-import { getRotationMatrix } from "./drawHelpers";
+import { getRotationMatrix, getScalingMatrix } from "./drawHelpers";
 import { Matrix } from "./matrix";
 
 const precision = 0.000001;
@@ -81,6 +81,10 @@ export class Vec2 {
     this.x = newX;
     this.y = newY;
     return this;
+  }
+
+  scale(amt: number) {
+    return this.transform(getScalingMatrix(amt, amt));
   }
 
   equals(other: Vec2) {

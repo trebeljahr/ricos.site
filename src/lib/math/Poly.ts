@@ -7,7 +7,10 @@ import {
   getTranslationMatrix,
   toRadians,
 } from "./drawHelpers";
-import Delaunator from "delaunator";
+import {
+  drawBackground,
+  visualizeCollision,
+} from "../../components/collision-detection/helpers";
 
 const randomBetween = (min: number, max: number) => {
   return min + Math.floor(Math.random() * (max - min + 1));
@@ -302,4 +305,109 @@ function isPointInTriangle({
   const v = (dot00 * dot12 - dot01 * dot02) / denom;
 
   return u >= 0 && v >= 0 && u + v < 1;
+}
+
+function sleep(amount: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, amount);
+  });
+}
+
+function getPolyFromIndexList(poly: Polygon, indexList: number[]) {
+  const verts = indexList.reduce((agg, i) => {
+    return [...agg, poly.vertices[i]];
+  }, [] as Vec2[]);
+  return new Polygon(verts, poly.color);
+}
+
+export async function triangulateVisualization(
+  ctx: CanvasRenderingContext2D,
+  poly: Polygon,
+  indexList: number[]
+) {
+  console.log("Running visualization");
+  const vertices = poly.vertices;
+  let j = 0;
+  const foundTriangles: Polygon[] = [];
+
+  while (indexList.length > 3) {
+    if (j++ > 1000) {
+      break;
+    }
+
+    console.log("Checking poly verts");
+    for (let i = 0; i < indexList.length; i++) {
+      drawBackground(ctx);
+      foundTriangles.forEach((tri) => tri.draw(ctx));
+      getPolyFromIndexList(poly, indexList).draw(ctx);
+
+      const a = indexList[i];
+      const b = getItem(indexList, i - 1);
+      const c = getItem(indexList, i + 1);
+      console.log(i, i - 1, i + 1);
+      console.log(a, b, c);
+
+      const va = vertices[a];
+      const vb = vertices[b];
+      const vc = vertices[c];
+
+      const va_to_vb = vb.sub(va);
+      const va_to_vc = vc.sub(va);
+
+      const checkingTri = new Polygon([va, vb, vc], "rgba(50, 50, 250, 0.5)");
+      checkingTri.draw(ctx);
+
+      await sleep(1000);
+
+      if (va_to_vb.perpDot(va_to_vc) < 0) {
+        continue;
+      }
+
+      let isEar = true;
+
+      // Does test ear contain any polygon vertices?
+      for (let j = 0; j < vertices.length; j++) {
+        if (j === a || j === b || j === c) {
+          continue;
+        }
+
+        if (
+          isPointInTriangle({
+            p: vertices[j],
+            triangle: { b: vb, a: va, c: vc },
+          })
+        ) {
+          isEar = false;
+          break;
+        }
+      }
+
+      if (isEar) {
+        foundTriangles.push(
+          new Polygon([va, vb, vc], makeBrighter(poly.color))
+        );
+        indexList.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  drawBackground(ctx);
+  foundTriangles.forEach((tri) => tri.draw(ctx));
+  getPolyFromIndexList(poly, indexList).draw(ctx);
+
+  let va = poly.vertices[indexList[0]];
+  let vb = poly.vertices[indexList[1]];
+  let vc = poly.vertices[indexList[2]];
+
+  const checkingTri = new Polygon([va, vb, vc], "rgba(50, 50, 250, 0.5)");
+  checkingTri.draw(ctx);
+
+  foundTriangles.push(new Polygon([va, vb, vc], makeBrighter(poly.color)));
+
+  await sleep(1000);
+
+  foundTriangles.forEach((tri) => tri.draw(ctx));
+
+  await sleep(1000);
 }

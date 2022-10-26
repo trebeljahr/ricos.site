@@ -368,6 +368,8 @@ Let's define what an "ear" is more formally. An ear is a set of three consecutiv
 
 When an ear is found, we put it into our list of triangles for the triangulation, remove the vertices from the list of vertices to check, and keep looping over the rest of the vertices left and check for another ear. We can keep doing this until just 3 vertices are left – those will form the last ear. In code this would look something like this: 
 
+<EarClipping />
+
 ```typescript
 function triangulate(p: Vec2[]) {
   const n = vertices.length - 1;

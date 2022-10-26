@@ -13,7 +13,6 @@ import {
   checkCollision,
   drawBackground,
   getResponseForCollision,
-  visualizeCollision,
 } from "./helpers";
 
 export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
@@ -69,7 +68,7 @@ export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
       convexityCheck: false,
     });
     return cleanup;
-  }, [cnv, response]);
+  }, [cnv, response, drawTris]);
 
   return (
     <div className="SATWithResponseContainer">

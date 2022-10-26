@@ -100,6 +100,16 @@ export class Polygon {
     });
   }
 
+  edgeMidpoints() {
+    return this.vertices.map((_, i) => {
+      let p1 = this.vertices[i];
+      let p2 = this.vertices[i + 1] || this.vertices[0];
+
+      let midpoint = p1.add(p2.sub(p1).multScalar(0.5));
+      return midpoint;
+    });
+  }
+
   transform(matrix: Matrix) {
     this.vertices = this.vertices.map((vertex) => vertex.transform(matrix));
   }

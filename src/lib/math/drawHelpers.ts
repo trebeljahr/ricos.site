@@ -274,8 +274,9 @@ export function initPolygons(cnv: HTMLCanvasElement, providedPoly?: Polygon) {
 
 export type State = {
   draggedPoly: Polygon | undefined;
-  draggedPoint: { poly: Polygon; point: Vec2 } | undefined;
+  draggedPoint: { poly?: Polygon; point: Vec2 } | undefined;
   rotationChange: number;
+  hoveredPoint: Vec2 | undefined;
 };
 
 function handleRotations(polys: Polygon[], amount: number) {
@@ -290,7 +291,7 @@ export function instrument(
   ctx: CanvasRenderingContext2D,
   polys: Polygon[],
   drawFn: () => void,
-  { convexityCheck = true } = {}
+  { convexityCheck = true, points = [] as Vec2[] } = {}
 ) {
   ctx.canvas.style.touchAction = "none";
 
@@ -299,10 +300,14 @@ export function instrument(
     draggedPoly: undefined,
     draggedPoint: undefined,
     rotationChange: 0,
+    hoveredPoint: undefined,
   };
 
   const selectPolygon = (event: { offsetX: number; offsetY: number }) => {
     const mousePos = new Vec2(event.offsetX, event.offsetY);
+    if (state.hoveredPoint) {
+      state.draggedPoint = { point: state.hoveredPoint };
+    }
     for (let poly of polys) {
       if (poly.hoveredVertex) {
         state.draggedPoint = { poly: poly, point: poly.hoveredVertex };
@@ -333,6 +338,15 @@ export function instrument(
         );
       });
     }
+
+    for (let point of points) {
+      if (mousePos.sub(point).mag() <= 7) {
+        state.hoveredPoint = point;
+      } else if (state.hoveredPoint?.equals(point)) {
+        state.hoveredPoint = undefined;
+      }
+    }
+
     if (state.draggedPoly) {
       state.draggedPoly.transform(
         getTranslationMatrix(event.movementX, event.movementY)
@@ -344,13 +358,13 @@ export function instrument(
       state.draggedPoint.point.transform(
         getTranslationMatrix(event.movementX, event.movementY)
       );
-      if (!state.draggedPoint.poly.isConvex()) {
+      if (!state.draggedPoint.poly?.isConvex()) {
         if (convexityCheck) {
           state.draggedPoint.point.transform(
             getTranslationMatrix(-event.movementX, -event.movementY)
           );
         } else {
-          state.draggedPoint.poly.triangulate();
+          state.draggedPoint.poly?.triangulate();
         }
       }
 
@@ -372,8 +386,12 @@ export function instrument(
 
   const reset = () => {
     state.draggedPoly = undefined;
-    state.draggedPoint && (state.draggedPoint.poly.hoveredVertex = undefined);
+    if (state.draggedPoint?.poly) {
+      state.draggedPoint.poly.hoveredVertex = undefined;
+    }
+
     state.draggedPoint = undefined;
+    state.hoveredPoint = undefined;
   };
 
   const handleRotation = (event: KeyboardEvent) => {
@@ -403,15 +421,17 @@ export function instrument(
   ctx.canvas.addEventListener("pointermove", updateMousePos);
   ctx.canvas.addEventListener("pointerdown", handleMouseDown);
   ctx.canvas.addEventListener("pointerup", handleMouseUp);
-  // ctx.canvas.addEventListener("touchstart", handleTouchStart);
-  // ctx.canvas.addEventListener("touchmove", handleTouchMove);
-  // ctx.canvas.addEventListener("touchend", handleTouchEnd);
 
   let frameId = 0;
   const loop = () => {
     frameId = requestAnimationFrame(() => {
       handleRotations(polys, state.rotationChange);
       drawFn();
+      if (state.hoveredPoint) {
+        ctx.fillStyle = "red";
+        console.log("Drawing...");
+        circle(ctx, state.hoveredPoint, 5);
+      }
       loop();
     });
   };
@@ -424,10 +444,6 @@ export function instrument(
       ctx.canvas.removeEventListener("pointermove", updateMousePos);
       ctx.canvas.removeEventListener("pointerdown", handleMouseDown);
       ctx.canvas.removeEventListener("pointerup", handleMouseUp);
-
-      // ctx.canvas.removeEventListener("touchstart", handleTouchStart);
-      // ctx.canvas.removeEventListener("touchmove", handleTouchMove);
-      // ctx.canvas.removeEventListener("touchend", handleTouchEnd);
       cancelAnimationFrame(frameId);
     },
   };

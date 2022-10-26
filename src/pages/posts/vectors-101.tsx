@@ -6,6 +6,8 @@ import { MDXProps } from "mdx/types";
 import { ImageRenderer } from "../../components/ImageRenderer";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import PostHeader from "../../components/post-header";
+import { NormalDemo } from "../../components/collision-detection/NormalDemo";
+import { DotProductDemo } from "../../components/collision-detection/DotProductDemo";
 
 interface MDXPost extends Post {
   default(props: MDXProps): JSX.Element;
@@ -34,8 +36,8 @@ const PostComponent = () => {
           <MDXProvider
             components={{
               img: ImageRenderer,
-              DotProductDemo: () => null,
-              ShowWhatANormalIs: () => null,
+              DotProductDemo,
+              NormalDemo,
               PointAndLineDemo: () => null,
             }}
           >

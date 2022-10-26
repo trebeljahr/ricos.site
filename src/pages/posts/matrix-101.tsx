@@ -35,7 +35,7 @@ const PostComponent = () => {
             components={{
               img: ImageRenderer,
               DotProductDemo: () => null,
-              ShowWhatANormalIs: () => null,
+              NormalDemo: () => null,
               PointAndLineDemo: () => null,
             }}
           >

@@ -325,7 +325,6 @@ export async function triangulateVisualization(
   poly: Polygon,
   indexList: number[]
 ) {
-  console.log("Running visualization");
   const vertices = poly.vertices;
   let j = 0;
   const foundTriangles: Polygon[] = [];
@@ -335,7 +334,6 @@ export async function triangulateVisualization(
       break;
     }
 
-    console.log("Checking poly verts");
     for (let i = 0; i < indexList.length; i++) {
       drawBackground(ctx);
       foundTriangles.forEach((tri) => tri.draw(ctx));
@@ -344,8 +342,6 @@ export async function triangulateVisualization(
       const a = indexList[i];
       const b = getItem(indexList, i - 1);
       const c = getItem(indexList, i + 1);
-      console.log(i, i - 1, i + 1);
-      console.log(a, b, c);
 
       const va = vertices[a];
       const vb = vertices[b];
@@ -360,6 +356,9 @@ export async function triangulateVisualization(
       await sleep(1000);
 
       if (va_to_vb.perpDot(va_to_vc) < 0) {
+        checkingTri.color = "red";
+        checkingTri.draw(ctx);
+        await sleep(1000);
         continue;
       }
 
@@ -402,12 +401,9 @@ export async function triangulateVisualization(
 
   const checkingTri = new Polygon([va, vb, vc], "rgba(50, 50, 250, 0.5)");
   checkingTri.draw(ctx);
-
   foundTriangles.push(new Polygon([va, vb, vc], makeBrighter(poly.color)));
 
   await sleep(1000);
 
   foundTriangles.forEach((tri) => tri.draw(ctx));
-
-  await sleep(1000);
 }

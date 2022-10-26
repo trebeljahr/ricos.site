@@ -16,7 +16,7 @@ import {
   visualizeCollision,
 } from "./helpers";
 
-export const Triangulation = ({ responseToggle = true }) => {
+export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();
   const [response, setResponse] = useState(!responseToggle);
@@ -49,7 +49,7 @@ export const Triangulation = ({ responseToggle = true }) => {
         poly1.draw(ctx);
         poly1.triangles.forEach((tri) => {
           const collision = checkCollision(tri, poly2);
-          tri.draw(ctx, { collision });
+          drawTris && tri.draw(ctx, { collision });
           if (collision && response) {
             const responseVector = getResponseForCollision(tri, poly2);
             const half = responseVector.multScalar(0.51);

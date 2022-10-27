@@ -6,14 +6,12 @@ import {
   instrument,
   niceGreen,
   starPoints,
-} from "../../lib/math/drawHelpers";
-import { Polygon } from "../../lib/math/Poly";
-import { Vec2 } from "../../lib/math/vector";
-import {
   checkCollision,
   drawBackground,
   getResponseForCollision,
-} from "./helpers";
+} from "../../lib/math/drawHelpers";
+import { Polygon } from "../../lib/math/Poly";
+import { Vec2 } from "../../lib/math/Vector";
 
 export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

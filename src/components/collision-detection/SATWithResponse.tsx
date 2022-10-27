@@ -6,16 +6,12 @@ import {
   instrument,
   niceGreen,
   starPoints,
-} from "../../lib/math/drawHelpers";
-import { Polygon } from "../../lib/math/Poly";
-import {
   checkCollision,
   drawAllProjections,
-  drawArrow,
   drawBackground,
-  getResponseForCollision,
   visualizeCollision,
-} from "./helpers";
+} from "../../lib/math/drawHelpers";
+import { Polygon } from "../../lib/math/Poly";
 
 export const SATWithResponse = ({
   drawProjections = true,

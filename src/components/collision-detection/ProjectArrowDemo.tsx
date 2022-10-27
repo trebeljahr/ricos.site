@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import SimpleReactCanvasComponent from "simple-react-canvas-component";
 import { useActualSize } from "../../hooks/useWindowSize";
-import { circle, drawInfiniteLine, line } from "../../lib/math/drawHelpers";
-import { Vec2 } from "../../lib/math/vector";
-import { drawArrow, drawBackground } from "./helpers";
+import {
+  circle,
+  drawInfiniteLine,
+  line,
+  drawArrow,
+  drawBackground,
+} from "../../lib/math/drawHelpers";
+import { Vec2 } from "../../lib/math/Vector";
 
-export const MatrixDemo = () => {
+export const ProjectArrowDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();
 

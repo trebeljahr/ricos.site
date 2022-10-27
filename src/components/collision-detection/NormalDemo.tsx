@@ -6,10 +6,11 @@ import {
   instrument,
   niceGreen,
   starPoints,
+  checkCollision,
+  drawArrow,
+  drawBackground,
 } from "../../lib/math/drawHelpers";
 import { Polygon } from "../../lib/math/Poly";
-import { Vec2 } from "../../lib/math/vector";
-import { checkCollision, drawArrow, drawBackground } from "./helpers";
 
 export const NormalDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

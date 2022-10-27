@@ -5,9 +5,9 @@ import {
   drawProjection,
   initPolygons,
   instrument,
+  drawBackground,
 } from "../../lib/math/drawHelpers";
-import { Vec2 } from "../../lib/math/vector";
-import { drawBackground } from "./helpers";
+import { Vec2 } from "../../lib/math/Vector";
 
 export const ProjectionDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

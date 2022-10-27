@@ -3,12 +3,12 @@ import SimpleReactCanvasComponent from "simple-react-canvas-component";
 import { useActualSize } from "../../hooks/useWindowSize";
 import {
   drawProjection,
-  getTranslationMatrix,
   initPolygons,
+  colorEdge,
+  drawBackground,
   instrument,
 } from "../../lib/math/drawHelpers";
-import { Vec2 } from "../../lib/math/vector";
-import { colorEdge, drawBackground } from "./helpers";
+import { Vec2 } from "../../lib/math/Vector";
 
 export const ExampleWith2Polygons = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

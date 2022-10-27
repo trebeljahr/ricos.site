@@ -2,21 +2,15 @@ import { useEffect, useState } from "react";
 import SimpleReactCanvasComponent from "simple-react-canvas-component";
 import { useActualSize } from "../../hooks/useWindowSize";
 import {
-  initPolygons,
   instrument,
   niceBlue,
   niceGreen,
-  starPoints,
   toDegrees,
-} from "../../lib/math/drawHelpers";
-import { Polygon } from "../../lib/math/Poly";
-import { Vec2 } from "../../lib/math/vector";
-import {
   drawArrow,
   drawBackground,
   drawCoordinateSystem,
-  getWidthAndHeight,
-} from "./helpers";
+} from "../../lib/math/drawHelpers";
+import { Vec2 } from "../../lib/math/Vector";
 
 export const DotProductDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

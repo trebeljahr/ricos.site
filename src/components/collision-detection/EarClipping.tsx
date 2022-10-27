@@ -6,10 +6,10 @@ import {
   instrument,
   niceGreen,
   starPoints,
+  drawBackground,
 } from "../../lib/math/drawHelpers";
 import { Polygon, triangulateVisualization } from "../../lib/math/Poly";
-import { Vec2 } from "../../lib/math/vector";
-import { drawBackground } from "./helpers";
+import { Vec2 } from "../../lib/math/Vector";
 
 export const EarClipping = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

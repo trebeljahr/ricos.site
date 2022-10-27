@@ -8,7 +8,7 @@ import { SATWithResponse } from "../../components/collision-detection/SATWithRes
 import * as post from "../../content/posts/collision-detection.mdx";
 import { Post } from "../../@types/post";
 import { MDXProps } from "mdx/types";
-import { MatrixDemo } from "../../components/collision-detection/MatrixDemo";
+import { ProjectArrowDemo } from "../../components/collision-detection/ProjectArrowDemo";
 import { Triangulation } from "../../components/collision-detection/Triangulation";
 import { EarClipping } from "../../components/collision-detection/EarClipping";
 import { ImageRenderer } from "../../components/ImageRenderer";
@@ -46,7 +46,7 @@ const PostComponent = () => {
               ProjectionDemo,
               AxisByAxis,
               ExampleWith2Polygons,
-              MatrixDemo,
+              ProjectArrowDemo,
               Triangulation,
               SATWithConcaveShapes: () => (
                 <SATWithResponse

@@ -1,4 +1,4 @@
-import { Vec2 } from "./vector";
+import { Vec2 } from "./Vector";
 import { Matrix } from "./matrix";
 import {
   circle,
@@ -6,11 +6,8 @@ import {
   getScalingMatrix,
   getTranslationMatrix,
   toRadians,
-} from "./drawHelpers";
-import {
   drawBackground,
-  visualizeCollision,
-} from "../../components/collision-detection/helpers";
+} from "./drawHelpers";
 
 const randomBetween = (min: number, max: number) => {
   return min + Math.floor(Math.random() * (max - min + 1));

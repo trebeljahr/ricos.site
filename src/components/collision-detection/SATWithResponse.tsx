@@ -39,7 +39,7 @@ export const SATWithResponse = ({
     if (!ctx) return;
 
     const [poly1, poly2] = initPolygons(
-      cnv,
+      ctx,
       withStar ? new Polygon(starPoints(), niceGreen) : undefined
     );
     const drawFn = () => {

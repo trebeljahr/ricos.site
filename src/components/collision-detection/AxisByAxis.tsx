@@ -24,7 +24,7 @@ export const AxisByAxis = () => {
     let axis = 0;
     let current = 0;
 
-    const polys = initPolygons(cnv);
+    const polys = initPolygons(ctx);
 
     const drawFn = () => {
       if (!ctx || !ctx.canvas) return;

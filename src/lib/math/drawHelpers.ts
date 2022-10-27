@@ -1,6 +1,7 @@
 import { Polygon } from "./Poly";
 import { Matrix } from "./matrix";
 import { Vec2 } from "./vector";
+import { getWidthAndHeight } from "../../components/collision-detection/helpers";
 
 export const toDegrees = (radians: number) => (radians * 180) / Math.PI;
 export const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
@@ -243,7 +244,10 @@ export function starPoints() {
   return pts;
 }
 
-export function initPolygons(cnv: HTMLCanvasElement, providedPoly?: Polygon) {
+export function initPolygons(
+  ctx: CanvasRenderingContext2D,
+  providedPoly?: Polygon
+) {
   const poly1 = providedPoly || new Polygon(regularPolygonVerts(10), niceGreen);
 
   const poly2 = new Polygon(
@@ -257,7 +261,7 @@ export function initPolygons(cnv: HTMLCanvasElement, providedPoly?: Polygon) {
     niceBlue
   );
 
-  const [w, h] = [parseFloat(cnv.style.width), parseFloat(cnv.style.height)];
+  const [w, h] = getWidthAndHeight(ctx);
   const origin = new Vec2(w / 2, h / 2);
   const byScalingUp = getScalingMatrix(w * 0.1, w * 0.1);
 
@@ -429,7 +433,6 @@ export function instrument(
       drawFn();
       if (state.hoveredPoint) {
         ctx.fillStyle = "red";
-        console.log("Drawing...");
         circle(ctx, state.hoveredPoint, 5);
       }
       loop();

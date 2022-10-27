@@ -4,12 +4,19 @@ import { useActualSize } from "../../hooks/useWindowSize";
 import {
   initPolygons,
   instrument,
+  niceBlue,
   niceGreen,
   starPoints,
+  toDegrees,
 } from "../../lib/math/drawHelpers";
 import { Polygon } from "../../lib/math/Poly";
 import { Vec2 } from "../../lib/math/vector";
-import { drawArrow, drawBackground } from "./helpers";
+import {
+  drawArrow,
+  drawBackground,
+  drawCoordinateSystem,
+  getWidthAndHeight,
+} from "./helpers";
 
 export const DotProductDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
@@ -21,34 +28,52 @@ export const DotProductDemo = () => {
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
+    if (!width || !height) return;
 
-    const origin = new Vec2(cnv.width / 2, cnv.height / 2);
+    const scalingFactor = Math.min(width, height) / 3;
+    const origin = new Vec2(width / 2, height / 2);
     const points = [new Vec2(1, 0), new Vec2(1, 1)].map((point) =>
-      point.scale(Math.min(cnv.width, cnv.height) / 2).add(origin)
+      point.scale(scalingFactor).add(origin)
     );
 
     const arrows = points.map((point) => [origin, point]);
 
     const drawFn = () => {
       drawBackground(ctx);
-      arrows.forEach(([a, b]) => {
-        drawArrow(ctx, a, b);
-      });
+      drawCoordinateSystem(ctx, scalingFactor / 10);
+
+      const a = arrows[0][1].sub(origin).scale((1 / scalingFactor) * 10);
+      a.y = -a.y;
+      ctx.strokeStyle = niceGreen;
+      drawArrow(ctx, origin, arrows[0][1]);
+
+      const b = arrows[1][1].sub(origin).scale((1 / scalingFactor) * 10);
+      b.y = -b.y;
+
+      ctx.strokeStyle = niceBlue;
+      drawArrow(ctx, origin, arrows[1][1]);
+      const dot = a.dot(b);
+
       ctx.font = "30px Arial";
-      ctx.fillStyle = "red";
-      ctx.fillText(
-        `${arrows[0][1].sub(origin).dot(arrows[1][1].sub(origin))}`,
-        10,
-        50
-      );
+
+      ctx.fillStyle = "black";
+      ctx.fillText(`${dot.toFixed(1)}`, 10, 50);
+
+      const degrees = toDegrees(Math.acos(dot / (a.mag() * b.mag())));
+      ctx.fillText(`${degrees.toFixed(1)}°`, 10, 100);
+
+      ctx.fillStyle = niceGreen;
+      ctx.fillText(`${a.x.toFixed(1)} ${a.y.toFixed(1)}`, 10, 150);
+      ctx.fillStyle = niceBlue;
+      ctx.fillText(`${b.x.toFixed(1)} ${b.y.toFixed(1)}`, 10, 200);
     };
 
     const { cleanup } = instrument(ctx, [], drawFn, {
       convexityCheck: false,
-      points: [origin, ...points],
+      points,
     });
     return cleanup;
-  }, [cnv]);
+  }, [cnv, width, height]);
 
   return (
     <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />

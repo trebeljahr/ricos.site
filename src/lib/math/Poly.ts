@@ -346,7 +346,7 @@ export async function triangulateVisualization(
 
     for (let i = 0; i < indexList.length; i++) {
       drawBackground(ctx);
-      foundTriangles.forEach((tri) => tri.draw(ctx));
+      // foundTriangles.forEach((tri) => tri.draw(ctx));
       getPolyFromIndexList(poly, indexList).draw(ctx);
 
       const a = indexList[i];
@@ -368,7 +368,7 @@ export async function triangulateVisualization(
       if (va_to_vb.perpDot(va_to_vc) < 0) {
         checkingTri.color = "red";
         checkingTri.draw(ctx);
-        await sleep(1000);
+        await sleep(500);
         continue;
       }
 
@@ -386,6 +386,9 @@ export async function triangulateVisualization(
             triangle: { b: vb, a: va, c: vc },
           })
         ) {
+          checkingTri.color = "red";
+          checkingTri.draw(ctx);
+          await sleep(500);
           isEar = false;
           break;
         }
@@ -402,7 +405,7 @@ export async function triangulateVisualization(
   }
 
   drawBackground(ctx);
-  foundTriangles.forEach((tri) => tri.draw(ctx));
+  // foundTriangles.forEach((tri) => tri.draw(ctx));
   getPolyFromIndexList(poly, indexList).draw(ctx);
 
   let va = poly.vertices[indexList[0]];
@@ -416,4 +419,5 @@ export async function triangulateVisualization(
   await sleep(1000);
 
   foundTriangles.forEach((tri) => tri.draw(ctx));
+  await sleep(1000);
 }

@@ -15,7 +15,7 @@ export const SAT = () => {
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
 
-    const [poly1, poly2] = initPolygons(cnv);
+    const [poly1, poly2] = initPolygons(ctx);
     const drawFn = () => {
       drawBackground(ctx);
       const collision = checkCollision(poly1, poly2);

@@ -1,6 +1,7 @@
 import { Polygon } from "../../lib/math/Poly";
 import { Vec2 } from "../../lib/math/vector";
 import {
+  drawInfiniteLine,
   drawProjection,
   getRotationMatrix,
   getScalingMatrix,
@@ -29,7 +30,6 @@ export function drawArrow(
 
   ctx.save();
   ctx.lineWidth = 3;
-  ctx.strokeStyle = "black";
   line(ctx, from, to);
   line(ctx, to, arrow1);
   line(ctx, to, arrow2);
@@ -78,6 +78,48 @@ export function drawAllProjections(
 
     drawProjection(ctx, [poly1, poly2], p1, p2);
   });
+}
+
+export function getWidthAndHeight(ctx: CanvasRenderingContext2D) {
+  return [
+    parseFloat(ctx.canvas.style.width),
+    parseFloat(ctx.canvas.style.height),
+  ];
+}
+export function drawCoordinateSystem(
+  ctx: CanvasRenderingContext2D,
+  scaleFactor: number
+) {
+  const [w, h] = getWidthAndHeight(ctx);
+
+  ctx.strokeStyle = "black";
+  line(ctx, new Vec2(0, h / 2), new Vec2(w, h / 2));
+  line(ctx, new Vec2(w / 2, 0), new Vec2(w / 2, h));
+  const iterations = Math.floor(Math.max(w, h) / scaleFactor) + 1;
+  for (let i = 1; i < iterations; i++) {
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+
+    line(
+      ctx,
+      new Vec2(0, h / 2 + i * scaleFactor),
+      new Vec2(w, h / 2 + i * scaleFactor)
+    );
+    line(
+      ctx,
+      new Vec2(w / 2 + i * scaleFactor, 0),
+      new Vec2(w / 2 + i * scaleFactor, h)
+    );
+    line(
+      ctx,
+      new Vec2(0, h / 2 - i * scaleFactor),
+      new Vec2(w, h / 2 - i * scaleFactor)
+    );
+    line(
+      ctx,
+      new Vec2(w / 2 - i * scaleFactor, 0),
+      new Vec2(w / 2 - i * scaleFactor, h)
+    );
+  }
 }
 
 function getShadowOverlap(axis: Vec2, pointsA: Vec2[], pointsB: Vec2[]) {

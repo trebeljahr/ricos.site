@@ -30,7 +30,7 @@ export const EarClipping = () => {
     if (!ctx) return;
 
     if (!poly) {
-      const [poly1] = initPolygons(cnv, new Polygon(starPoints(), niceGreen));
+      const [poly1] = initPolygons(ctx, new Polygon(starPoints(), niceGreen));
       poly1.centerOnPoint(new Vec2(cnv.width / 2, cnv.height / 2));
       setPoly(poly1);
       return;

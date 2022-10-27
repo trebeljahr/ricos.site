@@ -23,7 +23,7 @@ export const NormalDemo = () => {
     if (!ctx) return;
 
     const [poly1, poly2] = initPolygons(
-      cnv,
+      ctx,
       new Polygon(starPoints(), niceGreen)
     );
 
@@ -47,7 +47,7 @@ export const NormalDemo = () => {
       convexityCheck: false,
     });
     return cleanup;
-  }, [cnv]);
+  }, [cnv, width, height]);
 
   return (
     <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />

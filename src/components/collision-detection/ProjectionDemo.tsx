@@ -20,7 +20,7 @@ export const ProjectionDemo = () => {
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
 
-    const [poly1] = initPolygons(cnv);
+    const [poly1] = initPolygons(ctx);
 
     const drawFn = () => {
       drawBackground(ctx);

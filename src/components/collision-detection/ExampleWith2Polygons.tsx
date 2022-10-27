@@ -21,7 +21,7 @@ export const ExampleWith2Polygons = () => {
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
 
-    const [poly1, poly2] = initPolygons(cnv);
+    const [poly1, poly2] = initPolygons(ctx);
 
     const drawFn = () => {
       if (!ctx) return;

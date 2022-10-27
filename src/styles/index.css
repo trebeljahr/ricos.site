@@ -244,7 +244,7 @@ h1 {
 h1,
 h2,
 h3 {
-  line-height: 1.1;
+  line-height: 1.6;
 }
 
 h2 {
@@ -341,7 +341,7 @@ h2,
 h1 {
   font-family: "Spartan", sans-serif;
   font-weight: bold;
-  padding-top: 1.5rem;
+  padding-top: 2rem;
   margin-bottom: 0.5rem;
 }
 

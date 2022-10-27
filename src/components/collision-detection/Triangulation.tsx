@@ -31,7 +31,7 @@ export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
     if (!ctx) return;
 
     const [poly1, poly2] = initPolygons(
-      cnv,
+      ctx,
       new Polygon(starPoints(), niceGreen)
     );
 

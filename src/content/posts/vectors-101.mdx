@@ -10,10 +10,6 @@ author:
 
 ---
 
-# {title}
-
-#### {subtitle}
-
 <p>{excerpt}</p>
 
 ## The Confusion between Points and Vectors
@@ -122,6 +118,8 @@ function unit(b: Vec2) {
 }
 ```
 
+<UnitVectorDemo />
+
 ## The "Perp" or Perpendicular 
 
 In 2D getting a vector rotated by exactly 90° is very easy! You can simply swap the x and y components, and then negate the swapped x!
@@ -145,23 +143,28 @@ The reason for this has to do with the trigonometric functions sin and cos – a
 function perp(v: Vec2) {
   return new Vec2(v.y, -v.x);
 }
-``` 
+```
 
 ## The Dot Product
 
-The dot product of a vector is defined as adding up the multiples of it's components. Vectors can have multiple components, x,y,z etc. based on how many dimensions of space the vector is in, for these demos we keep everything super simple, and only worry about vectors in 2D. Those only have 2 components – x and y. 
-
-Dot Products are extremely useful in mathematics and computer graphics. Mainly because they can be used to find out how far along one vector is if it were projected onto another. This property is why we can see it appear in the above formula and why it will appear a lot more throughout this article.
-
-$$ 
-v \, \cdotp a = x_a * x_v + y_a * y_v 
+The dot product of a vector is defined as adding up the multiples of it's components. Vectors can have multiple components, x,y,z etc. based on how many dimensions of space the vector is in, but for this article we keep everything simple, and only worry about vectors in 2D. Those only have 2 components: x and y. It  can be computed like this:
 $$
+v \, \cdotp a = x_a * x_v + y_a * y_v
+$$
+
+Or in code: 
 
 ```typescript
 function dot(v: Vec2) {
   return v.x * v.x + v.y * v.y
 }
-``` 
+```
+Dot Products are extremely useful in mathematics and computer graphics for multiple reasons – they are related to the angles between vectors. The formula for the angle $\theta$ between two vectors is this:
+$$
+\theta = \frac{v \, \cdotp a}{\lVert v \rVert * \lVert a \rVert}
+$$
+
+
 <DotProductDemo />
 
 ## Normals
@@ -223,12 +226,6 @@ export class Vec2 {
 
   add(other: Vec2) {
     return new Vec2(this.x + other.x, this.y + other.y);
-  }
-
-  projectOnLine(A: Vec2, B: Vec2) {
-    const AP = this.sub(A);
-    const AB = B.sub(A);
-    return A.add(AB.multScalar(AP.dot(AB) / AB.mag2()));
   }
 
   unit() {

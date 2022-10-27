@@ -359,7 +359,11 @@ Ear Clipping?
 
 Well, glad you asked ^^
 
-The basic idea is to find "ears" – triangular pieces of the polygon that "stick out", like an ear, and then "clip" them out of the polygon, reducing the problem to a smaller polygon – for which we can then another ear to clip, and so on until only a last triangle is left.
+The basic idea is to find "ears" – triangular pieces of the polygon that "stick out", like an ear, and then "clip" them out of the polygon, reducing the problem to a smaller polygon – for which we can then find another ear to clip, and so on until only a last triangle is left.
+
+<EarClipping />
+
+If you turn off the visualization, you can drag around the polygon vertices to try out different shapes!
 
 Let's define what an "ear" is more formally. An ear is a set of three consecutive vertices, a, b and c, if two conditions are met:
 
@@ -368,7 +372,6 @@ Let's define what an "ear" is more formally. An ear is a set of three consecutiv
 
 When an ear is found, we put it into our list of triangles for the triangulation, remove the vertices from the list of vertices to check, and keep looping over the rest of the vertices left and check for another ear. We can keep doing this until just 3 vertices are left – those will form the last ear. In code this would look something like this: 
 
-<EarClipping />
 
 ```typescript
 function triangulate(p: Vec2[]) {

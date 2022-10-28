@@ -1,4 +1,4 @@
-import { getRotationMatrix, getScalingMatrix } from "./drawHelpers";
+import { cos, getRotationMatrix, getScalingMatrix, sin } from "./drawHelpers";
 import { Matrix } from "./matrix";
 
 const precision = 0.000001;
@@ -78,6 +78,14 @@ export class Vec2 {
   transform(matrix: Matrix) {
     const newX = matrix.a * this.x + matrix.b * this.y + matrix.c;
     const newY = matrix.d * this.x + matrix.e * this.y + matrix.f;
+    this.x = newX;
+    this.y = newY;
+    return this;
+  }
+
+  rotate(θ: number) {
+    const newX = cos(θ) * this.x - sin(θ) * this.y;
+    const newY = sin(θ) * this.x - cos(θ) * this.y;
     this.x = newX;
     this.y = newY;
     return this;

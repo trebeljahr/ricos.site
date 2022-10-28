@@ -28,19 +28,46 @@ export const MagnitudeDemo = () => {
 
     const scalingFactor = Math.min(width, height) / 10;
     const origin = new Vec2(width / 2, height / 2);
-    const a = new Vec2(-1, -1).scale(scalingFactor).add(origin);
+    const a = new Vec2(4, -3).scale(scalingFactor).add(origin);
+    ctx.font = "30px KaTeX_Main";
 
     const drawFn = () => {
       drawBackground(ctx);
       drawCoordinateSystem(ctx, scalingFactor);
 
-      ctx.strokeStyle = "black";
-      drawArrow(ctx, origin, a);
+      ctx.save();
+      ctx.lineWidth = 5;
+      ctx.lineCap = "round";
 
       ctx.strokeStyle = niceBlue;
-      line(ctx, origin, new Vec2(a.x, origin.y), { lineWidth: 3 });
+      line(ctx, origin, new Vec2(a.x, origin.y));
       ctx.strokeStyle = niceGreen;
-      line(ctx, new Vec2(a.x, origin.y), new Vec2(a.x, a.y), { lineWidth: 3 });
+      line(ctx, new Vec2(a.x, origin.y), new Vec2(a.x, a.y));
+
+      ctx.fillStyle = niceBlue;
+      const realX = (a.x - origin.x) / scalingFactor;
+      ctx.fillText(`x = ${realX.toFixed(1)}`, 10, 50);
+
+      ctx.fillStyle = niceGreen;
+      const realY = (a.y - origin.y) / -scalingFactor;
+      ctx.fillText(`y = ${realY.toFixed(1)}`, 10, 100);
+
+      ctx.fillStyle = "black";
+      const mag2 = realX * realX + realY * realY;
+      ctx.fillText(
+        `∥v∥² = ${realX.toFixed(1)}² + ${realY.toFixed(1)}² = ${mag2.toFixed(
+          1
+        )}`,
+        10,
+        150
+      );
+      const mag = Math.sqrt(mag2);
+      ctx.fillText(`∥v∥ = ${mag.toFixed(1)}`, 10, 200);
+
+      ctx.restore();
+
+      ctx.strokeStyle = "black";
+      drawArrow(ctx, origin, a);
     };
 
     const { cleanup } = instrument(ctx, [], drawFn, {

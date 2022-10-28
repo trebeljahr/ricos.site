@@ -10,6 +10,7 @@ import { NormalDemo } from "../../components/collision-detection/NormalDemo";
 import { DotProductDemo } from "../../components/collision-detection/DotProductDemo";
 import { UnitVectorDemo } from "../../components/collision-detection/UnitVectorDemo";
 import { MagnitudeDemo } from "../../components/collision-detection/MagnitudeDemo";
+import { ArbitraryRotationDemo } from "../../components/collision-detection/ArbitraryRotationDemo";
 
 interface MDXPost extends Post {
   default(props: MDXProps): JSX.Element;
@@ -42,6 +43,7 @@ const PostComponent = () => {
               NormalDemo,
               UnitVectorDemo,
               MagnitudeDemo,
+              ArbitraryRotationDemo,
               PointAndLineDemo: () => null,
             }}
           >

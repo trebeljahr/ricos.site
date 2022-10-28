@@ -334,6 +334,42 @@ input {
   font-family: "Noto Sans", Helvetica, sans-serif;
 }
 
+.slider-annotation {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.slider {
+  display: block;
+  width: 100%;
+  height: 20px;
+  margin: auto;
+}
+
+.slider-track {
+  top: 8px;
+  height: 4px;
+  background-color: grey;
+}
+
+.slider-track.slider-track-0 {
+  background-color: grey;
+}
+
+.slider-thumb {
+  cursor: pointer;
+  background: var(--blue);
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  outline: none;
+}
+
+.slider-thumb:hover {
+  box-shadow: 0 0 0 8px var(--ultra-light-blue);
+}
+
 h5,
 h4,
 h3,

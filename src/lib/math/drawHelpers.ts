@@ -31,20 +31,12 @@ export function getSupportPoint(vertices: Vec2[], d: Vec2) {
   return support;
 }
 
-export function line(
-  ctx: CanvasRenderingContext2D,
-  p1: Vec2,
-  p2: Vec2,
-  { lineWidth = 1 } = {}
-) {
-  ctx.save();
+export function line(ctx: CanvasRenderingContext2D, p1: Vec2, p2: Vec2) {
   ctx.beginPath();
-  ctx.lineWidth = lineWidth;
   ctx.moveTo(p1.x, p1.y);
   ctx.lineTo(p2.x, p2.y);
   ctx.stroke();
   ctx.closePath();
-  ctx.restore();
 }
 
 export function insidePoly({ x, y }: Vec2, vertices: Vec2[]) {
@@ -200,8 +192,8 @@ export function getTranslationMatrix(x: number, y: number) {
   ]);
 }
 
-const sin = Math.sin;
-const cos = Math.cos;
+export const sin = Math.sin;
+export const cos = Math.cos;
 
 export function getRotationMatrix(θ: number, { x, y }: Vec2 = new Vec2(0, 0)) {
   return new Matrix([

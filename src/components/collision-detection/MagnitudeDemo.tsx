@@ -2,19 +2,19 @@ import { useEffect, useState } from "react";
 import SimpleReactCanvasComponent from "simple-react-canvas-component";
 import { useActualSize } from "../../hooks/useWindowSize";
 import {
-  circle,
-  drawInfiniteLine,
-  line,
-  drawArrow,
-  drawBackground,
   instrument,
-  drawCoordinateSystem,
   niceBlue,
   niceGreen,
+  drawArrow,
+  drawBackground,
+  drawCoordinateSystem,
+  circle,
+  line,
 } from "../../lib/math/drawHelpers";
+import { makeBrighter } from "../../lib/math/Poly";
 import { Vec2 } from "../../lib/math/Vector";
 
-export const ProjectArrowDemo = () => {
+export const MagnitudeDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();
 
@@ -26,37 +26,26 @@ export const ProjectArrowDemo = () => {
     if (!ctx) return;
     if (!width || !height) return;
 
-    let p1 = new Vec2(200, 200);
-    let p2 = new Vec2(500, 50);
-    let p3 = new Vec2(300, 300);
+    const scalingFactor = Math.min(width, height) / 10;
+    const origin = new Vec2(width / 2, height / 2);
+    const a = new Vec2(-1, -1).scale(scalingFactor).add(origin);
 
-    const scaleFactor = Math.floor(Math.max(width, height) / 30);
     const drawFn = () => {
       drawBackground(ctx);
-      drawCoordinateSystem(ctx, scaleFactor);
+      drawCoordinateSystem(ctx, scalingFactor);
 
       ctx.strokeStyle = "black";
-      drawInfiniteLine(ctx, p1, p3, "black");
+      drawArrow(ctx, origin, a);
 
-      const projection = p2.projectOnLine(p1, p3);
-
-      ctx.strokeStyle = "black";
-      line(ctx, p2, projection);
-
-      ctx.fillStyle = niceGreen;
-      circle(ctx, projection, 3);
-
+      ctx.strokeStyle = niceBlue;
+      line(ctx, origin, new Vec2(a.x, origin.y), { lineWidth: 3 });
       ctx.strokeStyle = niceGreen;
-      drawArrow(ctx, p1, p2);
-
-      ctx.fillStyle = niceBlue;
-      circle(ctx, p1, 5);
-      circle(ctx, p3, 5);
+      line(ctx, new Vec2(a.x, origin.y), new Vec2(a.x, a.y), { lineWidth: 3 });
     };
 
     const { cleanup } = instrument(ctx, [], drawFn, {
-      points: [p1, p2, p3],
       convexityCheck: false,
+      points: [a],
     });
     return cleanup;
   }, [cnv, width, height]);

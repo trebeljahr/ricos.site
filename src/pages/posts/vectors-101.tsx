@@ -8,6 +8,8 @@ import { NewsletterForm } from "../../components/newsletter-signup";
 import PostHeader from "../../components/post-header";
 import { NormalDemo } from "../../components/collision-detection/NormalDemo";
 import { DotProductDemo } from "../../components/collision-detection/DotProductDemo";
+import { UnitVectorDemo } from "../../components/collision-detection/UnitVectorDemo";
+import { MagnitudeDemo } from "../../components/collision-detection/MagnitudeDemo";
 
 interface MDXPost extends Post {
   default(props: MDXProps): JSX.Element;
@@ -38,7 +40,8 @@ const PostComponent = () => {
               img: ImageRenderer,
               DotProductDemo,
               NormalDemo,
-              UnitVectorDemo: () => null,
+              UnitVectorDemo,
+              MagnitudeDemo,
               PointAndLineDemo: () => null,
             }}
           >

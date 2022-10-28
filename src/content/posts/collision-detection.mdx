@@ -1,7 +1,7 @@
 ---
-title: "SAT Collision Detection"
+title: "Collision Detection in 2D"
 subtitle: "An explanation of the Separating Axis Theorem"
-excerpt: 'Have you ever played a computer game and started asking yourself... Wait a second, how does the computer actually know how to stop moving my character when I hit the ground? Or when I run into an obstacle? It is quite awesome that all of this "just" works... but how exactly does the computer do it?'
+excerpt: 'Have you ever played a computer game and started asking yourself... Wait a second, how does the computer actually know how to stop moving my character when I hit the ground? Or when I run into an obstacle? It is quite awesome that all of this "just" works... but how exactly does it work?'
 cover: "/assets/blog/sat.png"
 date: "2022-10-13"
 author:
@@ -20,11 +20,11 @@ In all the demos of this article, you can drag around the polygons (and their po
 
 What you see in the demo above is based on the SAT (Separating Axis Theorem) Algorithm. We'll derive this idea and how it can be used for collision detections, with mathematics and in code, step by step. 
 
-The main idea behind it is simple. 
+The main idea behind it is rather simple. 
 
 >  If you can draw a line *between* two shapes, without touching either of them, then the two shapes do *not* collide. 
 
-If you can find such a line, you know for sure, that the two shapes are separated from each other by that line! And that's why this line can be called a "separating axis", and that's exactly where the name of the theorem comes from. 
+If you can find such a line, you know for sure, that the two shapes are separated from each other by (at least) that line! And that's why this line can be called a "separating axis", and that's exactly where the name of the theorem comes from. 
 
 But how does the computer search for the lines that separate two shapes? 
 It's using shadows!
@@ -35,7 +35,7 @@ In linear algebra a projection is essentially what happens if you were to shine 
 
 The demo's of this article will only be in two dimensions and hence the "wall" becomes a simple line and the object becomes a single point.
 
-But the idea, of shining a light onto that point and tracking where the shadow will fall on the line (or flattening the object onto the line) stays exactly the same. For the next section you should be comfortable with some basic concepts of vectors and "linear algebra", if you aren't [here's a quick summary of the concepts necessary](/posts/vectors-101).
+But the idea, of shining a light onto that point and tracking where the shadow falls on the line stays exactly the same. For the next section you should be comfortable with some basic concepts of vectors and "linear algebra", if you aren't [here's a quick summary of the concepts necessary](/posts/vectors-101).
 
 
 ## Projections
@@ -66,7 +66,7 @@ function projectOnLine(a: Vec2, b: Vec2, c: Vec2) {
 }
 ```
 
-Drawing this out onto the canvas yields a line going through a and b and an arrow p, going from a to c, which casts a shadow on the line from b to a! There's a demo below, where you can try dragging around the points A, B, and C to change the direction, position and length of the vector and the line. For all the demos in the rest of this article, you should be able to drag around the shapes themselves as well as the points making up the shapes. You can also click on shapes to "select" them and then rotate them by holding down the A and D keys on your keyboard! 
+Drawing this out onto the canvas yields a line going through a and b and an arrow p, going from a to c, which casts a shadow on the line from b to a! There's a demo below, where you can try dragging around the points a, b, and c to change the direction, position and length of the vector and the line.
 
 <ProjectArrowDemo />
 

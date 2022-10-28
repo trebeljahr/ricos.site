@@ -26,7 +26,7 @@ export const DotProductDemo = () => {
 
     const scalingFactor = Math.min(width, height) / 3;
     const origin = new Vec2(width / 2, height / 2);
-    const points = [new Vec2(1, 0), new Vec2(1, 1)].map((point) =>
+    const points = [new Vec2(-1, -1), new Vec2(1, -1)].map((point) =>
       point.scale(scalingFactor).add(origin)
     );
 
@@ -51,15 +51,15 @@ export const DotProductDemo = () => {
       ctx.font = "30px Arial";
 
       ctx.fillStyle = "black";
-      ctx.fillText(`${dot.toFixed(1)}`, 10, 50);
+      ctx.fillText(`v ⋅ a = ${dot.toFixed(1)}`, 10, 50);
 
       const degrees = toDegrees(Math.acos(dot / (a.mag() * b.mag())));
-      ctx.fillText(`${degrees.toFixed(1)}°`, 10, 100);
+      ctx.fillText(`θ = ${degrees.toFixed(1)}°`, 10, 100);
 
       ctx.fillStyle = niceGreen;
-      ctx.fillText(`${a.x.toFixed(1)} ${a.y.toFixed(1)}`, 10, 150);
+      ctx.fillText(`v = [${a.x.toFixed(1)}, ${a.y.toFixed(1)}]`, 10, 150);
       ctx.fillStyle = niceBlue;
-      ctx.fillText(`${b.x.toFixed(1)} ${b.y.toFixed(1)}`, 10, 200);
+      ctx.fillText(`a = [${b.x.toFixed(1)}, ${b.y.toFixed(1)}]`, 10, 200);
     };
 
     const { cleanup } = instrument(ctx, [], drawFn, {

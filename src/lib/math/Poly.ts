@@ -34,7 +34,8 @@ function convertHexToRgb(hex: string) {
     ${parseInt(hex.substring(3, 5), 16)},
     ${parseInt(hex.substring(5, 7), 16)})`;
 }
-function makeBrighter(color: string) {
+
+export function makeBrighter(color: string) {
   if (isHex(color)) color = convertHexToRgb(color);
 
   const rgbs = color

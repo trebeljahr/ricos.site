@@ -31,12 +31,20 @@ export function getSupportPoint(vertices: Vec2[], d: Vec2) {
   return support;
 }
 
-export function line(ctx: CanvasRenderingContext2D, p1: Vec2, p2: Vec2) {
+export function line(
+  ctx: CanvasRenderingContext2D,
+  p1: Vec2,
+  p2: Vec2,
+  { lineWidth = 1 } = {}
+) {
+  ctx.save();
   ctx.beginPath();
+  ctx.lineWidth = lineWidth;
   ctx.moveTo(p1.x, p1.y);
   ctx.lineTo(p2.x, p2.y);
   ctx.stroke();
   ctx.closePath();
+  ctx.restore();
 }
 
 export function insidePoly({ x, y }: Vec2, vertices: Vec2[]) {
@@ -95,7 +103,8 @@ export function drawProjectionOnLine(
 export function drawInfiniteLine(
   ctx: CanvasRenderingContext2D,
   p1: Vec2,
-  p2: Vec2
+  p2: Vec2,
+  color?: string
 ) {
   ctx.save();
   const d = p1.sub(p2);
@@ -107,7 +116,7 @@ export function drawInfiniteLine(
   const l1 = p1.add(d.multScalar(len));
   const l2 = p1.add(d.multScalar(-len));
 
-  ctx.strokeStyle = "rgba(100, 100, 100, 0.5)";
+  ctx.strokeStyle = color || "rgba(100, 100, 100, 0.5)";
   line(ctx, l2, l1);
   ctx.restore();
 
@@ -471,6 +480,7 @@ export function drawArrow(
     .transform(getRotationMatrix(-20, to));
 
   ctx.save();
+  ctx.lineCap = "round";
   ctx.lineWidth = 3;
   line(ctx, from, to);
   line(ctx, to, arrow1);
@@ -603,8 +613,19 @@ export function visualizeCollision(
     poly1.translate(halfNeg);
     poly2.translate(half);
   } else {
-    drawArrow(ctx, poly1.centroid(), poly1.centroid().add(halfNeg));
-    drawArrow(ctx, poly2.centroid(), poly2.centroid().add(half));
+    ctx.strokeStyle = "black";
+    drawArrow(
+      ctx,
+      poly1.centroid(),
+      poly1.centroid().add(halfNeg),
+      half.mag() / 2
+    );
+    drawArrow(
+      ctx,
+      poly2.centroid(),
+      poly2.centroid().add(half),
+      half.mag() / 2
+    );
   }
 }
 

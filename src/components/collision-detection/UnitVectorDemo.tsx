@@ -2,19 +2,19 @@ import { useEffect, useState } from "react";
 import SimpleReactCanvasComponent from "simple-react-canvas-component";
 import { useActualSize } from "../../hooks/useWindowSize";
 import {
-  circle,
-  drawInfiniteLine,
-  line,
-  drawArrow,
-  drawBackground,
   instrument,
-  drawCoordinateSystem,
   niceBlue,
   niceGreen,
+  toDegrees,
+  drawArrow,
+  drawBackground,
+  drawCoordinateSystem,
+  circle,
 } from "../../lib/math/drawHelpers";
+import { makeBrighter } from "../../lib/math/Poly";
 import { Vec2 } from "../../lib/math/Vector";
 
-export const ProjectArrowDemo = () => {
+export const UnitVectorDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();
 
@@ -26,37 +26,28 @@ export const ProjectArrowDemo = () => {
     if (!ctx) return;
     if (!width || !height) return;
 
-    let p1 = new Vec2(200, 200);
-    let p2 = new Vec2(500, 50);
-    let p3 = new Vec2(300, 300);
+    const scalingFactor = Math.min(width, height) / 5;
+    const origin = new Vec2(width / 2, height / 2);
+    const a = new Vec2(-1, -1).scale(scalingFactor).add(origin);
 
-    const scaleFactor = Math.floor(Math.max(width, height) / 30);
     const drawFn = () => {
       drawBackground(ctx);
-      drawCoordinateSystem(ctx, scaleFactor);
+      drawCoordinateSystem(ctx, scalingFactor);
+      ctx.fillStyle = makeBrighter(niceGreen);
+      ctx.strokeStyle = "black";
+      circle(ctx, origin, scalingFactor);
+
+      ctx.strokeStyle = niceBlue;
+      drawArrow(ctx, origin, a);
 
       ctx.strokeStyle = "black";
-      drawInfiniteLine(ctx, p1, p3, "black");
-
-      const projection = p2.projectOnLine(p1, p3);
-
-      ctx.strokeStyle = "black";
-      line(ctx, p2, projection);
-
-      ctx.fillStyle = niceGreen;
-      circle(ctx, projection, 3);
-
-      ctx.strokeStyle = niceGreen;
-      drawArrow(ctx, p1, p2);
-
-      ctx.fillStyle = niceBlue;
-      circle(ctx, p1, 5);
-      circle(ctx, p3, 5);
+      const unit = a.sub(origin).unit().scale(scalingFactor);
+      drawArrow(ctx, origin, unit.add(origin));
     };
 
     const { cleanup } = instrument(ctx, [], drawFn, {
-      points: [p1, p2, p3],
       convexityCheck: false,
+      points: [a],
     });
     return cleanup;
   }, [cnv, width, height]);

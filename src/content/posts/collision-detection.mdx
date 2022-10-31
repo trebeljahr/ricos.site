@@ -1,7 +1,7 @@
 ---
 title: "Collision Detection in 2D"
 subtitle: "An explanation of the Separating Axis Theorem"
-excerpt: 'Have you ever played a computer game and started asking yourself... Wait a second, how does the computer actually know how to stop moving my character when I hit the ground? Or when I run into an obstacle? It is quite awesome that all of this "just" works... but how exactly does it work?'
+excerpt: 'Have you ever played a computer game and started asking yourself... Waaaait a second, how does the computer know how to stop moving my character when I hit the ground? Or when I run into an obstacle? It is quite awesome that all of this "just" works... but how exactly does it work?'
 cover: "/assets/blog/sat.png"
 date: "2022-10-13"
 author:
@@ -31,16 +31,16 @@ It's using shadows!
 
 ## Shadows?
 
-In linear algebra a projection is essentially what happens if you were to shine a light onto an object from very, very far away. The object would cast a shadow onto the wall and this shadow on the wall is what is mathematically known as a "projection". You could also think of it as "flattening" the shape with a giant press that is aligned with the line.
+In linear algebra, a projection is essentially what happens if you were to shine a light onto an object from very, very far away. The object would cast a shadow onto the wall and this shadow on the wall is what is mathematically known as a "projection". You could also think of it as "flattening" the shape with a giant press that is aligned with the line.
 
-The demo's of this article will only be in two dimensions and hence the "wall" becomes a simple line and the object becomes a single point.
+The demos of this article will only be in two dimensions and hence the "wall" becomes a simple line and the object becomes a single point.
 
-But the idea, of shining a light onto that point and tracking where the shadow falls on the line stays exactly the same. For the next section you should be comfortable with some basic concepts of vectors and "linear algebra", if you aren't [here's a quick summary of the concepts necessary](/posts/vectors-101).
+But the idea, of shining a light onto that point and tracking where the shadow falls on the line stays the same. For the next section you should be comfortable with some basic concepts of vectors and "linear algebra", if you aren't [here's a quick summary of the concepts necessary](/posts/vectors-101).
 
 
 ## Projections
 
-In case you had to refresh your knowledge on vectors – welcome back! Now that these basic ideas are out of the way, let's tackle casting some shadows! 
+In case you had to refresh your knowledge of vectors – welcome back! Now that these basic ideas are out of the way, let's tackle casting some shadows! 
 
 Luckily there is a mathematical expression for how to calculate a shadow that a point would cast onto a line! 
 
@@ -70,7 +70,7 @@ Drawing this out onto the canvas yields a line going through a and b and an arro
 
 <ProjectArrowDemo />
 
-In a way the above can be done for any 2 vectors. For a line, we needed 2 points to get the direction of the line *and* to shift the result onto the line by adding on the vector/point a!
+In a way, the above can be done for any 2 vectors. For a line, we needed 2 points to get the direction of the line *and* to shift the result onto the line by adding on the vector/point a!
 The whole idea for only two vectors can be expressed more shortly and is also a useful operation to have in general. 
 $$
 proj_b \, a = \frac{a \, \cdotp b}{\lVert b \rVert^2} * b
@@ -83,7 +83,7 @@ function project(a: Vec2, b: Vec2) {
 }
 ```
 
-There is also the idea of using a "scalar" projection. A scalar is "just" a number, and the result of scalar projections are just numbers. A scalar projection calculates the length of the projection of vector a in the direction of vector b. And it can be computed like so:
+There is also the idea of using a "scalar" projection. A scalar is "just" a number, and the result of scalar projections are just numbers. A scalar projection calculates the length of the projection of the vector and in the direction of vector b. And it can be computed like so:
 $$
 s = \lVert a \rVert	* cos(\theta) = a \, \cdotp \hat{b}
 $$
@@ -94,25 +94,25 @@ Notice the little hat on the b, that means that this is [a unit vector](/posts/v
 
 ## Projecting a Whole Polygon
 
-The main idea for the SAT algorithm, is that these projections of points can become very useful, because they can help determine whether or not a single ray of light could shine through in between two polygons. 
+The main idea for the SAT algorithm is that these projections of points can become very useful because they can help determine whether or not a single ray of light could shine through in between two polygons. 
 
 The cool thing is, if there *could* be a light ray between two polygons, that means that they can not intersect! 
 
 Otherwise, how could the light get through?
 
-This means, that if there is light between the shadows of two polygons, there also has to be a separating axis (the ray of light itself!) and we can safely say that the two polygons don't touch each other! Because we can shine a light through in between them. 
+This means, that if there is some light between the shadows of two polygons, there also has to be a separating axis (the ray of light itself!) and we can safely say that the two polygons don't touch each other! Because we can shine a light through in between them. 
 
 So the goal now is this: find two shadows (projections) that don't overlap for the two polygons. If all the shadows overlap, then the two polygons will overlap.
 
-However to get there, we first need to be able to project a whole polygon onto a line. Casting the shadow for a whole object, not just for a single point... 
+However, to get there, we first need to be able to project a whole polygon onto a line. Casting the shadow for a whole object, not just for a single point... 
 
-Luckily, a polygon is just a set of points. Usually the points of a polygon are called vertices in computer graphics. The singular vertices is vertex. If we were to simply project all the vertices of a polygon we would still have to figure out which points are the "left" and "right" edge of the shadow.
+Luckily, a polygon is just a set of points. Usually, the points of a polygon are called vertices in computer graphics. If we were to simply project all the vertices of a polygon we would still have to figure out which points are the "left" and "right" edge of the shadow.
 
 There are multiple approaches to do this, but one I find particularly fascinating and which is the one used down below in the demos is that of using a support function. 
 
 Essentially a support function finds a point among a set of points (here the vertices of the polygon we want to project), that is furthest along in a particular direction. 
 
-The trick here is to run the polygon through the finding of support points for the two different directions of the line, which will result in the two points furthest along these directions. In the code below for the getting the support point in a specific direction notice, how we use the dot product to keep track of the distance for the scalar projections between of the vertex onto b?
+The trick here is to run the polygon through the finding of support points for the two different directions of the line, which will result in the two points being furthest along these directions. In the code below for getting the support point in a specific direction notice, how we use the dot product to keep track of the distance for the scalar projections between the vertex onto b.
 
 ```js
 export function getSupportPoint(vertices: Vec2[], d: Vec2) {
@@ -156,13 +156,13 @@ export function drawProjection(
   const origin = new Vec2(parseFloat(ctx.canvas.style.width) / 2, parseFloat(ctx.canvas.style.height) / 2);
   const toOrigin = getTranslationMatrix(origin.x, origin.y);
  
-  // use translation matrix + scaling to create far apart line points
-  // which goes through origin in the middle of the canvas 
+  // use translation matrix + scaling to create far-apart line points
+  // which goes through the origin in the middle of the canvas 
   const len = Math.max(parseFloat(ctx.canvas.style.width), parseFloat(ctx.canvas.style.height));
   const l1 = d2.unit().multScalar(len).transform(toOrigin);
   const l2 = d2.unit().multScalar(-len).transform(toOrigin);
 
-  // draw line onto which should be projected
+  // draw the line onto which should be projected
   ctx.strokeStyle = "rgba(100, 100, 100, 0.5)";
   line(ctx, l2, l1);
   
@@ -170,7 +170,7 @@ export function drawProjection(
   const s1 = getSupportPoint(poly.vertices, d1);
   const s2 = getSupportPoint(poly.vertices, d2);
   
-  // get projection for each support point
+  // get a projection for each support point
   const projectedS1 = projectOnLine(l1, l2, s1);
   const projectedS2 = projectOnLine(l1, l2, s2);
   
@@ -222,14 +222,14 @@ There are also versions of this test, which use the dot product to determine how
 
 ## The Last Idea
 
-How should we pick the lines that we project onto? Isn't there an infinity of possible lines we could chose from? 
+How should we pick the lines that we project onto? Isn't there an infinity of possible lines we could choose from? 
 
 Luckily for us, there is a last insight for the SAT algorithm to work, namely that we only have to check a single axis for every edge of the polygons we want to check for collisions. 
 Namely, need to check each of the normals of the edges, and see if the shadows projected onto that normal overlap. You can see that in the example below, where we are slowly cycling through the different normals, one by one! 
 
-The only thing we are interested in from the normal is the direction, so we displace it towards the origin and draw a line passing in the same general direction that the normal was pointing in. Usually normals would be directly on the edge of the polygon. 
+The only thing we are interested in from the normal is the direction, so we displace it towards the origin and draw a line passing in the same general direction that the normal was pointing in. Usually, normals would be directly on the edge of the polygon. 
 
-The edge to which the normal belongs to is colored yellow in the example and you can see how the line drawn through the origin is always perpendicular to the yellow edge (because the direction is taken from the normal that has to be the case)!
+The edge to which the normal belongs is colored yellow in the example and you can see how the line drawn through the origin is always perpendicular to the yellow edge (because the direction is taken from the normal that has to be the case)!
 
 <AxisByAxis />
 
@@ -237,13 +237,13 @@ In the above example, if you make the shapes overlap, what do you notice about t
 
 ## Complete SAT
 
-The loop we did, step by step with a delay above was just for visualization purposes, instead we can just check all of the normals at once and see: if all shadows overlap (and show up in red), then the shapes also have to overlap too and we can color them red! That's the whole meaning behind the separating axis theorem.
+The loop we did, step by step with a delay above was just for visualization purposes, instead, we can just check all of the normals at once and see: if all shadows overlap (and show up in red), then the shapes also have to overlap too and we can color them red! That's the whole meaning behind the separating axis theorem.
 
 <SAT/>
 
-This is all there is to a simple SAT collision detection algorithm. To sum up the algorithm: Cast shadows (projections) onto the normals of two polygons and check if the projections overlap. If you find a pair of projections that doesn't overlap, there is no collision. If all projections overlap, there is a collision.
+This is all there is to a simple SAT collision detection algorithm. To sum up the algorithm: Cast shadows (projections) onto the normals of two polygons and check if the projections overlap. If you find a pair of projections that don't overlap, there is no collision. If all projections overlap, there is a collision.
 
-Now you might say, wait a second... we don't yet prevent the shapes from intersecting with each other, do we? 
+Now you might say, wait for a second... we don't yet prevent the shapes from intersecting with each other, do we? 
 
 And you would be right. 
 
@@ -255,7 +255,7 @@ This second problem is usually known as calculating a collision response. So, ho
 
 Luckily for us, SAT is relatively easy to adapt to give a collision response – namely, if you find that all shadows (and therefore the shapes) overlap, you can find the pair of shadows that overlaps the least, and push the two shapes apart in that direction until the shadows don't touch anymore! 
 
-This idea of the "overlap" between the two shadows is related to an idea known as the MTV – the Minimum Translation Vector. In a way the smallest overlap of the shadows of the two polygons projected onto their normals is a vector that tells us exactly how far and in which direction the two shapes have to move so that at least one pair of shadows stops overlapping. It represents the minimum amount of work necessary to push the shapes apart. So we just apply half of the vector as a translation transformation to one shape and the opposite of that to the other shape. 
+This idea of the "overlap" between the two shadows is related to an idea known as the MTV – the Minimum Translation Vector. In a way, the smallest overlap of the shadows of the two polygons projected onto their normals is a vector that tells us exactly how far and in which direction the two shapes have to move so that at least one pair of shadows stops overlapping. It represents the minimum amount of work necessary to push the shapes apart. So we just apply half of the vector as a translation transformation to one shape and the opposite of that to the other shape. 
 
 Let's see how we could implement that idea in code:
 
@@ -298,7 +298,7 @@ export function getResponseForCollision(poly1: Polygon, poly2: Polygon) {
     // get the overlap between the shadows
     const overlap = getShadowOverlap(normal, poly1.vertices, poly2.vertices);
     const absOverlap = Math.abs(overlap);
-    // check if overlap is smallest so far
+    // check if the overlap is the smallest so far
     if (absOverlap < Math.abs(smallestOverlap)) {
       smallestOverlap = overlap;
       axis = normal.copy();
@@ -319,14 +319,14 @@ Then we can use that getResponseForCollision function like so:
 const responseVector = getResponseForCollision(poly1, poly2);
 // scale MTV by 0.51 or -0.51 respectively.
 const half = responseVector.multScalar(0.51);
-const halfNeg = responseVector.multScalar(-0.51);
+const oppositeHalf = responseVector.multScalar(-0.51);
 if (response) {
-  // if response should happen, translate polygons by MTVs
-  poly1.translate(halfNeg);
+  // if a response should happen, translate polygons by MTVs
+  poly1.translate(oppositeHalf);
   poly2.translate(half);
 } else {
-  // if response should not happen – draw the MTV arrows
-  drawArrow(ctx, poly1.centroid(), poly1.centroid().add(halfNeg));
+  // if a response should not happen – draw the MTV arrows
+  drawArrow(ctx, poly1.centroid(), poly1.centroid().add(oppositeHalf));
   drawArrow(ctx, poly2.centroid(), poly2.centroid().add(half));
 }
 ```
@@ -341,17 +341,17 @@ Cool, so we are done now, right? Well, check this out:
 
 ## The Problem of Concavity
 
-Well... that didn't go to well huh? The problem is that what you just saw were so called "concave" shapes... All the polygons you've seen so far up to this point were "convex", and I took some precautions so that this is always the case.
+Well... that didn't go too well huh? The problem is that what you just saw were so-called "concave" shapes... All the polygons you've seen so far up to this point were "convex", and I took some precautions so that this is always the case.
 
-Convex and concave are just two words to express that something bulges outwards or inwards. I remember them with the word "cave" as in con*cave*. A cave goes inward, so does a concave object. In other words, concave shapes are shapes that have some kind of indentation in them. A star would be a concave shape, or something looking like a V or U. 
+Convex and concave are just two words to express that something bulges outwards or inwards. I remember them with the word "cave" as in con*cave*. A cave goes inward, and so does a concave object. In other words, concave shapes are shapes that have some kind of indentation in them. A star would be a concave shape, or something looking like a V or U. 
 
-To handle collisions with concave shapes is very tricky... Usually people just don't bother and chop their concave shapes up into simpler, convex shapes and then run collision detection algorithms on them. 
+To handle collisions with concave shapes is very tricky... Usually, people just don't bother and chop their concave shapes up into simpler, convex shapes and then run collision detection algorithms on them. 
 
 This is what we are also going to do. Most people use triangles as the simpler polygon base and they use a process called triangulation to do that. Triangulation is not a trivial problem and has more than one solution! Let's look at one of them known as the "Ear Clipping Algorithm".
 
 ## The Ear Clipping Algorithm *or* how to triangulate Polygons
 
-Triangulating Polygons is a tough problem, because there are so many weird edge cases to deal with. There have been whole papers written about how to efficiently do it (see [resources](#triangulation-resources) below) and I won't go into too much detail here, and neither will I attempt to fix all the possible edge cases. 
+Triangulating Polygons is a tough problem because there are so many weird edge cases to deal with. There have been whole papers written about how to efficiently do it (see [resources](#triangulation-resources) below) and I won't go into too much detail here, and neither will I attempt to fix all the possible edge cases. 
 
 The algorithm we are going to use for triangulating concave shapes into a bunch of convex triangles is known as "Ear Clipping".
 
@@ -365,7 +365,7 @@ The basic idea is to find "ears" – triangular pieces of the polygon that "stic
 
 If you turn off the visualization, you can drag around the polygon vertices to try out different shapes!
 
-Let's define what an "ear" is more formally. An ear is a set of three consecutive vertices, a, b and c, if two conditions are met:
+Let's define what an "ear" is more formally. An ear is a set of three consecutive vertices, a, b and c if two conditions are met:
 
 1. The interior angle between edge $\overline{ab}$, and $\overline{bc}$ has to be smaller than 180°
 2. The triangle formed by the three vertices can not contain any other vertices of the polygon. 
@@ -412,19 +412,19 @@ function triangulate(p: Vec2[]) {
 
       let isEar = true;
       for (let j = 0; j < vertices.length; j++) {
-        // skip if vertex is part of ear
+        // skip if the vertex is part of the ear
         if (j === a || j === b || j === c) {
           continue;
         }
 
-        // check if vertex is in triangle
+        // check if the vertex is in the triangle
         if (isPointInTriangle({ p: vertices[j], triangle: { b: vb, a: va, c: vc } })) {
           isEar = false;
           break;
         }
       }
 
-      // add ear vertex indeces to triangulation
+      // add ear vertex indices to triangulation
       if (isEar) {
         triangles[triangleIndexCount++] = b;
         triangles[triangleIndexCount++] = a;
@@ -482,19 +482,19 @@ For now, this is it, with something like the above, you could have collision det
 
 However... Collision detection is a tricky business and there are still edge cases where the above breaks down. 
 
-The first that comes to mind are curved shapes – anything that doesn't really have vertices doesn't work with the above algorithms and we would need to convert it first. Also the triangulation implemented doesn't handle holes and breaks if the interior angle between two edges of a polygon is exactly equal to 180° or the polygon intersects with itself. Most of these problems could be tackled simply by using a better triangulation algorithm, but this article is way too long already. In case you are curious I have a list of resources down below!
+The first that comes to mind: Curved shapes. Anything that doesn't have vertices doesn't work with the above algorithms and we would need to convert it first. Also, the triangulation implemented doesn't handle holes and breaks if the interior angle between two edges of a polygon is exactly equal to 180° or the polygon intersects with itself. Most of these problems could be tackled simply by using a better triangulation algorithm, but this article is way too long already. In case you are curious I have a list of resources down below!
 
-Another problem could be objects or shapes that move very very quickly. If they move quickly enough and the step size is bigger than the thing they should collide with, they could simply pass through (or "over") the other object. In games, usually bullets and thin walls would show this kind of behavior and problem. It's like the shape were "tunneling" through the other shape, because it moved so fast that there never was a position update where the two were overlapping... 
+Another problem could be objects or shapes that move very very quickly. If they move quickly enough and the step size is bigger than the thing they should collide with, they could simply pass through (or "over") the other object. In games, usually bullets and thin walls would show this kind of behavior and problem. It's like the shape were "tunneling" through the other shape because it moved so fast that there never was a position update where the two were overlapping... 
 
-Yet another problem is that of performance when there are lots of things that could potentially collide with each other. I mean, all of the above code is written for clarity rather than performance so there are improvements to be gained in "simply" rewriting the collision code we have, but the problem of checking collisions for many shapes at once still remains $O(n^2)$. Which is really bad... 
+Yet another problem is that of performance when there are lots of things that could potentially collide with each other. I mean, all of the above code is written for clarity rather than performance so there are improvements to be gained in "simply" rewriting the collision code we have, but the problem of checking collisions for many shapes at once remains $O(n^2)$. Which is bad... 
 
-What if n is more than 2? If it is 10, 100, 1000? Collision detection algorithms of any kind are expensive and if we have to check every single polygon against every single other polygon the amount of computations we have to do grows exponentially which will break very soon. 
+What if n is more than 2? If it is 10, 100, or 1000? Collision detection algorithms of any kind are expensive and if we have to check every single polygon against every single other polygon the amount of computations we have to do grows exponentially which will break very soon. 
 
-This really means we have to use some clever data-structure or algorithm to reduce the amount of collisions to check drastically. 
+This means we have to use some clever data structure or algorithm to reduce the number of collisions to check drastically. 
 
-One way to do so would be to divide up the "space" into separate regions or "buckets". Because two shapes which are very very far apart can not intersect (unless one of them is really really big) we could cut down on the number of collision detections we actually have to do by a lot, because only things from the same bucket could potentially collide with one another. 
+One way to do so would be to divide up the "space" into separate regions or "buckets". Because two shapes that are very very far apart can not intersect (unless one of them is big) we could cut down on the number of collision detections we have to do by a lot, because only things from the same bucket could potentially collide with one another. 
 
-The general algorithm that could be used for that is called a Quadtree (in 2D) or and Octree (in 3d). Here's an image of the idea in 3D:
+The general algorithm that could be used for that is called a Quadtree (in 2D) or an Octree (in 3d). Here's an image of the idea in 3D:
 
 ![octree visualization](/assets/blog/octree.png)
 

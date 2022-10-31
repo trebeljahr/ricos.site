@@ -36,7 +36,7 @@ const PostComponent = () => {
               img: ImageRenderer,
               DotProductDemo: () => null,
               NormalDemo: () => null,
-              PointAndLineDemo: () => null,
+              PointAndVectorDemo: () => null,
             }}
           >
             <Vectors101Post />

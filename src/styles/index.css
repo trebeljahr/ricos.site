@@ -340,6 +340,10 @@ input {
   justify-content: space-between;
 }
 
+canvas {
+  margin-bottom: 1rem;
+}
+
 .slider {
   display: block;
   width: 100%;

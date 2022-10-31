@@ -31,7 +31,7 @@ const PostComponent = () => {
   return (
     <Layout title={title + " – " + subtitle} description={excerpt}>
       <main>
-        <article className="main-section">
+        <article className="main-section main-text">
           <PostHeader
             subtitle={subtitle}
             title={title}

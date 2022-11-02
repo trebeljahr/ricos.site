@@ -1,7 +1,7 @@
 ---
 title: "Collision Detection in 2D"
 subtitle: "An explanation of the Separating Axis Theorem"
-excerpt: 'Have you ever played a computer game and started asking yourself... Waaaait a second, how does the computer know how to stop moving my character when I hit the ground? Or when I run into an obstacle? It is quite awesome that all of this "just" works... but how exactly does it work?'
+excerpt: 'Have you ever played a computer game and started asking yourself... Wait a minute, how does the computer know how to stop moving my character when I hit the ground? Or when I run into an obstacle? It is quite awesome that all of this "just" works... but how exactly does it work?'
 cover: "/assets/blog/sat.png"
 date: "2022-10-13"
 author:
@@ -12,11 +12,11 @@ author:
 
 <p>{excerpt}</p>
 
-This post is going to answer that question, by explaining one particular algorithm that can be used to tackle this sort of problem – the SAT Algorithm. 
-
-In all the demos of this article, you can drag around the polygons (and their points), as well as rotate polygons around their centers by pressing the A or D keys! 
+This post is going to answer that question, by explaining one particular algorithm based on the SAT theorem.
 
 <Triangulation drawTris={false} responseToggle={false}/>
+
+In all the demos of this article, you can drag around the polygons (and their points), as well as rotate polygons around their centers by pressing the A or D keys! 
 
 What you see in the demo above is based on the SAT (Separating Axis Theorem) Algorithm. We'll derive this idea and how it can be used for collision detections, with mathematics and in code, step by step. 
 
@@ -39,8 +39,6 @@ But the idea, of shining a light onto that point and tracking where the shadow f
 
 
 ## Projections
-
-In case you had to refresh your knowledge of vectors – welcome back! Now that these basic ideas are out of the way, let's tackle casting some shadows! 
 
 Luckily there is a mathematical expression for how to calculate a shadow that a point would cast onto a line! 
 

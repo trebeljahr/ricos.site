@@ -418,7 +418,7 @@ code {
 
 .SATWithResponseContainer > button {
   position: absolute;
-  bottom: 20px;
+  bottom: 40px;
   right: 20px;
 }
 
@@ -439,6 +439,11 @@ code {
   width: 1.5rem;
   height: 1.5rem;
   position: relative;
+}
+
+.post-header > h1,
+.post-header > h2 {
+  padding: 0;
 }
 
 .post-meta {

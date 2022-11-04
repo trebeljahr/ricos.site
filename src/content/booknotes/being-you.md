@@ -7,7 +7,7 @@ bookAuthor: "Anil Seth"
 rating: 7
 done: true
 tags: ["mind", "non-fiction", "curiosity", "thought-provoking", "science", "pop-science", "consciousness"]
-summary: false
+summary: true
 detailedNotes: true
 amazonLink: ""
 

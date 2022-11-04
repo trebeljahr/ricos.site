@@ -14,7 +14,7 @@ amazonLink: ""
 
 ## Summary
 
-This book, like it's name suggests, is an introduction to the "Ancient Art of Stoic Joy". It's a good primer to then go and read the other sources, like [Marcus Aurelius's Meditations](/booknotes/meditations), or [Lucius Senecas Letters from a Stoic](/booknotes/letters-from-a-stoic) or [The Manual](/booknotes/the-manual). 
+This book, like it's name suggests, is an introduction to the "Ancient Art of Stoic Joy". It's a good primer to then go and read the other sources, like [Marcus Aurelius's Meditations](/booknotes/meditations), or [Lucius Senecas Letters from a Stoic](/booknotes/letters-from-a-stoic) or [The Manual for Living](/booknotes/manual-for-living). 
 
 The people behind Stoicism were a diverse set of characters, from poor paupers and slaves, all the way up to Roman emperors, and this book gives an introduction to their thought and lives and how it all connected together. As such it is a solid introduction, but if you already know a lot of things about Stoicism, this is not going to offer much new insight into the ideas behind it. 
 

@@ -16,7 +16,7 @@ This post is going to answer that question, by explaining one particular algorit
 
 <Triangulation drawTris={false} responseToggle={false}/>
 
-In all the demos of this article, you can drag around the polygons (and their points), as well as rotate polygons around their centers by pressing the A or D keys! 
+*In all the demos of this article, you can drag around the polygons (and their points), as well as rotate polygons around their centers by pressing the A or D keys.* 
 
 What you see in the demo above is based on the SAT (Separating Axis Theorem) Algorithm. We'll derive this idea and how it can be used for collision detections, with mathematics and in code, step by step. 
 
@@ -24,25 +24,25 @@ The main idea behind it is rather simple.
 
 >  If you can draw a line *between* two shapes, without touching either of them, then the two shapes do *not* collide. 
 
-If you can find such a line, you know for sure, that the two shapes are separated from each other by (at least) that line! And that's why this line can be called a "separating axis", and that's exactly where the name of the theorem comes from. 
+If you can find such a line, you know for sure, that the two shapes are separated from each other by (at least) that line. And that's why this line can be called a "separating axis", and that's exactly where the name of the theorem comes from. 
 
 But how does the computer search for the lines that separate two shapes? 
-It's using shadows!
+It's using shadows.
 
 ## Shadows?
 
-In linear algebra, a projection is essentially what happens if you were to shine a light onto an object from very, very far away. The object would cast a shadow onto the wall and this shadow on the wall is what is mathematically known as a "projection". You could also think of it as "flattening" the shape with a giant press that is aligned with the line.
+If you shine a light onto an object from very, very far away and track where the shadow falls on a wall, you get what is mathematically known as a "projection". Projections are a useful concept in linear algebra and we need them for the SAT algorithm. 
 
-The demos of this article will only be in two dimensions and hence the "wall" becomes a simple line and the object becomes a single point.
-
-But the idea, of shining a light onto that point and tracking where the shadow falls on the line stays the same. For the next section you should be comfortable with some basic concepts of vectors and "linear algebra", if you aren't [here's a quick summary of the concepts necessary](/posts/vectors-101).
+For the next section you should be comfortable with some basic concepts of vectors, if you aren't [here's a summary of the concepts necessary](/posts/vectors-101).
 
 
 ## Projections
 
-Luckily there is a mathematical expression for how to calculate a shadow that a point would cast onto a line! 
+There is a mathematical expression for how to calculate where that projection (shadow) of a point (object) would fall on a line (wall).
 
-Given the Points a, b, and c, where c is the point we want to project and a and b are the two points defining the line $\overline{ab}$, we can find the projection of c onto the line $\overline{ab}$ like so: 
+<ProjectArrowDemo />
+
+Given the Points $a$, $b$, and $c$, where $c$ is the point we want to project and $a$ and $b$ are the two points defining the line $\overline{ab}$, we can find the projection of $c$ onto the line $\overline{ab}$ like so: 
 
 $$
 p = c - a
@@ -64,11 +64,9 @@ function projectOnLine(a: Vec2, b: Vec2, c: Vec2) {
 }
 ```
 
-Drawing this out onto the canvas yields a line going through a and b and an arrow p, going from a to c, which casts a shadow on the line from b to a! There's a demo below, where you can try dragging around the points a, b, and c to change the direction, position and length of the vector and the line.
+Drawing this out onto the canvas yields a line going through $a$ and $b$ and an arrow $p$, going from $a$ to $c$, which casts a shadow on the line from $b$ to $a$. 
 
-<ProjectArrowDemo />
-
-In a way, the above can be done for any 2 vectors. For a line, we needed 2 points to get the direction of the line *and* to shift the result onto the line by adding on the vector/point a!
+The above can be done for any 2 vectors. For a line, we needed 2 points to get the direction of the line *and* to shift the result onto the line by adding on the vector/point a.
 The whole idea for only two vectors can be expressed more shortly and is also a useful operation to have in general. 
 $$
 proj_b \, a = \frac{a \, \cdotp b}{\lVert b \rVert^2} * b
@@ -81,30 +79,26 @@ function project(a: Vec2, b: Vec2) {
 }
 ```
 
-There is also the idea of using a "scalar" projection. A scalar is "just" a number, and the result of scalar projections are just numbers. A scalar projection calculates the length of the projection of the vector and in the direction of vector b. And it can be computed like so:
+There is also the idea of using a *scalar* projection. A scalar is *just* a number, and the result of scalar projections are just numbers. A scalar projection calculates the length of the projection of the vector and in the direction of vector b. And it can be computed like so:
 $$
 s = \lVert a \rVert	* cos(\theta) = a \, \cdotp \hat{b}
 $$
-Notice the little hat on the b, that means that this is [a unit vector](/posts/vectors-101)!
+Notice the little hat on the b, that means that this is [a unit vector](/posts/vectors-101).
 
 
 
 
 ## Projecting a Whole Polygon
 
-The main idea for the SAT algorithm is that these projections of points can become very useful because they can help determine whether or not a single ray of light could shine through in between two polygons. 
+In the SAT Algorithm the projections of the polygons determine whether or not a single ray of light could shine through in between them. If there is such a ray of light, the two can't collide. Otherwise, how could the light get through?
 
-The cool thing is, if there *could* be a light ray between two polygons, that means that they can not intersect! 
+The ray of light *is* the separating axis.
 
-Otherwise, how could the light get through?
-
-This means, that if there is some light between the shadows of two polygons, there also has to be a separating axis (the ray of light itself!) and we can safely say that the two polygons don't touch each other! Because we can shine a light through in between them. 
-
-So the goal now is this: find two shadows (projections) that don't overlap for the two polygons. If all the shadows overlap, then the two polygons will overlap.
+So the goal is easier now: For the two polygons we only need to find two shadows (projections) that don't overlap to determine that they don't collide.
 
 However, to get there, we first need to be able to project a whole polygon onto a line. Casting the shadow for a whole object, not just for a single point... 
 
-Luckily, a polygon is just a set of points. Usually, the points of a polygon are called vertices in computer graphics. If we were to simply project all the vertices of a polygon we would still have to figure out which points are the "left" and "right" edge of the shadow.
+Luckily, a polygon is just a set of points. Usually, the points of a polygon are called vertices in computer graphics. If we were to project all the vertices of a polygon we would still have to figure out which points are the "left" and "right" edge of the shadow.
 
 There are multiple approaches to do this, but one I find particularly fascinating and which is the one used down below in the demos is that of using a support function. 
 
@@ -114,23 +108,18 @@ The trick here is to run the polygon through the finding of support points for t
 
 ```js
 export function getSupportPoint(vertices: Vec2[], d: Vec2) {
-  // initialize variables
   let highest = -Infinity;
   let support = new Vec2(0, 0);
   
-  // loop over the vertices of the polygon
   for (let vertex of vertices) {
-    // compute the dot product between the vertex and the direction
     const dot = vertex.dot(d);
 	
-    // keep track of the highest dot product and thereby the furthest point along the direction
     if (dot > highest) {
       highest = dot;
       support = vertex;
     }
   }
   
-  // return the point with the highest dot product with the direction!
   return support;
 }
 ```

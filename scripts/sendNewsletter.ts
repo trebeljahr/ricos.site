@@ -12,7 +12,7 @@ import rehypePresetMinify from "rehype-preset-minify";
 import rehypeStringify from "rehype-stringify";
 import matter from "gray-matter";
 
-const newsletterNumber = 3;
+const newsletterNumber = 4;
 const LIVE_HOST = "https://trebeljahr.com";
 
 const HOST =

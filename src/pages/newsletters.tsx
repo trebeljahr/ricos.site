@@ -1,5 +1,5 @@
 import Layout from "../components/layout";
-import { getAllNewsletters, getAllPosts } from "../lib/api";
+import { getAllNewsletters } from "../lib/api";
 import Link from "next/link";
 import { ToTopButton } from "../components/ToTopButton";
 import { NewsletterForm } from "../components/newsletter-signup";

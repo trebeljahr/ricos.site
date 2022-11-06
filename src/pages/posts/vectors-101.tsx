@@ -13,6 +13,7 @@ import { MagnitudeDemo } from "../../components/collision-detection/MagnitudeDem
 import { ArbitraryRotationDemo } from "../../components/collision-detection/ArbitraryRotationDemo";
 import { PointAndVectorDemo } from "../../components/collision-detection/PointAndVectorDemo";
 import { SinAndCosineDemo } from "../../components/collision-detection/SinAndCosineDemo";
+import { ToggleCode } from "../../components/ToggleCode";
 
 interface MDXPost extends Post {
   default(props: MDXProps): JSX.Element;
@@ -41,6 +42,7 @@ const PostComponent = () => {
           <MDXProvider
             components={{
               img: ImageRenderer,
+              pre: ToggleCode,
               DotProductDemo,
               NormalDemo,
               UnitVectorDemo,

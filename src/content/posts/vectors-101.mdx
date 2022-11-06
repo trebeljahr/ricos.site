@@ -1,9 +1,9 @@
 ---
-title: "Vectors 101"
-subtitle: "A practical intro to Vector Mathematics"
+title: "A practical intro to Vector Mathematics"
+subtitle: "2D Vectors 101."
 excerpt: 'This post is an exploration of many different and important vector concepts and how they can be implemented in code. After reading it you should walk away with an understanding of how and why these operations work and where they could be useful.'
 cover: "/assets/blog/vector-demo.png"
-date: "2022-10-13"
+date: "2022-10-20"
 author:
   name: Rico Trebeljahr
   picture: "/assets/blog/profile.jpeg"
@@ -16,7 +16,7 @@ author:
 
 Points can be modeled with vectors, you can think of the vectors as little arrows pointing to a location somewhere in space. 
 
-In mathematics, vectors are often noted down as variables, like this $\overrightharpoon v$ or this $\overrightarrow v$ or this $v$.
+In mathematics, vectors are often noted down as variables, like $\overrightharpoon v$ or $\overrightarrow v$ or $v$.
 
 But vectors are made up of components so they can also be written like this:
 
@@ -107,7 +107,7 @@ Think of the x and y components and how they form the two sides of a right-angle
 $$
 \lVert
   v 
-\rVert = \sqrt{x² + y²} = v \, \cdotp v
+\rVert = \sqrt{x² + y²}
 $$
 
 <MagnitudeDemo/>
@@ -128,10 +128,6 @@ function mag2UsingDotProduct(v: Vec2) {
   return dot(v, v);
 }
 ```
-
-It's often useful to have the mag2 version because taking the square root is an expensive operation and for some applications, we don't need the "correct" length of the vector, because the squared length suffices. 
-
-Hence you can also find both methods on the Vec2 implementation!
 
 ## Unit Vectors
 
@@ -156,7 +152,7 @@ Here's a demo, the green circle is the "unit circle", it has a radius of exactly
 
 ## The Perpendicular 
 
-In 2D getting a vector rotated by exactly 90° to find its perpendicular is very easy! You can simply swap the x and y components, and then negate the swapped x!
+In 2D getting a vector rotated by exactly 90° to find its perpendicular is very easy! You can swap the x and y components, and then negate the swapped x!
 $$
 \begin{bmatrix}
 x \\

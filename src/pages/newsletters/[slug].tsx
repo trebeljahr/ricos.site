@@ -14,7 +14,7 @@ type Props = {
 const Newsletter = ({ newsletter, slug }: Props) => {
   return (
     <Layout description={newsletter.excerpt} title={`Newsletter ${slug}`}>
-      <article>
+      <article className="newsletter-article">
         <div className="header-image-container">
           <Image
             src={`/assets/newsletter/${slug}.jpg`}

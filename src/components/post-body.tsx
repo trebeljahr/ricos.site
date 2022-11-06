@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 import Image from "next/image";
@@ -72,12 +72,6 @@ const ImageRenderer = (props: { children?: any; node?: any }) => {
 };
 
 const ParagraphRenderer = (props: { children?: JSX.Element[]; node?: any }) => {
-  const { node } = props;
-
-  if (node.children[0].tagName === "img") {
-    return ImageRenderer(props);
-  }
-
   const className =
     props.children?.length &&
     (props.children[0] as unknown as string)[0] === "—"

@@ -14,6 +14,7 @@ import { EarClipping } from "../../components/collision-detection/EarClipping";
 import { ImageRenderer } from "../../components/ImageRenderer";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import PostHeader from "../../components/post-header";
+import { DetailedHTMLProps, HTMLAttributes, useEffect, useState } from "react";
 interface MDXPost extends Post {
   default(props: MDXProps): JSX.Element;
 }
@@ -26,6 +27,38 @@ const {
   excerpt,
   default: CollisionDetectionPost,
 } = post as MDXPost;
+
+type PreProps = DetailedHTMLProps<
+  HTMLAttributes<HTMLPreElement>,
+  HTMLPreElement
+>;
+
+function RenderCode(props: PreProps) {
+  const [hidden, setHidden] = useState(true);
+
+  useEffect(() => {}, [hidden]);
+
+  const toggleHidden = () => {
+    setHidden((old) => !old);
+  };
+
+  return (
+    <>
+      <button onClick={toggleHidden}>
+        {hidden ? (
+          <p>
+            Show Code <span className="icon-chevron-down" />
+          </p>
+        ) : (
+          <p>
+            Hide Code <span className="icon-chevron-up" />
+          </p>
+        )}
+      </button>
+      {!hidden && <pre {...props}>{props.children}</pre>}
+    </>
+  );
+}
 
 const PostComponent = () => {
   return (
@@ -41,6 +74,7 @@ const PostComponent = () => {
 
           <MDXProvider
             components={{
+              pre: RenderCode,
               img: ImageRenderer,
               SAT,
               ProjectionDemo,

@@ -34,6 +34,7 @@ export const ProjectArrowDemo = () => {
     const drawFn = () => {
       drawBackground(ctx);
       drawCoordinateSystem(ctx, scaleFactor);
+      ctx.font = "20px Arial";
 
       ctx.strokeStyle = "black";
       drawInfiniteLine(ctx, p1, p3, "black");
@@ -48,6 +49,11 @@ export const ProjectArrowDemo = () => {
 
       ctx.strokeStyle = niceGreen;
       drawArrow(ctx, p1, p2);
+
+      ctx.fillStyle = "black";
+      ctx.fillText("a", p1.x - 5, p1.y + 25);
+      ctx.fillText("b", p3.x - 5, p3.y + 25);
+      ctx.fillText("c", p2.x - 5, p2.y + 25);
 
       ctx.fillStyle = niceBlue;
       circle(ctx, p1, 5);

@@ -3,7 +3,7 @@ title: "Collision Detection in 2D"
 subtitle: "An explanation of the Separating Axis Theorem"
 excerpt: 'Have you ever played a computer game and started asking yourself... Wait a minute, how does the computer know how to stop moving my character when I hit the ground? Or when I run into an obstacle? It is quite awesome that all of this "just" works... but how exactly does it work?'
 cover: "/assets/blog/sat.png"
-date: "2022-10-13"
+date: "2022-11-06"
 author:
   name: Rico Trebeljahr
   picture: "/assets/blog/profile.jpeg"
@@ -102,17 +102,15 @@ Luckily, a polygon is just a set of points. Usually, the points of a polygon are
 
 There are multiple approaches to do this, but one I find particularly fascinating and which is the one used down below in the demos is that of using a support function. 
 
-Essentially a support function finds a point among a set of points (here the vertices of the polygon we want to project), that is furthest along in a particular direction. 
-
-The trick here is to run the polygon through the finding of support points for the two different directions of the line, which will result in the two points being furthest along these directions. In the code below for getting the support point in a specific direction notice, how we use the dot product to keep track of the distance for the scalar projections between the vertex onto b.
+Essentially a support function finds a point among a set of points (here the vertices of the polygon we want to project), that is furthest along in a particular direction.
 
 ```js
-export function getSupportPoint(vertices: Vec2[], d: Vec2) {
+export function getSupportPoint(vertices: Vec2[], direction: Vec2) {
   let highest = -Infinity;
   let support = new Vec2(0, 0);
   
   for (let vertex of vertices) {
-    const dot = vertex.dot(d);
+    const dot = vertex.dot(direction);
 	
     if (dot > highest) {
       highest = dot;
@@ -124,7 +122,9 @@ export function getSupportPoint(vertices: Vec2[], d: Vec2) {
 }
 ```
 
-We can then use these support points to project them onto the line for creating the "left" and "right" edge of the shadow.
+If we run the support function in the two directions of the line we want to project on, we get out only two points.
+
+We can then use these two support points to project them onto the line. Which gives us the "left" and "right" edge of the shadow.
 
 ```typescript
 export function drawProjection(
@@ -149,11 +149,9 @@ export function drawProjection(
   const l1 = d2.unit().multScalar(len).transform(toOrigin);
   const l2 = d2.unit().multScalar(-len).transform(toOrigin);
 
-  // draw the line onto which should be projected
   ctx.strokeStyle = "rgba(100, 100, 100, 0.5)";
   line(ctx, l2, l1);
   
-  // get support points for each direction
   const s1 = getSupportPoint(poly.vertices, d1);
   const s2 = getSupportPoint(poly.vertices, d2);
   
@@ -224,11 +222,16 @@ In the above example, if you make the shapes overlap, what do you notice about t
 
 ## Complete SAT
 
-The loop we did, step by step with a delay above was just for visualization purposes, instead, we can just check all of the normals at once and see: if all shadows overlap (and show up in red), then the shapes also have to overlap too and we can color them red! That's the whole meaning behind the separating axis theorem.
+In the demo above, we stop for a second at each step just for visualization purposes. We could just check all of the normals "at once". If all shadows overlap (and show up in red), then the shapes also have to overlap. They are colliding. That's the whole meaning behind the separating axis theorem.
 
 <SAT/>
 
-This is all there is to a simple SAT collision detection algorithm. To sum up the algorithm: Cast shadows (projections) onto the normals of two polygons and check if the projections overlap. If you find a pair of projections that don't overlap, there is no collision. If all projections overlap, there is a collision.
+> To sum up the algorithm:
+>
+> - Cast shadows onto the normals of two polygons
+> - Check if the shadows overlap
+> - If all shadows overlap, there is a collision. 
+> - If you find a single pair of shadows that doesn't overlap, there can't be a collision, because you have found a separating axis.
 
 Now you might say, wait for a second... we don't yet prevent the shapes from intersecting with each other, do we? 
 
@@ -240,7 +243,7 @@ This second problem is usually known as calculating a collision response. So, ho
 
 ## Adding a Collision Response
 
-Luckily for us, SAT is relatively easy to adapt to give a collision response – namely, if you find that all shadows (and therefore the shapes) overlap, you can find the pair of shadows that overlaps the least, and push the two shapes apart in that direction until the shadows don't touch anymore! 
+Luckily for us, SAT is easy to adapt to get out a collision response – namely, if you find that all shadows (and therefore the shapes) overlap, you can find the pair of shadows that overlaps the least, and push the two shapes apart in that direction until the shadows don't touch anymore.
 
 This idea of the "overlap" between the two shadows is related to an idea known as the MTV – the Minimum Translation Vector. In a way, the smallest overlap of the shadows of the two polygons projected onto their normals is a vector that tells us exactly how far and in which direction the two shapes have to move so that at least one pair of shadows stops overlapping. It represents the minimum amount of work necessary to push the shapes apart. So we just apply half of the vector as a translation transformation to one shape and the opposite of that to the other shape. 
 
@@ -322,19 +325,19 @@ And here is the demo:
 
 <SATWithResponse />
 
+## The Problem of Concavity
+
 Cool, so we are done now, right? Well, check this out: 
 
 <SATWithConcaveShapes />
 
-## The Problem of Concavity
+Well... that didn't go too well huh? The problem is that what you just saw were so-called "concave" shapes... All the polygons you've seen so far up to this point were "convex" and therefore *just worked*. 
 
-Well... that didn't go too well huh? The problem is that what you just saw were so-called "concave" shapes... All the polygons you've seen so far up to this point were "convex", and I took some precautions so that this is always the case.
+Convex and concave express whether something bulges in- or outwards. I remember them with the word "cave" as in con*cave*. A cave goes inward, and so does a concave object. In other words, concave shapes are shapes that have some kind of indentation in them. A star would be a concave shape, or something looking like a V or U. 
 
-Convex and concave are just two words to express that something bulges outwards or inwards. I remember them with the word "cave" as in con*cave*. A cave goes inward, and so does a concave object. In other words, concave shapes are shapes that have some kind of indentation in them. A star would be a concave shape, or something looking like a V or U. 
+To handle collisions with concave shapes is very tricky... so instead, we don't bother and just chop their concave shapes up into simple, convex shapes and then run collision detection algorithms on them.
 
-To handle collisions with concave shapes is very tricky... Usually, people just don't bother and chop their concave shapes up into simpler, convex shapes and then run collision detection algorithms on them. 
-
-This is what we are also going to do. Most people use triangles as the simpler polygon base and they use a process called triangulation to do that. Triangulation is not a trivial problem and has more than one solution! Let's look at one of them known as the "Ear Clipping Algorithm".
+To do that, we are going to use a process called triangulation. Chopping an arbitrary shape up into triangles, is not a trivial problem and has more than one solution! We'll look at one of them known as the "Ear Clipping Algorithm".
 
 ## The Ear Clipping Algorithm *or* how to triangulate Polygons
 
@@ -344,15 +347,13 @@ The algorithm we are going to use for triangulating concave shapes into a bunch 
 
 Ear Clipping? 
 
-Well, glad you asked ^^
-
 The basic idea is to find "ears" – triangular pieces of the polygon that "stick out", like an ear, and then "clip" them out of the polygon, reducing the problem to a smaller polygon – for which we can then find another ear to clip, and so on until only a last triangle is left.
 
 <EarClipping />
 
 If you turn off the visualization, you can drag around the polygon vertices to try out different shapes!
 
-Let's define what an "ear" is more formally. An ear is a set of three consecutive vertices, a, b and c if two conditions are met:
+Let's define what an "ear" is more formally. An ear is a set of three consecutive vertices, $a$, $b$ and $c$ if two conditions are met:
 
 1. The interior angle between edge $\overline{ab}$, and $\overline{bc}$ has to be smaller than 180°
 2. The triangle formed by the three vertices can not contain any other vertices of the polygon. 
@@ -361,7 +362,8 @@ When an ear is found, we put it into our list of triangles for the triangulation
 
 
 ```typescript
-function triangulate(p: Vec2[]) {
+type Triangle = [Vec2, Vec2, Vec2]
+function triangulate(p: Vec2[]): Triangle[] {
   const n = vertices.length - 1;
   if (n < 3) return [];
 
@@ -378,13 +380,13 @@ function triangulate(p: Vec2[]) {
       break;
     }
     for (let i = 0; i < indexList.length; i++) {
-      let a = indexList[i];
-      let b = getItem(indexList, i - 1);
-      let c = getItem(indexList, i + 1);
+      const a = indexList[i];
+      const b = getItem(indexList, i - 1);
+      const c = getItem(indexList, i + 1);
 
-      let va = vertices[a];
-      let vb = vertices[b];
-      let vc = vertices[c];
+      const va = vertices[a];
+      const vb = vertices[b];
+      const vc = vertices[c];
 
       // calculate edges
       let va_to_vb = vb.sub(va);
@@ -405,7 +407,7 @@ function triangulate(p: Vec2[]) {
         }
 
         // check if the vertex is in the triangle
-        if (isPointInTriangle({ p: vertices[j], triangle: { b: vb, a: va, c: vc } })) {
+        if (isPointInTriangle({ p: vertices[j], triangle: [va, vb, vc] })) {
           isEar = false;
           break;
         }
@@ -413,9 +415,7 @@ function triangulate(p: Vec2[]) {
 
       // add ear vertex indices to triangulation
       if (isEar) {
-        triangles[triangleIndexCount++] = b;
-        triangles[triangleIndexCount++] = a;
-        triangles[triangleIndexCount++] = c;
+        triangles.push([vb, va, vc]);
         indexList.splice(i, 1);
         break;
       }
@@ -423,20 +423,19 @@ function triangulate(p: Vec2[]) {
   }
 
   // loop is done, one triangle remaining, add it to the list as well.
-  triangles[triangleIndexCount++] = indexList[0];
-  triangles[triangleIndexCount++] = indexList[1];
-  triangles[triangleIndexCount++] = indexList[2];
+  const va = vertices[indexList[0]];    
+  const vb = vertices[indexList[1]];
+  const vc = vertices[indexList[2]];
+  triangles.push([vb, va, vc]);
 
   return triangles;
 }
 
 // helper function to determine whether or not a point is within a triangle
-type Triangle = { a: Vec2; b: Vec2; c: Vec2 }
-function isPointInTriangle({p, triangle: { a, b, c }}: { p: Vec2; triangle: Triangle }) {
+function isPointInTriangle({p, triangle: [ a, b, c ]}: { p: Vec2; triangle: Triangle }) {
   const v0 = c.sub(a);
   const v1 = b.sub(a);
   const v2 = p.sub(a);
-  
   
   const dot00 = v0.dot(v0);
   const dot01 = v0.dot(v1);
@@ -445,13 +444,13 @@ function isPointInTriangle({p, triangle: { a, b, c }}: { p: Vec2; triangle: Tria
   const dot12 = v1.dot(v2);
 
   const denom = dot00 * dot11 - dot01 * dot01;
+  // u and v here are just placeholder names.
   const u = (dot11 * dot02 - dot01 * dot12) / denom;
   const v = (dot00 * dot12 - dot01 * dot02) / denom;
 
   return u >= 0 && v >= 0 && u + v < 1;
 }
 
-// helper function to "wrap around" from the end/beginning when indexing into an array
 function getItem<T>(arr: T[], i: number) {
   if (i >= arr.length) {
     return arr[i % arr.length];
@@ -465,19 +464,23 @@ function getItem<T>(arr: T[], i: number) {
 <Triangulation />
 
 
-For now, this is it, with something like the above, you could have collision detection of arbitrary shapes, by carving them up into neat little triangles and then running collision detection on those. You could even constrain and stop the shapes from moving into each other by adding a collision response. 
+For now, this is it. We can have collision detection and responses for both convex and concave shapes.
 
 However... Collision detection is a tricky business and there are still edge cases where the above breaks down. 
 
-The first that comes to mind: Curved shapes. Anything that doesn't have vertices doesn't work with the above algorithms and we would need to convert it first. Also, the triangulation implemented doesn't handle holes and breaks if the interior angle between two edges of a polygon is exactly equal to 180° or the polygon intersects with itself. Most of these problems could be tackled simply by using a better triangulation algorithm, but this article is way too long already. In case you are curious I have a list of resources down below!
+## Limitations
 
-Another problem could be objects or shapes that move very very quickly. If they move quickly enough and the step size is bigger than the thing they should collide with, they could simply pass through (or "over") the other object. In games, usually bullets and thin walls would show this kind of behavior and problem. It's like the shape were "tunneling" through the other shape because it moved so fast that there never was a position update where the two were overlapping... 
+The first that comes to mind: Curved shapes. Anything that doesn't have vertices doesn't work with the above algorithms and we would need to convert it first. Also, the triangulation implemented doesn't handle holes and breaks if the interior angle between two edges of a polygon is exactly equal to 180° or the polygon intersects with itself. Most of these problems could be tackled simply by using a better triangulation algorithm, in case you are curious there is a list of [resources down below](/resources).
 
-Yet another problem is that of performance when there are lots of things that could potentially collide with each other. I mean, all of the above code is written for clarity rather than performance so there are improvements to be gained in "simply" rewriting the collision code we have, but the problem of checking collisions for many shapes at once remains $O(n^2)$. Which is bad... 
+Another problem could be objects or shapes that move very quickly. If they move quickly enough and the step size is bigger than the thing they should collide with, they could simply pass through (or "over") the other object. In games, usually bullets and thin walls would show this kind of behavior and problem. It's like the shape were "tunneling" through the other shape because it moved so fast that there never was a position update where the two were overlapping... 
 
-What if n is more than 2? If it is 10, 100, or 1000? Collision detection algorithms of any kind are expensive and if we have to check every single polygon against every single other polygon the amount of computations we have to do grows exponentially which will break very soon. 
+Yet another problem is that of performance when there are lots of things that could potentially collide with each other. I mean, all of the above code is written for clarity rather than performance so there are improvements to be gained in "simply" rewriting the collision code we have, but the problem of checking collisions for many shapes at once remains $O(n^2)$. Which is *bad*... 
 
-This means we have to use some clever data structure or algorithm to reduce the number of collisions to check drastically. 
+What if n is more than 2? If it is 10, 100, or 1000? Collision detection algorithms of any kind are expensive and if we have to check every single polygon against every single other polygon the amount of computations we have to do grows exponentially. Which will eventually slow down to a halt.
+
+This means we have to use some clever data structure or algorithm to reduce the number of collisions to check. 
+
+## Spatial Subdivision
 
 One way to do so would be to divide up the "space" into separate regions or "buckets". Because two shapes that are very very far apart can not intersect (unless one of them is big) we could cut down on the number of collision detections we have to do by a lot, because only things from the same bucket could potentially collide with one another. 
 
@@ -486,8 +489,6 @@ The general algorithm that could be used for that is called a Quadtree (in 2D) o
 ![octree visualization](/assets/blog/octree.png)
 
 But coding these is reserved for another time.
-
-
 
 If you came all this way – congratulations! I hope you learned something. You can inspect most of the code for the demos of this website at the repo for this page [over here](https://github.com/trebeljahr/trebeljahr.com/tree/collision-detection-article/src/components/collision-detection). 
 

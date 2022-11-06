@@ -741,6 +741,8 @@ li {
 canvas {
   box-sizing: border-box;
   outline: none;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 @media only screen and (min-width: 1030px) {

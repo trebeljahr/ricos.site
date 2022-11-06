@@ -3,9 +3,8 @@ import ErrorPage from "next/error";
 import PostBody from "../../components/post-body";
 import PostHeader from "../../components/post-header";
 import Layout from "../../components/layout";
-import { getPostBySlug, getAllPosts } from "../../lib/api";
+import { getPostBySlug, getAllPosts, getAllMarkdownPosts } from "../../lib/api";
 import { ReadMore } from "../../components/more-stories";
-import { UtteranceComments } from "../../components/comments";
 import { ToTopButton } from "../../components/ToTopButton";
 import { Post as PostType } from "../../@types/post";
 import { NewsletterForm } from "../../components/newsletter-signup";
@@ -16,10 +15,6 @@ type Props = {
 };
 
 const Post = ({ post, morePosts }: Props) => {
-  const router = useRouter();
-  if (!router.isFallback && !post?.slug) {
-    return <ErrorPage statusCode={404} />;
-  }
   return (
     <Layout
       description={post.excerpt}
@@ -38,7 +33,6 @@ const Post = ({ post, morePosts }: Props) => {
         <section className="main-section">
           {morePosts && <ReadMore posts={morePosts} />}
           <NewsletterForm />
-          <UtteranceComments />
           <ToTopButton />
         </section>
       </article>
@@ -69,7 +63,7 @@ function getRandom(arr: any[], n: number) {
 }
 
 export async function getStaticProps({ params }: Params) {
-  const post = getPostBySlug(params.slug, [
+  const post = await getPostBySlug(params.slug + ".md", [
     "title",
     "subtitle",
     "date",
@@ -80,7 +74,9 @@ export async function getStaticProps({ params }: Params) {
     "cover",
   ]);
   const bySlug = (otherPost: any) => otherPost.slug !== post.slug;
-  const otherPosts = getAllPosts(["title", "slug", "excerpt"]).filter(bySlug);
+  const otherPosts = (await getAllPosts(["title", "slug", "excerpt"])).filter(
+    bySlug
+  );
   const morePosts = getRandom(otherPosts, 3);
 
   return {
@@ -92,7 +88,7 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const posts = getAllPosts(["slug"]);
+  const posts = await getAllMarkdownPosts(["slug"]);
 
   return {
     paths: posts.map((post) => {

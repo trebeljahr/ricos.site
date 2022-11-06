@@ -1,0 +1,348 @@
+---
+title: "A practical intro to Vector Mathematics"
+subtitle: "2D Vectors 101."
+excerpt: 'This post is an exploration of many different and important vector concepts and how they can be implemented in code. After reading it you should walk away with an understanding of how and why these operations work and where they could be useful.'
+cover: "/assets/blog/vector-demo.png"
+date: "2022-10-20"
+author:
+  name: Rico Trebeljahr
+  picture: "/assets/blog/profile.jpeg"
+
+---
+
+<p>{excerpt}</p>
+
+## The Confusion between Points and Vectors
+
+Points can be modeled with vectors, you can think of the vectors as little arrows pointing to a location somewhere in space. 
+
+In mathematics, vectors are often noted down as variables, like $\overrightharpoon v$ or $\overrightarrow v$ or $v$.
+
+But vectors are made up of components so they can also be written like this:
+
+$$
+\begin{bmatrix}
+   x \\
+   y
+\end{bmatrix}
+or 
+\begin{bmatrix}
+   2 \\
+   5
+\end{bmatrix}
+or
+\begin{bmatrix}
+   -1 \\
+   20
+\end{bmatrix}
+or 
+\begin{bmatrix}
+   a \\
+   b
+\end{bmatrix}
+$$
+
+A component is a part of a vector that points in a certain direction. These directions depend on the coordinate system. Usually, the vector components mean distance in the x – the horizontal direction and y – the vertical direction. 
+
+Thinking of vectors in components in that way is very useful since we can see the amount that the vector goes into each of the directions x and y, at a glance. It's like saying, go x steps along this direction, then turn 90° and go y steps this way and voila, you reached the correct place I wanted you to go to. This is what makes vectors so highly useful, it's a way of describing coordinates, positions and directions with mathematics!
+
+The confusion about vectors and points comes because when thinking of vectors as arrows – there are usually *two* points that define an arrow. The "tip" and the "tail". 
+
+So in a way, thinking of vectors as arrows is a bit flawed, yet that's very often how they are represented. In the example below the red and the green arrow is the same vector, but moved around the screen to different places. Whereas the blue arrow is pointing exactly to a point from the origin at all times. 
+
+<PointAndVectorDemo/>
+
+If a vector is translated away from the origin (like the green or black one) it's usually used as a direction. And the direction changes its meaning (i.e. where you end up if you follow it for a certain time) depending on where you start. So while the red, black and green arrows are the same vector, pointing in the same direction (to the top-right), they start at different points. That's what makes them different. You can even see the translation vector for the black arrow (it's the blue arrow). And you can even see how, if you move the tip of the blue vector to the origin, shrinking its length to 0, the red and black arrows align. So they *really* are the same. 
+
+So to sum up. A vector can be used to describe both a point and a direction. Hence the idea of the little arrow in the notation $\overrightarrow{v}$. It means the vector is "pointing" in a direction in space, just like an arrow does!
+
+And if we want to work with these directions we need to be able to calculate with them!
+
+## Subtraction, Addition, Multiplication and Division of Vectors
+
+All of these are easy to do for vectors! Since vectors are just made up of components, to calculate with them, you simply add, subtract, multiply or divide all the components simultaneously. 
+$$
+\overrightharpoon{v} * a = 
+\begin{bmatrix}
+x * a \\
+y * a
+\end{bmatrix}
+$$
+
+However what happens if you want to calculate with two vectors at once? 
+$$
+v * a = 
+\begin{bmatrix}
+v.x * a.x \\
+v.y * a.y
+\end{bmatrix}
+$$
+
+```typescript
+function divScalar(vec: Vec2, scalar: number) {
+  return new Vec2(vec.x / scalar, vec.y / scalar);
+}
+
+function multScalar(scalar: number) {
+  return new Vec2(vec.x * scalar, vec.y * scalar);
+}
+
+function sub(vec: Vec2, vec2: Vec2) {
+  return new Vec2(vec.x - vec2.x, vec.y - vec2.y);
+}
+
+function add(vec: Vec2, vec2: Vec2) {
+  return new Vec2(vec.x + vec2.x, vec.y + vec2.y);
+}
+```
+
+## Magnitude, Norm and length
+
+The magnitude or norm is just mathematical jargon for "the length" of a vector. 
+
+If you imagine that a vector is giving you a location in space you could say, hmmm, if I were to walk there, how long would I have to walk? The answer to that can be found by using the Pythagorean theorem. 
+
+Think of the x and y components and how they form the two sides of a right-angled triangle and how the hypotenuse of that triangle is the vector (and the length) we are interested in. Hence the formula for the length of a vector is simply the Pythagorean theorem. 
+
+$$
+\lVert
+  v 
+\rVert = \sqrt{x² + y²}
+$$
+
+<MagnitudeDemo/>
+
+Sometimes we don't need the actual length but the squared length, so we can drop the $\sqrt{}$ from the formula above. If we implement these two ideas mag and mag2 (squared norm/length) ideas in code, we get the below. 
+```typescript
+function mag2(v: Vec2) {
+  return v.x * v.x + v.y * v.y
+}
+
+function mag(v: Vec2) {
+  return Math.sqrt(mag2(v));
+}
+
+// this can also be written by getting the vectors dot product with itself!
+// more on the dot product below!
+function mag2UsingDotProduct(v: Vec2) {
+  return dot(v, v);
+}
+```
+
+## Unit Vectors
+
+The norm or magnitude of a vector is also often used to construct a "unit" vector. 
+
+Unit vectors are "raw" directions, without any information about distance attached to them. It's like telling somebody to go and head "northeast" without telling them how far to go in that direction. You get them if you divide the vector by its norm you get a vector of length 1. But you are preserving the direction of the vector!
+And the name stems from the "unit" circle, a circle with a radius of length 1. Just like the radius of the circle, unit vectors have a length of 1. 
+$$
+\hat{v} = \frac{v}{\lVert v \rVert} 
+$$
+
+In code this would look something like this:
+```typescript
+function unit(b: Vec2) {
+  return b.divScalar(b.mag());
+}
+```
+
+Here's a demo, the green circle is the "unit circle", it has a radius of exactly 1 unit. See how the black vector always follows the blue one, yet stays exactly on the edge of the circle? That's what it means to normalize a vector/create a unit vector.
+
+<UnitVectorDemo />
+
+## The Perpendicular 
+
+In 2D getting a vector rotated by exactly 90° to find its perpendicular is very easy! You can swap the x and y components, and then negate the swapped x!
+$$
+\begin{bmatrix}
+x \\
+y 
+\end{bmatrix}
+
+\xrightarrow[\circlearrowright]{\, \, 90°}
+
+\begin{bmatrix}
+y \\
+-x 
+\end{bmatrix}
+$$
+
+
+If you instead of the x, negate the swapped y you get rotation in the other direction. Which direction is clockwise versus counter-clockwise depends on the orientation of the coordinate system. Usually, in computer graphics, this boils down to whether y goes up or down when you go down on the screen.
+$$
+\begin{bmatrix}
+x \\
+y 
+\end{bmatrix}
+
+\xrightarrow[\circlearrowleft]{\, \, 90°}
+
+\begin{bmatrix}
+-y \\
+x 
+\end{bmatrix}
+$$
+
+The reason why this works has to do with the trigonometric functions sin and cos – and how they relate angles to directions and therefore vectors.
+
+```typescript
+function perp(v: Vec2) {
+  return new Vec2(v.y, -v.x);
+}
+```
+
+## Normals
+
+Perpendiculars are often called Normals. Hence normals are just vectors perpendicular to a given other vector, and they can therefore be found with the same code as that for the "perpendicular" of a vector (i.e. rotating a vector by 90°). 
+
+Sometimes normals are "normalized" so that they are also unit vectors and have a length of exactly one unit. 
+
+When working with polygon edges one is usually interested in the normals that are facing out and away from the polygon and its edge, not the ones facing into the polygon.
+
+<NormalDemo/>
+
+In a lot of computer graphics applications, bugs can happen where the normals become inverted. When this happens it messes up the lighting calculations, because the shape is "wrapped" in the wrong direction and light that should bounce "away" from the shape, bounces "into" the shape instead... 
+
+## Arbitrary Rotation
+
+Finding the perpendicular is just a special case of how to rotate a vector by an angle! The general formula is this: 
+The general formula looks like this:
+$$
+\begin{bmatrix}
+x \\
+y 
+\end{bmatrix}
+
+\xrightarrow[\circlearrowright]{\, \, \theta \, rads}
+
+\begin{bmatrix}
+cos(\theta) * x - sin(\theta) * y\\
+sin(\theta) * x - cos(\theta) * y  
+\end{bmatrix}
+$$
+
+<ArbitraryRotationDemo />
+
+If you take the special case for 90° or $\frac{\pi}{2}$ the expression simplifies a lot and we get the special case shown above!
+$$
+\begin{bmatrix}
+cos(\frac{\pi}{2}) * x - sin(\frac{\pi}{2}) * y\\
+sin(\frac{\pi}{2}) * x - cos(\frac{\pi}{2}) * y  
+\end{bmatrix} 
+=
+\begin{bmatrix}
+0 * x - 1 * y\\
+1 * x - 0 * y  
+\end{bmatrix}
+= 
+\begin{bmatrix}
+-y \\
+x
+\end{bmatrix}
+$$
+
+## The Dot Product
+
+The dot product of a vector is defined as adding up the multiples of its components. Vectors can have multiple components, x,y,z etc. based on how many dimensions of space the vector is in. Vectors in 2D only have 2 components: x and y. For them the dot product can be computed like this:
+$$
+v \, \cdotp a = x_a * x_v + y_a * y_v
+$$
+
+Or in code: 
+
+```typescript
+function dot(v: Vec2, a: Vec2) {
+  return v.x * a.x + v.y * a.y
+}
+```
+Dot Products are extremely useful in mathematics and computer graphics for multiple reasons. Mainly because they relate angles between vectors and because they can be used to project one vector onto another. 
+
+The relation between the angle $\theta$ of two vectors and their dot products is this:
+$$
+cos(\theta) = \frac{v \, \cdotp a}{\lVert v \rVert * \lVert a \rVert}
+$$
+
+<DotProductDemo />
+
+This can be used to convert between angles and vectors (+ the idea of general rotations from above) and helps to do all kinds of things. For example, we could determine the direction a player is facing in a computer game. Or we could determine at what angle a ball should bounce off from a wall in a simulation. Or what kind of force something would experience if we hit it at a certain angle... And so much more. 
+
+## Summary
+As we have seen, there are a lot of fancy things that can be done with vectors, even just in 2D. Adding, Subtracting, Dividing, and Multiplying by both other Vectors and simple Numbers called Scalars, rotations, perpendiculars, dot products, unit vectors and normals.
+
+Let's write a class that implements all of those functionalities and methods from above and use that for demos such as the ones you see in the [SAT algorithms article](/posts/collision-detection)!
+
+```typescript
+const precision = 0.000001;
+export class Vec2 {
+  public components: [number, number];
+
+  constructor(x: number, y: number) {
+    this.components = [x, y];
+  }
+
+  get x() {
+    return this.components[0];
+  }
+  set x(newX: number) {
+    this.components[0] = newX;
+  }
+  get y() {
+    return this.components[1];
+  }
+  set y(newY: number) {
+    this.components[1] = newY;
+  }
+
+  mag() {
+    return Math.sqrt(this.mag2());
+  }
+
+  mag2() {
+    return this.dot(this);
+  }
+
+  divScalar(scalar: number) {
+    return new Vec2(this.x / scalar, this.y / scalar);
+  }
+
+  multScalar(scalar: number) {
+    return new Vec2(this.x * scalar, this.y * scalar);
+  }
+
+  sub(other: Vec2) {
+    return new Vec2(this.x - other.x, this.y - other.y);
+  }
+
+  add(other: Vec2) {
+    return new Vec2(this.x + other.x, this.y + other.y);
+  }
+
+  unit() {
+    return this.divScalar(this.mag());
+  }
+
+  perp() {
+    return new Vec2(this.y, -this.x);
+  }
+
+  rotate(θ: number) {
+    const newX = cos(θ) * this.x - sin(θ) * this.y;
+    const newY = sin(θ) * this.x - cos(θ) * this.y;
+    this.x = newX;
+    this.y = newY;
+    return this;
+  }
+
+  getNormal() {
+    return this.perp().unit();
+  }
+
+  dot(other: Vec2) {
+    return this.x * other.x + this.y * other.y;
+  }
+
+  perpDot(other: Vec2) {
+    return this.perp().dot(other);
+  }
+}
+```

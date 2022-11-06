@@ -62,7 +62,7 @@ export default function Books({ allBooks }: Props) {
 }
 
 export const getStaticProps = async () => {
-  const allBooks = getAllBookReviews([
+  const allBooks = await getAllBookReviews([
     "title",
     "slug",
     "bookAuthor",

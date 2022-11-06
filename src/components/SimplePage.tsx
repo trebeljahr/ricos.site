@@ -1,4 +1,3 @@
-import { UtteranceComments } from "./comments";
 import Layout from "./layout";
 import { NewsletterForm } from "./newsletter-signup";
 import PostBody from "./post-body";
@@ -22,7 +21,6 @@ export function SimplePage({ content, description, title, subtitle }: Props) {
         </section>
         <section className="main-section">
           <NewsletterForm />
-          <UtteranceComments />
           <ToTopButton />
         </section>
       </article>

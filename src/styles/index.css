@@ -27,6 +27,8 @@ html {
 
 * {
   box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 button {
@@ -52,6 +54,11 @@ button {
   position: relative;
   height: 40vh;
   margin: 1rem 0;
+}
+
+.markdown-image {
+  width: var(--main-width);
+  position: relative;
 }
 
 .colored-link {
@@ -230,25 +237,6 @@ a {
   font-size: 1rem;
 }
 
-h5,
-h4,
-h3,
-h2,
-h1 {
-  font-family: "Spartan", sans-serif;
-  font-weight: bold;
-}
-
-h5,
-h4,
-h3,
-h2,
-h1 {
-  padding-bottom: 1rem;
-  padding-top: 1.6rem;
-  margin: 0;
-}
-
 h1 {
   font-size: 1.8rem;
 }
@@ -256,7 +244,7 @@ h1 {
 h1,
 h2,
 h3 {
-  line-height: 1.1;
+  line-height: 1.6;
 }
 
 h2 {
@@ -269,6 +257,7 @@ h3 {
 
 .header {
   height: fit-content;
+  margin-bottom: 1rem;
 }
 
 blockquote {
@@ -307,16 +296,98 @@ blockquote p {
   color: var(--blue);
 }
 
-p,
+hgroup,
 ul,
 ol,
+dd,
 blockquote,
+pre,
+li,
+code,
+p,
+figure,
+pre,
+table,
+fieldset,
+hr {
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+hgroup,
+ul,
+ol,
+dd,
+blockquote,
+pre,
+li,
+code,
+p,
+figure,
+pre,
+table,
+fieldset,
+hr,
 button,
 input {
-  line-height: 1.6;
-  font-size: 1rem;
   font-weight: normal;
-  font-family: arvo, serif;
+  font-family: "Noto Sans", Helvetica, sans-serif;
+}
+
+.slider-annotation {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+canvas {
+  margin-bottom: 1rem;
+}
+
+.slider {
+  display: block;
+  width: 100%;
+  height: 20px;
+  margin: auto;
+}
+
+.slider-track {
+  top: 8px;
+  height: 4px;
+  background-color: grey;
+}
+
+.slider-track.slider-track-0 {
+  background-color: grey;
+}
+
+.slider-thumb {
+  cursor: pointer;
+  background: var(--blue);
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  outline: none;
+}
+
+.slider-thumb:hover {
+  box-shadow: 0 0 0 8px var(--ultra-light-blue);
+}
+
+h5,
+h4,
+h3,
+h2,
+h1 {
+  font-family: "Spartan", sans-serif;
+  font-weight: bold;
+  padding-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+pre,
+code {
+  font-family: "Fira Code", monospace;
 }
 
 .allBooks {
@@ -341,6 +412,16 @@ input {
   display: block;
 }
 
+.SATWithResponseContainer {
+  position: relative;
+}
+
+.SATWithResponseContainer > button {
+  position: absolute;
+  bottom: 40px;
+  right: 20px;
+}
+
 .avatar-with-author {
   display: flex;
   align-items: center;
@@ -358,6 +439,11 @@ input {
   width: 1.5rem;
   height: 1.5rem;
   position: relative;
+}
+
+.post-header > h1,
+.post-header > h2 {
+  padding: 0;
 }
 
 .post-meta {
@@ -569,7 +655,15 @@ li {
   content: "\eac9";
 }
 
+:root {
+  --main-width: 300px;
+}
+
 @media only screen and (min-width: 600px) {
+  :root {
+    --main-width: 440px;
+  }
+
   .allBooks {
     width: var(--main-width);
     margin-left: auto;
@@ -603,19 +697,7 @@ li {
   }
 
   p {
-    padding: 0.5rem 0px;
-    margin: 0;
-  }
-
-  h5,
-  h4,
-  h3,
-  h2,
-  h1,
-  .post-meta {
-    padding-bottom: 1rem;
-    padding-top: 1rem;
-    margin: 0;
+    margin-bottom: 1rem;
   }
 
   .read-more {
@@ -639,6 +721,13 @@ li {
   .book-info {
     display: flex;
   }
+}
+
+canvas {
+  box-sizing: border-box;
+  outline: none;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 @media only screen and (min-width: 1030px) {
@@ -674,6 +763,6 @@ li {
   }
 
   :root {
-    --main-width: 750px;
+    --main-width: 780px;
   }
 }

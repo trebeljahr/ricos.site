@@ -12,6 +12,7 @@ import { ProjectArrowDemo } from "../../components/collision-detection/ProjectAr
 import { Triangulation } from "../../components/collision-detection/Triangulation";
 import { EarClipping } from "../../components/collision-detection/EarClipping";
 import { ImageRenderer } from "../../components/ImageRenderer";
+import { ToggleCode } from "../../components/ToggleCode";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import PostHeader from "../../components/post-header";
 interface MDXPost extends Post {
@@ -41,6 +42,7 @@ const PostComponent = () => {
 
           <MDXProvider
             components={{
+              pre: ToggleCode,
               img: ImageRenderer,
               SAT,
               ProjectionDemo,

@@ -9,6 +9,11 @@
   width: 100%;
 }
 
+.newsletter-article .postImgWrapper,
+.header-image-container {
+  height: 780px;
+  width: 780px;
+}
 .newsletter .error {
   color: var(--dark-red);
 }

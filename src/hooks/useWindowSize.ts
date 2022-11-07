@@ -26,14 +26,22 @@ export function useWindowSize(): Size {
 
 export function useActualSize(): Size {
   const { width } = useWindowSize();
-  const maxWidth = 780;
-  const maxHeight = 500;
+
   const [actualWidth, setActualWidth] = useState<number>();
   const [actualHeight, setActualHeight] = useState<number>();
 
   useEffect(() => {
-    const aspectRatio = maxWidth / maxHeight;
-    const newWidth = Math.min(maxWidth, (width || Infinity) * 0.95);
+    if (!width) return;
+
+    const maxHeight = 500;
+    let newWidth = width * 0.95;
+    if (width > 600) {
+      newWidth = 440;
+    }
+    if (width > 1030) {
+      newWidth = 780;
+    }
+    const aspectRatio = newWidth / maxHeight;
 
     setActualWidth(newWidth);
     setActualHeight(Math.min(maxHeight, newWidth * aspectRatio));

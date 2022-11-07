@@ -21,7 +21,7 @@ export const PostCoverImage = ({ src, title, priority = false }: Props) => {
 
 export const BookCover = ({ title, src }: Props) => {
   return (
-    <span className="book-cover-image">
+    <div className="book-cover-image">
       <Image
         src={src}
         layout="responsive"
@@ -30,6 +30,6 @@ export const BookCover = ({ title, src }: Props) => {
         alt={`Bookcover - ${title}`}
         // placeholder="blur"
       />
-    </span>
+    </div>
   );
 };

@@ -6,7 +6,7 @@ nav.primary-navigation {
   font-size: 16px;
 }
 nav.primary-navigation ul {
-  width: var(--main-width);
+  width: 95%;
   margin: auto;
   box-sizing: border-box;
   padding: 0;
@@ -54,11 +54,20 @@ ul li ul li a {
 }
 
 .navbar-controls {
+  width: 95%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: var(--main-width);
   margin: auto;
+}
+
+@media only screen and (min-width: 600px) {
+  nav.primary-navigation ul {
+    width: var(--main-width);
+  }
+  .navbar-controls {
+    width: var(--main-width);
+  }
 }
 
 @media only screen and (min-width: 1030px) {

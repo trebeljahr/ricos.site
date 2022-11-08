@@ -10,7 +10,7 @@ tags: ["business", "made-you-think", "mental-models", "paradigm-shift", "economi
 summary: true
 detailedNotes: false
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary:

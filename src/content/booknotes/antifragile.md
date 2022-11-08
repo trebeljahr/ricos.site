@@ -9,7 +9,7 @@ tags: ["philosophy", "business", "ideas", "economy", "thought-provoking"]
 summary: true
 detailedNotes: false
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary: 

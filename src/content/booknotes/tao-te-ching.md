@@ -9,7 +9,7 @@ tags: ["taoism", "buddhism", "philosophy", "made-me-think", "art-of-living", "no
 summary: false
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 > When nothing is done, nothing is left undone. 

@@ -9,7 +9,7 @@ tags: ["learning", "self-help", "art-of-living", "made-me-think", "self-improvem
 summary: false
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Introduction

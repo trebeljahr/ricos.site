@@ -9,7 +9,7 @@ tags: ["philosophy", "stoic", "stoicism"]
 summary: true
 detailedNotes: false
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary

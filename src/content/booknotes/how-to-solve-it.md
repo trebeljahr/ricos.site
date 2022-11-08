@@ -9,7 +9,7 @@ tags: ["non-fiction", "mathematics"]
 summary: false
 detailedNotes: false
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 This book is an attempt at describing basic problem-solving strategies. Based on puzzles and mathematical riddles the author tries to teach the general approach of problem-solving, but I think that assuming that problem-solving skills can be taught by reading a book is a bit of a flawed idea in the end. 

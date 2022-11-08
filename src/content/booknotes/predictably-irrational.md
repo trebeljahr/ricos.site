@@ -9,7 +9,7 @@ tags: []
 summary: false
 detailedNotes: false
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 Read [Thinking Fast and Slow](/booknotes/thinking-fast-and-slow) instead.

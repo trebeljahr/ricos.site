@@ -9,7 +9,7 @@ tags: ["self-help", "business", "non-fiction"]
 summary: true
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary:

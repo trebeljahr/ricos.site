@@ -9,7 +9,7 @@ tags: ["business", "philosophy", "novel", "ideas", "non-fiction"]
 summary: false
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Introduction

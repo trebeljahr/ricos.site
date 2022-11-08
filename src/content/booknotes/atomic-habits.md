@@ -9,7 +9,7 @@ tags: ["book", "habits", "productivity"]
 summary: false
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Detailed Notes: 

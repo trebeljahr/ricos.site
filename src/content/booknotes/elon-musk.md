@@ -9,5 +9,5 @@ tags: ["business", "biography"]
 summary: false
 detailedNotes: false
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---

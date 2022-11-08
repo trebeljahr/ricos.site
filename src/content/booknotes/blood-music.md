@@ -9,7 +9,7 @@ tags: []
 summary: false
 detailedNotes: false
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 Some of the best sci-fi out there. 

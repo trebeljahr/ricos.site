@@ -9,7 +9,7 @@ tags: [ "book", "productivity", "reading", "how-to", "self-help" ]
 summary: false
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary 

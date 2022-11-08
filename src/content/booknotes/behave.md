@@ -9,7 +9,7 @@ tags: ["biology", "neuroscience", "psychology", "evolution", "made-you-think", "
 summary: true
 detailedNotes: false
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary

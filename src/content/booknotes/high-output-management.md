@@ -9,7 +9,7 @@ tags: ["business", "non-fiction", "management"]
 summary: false
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary

@@ -407,9 +407,11 @@ code {
 .book-cover-image {
   margin: 1rem auto;
   width: calc(var(--main-width));
-  height: calc(1.6 * calc(var(--main-width)));
+  /* height: calc(1.6 * calc(var(--main-width))); */
   position: relative;
   display: block;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .SATWithResponseContainer {
@@ -543,9 +545,18 @@ li {
   width: 100%;
 }
 
+.book-preview-text > h1 {
+  padding-top: 0;
+}
+
+.book-preview-text > h2 {
+  padding-top: 0.5rem;
+}
+
 .book-preview-text {
   width: 45%;
   margin: 0 auto;
+  margin-left: 40px;
 }
 
 .book-info {
@@ -692,7 +703,7 @@ li {
 
   .book-cover-image {
     width: calc(var(--main-width) / 4);
-    height: calc(1.6 * calc(var(--main-width) / 4));
+    /* height: calc(1.6 * calc(var(--main-width) / 4)); */
     position: relative;
   }
 
@@ -738,14 +749,14 @@ canvas {
   .book-cover-image {
     margin: auto;
     width: calc(var(--main-width) / 3);
-    height: calc(1.52 * calc(var(--main-width) / 3));
+    /* height: calc(1.52 * calc(var(--main-width) / 3)); */
     position: relative;
   }
 
   .book-info > .book-cover-image {
     margin: 0;
     width: calc(var(--main-width) / 2);
-    height: calc(1.52 * var(--main-width) / 2);
+    /* height: calc(1.52 * var(--main-width) / 2); */
 
     position: relative;
   }

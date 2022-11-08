@@ -30,14 +30,15 @@ The second "hack" I employ is to share this with my best friends. People such as
 
 ### Currently Working On
 
-**No. 3**–Build an Interactive Deep Dive Article showcasing different Collision Detection Algorithms.
+**No. 4:** Write at least 30 book summaries for the booknotes section of this site.
 
 ### Done
-- ~~Build up this blog (/needlestack, /posts, /booknotes)~~ => Done! The result is online at. Well. Here. (August 2022)
-- ~~Create a Fractal Garden Webpage~~ => Done! The result is online at [fractal.garden](https://fractal.garden) (September 2022)
+- ~~Build up this blog (/needlestack)~~ – artefact: [trebeljahr.com](https://trebeljahr.com). (August 2022)
+- ~~Create a Fractal Garden Webpage~~ – artefact: [fractal.garden](https://fractal.garden) (September 2022)
+- ~~Build an article showcasing SAT~~ – artefact: [SAT algorithm](https://trebeljahr.com/posts/collision-detection) (October 2022)
 
 ### Writing
-- Write a short (100 pages?) science fiction book and publish it on Amazon Self Publishing
+- Write a science fiction book and publish it on Amazon Self Publishing
 
 ### Photography
 - Create a real-life photo gallery/exhibition
@@ -49,8 +50,7 @@ The second "hack" I employ is to share this with my best friends. People such as
 - Paint Images -> Sell at least 1 for at least 1$
 - Use Stablediffusion to create a digital art portfolio
 
-### Coding Related
-- Deep Dive into Collision Detection (October 2022 - currently working on it!)
+### Coding
 - Build a "simple" 2D Physics Engine from Scratch
 - Build a compiler for LISP (preferably in Rust)
 - Build a Neural Network (including the Matrix Mathematics) from Scratch
@@ -71,7 +71,8 @@ The second "hack" I employ is to share this with my best friends. People such as
 - Deep Dive into Linear Algebra, Multi-Variable Calculus and Non-Linear Dynamics.
 - The month of reading, how many books + book notes can I do in a month?
 - Read the whole of "The Molecular Biology of the Cell" and write book notes on it.
-- Read the whole of SICP, Operating Systems by Tanenbaum and Compiler Book and write book notes on them. 
+- Read the whole of SICP, Operating Systems by Tanenbaum and Compiler Book and write book notes on them.
+- Read the Feynman Lectures completely + Notes
 
 ### Music
 - Spend a month learning harmonizing, circle of fifths and chord theory
@@ -97,5 +98,5 @@ The second "hack" I employ is to share this with my best friends. People such as
 - Learn and play around with Blender
 - Network in the Berlin Startup Community 
 - Write a Minecraft Mod
-
+- Write a book that details how the Human Brain works
  -->

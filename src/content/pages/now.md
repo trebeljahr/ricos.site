@@ -9,9 +9,7 @@ a "part-time web development lead teacher". This means that I teach people how t
 
 It also means that I only work for 12 hours a week and have the rest of my time free for working on personal projects. 
 
-When not working for Ironhack, I spend my time working on one of my [1-month projects](/1-month-projects). In a way, most of this blog is from one of those, as is the site over at [fractal.garden](https://fractal.garden). And there is more to come.
-
-This month (October 2022) I am working on building an interactive deep dive article/demo showcasing different Collision Detection Algorithms.
+When not working for Ironhack, I spend my time working on one of my [1-month projects](/1-month-projects). This month (November 2022) I am completing more book summaries for the booknotes (plan is to finish 40+) and traveling to Tenerife to escape the winter in Germany. 
 
 I also try to read a lot and you can find what I have read, some of it with notes at the [/booknotes](/booknotes) of this site.
 

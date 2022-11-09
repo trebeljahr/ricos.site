@@ -32,4 +32,6 @@ Malcolm Gladwell props these ideas up with a few stories. The most memorable to 
 
 Similar dynamics exist for almost all other sports, music and pretty much anything where humans compete against each other. 
 
+Another thing is where you have been born. Not just for the dynamics of wealth at play, but also for the cultural norms that subtly influence your behavior and what you are likely to do in a given situation. The main thing is, the deeper you dig into success, the more weird patterns you start to see, and find, which show you that it's not just about the hard work being put in. And that's the main valuable lesson to take away from this book.
+
 All this being said, even though a lot of success is up to luck, it's still a necessary requirement to put in the work and make an effort to become better than you were yesterday, otherwise the competition for success is lost before it even began. 

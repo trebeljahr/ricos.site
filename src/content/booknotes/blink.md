@@ -5,7 +5,7 @@ slug: "blink"
 bookAuthor: "Malcolm Gladwell"
 rating: 4
 done: true
-tags: ["self-help", "psychology"]
+tags: ["self-help", "psychology", "pop-science"]
 summary: true
 detailedNotes: false
 amazonLink: ""

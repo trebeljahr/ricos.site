@@ -9,7 +9,8 @@ tags: ["self-help", "business", "non-fiction", "psychology", "improvement", "phi
 summary: true
 detailedNotes: false
 amazonLink: ""
-amazonAffiliateLink: ""---
+amazonAffiliateLink: ""
+---
 
 ## Summary:
 

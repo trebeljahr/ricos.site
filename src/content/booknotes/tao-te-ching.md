@@ -12,6 +12,22 @@ amazonLink: ""
 amazonAffiliateLink: ""
 ---
 
+## Summary 
+
+A small book filled with wisdom from long ago. In spirit it's very similar to ideas from [The Bhagavad Gita](/booknotes/bhagavad-gita) or lessons from Stoicism, such as [Marcus Aurelius's meditations](/booknotes/meditations). 
+
+### Main Ideas
+
+There is a universal "substance", the Tao, that permeates all and is all. But yet isn't. There is nothing, yet something, and the Tao is undefinable by mere words and defies understanding and logic, yet it underlies all there is. 
+
+To connect with this Tao, and life a good life, we need to stop getting attached to the outcomes, to the worldly logic, and to our own ideas and models. We have to act, do our best, improve, but without thinking about what we are doing these things for. Simply do them, because you do. 
+
+A person who has achieved this simplicity of life, is a "master of the Tao". Not trying to impose their will on others, only on themselves, and even there, understanding of the self comes first. They are content, measured, serene, and somewhat stoic. The master doesn't talk, she does not desire, but still achieves. And lives with the paradox of that, understanding it, at a deeper level, at the level of the Tao, without really knowing it. 
+
+In a way, most of the Tao Te Ching is somewhat cryptic, and designed to be that way. It's food for thoughts, little sentences to think over, that only slowly reveal their meaning over time, like food that has to be chewed on for a while, before it can fully be digested and incorporated. 
+
+## Detailed Notes
+
 > When nothing is done, nothing is left undone. 
 
 > Darkness within darkness. The gateway to all understanding. 
@@ -36,7 +52,7 @@ amazonAffiliateLink: ""
 
 > Governing a large country is like frying a small fish. You spoil it with too much poking. 
 
-> If you want to learn how to govern, avoid being clever or rich. The simplest pattern is the clearest. Content with an ordinary life, you can show all peoe the way back to their true nature. 
+> If you want to learn how to govern, avoid being clever or rich. The simplest pattern is the clearest. Content with an ordinary life, you can show all people the way back to their true nature.
 
 > All streams flow to the sea because it is lower than they are. Humility gives it its power. 
 

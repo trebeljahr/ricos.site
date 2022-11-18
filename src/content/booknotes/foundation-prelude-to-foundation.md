@@ -4,9 +4,9 @@ bookCover: "/assets/book-covers/prelude-to-foundation.jpg"
 slug: "foundation-prelude-to-foundation"
 bookAuthor: "Isaac Asimov"
 rating: 9
-done: false
+done: true
 tags: []
-summary: false
+summary: true
 detailedNotes: false
 amazonLink: ""
 amazonAffiliateLink: ""

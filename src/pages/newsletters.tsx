@@ -41,7 +41,7 @@ const Newsletters = ({ newsletterSlugs }: Props) => {
 export default Newsletters;
 
 export const getStaticProps = async () => {
-  const newsletterSlugs = getAllNewsletters(["slug"]);
+  const newsletterSlugs = await getAllNewsletters(["slug"]);
   return {
     props: { newsletterSlugs },
   };

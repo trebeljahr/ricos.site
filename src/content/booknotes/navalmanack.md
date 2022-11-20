@@ -128,7 +128,7 @@ Learning is about understanding the basics on a very deep level, being able to r
 
 Suffering is reality showing itself to be different from what you thought. It's a moment of truth. Seeing the truth is hard since our egos are usually in the way. To see the truth more clearly reduces the ego. Then you can start to learn and improve and no longer suffer so much eventually. 
 
-Pick apart habits - mental and physical. See the truth. Then change, leave behind what is not necessary. It reminds me of Habit 2 - [Start with the end in mind](/booknotes/7-habits). And also of the career arrow of [Tim Urban's - How to Pick a Career that Actually Fits You](/https://waitbutwhy.com/2018/04/picking-career.html).
+Pick apart habits - mental and physical. See the truth. Then change, leave behind what is not necessary. It reminds me of Habit 2 - [Start with the end in mind](/booknotes/7-habits). And also of the career arrow of [Tim Urban's - How to Pick a Career that Actually Fits You](https://waitbutwhy.com/2018/04/picking-career.html).
 
 > Tension is who you think you should be. Relaxation is who you are. 
 

@@ -6,7 +6,6 @@ import { getBookReviewBySlug, getAllBookReviews } from "../../lib/api";
 import { PostSubTitle, PostTitle } from "../../components/post-title";
 import BookType from "../../@types/book";
 import { BookCover } from "../../components/cover-image";
-import { UtteranceComments } from "../../components/comments";
 import { ToTopButton } from "../../components/ToTopButton";
 import { ExternalLink } from "../../components/ExternalLink";
 import { NewsletterForm } from "../../components/newsletter-signup";
@@ -28,7 +27,8 @@ const BuyItOnAmazon = ({ link }: { link: string }) => {
 };
 
 const BooknotesWithDefault = ({ book }: Props) => {
-  if (book.content) return <PostBody content={book.content} />;
+  if (book.done || book.summary || book.detailedNotes)
+    return <PostBody content={book.content} />;
   return (
     <div className="main-text">
       <p className="placeholder-text">
@@ -71,7 +71,6 @@ const Book = ({ book }: Props) => {
           <section className="main-section">
             <ToTopButton />
             <NewsletterForm />
-            <UtteranceComments />
           </section>
         </article>
       )}
@@ -88,7 +87,7 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const book = getBookReviewBySlug(params.slug, [
+  const book = await getBookReviewBySlug(params.slug + ".md", [
     "title",
     "slug",
     "subtitle",
@@ -108,7 +107,7 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const books = getAllBookReviews(["slug", "done"]);
+  const books = await getAllBookReviews(["slug", "done"]);
   return {
     paths: books
       // .filter(({ done }) => done)

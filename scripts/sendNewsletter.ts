@@ -40,7 +40,7 @@ async function main() {
       "src",
       "content",
       "newsletters",
-      `${newsletterNumber}`
+      `${newsletterNumber}.md`
     ),
     "utf-8"
   );

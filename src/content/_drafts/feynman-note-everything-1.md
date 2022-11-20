@@ -54,7 +54,7 @@ When I think about Feynman Noting everything, something in my mind rebels agains
 
 I want to lie down in bed, watching videos all day long. I don't want to sit beside my laptop, take notes after watching, *think* about the content I just watched and go over it again. I don't want to dissect it, making sure that I understood everything and can coherently explain what I watched to others. In short, I don't want to learn. But yet... I *do*. That's the whole point of watching content like this over a movie or playing video games all day. But when I think about what it would mean to *sit down* and work through content like this, my mind kinda shrinks away. 
 
-One thing I notice over and over again is that this feeling in my mind, this sort of aversion towards work is the best indicator I have, of what is something good and worthwhile to pursue. [ you know what is the right thing to do, by kind of not wanting to do it](/posts/principles#:~:text=Always%20fight%20the,So%20go.%20Fight.). Feynman Note taking everything falls into that category.
+One thing I notice over and over again is that this feeling in my mind, this sort of aversion towards work is the best indicator I have, of what is something good and worthwhile to pursue. [ you know what is the right thing to do, by kind of not wanting to do it](/principles#:~:text=Always%20fight%20the,So%20go.%20Fight.). Feynman Note taking everything falls into that category.
 
 ## Summary
 

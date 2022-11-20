@@ -1,26 +1,24 @@
 import Layout from "../components/layout";
 import fs from "fs/promises";
 import { join } from "path";
-import matter from "gray-matter";
 import { Search, useSearch } from "../components/SearchBar";
 import { ToTopButton } from "../components/ToTopButton";
-import { UtteranceComments } from "../components/comments";
 import { NewsletterForm } from "../components/newsletter-signup";
+import quotesJSON from "../content/pages/quotes.json";
+
+const quotes: Quote[] = quotesJSON;
+
+type Quote = {
+  author: string;
+  content: string;
+  tags: string[];
+};
 
 function toFilters({ author }: Quote) {
   return { author };
 }
 
-type Quote = {
-  author: string;
-  text: string;
-};
-
-type Props = {
-  quotes: Quote[];
-};
-
-export default function Quotes({ quotes }: Props) {
+export default function Quotes() {
   const { byFilters, filters, setFilters } = useSearch(quotes.map(toFilters));
   const filteredQuotes = quotes.filter(byFilters);
 
@@ -36,11 +34,11 @@ export default function Quotes({ quotes }: Props) {
           <p>Amount: {filteredQuotes.length}</p>
         </section>
         <section className="main-section">
-          {filteredQuotes.map(({ author, text }, index) => {
+          {filteredQuotes.map(({ author, content }, index) => {
             return (
               <div key={author + index} className="quote">
                 <blockquote>
-                  <p>{text}</p>
+                  <p>{content}</p>
                 </blockquote>
                 <p>— {author}</p>
               </div>
@@ -50,27 +48,8 @@ export default function Quotes({ quotes }: Props) {
         <section className="main-section">
           <NewsletterForm />
           <ToTopButton />
-          <UtteranceComments />
         </section>
       </article>
     </Layout>
   );
-}
-
-export async function getStaticProps() {
-  const quotesSrc = join(process.cwd(), "src", "content", "pages", "quotes.md");
-  const fileContents = await fs.readFile(quotesSrc, "utf-8");
-  const { content } = matter(fileContents);
-  const [, ...quotes] = content.split("\n> ");
-  const quoteData = quotes.map((quote) => {
-    const [text, author] = quote
-      .split("\n– ")
-      .map((str) => str.replace("\n", "").trim());
-    return { text, author };
-  });
-  return {
-    props: {
-      quotes: quoteData,
-    },
-  };
 }

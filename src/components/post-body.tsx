@@ -16,17 +16,14 @@ type HeadingResolverProps = {
   level: number;
   children: JSX.Element[];
 };
-
 const HeadingRenderer: React.FC<HeadingResolverProps> = ({
   level,
   children,
 }) => {
   const heading = children[0]?.props?.value || children[0];
-
   let anchor = (typeof heading === "string" ? heading.toLowerCase() : "")
     .replace(/[^a-zA-Z0-9 ]/g, "")
     .replace(/ /g, "-");
-
   switch (level) {
     case 1:
       return <h1 id={anchor}>{children}</h1>;
@@ -80,14 +77,11 @@ const ParagraphRenderer = (props: { children?: JSX.Element[]; node?: any }) => {
     (props.children[0] as unknown as string)[0] === "—"
       ? "quote-author"
       : "paragraph";
-
   return <p className={className}>{props.children}</p>;
 };
-
 const LinkRenderer = (props: any) => {
   const href = props.href;
   const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
-
   if (isInternalLink) {
     return (
       <Link href={href || ""}>
@@ -95,7 +89,6 @@ const LinkRenderer = (props: any) => {
       </Link>
     );
   }
-
   return <ExternalLink {...props} />;
 };
 

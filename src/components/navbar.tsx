@@ -60,6 +60,9 @@ export function Navbar() {
     setExpanded(width ? width > 1030 : false);
   }, [width]);
 
+  const setExpandedOnMobile = () => {
+    setExpanded(width ? width > 1030 : false);
+  };
   return (
     <nav role="navigation" className="primary-navigation">
       <div className="navbar-controls">
@@ -72,8 +75,8 @@ export function Navbar() {
           <span className={expanded ? "icon-close" : "icon-bars"} />
         </button>
       </div>
-      <ul>
-        <Navlinks expanded={expanded} setExpanded={setExpanded} />
+      <ul className="navlinks">
+        <Navlinks expanded={expanded} setExpanded={setExpandedOnMobile} />
       </ul>
     </nav>
   );

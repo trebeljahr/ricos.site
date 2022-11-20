@@ -7,10 +7,10 @@ bookAuthor: "Mitchell Waldrop"
 rating: 8
 done: true
 tags: []
-summary: false
+summary: true
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary

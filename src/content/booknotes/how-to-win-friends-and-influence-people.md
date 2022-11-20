@@ -9,7 +9,7 @@ tags: ["self-help", "psychology", "business", "communication", "top-50"]
 summary: true
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary: 

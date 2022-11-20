@@ -9,7 +9,7 @@ tags: ["traveling", "business", "practical", "non-fiction"]
 summary: true
 detailedNotes: false
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary: 

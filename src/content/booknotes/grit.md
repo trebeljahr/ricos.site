@@ -10,7 +10,7 @@ tags: ["business", "self-help", "psychology", "success-literature", "non-fiction
 summary: true
 detailedNotes: false
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary: 

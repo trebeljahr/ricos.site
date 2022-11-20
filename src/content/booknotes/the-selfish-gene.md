@@ -9,7 +9,7 @@ tags: ["curiosity", "made-me-think", "top-50", "biology", "evolution", "non-fict
 summary: false
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 **Book Recommendation:** The Evolution of Cooperation by Robert Axelrod

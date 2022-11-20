@@ -9,7 +9,7 @@ tags: ["curiosity", "learning", "non-fiction", "immunology", "biology"]
 summary: true
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary: 

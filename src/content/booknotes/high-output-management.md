@@ -6,10 +6,10 @@ bookAuthor: "Andrew S. Grove"
 rating: 7
 done: true
 tags: ["business", "non-fiction", "management"]
-summary: false
+summary: true
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary

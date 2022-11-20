@@ -9,7 +9,7 @@ tags: ["curiosity", "made-me-think", "evolution", "non-fiction"]
 summary: false
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Prologue

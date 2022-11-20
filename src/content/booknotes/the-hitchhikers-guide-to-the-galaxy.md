@@ -9,7 +9,7 @@ tags: []
 summary: false
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 Writing notes for science fiction books feels weird, but I have gathered a small collection of quotes that I like from the book: 

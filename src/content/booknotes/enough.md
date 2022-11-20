@@ -10,7 +10,7 @@ tags: [ "business", "finance", "character", "investing", "non-fiction"]
 summary: true
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary: 

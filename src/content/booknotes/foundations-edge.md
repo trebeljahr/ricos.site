@@ -4,12 +4,12 @@ bookCover: "/assets/book-covers/foundations-edge.jpg"
 slug: "foundations-edge"
 bookAuthor: "Isaac Asimov"
 rating: 9
-done: false
+done: true
 tags: []
-summary: false
+summary: true
 detailedNotes: false
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary

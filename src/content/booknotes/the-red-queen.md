@@ -9,7 +9,7 @@ tags: ["curiosity", "made-me-think", "biology", "evolution", "non-fiction"]
 summary: false
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Preface

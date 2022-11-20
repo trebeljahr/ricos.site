@@ -58,8 +58,11 @@ async function main() {
 
   function rewrite(node: any) {
     if (node.type === "element" && node.tagName === "img") {
+      console.log(node.properties);
+
       node.properties = {
         ...node.properties,
+        alt: node?.properties?.alt?.replace(/\/[^\/]*\//g, "") || "",
         width: "600",
         height: "",
         border: "0",

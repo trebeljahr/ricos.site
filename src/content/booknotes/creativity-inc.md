@@ -9,7 +9,7 @@ tags: ["business", "non-fiction", "creativity", "management", "ideas","thought-p
 summary: true
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary: 

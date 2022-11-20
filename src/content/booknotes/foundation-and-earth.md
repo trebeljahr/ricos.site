@@ -4,12 +4,12 @@ bookCover: "/assets/book-covers/foundation-and-earth.jpg"
 slug: "foundation-and-earth"
 bookAuthor: "Isaac Asimov"
 rating: 9
-done: false
+done: true
 tags: []
-summary: false
+summary: true
 detailedNotes: false
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary

@@ -9,7 +9,7 @@ tags: ["self-help", "business", "productivity", "advice"]
 summary: true
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary:

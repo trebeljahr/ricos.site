@@ -9,7 +9,7 @@ tags: ["business", "philosophy", "top-50", "made-me-think", "psychology", "econo
 summary: true
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary

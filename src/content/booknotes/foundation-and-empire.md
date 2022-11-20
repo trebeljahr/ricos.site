@@ -4,12 +4,12 @@ bookCover: "/assets/book-covers/foundation-and-empire.jpg"
 slug: "foundation-and-empire"
 bookAuthor: "Isaac Asimov"
 rating: 9
-done: false
+done: true
 tags: []
-summary: false
+summary: true
 detailedNotes: false
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary
@@ -23,7 +23,6 @@ Foundation Novels in Order:
 - [Second Foundation](/booknotes/foundation-second-foundation)
 - [Foundation's Edge](/booknotes/foundations-edge)
 - [Foundation and Earth](/booknotes/foundation-and-earth)
-
 
 Prequels: 
 

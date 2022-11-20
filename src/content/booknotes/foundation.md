@@ -6,10 +6,10 @@ bookAuthor: "Isaac Asimov"
 rating: 9
 done: true
 tags: []
-summary: false
+summary: true
 detailedNotes: false
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary
@@ -18,14 +18,14 @@ I think writing summaries for science fiction books makes not much sense, but th
 
 Foundation Novels in Order:
 
-- [Foundation]()
-- [Foundation and Empire]()
-- [Second Foundation]()
-- [Foundation's Edge]()
-- [Foundation and Earth]()
+- [Foundation](/booknotes/foundation) (this book)
+- [Foundation and Empire](/booknotes/foundation-and-empire)
+- [Second Foundation](/booknotes/foundation-second-foundation) 
+- [Foundation's Edge](/booknotes/foundations-edge)
+- [Foundation and Earth](/booknotes/foundation-and-earth)
 
 
 Prequels: 
 
-- [Prelude to Foundation]() 
-- [Forward the Foundation]()
+- [Prelude to Foundation](/booknotes/foundation-prelude-to-foundation) 
+- [Forward the Foundation](/booknotes/foundation-forward-the-foundation)

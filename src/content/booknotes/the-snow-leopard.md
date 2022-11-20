@@ -9,7 +9,7 @@ tags: ["novel", "made-me-think", "traveling", "philosophy", "buddhism", "art-of-
 summary: false
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Foreword

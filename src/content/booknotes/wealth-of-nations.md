@@ -9,7 +9,7 @@ tags: []
 summary: true
 detailedNotes: false
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary: 

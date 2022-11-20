@@ -9,7 +9,7 @@ tags: ["philosophy", "fiction", "novel", "made-me-think"]
 summary: true
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary: 

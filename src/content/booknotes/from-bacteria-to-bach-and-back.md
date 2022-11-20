@@ -9,7 +9,7 @@ tags: ["evolution", "mind", "made-me-think", "non-fiction"]
 summary: true
 detailedNotes: true
 amazonLink: ""
-
+amazonAffiliateLink: ""
 ---
 
 ## Summary: 

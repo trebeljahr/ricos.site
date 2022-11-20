@@ -14,8 +14,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    console.log("New signup:", req.body);
-
     const newMember = {
       email: req.body.email,
       name: req.body.name || "",
@@ -23,7 +21,6 @@ export default async function handler(
     };
 
     if (await isAlreadySubscribed(newMember.email)) {
-      console.log("Member already subscribed", newMember.email);
       return res.json({
         success: "You were already signed up to the newsletter.",
       });

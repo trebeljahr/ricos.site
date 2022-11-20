@@ -44,7 +44,6 @@ const ImageRenderer = (props: { children?: any; node?: any }) => {
   const { node } = props;
   const image = node;
   const metastring = image.properties.alt;
-  console.log(metastring);
 
   const alt = metastring?.replace(/ *\/[^)]*\/ */g, "");
 

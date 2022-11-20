@@ -43,11 +43,6 @@ const NextAndPrevArrows = ({
 };
 
 const Newsletter = ({ newsletter, slug, nextPost, prevPost }: Props) => {
-  console.log(
-    "aspect ratio: ",
-    newsletter.cover.width || 1,
-    newsletter.cover.height || 1
-  );
   return (
     <Layout description={newsletter.excerpt} title={`Newsletter ${slug}`}>
       <article className="newsletter-article">
@@ -100,11 +95,8 @@ export async function getStaticProps({ params: { slug } }: Params) {
   let nextPost: number | null = newsletterNumber + 1;
   let prevPost: number | null = newsletterNumber - 1;
 
-  console.log(nextPost, prevPost);
-
   nextPost = nextPost > allNewsletters.length ? null : nextPost;
   prevPost = prevPost < 1 ? null : prevPost;
-  console.log(nextPost, prevPost);
 
   return {
     props: {
@@ -120,16 +112,11 @@ export async function getStaticPaths() {
   const allNewsletters = await getAllNewsletters(["slug"]);
 
   return {
-    paths: allNewsletters.map((newsletter) => {
-      const params = {
+    paths: allNewsletters.map((newsletter) => ({
+      params: {
         slug: newsletter.slug,
-      };
-
-      console.log(params);
-      return {
-        params,
-      };
-    }),
+      },
+    })),
     fallback: false,
   };
 }

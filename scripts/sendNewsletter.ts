@@ -108,7 +108,7 @@ async function main() {
   const webversion = `${HOST}/newsletters/${newsletterNumber}`;
 
   const defaultExcerpt =
-    "Live and Learn is a Newsletter filled with awesome links, and so much more...";
+    "Live and Learn is a Newsletter filled with awesome links...";
 
   const realTitle = `${title} | Live and Learn #${newsletterNumber}`;
 
@@ -127,15 +127,23 @@ async function main() {
     subject: `🌱 ${title} | #${newsletterNumber}`,
     html: htmlEmail,
     text: `
-      🌱 ${realTitle}
-      ${excerpt}
-      You can read also [read this on the web](${webversion}).
-      ![${cover.alt}](${cover.src})
-      ${content}
-      [Unsubscribe](%mailing_list_unsubscribe_url%)
+🌱 ${realTitle}
 
-      Thanks for reading plaintext emails. You're cool!
-  `,
+
+${excerpt}
+
+You can read also [read this on the web](${webversion}).
+
+![${cover.alt}](${cover.src})
+
+${content}
+
+[Unsubscribe](%mailing_list_unsubscribe_url%)
+
+Thanks for reading plaintext emails. You're cool!
+
+
+`,
   };
 
   await sendEmail(data);

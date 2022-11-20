@@ -110,9 +110,11 @@ async function main() {
   const defaultExcerpt =
     "Live and Learn is a Newsletter filled with awesome links, and so much more...";
 
+  const realTitle = `${title} | Live and Learn #${newsletterNumber}`;
+
   const htmlEmail = template({
     content: file.value,
-    title: `${title} | Live and Learn #${newsletterNumber}`,
+    title: realTitle,
     excerpt: excerpt || defaultExcerpt,
     coverImageSrc: `${HOST}${cover.src}`,
     coverImageAlt: cover.alt,
@@ -124,7 +126,16 @@ async function main() {
     to: newsletterListMail,
     subject: `🌱 ${title} | #${newsletterNumber}`,
     html: htmlEmail,
-    text: mdFileRaw,
+    text: `
+      🌱 ${realTitle}
+      ${excerpt}
+      You can read also [read this on the web](${webversion}).
+      ![${cover.alt}](${cover.src})
+      ${content}
+      [Unsubscribe](%mailing_list_unsubscribe_url%)
+
+      Thanks for reading plaintext emails. You're cool!
+  `,
   };
 
   await sendEmail(data);

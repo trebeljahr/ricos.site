@@ -9,11 +9,40 @@
   width: 100%;
 }
 
+.page-arrow {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  top: 50%;
+  color: black;
+  background: var(--light-blue);
+  width: 50px;
+  height: 50px;
+}
+
+.page-arrow:hover {
+  color: black;
+}
+
+.page-arrow:hover {
+  background-color: var(--blue);
+}
+
+.page-arrow.right {
+  right: 0px;
+}
+
+.page-arrow.left {
+  left: 0px;
+}
+
 .newsletter-article .postImgWrapper,
 .header-image-container {
-  height: 780px;
-  width: 780px;
+  max-width: 780px;
 }
+
 .newsletter .error {
   color: var(--dark-red);
 }

@@ -633,6 +633,12 @@ li {
 .icon-link:before {
   content: "\e9cb";
 }
+.icon-arrow-right:before {
+  content: "\ea3c";
+}
+.icon-arrow-left:before {
+  content: "\ea40";
+}
 .icon-arrow-up:before {
   content: "\ea3a";
 }

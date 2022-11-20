@@ -2,7 +2,8 @@
 title: "Why do I like traveling?"
 subtitle: "Diving down into subconscious reasons"
 excerpt: "Reading through the notes I wrote while I was traveling for the first time I can not help myself but wonder at the feelings surging through me..."
-cover: "/assets/blog/laos-rice-field.jpg"
+cover: 
+  src: "/assets/blog/laos-rice-field.jpg"
 date: "2020-06-23"
 author:
   name: Rico Trebeljahr

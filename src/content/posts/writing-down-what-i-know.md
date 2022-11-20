@@ -2,7 +2,8 @@
 title: "Writing down what I know"
 subtitle: "Should I become a writer?"
 excerpt: "Something that I am playing with as a thought is to write down all of the things that I know and the knowledge that I accumulate in the form of blog posts."
-cover: "/assets/blog/writing-down-what-i-know.jpg"
+cover: 
+  src: "/assets/blog/writing-down-what-i-know.jpg"
 date: "2021-03-16T05:35:07.322Z"
 author:
   name: Rico Trebeljahr

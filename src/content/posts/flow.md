@@ -2,7 +2,8 @@
 title: "A sense of Flow"
 subtitle: "The Feeling of Bliss"
 excerpt: "An idea that shapes my view of the world is the experience of flow. Flow is losing yourself in an activity. It's about doing something that is just on the edge of your abilities. Something that pushes you."
-cover: "/assets/blog/water.jpg"
+cover: 
+  src: "/assets/blog/water.jpg"
 date: "2020-03-20T05:35:07.322Z"
 author:
   name: Rico Trebeljahr

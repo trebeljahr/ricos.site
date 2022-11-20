@@ -2,7 +2,8 @@
 title: "Computer Games"
 subtitle: "Thoughts of somebody who is barely controlling his addiction."
 excerpt: "Are computer games a valuable way to spend my time? At some level I feel they are, but why do I get a bad feeling when playing too much? Why don't I get such feelings when traveling or listening to music?"
-cover: "/assets/blog/keyboard.jpg"
+cover: 
+  src: "/assets/blog/keyboard.jpg"
 date: "2020-03-17T05:35:07.322Z"
 author:
   name: Rico Trebeljahr

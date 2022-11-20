@@ -2,7 +2,8 @@
 title: "So many awesome things to do"
 subtitle: "And why to do them"
 excerpt: "There are so many things in this highly complex world, that humans can devote their time to, so many new things and skills to be learned, so much to discover, to do..."
-cover: "/assets/blog/write-code.png"
+cover: 
+  src: "/assets/blog/write-code.png"
 date: "2020-03-10T05:35:07.322Z"
 author:
   name: Rico Trebeljahr

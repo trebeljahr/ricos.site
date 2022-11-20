@@ -2,7 +2,8 @@
 title: "Decisions"
 subtitle: "And why making them is hard"
 excerpt: "Decisions are the most important thing in life. And yet there is a fundamental problem with decisions... You don't make them."
-cover: "/assets/blog/brain.jpg"
+cover: 
+  src: "/assets/blog/brain.jpg"
 date: "2021-09-03"
 author:
   name: Rico Trebeljahr

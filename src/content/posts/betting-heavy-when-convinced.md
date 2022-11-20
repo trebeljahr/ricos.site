@@ -2,7 +2,8 @@
 title: "Betting Heavy when convinced"
 subtitle: "And other such investment advice"
 excerpt: "This article is a consortium of things that I think about how or why to invest money. My opinion on investing is fundamentally split, between thinking of it as a waste of time and a necessary evil."
-cover: "/assets/blog/tall-buildings.jpg"
+cover: 
+  src: "/assets/blog/tall-buildings.jpg"
 date: "2021-09-02"
 author:
   name: Rico Trebeljahr

@@ -2,7 +2,8 @@
 title: "Fractal Garden Learnings – Part 1"
 subtitle: "Ideas on how to work effectively"
 excerpt: "In September I finished my first 1-month project. During the process I learned a lot about how I approach work and this post is a reflection and documentation on the process."
-cover: "/assets/blog/mandelbrot.jpg"
+cover: 
+  src: "/assets/blog/mandelbrot.jpg"
 date: "2022-10-05"
 author:
   name: Rico Trebeljahr

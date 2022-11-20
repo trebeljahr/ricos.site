@@ -2,7 +2,8 @@
 title: "Open AI's Codex"
 subtitle: "The only way out are ideas"
 excerpt: "A few days ago I have watched the OpenAI Codex demo and I am still thinking about what to do, because it means that I am going to lose my job as a software engineer pretty soon."
-cover: "/assets/blog/open-ai-avatar.png"
+cover: 
+  src: "/assets/blog/open-ai-avatar.png"
 date: "2021-10-06"
 author:
   name: Rico Trebeljahr

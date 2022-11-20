@@ -1,7 +1,8 @@
 ---
 title: "Feynman Note Everything - Part II"
 excerpt: "How to consume content in a way that helps you understand by leaving a papertrail"
-cover: "/assets/blog/tall-buildings.jpg"
+cover: 
+  src: "/assets/blog/tall-buildings.jpg"
 date: "2022-16-22"
 author:
   name: Rico Trebeljahr

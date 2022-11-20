@@ -2,7 +2,8 @@
 title: "Morning Meditation"
 subtitle: "Noticing Beauty in the World"
 excerpt: "It's September now in Berlin, and it starts to get cold. The fields are still green and damp from the cold night. But the sun has retained its energy from the summer. When it comes out it evaporates the dew over the fields and meadows. Clouds are moving over the sky."
-cover: "/assets/blog/morning.jpg"
+cover: 
+  src: "/assets/blog/morning.jpg"
 date: "2022-09-18"
 author:
   name: Rico Trebeljahr

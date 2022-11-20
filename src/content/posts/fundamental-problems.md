@@ -2,7 +2,8 @@
 title: "Fundamental Problems"
 subtitle: "Things that keep us from living a fulfilled and good life"
 excerpt: "When I think about life there are many problems I have, problems that I need to solve, if I want to live a fulfilled and good life. And I think that many people share these problems because they are fundamental problems."
-cover: "/assets/blog/puzzle.jpg"
+cover: 
+  src: "/assets/blog/puzzle.jpg"
 date: "2020-03-16T05:35:07.322Z"
 author:
   name: Rico Trebeljahr

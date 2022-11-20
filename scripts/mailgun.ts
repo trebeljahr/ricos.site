@@ -8,7 +8,9 @@ const mailgun = new Mailgun(formData);
 
 const DOMAIN = "newsletter.trebeljahr.com";
 export const newsletterListMail =
-  process.env.NODE_ENV === "production" ? `hi@${DOMAIN}` : `test@${DOMAIN}`;
+  process.env.NODE_ENV === "production"
+    ? `hi@${DOMAIN}`
+    : process.env.TO_CUSTOM_MAIL || `test@${DOMAIN}`;
 
 console.log(`Sending Newsletter to ${newsletterListMail}`);
 

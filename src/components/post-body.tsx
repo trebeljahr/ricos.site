@@ -10,6 +10,7 @@ import rehypeHighlight from "rehype-highlight";
 
 type Props = {
   content: string;
+  excerpt?: string;
 };
 
 type HeadingResolverProps = {
@@ -110,9 +111,10 @@ const MarkdownRenderers: object = {
   img: ImageRenderer,
 };
 
-const PostBody = ({ content }: Props) => {
+const PostBody = ({ content, excerpt }: Props) => {
   return (
     <div className="main-text">
+      {excerpt && <p>{excerpt}</p>}
       <ReactMarkdown
         remarkPlugins={[remarkToc, remarkGfm]}
         rehypePlugins={[rehypeRaw, rehypeHighlight]}

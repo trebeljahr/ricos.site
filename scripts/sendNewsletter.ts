@@ -47,7 +47,7 @@ async function main() {
 
   const {
     content,
-    data: { cover, title },
+    data: { cover, title, excerpt },
   } = matter(mdFileRaw);
 
   function addHost(url: any) {
@@ -58,8 +58,6 @@ async function main() {
 
   function rewrite(node: any) {
     if (node.type === "element" && node.tagName === "img") {
-      console.log(node.properties);
-
       node.properties = {
         ...node.properties,
         alt: node?.properties?.alt?.replace(/\/[^\/]*\//g, "") || "",
@@ -108,11 +106,14 @@ async function main() {
   const template = Handlebars.compile(emailHandlebarsFile);
 
   const webversion = `${HOST}/newsletters/${newsletterNumber}`;
-  const realTitle = `${title} | Live and Learn #${newsletterNumber}`;
+
+  const defaultExcerpt =
+    "Live and Learn is a Newsletter filled with awesome links, and so much more...";
 
   const htmlEmail = template({
     content: file.value,
-    title: realTitle,
+    title: `${title} | Live and Learn #${newsletterNumber}`,
+    excerpt: excerpt || defaultExcerpt,
     coverImageSrc: `${HOST}${cover.src}`,
     coverImageAlt: cover.alt,
     webversion,
@@ -121,7 +122,7 @@ async function main() {
   const data = {
     from: "Rico Trebeljahr <rico@trebeljahr.com>",
     to: newsletterListMail,
-    subject: `${realTitle}`,
+    subject: `🌱 ${title} | #${newsletterNumber}`,
     html: htmlEmail,
     text: mdFileRaw,
   };

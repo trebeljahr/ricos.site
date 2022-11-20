@@ -46,20 +46,20 @@ const Newsletter = ({ newsletter, slug, nextPost, prevPost }: Props) => {
   return (
     <Layout description={newsletter.excerpt} title={`Live and Learn #${slug}`}>
       <article className="newsletter-article">
-        <PostHeader title={newsletter.title + " – Live and Learn #" + slug} />
-        <div className="header-image-container">
-          <Image
-            priority
-            src={newsletter.cover.src}
-            layout="responsive"
-            width={newsletter.cover.width || 1}
-            height={newsletter.cover.height || 1}
-            objectFit="cover"
-            alt={newsletter.cover.alt}
-          />
-        </div>
         <section className="post-body main-section">
-          <PostBody content={newsletter.content} />
+          <PostHeader title={newsletter.title + " – Live and Learn #" + slug} />
+          <div className="header-image-container">
+            <Image
+              priority
+              src={newsletter.cover.src}
+              layout="responsive"
+              width={newsletter.cover.width || 1}
+              height={newsletter.cover.height || 1}
+              objectFit="cover"
+              alt={newsletter.cover.alt}
+            />
+          </div>
+          <PostBody content={newsletter.content} excerpt={newsletter.excerpt} />
         </section>
 
         <section className="main-section">
@@ -87,6 +87,7 @@ export async function getStaticProps({ params: { slug } }: Params) {
     "content",
     "title",
     "cover",
+    "excerpt",
   ]);
 
   const allNewsletters = await getAllNewsletters(["slug"]);

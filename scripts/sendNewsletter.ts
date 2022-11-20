@@ -105,11 +105,11 @@ async function main() {
   const template = Handlebars.compile(emailHandlebarsFile);
 
   const webversion = `${HOST}/newsletters/${newsletterNumber}`;
-  const realTitle = `${title} | #${newsletterNumber}`;
+  const realTitle = `${title} | Live and Learn #${newsletterNumber}`;
 
   const htmlEmail = template({
     content: file.value,
-    title,
+    title: realTitle,
     coverImageSrc: `${HOST}${cover.src}`,
     coverImageAlt: cover.alt,
     webversion,

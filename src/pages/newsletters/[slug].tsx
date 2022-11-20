@@ -44,7 +44,7 @@ const NextAndPrevArrows = ({
 
 const Newsletter = ({ newsletter, slug, nextPost, prevPost }: Props) => {
   return (
-    <Layout description={newsletter.excerpt} title={`Newsletter ${slug}`}>
+    <Layout description={newsletter.excerpt} title={`Live and Learn #${slug}`}>
       <article className="newsletter-article">
         <PostHeader title={newsletter.title + " – Live and Learn #" + slug} />
         <div className="header-image-container">

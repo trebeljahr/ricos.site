@@ -76,8 +76,9 @@ export const NewsletterForm = () => {
         <>
           <h2>Subscribe to my newsletter</h2>
           <p>
-            Twice a month. 1 Booknote. 1 Photo. 1 Post. Awesomeness bundled
-            together in one heck of a Newsletter. No spam. No noise.{" "}
+            Twice a month. A quote, a photo, a booknote and some Links.
+            Awesomeness bundled together in one heck of a Newsletter. No spam.
+            No noise.{" "}
           </p>
 
           {error && <p className="error">{error}</p>}

@@ -52,7 +52,6 @@ button {
   display: block;
   width: 100%;
   position: relative;
-  height: 40vh;
   margin: 1rem 0;
 }
 
@@ -644,6 +643,12 @@ li {
 .icon-link:before {
   content: "\e9cb";
 }
+.icon-arrow-right:before {
+  content: "\ea3c";
+}
+.icon-arrow-left:before {
+  content: "\ea40";
+}
 .icon-arrow-up:before {
   content: "\ea3a";
 }
@@ -690,10 +695,6 @@ li {
   }
 
   .header-image-container {
-    height: 70vh;
-  }
-
-  .postImgWrapper {
     height: 70vh;
   }
 

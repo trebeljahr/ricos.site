@@ -36,7 +36,7 @@ export const PostPreviewImage = ({
 }: PreviewImageProps) => {
   return (
     <div className="post-preview-image">
-      <PostCoverImage title={title} src={src} priority={priority} />
+      <PostCoverImage title={title} src={src} priority={priority} alt="" />
     </div>
   );
 };
@@ -53,7 +53,7 @@ export const PostPreview = ({
   return (
     <Link as={`/posts/${slug}`} href={`/posts/${slug}`}>
       <a className={isHeroPost ? "hero-post-preview" : "post-preview"}>
-        <PostPreviewImage title={title} src={cover} priority={isHeroPost} />
+        <PostPreviewImage title={title} src={cover.src} priority={isHeroPost} />
         <PostPreviewText title={title} date={date} excerpt={excerpt} />
       </a>
     </Link>

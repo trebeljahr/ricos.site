@@ -12,7 +12,7 @@ import rehypePresetMinify from "rehype-preset-minify";
 import rehypeStringify from "rehype-stringify";
 import matter from "gray-matter";
 
-const newsletterNumber = 4;
+const newsletterNumber = 5;
 const LIVE_HOST = "https://trebeljahr.com";
 
 const HOST =
@@ -47,7 +47,7 @@ async function main() {
 
   const {
     content,
-    data: { cover, title },
+    data: { cover, title, excerpt },
   } = matter(mdFileRaw);
 
   function addHost(url: any) {
@@ -60,6 +60,7 @@ async function main() {
     if (node.type === "element" && node.tagName === "img") {
       node.properties = {
         ...node.properties,
+        alt: node?.properties?.alt?.replace(/\/[^\/]*\//g, "") || "",
         width: "600",
         height: "",
         border: "0",
@@ -105,11 +106,16 @@ async function main() {
   const template = Handlebars.compile(emailHandlebarsFile);
 
   const webversion = `${HOST}/newsletters/${newsletterNumber}`;
-  const realTitle = `${title} | #${newsletterNumber}`;
+
+  const defaultExcerpt =
+    "Live and Learn is a Newsletter filled with awesome links...";
+
+  const realTitle = `${title} | Live and Learn #${newsletterNumber}`;
 
   const htmlEmail = template({
     content: file.value,
-    title,
+    title: realTitle,
+    excerpt: excerpt || defaultExcerpt,
     coverImageSrc: `${HOST}${cover.src}`,
     coverImageAlt: cover.alt,
     webversion,
@@ -118,9 +124,26 @@ async function main() {
   const data = {
     from: "Rico Trebeljahr <rico@trebeljahr.com>",
     to: newsletterListMail,
-    subject: `${realTitle}`,
+    subject: `🌱 ${title} | #${newsletterNumber}`,
     html: htmlEmail,
-    text: mdFileRaw,
+    text: `
+🌱 ${realTitle}
+
+
+${excerpt}
+
+You can read also [read this on the web](${webversion}).
+
+![${cover.alt}](${cover.src})
+
+${content}
+
+[Unsubscribe](%mailing_list_unsubscribe_url%)
+
+Thanks for reading plaintext emails. You're cool!
+
+
+`,
   };
 
   await sendEmail(data);

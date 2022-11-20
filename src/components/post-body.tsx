@@ -10,6 +10,7 @@ import rehypeHighlight from "rehype-highlight";
 
 type Props = {
   content: string;
+  excerpt?: string;
 };
 
 type HeadingResolverProps = {
@@ -44,7 +45,11 @@ const ImageRenderer = (props: { children?: any; node?: any }) => {
   const { node } = props;
   const image = node;
   const metastring = image.properties.alt;
-  const alt = metastring?.replace(/ *\{[^)]*\} */g, "");
+
+  const alt = metastring?.replace(/ *\/[^)]*\/ */g, "");
+
+  const width = metastring?.match(/\/width: (.*?)\//)?.pop() || 1;
+  const height = metastring?.match(/\/height: (.*?)\//)?.pop() || 1;
 
   const isPriority = metastring?.toLowerCase().match("{priority}");
   const hasCaption = metastring?.toLowerCase().includes("{caption:");
@@ -55,10 +60,12 @@ const ImageRenderer = (props: { children?: any; node?: any }) => {
       <span className="postImgWrapper">
         <Image
           src={image.properties.src}
-          layout="fill"
+          layout="responsive"
           objectFit="cover"
           alt={alt}
           priority={isPriority}
+          width={width}
+          height={height}
           // placeholder="blur"
         />
       </span>
@@ -104,9 +111,10 @@ const MarkdownRenderers: object = {
   img: ImageRenderer,
 };
 
-const PostBody = ({ content }: Props) => {
+const PostBody = ({ content, excerpt }: Props) => {
   return (
     <div className="main-text">
+      {excerpt && <p>{excerpt}</p>}
       <ReactMarkdown
         remarkPlugins={[remarkToc, remarkGfm]}
         rehypePlugins={[rehypeRaw, rehypeHighlight]}

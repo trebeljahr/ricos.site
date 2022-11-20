@@ -32,28 +32,41 @@ export default function EmailSignupSuccess() {
   const { width, height } = useWindowSize();
 
   return (
-    <Layout
-      title="Email Signup Success"
-      description="This page is displayed when a user has successfully completed signup for the trebeljahr.com newsletter"
-    >
-      {width && height && <Confetti width={width} height={height} />}
-      <h1>Success</h1>
-      <p>
-        Welcome to my newsletter, you should get a welcome newsletter into your
-        inbox shortly. Meanwhile, you can still read all of the older
-        newsletters that you missed so far at{" "}
-        <Link as={`/newsletters`} href="/newsletters">
-          <a>/newsletters</a>
-        </Link>
-        .
-      </p>
-      <p>
-        Or alternatively check out some of my other writing at{" "}
-        <Link as={`/posts`} href="/posts">
-          <a>/posts</a>
-        </Link>
-        .
-      </p>
-    </Layout>
+    <>
+      {width && height && (
+        <Confetti
+          width={width}
+          height={height}
+          style={{ position: "absolute", top: 0, left: 0, width, height }}
+        />
+      )}
+
+      <Layout
+        title="Email Signup Success"
+        description="This page is displayed when a user has successfully completed signup for the trebeljahr.com newsletter"
+      >
+        <article>
+          <section className="main-section">
+            <h1>Success</h1>
+            <p>
+              Welcome to my newsletter, emails go out Sunday every two weeks.
+              Cant wait? You can still read all of the older newsletters that
+              you missed so far at{" "}
+              <Link as={`/newsletters`} href="/newsletters">
+                <a>/newsletters</a>
+              </Link>
+              .
+            </p>
+            <p>
+              Or alternatively check out some of my other writing at{" "}
+              <Link as={`/posts`} href="/posts">
+                <a>/posts</a>
+              </Link>
+              .
+            </p>
+          </section>
+        </article>
+      </Layout>
+    </>
   );
 }

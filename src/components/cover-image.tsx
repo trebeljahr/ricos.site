@@ -4,15 +4,21 @@ type Props = {
   title: string;
   src: string;
   priority?: boolean;
+  alt?: string;
 };
 
-export const PostCoverImage = ({ src, title, priority = false }: Props) => {
+export const PostCoverImage = ({
+  src,
+  title,
+  priority = false,
+  alt,
+}: Props) => {
   return (
     <Image
       src={src}
       layout="fill"
       objectFit="cover"
-      alt={"Cover for post: " + title}
+      alt={alt || "Cover for post: " + title}
       // placeholder="blur"
       priority={priority}
     />

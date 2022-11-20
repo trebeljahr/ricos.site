@@ -6,6 +6,7 @@ import { Post as PostType } from "../../@types/post";
 import Image from "next/image";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import Link from "next/link";
+import PostHeader from "../../components/post-header";
 
 type Props = {
   newsletter: PostType;
@@ -42,15 +43,24 @@ const NextAndPrevArrows = ({
 };
 
 const Newsletter = ({ newsletter, slug, nextPost, prevPost }: Props) => {
+  console.log(
+    "aspect ratio: ",
+    newsletter.cover.width || 1,
+    newsletter.cover.height || 1
+  );
   return (
     <Layout description={newsletter.excerpt} title={`Newsletter ${slug}`}>
       <article className="newsletter-article">
+        <PostHeader title={newsletter.title + " – Live and Learn #" + slug} />
         <div className="header-image-container">
           <Image
-            src={`/assets/newsletter/${slug}.jpg`}
-            layout="fill"
+            priority
+            src={newsletter.cover.src}
+            layout="responsive"
+            width={newsletter.cover.width || 1}
+            height={newsletter.cover.height || 1}
             objectFit="cover"
-            alt={`Cover for Newsletter #${slug}`}
+            alt={newsletter.cover.alt}
           />
         </div>
         <section className="post-body main-section">
@@ -78,7 +88,11 @@ type Params = {
 };
 
 export async function getStaticProps({ params: { slug } }: Params) {
-  const newsletter = await getNewsletterBySlug(slug + ".md", ["content"]);
+  const newsletter = await getNewsletterBySlug(slug + ".md", [
+    "content",
+    "title",
+    "cover",
+  ]);
 
   const allNewsletters = await getAllNewsletters(["slug"]);
   const newsletterNumber = parseInt(slug);

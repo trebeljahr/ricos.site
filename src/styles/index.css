@@ -52,7 +52,6 @@ button {
   display: block;
   width: 100%;
   position: relative;
-  height: 40vh;
   margin: 1rem 0;
 }
 
@@ -685,10 +684,6 @@ li {
   }
 
   .header-image-container {
-    height: 70vh;
-  }
-
-  .postImgWrapper {
     height: 70vh;
   }
 

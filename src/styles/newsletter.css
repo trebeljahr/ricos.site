@@ -40,7 +40,10 @@
 
 .newsletter-article .postImgWrapper,
 .header-image-container {
+  /* max-width: 780px; */
   max-width: 780px;
+  height: auto;
+  /* height: 100%; */
 }
 
 .newsletter .error {

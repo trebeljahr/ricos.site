@@ -5,7 +5,7 @@ export type Post = {
   slug: string;
   title: string;
   date: string;
-  cover: string;
+  cover: { src: string; alt: string; width: string; height: string };
   author: Author;
   excerpt: string;
   content: string;

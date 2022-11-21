@@ -5,7 +5,7 @@ slug: "the-art-of-learning"
 bookAuthor: "Josh Waitzkin"
 rating: 10
 done: true
-tags: ["learning", "self-help", "art-of-living", "made-me-think", "self-improvement"]
+tags: ["learning", "self-help", "art-of-living", "made-me-think", "self-improvement", "masterpiece" ]
 summary: true
 detailedNotes: true
 amazonLink: ""
@@ -23,7 +23,7 @@ Learning is about change. It's about analyzing, where you are, where you want to
 
 Ideas of deep insights can be transferred between subjects. There is something connecting mastery across different fields. Things learned in one, can be subconsciously molten into other areas that we never thought would benefit from those experiences. The experience is the connecting factor. We play chess, while our brain plays Tai Chi. And our chess is great because of it. 
 
-Mastery happens when actions becomes instinctual. When we are at our best, we don't think. Our minds are so prepared, that things happen. Actions flow, where we don't quite "know" and "understand" in that particular moment, where they come from. In retrospect, we dissect these moments, trying to understand them on a rational level. Further feeding the subconcious to enable yet more insight experiences, on ever higher levels. This again, is learning, change and growth. And the process of dissecting, how we know, yet don't know, again, is painful. 
+Mastery happens when actions becomes instinctual. When we are at our best, we don't think. Our minds are so prepared, that things happen. Actions flow, where we don't quite "know" and "understand" in that particular moment, where they come from. In retrospect, we dissect these moments, trying to understand them on a rational level. Further feeding the subconcious to enable yet more insight experiences, on ever higher levels. This again, is learning, change and growth. And the process of dissecting, how we know, yet don't know, again, is painful. The only thing that allows us to overcome this pain is the love for the activity itself. If we love an activity enough, that the pain, of not being good at it is greater than the pain of change, we can achieve mastery within it. Then we'll do whatever is necessary.
 
 Losing is an opportunity to learn – Anything is an opportunity to learn. 
 
@@ -39,7 +39,7 @@ There are no excuses on the path to mastery. Human minds and bodies can overcome
 
 Routines are powerful. We can use them to build "triggers". Little rituals that influence the mind in extreme ways. The idea is to always have the same set of behaviors, followed by the state that we want to be in. After some time, the routine will trigger the mental state. Then the routine becomes a trigger. When the routine becomes shortened, a single breath can completely alter the state of mind we are in. Ready to perform, to show mastery, to learn. 
 
-This book changed me. It's one of the best I've read, interesting from a philosophical, biographical and personal point of view. And the lessons of learning within it, are inspiring and I think, true. I hope my notes do justice to the book, definitely pick up a copy.
+This book changed me. It's one of the best I've read, interesting from a philosophical, biographical and personal point of view. And the lessons of learning within it, are inspiring and I think, true. There is a small infinity of wisdom within these pages and I hope my notes do justice to the book, definitely pick up a copy and read the whole thing yourself. 
 
 ## Detailed Notes
 ## Introduction
@@ -243,11 +243,12 @@ Internalizing technical concepts and making them come together in the subconscio
 
 ### Chapter 20 - Taiwan
 
-One of the craziest descriptions of a martial arts tournament I have ever read. The experience just drips from the pages, thick and juicy...
+One of the craziest descriptions of a martial arts tournament I have ever read. The experience just drips from the pages...
 
 ### Afterword
 
-> If I have learned anything over my first twenty-nine years, it is that we cannot calculate our important contests, adventures, and great loves to the end
+> If I have learned anything over my first twenty-nine years, it is that we cannot calculate our important contests, adventures, and great loves to the end.
+
 The only thing we can  count on is getting surprised. No matter how much preparation we do, in the real tests of our lives we'll be in unfamiliar terrain. Conditions might not be calm or reasonable. It may feel as though the whole world is stacked against us. This is when we have to perform better than we ever conceived of performing. I believe the key is to have prepared in a manner that allows for inspiration to have laid the foundation for us to create under the wildest pressure we ever imagined. 
 
-> If my approach feels right, take it, hone it, give it your flavor. Leave my numbers behind. In the end, mastery involves discovering the most resonant information and integrating it do deeply and fully it disappears and allows us to fly free. 
+> If my approach feels right, take it, hone it, give it your flavor. Leave my numbers behind. In the end, mastery involves discovering the most resonant information and integrating it so deeply and fully it disappears and allows us to fly free. 

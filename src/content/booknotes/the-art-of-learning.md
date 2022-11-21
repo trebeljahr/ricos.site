@@ -3,15 +3,45 @@ title: "The Art of Learning"
 bookCover: "/assets/book-covers/the-art-of-learning.jpg"
 slug: "the-art-of-learning"
 bookAuthor: "Josh Waitzkin"
-rating: 9
+rating: 10
 done: true
 tags: ["learning", "self-help", "art-of-living", "made-me-think", "self-improvement"]
-summary: false
+summary: true
 detailedNotes: true
 amazonLink: ""
 amazonAffiliateLink: ""
 ---
 
+## Summary
+
+Mastery is something everybody can achieve if working *really* hard towards it. And the way towards mastery is rewarding and *beautiful*. A life of striving, is a life well lived and worth living. What we strive towards is not important, the striving itself, the pushing of our boundaries and learning who we are is. 
+On the way, we learn about ourselves. That's what makes it worthwhile. In a way, pushing yourself, to see how far you can grow, is a way of introspecting on the human condition. It's a way of living. It's an art. The Art of Learning.
+
+## Main Ideas
+
+Learning is about change. It's about analyzing, where you are, where you want to go, and then implementing the necessary actions to get there. However, that kind of growing and learning is very very painful. Because it involves change. And change is something we want to subconsciously avoid. That's what makes it painful. We like to think of ourselves as already complete, as good enough. That is a lie however. A lie, that stands in the way of greatness. It is a self-protection in that sense that prevents us from growing. Repeatedly becoming aware of this lie, shifting ourselves mentally, to accepting the pain of how much we suck at something is the key to learning. Then we can work towards getting better in an endless upward looping process. This loop is at the heart of learning and mastery. It's what Ray Dalio [expresses in his Principles](/booknotes/principles).
+
+Ideas of deep insights can be transferred between subjects. There is something connecting mastery across different fields. Things learned in one, can be subconsciously molten into other areas that we never thought would benefit from those experiences. The experience is the connecting factor. We play chess, while our brain plays Tai Chi. And our chess is great because of it. 
+
+Mastery happens when actions becomes instinctual. When we are at our best, we don't think. Our minds are so prepared, that things happen. Actions flow, where we don't quite "know" and "understand" in that particular moment, where they come from. In retrospect, we dissect these moments, trying to understand them on a rational level. Further feeding the subconcious to enable yet more insight experiences, on ever higher levels. This again, is learning, change and growth. And the process of dissecting, how we know, yet don't know, again, is painful. 
+
+Losing is an opportunity to learn – Anything is an opportunity to learn. 
+
+We are never complete, never finished. Mastery is deeper than our time.
+
+Learning moves up from the basics. Understand the basics, *really* understand them. Dissect them, drill them, *be* them. Once the basics are subconsciously there, the rest can flow from them. 
+
+Solid building blocks build good houses. Hence making good bricks is important. 
+
+And so it is with every skill where we want to become truly good at. Make smaller circles. 
+
+There are no excuses on the path to mastery. Human minds and bodies can overcome so so many things, there is nothing short of death that can happen to stop you from finding angles of dealing with it and using it as a way to learn more.
+
+Routines are powerful. We can use them to build "triggers". Little rituals that influence the mind in extreme ways. The idea is to always have the same set of behaviors, followed by the state that we want to be in. After some time, the routine will trigger the mental state. Then the routine becomes a trigger. When the routine becomes shortened, a single breath can completely alter the state of mind we are in. Ready to perform, to show mastery, to learn. 
+
+This book changed me. It's one of the best I've read, interesting from a philosophical, biographical and personal point of view. And the lessons of learning within it, are inspiring and I think, true. I hope my notes do justice to the book, definitely pick up a copy.
+
+## Detailed Notes
 ## Introduction
 
 > Chess was my friend. 
@@ -113,7 +143,7 @@ During intense introspection and learning of any skill there will come a moment,
 
 ## Part II - My Second Art
 
-Chapter 9 - Beginners Mind
+### Chapter 9 - Beginners Mind
 
 Breathing is important, in a world where we are constantly stressed we acquire bad breathing patterns, combined with our bad postures this makes a lot of our problems. Tai Chi is a way to relax those tensed up muscles, to inhale and exhale again in a natural pattern, loosening the tight stressed body and mind. But to learn from the great masters one also has to be aware, to look closely and not miss the subtle but powerful instructions full of wisdom. 
 

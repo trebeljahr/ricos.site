@@ -3,11 +3,23 @@ title: "Starquake"
 bookCover: "/assets/book-covers/starquake.jpg"
 slug: "starquake"
 bookAuthor: "Robert L. Forward"
-rating: 10
-done: false
+rating: 9
+done: true
 tags: []
-summary: false
+summary: true
 detailedNotes: false
 amazonLink: ""
 amazonAffiliateLink: ""
 ---
+
+## Summary
+
+This is the second part to a series, it starts with [**The Dragons Egg**](/booknotes/the-dragons-egg). 
+
+In this science fiction novel humans explore a neutron star and find life on it. The catch is, the life on the neutron star experiences time a lot differently. 
+
+They live extremely fast, undergoing millenia of their history, in mere seconds of human time. In this second book, the neutron star, collapses a little. Sometimes crystal defects in the ultra dense matter of a neutron star can't handle the enormous pressure anymore and the whole star shrinks to fill that space of the defect. Because of the enormous gravitational forces involved this collapse happens suddenly and with an extremely violent force, basically wiping out the alien civilization and the humans. 
+
+This book is about the fallout, and how some of the aliens try to re-use the technology of the past, while others revert to a brute force dark age style of life and conquest. And how the two eventually collide and fight.
+
+Overall this is an extraordinarily creative book. In general Robert L. Forward writes wonderful science fiction. I can only recommend his other books, like [**Rocheworld**](/booknotes/rocheworld). 

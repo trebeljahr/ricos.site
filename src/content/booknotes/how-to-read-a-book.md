@@ -3,10 +3,10 @@ title: "How to Read a Book"
 bookCover: "/assets/book-covers/how-to-read-a-book.jpg"
 slug: "how-to-read-a-book"
 bookAuthor: "Mortimer Adler"
-rating: 6
-done: false
+rating: 7
+done: true
 tags: [ "book", "productivity", "reading", "how-to", "self-help" ]
-summary: false
+summary: true
 detailedNotes: true
 amazonLink: ""
 amazonAffiliateLink: ""

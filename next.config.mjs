@@ -24,4 +24,7 @@ const withMDX = nextMDX({
 
 export default withMDX({
   pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
+  images: {
+    domains: [process.env.NEXT_PUBLIC_STATIC_FILE_URL],
+  },
 });

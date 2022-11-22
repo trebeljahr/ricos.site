@@ -1,4 +1,4 @@
-import Image from "next/legacy/image";
+import Image from "next/image";
 import Link from "next/link";
 import { AnchorHTMLAttributes, HTMLAttributes, ImgHTMLAttributes } from "react";
 import { ExternalLink } from "./ExternalLink";
@@ -18,27 +18,28 @@ export const ImageRenderer = ({
   const hasCaption = alt?.toLowerCase().includes("{caption:");
   const caption = alt?.match(/{caption: (.*?)}/)?.pop();
 
-  return (
-    <>
-      <span className="postImgWrapper markdown-image">
-        <Image
-          src={src}
-          layout="responsive"
-          objectFit="cover"
-          alt={realAlt}
-          priority={!!isPriority}
-          width={parseFloat(width)}
-          height={parseFloat(height)}
-          // placeholder="blur"
-        />
-      </span>
-      {hasCaption ? (
-        <div className="caption" aria-label={caption}>
-          {caption}
-        </div>
-      ) : null}
-    </>
-  );
+  return <>
+    <span className="postImgWrapper markdown-image">
+      <Image
+        src={src}
+        alt={realAlt}
+        priority={!!isPriority}
+        width={parseFloat(width)}
+        // placeholder="blur"
+        height={parseFloat(height)}
+        sizes="100vw"
+        style={{
+          width: "100%",
+          height: "auto",
+          objectFit: "cover"
+        }} />
+    </span>
+    {hasCaption ? (
+      <div className="caption" aria-label={caption}>
+        {caption}
+      </div>
+    ) : null}
+  </>;
 };
 
 export const LinkRenderer = ({

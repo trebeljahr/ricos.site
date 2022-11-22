@@ -3,7 +3,7 @@ import Layout from "../../components/layout";
 import { getAllNewsletters, getNewsletterBySlug } from "../../lib/api";
 import { ToTopButton } from "../../components/ToTopButton";
 import { Post as PostType } from "../../@types/post";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import Link from "next/link";
 import PostHeader from "../../components/post-header";
@@ -56,12 +56,15 @@ const Newsletter = ({ newsletter, slug, nextPost, prevPost }: Props) => {
             <Image
               priority
               src={newsletter.cover.src}
-              layout="responsive"
               width={parseFloat(newsletter.cover.width) || 1}
               height={parseFloat(newsletter.cover.height) || 1}
-              objectFit="cover"
               alt={newsletter.cover.alt}
-            />
+              sizes="100vw"
+              style={{
+                width: "100%",
+                height: "auto",
+                objectFit: "cover"
+              }} />
           </div>
           <PostBody content={newsletter.content} excerpt={newsletter.excerpt} />
         </section>

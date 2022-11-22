@@ -1,4 +1,4 @@
-import Image from "next/legacy/image";
+import Image from "next/image";
 type AvatarProps = {
   picture: string;
 };
@@ -9,11 +9,13 @@ const Avatar = ({ picture }: AvatarProps) => {
       <Image
         src={picture}
         alt="Picture of the author"
-        layout="fill"
-        objectFit="cover"
-        className="round"
         // placeholder="blur"
-      />
+        className="round"
+        fill
+        sizes="100vw"
+        style={{
+          objectFit: "cover"
+        }} />
     </div>
   );
 };

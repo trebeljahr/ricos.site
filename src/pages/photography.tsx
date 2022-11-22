@@ -1,6 +1,6 @@
 import Layout from "../components/layout";
 import { ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
-import Image from "next/legacy/image";
+import Image from "next/image";
 
 export default function Photography({
   imageFileNames,
@@ -16,12 +16,15 @@ export default function Photography({
           <Image
             key={index}
             src={src}
-            layout="responsive"
             width="6"
             height="4"
             alt={src}
-            objectFit="cover"
-          />
+            sizes="100vw"
+            style={{
+              width: "100%",
+              height: "auto",
+              objectFit: "cover"
+            }} />
         );
       })}
     </Layout>

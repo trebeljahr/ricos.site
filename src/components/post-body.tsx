@@ -1,7 +1,7 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import remarkToc from "remark-toc";
 import rehypeRaw from "rehype-raw";
 import { ExternalLink } from "./ExternalLink";
@@ -55,27 +55,28 @@ const ImageRenderer = (props: { children?: any; node?: any }) => {
   const hasCaption = metastring?.toLowerCase().includes("{caption:");
   const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
 
-  return (
-    <>
-      <span className="postImgWrapper">
-        <Image
-          src={image.properties.src}
-          layout="responsive"
-          objectFit="cover"
-          alt={alt}
-          priority={isPriority}
-          width={width}
-          height={height}
-          // placeholder="blur"
-        />
-      </span>
-      {hasCaption ? (
-        <div className="caption" aria-label={caption}>
-          {caption}
-        </div>
-      ) : null}
-    </>
-  );
+  return <>
+    <span className="postImgWrapper">
+      <Image
+        src={image.properties.src}
+        alt={alt}
+        priority={isPriority}
+        width={width}
+        // placeholder="blur"
+        height={height}
+        sizes="100vw"
+        style={{
+          width: "100%",
+          height: "auto",
+          objectFit: "cover"
+        }} />
+    </span>
+    {hasCaption ? (
+      <div className="caption" aria-label={caption}>
+        {caption}
+      </div>
+    ) : null}
+  </>;
 };
 
 const MarkdownRenderers: object = {

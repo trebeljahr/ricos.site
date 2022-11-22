@@ -8,12 +8,6 @@ import { NewsletterForm } from "../../components/newsletter-signup";
 import { ToTopButton } from "../../components/ToTopButton";
 import { ReadMore } from "../../components/more-stories";
 import { getRandom } from "src/lib/math/getRandom";
-import { NormalDemo } from "../../components/collision-detection/NormalDemo";
-import { DotProductDemo } from "../../components/collision-detection/DotProductDemo";
-import { UnitVectorDemo } from "../../components/collision-detection/UnitVectorDemo";
-import { RotationDemo } from "../../components/collision-detection/RotationDemo";
-import { PointAndVectorDemo } from "../../components/collision-detection/PointAndVectorDemo";
-import { SinAndCosineDemo } from "../../components/collision-detection/SinAndCosineDemo";
 
 type Props = {
   children: React.ReactNode;

@@ -11,10 +11,13 @@ type NavlinksProps = {
 
 export function Navlinks({ expanded, setExpanded }: NavlinksProps) {
   const router = useRouter();
+  console.log(router);
+  console.log(router.pathname);
+
   const activeStyle = (link: string, { exact = false } = {}) => {
-    let isUnderlined = router.pathname.startsWith(link);
+    let isUnderlined = router.asPath.startsWith(link);
     if (exact) {
-      isUnderlined = router.pathname === link;
+      isUnderlined = router.asPath === link;
     }
 
     return {
@@ -35,10 +38,9 @@ export function Navlinks({ expanded, setExpanded }: NavlinksProps) {
           as={link}
           href={link}
           onClick={() => close(link)}
-          style={activeStyle(link)}>
-
+          style={activeStyle(link)}
+        >
           {to}
-
         </Link>
       </li>
     );

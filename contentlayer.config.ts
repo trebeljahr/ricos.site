@@ -40,6 +40,23 @@ export const Post = defineDocumentType(() => ({
   },
 }));
 
+export const Page = defineDocumentType(() => ({
+  name: "Page",
+  filePathPattern: "pages/*.mdx",
+  contentType: "mdx",
+  fields: {
+    title: { type: "string", required: true },
+    subtitle: { type: "string", required: true },
+    description: { type: "string", required: true },
+  },
+  computedFields: {
+    slug: {
+      type: "string",
+      resolve: (doc: any) => doc._raw.sourceFileName.replace(".mdx", ""),
+    },
+  },
+}));
+
 import remarkGfm from "remark-gfm";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
@@ -52,7 +69,7 @@ import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 
 export default makeSource({
   contentDirPath: "src/content",
-  documentTypes: [Post],
+  documentTypes: [Post, Page],
   mdx: {
     remarkPlugins: [
       remarkFrontmatter,

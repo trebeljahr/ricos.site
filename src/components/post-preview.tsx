@@ -51,11 +51,16 @@ export const PostPreview = ({
   isHeroPost = false,
 }: Props) => {
   return (
-    <Link as={`/posts/${slug}`} href={`/posts/${slug}`}>
-      <a className={isHeroPost ? "hero-post-preview" : "post-preview"}>
+    <Link
+      as={`/posts/${slug}`}
+      href={`/posts/${slug}`}
+      className={isHeroPost ? "hero-post-preview" : "post-preview"}
+      passHref
+    >
+      <>
         <PostPreviewImage title={title} src={cover.src} priority={isHeroPost} />
         <PostPreviewText title={title} date={date} excerpt={excerpt} />
-      </a>
+      </>
     </Link>
   );
 };

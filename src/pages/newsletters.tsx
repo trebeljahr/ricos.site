@@ -23,7 +23,7 @@ const Newsletters = ({ newsletterSlugs }: Props) => {
                   as={`/newsletters/${number}`}
                   href={`/newsletters/${number}`}
                 >
-                  <a> Newsletter #{number}</a>
+                  Newsletter #{number}
                 </Link>
               </h3>
             );

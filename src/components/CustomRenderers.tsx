@@ -5,18 +5,18 @@ import { ExternalLink } from "./ExternalLink";
 
 export const ImageRenderer = ({
   src,
-  alt: metastring,
+  alt,
 }: ImgHTMLAttributes<HTMLImageElement>) => {
-  if (!src) return null;
+  if (!src || !alt) return null;
 
-  const alt = metastring?.replace(/ *\/[^)]*\/ */g, "");
+  const realAlt = alt?.replace(/ *\/[^)]*\/ */g, "");
 
-  const width = metastring?.match(/\/width: (.*?)\//)?.pop() || 1;
-  const height = metastring?.match(/\/height: (.*?)\//)?.pop() || 1;
+  const width = alt?.match(/\/width: (.*?)\//)?.pop() || "1";
+  const height = alt?.match(/\/height: (.*?)\//)?.pop() || "1";
 
-  const isPriority = metastring?.toLowerCase().match("{priority}");
-  const hasCaption = metastring?.toLowerCase().includes("{caption:");
-  const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
+  const isPriority = alt?.toLowerCase().match("{priority}");
+  const hasCaption = alt?.toLowerCase().includes("{caption:");
+  const caption = alt?.match(/{caption: (.*?)}/)?.pop();
 
   return (
     <>
@@ -25,10 +25,10 @@ export const ImageRenderer = ({
           src={src}
           layout="responsive"
           objectFit="cover"
-          alt={alt}
+          alt={realAlt}
           priority={!!isPriority}
-          width={width}
-          height={height}
+          width={parseFloat(width)}
+          height={parseFloat(height)}
           // placeholder="blur"
         />
       </span>
@@ -51,10 +51,8 @@ export const LinkRenderer = ({
 
   if (isInternalLink) {
     return (
-      <Link href={href}>
-        <a className="internalLink" href={href}>
-          {children}
-        </a>
+      <Link href={href} className="internalLink">
+        {children}
       </Link>
     );
   }

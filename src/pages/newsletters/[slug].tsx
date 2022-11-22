@@ -25,17 +25,21 @@ const NextAndPrevArrows = ({
   return (
     <>
       {prevPost && (
-        <Link href={`/newsletters/${prevPost}`}>
-          <a className="page-arrow left">
-            <span className="icon-arrow-left" />
-          </a>
+        <Link
+          href={`/newsletters/${prevPost}`}
+          className="page-arrow left"
+          passHref
+        >
+          <span className="icon-arrow-left" />
         </Link>
       )}
       {nextPost && (
-        <Link href={`/newsletters/${nextPost}`}>
-          <a className="page-arrow right">
-            <span className="icon-arrow-right" />
-          </a>
+        <Link
+          href={`/newsletters/${nextPost}`}
+          className="page-arrow right"
+          passHref
+        >
+          <span className="icon-arrow-right" />
         </Link>
       )}
     </>
@@ -53,8 +57,8 @@ const Newsletter = ({ newsletter, slug, nextPost, prevPost }: Props) => {
               priority
               src={newsletter.cover.src}
               layout="responsive"
-              width={newsletter.cover.width || 1}
-              height={newsletter.cover.height || 1}
+              width={parseFloat(newsletter.cover.width) || 1}
+              height={parseFloat(newsletter.cover.height) || 1}
               objectFit="cover"
               alt={newsletter.cover.alt}
             />

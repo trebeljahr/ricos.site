@@ -51,7 +51,6 @@ The confusion about vectors and points comes because when thinking of vectors as
 
 So in a way, thinking of vectors as arrows is a bit flawed, yet that's very often how they are represented. In the example below the red and the green arrow is the same vector, but moved around the screen to different places. Whereas the blue arrow is pointing exactly to a point from the origin at all times. 
 
-import { PointAndVectorDemo } from "components/collision-detection/PointAndVectorDemo";
 <PointAndVectorDemo/>
 
 If a vector is translated away from the origin (like the green or black one) it's usually used as a direction. And the direction changes its meaning (i.e. where you end up if you follow it for a certain time) depending on where you start. So while the red, black and green arrows are the same vector, pointing in the same direction (to the top-right), they start at different points. That's what makes them different. You can even see the translation vector for the black arrow (it's the blue arrow). And you can even see how, if you move the tip of the blue vector to the origin, shrinking its length to 0, the red and black arrows align. So they *really* are the same. 
@@ -112,7 +111,6 @@ $$
 \rVert = \sqrt{x² + y²}
 $$
 
-import { MagnitudeDemo } from "components/collision-detection/MagnitudeDemo";
 <MagnitudeDemo/>
 
 Sometimes we don't need the actual length but the squared length, so we can drop the $\sqrt{}$ from the formula above. If we implement these two ideas mag and mag2 (squared norm/length) ideas in code, we get the below. 
@@ -151,7 +149,6 @@ function unit(b: Vec2) {
 
 Here's a demo, the green circle is the "unit circle", it has a radius of exactly 1 unit. See how the black vector always follows the blue one, yet stays exactly on the edge of the circle? That's what it means to normalize a vector/create a unit vector.
 
-import { UnitVectorDemo } from "components/collision-detection/UnitVectorDemo";
 <UnitVectorDemo />
 
 ## The Perpendicular 
@@ -203,7 +200,6 @@ Sometimes normals are "normalized" so that they are also unit vectors and have a
 
 When working with polygon edges one is usually interested in the normals that are facing out and away from the polygon and its edge, not the ones facing into the polygon.
 
-import { NormalDemo } from "components/collision-detection/NormalDemo";
 <NormalDemo/>
 
 In a lot of computer graphics applications, bugs can happen where the normals become inverted. When this happens it messes up the lighting calculations, because the shape is "wrapped" in the wrong direction and light that should bounce "away" from the shape, bounces "into" the shape instead... 
@@ -226,7 +222,6 @@ sin(\theta) * x - cos(\theta) * y
 \end{bmatrix}
 $$
 
-import { RotationDemo } from "components/collision-detection/RotationDemo";
 <RotationDemo />
 
 If you take the special case for 90° or $\frac{\pi}{2}$ the expression simplifies a lot and we get the special case shown above!
@@ -268,7 +263,6 @@ $$
 cos(\theta) = \frac{v \, \cdotp a}{\lVert v \rVert * \lVert a \rVert}
 $$
 
-import { DotProductDemo } from "components/collision-detection/DotProductDemo";
 <DotProductDemo />
 
 This can be used to convert between angles and vectors (+ the idea of general rotations from above) and helps to do all kinds of things. For example, we could determine the direction a player is facing in a computer game. Or we could determine at what angle a ball should bounce off from a wall in a simulation. Or what kind of force something would experience if we hit it at a certain angle... And so much more. 

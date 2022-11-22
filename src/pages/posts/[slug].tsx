@@ -11,7 +11,6 @@ import { getRandom } from "src/lib/math/getRandom";
 import { NormalDemo } from "../../components/collision-detection/NormalDemo";
 import { DotProductDemo } from "../../components/collision-detection/DotProductDemo";
 import { UnitVectorDemo } from "../../components/collision-detection/UnitVectorDemo";
-import { MagnitudeDemo } from "../../components/collision-detection/MagnitudeDemo";
 import { RotationDemo } from "../../components/collision-detection/RotationDemo";
 import { PointAndVectorDemo } from "../../components/collision-detection/PointAndVectorDemo";
 import { SinAndCosineDemo } from "../../components/collision-detection/SinAndCosineDemo";
@@ -53,21 +52,14 @@ type BlogProps = {
 };
 
 export default function PostComponent({ post, morePosts }: BlogProps) {
+  console.log(post.body.code);
+  console.log(post);
+
   const Component = useMDXComponent(post.body.code);
 
   return (
     <BlogLayout post={post} morePosts={morePosts}>
-      <Component
-        components={{
-          DotProductDemo,
-          MagnitudeDemo,
-          NormalDemo,
-          PointAndVectorDemo,
-          UnitVectorDemo,
-          RotationDemo,
-          SinAndCosineDemo,
-        }}
-      />
+      <Component />
     </BlogLayout>
   );
 }

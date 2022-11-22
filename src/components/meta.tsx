@@ -6,6 +6,8 @@ interface Props {
 }
 
 const Meta = ({ description, title }: Props) => {
+  console.log(title);
+
   return (
     <Head>
       <title>{title} | trebeljahr.com</title>

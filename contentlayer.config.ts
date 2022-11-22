@@ -47,6 +47,8 @@ import remarkToc from "remark-toc";
 import rehypeHighlight from "rehype-highlight";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
+import rehypeSlug from "rehype-slug";
+import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 
 export default makeSource({
   contentDirPath: "src/content",
@@ -59,6 +61,11 @@ export default makeSource({
       remarkToc,
       remarkMath,
     ],
-    rehypePlugins: [rehypeHighlight, rehypeKatex],
+    rehypePlugins: [
+      rehypeHighlight,
+      rehypeKatex,
+      rehypeSlug,
+      rehypeAccessibleEmojis,
+    ],
   },
 });

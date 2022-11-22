@@ -2,14 +2,21 @@ import PostBody from "../../components/post-body";
 import Layout from "../../components/layout";
 import { getAllNewsletters, getNewsletterBySlug } from "../../lib/api";
 import { ToTopButton } from "../../components/ToTopButton";
-import { Post as PostType } from "../../@types/post";
 import Image from "next/image";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import Link from "next/link";
 import PostHeader from "../../components/post-header";
+import Author from "src/@types/author";
+
+type NewsletterType = {
+  title: string;
+  cover: { src: string; alt: string; width: string; height: string };
+  excerpt: string;
+  content: string;
+};
 
 type Props = {
-  newsletter: PostType;
+  newsletter: NewsletterType;
   slug: string;
   nextPost: null | number;
   prevPost: null | number;
@@ -63,8 +70,9 @@ const Newsletter = ({ newsletter, slug, nextPost, prevPost }: Props) => {
               style={{
                 width: "100%",
                 height: "auto",
-                objectFit: "cover"
-              }} />
+                objectFit: "cover",
+              }}
+            />
           </div>
           <PostBody content={newsletter.content} excerpt={newsletter.excerpt} />
         </section>

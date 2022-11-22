@@ -1,23 +1,16 @@
+import { Post } from "contentlayer/generated";
 import Link from "next/link";
-import DateFormatter from "./date-formatter";
 import { PostCoverImage } from "./cover-image";
-import { Post } from "../@types/post";
 
 interface PreviewTextProps {
   title: string;
   excerpt: string;
-  date: string;
 }
 
-export const PostPreviewText = ({
-  title,
-  excerpt,
-  date: date,
-}: PreviewTextProps) => {
+const PostPreviewText = ({ title, excerpt }: PreviewTextProps) => {
   return (
     <div className="post-preview-text">
       <h2>{title}</h2>
-      <DateFormatter date={date} />
       <p>{excerpt}</p>
     </div>
   );
@@ -29,7 +22,7 @@ interface PreviewImageProps {
   priority?: boolean;
 }
 
-export const PostPreviewImage = ({
+const PostPreviewImage = ({
   title,
   src,
   priority = false,
@@ -47,7 +40,7 @@ type Props = {
 };
 
 export const PostPreview = ({
-  post: { title, cover, date, excerpt, slug },
+  post: { title, cover, excerpt, slug },
   isHeroPost = false,
 }: Props) => {
   return (
@@ -59,7 +52,7 @@ export const PostPreview = ({
     >
       <>
         <PostPreviewImage title={title} src={cover.src} priority={isHeroPost} />
-        <PostPreviewText title={title} date={date} excerpt={excerpt} />
+        <PostPreviewText title={title} excerpt={excerpt} />
       </>
     </Link>
   );

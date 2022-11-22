@@ -11,8 +11,6 @@ type NavlinksProps = {
 
 export function Navlinks({ expanded, setExpanded }: NavlinksProps) {
   const router = useRouter();
-  console.log(router);
-  console.log(router.pathname);
 
   const activeStyle = (link: string, { exact = false } = {}) => {
     let isUnderlined = router.asPath.startsWith(link);

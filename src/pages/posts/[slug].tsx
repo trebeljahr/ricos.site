@@ -46,9 +46,6 @@ type BlogProps = {
 };
 
 export default function PostComponent({ post, morePosts }: BlogProps) {
-  console.log(post.body.code);
-  console.log(post);
-
   const Component = useMDXComponent(post.body.code);
 
   return (

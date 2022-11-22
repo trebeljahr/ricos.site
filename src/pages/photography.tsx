@@ -7,7 +7,6 @@ export default function Photography({
 }: {
   imageFileNames: string[];
 }) {
-  console.log(getImageSources({ imageFileNames }));
   return (
     <Layout title="Photography" description="A page with some photos.">
       <h1>Photography</h1>
@@ -23,8 +22,9 @@ export default function Photography({
             style={{
               width: "100%",
               height: "auto",
-              objectFit: "cover"
-            }} />
+              objectFit: "cover",
+            }}
+          />
         );
       })}
     </Layout>
@@ -47,8 +47,6 @@ export const getStaticProps = async () => {
     awsRegion,
     bucketName,
   });
-
-  console.log(imageFileNames);
 
   return { props: { imageFileNames } };
 };

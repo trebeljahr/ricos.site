@@ -1,6 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { AnchorHTMLAttributes, HTMLAttributes, ImgHTMLAttributes } from "react";
+import {
+  AnchorHTMLAttributes,
+  DetailedHTMLProps,
+  HTMLAttributes,
+  ImgHTMLAttributes,
+  useEffect,
+  useState,
+} from "react";
 import { ExternalLink } from "./ExternalLink";
 
 export const ImageRenderer = ({
@@ -96,4 +103,38 @@ export const HeadingRenderer = (level: number) => {
         return <h6 id={anchor}>{children}</h6>;
     }
   };
+};
+
+export const CodeRenderer = (props: HTMLAttributes<HTMLPreElement>) => {
+  const [hidden, setHidden] = useState(true);
+
+  useEffect(() => {}, [hidden]);
+
+  const toggleHidden = () => {
+    setHidden((old) => !old);
+  };
+
+  return (
+    <>
+      <button onClick={toggleHidden} style={{ cursor: "pointer" }}>
+        {hidden ? (
+          <span>
+            <span className="icon-chevron-down" /> Show Code
+          </span>
+        ) : (
+          <span>
+            <span className="icon-chevron-up" /> Hide Code
+          </span>
+        )}
+      </button>
+      {!hidden && <pre {...props}>{props.children}</pre>}
+    </>
+  );
+};
+
+export const MarkdownRenderers = {
+  p: ParagraphRenderer,
+  a: LinkRenderer,
+  img: ImageRenderer,
+  pre: CodeRenderer,
 };

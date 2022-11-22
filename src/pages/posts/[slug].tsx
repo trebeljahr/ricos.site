@@ -1,13 +1,13 @@
-import { useMDXComponent } from "next-contentlayer/hooks";
-import { allPosts } from "contentlayer/generated";
-import type { Post as PostType } from "contentlayer/generated";
-
 import PostHeader from "../../components/post-header";
 import Layout from "../../components/layout";
+import { useMDXComponent } from "next-contentlayer/hooks";
+import { allPosts } from "contentlayer/generated";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import { ToTopButton } from "../../components/ToTopButton";
 import { ReadMore } from "../../components/more-stories";
 import { getRandom } from "src/lib/math/getRandom";
+import { MarkdownRenderers } from "src/components/CustomRenderers";
+import type { Post as PostType } from "contentlayer/generated";
 
 type Props = {
   children: React.ReactNode;
@@ -50,7 +50,7 @@ export default function PostComponent({ post, morePosts }: BlogProps) {
 
   return (
     <BlogLayout post={post} morePosts={morePosts}>
-      <Component />
+      <Component components={{ ...MarkdownRenderers }} />
     </BlogLayout>
   );
 }

@@ -78,27 +78,6 @@ const ImageRenderer = (props: { children?: any; node?: any }) => {
   );
 };
 
-const ParagraphRenderer = (props: { children?: JSX.Element[]; node?: any }) => {
-  const className =
-    props.children?.length &&
-    (props.children[0] as unknown as string)[0] === "—"
-      ? "quote-author"
-      : "paragraph";
-  return <p className={className}>{props.children}</p>;
-};
-const LinkRenderer = (props: any) => {
-  const href = props.href;
-  const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
-  if (isInternalLink) {
-    return (
-      <Link href={href || ""}>
-        <a className="internalLink" {...props} />
-      </Link>
-    );
-  }
-  return <ExternalLink {...props} />;
-};
-
 const MarkdownRenderers: object = {
   h1: HeadingRenderer,
   h2: HeadingRenderer,
@@ -106,8 +85,8 @@ const MarkdownRenderers: object = {
   h4: HeadingRenderer,
   h5: HeadingRenderer,
   h6: HeadingRenderer,
-  p: ParagraphRenderer,
-  a: LinkRenderer,
+  // p: ParagraphRenderer,
+  // a: LinkRenderer,
   img: ImageRenderer,
 };
 

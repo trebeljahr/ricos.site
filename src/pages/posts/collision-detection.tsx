@@ -11,7 +11,7 @@ import { MDXProps } from "mdx/types";
 import { ProjectArrowDemo } from "../../components/collision-detection/ProjectArrowDemo";
 import { Triangulation } from "../../components/collision-detection/Triangulation";
 import { EarClipping } from "../../components/collision-detection/EarClipping";
-import { ImageRenderer } from "../../components/ImageRenderer";
+import { ImageRenderer } from "../../components/CustomRenderers";
 import { ToggleCode } from "../../components/ToggleCode";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import PostHeader from "../../components/post-header";

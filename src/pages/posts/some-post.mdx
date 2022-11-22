@@ -1,0 +1,111 @@
+---
+title: "Betting Heavy when convinced"
+subtitle: "And other such investment advice"
+excerpt: "This article is a consortium of things that I think about how or why to invest money. My opinion on investing is fundamentally split, between thinking of it as a waste of time and a necessary evil."
+cover: 
+  src: "/assets/blog/tall-buildings.jpg"
+date: "2021-09-02"
+author:
+  name: Rico Trebeljahr
+  picture: "/assets/blog/profile.jpeg"
+---
+
+<p>{excerpt}</p>
+
+And this post is going to explore investment advice in both directions. 
+
+## Table of contents
+
+The idea of writing it was triggered by a good friend of mine, Henry, who is one of the most knowledgeable people on this topic, whom I know. Somebody, who is constantly reading up on it, spending considerable amounts of brain power on making better investment decisions. I wish he had a blog I could link to from here.
+
+## Images
+
+![some image /width:6000//height:4000/](/assets/newsletter/5.jpg)
+
+## Quotes
+
+> Some awesome quote.
+
+– Cool Dude 1
+
+> Another Quote.
+
+– Albert Camus
+
+## Links
+
+- [some link](https://www.google.com)
+- [some link internal](/booknotes/tao-te-ching)
+
+## Math
+
+$$
+\begin{bmatrix}
+   x \\
+   y
+\end{bmatrix}
+or 
+\begin{bmatrix}
+   2 \\
+   5
+\end{bmatrix}
+or
+\begin{bmatrix}
+   -1 \\
+   20
+\end{bmatrix}
+or 
+\begin{bmatrix}
+   a \\
+   b
+\end{bmatrix}
+$$
+
+## Code 
+
+```typescript
+function divScalar(vec: Vec2, scalar: number) {
+  return new Vec2(vec.x / scalar, vec.y / scalar);
+}
+
+function multScalar(scalar: number) {
+  return new Vec2(vec.x * scalar, vec.y * scalar);
+}
+
+function sub(vec: Vec2, vec2: Vec2) {
+  return new Vec2(vec.x - vec2.x, vec.y - vec2.y);
+}
+
+function add(vec: Vec2, vec2: Vec2) {
+  return new Vec2(vec.x + vec2.x, vec.y + vec2.y);
+}
+```
+
+import PostBody from "../../components/post-body";
+import PostHeader from "../../components/post-header";
+import Layout from "../../components/layout";
+import { NewsletterForm } from "../../components/newsletter-signup";
+import { ToTopButton } from "../../components/ToTopButton";
+import { ReadMore } from "../../components/more-stories";
+
+export default ( { children, morePosts } ) => <Layout
+      description={excerpt}
+      title={title + " – " + subtitle}
+    >
+      <article className="post-body">
+        <section className="main-section main-text">
+          <PostHeader
+            subtitle={subtitle}
+            title={title}
+            date={date}
+            author={author}
+          />
+          {children}
+        </section>
+        <section className="main-section">
+          {morePosts && <ReadMore posts={morePosts} />}
+          <NewsletterForm />
+          <ToTopButton />
+        </section>
+      </article>
+    </Layout>

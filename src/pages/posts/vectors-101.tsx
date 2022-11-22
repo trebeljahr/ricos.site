@@ -3,7 +3,7 @@ import Layout from "../../components/layout";
 import * as frontmatter from "../../content/posts/vectors-101.mdx";
 import { Post } from "../../@types/post";
 import { MDXProps } from "mdx/types";
-import { ImageRenderer } from "../../components/ImageRenderer";
+import { ImageRenderer } from "../../components/CustomRenderers";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import PostHeader from "../../components/post-header";
 import { NormalDemo } from "../../components/collision-detection/NormalDemo";

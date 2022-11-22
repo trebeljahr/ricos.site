@@ -8,6 +8,7 @@ import { ReadMore } from "../../components/more-stories";
 import { ToTopButton } from "../../components/ToTopButton";
 import { Post as PostType } from "../../@types/post";
 import { NewsletterForm } from "../../components/newsletter-signup";
+import { getRandom } from "src/lib/math/getRandom";
 
 type Props = {
   post: PostType;
@@ -47,20 +48,6 @@ type Params = {
     slug: string;
   };
 };
-
-function getRandom(arr: any[], n: number) {
-  var result = new Array(n),
-    len = arr.length,
-    taken = new Array(len);
-  if (n > len)
-    throw new RangeError("getRandom: more elements taken than available");
-  while (n--) {
-    var x = Math.floor(Math.random() * len);
-    result[n] = arr[x in taken ? taken[x] : x];
-    taken[x] = --len in taken ? taken[len] : len;
-  }
-  return result;
-}
 
 export async function getStaticProps({ params }: Params) {
   const post = await getPostBySlug(params.slug + ".md", [

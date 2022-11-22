@@ -1,21 +1,38 @@
-import { defineDocumentType, makeSource } from "contentlayer/source-files";
-// import readingTime from "reading-time";
+import {
+  defineNestedType,
+  defineDocumentType,
+  makeSource,
+} from "contentlayer/source-files";
 
-export const Blog = defineDocumentType(() => ({
-  name: "Blog",
-  filePathPattern: "src/content/*.mdx",
-  bodyType: "mdx",
+const Image = defineNestedType(() => ({
+  name: "Image",
+  fields: {
+    src: { type: "string", required: true },
+    alt: { type: "string", required: true },
+  },
+}));
+
+const Author = defineNestedType(() => ({
+  name: "Author",
+  fields: {
+    name: { type: "string", required: true },
+    picture: { type: "string", required: true }, // { type: "nested", of: Image, required: true },
+  },
+}));
+
+export const Post = defineDocumentType(() => ({
+  name: "Post",
+  filePathPattern: "posts/*.mdx",
+  contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
-    publishedAt: { type: "string", required: true },
-    description: { type: "string", required: true },
-    cover: { type: "string", required: true },
+    subtitle: { type: "string", required: true },
+    excerpt: { type: "string", required: true },
+    date: { type: "string", required: true },
+    author: { type: "nested", of: Author, required: true },
+    cover: { type: "nested", of: Image, required: true },
   },
   computedFields: {
-    // readingTime: {
-    //   type: "json",
-    //   resolve: (doc) => readingTime(doc.body.raw),
-    // },
     slug: {
       type: "string",
       resolve: (doc: any) => doc._raw.sourceFileName.replace(".mdx", ""),
@@ -23,11 +40,25 @@ export const Blog = defineDocumentType(() => ({
   },
 }));
 
+import remarkGfm from "remark-gfm";
+import remarkFrontmatter from "remark-frontmatter";
+import remarkMdxFrontmatter from "remark-mdx-frontmatter";
+import remarkToc from "remark-toc";
+import rehypeHighlight from "rehype-highlight";
+import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
+
 export default makeSource({
-  contentDirPath: "data",
-  documentTypes: [Blog],
+  contentDirPath: "src/content",
+  documentTypes: [Post],
   mdx: {
-    remarkPlugins: [],
-    rehypePlugins: [],
+    remarkPlugins: [
+      remarkFrontmatter,
+      remarkMdxFrontmatter,
+      remarkGfm,
+      remarkToc,
+      remarkMath,
+    ],
+    rehypePlugins: [rehypeHighlight, rehypeKatex],
   },
 });

@@ -10,7 +10,7 @@ import {
 import { Vec2 } from "../../lib/math/Vector";
 import ReactSlider from "react-slider";
 
-export const ArbitraryRotationDemo = () => {
+export const RotationDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();
   const [slider, setSlider] = useState(0);

@@ -1,6 +1,6 @@
 import Layout from "../components/layout";
 import { ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
-import Image from "next/image";
+import Image from "next/legacy/image";
 
 export default function Photography({
   imageFileNames,

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import remarkToc from "remark-toc";
 import rehypeRaw from "rehype-raw";
 import { ExternalLink } from "./ExternalLink";

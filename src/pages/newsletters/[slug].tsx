@@ -3,7 +3,7 @@ import Layout from "../../components/layout";
 import { getAllNewsletters, getNewsletterBySlug } from "../../lib/api";
 import { ToTopButton } from "../../components/ToTopButton";
 import { Post as PostType } from "../../@types/post";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import Link from "next/link";
 import PostHeader from "../../components/post-header";

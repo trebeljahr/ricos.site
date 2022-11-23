@@ -21,8 +21,8 @@ export const BlogLayout = ({
   post: { excerpt, title, subtitle, date, author },
 }: Props) => (
   <Layout description={excerpt} title={title + " – " + subtitle}>
-    <article className="post-body">
-      <section className="main-section main-text">
+    <article>
+      <section className="main-section main-text post-body">
         <PostHeader
           subtitle={subtitle}
           title={title}

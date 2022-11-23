@@ -1,15 +1,10 @@
-import { BookPreview } from "../components/book-preview";
 import Layout from "../components/layout";
-import PostHeader from "../components/post-header";
-import { getAllBookReviews } from "../lib/api";
-import Book from "../@types/book";
+import { BookPreview } from "../components/book-preview";
 import { Search, useSearch } from "../components/SearchBar";
 import { NewsletterForm } from "../components/newsletter-signup";
 import { ToTopButton } from "../components/ToTopButton";
-
-type Props = {
-  allBooks: Book[];
-};
+import { Booknote, allBooknotes } from "contentlayer/generated";
+import { useEffect } from "react";
 
 function toFilters({
   bookAuthor,
@@ -18,14 +13,20 @@ function toFilters({
   tags,
   summary,
   detailedNotes,
-}: Book) {
+}: Booknote) {
   return { bookAuthor, title, rating, tags, summary, detailedNotes };
 }
 
-export default function Books({ allBooks }: Props) {
-  const { byFilters, filters, setFilters } = useSearch(allBooks.map(toFilters));
-  const filteredBooks = allBooks.filter(byFilters);
-
+export default function Books() {
+  const { byFilters, filters, setFilters } = useSearch(
+    allBooknotes.map(toFilters)
+  );
+  const filteredBooks = allBooknotes.filter(byFilters);
+  useEffect(() => {
+    setFilters((old) => {
+      return { ...old, summary: { ...old.summary, active: true, value: true } };
+    });
+  }, [setFilters]);
   return (
     <Layout
       title="Booknotes - notes on the things I've read"
@@ -36,7 +37,7 @@ export default function Books({ allBooks }: Props) {
       <article>
         <section className="main-section">
           <Search filters={filters} setFilters={setFilters} />
-          <PostHeader title={`books:`} />
+          <h1>booknotes</h1>
           <p>Amount: {filteredBooks.length}</p>
           {!filters.detailedNotes.value && !filters.summary.value ? (
             <p>
@@ -47,7 +48,7 @@ export default function Books({ allBooks }: Props) {
             </p>
           ) : null}
         </section>
-        <section className="allBooks">
+        <section className="main-section allBooknotes">
           {filteredBooks.map((book) => {
             return <BookPreview key={book.slug} book={book} />;
           })}
@@ -60,21 +61,3 @@ export default function Books({ allBooks }: Props) {
     </Layout>
   );
 }
-
-export const getStaticProps = async () => {
-  const allBooks = await getAllBookReviews([
-    "title",
-    "slug",
-    "bookAuthor",
-    "bookCover",
-    "summary",
-    "rating",
-    "done",
-    "tags",
-    "amazonLink",
-    "detailedNotes",
-  ]);
-  return {
-    props: { allBooks }, // { allBooks: allBooks.filter(({ done }) => done) },
-  };
-};

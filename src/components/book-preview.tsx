@@ -1,21 +1,41 @@
 import { BookCover } from "./cover-image";
 import Link from "next/link";
-import BookType from "../@types/book";
+import { Booknote } from "contentlayer/generated";
+import { PostSubTitle, PostTitle } from "./post-title";
 
 type Props = {
-  book: BookType;
+  book: Booknote;
 };
 
 export function BookPreview({ book }: Props) {
-  const { slug, title, bookCover } = book;
+  const { slug, title, bookCover, excerpt, subtitle, bookAuthor, rating } =
+    book;
+
+  const defaultExcerpt = "";
   return (
-    <Link
-      as={`/booknotes/${slug}`}
-      href="/booknotes/[slug]"
-      className="book-preview book-cover-image"
-      passHref
-    >
-      <BookCover title={title} src={bookCover} />
-    </Link>
+    <div className="book-info">
+      <Link as={`/booknotes/${slug}`} href="/booknotes/[slug]" passHref>
+        <BookCover title={title} src={bookCover} />
+      </Link>
+      <div className="book-preview-text">
+        <div className="book-preview-heading">
+          <Link as={`/booknotes/${slug}`} href="/booknotes/[slug]">
+            <p>
+              <b>
+                {title} {subtitle && `| ${subtitle}`}
+              </b>{" "}
+              by {bookAuthor}
+            </p>
+          </Link>
+        </div>
+        <p>
+          <b>Rated: {rating}/10</b>
+        </p>
+        {excerpt ? <p>{excerpt}</p> : <p>{defaultExcerpt}</p>}
+        <Link as={`/booknotes/${slug}`} href="/booknotes/[slug]">
+          <p>Read full book notes</p>
+        </Link>
+      </div>
+    </div>
   );
 }

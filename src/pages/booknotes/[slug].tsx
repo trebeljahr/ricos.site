@@ -1,17 +1,17 @@
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
-import PostBody from "../../components/post-body";
 import Layout from "../../components/layout";
-import { getBookReviewBySlug, getAllBookReviews } from "../../lib/api";
 import { PostSubTitle, PostTitle } from "../../components/post-title";
-import BookType from "../../@types/book";
 import { BookCover } from "../../components/cover-image";
 import { ToTopButton } from "../../components/ToTopButton";
 import { ExternalLink } from "../../components/ExternalLink";
 import { NewsletterForm } from "../../components/newsletter-signup";
+import { Booknote, allBooknotes } from "contentlayer/generated";
+import { useMDXComponent } from "next-contentlayer/hooks";
+import { MarkdownRenderers } from "src/components/CustomRenderers";
 
 type Props = {
-  book: BookType;
+  book: Booknote;
 };
 
 const BuyItOnAmazon = ({ link }: { link: string }) => {
@@ -26,17 +26,24 @@ const BuyItOnAmazon = ({ link }: { link: string }) => {
   );
 };
 
+const BooknoteComponent = ({ book }: Props) => {
+  const Component = useMDXComponent(book.body.code);
+  return <Component components={{ ...MarkdownRenderers }} />;
+};
+
 const BooknotesWithDefault = ({ book }: Props) => {
-  if (book.done || book.summary || book.detailedNotes)
-    return <PostBody content={book.content} />;
-  return (
-    <div className="main-text">
-      <p className="placeholder-text">
-        I have read this book, but did not write booknotes or a summary for it
-        yet. For now, this is all there is.
-      </p>
-    </div>
-  );
+  if (!book?.body?.code) {
+    return (
+      <div className="main-text">
+        <p className="placeholder-text">
+          I have read this book, but did not write booknotes or a summary for it
+          yet. For now, this is all there is.
+        </p>
+      </div>
+    );
+  }
+
+  return <BooknoteComponent book={book} />;
 };
 
 const Book = ({ book }: Props) => {
@@ -53,7 +60,7 @@ const Book = ({ book }: Props) => {
         <PostTitle>Loading…</PostTitle>
       ) : (
         <article>
-          <section className="book-info">
+          <section className="book-info main-section">
             <BookCover title={book.title} src={book.bookCover} />
 
             <div className="book-preview-text">
@@ -64,7 +71,7 @@ const Book = ({ book }: Props) => {
               <BuyItOnAmazon link={book.amazonLink} />
             </div>
           </section>
-          <section className="main-section">
+          <section className="main-section main-text post-body">
             <BooknotesWithDefault book={book} />
             <BuyItOnAmazon link={book.amazonLink} />
           </section>
@@ -87,17 +94,7 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const book = await getBookReviewBySlug(params.slug + ".md", [
-    "title",
-    "slug",
-    "subtitle",
-    "bookAuthor",
-    "bookCover",
-    "rating",
-    "done",
-    "content",
-    "amazonLink",
-  ]);
+  const book = allBooknotes.find(({ slug }) => params.slug === slug);
 
   return {
     props: {
@@ -107,17 +104,17 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const books = await getAllBookReviews(["slug", "done"]);
+  const paths = allBooknotes.map((book) => {
+    return {
+      params: {
+        slug: book.slug,
+      },
+    };
+  });
+  console.log(paths);
+
   return {
-    paths: books
-      // .filter(({ done }) => done)
-      .map((book) => {
-        return {
-          params: {
-            slug: book.slug,
-          },
-        };
-      }),
+    paths,
     fallback: false,
   };
 }

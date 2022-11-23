@@ -40,14 +40,16 @@ export const Post = defineDocumentType(() => ({
   },
 }));
 
-export const Booknotes = defineDocumentType(() => ({
-  name: "Booknotes",
-  filePathPattern: "booknotes/*.md",
+export const Booknote = defineDocumentType(() => ({
+  name: "Booknote",
+  filePathPattern: "booknotes/*.mdx",
+  contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
     subtitle: { type: "string" },
     bookCover: { type: "string", required: true },
     slug: { type: "string", required: true },
+    excerpt: { type: "string" },
     bookAuthor: { type: "string", required: true },
     rating: { type: "number", required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
@@ -57,12 +59,6 @@ export const Booknotes = defineDocumentType(() => ({
 
     amazonLink: { type: "string", required: true },
     amazonAffiliateLink: { type: "string", required: true },
-  },
-  computedFields: {
-    newsletterNumber: {
-      type: "string",
-      resolve: (doc: any) => doc._raw.sourceFileName.replace(".mdx", ""),
-    },
   },
 }));
 
@@ -111,7 +107,7 @@ import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 
 export default makeSource({
   contentDirPath: "src/content",
-  documentTypes: [Post, Page, Newsletter, Booknotes],
+  documentTypes: [Post, Page, Newsletter, Booknote],
   mdx: {
     remarkPlugins: [
       remarkFrontmatter,

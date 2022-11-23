@@ -40,6 +40,22 @@ export const Post = defineDocumentType(() => ({
   },
 }));
 
+export const Newsletter = defineDocumentType(() => ({
+  name: "Newsletter",
+  filePathPattern: "newsletters/*.md",
+  fields: {
+    title: { type: "string", required: true },
+    cover: { type: "nested", of: Image, required: true },
+    excerpt: { type: "string" },
+  },
+  computedFields: {
+    newsletterNumber: {
+      type: "string",
+      resolve: (doc: any) => doc._raw.sourceFileName.replace(".mdx", ""),
+    },
+  },
+}));
+
 export const Page = defineDocumentType(() => ({
   name: "Page",
   filePathPattern: "pages/*.mdx",
@@ -69,7 +85,7 @@ import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 
 export default makeSource({
   contentDirPath: "src/content",
-  documentTypes: [Post, Page],
+  documentTypes: [Post, Page, Newsletter],
   mdx: {
     remarkPlugins: [
       remarkFrontmatter,

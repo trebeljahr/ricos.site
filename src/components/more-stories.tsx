@@ -1,7 +1,10 @@
-import { Post } from "../@types/post";
 import Link from "next/link";
 
-export const ReadMore = ({ posts }: { posts: Post[] }) => {
+type Props = {
+  posts: { slug: string; title: string }[];
+};
+
+export const ReadMore = ({ posts }: Props) => {
   return (
     <div className="read-more">
       <h2>Keep reading:</h2>
@@ -9,7 +12,7 @@ export const ReadMore = ({ posts }: { posts: Post[] }) => {
         return (
           <h3 key={post.slug}>
             <Link as={`/posts/${post.slug}`} href={"/posts/[slug]"}>
-              <a>{post.title}</a>
+              {post.title}
             </Link>
           </h3>
         );

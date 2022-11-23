@@ -34,7 +34,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
           <p>
             If you want to know what I am doing currently, head over to{" "}
             <Link as={`/now`} href="/now">
-              <a>/now</a>
+              /now
             </Link>
             .
           </p>

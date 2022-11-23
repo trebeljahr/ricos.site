@@ -16,26 +16,30 @@ export const PostCoverImage = ({
   return (
     <Image
       src={src}
-      layout="fill"
-      objectFit="cover"
       alt={alt || "Cover for post: " + title}
       // placeholder="blur"
       priority={priority}
+      fill
+      sizes="100vw"
+      style={{
+        objectFit: "cover",
+      }}
     />
   );
 };
 
 export const BookCover = ({ title, src }: Props) => {
   return (
-    <div className="book-cover-image">
-      <Image
-        src={src}
-        layout="responsive"
-        width={1}
-        height={1.6}
-        alt={`Bookcover - ${title}`}
-        // placeholder="blur"
-      />
-    </div>
+    <Image
+      src={src}
+      width={1}
+      height={1.6}
+      alt={`Bookcover - ${title}`}
+      sizes="100vw"
+      style={{
+        width: "100%",
+        height: "auto",
+      }}
+    />
   );
 };

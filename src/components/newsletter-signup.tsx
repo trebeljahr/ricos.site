@@ -68,7 +68,7 @@ export const NewsletterForm = () => {
           <p>{success}</p>
           <p>
             <Link as="/newsletters" href="/newsletters">
-              <a>You can read past editions in the archive!</a>
+              You can read past editions in the archive!
             </Link>
           </p>
         </>

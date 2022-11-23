@@ -8,10 +8,8 @@ import {
   drawArrow,
   drawBackground,
   drawCoordinateSystem,
-  circle,
   line,
 } from "../../lib/math/drawHelpers";
-import { makeBrighter } from "../../lib/math/Poly";
 import { Vec2 } from "../../lib/math/Vector";
 
 export const MagnitudeDemo = () => {

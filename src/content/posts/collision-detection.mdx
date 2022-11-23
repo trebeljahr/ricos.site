@@ -15,6 +15,8 @@ author:
 
 This post is going to answer that question, by explaining one particular algorithm based on the SAT theorem.
 
+import { Triangulation } from "../../components/collision-detection/Triangulation";
+
 <Triangulation drawTris={false} responseToggle={false}/>
 
 *In all the demos of this article, you can drag around the polygons (and their points), as well as rotate polygons around their centers by pressing the A or D keys.* 
@@ -41,9 +43,11 @@ For the next section you should be comfortable with some basic concepts of vecto
 
 There is a mathematical expression for how to calculate where that projection (shadow) of a point (object) would fall on a line (wall).
 
+import { ProjectArrowDemo } from "../../components/collision-detection/ProjectArrowDemo";
+
 <ProjectArrowDemo />
 
-Given the Points $a$, $b$, and $c$, where $c$ is the point we want to project and $a$ and $b$ are the two points defining the line $\overline{ab}$, we can find the projection of $c$ onto the line $\overline{ab}$ like so: 
+Given the Points $a$, $b$, and $c$, where $c$ is the point we want to project and $a$ and $b$ are the two points defining the line $\overline{ab}$, we can find the projection of $c$ onto the line $\overline{ab}$ like so:
 
 $$
 p = c - a
@@ -173,6 +177,8 @@ export function drawProjection(
 }
 ```
 
+import { ProjectionDemo } from "../../components/collision-detection/ProjectionDemo";
+
 <ProjectionDemo />
 
 ## Projection for 2 Polygons 
@@ -204,6 +210,8 @@ function doIntersect(a1: Vec2, a2: Vec2, b1: Vec2, b2: Vec2) {
 
 There are also versions of this test, which use the dot product to determine how far along the line the points are and by comparing the minimum and maximum against each other determine whether or not they overlap. Which algorithm we use doesn't matter so much in the end, the important thing is that we can test for the two shadows "overlapping" or not. In the example below, if the shadows overlap we change the color to red.
 
+import { ExampleWith2Polygons } from "../../components/collision-detection/ExampleWith2Polygons";
+
 <ExampleWith2Polygons />
 
 ## The Last Idea
@@ -217,6 +225,8 @@ The only thing we are interested in from the normal is the direction, so we disp
 
 The edge to which the normal belongs is colored yellow in the example and you can see how the line drawn through the origin is always perpendicular to the yellow edge (because the direction is taken from the normal that has to be the case)!
 
+import { AxisByAxis } from "../../components/collision-detection/AxisByAxis";
+
 <AxisByAxis />
 
 In the above example, if you make the shapes overlap, what do you notice about their shadows?
@@ -224,6 +234,8 @@ In the above example, if you make the shapes overlap, what do you notice about t
 ## Complete SAT
 
 In the demo above, we stop for a second at each step just for visualization purposes. We could just check all of the normals "at once". If all shadows overlap (and show up in red), then the shapes also have to overlap. They are colliding. That's the whole meaning behind the separating axis theorem.
+
+import { SAT } from "../../components/collision-detection/SAT";
 
 <SAT/>
 
@@ -324,11 +336,15 @@ if (response) {
 
 And here is the demo:
 
+import { SATWithResponse } from "../../components/collision-detection/SATWithResponse";
+
 <SATWithResponse />
 
 ## The Problem of Concavity
 
 Cool, so we are done now, right? Well, check this out: 
+
+import { SATWithConcaveShapes } from "../../components/collision-detection/SATWithConcaveShapes";
 
 <SATWithConcaveShapes />
 
@@ -349,6 +365,8 @@ The algorithm we are going to use for triangulating concave shapes into a bunch 
 Ear Clipping? 
 
 The basic idea is to find "ears" – triangular pieces of the polygon that "stick out", like an ear, and then "clip" them out of the polygon, reducing the problem to a smaller polygon – for which we can then find another ear to clip, and so on until only a last triangle is left.
+
+import { EarClipping } from "../../components/collision-detection/EarClipping";
 
 <EarClipping />
 

@@ -1,10 +1,12 @@
+import { ReactNode } from "react";
+
 export const ExternalLink = ({
   href,
   children,
   className = "",
 }: {
   href: string;
-  children: string;
+  children: ReactNode | string;
   className?: string;
 }) => {
   return (

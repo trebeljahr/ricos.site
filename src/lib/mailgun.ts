@@ -11,7 +11,7 @@ export const newsletterListMail =
 
 const mg = mailgun.client({
   username: "api",
-  key: process.env.API_KEY || "",
+  key: process.env.MAILGUN_API_KEY || "",
   url: "https://api.eu.mailgun.net",
 });
 

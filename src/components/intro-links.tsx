@@ -4,16 +4,16 @@ export const TrySomeOfThese = () => {
   return (
     <p>
       For now, you can try one of these:{" "}
-      <Link as="/posts" href="/posts">
-        <a className="colored-link">/posts</a>
+      <Link as="/posts" href="/posts" className="colored-link">
+        /posts
       </Link>
       ,{" "}
-      <Link as="/booknotes" href="/booknotes">
-        <a className="colored-link">/booknotes</a>
+      <Link as="/booknotes" href="/booknotes" className="colored-link">
+        /booknotes
       </Link>
       , or{" "}
-      <Link as="/needlestack" href="/needlestack">
-        <a className="colored-link">/needlestack</a>
+      <Link as="/needlestack" href="/needlestack" className="colored-link">
+        /needlestack
       </Link>
       .
     </p>

@@ -61,7 +61,9 @@ const Book = ({ book }: Props) => {
       ) : (
         <article>
           <section className="book-info main-section">
-            <BookCover title={book.title} src={book.bookCover} />
+            <div className="book-cover-image">
+              <BookCover title={book.title} src={book.bookCover} />
+            </div>
 
             <div className="book-preview-text">
               <PostTitle>{book.title}</PostTitle>

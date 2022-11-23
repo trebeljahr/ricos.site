@@ -14,7 +14,11 @@ export function BookPreview({ book }: Props) {
   const defaultExcerpt = "";
   return (
     <div className="book-info">
-      <Link as={`/booknotes/${slug}`} href="/booknotes/[slug]" passHref>
+      <Link
+        as={`/booknotes/${slug}`}
+        href="/booknotes/[slug]"
+        className="book-cover-image"
+      >
         <BookCover title={title} src={bookCover} />
       </Link>
       <div className="book-preview-text">

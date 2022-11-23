@@ -22,25 +22,24 @@ export const PostCoverImage = ({
       fill
       sizes="100vw"
       style={{
-        objectFit: "cover"
-      }} />
+        objectFit: "cover",
+      }}
+    />
   );
 };
 
 export const BookCover = ({ title, src }: Props) => {
   return (
-    <div className="book-cover-image">
-      <Image
-        src={src}
-        width={1}
-        height={1.6}
-        // placeholder="blur"
-        alt={`Bookcover - ${title}`}
-        sizes="100vw"
-        style={{
-          width: "100%",
-          height: "auto"
-        }} />
-    </div>
+    <Image
+      src={src}
+      width={1}
+      height={1.6}
+      alt={`Bookcover - ${title}`}
+      sizes="100vw"
+      style={{
+        width: "100%",
+        height: "auto",
+      }}
+    />
   );
 };

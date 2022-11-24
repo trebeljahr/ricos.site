@@ -1,7 +1,6 @@
 import Layout from "../components/layout";
-import { getAllPosts } from "../lib/api";
 import { HeroPostPreview, OtherPostsPreview } from "../components/post-preview";
-import { Post } from "contentlayer/generated";
+import { allPosts, Post } from "contentlayer/generated";
 
 type Props = {
   posts: Post[];
@@ -28,14 +27,18 @@ const Posts = ({ posts }: Props) => {
 export default Posts;
 
 export const getStaticProps = async () => {
-  const posts = await getAllPosts([
-    "title",
-    "date",
-    "slug",
-    "author",
-    "cover",
-    "excerpt",
-  ]);
+  const posts = allPosts.map(
+    ({ slug, excerpt, cover, title, date, author }) => ({
+      slug,
+      excerpt,
+      cover,
+      title,
+      date,
+      author,
+    })
+  );
+  posts.sort((post1, post2) => (post1.date > post2.date ? -1 : 1));
+
   return {
     props: { posts },
   };

@@ -1,18 +1,17 @@
 import PostHeader from "../../components/post-header";
 import Layout from "../../components/layout";
 import { useMDXComponent } from "next-contentlayer/hooks";
-import { allPosts } from "contentlayer/generated";
+import { allPosts, Post } from "contentlayer/generated";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import { ToTopButton } from "../../components/ToTopButton";
 import { ReadMore } from "../../components/more-stories";
 import { getRandom } from "src/lib/math/getRandom";
 import { MarkdownRenderers } from "src/components/CustomRenderers";
-import type { Post as PostType } from "contentlayer/generated";
 
 type Props = {
   children: React.ReactNode;
-  morePosts: { slug: string; title: string }[];
-  post: PostType;
+  morePosts: Post[];
+  post: Post;
 };
 
 export const BlogLayout = ({
@@ -41,8 +40,8 @@ export const BlogLayout = ({
 );
 
 type BlogProps = {
-  post: PostType;
-  morePosts: { slug: string; title: string }[];
+  post: Post;
+  morePosts: Post[];
 };
 
 export default function PostComponent({ post, morePosts }: BlogProps) {
@@ -57,17 +56,21 @@ export default function PostComponent({ post, morePosts }: BlogProps) {
 
 export async function getStaticPaths() {
   return {
-    paths: allPosts.map((post: PostType) => ({ params: { slug: post.slug } })),
+    paths: allPosts.map(({ id }) => ({ params: { id } })),
     fallback: false,
   };
 }
 
-export async function getStaticProps({ params }: { params: { slug: string } }) {
-  const post = allPosts.find((post: PostType) => post.slug === params.slug);
+type Params = { params: { id: string } };
+
+export async function getStaticProps({ params }: Params) {
+  const post = allPosts.find((post: Post) => post.id === params.id);
   const otherPosts = allPosts
-    .filter((post) => post.slug !== params.slug)
-    .map(({ slug, title }) => ({ slug, title }));
+    .filter((post) => post.id !== params.id)
+    .map(({ title, slug }) => ({ title, slug }));
+  console.log({ otherPosts });
   const morePosts = getRandom(otherPosts, 3);
+  console.log({ morePosts });
 
   return { props: { post, morePosts } };
 }

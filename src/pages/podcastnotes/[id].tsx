@@ -18,10 +18,6 @@ const PodcastNoteComponent = ({ podcastNote }: Props) => {
 };
 
 const PodcastNote = ({ podcastNote }: Props) => {
-  const router = useRouter();
-  if (!router.isFallback && !podcastNote?.slug) {
-    return <ErrorPage statusCode={404} />;
-  }
   return (
     <Layout
       title={`${podcastNote.displayTitle}`}
@@ -68,12 +64,12 @@ export default PodcastNote;
 
 type Params = {
   params: {
-    slug: string;
+    id: string;
   };
 };
 
 export async function getStaticProps({ params }: Params) {
-  const podcastNote = allPodcastNotes.find(({ slug }) => params.slug === slug);
+  const podcastNote = allPodcastNotes.find(({ id }) => params.id === id);
 
   return {
     props: {
@@ -86,7 +82,7 @@ export async function getStaticPaths() {
   const paths = allPodcastNotes.map((podcastNote) => {
     return {
       params: {
-        slug: podcastNote.slug,
+        id: podcastNote.id,
       },
     };
   });

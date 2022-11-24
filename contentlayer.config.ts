@@ -20,6 +20,15 @@ const Author = defineNestedType(() => ({
   },
 }));
 
+const PodcastLinks = defineNestedType(() => ({
+  name: "PodcastLinks",
+  fields: {
+    web: { type: "string", required: true },
+    spotify: { type: "string", required: true },
+    youtube: { type: "string", required: true },
+  },
+}));
+
 export const Post = defineDocumentType(() => ({
   name: "Post",
   filePathPattern: "posts/*.mdx",
@@ -36,6 +45,32 @@ export const Post = defineDocumentType(() => ({
     slug: {
       type: "string",
       resolve: (doc: any) => doc._raw.sourceFileName.replace(".mdx", ""),
+    },
+  },
+}));
+
+export const PodcastNote = defineDocumentType(() => ({
+  name: "PodcastNote",
+  filePathPattern: "podcastNotes/*.mdx",
+  contentType: "mdx",
+  fields: {
+    title: { type: "string", required: true },
+    show: { type: "string", required: true },
+    episode: { type: "number", required: true },
+    excerpt: { type: "string", required: true },
+    links: { type: "nested", of: PodcastLinks, required: true },
+    tags: { type: "list", of: { type: "string" }, required: true },
+    rating: { type: "number", required: true },
+  },
+  computedFields: {
+    slug: {
+      type: "string",
+      resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
+    },
+    displayTitle: {
+      type: "string",
+      resolve: ({ title, show, episode }) =>
+        `${title} | ${show} – Episode ${episode}`,
     },
   },
 }));
@@ -107,7 +142,7 @@ import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 
 export default makeSource({
   contentDirPath: "src/content",
-  documentTypes: [Post, Page, Newsletter, Booknote],
+  documentTypes: [Post, Page, Newsletter, Booknote, PodcastNote],
   mdx: {
     remarkPlugins: [
       remarkFrontmatter,

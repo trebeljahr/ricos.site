@@ -569,6 +569,11 @@ li {
   color: black;
 }
 
+.podcastnote-link-card h3 {
+  padding: 0;
+}
+
+.podcastnote-link-card,
 .allBooknotes > .book-info {
   padding-bottom: 30px;
   padding-top: 30px;

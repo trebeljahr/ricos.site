@@ -13,7 +13,7 @@ const mainCategories = [
   "evolution",
   "engineering",
   "personal development",
-  "ai",
+  "AI",
   "programming",
   "finances",
   "mathematics",
@@ -24,7 +24,7 @@ const mainCategories = [
 type LinksOnTag<T> = { tag: string; links: T[] };
 
 type TaggedDocumentData = LinksOnTag<
-  Pick<DocumentTypes, "title" | "slug" | "type">
+  Pick<DocumentTypes, "title" | "slug" | "type" | "readingTime">
 >;
 
 type Props = {
@@ -59,11 +59,11 @@ const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
           <div key={tag}>
             <h2 id={tag}>{tag}</h2>
             <ul>
-              {links.map(({ slug, title, type }) => {
+              {links.map(({ slug, title, type, readingTime }) => {
                 return (
                   <li key={slug}>
                     <Link href={slug} as={slug}>
-                      {title} ({type})
+                      {title} ({type}) {readingTime}
                     </Link>
                   </li>
                 );
@@ -75,6 +75,7 @@ const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
     </>
   );
 };
+
 const ShowTags = ({ tags, categories }: Props) => {
   console.log(tags);
   console.log(categories);
@@ -90,7 +91,7 @@ const ShowTags = ({ tags, categories }: Props) => {
           <h2>Tags:</h2>
           <RenderTags tags={tags} />
           <h2>Links:</h2>
-          <RenderAnchors tags={tags} />
+          <RenderAnchors tags={categories} />
         </section>
         <section className="main-section">
           <NewsletterForm />
@@ -103,7 +104,7 @@ const ShowTags = ({ tags, categories }: Props) => {
 
 export default ShowTags;
 
-export function getStaticProps() {
+export async function getStaticProps() {
   const allTags = allDocuments.flatMap(({ tags }) => tags);
   console.log(allTags);
   const dedupedTags = [...new Set(allTags)];
@@ -127,7 +128,12 @@ export function getStaticProps() {
         .filter(({ tags }) => {
           return tags.includes(tag);
         })
-        .map(({ slug, type, title }) => ({ slug, type, title })),
+        .map(({ slug, type, title, readingTime }) => ({
+          slug,
+          type,
+          title,
+          readingTime,
+        })),
     };
   });
 

@@ -56,8 +56,8 @@ export const Post = defineDocumentType(() => ({
   },
 }));
 
-export const PodcastNote = defineDocumentType(() => ({
-  name: "PodcastNote",
+export const Podcastnote = defineDocumentType(() => ({
+  name: "Podcastnote",
   filePathPattern: "podcastnotes/*.mdx",
   contentType: "mdx",
   fields: {
@@ -179,7 +179,7 @@ import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 
 export default makeSource({
   contentDirPath: "src/content",
-  documentTypes: [Post, Page, Newsletter, Booknote, PodcastNote],
+  documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote],
   mdx: {
     remarkPlugins: [
       remarkFrontmatter,

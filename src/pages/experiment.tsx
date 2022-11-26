@@ -9,32 +9,30 @@ const mainCategories = [
   "psychology",
   "neuroscience",
   "biochemistry",
-  "cells",
   "physics",
+  "evolution",
   "engineering",
   "personal development",
-  "music",
   "ai",
   "programming",
-  "hacking",
   "finances",
   "mathematics",
   "traveling",
   "design",
-  "politics",
-  "problems",
-  "art",
+  "beauty",
 ];
 type LinksOnTag<T> = { tag: string; links: T[] };
 
-type LinksInfo = LinksOnTag<Pick<DocumentTypes, "title" | "slug" | "type">>;
+type TaggedDocumentData = LinksOnTag<
+  Pick<DocumentTypes, "title" | "slug" | "type">
+>;
 
 type Props = {
-  tags: LinksInfo[];
-  categories: LinksInfo[];
+  tags: TaggedDocumentData[];
+  categories: TaggedDocumentData[];
 };
 
-const RenderTags = ({ tags }: { tags: LinksInfo[] }) => {
+const RenderTags = ({ tags }: { tags: TaggedDocumentData[] }) => {
   return (
     <div className="tag-filter-container">
       {tags.map(({ tag, links }) => {
@@ -52,6 +50,31 @@ const RenderTags = ({ tags }: { tags: LinksInfo[] }) => {
     </div>
   );
 };
+
+const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
+  return (
+    <>
+      {tags.map(({ tag, links }) => {
+        return (
+          <div key={tag}>
+            <h2 id={tag}>{tag}</h2>
+            <ul>
+              {links.map(({ slug, title, type }) => {
+                return (
+                  <li key={slug}>
+                    <Link href={slug} as={slug}>
+                      {title} ({type})
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
+      })}
+    </>
+  );
+};
 const ShowTags = ({ tags, categories }: Props) => {
   console.log(tags);
   console.log(categories);
@@ -64,28 +87,10 @@ const ShowTags = ({ tags, categories }: Props) => {
         <section className="main-section main-text">
           <h2>Categories:</h2>
           <RenderTags tags={categories} />
-
           <h2>Tags:</h2>
           <RenderTags tags={tags} />
-
-          {tags.map(({ tag, links }) => {
-            return (
-              <div key={tag}>
-                <h2 id={tag}>{tag}</h2>
-                <ul>
-                  {links.map(({ slug, title, type }) => {
-                    return (
-                      <li key={slug}>
-                        <Link href={slug} as={slug}>
-                          {title} ({type})
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            );
-          })}
+          <h2>Links:</h2>
+          <RenderAnchors tags={tags} />
         </section>
         <section className="main-section">
           <NewsletterForm />

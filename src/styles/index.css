@@ -139,6 +139,16 @@ a {
   margin-left: 0.4rem;
 }
 
+.tag-filter.clickable {
+  color: black;
+  background-color: var(--light-blue);
+}
+
+.tag-filter.clickable:hover {
+  color: black;
+  background-color: var(--blue);
+}
+
 .add-filter-container,
 .tag-filter-container {
   display: flex;

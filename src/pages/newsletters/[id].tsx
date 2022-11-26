@@ -1,12 +1,11 @@
 import PostBody from "../../components/post-body";
 import Layout from "../../components/layout";
-import { getAllNewsletters, getNewsletterBySlug } from "../../lib/api";
-import { ToTopButton } from "../../components/ToTopButton";
 import Image from "next/image";
-import { NewsletterForm } from "../../components/newsletter-signup";
 import Link from "next/link";
 import PostHeader from "../../components/post-header";
+import { ToTopButton } from "../../components/ToTopButton";
 import { allNewsletters, Newsletter } from "contentlayer/generated";
+import { NewsletterForm } from "../../components/newsletter-signup";
 
 const NextAndPrevArrows = ({
   nextPost,

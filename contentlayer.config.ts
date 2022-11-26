@@ -9,6 +9,8 @@ const Image = defineNestedType(() => ({
   fields: {
     src: { type: "string", required: true },
     alt: { type: "string", required: true },
+    width: { type: "number" },
+    height: { type: "number" },
   },
 }));
 
@@ -40,18 +42,23 @@ export const Post = defineDocumentType(() => ({
     date: { type: "string", required: true },
     author: { type: "nested", of: Author, required: true },
     cover: { type: "nested", of: Image, required: true },
+    tags: { type: "list", of: { type: "string" }, required: true },
   },
   computedFields: {
     slug: {
       type: "string",
-      resolve: (doc: any) => doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) => "/posts/" + doc._raw.sourceFileName.replace(".mdx", ""),
+    },
+    id: {
+      type: "string",
+      resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
     },
   },
 }));
 
 export const PodcastNote = defineDocumentType(() => ({
   name: "PodcastNote",
-  filePathPattern: "podcastNotes/*.mdx",
+  filePathPattern: "podcastnotes/*.mdx",
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
@@ -64,6 +71,11 @@ export const PodcastNote = defineDocumentType(() => ({
   },
   computedFields: {
     slug: {
+      type: "string",
+      resolve: (doc) =>
+        "/podcastnotes/" + doc._raw.sourceFileName.replace(".mdx", ""),
+    },
+    id: {
       type: "string",
       resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
     },
@@ -83,7 +95,6 @@ export const Booknote = defineDocumentType(() => ({
     title: { type: "string", required: true },
     subtitle: { type: "string" },
     bookCover: { type: "string", required: true },
-    slug: { type: "string", required: true },
     excerpt: { type: "string" },
     bookAuthor: { type: "string", required: true },
     rating: { type: "number", required: true },
@@ -95,6 +106,17 @@ export const Booknote = defineDocumentType(() => ({
     amazonLink: { type: "string", required: true },
     amazonAffiliateLink: { type: "string", required: true },
   },
+  computedFields: {
+    slug: {
+      type: "string",
+      resolve: (doc) =>
+        "/booknotes/" + doc._raw.sourceFileName.replace(".mdx", ""),
+    },
+    id: {
+      type: "string",
+      resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
+    },
+  },
 }));
 
 export const Newsletter = defineDocumentType(() => ({
@@ -104,11 +126,21 @@ export const Newsletter = defineDocumentType(() => ({
     title: { type: "string", required: true },
     cover: { type: "nested", of: Image, required: true },
     excerpt: { type: "string" },
+    tags: { type: "list", of: { type: "string" }, required: true },
   },
   computedFields: {
     newsletterNumber: {
+      type: "number",
+      resolve: (doc) => parseInt(doc._raw.sourceFileName.replace(".md", "")),
+    },
+    slug: {
       type: "string",
-      resolve: (doc: any) => doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) =>
+        "/newsletters/" + doc._raw.sourceFileName.replace(".md", ""),
+    },
+    id: {
+      type: "string",
+      resolve: (doc) => doc._raw.sourceFileName.replace(".md", ""),
     },
   },
 }));
@@ -121,11 +153,16 @@ export const Page = defineDocumentType(() => ({
     title: { type: "string", required: true },
     subtitle: { type: "string", required: true },
     description: { type: "string", required: true },
+    tags: { type: "list", of: { type: "string" }, required: true },
   },
   computedFields: {
     slug: {
       type: "string",
-      resolve: (doc: any) => doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) => "/" + doc._raw.sourceFileName.replace(".mdx", ""),
+    },
+    id: {
+      type: "string",
+      resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
     },
   },
 }));

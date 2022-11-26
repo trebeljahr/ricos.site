@@ -43,10 +43,12 @@ export const PostPreview = ({
   post: { title, cover, excerpt, slug },
   isHeroPost = false,
 }: Props) => {
+  console.log(slug);
+
   return (
     <Link
-      as={`/posts/${slug}`}
-      href={`/posts/${slug}`}
+      as={slug}
+      href={slug}
       className={isHeroPost ? "hero-post-preview" : "post-preview"}
       passHref
     >

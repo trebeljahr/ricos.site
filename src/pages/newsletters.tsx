@@ -1,11 +1,11 @@
 import Layout from "../components/layout";
-import { getAllNewsletters } from "../lib/api";
 import Link from "next/link";
 import { ToTopButton } from "../components/ToTopButton";
 import { NewsletterForm } from "../components/newsletter-signup";
+import { allNewsletters } from "contentlayer/generated";
 
 type Props = {
-  newsletterSlugs: { slug: string }[];
+  newsletterSlugs: { slug: string; newsletterNumber: number }[];
 };
 
 const Newsletters = ({ newsletterSlugs }: Props) => {
@@ -16,14 +16,11 @@ const Newsletters = ({ newsletterSlugs }: Props) => {
     >
       <article>
         <section className="main-section">
-          {newsletterSlugs.map(({ slug: number }) => {
+          {newsletterSlugs.map(({ slug, newsletterNumber }) => {
             return (
-              <h3 key={number}>
-                <Link
-                  as={`/newsletters/${number}`}
-                  href={`/newsletters/${number}`}
-                >
-                  Newsletter #{number}
+              <h3 key={slug}>
+                <Link as={slug} href={slug}>
+                  Newsletter #{newsletterNumber}
                 </Link>
               </h3>
             );
@@ -41,7 +38,13 @@ const Newsletters = ({ newsletterSlugs }: Props) => {
 export default Newsletters;
 
 export const getStaticProps = async () => {
-  const newsletterSlugs = await getAllNewsletters(["slug"]);
+  const newsletterSlugs = allNewsletters.map(({ slug, newsletterNumber }) => ({
+    slug,
+    newsletterNumber,
+  }));
+
+  console.log(newsletterSlugs);
+
   return {
     props: { newsletterSlugs },
   };

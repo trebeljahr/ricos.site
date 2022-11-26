@@ -1,5 +1,4 @@
 import Layout from "../components/layout";
-import { getAllPosts } from "../lib/api";
 import { TrySomeOfThese } from "../components/intro-links";
 import Link from "next/link";
 import { ExternalLink } from "../components/ExternalLink";
@@ -77,17 +76,3 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
 };
 
 export default Index;
-
-export const getStaticProps = async () => {
-  const allPosts = await getAllPosts([
-    "title",
-    "date",
-    "slug",
-    "author",
-    "cover",
-    "excerpt",
-  ]);
-  return {
-    props: { allPosts },
-  };
-};

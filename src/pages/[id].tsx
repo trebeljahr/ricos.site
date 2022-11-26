@@ -31,7 +31,7 @@ export default function Page({ page }: Props) {
 
 export async function getStaticPaths() {
   return {
-    paths: allPages.map((page: PageType) => ({ params: { id: page.id } })),
+    paths: allPages.map(({ id }: PageType) => ({ params: { id } })),
     fallback: false,
   };
 }

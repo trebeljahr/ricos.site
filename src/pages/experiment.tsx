@@ -33,7 +33,7 @@ export default Newsletters;
 
 export function getStaticProps() {
   const allTags = allDocuments.flatMap(({ tags }) => tags);
-  //   console.log(allTags);
+  console.log(allTags);
   const dedupedTags = [...new Set(allTags)];
   console.log(dedupedTags);
 

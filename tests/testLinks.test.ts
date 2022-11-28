@@ -11,6 +11,7 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkToc from "remark-toc";
 import { existsSync } from "fs";
+import fetch from "node-fetch";
 
 async function generateLinksAndAnchors(document: DocumentTypes) {
   const links = new Set<string>();
@@ -31,7 +32,7 @@ async function generateLinksAndAnchors(document: DocumentTypes) {
         });
         visit(tree, "heading", (headingNode) => {
           if (headingNode.children[0].type === "text") {
-            anchors.add(kebab(headingNode.children[0].value));
+            anchors.add("#" + kebab(headingNode.children[0].value));
           }
         });
       };
@@ -53,59 +54,51 @@ describe("test links", async () => {
       const { links, anchors } = await generateLinksAndAnchors(document);
       return {
         title: document.title,
-        links,
+        localLinks: [...links].filter((link) => {
+          return link.startsWith("/") || link.startsWith("#");
+        }),
+        foreignLinks: [...links].filter((link) => {
+          return !link.startsWith("/");
+        }),
         anchors,
         availableAnchorLinks: [...anchors].map(
-          (anchor) => document.slug + "#" + anchor
+          (anchor) => document.slug + anchor
         ),
       };
     })
   );
 
-  const allLinks = availableLinks.concat(
-    transformedDocs
-      .map(({ availableAnchorLinks }) => availableAnchorLinks)
-      .flat()
-  );
-
-  console.log(allLinks);
-
-  console.log(allLinks.filter((link) => link.includes("fundamental")));
-
-  console.log(
-    "exact",
-    allLinks.filter((link) =>
-      link.includes("/posts/fundamental-problems#fear-of-failure")
+  const allLinks = new Set(
+    availableLinks.concat(
+      transformedDocs
+        .map(({ availableAnchorLinks }) => availableAnchorLinks)
+        .flat()
     )
   );
 
-  console.log(
-    "same check",
-    allLinks.includes("/posts/fundamental-problems#fear-of-failure")
-  );
-  for (const { links, anchors, title } of transformedDocs) {
-    if (links.size === 0) continue;
-
-    describe(title, () => {
-      for (let link of links) {
-        if (link.startsWith("/assets")) {
-          it(`should have resource "${link}"`, () => {
-            const fileExists = existsSync(`./public${link}`);
-            expect(fileExists).toBe(true);
-          });
-        } else if (link.startsWith("/")) {
-          it(`own website should have "${link}"`, () => {
-            const linkAvailable = allLinks.includes(link);
-            expect(linkAvailable).toBeTruthy();
-          });
-        } else {
-          it(`external link "${link}" should not 404 `, async () => {
-            // console.log(link);
-            // const response = await fetch(link);
-            // expect(response.ok).toBe(true);
-          });
+  for (const { localLinks, anchors, title } of transformedDocs) {
+    if (localLinks.length !== 0) {
+      describe(title, () => {
+        for (let fullLink of localLinks) {
+          let [link] = fullLink.split(":~:text=");
+          if (link.startsWith("#")) {
+            it(`should have anchor on site "${link}"`, () => {
+              const anchorAvailable = anchors.has(link);
+              expect(anchorAvailable).toBe(true);
+            });
+          } else if (link.startsWith("/assets")) {
+            it(`should have resource "${link}"`, () => {
+              const fileExists = existsSync(`./public${link}`);
+              expect(fileExists).toBe(true);
+            });
+          } else {
+            it(`own website should have "${link}"`, () => {
+              const linkAvailable = allLinks.has(link);
+              expect(linkAvailable).toBeTruthy();
+            });
+          }
         }
-      }
-    });
+      });
+    }
   }
 });

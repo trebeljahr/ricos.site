@@ -48,6 +48,7 @@
     "remark-mdx-frontmatter": "^2.0.3",
     "remark-toc": "^8.0.1",
     "simple-react-canvas-component": "^0.1.14",
+    "node-fetch": "^3.3.0",
     "three": "^0.146.0"
   },
   "devDependencies": {

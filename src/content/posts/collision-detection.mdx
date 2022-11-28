@@ -5,7 +5,7 @@ excerpt: 'If you have ever played any video game in your life, you used algorith
 cover: 
   src: "/assets/blog/sat.png"
 date: "2022-11-06"
-tags: []
+tags: ["programming", "mathematics", "engineering"]
 author:
   name: Rico Trebeljahr
   picture: "/assets/blog/profile.jpeg"
@@ -359,7 +359,7 @@ To do that, we are going to use a process called triangulation. Chopping an arbi
 
 ## The Ear Clipping Algorithm *or* how to triangulate Polygons
 
-Triangulating Polygons is a tough problem because there are so many weird edge cases to deal with. There have been whole papers written about how to efficiently do it (see [resources](#triangulation-resources) below) and I won't go into too much detail here, and neither will I attempt to fix all the possible edge cases. 
+Triangulating Polygons is a tough problem because there are so many weird edge cases to deal with. There have been whole papers written about how to efficiently do it (see [resources](#triangulation) below) and I won't go into too much detail here, and neither will I attempt to fix all the possible edge cases. 
 
 The algorithm we are going to use for triangulating concave shapes into a bunch of convex triangles is known as "Ear Clipping".
 
@@ -490,7 +490,7 @@ However... Collision detection is a tricky business and there are still edge cas
 
 ## Limitations
 
-The first that comes to mind: Curved shapes. Anything that doesn't have vertices doesn't work with the above algorithms and we would need to convert it first. Also, the triangulation implemented doesn't handle holes and breaks if the interior angle between two edges of a polygon is exactly equal to 180° or the polygon intersects with itself. Most of these problems could be tackled simply by using a better triangulation algorithm, in case you are curious there is a list of [resources down below](/resources).
+The first that comes to mind: Curved shapes. Anything that doesn't have vertices doesn't work with the above algorithms and we would need to convert it first. Also, the triangulation implemented doesn't handle holes and breaks if the interior angle between two edges of a polygon is exactly equal to 180° or the polygon intersects with itself. Most of these problems could be tackled simply by using a better triangulation algorithm, in case you are curious there is a list of [resources down below](#resources).
 
 Another problem could be objects or shapes that move very quickly. If they move quickly enough and the step size is bigger than the thing they should collide with, they could simply pass through (or "over") the other object. In games, usually bullets and thin walls would show this kind of behavior and problem. It's like the shape were "tunneling" through the other shape because it moved so fast that there never was a position update where the two were overlapping... 
 

@@ -49,6 +49,10 @@ export const Post = defineDocumentType(() => ({
       type: "string",
       resolve: (doc) => "/posts/" + doc._raw.sourceFileName.replace(".mdx", ""),
     },
+    readingTime: {
+      type: "string",
+      resolve: (doc) => readingTime(doc.body.raw).text,
+    },
     id: {
       type: "string",
       resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
@@ -56,8 +60,8 @@ export const Post = defineDocumentType(() => ({
   },
 }));
 
-export const PodcastNote = defineDocumentType(() => ({
-  name: "PodcastNote",
+export const Podcastnote = defineDocumentType(() => ({
+  name: "Podcastnote",
   filePathPattern: "podcastnotes/*.mdx",
   contentType: "mdx",
   fields: {
@@ -74,6 +78,10 @@ export const PodcastNote = defineDocumentType(() => ({
       type: "string",
       resolve: (doc) =>
         "/podcastnotes/" + doc._raw.sourceFileName.replace(".mdx", ""),
+    },
+    readingTime: {
+      type: "string",
+      resolve: (doc) => readingTime(doc.body.raw).text,
     },
     id: {
       type: "string",
@@ -112,6 +120,10 @@ export const Booknote = defineDocumentType(() => ({
       resolve: (doc) =>
         "/booknotes/" + doc._raw.sourceFileName.replace(".mdx", ""),
     },
+    readingTime: {
+      type: "string",
+      resolve: (doc) => readingTime(doc.body.raw).text,
+    },
     id: {
       type: "string",
       resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
@@ -138,6 +150,14 @@ export const Newsletter = defineDocumentType(() => ({
       resolve: (doc) =>
         "/newsletters/" + doc._raw.sourceFileName.replace(".md", ""),
     },
+    readingTime: {
+      type: "string",
+      resolve: (doc) => {
+        const time = readingTime(doc.body.raw);
+        console.log(time);
+        return time.text;
+      },
+    },
     id: {
       type: "string",
       resolve: (doc) => doc._raw.sourceFileName.replace(".md", ""),
@@ -160,6 +180,10 @@ export const Page = defineDocumentType(() => ({
       type: "string",
       resolve: (doc) => "/" + doc._raw.sourceFileName.replace(".mdx", ""),
     },
+    readingTime: {
+      type: "string",
+      resolve: (doc) => readingTime(doc.body.raw).text,
+    },
     id: {
       type: "string",
       resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
@@ -176,10 +200,11 @@ import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import rehypeSlug from "rehype-slug";
 import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
+import readingTime from "reading-time";
 
 export default makeSource({
   contentDirPath: "src/content",
-  documentTypes: [Post, Page, Newsletter, Booknote, PodcastNote],
+  documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote],
   mdx: {
     remarkPlugins: [
       remarkFrontmatter,

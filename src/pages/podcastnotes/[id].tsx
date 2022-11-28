@@ -4,52 +4,52 @@ import Layout from "../../components/layout";
 import { ToTopButton } from "../../components/ToTopButton";
 import { ExternalLink } from "../../components/ExternalLink";
 import { NewsletterForm } from "../../components/newsletter-signup";
-import { PodcastNote, allPodcastNotes } from "contentlayer/generated";
+import { Podcastnote, allPodcastnotes } from "contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { MarkdownRenderers } from "src/components/CustomRenderers";
 
 type Props = {
-  podcastNote: PodcastNote;
+  Podcastnote: Podcastnote;
 };
 
-const PodcastNoteComponent = ({ podcastNote }: Props) => {
-  const Component = useMDXComponent(podcastNote.body.code);
+const PodcastnoteComponent = ({ Podcastnote }: Props) => {
+  const Component = useMDXComponent(Podcastnote.body.code);
   return <Component components={{ ...MarkdownRenderers }} />;
 };
 
-const PodcastNote = ({ podcastNote }: Props) => {
+const Podcastnote = ({ Podcastnote }: Props) => {
   return (
     <Layout
-      title={`${podcastNote.displayTitle}`}
-      description={`These are my Podcast Notes for ${podcastNote.title}. ${podcastNote.excerpt}`}
+      title={`${Podcastnote.displayTitle}`}
+      description={`These are my Podcast Notes for ${Podcastnote.title}. ${Podcastnote.excerpt}`}
     >
       <article>
-        <section className="podcastNote-info main-section main-text">
-          <div className="podcastNote-preview-text">
+        <section className="Podcastnote-info main-section main-text">
+          <div className="Podcastnote-preview-text">
             <h2>
-              {podcastNote.show} | Episode – {podcastNote.episode}
+              {Podcastnote.show} | Episode – {Podcastnote.episode}
             </h2>
 
-            <h1>{podcastNote.title}</h1>
+            <h1>{Podcastnote.title}</h1>
             <p>
-              <b>Rating: {podcastNote.rating}/10</b>
+              <b>Rating: {Podcastnote.rating}/10</b>
             </p>
             <p>
               Listen on:{" "}
-              <ExternalLink href={podcastNote.links.youtube}>
+              <ExternalLink href={Podcastnote.links.youtube}>
                 Youtube
               </ExternalLink>{" "}
               |{" "}
-              <ExternalLink href={podcastNote.links.youtube}>
+              <ExternalLink href={Podcastnote.links.youtube}>
                 Spotify
               </ExternalLink>{" "}
               |{" "}
-              <ExternalLink href={podcastNote.links.youtube}>Web</ExternalLink>
+              <ExternalLink href={Podcastnote.links.youtube}>Web</ExternalLink>
             </p>
           </div>
         </section>
         <section className="main-section main-text post-body">
-          <PodcastNoteComponent podcastNote={podcastNote} />
+          <PodcastnoteComponent Podcastnote={Podcastnote} />
         </section>
         <section className="main-section">
           <ToTopButton />
@@ -60,7 +60,7 @@ const PodcastNote = ({ podcastNote }: Props) => {
   );
 };
 
-export default PodcastNote;
+export default Podcastnote;
 
 type Params = {
   params: {
@@ -69,20 +69,20 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const podcastNote = allPodcastNotes.find(({ id }) => params.id === id);
+  const Podcastnote = allPodcastnotes.find(({ id }) => params.id === id);
 
   return {
     props: {
-      podcastNote,
+      Podcastnote,
     },
   };
 }
 
 export async function getStaticPaths() {
-  const paths = allPodcastNotes.map((podcastNote) => {
+  const paths = allPodcastnotes.map((Podcastnote) => {
     return {
       params: {
-        id: podcastNote.id,
+        id: Podcastnote.id,
       },
     };
   });

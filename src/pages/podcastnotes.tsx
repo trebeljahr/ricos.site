@@ -2,19 +2,19 @@ import Layout from "../components/layout";
 import { Search, useSearch } from "../components/SearchBar";
 import { NewsletterForm } from "../components/newsletter-signup";
 import { ToTopButton } from "../components/ToTopButton";
-import { PodcastNote, allPodcastNotes } from "contentlayer/generated";
+import { Podcastnote, allPodcastnotes } from "contentlayer/generated";
 import { useEffect } from "react";
 import Link from "next/link";
 
-function toFilters({ title, rating, tags, show }: PodcastNote) {
+function toFilters({ title, rating, tags, show }: Podcastnote) {
   return { title, rating, tags, show };
 }
 
-export default function PodcastNotes() {
+export default function Podcastnotes() {
   const { byFilters, filters, setFilters } = useSearch(
-    allPodcastNotes.map(toFilters)
+    allPodcastnotes.map(toFilters)
   );
-  const filteredPodcastNotes = allPodcastNotes.filter(byFilters);
+  const filteredPodcastnotes = allPodcastnotes.filter(byFilters);
 
   useEffect(() => {
     setFilters((old) => {
@@ -24,23 +24,23 @@ export default function PodcastNotes() {
 
   return (
     <Layout
-      title="PodcastNotes - notes on the things I've read"
+      title="Podcastnotes - notes on the things I've read"
       description={
-        "An overview of what I have read, with a filterable list of books and PodcastNotes"
+        "An overview of what I have read, with a filterable list of books and Podcastnotes"
       }
     >
       <article>
         <section className="main-section">
           <Search filters={filters} setFilters={setFilters} />
-          <h1>PodcastNotes</h1>
-          <p>Amount: {filteredPodcastNotes.length}</p>
+          <h1>Podcastnotes</h1>
+          <p>Amount: {filteredPodcastnotes.length}</p>
         </section>
-        <section className="main-section allPodcastNotes">
-          {filteredPodcastNotes.map(
+        <section className="main-section allPodcastnotes">
+          {filteredPodcastnotes.map(
             ({ slug, title, show, episode, rating, excerpt }) => {
               return (
-                <div key={slug} className="podcastnote-link-card">
-                  <Link href={`/podcastnotes/${slug}`}>
+                <div key={slug} className="Podcastnote-link-card">
+                  <Link href={slug}>
                     <h2>{title}</h2>
                   </Link>
                   <h3>

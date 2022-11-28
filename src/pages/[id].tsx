@@ -31,13 +31,13 @@ export default function Page({ page }: Props) {
 
 export async function getStaticPaths() {
   return {
-    paths: allPages.map((page: PageType) => ({ params: { slug: page.slug } })),
+    paths: allPages.map(({ id }: PageType) => ({ params: { id } })),
     fallback: false,
   };
 }
 
-export async function getStaticProps({ params }: { params: { slug: string } }) {
-  const page = allPages.find((page: PageType) => page.slug === params.slug);
+export async function getStaticProps({ params }: { params: { id: string } }) {
+  const page = allPages.find((page: PageType) => page.id === params.id);
 
   return { props: { page } };
 }

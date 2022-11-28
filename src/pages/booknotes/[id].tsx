@@ -47,42 +47,32 @@ const BooknotesWithDefault = ({ book }: Props) => {
 };
 
 const Book = ({ book }: Props) => {
-  const router = useRouter();
-  if (!router.isFallback && !book?.slug) {
-    return <ErrorPage statusCode={404} />;
-  }
+  const defaultDescription = `These are the book Notes for ${book.title} by ${book.bookAuthor}`;
   return (
-    <Layout
-      title={book.title}
-      description={`These are the book Notes for ${book.title} by ${book.bookAuthor}`}
-    >
-      {router.isFallback ? (
-        <PostTitle>Loading…</PostTitle>
-      ) : (
-        <article>
-          <section className="book-info main-section">
-            <div className="book-cover-image">
-              <BookCover title={book.title} src={book.bookCover} />
-            </div>
+    <Layout title={book.title} description={book.excerpt || defaultDescription}>
+      <article>
+        <section className="book-info main-section">
+          <div className="book-cover-image">
+            <BookCover title={book.title} src={book.bookCover} />
+          </div>
 
-            <div className="book-preview-text">
-              <PostTitle>{book.title}</PostTitle>
-              <PostSubTitle>{book.subtitle}</PostSubTitle>
-              <p>by {book.bookAuthor} </p>
-              <h3>Rating: {book.rating}/10</h3>
-              <BuyItOnAmazon link={book.amazonLink} />
-            </div>
-          </section>
-          <section className="main-section main-text post-body">
-            <BooknotesWithDefault book={book} />
+          <div className="book-preview-text">
+            <PostTitle>{book.title}</PostTitle>
+            <PostSubTitle>{book.subtitle}</PostSubTitle>
+            <p>by {book.bookAuthor} </p>
+            <h3>Rating: {book.rating}/10</h3>
             <BuyItOnAmazon link={book.amazonLink} />
-          </section>
-          <section className="main-section">
-            <ToTopButton />
-            <NewsletterForm />
-          </section>
-        </article>
-      )}
+          </div>
+        </section>
+        <section className="main-section main-text post-body">
+          <BooknotesWithDefault book={book} />
+          <BuyItOnAmazon link={book.amazonLink} />
+        </section>
+        <section className="main-section">
+          <ToTopButton />
+          <NewsletterForm />
+        </section>
+      </article>
     </Layout>
   );
 };
@@ -91,12 +81,12 @@ export default Book;
 
 type Params = {
   params: {
-    slug: string;
+    id: string;
   };
 };
 
 export async function getStaticProps({ params }: Params) {
-  const book = allBooknotes.find(({ slug }) => params.slug === slug);
+  const book = allBooknotes.find(({ id }) => params.id === id);
 
   return {
     props: {
@@ -109,7 +99,7 @@ export async function getStaticPaths() {
   const paths = allBooknotes.map((book) => {
     return {
       params: {
-        slug: book.slug,
+        id: book.id,
       },
     };
   });

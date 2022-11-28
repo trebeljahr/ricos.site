@@ -1,26 +1,11 @@
 import PostBody from "../../components/post-body";
 import Layout from "../../components/layout";
-import { getAllNewsletters, getNewsletterBySlug } from "../../lib/api";
-import { ToTopButton } from "../../components/ToTopButton";
 import Image from "next/image";
-import { NewsletterForm } from "../../components/newsletter-signup";
 import Link from "next/link";
 import PostHeader from "../../components/post-header";
-import Author from "src/@types/author";
-
-type NewsletterType = {
-  title: string;
-  cover: { src: string; alt: string; width: string; height: string };
-  excerpt: string;
-  content: string;
-};
-
-type Props = {
-  newsletter: NewsletterType;
-  slug: string;
-  nextPost: null | number;
-  prevPost: null | number;
-};
+import { ToTopButton } from "../../components/ToTopButton";
+import { allNewsletters, Newsletter } from "contentlayer/generated";
+import { NewsletterForm } from "../../components/newsletter-signup";
 
 const NextAndPrevArrows = ({
   nextPost,
@@ -53,19 +38,34 @@ const NextAndPrevArrows = ({
   );
 };
 
-const Newsletter = ({ newsletter, slug, nextPost, prevPost }: Props) => {
+type Props = {
+  newsletter: Newsletter;
+  nextPost: null | number;
+  prevPost: null | number;
+};
+
+const Newsletter = ({
+  newsletter: { excerpt, title, newsletterNumber, cover, body },
+  nextPost,
+  prevPost,
+}: Props) => {
   return (
-    <Layout description={newsletter.excerpt} title={`Live and Learn #${slug}`}>
+    <Layout
+      title={`Live and Learn #${newsletterNumber}`}
+      description={excerpt || ""}
+    >
       <article className="newsletter-article">
         <section className="post-body main-section">
-          <PostHeader title={newsletter.title + " – Live and Learn #" + slug} />
+          <PostHeader
+            title={title + " – Live and Learn #" + newsletterNumber}
+          />
           <div className="header-image-container">
             <Image
               priority
-              src={newsletter.cover.src}
-              width={parseFloat(newsletter.cover.width) || 1}
-              height={parseFloat(newsletter.cover.height) || 1}
-              alt={newsletter.cover.alt}
+              src={cover.src}
+              width={cover.width || 1}
+              height={cover.height || 1}
+              alt={cover.alt}
               sizes="100vw"
               style={{
                 width: "100%",
@@ -74,7 +74,7 @@ const Newsletter = ({ newsletter, slug, nextPost, prevPost }: Props) => {
               }}
             />
           </div>
-          <PostBody content={newsletter.content} excerpt={newsletter.excerpt} />
+          <PostBody content={body.raw} excerpt={excerpt} />
         </section>
 
         <section className="main-section">
@@ -91,25 +91,16 @@ export default Newsletter;
 
 type Params = {
   params: {
-    slug: string;
-    nextPost: null | number;
-    prevPost: null | number;
+    id: string;
   };
 };
 
-export async function getStaticProps({ params: { slug } }: Params) {
-  const newsletter = await getNewsletterBySlug(slug + ".md", [
-    "content",
-    "title",
-    "cover",
-    "excerpt",
-  ]);
+export async function getStaticProps({ params }: Params) {
+  const newsletter = allNewsletters.find(({ id }) => id === params.id);
+  if (!newsletter) throw Error("Newsletter not found");
 
-  const allNewsletters = await getAllNewsletters(["slug"]);
-  const newsletterNumber = parseInt(slug);
-
-  let nextPost: number | null = newsletterNumber + 1;
-  let prevPost: number | null = newsletterNumber - 1;
+  let nextPost: number | null = newsletter.newsletterNumber + 1;
+  let prevPost: number | null = newsletter.newsletterNumber - 1;
 
   nextPost = nextPost > allNewsletters.length ? null : nextPost;
   prevPost = prevPost < 1 ? null : prevPost;
@@ -117,7 +108,6 @@ export async function getStaticProps({ params: { slug } }: Params) {
   return {
     props: {
       newsletter,
-      slug: slug,
       nextPost,
       prevPost,
     },
@@ -125,12 +115,10 @@ export async function getStaticProps({ params: { slug } }: Params) {
 }
 
 export async function getStaticPaths() {
-  const allNewsletters = await getAllNewsletters(["slug"]);
-
   return {
-    paths: allNewsletters.map((newsletter) => ({
+    paths: allNewsletters.map(({ id }) => ({
       params: {
-        slug: newsletter.slug,
+        id,
       },
     })),
     fallback: false,

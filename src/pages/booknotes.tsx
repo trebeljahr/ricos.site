@@ -17,11 +17,15 @@ function toFilters({
   return { bookAuthor, title, rating, tags, summary, detailedNotes };
 }
 
-export default function Books() {
+type Props = {
+  booknotes: Booknote[];
+};
+
+export default function Books({ booknotes }: Props) {
   const { byFilters, filters, setFilters } = useSearch(
-    allBooknotes.map(toFilters)
+    booknotes.map(toFilters)
   );
-  const filteredBooks = allBooknotes.filter(byFilters);
+  const filteredBooks = booknotes.filter(byFilters);
   useEffect(() => {
     setFilters((old) => {
       return { ...old, summary: { ...old.summary, active: true, value: true } };
@@ -37,7 +41,7 @@ export default function Books() {
       <article>
         <section className="main-section">
           <Search filters={filters} setFilters={setFilters} />
-          <h1>booknotes</h1>
+          <h1>Booknotes</h1>
           <p>Amount: {filteredBooks.length}</p>
           {!filters.detailedNotes.value && !filters.summary.value ? (
             <p>
@@ -60,4 +64,34 @@ export default function Books() {
       </article>
     </Layout>
   );
+}
+
+export function getStaticProps() {
+  return {
+    props: {
+      booknotes: allBooknotes.map(
+        ({
+          bookAuthor,
+          title,
+          rating,
+          tags,
+          summary,
+          detailedNotes,
+          excerpt,
+          slug,
+          bookCover,
+        }) => ({
+          bookAuthor,
+          bookCover,
+          slug,
+          title,
+          rating,
+          tags,
+          summary,
+          detailedNotes,
+          excerpt: excerpt || "",
+        })
+      ),
+    },
+  };
 }

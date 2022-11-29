@@ -43,14 +43,6 @@ export default function Books({ booknotes }: Props) {
           <Search filters={filters} setFilters={setFilters} />
           <h1>Booknotes</h1>
           <p>Amount: {filteredBooks.length}</p>
-          {!filters.detailedNotes.value && !filters.summary.value ? (
-            <p>
-              Fair warning: Many of these books still do not have detailed notes
-              or even summaries. I am still working on adding them, but it takes
-              time. If you want to see only those with descriptions or summaries
-              you can add a filter above!
-            </p>
-          ) : null}
         </section>
         <section className="main-section allBooknotes">
           {filteredBooks.map((book) => {

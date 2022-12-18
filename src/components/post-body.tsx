@@ -8,13 +8,11 @@ import { MarkdownRenderers } from "./CustomRenderers";
 
 type Props = {
   content: string;
-  excerpt?: string;
 };
 
-const PostBody = ({ content, excerpt }: Props) => {
+export const PostBodyWithoutExcerpt = ({ content }: Props) => {
   return (
     <div className="main-text">
-      {excerpt && <p>{excerpt}</p>}
       <ReactMarkdown
         remarkPlugins={[remarkToc, remarkGfm]}
         rehypePlugins={[rehypeRaw, rehypeHighlight]}
@@ -25,5 +23,3 @@ const PostBody = ({ content, excerpt }: Props) => {
     </div>
   );
 };
-
-export default PostBody;

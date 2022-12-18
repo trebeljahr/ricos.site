@@ -1,11 +1,11 @@
-import PostBody from "../../components/post-body";
-import Layout from "../../components/layout";
+import { allNewsletters, Newsletter } from "contentlayer/generated";
 import Image from "next/image";
 import Link from "next/link";
+import Layout from "../../components/layout";
+import { NewsletterForm } from "../../components/newsletter-signup";
+import { PostBodyWithoutExcerpt } from "../../components/post-body";
 import PostHeader from "../../components/post-header";
 import { ToTopButton } from "../../components/ToTopButton";
-import { allNewsletters, Newsletter } from "contentlayer/generated";
-import { NewsletterForm } from "../../components/newsletter-signup";
 
 const NextAndPrevArrows = ({
   nextPost,
@@ -59,6 +59,7 @@ const Newsletter = ({
           <PostHeader
             title={title + " – Live and Learn #" + newsletterNumber}
           />
+          {excerpt && <p>{excerpt}</p>}
           <div className="header-image-container">
             <Image
               priority
@@ -74,7 +75,7 @@ const Newsletter = ({
               }}
             />
           </div>
-          <PostBody content={body.raw} excerpt={excerpt} />
+          <PostBodyWithoutExcerpt content={body.raw} />
         </section>
 
         <section className="main-section">

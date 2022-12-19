@@ -16,8 +16,8 @@ export default function Page({ page }: Props) {
   return (
     <Layout title={title + " – " + subtitle} description={description}>
       <article>
-        <PostHeader subtitle={subtitle} title={title} />
         <section className="main-section main-text">
+          <PostHeader subtitle={subtitle} title={title} />
           <Component />
         </section>
         <section className="main-section">

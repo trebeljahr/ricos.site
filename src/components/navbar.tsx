@@ -1,7 +1,13 @@
 import Link from "next/link";
 import Intro from "./intro";
 import { useRouter } from "next/router";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { useWindowSize } from "../hooks/useWindowSize";
 
 type NavlinksProps = {
@@ -44,7 +50,8 @@ export function Navlinks({ expanded, setExpanded }: NavlinksProps) {
     );
   };
 
-  if (!expanded) return null;
+  // if (!expanded) return null;
+  // style={{ display: expanded ? "block" : "none" }}
   return (
     <>
       <SingleNavLink to="posts" />
@@ -59,29 +66,35 @@ export function Navlinks({ expanded, setExpanded }: NavlinksProps) {
 
 export function Navbar() {
   const { width } = useWindowSize();
-  const [expanded, setExpanded] = useState(width ? width > 1030 : false);
+  const [expanded, setExpanded] = useState(width ? width > 1030 : true);
   useEffect(() => {
-    setExpanded(width ? width > 1030 : false);
+    setExpanded(width ? width > 1030 : true);
   }, [width]);
 
   const setExpandedOnMobile = () => {
     setExpanded(width ? width > 1030 : false);
   };
   return (
-    <nav role="navigation" className="primary-navigation">
-      <div className="navbar-controls">
-        <Intro withLink={true} withMotto={false}></Intro>
+    <>
+      {width && (
+        <nav role="navigation" className="primary-navigation">
+          <div className="navbar-controls">
+            <Intro withLink={true} withMotto={false}></Intro>
 
-        <button
-          className="navlink-expander"
-          onClick={() => setExpanded(!expanded)}
-        >
-          <span className={expanded ? "icon-close" : "icon-bars"} />
-        </button>
-      </div>
-      <ul className="navlinks">
-        <Navlinks expanded={expanded} setExpanded={setExpandedOnMobile} />
-      </ul>
-    </nav>
+            <button
+              className="navlink-expander"
+              onClick={() => setExpanded(!expanded)}
+            >
+              <span className={expanded ? "icon-close" : "icon-bars"} />
+            </button>
+          </div>
+          {expanded ? (
+            <ul className="navlinks">
+              <Navlinks expanded={expanded} setExpanded={setExpandedOnMobile} />
+            </ul>
+          ) : null}
+        </nav>
+      )}
+    </>
   );
 }

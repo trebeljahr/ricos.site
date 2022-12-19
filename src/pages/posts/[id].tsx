@@ -68,9 +68,7 @@ export async function getStaticProps({ params }: Params) {
   const otherPosts = allPosts
     .filter((post) => post.id !== params.id)
     .map(({ title, slug }) => ({ title, slug }));
-  console.log({ otherPosts });
   const morePosts = getRandom(otherPosts, 3);
-  console.log({ morePosts });
 
   return { props: { post, morePosts } };
 }

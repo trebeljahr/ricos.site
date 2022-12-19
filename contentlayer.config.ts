@@ -1,6 +1,6 @@
 import {
-  defineNestedType,
   defineDocumentType,
+  defineNestedType,
   makeSource,
 } from "contentlayer/source-files";
 
@@ -154,7 +154,6 @@ export const Newsletter = defineDocumentType(() => ({
       type: "string",
       resolve: (doc) => {
         const time = readingTime(doc.body.raw);
-        console.log(time);
         return time.text;
       },
     },
@@ -191,16 +190,16 @@ export const Page = defineDocumentType(() => ({
   },
 }));
 
-import remarkGfm from "remark-gfm";
-import remarkFrontmatter from "remark-frontmatter";
-import remarkMdxFrontmatter from "remark-mdx-frontmatter";
-import remarkToc from "remark-toc";
+import readingTime from "reading-time";
+import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 import rehypeHighlight from "rehype-highlight";
 import rehypeKatex from "rehype-katex";
-import remarkMath from "remark-math";
 import rehypeSlug from "rehype-slug";
-import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
-import readingTime from "reading-time";
+import remarkFrontmatter from "remark-frontmatter";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import remarkMdxFrontmatter from "remark-mdx-frontmatter";
+import remarkToc from "remark-toc";
 
 export default makeSource({
   contentDirPath: "src/content",

@@ -43,8 +43,6 @@ export const PostPreview = ({
   post: { title, cover, excerpt, slug },
   isHeroPost = false,
 }: Props) => {
-  console.log(slug);
-
   return (
     <Link
       as={slug}

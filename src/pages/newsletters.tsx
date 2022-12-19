@@ -43,8 +43,6 @@ export const getStaticProps = async () => {
     newsletterNumber,
   }));
 
-  console.log(newsletterSlugs);
-
   return {
     props: { newsletterSlugs },
   };

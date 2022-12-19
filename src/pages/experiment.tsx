@@ -77,8 +77,6 @@ const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
 };
 
 const ShowTags = ({ tags, categories }: Props) => {
-  console.log(tags);
-  console.log(categories);
   return (
     <Layout
       title="Experiment"
@@ -106,9 +104,7 @@ export default ShowTags;
 
 export async function getStaticProps() {
   const allTags = allDocuments.flatMap(({ tags }) => tags);
-  console.log(allTags);
   const dedupedTags = [...new Set(allTags)];
-  console.log(dedupedTags);
 
   const tags = dedupedTags.map((tag) => {
     return {
@@ -136,8 +132,6 @@ export async function getStaticProps() {
         })),
     };
   });
-
-  console.log(categories);
 
   return {
     props: {

@@ -3,9 +3,20 @@ import Link from "next/link";
 import { ToTopButton } from "../components/ToTopButton";
 import { NewsletterForm } from "../components/newsletter-signup";
 import { allNewsletters } from "contentlayer/generated";
+import { useMemo } from "react";
+
+type SlugData = { slug: string; newsletterNumber: number };
 
 type Props = {
-  newsletterSlugs: { slug: string; newsletterNumber: number }[];
+  newsletterSlugs: SlugData[];
+};
+
+const sortSlugs = (slugArray: SlugData[]) => {
+  const collator = new Intl.Collator(undefined, {
+    numeric: true,
+    sensitivity: "base",
+  });
+  return slugArray.sort((a, b) => collator.compare(a.slug, b.slug));
 };
 
 const Newsletters = ({ newsletterSlugs }: Props) => {
@@ -44,6 +55,6 @@ export const getStaticProps = async () => {
   }));
 
   return {
-    props: { newsletterSlugs },
+    props: { newsletterSlugs: sortSlugs(newsletterSlugs) },
   };
 };

@@ -1,4 +1,5 @@
 import Image from "next/image";
+
 type AvatarProps = {
   picture: string;
 };
@@ -14,8 +15,9 @@ const Avatar = ({ picture }: AvatarProps) => {
         fill
         sizes="100vw"
         style={{
-          objectFit: "cover"
-        }} />
+          objectFit: "cover",
+        }}
+      />
     </div>
   );
 };

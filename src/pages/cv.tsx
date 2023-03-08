@@ -17,7 +17,6 @@ export default function CVPage() {
         </div>
         <div className="cv-contact-info">
           <a href="mailto:ricotrebeljahr@gmail.com">ricotrebeljahr@gmail.com</a>
-          <a href="https://ricotrebeljahr.com">ricotrebeljahr.com</a>
           <a href="https://github.com/trebeljahr">github.com/trebeljahr</a>
           <a href="https://www.linkedin.com/in/trebeljahr/">
             linkedin.com/in/trebeljahr/
@@ -43,10 +42,9 @@ export default function CVPage() {
           <p className="cv-date">Jan. 2022 - now</p>
         </div>
         <p>
-          Lead the teaching efforts of 3 cohorts at Ironhack, teaching around
-          ~60 people how to become Fullstack Web Developers themselves. Sharing
-          my knowledge and expertise, and conducting both full-time and part
-          time classes.
+          Lead the teaching efforts of 3 cohorts at Ironhack, teaching 60+
+          people how to become Fullstack Web Developers. Sharing my knowledge
+          and expertise, and conducting both full-time and part time classes.
         </p>
       </div>
       <div className="cv-section">
@@ -55,9 +53,9 @@ export default function CVPage() {
           <p className="cv-date">Oct. 2021 - Dez. 2021</p>
         </div>
         <p>
-          Worked on a 3-month project at the European Space Agency helping to
-          build web based tools for avoiding collisions of satellites with space
-          debris, leading the efforts to automate deployments with Ansible.
+          Worked on a project at the European Space Agency to build tools for
+          avoiding collisions of satellites with space debris. Lead the efforts
+          to automate deployments with Ansible.
         </p>
       </div>
       <div className="cv-section">
@@ -67,7 +65,7 @@ export default function CVPage() {
         </div>
         <p>
           Worked at Klarna for 6 months as a Software Engineer, as part of their
-          core chrome browser extension team. There I built an automated browser
+          core browser extension team. There I built an automated browser
           extension testing setup with cypress and wrote the extension&apos;s
           notifications feature.
         </p>
@@ -187,7 +185,7 @@ export default function CVPage() {
         </ul>
       </div>
       <div className="cv-section">
-        <h3>TECHNOLOGIES</h3>
+        <h3>TECH</h3>
         <ul>
           <li>JavaScript, HTML, CSS</li>
           <li>Golang, Python, TypeScript</li>

@@ -59,21 +59,15 @@
   width: 100%;
   max-width: 95vw;
   font-family: Helvetica;
-  font-size: 20px;
 }
 
 .cv-contact-info {
   display: flex;
   flex-direction: column;
-  margin-top: 3vh;
 }
 
 .cv-date {
   margin-top: -1vh;
-}
-
-.cv-name-heading {
-  margin-top: 3vh;
 }
 
 .cv-name-heading h1 {
@@ -107,13 +101,14 @@ a {
 }
 
 .cv-container ul {
-  margin-left: -20px;
+  margin-left: 20px;
 }
 
 .cv-container h1,
 .cv-container h2,
 .cv-container h3 {
   color: var(--green);
+  margin-bottom: 0;
 }
 
 .cv-container h1 {

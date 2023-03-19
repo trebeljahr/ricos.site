@@ -11,7 +11,6 @@ import "../styles/highlight.css";
 import "../styles/navbar.css";
 import "../styles/post-preview.css";
 import "../styles/newsletter.css";
-import "../styles/cv.css";
 
 import Script from "next/script";
 import Head from "next/head";

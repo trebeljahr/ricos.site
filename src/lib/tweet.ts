@@ -44,7 +44,7 @@ export async function tweetRandomQuote() {
   const quote = unpickedQuotes[randomIndex];
 
   try {
-    const tweetContent = `"${quote.content}" \n- ${quote.author}`;
+    const tweetContent = `"${quote.content}" \n– ${quote.author} \n\n Quote Archive at https://trebeljahr.com/quotes #quotes`;
     await twitter.v1.tweet(tweetContent);
 
     console.log("Tweet sent:", tweetContent);

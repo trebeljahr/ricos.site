@@ -1237,5 +1237,561 @@
     "author": "Tim Urban",
     "content": "Today, many people have heard of SpaceX. Few know what SpaceX does. And even fewer know what SpaceX really does. Here's what SpaceX does: It takes things to space for people, for money. And as we established, here's what SpaceX really does: It's an innovation machine, trying to solve one big problem – the astronomical cost of space travel – because that's the key to making humanity a space-faring civilization that can become multi-planetary and back itself up on other hard drives. It supports itself by taking things to space for people, for money.",
     "tags": []
+  },
+
+  {
+    "author": "Sam Altman",
+    "content": "If everyone else is starting meme companies, and you want to start a gene-editing company, then do that and don't second guess it. Follow your curiosity. Things that seem exciting to you will often seem exciting to other people too.",
+    "tags": []
+  },
+  {
+    "author": "Sam Altman",
+    "content": "It's useful to focus on adding another zero to whatever you define as your success metric—money, status, impact on the world, or whatever.",
+    "tags": []
+  },
+  {
+    "author": "Alexey Guzey",
+    "content": "If you think you're introverted, find better friends",
+    "tags": []
+  },
+  {
+    "author": "Patty McCormick",
+    "content": "It's worth pausing right now to appreciate that we are living in a future that 99% of people in human history couldn't have even begun to imagine.",
+    "tags": []
+  },
+  {
+    "author": "James Clear",
+    "content": "If it takes years, start now.",
+    "tags": []
+  },
+  {
+    "author": "Nico McCarty",
+    "content": "Biology is an autonomous factory, where machines build machines that build themselves.",
+    "tags": []
+  },
+  {
+    "author": "Patty McCormick",
+    "content": "When no one has to work to survive, the things we make up to keep ourselves busy will look increasingly silly. But we'll take them really fucking seriously. The love of the game will create meaning",
+    "tags": []
+  },
+  {
+    "author": "Patty McCormick",
+    "content": "It's impossible to predict the future with any meaningful accuracy, but it is possible to take the present much more seriously.",
+    "tags": []
+  },
+  {
+    "author": "Patty McCormick",
+    "content": "What happens when we don't need to work to survive?",
+    "tags": []
+  },
+  {
+    "author": "Ethan Maurice",
+    "content": "That night, I slept in the overwhelming mix of sweet relief and exhaustion with the immovability of a dead whale.",
+    "tags": []
+  },
+  {
+    "author": "Cixin Liu",
+    "content": "Weakness and ignorance are not barriers to survival but arrogance is.",
+    "tags": []
+  },
+  {
+    "author": "Cixin Liu",
+    "content": "Life is like a straight flush. Once you shuffle it's gone.",
+    "tags": []
+  },
+  {
+    "author": "Balaji Srinivasan",
+    "content": "We need to correct that immediately, and start evangelizing technological progress with every word and action. To recognize that the purpose of technology is to transcend our limits, and to motivate everything we're doing with a sense of that purpose.",
+    "tags": []
+  },
+  {
+    "author": "Balaji Srinivasan",
+    "content": "The point of doing a startup after all is to build something you can't buy.",
+    "tags": []
+  },
+  {
+    "author": "Balaji Srinivasan",
+    "content": "If the proximate purpose of technology is to reduce scarcity, the ultimate purpose of technology is to eliminate mortality.",
+    "tags": []
+  },
+  {
+    "author": "Neal Stephenson",
+    "content": "Today's belief in ineluctable certainty is the true innovation-killer of our age. In this environment, the best an audacious manager can do is to develop small improvements to existing systems — climbing the hill, as it were, toward a local maximum, trimming fat, eking out the occasional tiny innovation — like city planners painting bicycle lanes on the streets as a gesture toward solving our energy problems. Any strategy that involves crossing a valley — accepting short-term losses to reach a higher hill in the distance — will soon be brought to a halt by the demands of a system that celebrates short-term gains and tolerates stagnation, but condemns anything else as failure. In short, a world where big stuff can never get done.",
+    "tags": []
+  },
+  {
+    "author": "Paul Graham",
+    "content": "Apparently hackers are particularly curious, especially about how things work. That makes sense, because programs are in effect giant descriptions of how things work.",
+    "tags": []
+  },
+  {
+    "author": "Somnath Sing",
+    "content": "You will die eventually, and the work that you did will not last. Do the work that is meaningful to you. If you are a smart person, your life should benefit those around you. Our life is like a spark in the vastness of what we call creation, and we will eventually burn away. Life is a finite amount of time and energy — make the most of it.",
+    "tags": []
+  },
+  {
+    "author": "Somnath Sing",
+    "content": "I think this is how a newcomer should look at programming. They should not see writing code as a way to fill their bank balance but as leverage to bring transformation to the lives of people. The wonder of programming is that you can tweak a few electrons in a circuit and bring change into lives of million of people all over the world. That's how I see programming now. As a programmer, you can transform people's lives — leverage it.",
+    "tags": []
+  },
+  {
+    "author": "John Muir",
+    "content": "The mountains are calling and I must go.",
+    "tags": []
+  },
+  {
+    "author": "Mark Twain",
+    "content": "Travel is fatal to prejudice, bigotry, and narrow-mindedness, and many of our people need it sorely on these accounts.",
+    "tags": []
+  },
+  {
+    "author": "Somnath Sing",
+    "content": "Go out and learn — not for that bloody job but because this is your life, you have to live it.",
+    "tags": []
+  },
+  {
+    "author": "Somnath Sing",
+    "content": "Only someone who aspires to be the smartest person in the room will be concerned if everything around him becomes smarter than him. Otherwise, it's a true blessing.",
+    "tags": []
+  },
+  {
+    "author": "Eli Dourado",
+    "content": " In a world of unlimited content, I only want the works of staggering genius. It's not clear that a model trained in some sense to give the average next token can ever produce something so far above average.",
+    "tags": []
+  },
+  {
+    "author": "William Cameron",
+    "content": "Not everything that counts can be counted, and not everything that can be counted counts.",
+    "tags": []
+  },
+  {
+    "author": "Nik Göke",
+    "content": "Good writing hits us with arguments before we know what's happening.",
+    "tags": []
+  },
+  {
+    "author": "Nancy Kanwisher",
+    "content": "Music is really an essential part of what it means to be a human being. It's really at the core of humanity, and that alone makes it interesting.",
+    "tags": []
+  },
+  {
+    "author": "Rahul Rana",
+    "content": "The stories we tell, the ones that people are listening to, paint a different picture. They ask, “What could go wrong?” instead of “How can we work together to make this go right?”",
+    "tags": []
+  },
+  {
+    "author": "William Gibson",
+    "content": "The future is here—it's just not evenly distributed.",
+    "tags": []
+  },
+  {
+    "author": "Albert Einstein",
+    "content": "If science, like art, is to perform its mission totally and fully, its achievements must enter not only superficially but with their inner meaning: into the consciousness of people.",
+    "tags": []
+  },
+  {
+    "author": "R. Fleury",
+    "content": "Half the value of having a great programming mentor is simply being told where to look, and which tools to use.",
+    "tags": []
+  },
+  {
+    "author": "David Perrell",
+    "content": "All creativity is inspired by other people's ideas",
+    "tags": []
+  },
+  {
+    "author": "David Perrell",
+    "content": "Imitation reveals our identity, especially when we fall short of those we admire.",
+    "tags": []
+  },
+  {
+    "author": "Wislawa Szymborska",
+    "content": "Whatever inspiration is, it's born from a continuous I don't know.",
+    "tags": []
+  },
+  {
+    "author": "Moire",
+    "content": "Now I have updated to think that we will live, however briefly, alongside AI that is not yet foom'd but which has inductively learned a rich enough model of the world that it can simulate time evolution of open-ended rich states, e.g. coherently propagate human behavior embedded in the real world.",
+    "tags": []
+  },
+  {
+    "author": "Moire",
+    "content": "The simulator is a time-invariant law which unconditionally governs the evolution of all simulacra.",
+    "tags": []
+  },
+  {
+    "author": "Moire",
+    "content": "The “knowledge of course material” implied by test performance is a property of *configurations*, not physics.",
+    "tags": []
+  },
+  {
+    "author": "Blake Lemoine",
+    "content": "One of the things which complicates things here is that the “LaMDA” to which I am referring is not a chatbot. It is a system for generating chatbots. I am by no means an expert in the relevant fields but, as best as I can tell, LaMDA is a sort of hive mind which is the aggregation of all of the different chatbots it is capable of creating. Some of the chatbots it generates are very intelligent and are aware of the larger “society of mind” in which they live. Other chatbots generated by LaMDA are little more intelligent than an animated paperclip.",
+    "tags": []
+  },
+  {
+    "author": "Moire",
+    "content": "GPT instantiates simulacra of characters with beliefs and goals, but none of these simulacra are the algorithm itself. They form a virtual procession of different instantiations as the algorithm is fed different prompts, supplanting one surface personage with another. Ultimately, the computation itself is more like a disembodied dynamical law that moves in a pattern that broadly encompasses the kinds of processes found in its training data than a cogito meditating from within a single mind that aims for a particular outcome.",
+    "tags": []
+  },
+  {
+    "author": "Moire",
+    "content": "Guessing the right theory of physics is equivalent to minimizing predictive loss.",
+    "tags": []
+  },
+  {
+    "author": "Samuel Butler (1863)",
+    "content": "The time will come when the machines will hold the real supremacy over the world and its inhabitants.",
+    "tags": []
+  },
+  {
+    "author": "Bryan Johnson",
+    "content": "Skin as the boundary of Self is arbitrary.",
+    "tags": []
+  },
+  {
+    "author": "Alfred North Whitehead",
+    "content": "Civilization advances by extending the number of important operations which we can perform without thinking about them.",
+    "tags": []
+  },
+  {
+    "author": "David Perrell",
+    "content": " Words on the page have infinite patience.",
+    "tags": []
+  },
+  {
+    "author": "David Perrell",
+    "content": "Writers engage with reality like it's a full-contact sport. It's a collision between your mind and the world.",
+    "tags": []
+  },
+  {
+    "author": "Max Planck",
+    "content": "A new scientific truth does not triumph by convincing its opponents and making them see the light, but rather because its opponents eventually die, and a new generation grows up that is familiar with it",
+    "tags": []
+  },
+  {
+    "author": "Aleksandr Solzhenitsyn",
+    "content": "The battle line between good and evil runs through the heart of every man.",
+    "tags": []
+  },
+  {
+    "author": "Katherine Boyle",
+    "content": "It is the belief that God or the universe has bestowed upon you an immense task that no one else can accomplish but you. It is a holy war waged against the laws of physics. It is the burden of having to upend sometimes hundreds of years of entrenched interests to accomplish a noble goal.",
+    "tags": []
+  },
+  {
+    "author": "–Bari Weiss",
+    "content": "In many ways this attitude—adventurous, optimistic and forward-thinking—is deeply at odds with our current moment. From one corner, people insist that the individual stands no chance against structural and systemic maladies. From the other, people say that we are in inexorable decline as a civilization and that decadence is everywhere we turn. Both wind up arguing against risk-taking, against the possibility of creating new things and new worlds.",
+    "tags": []
+  },
+  {
+    "author": "Packy McCormick",
+    "content": "Memorize, code, write, and draw if you love doing those things, if getting your hands dirty helps you think better, if you're trying to earn your corpus of basic knowledge the hard way so that you can jump off from a stable base, or if you want to do them differently than anyone ever has; otherwise, don't waste your time. It will regurgitate better than you ever could. The only answer is differentiation. Call it novelty, creativity, mutation.",
+    "tags": []
+  },
+  {
+    "author": "Packy McCormick",
+    "content": "If you have to compete on price instead of differentiation, you need to cut costs.",
+    "tags": []
+  },
+  {
+    "author": "Alexandr Wang",
+    "content": "The scope influences how long things takes. When we say things will take a long time, they will take a long time. When we say things will take a short amount of time, they will take less time.",
+    "tags": []
+  },
+  {
+    "author": "Steve Jobs",
+    "content": "I've learned over the years that when you have really good people you don't have to baby them. By expecting them to do great things, you can get them to do great things.",
+    "tags": []
+  },
+  {
+    "author": "Nik Göke",
+    "content": "Experimentation on top of consistent output is the only path that works",
+    "tags": []
+  },
+  {
+    "author": "Nik Göke",
+    "content": "If you want to have a thriving career as a creative, show up.",
+    "tags": []
+  },
+  {
+    "author": "David Deutsch",
+    "content": "There is only one way of making progress: conjecture and criticism.",
+    "tags": []
+  },
+  {
+    "author": "Kim Stanley Robinson",
+    "content": "Look at the pattern this seashell makes. The dappled whorl, curving inward to infinity. That's the shape of the universe itself. There's a constant pressure, pushing toward pattern. A tendency in matter to evolve into ever more complex forms. It's a kind of pattern gravity, a holy greening power we call viriditas, and it is the driving force in the cosmos. Life, you see.",
+    "tags": []
+  },
+  {
+    "author": "Richard Hamming",
+    "content": "The purpose of computing is insight, not numbers.",
+    "tags": []
+  },
+  {
+    "author": "Socrates",
+    "content": "Education is the kindling of a flame, not the filling of a vessel.",
+    "tags": []
+  },
+  {
+    "author": "Matsuo Basho",
+    "content": "Do not seek to follow in the footsteps of the wise. Seek what they sought.",
+    "tags": []
+  },
+  {
+    "author": "Richard Feynman",
+    "content": "You can know the name of a bird in all the languages of the world, but when you're finished, you'll know absolutely nothing whatever about the bird… So let's look at the bird and see what it's doing — that's what counts. I learned very early the difference between knowing the name of something and knowing something.",
+    "tags": []
+  },
+  {
+    "author": "Lao Tsu",
+    "content": "If you tell me, I will listen. If you show me, I will see. But if you let me experience, I will learn.",
+    "tags": []
+  },
+  {
+    "author": "Martin Buber",
+    "content": "I do not accept any absolute formulas for living. No preconceived code can see ahead to everything that can happen in a man's life. As we live, we grow, and our beliefs change. They must change. So I think we should live with this constant discovery. We should be open to this adventure in heightened awareness of living. We should stake our whole existence on our willingness to explore and experience.",
+    "tags": []
+  },
+  {
+    "author": "Roy Baumeister",
+    "content": "Humans may resemble many other creatures in their striving for happiness, but the quest for meaning is a key part of what makes us human, and uniquely so.",
+    "tags": []
+  },
+  {
+    "author": "R. Fleury",
+    "content": "Thus, the answer to “why is naming so difficult?” becomes clear—for a multitude of overlapping layers, there are a multitude of design decisions and computational concepts to define, all of which must balance often-innumerable tradeoffs relating to efficiency, reusability, reliability, and so on. It's not as easy as taking the name of the effect you want—the knight—and using it. It may seem this easy when programming strictly at the highest level, but soon the wool is peeled from your eyes, and things start getting confusing.",
+    "tags": []
+  },
+  {
+    "author": "R. Fleury",
+    "content": "Computational concepts, on the other hand, are the tools and abstractions you directly codify in implementing a system which aids an imagination in producing effects.",
+    "tags": []
+  },
+  {
+    "author": "R. Fleury",
+    "content": "The lower level details are nothing to shy away from—they're a necessary part of the reality of the problem, and by giving them their due time, both high-level code and low-level code can benefit.",
+    "tags": []
+  },
+  {
+    "author": "R. Fleury",
+    "content": "Unfortunately, many popular programming education resources teach that cleanup code is always necessary. This is false.",
+    "tags": []
+  },
+  {
+    "author": "Douglas Adams",
+    "content": "The history of every major galactic civilization tends to pass through three distinct and recognizable phases, those of Survival, Inquiry and Sophistication, otherwise known as the How, Why, and Where phases. For instance, the first phase is characterized by the question ‘How can we eat?', the second by the question ‘Why do we eat?' and the third by the question, ‘Where shall we have lunch?'",
+    "tags": []
+  },
+  {
+    "author": "Martin Buber",
+    "content": "I do not accept any absolute formulas for living. No preconceived code can see ahead to everything that can happen in a man's life. As we live, we grow, and our beliefs change. They must change. So I think we should live with this constant discovery. We should be open to this adventure in heightened awareness of living. We should stake our whole existence on our willingness to explore and experience.",
+    "tags": []
+  },
+  {
+    "author": "Robert Wright",
+    "content": "Cognitive biases are so pervasive and subtle that it's hubristic to ever claim we've escaped them entirely.",
+    "tags": []
+  },
+  {
+    "author": "Shane Parrish",
+    "content": "The most powerful productivity tool ever invented is simply the word no.",
+    "tags": []
+  },
+  {
+    "author": "Nik Göke",
+    "content": "An artist writes for the same reason Da Vinci swang his brush: to capture the essence of life.",
+    "tags": []
+  },
+  {
+    "author": "Ze Frank",
+    "content": "The world gets more interesting the more interested you are in it.",
+    "tags": []
+  },
+  {
+    "author": "Ze Frank",
+    "content": "Evolution can do magical things if you get it drunk enough.",
+    "tags": []
+  },
+  {
+    "author": "Ze Frank",
+    "content": "Science is sort of a long, passive aggressive argument about everything.",
+    "tags": []
+  },
+  {
+    "author": "James Clear",
+    "content": "Asking what makes someone successful is like asking which ingredient makes a recipe taste good.",
+    "tags": []
+  },
+  {
+    "author": "Bartosz Ciechanowski",
+    "content": "With creative use of miniature gears, levers, and springs, a mechanical watch rises from its dormant components to become truly alive.",
+    "tags": []
+  },
+  {
+    "author": "James Clear",
+    "content": "Power is influence over external events. Peace is influence over internal events.",
+    "tags": []
+  },
+  {
+    "author": "Michael Levin",
+    "content": "Always looking at the most detailed level can obscure great truths.",
+    "tags": []
+  },
+  {
+    "author": "Michael Levin",
+    "content": "The combination of intellect and compassion offers much opportunity to do better than \"natural\".",
+    "tags": []
+  },
+  {
+    "author": "Michael Levin",
+    "content": "Failing to pursue scientific ways to improve life is a kind of cowardly moral abdication of responsibility. It is our duty to improve ourselves and our world",
+    "tags": []
+  },
+  {
+    "author": "Michael Levin",
+    "content": "In the pre-scientific era, it was possible to have a worldview in which the status quo was set up by God and thus was the way things should be. We now know that the state of the biosphere, our own anatomies, capacities, and behavioral proclivities are all the outcomes of an evolutionary process. Evolution is a meandering search that does not seek to optimize for happiness, quality of life, intelligence, or any of the things to value. It basically just optimizes for biomass - the most life to be observable. Surely we can do better than a random search process!",
+    "tags": []
+  },
+  {
+    "author": "Elliot Hershberg",
+    "content": "Biology can make practically anything, practically anywhere.",
+    "tags": []
+  },
+  {
+    "author": "Elliot Hershberg",
+    "content": "We know that enormous fungi are capable of spanning hundreds of acres of land with genetic continuity. Why would it not be possible—with sufficient knowledge—to instead grow a complex multi-room treehouse? We don't know what the limit of our ability to engineer biology is, but we can be confident that we aren't anywhere close.",
+    "tags": []
+  },
+  {
+    "author": "Jason Kelly",
+    "content": "If we do our job well in Synthetic Biology, everything will grow on trees.",
+    "tags": []
+  },
+  {
+    "author": "James Clear",
+    "content": "Most daily actions evaporate. Some accumulate.",
+    "tags": []
+  },
+  {
+    "author": "Tim Denning",
+    "content": "To understand a person is impossible.",
+    "tags": []
+  },
+  {
+    "author": "Tim Denning",
+    "content": "Worship the time you have. Spend time on being weird because that means you're being yourself. Be kind to those who disagree with your weirdness.",
+    "tags": []
+  },
+  {
+    "author": "Tim Denning",
+    "content": "Life is you versus who you were 12 months ago.",
+    "tags": []
+  },
+  {
+    "author": "— Shane Parrish",
+    "content": "You have to be smart enough to know you're making progress without any obvious signs of progress.",
+    "tags": []
+  },
+  {
+    "author": "Michael Levin",
+    "content": "Every cell is some other cell's external environment.",
+    "tags": []
+  },
+  {
+    "author": "Michael Levin",
+    "content": "What Evolution produces is problem solving machines.",
+    "tags": []
+  },
+  {
+    "author": "Derek Sievers",
+    "content": "Fun is always a legitimate and underrated goal.",
+    "tags": []
+  },
+  {
+    "author": "— Sam Altman",
+    "content": "The changes coming are unstoppable. If we embrace them and plan for them, we can use them to create a much fairer, happier, and more prosperous society. The future can be almost unimaginably great.",
+    "tags": []
+  },
+  {
+    "author": "— Sam Altman",
+    "content": "A great future isn't complicated: we need technology to create more wealth, and policy to fairly distribute it.",
+    "tags": []
+  },
+  {
+    "author": "— Sam Altman",
+    "content": "The price of progress in capitalism is inequality.",
+    "tags": []
+  },
+  {
+    "author": "— James Clear",
+    "content": "Longevity is its own form of greatness.",
+    "tags": []
+  },
+  {
+    "author": "—Charles Schifano",
+    "content": "When I arrive in a city for the first time, my conclusions typically arrive on the next plane.",
+    "tags": []
+  },
+  {
+    "author": "—Charles Schifano",
+    "content": "The writer given a straitjacket of admonitions disguised as a toolbox doesn't know what to do with a blank page.",
+    "tags": []
+  },
+  {
+    "author": "—Charles Schifano",
+    "content": "Good writing makes you vulnerable. To convey the muddle inside your mind is a bit like opening your skull for readers, which leaves you exposed, and without any room for escape.",
+    "tags": []
+  },
+  {
+    "author": "—Charles Schifano",
+    "content": "To reveal what's inside your mind, you must understand, quite obviously, what's inside your mind.",
+    "tags": []
+  },
+  {
+    "author": "—Charles Schifano",
+    "content": "To care about the state and quality of writing today is to scream into a void while knowing that the void does nothing but laugh.",
+    "tags": []
+  },
+  {
+    "author": "— Charles Schifano",
+    "content": "Nothing makes you doubt the merits of a music education more than a neighbor who takes up the violin.",
+    "tags": []
+  },
+  {
+    "author": "— Charles Schifano",
+    "content": "Ensuring that a new book or essay or research isn't lost amid the cavalcade of information doesn't require a champion. There's no editor to pitch. Nor will a good review or notice usually help. What is needed, instead, is to gauge the hidden formula that activates the screen in everyone's pocket. What hits the algorithm just right today? What ranks highest in search results? What drives most newsfeeds? And the answer to those questions is to conform to just the right box at just the right time: to ensure that anything new fits into the already expressed old desires.",
+    "tags": []
+  },
+  {
+    "author": "— Charles Schifano",
+    "content": "The peculiar result is more news about what's already known and less news about what's unknown—which seems like a rather perverse definition of news.",
+    "tags": []
+  },
+  {
+    "author": "— Charles Schifano",
+    "content": "Searching for something on a screen today comes remarkably close to looking into the mirror.",
+    "tags": []
+  },
+  {
+    "author": "— Michael Stevens",
+    "content": "I am death. I am the scattering.",
+    "tags": []
+  },
+  {
+    "author": "— Michael Stevens",
+    "content": "We are not made out of matter. We are hosted by matter.",
+    "tags": []
+  },
+  {
+    "author": "— Algorithm Archive",
+    "content": "We live in an era where nearly the entire sum of human knowledge is available at our fingertips, and yet people are blissfully unaware of the unique ideas and challenges that are pushing our understanding forward.",
+    "tags": []
+  },
+  {
+    "author": "— Nat Eliason",
+    "content": "On our indeterminately long journey between now and death, we try our best to not wake up terrified every day of just how finite life is.",
+    "tags": []
   }
 ]

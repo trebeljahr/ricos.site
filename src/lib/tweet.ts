@@ -1,5 +1,5 @@
 import { TwitterApi } from "twitter-api-v2";
-import { MongoClient } from "mongodb";
+import { MongoClient, WithId } from "mongodb";
 
 const options = {
   appKey: process.env.TWITTER_APP_KEY,
@@ -31,28 +31,31 @@ export async function tweetRandomQuote() {
   await client.connect();
   const quotesCollection = client.db("quotes").collection<Quote>("quotes");
 
-  const unpickedQuotes = await quotesCollection
-    .find({ picked: { $ne: true } })
-    .toArray();
-
-  if (unpickedQuotes.length === 0) {
-    console.log("No more quotes to tweet!");
-    return;
-  }
-
-  const randomIndex = Math.floor(Math.random() * unpickedQuotes.length);
-  const quote = unpickedQuotes[randomIndex];
-
   try {
-    const tweetContent = `"${quote.content}" \n– ${quote.author} \n\n Quote Archive at https://trebeljahr.com/quotes #quotes`;
+    let tweetContent = "";
+    let quote: WithId<Quote> | null = null;
+    do {
+      quote = await quotesCollection.findOne({
+        picked: { $ne: true },
+      });
+
+      if (!quote) {
+        return console.log("No more quotes left!");
+      }
+
+      await quotesCollection.updateOne(
+        { _id: quote._id },
+        { $set: { picked: true } }
+      );
+
+      tweetContent = `"${quote.content}" \n– ${quote.author} \n\n #quotes #dailyquote \n Quote Archive at https://trebeljahr.com/quotes`;
+    } while (tweetContent.length > 140);
+
+    console.log("Sending tweet with:", tweetContent);
+
     await twitter.v1.tweet(tweetContent);
 
-    console.log("Tweet sent:", tweetContent);
-
-    await quotesCollection.updateOne(
-      { _id: quote._id },
-      { $set: { picked: true } }
-    );
+    console.log("Tweet sent successfully!");
   } catch (error) {
     console.error("Error sending tweet:", error);
   } finally {

@@ -1,6 +1,6 @@
 import { readFile, writeFile } from "fs/promises";
 
-const quoteText = await readFile("../page-content/quotes.md", "utf-8");
+const quoteText = await readFile("./quote-text.md", "utf-8");
 const quotes = quoteText
   .split("\n")
   .map((str) => str.trim())
@@ -13,7 +13,4 @@ for (let i = 0; i < quotes.length; i += 2) {
   allQuotes.push(newQuote);
 }
 
-await writeFile(
-  "../page-content/quotes.json",
-  JSON.stringify(allQuotes, undefined, 2)
-);
+await writeFile("./quotes.json", JSON.stringify(allQuotes, undefined, 2));

@@ -1,13 +1,6 @@
 import { TwitterApi } from "twitter-api-v2";
 import { MongoClient } from "mongodb";
 
-type Quote = {
-  content: string;
-  author: string;
-  picked: boolean;
-  tags: string[];
-};
-
 const options = {
   appKey: process.env.TWITTER_APP_KEY,
   appSecret: process.env.TWITTER_APP_SECRET,
@@ -27,9 +20,16 @@ const twitter = new TwitterApi(options).readWrite;
 const MONGODB_URI = process.env.MONGODB_CONNECTION_STRING || "";
 const client = new MongoClient(MONGODB_URI);
 
+type Quote = {
+  content: string;
+  author: string;
+  picked: boolean;
+  tags: string[];
+};
+
 export async function tweetRandomQuote() {
   await client.connect();
-  const quotesCollection = client.db("quotes").collection("quotes");
+  const quotesCollection = client.db("quotes").collection<Quote>("quotes");
 
   const unpickedQuotes = await quotesCollection
     .find({ picked: { $ne: true } })

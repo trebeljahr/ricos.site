@@ -34,22 +34,33 @@ export async function tweetRandomQuote() {
   try {
     let tweetContent = "";
     let quote: WithId<Quote> | null = null;
-    do {
-      quote = await quotesCollection.findOne({
-        picked: { $ne: true },
-      });
 
-      if (!quote) {
+    const filter = {
+      picked: { $ne: true },
+    };
+    const totalCount = await quotesCollection.countDocuments(filter);
+    const randomIndex = Math.floor(Math.random() * totalCount);
+
+    do {
+      const results = await quotesCollection
+        .find(filter)
+        .skip(randomIndex)
+        .limit(1)
+        .toArray();
+
+      if (results.length === 0) {
         return console.log("No more quotes left!");
       }
 
+      quote = results[0];
       await quotesCollection.updateOne(
         { _id: quote._id },
         { $set: { picked: true } }
       );
 
       tweetContent = `"${quote.content}" \n– ${quote.author} \n\n #quotes #dailyquote \n\n Quote Archive at https://trebeljahr.com/quotes`;
-    } while (tweetContent.length > 140);
+      console.log(tweetContent.length);
+    } while (tweetContent.length > 280);
 
     console.log("Sending tweet with:", tweetContent);
 

@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { tweetRandomQuote } from "src/lib/tweet";
 
 export default async function handler(
   req: NextApiRequest,
@@ -29,6 +30,8 @@ export default async function handler(
   ) {
     return res.status(401).json({ message: "Invalid username or password" });
   }
+
+  await tweetRandomQuote();
 
   res.status(200).json({ message: "Authenticated API call" });
 }

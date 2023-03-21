@@ -27,7 +27,10 @@ interface TwitterApiTokens {
 
 const twitter = new TwitterApi(options).readWrite;
 
-const quotesFilePath = path.join(process.cwd(), "../content/pages/quotes.json");
+const quotesFilePath = path.join(
+  process.cwd(),
+  "/src/content/pages/quotes.json"
+);
 
 export async function tweetRandomQuote() {
   const quotes: Quote[] = JSON.parse(await readFile(quotesFilePath, "utf-8"));
@@ -42,9 +45,10 @@ export async function tweetRandomQuote() {
   const quote = unpickedQuotes[randomIndex];
 
   try {
-    const tweetContent = `"${quote.content}" - ${quote.author}`;
-    const tweet = await twitter.v1.tweet(tweetContent);
-    console.log("Tweet sent:", tweet.text);
+    const tweetContent = `"${quote.content}" \n- ${quote.author}`;
+    await twitter.v1.tweet(tweetContent);
+
+    console.log("Tweet sent:", tweetContent);
 
     const originalQuote = quotes.find(
       (q: Quote) => q.content === quote.content

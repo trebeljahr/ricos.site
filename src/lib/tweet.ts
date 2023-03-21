@@ -1,6 +1,5 @@
 import { TwitterApi } from "twitter-api-v2";
-import { readFile, writeFile } from "fs/promises";
-import path from "path";
+import { MongoClient } from "mongodb";
 
 type Quote = {
   content: string;
@@ -16,8 +15,6 @@ const options = {
   accessSecret: process.env.TWITTER_ACCESS_SECRET,
 } as TwitterApiTokens;
 
-console.log({ options });
-
 interface TwitterApiTokens {
   appKey: string;
   appSecret: string;
@@ -27,15 +24,17 @@ interface TwitterApiTokens {
 
 const twitter = new TwitterApi(options).readWrite;
 
-const quotesFilePath = path.join(
-  process.cwd(),
-  "/src/content/pages/quotes.json"
-);
+const MONGODB_URI = process.env.MONGODB_CONNECTION_STRING || "";
+const client = new MongoClient(MONGODB_URI);
 
 export async function tweetRandomQuote() {
-  const quotes: Quote[] = JSON.parse(await readFile(quotesFilePath, "utf-8"));
+  await client.connect();
+  const quotesCollection = client.db("quotes").collection("quotes");
 
-  const unpickedQuotes = quotes.filter((quote) => !quote.picked);
+  const unpickedQuotes = await quotesCollection
+    .find({ picked: { $ne: true } })
+    .toArray();
+
   if (unpickedQuotes.length === 0) {
     console.log("No more quotes to tweet!");
     return;
@@ -50,16 +49,13 @@ export async function tweetRandomQuote() {
 
     console.log("Tweet sent:", tweetContent);
 
-    const originalQuote = quotes.find(
-      (q: Quote) => q.content === quote.content
+    await quotesCollection.updateOne(
+      { _id: quote._id },
+      { $set: { picked: true } }
     );
-
-    if (!originalQuote) throw new Error("Quote not found");
-
-    originalQuote.picked = true;
-
-    await writeFile(quotesFilePath, JSON.stringify(quotes, null, 2));
   } catch (error) {
     console.error("Error sending tweet:", error);
+  } finally {
+    await client.close();
   }
 }

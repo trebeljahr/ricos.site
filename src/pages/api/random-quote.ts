@@ -8,10 +8,6 @@ export default async function handler(
   const authHeader = req.headers.authorization || "";
   const [scheme, credentials] = authHeader.split(" ");
 
-  console.log(req);
-  console.log("authHeader", credentials);
-  console.log("scheme", scheme);
-
   if (scheme !== "Basic" || !credentials) {
     return res
       .status(401)

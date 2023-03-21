@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { confirmEmail, getErrorMessage } from "../../lib/utils";
+import { confirmEmail } from "../../lib/utils";
 
 export default async function handler(
   req: NextApiRequest,

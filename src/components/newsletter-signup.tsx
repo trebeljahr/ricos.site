@@ -66,15 +66,11 @@ export const NewsletterForm = () => {
             <span className="icon-check-circle newsletter-success"></span>
           </h2>
           <p>{success}</p>
-          <p>
-            <Link as="/newsletters" href="/newsletters">
-              You can read past editions in the archive!
-            </Link>
-          </p>
         </>
       ) : (
         <>
           <h2>Subscribe to Live and Learn</h2>
+
           <p>
             Twice a month. Quotes, photos, booknotes and interesting links.
             Bundled together in one heck of a Newsletter. No spam. No noise.{" "}
@@ -105,6 +101,14 @@ export const NewsletterForm = () => {
               )}
             </button>
           </div>
+
+          <Link
+            as="/newsletters"
+            href="/newsletters"
+            style={{ marginTop: "30px", fontSize: "20px" }}
+          >
+            Check out what you missed so far.
+          </Link>
         </>
       )}
     </div>

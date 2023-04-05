@@ -3,23 +3,27 @@ import Link from "next/link";
 import { ToTopButton } from "../components/ToTopButton";
 import { NewsletterForm } from "../components/newsletter-signup";
 import { allNewsletters } from "contentlayer/generated";
-import { useMemo } from "react";
 
-type SlugData = { slug: string; newsletterNumber: number };
-
-type Props = {
-  newsletterSlugs: SlugData[];
+type NewsletterData = {
+  slug: string;
+  newsletterNumber: number;
+  title: string;
+  excerpt: string;
 };
 
-const sortSlugs = (slugArray: SlugData[]) => {
+type Props = {
+  newsletterData: NewsletterData[];
+};
+
+const sortSlugs = (slugArray: NewsletterData[]) => {
   const collator = new Intl.Collator(undefined, {
     numeric: true,
     sensitivity: "base",
   });
-  return slugArray.sort((a, b) => collator.compare(a.slug, b.slug));
+  return slugArray.sort((a, b) => -collator.compare(a.slug, b.slug));
 };
 
-const Newsletters = ({ newsletterSlugs }: Props) => {
+const Newsletters = ({ newsletterData }: Props) => {
   return (
     <Layout
       title="Newsletters - an archive of newsletters"
@@ -27,13 +31,17 @@ const Newsletters = ({ newsletterSlugs }: Props) => {
     >
       <article>
         <section className="main-section">
-          {newsletterSlugs.map(({ slug, newsletterNumber }) => {
+          {newsletterData.map(({ slug, newsletterNumber, title, excerpt }) => {
             return (
-              <h3 key={slug}>
-                <Link as={slug} href={slug}>
-                  Newsletter #{newsletterNumber}
+              <div key={slug} className="Podcastnote-link-card">
+                <Link href={slug}>
+                  <h2>
+                    {title} | Live and Learn #{newsletterNumber}
+                  </h2>
                 </Link>
-              </h3>
+
+                <p>{excerpt}</p>
+              </div>
             );
           })}
         </section>
@@ -49,12 +57,18 @@ const Newsletters = ({ newsletterSlugs }: Props) => {
 export default Newsletters;
 
 export const getStaticProps = async () => {
-  const newsletterSlugs = allNewsletters.map(({ slug, newsletterNumber }) => ({
-    slug,
-    newsletterNumber,
-  }));
+  const newsletterData = allNewsletters.map(
+    ({ slug, newsletterNumber, title, excerpt = "" }) => ({
+      slug,
+      newsletterNumber,
+      title,
+      excerpt: excerpt
+        .replace("Welcome to this edition of Live and Learn. ", "")
+        .replace("Enjoy.", ""),
+    })
+  );
 
   return {
-    props: { newsletterSlugs: sortSlugs(newsletterSlugs) },
+    props: { newsletterData: sortSlugs(newsletterData) },
   };
 };

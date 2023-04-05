@@ -37,6 +37,7 @@ export default function Books({ booknotes }: Props) {
       description={
         "An overview of what I have read, with a filterable list of books and booknotes"
       }
+      url="https://trebeljahr.com/booknotes"
     >
       <article>
         <section className="main-section">

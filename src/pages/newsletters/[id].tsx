@@ -49,16 +49,17 @@ const Newsletter = ({
   nextPost,
   prevPost,
 }: Props) => {
+  const fullTitle = title + " – Live and Learn #" + newsletterNumber;
   return (
     <Layout
-      title={`Live and Learn #${newsletterNumber}`}
+      title={fullTitle}
       description={excerpt || ""}
+      url={`https://trebeljahr.com/newsletters/${newsletterNumber}`}
+      image={"https://trebeljahr.com" + cover.src}
     >
       <article className="newsletter-article">
         <section className="post-body main-section">
-          <PostHeader
-            title={title + " – Live and Learn #" + newsletterNumber}
-          />
+          <PostHeader title={fullTitle} />
           {excerpt && <p>{excerpt}</p>}
           <div className="header-image-container">
             <Image

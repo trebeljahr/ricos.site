@@ -12,9 +12,13 @@ type Props = {
 
 export default function Page({ page }: Props) {
   const Component = useMDXComponent(page.body.code);
-  const { subtitle, title, description } = page;
+  const { subtitle, title, description, cover } = page;
   return (
-    <Layout title={title + " – " + subtitle} description={description}>
+    <Layout
+      title={title + " – " + subtitle}
+      description={description}
+      image={cover.src}
+    >
       <article>
         <section className="main-section main-text">
           <PostHeader subtitle={subtitle} title={title} />

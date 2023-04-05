@@ -12,6 +12,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
     <Layout
       title="home - Hi there 👋🏻 I am Rico. A programmer, traveler, photographer..."
       description={description}
+      image="/assets/midjourney/young-man-looking-absolutely-relaxed-while-reading-a-book-in-the-milkyway.png"
     >
       <article>
         <section className="main-section">

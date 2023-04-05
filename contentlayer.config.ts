@@ -171,6 +171,7 @@ export const Page = defineDocumentType(() => ({
   fields: {
     title: { type: "string", required: true },
     subtitle: { type: "string", required: true },
+    cover: { type: "nested", of: Image, required: true },
     description: { type: "string", required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
   },

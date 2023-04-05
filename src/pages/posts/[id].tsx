@@ -17,9 +17,13 @@ type Props = {
 export const BlogLayout = ({
   children,
   morePosts,
-  post: { excerpt, title, subtitle, date, author },
+  post: { excerpt, title, subtitle, date, author, cover },
 }: Props) => (
-  <Layout description={excerpt} title={title + " – " + subtitle}>
+  <Layout
+    description={excerpt}
+    title={title + " – " + subtitle}
+    image={cover.src}
+  >
     <article>
       <section className="main-section main-text post-body">
         <PostHeader
@@ -67,7 +71,7 @@ export async function getStaticProps({ params }: Params) {
   const post = allPosts.find((post: Post) => post.id === params.id);
   const otherPosts = allPosts
     .filter((post) => post.id !== params.id)
-    .map(({ title, slug }) => ({ title, slug }));
+    .map(({ title, slug, cover }) => ({ title, slug, cover }));
   const morePosts = getRandom(otherPosts, 3);
 
   return { props: { post, morePosts } };

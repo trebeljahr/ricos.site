@@ -26,6 +26,7 @@ export default function Quotes() {
     <Layout
       title="Quotes - a collection of quotes from a curious person"
       description="Here, on this page, I collect quotes I have found from all kinds of different sources. Books, movies, series, blog posts, whenever I find a phrase I really like, I put it here eventually."
+      image="/assets/midjourney/a-collection-of-notes-of-importance.jpg"
     >
       <article>
         <section className="main-section">

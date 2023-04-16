@@ -1,6 +1,4 @@
 import Layout from "../components/layout";
-import fs from "fs/promises";
-import { join } from "path";
 import { Search, useSearch } from "../components/SearchBar";
 import { ToTopButton } from "../components/ToTopButton";
 import { NewsletterForm } from "../components/newsletter-signup";

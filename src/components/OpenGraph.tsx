@@ -11,15 +11,16 @@ interface OpenGraphProps {
 export const OpenGraph: React.FC<OpenGraphProps> = ({
   title,
   description,
-  url: providedLinkUrl,
-  image: providedImageUrl,
+  url: providedLinkUrl = "",
+  image: providedImageUrl = "",
   articleSection: section,
   articlePublishedTime: publishedTime,
 }) => {
-  const baseUrl = "https://trebeljahr.com/";
-  const url = baseUrl + providedLinkUrl;
-  const imageUrl = baseUrl + providedImageUrl;
+  const baseUrl = "https://trebeljahr.com";
+  const url = new URL(providedLinkUrl, baseUrl).toString();
+  const imageUrl = new URL(providedImageUrl, baseUrl).toString();
 
+  console.log(url, imageUrl);
   return (
     <Head>
       {title && <meta property="og:title" content={title} />}

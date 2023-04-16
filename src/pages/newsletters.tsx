@@ -28,6 +28,7 @@ const Newsletters = ({ newsletterData }: Props) => {
     <Layout
       title="Newsletters - an archive of newsletters"
       description="An archive overview page of all the Newsletters I have published in the past at trebeljahr.com."
+      url="newsletters"
     >
       <article>
         <section className="main-section">

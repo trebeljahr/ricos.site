@@ -81,6 +81,7 @@ const ShowTags = ({ tags, categories }: Props) => {
     <Layout
       title="Experiment"
       description="An Experimental Overview over All Pages"
+      url="experiment"
     >
       <article>
         <section className="main-section main-text">

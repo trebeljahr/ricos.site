@@ -28,6 +28,7 @@ export default function Podcastnotes() {
       description={
         "An overview of what I have read, with a filterable list of books and Podcastnotes"
       }
+      url="podcastnotes"
     >
       <article>
         <section className="main-section">

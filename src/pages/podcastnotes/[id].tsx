@@ -22,6 +22,7 @@ const Podcastnote = ({ Podcastnote }: Props) => {
     <Layout
       title={`${Podcastnote.displayTitle}`}
       description={`These are my Podcast Notes for ${Podcastnote.title}. ${Podcastnote.excerpt}`}
+      url={`podcastnotes/${Podcastnote.id}`}
     >
       <article>
         <section className="Podcastnote-info main-section main-text">

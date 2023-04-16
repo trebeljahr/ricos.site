@@ -8,7 +8,11 @@ export default function Photography({
   imageFileNames: string[];
 }) {
   return (
-    <Layout title="Photography" description="A page with some photos.">
+    <Layout
+      title="Photography"
+      description="A page with all my photography."
+      url="photography"
+    >
       <h1>Photography</h1>
       {getImageSources({ imageFileNames }).map(({ src }, index) => {
         return (

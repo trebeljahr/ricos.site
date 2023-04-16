@@ -49,7 +49,11 @@ const BooknotesWithDefault = ({ book }: Props) => {
 const Book = ({ book }: Props) => {
   const defaultDescription = `These are the book Notes for ${book.title} by ${book.bookAuthor}`;
   return (
-    <Layout title={book.title} description={book.excerpt || defaultDescription}>
+    <Layout
+      title={book.title}
+      description={book.excerpt || defaultDescription}
+      url={`books/${book.id}`}
+    >
       <article>
         <section className="book-info main-section">
           <div className="book-cover-image">

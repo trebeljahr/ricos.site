@@ -54,8 +54,8 @@ const Newsletter = ({
     <Layout
       title={fullTitle}
       description={excerpt || ""}
-      url={`https://trebeljahr.com/newsletters/${newsletterNumber}`}
-      image={"https://trebeljahr.com" + cover.src}
+      url={`newsletters/${newsletterNumber}`}
+      image={cover.src}
     >
       <article className="newsletter-article">
         <section className="post-body main-section">

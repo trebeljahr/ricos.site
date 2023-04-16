@@ -38,7 +38,7 @@ export default function Books({ booknotes }: Props) {
         "An overview of what I have read, with a filterable list of books and booknotes"
       }
       image="/assets/midjourney/a-bookshelf.jpg"
-      url="/booknotes"
+      url="booknotes"
     >
       <article>
         <section className="main-section">

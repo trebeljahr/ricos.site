@@ -11,17 +11,21 @@ interface OpenGraphProps {
 export const OpenGraph: React.FC<OpenGraphProps> = ({
   title,
   description,
-  url,
-  image,
+  url: providedLinkUrl,
+  image: providedImageUrl,
   articleSection: section,
   articlePublishedTime: publishedTime,
 }) => {
+  const baseUrl = "https://trebeljahr.com/";
+  const url = baseUrl + providedLinkUrl;
+  const imageUrl = baseUrl + providedImageUrl;
+
   return (
     <Head>
       {title && <meta property="og:title" content={title} />}
       {description && <meta property="og:description" content={description} />}
       {url && <meta property="og:url" content={url} />}
-      {image && <meta property="og:image" content={image} />}
+      {imageUrl && <meta property="og:image" content={imageUrl} />}
       <meta property="og:locale" content="en_US" />
       <meta property="og:site_name" content="trebeljahr.com" />
       <meta property="og:type" content="website" />
@@ -34,14 +38,16 @@ export const OpenGraph: React.FC<OpenGraphProps> = ({
 
       <meta
         name="twitter:card"
-        content={image ? "summary_large_image" : "summary"}
+        content={providedImageUrl ? "summary_large_image" : "summary"}
       />
       <meta name="twitter:site" content="@ricotrebeljahr" />
       <meta name="twitter:creator" content="@ricotrebeljahr" />
 
       {title && <meta name="twitter:title" content={title} />}
       {description && <meta name="twitter:description" content={description} />}
-      {image && <meta name="twitter:image" content={image} />}
+      {providedImageUrl && (
+        <meta name="twitter:image" content={providedImageUrl} />
+      )}
     </Head>
   );
 };

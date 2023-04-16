@@ -39,6 +39,7 @@ export default function Books({ booknotes }: Props) {
       }
       image="/assets/midjourney/a-bookshelf.jpg"
       url="booknotes"
+      imageAlt={"a bookshelf filled with lots of books"}
     >
       <article>
         <section className="main-section">

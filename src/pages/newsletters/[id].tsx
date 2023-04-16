@@ -56,6 +56,7 @@ const Newsletter = ({
       description={excerpt || ""}
       url={`newsletters/${newsletterNumber}`}
       image={cover.src}
+      imageAlt={cover.alt}
     >
       <article className="newsletter-article">
         <section className="post-body main-section">

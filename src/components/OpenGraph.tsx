@@ -6,6 +6,7 @@ interface OpenGraphProps {
   image?: string;
   articleSection?: string;
   articlePublishedTime?: string;
+  imageAlt?: string;
 }
 
 export const OpenGraph: React.FC<OpenGraphProps> = ({
@@ -15,12 +16,12 @@ export const OpenGraph: React.FC<OpenGraphProps> = ({
   image: providedImageUrl = "",
   articleSection: section,
   articlePublishedTime: publishedTime,
+  imageAlt = "",
 }) => {
   const baseUrl = "https://trebeljahr.com";
   const url = new URL(providedLinkUrl, baseUrl).toString();
   const imageUrl = new URL(providedImageUrl, baseUrl).toString();
 
-  console.log(url, imageUrl);
   return (
     <Head>
       {title && <meta property="og:title" content={title} />}
@@ -37,18 +38,13 @@ export const OpenGraph: React.FC<OpenGraphProps> = ({
         <meta property="article:published_time" content={publishedTime} />
       )}
 
-      <meta
-        name="twitter:card"
-        content={providedImageUrl ? "summary_large_image" : "summary"}
-      />
+      <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:site" content="@ricotrebeljahr" />
       <meta name="twitter:creator" content="@ricotrebeljahr" />
-
       {title && <meta name="twitter:title" content={title} />}
       {description && <meta name="twitter:description" content={description} />}
-      {providedImageUrl && (
-        <meta name="twitter:image" content={providedImageUrl} />
-      )}
+      {imageUrl && <meta name="twitter:image" content={imageUrl} />}
+      {imageAlt && <meta name="twitter:image:alt" content={imageAlt} />}
     </Head>
   );
 };

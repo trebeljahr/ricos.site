@@ -9,9 +9,17 @@ type Props = {
   title: string;
   url?: string;
   image?: string;
+  imageAlt?: string;
 };
 
-const Layout = ({ children, description, title, url, image }: Props) => {
+const Layout = ({
+  children,
+  description,
+  title,
+  url,
+  image,
+  imageAlt,
+}: Props) => {
   return (
     <>
       <Meta description={description} title={title} />
@@ -20,6 +28,7 @@ const Layout = ({ children, description, title, url, image }: Props) => {
         description={description}
         url={url}
         image={image}
+        imageAlt={imageAlt}
       />
       <Navbar />
       <main className={"main-page"}>{children}</main>

@@ -24,6 +24,7 @@ export const BlogLayout = ({
     title={title + " – " + subtitle}
     image={cover.src}
     url={`posts/${id}`}
+    imageAlt={cover.alt}
   >
     <article>
       <section className="main-section main-text post-body">

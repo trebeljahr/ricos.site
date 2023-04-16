@@ -17,6 +17,7 @@ const Posts = ({ posts }: Props) => {
         "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg"
       }
       url="posts"
+      imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
       <article className="posts-overview">
         <section className="main-section">

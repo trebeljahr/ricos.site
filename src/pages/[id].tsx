@@ -18,6 +18,7 @@ export default function Page({ page }: Props) {
       title={title + " – " + subtitle}
       description={description}
       image={cover.src}
+      imageAlt={cover.alt}
     >
       <article>
         <section className="main-section main-text">

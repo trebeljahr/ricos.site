@@ -14,6 +14,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
       description={description}
       image="/assets/midjourney/young-man-looking-absolutely-relaxed-while-reading-a-book-in-the-milkyway.png"
       url="/"
+      imageAlt={"a person reading a book, while floating in space"}
     >
       <article>
         <section className="main-section">

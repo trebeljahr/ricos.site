@@ -12,7 +12,7 @@ import rehypeUrls from "rehype-urls";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 
-const newsletterNumber = 15;
+const newsletterNumber = 16;
 
 const LIVE_HOST = "https://trebeljahr.com";
 

@@ -57,13 +57,17 @@ export async function getS3Folders(): Promise<string[]> {
     new ListObjectsV2Command({
       Bucket: bucketName,
       Delimiter: "/",
+      Prefix: "photography/",
     })
   );
 
+  console.log(data);
+
   const folders =
-    data.CommonPrefixes?.map((prefix) => prefix.Prefix?.split("/")[0] || "") ||
+    data.CommonPrefixes?.map((prefix) => prefix.Prefix?.split("/")[1] || "") ||
     [];
 
+  console.log(folders);
   return folders.sort();
 }
 
@@ -88,7 +92,7 @@ export const getDataFromS3 = async ({
   const data = await s3Client.send(
     new ListObjectsV2Command({
       Bucket: bucketName,
-      Prefix: `${prefix}/`,
+      Prefix: `photography/${prefix}/`,
     })
   );
 
@@ -99,9 +103,11 @@ export const getDataFromS3 = async ({
   console.log(data);
   console.log(data.Contents);
 
+  console.log(prefix);
+
   return (
-    data.Contents?.filter(({ Key }) => Key !== `${prefix}/`).map(
-      (file) => file.Key as string
+    data.Contents?.filter(({ Key }) => Key !== `photography/${prefix}/`).map(
+      (file) => (file.Key as string).replace("photography/", "")
     ) ?? []
   );
 };

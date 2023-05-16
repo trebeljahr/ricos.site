@@ -11,7 +11,7 @@ export const getImageSources = ({
   }
 
   return imageFileNames.map((fileName) => ({
-    src: `https://${domain}/${fileName}`,
+    src: `https://${domain}/photography/${fileName}`,
   }));
 };
 

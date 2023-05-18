@@ -1,16 +1,15 @@
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import { MutableRefObject, useEffect, useRef } from "react";
-import Modal from "src/components/image-gallery/Modal";
+import React, { useEffect, useRef, useState } from "react";
+import Gallery from "react-photo-gallery";
+import Lightbox from "react-spring-lightbox";
 import { getS3Folders, getS3ImageData } from "src/lib/aws";
 import { ImageProps } from "src/utils/types";
 import { useLastViewedPhoto } from "src/utils/useLastViewedPhoto";
 import Layout from "../../../components/layout";
-import React, { useState } from "react";
-import Lightbox from "react-spring-lightbox";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import Gallery from "react-photo-gallery";
+import { range } from "src/utils/range";
 
 export default function ImageGallery({
   images,
@@ -52,6 +51,7 @@ export default function ImageGallery({
   const photos = images.map((image) => ({
     src: image.url,
     alt: image.name,
+    index: image.index,
     width: 100,
     height: 100,
   }));
@@ -62,17 +62,38 @@ export default function ImageGallery({
       index: number;
     }
   ) => {
+    console.log("opening modal!");
     setCurrentImageIndex(photos.index);
     setIsModalOpen(true);
   };
+
+  let filteredImages = images?.filter((img: ImageProps) =>
+    range(currentImageIndex - 15, currentImageIndex + 15).includes(img.index)
+  );
 
   return (
     <Layout
       title="Photography"
       description="A page with all my photography."
       url={`/photography/${tripName}`}
+      fullScreen={false}
     >
-      <Gallery photos={photos} onClick={openModal} />
+      <Gallery
+        photos={photos}
+        onClick={openModal}
+        renderImage={({ photo, index }) => {
+          return (
+            <Image
+              key={photo.src}
+              src={photo.src}
+              alt={photo.alt || "photography image"}
+              width={photo.width}
+              height={photo.height}
+              onClick={(event) => openModal(event, { index })}
+            />
+          );
+        }}
+      />
 
       <Lightbox
         isOpen={isModalOpen}
@@ -80,9 +101,63 @@ export default function ImageGallery({
         onNext={gotoNext}
         images={photos}
         currentIndex={currentImageIndex}
+        style={{ background: "rgba(20, 20, 20, 0.99)" }}
         /* Add your own UI */
         // renderHeader={() => (<CustomHeader />)}
-        // renderFooter={() => <CustomFooter />}
+        renderFooter={() => (
+          <div className="fixed inset-x-0 bottom-0 z-40 overflow-hidden bg-gradient-to-b from-black/0 to-black/60">
+            <motion.div
+              initial={false}
+              className="mx-auto mt-6 flex aspect-[3/2] h-10"
+            >
+              <AnimatePresence initial={false}>
+                {filteredImages.map(({ index }) => (
+                  <motion.button
+                    initial={{
+                      width: "0%",
+                      x: `${Math.max(
+                        (currentImageIndex - 1) * -100,
+                        15 * -100
+                      )}%`,
+                    }}
+                    animate={{
+                      scale: index === currentImageIndex ? 1.25 : 1,
+                      width: "100%",
+                      x: `${Math.max(currentImageIndex * -100, 15 * -100)}%`,
+                    }}
+                    transition={{
+                      duration: 0.5,
+                    }}
+                    exit={{ width: "0%" }}
+                    onClick={() => setCurrentImageIndex(index)}
+                    key={index}
+                    className={`${
+                      index === currentImageIndex
+                        ? "z-20 rounded-md shadow shadow-black/50"
+                        : "z-10"
+                    } ${currentImageIndex === 0 ? "rounded-l-md" : ""} ${
+                      currentImageIndex === images.length - 1
+                        ? "rounded-r-md"
+                        : ""
+                    } relative inline-block w-full shrink-0 transform-gpu overflow-hidden focus:outline-none`}
+                  >
+                    <Image
+                      alt="small photos on the bottom"
+                      width={180}
+                      height={120}
+                      className={`${
+                        index === currentImageIndex
+                          ? "brightness-110 hover:brightness-110"
+                          : "brightness-50 contrast-125 hover:brightness-75"
+                      } h-full transform object-cover transition`}
+                      src={images[index].url}
+                    />
+                  </motion.button>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          </div>
+        )}
         renderPrevButton={() =>
           currentImageIndex > 0 && (
             <button
@@ -105,8 +180,7 @@ export default function ImageGallery({
             </button>
           )
         }
-        // renderImageOverlay={() => (<ImageOverlayComponent >)}
-
+        // renderImageOverlay={}
         /* Add styling */
         // className="cool-class"
         // style={{ background: "grey" }}

@@ -10,6 +10,7 @@ type Props = {
   url?: string;
   image?: string;
   imageAlt?: string;
+  fullScreen?: boolean;
 };
 
 const Layout = ({
@@ -19,6 +20,7 @@ const Layout = ({
   url,
   image,
   imageAlt,
+  fullScreen = true,
 }: Props) => {
   return (
     <>
@@ -31,7 +33,11 @@ const Layout = ({
         imageAlt={imageAlt}
       />
       <Navbar />
-      <main className={"main-page"}>{children}</main>
+      <main
+        className={fullScreen ? "main-page" : "w-100 p-1 md:pr-10 md:pl-10"}
+      >
+        {children}
+      </main>
     </>
   );
 };

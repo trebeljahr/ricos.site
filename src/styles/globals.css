@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.react-photo-gallery--gallery > div {
+  justify-content: center;
+}

@@ -16,7 +16,7 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "contentlayer/generated": ["./.contentlayer/generated"],
+      "@contentlayer/generated": ["./.contentlayer/generated"],
       "components/collision-detection": ["./src/components/collision-detection"]
     }
   },

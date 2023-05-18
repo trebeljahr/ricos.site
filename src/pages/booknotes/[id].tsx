@@ -6,7 +6,7 @@ import { BookCover } from "../../components/cover-image";
 import { ToTopButton } from "../../components/ToTopButton";
 import { ExternalLink } from "../../components/ExternalLink";
 import { NewsletterForm } from "../../components/newsletter-signup";
-import { Booknote, allBooknotes } from "contentlayer/generated";
+import { Booknote, allBooknotes } from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { MarkdownRenderers } from "src/components/CustomRenderers";
 

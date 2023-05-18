@@ -1,20 +1,20 @@
 import Image from "next/image";
-import { getImageSources, getS3Folders, getS3ImageData } from "src/lib/aws";
-import Layout from "../../../components/layout";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
 import Modal from "src/components/image-gallery/Modal";
+import { getS3Folders, getS3ImageData } from "src/lib/aws";
 import { ImageProps } from "src/utils/types";
 import { useLastViewedPhoto } from "src/utils/useLastViewedPhoto";
+import Layout from "../../../components/layout";
 
-const Home = ({
+export default function ImageGallery({
   images,
   tripName,
 }: {
   images: ImageProps[];
   tripName: string;
-}) => {
+}) {
   const router = useRouter();
   const { photoId: photoIdFromQuery } = router.query;
 
@@ -71,43 +71,7 @@ const Home = ({
       ))}
     </Layout>
   );
-};
-
-export default Home;
-
-// export default function Page({
-//   imageFileNames,
-//   tripName,
-// }: {
-//   tripName: string;
-//   imageFileNames: string[];
-// }) {
-//   return (
-//     <Layout
-//       title="Photography"
-//       description="A page with all my photography."
-//       url={`/photography/${tripName}`}
-//     >
-//       {getImageSources({ imageFileNames }).map(({ src }, index) => {
-//         return (
-//           <Image
-//             key={index}
-//             src={src}
-//             width="6"
-//             height="4"
-//             alt={src}
-//             sizes="100vw"
-//             style={{
-//               width: "100%",
-//               height: "auto",
-//               objectFit: "cover",
-//             }}
-//           />
-//         );
-//       })}
-//     </Layout>
-//   );
-// }
+}
 
 type StaticProps = {
   params: { tripName: string };
@@ -133,6 +97,7 @@ export async function getStaticProps({ params }: StaticProps) {
 
   const images: ImageProps[] = imageFileNames.map((name, index) => {
     return {
+      tripName: params.tripName,
       index,
       name,
       url: `https://${process.env.NEXT_PUBLIC_STATIC_FILE_URL}/photography/${name}`,

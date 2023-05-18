@@ -16,7 +16,7 @@ import { range } from "../../utils/range";
 import type { ImageProps, SharedModalProps } from "../../utils/types";
 
 export default function SharedModal({
-  index: indexOfCurrent,
+  index: currentIndex,
   images,
   changePhotoId,
   closeModal,
@@ -27,28 +27,32 @@ export default function SharedModal({
   const [loaded, setLoaded] = useState(false);
 
   let filteredImages = images?.filter((img: ImageProps) =>
-    range(indexOfCurrent - 15, indexOfCurrent + 15).includes(img.index)
+    range(currentIndex - 15, currentIndex + 15).includes(img.index)
   );
 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
-      if (indexOfCurrent < images?.length - 1) {
-        changePhotoId(indexOfCurrent + 1);
+      if (currentIndex < images?.length - 1) {
+        changePhotoId(currentIndex + 1);
       }
     },
     onSwipedRight: () => {
-      if (indexOfCurrent > 0) {
-        changePhotoId(indexOfCurrent - 1);
+      if (currentIndex > 0) {
+        changePhotoId(currentIndex - 1);
       }
     },
     trackMouse: true,
   });
 
-  let currentImage = images ? images[indexOfCurrent] : currentPhoto;
+  let currentImage = images ? images[currentIndex] : currentPhoto;
 
-  console.log(currentImage);
+  console.log("indexOfCurrent", currentIndex, typeof currentIndex);
 
-  console.log(images);
+  console.log({ currentImage });
+  console.log({ images });
+  console.log({ filteredImages });
+  console.log({ loaded });
+  console.log({ navigation });
   // if (!currentImage) return null;
 
   return (
@@ -66,7 +70,7 @@ export default function SharedModal({
           <div className="relative flex aspect-[3/2] items-center justify-center">
             <AnimatePresence initial={false} custom={direction}>
               <motion.div
-                key={indexOfCurrent}
+                key={currentIndex}
                 custom={direction}
                 variants={variants}
                 initial="enter"
@@ -94,20 +98,20 @@ export default function SharedModal({
             <div className="relative aspect-[3/2] max-h-full w-full">
               {navigation && (
                 <>
-                  {indexOfCurrent > 0 && (
+                  {currentIndex > 0 && (
                     <button
                       className="absolute left-3 top-[calc(50%-16px)] rounded-full bg-black/50 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white focus:outline-none"
                       style={{ transform: "translate3d(0, 0, 0)" }}
-                      onClick={() => changePhotoId(indexOfCurrent - 1)}
+                      onClick={() => changePhotoId(currentIndex - 1)}
                     >
                       <ChevronLeftIcon className="h-6 w-6" />
                     </button>
                   )}
-                  {indexOfCurrent + 1 < images.length && (
+                  {currentIndex + 1 < images.length && (
                     <button
                       className="absolute right-3 top-[calc(50%-16px)] rounded-full bg-black/50 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white focus:outline-none"
                       style={{ transform: "translate3d(0, 0, 0)" }}
-                      onClick={() => changePhotoId(indexOfCurrent + 1)}
+                      onClick={() => changePhotoId(currentIndex + 1)}
                     >
                       <ChevronRightIcon className="h-6 w-6" />
                     </button>
@@ -130,7 +134,7 @@ export default function SharedModal({
                     currentImage &&
                       downloadPhoto(
                         currentImage?.url || "",
-                        `${indexOfCurrent}.jpg`
+                        `${currentIndex}.jpg`
                       );
                   }}
                   className="rounded-full bg-black/50 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
@@ -164,22 +168,22 @@ export default function SharedModal({
                     <motion.button
                       initial={{
                         width: "0%",
-                        x: `${Math.max((index - 1) * -100, 15 * -100)}%`,
+                        x: `${Math.max((currentIndex - 1) * -100, 15 * -100)}%`,
                       }}
                       animate={{
-                        scale: index === index ? 1.25 : 1,
+                        scale: index === currentIndex ? 1.25 : 1,
                         width: "100%",
-                        x: `${Math.max(index * -100, 15 * -100)}%`,
+                        x: `${Math.max(currentIndex * -100, 15 * -100)}%`,
                       }}
                       exit={{ width: "0%" }}
                       onClick={() => changePhotoId(index)}
                       key={index}
                       className={`${
-                        index === index
+                        index === currentIndex
                           ? "z-20 rounded-md shadow shadow-black/50"
                           : "z-10"
-                      } ${index === 0 ? "rounded-l-md" : ""} ${
-                        index === images.length - 1 ? "rounded-r-md" : ""
+                      } ${currentIndex === 0 ? "rounded-l-md" : ""} ${
+                        currentIndex === images.length - 1 ? "rounded-r-md" : ""
                       } relative inline-block w-full shrink-0 transform-gpu overflow-hidden focus:outline-none`}
                     >
                       <Image
@@ -187,7 +191,7 @@ export default function SharedModal({
                         width={180}
                         height={120}
                         className={`${
-                          index === index
+                          index === currentIndex
                             ? "brightness-110 hover:brightness-110"
                             : "brightness-50 contrast-125 hover:brightness-75"
                         } h-full transform object-cover transition`}

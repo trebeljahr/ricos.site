@@ -19,10 +19,15 @@ export default function Carousel({
 
   function closeModal() {
     setLastViewedPhoto(currentPhoto.index);
-    router.push("/", undefined, { shallow: true });
+    router.push(`/photography/${currentPhoto.tripName}`, undefined, {
+      shallow: true,
+    });
   }
 
   function changePhotoId(newVal: number) {
+    router.push(`/photography/${currentPhoto.tripName}/${newVal}`, undefined, {
+      shallow: true,
+    });
     return newVal;
   }
 
@@ -34,25 +39,17 @@ export default function Carousel({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center">
-      {/* <button
+      <button
         className="absolute inset-0 z-30 cursor-default bg-black backdrop-blur-2xl"
         onClick={closeModal}
-      >
-        <Image
-          src={currentPhoto.url || ""}
-          className="pointer-events-none h-full w-full"
-          alt="blurred background"
-          fill
-          priority={true}
-        />
-      </button> */}
+      />
       <SharedModal
         index={index}
         images={images}
         changePhotoId={changePhotoId}
         currentPhoto={currentPhoto}
         closeModal={closeModal}
-        navigation={false}
+        navigation={true}
       />
     </div>
   );

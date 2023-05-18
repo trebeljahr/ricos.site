@@ -7,10 +7,9 @@ import { getS3Folders, getS3ImageData } from "src/lib/aws";
 import { ImageProps } from "src/utils/types";
 import { useLastViewedPhoto } from "src/utils/useLastViewedPhoto";
 import Layout from "../../../components/layout";
-
-import "photoswipe/dist/photoswipe.css";
-
-import { Gallery, Item } from "react-photoswipe-gallery";
+import React, { useState } from "react";
+import Lightbox from "react-spring-lightbox";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 export default function ImageGallery({
   images,
@@ -34,49 +33,76 @@ export default function ImageGallery({
     }
   }, [photoIdNumber, lastViewedPhoto, setLastViewedPhoto]);
 
+  const [currentImageIndex, setCurrentIndex] = useState(0);
+
+  const gotoPrevious = () =>
+    currentImageIndex > 0 && setCurrentIndex(currentImageIndex - 1);
+
+  const gotoNext = () =>
+    currentImageIndex + 1 < images.length &&
+    setCurrentIndex(currentImageIndex + 1);
+
+  const handleClose = () => {
+    console.log("closing!");
+  };
+
   return (
     <Layout
       title="Photography"
       description="A page with all my photography."
       url={`/photography/${tripName}`}
     >
-      <Gallery id="my-gallery">
-        {images.map(({ index: id, url }) => (
-          <Item
-            key={id}
-            id="first-pic"
-            original={url}
-            thumbnail={url}
-            width="1024"
-            height="768"
-          >
-            {({ ref, open }) => (
-              <div
-                // href={`${tripName}/${id}`}
-                // as={`${tripName}/${id}`}
-                ref={ref as MutableRefObject<HTMLDivElement>}
-                onClick={open}
-                className="after:content group relative mb-5 block w-full cursor-zoom-in after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:shadow-highlight"
-              >
-                <Image
-                  alt="Next.js Conf photo"
-                  className="transform rounded-lg brightness-90 transition will-change-auto group-hover:brightness-110"
-                  style={{ transform: "translate3d(0, 0, 0)" }}
-                  // placeholder="blur"
-                  // blurDataURL={blurDataUrl}
-                  src={url}
-                  width={720}
-                  height={480}
-                  sizes="(max-width: 640px) 100vw,
-                    (max-width: 1280px) 50vw,
-                    (max-width: 1536px) 33vw,
-                    25vw"
-                />
-              </div>
-            )}
-          </Item>
-        ))}
-      </Gallery>
+      <Lightbox
+        isOpen={true}
+        onPrev={gotoPrevious}
+        onNext={gotoNext}
+        images={images.map((image) => ({ src: image.url, alt: image.name }))}
+        currentIndex={currentImageIndex}
+        /* Add your own UI */
+        // renderHeader={() => (<CustomHeader />)}
+        // renderFooter={() => <CustomFooter />}
+        renderPrevButton={() =>
+          currentImageIndex > 0 && (
+            <button
+              className="z-10 absolute left-3 top-[calc(50%-16px)] rounded-full bg-black/50 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white focus:outline-none"
+              style={{ transform: "translate3d(0, 0, 0)" }}
+              onClick={gotoPrevious}
+            >
+              <ChevronLeftIcon className="h-6 w-6" />
+            </button>
+          )
+        }
+        renderNextButton={() =>
+          currentImageIndex < images.length - 1 && (
+            <button
+              className="z-10 absolute right-3 top-[calc(50%-16px)] rounded-full bg-black/50 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white focus:outline-none"
+              style={{ transform: "translate3d(0, 0, 0)" }}
+              onClick={gotoNext}
+            >
+              <ChevronRightIcon className="h-6 w-6" />
+            </button>
+          )
+        }
+        // renderImageOverlay={() => (<ImageOverlayComponent >)}
+
+        /* Add styling */
+        // className="cool-class"
+        // style={{ background: "grey" }}
+
+        /* Handle closing */
+        onClose={handleClose}
+
+        /* Use single or double click to zoom */
+        // singleClickToZoom
+
+        /* react-spring config for open/close animation */
+        // pageTransitionConfig={{
+        //   from: { transform: "scale(0.75)", opacity: 0 },
+        //   enter: { transform: "scale(1)", opacity: 1 },
+        //   leave: { transform: "scale(0.75)", opacity: 0 },
+        //   config: { mass: 1, tension: 320, friction: 32 }
+        // }}
+      />
     </Layout>
   );
 }

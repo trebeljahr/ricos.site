@@ -10,6 +10,7 @@ import Layout from "../../../components/layout";
 import React, { useState } from "react";
 import Lightbox from "react-spring-lightbox";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import Gallery from "react-photo-gallery";
 
 export default function ImageGallery({
   images,
@@ -33,17 +34,36 @@ export default function ImageGallery({
     }
   }, [photoIdNumber, lastViewedPhoto, setLastViewedPhoto]);
 
-  const [currentImageIndex, setCurrentIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const gotoPrevious = () =>
-    currentImageIndex > 0 && setCurrentIndex(currentImageIndex - 1);
+    currentImageIndex > 0 && setCurrentImageIndex(currentImageIndex - 1);
 
   const gotoNext = () =>
     currentImageIndex + 1 < images.length &&
-    setCurrentIndex(currentImageIndex + 1);
+    setCurrentImageIndex(currentImageIndex + 1);
 
   const handleClose = () => {
     console.log("closing!");
+    setIsModalOpen(false);
+  };
+
+  const photos = images.map((image) => ({
+    src: image.url,
+    alt: image.name,
+    width: 100,
+    height: 100,
+  }));
+
+  const openModal = (
+    event: React.MouseEvent,
+    photos: {
+      index: number;
+    }
+  ) => {
+    setCurrentImageIndex(photos.index);
+    setIsModalOpen(true);
   };
 
   return (
@@ -52,11 +72,13 @@ export default function ImageGallery({
       description="A page with all my photography."
       url={`/photography/${tripName}`}
     >
+      <Gallery photos={photos} onClick={openModal} />
+
       <Lightbox
-        isOpen={true}
+        isOpen={isModalOpen}
         onPrev={gotoPrevious}
         onNext={gotoNext}
-        images={images.map((image) => ({ src: image.url, alt: image.name }))}
+        images={photos}
         currentIndex={currentImageIndex}
         /* Add your own UI */
         // renderHeader={() => (<CustomHeader />)}

@@ -1,4 +1,5 @@
 import { ListObjectsV2Command, S3, S3Client } from "@aws-sdk/client-s3";
+import { k } from "vitest/dist/index-9f5bc072";
 
 export const getImageSources = ({
   imageFileNames,
@@ -61,13 +62,10 @@ export async function getS3Folders(): Promise<string[]> {
     })
   );
 
-  console.log(data);
-
   const folders =
     data.CommonPrefixes?.map((prefix) => prefix.Prefix?.split("/")[1] || "") ||
     [];
 
-  console.log(folders);
   return folders.sort();
 }
 
@@ -76,7 +74,7 @@ export const getDataFromS3 = async ({
   secretAccessKey,
   awsRegion,
   bucketName,
-  prefix = "",
+  prefix,
 }: {
   accessKeyId: string;
   secretAccessKey: string;
@@ -92,7 +90,7 @@ export const getDataFromS3 = async ({
   const data = await s3Client.send(
     new ListObjectsV2Command({
       Bucket: bucketName,
-      Prefix: `photography/${prefix}/`,
+      Prefix: prefix ? `photography/${prefix}/` : "photography/",
     })
   );
 
@@ -100,14 +98,13 @@ export const getDataFromS3 = async ({
     throw new Error("Can't display all objects in the bucket");
   }
 
-  console.log(data);
-  console.log(data.Contents);
+  if (!data.Contents) throw new Error("No contents found");
 
-  console.log(prefix);
+  return data.Contents.filter(({ Key }) => {
+    if (!Key) return false;
 
-  return (
-    data.Contents?.filter(({ Key }) => Key !== `photography/${prefix}/`).map(
-      (file) => (file.Key as string).replace("photography/", "")
-    ) ?? []
-  );
+    const split = Key.split("/");
+    console.log("split", split);
+    return split[split.length - 1] !== "";
+  }).map((file) => (file.Key as string).replace("photography/", ""));
 };

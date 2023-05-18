@@ -36,3 +36,4 @@
 # vercel
 /**/**/.vercel
 .contentlayer
+.vercel

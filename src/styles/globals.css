@@ -5,3 +5,8 @@
 .react-photo-gallery--gallery > div {
   justify-content: center;
 }
+
+.yarl__thumbnails_container {
+  position: absolute;
+  bottom: 0;
+}

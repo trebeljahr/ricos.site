@@ -2,8 +2,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
-import Lightbox from "react-spring-lightbox";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { getS3Folders, getS3ImageData } from "src/lib/aws";
 import { ImageProps } from "src/utils/types";
 import { useLastViewedPhoto } from "src/utils/useLastViewedPhoto";
@@ -15,10 +14,60 @@ import {
   PhotoAlbum,
   RenderPhotoProps,
 } from "react-photo-album";
+import Lightbox, {
+  ContainerRect,
+  Render,
+  RenderSlideProps,
+  Slide,
+  isImageFitCover,
+  isImageSlide,
+  useLightboxProps,
+} from "yet-another-react-lightbox";
+import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+
+import "yet-another-react-lightbox/styles.css";
+// import useLightbox from "src/hooks/useLightbox";
+
+export function SlideImageWithNext({ slide, rect }: RenderSlideProps) {
+  const { imageFit } = useLightboxProps().carousel;
+  // const { openLightbox, renderLightbox } = useLightbox();
+
+  const cover = isImageSlide(slide) && isImageFitCover(slide, imageFit);
+
+  if (!slide.height || !slide.width) return null;
+
+  const width = !cover
+    ? Math.round(
+        Math.min(rect.width, (rect.height / slide.height) * slide.width)
+      )
+    : rect.width;
+
+  const height = !cover
+    ? Math.round(
+        Math.min(rect.height, (rect.width / slide.width) * slide.height)
+      )
+    : rect.height;
+
+  return (
+    <div style={{ position: "relative", width, height }}>
+      <Image
+        fill
+        alt={slide.alt || "this image doesn't have an alt text, sorry"}
+        src={slide.src}
+        loading="eager"
+        // placeholder="blur"
+        draggable={false}
+        style={{ objectFit: cover ? "cover" : "contain" }}
+        sizes={`${Math.ceil((width / window.innerWidth) * 100)}vw`}
+      />
+    </div>
+  );
+}
 
 export function NextJsImage({
   photo,
-  imageProps: { alt, title, className, onClick },
+  imageProps: { alt, title, sizes, className, onClick },
   wrapperStyle,
 }: RenderPhotoProps) {
   console.log(photo);
@@ -27,15 +76,50 @@ export function NextJsImage({
     <div style={{ ...wrapperStyle, position: "relative" }}>
       <Image
         src={photo}
-        width={photo.width}
-        height={photo.height}
+        fill
+        // width={photo.width}
+        // height={photo.height}
         placeholder={"blurDataURL" in photo ? "blur" : undefined}
-        {...{ alt, title, className, onClick }}
+        {...{ alt, title, className, sizes, onClick }}
       />
     </div>
   );
 }
 
+function NextThumbnailRenderer({
+  slide,
+  rect,
+  render,
+}: {
+  slide: Slide;
+  rect: ContainerRect;
+  render: Render;
+}): ReactNode {
+  console.log({ render });
+  console.log(rect);
+  console.log(slide);
+
+  return (
+    <div
+      style={{
+        position: "relative",
+        bottom: 0,
+        width: rect.width,
+        height: rect.height,
+      }}
+    >
+      <Image
+        fill
+        alt={slide.alt || "this image doesn't have an alt text, sorry"}
+        src={slide.src}
+        loading="eager"
+        draggable={false}
+        style={{ objectFit: "cover" }}
+        sizes={`${Math.ceil((rect.width / window.innerWidth) * 100)}vw`}
+      />
+    </div>
+  );
+}
 export default function ImageGallery({
   images,
   tripName,
@@ -112,110 +196,23 @@ export default function ImageGallery({
           ],
         }}
       />
-
       <Lightbox
-        isOpen={isModalOpen}
-        onPrev={gotoPrevious}
-        onNext={gotoNext}
-        images={photos}
-        currentIndex={currentImageIndex}
-        style={{ background: "rgba(20, 20, 20, 0.99)" }}
-        /* Add your own UI */
-        // renderHeader={() => (<CustomHeader />)}
-        renderFooter={() => (
-          <div className="fixed inset-x-0 bottom-0 z-40 overflow-hidden bg-gradient-to-b from-black/0 to-black/60">
-            <motion.div
-              initial={false}
-              className="mx-auto mt-6 flex aspect-[3/2] h-10"
-            >
-              <AnimatePresence initial={false}>
-                {filteredImages.map(({ index }) => (
-                  <motion.button
-                    initial={{
-                      width: "0%",
-                      x: `${Math.max(
-                        (currentImageIndex - 1) * -100,
-                        15 * -100
-                      )}%`,
-                    }}
-                    animate={{
-                      scale: index === currentImageIndex ? 1.25 : 1,
-                      width: "100%",
-                      x: `${Math.max(currentImageIndex * -100, 15 * -100)}%`,
-                    }}
-                    transition={{
-                      duration: 0.5,
-                    }}
-                    exit={{ width: "0%" }}
-                    onClick={() => setCurrentImageIndex(index)}
-                    key={index}
-                    className={`${
-                      index === currentImageIndex
-                        ? "z-20 rounded-md shadow shadow-black/50"
-                        : "z-10"
-                    } ${currentImageIndex === 0 ? "rounded-l-md" : ""} ${
-                      currentImageIndex === images.length - 1
-                        ? "rounded-r-md"
-                        : ""
-                    } relative inline-block w-full shrink-0 transform-gpu overflow-hidden focus:outline-none`}
-                  >
-                    <Image
-                      alt="small photos on the bottom"
-                      width={180}
-                      height={120}
-                      className={`${
-                        index === currentImageIndex
-                          ? "brightness-110 hover:brightness-110"
-                          : "brightness-50 contrast-125 hover:brightness-75"
-                      } h-full transform object-cover transition`}
-                      src={images[index].url}
-                    />
-                  </motion.button>
-                ))}
-              </AnimatePresence>
-            </motion.div>
-          </div>
-        )}
-        renderPrevButton={() =>
-          currentImageIndex > 0 && (
-            <button
-              className="z-10 absolute left-3 top-[calc(50%-16px)] rounded-full bg-black/50 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white focus:outline-none"
-              style={{ transform: "translate3d(0, 0, 0)" }}
-              onClick={gotoPrevious}
-            >
-              <ChevronLeftIcon className="h-6 w-6" />
-            </button>
-          )
-        }
-        renderNextButton={() =>
-          currentImageIndex < images.length - 1 && (
-            <button
-              className="z-10 absolute right-3 top-[calc(50%-16px)] rounded-full bg-black/50 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white focus:outline-none"
-              style={{ transform: "translate3d(0, 0, 0)" }}
-              onClick={gotoNext}
-            >
-              <ChevronRightIcon className="h-6 w-6" />
-            </button>
-          )
-        }
-        // renderImageOverlay={}
-        /* Add styling */
-        // className="cool-class"
-        // style={{ background: "grey" }}
-
-        /* Handle closing */
-        onClose={handleClose}
-
-        /* Use single or double click to zoom */
-        // singleClickToZoom
-
-        /* react-spring config for open/close animation */
-        // pageTransitionConfig={{
-        //   from: { transform: "scale(0.75)", opacity: 0 },
-        //   enter: { transform: "scale(1)", opacity: 1 },
-        //   leave: { transform: "scale(0.75)", opacity: 0 },
-        //   config: { mass: 1, tension: 320, friction: 32 }
-        // }}
+        open={isModalOpen}
+        close={handleClose}
+        slides={photos}
+        index={currentImageIndex}
+        render={{ slide: SlideImageWithNext, thumbnail: NextThumbnailRenderer }}
+        plugins={[Thumbnails, Zoom]}
+        thumbnails={{
+          position: "bottom",
+          width: 120,
+          height: 80,
+          // border,
+          // borderRadius,
+          // padding,
+          // gap,
+          // showToggle,
+        }}
       />
     </Layout>
   );
@@ -236,6 +233,8 @@ export async function getStaticPaths() {
   };
 }
 
+const breakpoints = [1080, 640, 384, 256, 128, 96, 64, 48];
+
 export async function getStaticProps({ params }: StaticProps) {
   console.log("from tripName", { params });
 
@@ -245,18 +244,25 @@ export async function getStaticProps({ params }: StaticProps) {
 
   console.log(imageFileNames[0]);
 
-  const images: ImageProps[] = imageFileNames.map(
-    ({ name, width, height }, index) => {
-      return {
-        tripName: params.tripName,
-        index,
-        width,
-        height,
-        name,
-        url: `https://${process.env.NEXT_PUBLIC_STATIC_FILE_URL}/photography/${name}`,
-      };
-    }
-  );
+  const images: ImageProps[] = imageFileNames.map((photo, index) => {
+    const url = `https://${process.env.NEXT_PUBLIC_STATIC_FILE_URL}/photography/${photo.name}`;
+    return {
+      tripName: params.tripName,
+      index,
+      width: photo.width,
+      height: photo.height,
+      name: photo.name,
+      srcSet: breakpoints.map((breakpoint: number) => {
+        const height = Math.round((photo.height / photo.width) * breakpoint);
+        return {
+          src: url,
+          width: breakpoint,
+          height,
+        };
+      }),
+      url,
+    };
+  });
 
   console.log({ images });
 

@@ -3,13 +3,35 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
-import Gallery from "react-photo-gallery";
 import Lightbox from "react-spring-lightbox";
 import { getS3Folders, getS3ImageData } from "src/lib/aws";
 import { ImageProps } from "src/utils/types";
 import { useLastViewedPhoto } from "src/utils/useLastViewedPhoto";
 import Layout from "../../../components/layout";
 import { range } from "src/utils/range";
+import {
+  ClickHandler,
+  Photo,
+  PhotoAlbum,
+  RenderPhotoProps,
+} from "react-photo-album";
+
+export function NextJsImage({
+  photo,
+  imageProps: { alt, title, sizes, className, onClick },
+  wrapperStyle,
+}: RenderPhotoProps) {
+  return (
+    <div style={{ ...wrapperStyle, position: "relative" }}>
+      <Image
+        fill
+        src={photo}
+        placeholder={"blurDataURL" in photo ? "blur" : undefined}
+        {...{ alt, title, sizes, className, onClick }}
+      />
+    </div>
+  );
+}
 
 export default function ImageGallery({
   images,
@@ -56,14 +78,9 @@ export default function ImageGallery({
     height: 100,
   }));
 
-  const openModal = (
-    event: React.MouseEvent,
-    photos: {
-      index: number;
-    }
-  ) => {
+  const openModal: ClickHandler<Photo> = ({ index }) => {
     console.log("opening modal!");
-    setCurrentImageIndex(photos.index);
+    setCurrentImageIndex(index);
     setIsModalOpen(true);
   };
 
@@ -78,20 +95,19 @@ export default function ImageGallery({
       url={`/photography/${tripName}`}
       fullScreen={false}
     >
-      <Gallery
+      <PhotoAlbum
         photos={photos}
+        layout="rows"
         onClick={openModal}
-        renderImage={({ photo, index }) => {
-          return (
-            <Image
-              key={photo.src}
-              src={photo.src}
-              alt={photo.alt || "photography image"}
-              width={photo.width}
-              height={photo.height}
-              onClick={(event) => openModal(event, { index })}
-            />
-          );
+        renderPhoto={NextJsImage}
+        defaultContainerWidth={1200}
+        sizes={{
+          size: "calc(100vw - 40px)",
+          sizes: [
+            { viewport: "(max-width: 299px)", size: "calc(100vw - 10px)" },
+            { viewport: "(max-width: 599px)", size: "calc(100vw - 20px)" },
+            { viewport: "(max-width: 1199px)", size: "calc(100vw - 30px)" },
+          ],
         }}
       />
 

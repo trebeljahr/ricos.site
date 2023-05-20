@@ -73,7 +73,6 @@ export default function ImageGallery({
   const photos = images.map((image) => ({
     src: image.url,
     alt: image.name,
-    index: image.index,
     width: 100,
     height: 100,
   }));

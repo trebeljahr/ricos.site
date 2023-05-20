@@ -147,11 +147,22 @@ export const getDataFromS3 = async ({
 
   if (!data.Contents) throw new Error("No contents found");
 
-  return data.Contents.filter(({ Key }) => {
-    if (!Key) return false;
+  const output = await Promise.all(
+    data.Contents.filter(({ Key }) => {
+      if (!Key) return false;
 
-    const split = Key.split("/");
-    console.log("split", split);
-    return split[split.length - 1] !== "";
-  }).map((file) => (file.Key as string).replace("photography/", ""));
+      const split = Key.split("/");
+      console.log("split", split);
+      return split[split.length - 1] !== "";
+    }).map(async (file) => {
+      const result = await getObjectMetadata(bucketName, file.Key || "");
+      return {
+        name: (file.Key as string).replace("photography/", ""),
+        width: parseInt(result.Metadata?.width || "100"),
+        height: parseInt(result.Metadata?.height || "100"),
+      };
+    })
+  );
+
+  return output;
 };

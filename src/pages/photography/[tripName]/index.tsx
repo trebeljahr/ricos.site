@@ -18,16 +18,19 @@ import {
 
 export function NextJsImage({
   photo,
-  imageProps: { alt, title, sizes, className, onClick },
+  imageProps: { alt, title, className, onClick },
   wrapperStyle,
 }: RenderPhotoProps) {
+  console.log(photo);
+
   return (
     <div style={{ ...wrapperStyle, position: "relative" }}>
       <Image
-        fill
         src={photo}
+        width={photo.width}
+        height={photo.height}
         placeholder={"blurDataURL" in photo ? "blur" : undefined}
-        {...{ alt, title, sizes, className, onClick }}
+        {...{ alt, title, className, onClick }}
       />
     </div>
   );
@@ -73,8 +76,8 @@ export default function ImageGallery({
   const photos = images.map((image) => ({
     src: image.url,
     alt: image.name,
-    width: 100,
-    height: 100,
+    width: image.width,
+    height: image.height,
   }));
 
   const openModal: ClickHandler<Photo> = ({ index }) => {
@@ -240,14 +243,20 @@ export async function getStaticProps({ params }: StaticProps) {
     prefix: params.tripName,
   });
 
-  const images: ImageProps[] = imageFileNames.map((name, index) => {
-    return {
-      tripName: params.tripName,
-      index,
-      name,
-      url: `https://${process.env.NEXT_PUBLIC_STATIC_FILE_URL}/photography/${name}`,
-    };
-  });
+  console.log(imageFileNames[0]);
+
+  const images: ImageProps[] = imageFileNames.map(
+    ({ name, width, height }, index) => {
+      return {
+        tripName: params.tripName,
+        index,
+        width,
+        height,
+        name,
+        url: `https://${process.env.NEXT_PUBLIC_STATIC_FILE_URL}/photography/${name}`,
+      };
+    }
+  );
 
   console.log({ images });
 

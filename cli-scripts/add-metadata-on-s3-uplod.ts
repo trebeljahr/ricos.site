@@ -22,24 +22,34 @@ export async function parseMetadataForAllImagesInFolder(dir: string) {
   console.log(allResults);
 }
 
+export async function uploadAllImagesFromDirectoryToS3(dir: string) {
+  const imageFiles = await findFiles(dir, /\.(jpg|jpeg|png)$/i);
+  const pool = Pool(() => spawn(new Worker("./upload-worker.ts")));
+
+  const tripName = "tenerife-2022";
+
+  for (const imagePath of imageFiles) {
+    pool.queue(async (uploadWorker) => {
+      await uploadWorker(imagePath, tripName);
+    });
+  }
+
+  await pool.completed();
+  await pool.terminate();
+
+  console.log("Done uploading all images!");
+}
+
 async function main() {
+  console.log(process.argv);
   if (process.argv.length !== 3) {
     console.error("Usage: tsx add-metadata-on-s3-upload.js <dir>");
     process.exit(1);
   }
 
-  const filepath = process.argv[2];
-  const exifData = await getExifData(filepath);
-  console.log(exifData);
+  const dir = process.argv[2];
 
-  const key = createKey("photography/test", filepath);
-
-  await uploadWithMetadata(filepath, key, {
-    width: String(exifData.width),
-    height: String(exifData.height),
-  });
-
-  console.log(`Done uploading test file!`);
+  await uploadAllImagesFromDirectoryToS3(dir);
 }
 
 main();

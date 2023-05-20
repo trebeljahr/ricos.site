@@ -76,6 +76,7 @@
     "dotenv": "^16.0.3",
     "eslint": "7.32.0",
     "eslint-config-next": "^13.0.4",
+    "exifreader": "^4.12.0",
     "exiftool-vendored": "^22.0.0",
     "mime": "^2.5.2",
     "next-sitemap": "^1.6.168",

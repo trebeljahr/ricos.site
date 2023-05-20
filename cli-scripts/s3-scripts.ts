@@ -5,6 +5,7 @@ import { readFileSync } from "fs";
 import { getType } from "mime";
 import { config } from "dotenv";
 import path from "path";
+import { getExifData } from "./getExifData.js";
 config({ path: "../.env" });
 
 export function createKey(prefix: string, filepath: string) {
@@ -55,4 +56,14 @@ export async function readS3MetadataForAllStorageObjects() {
   );
 
   console.log(metadata);
+}
+
+export async function uploadSingleFileToS3(filepath: string, tripName: string) {
+  const key = createKey(`photography/${tripName}`, filepath);
+  const exifData = await getExifData(filepath);
+
+  await uploadWithMetadata(filepath, key, {
+    width: String(exifData.width),
+    height: String(exifData.height),
+  });
 }

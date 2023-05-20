@@ -1,20 +1,52 @@
-import { ListObjectsV2Command, S3, S3Client } from "@aws-sdk/client-s3";
-import { k } from "vitest/dist/index-9f5bc072";
+import {
+  HeadObjectCommand,
+  ListObjectsV2Command,
+  S3Client,
+} from "@aws-sdk/client-s3";
 
-export const getImageSources = ({
-  imageFileNames,
-}: {
-  imageFileNames: string[];
-}) => {
-  const domain = process.env.NEXT_PUBLIC_STATIC_FILE_URL;
-  if (!domain) {
-    throw new Error("No static file URL provided");
+export async function getObjectMetadata(Bucket: string, Key: string) {
+  const client = createS3Client();
+  const command = new HeadObjectCommand({ Bucket, Key });
+  const response = await client.send(command);
+  console.log(response);
+  return response;
+}
+
+export async function getAllStorageObjectKeys(
+  Bucket: string,
+  Prefix: string = ""
+) {
+  const client = createS3Client();
+
+  const command = new ListObjectsV2Command({
+    Bucket,
+    MaxKeys: 1000,
+    Prefix,
+  });
+
+  try {
+    let isTruncated = true;
+    let contents: string[] = [];
+
+    while (isTruncated) {
+      const { Contents, IsTruncated, NextContinuationToken } =
+        await client.send(command);
+
+      if (Contents === undefined || IsTruncated === undefined) {
+        throw new Error("Something went wrong on the S3 request!");
+      }
+
+      contents = contents.concat(Contents.map(({ Key }) => Key || ""));
+      isTruncated = IsTruncated;
+      command.input.ContinuationToken = NextContinuationToken;
+    }
+    console.log(contents);
+    return contents;
+  } catch (err) {
+    console.error(err);
+    throw new Error("Something went wrong on the S3 request!");
   }
-
-  return imageFileNames.map((fileName) => ({
-    src: `https://${domain}/photography/${fileName}`,
-  }));
-};
+}
 
 type Options = {
   prefix?: string;
@@ -38,6 +70,21 @@ export const getS3ImageData = async ({ prefix = "" }: Options = {}) => {
     prefix,
   });
 };
+
+export function createS3Client() {
+  const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
+  const awsRegion = process.env.LOCAL_AWS_REGION;
+
+  if (!accessKeyId || !secretAccessKey || !awsRegion) {
+    throw new Error("No AWS credentials provided");
+  }
+
+  return new S3Client({
+    region: awsRegion,
+    credentials: { accessKeyId, secretAccessKey },
+  });
+}
 
 export async function getS3Folders(): Promise<string[]> {
   const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;

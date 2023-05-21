@@ -58,8 +58,6 @@ export function NextJsImage({
       <Image
         src={photo}
         fill
-        // width={photo.width}
-        // height={photo.height}
         placeholder={"blurDataURL" in photo ? "blur" : undefined}
         {...{ alt, title, className, sizes, onClick }}
       />
@@ -80,22 +78,18 @@ export function NextThumbnailRenderer({
   console.log(rect);
   console.log(slide);
 
+  console.log("got the changes!");
+
   return (
-    <div
-      style={{
-        width: rect.width,
-        height: rect.height,
-      }}
-    >
-      <Image
-        fill
-        alt={slide.alt || "this image doesn't have an alt text, sorry"}
-        src={slide.src}
-        loading="eager"
-        draggable={false}
-        style={{ objectFit: "cover" }}
-        sizes={`${Math.ceil((rect.width / window.innerWidth) * 100)}vw`}
-      />
-    </div>
+    <Image
+      alt={slide.alt || "this image doesn't have an alt text, sorry"}
+      src={slide.src}
+      width={slide.width}
+      height={slide.height}
+      loading="eager"
+      draggable={false}
+      style={{ objectFit: "cover", width: rect.width, height: rect.height }}
+      sizes={`${Math.ceil((rect.width / window.innerWidth) * 100)}vw`}
+    />
   );
 }

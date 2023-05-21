@@ -24,6 +24,5 @@ export default function Photography({ tripNames }: { tripNames: string[] }) {
 
 export async function getStaticProps() {
   const tripNames = await getS3Folders();
-  console.log(tripNames);
   return { props: { tripNames } };
 }

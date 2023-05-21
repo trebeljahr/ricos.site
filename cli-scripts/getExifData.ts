@@ -10,8 +10,6 @@ export async function getExifData(imagePath: string) {
     const width = tags.file?.["Image Width"]?.value;
     const height = tags.file?.["Image Height"]?.value;
 
-    console.log(width, height);
-
     if (!width || !height) throw new Error("No width or height found on image");
 
     return { width, height, imagePath };

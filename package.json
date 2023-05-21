@@ -55,6 +55,7 @@
     "remark-math": "^5.1.1",
     "remark-mdx-frontmatter": "^2.0.3",
     "remark-toc": "^8.0.1",
+    "sharp": "^0.32.1",
     "simple-react-canvas-component": "^0.1.14",
     "three": "^0.146.0",
     "twitter-api-v2": "^1.12.7",

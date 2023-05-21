@@ -8,7 +8,6 @@ export async function getObjectMetadata(Bucket: string, Key: string) {
   const client = createS3Client();
   const command = new HeadObjectCommand({ Bucket, Key });
   const response = await client.send(command);
-  console.log(response);
   return response;
 }
 
@@ -40,7 +39,6 @@ export async function getAllStorageObjectKeys(
       isTruncated = IsTruncated;
       command.input.ContinuationToken = NextContinuationToken;
     }
-    console.log(contents);
     return contents;
   } catch (err) {
     console.error(err);
@@ -152,7 +150,6 @@ export const getDataFromS3 = async ({
       if (!Key) return false;
 
       const split = Key.split("/");
-      console.log("split", split);
       return split[split.length - 1] !== "";
     }).map(async (file) => {
       const result = await getObjectMetadata(bucketName, file.Key || "");

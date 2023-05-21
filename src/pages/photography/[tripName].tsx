@@ -6,7 +6,7 @@ import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { getS3Folders, getS3ImageData } from "src/lib/aws";
 import { ImageProps } from "src/utils/types";
 import { useLastViewedPhoto } from "src/utils/useLastViewedPhoto";
-import Layout from "../../../components/layout";
+import Layout from "../../components/layout";
 import { range } from "src/utils/range";
 import {
   ClickHandler,
@@ -67,19 +67,17 @@ export default function ImageGallery({
     setCurrentImageIndex(currentImageIndex + 1);
 
   const handleClose = () => {
-    console.log("closing!");
     setIsModalOpen(false);
   };
 
   const photos = images.map((image) => ({
-    src: image.url,
+    src: image.src,
     alt: image.name,
     width: image.width,
     height: image.height,
   }));
 
   const openModal: ClickHandler<Photo> = ({ index }) => {
-    console.log("opening modal!");
     setCurrentImageIndex(index);
     setIsModalOpen(true);
   };
@@ -103,11 +101,6 @@ export default function ImageGallery({
         defaultContainerWidth={1200}
         sizes={{
           size: "calc(100vw - 40px)",
-          sizes: [
-            { viewport: "(max-width: 299px)", size: "calc(100vw - 10px)" },
-            { viewport: "(max-width: 599px)", size: "calc(100vw - 20px)" },
-            { viewport: "(max-width: 1199px)", size: "calc(100vw - 30px)" },
-          ],
         }}
       />
       <Lightbox
@@ -115,18 +108,18 @@ export default function ImageGallery({
         close={handleClose}
         slides={photos}
         index={currentImageIndex}
-        render={{ slide: SlideImageWithNext, thumbnail: NextThumbnailRenderer }}
-        plugins={[Thumbnails, Zoom]}
-        thumbnails={{
-          position: "bottom",
-          width: 120,
-          height: 80,
-          // border,
-          // borderRadius,
-          // padding,
-          // gap,
-          // showToggle,
-        }}
+        // render={{ slide: SlideImageWithNext, thumbnail: NextThumbnailRenderer }}
+        plugins={[Zoom]}
+        // thumbnails={{
+        //   position: "bottom",
+        //   width: 120,
+        //   height: 80,
+        //   // border,
+        //   // borderRadius,
+        //   // padding,
+        //   // gap,
+        //   // showToggle,
+        // }}
       />
     </Layout>
   );
@@ -147,38 +140,44 @@ export async function getStaticPaths() {
   };
 }
 
-const breakpoints = [1080, 640, 384, 256, 128, 96, 64, 48];
+const imageSizes = [16, 32, 48, 64, 96, 128, 256, 384];
+const deviceSizes = [640, 750, 828, 1080, 1200, 1920, 2048, 3840];
+
+function nextImageUrl(src: string, size: number) {
+  return `/_next/image?url=${encodeURIComponent(src)}&w=${size}&q=75`;
+}
 
 export async function getStaticProps({ params }: StaticProps) {
-  console.log("from tripName", { params });
+  const { tripName } = params;
 
   const imageFileNames = await getS3ImageData({
-    prefix: params.tripName,
+    prefix: tripName,
   });
 
-  console.log(imageFileNames[0]);
+  const slides: ImageProps[] = imageFileNames.map(
+    ({ name, width, height }, index) => {
+      const src = `https://${process.env.NEXT_PUBLIC_STATIC_FILE_URL}/photography/${name}`;
 
-  const images: ImageProps[] = imageFileNames.map((photo, index) => {
-    const url = `https://${process.env.NEXT_PUBLIC_STATIC_FILE_URL}/photography/${photo.name}`;
-    return {
-      tripName: params.tripName,
-      index,
-      width: photo.width,
-      height: photo.height,
-      name: photo.name,
-      srcSet: breakpoints.map((breakpoint: number) => {
-        const height = Math.round((photo.height / photo.width) * breakpoint);
-        return {
-          src: url,
-          width: breakpoint,
-          height,
-        };
-      }),
-      url,
-    };
-  });
+      return {
+        width,
+        height,
+        index,
+        tripName,
+        name,
+        src: nextImageUrl(src, 640),
+        srcSet: imageSizes
+          .concat(...deviceSizes)
+          .filter((size) => size <= width)
+          .map((size) => ({
+            src: nextImageUrl(src, size),
+            width: size,
+            height: Math.round((height / width) * size),
+          })),
+      };
+    }
+  );
 
-  console.log({ images });
+  console.log({ slides: slides.slice(0, 10) });
 
-  return { props: { images: images.slice(0, 10), tripName: params.tripName } };
+  return { props: { images: slides.slice(0, 10), tripName: params.tripName } };
 }

@@ -5,7 +5,7 @@ export interface ImageProps {
   width: number;
   height: number;
   name: string;
-  url: string;
+  src: string;
 }
 
 export interface SharedModalProps {

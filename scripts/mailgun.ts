@@ -1,7 +1,7 @@
 import formData from "form-data";
 import Mailgun from "mailgun.js";
 import { config } from "dotenv";
-config();
+config({ path: "../.env.local" });
 
 // @ts-ignore:next-line
 const mailgun = new Mailgun(formData);

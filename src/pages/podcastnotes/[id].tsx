@@ -4,7 +4,7 @@ import Layout from "../../components/layout";
 import { ToTopButton } from "../../components/ToTopButton";
 import { ExternalLink } from "../../components/ExternalLink";
 import { NewsletterForm } from "../../components/newsletter-signup";
-import { Podcastnote, allPodcastnotes } from "contentlayer/generated";
+import { Podcastnote, allPodcastnotes } from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { MarkdownRenderers } from "src/components/CustomRenderers";
 

@@ -1,4 +1,4 @@
-import { allNewsletters, Newsletter } from "contentlayer/generated";
+import { allNewsletters, Newsletter } from "@contentlayer/generated";
 import Image from "next/image";
 import Link from "next/link";
 import Layout from "../../components/layout";

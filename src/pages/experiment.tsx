@@ -1,7 +1,7 @@
 import Layout from "../components/layout";
 import { ToTopButton } from "../components/ToTopButton";
 import { NewsletterForm } from "../components/newsletter-signup";
-import { allDocuments, DocumentTypes } from "contentlayer/generated";
+import { allDocuments, DocumentTypes } from "@contentlayer/generated";
 import Link from "next/link";
 
 const mainCategories = [

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { allDocuments, DocumentTypes } from "contentlayer/generated";
+import { allDocuments, DocumentTypes } from "@contentlayer/generated";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
 import remarkMath, { Root } from "remark-math";

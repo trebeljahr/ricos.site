@@ -1,38 +1,14 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import { AnimatePresence, motion } from "framer-motion";
-import Image from "next/image";
-import { useRouter } from "next/router";
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { ClickHandler, Photo, PhotoAlbum } from "react-photo-album";
 import { getS3Folders, getS3ImageData } from "src/lib/aws";
 import { ImageProps } from "src/utils/types";
-import { useLastViewedPhoto } from "src/utils/useLastViewedPhoto";
-import Layout from "../../components/layout";
-import { range } from "src/utils/range";
-import {
-  ClickHandler,
-  Photo,
-  PhotoAlbum,
-  RenderPhotoProps,
-} from "react-photo-album";
-import Lightbox, {
-  ContainerRect,
-  Render,
-  RenderSlideProps,
-  Slide,
-  isImageFitCover,
-  isImageSlide,
-  useLightboxProps,
-} from "yet-another-react-lightbox";
+import { NextJsImage } from "src/components/image-gallery/customRenderers";
+import Lightbox from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
-
+import Layout from "../../components/layout";
+import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/styles.css";
-import {
-  NextJsImage,
-  NextThumbnailRenderer,
-  SlideImageWithNext,
-} from "src/components/image-gallery/customRenderers";
-// import useLightbox from "src/hooks/useLightbox";
 
 export default function ImageGallery({
   images,
@@ -41,60 +17,27 @@ export default function ImageGallery({
   images: ImageProps[];
   tripName: string;
 }) {
-  const router = useRouter();
-  const { photoId: photoIdFromQuery } = router.query;
-
-  const photoIdNumber = parseInt(photoIdFromQuery as string);
-  const [lastViewedPhoto, setLastViewedPhoto] = useLastViewedPhoto();
-
-  const lastViewedPhotoRef = useRef<HTMLAnchorElement>(null);
-
-  useEffect(() => {
-    if (lastViewedPhoto && !photoIdNumber) {
-      lastViewedPhotoRef?.current?.scrollIntoView({ block: "center" });
-      setLastViewedPhoto(0);
-    }
-  }, [photoIdNumber, lastViewedPhoto, setLastViewedPhoto]);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const gotoPrevious = () =>
-    currentImageIndex > 0 && setCurrentImageIndex(currentImageIndex - 1);
-
-  const gotoNext = () =>
-    currentImageIndex + 1 < images.length &&
-    setCurrentImageIndex(currentImageIndex + 1);
 
   const handleClose = () => {
     setIsModalOpen(false);
   };
-
-  const photos = images.map((image) => ({
-    src: image.src,
-    alt: image.name,
-    width: image.width,
-    height: image.height,
-  }));
 
   const openModal: ClickHandler<Photo> = ({ index }) => {
     setCurrentImageIndex(index);
     setIsModalOpen(true);
   };
 
-  let filteredImages = images?.filter((img: ImageProps) =>
-    range(currentImageIndex - 15, currentImageIndex + 15).includes(img.index)
-  );
-
   return (
     <Layout
       title="Photography"
       description="A page with all my photography."
       url={`/photography/${tripName}`}
-      fullScreen={false}
+      fullScreen={true}
     >
       <PhotoAlbum
-        photos={photos}
+        photos={images}
         layout="rows"
         onClick={openModal}
         renderPhoto={NextJsImage}
@@ -106,20 +49,20 @@ export default function ImageGallery({
       <Lightbox
         open={isModalOpen}
         close={handleClose}
-        slides={photos}
+        slides={images}
         index={currentImageIndex}
-        // render={{ slide: SlideImageWithNext, thumbnail: NextThumbnailRenderer }}
-        plugins={[Zoom]}
-        // thumbnails={{
-        //   position: "bottom",
-        //   width: 120,
-        //   height: 80,
-        //   // border,
-        //   // borderRadius,
-        //   // padding,
-        //   // gap,
-        //   // showToggle,
-        // }}
+        plugins={[Thumbnails, Zoom]}
+        thumbnails={{
+          position: "bottom",
+          width: 100,
+          height: 100,
+          border: 0,
+          borderRadius: 4,
+          padding: 0,
+          gap: 10,
+          imageFit: "cover",
+          vignette: true,
+        }}
       />
     </Layout>
   );
@@ -158,7 +101,7 @@ export async function getStaticProps({ params }: StaticProps) {
     ({ name, width, height }, index) => {
       const src = `https://${process.env.NEXT_PUBLIC_STATIC_FILE_URL}/photography/${name}`;
 
-      return {
+      const image = {
         width,
         height,
         index,
@@ -168,12 +111,17 @@ export async function getStaticProps({ params }: StaticProps) {
         srcSet: imageSizes
           .concat(...deviceSizes)
           .filter((size) => size <= width)
-          .map((size) => ({
-            src: nextImageUrl(src, size),
-            width: size,
-            height: Math.round((height / width) * size),
-          })),
+          .map((size) => {
+            const aspectRatio = Math.round(height / width);
+            return {
+              src: nextImageUrl(src, size),
+              width: size,
+              height: aspectRatio * size,
+            };
+          }),
       };
+
+      return image;
     }
   );
 

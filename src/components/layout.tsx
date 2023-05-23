@@ -20,7 +20,7 @@ const Layout = ({
   url,
   image,
   imageAlt,
-  fullScreen = true,
+  fullScreen = false,
 }: Props) => {
   return (
     <>
@@ -34,7 +34,7 @@ const Layout = ({
       />
       <Navbar />
       <main
-        className={fullScreen ? "main-page" : "w-100 p-1 md:pr-10 md:pl-10"}
+        className={fullScreen ? "w-100 p-1 md:pr-10 md:pl-10" : "main-page"}
       >
         {children}
       </main>

@@ -6,6 +6,7 @@ export interface ImageProps {
   height: number;
   name: string;
   src: string;
+  blurDataURL?: string;
 }
 
 export interface SharedModalProps {

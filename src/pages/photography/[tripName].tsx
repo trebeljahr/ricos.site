@@ -9,6 +9,8 @@ import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Layout from "../../components/layout";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/styles.css";
+import { useWindowSize } from "src/hooks/useWindowSize";
+import { getPlaiceholder } from "plaiceholder";
 
 export default function ImageGallery({
   images,
@@ -29,6 +31,10 @@ export default function ImageGallery({
     setIsModalOpen(true);
   };
 
+  const { width, height } = useWindowSize();
+
+  if (!width || !height) return null;
+
   return (
     <Layout
       title="Photography"
@@ -38,6 +44,7 @@ export default function ImageGallery({
     >
       <PhotoAlbum
         photos={images}
+        targetRowHeight={height / 3}
         layout="rows"
         onClick={openModal}
         renderPhoto={NextJsImage}
@@ -97,9 +104,10 @@ export async function getStaticProps({ params }: StaticProps) {
     prefix: tripName,
   });
 
-  const slides: ImageProps[] = imageFileNames.map(
-    ({ name, width, height }, index) => {
+  const images: ImageProps[] = await Promise.all(
+    imageFileNames.slice(0, 10).map(async ({ name, width, height }, index) => {
       const src = `https://${process.env.NEXT_PUBLIC_STATIC_FILE_URL}/photography/${name}`;
+      const { base64 } = await getPlaiceholder(src);
 
       const image = {
         width,
@@ -107,6 +115,7 @@ export async function getStaticProps({ params }: StaticProps) {
         index,
         tripName,
         name,
+        blurDataURL: base64,
         src: nextImageUrl(src, 640),
         srcSet: imageSizes
           .concat(...deviceSizes)
@@ -122,10 +131,8 @@ export async function getStaticProps({ params }: StaticProps) {
       };
 
       return image;
-    }
+    })
   );
 
-  console.log({ slides: slides.slice(0, 10) });
-
-  return { props: { images: slides.slice(0, 10), tripName: params.tripName } };
+  return { props: { images, tripName: params.tripName } };
 }

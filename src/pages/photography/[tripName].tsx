@@ -98,7 +98,10 @@ export async function getStaticProps({ params }: StaticProps) {
     prefix: tripName,
   });
 
-  const images: ImageProps[] = await mapToImageProps(awsImageData, tripName);
+  const images: ImageProps[] = await mapToImageProps(
+    awsImageData.slice(0, 50),
+    tripName
+  );
 
   return { props: { images, tripName: params.tripName } };
 }

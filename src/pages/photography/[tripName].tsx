@@ -11,6 +11,7 @@ import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/styles.css";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import { getPlaiceholder } from "plaiceholder";
+import { mapToImageProps } from "src/lib/mapToImageProps";
 
 export default function ImageGallery({
   images,
@@ -44,7 +45,7 @@ export default function ImageGallery({
     >
       <PhotoAlbum
         photos={images}
-        targetRowHeight={height / 3}
+        targetRowHeight={height * 0.6}
         layout="rows"
         onClick={openModal}
         renderPhoto={NextJsImage}
@@ -90,49 +91,14 @@ export async function getStaticPaths() {
   };
 }
 
-const imageSizes = [16, 32, 48, 64, 96, 128, 256, 384];
-const deviceSizes = [640, 750, 828, 1080, 1200, 1920, 2048, 3840];
-
-function nextImageUrl(src: string, size: number) {
-  return `/_next/image?url=${encodeURIComponent(src)}&w=${size}&q=75`;
-}
-
 export async function getStaticProps({ params }: StaticProps) {
   const { tripName } = params;
 
-  const imageFileNames = await getS3ImageData({
+  const awsImageData = await getS3ImageData({
     prefix: tripName,
   });
 
-  const images: ImageProps[] = await Promise.all(
-    imageFileNames.slice(0, 10).map(async ({ name, width, height }, index) => {
-      const src = `https://${process.env.NEXT_PUBLIC_STATIC_FILE_URL}/photography/${name}`;
-      const { base64 } = await getPlaiceholder(src);
-
-      const image = {
-        width,
-        height,
-        index,
-        tripName,
-        name,
-        blurDataURL: base64,
-        src: nextImageUrl(src, 640),
-        srcSet: imageSizes
-          .concat(...deviceSizes)
-          .filter((size) => size <= width)
-          .map((size) => {
-            const aspectRatio = Math.round(height / width);
-            return {
-              src: nextImageUrl(src, size),
-              width: size,
-              height: aspectRatio * size,
-            };
-          }),
-      };
-
-      return image;
-    })
-  );
+  const images: ImageProps[] = await mapToImageProps(awsImageData, tripName);
 
   return { props: { images, tripName: params.tripName } };
 }

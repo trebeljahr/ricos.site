@@ -7,6 +7,11 @@ export interface ImageProps {
   name: string;
   src: string;
   blurDataURL?: string;
+  srcSet: {
+    src: string;
+    width: number;
+    height: number;
+  }[];
 }
 
 export interface SharedModalProps {

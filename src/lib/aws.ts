@@ -114,6 +114,12 @@ export async function getS3Folders(): Promise<string[]> {
   return folders.sort();
 }
 
+export type ImageDataFromAWS = {
+  name: string;
+  width: number;
+  height: number;
+};
+
 export const getDataFromS3 = async ({
   accessKeyId,
   secretAccessKey,

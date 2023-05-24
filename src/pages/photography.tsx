@@ -1,96 +1,60 @@
+import Link from "next/link";
 import Layout from "../components/layout";
-import { ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
+import { getS3Folders, getS3ImageData } from "src/lib/aws";
+import { ImageProps } from "src/utils/types";
 import Image from "next/image";
+import { mapToImageProps } from "src/lib/mapToImageProps";
 
 export default function Photography({
-  imageFileNames,
+  trips,
 }: {
-  imageFileNames: string[];
+  trips: { image: ImageProps; tripName: string }[];
 }) {
   return (
     <Layout
       title="Photography"
       description="A page with all my photography."
       url="photography"
+      fullScreen={true}
     >
       <h1>Photography</h1>
-      {getImageSources({ imageFileNames }).map(({ src }, index) => {
-        return (
-          <Image
-            key={index}
-            src={src}
-            width="6"
-            height="4"
-            alt={src}
-            sizes="100vw"
-            style={{
-              width: "100%",
-              height: "auto",
-              objectFit: "cover",
-            }}
-          />
-        );
-      })}
+      <div className="flex w-full flex-wrap">
+        {trips.map(({ tripName, image }) => {
+          return (
+            <Link
+              href={`/photography/${tripName}`}
+              key={tripName}
+              className="relative w-1/2 aspect-square overflow-hidden basis-1/2 flex-shrink-0"
+            >
+              <Image
+                src={image.src}
+                sizes={"calc(50vw - 40px)"}
+                blurDataURL={image.blurDataURL}
+                fill
+                alt={"A photo from " + tripName}
+                className="absolute inset-0 z-0 object-cover w-full h-full hover:scale-105 transition-all duration-300 ease-in-out"
+              />
+              <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center w-full h-full bg-black bg-opacity-40">
+                <span className="text-xl  text-white">{tripName}</span>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
     </Layout>
   );
 }
 
-export const getStaticProps = async () => {
-  const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
-  const awsRegion = process.env.LOCAL_AWS_REGION;
-  const bucketName = process.env.LOCAL_AWS_BUCKET_NAME;
+export async function getStaticProps() {
+  const tripNames = await getS3Folders();
+  const trips = await Promise.all(
+    tripNames.map(async (tripName) => {
+      const [firstImage] = await getS3ImageData({ prefix: tripName });
+      const [image] = await mapToImageProps([firstImage], tripName);
 
-  if (!accessKeyId || !secretAccessKey || !bucketName || !awsRegion) {
-    throw new Error("No AWS credentials provided");
-  }
-
-  const imageFileNames = await getImagesFromS3({
-    accessKeyId,
-    secretAccessKey,
-    awsRegion,
-    bucketName,
-  });
-
-  return { props: { imageFileNames } };
-};
-
-const getImageSources = ({ imageFileNames }: { imageFileNames: string[] }) => {
-  const domain = process.env.NEXT_PUBLIC_STATIC_FILE_URL;
-  if (!domain) {
-    throw new Error("No static file URL provided");
-  }
-
-  return imageFileNames.map((fileName) => ({
-    src: `https://${domain}/${fileName}`,
-  }));
-};
-
-const getImagesFromS3 = async ({
-  accessKeyId,
-  secretAccessKey,
-  awsRegion,
-  bucketName,
-}: {
-  accessKeyId: string;
-  secretAccessKey: string;
-  awsRegion: string;
-  bucketName: string;
-}) => {
-  const s3Client = new S3Client({
-    region: awsRegion,
-    credentials: { accessKeyId, secretAccessKey },
-  });
-
-  const data = await s3Client.send(
-    new ListObjectsV2Command({
-      Bucket: bucketName,
+      return { image, tripName };
     })
   );
 
-  if (data.KeyCount && data.MaxKeys && data.KeyCount >= data.MaxKeys) {
-    throw new Error("Can't display all objects in the bucket");
-  }
-
-  return data.Contents?.map((file) => file.Key as string) ?? [];
-};
+  return { props: { trips } };
+}

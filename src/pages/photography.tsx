@@ -56,7 +56,5 @@ export async function getStaticProps() {
     })
   );
 
-  console.log(trips);
-
   return { props: { trips } };
 }

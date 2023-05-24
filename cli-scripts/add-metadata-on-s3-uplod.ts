@@ -19,14 +19,14 @@ export async function parseMetadataForAllImagesInFolder(dir: string) {
   await pool.completed();
   await pool.terminate();
 
-  console.log(allResults);
+  return allResults;
 }
 
 export async function uploadAllImagesFromDirectoryToS3(dir: string) {
   const imageFiles = await findFiles(dir, /\.(jpg|jpeg|png)$/i);
   const pool = Pool(() => spawn(new Worker("./upload-worker.ts")));
 
-  const tripName = "2021 Crete";
+  const tripName = "2022 Germany";
 
   for (const imagePath of imageFiles) {
     pool.queue(async (uploadWorker) => {
@@ -36,12 +36,9 @@ export async function uploadAllImagesFromDirectoryToS3(dir: string) {
 
   await pool.completed();
   await pool.terminate();
-
-  console.log("Done uploading all images!");
 }
 
 async function main() {
-  console.log(process.argv);
   if (process.argv.length !== 3) {
     console.error("Usage: tsx add-metadata-on-s3-upload.js <dir>");
     process.exit(1);

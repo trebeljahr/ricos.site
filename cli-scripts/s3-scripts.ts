@@ -24,8 +24,6 @@ export async function uploadWithMetadata(
   const client = createS3Client();
   const Body = readFileSync(filepath);
 
-  console.log(getType(filepath));
-
   const command = new PutObjectCommand({
     Bucket,
     Key,
@@ -35,8 +33,7 @@ export async function uploadWithMetadata(
   });
 
   try {
-    const response = await client.send(command);
-    console.log(response);
+    await client.send(command);
   } catch (err) {
     console.error(err);
   }
@@ -47,7 +44,6 @@ export async function readS3MetadataForAllStorageObjects() {
   if (!bucketName) throw new Error("No bucket name provided in .env file");
 
   const allKeys = await getAllStorageObjectKeys(bucketName, "photography/");
-  console.log(allKeys);
 
   const metadata = await Promise.all(
     allKeys.map((key) => {
@@ -55,7 +51,7 @@ export async function readS3MetadataForAllStorageObjects() {
     })
   );
 
-  console.log(metadata);
+  return metadata;
 }
 
 export async function uploadSingleFileToS3(filepath: string, tripName: string) {

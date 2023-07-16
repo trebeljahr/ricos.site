@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Layout from "../components/layout";
-import { getS3Folders, getS3ImageData } from "src/lib/aws";
+import { bucketPrefix, getS3Folders, getS3ImageData } from "src/lib/aws";
 import { ImageProps } from "src/utils/types";
 import Image from "next/image";
 import { mapToImageProps } from "src/lib/mapToImageProps";
@@ -22,7 +22,7 @@ export default function Photography({
         {trips.map(({ tripName, image }) => {
           return (
             <Link
-              href={`/photography/${tripName}`}
+              href={`/${bucketPrefix}${tripName}`}
               key={tripName}
               className="relative w-1/2 aspect-square overflow-hidden basis-1/2 flex-shrink-0"
             >

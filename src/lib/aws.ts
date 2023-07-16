@@ -84,6 +84,8 @@ export function createS3Client() {
   });
 }
 
+export const bucketPrefix = "webp-photography/";
+
 export async function getS3Folders(): Promise<string[]> {
   const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
@@ -103,7 +105,7 @@ export async function getS3Folders(): Promise<string[]> {
     new ListObjectsV2Command({
       Bucket: bucketName,
       Delimiter: "/",
-      Prefix: "photography/",
+      Prefix: `${bucketPrefix}`,
     })
   );
 
@@ -141,7 +143,7 @@ export const getDataFromS3 = async ({
   const data = await s3Client.send(
     new ListObjectsV2Command({
       Bucket: bucketName,
-      Prefix: prefix ? `photography/${prefix}/` : "photography/",
+      Prefix: prefix ? `${bucketPrefix}${prefix}/` : `${bucketPrefix}`,
     })
   );
 
@@ -160,7 +162,7 @@ export const getDataFromS3 = async ({
     }).map(async (file) => {
       const result = await getObjectMetadata(bucketName, file.Key || "");
       return {
-        name: (file.Key as string).replace("photography/", ""),
+        name: (file.Key as string).replace(`${bucketPrefix}`, ""),
         width: parseInt(result.Metadata?.width || "100"),
         height: parseInt(result.Metadata?.height || "100"),
       };

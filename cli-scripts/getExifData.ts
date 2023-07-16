@@ -1,16 +1,8 @@
-import { readFileSync } from "fs";
-import ExifReader from "exifreader";
+import sizeOf from "image-size";
 
-export async function getExifData(imagePath: string) {
+export async function getWidthAndHeight(imagePath: string) {
   try {
-    const fileBuffer = readFileSync(imagePath);
-    const tags = ExifReader.load(fileBuffer, { expanded: true });
-
-    // const tags = await exiftool.read(imagePath);
-    const width = tags.file?.["Image Width"]?.value;
-    const height = tags.file?.["Image Height"]?.value;
-
-    if (!width || !height) throw new Error("No width or height found on image");
+    const { width, height } = sizeOf(imagePath);
 
     return { width, height, imagePath };
   } catch (err) {

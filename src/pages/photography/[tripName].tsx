@@ -1,17 +1,16 @@
 import { useState } from "react";
 import { ClickHandler, Photo, PhotoAlbum } from "react-photo-album";
-import { getS3Folders, getS3ImageData } from "src/lib/aws";
-import { ImageProps } from "src/utils/types";
 import { NextJsImage } from "src/components/image-gallery/customRenderers";
+import { useWindowSize } from "src/hooks/useWindowSize";
+import { bucketPrefix, getS3Folders, getS3ImageData } from "src/lib/aws";
+import { mapToImageProps } from "src/lib/mapToImageProps";
+import { ImageProps } from "src/utils/types";
 import Lightbox from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
-import Zoom from "yet-another-react-lightbox/plugins/zoom";
-import Layout from "../../components/layout";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
-import { useWindowSize } from "src/hooks/useWindowSize";
-import { getPlaiceholder } from "plaiceholder";
-import { mapToImageProps } from "src/lib/mapToImageProps";
+import Layout from "../../components/layout";
 
 export default function ImageGallery({
   images,
@@ -40,7 +39,7 @@ export default function ImageGallery({
     <Layout
       title="Photography"
       description="A page with all my photography."
-      url={`/photography/${tripName}`}
+      url={`/${bucketPrefix}${tripName}`}
       fullScreen={true}
     >
       <PhotoAlbum
@@ -98,10 +97,7 @@ export async function getStaticProps({ params }: StaticProps) {
     prefix: tripName,
   });
 
-  const images: ImageProps[] = await mapToImageProps(
-    awsImageData.slice(0, 50),
-    tripName
-  );
+  const images: ImageProps[] = await mapToImageProps(awsImageData, tripName);
 
   return { props: { images, tripName: params.tripName } };
 }

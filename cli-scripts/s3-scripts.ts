@@ -1,15 +1,15 @@
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { config } from "dotenv";
+import { readFileSync } from "fs";
+import { getType } from "mime";
+import path from "path";
+import { createS3Client } from "src/lib/aws";
 import {
   bucketPrefix,
   getAllStorageObjectKeys,
   getObjectMetadata,
 } from "../src/lib/aws.js";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { createS3Client } from "src/lib/aws";
-import { readFileSync } from "fs";
-import { getType } from "mime";
-import { config } from "dotenv";
-import path from "path";
-import { getWidthAndHeight } from "./getExifData.js";
+import { getWidthAndHeight } from "./getWidthAndHeight.js";
 config({ path: "../.env" });
 
 export function createKey(prefix: string, filepath: string) {
@@ -61,13 +61,12 @@ export async function readS3MetadataForAllStorageObjects() {
 export async function uploadSingleFileToS3(filepath: string, tripName: string) {
   const key = createKey(`${bucketPrefix}${tripName}`, filepath);
 
-  const exifData = await getWidthAndHeight(filepath);
-  console.log(key, exifData.width, exifData.height);
+  const data = await getWidthAndHeight(filepath);
 
   try {
     await uploadWithMetadata(filepath, key, {
-      width: String(exifData.width),
-      height: String(exifData.height),
+      width: String(data?.width),
+      height: String(data?.height),
     });
   } catch (error) {
     console.error(error);

@@ -6,6 +6,6 @@ export async function getWidthAndHeight(imagePath: string) {
 
     return { width, height, imagePath };
   } catch (err) {
-    throw new Error(`Error processing ${imagePath}: ${err}`);
+    console.error(`Error processing ${imagePath}: ${err}`);
   }
 }

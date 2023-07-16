@@ -22,7 +22,7 @@ export default function Photography({
         {trips.map(({ tripName, image }) => {
           return (
             <Link
-              href={`/${bucketPrefix}${tripName}`}
+              href={`/photography/${tripName}`}
               key={tripName}
               className="relative w-1/2 aspect-square overflow-hidden basis-1/2 flex-shrink-0"
             >

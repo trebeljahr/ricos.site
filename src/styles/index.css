@@ -337,7 +337,6 @@ pre,
 table,
 fieldset,
 hr,
-button,
 input {
   font-weight: normal;
   font-family: "Noto Sans", Helvetica, sans-serif;
@@ -484,11 +483,19 @@ code {
 .main-section {
   width: 95%;
   margin: auto;
+  padding-top: 2rem;
 }
 
-.main-text {
-  margin-top: 1rem;
+.main-section > :nth-child(1).Podcastnote-link-card {
+  margin-top: -30px;
 }
+
+.main-section > h2:nth-child(1),
+.main-section > h3:nth-child(1),
+.main-section > h4:nth-child(1) {
+  margin-top: -2rem;
+}
+
 
 .main-text > * {
   max-width: 100%;
@@ -727,6 +734,7 @@ li {
   }
 
   .main-section {
+    padding-top: 2rem;
     width: var(--main-width);
   }
 

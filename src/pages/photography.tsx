@@ -5,7 +5,7 @@ import { mapToImageProps } from "src/lib/mapToImageProps";
 import { ImageProps } from "src/utils/types";
 import Layout from "../components/layout";
 
-const tripNameMap: Record<string, string> = {
+export const tripNameMap: Record<string, string> = {
   "2020-alps": "Traumpfad",
   "2022-tenerife": "Tenerife",
   "2022-india": "North India",
@@ -27,13 +27,13 @@ export default function Photography({
       url="photography"
       fullScreen={true}
     >
-      {/* <h1>Photography</h1> */}
+      <h1 style={{ marginTop: "-2rem", marginBottom: "1rem" }}>Photography</h1>
       {/* <p>
         A great attitude becomes a great day which becomes a great month which
         becomes a great year which becomes a great life.
       </p>
       <p>– Mandy Hale</p> */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-20">
         {trips.map(({ tripName, image }) => {
           return (
             <Link

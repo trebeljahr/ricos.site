@@ -11,6 +11,8 @@ import "yet-another-react-lightbox/plugins/thumbnails.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
 import Layout from "../../components/layout";
+import { ToTopButton } from "src/components/ToTopButton";
+import { tripNameMap } from "../photography";
 
 export default function ImageGallery({
   images,
@@ -42,35 +44,41 @@ export default function ImageGallery({
       url={`/${bucketPrefix}${tripName}`}
       fullScreen={true}
     >
-      <PhotoAlbum
-        photos={images}
-        targetRowHeight={height * 0.6}
-        layout="rows"
-        onClick={openModal}
-        renderPhoto={NextJsImage}
-        defaultContainerWidth={1200}
-        sizes={{
-          size: "calc(100vw - 40px)",
-        }}
-      />
-      <Lightbox
-        open={isModalOpen}
-        close={handleClose}
-        slides={images}
-        index={currentImageIndex}
-        plugins={[Thumbnails, Zoom]}
-        thumbnails={{
-          position: "bottom",
-          width: 100,
-          height: 100,
-          border: 0,
-          borderRadius: 4,
-          padding: 0,
-          gap: 10,
-          imageFit: "cover",
-          vignette: true,
-        }}
-      />
+      <div className="mb-20">
+        <h1 style={{ marginTop: "-2rem", marginBottom: "1rem" }}>
+          {tripNameMap[tripName]}
+        </h1>
+        <PhotoAlbum
+          photos={images}
+          targetRowHeight={height * 0.6}
+          layout="rows"
+          onClick={openModal}
+          renderPhoto={NextJsImage}
+          defaultContainerWidth={1200}
+          sizes={{
+            size: "calc(100vw - 40px)",
+          }}
+        />
+        <Lightbox
+          open={isModalOpen}
+          close={handleClose}
+          slides={images}
+          index={currentImageIndex}
+          plugins={[Thumbnails, Zoom]}
+          thumbnails={{
+            position: "bottom",
+            width: 100,
+            height: 100,
+            border: 0,
+            borderRadius: 4,
+            padding: 0,
+            gap: 10,
+            imageFit: "cover",
+            vignette: true,
+          }}
+        />
+        <ToTopButton />
+      </div>
     </Layout>
   );
 }

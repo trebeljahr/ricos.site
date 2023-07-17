@@ -7,7 +7,7 @@ import Image from "next/image";
 
 const navigation = ["posts", "newsletters", "photography"];
 const resources = ["needlestack", "booknotes", "podcastnotes", "quotes"];
-const about = ["principles", "now"];
+const about = ["principles", "1-month-projects"];
 
 function combine(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -87,7 +87,7 @@ function DesktopVersion({ open, isActive }: NavbarProps) {
                 href={"/" + item}
                 className={combine(
                   isActive(item)
-                    ? "bg-gray-900 text-white hover:text-white cursor-default"
+                    ? "bg-gray-900 text-white hover:text-white"
                     : "text-gray-300 hover:bg-gray-700 hover:text-white",
                   "rounded-md px-3 py-2 text-sm font-medium"
                 )}
@@ -138,9 +138,18 @@ type MenuProps = {
 };
 
 function DesktopMenu({ links, text }: MenuProps) {
+  const router = useRouter();
+  const isActive = links.some((link) => router.asPath.startsWith("/" + link));
   return (
     <Menu as="div" className="block relative ml-3">
-      <Menu.Button className="block text-gray-300 hover:bg-gray-700 hover:text-white   rounded-md px-3 py-2 text-sm font-medium">
+      <Menu.Button
+        className={combine(
+          isActive
+            ? "bg-gray-900 text-white"
+            : "text-gray-300 hover:bg-gray-700 hover:text-white",
+          "block rounded-md px-3 py-2 text-base font-medium"
+        )}
+      >
         {text}
       </Menu.Button>
       <Transition
@@ -163,10 +172,19 @@ function DesktopMenu({ links, text }: MenuProps) {
 }
 
 function MobileMenu({ links, text }: MenuProps) {
+  const router = useRouter();
+  const isActive = links.some((link) => router.asPath.startsWith("/" + link));
   return (
-    <Menu as="div" className="relative ml-3">
+    <Menu as="div" className="relative">
       <Disclosure.Button as="div">
-        <Menu.Button className="block text-gray-300 hover:bg-gray-700 hover:text-white rounded-md py-2 text-base font-medium">
+        <Menu.Button
+          className={combine(
+            isActive
+              ? "bg-gray-900 text-white"
+              : "text-gray-300 hover:bg-gray-700 hover:text-white",
+            "block w-full text-start rounded-md px-3 py-2 text-base font-medium"
+          )}
+        >
           {text}
         </Menu.Button>
         <Transition

@@ -3,7 +3,7 @@ import { RenderPhotoProps } from "react-photo-album";
 import { ImageProps } from "src/utils/types";
 
 export function NextJsImage({
-  photo: { src },
+  photo: { src, index },
   imageProps: { alt, title, sizes, className, onClick },
   wrapperStyle,
 }: RenderPhotoProps<ImageProps>) {
@@ -14,6 +14,7 @@ export function NextJsImage({
       <Image
         src={src}
         fill
+        priority={index < 6}
         {...{
           alt,
           title,

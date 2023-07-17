@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.215.0",
+    "@headlessui/react": "^1.7.15",
+    "@heroicons/react": "^2.0.18",
     "@mdx-js/loader": "^2.1.5",
     "@mdx-js/react": "^2.1.5",
     "@next/mdx": "^12.3.1",
@@ -20,6 +22,8 @@
     "contentlayer": "^0.3.2",
     "date-fns": "2.21.3",
     "delaunator": "^5.0.0",
+    "flowbite": "^1.7.0",
+    "flowbite-react": "^0.4.11",
     "form-data": "^4.0.0",
     "gray-matter": "4.0.3",
     "handlebars": "^4.7.7",
@@ -53,6 +57,7 @@
     "remark-toc": "^8.0.1",
     "sharp": "^0.32.1",
     "simple-react-canvas-component": "^0.1.14",
+    "tailgrids": "^2.0.1",
     "three": "^0.146.0",
     "twitter-api-v2": "^1.12.7",
     "yet-another-react-lightbox": "^3.9.0"

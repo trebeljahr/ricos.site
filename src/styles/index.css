@@ -274,7 +274,7 @@ blockquote {
   border-left: 10px solid #ccc;
   margin: 1.5em 0px;
   padding: 0.5em 20px;
-  quotes: "\201C""\201D";
+  quotes: "\201C\201D";
 }
 
 blockquote + .quote-author {
@@ -796,4 +796,4 @@ canvas {
   :root {
     --main-width: 780px;
   }
-}
+} 

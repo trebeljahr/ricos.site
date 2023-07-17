@@ -1,7 +1,9 @@
 // import Footer from "./footer";
+import { FloatUi } from "./floatui-navbar";
 import Meta from "./meta";
-import { Navbar } from "./navbar";
+import { NewNavbar } from "./navbar";
 import { OpenGraph } from "./OpenGraph";
+import { TailwindNavbar } from "./tailwindui-navbar";
 
 type Props = {
   children: React.ReactNode;
@@ -32,9 +34,15 @@ const Layout = ({
         image={image}
         imageAlt={imageAlt}
       />
-      <Navbar />
+      {/* <NewNavbar /> */}
+      {/* <FloatUi /> */}
+      {/* <Navbar /> */}
+      <TailwindNavbar />
+
       <main
-        className={fullScreen ? "w-100 p-1 md:pr-10 md:pl-10" : "main-page"}
+        className={
+          fullScreen ? "w-100 p-1 mt-10 md:pr-10 md:pl-10" : "main-page"
+        }
       >
         {children}
       </main>

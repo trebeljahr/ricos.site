@@ -1,14 +1,9 @@
+import { Avatar, Dropdown, Navbar } from "flowbite-react";
 import Link from "next/link";
-import Intro from "./intro";
 import { useRouter } from "next/router";
-import {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useWindowSize } from "../hooks/useWindowSize";
+import Intro from "./intro";
 
 type NavlinksProps = {
   expanded: boolean;
@@ -34,6 +29,7 @@ export function Navlinks({ expanded, setExpanded }: NavlinksProps) {
       setExpanded(false);
     }
   };
+
   const SingleNavLink = ({ to }: { to: string }) => {
     const link = `/${to}`;
     return (
@@ -55,16 +51,18 @@ export function Navlinks({ expanded, setExpanded }: NavlinksProps) {
   return (
     <>
       <SingleNavLink to="posts" />
+      <SingleNavLink to="newsletter" />
       <SingleNavLink to="booknotes" />
       <SingleNavLink to="needlestack" />
       <SingleNavLink to="principles" />
       <SingleNavLink to="quotes" />
+      <SingleNavLink to="photography" />
       <SingleNavLink to="now" />
     </>
   );
 }
 
-export function Navbar() {
+export function CustomNavbar() {
   const { width } = useWindowSize();
   const [expanded, setExpanded] = useState(width ? width > 1030 : true);
   useEffect(() => {
@@ -98,3 +96,58 @@ export function Navbar() {
     </>
   );
 }
+
+function SingleNavLink({ to: link }: { to: string }) {
+  const router = useRouter();
+
+  const isActive = () => {
+    return router.asPath.startsWith(link);
+  };
+
+  return (
+    <Navbar.Link href={`/${link}`} active={isActive()}>
+      {link}
+    </Navbar.Link>
+  );
+}
+
+export const NewNavbar = () => {
+  return (
+    <Navbar fluid rounded>
+      <Navbar.Brand href="/">
+        <img
+          alt="Flowbite React Logo"
+          className="mr-3 h-6 sm:h-9"
+          src="/favicon/apple-touch-icon.png"
+        />
+        <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+          trebeljahr
+        </span>
+      </Navbar.Brand>
+      <Navbar.Toggle />
+
+      <Navbar.Collapse>
+        <Dropdown inline label={"content"}>
+          {["posts", "newsletter", "booknotes", "quotes", "podcastnotes"].map(
+            (link) => (
+              <Dropdown.Item>
+                <SingleNavLink to={link} />
+              </Dropdown.Item>
+            )
+          )}
+
+          <Dropdown.Item>
+            <SingleNavLink to="needlestack" />
+          </Dropdown.Item>
+
+          <Dropdown.Item>
+            <SingleNavLink to="principles" />
+          </Dropdown.Item>
+        </Dropdown>
+
+        <SingleNavLink to="photography" />
+        <SingleNavLink to="now" />
+      </Navbar.Collapse>
+    </Navbar>
+  );
+};

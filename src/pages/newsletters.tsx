@@ -1,8 +1,8 @@
-import Layout from "../components/layout";
+import { allNewsletters } from "@contentlayer/generated";
 import Link from "next/link";
 import { ToTopButton } from "../components/ToTopButton";
+import Layout from "../components/layout";
 import { NewsletterForm } from "../components/newsletter-signup";
-import { allNewsletters } from "@contentlayer/generated";
 
 type NewsletterData = {
   slug: string;

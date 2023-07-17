@@ -98,7 +98,7 @@ export default function ImageGallery({
     >
       <div className="mb-20">
         <BreadCrumbs tripName={tripName} />
-        <h1 style={{ marginTop: "-1rem", marginBottom: "1.2rem" }}>
+        <h1 style={{ marginTop: "-2rem", marginBottom: "1.2rem" }}>
           {tripNameMap[tripName]}
         </h1>
         <PhotoAlbum

@@ -3,6 +3,7 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Image from "next/image";
 
 const navigation = ["posts", "newsletters", "photography"];
 const resources = ["needlestack", "booknotes", "podcastnotes", "quotes"];
@@ -69,10 +70,12 @@ function DesktopVersion({ open, isActive }: NavbarProps) {
       </div>
       <div className="flex flex-1 items-stretch justify-end lg:items-center lg:justify-between ">
         <Link href="/" className="flex flex-shrink-0 items-center">
-          <img
+          <Image
             className="h-8 w-auto"
             src="/favicon/apple-touch-icon.png"
             alt="trebeljahr"
+            width={32}
+            height={32}
           />
           <span className="text-white ml-1">trebeljahr</span>
         </Link>

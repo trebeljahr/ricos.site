@@ -1,7 +1,4 @@
-// import Footer from "./footer";
-import { FloatUi } from "./floatui-navbar";
 import Meta from "./meta";
-import { NewNavbar } from "./navbar";
 import { OpenGraph } from "./OpenGraph";
 import { TailwindNavbar } from "./tailwindui-navbar";
 
@@ -34,9 +31,6 @@ const Layout = ({
         image={image}
         imageAlt={imageAlt}
       />
-      {/* <NewNavbar /> */}
-      {/* <FloatUi /> */}
-      {/* <Navbar /> */}
       <TailwindNavbar />
 
       <main

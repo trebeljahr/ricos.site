@@ -6,7 +6,7 @@ const nextConfig = {
   },
   staticPageGenerationTimeout: 600,
   experimental: {
-    esmExternals: false,
+    // esmExternals: false,
   },
 };
 

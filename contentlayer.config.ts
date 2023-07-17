@@ -204,6 +204,7 @@ import remarkToc from "remark-toc";
 
 export default makeSource({
   contentDirPath: "src/content",
+  contentDirExclude: ["pages/quotes.json"],
   documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote],
   mdx: {
     remarkPlugins: [

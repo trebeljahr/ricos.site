@@ -1,17 +1,16 @@
-import { describe, expect, it } from "vitest";
-import { allDocuments, DocumentTypes } from "@contentlayer/generated";
-import { unified } from "unified";
-import { visit } from "unist-util-visit";
-import remarkMath, { Root } from "remark-math";
+import { DocumentTypes, allDocuments } from "@contentlayer/generated";
 import { kebab } from "case";
+import { existsSync } from "fs";
+import remarkFrontmatter from "remark-frontmatter";
+import remarkGfm from "remark-gfm";
+import remarkMath, { Root } from "remark-math";
+import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkParse from "remark-parse";
 import remarkStringify from "remark-stringify";
-import remarkFrontmatter from "remark-frontmatter";
-import remarkMdxFrontmatter from "remark-mdx-frontmatter";
-import remarkGfm from "remark-gfm";
 import remarkToc from "remark-toc";
-import { existsSync } from "fs";
-import fetch from "node-fetch";
+import { unified } from "unified";
+import { visit } from "unist-util-visit";
+import { describe, expect, it } from "vitest";
 
 async function generateLinksAndAnchors(document: DocumentTypes) {
   const links = new Set<string>();

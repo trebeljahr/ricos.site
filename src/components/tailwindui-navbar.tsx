@@ -13,16 +13,25 @@ function combine(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-function SingleMenuItem({ link }: { link: string }) {
+type SingleMenuItemProps = {
+  link: string;
+  closeNav: () => void;
+};
+
+function SingleMenuItem({ link, closeNav }: SingleMenuItemProps) {
   return (
     <Menu.Item>
-      {({ active }) => (
+      {({ active, close }) => (
         <Link
           href={`/${link}`}
           className={combine(
             active ? "bg-gray-100" : "",
             "block px-4 py-2 link-sm text-gray-700"
           )}
+          onClick={() => {
+            closeNav();
+            close();
+          }}
         >
           {link}
         </Link>
@@ -40,10 +49,10 @@ export function TailwindNavbar() {
 
   return (
     <Disclosure as="nav" className="bg-gray-800">
-      {({ open }) => (
+      {({ open, close }) => (
         <>
-          <DesktopVersion {...{ isActive, open }} />
-          <MobileVersion {...{ isActive, open }} />
+          <DesktopVersion {...{ isActive, open, close }} />
+          <MobileVersion {...{ isActive, open, close }} />
         </>
       )}
     </Disclosure>
@@ -52,10 +61,11 @@ export function TailwindNavbar() {
 
 type NavbarProps = {
   open: boolean;
+  close: () => void;
   isActive: (link: string) => boolean;
 };
 
-function DesktopVersion({ open, isActive }: NavbarProps) {
+function DesktopVersion({ open, isActive, close }: NavbarProps) {
   return (
     <div className="mx-auto max-w-7xl px-2 md :px-6 lg:px-8 relative flex h-16 items-center justify-between">
       <div className="absolute ml-2 inset-y-0 left-0 flex items-center lg:hidden">
@@ -96,8 +106,8 @@ function DesktopVersion({ open, isActive }: NavbarProps) {
                 {item}
               </Link>
             ))}
-            <DesktopMenu links={resources} text="resources" />
-            <DesktopMenu links={about} text="about" />
+            <DesktopMenu links={resources} text="resources" closeNav={close} />
+            <DesktopMenu links={about} text="about" closeNav={close} />
           </div>
         </div>
       </div>
@@ -105,7 +115,7 @@ function DesktopVersion({ open, isActive }: NavbarProps) {
   );
 }
 
-function MobileVersion({ isActive }: NavbarProps) {
+function MobileVersion({ isActive, close }: NavbarProps) {
   return (
     <Disclosure.Panel className="lg:hidden">
       <div className="space-y-1 px-2 pb-3 pt-2">
@@ -125,8 +135,8 @@ function MobileVersion({ isActive }: NavbarProps) {
           </Link>
         ))}
 
-        <MobileMenu links={resources} text="resources" />
-        <MobileMenu links={about} text="about" />
+        <MobileMenu links={resources} text="resources" closeNav={close} />
+        <MobileMenu links={about} text="about" closeNav={close} />
       </div>
     </Disclosure.Panel>
   );
@@ -135,9 +145,10 @@ function MobileVersion({ isActive }: NavbarProps) {
 type MenuProps = {
   links: string[];
   text: string;
+  closeNav: () => void;
 };
 
-function DesktopMenu({ links, text }: MenuProps) {
+function DesktopMenu({ links, text, closeNav }: MenuProps) {
   const router = useRouter();
   const isActive = links.some((link) => router.asPath.startsWith("/" + link));
   return (
@@ -163,7 +174,7 @@ function DesktopMenu({ links, text }: MenuProps) {
       >
         <Menu.Items className="absolute right-0 z-20 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           {links.map((item) => (
-            <SingleMenuItem key={item} link={item} />
+            <SingleMenuItem key={item} link={item} closeNav={closeNav} />
           ))}
         </Menu.Items>
       </Transition>
@@ -171,7 +182,7 @@ function DesktopMenu({ links, text }: MenuProps) {
   );
 }
 
-function MobileMenu({ links, text }: MenuProps) {
+function MobileMenu({ links, text, closeNav }: MenuProps) {
   const router = useRouter();
   const isActive = links.some((link) => router.asPath.startsWith("/" + link));
   return (
@@ -198,7 +209,7 @@ function MobileMenu({ links, text }: MenuProps) {
         >
           <Menu.Items className="absolute left-0 z-20 mt-2 w-48 origin-top-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
             {links.map((item) => (
-              <SingleMenuItem key={item} link={item} />
+              <SingleMenuItem key={item} link={item} closeNav={closeNav} />
             ))}
           </Menu.Items>
         </Transition>

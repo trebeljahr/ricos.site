@@ -58,7 +58,7 @@ type NavbarProps = {
 function DesktopVersion({ open, isActive }: NavbarProps) {
   return (
     <div className="mx-auto max-w-7xl px-2 md :px-6 lg:px-8 relative flex h-16 items-center justify-between">
-      <div className="absolute inset-y-0 left-0 flex items-center lg:hidden">
+      <div className="absolute ml-2 inset-y-0 left-0 flex items-center lg:hidden">
         <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
           <span className="sr-only">Open main menu</span>
           {open ? (
@@ -68,7 +68,7 @@ function DesktopVersion({ open, isActive }: NavbarProps) {
           )}
         </Disclosure.Button>
       </div>
-      <div className="flex flex-1 items-stretch justify-end lg:items-center lg:justify-between ">
+      <div className="flex flex-1 mr-1 items-stretch justify-end lg:mr-0 lg:items-center lg:justify-between ">
         <Link href="/" className="flex flex-shrink-0 items-center">
           <Image
             className="h-8 w-auto"

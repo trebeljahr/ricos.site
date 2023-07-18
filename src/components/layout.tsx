@@ -35,7 +35,7 @@ const Layout = ({
 
       <main
         className={
-          fullScreen ? "w-100 p-1 mt-10 md:pr-10 md:pl-10" : "main-page"
+          fullScreen ? "w-100 pr-3 pl-3 mt-10 md:pr-10 md:pl-10" : "main-page"
         }
       >
         {children}

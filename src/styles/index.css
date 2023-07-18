@@ -16,14 +16,6 @@
   font-size: 16px;
 }
 
-html::-webkit-scrollbar {
-  display: none;
-}
-
-html {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
 
 * {
   box-sizing: border-box;
@@ -274,7 +266,7 @@ blockquote {
   border-left: 10px solid #ccc;
   margin: 1.5em 0px;
   padding: 0.5em 20px;
-  quotes: "\201C""\201D";
+  quotes: "\201C\201D";
 }
 
 blockquote + .quote-author {
@@ -337,7 +329,6 @@ pre,
 table,
 fieldset,
 hr,
-button,
 input {
   font-weight: normal;
   font-family: "Noto Sans", Helvetica, sans-serif;
@@ -484,11 +475,20 @@ code {
 .main-section {
   width: 95%;
   margin: auto;
+  padding-top: 2rem;
 }
 
-.main-text {
-  margin-top: 1rem;
+.main-section > :nth-child(1).Podcastnote-link-card {
+  margin-top: -30px;
 }
+
+.main-section > h1:nth-child(1),
+.main-section > h2:nth-child(1),
+.main-section > h3:nth-child(1),
+.main-section > h4:nth-child(1) {
+  margin-top: -2rem;
+}
+
 
 .main-text > * {
   max-width: 100%;
@@ -727,6 +727,7 @@ li {
   }
 
   .main-section {
+    padding-top: 2rem;
     width: var(--main-width);
   }
 
@@ -796,4 +797,4 @@ canvas {
   :root {
     --main-width: 780px;
   }
-}
+} 

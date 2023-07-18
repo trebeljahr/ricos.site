@@ -1,4 +1,4 @@
 import { expose } from "threads/worker";
-import { getExifData } from "./getExifData";
+import { getWidthAndHeight } from "./getWidthAndHeight";
 
-expose(getExifData);
+expose(getWidthAndHeight);

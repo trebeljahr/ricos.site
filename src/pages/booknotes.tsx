@@ -43,8 +43,8 @@ export default function Books({ booknotes }: Props) {
     >
       <article>
         <section className="main-section">
-          <Search filters={filters} setFilters={setFilters} />
           <h1>Booknotes</h1>
+          <Search filters={filters} setFilters={setFilters} />
           <p>Amount: {filteredBooks.length}</p>
         </section>
         <section className="main-section allBooknotes">

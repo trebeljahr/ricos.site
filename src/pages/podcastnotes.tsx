@@ -32,8 +32,8 @@ export default function Podcastnotes() {
     >
       <article>
         <section className="main-section">
-          <Search filters={filters} setFilters={setFilters} />
           <h1>Podcastnotes</h1>
+          <Search filters={filters} setFilters={setFilters} />
           <p>Amount: {filteredPodcastnotes.length}</p>
         </section>
         <section className="main-section allPodcastnotes">

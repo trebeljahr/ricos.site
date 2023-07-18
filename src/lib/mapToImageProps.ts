@@ -1,5 +1,4 @@
-import { getPlaiceholder } from "plaiceholder";
-import { ImageDataFromAWS } from "./aws";
+import { ImageDataFromAWS, bucketPrefix } from "./aws";
 
 const imageSizes = [
   16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048,
@@ -16,16 +15,13 @@ export async function mapToImageProps(
 ) {
   return await Promise.all(
     images.map(async ({ name, width, height }, index) => {
-      const src = `https://${process.env.NEXT_PUBLIC_STATIC_FILE_URL}/photography/${name}`;
-      const { base64 } = await getPlaiceholder(src);
-
+      const src = `https://${process.env.NEXT_PUBLIC_STATIC_FILE_URL}/${bucketPrefix}${name}`;
       const image = {
         width,
         height,
         index,
         tripName,
         name,
-        blurDataURL: base64,
         src,
         srcSet: imageSizes
           .filter((size) => size <= width)

@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { useState } from "react";
 import { ClickHandler, Photo, PhotoAlbum } from "react-photo-album";
+import { ToTopButton } from "src/components/ToTopButton";
 import { NextJsImage } from "src/components/image-gallery/customRenderers";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import { bucketPrefix, getS3Folders, getS3ImageData } from "src/lib/aws";
@@ -11,11 +13,9 @@ import "yet-another-react-lightbox/plugins/thumbnails.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
 import Layout from "../../components/layout";
-import { ToTopButton } from "src/components/ToTopButton";
 import { tripNameMap } from "../photography";
-import Link from "next/link";
 
-export function BreadCrumbs({ tripName }: { tripName: string }) {
+export function BreadCrumbs() {
   return (
     <nav className="flex" aria-label="Breadcrumb">
       <ol className="inline-flex items-center space-x-1 md:space-x-3">
@@ -47,9 +47,9 @@ export function BreadCrumbs({ tripName }: { tripName: string }) {
             >
               <path
                 stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
                 d="m1 9 4-4-4-4"
               />
             </svg>
@@ -97,7 +97,7 @@ export default function ImageGallery({
       fullScreen={true}
     >
       <div className="mb-20">
-        <BreadCrumbs tripName={tripName} />
+        <BreadCrumbs />
         <h1 style={{ marginTop: "-2rem", marginBottom: "1.2rem" }}>
           {tripNameMap[tripName]}
         </h1>

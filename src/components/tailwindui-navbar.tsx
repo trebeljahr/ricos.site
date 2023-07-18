@@ -7,7 +7,7 @@ import Image from "next/image";
 
 const navigation = ["posts", "newsletters", "photography"];
 const resources = ["needlestack", "booknotes", "podcastnotes", "quotes"];
-const about = ["principles", "1-month-projects"];
+const about = ["now", "principles", "1-month-projects"];
 
 function combine(...classes: string[]) {
   return classes.filter(Boolean).join(" ");

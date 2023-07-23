@@ -1,6 +1,11 @@
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  BellIcon,
+  ChevronDownIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
@@ -161,7 +166,10 @@ function DesktopMenu({ links, text, closeNav }: MenuProps) {
           "block rounded-md px-3 py-2 text-sm font-medium"
         )}
       >
-        {text}
+        <span className="flex items-center justify-center">
+          <span>{text}</span>
+          <ChevronDownIcon className="h-3 w-3 text-blue-500 ml-1" />
+        </span>
       </Menu.Button>
       <Transition
         as={Fragment}

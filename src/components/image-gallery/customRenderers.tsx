@@ -7,7 +7,6 @@ export function NextJsImage({
   imageProps: { alt, title, sizes, className, onClick },
   wrapperStyle,
 }: RenderPhotoProps<ImageProps>) {
-  console.log("New Code", sizes);
   return (
     <div
       style={{ ...wrapperStyle, position: "relative", background: "#f1f3f5" }}

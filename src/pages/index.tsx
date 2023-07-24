@@ -26,11 +26,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
           <p>
             Here is where I collect thoughts, books, quotes, ideas, traveling
             stories, photography, side projects and links to my favorite places
-            in the internet. For now I still have an old - second site - over at{" "}
-            <ExternalLink href="https://ricotrebeljahr.com">
-              ricotrebeljahr.com
-            </ExternalLink>{" "}
-            but the content will eventually also move over here.
+            in the internet.
           </p>
           <TrySomeOfThese />
           <p>

@@ -109,7 +109,11 @@ export default function ImageGallery({
           renderPhoto={NextJsImage}
           defaultContainerWidth={1200}
           sizes={{
-            size: "calc(100vw - 40px)",
+            size: "calc(100vw - 24px)",
+            sizes: [
+              { viewport: "(max-width: 520px)", size: "calc(80vw - 105px)" },
+              { viewport: "(max-width: 1150px)", size: "calc(80vw - 105px)" },
+            ],
           }}
         />
         <Lightbox

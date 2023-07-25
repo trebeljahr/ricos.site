@@ -20,6 +20,6 @@
       "components/collision-detection": ["./src/components/collision-detection"]
     }
   },
-  "exclude": ["node_modules", "scripts"],
+  "exclude": ["node_modules"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".contentlayer/generated"]
 }

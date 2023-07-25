@@ -8,7 +8,7 @@ import {
   bucketPrefix,
   getAllStorageObjectKeys,
   getObjectMetadata,
-} from "../src/lib/aws.js";
+} from "../../lib/aws.js";
 import { getWidthAndHeight } from "./getWidthAndHeight.js";
 config({ path: "../.env" });
 

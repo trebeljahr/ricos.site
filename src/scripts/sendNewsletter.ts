@@ -3,7 +3,6 @@ import Handlebars from "handlebars";
 import path from "path";
 import { unified } from "unified";
 import { newsletterListMail, sendEmail } from "./mailgun.js";
-
 import matter from "gray-matter";
 import rehypePresetMinify from "rehype-preset-minify";
 import rehypeRewrite from "rehype-rewrite";
@@ -25,7 +24,6 @@ async function main() {
   const emailHandlebarsFile = await readFile(
     path.join(
       process.cwd(),
-      "..",
       "src",
       "content",
       "email-templates",
@@ -37,7 +35,6 @@ async function main() {
   const mdFileRaw = await readFile(
     path.join(
       process.cwd(),
-      "..",
       "src",
       "content",
       "newsletters",

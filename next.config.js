@@ -4,6 +4,15 @@ const nextConfig = {
   images: {
     domains: [process.env.NEXT_PUBLIC_STATIC_FILE_URL],
   },
+  webpack: (config) => {
+    config.infrastructureLogging = {
+      level: "error",
+    };
+
+    return config;
+  },
 };
 
-export default withContentlayer(nextConfig);
+const configWithContentlayer = withContentlayer(nextConfig);
+
+export default configWithContentlayer;

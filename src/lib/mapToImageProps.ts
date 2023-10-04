@@ -2,11 +2,11 @@ import { ImageDataFromAWS, bucketPrefix } from "./aws";
 
 const imageSizes = [
   16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048,
-  3840,
+  3840, 4000, 6000,
 ];
 
-function nextImageUrl(src: string, size: number) {
-  return `/_next/image?url=${encodeURIComponent(src)}&w=${size}&q=75`;
+function nextImageUrl(src: string, width: number) {
+  return `https://d2mpovkbhuoejh.cloudfront.net${src}?format=auto&width=${width}`;
 }
 
 export async function mapToImageProps(
@@ -15,7 +15,7 @@ export async function mapToImageProps(
 ) {
   return await Promise.all(
     images.map(async ({ name, width, height }, index) => {
-      const src = `/${bucketPrefix}${name}`; //`https://${process.env.NEXT_PUBLIC_STATIC_FILE_URL}/${bucketPrefix}${name}`;
+      const src = `/${bucketPrefix}${name}`;
       const image = {
         width,
         height,

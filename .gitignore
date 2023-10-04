@@ -37,3 +37,8 @@
 /**/**/.vercel
 .contentlayer
 .vercel
+
+.terraform*
+terraform*
+
+/public/assets/**

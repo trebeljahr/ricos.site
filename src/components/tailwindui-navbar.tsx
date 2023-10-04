@@ -127,7 +127,7 @@ function MobileVersion({ isActive, close }: NavbarProps) {
         {navigation.map((item) => (
           <Link
             key={item}
-            href={item}
+            href={"/" + item}
             className={combine(
               isActive(item)
                 ? "bg-gray-900 text-white"

@@ -15,7 +15,7 @@ export async function mapToImageProps(
 ) {
   return await Promise.all(
     images.map(async ({ name, width, height }, index) => {
-      const src = `https://${process.env.NEXT_PUBLIC_STATIC_FILE_URL}/${bucketPrefix}${name}`;
+      const src = `/${bucketPrefix}${name}`; //`https://${process.env.NEXT_PUBLIC_STATIC_FILE_URL}/${bucketPrefix}${name}`;
       const image = {
         width,
         height,

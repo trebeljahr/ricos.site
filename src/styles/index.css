@@ -90,7 +90,7 @@ a {
 
 #to-top-button {
   position: fixed;
-  z-index: 100;
+  z-index: 2;
   cursor: pointer;
   font-size: 1.2rem;
   font-size: 1.2rem;

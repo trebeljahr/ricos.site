@@ -37,3 +37,6 @@
 /**/**/.vercel
 .contentlayer
 .vercel
+
+.terraform*
+terraform*

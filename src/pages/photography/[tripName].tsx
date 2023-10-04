@@ -14,6 +14,7 @@ import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
 import Layout from "../../components/layout";
 import { tripNameMap } from "../photography";
+import InfiniteScroll from "react-infinite-scroller";
 
 export function BreadCrumbs() {
   return (
@@ -75,6 +76,7 @@ export default function ImageGallery({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [displayedImages, setDisplayImages] = useState(images.slice(0, 10));
 
   const handleClose = () => {
     setIsModalOpen(false);
@@ -89,6 +91,14 @@ export default function ImageGallery({
 
   if (!width || !height) return null;
 
+  const loadMoreImages = (count = 10) => {
+    const newImages = images.slice(
+      displayedImages.length,
+      displayedImages.length + count
+    );
+    setDisplayImages([...displayedImages, ...newImages]);
+  };
+
   return (
     <Layout
       title="Photography"
@@ -101,39 +111,47 @@ export default function ImageGallery({
         <h1 style={{ marginTop: "-2rem", marginBottom: "1.2rem" }}>
           {tripNameMap[tripName]}
         </h1>
-        <PhotoAlbum
-          photos={images}
-          targetRowHeight={height * 0.6}
-          layout="rows"
-          onClick={openModal}
-          renderPhoto={NextJsImage}
-          defaultContainerWidth={1200}
-          sizes={{
-            size: "calc(100vw - 24px)",
-            sizes: [
-              { viewport: "(max-width: 520px)", size: "calc(80vw - 105px)" },
-              { viewport: "(max-width: 1150px)", size: "calc(80vw - 105px)" },
-            ],
-          }}
-        />
-        <Lightbox
-          open={isModalOpen}
-          close={handleClose}
-          slides={images}
-          index={currentImageIndex}
-          plugins={[Thumbnails, Zoom]}
-          thumbnails={{
-            position: "bottom",
-            width: 100,
-            height: 100,
-            border: 0,
-            borderRadius: 4,
-            padding: 0,
-            gap: 10,
-            imageFit: "cover",
-            vignette: true,
-          }}
-        />
+        <InfiniteScroll
+          pageStart={0}
+          loadMore={loadMoreImages}
+          hasMore={displayedImages.length < images.length}
+          loader={<div className="loader" key="0"></div>}
+        >
+          <PhotoAlbum
+            photos={displayedImages}
+            targetRowHeight={height * 0.6}
+            layout="rows"
+            onClick={openModal}
+            renderPhoto={NextJsImage}
+            defaultContainerWidth={1200}
+            sizes={{
+              size: "calc(100vw - 24px)",
+              sizes: [
+                { viewport: "(max-width: 520px)", size: "calc(80vw - 105px)" },
+                { viewport: "(max-width: 1150px)", size: "calc(80vw - 105px)" },
+              ],
+            }}
+          />
+          <Lightbox
+            open={isModalOpen}
+            close={handleClose}
+            slides={displayedImages}
+            index={currentImageIndex}
+            plugins={[Thumbnails, Zoom]}
+            thumbnails={{
+              position: "bottom",
+              width: 100,
+              height: 100,
+              border: 0,
+              borderRadius: 4,
+              padding: 0,
+              gap: 10,
+              imageFit: "cover",
+              vignette: true,
+            }}
+          />
+        </InfiniteScroll>
+
         <ToTopButton />
       </div>
     </Layout>

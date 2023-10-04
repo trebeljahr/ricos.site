@@ -10,12 +10,21 @@ import {
 } from "react";
 import { ExternalLink } from "./ExternalLink";
 
+export function addBucketUrlToSrc(src: string) {
+  return src.startsWith("/assets/")
+    ? "https://" + process.env.NEXT_PUBLIC_STATIC_FILE_URL + src
+    : src;
+}
+
 export const ImageRenderer = ({
   src,
   alt,
 }: ImgHTMLAttributes<HTMLImageElement>) => {
   if (!src || !alt) return null;
 
+  src = addBucketUrlToSrc(src);
+
+  console.log(src);
   const realAlt = alt?.replace(/ *\/[^)]*\/ */g, "");
 
   const width = alt?.match(/\/width: (.*?)\//)?.pop() || "1";

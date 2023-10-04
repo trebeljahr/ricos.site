@@ -6,6 +6,7 @@ import { NewsletterForm } from "../../components/newsletter-signup";
 import { PostBodyWithoutExcerpt } from "../../components/post-body";
 import PostHeader from "../../components/post-header";
 import { ToTopButton } from "../../components/ToTopButton";
+import { addBucketUrlToSrc } from "src/components/CustomRenderers";
 
 const NextAndPrevArrows = ({
   nextPost,
@@ -65,7 +66,7 @@ const Newsletter = ({
           <div className="header-image-container">
             <Image
               priority
-              src={cover.src}
+              src={addBucketUrlToSrc(cover.src)}
               width={cover.width || 1}
               height={cover.height || 1}
               alt={cover.alt}

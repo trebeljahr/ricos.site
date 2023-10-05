@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getS3Folders, getS3ImageData } from "src/lib/aws";
+import { getDataFromS3, photographyFolder } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
 import { ImageProps } from "src/utils/types";
 import Layout from "../components/layout";
@@ -29,7 +29,7 @@ export default function Photography({
     >
       <h1 style={{ marginTop: "-2rem", marginBottom: "1rem" }}>Photography</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-20">
-        {trips.map(({ tripName, image }) => {
+        {trips.map(({ tripName, image }, index) => {
           return (
             <Link
               href={`/photography/${tripName}`}
@@ -41,6 +41,7 @@ export default function Photography({
                 sizes={"calc(50vw - 40px)"}
                 blurDataURL={image.blurDataURL}
                 fill
+                priority={index <= 3}
                 alt={"A photo from " + tripName}
                 style={{ filter: "brightness(50%)" }}
                 className="absolute inset-0 z-0 object-cover w-full h-full hover:scale-105 transition-all duration-300 ease-in-out  "
@@ -59,11 +60,18 @@ export default function Photography({
 }
 
 export async function getStaticProps() {
-  const tripNames = await getS3Folders();
+  const tripNames = Object.keys(tripNameMap);
+
   const trips = await Promise.all(
     tripNames.map(async (tripName) => {
-      const [firstImage] = await getS3ImageData({ prefix: tripName });
-      const [image] = await mapToImageProps([firstImage], tripName);
+      const [firstImage] = await getDataFromS3({
+        prefix: photographyFolder + tripName,
+        numberOfItems: 1,
+      });
+      const [image] = mapToImageProps(
+        [firstImage],
+        photographyFolder + tripName
+      );
 
       return { image, tripName };
     })

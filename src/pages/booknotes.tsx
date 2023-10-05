@@ -48,8 +48,8 @@ export default function Books({ booknotes }: Props) {
           <p>Amount: {filteredBooks.length}</p>
         </section>
         <section className="main-section allBooknotes">
-          {filteredBooks.map((book) => {
-            return <BookPreview key={book.slug} book={book} />;
+          {filteredBooks.map((book, index) => {
+            return <BookPreview key={book.slug} book={book} index={index} />;
           })}
         </section>
         <section className="main-section">

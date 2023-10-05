@@ -31,7 +31,7 @@ function SingleMenuItem({ link, closeNav }: SingleMenuItemProps) {
           href={`/${link}`}
           className={combine(
             active ? "bg-gray-100" : "",
-            "block px-4 py-2 link-sm text-gray-700"
+            "block px-4 py-2 text-gray-700 self-end break-keep text-right whitespace-nowrap	"
           )}
           onClick={() => {
             closeNav();
@@ -73,7 +73,7 @@ type NavbarProps = {
 function DesktopVersion({ open, isActive, close }: NavbarProps) {
   return (
     <div className="mx-auto max-w-7xl px-2 md :px-6 lg:px-8 relative flex h-16 items-center justify-between">
-      <div className="absolute ml-2 inset-y-0 left-0 flex items-center lg:hidden">
+      <div className="absolute mr-2 inset-y-0 right-0 flex items-center lg:hidden">
         <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
           <span className="sr-only">Open main menu</span>
           {open ? (
@@ -83,18 +83,18 @@ function DesktopVersion({ open, isActive, close }: NavbarProps) {
           )}
         </Disclosure.Button>
       </div>
-      <div className="flex flex-1 mr-1 items-stretch justify-end lg:mr-0 lg:items-center lg:justify-between ">
-        <Link href="/" className="flex flex-shrink-0 items-center">
-          <Image
-            className="h-8 w-auto"
-            src="/favicon/apple-touch-icon.png"
-            alt="trebeljahr"
-            width={32}
-            height={32}
-          />
-          <span className="text-white ml-1">trebeljahr</span>
-        </Link>
-        <div className="hidden lg:ml-6 lg:block">
+      <Link href="/" className="flex flex-shrink-0 items-center">
+        <Image
+          className="h-8 w-auto"
+          src="/favicon/apple-touch-icon.png"
+          alt="trebeljahr"
+          width={32}
+          height={32}
+        />
+        <span className="text-white ml-1">trebeljahr</span>
+      </Link>
+      <div className="flex flex-1 mr-1 items-stretch justify-end lg:mr-0 lg:items-center">
+        <div className="hidden lg:ml-6 lg:block sm:justify-self-end">
           <div className="flex space-x-4">
             {navigation.map((item) => (
               <Link
@@ -123,7 +123,7 @@ function DesktopVersion({ open, isActive, close }: NavbarProps) {
 function MobileVersion({ isActive, close }: NavbarProps) {
   return (
     <Disclosure.Panel className="lg:hidden">
-      <div className="space-y-1 px-2 pb-3 pt-2">
+      <div className="space-y-1 flex flex-col px-2 pb-3 pt-2 items-end justify-end">
         {navigation.map((item) => (
           <Link
             key={item}
@@ -132,7 +132,7 @@ function MobileVersion({ isActive, close }: NavbarProps) {
               isActive(item)
                 ? "bg-gray-900 text-white"
                 : "text-gray-300 hover:bg-gray-700 hover:text-white",
-              "block rounded-md px-3 py-2 text-sm font-medium"
+              "block w-fit rounded-md px-3 py-2 text-sm font-medium text-right"
             )}
             aria-current={isActive(item) ? "page" : undefined}
           >
@@ -180,7 +180,7 @@ function DesktopMenu({ links, text, closeNav }: MenuProps) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute right-0 z-20 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <Menu.Items className="flex-col absolute box-border right-0 z-50 mt-2 origin-top-right w-fit rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           {links.map((item) => (
             <SingleMenuItem key={item} link={item} closeNav={closeNav} />
           ))}
@@ -193,18 +193,22 @@ function DesktopMenu({ links, text, closeNav }: MenuProps) {
 function MobileMenu({ links, text, closeNav }: MenuProps) {
   const router = useRouter();
   const isActive = links.some((link) => router.asPath.startsWith("/" + link));
+
   return (
-    <Menu as="div" className="relative">
+    <Menu as="div" className="relative w-fit">
       <Disclosure.Button as="div">
         <Menu.Button
           className={combine(
             isActive
               ? "bg-gray-900 text-white"
               : "text-gray-300 hover:bg-gray-700 hover:text-white",
-            "block w-full text-start rounded-md px-3 py-2 text-sm font-medium"
+            "rounded-md px-3 py-2 text-sm font-medium text-right flex justify-end"
           )}
         >
-          {text}
+          <span className="flex items-center justify-center">
+            <span>{text}</span>
+            <ChevronDownIcon className="h-3 w-3 text-blue-500 ml-1" />
+          </span>
         </Menu.Button>
         <Transition
           as={Fragment}
@@ -215,7 +219,7 @@ function MobileMenu({ links, text, closeNav }: MenuProps) {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="absolute left-0 z-20 mt-2 w-48 origin-top-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <Menu.Items className="absolute right-0 top-10 z-50 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
             {links.map((item) => (
               <SingleMenuItem key={item} link={item} closeNav={closeNav} />
             ))}

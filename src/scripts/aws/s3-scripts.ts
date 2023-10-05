@@ -3,12 +3,8 @@ import { config } from "dotenv";
 import { readFileSync } from "fs";
 import { getType } from "mime";
 import path from "path";
-import { createS3Client } from "src/lib/aws";
-import {
-  bucketPrefix,
-  getAllStorageObjectKeys,
-  getObjectMetadata,
-} from "../../lib/aws.js";
+import { createS3Client, photographyFolder } from "src/lib/aws";
+import { getAllStorageObjectKeys, getObjectMetadata } from "../../lib/aws.js";
 import { getWidthAndHeight } from "./getWidthAndHeight.js";
 config({ path: "../.env" });
 
@@ -43,11 +39,10 @@ export async function uploadWithMetadata(
   }
 }
 
-export async function readS3MetadataForAllStorageObjects() {
+export async function readS3MetadataForAllStorageObjects(prefix: string) {
   const bucketName = process.env.LOCAL_AWS_BUCKET_NAME;
   if (!bucketName) throw new Error("No bucket name provided in .env file");
-
-  const allKeys = await getAllStorageObjectKeys(bucketName, `${bucketPrefix}`);
+  const allKeys = await getAllStorageObjectKeys(bucketName, prefix);
 
   const metadata = await Promise.all(
     allKeys.map((key) => {
@@ -59,7 +54,7 @@ export async function readS3MetadataForAllStorageObjects() {
 }
 
 export async function uploadSingleFileToS3(filepath: string, tripName: string) {
-  const key = createKey(`${bucketPrefix}${tripName}`, filepath);
+  const key = createKey(`${photographyFolder}${tripName}`, filepath);
 
   const data = await getWidthAndHeight(filepath);
 

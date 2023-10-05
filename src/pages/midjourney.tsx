@@ -3,38 +3,20 @@ import InfiniteScroll from "react-infinite-scroller";
 import { ClickHandler, Photo, PhotoAlbum } from "react-photo-album";
 import { ToTopButton } from "src/components/ToTopButton";
 import { NextJsImage } from "src/components/image-gallery/customRenderers";
+import Layout from "src/components/layout";
 import { useWindowSize } from "src/hooks/useWindowSize";
-import { getDataFromS3, getS3Folders, photographyFolder } from "src/lib/aws";
+import { getDataFromS3 } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
 import { ImageProps } from "src/utils/types";
-import Lightbox from "yet-another-react-lightbox";
-import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
-import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
-import Layout from "../../components/layout";
-import { tripNameMap } from "../photography";
-import { BreadCrumbs } from "../../components/BreadCrumbs";
 
-export default function ImageGallery({
+export default function MidjourneyGallery({
   images,
-  tripName,
 }: {
   images: ImageProps[];
-  tripName: string;
 }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [displayedImages, setDisplayImages] = useState(images.slice(0, 10));
-
-  const handleClose = () => {
-    setIsModalOpen(false);
-  };
-
-  const openModal: ClickHandler<Photo> = ({ index }) => {
-    setCurrentImageIndex(index);
-    setIsModalOpen(true);
-  };
 
   const { width, height } = useWindowSize();
 
@@ -52,13 +34,12 @@ export default function ImageGallery({
     <Layout
       title="Photography"
       description="A page with all my photography."
-      url={`/photography/${tripName}`}
+      url={`/midjourney`}
       fullScreen={true}
     >
       <div className="mb-20">
-        <BreadCrumbs path={`photography/${tripName}`} />
         <h1 style={{ marginTop: "-2rem", marginBottom: "1.2rem" }}>
-          {tripNameMap[tripName]}
+          Midjourney Images
         </h1>
         <InfiniteScroll
           pageStart={0}
@@ -70,7 +51,6 @@ export default function ImageGallery({
             photos={displayedImages}
             targetRowHeight={height * 0.6}
             layout="rows"
-            onClick={openModal}
             renderPhoto={NextJsImage}
             defaultContainerWidth={1200}
             sizes={{
@@ -81,24 +61,6 @@ export default function ImageGallery({
               ],
             }}
           />
-          <Lightbox
-            open={isModalOpen}
-            close={handleClose}
-            slides={displayedImages}
-            index={currentImageIndex}
-            plugins={[Thumbnails, Zoom]}
-            thumbnails={{
-              position: "bottom",
-              width: 100,
-              height: 100,
-              border: 0,
-              borderRadius: 4,
-              padding: 0,
-              gap: 10,
-              imageFit: "cover",
-              vignette: true,
-            }}
-          />
         </InfiniteScroll>
 
         <ToTopButton />
@@ -107,29 +69,9 @@ export default function ImageGallery({
   );
 }
 
-type StaticProps = {
-  params: { tripName: string };
-};
-
-export async function getStaticPaths() {
-  const tripNames = await getS3Folders(photographyFolder);
-
-  return {
-    paths: tripNames.map((tripName) => {
-      return { params: { tripName } };
-    }),
-    fallback: false,
-  };
-}
-
-export async function getStaticProps({ params }: StaticProps) {
-  const { tripName } = params;
-  const prefix = photographyFolder + tripName;
-  const awsImageData = await getDataFromS3({
-    prefix,
-    numberOfItems: 1000,
-  });
+export async function getStaticProps() {
+  const prefix = "webp/";
+  const awsImageData = await getDataFromS3({ prefix, numberOfItems: 1000 });
   const images: ImageProps[] = mapToImageProps(awsImageData, prefix);
-
-  return { props: { images, tripName: params.tripName } };
+  return { props: { images } };
 }

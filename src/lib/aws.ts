@@ -4,6 +4,10 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 
+const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
+const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
+const awsRegion = process.env.LOCAL_AWS_REGION;
+
 export async function getObjectMetadata(Bucket: string, Key: string) {
   const client = createS3Client();
   const command = new HeadObjectCommand({ Bucket, Key });
@@ -46,28 +50,7 @@ export async function getAllStorageObjectKeys(
   }
 }
 
-type Options = {
-  prefix?: string;
-};
-
-export const getS3ImageData = async ({ prefix = "" }: Options = {}) => {
-  const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
-  const awsRegion = process.env.LOCAL_AWS_REGION;
-  const bucketName = process.env.LOCAL_AWS_BUCKET_NAME;
-
-  if (!accessKeyId || !secretAccessKey || !bucketName || !awsRegion) {
-    throw new Error("No AWS credentials provided");
-  }
-
-  return await getDataFromS3({
-    accessKeyId,
-    secretAccessKey,
-    awsRegion,
-    bucketName,
-    prefix,
-  });
-};
+export const photographyFolder = "webp-photography/";
 
 export function createS3Client() {
   const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
@@ -84,17 +67,13 @@ export function createS3Client() {
   });
 }
 
-export const bucketPrefix = "webp-photography/";
-
-export async function getS3Folders(): Promise<string[]> {
-  const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
-  const awsRegion = process.env.LOCAL_AWS_REGION;
-  const bucketName = process.env.LOCAL_AWS_BUCKET_NAME;
-
-  if (!accessKeyId || !secretAccessKey || !bucketName || !awsRegion) {
+export async function getS3Folders(prefix: string): Promise<string[]> {
+  if (!accessKeyId || !secretAccessKey || !awsRegion) {
     throw new Error("No AWS credentials provided");
   }
+
+  const bucketName = process.env.LOCAL_AWS_BUCKET_NAME;
+  if (!bucketName) throw new Error("Bucket has to be specified");
 
   const s3Client = new S3Client({
     region: awsRegion,
@@ -105,13 +84,12 @@ export async function getS3Folders(): Promise<string[]> {
     new ListObjectsV2Command({
       Bucket: bucketName,
       Delimiter: "/",
-      Prefix: `${bucketPrefix}`,
+      Prefix: prefix,
     })
   );
 
   const folders =
-    data.CommonPrefixes?.map((prefix) => prefix.Prefix?.split("/")[1] || "") ||
-    [];
+    data.CommonPrefixes?.map((data) => data.Prefix?.split("/")[1] || "") || [];
 
   return folders.sort();
 }
@@ -123,33 +101,32 @@ export type ImageDataFromAWS = {
 };
 
 export const getDataFromS3 = async ({
-  accessKeyId,
-  secretAccessKey,
-  awsRegion,
-  bucketName,
   prefix,
+  numberOfItems = 100,
 }: {
-  accessKeyId: string;
-  secretAccessKey: string;
-  awsRegion: string;
-  bucketName: string;
   prefix?: string;
+  numberOfItems?: number;
 }) => {
+  if (!accessKeyId || !secretAccessKey || !awsRegion) {
+    throw new Error("No AWS credentials provided");
+  }
+
   const s3Client = new S3Client({
     region: awsRegion,
     credentials: { accessKeyId, secretAccessKey },
   });
 
+  const bucketName = process.env.LOCAL_AWS_BUCKET_NAME;
+  if (!bucketName) throw new Error("Bucket has to be specified");
+
   const data = await s3Client.send(
     new ListObjectsV2Command({
       Bucket: bucketName,
-      Prefix: prefix ? `${bucketPrefix}${prefix}/` : `${bucketPrefix}`,
+      Prefix: `${prefix}`,
+      MaxKeys: numberOfItems,
     })
   );
-
-  if (data.KeyCount && data.MaxKeys && data.KeyCount >= data.MaxKeys) {
-    throw new Error("Can't display all objects in the bucket");
-  }
+  console.log(data);
 
   if (!data.Contents) throw new Error("No contents found");
 
@@ -162,7 +139,7 @@ export const getDataFromS3 = async ({
     }).map(async (file) => {
       const result = await getObjectMetadata(bucketName, file.Key || "");
       return {
-        name: (file.Key as string).replace(`${bucketPrefix}`, ""),
+        name: (file.Key as string).replace(`${prefix}`, ""),
         width: parseInt(result.Metadata?.width || "100"),
         height: parseInt(result.Metadata?.height || "100"),
       };

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { useState } from "react";
+import InfiniteScroll from "react-infinite-scroller";
 import { ClickHandler, Photo, PhotoAlbum } from "react-photo-album";
 import { ToTopButton } from "src/components/ToTopButton";
 import { NextJsImage } from "src/components/image-gallery/customRenderers";
 import { useWindowSize } from "src/hooks/useWindowSize";
-import { bucketPrefix, getS3Folders, getS3ImageData } from "src/lib/aws";
+import { getDataFromS3, getS3Folders, photographyFolder } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
 import { ImageProps } from "src/utils/types";
 import Lightbox from "yet-another-react-lightbox";
@@ -14,7 +15,6 @@ import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
 import Layout from "../../components/layout";
 import { tripNameMap } from "../photography";
-import InfiniteScroll from "react-infinite-scroller";
 
 export function BreadCrumbs() {
   return (
@@ -103,7 +103,7 @@ export default function ImageGallery({
     <Layout
       title="Photography"
       description="A page with all my photography."
-      url={`/${bucketPrefix}${tripName}`}
+      url={`/photography/${tripName}`}
       fullScreen={true}
     >
       <div className="mb-20">
@@ -163,7 +163,7 @@ type StaticProps = {
 };
 
 export async function getStaticPaths() {
-  const tripNames = await getS3Folders();
+  const tripNames = await getS3Folders(photographyFolder);
 
   return {
     paths: tripNames.map((tripName) => {
@@ -175,12 +175,12 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }: StaticProps) {
   const { tripName } = params;
-
-  const awsImageData = await getS3ImageData({
-    prefix: tripName,
+  const prefix = photographyFolder + tripName;
+  const awsImageData = await getDataFromS3({
+    prefix,
+    numberOfItems: 1000,
   });
-
-  const images: ImageProps[] = await mapToImageProps(awsImageData, tripName);
+  const images: ImageProps[] = mapToImageProps(awsImageData, prefix);
 
   return { props: { images, tripName: params.tripName } };
 }

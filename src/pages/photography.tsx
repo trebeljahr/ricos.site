@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getS3Folders, getS3ImageData } from "src/lib/aws";
+import { getDataFromS3, photographyFolder } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
 import { ImageProps } from "src/utils/types";
 import Layout from "../components/layout";
@@ -59,11 +59,18 @@ export default function Photography({
 }
 
 export async function getStaticProps() {
-  const tripNames = await getS3Folders();
+  const tripNames = Object.keys(tripNameMap);
+
   const trips = await Promise.all(
     tripNames.map(async (tripName) => {
-      const [firstImage] = await getS3ImageData({ prefix: tripName });
-      const [image] = await mapToImageProps([firstImage], tripName);
+      const [firstImage] = await getDataFromS3({
+        prefix: photographyFolder + tripName,
+        numberOfItems: 1,
+      });
+      const [image] = mapToImageProps(
+        [firstImage],
+        photographyFolder + tripName
+      );
 
       return { image, tripName };
     })

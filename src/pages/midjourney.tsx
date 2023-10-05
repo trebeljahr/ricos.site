@@ -16,18 +16,7 @@ export default function MidjourneyGallery({
 }: {
   images: ImageProps[];
 }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [displayedImages, setDisplayImages] = useState(images.slice(0, 10));
-
-  const handleClose = () => {
-    setIsModalOpen(false);
-  };
-
-  const openModal: ClickHandler<Photo> = ({ index }) => {
-    setCurrentImageIndex(index);
-    setIsModalOpen(true);
-  };
 
   const { width, height } = useWindowSize();
 
@@ -62,7 +51,6 @@ export default function MidjourneyGallery({
             photos={displayedImages}
             targetRowHeight={height * 0.6}
             layout="rows"
-            onClick={openModal}
             renderPhoto={NextJsImage}
             defaultContainerWidth={1200}
             sizes={{
@@ -83,7 +71,7 @@ export default function MidjourneyGallery({
 
 export async function getStaticProps() {
   const prefix = "webp/";
-  const awsImageData = await getDataFromS3({ prefix });
-  const images: ImageProps[] = await mapToImageProps(awsImageData, prefix);
+  const awsImageData = await getDataFromS3({ prefix, numberOfItems: 1000 });
+  const images: ImageProps[] = mapToImageProps(awsImageData, prefix);
   return { props: { images } };
 }

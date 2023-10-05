@@ -20,7 +20,9 @@ export const PostCoverImage = ({
       // placeholder="blur"
       priority={priority}
       fill
-      sizes="100vw"
+      sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
+        priority ? 780 : 357
+      }`}
       style={{
         objectFit: "cover",
       }}
@@ -28,7 +30,7 @@ export const PostCoverImage = ({
   );
 };
 
-export const BookCover = ({ title, src }: Props) => {
+export const BookCover = ({ title, src, priority }: Props) => {
   return (
     <Image
       src={src}
@@ -36,6 +38,7 @@ export const BookCover = ({ title, src }: Props) => {
       height={1.6}
       alt={`Bookcover - ${title}`}
       sizes="100vw"
+      priority={priority}
       style={{
         width: "100%",
         height: "auto",

@@ -4,9 +4,10 @@ import { BookCover } from "./cover-image";
 
 type Props = {
   book: Booknote;
+  index: number;
 };
 
-export function BookPreview({ book }: Props) {
+export function BookPreview({ book, index }: Props) {
   const { slug, title, bookCover, excerpt, subtitle, bookAuthor, rating } =
     book;
 
@@ -14,7 +15,7 @@ export function BookPreview({ book }: Props) {
   return (
     <div className="book-info">
       <Link as={slug} href={slug} className="book-cover-image">
-        <BookCover title={title} src={bookCover} />
+        <BookCover title={title} src={bookCover} priority={index === 0} />
       </Link>
       <div className="book-preview-text">
         <div className="book-preview-heading">

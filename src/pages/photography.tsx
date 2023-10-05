@@ -29,7 +29,7 @@ export default function Photography({
     >
       <h1 style={{ marginTop: "-2rem", marginBottom: "1rem" }}>Photography</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-20">
-        {trips.map(({ tripName, image }) => {
+        {trips.map(({ tripName, image }, index) => {
           return (
             <Link
               href={`/photography/${tripName}`}
@@ -41,6 +41,7 @@ export default function Photography({
                 sizes={"calc(50vw - 40px)"}
                 blurDataURL={image.blurDataURL}
                 fill
+                priority={index <= 3}
                 alt={"A photo from " + tripName}
                 style={{ filter: "brightness(50%)" }}
                 className="absolute inset-0 z-0 object-cover w-full h-full hover:scale-105 transition-all duration-300 ease-in-out  "

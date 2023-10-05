@@ -100,13 +100,15 @@ export type ImageDataFromAWS = {
   height: number;
 };
 
+type OptionsForS3 = {
+  prefix?: string;
+  numberOfItems?: number;
+};
+
 export const getDataFromS3 = async ({
   prefix,
   numberOfItems = 100,
-}: {
-  prefix?: string;
-  numberOfItems?: number;
-}) => {
+}: OptionsForS3) => {
   if (!accessKeyId || !secretAccessKey || !awsRegion) {
     throw new Error("No AWS credentials provided");
   }

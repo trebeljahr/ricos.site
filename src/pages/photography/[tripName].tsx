@@ -13,8 +13,10 @@ import "yet-another-react-lightbox/plugins/thumbnails.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
 import Layout from "../../components/layout";
-import { tripNameMap } from "../photography";
-import { BreadCrumbs } from "../../components/BreadCrumbs";
+import {
+  BreadCrumbs,
+  turnKebabIntoTitleCase,
+} from "../../components/BreadCrumbs";
 
 export default function ImageGallery({
   images,
@@ -58,7 +60,7 @@ export default function ImageGallery({
       <div className="mb-20">
         <BreadCrumbs path={`photography/${tripName}`} />
         <h1 style={{ marginTop: "-2rem", marginBottom: "1.2rem" }}>
-          {tripNameMap[tripName]}
+          {turnKebabIntoTitleCase(tripName)}
         </h1>
         <InfiniteScroll
           pageStart={0}

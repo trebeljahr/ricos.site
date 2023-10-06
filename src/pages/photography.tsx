@@ -4,16 +4,29 @@ import { getDataFromS3, photographyFolder } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
 import { ImageProps } from "src/utils/types";
 import Layout from "../components/layout";
+import { turnKebabIntoTitleCase } from "src/components/BreadCrumbs";
 
-export const tripNameMap: Record<string, string> = {
-  "2020-alps": "Traumpfad",
-  "2022-tenerife": "Tenerife",
-  "2022-india": "North India",
-  "2022-germany": "Germany",
-  "2021-crete": "Crete",
-  "2020-india": "South India",
-  "2019-india": "West India",
-};
+const tripNames = [
+  "alps",
+  "crete",
+  "east-india",
+  "germany",
+  "indonesia",
+  "laos",
+  "rajasthan",
+  "sri-lanka",
+  "thailand",
+  "vietnam",
+  "central-india",
+  "delhi",
+  "egypt",
+  "himachal-pradesh",
+  "italy",
+  "nepal",
+  "south-india",
+  "tenerife",
+  "varanasi",
+];
 
 export default function Photography({
   trips,
@@ -48,7 +61,7 @@ export default function Photography({
               />
               <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center w-full h-full">
                 <h2 className="text-xl font-bold text-white">
-                  {tripNameMap[tripName]}
+                  {turnKebabIntoTitleCase(tripName)}
                 </h2>
               </div>
             </Link>
@@ -60,8 +73,6 @@ export default function Photography({
 }
 
 export async function getStaticProps() {
-  const tripNames = Object.keys(tripNameMap);
-
   const trips = await Promise.all(
     tripNames.map(async (tripName) => {
       const [firstImage] = await getDataFromS3({

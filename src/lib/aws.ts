@@ -135,8 +135,6 @@ export async function getListingS3(prefix?: string) {
       })
     );
 
-    console.log("Fetched Data:", data.Contents?.length);
-
     data.Contents?.forEach(
       (content) => content.Key && allKeys.push(content.Key)
     );
@@ -173,8 +171,6 @@ export const getDataFromS3 = async ({
       MaxKeys: numberOfItems,
     })
   );
-
-  console.log(data);
 
   if (!data.Contents) throw new Error("No contents found");
 

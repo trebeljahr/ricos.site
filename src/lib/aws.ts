@@ -1,6 +1,7 @@
 import {
   HeadObjectCommand,
   ListObjectsV2Command,
+  ListObjectsV2CommandOutput,
   S3Client,
 } from "@aws-sdk/client-s3";
 
@@ -105,17 +106,13 @@ type OptionsForS3 = {
   numberOfItems?: number;
 };
 
-export const getDataFromS3 = async ({
-  prefix,
-  numberOfItems = 100,
-}: OptionsForS3) => {
+export async function getListingS3(prefix?: string) {
   const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
   const awsRegion = process.env.LOCAL_AWS_REGION;
+  const bucketName = process.env.LOCAL_AWS_BUCKET_NAME;
 
-  console.log(process.env);
-
-  if (!accessKeyId || !secretAccessKey || !awsRegion) {
+  if (!accessKeyId || !secretAccessKey || !awsRegion || !bucketName) {
     throw new Error("No AWS credentials provided");
   }
 
@@ -124,16 +121,54 @@ export const getDataFromS3 = async ({
     credentials: { accessKeyId, secretAccessKey },
   });
 
+  const allKeys: string[] = [];
+  let data: ListObjectsV2CommandOutput;
+  let NextContinuationToken;
+
+  do {
+    data = await s3Client.send(
+      new ListObjectsV2Command({
+        Bucket: bucketName,
+        Prefix: prefix,
+        ContinuationToken: NextContinuationToken,
+      })
+    );
+
+    data.Contents?.forEach(function (content) {
+      content.Key && allKeys.push(content.Key);
+    });
+    NextContinuationToken = data.ContinuationToken;
+  } while (data.IsTruncated);
+
+  return allKeys;
+}
+
+export const getDataFromS3 = async ({
+  prefix,
+  numberOfItems = 100,
+}: OptionsForS3 = {}) => {
+  const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
+  const awsRegion = process.env.LOCAL_AWS_REGION;
   const bucketName = process.env.LOCAL_AWS_BUCKET_NAME;
-  if (!bucketName) throw new Error("Bucket has to be specified");
+
+  if (!accessKeyId || !secretAccessKey || !awsRegion || !bucketName) {
+    throw new Error("No AWS credentials provided");
+  }
+
+  const s3Client = new S3Client({
+    region: awsRegion,
+    credentials: { accessKeyId, secretAccessKey },
+  });
 
   const data = await s3Client.send(
     new ListObjectsV2Command({
       Bucket: bucketName,
-      Prefix: `${prefix}`,
+      Prefix: prefix,
       MaxKeys: numberOfItems,
     })
   );
+
   console.log(data);
 
   if (!data.Contents) throw new Error("No contents found");

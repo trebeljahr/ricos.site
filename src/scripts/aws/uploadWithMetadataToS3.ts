@@ -56,7 +56,7 @@ export async function uploadAllImagesFromDirectoryToS3(dirPath: string) {
 
   const pool = Pool(() => spawn(new Worker("./upload-worker.ts")));
 
-  let counter = 0;
+  let counter = 1;
   const progress = new SingleBar(
     {
       format: `${folderName} | {bar} | {percentage}% | {value}/{total} | {eta}s`,
@@ -67,7 +67,6 @@ export async function uploadAllImagesFromDirectoryToS3(dirPath: string) {
 
   for (const imagePath of imageFiles) {
     const imageFileName = imagePath.split("/").at(-1);
-    // console.log(imagePath, imageFileName, folderName);
 
     if (!folderName || !imageFileName || !directoryName)
       throw Error("Didn't find a valid image to upload...");

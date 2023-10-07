@@ -1,8 +1,8 @@
 import { ImageDataFromAWS } from "./aws";
 
-const imageSizes = [
+export const imageSizes = [
   16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048,
-  3840, 4000, 6000,
+  3840,
 ];
 
 function nextImageUrl(src: string, width: number) {
@@ -18,16 +18,14 @@ export function mapToImageProps(images: ImageDataFromAWS[], prefix: string) {
       index,
       name,
       src,
-      srcSet: imageSizes
-        .filter((size) => size <= width)
-        .map((size) => {
-          const aspectRatio = Math.round(height / width);
-          return {
-            src: nextImageUrl(src, size),
-            width: size,
-            height: aspectRatio * size,
-          };
-        }),
+      srcSet: imageSizes.map((size) => {
+        const aspectRatio = Math.round(height / width);
+        return {
+          src: nextImageUrl(src, size),
+          width: size,
+          height: aspectRatio * size,
+        };
+      }),
     };
   });
 }

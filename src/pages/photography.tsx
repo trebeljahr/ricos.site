@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getDataFromS3, photographyFolder } from "src/lib/aws";
-import { mapToImageProps } from "src/lib/mapToImageProps";
+import { mapToImageProps, nextImageUrl } from "src/lib/mapToImageProps";
 import { ImageProps } from "src/utils/types";
 import Layout from "../components/layout";
 import { turnKebabIntoTitleCase } from "src/components/BreadCrumbs";
@@ -52,7 +52,8 @@ export default function Photography({
               <Image
                 src={image.src}
                 sizes={"calc(50vw - 40px)"}
-                blurDataURL={image.blurDataURL}
+                placeholder="blur"
+                blurDataURL={nextImageUrl(image.src, 16, 1)}
                 fill
                 priority={index <= 3}
                 alt={"A photo from " + tripName}

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { nextImageUrl } from "src/lib/mapToImageProps";
 
 type Props = {
   title: string;
@@ -17,7 +18,8 @@ export const PostCoverImage = ({
     <Image
       src={src}
       alt={alt || "Cover for post: " + title}
-      // placeholder="blur"
+      placeholder="blur"
+      blurDataURL={nextImageUrl(src, 16, 1)}
       priority={priority}
       fill
       sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
@@ -36,6 +38,8 @@ export const BookCover = ({ title, src, priority }: Props) => {
       src={src}
       width={1}
       height={1.6}
+      placeholder="blur"
+      blurDataURL={nextImageUrl(src, 16, 1)}
       alt={`Bookcover - ${title}`}
       sizes="100vw"
       priority={priority}

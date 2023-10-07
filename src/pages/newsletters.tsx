@@ -4,6 +4,7 @@ import { ToTopButton } from "../components/ToTopButton";
 import Layout from "../components/layout";
 import { NewsletterForm } from "../components/newsletter-signup";
 import Image from "next/image";
+import { nextImageUrl } from "src/lib/mapToImageProps";
 
 type NewsletterData = {
   slug: string;
@@ -58,6 +59,8 @@ const Newsletters = ({ newsletterData }: Props) => {
                       sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
                         priority ? 780 : 357
                       }`}
+                      placeholder="blur"
+                      blurDataURL={nextImageUrl(cover.src, 16, 1)}
                       priority={priority}
                       className="rounded-md"
                       style={{

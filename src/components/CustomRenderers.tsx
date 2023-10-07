@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { ExternalLink } from "./ExternalLink";
+import { nextImageUrl } from "src/lib/mapToImageProps";
 
 export const ImageRenderer = ({
   src,
@@ -33,7 +34,8 @@ export const ImageRenderer = ({
           alt={realAlt}
           priority={!!isPriority}
           width={parseFloat(width)}
-          // placeholder="blur"
+          placeholder="blur"
+          blurDataURL={nextImageUrl(src, 16, 1)}
           height={parseFloat(height)}
           sizes="100vw"
           style={{

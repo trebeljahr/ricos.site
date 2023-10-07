@@ -6,6 +6,7 @@ import { NewsletterForm } from "../../components/newsletter-signup";
 import { PostBodyWithoutExcerpt } from "../../components/post-body";
 import PostHeader from "../../components/post-header";
 import { ToTopButton } from "../../components/ToTopButton";
+import { nextImageUrl } from "src/lib/mapToImageProps";
 
 const NextAndPrevArrows = ({
   nextPost,
@@ -68,6 +69,8 @@ const Newsletter = ({
               src={cover.src}
               width={cover.width || 1}
               height={cover.height || 1}
+              placeholder="blur"
+              blurDataURL={nextImageUrl(cover.src, 16, 1)}
               alt={cover.alt}
               sizes="100vw"
               style={{

@@ -5,7 +5,7 @@ export const imageSizes = [
   3840,
 ];
 
-function nextImageUrl(src: string, width: number) {
+export function nextImageUrl(src: string, width: number) {
   return `https://d2mpovkbhuoejh.cloudfront.net${src}?format=auto&width=${width}`;
 }
 

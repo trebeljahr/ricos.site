@@ -1,18 +1,21 @@
 import "dotenv/config";
 import { getDataFromS3, getListingS3 } from "src/lib/aws";
-import { mapToImageProps } from "src/lib/mapToImageProps";
+import { mapToImageProps, nextImageUrl } from "src/lib/mapToImageProps";
 import axios from "axios";
 
-const imageData = await getDataFromS3();
+const imageKeys = await getListingS3();
 
-// const s3Data = await getListingS3();
+let totalInvocations = 0;
 
-const allImages = mapToImageProps(imageData, "");
-for (const image of allImages) {
-  for (const srcSet of image.srcSet) {
-    console.log(srcSet.src);
-
-    axios.get(srcSet.src);
+const imageSizes = [3840];
+for (const imageKey of imageKeys) {
+  for (const size of imageSizes) {
+    totalInvocations++;
+    const url = nextImageUrl("/" + imageKey, size);
+    console.log(url);
+    // axios.get(url);
   }
 }
+
+console.log(totalInvocations);
 process.exit();

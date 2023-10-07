@@ -3,6 +3,7 @@ import {
   ListObjectsV2Command,
   ListObjectsV2CommandOutput,
   S3Client,
+  _Object,
 } from "@aws-sdk/client-s3";
 
 export async function getObjectMetadata(Bucket: string, Key: string) {
@@ -134,10 +135,14 @@ export async function getListingS3(prefix?: string) {
       })
     );
 
-    data.Contents?.forEach(function (content) {
-      content.Key && allKeys.push(content.Key);
-    });
-    NextContinuationToken = data.ContinuationToken;
+    console.log("Fetched Data:", data.Contents?.length);
+
+    data.Contents?.forEach(
+      (content) => content.Key && allKeys.push(content.Key)
+    );
+
+    NextContinuationToken = data.NextContinuationToken;
+    if (!NextContinuationToken) break;
   } while (data.IsTruncated);
 
   return allKeys;

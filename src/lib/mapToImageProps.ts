@@ -7,7 +7,7 @@ export const imageSizes = [
 
 export function nextImageUrl(src: string, width: number) {
   return encodeURI(
-    `https://d2mpovkbhuoejh.cloudfront.net${src}?format=auto&width=${width}`
+    `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net${src}?format=auto&width=${width}`
   );
 }
 

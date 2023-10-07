@@ -46,6 +46,7 @@
     "yet-another-react-lightbox": "^3.9.0"
   },
   "devDependencies": {
+    "@aws-sdk/client-lambda": "^3.427.0",
     "@testing-library/react": "^13.4.0",
     "@tsconfig/node16": "^1.0.3",
     "@types/cli-progress": "^3.11.0",

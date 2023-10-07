@@ -51,9 +51,9 @@ export async function getAllStorageObjectKeys(
 export const photographyFolder = "photography/";
 
 export function createS3Client() {
-  const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
-  const awsRegion = process.env.LOCAL_AWS_REGION;
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+  const awsRegion = process.env.AWS_REGION;
 
   if (!accessKeyId || !secretAccessKey || !awsRegion) {
     throw new Error("No AWS credentials provided");
@@ -66,15 +66,15 @@ export function createS3Client() {
 }
 
 export async function getS3Folders(prefix: string): Promise<string[]> {
-  const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
-  const awsRegion = process.env.LOCAL_AWS_REGION;
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+  const awsRegion = process.env.AWS_REGION;
 
   if (!accessKeyId || !secretAccessKey || !awsRegion) {
     throw new Error("No AWS credentials provided");
   }
 
-  const bucketName = process.env.LOCAL_AWS_BUCKET_NAME;
+  const bucketName = process.env.AWS_BUCKET_NAME;
   if (!bucketName) throw new Error("Bucket has to be specified");
 
   const s3Client = new S3Client({
@@ -111,10 +111,10 @@ export const getDataFromS3 = async ({
   prefix,
   numberOfItems = 100,
 }: OptionsForS3 = {}) => {
-  const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
-  const awsRegion = process.env.LOCAL_AWS_REGION;
-  const bucketName = process.env.LOCAL_AWS_BUCKET_NAME;
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+  const awsRegion = process.env.AWS_REGION;
+  const bucketName = process.env.AWS_BUCKET_NAME;
 
   if (!accessKeyId || !secretAccessKey || !awsRegion || !bucketName) {
     throw new Error("No AWS credentials provided");

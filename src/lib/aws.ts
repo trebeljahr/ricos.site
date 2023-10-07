@@ -1,12 +1,10 @@
 import {
   HeadObjectCommand,
   ListObjectsV2Command,
+  ListObjectsV2CommandOutput,
   S3Client,
+  _Object,
 } from "@aws-sdk/client-s3";
-
-const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
-const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
-const awsRegion = process.env.LOCAL_AWS_REGION;
 
 export async function getObjectMetadata(Bucket: string, Key: string) {
   const client = createS3Client();
@@ -29,7 +27,7 @@ export async function getAllStorageObjectKeys(
 
   try {
     let isTruncated = true;
-    let contents: string[] = [];
+    let keys: string[] = [];
 
     while (isTruncated) {
       const { Contents, IsTruncated, NextContinuationToken } =
@@ -39,18 +37,18 @@ export async function getAllStorageObjectKeys(
         throw new Error("Something went wrong on the S3 request!");
       }
 
-      contents = contents.concat(Contents.map(({ Key }) => Key || ""));
+      keys = keys.concat(Contents.map(({ Key }) => Key || ""));
       isTruncated = IsTruncated;
       command.input.ContinuationToken = NextContinuationToken;
     }
-    return contents;
+    return keys;
   } catch (err) {
     console.error(err);
     throw new Error("Something went wrong on the S3 request!");
   }
 }
 
-export const photographyFolder = "webp-photography/";
+export const photographyFolder = "photography/";
 
 export function createS3Client() {
   const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
@@ -68,6 +66,10 @@ export function createS3Client() {
 }
 
 export async function getS3Folders(prefix: string): Promise<string[]> {
+  const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
+  const awsRegion = process.env.LOCAL_AWS_REGION;
+
   if (!accessKeyId || !secretAccessKey || !awsRegion) {
     throw new Error("No AWS credentials provided");
   }
@@ -108,8 +110,13 @@ type OptionsForS3 = {
 export const getDataFromS3 = async ({
   prefix,
   numberOfItems = 100,
-}: OptionsForS3) => {
-  if (!accessKeyId || !secretAccessKey || !awsRegion) {
+}: OptionsForS3 = {}) => {
+  const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
+  const awsRegion = process.env.LOCAL_AWS_REGION;
+  const bucketName = process.env.LOCAL_AWS_BUCKET_NAME;
+
+  if (!accessKeyId || !secretAccessKey || !awsRegion || !bucketName) {
     throw new Error("No AWS credentials provided");
   }
 
@@ -118,17 +125,13 @@ export const getDataFromS3 = async ({
     credentials: { accessKeyId, secretAccessKey },
   });
 
-  const bucketName = process.env.LOCAL_AWS_BUCKET_NAME;
-  if (!bucketName) throw new Error("Bucket has to be specified");
-
   const data = await s3Client.send(
     new ListObjectsV2Command({
       Bucket: bucketName,
-      Prefix: `${prefix}`,
+      Prefix: prefix,
       MaxKeys: numberOfItems,
     })
   );
-  console.log(data);
 
   if (!data.Contents) throw new Error("No contents found");
 

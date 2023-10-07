@@ -1,12 +1,11 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { config } from "dotenv";
 import { readFileSync } from "fs";
-import { getType } from "mime";
+import mime from "mime";
 import path from "path";
-import { createS3Client, photographyFolder } from "src/lib/aws";
+import { createS3Client } from "src/lib/aws";
 import { getAllStorageObjectKeys, getObjectMetadata } from "../../lib/aws.js";
 import { getWidthAndHeight } from "./getWidthAndHeight.js";
-config({ path: "../.env" });
 
 export function createKey(prefix: string, filepath: string) {
   const filename = path.basename(filepath);
@@ -18,7 +17,7 @@ export async function uploadWithMetadata(
   Key: string,
   Metadata: Record<string, string>
 ) {
-  const Bucket = process.env.LOCAL_AWS_BUCKET_NAME;
+  const Bucket = "images.trebeljahr.com";
   if (!Bucket) throw new Error("No bucket name provided in .env file");
 
   const client = createS3Client();
@@ -28,12 +27,12 @@ export async function uploadWithMetadata(
     Bucket,
     Key,
     Body,
-    ContentType: getType(filepath) || undefined,
+    ContentType: mime.getType(filepath) || undefined,
     Metadata,
   });
 
   try {
-    await client.send(command);
+    return await client.send(command);
   } catch (err) {
     console.error(err);
   }
@@ -53,8 +52,8 @@ export async function readS3MetadataForAllStorageObjects(prefix: string) {
   return metadata;
 }
 
-export async function uploadSingleFileToS3(filepath: string, tripName: string) {
-  const key = createKey(`${photographyFolder}${tripName}`, filepath);
+export async function uploadSingleFileToS3(filepath: string, awsPath: string) {
+  const key = createKey(awsPath, filepath);
 
   const data = await getWidthAndHeight(filepath);
 

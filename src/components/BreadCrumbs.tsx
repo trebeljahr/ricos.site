@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { tripNameMap } from "src/pages/photography";
+
+export function turnKebabIntoTitleCase(kebab: string) {
+  return kebab
+    .split("-")
+    .map(
+      (substring) => substring.slice(0, 1).toUpperCase() + substring.slice(1)
+    )
+    .join(" ");
+}
 
 export function BreadCrumbs({ path }: { path: string }) {
   const pathParts = path.split("/").filter((part) => part !== "");
@@ -47,9 +55,7 @@ export function BreadCrumbs({ path }: { path: string }) {
                   href={"/" + part}
                   className="ml-1 text-sm font-medium text-gray-700 hover:text-blue md:ml-2"
                 >
-                  {tripNameMap[part]
-                    ? tripNameMap[part]
-                    : part.slice(0, 1).toUpperCase() + part.slice(1)}
+                  {turnKebabIntoTitleCase(part)}
                 </Link>
               </div>
             </li>

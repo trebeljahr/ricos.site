@@ -4,10 +4,6 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 
-const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
-const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
-const awsRegion = process.env.LOCAL_AWS_REGION;
-
 export async function getObjectMetadata(Bucket: string, Key: string) {
   const client = createS3Client();
   const command = new HeadObjectCommand({ Bucket, Key });
@@ -50,7 +46,7 @@ export async function getAllStorageObjectKeys(
   }
 }
 
-export const photographyFolder = "webp-photography/";
+export const photographyFolder = "photography/";
 
 export function createS3Client() {
   const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
@@ -68,6 +64,10 @@ export function createS3Client() {
 }
 
 export async function getS3Folders(prefix: string): Promise<string[]> {
+  const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
+  const awsRegion = process.env.LOCAL_AWS_REGION;
+
   if (!accessKeyId || !secretAccessKey || !awsRegion) {
     throw new Error("No AWS credentials provided");
   }
@@ -109,6 +109,12 @@ export const getDataFromS3 = async ({
   prefix,
   numberOfItems = 100,
 }: OptionsForS3) => {
+  const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
+  const awsRegion = process.env.LOCAL_AWS_REGION;
+
+  console.log(process.env);
+
   if (!accessKeyId || !secretAccessKey || !awsRegion) {
     throw new Error("No AWS credentials provided");
   }

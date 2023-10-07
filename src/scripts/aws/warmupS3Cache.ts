@@ -1,9 +1,9 @@
 import "dotenv/config";
-import { getDataFromS3, getListingS3 } from "src/lib/aws";
+import { getAllStorageObjectKeys, getDataFromS3 } from "src/lib/aws";
 import { mapToImageProps, nextImageUrl } from "src/lib/mapToImageProps";
 import axios from "axios";
 
-const imageKeys = await getListingS3();
+const imageKeys = await getAllStorageObjectKeys(process.env.AWS_BUCKET_NAME!);
 
 let totalInvocations = 0;
 

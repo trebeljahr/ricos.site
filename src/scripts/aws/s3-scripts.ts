@@ -32,7 +32,7 @@ export async function uploadWithMetadata(
   });
 
   try {
-    await client.send(command);
+    return await client.send(command);
   } catch (err) {
     console.error(err);
   }

@@ -27,7 +27,7 @@ export async function getAllStorageObjectKeys(
 
   try {
     let isTruncated = true;
-    let contents: string[] = [];
+    let keys: string[] = [];
 
     while (isTruncated) {
       const { Contents, IsTruncated, NextContinuationToken } =
@@ -37,11 +37,11 @@ export async function getAllStorageObjectKeys(
         throw new Error("Something went wrong on the S3 request!");
       }
 
-      contents = contents.concat(Contents.map(({ Key }) => Key || ""));
+      keys = keys.concat(Contents.map(({ Key }) => Key || ""));
       isTruncated = IsTruncated;
       command.input.ContinuationToken = NextContinuationToken;
     }
-    return contents;
+    return keys;
   } catch (err) {
     console.error(err);
     throw new Error("Something went wrong on the S3 request!");
@@ -106,45 +106,6 @@ type OptionsForS3 = {
   prefix?: string;
   numberOfItems?: number;
 };
-
-export async function getListingS3(prefix?: string) {
-  const accessKeyId = process.env.LOCAL_AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.LOCAL_AWS_SECRET_ACCESS_KEY;
-  const awsRegion = process.env.LOCAL_AWS_REGION;
-  const bucketName = process.env.LOCAL_AWS_BUCKET_NAME;
-
-  if (!accessKeyId || !secretAccessKey || !awsRegion || !bucketName) {
-    throw new Error("No AWS credentials provided");
-  }
-
-  const s3Client = new S3Client({
-    region: awsRegion,
-    credentials: { accessKeyId, secretAccessKey },
-  });
-
-  const allKeys: string[] = [];
-  let data: ListObjectsV2CommandOutput;
-  let NextContinuationToken;
-
-  do {
-    data = await s3Client.send(
-      new ListObjectsV2Command({
-        Bucket: bucketName,
-        Prefix: prefix,
-        ContinuationToken: NextContinuationToken,
-      })
-    );
-
-    data.Contents?.forEach(
-      (content) => content.Key && allKeys.push(content.Key)
-    );
-
-    NextContinuationToken = data.NextContinuationToken;
-    if (!NextContinuationToken) break;
-  } while (data.IsTruncated);
-
-  return allKeys;
-}
 
 export const getDataFromS3 = async ({
   prefix,

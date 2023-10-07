@@ -5,7 +5,9 @@ import { readdir } from "fs/promises";
 import inquirer from "inquirer";
 import path from "path";
 import { Pool, Worker, spawn } from "threads";
-import { uploadSingleFileToS3 } from "./s3-scripts";
+import { uploadSingleFileToS3, uploadWithMetadata } from "./s3-scripts";
+import { promises as fs } from "fs";
+import { getWidthAndHeight } from "./getWidthAndHeight";
 
 async function main() {
   const { dirPath } = await inquirer.prompt<{
@@ -24,9 +26,13 @@ async function main() {
 
   const folders = await listDirectories(dirPath);
 
-  for (const folder of folders) {
-    await uploadAllImagesFromDirectoryToS3(path.join(dirPath, folder));
-  }
+  // if (folders.length === 0) {
+  await uploadDir(dirPath);
+  // } else {
+  //   for (const folder of folders) {
+  //     await uploadAllImagesFromDirectoryToS3(path.join(dirPath, folder));
+  //   }
+  // }
 }
 
 main();
@@ -103,4 +109,43 @@ export async function findFiles(dir: string, pattern: RegExp) {
     }
   }
   return results;
+}
+
+async function uploadDir(directoryPath: string) {
+  async function getFiles(dir: string): Promise<string | string[]> {
+    const dirents = await fs.readdir(dir, { withFileTypes: true });
+    const files = await Promise.all(
+      dirents.map((dirent) => {
+        const res = path.resolve(dir, dirent.name);
+        return dirent.isDirectory() ? getFiles(res) : res;
+      })
+    );
+    return Array.prototype.concat(...files);
+  }
+
+  const files = (await getFiles(directoryPath)) as string[];
+
+  let counter = 1;
+
+  const dirName = path.basename(directoryPath);
+  const format = `${dirName} | {bar} | {percentage}% | {value}/{total} | {eta}s`;
+  const progress = new SingleBar({ format }, Presets.shades_classic);
+  progress.start(files.length, counter);
+
+  const uploads = files.map(async (filePath) => {
+    const data = await getWidthAndHeight(filePath);
+    const key = path.relative(
+      directoryPath.split("/").slice(0, -1).join("/"),
+      filePath
+    );
+    await uploadWithMetadata(filePath, key, {
+      width: String(data?.width),
+      height: String(data?.height),
+    });
+    progress.update(counter++);
+  });
+
+  await Promise.all(uploads);
+
+  progress.stop();
 }

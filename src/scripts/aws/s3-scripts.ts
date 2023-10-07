@@ -39,7 +39,7 @@ export async function uploadWithMetadata(
 }
 
 export async function readS3MetadataForAllStorageObjects(prefix: string) {
-  const bucketName = process.env.LOCAL_AWS_BUCKET_NAME;
+  const bucketName = process.env.AWS_BUCKET_NAME;
   if (!bucketName) throw new Error("No bucket name provided in .env file");
   const allKeys = await getAllStorageObjectKeys(bucketName, prefix);
 

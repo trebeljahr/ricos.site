@@ -6,12 +6,14 @@ export const imageSizes = [
 ];
 
 export function nextImageUrl(src: string, width: number) {
-  return `https://d2mpovkbhuoejh.cloudfront.net${src}?format=auto&width=${width}`;
+  return encodeURI(
+    `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net${src}?format=auto&width=${width}`
+  );
 }
 
 export function mapToImageProps(images: ImageDataFromAWS[], prefix: string) {
   return images.map(({ name, width, height }, index) => {
-    const src = `/${prefix}${name}`;
+    const src = encodeURI(`/${prefix}${name}`);
     return {
       width,
       height,

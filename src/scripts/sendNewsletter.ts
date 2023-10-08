@@ -10,8 +10,10 @@ import rehypeStringify from "rehype-stringify";
 import rehypeUrls from "rehype-urls";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
+import { URL } from "url";
+import { nextImageUrl } from "src/lib/mapToImageProps.js";
 
-const newsletterNumber = 25;
+const newsletterNumber = 26;
 
 const LIVE_HOST = "https://trebeljahr.com";
 
@@ -48,8 +50,11 @@ async function main() {
     data: { cover, title, excerpt },
   } = matter(mdFileRaw);
 
-  function addHost(url: any) {
-    if (url.href.startsWith("/")) {
+  function addHost(url: { href: string; path: string }) {
+    if (url.href.startsWith("/") && url.href.endsWith(".webp")) {
+      const smallImageUrl = nextImageUrl(url.href, 1024);
+      return smallImageUrl;
+    } else if (url.href.startsWith("/")) {
       return HOST + url.path;
     }
   }
@@ -114,7 +119,7 @@ async function main() {
     content: file.value,
     title: realTitle,
     excerpt: excerpt || defaultExcerpt,
-    coverImageSrc: `${HOST}${cover.src}`,
+    coverImageSrc: nextImageUrl(cover.src, 1024),
     coverImageAlt: cover.alt,
     webversion,
   });

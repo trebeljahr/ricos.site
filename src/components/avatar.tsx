@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { nextImageUrl } from "src/lib/mapToImageProps";
 
 type AvatarProps = {
   picture: string;
@@ -11,8 +10,7 @@ const Avatar = ({ picture }: AvatarProps) => {
       <Image
         src={picture}
         alt="Picture of the author"
-        placeholder="blur"
-        blurDataURL={nextImageUrl(picture, 16, 1)}
+        // placeholder="blur"
         className="round"
         fill
         sizes="100vw"

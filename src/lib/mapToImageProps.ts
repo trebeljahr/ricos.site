@@ -5,9 +5,9 @@ export const imageSizes = [
   3840,
 ];
 
-export function nextImageUrl(src: string, width: number, quality?: number) {
+export function nextImageUrl(src: string, width: number) {
   return encodeURI(
-    `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net${src}?format=auto&width=${width}&quality=${quality}`
+    `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net${src}?format=auto&width=${width}`
   );
 }
 

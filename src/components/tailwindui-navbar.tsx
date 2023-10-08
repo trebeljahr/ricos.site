@@ -9,7 +9,6 @@ import {
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
-import { nextImageUrl } from "src/lib/mapToImageProps";
 
 const navigation = ["posts", "newsletters", "photography"];
 const resources = ["needlestack", "booknotes", "podcastnotes", "quotes"];

@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { RenderPhotoProps } from "react-photo-album";
-import { nextImageUrl } from "src/lib/mapToImageProps";
 import { ImageProps } from "src/utils/types";
 
 export function NextJsImage({
@@ -16,8 +15,7 @@ export function NextJsImage({
         fill
         src={photo}
         priority={photo.index < 3}
-        placeholder="blur"
-        blurDataURL={nextImageUrl(photo.src, 16, 1)}
+        placeholder={"blurDataURL" in photo ? "blur" : undefined}
         {...{ alt, title, sizes, className, onClick }}
       />
     </div>

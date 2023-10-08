@@ -9,14 +9,14 @@ export function useScrollVisibility({
 }) {
   const [visible, setVisible] = useState(false);
 
-  const toggleVisible = () => {
-    const scrolled = document.documentElement.scrollTop;
-    const isVisible = scrolled > window.innerHeight * howFarDown;
-    if (!isVisible && hideAgain) setVisible(isVisible);
-    else if (isVisible) setVisible(isVisible);
-  };
-
   useEffect(() => {
+    const toggleVisible = () => {
+      const scrolled = document.documentElement.scrollTop;
+      const isVisible = scrolled > window.innerHeight * howFarDown;
+      if (!isVisible && hideAgain) setVisible(isVisible);
+      else if (isVisible) setVisible(isVisible);
+    };
+
     window.addEventListener("scroll", toggleVisible);
     return () => window.removeEventListener("scroll", toggleVisible);
   }, []);

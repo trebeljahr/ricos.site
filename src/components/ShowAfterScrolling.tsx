@@ -19,7 +19,7 @@ export function useScrollVisibility({
 
     window.addEventListener("scroll", toggleVisible);
     return () => window.removeEventListener("scroll", toggleVisible);
-  }, []);
+  }, [hideAgain, howFarDown]);
 
   return { visible, setVisible };
 }

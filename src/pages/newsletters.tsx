@@ -45,7 +45,7 @@ const Newsletters = ({ newsletterData }: Props) => {
               return (
                 <div
                   key={slug}
-                  className="cursor-pointer overflow-hidden lg:grid mb-8 md:mb-20"
+                  className="overflow-hidden lg:grid mb-8 md:mb-20"
                   style={{
                     gridTemplateColumns: "17rem auto",
                     gridColumnGap: "2rem",

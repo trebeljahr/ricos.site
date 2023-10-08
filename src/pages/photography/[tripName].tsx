@@ -86,13 +86,13 @@ export default function ImageGallery({
           <Lightbox
             open={isModalOpen}
             close={handleClose}
-            slides={displayedImages}
+            slides={images}
             index={currentImageIndex}
             plugins={[Thumbnails, Zoom]}
             thumbnails={{
               position: "bottom",
-              width: 100,
-              height: 100,
+              width: height < 500 ? 50 : 100,
+              height: height < 500 ? 50 : 100,
               border: 0,
               borderRadius: 4,
               padding: 0,

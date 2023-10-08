@@ -48,7 +48,7 @@ button {
 }
 
 .markdown-image {
-  width: var(--main-width);
+  width: 100%;
   position: relative;
 }
 

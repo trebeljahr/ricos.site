@@ -17,7 +17,7 @@ function isValidEmail(email: string) {
   return /\S+@\S+\.\S+/.test(email);
 }
 
-export const NewsletterForm = () => {
+function useNewsletterForm() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
@@ -57,60 +57,63 @@ export const NewsletterForm = () => {
     setEmail(event.target.value);
   };
 
-  return (
+  return {
+    loading,
+    handleInput,
+    handleSubmit,
+    success,
+    error,
+    email,
+  };
+}
+
+export const NewsletterForm = () => {
+  const form = useNewsletterForm();
+  return form.success ? (
+    <div>
+      <h2 className="pt-0">
+        Success <span className="icon-check-circle newsletter-success"></span>
+      </h2>
+      <p>{form.success}</p>
+    </div>
+  ) : (
     <div className="newsletter">
-      {success ? (
-        <>
-          <h2>
-            Success{" "}
-            <span className="icon-check-circle newsletter-success"></span>
-          </h2>
-          <p>{success}</p>
-        </>
-      ) : (
-        <>
-          <h2>Subscribe to Live and Learn</h2>
+      <h2>Subscribe to Live and Learn</h2>
 
-          <p>
-            Twice a month. Quotes, photos, booknotes and interesting links.
-            Bundled together in one heck of a Newsletter. No spam. No noise.{" "}
-          </p>
+      <p>
+        Twice a month. Quotes, photos, booknotes and interesting links. Bundled
+        together in one heck of a Newsletter. No spam. No noise.{" "}
+      </p>
 
-          {error && <p className="error">{error}</p>}
-          <div className="form">
-            <input
-              name="email"
-              type="email"
-              required
-              value={email}
-              placeholder="Your very best email"
-              onChange={handleInput}
-            />
-            <button
-              className={loading ? "inactive" : "active"}
-              onClick={handleSubmit}
-            >
-              {loading ? (
-                <ClipLoader
-                  color={"rgb(68, 160, 255)"}
-                  loading={true}
-                  size={20}
-                />
-              ) : (
-                "Subscribe"
-              )}
-            </button>
-          </div>
+      {form.error && <p className="error">{form.error}</p>}
+      <div className="form">
+        <input
+          name="email"
+          type="email"
+          required
+          value={form.email}
+          placeholder="Your very best email"
+          onChange={form.handleInput}
+        />
+        <button
+          className={form.loading ? "inactive" : "active"}
+          onClick={form.handleSubmit}
+        >
+          {form.loading ? (
+            <ClipLoader color={"rgb(68, 160, 255)"} loading={true} size={20} />
+          ) : (
+            "Subscribe"
+          )}
+        </button>
+      </div>
 
-          <Link
-            as="/newsletters"
-            href="/newsletters"
-            style={{ marginTop: "30px", fontSize: "20px" }}
-          >
-            Check out what you missed so far.
-          </Link>
-        </>
-      )}
+      <Link
+        as="/newsletters"
+        href="/newsletters"
+        style={{ marginTop: "30px", fontSize: "20px" }}
+      >
+        Check out what you missed so far.
+      </Link>
     </div>
   );
 };

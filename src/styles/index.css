@@ -487,17 +487,10 @@ code {
   height: auto;
 }
 
-.read-more {
-  margin-top: 10px;
-}
-
 .header h1 {
   max-width: fit-content;
 }
 
-.read-more a:hover {
-  color: var(--dark-blue);
-}
 
 a {
   color: var(--dark-blue);
@@ -692,7 +685,7 @@ li {
 
 @media only screen and (min-width: 600px) {
   :root {
-    --main-width: 440px;
+    --main-width: 500px;
   }
 
   #to-top-button {
@@ -730,10 +723,6 @@ li {
 
   p {
     margin-bottom: 1rem;
-  }
-
-  .read-more {
-    margin-top: 50px;
   }
 
   :root {

@@ -59,6 +59,7 @@ const Newsletter = ({
 }: Props) => {
   const fullTitle = title + " – Live and Learn #" + newsletterNumber;
   const url = `newsletters/${newsletterNumber}`;
+
   return (
     <Layout
       title={fullTitle}

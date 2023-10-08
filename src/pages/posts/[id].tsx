@@ -41,9 +41,9 @@ export const BlogLayout = ({
           />
           {children}
         </section>
-        <section className="main-section">
-          {morePosts && <ReadMore posts={morePosts} />}
+        <section>
           <NewsletterForm />
+          {morePosts && <ReadMore posts={morePosts} />}
           <ToTopButton />
         </section>
       </article>
@@ -78,7 +78,13 @@ export async function getStaticProps({ params }: Params) {
   const post = allPosts.find((post: Post) => post.id === params.id);
   const otherPosts = allPosts
     .filter((post) => post.id !== params.id)
-    .map(({ title, slug, cover, id }) => ({ title, slug, cover, id }));
+    .map(({ title, slug, cover, id, excerpt }) => ({
+      title,
+      slug,
+      cover,
+      id,
+      excerpt,
+    }));
   const morePosts = getRandom(otherPosts, 3);
 
   return { props: { post, morePosts } };

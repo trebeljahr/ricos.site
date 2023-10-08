@@ -76,28 +76,88 @@ export const NewsletterModalPopup = () => {
   const [open, setOpen] = useState(true);
   const { visible } = useScrollVisibility({
     hideAgain: false,
-    howFarDown: 1.2,
+    howFarDown: 1.5,
   });
 
   function closeModal() {
     setOpen(false);
+    localStorage.setItem("newsletter-popup", "closed");
   }
+
+  useEffect(() => {
+    if (!localStorage) return;
+    setOpen(localStorage.getItem("newsletter-popup") !== "closed");
+  }, []);
+
+  useEffect(() => {
+    if (!document) return;
+
+    const root = document.getElementById("__next");
+    if (!root) return;
+
+    if (open && visible) {
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+      root.style.overflow = "hidden";
+    } else {
+      document.documentElement.style.overflow = "auto";
+      document.body.style.overflow = "auto";
+      root.style.overflow = "auto";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+      document.body.style.overflow = "auto";
+      root.style.overflow = "auto";
+    };
+  }, [open, visible]);
 
   return (
     <Modal
-      isOpen={visible && open}
+      isOpen={open}
       onRequestClose={closeModal}
-      contentLabel="Example Modal"
+      contentLabel="Newsletter Popup Form"
+      style={{
+        overlay: {
+          visibility: visible ? "visible" : "hidden",
+          transition: "visibility 0.5s linear,opacity 0.5s linear",
+          opacity: visible ? 1 : 0,
+          zIndex: 100,
+        },
+        content: {
+          visibility: visible ? "visible" : "hidden",
+          transition: "visibility 0.3s linear,opacity 0.3s linear",
+          opacity: visible ? 1 : 0,
+          zIndex: 100,
+        },
+      }}
+      className="fixed overflow-hidden flex items-center justify-center top-0 left-0 bg-white w-screen h-screen"
     >
-      <NewsletterForm
-        heading={<h2>Not subscribed yet?</h2>}
-        text={<></>}
-        link={
-          <button onClick={() => setOpen(false)} className="block text-black">
-            Or simply keep reading...
-          </button>
-        }
-      />
+      <div className="w-3/6">
+        <NewsletterForm
+          heading={<h2>Not subscribed yet?</h2>}
+          text={<></>}
+          link={
+            <button onClick={closeModal} className="flex text-black mt-10">
+              <span>Continue Reading</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                />
+              </svg>
+            </button>
+          }
+        />
+      </div>
     </Modal>
   );
 };
@@ -113,11 +173,7 @@ export const NewsletterForm = ({
 }) => {
   const form = useNewsletterForm();
   const defaultLink = (
-    <Link
-      as="/newsletters"
-      href="/newsletters"
-      style={{ marginTop: "30px", fontSize: "20px" }}
-    >
+    <Link as="/newsletters" href="/newsletters" className="block mt-5">
       Check out what you missed so far.
     </Link>
   );
@@ -137,9 +193,10 @@ export const NewsletterForm = ({
         Success <span className="icon-check-circle newsletter-success"></span>
       </h2>
       <p>{form.success}</p>
+      {link || null}
     </div>
   ) : (
-    <div className="newsletter ">
+    <div>
       {heading || defaultHeading}
       {text || defaultText}
 
@@ -149,8 +206,9 @@ export const NewsletterForm = ({
           name="email"
           type="email"
           required
+          className="newsletter-input"
           value={form.email}
-          placeholder="Your very best email"
+          placeholder="Type your email..."
           onChange={form.handleInput}
         />
         <button

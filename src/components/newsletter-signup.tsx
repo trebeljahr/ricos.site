@@ -1,6 +1,9 @@
 import Link from "next/link";
-import { ChangeEvent, MouseEvent, useState } from "react";
+import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
+import { ReactElement } from "react-markdown/lib/react-markdown";
+import Modal from "react-modal";
 import { ClipLoader } from "react-spinners";
+import { ShowAfterScrolling, useScrollVisibility } from "./ShowAfterScrolling";
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
   const response = await fetch(input, init);
@@ -67,8 +70,67 @@ function useNewsletterForm() {
   };
 }
 
-export const NewsletterForm = () => {
+Modal.setAppElement("#__next");
+
+export const NewsletterModalPopup = () => {
+  const [open, setOpen] = useState(true);
+  const { visible } = useScrollVisibility({
+    hideAgain: false,
+    howFarDown: 1.2,
+  });
+
+  function closeModal() {
+    setOpen(false);
+  }
+
+  return (
+    <Modal
+      isOpen={visible && open}
+      onRequestClose={closeModal}
+      contentLabel="Example Modal"
+    >
+      <NewsletterForm
+        heading={<h2>Not subscribed yet?</h2>}
+        text={<></>}
+        link={
+          <button onClick={() => setOpen(false)} className="block text-black">
+            Or simply keep reading...
+          </button>
+        }
+      />
+    </Modal>
+  );
+};
+
+export const NewsletterForm = ({
+  link,
+  heading,
+  text,
+}: {
+  link?: ReactElement;
+  heading?: ReactElement;
+  text?: ReactElement;
+}) => {
   const form = useNewsletterForm();
+  const defaultLink = (
+    <Link
+      as="/newsletters"
+      href="/newsletters"
+      style={{ marginTop: "30px", fontSize: "20px" }}
+    >
+      Check out what you missed so far.
+    </Link>
+  );
+
+  const defaultText = (
+    <p>
+      Twice a month. Quotes, photos, booknotes and interesting links. Bundled
+      together in one heck of a Newsletter. No spam. No noise.{" "}
+    </p>
+  );
+
+  const defaultHeading = <h2>Subscribe to Live and Learn</h2>;
+
   return form.success ? (
     <div>
       <h2 className="pt-0">
@@ -77,13 +139,9 @@ export const NewsletterForm = () => {
       <p>{form.success}</p>
     </div>
   ) : (
-    <div className="newsletter">
-      <h2>Subscribe to Live and Learn</h2>
-
-      <p>
-        Twice a month. Quotes, photos, booknotes and interesting links. Bundled
-        together in one heck of a Newsletter. No spam. No noise.{" "}
-      </p>
+    <div className="newsletter ">
+      {heading || defaultHeading}
+      {text || defaultText}
 
       {form.error && <p className="error">{form.error}</p>}
       <div className="form">
@@ -96,7 +154,9 @@ export const NewsletterForm = () => {
           onChange={form.handleInput}
         />
         <button
-          className={form.loading ? "inactive" : "active"}
+          className={
+            "newsletter-button " + (form.loading ? "inactive" : "active")
+          }
           onClick={form.handleSubmit}
         >
           {form.loading ? (
@@ -105,15 +165,8 @@ export const NewsletterForm = () => {
             "Subscribe"
           )}
         </button>
+        {link || defaultLink}
       </div>
-
-      <Link
-        as="/newsletters"
-        href="/newsletters"
-        style={{ marginTop: "30px", fontSize: "20px" }}
-      >
-        Check out what you missed so far.
-      </Link>
     </div>
   );
 };

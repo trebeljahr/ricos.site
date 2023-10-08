@@ -39,7 +39,7 @@
   margin-bottom: 1em;
 }
 
-.newsletter button {
+.newsletter-button {
   padding: 0.5em 1em;
   width: 100%;
   font-size: 1rem;
@@ -47,22 +47,23 @@
   cursor: pointer;
 }
 
-.newsletter button.active:hover {
+.newsletter-button.active:hover {
   background-color: var(--blue);
 }
 
-.newsletter button.active {
+.newsletter-button.active {
   background-color: var(--dark-blue);
+} 
+
+.newsletter-button.inactive {
+  cursor: default;
+  background-color: var(--light-blue);
 }
 
 .newsletter-success {
   color: var(--success-green);
 }
 
-.newsletter button.inactive {
-  cursor: default;
-  background-color: var(--light-blue);
-}
 
 .newsletter input {
   width: 100%;

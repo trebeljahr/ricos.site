@@ -1,14 +1,17 @@
 import { allNewsletters, Newsletter } from "@contentlayer/generated";
 import Image from "next/image";
 import Link from "next/link";
+import { BreadCrumbs } from "src/components/BreadCrumbs";
+import { ShowAfterScrolling } from "src/components/ShowAfterScrolling";
+import { nextImageUrl } from "src/lib/mapToImageProps";
 import Layout from "../../components/layout";
-import { NewsletterForm } from "../../components/newsletter-signup";
+import {
+  NewsletterForm,
+  NewsletterModalPopup,
+} from "../../components/newsletter-signup";
 import { PostBodyWithoutExcerpt } from "../../components/post-body";
 import PostHeader from "../../components/post-header";
 import { ToTopButton } from "../../components/ToTopButton";
-import { nextImageUrl } from "src/lib/mapToImageProps";
-import { ShowAfterScrolling } from "src/components/ShowAfterScrolling";
-import { BreadCrumbs } from "src/components/BreadCrumbs";
 
 const NextAndPrevArrows = ({
   nextPost,
@@ -18,9 +21,9 @@ const NextAndPrevArrows = ({
   prevPost: null | number;
 }) => {
   return (
-    <>
-      {prevPost && (
-        <ShowAfterScrolling>
+    <ShowAfterScrolling>
+      <>
+        {prevPost && (
           <Link
             href={`/newsletters/${prevPost}`}
             className="page-arrow left"
@@ -28,10 +31,8 @@ const NextAndPrevArrows = ({
           >
             <span className="icon-arrow-left" />
           </Link>
-        </ShowAfterScrolling>
-      )}
-      {nextPost && (
-        <ShowAfterScrolling>
+        )}
+        {nextPost && (
           <Link
             href={`/newsletters/${nextPost}`}
             className="page-arrow right"
@@ -39,9 +40,9 @@ const NextAndPrevArrows = ({
           >
             <span className="icon-arrow-right" />
           </Link>
-        </ShowAfterScrolling>
-      )}
-    </>
+        )}
+      </>
+    </ShowAfterScrolling>
   );
 };
 
@@ -66,6 +67,8 @@ const Newsletter = ({
       image={cover.src}
       imageAlt={cover.alt}
     >
+      <NewsletterModalPopup />
+
       <article className="newsletter-article">
         <section className="post-body main-section mt-2">
           <BreadCrumbs path={url} />
@@ -91,7 +94,6 @@ const Newsletter = ({
           </div>
           <PostBodyWithoutExcerpt content={body.raw} />
         </section>
-
         <section className="main-section">
           <NextAndPrevArrows nextPost={nextPost} prevPost={prevPost} />
           <NewsletterForm />

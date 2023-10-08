@@ -11,7 +11,7 @@ export const ReadMore = ({ posts }: Props) => {
     <div className="mt-10">
       <h2>Keep reading:</h2>
       {posts.map((post) => {
-        return <PostPreview post={post} isHeroPost={false} />;
+        return <PostPreview key={post.title} post={post} isHeroPost={false} />;
       })}
     </div>
   );

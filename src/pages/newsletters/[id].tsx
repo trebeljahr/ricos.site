@@ -63,7 +63,7 @@ const Newsletter = ({
         <section className="post-body main-section">
           <PostHeader title={fullTitle} />
           {excerpt && <p>{excerpt}</p>}
-          <div className="header-image-container">
+          <div className="header-image-container mb-5">
             <Image
               priority
               src={cover.src}

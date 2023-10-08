@@ -32,7 +32,7 @@ export function BreadCrumbs({ path }: { path: string }) {
             Home
           </Link>
         </li>
-        {pathParts.map((part) => {
+        {pathParts.map((part, index) => {
           return (
             <li key={part}>
               <div className="flex items-center">
@@ -52,7 +52,7 @@ export function BreadCrumbs({ path }: { path: string }) {
                   />
                 </svg>
                 <Link
-                  href={"/" + part}
+                  href={"/" + pathParts.slice(0, index + 1).join("/")}
                   className="ml-1 text-sm font-medium text-gray-700 hover:text-blue md:ml-2"
                 >
                   {turnKebabIntoTitleCase(part)}

@@ -5,6 +5,7 @@ import Layout from "../components/layout";
 import { NewsletterForm } from "../components/newsletter-signup";
 import Image from "next/image";
 import { nextImageUrl } from "src/lib/mapToImageProps";
+import { shimmer, toBase64 } from "src/lib/shimmer";
 
 type NewsletterData = {
   slug: string;
@@ -38,49 +39,51 @@ const Newsletters = ({ newsletterData }: Props) => {
     >
       <article className="posts-overview">
         <section className="main-section">
-          {newsletterData.map(
-            ({ slug, newsletterNumber, title, excerpt, cover }, index) => {
-              const priority = index <= 1;
+          {newsletterData.map((newsletter, index) => {
+            const { slug, newsletterNumber, title, excerpt, cover } =
+              newsletter;
+            const priority = index <= 1;
 
-              return (
-                <div
-                  key={slug}
-                  className="cursor-pointer overflow-hidden lg:grid mb-8 md:mb-20"
-                  style={{
-                    gridTemplateColumns: "17rem auto",
-                    gridColumnGap: "2rem",
-                  }}
-                >
-                  <div className="lg:h-full h-56 mb-4 relative">
-                    <Image
-                      src={cover.src}
-                      alt={cover.alt}
-                      fill
-                      sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
-                        priority ? 780 : 357
-                      }`}
-                      placeholder="blur"
-                      blurDataURL={nextImageUrl(cover.src, 16, 1)}
-                      priority={priority}
-                      className="rounded-md"
-                      style={{
-                        objectFit: "cover",
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <Link href={slug}>
-                      <h2 className="pt-0">
-                        {title} | Live and Learn #{newsletterNumber}
-                      </h2>
-                    </Link>
-
-                    <p>{excerpt}</p>
-                  </div>
+            return (
+              <div
+                key={slug}
+                className="cursor-pointer overflow-hidden lg:grid mb-8 md:mb-20"
+                style={{
+                  gridTemplateColumns: "17rem auto",
+                  gridColumnGap: "2rem",
+                }}
+              >
+                <div className="lg:h-full h-56 mb-4 relative">
+                  <Image
+                    src={cover.src}
+                    alt={cover.alt}
+                    fill
+                    sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
+                      priority ? 780 : 357
+                    }`}
+                    placeholder="blur"
+                    blurDataURL={`data:image/svg+xml;base64,${toBase64(
+                      shimmer(32, 32)
+                    )}`}
+                    priority={priority}
+                    className="rounded-md"
+                    style={{
+                      objectFit: "cover",
+                    }}
+                  />
                 </div>
-              );
-            }
-          )}
+                <div>
+                  <Link href={slug}>
+                    <h2 className="pt-0">
+                      {title} | Live and Learn #{newsletterNumber}
+                    </h2>
+                  </Link>
+
+                  <p>{excerpt}</p>
+                </div>
+              </div>
+            );
+          })}
         </section>
         <section className="main-section">
           <NewsletterForm />

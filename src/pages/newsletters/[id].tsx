@@ -1,12 +1,12 @@
 import { allNewsletters, Newsletter } from "@contentlayer/generated";
 import Image from "next/image";
 import Link from "next/link";
+import { shimmer, toBase64 } from "src/lib/shimmer";
 import Layout from "../../components/layout";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import { PostBodyWithoutExcerpt } from "../../components/post-body";
 import PostHeader from "../../components/post-header";
 import { ToTopButton } from "../../components/ToTopButton";
-import { nextImageUrl } from "src/lib/mapToImageProps";
 
 const NextAndPrevArrows = ({
   nextPost,
@@ -70,7 +70,9 @@ const Newsletter = ({
               width={cover.width || 1}
               height={cover.height || 1}
               placeholder="blur"
-              blurDataURL={nextImageUrl(cover.src, 16, 1)}
+              blurDataURL={`data:image/svg+xml;base64,${toBase64(
+                shimmer(cover.width || 32, cover.height || 32)
+              )}`}
               alt={cover.alt}
               sizes="100vw"
               style={{

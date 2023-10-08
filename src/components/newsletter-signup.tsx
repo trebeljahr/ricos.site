@@ -3,7 +3,7 @@ import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import { ReactElement } from "react-markdown/lib/react-markdown";
 import Modal from "react-modal";
 import { ClipLoader } from "react-spinners";
-import { ShowAfterScrolling, useScrollVisibility } from "./ShowAfterScrolling";
+import { useScrollVisibility } from "./ShowAfterScrolling";
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
   const response = await fetch(input, init);

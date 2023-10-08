@@ -46,6 +46,7 @@ export default function MidjourneyGallery({
           loadMore={loadMoreImages}
           hasMore={displayedImages.length < images.length}
           loader={<div className="loader" key="0"></div>}
+          threshold={500}
         >
           <PhotoAlbum
             photos={displayedImages}

@@ -1,8 +1,14 @@
 import { allNewsletters, Newsletter } from "@contentlayer/generated";
 import Image from "next/image";
 import Link from "next/link";
+import { BreadCrumbs } from "src/components/BreadCrumbs";
+import { ShowAfterScrolling } from "src/components/ShowAfterScrolling";
+import { nextImageUrl } from "src/lib/mapToImageProps";
 import Layout from "../../components/layout";
-import { NewsletterForm } from "../../components/newsletter-signup";
+import {
+  NewsletterForm,
+  NewsletterModalPopup,
+} from "../../components/newsletter-signup";
 import { PostBodyWithoutExcerpt } from "../../components/post-body";
 import PostHeader from "../../components/post-header";
 import { ToTopButton } from "../../components/ToTopButton";
@@ -15,26 +21,28 @@ const NextAndPrevArrows = ({
   prevPost: null | number;
 }) => {
   return (
-    <>
-      {prevPost && (
-        <Link
-          href={`/newsletters/${prevPost}`}
-          className="page-arrow left"
-          passHref
-        >
-          <span className="icon-arrow-left" />
-        </Link>
-      )}
-      {nextPost && (
-        <Link
-          href={`/newsletters/${nextPost}`}
-          className="page-arrow right"
-          passHref
-        >
-          <span className="icon-arrow-right" />
-        </Link>
-      )}
-    </>
+    <ShowAfterScrolling>
+      <>
+        {prevPost && (
+          <Link
+            href={`/newsletters/${prevPost}`}
+            className="page-arrow left"
+            passHref
+          >
+            <span className="icon-arrow-left" />
+          </Link>
+        )}
+        {nextPost && (
+          <Link
+            href={`/newsletters/${nextPost}`}
+            className="page-arrow right"
+            passHref
+          >
+            <span className="icon-arrow-right" />
+          </Link>
+        )}
+      </>
+    </ShowAfterScrolling>
   );
 };
 
@@ -50,19 +58,25 @@ const Newsletter = ({
   prevPost,
 }: Props) => {
   const fullTitle = title + " – Live and Learn #" + newsletterNumber;
+  const url = `newsletters/${newsletterNumber}`;
+
   return (
     <Layout
       title={fullTitle}
       description={excerpt || ""}
-      url={`newsletters/${newsletterNumber}`}
+      url={url}
       image={cover.src}
       imageAlt={cover.alt}
     >
+      <NewsletterModalPopup />
+
       <article className="newsletter-article">
-        <section className="post-body main-section">
+        <section className="post-body main-section mt-2">
+          <BreadCrumbs path={url} />
+
           <PostHeader title={fullTitle} />
           {excerpt && <p>{excerpt}</p>}
-          <div className="header-image-container">
+          <div className="header-image-container mb-5">
             <Image
               priority
               src={cover.src}
@@ -79,7 +93,6 @@ const Newsletter = ({
           </div>
           <PostBodyWithoutExcerpt content={body.raw} />
         </section>
-
         <section className="main-section">
           <NextAndPrevArrows nextPost={nextPost} prevPost={prevPost} />
           <NewsletterForm />

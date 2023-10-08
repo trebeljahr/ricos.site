@@ -1,5 +1,6 @@
 import { Post } from "@contentlayer/generated";
 import Link from "next/link";
+import { PostPreview } from "./post-preview";
 
 type Props = {
   posts: Post[];
@@ -7,16 +8,10 @@ type Props = {
 
 export const ReadMore = ({ posts }: Props) => {
   return (
-    <div className="read-more">
+    <div className="mt-10">
       <h2>Keep reading:</h2>
-      {posts.map(({ slug, title }) => {
-        return (
-          <h3 key={slug}>
-            <Link as={slug} href={slug}>
-              {title}
-            </Link>
-          </h3>
-        );
+      {posts.map((post) => {
+        return <PostPreview key={post.title} post={post} isHeroPost={false} />;
       })}
     </div>
   );

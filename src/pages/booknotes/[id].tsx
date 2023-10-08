@@ -9,6 +9,7 @@ import { NewsletterForm } from "../../components/newsletter-signup";
 import { Booknote, allBooknotes } from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { MarkdownRenderers } from "src/components/CustomRenderers";
+import { BreadCrumbs } from "src/components/BreadCrumbs";
 
 type Props = {
   book: Booknote;
@@ -52,18 +53,18 @@ const Book = ({ book }: Props) => {
     <Layout
       title={book.title}
       description={book.excerpt || defaultDescription}
-      url={`books/${book.id}`}
+      url={`booknotes/${book.id}`}
     >
-      <article>
-        <section className="book-info main-section">
-          <div className="book-cover-image">
+      <article className="main-section">
+        <BreadCrumbs path={`booknotes/${book.id}`} />
+        <section className="main-section flex">
+          <div className="block relative mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
             <BookCover
               title={book.title}
               src={book.bookCover}
               priority={true}
             />
           </div>
-
           <div className="book-preview-text">
             <PostTitle>{book.title}</PostTitle>
             <PostSubTitle>{book.subtitle}</PostSubTitle>

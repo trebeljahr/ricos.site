@@ -14,7 +14,13 @@ export function BreadCrumbs({ path }: { path: string }) {
 
   return (
     <nav className="flex" aria-label="Breadcrumb">
-      <ol className="inline-flex items-center space-x-1 md:space-x-3">
+      <ol
+        className="inline-flex items-center space-x-1 md:space-x-3"
+        style={{
+          listStyle: "none",
+          paddingLeft: 0,
+        }}
+      >
         <li className="inline-flex items-center">
           <Link
             href="/"
@@ -32,7 +38,7 @@ export function BreadCrumbs({ path }: { path: string }) {
             Home
           </Link>
         </li>
-        {pathParts.map((part) => {
+        {pathParts.map((part, index) => {
           return (
             <li key={part}>
               <div className="flex items-center">
@@ -52,7 +58,7 @@ export function BreadCrumbs({ path }: { path: string }) {
                   />
                 </svg>
                 <Link
-                  href={"/" + part}
+                  href={"/" + pathParts.slice(0, index + 1).join("/")}
                   className="ml-1 text-sm font-medium text-gray-700 hover:text-blue md:ml-2"
                 >
                   {turnKebabIntoTitleCase(part)}

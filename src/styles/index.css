@@ -48,7 +48,7 @@ button {
 }
 
 .markdown-image {
-  width: var(--main-width);
+  width: 100%;
   position: relative;
 }
 
@@ -97,8 +97,8 @@ a {
   width: 2em;
   height: 2em;
   border-radius: 100%;
-  bottom: 10vmin;
-  right: 10vmin;
+  bottom: 2vmin;
+  right: 2vmin;
   border: none;
   color: black;
   background-color: var(--light-blue);
@@ -404,14 +404,6 @@ code {
   background-color: rgb(197, 201, 203);
 }
 
-.book-cover-image {
-  width: 40%;
-  position: relative;
-  display: block;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
 .SATWithResponseContainer {
   position: relative;
 }
@@ -495,17 +487,10 @@ code {
   height: auto;
 }
 
-.read-more {
-  margin-top: 10px;
-}
-
 .header h1 {
   max-width: fit-content;
 }
 
-.read-more a:hover {
-  color: var(--dark-blue);
-}
 
 a {
   color: var(--dark-blue);
@@ -541,9 +526,6 @@ li {
   margin-bottom: 10px;
 }
 
-.book-info {
-  margin-bottom: 1rem;
-}
 
 .book-preview {
   display: flex;
@@ -561,9 +543,6 @@ li {
   padding-top: 0;
 }
 
-.book-preview-heading {
-  display: flex;
-}
 
 .book-preview-text > h2 {
   padding-top: 0.2rem;
@@ -583,8 +562,7 @@ li {
   padding: 0;
 }
 
-.Podcastnote-link-card,
-.allBooknotes > .book-info {
+.Podcastnote-link-card {
   padding-bottom: 30px;
   padding-top: 30px;
   margin-bottom: 30px;
@@ -700,19 +678,19 @@ li {
   content: "\eac9";
 }
 
+
 :root {
   --main-width: 300px;
 }
 
 @media only screen and (min-width: 600px) {
   :root {
-    --main-width: 440px;
+    --main-width: 500px;
   }
 
-  .book-info > .book-cover-image {
-    margin: 0;
-    width: calc(var(--main-width) / 2);
-    position: relative;
+  #to-top-button {
+    right: 8vmin;
+    bottom: 4vmin;
   }
 
   .book-preview-text {
@@ -747,10 +725,6 @@ li {
     margin-bottom: 1rem;
   }
 
-  .read-more {
-    margin-top: 50px;
-  }
-
   :root {
     font-size: 21px;
   }
@@ -765,9 +739,7 @@ li {
     list-style: decimal outside;
   }
 
-  .book-info {
-    display: flex;
-  }
+ 
 }
 
 canvas {

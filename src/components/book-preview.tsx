@@ -13,12 +13,16 @@ export function BookPreview({ book, index }: Props) {
 
   const defaultExcerpt = "";
   return (
-    <div className="book-info">
-      <Link as={slug} href={slug} className="book-cover-image">
-        <BookCover title={title} src={bookCover} priority={index === 0} />
-      </Link>
-      <div className="book-preview-text">
-        <div className="book-preview-heading">
+    <div className="flex flex-col py-5 pr-5 mb-5">
+      <div className="flex">
+        <Link
+          as={slug}
+          href={slug}
+          className="block relative mb-2 w-60 overflow-hidden rounded-md"
+        >
+          <BookCover title={title} src={bookCover} priority={index === 0} />
+        </Link>
+        <div className="flex flex-col pl-5">
           <Link as={slug} href={slug}>
             <p>
               <b>
@@ -27,15 +31,18 @@ export function BookPreview({ book, index }: Props) {
               by {bookAuthor}
             </p>
           </Link>
+          <p>
+            <b>Rated: {rating}/10</b>
+          </p>
         </div>
-        <p>
-          <b>Rated: {rating}/10</b>
-        </p>
+      </div>
+
+      <div className="pt-2">
         {excerpt ? (
           <>
-            <p>{excerpt}</p>
+            <p className="mb-2">{excerpt}</p>
             <Link as={slug} href={slug}>
-              <p>Read full book notes</p>
+              <p className="mb-0">Read full book notes</p>
             </Link>
           </>
         ) : (

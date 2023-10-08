@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { shimmer, toBase64 } from "src/lib/shimmer";
+import { nextImageUrl } from "src/lib/mapToImageProps";
 
 type AvatarProps = {
   picture: string;
@@ -12,7 +12,7 @@ const Avatar = ({ picture }: AvatarProps) => {
         src={picture}
         alt="Picture of the author"
         placeholder="blur"
-        blurDataURL={`data:image/svg+xml;base64,${toBase64(shimmer(32, 32))}`}
+        blurDataURL={nextImageUrl(picture, 16, 1)}
         className="round"
         fill
         sizes="100vw"

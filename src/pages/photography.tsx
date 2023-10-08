@@ -5,7 +5,6 @@ import { mapToImageProps, nextImageUrl } from "src/lib/mapToImageProps";
 import { ImageProps } from "src/utils/types";
 import Layout from "../components/layout";
 import { turnKebabIntoTitleCase } from "src/components/BreadCrumbs";
-import { shimmer, toBase64 } from "src/lib/shimmer";
 
 const tripNames = [
   "alps",
@@ -54,9 +53,7 @@ export default function Photography({
                 src={image.src}
                 sizes={"calc(50vw - 40px)"}
                 placeholder="blur"
-                blurDataURL={`data:image/svg+xml;base64,${toBase64(
-                  shimmer(image.width, image.height)
-                )}`}
+                blurDataURL={nextImageUrl(image.src, 16, 1)}
                 fill
                 priority={index <= 3}
                 alt={"A photo from " + tripName}

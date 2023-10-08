@@ -2,13 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   AnchorHTMLAttributes,
+  DetailedHTMLProps,
   HTMLAttributes,
   ImgHTMLAttributes,
   useEffect,
   useState,
 } from "react";
-import { shimmer, toBase64 } from "src/lib/shimmer";
 import { ExternalLink } from "./ExternalLink";
+import { nextImageUrl } from "src/lib/mapToImageProps";
 
 export const ImageRenderer = ({
   src,
@@ -34,9 +35,7 @@ export const ImageRenderer = ({
           priority={!!isPriority}
           width={parseFloat(width)}
           placeholder="blur"
-          blurDataURL={`data:image/svg+xml;base64,${toBase64(
-            shimmer(parseFloat(width), parseFloat(height))
-          )}`}
+          blurDataURL={nextImageUrl(src, 16, 1)}
           height={parseFloat(height)}
           sizes="100vw"
           style={{

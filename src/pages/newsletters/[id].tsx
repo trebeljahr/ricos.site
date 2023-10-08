@@ -7,6 +7,8 @@ import { PostBodyWithoutExcerpt } from "../../components/post-body";
 import PostHeader from "../../components/post-header";
 import { ToTopButton } from "../../components/ToTopButton";
 import { nextImageUrl } from "src/lib/mapToImageProps";
+import { ShowAfterScrolling } from "src/components/ShowAfterScrolling";
+import { BreadCrumbs } from "src/components/BreadCrumbs";
 
 const NextAndPrevArrows = ({
   nextPost,
@@ -18,22 +20,26 @@ const NextAndPrevArrows = ({
   return (
     <>
       {prevPost && (
-        <Link
-          href={`/newsletters/${prevPost}`}
-          className="page-arrow left"
-          passHref
-        >
-          <span className="icon-arrow-left" />
-        </Link>
+        <ShowAfterScrolling>
+          <Link
+            href={`/newsletters/${prevPost}`}
+            className="page-arrow left"
+            passHref
+          >
+            <span className="icon-arrow-left" />
+          </Link>
+        </ShowAfterScrolling>
       )}
       {nextPost && (
-        <Link
-          href={`/newsletters/${nextPost}`}
-          className="page-arrow right"
-          passHref
-        >
-          <span className="icon-arrow-right" />
-        </Link>
+        <ShowAfterScrolling>
+          <Link
+            href={`/newsletters/${nextPost}`}
+            className="page-arrow right"
+            passHref
+          >
+            <span className="icon-arrow-right" />
+          </Link>
+        </ShowAfterScrolling>
       )}
     </>
   );
@@ -51,16 +57,19 @@ const Newsletter = ({
   prevPost,
 }: Props) => {
   const fullTitle = title + " – Live and Learn #" + newsletterNumber;
+  const url = `newsletters/${newsletterNumber}`;
   return (
     <Layout
       title={fullTitle}
       description={excerpt || ""}
-      url={`newsletters/${newsletterNumber}`}
+      url={url}
       image={cover.src}
       imageAlt={cover.alt}
     >
       <article className="newsletter-article">
-        <section className="post-body main-section">
+        <section className="post-body main-section mt-2">
+          <BreadCrumbs path={url} />
+
           <PostHeader title={fullTitle} />
           {excerpt && <p>{excerpt}</p>}
           <div className="header-image-container mb-5">

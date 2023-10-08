@@ -97,8 +97,8 @@ a {
   width: 2em;
   height: 2em;
   border-radius: 100%;
-  bottom: 10vmin;
-  right: 10vmin;
+  bottom: 2vmin;
+  right: 2vmin;
   border: none;
   color: black;
   background-color: var(--light-blue);
@@ -685,6 +685,7 @@ li {
   content: "\eac9";
 }
 
+
 :root {
   --main-width: 300px;
 }
@@ -692,6 +693,11 @@ li {
 @media only screen and (min-width: 600px) {
   :root {
     --main-width: 440px;
+  }
+
+  #to-top-button {
+    right: 8vmin;
+    bottom: 4vmin;
   }
 
   .book-preview-text {

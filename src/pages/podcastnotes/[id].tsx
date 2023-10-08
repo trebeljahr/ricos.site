@@ -7,6 +7,7 @@ import { NewsletterForm } from "../../components/newsletter-signup";
 import { Podcastnote, allPodcastnotes } from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { MarkdownRenderers } from "src/components/CustomRenderers";
+import { BreadCrumbs } from "src/components/BreadCrumbs";
 
 type Props = {
   Podcastnote: Podcastnote;
@@ -18,20 +19,22 @@ const PodcastnoteComponent = ({ Podcastnote }: Props) => {
 };
 
 const Podcastnote = ({ Podcastnote }: Props) => {
+  const url = `podcastnotes/${Podcastnote.id}`;
   return (
     <Layout
       title={`${Podcastnote.displayTitle}`}
       description={`These are my Podcast Notes for ${Podcastnote.title}. ${Podcastnote.excerpt}`}
-      url={`podcastnotes/${Podcastnote.id}`}
+      url={url}
     >
       <article>
         <section className="Podcastnote-info main-section main-text">
+          <BreadCrumbs path={url} />
           <div className="Podcastnote-preview-text">
-            <h2>
+            <h2 className="mt-0 pt-0">
               {Podcastnote.show} | Episode – {Podcastnote.episode}
             </h2>
 
-            <h1>{Podcastnote.title}</h1>
+            <h1 className="pt-4">{Podcastnote.title}</h1>
             <p>
               <b>Rating: {Podcastnote.rating}/10</b>
             </p>

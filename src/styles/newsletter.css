@@ -81,22 +81,32 @@
 }
 
 .page-arrow {
-  display: none;
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+  width: 2em;
+  height: 2em;
+  z-index: 2;
+  bottom: 2vmin;
+  color: black;
+  background: var(--light-blue);
+}
+
+@media only screen and (max-width: 600px) {
+  .page-arrow.right {
+    left: 40px;
+  }
+
+  .page-arrow.left {
+    left: 5px;
+  }
 }
 
 @media only screen and (min-width: 600px) {
   .page-arrow {
-    position: fixed;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1rem;
-    width: 2em;
-    height: 2em;
-    z-index: 2;
     top: 50%;
-    color: black;
-    background: var(--light-blue);
   }
 
   .page-arrow:hover {

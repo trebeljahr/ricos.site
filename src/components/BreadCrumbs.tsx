@@ -14,7 +14,13 @@ export function BreadCrumbs({ path }: { path: string }) {
 
   return (
     <nav className="flex" aria-label="Breadcrumb">
-      <ol className="inline-flex items-center space-x-1 md:space-x-3">
+      <ol
+        className="inline-flex items-center space-x-1 md:space-x-3"
+        style={{
+          listStyle: "none",
+          paddingLeft: 0,
+        }}
+      >
         <li className="inline-flex items-center">
           <Link
             href="/"

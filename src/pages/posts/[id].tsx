@@ -7,6 +7,7 @@ import { ToTopButton } from "../../components/ToTopButton";
 import { ReadMore } from "../../components/more-stories";
 import { getRandom } from "src/lib/math/getRandom";
 import { MarkdownRenderers } from "src/components/CustomRenderers";
+import { BreadCrumbs } from "src/components/BreadCrumbs";
 
 type Props = {
   children: React.ReactNode;
@@ -18,33 +19,37 @@ export const BlogLayout = ({
   children,
   morePosts,
   post: { excerpt, title, subtitle, date, author, cover, id },
-}: Props) => (
-  <Layout
-    description={excerpt}
-    title={title + " – " + subtitle}
-    image={cover.src}
-    url={`posts/${id}`}
-    imageAlt={cover.alt}
-  >
-    <article>
-      <section className="main-section main-text post-body">
-        <PostHeader
-          subtitle={subtitle}
-          title={title}
-          date={date}
-          author={author}
-        />
-        {children}
-      </section>
-      <section className="main-section">
-        {morePosts && <ReadMore posts={morePosts} />}
-        <NewsletterForm />
-        <ToTopButton />
-      </section>
-    </article>
-  </Layout>
-);
+}: Props) => {
+  const url = `posts/${id}`;
+  return (
+    <Layout
+      description={excerpt}
+      title={title + " – " + subtitle}
+      image={cover.src}
+      url={url}
+      imageAlt={cover.alt}
+    >
+      <article>
+        <section className="main-section main-text post-body">
+          <BreadCrumbs path={url} />
 
+          <PostHeader
+            subtitle={subtitle}
+            title={title}
+            date={date}
+            author={author}
+          />
+          {children}
+        </section>
+        <section className="main-section">
+          {morePosts && <ReadMore posts={morePosts} />}
+          <NewsletterForm />
+          <ToTopButton />
+        </section>
+      </article>
+    </Layout>
+  );
+};
 type BlogProps = {
   post: Post;
   morePosts: Post[];

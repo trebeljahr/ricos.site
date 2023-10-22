@@ -13,7 +13,7 @@ import remarkRehype from "remark-rehype";
 import { URL } from "url";
 import { nextImageUrl } from "src/lib/mapToImageProps.js";
 
-const newsletterNumber = 26;
+const newsletterNumber = 27;
 
 const LIVE_HOST = "https://trebeljahr.com";
 

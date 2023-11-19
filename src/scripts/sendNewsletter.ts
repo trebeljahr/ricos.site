@@ -1,19 +1,18 @@
 import { readFile } from "fs/promises";
+import matter from "gray-matter";
 import Handlebars from "handlebars";
 import path from "path";
-import { unified } from "unified";
-import { newsletterListMail, sendEmail } from "./mailgun.js";
-import matter from "gray-matter";
 import rehypePresetMinify from "rehype-preset-minify";
 import rehypeRewrite from "rehype-rewrite";
 import rehypeStringify from "rehype-stringify";
 import rehypeUrls from "rehype-urls";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
-import { URL } from "url";
 import { nextImageUrl } from "src/lib/mapToImageProps.js";
+import { unified } from "unified";
+import { newsletterListMail, sendEmail } from "./mailgun.js";
 
-const newsletterNumber = 28;
+const newsletterNumber = 29;
 
 const LIVE_HOST = "https://trebeljahr.com";
 

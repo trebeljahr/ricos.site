@@ -12,7 +12,7 @@ import { nextImageUrl } from "src/lib/mapToImageProps.js";
 import { unified } from "unified";
 import { newsletterListMail, sendEmail } from "./mailgun.js";
 
-const newsletterNumber = 29;
+const newsletterNumber = 30;
 
 const LIVE_HOST = "https://trebeljahr.com";
 

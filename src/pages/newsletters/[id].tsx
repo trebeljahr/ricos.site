@@ -1,9 +1,8 @@
-import { allNewsletters, Newsletter } from "@contentlayer/generated";
+import { allNewsletters, type Newsletter } from "@contentlayer/generated";
 import Image from "next/image";
 import Link from "next/link";
 import { BreadCrumbs } from "src/components/BreadCrumbs";
 import { ShowAfterScrolling } from "src/components/ShowAfterScrolling";
-import { nextImageUrl } from "src/lib/mapToImageProps";
 import Layout from "../../components/layout";
 import {
   NewsletterForm,

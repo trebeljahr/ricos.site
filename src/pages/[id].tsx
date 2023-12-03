@@ -1,10 +1,10 @@
+import type { Page as PageType } from "@contentlayer/generated";
+import { allPages } from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
+import PostHeader from "src/components/post-header";
+import { ToTopButton } from "../components/ToTopButton";
 import Layout from "../components/layout";
 import { NewsletterForm } from "../components/newsletter-signup";
-import { ToTopButton } from "../components/ToTopButton";
-import { allPages } from "@contentlayer/generated";
-import type { Page as PageType } from "@contentlayer/generated";
-import PostHeader from "src/components/post-header";
 
 type Props = {
   page: PageType;

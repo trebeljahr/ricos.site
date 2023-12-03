@@ -1,13 +1,11 @@
-import { useRouter } from "next/router";
-import ErrorPage from "next/error";
-import Layout from "../../components/layout";
-import { ToTopButton } from "../../components/ToTopButton";
-import { ExternalLink } from "../../components/ExternalLink";
-import { NewsletterForm } from "../../components/newsletter-signup";
-import { Podcastnote, allPodcastnotes } from "@contentlayer/generated";
+import { allPodcastnotes, type Podcastnote } from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
-import { MarkdownRenderers } from "src/components/CustomRenderers";
 import { BreadCrumbs } from "src/components/BreadCrumbs";
+import { MarkdownRenderers } from "src/components/CustomRenderers";
+import { ExternalLink } from "../../components/ExternalLink";
+import { ToTopButton } from "../../components/ToTopButton";
+import Layout from "../../components/layout";
+import { NewsletterForm } from "../../components/newsletter-signup";
 
 type Props = {
   Podcastnote: Podcastnote;

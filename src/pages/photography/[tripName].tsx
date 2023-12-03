@@ -12,11 +12,11 @@ import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
-import Layout from "../../components/layout";
 import {
   BreadCrumbs,
   turnKebabIntoTitleCase,
 } from "../../components/BreadCrumbs";
+import Layout from "../../components/layout";
 
 export default function ImageGallery({
   images,

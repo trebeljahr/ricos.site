@@ -1,6 +1,6 @@
 import { useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
-import { ClickHandler, Photo, PhotoAlbum } from "react-photo-album";
+import { PhotoAlbum } from "react-photo-album";
 import { ToTopButton } from "src/components/ToTopButton";
 import { NextJsImage } from "src/components/image-gallery/customRenderers";
 import Layout from "src/components/layout";

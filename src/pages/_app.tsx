@@ -1,5 +1,5 @@
-import { AppProps } from "next/app";
 import { MDXProvider } from "@mdx-js/react";
+import { AppProps } from "next/app";
 import {
   HeadingRenderer,
   ImageRenderer,
@@ -7,14 +7,14 @@ import {
   ParagraphRenderer,
 } from "../components/CustomRenderers";
 import "../styles/globals.css";
-import "../styles/index.css";
 import "../styles/highlight.css";
+import "../styles/index.css";
 import "../styles/navbar.css";
-import "../styles/post-preview.css";
 import "../styles/newsletter.css";
+import "../styles/post-preview.css";
 
-import Script from "next/script";
 import Head from "next/head";
+import Script from "next/script";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (

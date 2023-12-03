@@ -15,7 +15,10 @@ export const AxisByAxis = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    if (!cnv) return;
+    if (!cnv || !width || !height) return;
+
+    cnv.width = width;
+    cnv.height = height;
     cnv.tabIndex = 0;
 
     const ctx = cnv.getContext("2d");

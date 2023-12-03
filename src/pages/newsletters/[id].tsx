@@ -1,4 +1,7 @@
-import { allNewsletters, type Newsletter } from "@contentlayer/generated";
+import {
+  allNewsletters,
+  type Newsletter as NewsletterType,
+} from "@contentlayer/generated";
 import Image from "next/image";
 import Link from "next/link";
 import { BreadCrumbs } from "src/components/BreadCrumbs";
@@ -46,7 +49,7 @@ const NextAndPrevArrows = ({
 };
 
 type Props = {
-  newsletter: Newsletter;
+  newsletter: NewsletterType;
   nextPost: null | number;
   prevPost: null | number;
 };

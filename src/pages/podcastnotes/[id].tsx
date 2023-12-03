@@ -1,4 +1,7 @@
-import { allPodcastnotes, type Podcastnote } from "@contentlayer/generated";
+import {
+  allPodcastnotes,
+  type Podcastnote as PodcastnoteType,
+} from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { BreadCrumbs } from "src/components/BreadCrumbs";
 import { MarkdownRenderers } from "src/components/CustomRenderers";
@@ -8,7 +11,7 @@ import Layout from "../../components/layout";
 import { NewsletterForm } from "../../components/newsletter-signup";
 
 type Props = {
-  Podcastnote: Podcastnote;
+  Podcastnote: PodcastnoteType;
 };
 
 const PodcastnoteComponent = ({ Podcastnote }: Props) => {

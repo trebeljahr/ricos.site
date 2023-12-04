@@ -7,25 +7,26 @@ import { NewsletterForm } from "../components/newsletter-signup";
 
 type NewsletterData = {
   slug: string;
-  newsletterNumber: number;
+  number: number;
   title: string;
   excerpt: string;
   cover: {
     src: string;
     alt: string;
   };
+  id: string;
 };
 
 type Props = {
   newsletterData: NewsletterData[];
 };
 
-const sortSlugs = (slugArray: NewsletterData[]) => {
+const sortByIds = (arr: NewsletterData[]) => {
   const collator = new Intl.Collator(undefined, {
     numeric: true,
     sensitivity: "base",
   });
-  return slugArray.sort((a, b) => -collator.compare(a.slug, b.slug));
+  return arr.sort((a, b) => -collator.compare(a.id, b.id));
 };
 
 const Newsletters = ({ newsletterData }: Props) => {
@@ -38,7 +39,7 @@ const Newsletters = ({ newsletterData }: Props) => {
       <article className="posts-overview">
         <section className="main-section">
           {newsletterData.map(
-            ({ slug, newsletterNumber, title, excerpt, cover }, index) => {
+            ({ slug, number, title, excerpt, cover }, index) => {
               const priority = index <= 1;
 
               return (
@@ -68,7 +69,7 @@ const Newsletters = ({ newsletterData }: Props) => {
                   <div>
                     <Link href={slug}>
                       <h2 className="pt-0">
-                        {title} | Live and Learn #{newsletterNumber}
+                        {title} | Live and Learn #{number}
                       </h2>
                     </Link>
 
@@ -92,11 +93,12 @@ export default Newsletters;
 
 export const getStaticProps = async () => {
   const newsletterData = allNewsletters.map(
-    ({ slug, newsletterNumber, title, excerpt = "", cover }) => ({
+    ({ slug, number, title, excerpt = "", cover, id }) => ({
       slug,
-      newsletterNumber,
+      number,
       title,
       cover,
+      id,
       excerpt: excerpt
         .replace("Welcome to this edition of Live and Learn. ", "")
         .replace("Enjoy.", ""),
@@ -104,6 +106,6 @@ export const getStaticProps = async () => {
   );
 
   return {
-    props: { newsletterData: sortSlugs(newsletterData) },
+    props: { newsletterData: sortByIds(newsletterData) },
   };
 };

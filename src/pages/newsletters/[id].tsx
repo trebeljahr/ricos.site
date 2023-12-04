@@ -55,12 +55,12 @@ type Props = {
 };
 
 const Newsletter = ({
-  newsletter: { excerpt, title, newsletterNumber, cover, body },
+  newsletter: { excerpt, title, number, slugTitle, cover, body },
   nextPost,
   prevPost,
 }: Props) => {
-  const fullTitle = title + " – Live and Learn #" + newsletterNumber;
-  const url = `newsletters/${newsletterNumber}`;
+  const fullTitle = title + " – Live and Learn #" + number;
+  const url = `newsletters/${slugTitle}`;
 
   return (
     <Layout
@@ -74,7 +74,10 @@ const Newsletter = ({
 
       <article className="newsletter-article">
         <section className="post-body main-section mt-2">
-          <BreadCrumbs path={url} />
+          <BreadCrumbs
+            path={url}
+            overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]}
+          />
 
           <PostHeader title={fullTitle} />
           {excerpt && <p>{excerpt}</p>}
@@ -114,31 +117,45 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const newsletter = allNewsletters.find(({ id }) => id === params.id);
+  const newsletter = allNewsletters.find(
+    ({ slugTitle }) => slugTitle === params.id
+  );
   if (!newsletter) throw Error("Newsletter not found");
 
-  let nextPost: number | null = newsletter.newsletterNumber + 1;
-  let prevPost: number | null = newsletter.newsletterNumber - 1;
+  const next = newsletter.number + 1;
+  const prev = newsletter.number - 1;
 
-  nextPost = nextPost > allNewsletters.length ? null : nextPost;
-  prevPost = prevPost < 1 ? null : prevPost;
+  let nextPost = allNewsletters.find(({ number }) => number === next);
+  let prevPost = allNewsletters.find(({ number }) => number === prev);
 
   return {
     props: {
       newsletter,
-      nextPost,
-      prevPost,
+      nextPost: nextPost?.slugTitle || null,
+      prevPost: prevPost?.slugTitle || null,
     },
   };
 }
 
 export async function getStaticPaths() {
-  return {
-    paths: allNewsletters.map(({ id }) => ({
+  const newsletterTitles = allNewsletters.map(({ slugTitle }) => {
+    return {
       params: {
-        id,
+        id: slugTitle,
       },
-    })),
+    };
+  });
+
+  // const newsletterIds = allNewsletters.map(({ id }) => {
+  //   return {
+  //     params: {
+  //       id,
+  //     },
+  //   };
+  // });
+
+  return {
+    paths: newsletterTitles, //...newsletterIds],
     fallback: false,
   };
 }

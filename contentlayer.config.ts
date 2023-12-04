@@ -3,6 +3,17 @@ import {
   defineNestedType,
   makeSource,
 } from "contentlayer/source-files";
+import readingTime from "reading-time";
+import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
+import rehypeHighlight from "rehype-highlight";
+import rehypeKatex from "rehype-katex";
+import rehypeSlug from "rehype-slug";
+import remarkFrontmatter from "remark-frontmatter";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import remarkMdxFrontmatter from "remark-mdx-frontmatter";
+import remarkToc from "remark-toc";
+import { sluggify } from "./src/lib/sluggify.js";
 
 const Image = defineNestedType(() => ({
   name: "Image",
@@ -139,16 +150,20 @@ export const Newsletter = defineDocumentType(() => ({
     cover: { type: "nested", of: Image, required: true },
     excerpt: { type: "string" },
     tags: { type: "list", of: { type: "string" }, required: true },
+    sent: { type: "boolean", required: true },
   },
   computedFields: {
-    newsletterNumber: {
+    number: {
       type: "number",
       resolve: (doc) => parseInt(doc._raw.sourceFileName.replace(".md", "")),
     },
     slug: {
       type: "string",
-      resolve: (doc) =>
-        "/newsletters/" + doc._raw.sourceFileName.replace(".md", ""),
+      resolve: (doc) => "/newsletters/" + sluggify(doc.title),
+    },
+    slugTitle: {
+      type: "string",
+      resolve: (doc) => sluggify(doc.title),
     },
     readingTime: {
       type: "string",
@@ -190,17 +205,6 @@ export const Page = defineDocumentType(() => ({
     },
   },
 }));
-
-import readingTime from "reading-time";
-import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
-import rehypeHighlight from "rehype-highlight";
-import rehypeKatex from "rehype-katex";
-import rehypeSlug from "rehype-slug";
-import remarkFrontmatter from "remark-frontmatter";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
-import remarkMdxFrontmatter from "remark-mdx-frontmatter";
-import remarkToc from "remark-toc";
 
 export default makeSource({
   contentDirPath: "src/content",

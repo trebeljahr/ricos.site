@@ -10,9 +10,9 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { nextImageUrl } from "src/lib/mapToImageProps.js";
 import { unified } from "unified";
-import { newsletterListMail } from "./mailgun.js";
 import { sortedNewsletters } from "./sortedNewsletters.js";
 import { sluggify } from "src/lib/sluggify.js";
+import { sendEmail, newsletterListMail } from "src/lib/mailgun.js";
 
 const number = sortedNewsletters[0].replace(".md", "");
 
@@ -141,8 +141,6 @@ ${content}
 [Unsubscribe](%mailing_list_unsubscribe_url%)
 
 Thanks for reading plaintext emails. You're cool!
-
-
 `,
   };
 
@@ -150,7 +148,7 @@ Thanks for reading plaintext emails. You're cool!
     console.log("Newsletter already sent!");
   } else {
     console.log("Sending newsletter...");
-    // await sendEmail(data);
+    await sendEmail(data);
     console.log("Successfully sent email!");
   }
 }

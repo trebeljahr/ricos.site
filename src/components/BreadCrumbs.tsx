@@ -9,7 +9,17 @@ export function turnKebabIntoTitleCase(kebab: string) {
     .join(" ");
 }
 
-export function BreadCrumbs({ path }: { path: string }) {
+export function BreadCrumbs({
+  path,
+  overwrites,
+}: {
+  path: string;
+  overwrites?: {
+    matchingPath: string;
+    newText?: string;
+    alternateLink?: string;
+  }[];
+}) {
   const pathParts = path.split("/").filter((part) => part !== "");
 
   return (
@@ -39,6 +49,10 @@ export function BreadCrumbs({ path }: { path: string }) {
           </Link>
         </li>
         {pathParts.map((part, index) => {
+          const overwrite = overwrites?.find(
+            ({ matchingPath }) => matchingPath === part
+          );
+
           return (
             <li key={part}>
               <div className="flex items-center">
@@ -61,7 +75,7 @@ export function BreadCrumbs({ path }: { path: string }) {
                   href={"/" + pathParts.slice(0, index + 1).join("/")}
                   className="ml-1 text-sm font-medium text-gray-700 hover:text-blue md:ml-2"
                 >
-                  {turnKebabIntoTitleCase(part)}
+                  {turnKebabIntoTitleCase(overwrite?.newText || part)}
                 </Link>
               </div>
             </li>

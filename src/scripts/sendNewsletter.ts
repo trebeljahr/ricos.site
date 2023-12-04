@@ -10,9 +10,11 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { nextImageUrl } from "src/lib/mapToImageProps.js";
 import { unified } from "unified";
-import { newsletterListMail, sendEmail } from "./mailgun.js";
+import { newsletterListMail } from "./mailgun.js";
+import { sortedNewsletters } from "./sortedNewsletters.js";
+import { sluggify } from "src/lib/sluggify.js";
 
-const newsletterNumber = 30;
+const number = sortedNewsletters[0].replace(".md", "");
 
 const LIVE_HOST = "https://trebeljahr.com";
 
@@ -34,20 +36,16 @@ async function main() {
   );
 
   const mdFileRaw = await readFile(
-    path.join(
-      process.cwd(),
-      "src",
-      "content",
-      "newsletters",
-      `${newsletterNumber}.md`
-    ),
+    path.join(process.cwd(), "src", "content", "newsletters", `${number}.md`),
     "utf-8"
   );
 
   const {
     content,
-    data: { cover, title, excerpt },
+    data: { cover, title, excerpt, sent: alreadySent },
   } = matter(mdFileRaw);
+
+  console.log(title.replaceAll(" ", "-").replaceAll(",", "").toLowerCase());
 
   function addHost(url: { href: string; path: string }) {
     if (url.href.startsWith("/") && url.href.endsWith(".webp")) {
@@ -107,12 +105,12 @@ async function main() {
 
   const template = Handlebars.compile(emailHandlebarsFile);
 
-  const webversion = `${HOST}/newsletters/${newsletterNumber}`;
+  const webversion = `${HOST}/newsletters/${sluggify(title)}`;
 
   const defaultExcerpt =
     "Live and Learn is a Newsletter filled with awesome links...";
 
-  const realTitle = `${title} | Live and Learn #${newsletterNumber}`;
+  const realTitle = `${title} | Live and Learn #${number}`;
 
   const htmlEmail = template({
     content: file.value,
@@ -126,7 +124,7 @@ async function main() {
   const data = {
     from: "Rico Trebeljahr <rico@trebeljahr.com>",
     to: newsletterListMail,
-    subject: `🌱 ${title} | #${newsletterNumber}`,
+    subject: `🌱 ${title} | #${number}`,
     html: htmlEmail,
     text: `
 🌱 ${realTitle}
@@ -148,8 +146,13 @@ Thanks for reading plaintext emails. You're cool!
 `,
   };
 
-  await sendEmail(data);
-  console.log("Successfully sent email!");
+  if (process.env.NODE_ENV === "production" && alreadySent) {
+    console.log("Newsletter already sent!");
+  } else {
+    console.log("Sending newsletter...");
+    // await sendEmail(data);
+    console.log("Successfully sent email!");
+  }
 }
 
 main();

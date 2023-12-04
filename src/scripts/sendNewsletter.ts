@@ -46,7 +46,7 @@ async function main() {
 
   const {
     content,
-    data: { cover, title, excerpt },
+    data: { cover, title, excerpt, sent: alreadySent },
   } = matter(mdFileRaw);
 
   function addHost(url: { href: string; path: string }) {
@@ -148,8 +148,13 @@ Thanks for reading plaintext emails. You're cool!
 `,
   };
 
-  await sendEmail(data);
-  console.log("Successfully sent email!");
+  if (process.env.NODE_ENV === "production" && alreadySent) {
+    console.log("Newsletter already sent!");
+  } else {
+    console.log("Sending newsletter...");
+    // await sendEmail(data);
+    console.log("Successfully sent email!");
+  }
 }
 
 main();

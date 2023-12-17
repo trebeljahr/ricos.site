@@ -1,6 +1,5 @@
 ---
 title: ""
-sent: true
 cover:
     src: "/assets/midjourney/"
     alt: ""

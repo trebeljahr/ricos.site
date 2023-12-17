@@ -42,7 +42,7 @@ async function main() {
 
   const {
     content,
-    data: { cover, title, excerpt, sent: alreadySent },
+    data: { cover, title, excerpt },
   } = matter(mdFileRaw);
 
   console.log(title.replaceAll(" ", "-").replaceAll(",", "").toLowerCase());
@@ -144,13 +144,9 @@ Thanks for reading plaintext emails. You're cool!
 `,
   };
 
-  if (process.env.NODE_ENV === "production" && alreadySent) {
-    console.log("Newsletter already sent!");
-  } else {
-    console.log("Sending newsletter...");
-    await sendEmail(data);
-    console.log("Successfully sent email!");
-  }
+  console.log("Sending newsletter...");
+  await sendEmail(data);
+  console.log("Successfully sent email!");
 }
 
 main();

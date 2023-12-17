@@ -150,7 +150,6 @@ export const Newsletter = defineDocumentType(() => ({
     cover: { type: "nested", of: Image, required: true },
     excerpt: { type: "string" },
     tags: { type: "list", of: { type: "string" }, required: true },
-    sent: { type: "boolean", required: true },
   },
   computedFields: {
     number: {

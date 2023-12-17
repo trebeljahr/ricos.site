@@ -1,4 +1,4 @@
-export function sluggify(text: string) {
+export function sluggify(text) {
   return text
     .replaceAll(" ", "-")
     .replaceAll("/", "-")

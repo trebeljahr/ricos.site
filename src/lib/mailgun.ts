@@ -1,3 +1,4 @@
+import "dotenv/config";
 import formData from "form-data";
 import Mailgun from "mailgun.js";
 import { CreateUpdateMailListMembers } from "mailgun.js/interfaces/mailListMembers";

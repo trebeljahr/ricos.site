@@ -1,9 +1,8 @@
+import "dotenv/config";
 import {
   HeadObjectCommand,
   ListObjectsV2Command,
-  ListObjectsV2CommandOutput,
   S3Client,
-  _Object,
 } from "@aws-sdk/client-s3";
 
 export async function getObjectMetadata(Bucket: string, Key: string) {

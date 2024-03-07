@@ -62,7 +62,7 @@ const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
               {links.map(({ slug, title, type, readingTime }) => {
                 return (
                   <li key={slug}>
-                    <Link href={slug} as={slug}>
+                    <Link href={slug || ""} as={slug}>
                       {title} ({type}) {readingTime}
                     </Link>
                   </li>
@@ -112,7 +112,7 @@ export async function getStaticProps() {
       tag,
       links: allDocuments
         .filter(({ tags }) => {
-          return tags.includes(tag);
+          return tags?.includes(tag || "");
         })
         .map(({ slug, type, title }) => ({ slug, type, title })),
     };
@@ -123,7 +123,7 @@ export async function getStaticProps() {
       tag,
       links: allDocuments
         .filter(({ tags }) => {
-          return tags.includes(tag);
+          return tags?.includes(tag);
         })
         .map(({ slug, type, title, readingTime }) => ({
           slug,

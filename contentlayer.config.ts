@@ -45,13 +45,23 @@ const PodcastLinks = defineNestedType(() => ({
 export const Note = defineDocumentType(() => ({
   name: "Note",
   filePathPattern: "Notes/**/**/*.md",
+  computedFields: {
+    slug: {
+      type: "string",
+      resolve: (doc) => doc._raw.sourceFileName.replace(".md", ""),
+    },
+    readingTime: {
+      type: "string",
+      resolve: (doc) => readingTime(doc.body.raw).text,
+    },
+  },
   fields: {
     title: { type: "string" },
-    slug: { type: "string" },
     date: { type: "date" },
     date_published: { type: "date", of: { type: "string" } },
     date_updated: { type: "date", of: { type: "string" } },
     subtitle: { type: "string" },
+    tags: { type: "list", of: { type: "string" } },
     excerpt: { type: "string" },
     coverImage: { type: "string" },
     author: { type: "nested", of: Author },

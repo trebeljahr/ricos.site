@@ -77,7 +77,7 @@ describe("test links", async () => {
 
   for (const { localLinks, anchors, title } of transformedDocs) {
     if (localLinks.length !== 0) {
-      describe(title, () => {
+      describe(title || "", () => {
         for (let fullLink of localLinks) {
           let [link] = fullLink.split(":~:text=");
           if (link.startsWith("#")) {

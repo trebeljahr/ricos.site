@@ -11,8 +11,8 @@ import remarkRehype from "remark-rehype";
 import { nextImageUrl } from "src/lib/mapToImageProps.js";
 import { unified } from "unified";
 import { sortedNewsletters } from "./sortedNewsletters.js";
-import { sluggify } from "src/lib/sluggify.js";
 import { sendEmail, newsletterListMail } from "src/lib/mailgun.js";
+import slugify from "@sindresorhus/slugify";
 
 const number = sortedNewsletters[0].replace(".md", "");
 
@@ -105,7 +105,7 @@ async function main() {
 
   const template = Handlebars.compile(emailHandlebarsFile);
 
-  const webversion = `${HOST}/newsletters/${sluggify(title)}`;
+  const webversion = `${HOST}/newsletters/${slugify(title)}`;
 
   const defaultExcerpt =
     "Live and Learn is a Newsletter filled with awesome links...";

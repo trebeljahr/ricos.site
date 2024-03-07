@@ -13,7 +13,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
-import { sluggify } from "./src/lib/sluggify.js";
+import slugify from "@sindresorhus/slugify";
 
 const Image = defineNestedType(() => ({
   name: "Image",
@@ -44,11 +44,12 @@ const PodcastLinks = defineNestedType(() => ({
 
 export const Note = defineDocumentType(() => ({
   name: "Note",
+  // contentType: "mdx",
   filePathPattern: "Notes/**/**/*.md",
   computedFields: {
     slug: {
       type: "string",
-      resolve: (doc) => doc._raw.sourceFileName.replace(".md", ""),
+      resolve: (doc) => slugify(doc._raw.sourceFileName.replace(".md", "")),
     },
     readingTime: {
       type: "string",
@@ -186,11 +187,11 @@ export const Newsletter = defineDocumentType(() => ({
     },
     slug: {
       type: "string",
-      resolve: (doc) => "/newsletters/" + sluggify(doc.title),
+      resolve: (doc) => "/newsletters/" + slugify(doc.title),
     },
     slugTitle: {
       type: "string",
-      resolve: (doc) => sluggify(doc.title),
+      resolve: (doc) => slugify(doc.title),
     },
     readingTime: {
       type: "string",

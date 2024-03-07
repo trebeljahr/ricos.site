@@ -1,7 +1,7 @@
 import matter from "gray-matter";
 import { sortedNewsletters } from "./sortedNewsletters.js";
-import { sluggify } from "../lib/sluggify.js";
 import { readFile } from "fs/promises";
+import slugify from "@sindresorhus/slugify";
 import path from "path";
 
 export async function generateRedirects() {
@@ -21,7 +21,7 @@ export async function generateRedirects() {
 
       const { data } = matter(mdFileRaw);
 
-      const slugTitle = sluggify(data.title);
+      const slugTitle = slugify(data.title);
 
       return {
         source: `/newsletters/${newsletter.replace(".md", "")}`,

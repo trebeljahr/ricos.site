@@ -11,7 +11,8 @@
     "warmupS3Cache": "tsx src/scripts/aws/warmupS3Cache.ts",
     "sendNewsletter": "tsx src/scripts/sendNewsletter.ts",
     "createRedirects": "tsx src/scripts/createRedirects.ts",
-    "fixFolderPaths": "tsx src/scripts/aws/fix-s3-photos-in-folders.ts"
+    "fixFolderPaths": "tsx src/scripts/aws/fix-s3-photos-in-folders.ts",
+    "vercel-install": "./vercel-submodule-workaround.sh && npm install --production=false"
   },
   "type": "module",
   "dependencies": {

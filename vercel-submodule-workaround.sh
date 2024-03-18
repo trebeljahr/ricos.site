@@ -1,8 +1,8 @@
 # github submodule repo address without https:// prefix
-SUBMODULE_GITHUB=github.com/beeinger/vercel-private-submodule
+SUBMODULE_GITHUB=github.com/trebeljahr/Notes.git
 
 # .gitmodules submodule path
-SUBMODULE_PATH=library
+SUBMODULE_PATH=src/content/Notes
 
 # github access token is necessary
 # add it to Environment Variables on Vercel
@@ -27,8 +27,11 @@ cd tmp # go into the tmp folder
 # checkout the current submodule commit
 git init # initialise empty repo
 git remote add origin https://$GITHUB_ACCESS_TOKEN@$SUBMODULE_GITHUB # add origin of the submodule
-git fetch --depth=1 origin $COMMIT # fetch only the required version
-git checkout $COMMIT # checkout on the right commit
+
+git fetch origin
+git checkout main
+
+npm install
 
 # move the submodule from tmp to the submodule path
 cd .. # go folder up

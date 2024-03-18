@@ -104,7 +104,11 @@ const ShowTags = ({ tags, categories }: Props) => {
 export default ShowTags;
 
 export async function getStaticProps() {
-  const allTags = allDocuments.flatMap(({ tags }) => tags);
+  const allTags = allDocuments
+    .filter((document) => {
+      return document.type !== "Note";
+    })
+    .flatMap(({ tags }) => tags);
   const dedupedTags = [...new Set(allTags)];
 
   const tags = dedupedTags.map((tag) => {

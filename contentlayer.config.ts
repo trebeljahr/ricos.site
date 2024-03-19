@@ -245,7 +245,7 @@ export default makeSource({
       remarkMdxFrontmatter,
       remarkGfm,
       remarkToc,
-      [remarkObsidianLink, { toSlug: slugify, prefix: "/notes/" }],
+      remarkObsidianLink,
       remarkMath,
     ],
     rehypePlugins: [
@@ -261,7 +261,7 @@ export default makeSource({
       remarkMdxFrontmatter,
       remarkGfm,
       remarkToc,
-      [remarkObsidianLink, { toSlug: slugify, prefix: "/notes/" }],
+      remarkObsidianLink,
       remarkMath,
     ],
     rehypePlugins: [

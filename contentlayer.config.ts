@@ -15,6 +15,7 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
 import slugify from "@sindresorhus/slugify";
 import remarkObsidian from "remark-obsidian";
+import remarkObsidianCallout from "remark-obsidian-callout";
 
 const Image = defineNestedType(() => ({
   name: "Image",
@@ -245,8 +246,8 @@ export default makeSource({
       remarkMdxFrontmatter,
       remarkGfm,
       remarkToc,
+      remarkObsidianCallout,
       remarkMath,
-      remarkObsidian,
     ],
     rehypePlugins: [
       rehypeHighlight,
@@ -261,8 +262,8 @@ export default makeSource({
       remarkMdxFrontmatter,
       remarkGfm,
       remarkToc,
+      remarkObsidianCallout,
       remarkMath,
-      remarkObsidian,
     ],
     rehypePlugins: [
       rehypeHighlight,

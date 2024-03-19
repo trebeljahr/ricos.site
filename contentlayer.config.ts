@@ -14,7 +14,7 @@ import remarkMath from "remark-math";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
 import slugify from "@sindresorhus/slugify";
-import wikiLinkPlugin from "remark-wiki-link-plus";
+import { remarkObsidianLink } from "remark-obsidian-link";
 
 const Image = defineNestedType(() => ({
   name: "Image",
@@ -235,6 +235,11 @@ export const Page = defineDocumentType(() => ({
   },
 }));
 
+const toLink = (wikiLink: any) => ({
+  value: wikiLink.value,
+  uri: `/${wikiLink.value}`,
+});
+
 export default makeSource({
   contentDirPath: "src/content",
   contentDirExclude: ["pages/quotes.json"],
@@ -244,9 +249,9 @@ export default makeSource({
       remarkFrontmatter,
       remarkMdxFrontmatter,
       remarkGfm,
+      () => remarkObsidianLink({ toLink }),
       remarkToc,
       remarkMath,
-      wikiLinkPlugin,
     ],
     rehypePlugins: [
       rehypeHighlight,
@@ -260,9 +265,9 @@ export default makeSource({
       remarkFrontmatter,
       remarkMdxFrontmatter,
       remarkGfm,
+      remarkObsidianLink,
       remarkToc,
       remarkMath,
-      wikiLinkPlugin,
     ],
     rehypePlugins: [
       rehypeHighlight,

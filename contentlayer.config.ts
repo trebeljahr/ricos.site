@@ -14,7 +14,6 @@ import remarkMath from "remark-math";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
 import slugify from "@sindresorhus/slugify";
-import { remarkObsidianLink } from "remark-obsidian-link";
 
 const Image = defineNestedType(() => ({
   name: "Image",
@@ -245,23 +244,6 @@ export default makeSource({
       remarkMdxFrontmatter,
       remarkGfm,
       remarkToc,
-      remarkObsidianLink,
-      remarkMath,
-    ],
-    rehypePlugins: [
-      rehypeHighlight,
-      rehypeKatex,
-      rehypeSlug,
-      rehypeAccessibleEmojis,
-    ],
-  },
-  markdown: {
-    remarkPlugins: [
-      remarkFrontmatter,
-      remarkMdxFrontmatter,
-      remarkGfm,
-      remarkToc,
-      remarkObsidianLink,
       remarkMath,
     ],
     rehypePlugins: [

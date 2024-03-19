@@ -235,11 +235,6 @@ export const Page = defineDocumentType(() => ({
   },
 }));
 
-const toLink = (wikiLink: any) => ({
-  value: wikiLink.value,
-  uri: `/${wikiLink.value}`,
-});
-
 export default makeSource({
   contentDirPath: "src/content",
   contentDirExclude: ["pages/quotes.json"],
@@ -249,7 +244,7 @@ export default makeSource({
       remarkFrontmatter,
       remarkMdxFrontmatter,
       remarkGfm,
-      () => remarkObsidianLink({ toLink }),
+      remarkObsidianLink,
       remarkToc,
       remarkMath,
     ],

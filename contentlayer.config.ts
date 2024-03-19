@@ -14,7 +14,7 @@ import remarkMath from "remark-math";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
 import slugify from "@sindresorhus/slugify";
-import { remarkObsidianLink } from "remark-obsidian-link";
+import { remarkWikiLink } from "@portaljs/remark-wiki-link";
 
 const Image = defineNestedType(() => ({
   name: "Image",
@@ -244,9 +244,9 @@ export default makeSource({
       remarkFrontmatter,
       remarkMdxFrontmatter,
       remarkGfm,
-      remarkObsidianLink,
       remarkToc,
       remarkMath,
+      [remarkWikiLink, { pathFormat: "obsidian-short" }],
     ],
     rehypePlugins: [
       rehypeHighlight,
@@ -260,9 +260,9 @@ export default makeSource({
       remarkFrontmatter,
       remarkMdxFrontmatter,
       remarkGfm,
-      remarkObsidianLink,
       remarkToc,
       remarkMath,
+      [remarkWikiLink, { pathFormat: "obsidian-short" }],
     ],
     rehypePlugins: [
       rehypeHighlight,

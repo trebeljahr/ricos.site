@@ -14,6 +14,7 @@ import remarkMath from "remark-math";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
 import slugify from "@sindresorhus/slugify";
+import remarkWikiLinkPlus from "remark-wiki-link-plus";
 
 const Image = defineNestedType(() => ({
   name: "Image",
@@ -44,7 +45,7 @@ const PodcastLinks = defineNestedType(() => ({
 
 export const Note = defineDocumentType(() => ({
   name: "Note",
-  // contentType: "mdx",
+  contentType: "mdx",
   filePathPattern: "Notes/**/**/*.md",
   computedFields: {
     slug: {
@@ -244,6 +245,7 @@ export default makeSource({
       remarkMdxFrontmatter,
       remarkGfm,
       remarkToc,
+      remarkWikiLinkPlus,
       remarkMath,
     ],
     rehypePlugins: [

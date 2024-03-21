@@ -4,6 +4,8 @@ import { ToTopButton } from "../../components/ToTopButton";
 import Layout from "../../components/layout";
 import { NewsletterForm } from "../../components/newsletter-signup";
 import PostHeader from "../../components/post-header";
+import { MarkdownRenderers } from "src/components/CustomRenderers";
+import { useMDXComponent } from "next-contentlayer/hooks";
 
 type Props = {
   children: React.ReactNode;
@@ -49,9 +51,11 @@ type BlogProps = {
 };
 
 export default function PostComponent({ post }: BlogProps) {
+  const Component = useMDXComponent(post.body.code);
+
   return (
     <NotesLayout post={post}>
-      <div dangerouslySetInnerHTML={{ __html: post.body.html }} />
+      <Component components={{ ...MarkdownRenderers }} />
     </NotesLayout>
   );
 }
@@ -69,7 +73,7 @@ type Params = { params: { id: string } };
 
 export async function getStaticProps({ params }: Params) {
   const post = allNotes.find((post: Note) => post.slug === params.id);
-  console.log(post);
+  console.log(post?.body);
 
   return {
     props: { post },

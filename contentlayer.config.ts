@@ -245,7 +245,10 @@ export default makeSource({
       remarkMdxFrontmatter,
       remarkGfm,
       remarkToc,
-      remarkWikiLinkPlus,
+      [
+        remarkWikiLinkPlus,
+        { hrefTemplate: (link: string) => `/Attachments/${link}` },
+      ],
       remarkMath,
     ],
     rehypePlugins: [

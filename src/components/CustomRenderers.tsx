@@ -14,9 +14,9 @@ export const ImageRenderer = ({
   src,
   alt,
 }: ImgHTMLAttributes<HTMLImageElement>) => {
-  if (!src || !alt) return null;
+  if (!src) return null;
 
-  const realAlt = alt?.replace(/ *\/[^)]*\/ */g, "");
+  const realAlt = alt ? alt?.replace(/ *\/[^)]*\/ */g, "") : src;
 
   const width = alt?.match(/\/width: (.*?)\//)?.pop() || "1";
   const height = alt?.match(/\/height: (.*?)\//)?.pop() || "1";

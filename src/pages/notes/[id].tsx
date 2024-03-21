@@ -61,8 +61,6 @@ export default function PostComponent({ post }: BlogProps) {
 }
 
 export async function getStaticPaths() {
-  // console.log(allNotes.map(({ slug }) => ({ params: { id: slug } })));
-
   return {
     paths: allNotes.map(({ slug }) => ({ params: { id: slug } })),
     fallback: false,
@@ -73,7 +71,6 @@ type Params = { params: { id: string } };
 
 export async function getStaticProps({ params }: Params) {
   const post = allNotes.find((post: Note) => post.slug === params.id);
-  console.log(post?.body);
 
   return {
     props: { post },

@@ -31,7 +31,6 @@ export default function ImageGallery({
 
   const handleClose = () => {
     setIsModalOpen(false);
-    // console.log("current image:", images[currentImageIndex]);
   };
 
   const openModal: ClickHandler<Photo> = ({ index }) => {

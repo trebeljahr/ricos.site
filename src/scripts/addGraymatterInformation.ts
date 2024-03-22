@@ -1,5 +1,5 @@
 import fs from "fs";
-import path from "path";
+import path, { format } from "path";
 import matter from "gray-matter";
 import * as glob from "glob";
 import { Note } from "@contentlayer/generated";
@@ -11,8 +11,6 @@ const fields = {
   title: "Enter title",
   subtitle: "Enter subtitle",
   excerpt: "Enter excerpt",
-  dateUpdated: new Date().toISOString().slice(0, 10),
-  dateCreated: new Date().toISOString().slice(0, 10),
   tags: [],
   cover: {
     src: "Enter Cover image source",
@@ -46,6 +44,14 @@ function getCreationDate(filePath: string): string {
   return result;
 }
 
+function formatDate(date: string): string {
+  return new Date(date).toLocaleDateString("de-DE", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+}
+
 mdFiles.forEach((filePath: string) => {
   const fileContent = fs.readFileSync(filePath, "utf8");
 
@@ -62,15 +68,12 @@ mdFiles.forEach((filePath: string) => {
 
   const dateCreated =
     frontmatter.date || frontmatter.date_published || getCreationDate(filePath);
-  const dateUpdated = frontmatter.date_updated || getUpdatedDate(filePath);
 
-  // If no front matter exists, add the new fields
   const newFrontmatter = {
     ...fields,
     ...frontmatter,
     title: fileName,
-    dateCreated,
-    dateUpdated,
+    date: formatDate(dateCreated),
   };
 
   delete newFrontmatter["coverImage"];
@@ -78,7 +81,6 @@ mdFiles.forEach((filePath: string) => {
   delete newFrontmatter["author"];
   delete newFrontmatter["date_published"];
   delete newFrontmatter["date_updated"];
-  delete newFrontmatter["date"];
 
   const newContent = matter.stringify(content, newFrontmatter);
 

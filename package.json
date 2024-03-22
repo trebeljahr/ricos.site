@@ -12,6 +12,7 @@
     "sendNewsletter": "tsx src/scripts/sendNewsletter.ts",
     "createRedirects": "tsx src/scripts/createRedirects.ts",
     "fixFolderPaths": "tsx src/scripts/aws/fix-s3-photos-in-folders.ts",
+    "addGraymatterInformation": "tsx src/scripts/addGraymatterInformation.ts",
     "vercel-install": "./vercel-submodule-workaround.sh && npm install --production=false"
   },
   "type": "module",

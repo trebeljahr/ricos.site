@@ -35,15 +35,16 @@ const fields = {
 };
 
 const mdFiles = glob.sync(path.join(directory, "**/*.md"));
+console.log(mdFiles);
 
 mdFiles.forEach((filePath: string) => {
   const fileContent = fs.readFileSync(filePath, "utf8");
 
   // Parse the file content and check if front matter already exists
-  const { data, content } = matter(fileContent);
+  const { data: frontmatter, content } = matter(fileContent);
   // If no front matter exists, add the new fields
-  const newData = { ...data, ...fields };
-  const newContent = matter.stringify(content, newData);
+  const newFrontmatter = { ...fields, ...frontmatter };
+  const newContent = matter.stringify(content, newFrontmatter);
 
   console.log(newContent);
   // Write the updated content back to the file

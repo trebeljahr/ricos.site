@@ -15,6 +15,8 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
 import slugify from "@sindresorhus/slugify";
 import remarkWikiLinkPlus from "remark-wiki-link-plus";
+import { generate } from "rxjs";
+import { generateExcerpt } from "src/lib/generateExcerpt";
 
 const Image = defineNestedType(() => ({
   name: "Image",
@@ -56,13 +58,15 @@ export const Note = defineDocumentType(() => ({
       type: "string",
       resolve: (doc) => readingTime(doc.body.raw).text,
     },
+    excerpt: {
+      type: "string",
+      resolve: (doc) => generateExcerpt(doc.body.raw, 200),
+    },
   },
   fields: {
     title: { type: "string", required: true },
     date: { type: "date", required: true },
-    subtitle: { type: "string", required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
-    excerpt: { type: "string", required: true },
     cover: { type: "nested", of: Image, required: true },
     draft: { type: "boolean", required: true },
   },

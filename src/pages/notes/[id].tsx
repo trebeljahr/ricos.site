@@ -14,7 +14,7 @@ type Props = {
 
 export const NotesLayout = ({
   children,
-  post: { excerpt, slug, ogImage: cover, title, subtitle, date, author },
+  post: { excerpt, slug, cover, title, subtitle, date },
 }: Props) => {
   const url = `notes/${slug}`;
   return (
@@ -29,12 +29,7 @@ export const NotesLayout = ({
         <section className="main-section main-text post-body">
           <BreadCrumbs path={url} />
 
-          <PostHeader
-            subtitle={subtitle}
-            title={title || ""}
-            date={date}
-            author={author}
-          />
+          <PostHeader subtitle={subtitle} title={title || ""} date={date} />
           {children}
         </section>
         <section>

@@ -24,12 +24,25 @@ const fields = {
 const mdFiles = glob.sync(path.join(directory, "**/*.md"));
 console.log(mdFiles);
 
-function getUpdatedDate(filePath: string): string {
-  const directory = path.dirname(filePath);
-  const filename = path.basename(filePath);
-  const command = `git log --format=%aD -1 -- "${filename}"`;
-  const result = execSync(command, { cwd: directory }).toString().trim();
-  return result;
+function parseDateFromTitle(title: string) {
+  const match = title.match(/^\d{2}[-.]\d{2}[-.]\d{4}/);
+
+  if (match) {
+    // Replace dashes with dots to ensure consistent date format
+    const dateString = match[0].replace(/-/g, ".");
+    const dateParts = dateString.split(".");
+    const dateISO = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+    const parsedDate = new Date(dateISO);
+
+    console.log(title, match[0], parsedDate);
+
+    if (isNaN(parsedDate.getTime())) {
+      return false;
+    }
+    return parsedDate.toISOString().slice(0, 10);
+  } else {
+    return false;
+  }
 }
 
 function getCreationDate(filePath: string): string {
@@ -67,7 +80,10 @@ mdFiles.forEach((filePath: string) => {
   };
 
   const dateCreated =
-    frontmatter.date || frontmatter.date_published || getCreationDate(filePath);
+    parseDateFromTitle(fileName) ||
+    frontmatter.date ||
+    frontmatter.date_published ||
+    getCreationDate(filePath);
 
   const newFrontmatter = {
     ...fields,
@@ -75,6 +91,10 @@ mdFiles.forEach((filePath: string) => {
     title: fileName,
     date: formatDate(dateCreated),
   };
+
+  if (newFrontmatter.date === "Invalid Date") {
+    // console.log(dateCreated);
+  }
 
   delete newFrontmatter["coverImage"];
   delete newFrontmatter["ogImage"];
@@ -84,9 +104,9 @@ mdFiles.forEach((filePath: string) => {
 
   const newContent = matter.stringify(content, newFrontmatter);
 
-  console.log(newFrontmatter);
-  console.log("-----");
+  // console.log(newFrontmatter);
+  // console.log("-----");
 
   // Write the updated content back to the file
-  // fs.writeFileSync(filePath, newContent, "utf8");
+  fs.writeFileSync(filePath, newContent, "utf8");
 });

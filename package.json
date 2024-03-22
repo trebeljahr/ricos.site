@@ -76,6 +76,7 @@
     "dotenv": "^16.0.3",
     "eslint": "7.32.0",
     "eslint-config-next": "^13.0.4",
+    "glob": "^10.3.10",
     "gray-matter": "4.0.3",
     "htmlparser2": "^8.0.1",
     "image-size": "^1.0.2",

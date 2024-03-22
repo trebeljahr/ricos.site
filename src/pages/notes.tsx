@@ -32,16 +32,13 @@ const Posts = ({ posts }: Props) => {
 export default Posts;
 
 export const getStaticProps = async () => {
-  const posts = allNotes.map(
-    ({ slug, excerpt, ogImage: cover, title, date, author }) => ({
-      slug: "/notes/" + slug,
-      excerpt: excerpt || "",
-      cover: cover || "",
-      title: slug,
-      date: date || 0,
-      author: author || "",
-    })
-  );
+  const posts = allNotes.map(({ slug, excerpt, cover, title, date }) => ({
+    slug: "/notes/" + slug,
+    excerpt: excerpt || "",
+    cover: cover,
+    title,
+    date: date || 0,
+  }));
   posts.sort((post1, post2) =>
     (post1?.date || 0) > (post2?.date || 0) ? -1 : 1
   );

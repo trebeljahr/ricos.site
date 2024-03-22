@@ -6,13 +6,13 @@ type Props = {
   posts: Note[];
 };
 
-const Posts = ({ posts }: Props) => {
+const Notes = ({ posts }: Props) => {
   const heroPost = posts[0];
   const morePosts = posts.slice(1);
   return (
     <Layout
-      title="Posts - writings of a curious person, about life, the universe and everything"
-      description="An overview page about all the posts that I have written so far on trebeljahr.com, ordered by the date that they were published."
+      title="Notes - as of yet unstructured writing"
+      description="An overview page about the notes on trebeljahr.com"
       image={
         "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg"
       }
@@ -29,21 +29,21 @@ const Posts = ({ posts }: Props) => {
   );
 };
 
-export default Posts;
+export default Notes;
 
 export const getStaticProps = async () => {
-  const posts = allNotes.map(({ slug, excerpt, cover, title, date }) => ({
+  const notes = allNotes.map(({ slug, excerpt, cover, title, date }) => ({
     slug: "/notes/" + slug,
-    excerpt: excerpt || "",
-    cover: cover,
+    excerpt,
+    cover,
     title,
     date: date || 0,
   }));
-  posts.sort((post1, post2) =>
-    (post1?.date || 0) > (post2?.date || 0) ? -1 : 1
+  notes.sort((note1, note2) =>
+    (note1?.date || 0) > (note2?.date || 0) ? -1 : 1
   );
 
   return {
-    props: { posts },
+    props: { posts: notes },
   };
 };

@@ -29,7 +29,7 @@ export const NotesLayout = ({
         <section className="main-section main-text post-body">
           <BreadCrumbs path={url} />
 
-          <PostHeader subtitle={subtitle} title={title || ""} date={date} />
+          <PostHeader title={title || ""} date={date} />
           {children}
         </section>
         <section>

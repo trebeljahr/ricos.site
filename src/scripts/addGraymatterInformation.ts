@@ -8,7 +8,6 @@ const directory = "src/content/Notes";
 
 const fields = {
   title: "Enter title",
-  subtitle: "Enter subtitle",
   date: "01.01.1970",
   tags: [],
   cover: {

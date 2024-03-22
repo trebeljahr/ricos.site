@@ -15,9 +15,25 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
 import slugify from "@sindresorhus/slugify";
 import remarkWikiLinkPlus from "remark-wiki-link-plus";
-import { generate } from "rxjs";
-import { generateExcerpt } from "src/lib/generateExcerpt";
 
+function generateExcerpt(text: string, length: number): string {
+  const lines = text
+    .split("\n")
+    .filter((line) => !/^#/.test(line.trim()) || line === "");
+  const parts = lines.join(" ").split(/([.,!?])\s*/);
+  let excerpt = "";
+
+  for (let i = 0; i < parts.length - 1; i += 2) {
+    const sentence = parts[i] + parts[i + 1];
+    if (excerpt.length + sentence.length <= length) {
+      excerpt += sentence + " ";
+    } else {
+      break;
+    }
+  }
+
+  return excerpt.trim().slice(0, -1) + "...";
+}
 const Image = defineNestedType(() => ({
   name: "Image",
   fields: {
@@ -65,10 +81,10 @@ export const Note = defineDocumentType(() => ({
   },
   fields: {
     title: { type: "string", required: true },
-    date: { type: "date", required: true },
+    date: { type: "string", required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
     cover: { type: "nested", of: Image, required: true },
-    draft: { type: "boolean", required: true },
+    published: { type: "boolean", required: true },
   },
 }));
 

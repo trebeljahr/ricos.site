@@ -75,7 +75,6 @@ mdFiles.forEach((filePath: string) => {
   const newFrontmatter = {
     ...fields,
     ...frontmatter,
-    draft: true,
     title: fileName,
     date: frontmatter.date || formatDate(parsedCreationDate),
   } as { [key: string]: any };

@@ -14,13 +14,13 @@ type Props = {
 
 export const NotesLayout = ({
   children,
-  post: { excerpt, slug, cover, title, subtitle, date },
+  post: { excerpt, slug, cover, title, date },
 }: Props) => {
   const url = `notes/${slug}`;
   return (
     <Layout
       description={excerpt || ""}
-      title={title + " – " + subtitle}
+      title={title}
       image={cover?.src || ""}
       url={url}
       imageAlt={cover?.alt || ""}

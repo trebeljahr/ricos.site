@@ -56,7 +56,7 @@ const PodcastLinks = defineNestedType(() => ({
 export const Note = defineDocumentType(() => ({
   name: "Note",
   contentType: "mdx",
-  filePathPattern: "Notes/**/**/*.md",
+  filePathPattern: "**/**/*.md",
   computedFields: {
     slug: {
       type: "string",
@@ -82,7 +82,7 @@ export const Note = defineDocumentType(() => ({
 
 export const Post = defineDocumentType(() => ({
   name: "Post",
-  filePathPattern: "Notes/posts/*.mdx",
+  filePathPattern: "posts/*.mdx",
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
@@ -181,7 +181,7 @@ export const Booknote = defineDocumentType(() => ({
 
 export const Newsletter = defineDocumentType(() => ({
   name: "Newsletter",
-  filePathPattern: "newsletters/*.md",
+  filePathPattern: "Newsletter Stuff/newsletters/*.md",
   fields: {
     title: { type: "string", required: true },
     cover: { type: "nested", of: Image, required: true },
@@ -243,8 +243,12 @@ export const Page = defineDocumentType(() => ({
 }));
 
 export default makeSource({
-  contentDirPath: "src/content",
-  contentDirExclude: ["pages/quotes.json"],
+  contentDirPath: "src/content/Notes",
+  contentDirExclude: [
+    "pages/quotes.json",
+    "Newsletter Stuff/newsletter Ad Template.md",
+    "Newsletter Stuff/newsletter-template.md",
+  ],
   documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote, Note],
   mdx: {
     remarkPlugins: [

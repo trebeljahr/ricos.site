@@ -5,9 +5,8 @@
   height: auto;
   /* height: 100%; */
 }
-
-.newsletter .error {
-  color: var(--dark-red);
+.error {
+  color: var(--red);
 }
 
 .newsletter-button {

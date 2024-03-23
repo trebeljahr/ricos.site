@@ -32,16 +32,13 @@ const Posts = ({ posts }: Props) => {
 export default Posts;
 
 export const getStaticProps = async () => {
-  const posts = allPosts.map(
-    ({ slug, excerpt, cover, title, date, author }) => ({
-      slug,
-      excerpt,
-      cover,
-      title,
-      date,
-      author,
-    })
-  );
+  const posts = allPosts.map(({ slug, excerpt, cover, title, date }) => ({
+    slug,
+    excerpt,
+    cover,
+    title,
+    date,
+  }));
   posts.sort((post1, post2) => (post1.date > post2.date ? -1 : 1));
 
   return {

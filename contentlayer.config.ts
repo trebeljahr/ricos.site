@@ -44,14 +44,6 @@ const Image = defineNestedType(() => ({
   },
 }));
 
-const Author = defineNestedType(() => ({
-  name: "Author",
-  fields: {
-    name: { type: "string", required: true },
-    picture: { type: "string", required: true }, // { type: "nested", of: Image, required: true },
-  },
-}));
-
 const PodcastLinks = defineNestedType(() => ({
   name: "PodcastLinks",
   fields: {
@@ -97,7 +89,6 @@ export const Post = defineDocumentType(() => ({
     subtitle: { type: "string", required: true },
     excerpt: { type: "string", required: true },
     date: { type: "string", required: true },
-    author: { type: "nested", of: Author, required: true },
     cover: { type: "nested", of: Image, required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
   },

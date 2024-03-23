@@ -82,7 +82,7 @@ export const Note = defineDocumentType(() => ({
 
 export const Post = defineDocumentType(() => ({
   name: "Post",
-  filePathPattern: "posts/*.mdx",
+  filePathPattern: "posts/*.md",
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
@@ -95,7 +95,7 @@ export const Post = defineDocumentType(() => ({
   computedFields: {
     slug: {
       type: "string",
-      resolve: (doc) => "/posts/" + doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) => "/posts/" + doc._raw.sourceFileName.replace(".md", ""),
     },
     readingTime: {
       type: "string",
@@ -103,14 +103,14 @@ export const Post = defineDocumentType(() => ({
     },
     id: {
       type: "string",
-      resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) => doc._raw.sourceFileName.replace(".md", ""),
     },
   },
 }));
 
 export const Podcastnote = defineDocumentType(() => ({
   name: "Podcastnote",
-  filePathPattern: "podcastnotes/*.mdx",
+  filePathPattern: "podcastnotes/*.md",
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
@@ -125,7 +125,7 @@ export const Podcastnote = defineDocumentType(() => ({
     slug: {
       type: "string",
       resolve: (doc) =>
-        "/podcastnotes/" + doc._raw.sourceFileName.replace(".mdx", ""),
+        "/podcastnotes/" + doc._raw.sourceFileName.replace(".md", ""),
     },
     readingTime: {
       type: "string",
@@ -133,7 +133,7 @@ export const Podcastnote = defineDocumentType(() => ({
     },
     id: {
       type: "string",
-      resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) => doc._raw.sourceFileName.replace(".md", ""),
     },
     displayTitle: {
       type: "string",
@@ -145,7 +145,7 @@ export const Podcastnote = defineDocumentType(() => ({
 
 export const Booknote = defineDocumentType(() => ({
   name: "Booknote",
-  filePathPattern: "booknotes/*.mdx",
+  filePathPattern: "booknotes/*.md",
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
@@ -166,7 +166,7 @@ export const Booknote = defineDocumentType(() => ({
     slug: {
       type: "string",
       resolve: (doc) =>
-        "/booknotes/" + doc._raw.sourceFileName.replace(".mdx", ""),
+        "/booknotes/" + doc._raw.sourceFileName.replace(".md", ""),
     },
     readingTime: {
       type: "string",
@@ -174,7 +174,7 @@ export const Booknote = defineDocumentType(() => ({
     },
     id: {
       type: "string",
-      resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) => doc._raw.sourceFileName.replace(".md", ""),
     },
   },
 }));
@@ -217,7 +217,7 @@ export const Newsletter = defineDocumentType(() => ({
 
 export const Page = defineDocumentType(() => ({
   name: "Page",
-  filePathPattern: "pages/*.mdx",
+  filePathPattern: "pages/*.md",
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
@@ -229,7 +229,7 @@ export const Page = defineDocumentType(() => ({
   computedFields: {
     slug: {
       type: "string",
-      resolve: (doc) => "/" + doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) => "/" + doc._raw.sourceFileName.replace(".md", ""),
     },
     readingTime: {
       type: "string",
@@ -237,7 +237,7 @@ export const Page = defineDocumentType(() => ({
     },
     id: {
       type: "string",
-      resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) => doc._raw.sourceFileName.replace(".md", ""),
     },
   },
 }));

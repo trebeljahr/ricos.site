@@ -6,7 +6,7 @@ type Props = {
 
 const DateFormatter = ({ date: dateString }: Props) => {
   let date;
-  if (dateString.includes(".")) {
+  if (dateString.match(/\d{2}.\d{2}.\d{4}/)) {
     date = parse(dateString, "dd.MM.yyyy", new Date());
   } else {
     date = parseISO(dateString);

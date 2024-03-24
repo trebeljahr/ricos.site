@@ -2,7 +2,7 @@ import { Search, useSearch } from "../components/SearchBar";
 import { ToTopButton } from "../components/ToTopButton";
 import Layout from "../components/layout";
 import { NewsletterForm } from "../components/newsletter-signup";
-import quotesJSON from "../content/pages/quotes.json";
+import quotesJSON from "../content/Notes/pages/quotes.json";
 
 const quotes: Quote[] = quotesJSON;
 

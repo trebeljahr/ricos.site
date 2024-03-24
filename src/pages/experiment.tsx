@@ -62,7 +62,7 @@ const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
               {links.map(({ slug, title, type, readingTime }) => {
                 return (
                   <li key={slug}>
-                    <Link href={slug} as={slug}>
+                    <Link href={slug || ""} as={slug}>
                       {title} ({type}) {readingTime}
                     </Link>
                   </li>
@@ -104,7 +104,11 @@ const ShowTags = ({ tags, categories }: Props) => {
 export default ShowTags;
 
 export async function getStaticProps() {
-  const allTags = allDocuments.flatMap(({ tags }) => tags);
+  const allTags = allDocuments
+    .filter((document) => {
+      return document.type !== "Note";
+    })
+    .flatMap(({ tags }) => tags);
   const dedupedTags = [...new Set(allTags)];
 
   const tags = dedupedTags.map((tag) => {
@@ -112,7 +116,7 @@ export async function getStaticProps() {
       tag,
       links: allDocuments
         .filter(({ tags }) => {
-          return tags.includes(tag);
+          return tags?.includes(tag || "");
         })
         .map(({ slug, type, title }) => ({ slug, type, title })),
     };
@@ -123,7 +127,7 @@ export async function getStaticProps() {
       tag,
       links: allDocuments
         .filter(({ tags }) => {
-          return tags.includes(tag);
+          return tags?.includes(tag);
         })
         .map(({ slug, type, title, readingTime }) => ({
           slug,

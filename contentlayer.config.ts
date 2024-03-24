@@ -13,8 +13,27 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
-import { sluggify } from "./src/lib/sluggify.js";
+import slugify from "@sindresorhus/slugify";
+import remarkWikiLinkPlus from "remark-wiki-link-plus";
 
+function generateExcerpt(text: string, length: number): string {
+  const lines = text
+    .split("\n")
+    .filter((line) => !/^#/.test(line.trim()) || line === "");
+  const parts = lines.join(" ").split(/([.,!?])\s*/);
+  let excerpt = "";
+
+  for (let i = 0; i < parts.length - 1; i += 2) {
+    const sentence = parts[i] + parts[i + 1];
+    if (excerpt.length + sentence.length <= length) {
+      excerpt += sentence + " ";
+    } else {
+      break;
+    }
+  }
+
+  return excerpt.trim().slice(0, -1) + "...";
+}
 const Image = defineNestedType(() => ({
   name: "Image",
   fields: {
@@ -22,14 +41,6 @@ const Image = defineNestedType(() => ({
     alt: { type: "string", required: true },
     width: { type: "number" },
     height: { type: "number" },
-  },
-}));
-
-const Author = defineNestedType(() => ({
-  name: "Author",
-  fields: {
-    name: { type: "string", required: true },
-    picture: { type: "string", required: true }, // { type: "nested", of: Image, required: true },
   },
 }));
 
@@ -42,23 +53,49 @@ const PodcastLinks = defineNestedType(() => ({
   },
 }));
 
+export const Note = defineDocumentType(() => ({
+  name: "Note",
+  contentType: "mdx",
+  filePathPattern: "**/**/*.md",
+  computedFields: {
+    slug: {
+      type: "string",
+      resolve: (doc) => slugify(doc._raw.sourceFileName.replace(".md", "")),
+    },
+    readingTime: {
+      type: "string",
+      resolve: (doc) => readingTime(doc.body.raw).text,
+    },
+    excerpt: {
+      type: "string",
+      resolve: (doc) => generateExcerpt(doc.body.raw, 200),
+    },
+  },
+  fields: {
+    title: { type: "string", required: true },
+    date: { type: "string", required: true },
+    tags: { type: "list", of: { type: "string" }, required: true },
+    cover: { type: "nested", of: Image, required: false },
+    published: { type: "boolean", required: false },
+  },
+}));
+
 export const Post = defineDocumentType(() => ({
   name: "Post",
-  filePathPattern: "posts/*.mdx",
+  filePathPattern: "posts/*.md",
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
     subtitle: { type: "string", required: true },
     excerpt: { type: "string", required: true },
     date: { type: "string", required: true },
-    author: { type: "nested", of: Author, required: true },
     cover: { type: "nested", of: Image, required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
   },
   computedFields: {
     slug: {
       type: "string",
-      resolve: (doc) => "/posts/" + doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) => "/posts/" + doc._raw.sourceFileName.replace(".md", ""),
     },
     readingTime: {
       type: "string",
@@ -66,14 +103,14 @@ export const Post = defineDocumentType(() => ({
     },
     id: {
       type: "string",
-      resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) => doc._raw.sourceFileName.replace(".md", ""),
     },
   },
 }));
 
 export const Podcastnote = defineDocumentType(() => ({
   name: "Podcastnote",
-  filePathPattern: "podcastnotes/*.mdx",
+  filePathPattern: "podcastnotes/*.md",
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
@@ -88,7 +125,7 @@ export const Podcastnote = defineDocumentType(() => ({
     slug: {
       type: "string",
       resolve: (doc) =>
-        "/podcastnotes/" + doc._raw.sourceFileName.replace(".mdx", ""),
+        "/podcastnotes/" + doc._raw.sourceFileName.replace(".md", ""),
     },
     readingTime: {
       type: "string",
@@ -96,7 +133,7 @@ export const Podcastnote = defineDocumentType(() => ({
     },
     id: {
       type: "string",
-      resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) => doc._raw.sourceFileName.replace(".md", ""),
     },
     displayTitle: {
       type: "string",
@@ -108,7 +145,7 @@ export const Podcastnote = defineDocumentType(() => ({
 
 export const Booknote = defineDocumentType(() => ({
   name: "Booknote",
-  filePathPattern: "booknotes/*.mdx",
+  filePathPattern: "booknotes/*.md",
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
@@ -129,7 +166,7 @@ export const Booknote = defineDocumentType(() => ({
     slug: {
       type: "string",
       resolve: (doc) =>
-        "/booknotes/" + doc._raw.sourceFileName.replace(".mdx", ""),
+        "/booknotes/" + doc._raw.sourceFileName.replace(".md", ""),
     },
     readingTime: {
       type: "string",
@@ -137,14 +174,14 @@ export const Booknote = defineDocumentType(() => ({
     },
     id: {
       type: "string",
-      resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) => doc._raw.sourceFileName.replace(".md", ""),
     },
   },
 }));
 
 export const Newsletter = defineDocumentType(() => ({
   name: "Newsletter",
-  filePathPattern: "newsletters/*.md",
+  filePathPattern: "Newsletter Stuff/newsletters/*.md",
   fields: {
     title: { type: "string", required: true },
     cover: { type: "nested", of: Image, required: true },
@@ -158,11 +195,11 @@ export const Newsletter = defineDocumentType(() => ({
     },
     slug: {
       type: "string",
-      resolve: (doc) => "/newsletters/" + sluggify(doc.title),
+      resolve: (doc) => "/newsletters/" + slugify(doc.title),
     },
     slugTitle: {
       type: "string",
-      resolve: (doc) => sluggify(doc.title),
+      resolve: (doc) => slugify(doc.title),
     },
     readingTime: {
       type: "string",
@@ -180,7 +217,7 @@ export const Newsletter = defineDocumentType(() => ({
 
 export const Page = defineDocumentType(() => ({
   name: "Page",
-  filePathPattern: "pages/*.mdx",
+  filePathPattern: "pages/*.md",
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
@@ -192,7 +229,7 @@ export const Page = defineDocumentType(() => ({
   computedFields: {
     slug: {
       type: "string",
-      resolve: (doc) => "/" + doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) => "/" + doc._raw.sourceFileName.replace(".md", ""),
     },
     readingTime: {
       type: "string",
@@ -200,21 +237,30 @@ export const Page = defineDocumentType(() => ({
     },
     id: {
       type: "string",
-      resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) => doc._raw.sourceFileName.replace(".md", ""),
     },
   },
 }));
 
 export default makeSource({
-  contentDirPath: "src/content",
-  contentDirExclude: ["pages/quotes.json"],
-  documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote],
+  contentDirPath: "src/content/Notes",
+  contentDirExclude: [
+    "pages/quotes.json",
+    "Newsletter Stuff/newsletter Ad Template.md",
+    "Newsletter Stuff/newsletter-template.md",
+    ".obsidian/workspace.json",
+  ],
+  documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote, Note],
   mdx: {
     remarkPlugins: [
       remarkFrontmatter,
       remarkMdxFrontmatter,
       remarkGfm,
       remarkToc,
+      [
+        remarkWikiLinkPlus,
+        { hrefTemplate: (link: string) => `/Attachments/${link}` },
+      ],
       remarkMath,
     ],
     rehypePlugins: [

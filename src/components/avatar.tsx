@@ -9,11 +9,11 @@ const Avatar = ({ picture }: AvatarProps) => {
     <div className="avatar-container">
       <Image
         src={picture}
-        alt="Picture of the author"
+        alt="avatar icon"
         // placeholder="blur"
         className="round"
         fill
-        sizes="100vw"
+        sizes="10vw"
         style={{
           objectFit: "cover",
         }}

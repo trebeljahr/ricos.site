@@ -1,30 +1,23 @@
-import matter from "gray-matter";
-import { sortedNewsletters } from "./sortedNewsletters.js";
-import { sluggify } from "../lib/sluggify.js";
+import slugify from "@sindresorhus/slugify";
 import { readFile } from "fs/promises";
+import matter from "gray-matter";
+import { newsletterPath, sortedNewsletterNames } from "./sortedNewsletters.js";
 import path from "path";
 
 export async function generateRedirects() {
   const redirects = await Promise.all(
-    sortedNewsletters.map(async (newsletter) => {
-      const number = newsletter.replace(".md", "");
+    sortedNewsletterNames.map(async (fileName) => {
       const mdFileRaw = await readFile(
-        path.join(
-          process.cwd(),
-          "src",
-          "content",
-          "newsletters",
-          `${number}.md`
-        ),
+        path.join(newsletterPath, fileName),
         "utf-8"
       );
 
       const { data } = matter(mdFileRaw);
 
-      const slugTitle = sluggify(data.title);
+      const slugTitle = slugify(data.title);
 
       return {
-        source: `/newsletters/${newsletter.replace(".md", "")}`,
+        source: `/newsletters/${fileName.replace(".md", "")}`,
         destination: `/newsletters/${slugTitle}`,
         permanent: true,
       };

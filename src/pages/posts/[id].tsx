@@ -18,7 +18,7 @@ type Props = {
 export const BlogLayout = ({
   children,
   morePosts,
-  post: { excerpt, title, subtitle, date, author, cover, id },
+  post: { excerpt, title, subtitle, date, cover, id },
 }: Props) => {
   const url = `posts/${id}`;
   return (
@@ -33,12 +33,7 @@ export const BlogLayout = ({
         <section className="main-section main-text post-body">
           <BreadCrumbs path={url} />
 
-          <PostHeader
-            subtitle={subtitle}
-            title={title}
-            date={date}
-            author={author}
-          />
+          <PostHeader subtitle={subtitle} title={title} date={date} />
           {children}
         </section>
         <section>

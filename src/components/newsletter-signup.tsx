@@ -200,7 +200,6 @@ export const NewsletterForm = ({
       {heading || defaultHeading}
       {text || defaultText}
 
-      {form.error && <p className="error">{form.error}</p>}
       <div className="form">
         <input
           name="email"
@@ -211,6 +210,8 @@ export const NewsletterForm = ({
           placeholder="Type your email..."
           onChange={form.handleInput}
         />
+        {form.error && <p className="error">{form.error}</p>}
+
         <button
           className={
             "newsletter-button " + (form.loading ? "inactive" : "active")

@@ -27,7 +27,7 @@
     "**/*.tsx",
     ".contentlayer/generated",
     "src/scripts/createRedirects.js",
-    "src/scripts/sortedNewsletters.js",
-    "src/lib/sluggify.js"
+    "src/lib/generateExcerpts.js",
+    "src/scripts/sortedNewsletters.js"
   ]
 }

@@ -75,8 +75,8 @@ export const Note = defineDocumentType(() => ({
     title: { type: "string", required: true },
     date: { type: "string", required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
-    cover: { type: "nested", of: Image, required: true },
-    published: { type: "boolean", required: true },
+    cover: { type: "nested", of: Image, required: false },
+    published: { type: "boolean", required: false },
   },
 }));
 

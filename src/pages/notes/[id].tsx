@@ -57,19 +57,34 @@ export default function PostComponent({ post }: BlogProps) {
 
 export async function getStaticPaths() {
   return {
-    paths: allNotes.map(({ slug }) => ({ params: { id: slug } })),
+    paths: allNotes
+      .filter(({ published }) => published)
+      .map(({ slug }) => ({ params: { id: slug } })),
     fallback: false,
   };
+}
+
+function replaceUndefinedWithNull(obj: any): any {
+  if (obj === undefined) return null;
+  if (obj === null || typeof obj !== "object") return obj;
+
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      obj[key] = replaceUndefinedWithNull(obj[key]);
+    }
+  }
+
+  return obj;
 }
 
 type Params = { params: { id: string } };
 
 export async function getStaticProps({ params }: Params) {
-  const post = allNotes
+  const note = allNotes
     .filter(({ published }) => published)
     .find((post: Note) => post.slug === params.id);
 
   return {
-    props: { post },
+    props: { post: replaceUndefinedWithNull(note) },
   };
 }

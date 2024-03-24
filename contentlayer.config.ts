@@ -248,6 +248,7 @@ export default makeSource({
     "pages/quotes.json",
     "Newsletter Stuff/newsletter Ad Template.md",
     "Newsletter Stuff/newsletter-template.md",
+    ".obsidian/workspace.json",
   ],
   documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote, Note],
   mdx: {

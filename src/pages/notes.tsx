@@ -32,16 +32,17 @@ const Notes = ({ posts }: Props) => {
 export default Notes;
 
 export const getStaticProps = async () => {
-  const notes = allNotes.map(({ slug, excerpt, cover, title, date }) => ({
-    slug: "/notes/" + slug,
-    excerpt,
-    cover,
-    title,
-    date: date || 0,
-  }));
-  notes.sort((note1, note2) =>
-    (note1?.date || 0) > (note2?.date || 0) ? -1 : 1
-  );
+  const notes = allNotes
+    .map(({ slug, excerpt, cover, title, date, published }) => ({
+      slug: "/notes/" + slug,
+      excerpt,
+      cover,
+      title,
+      date: date || 0,
+      published,
+    }))
+    .filter(({ published }) => published)
+    .sort((note1, note2) => ((note1?.date || 0) > (note2?.date || 0) ? -1 : 1));
 
   return {
     props: { posts: notes },

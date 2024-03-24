@@ -65,7 +65,9 @@ export async function getStaticPaths() {
 type Params = { params: { id: string } };
 
 export async function getStaticProps({ params }: Params) {
-  const post = allNotes.find((post: Note) => post.slug === params.id);
+  const post = allNotes
+    .filter(({ published }) => published)
+    .find((post: Note) => post.slug === params.id);
 
   return {
     props: { post },

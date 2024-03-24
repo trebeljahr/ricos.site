@@ -2,7 +2,14 @@ import { readdir } from "fs/promises";
 import path from "path";
 
 const allNewsletters = await readdir(
-  path.join(process.cwd(), "src", "content", "Notes", "newsletters")
+  path.join(
+    process.cwd(),
+    "src",
+    "content",
+    "Notes",
+    "Newsletter Stuff",
+    "newsletters"
+  )
 );
 
 const collator = new Intl.Collator(undefined, {

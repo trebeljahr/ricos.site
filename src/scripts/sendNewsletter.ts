@@ -10,11 +10,11 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { nextImageUrl } from "src/lib/mapToImageProps.js";
 import { unified } from "unified";
-import { sortedNewsletters } from "./sortedNewsletters.js";
+import { sortedNewsletterNames } from "./sortedNewsletters.js";
 import { sendEmail, newsletterListMail } from "src/lib/mailgun.js";
 import slugify from "@sindresorhus/slugify";
 
-const number = sortedNewsletters[0].replace(".md", "");
+const number = sortedNewsletterNames[0].replace(".md", "");
 
 const LIVE_HOST = "https://trebeljahr.com";
 

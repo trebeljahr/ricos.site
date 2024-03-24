@@ -12,8 +12,6 @@ export const newsletterPath = path.join(
 
 const allNewsletterPaths = await readdir(newsletterPath);
 
-console.log(allNewsletterPaths);
-
 const collator = new Intl.Collator(undefined, {
   numeric: true,
   sensitivity: "base",

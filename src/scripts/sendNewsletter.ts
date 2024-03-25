@@ -10,7 +10,7 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { nextImageUrl } from "src/lib/mapToImageProps.js";
 import { unified } from "unified";
-import { sortedNewsletterNames } from "./sortedNewsletters.js";
+import { newsletterPath, sortedNewsletterNames } from "./sortedNewsletters.js";
 import { sendEmail, newsletterListMail } from "src/lib/mailgun.js";
 import slugify from "@sindresorhus/slugify";
 
@@ -36,7 +36,7 @@ async function main() {
   );
 
   const mdFileRaw = await readFile(
-    path.join(process.cwd(), "src", "content", "newsletters", `${number}.md`),
+    path.join(newsletterPath, `${number}.md`),
     "utf-8"
   );
 

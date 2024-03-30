@@ -1,7 +1,9 @@
 import {
   CopyObjectCommand,
   DeleteObjectCommand,
+  ListObjectsCommandOutput,
   ListObjectsV2Command,
+  ListObjectsV2CommandOutput,
 } from "@aws-sdk/client-s3";
 import { createS3Client } from "src/lib/aws";
 
@@ -11,52 +13,47 @@ const s3 = createS3Client();
 // Your bucket name
 const bucketName = "images.trebeljahr.com";
 
-// Function to list and move objects
 async function fixFileNames() {
   try {
-    // List objects in the "photography" folder
-    const objects = await s3.send(
-      new ListObjectsV2Command({
-        Bucket: bucketName,
-        Prefix: "photography/",
-      })
-    );
+    let isTruncated = true;
+    let nextContinuationToken;
 
-    // Filter and move each object
-    console.log(objects.IsTruncated);
+    while (isTruncated) {
+      const objects: ListObjectsV2CommandOutput = await s3.send(
+        new ListObjectsV2Command({
+          Bucket: bucketName,
+          Prefix: "photography/",
+          ContinuationToken: nextContinuationToken,
+        })
+      );
 
-    objects.Contents?.slice(0, 5).forEach(async (obj) => {
-      const key = obj.Key!;
-      // Identify and construct new key
-      const parts = key.split("/");
-      if (
-        parts.length > 3 &&
-        parts[parts.length - 2] === parts[parts.length - 1]
-      ) {
-        const newKey = parts.slice(0, -1).join("/");
+      if (objects.Contents === undefined) break;
 
-        // Copy the object to the new location
-        await s3.send(
-          new CopyObjectCommand({
-            Bucket: bucketName,
-            CopySource: `${bucketName}/${key}`,
-            Key: newKey,
-          })
-        );
+      await Promise.all(
+        objects.Contents.map(async (obj) => {
+          const key = obj.Key!;
+          const parts = key.split("/");
+          if (
+            parts.length > 3 &&
+            parts[parts.length - 2] === parts[parts.length - 1]
+          ) {
+            const newKey = "photography-v2/" + parts.slice(0, -1).join("/");
+            await s3.send(
+              new CopyObjectCommand({
+                Bucket: bucketName,
+                CopySource: `${bucketName}/${key}`,
+                Key: newKey,
+              })
+            );
+          }
+        })
+      );
 
-        // // Delete the old object
-        await s3.send(
-          new DeleteObjectCommand({
-            Bucket: bucketName,
-            Key: key,
-          })
-        );
-
-        console.log(`Moved ${bucketName}/${key} to ${newKey}`);
-      }
-    });
-  } catch (error) {
-    console.error("An error occurred:", error);
+      isTruncated = objects.IsTruncated || false;
+      nextContinuationToken = objects.NextContinuationToken;
+    }
+  } catch (err) {
+    console.error(err);
   }
 }
 

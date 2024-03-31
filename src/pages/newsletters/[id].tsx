@@ -3,50 +3,16 @@ import {
   type Newsletter as NewsletterType,
 } from "@contentlayer/generated";
 import Image from "next/image";
-import Link from "next/link";
 import { BreadCrumbs } from "src/components/BreadCrumbs";
-import { ShowAfterScrolling } from "src/components/ShowAfterScrolling";
-import Layout from "../../components/layout";
+import Layout from "@components/layout";
 import {
   NewsletterForm,
   NewsletterModalPopup,
-} from "../../components/newsletter-signup";
-import { PostBodyWithoutExcerpt } from "../../components/post-body";
-import PostHeader from "../../components/post-header";
-import { ToTopButton } from "../../components/ToTopButton";
-
-const NextAndPrevArrows = ({
-  nextPost,
-  prevPost,
-}: {
-  nextPost: null | number;
-  prevPost: null | number;
-}) => {
-  return (
-    <ShowAfterScrolling>
-      <>
-        {prevPost && (
-          <Link
-            href={`/newsletters/${prevPost}`}
-            className="page-arrow left"
-            passHref
-          >
-            <span className="icon-arrow-left" />
-          </Link>
-        )}
-        {nextPost && (
-          <Link
-            href={`/newsletters/${nextPost}`}
-            className="page-arrow right"
-            passHref
-          >
-            <span className="icon-arrow-right" />
-          </Link>
-        )}
-      </>
-    </ShowAfterScrolling>
-  );
-};
+} from "@components/newsletter-signup";
+import { PostBodyWithoutExcerpt } from "@components/post-body";
+import PostHeader from "@components/post-header";
+import { ToTopButton } from "@components/ToTopButton";
+import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 
 type Props = {
   newsletter: NewsletterType;

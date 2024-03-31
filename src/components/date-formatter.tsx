@@ -4,16 +4,22 @@ type Props = {
   date: string;
 };
 
-const DateFormatter = ({ date: dateString }: Props) => {
+export function parseDate(dateString: string) {
   let date;
   if (dateString.match(/\d{2}.\d{2}.\d{4}/)) {
     date = parse(dateString, "dd.MM.yyyy", new Date());
   } else {
     date = parseISO(dateString);
   }
+  return date;
+}
+
+const DateFormatter = ({ date: dateString }: Props) => {
   return (
     <div className="publish-date">
-      <time dateTime={dateString}>{format(date, "LLLL	d, yyyy")}</time>
+      <time dateTime={dateString}>
+        {format(parseDate(dateString), "LLLL	d, yyyy")}
+      </time>
     </div>
   );
 };

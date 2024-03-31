@@ -5,10 +5,10 @@ import {
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { BreadCrumbs } from "src/components/BreadCrumbs";
 import { MarkdownRenderers } from "src/components/CustomRenderers";
-import { ExternalLink } from "../../components/ExternalLink";
-import { ToTopButton } from "../../components/ToTopButton";
-import Layout from "../../components/layout";
-import { NewsletterForm } from "../../components/newsletter-signup";
+import { ExternalLink } from "@components/ExternalLink";
+import { ToTopButton } from "@components/ToTopButton";
+import Layout from "@components/layout";
+import { NewsletterForm } from "@components/newsletter-signup";
 
 type Props = {
   Podcastnote: PodcastnoteType;

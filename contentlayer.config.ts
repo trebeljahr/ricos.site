@@ -56,8 +56,12 @@ const PodcastLinks = defineNestedType(() => ({
 export const Note = defineDocumentType(() => ({
   name: "Note",
   contentType: "mdx",
-  filePathPattern: "**/**/*.md",
+  filePathPattern: "traveling/**/*.md",
   computedFields: {
+    path: {
+      type: "string",
+      resolve: (doc) => doc._raw.flattenedPath.replace(".md", "").split("/"),
+    },
     slug: {
       type: "string",
       resolve: (doc) => slugify(doc._raw.sourceFileName.replace(".md", "")),
@@ -244,8 +248,10 @@ export const Page = defineDocumentType(() => ({
 
 export default makeSource({
   contentDirPath: "src/content/Notes",
+  contentDirInclude: [],
   contentDirExclude: [
     "pages/quotes.json",
+    "Newsletter Stuff/research/**",
     "Newsletter Stuff/newsletter Ad Template.md",
     "Newsletter Stuff/newsletter-template.md",
     ".obsidian/workspace.json",

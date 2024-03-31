@@ -17,7 +17,10 @@
     "baseUrl": ".",
     "paths": {
       "@contentlayer/generated": ["./.contentlayer/generated"],
-      "components/collision-detection": ["./src/components/collision-detection"]
+      "components/collision-detection": [
+        "./src/components/collision-detection"
+      ],
+      "@components/*": ["./src/components/*"]
     }
   },
   "exclude": ["node_modules"],

@@ -47,8 +47,6 @@ export const getStaticProps = async () => {
       const date1 = parseDate(note1?.date);
       const date2 = parseDate(note2?.date);
 
-      console.log(date1, date2);
-
       return date1.getTime() > date2.getTime() ? -1 : 1;
     });
 

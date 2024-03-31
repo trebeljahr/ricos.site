@@ -86,8 +86,6 @@ export async function getStaticProps({ params }: Params) {
     .filter(({ published }) => published)
     .find((post: Note) => post.slug === params.id);
 
-  console.log(note);
-
   return {
     props: { post: replaceUndefinedWithNull(note) },
   };

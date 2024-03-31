@@ -1,8 +1,8 @@
 import { allDocuments, DocumentTypes } from "@contentlayer/generated";
 import Link from "next/link";
-import Layout from "../components/layout";
-import { NewsletterForm } from "../components/newsletter-signup";
-import { ToTopButton } from "../components/ToTopButton";
+import Layout from "@components/layout";
+import { NewsletterForm } from "@components/newsletter-signup";
+import { ToTopButton } from "@components/ToTopButton";
 
 const mainCategories = [
   "philosophy",

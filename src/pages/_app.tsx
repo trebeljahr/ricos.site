@@ -5,7 +5,7 @@ import {
   ImageRenderer,
   LinkRenderer,
   ParagraphRenderer,
-} from "../components/CustomRenderers";
+} from "@components/CustomRenderers";
 import "../styles/globals.css";
 import "../styles/highlight.css";
 import "../styles/index.css";

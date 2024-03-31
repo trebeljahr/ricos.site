@@ -1,4 +1,4 @@
-import { Post } from "@contentlayer/generated";
+import { type Note, type Post } from "@contentlayer/generated";
 import Link from "next/link";
 import { PostCoverImage } from "./cover-image";
 
@@ -35,7 +35,7 @@ const PostPreviewImage = ({
 };
 
 type Props = {
-  post: Post;
+  post: Post | Note;
   isHeroPost?: boolean;
 };
 
@@ -51,14 +51,18 @@ export const PostPreview = ({
       passHref
     >
       <>
-        <PostPreviewImage title={title} src={cover.src} priority={isHeroPost} />
+        <PostPreviewImage
+          title={title}
+          src={cover?.src || ""}
+          priority={isHeroPost}
+        />
         <PostPreviewText title={title} excerpt={excerpt} />
       </>
     </Link>
   );
 };
 
-export const HeroPostPreview = ({ post }: { post: Post }) => {
+export const HeroPostPreview = ({ post }: { post: Post | Note }) => {
   return (
     <section>
       <h1 className="posts-page-title">Latest Post:</h1>
@@ -69,7 +73,7 @@ export const HeroPostPreview = ({ post }: { post: Post }) => {
   );
 };
 
-export const OtherPostsPreview = ({ posts }: { posts: Post[] }) => {
+export const OtherPostsPreview = ({ posts }: { posts: Post[] | Note[] }) => {
   return (
     <section>
       <h2 className="posts-page-title">More Posts:</h2>

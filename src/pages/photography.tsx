@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { turnKebabIntoTitleCase } from "src/components/BreadCrumbs";
+import { turnKebabIntoTitleCase } from "@components/BreadCrumbs";
 import { getDataFromS3, photographyFolder } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
 import { ImageProps } from "src/utils/types";
-import Layout from "../components/layout";
+import Layout from "@components/layout";
 
 const tripNames = [
   "alps",

@@ -60,7 +60,20 @@ export const Note = defineDocumentType(() => ({
   computedFields: {
     path: {
       type: "string",
-      resolve: (doc) => doc._raw.flattenedPath.replace(".md", "").split("/"),
+      resolve: (doc) => doc._raw.flattenedPath.replace(".md", ""),
+    },
+    parentFolder: {
+      type: "string",
+      resolve: (doc) => {
+        const name = doc._raw.flattenedPath
+          .replace(".md", "")
+          .split("/")
+          .at(-2);
+
+        if (!name) console.error("No name found for " + doc._raw.flattenedPath);
+
+        return slugify(name || "");
+      },
     },
     slug: {
       type: "string",
@@ -248,13 +261,16 @@ export const Page = defineDocumentType(() => ({
 
 export default makeSource({
   contentDirPath: "src/content/Notes",
-  contentDirInclude: [],
   contentDirExclude: [
     "pages/quotes.json",
     "Newsletter Stuff/research/**",
-    "Newsletter Stuff/newsletter Ad Template.md",
+    "Newsletter Stuff/Newsletter Ad Template.md",
     "Newsletter Stuff/newsletter-template.md",
     ".obsidian/workspace.json",
+    "Attachments/**",
+    "Notes/**",
+    "Diary Entries/**",
+    "texts/**",
   ],
   documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote, Note],
   mdx: {

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ShowAfterScrolling } from "src/components/ShowAfterScrolling";
+import { ShowAfterScrolling } from "@components/ShowAfterScrolling";
 
 export const NextAndPrevArrows = ({
   nextPost,

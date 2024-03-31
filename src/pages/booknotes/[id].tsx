@@ -8,8 +8,8 @@ import { ExternalLink } from "@components/ExternalLink";
 import { NewsletterForm } from "@components/newsletter-signup";
 import { Booknote, allBooknotes } from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
-import { MarkdownRenderers } from "src/components/CustomRenderers";
-import { BreadCrumbs } from "src/components/BreadCrumbs";
+import { MarkdownRenderers } from "@components/CustomRenderers";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 
 type Props = {
   book: Booknote;

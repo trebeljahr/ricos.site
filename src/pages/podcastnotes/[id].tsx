@@ -3,8 +3,8 @@ import {
   type Podcastnote as PodcastnoteType,
 } from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
-import { BreadCrumbs } from "src/components/BreadCrumbs";
-import { MarkdownRenderers } from "src/components/CustomRenderers";
+import { BreadCrumbs } from "@components/BreadCrumbs";
+import { MarkdownRenderers } from "@components/CustomRenderers";
 import { ExternalLink } from "@components/ExternalLink";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/layout";

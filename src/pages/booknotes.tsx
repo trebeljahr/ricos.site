@@ -1,10 +1,10 @@
 import { Booknote, allBooknotes } from "@contentlayer/generated";
 import { useEffect } from "react";
-import { Search, useSearch } from "../components/SearchBar";
-import { ToTopButton } from "../components/ToTopButton";
-import { BookPreview } from "../components/book-preview";
-import Layout from "../components/layout";
-import { NewsletterForm } from "../components/newsletter-signup";
+import { Search, useSearch } from "@components/SearchBar";
+import { ToTopButton } from "@components/ToTopButton";
+import { BookPreview } from "@components/book-preview";
+import Layout from "@components/layout";
+import { NewsletterForm } from "@components/newsletter-signup";
 
 function toFilters({
   bookAuthor,

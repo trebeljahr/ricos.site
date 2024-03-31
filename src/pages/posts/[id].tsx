@@ -6,8 +6,8 @@ import { NewsletterForm } from "@components/newsletter-signup";
 import { ToTopButton } from "@components/ToTopButton";
 import { ReadMore } from "@components/more-stories";
 import { getRandom } from "src/lib/math/getRandom";
-import { MarkdownRenderers } from "src/components/CustomRenderers";
-import { BreadCrumbs } from "src/components/BreadCrumbs";
+import { MarkdownRenderers } from "@components/CustomRenderers";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 
 type Props = {
   children: React.ReactNode;

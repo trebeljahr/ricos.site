@@ -1,11 +1,12 @@
-import { allNotes, type Note } from "@contentlayer/generated";
 import { BreadCrumbs } from "@components/BreadCrumbs";
+import { MarkdownRenderers } from "@components/CustomRenderers";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/layout";
-import { NewsletterForm } from "@components/newsletter-signup";
 import PostHeader from "@components/post-header";
-import { MarkdownRenderers } from "@components/CustomRenderers";
+import { allNotes, type Note } from "@contentlayer/generated";
+import slugify from "@sindresorhus/slugify";
 import { useMDXComponent } from "next-contentlayer/hooks";
+import { travelingStoryNames } from "..";
 
 type Props = {
   children: React.ReactNode;
@@ -14,9 +15,9 @@ type Props = {
 
 export const NotesLayout = ({
   children,
-  post: { excerpt, slug, cover, title, date },
+  post: { excerpt, slug, cover, title, date, parentFolder },
 }: Props) => {
-  const url = `notes/${slug}`;
+  const url = `travel/${parentFolder}/${slug}`;
   return (
     <Layout
       description={excerpt || ""}
@@ -58,7 +59,19 @@ export default function PostComponent({ post }: BlogProps) {
 export async function getStaticPaths() {
   const paths = allNotes
     .filter(({ published }) => published)
-    .map(({ slug }) => ({ params: { id: slug } }));
+    .filter(({ path }) => {
+      const name = path.split("/").at(-2);
+      if (!name) console.error("No name found for", path);
+      else return travelingStoryNames.includes(slugify(name));
+    })
+    .map(({ slug, path }) => ({
+      params: {
+        tripName: slugify(path.split("/").at(-2) || ""),
+        storyName: slug,
+      },
+    }));
+
+  console.log(paths);
 
   return {
     paths,
@@ -79,12 +92,11 @@ function replaceUndefinedWithNull(obj: any): any {
   return obj;
 }
 
-type Params = { params: { id: string } };
+type Params = { params: { storyName: string } };
 
 export async function getStaticProps({ params }: Params) {
-  const note = allNotes
-    .filter(({ published }) => published)
-    .find((post: Note) => post.slug === params.id);
+  console.log(params);
+  const note = allNotes.find((post: Note) => post.slug === params.storyName);
 
   return {
     props: { post: replaceUndefinedWithNull(note) },

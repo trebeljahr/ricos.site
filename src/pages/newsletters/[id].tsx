@@ -3,7 +3,7 @@ import {
   type Newsletter as NewsletterType,
 } from "@contentlayer/generated";
 import Image from "next/image";
-import { BreadCrumbs } from "src/components/BreadCrumbs";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/layout";
 import {
   NewsletterForm,

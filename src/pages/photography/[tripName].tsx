@@ -1,8 +1,8 @@
 import { useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { ClickHandler, Photo, PhotoAlbum } from "react-photo-album";
-import { ToTopButton } from "src/components/ToTopButton";
-import { NextJsImage } from "src/components/image-gallery/customRenderers";
+import { ToTopButton } from "@components/ToTopButton";
+import { NextJsImage } from "@components/image-gallery/customRenderers";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import { getDataFromS3, getS3Folders, photographyFolder } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";

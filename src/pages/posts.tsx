@@ -1,6 +1,6 @@
 import { Post, allPosts } from "@contentlayer/generated";
-import Layout from "../components/layout";
-import { HeroPostPreview, OtherPostsPreview } from "../components/post-preview";
+import Layout from "@components/layout";
+import { HeroPostPreview, OtherPostsPreview } from "@components/post-preview";
 
 type Props = {
   posts: Post[];

@@ -13,8 +13,8 @@ const Notes = ({ posts }: Props) => {
 
   return (
     <Layout
-      title="Notes - as of yet unstructured writing"
-      description="An overview page about the notes on trebeljahr.com"
+      title="Traveling Stories"
+      description="An overview page about the traveling stories I have to tell"
       image={
         "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg"
       }

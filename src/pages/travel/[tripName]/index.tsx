@@ -4,21 +4,19 @@ import { allNotes, Post, type Note } from "@contentlayer/generated";
 import slugify from "@sindresorhus/slugify";
 import { travelingStoryNames } from "..";
 import { BreadCrumbs } from "@components/BreadCrumbs";
+import { parseDate } from "@components/date-formatter";
 
 type Props = {
   posts: Note[];
   tripName: string;
 };
 
-const Notes = ({ posts, tripName }: Props) => {
-  const heroPost = posts[0];
-  const morePosts = posts.slice(1);
-
+const Traveling = ({ posts, tripName }: Props) => {
   const url = "/travel/" + tripName;
   return (
     <Layout
-      title="Notes - as of yet unstructured writing"
-      description="An overview page about the notes on trebeljahr.com"
+      title={`${tripName}`}
+      description={`An overview page for the stories of ${tripName}.`}
       image={
         "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg"
       }
@@ -30,15 +28,14 @@ const Notes = ({ posts, tripName }: Props) => {
           <BreadCrumbs path={url} />
         </section>
         <section className="main-section">
-          {heroPost && <HeroPostPreview post={heroPost} />}
-          {morePosts.length > 0 && <OtherPostsPreview posts={morePosts} />}
+          <OtherPostsPreview posts={posts} morePostsText={null} />
         </section>
       </article>
     </Layout>
   );
 };
 
-export default Notes;
+export default Traveling;
 
 export const getStaticPaths = async () => {
   return {
@@ -55,14 +52,17 @@ export const getStaticProps = async ({
   const posts = allNotes
     .filter(({ published }) => published)
     .filter(({ parentFolder }) => params.tripName === parentFolder)
-    .map((note) => {
+    .map(({ path, title, slug, excerpt, date }) => {
       return {
-        ...note,
-        slug: slugify(note.path.split("/").at(-2) || "") + "/" + note.slug,
+        title,
+        date,
+        excerpt,
+        slug: slugify(path.split("/").at(-2) || "") + "/" + slug,
       };
+    })
+    .sort((a, b) => {
+      return parseDate(a.date) > parseDate(b.date) ? 1 : -1;
     });
-
-  console.log(posts.map(({ slug }) => slug));
 
   return {
     props: { posts, tripName: params.tripName },

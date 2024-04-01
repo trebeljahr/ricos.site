@@ -7,6 +7,7 @@
     "typecheck": "tsc",
     "test": "vitest",
     "tweet": "tsx src/scripts/tweet.ts",
+    "renameFiles": "tsx src/scripts/renameFiles.ts",
     "uploadWithMetadataToS3": "tsx src/scripts/aws/uploadWithMetadataToS3.ts",
     "warmupS3Cache": "tsx src/scripts/aws/warmupS3Cache.ts",
     "sendNewsletter": "tsx src/scripts/sendNewsletter.ts",

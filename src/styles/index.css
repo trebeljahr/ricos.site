@@ -381,8 +381,8 @@ h2,
 h1 {
   font-family: "Spartan", sans-serif;
   font-weight: bold;
-  padding-top: 2rem;
-  margin-bottom: 0.5rem;
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
 }
 
 pre,

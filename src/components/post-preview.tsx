@@ -73,10 +73,16 @@ export const HeroPostPreview = ({ post }: { post: Post | Note }) => {
   );
 };
 
-export const OtherPostsPreview = ({ posts }: { posts: Post[] | Note[] }) => {
+export const OtherPostsPreview = ({
+  posts,
+  morePostsText = "More Posts:",
+}: {
+  posts: Post[] | Note[];
+  morePostsText?: string | null;
+}) => {
   return (
     <section>
-      <h2 className="posts-page-title">More Posts:</h2>
+      {morePostsText && <h2 className="posts-page-title">{morePostsText}</h2>}
       <div className="other-posts-container">
         {posts.map((post) => {
           return <PostPreview key={post.slug} post={post} />;

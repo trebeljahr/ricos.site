@@ -56,7 +56,7 @@ const PodcastLinks = defineNestedType(() => ({
 export const Note = defineDocumentType(() => ({
   name: "Note",
   contentType: "mdx",
-  filePathPattern: "traveling/**/*.md",
+  filePathPattern: "travel/**/*.md",
   computedFields: {
     path: {
       type: "string",
@@ -85,7 +85,7 @@ export const Note = defineDocumentType(() => ({
     },
     excerpt: {
       type: "string",
-      resolve: (doc) => generateExcerpt(doc.body.raw, 200),
+      resolve: (doc) => generateExcerpt(doc.body.raw, 280),
     },
   },
   fields: {

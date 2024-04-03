@@ -1,3 +1,4 @@
+import { toTitleCase } from "src/lib/toTitleCase";
 import Meta from "./meta";
 import { OpenGraph } from "./OpenGraph";
 import { TailwindNavbar } from "./tailwindui-navbar";
@@ -21,11 +22,13 @@ const Layout = ({
   imageAlt,
   fullScreen = false,
 }: Props) => {
+  const properTitle = toTitleCase(title);
+
   return (
     <>
-      <Meta description={description} title={title} />
+      <Meta description={description} title={properTitle} />
       <OpenGraph
-        title={title}
+        title={properTitle}
         description={description}
         url={url}
         image={image}

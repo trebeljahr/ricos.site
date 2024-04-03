@@ -1,13 +1,12 @@
-import "dotenv/config";
 import { Presets, SingleBar } from "cli-progress";
-import { lstatSync } from "fs";
+import "dotenv/config";
+import { promises as fs, lstatSync } from "fs";
 import { readdir } from "fs/promises";
 import inquirer from "inquirer";
 import path from "path";
 import { Pool, Worker, spawn } from "threads";
-import { uploadSingleFileToS3, uploadWithMetadata } from "./s3-scripts";
-import { promises as fs } from "fs";
 import { getWidthAndHeight } from "./getWidthAndHeight";
+import { uploadSingleFileToS3, uploadWithMetadata } from "./s3-scripts";
 
 async function main() {
   const { dirPath } = await inquirer.prompt<{
@@ -132,7 +131,20 @@ async function uploadDir(directoryPath: string) {
   const progress = new SingleBar({ format }, Presets.shades_classic);
   progress.start(files.length, counter);
 
-  const uploads = files.map(async (filePath) => {
+  // await Promise.all(
+  //   files.map(async (filePath) => {
+  //     const key = path.relative(
+  //       directoryPath.split("/").slice(0, -1).join("/"),
+  //       filePath
+  //     );
+  //     const exists = await doesFileExistInS3(filePath);
+  //     console.log(key);
+  //     console.log(exists ? "File exists" : "File does not exist");
+  //     progress.update(counter++);
+  //   })
+  // );
+
+  const uploadsPromises = files.map(async (filePath) => {
     const data = await getWidthAndHeight(filePath);
     const key = path.relative(
       directoryPath.split("/").slice(0, -1).join("/"),
@@ -145,7 +157,7 @@ async function uploadDir(directoryPath: string) {
     progress.update(counter++);
   });
 
-  await Promise.all(uploads);
+  await Promise.all(uploadsPromises);
 
   progress.stop();
 }

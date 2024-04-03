@@ -26,6 +26,8 @@ const tripNames = [
   "south-india",
   "tenerife",
   "varanasi",
+  "Guadeloupe",
+  "Transat",
 ];
 
 export default function Photography({

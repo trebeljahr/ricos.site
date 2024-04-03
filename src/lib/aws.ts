@@ -47,7 +47,7 @@ export async function getAllStorageObjectKeys(
   }
 }
 
-export const photographyFolder = "photography/";
+export const photographyFolder = "Attachments/Photography/";
 
 export function createS3Client() {
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
@@ -90,7 +90,7 @@ export async function getS3Folders(prefix: string): Promise<string[]> {
   );
 
   const folders =
-    data.CommonPrefixes?.map((data) => data.Prefix?.split("/")[1] || "") || [];
+    data.CommonPrefixes?.map((data) => data.Prefix?.split("/")[2] || "") || [];
 
   return folders.sort();
 }

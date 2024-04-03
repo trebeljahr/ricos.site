@@ -71,8 +71,6 @@ export async function getStaticPaths() {
       },
     }));
 
-  console.log(paths);
-
   return {
     paths,
     fallback: false,
@@ -95,7 +93,6 @@ function replaceUndefinedWithNull(obj: any): any {
 type Params = { params: { storyName: string } };
 
 export async function getStaticProps({ params }: Params) {
-  console.log(params);
   const note = allNotes.find((post: Note) => post.slug === params.storyName);
 
   return {

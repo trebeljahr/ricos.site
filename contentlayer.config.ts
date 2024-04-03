@@ -14,7 +14,6 @@ import remarkMath from "remark-math";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
 import slugify from "@sindresorhus/slugify";
-import remarkWikiLinkPlus from "remark-wiki-link-plus";
 
 function generateExcerpt(text: string, length: number): string {
   const lines = text
@@ -279,10 +278,6 @@ export default makeSource({
       remarkMdxFrontmatter,
       remarkGfm,
       remarkToc,
-      [
-        remarkWikiLinkPlus,
-        { hrefTemplate: (link: string) => `/Attachments/${link}` },
-      ],
       remarkMath,
     ],
     rehypePlugins: [

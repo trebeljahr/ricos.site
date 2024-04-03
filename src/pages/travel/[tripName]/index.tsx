@@ -52,9 +52,10 @@ export const getStaticProps = async ({
   const posts = allNotes
     .filter(({ published }) => published)
     .filter(({ parentFolder }) => params.tripName === parentFolder)
-    .map(({ path, title, slug, excerpt, date }) => {
+    .map(({ path, title, slug, excerpt, date, cover }) => {
       return {
         title,
+        cover,
         date,
         excerpt,
         slug: slugify(path.split("/").at(-2) || "") + "/" + slug,

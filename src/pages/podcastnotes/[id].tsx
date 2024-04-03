@@ -7,8 +7,8 @@ import { BreadCrumbs } from "@components/BreadCrumbs";
 import { MarkdownRenderers } from "@components/CustomRenderers";
 import { ExternalLink } from "@components/ExternalLink";
 import { ToTopButton } from "@components/ToTopButton";
-import Layout from "@components/layout";
-import { NewsletterForm } from "@components/newsletter-signup";
+import Layout from "@components/Layout";
+import { NewsletterForm } from "@components/NewsletterSignup";
 
 type Props = {
   Podcastnote: PodcastnoteType;

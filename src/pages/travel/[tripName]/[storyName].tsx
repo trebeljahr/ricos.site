@@ -2,8 +2,8 @@ import { BreadCrumbs } from "@components/BreadCrumbs";
 import { MarkdownRenderers } from "@components/CustomRenderers";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import { ToTopButton } from "@components/ToTopButton";
-import Layout from "@components/layout";
-import PostHeader from "@components/post-header";
+import Layout from "@components/Layout";
+import PostHeader from "@components/PostHeader";
 import {
   allNotes as allTravelStories,
   type Note,

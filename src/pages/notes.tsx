@@ -1,6 +1,6 @@
 import { Post as Note, allNotes } from "@contentlayer/generated";
-import Layout from "@components/layout";
-import { HeroPostPreview, OtherPostsPreview } from "@components/post-preview";
+import Layout from "@components/Layout";
+import { HeroPostPreview, OtherPostsPreview } from "@components/PostPreview";
 import { parseDate } from "src/lib/dateUtils";
 
 type Props = {

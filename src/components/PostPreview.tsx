@@ -1,6 +1,6 @@
 import { type Note, type Post } from "@contentlayer/generated";
 import Link from "next/link";
-import { PostCoverImage } from "./cover-image";
+import { PostCoverImage } from "./CoverImage";
 
 interface PreviewTextProps {
   title: string;

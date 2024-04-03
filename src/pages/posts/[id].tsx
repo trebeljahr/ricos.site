@@ -1,10 +1,10 @@
-import PostHeader from "@components/post-header";
-import Layout from "@components/layout";
+import PostHeader from "@components/PostHeader";
+import Layout from "@components/Layout";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { allPosts, Post } from "@contentlayer/generated";
-import { NewsletterForm } from "@components/newsletter-signup";
+import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";
-import { ReadMore } from "@components/more-stories";
+import { ReadMore } from "@components/MoreStories";
 import { getRandom } from "src/lib/math/getRandom";
 import { MarkdownRenderers } from "@components/CustomRenderers";
 import { BreadCrumbs } from "@components/BreadCrumbs";

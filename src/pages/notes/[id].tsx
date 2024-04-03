@@ -1,9 +1,9 @@
 import { allNotes, type Note } from "@contentlayer/generated";
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ToTopButton } from "@components/ToTopButton";
-import Layout from "@components/layout";
-import { NewsletterForm } from "@components/newsletter-signup";
-import PostHeader from "@components/post-header";
+import Layout from "@components/Layout";
+import { NewsletterForm } from "@components/NewsletterSignup";
+import PostHeader from "@components/PostHeader";
 import { MarkdownRenderers } from "@components/CustomRenderers";
 import { useMDXComponent } from "next-contentlayer/hooks";
 

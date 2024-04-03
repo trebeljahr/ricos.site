@@ -7,7 +7,7 @@ type Props = {
 
 const DateFormatter = ({ date: dateString }: Props) => {
   return (
-    <div className="publish-date">
+    <div className="publish-date mb-5 mt-5">
       <time dateTime={dateString}>
         {format(parseDate(dateString), "LLLL	d, yyyy")}
       </time>

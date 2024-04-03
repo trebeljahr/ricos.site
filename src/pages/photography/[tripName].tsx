@@ -2,7 +2,7 @@ import { useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { ClickHandler, Photo, PhotoAlbum } from "react-photo-album";
 import { ToTopButton } from "@components/ToTopButton";
-import { NextJsImage } from "@components/image-gallery/customRenderers";
+import { NextJsImage } from "@components/images/CustomRenderers";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import { getDataFromS3, getS3Folders, photographyFolder } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
@@ -13,7 +13,7 @@ import "yet-another-react-lightbox/plugins/thumbnails.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
 import { BreadCrumbs, turnKebabIntoTitleCase } from "@components/BreadCrumbs";
-import Layout from "@components/layout";
+import Layout from "@components/Layout";
 
 export default function ImageGallery({
   images,

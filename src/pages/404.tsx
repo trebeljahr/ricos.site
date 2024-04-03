@@ -1,5 +1,5 @@
-import { TrySomeOfThese } from "@components/intro-links";
-import Layout from "@components/layout";
+import { TrySomeOfThese } from "@components/IntroLinks";
+import Layout from "@components/Layout";
 
 export default function Custom404() {
   return (

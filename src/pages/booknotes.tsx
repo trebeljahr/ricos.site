@@ -2,9 +2,9 @@ import { Booknote, allBooknotes } from "@contentlayer/generated";
 import { useEffect } from "react";
 import { Search, useSearch } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
-import { BookPreview } from "@components/book-preview";
-import Layout from "@components/layout";
-import { NewsletterForm } from "@components/newsletter-signup";
+import { BookPreview } from "@components/BookPreview";
+import Layout from "@components/Layout";
+import { NewsletterForm } from "@components/NewsletterSignup";
 
 function toFilters({
   bookAuthor,

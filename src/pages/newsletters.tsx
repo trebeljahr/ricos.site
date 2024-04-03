@@ -1,7 +1,7 @@
 import { allNewsletters } from "@contentlayer/generated";
 import { ToTopButton } from "@components/ToTopButton";
-import Layout from "@components/layout";
-import { NewsletterForm } from "@components/newsletter-signup";
+import Layout from "@components/Layout";
+import { NewsletterForm } from "@components/NewsletterSignup";
 import { NiceCard } from "../components/NiceCard";
 
 type NewsletterData = {

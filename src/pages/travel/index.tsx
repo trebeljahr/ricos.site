@@ -1,5 +1,5 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
-import Layout from "@components/layout";
+import Layout from "@components/Layout";
 import { allNotes } from "@contentlayer/generated";
 import slugify from "@sindresorhus/slugify";
 import Link from "next/link";

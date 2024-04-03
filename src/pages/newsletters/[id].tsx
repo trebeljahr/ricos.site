@@ -4,13 +4,13 @@ import {
 } from "@contentlayer/generated";
 import Image from "next/image";
 import { BreadCrumbs } from "@components/BreadCrumbs";
-import Layout from "@components/layout";
+import Layout from "@components/Layout";
 import {
   NewsletterForm,
   NewsletterModalPopup,
-} from "@components/newsletter-signup";
-import { PostBodyWithoutExcerpt } from "@components/post-body";
-import PostHeader from "@components/post-header";
+} from "@components/NewsletterSignup";
+import { PostBodyWithoutExcerpt } from "@components/PostBody";
+import PostHeader from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 

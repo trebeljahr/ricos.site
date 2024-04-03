@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
-import Layout from "@components/layout";
-import { PostSubTitle, PostTitle } from "@components/post-title";
-import { BookCover } from "@components/cover-image";
+import Layout from "@components/Layout";
+import { PostSubTitle, PostTitle } from "@components/PostTitle";
+import { BookCover } from "@components/CoverImage";
 import { ToTopButton } from "@components/ToTopButton";
 import { ExternalLink } from "@components/ExternalLink";
-import { NewsletterForm } from "@components/newsletter-signup";
+import { NewsletterForm } from "@components/NewsletterSignup";
 import { Booknote, allBooknotes } from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { MarkdownRenderers } from "@components/CustomRenderers";

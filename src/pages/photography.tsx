@@ -4,7 +4,7 @@ import { turnKebabIntoTitleCase } from "@components/BreadCrumbs";
 import { getDataFromS3, photographyFolder } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
 import { ImageProps } from "src/@types";
-import Layout from "@components/layout";
+import Layout from "@components/Layout";
 
 const tripNames = [
   "alps",

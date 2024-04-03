@@ -1,7 +1,7 @@
 import { allDocuments, DocumentTypes } from "@contentlayer/generated";
 import Link from "next/link";
-import Layout from "@components/layout";
-import { NewsletterForm } from "@components/newsletter-signup";
+import Layout from "@components/Layout";
+import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";
 
 const mainCategories = [

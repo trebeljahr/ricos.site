@@ -1,7 +1,7 @@
 import { Search, useSearch } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
-import Layout from "@components/layout";
-import { NewsletterForm } from "@components/newsletter-signup";
+import Layout from "@components/Layout";
+import { NewsletterForm } from "@components/NewsletterSignup";
 import quotesJSON from "../content/Notes/pages/quotes.json";
 
 const quotes: Quote[] = quotesJSON;

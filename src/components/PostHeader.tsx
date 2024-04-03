@@ -1,5 +1,5 @@
-import DateFormatter from "./date-formatter";
-import { PostSubTitle, PostTitle } from "./post-title";
+import DateFormatter from "./DateFormatter";
+import { PostSubTitle, PostTitle } from "./PostTitle";
 
 type Props = {
   title: string;

@@ -1,7 +1,7 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { byDates } from "src/lib/dateUtils";
-import Layout from "@components/layout";
-import { OtherPostsPreview } from "@components/post-preview";
+import Layout from "@components/Layout";
+import { OtherPostsPreview } from "@components/PostPreview";
 import { allNotes, type Note } from "@contentlayer/generated";
 import slugify from "@sindresorhus/slugify";
 import { travelingStoryNames } from "..";

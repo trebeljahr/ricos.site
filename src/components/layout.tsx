@@ -1,7 +1,7 @@
 import { toTitleCase } from "src/lib/toTitleCase";
-import Meta from "./meta";
+import Meta from "./Meta";
 import { OpenGraph } from "./OpenGraph";
-import { TailwindNavbar } from "./tailwindui-navbar";
+import { TailwindNavbar } from "./TailwindNavbar";
 
 type Props = {
   children: React.ReactNode;

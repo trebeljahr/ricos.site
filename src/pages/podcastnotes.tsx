@@ -1,6 +1,6 @@
-import Layout from "@components/layout";
+import Layout from "@components/Layout";
 import { Search, useSearch } from "@components/SearchBar";
-import { NewsletterForm } from "@components/newsletter-signup";
+import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";
 import { Podcastnote, allPodcastnotes } from "@contentlayer/generated";
 import { useEffect } from "react";

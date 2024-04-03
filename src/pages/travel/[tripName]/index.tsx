@@ -6,6 +6,7 @@ import { allNotes, type Note } from "@contentlayer/generated";
 import slugify from "@sindresorhus/slugify";
 import { travelingStoryNames } from "..";
 import { sortAndFilterNotes } from "src/lib/utils";
+import { NiceCard } from "@components/NiceCard";
 
 type Props = {
   posts: Note[];
@@ -29,7 +30,11 @@ const Traveling = ({ posts, tripName }: Props) => {
           <BreadCrumbs path={url} />
         </section>
         <section>
-          <OtherPostsPreview posts={posts} morePostsText={null} />
+          {posts.map((post, index) => {
+            const priority = index <= 1;
+            return <NiceCard key={post.slug} priority={priority} {...post} />;
+          })}
+          {/* <OtherPostsPreview posts={posts} morePostsText={null} /> */}
         </section>
       </article>
     </Layout>

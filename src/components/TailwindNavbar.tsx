@@ -1,17 +1,22 @@
-import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
-  BellIcon,
   ChevronDownIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { useRouter } from "next/router";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { Fragment } from "react";
 
 const navigation = ["posts", "newsletters", "photography"];
-const resources = ["needlestack", "booknotes", "podcastnotes", "quotes"];
+const resources = [
+  "needlestack",
+  "booknotes",
+  "podcastnotes",
+  "travel",
+  "quotes",
+];
 const about = ["now", "principles", "1-month-projects"];
 
 function combine(...classes: string[]) {

@@ -465,7 +465,8 @@ code {
 }
 
 .main-content {
-  width: 95%;
+  padding-right: 16px;
+  padding-left: 16px;
   margin: auto;
   padding-top: 2rem;
 }

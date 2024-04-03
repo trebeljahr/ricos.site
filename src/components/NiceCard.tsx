@@ -19,13 +19,13 @@ export const NiceCard = ({
   return (
     <div
       key={slug}
-      className="overflow-hidden lg:grid mb-8 md:mb-20"
+      className="overflow-hidden lg:grid mb-12 lg:mb-12"
       style={{
         gridTemplateColumns: "17rem auto",
         gridColumnGap: "2rem",
       }}
     >
-      <div className="lg:h-full h-56 mb-4 relative">
+      <div className="h-64 md:h-56 lg:h-full mb-4 relative">
         <Image
           src={cover.src}
           alt={cover.alt}

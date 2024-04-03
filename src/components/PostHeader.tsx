@@ -9,7 +9,7 @@ type Props = {
 
 const PostHeader = ({ title, subtitle, date }: Props) => {
   return (
-    <div className="post-header">
+    <div className="post-header mb-6">
       <PostTitle>{title}</PostTitle>
       <PostSubTitle>{subtitle}</PostSubTitle>
       {date && <DateFormatter date={date} />}

@@ -43,3 +43,7 @@
 terraform*
 
 /public/assets/**
+
+# ignore weird folders added by vscode extensions
+.clj-kondo
+.lsp

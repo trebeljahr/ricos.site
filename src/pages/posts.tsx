@@ -19,8 +19,8 @@ const Posts = ({ posts }: Props) => {
       url="posts"
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
-      <article className="posts-overview">
-        <section className="main-section">
+      <article className="main-content posts-overview">
+        <section>
           {heroPost && <HeroPostPreview post={heroPost} />}
           {morePosts.length > 0 && <OtherPostsPreview posts={morePosts} />}
         </section>

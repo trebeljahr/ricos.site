@@ -83,8 +83,8 @@ const ShowTags = ({ tags, categories }: Props) => {
       description="An Experimental Overview over All Pages"
       url="experiment"
     >
-      <article>
-        <section className="main-section main-text">
+      <article className="main-content">
+        <section>
           <h2>Categories:</h2>
           <RenderTags tags={categories} />
           <h2>Tags:</h2>
@@ -92,7 +92,7 @@ const ShowTags = ({ tags, categories }: Props) => {
           <h2>Links:</h2>
           <RenderAnchors tags={categories} />
         </section>
-        <section className="main-section">
+        <section>
           <NewsletterForm />
           <ToTopButton />
         </section>

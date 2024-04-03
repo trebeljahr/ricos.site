@@ -16,8 +16,8 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
       url="/"
       imageAlt={"a person reading a book, while floating in space"}
     >
-      <article>
-        <section className="main-section">
+      <article className="main-content">
+        <section>
           <h2>Hi there 👋🏻</h2>
           <p>
             I am Rico. A programmer, traveler, photographer, writer and fellow
@@ -67,7 +67,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
           </p>
         </section>
       </article>
-      <section className="main-section">
+      <section>
         <NewsletterForm />
       </section>
     </Layout>

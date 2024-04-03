@@ -30,13 +30,13 @@ export default function Podcastnotes() {
       }
       url="podcastnotes"
     >
-      <article>
-        <section className="main-section">
+      <article className="main-content">
+        <section>
           <h1>Podcastnotes</h1>
           <Search filters={filters} setFilters={setFilters} />
           <p>Amount: {filteredPodcastnotes.length}</p>
         </section>
-        <section className="main-section allPodcastnotes">
+        <section className="allPodcastnotes">
           {filteredPodcastnotes.map(
             ({ slug, title, show, episode, rating, excerpt }) => {
               return (
@@ -54,7 +54,7 @@ export default function Podcastnotes() {
             }
           )}
         </section>
-        <section className="main-section">
+        <section>
           <NewsletterForm />
           <ToTopButton />
         </section>

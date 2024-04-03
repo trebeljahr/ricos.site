@@ -36,8 +36,8 @@ const Newsletters = ({ newsletterData }: Props) => {
       description="An archive overview page of all the Newsletters I have published in the past at trebeljahr.com."
       url="newsletters"
     >
-      <article className="posts-overview">
-        <section className="main-section">
+      <article className="main-content posts-overview">
+        <section>
           {newsletterData.map(
             ({ slug, number, title, excerpt, cover }, index) => {
               const priority = index <= 1;
@@ -80,7 +80,7 @@ const Newsletters = ({ newsletterData }: Props) => {
             }
           )}
         </section>
-        <section className="main-section">
+        <section>
           <NewsletterForm />
           <ToTopButton />
         </section>

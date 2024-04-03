@@ -35,7 +35,7 @@ const BooknoteComponent = ({ book }: Props) => {
 const BooknotesWithDefault = ({ book }: Props) => {
   if (!book?.body?.code) {
     return (
-      <div className="main-text">
+      <div>
         <p className="placeholder-text">
           I have read this book, but did not write booknotes or a summary for it
           yet. For now, this is all there is.
@@ -55,9 +55,9 @@ const Book = ({ book }: Props) => {
       description={book.excerpt || defaultDescription}
       url={`booknotes/${book.id}`}
     >
-      <article className="main-section">
+      <article className="main-content">
         <BreadCrumbs path={`booknotes/${book.id}`} />
-        <section className="main-section flex">
+        <section className="flex">
           <div className="block relative mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
             <BookCover
               title={book.title}
@@ -73,11 +73,11 @@ const Book = ({ book }: Props) => {
             <BuyItOnAmazon link={book.amazonLink} />
           </div>
         </section>
-        <section className="main-section main-text post-body">
+        <section className="post-body">
           <BooknotesWithDefault book={book} />
           <BuyItOnAmazon link={book.amazonLink} />
         </section>
-        <section className="main-section">
+        <section>
           <ToTopButton />
           <NewsletterForm />
         </section>

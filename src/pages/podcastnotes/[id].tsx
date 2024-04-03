@@ -27,8 +27,8 @@ const Podcastnote = ({ Podcastnote }: Props) => {
       description={`These are my Podcast Notes for ${Podcastnote.title}. ${Podcastnote.excerpt}`}
       url={url}
     >
-      <article>
-        <section className="Podcastnote-info main-section main-text">
+      <article className="main-content">
+        <section className="Podcastnote-info main-content">
           <BreadCrumbs path={url} />
           <div className="Podcastnote-preview-text">
             <h2 className="mt-0 pt-0">
@@ -53,10 +53,10 @@ const Podcastnote = ({ Podcastnote }: Props) => {
             </p>
           </div>
         </section>
-        <section className="main-section main-text post-body">
+        <section className="post-body">
           <PodcastnoteComponent Podcastnote={Podcastnote} />
         </section>
-        <section className="main-section">
+        <section>
           <ToTopButton />
           <NewsletterForm />
         </section>

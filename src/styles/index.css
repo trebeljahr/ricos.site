@@ -464,25 +464,25 @@ code {
   margin-bottom: 3rem;
 }
 
-.main-section {
+.main-content {
   width: 95%;
   margin: auto;
   padding-top: 2rem;
 }
 
-.main-section > :nth-child(1).Podcastnote-link-card {
+.main-content > :nth-child(1).Podcastnote-link-card {
   margin-top: -30px;
 }
 
-.main-section > h1:nth-child(1),
-.main-section > h2:nth-child(1),
-.main-section > h3:nth-child(1),
-.main-section > h4:nth-child(1) {
+.main-content > h1:nth-child(1),
+.main-content > h2:nth-child(1),
+.main-content > h3:nth-child(1),
+.main-content > h4:nth-child(1) {
   margin-top: -2rem;
 }
 
 
-.main-text > * {
+.main-content > * {
   max-width: 100%;
   height: auto;
 }
@@ -504,16 +504,16 @@ a:hover {
   padding-left: 40px;
 }
 
-.main-text ul {
+.main-content ul {
   padding-left: 1.2rem;
   list-style: disc outside;
 }
 
-.main-text ol {
+.main-content ol {
   padding-left: 1.4rem;
 }
 
-.main-text ol {
+.main-content ol {
   padding-left: 1.7rem;
   list-style: decimal outside;
 }
@@ -704,7 +704,7 @@ li {
     margin-right: auto;
   }
 
-  .main-section {
+  .main-content {
     padding-top: 2rem;
     width: var(--main-width);
   }
@@ -729,12 +729,12 @@ li {
     font-size: 21px;
   }
 
-  .main-text ul {
+  .main-content ul {
     padding-left: 1.4rem;
     list-style: disc outside;
   }
 
-  .main-text ol {
+  .main-content ol {
     padding-left: 1.8rem;
     list-style: decimal outside;
   }

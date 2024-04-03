@@ -20,12 +20,12 @@ export default function Page({ page }: Props) {
       image={cover.src}
       imageAlt={cover.alt}
     >
-      <article>
-        <section className="main-section main-text">
+      <article className="main-content">
+        <section>
           <PostHeader subtitle={subtitle} title={title} />
           <Component />
         </section>
-        <section className="main-section">
+        <section>
           <NewsletterForm />
           <ToTopButton />
         </section>

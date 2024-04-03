@@ -1,5 +1,6 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { MarkdownRenderers } from "@components/CustomRenderers";
+import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/layout";
 import PostHeader from "@components/post-header";
@@ -9,22 +10,19 @@ import {
 } from "@contentlayer/generated";
 import slugify from "@sindresorhus/slugify";
 import { useMDXComponent } from "next-contentlayer/hooks";
-import { travelingStoryNames } from "..";
-import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
-import { replaceUndefinedWithNull } from "src/lib/utils";
-import { sortAndFilterNotes } from "src/lib/utils";
+import { replaceUndefinedWithNull, sortAndFilterNotes } from "src/lib/utils";
 
-type BlogProps = {
+type TravelBlogProps = {
   post: Note;
   nextSlug: string | null;
   previousSlug: string | null;
 };
 
-interface LayoutProps extends BlogProps {
+interface LayoutProps extends TravelBlogProps {
   children: React.ReactNode;
 }
 
-export const NotesLayout = ({
+export const TravelBlogLayout = ({
   children,
   post: { excerpt, slug, cover, title, date, parentFolder },
   nextSlug,
@@ -40,7 +38,7 @@ export const NotesLayout = ({
       imageAlt={cover?.alt || ""}
     >
       <NextAndPrevArrows nextPost={nextSlug} prevPost={previousSlug} />
-      <article className="main-section main-text post-body">
+      <article className="main-content post-body">
         <section>
           <BreadCrumbs path={url} />
 
@@ -59,13 +57,17 @@ export default function PostComponent({
   post,
   previousSlug,
   nextSlug,
-}: BlogProps) {
+}: TravelBlogProps) {
   const Component = useMDXComponent(post.body.code);
 
   return (
-    <NotesLayout post={post} previousSlug={previousSlug} nextSlug={nextSlug}>
+    <TravelBlogLayout
+      post={post}
+      previousSlug={previousSlug}
+      nextSlug={nextSlug}
+    >
       <Component components={{ ...MarkdownRenderers }} />
-    </NotesLayout>
+    </TravelBlogLayout>
   );
 }
 

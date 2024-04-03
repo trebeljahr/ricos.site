@@ -41,18 +41,18 @@ export default function Books({ booknotes }: Props) {
       url="booknotes"
       imageAlt={"a bookshelf filled with lots of books"}
     >
-      <article>
-        <section className="main-section">
+      <article className="main-content allBooknotes pt-5">
+        <section>
           <h1>Booknotes</h1>
           <Search filters={filters} setFilters={setFilters} />
           <p className="mb-0">Amount: {filteredBooks.length}</p>
         </section>
-        <section className="main-section allBooknotes pt-5">
+        <section>
           {filteredBooks.map((book, index) => {
             return <BookPreview key={book.slug} book={book} index={index} />;
           })}
         </section>
-        <section className="main-section">
+        <section>
           <NewsletterForm />
           <ToTopButton />
         </section>

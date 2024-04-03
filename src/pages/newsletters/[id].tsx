@@ -38,8 +38,8 @@ const Newsletter = ({
     >
       <NewsletterModalPopup />
 
-      <article className="newsletter-article">
-        <section className="post-body main-section mt-2">
+      <article className="main-content maint-text newsletter-article">
+        <section className="post-body mt-2">
           <BreadCrumbs
             path={url}
             overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]}
@@ -64,7 +64,7 @@ const Newsletter = ({
           </div>
           <PostBodyWithoutExcerpt content={body.raw} />
         </section>
-        <section className="main-section">
+        <section>
           <NextAndPrevArrows nextPost={nextPost} prevPost={prevPost} />
           <NewsletterForm />
           <ToTopButton />

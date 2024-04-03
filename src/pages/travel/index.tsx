@@ -21,11 +21,11 @@ const Notes = ({ posts }: Props) => {
       url="posts"
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
-      <article className="posts-overview">
-        <section className="main-section">
+      <article className="main-content posts-overview">
+        <section>
           <BreadCrumbs path={url} />
         </section>
-        <section className="main-section">
+        <section>
           {posts.map((post) => {
             return (
               <div key={post}>

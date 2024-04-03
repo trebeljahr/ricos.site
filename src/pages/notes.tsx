@@ -1,7 +1,7 @@
 import { Post as Note, allNotes } from "@contentlayer/generated";
 import Layout from "@components/layout";
 import { HeroPostPreview, OtherPostsPreview } from "@components/post-preview";
-import { parseDate } from "@components/date-formatter";
+import { parseDate } from "src/lib/dateUtils";
 
 type Props = {
   posts: Note[];

@@ -7,7 +7,7 @@ import Layout from "@components/layout";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import { getDataFromS3 } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
-import { ImageProps } from "src/utils/types";
+import { ImageProps } from "src/@types";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/styles.css";
 

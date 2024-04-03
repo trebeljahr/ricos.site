@@ -3,20 +3,33 @@ import { MarkdownRenderers } from "@components/CustomRenderers";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/layout";
 import PostHeader from "@components/post-header";
-import { allNotes, type Note } from "@contentlayer/generated";
+import {
+  allNotes as allTravelStories,
+  type Note,
+} from "@contentlayer/generated";
 import slugify from "@sindresorhus/slugify";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { travelingStoryNames } from "..";
+import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
+import { replaceUndefinedWithNull } from "src/lib/utils";
+import { sortAndFilterNotes } from "src/lib/utils";
 
-type Props = {
-  children: React.ReactNode;
+type BlogProps = {
   post: Note;
+  nextSlug: string | null;
+  previousSlug: string | null;
 };
+
+interface LayoutProps extends BlogProps {
+  children: React.ReactNode;
+}
 
 export const NotesLayout = ({
   children,
   post: { excerpt, slug, cover, title, date, parentFolder },
-}: Props) => {
+  nextSlug,
+  previousSlug,
+}: LayoutProps) => {
   const url = `travel/${parentFolder}/${slug}`;
   return (
     <Layout
@@ -26,6 +39,7 @@ export const NotesLayout = ({
       url={url}
       imageAlt={cover?.alt || ""}
     >
+      <NextAndPrevArrows nextPost={nextSlug} prevPost={previousSlug} />
       <article className="main-section main-text post-body">
         <section>
           <BreadCrumbs path={url} />
@@ -41,35 +55,31 @@ export const NotesLayout = ({
   );
 };
 
-type BlogProps = {
-  post: Note;
-  morePosts: Note[];
-};
-
-export default function PostComponent({ post }: BlogProps) {
+export default function PostComponent({
+  post,
+  previousSlug,
+  nextSlug,
+}: BlogProps) {
   const Component = useMDXComponent(post.body.code);
 
   return (
-    <NotesLayout post={post}>
+    <NotesLayout post={post} previousSlug={previousSlug} nextSlug={nextSlug}>
       <Component components={{ ...MarkdownRenderers }} />
     </NotesLayout>
   );
 }
 
+type Params = { params: { storyName: string; tripName: string } };
+
 export async function getStaticPaths() {
-  const paths = allNotes
-    .filter(({ published }) => published)
-    .filter(({ path }) => {
-      const name = path.split("/").at(-2);
-      if (!name) console.error("No name found for", path);
-      else return travelingStoryNames.includes(slugify(name));
-    })
-    .map(({ slug, path }) => ({
+  const paths: Params[] = sortAndFilterNotes(allTravelStories).map(
+    ({ slug, parentFolder }) => ({
       params: {
-        tripName: slugify(path.split("/").at(-2) || ""),
+        tripName: slugify(parentFolder),
         storyName: slug,
       },
-    }));
+    })
+  );
 
   return {
     paths,
@@ -77,25 +87,24 @@ export async function getStaticPaths() {
   };
 }
 
-function replaceUndefinedWithNull(obj: any): any {
-  if (obj === undefined) return null;
-  if (obj === null || typeof obj !== "object") return obj;
+export async function getStaticProps({
+  params: { storyName, tripName },
+}: Params) {
+  const stories = sortAndFilterNotes(allTravelStories, tripName);
+  const currentIndex = stories.findIndex((post) => post.slug === storyName);
 
-  for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      obj[key] = replaceUndefinedWithNull(obj[key]);
-    }
-  }
+  const travelingStory = stories[currentIndex];
+  const prevIndex = currentIndex - 1;
+  const nextIndex = currentIndex + 1;
 
-  return obj;
-}
-
-type Params = { params: { storyName: string } };
-
-export async function getStaticProps({ params }: Params) {
-  const note = allNotes.find((post: Note) => post.slug === params.storyName);
+  const previousSlug = prevIndex >= 0 ? stories[prevIndex].slug : null;
+  const nextSlug = nextIndex < stories.length ? stories[nextIndex].slug : null;
 
   return {
-    props: { post: replaceUndefinedWithNull(note) },
+    props: {
+      post: replaceUndefinedWithNull(travelingStory),
+      nextSlug,
+      previousSlug,
+    },
   };
 }

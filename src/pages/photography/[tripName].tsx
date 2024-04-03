@@ -6,7 +6,7 @@ import { NextJsImage } from "@components/image-gallery/customRenderers";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import { getDataFromS3, getS3Folders, photographyFolder } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
-import { ImageProps } from "src/utils/types";
+import { ImageProps } from "src/@types";
 import Lightbox from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/plugins/thumbnails.css";

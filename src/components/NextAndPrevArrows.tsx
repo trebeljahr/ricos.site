@@ -1,19 +1,24 @@
 import Link from "next/link";
 import { ShowAfterScrolling } from "@components/ShowAfterScrolling";
+import { useRouter } from "next/router";
 
 export const NextAndPrevArrows = ({
   nextPost,
   prevPost,
 }: {
-  nextPost: null | number;
-  prevPost: null | number;
+  nextPost: null | number | string;
+  prevPost: null | number | string;
 }) => {
+  const router = useRouter();
+  const currentPath = router.asPath;
+  const basePath = currentPath.substring(0, currentPath.lastIndexOf("/"));
+
   return (
     <ShowAfterScrolling>
       <>
         {prevPost && (
           <Link
-            href={`/newsletters/${prevPost}`}
+            href={`${basePath}/${prevPost}`}
             className="page-arrow left"
             passHref
           >
@@ -22,7 +27,7 @@ export const NextAndPrevArrows = ({
         )}
         {nextPost && (
           <Link
-            href={`/newsletters/${nextPost}`}
+            href={`${basePath}/${nextPost}`}
             className="page-arrow right"
             passHref
           >

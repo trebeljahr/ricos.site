@@ -1,10 +1,11 @@
+import { BreadCrumbs } from "@components/BreadCrumbs";
+import { byDates } from "src/lib/dateUtils";
 import Layout from "@components/layout";
-import { HeroPostPreview, OtherPostsPreview } from "@components/post-preview";
-import { allNotes, Post, type Note } from "@contentlayer/generated";
+import { OtherPostsPreview } from "@components/post-preview";
+import { allNotes, type Note } from "@contentlayer/generated";
 import slugify from "@sindresorhus/slugify";
 import { travelingStoryNames } from "..";
-import { BreadCrumbs } from "@components/BreadCrumbs";
-import { parseDate } from "@components/date-formatter";
+import { sortAndFilterNotes } from "src/lib/utils";
 
 type Props = {
   posts: Note[];
@@ -37,33 +38,31 @@ const Traveling = ({ posts, tripName }: Props) => {
 
 export default Traveling;
 
+type Params = {
+  params: { tripName: string };
+};
+
 export const getStaticPaths = async () => {
   return {
-    paths: travelingStoryNames.map((post) => ({ params: { tripName: post } })),
+    paths: travelingStoryNames.map<Params>((post) => ({
+      params: { tripName: post },
+    })),
     fallback: false,
   };
 };
 
-export const getStaticProps = async ({
-  params,
-}: {
-  params: { tripName: string };
-}) => {
-  const posts = allNotes
-    .filter(({ published }) => published)
-    .filter(({ parentFolder }) => params.tripName === parentFolder)
-    .map(({ path, title, slug, excerpt, date, cover }) => {
+export const getStaticProps = async ({ params }: Params) => {
+  const posts = sortAndFilterNotes(allNotes, params.tripName).map(
+    ({ parentFolder, title, slug, excerpt, date, cover }) => {
       return {
         title,
         cover,
         date,
         excerpt,
-        slug: slugify(path.split("/").at(-2) || "") + "/" + slug,
+        slug: slugify(parentFolder) + "/" + slug,
       };
-    })
-    .sort((a, b) => {
-      return parseDate(a.date) > parseDate(b.date) ? 1 : -1;
-    });
+    }
+  );
 
   return {
     props: { posts, tripName: params.tripName },

@@ -6,7 +6,11 @@ import inquirer from "inquirer";
 import path from "path";
 import { Pool, Worker, spawn } from "threads";
 import { getWidthAndHeight } from "./getWidthAndHeight";
-import { uploadSingleFileToS3, uploadWithMetadata } from "./s3-scripts";
+import {
+  doesFileExistInS3,
+  uploadSingleFileToS3,
+  uploadWithMetadata,
+} from "./s3-scripts";
 
 async function main() {
   const { dirPath } = await inquirer.prompt<{
@@ -129,35 +133,43 @@ async function uploadDir(directoryPath: string) {
   const dirName = path.basename(directoryPath);
   const format = `${dirName} | {bar} | {percentage}% | {value}/{total} | {eta}s`;
   const progress = new SingleBar({ format }, Presets.shades_classic);
-  progress.start(files.length, counter);
 
-  // await Promise.all(
-  //   files.map(async (filePath) => {
-  //     const key = path.relative(
-  //       directoryPath.split("/").slice(0, -1).join("/"),
-  //       filePath
-  //     );
-  //     const exists = await doesFileExistInS3(filePath);
-  //     console.log(key);
-  //     console.log(exists ? "File exists" : "File does not exist");
-  //     progress.update(counter++);
-  //   })
-  // );
+  const filesToUpload = await files.reduce(
+    async (aggPromise: Promise<string[]>, filePath) => {
+      const agg = await aggPromise;
+      const key = path.relative(
+        directoryPath.split("/").slice(0, -1).join("/"),
+        filePath
+      );
+      const exists = await doesFileExistInS3(key);
+      console.log(key);
+      console.log(exists ? "File exists" : "File does not exist");
+      progress.update(counter++);
+      if (!exists) return [...agg, filePath];
 
-  const uploadsPromises = files.map(async (filePath) => {
-    const data = await getWidthAndHeight(filePath);
-    const key = path.relative(
-      directoryPath.split("/").slice(0, -1).join("/"),
-      filePath
-    );
-    await uploadWithMetadata(filePath, key, {
-      width: String(data?.width),
-      height: String(data?.height),
-    });
-    progress.update(counter++);
-  });
+      return [...agg];
+    },
+    Promise.resolve([])
+  );
 
-  await Promise.all(uploadsPromises);
+  progress.start(filesToUpload.length, counter);
+
+  console.log(filesToUpload);
+
+  // const uploadsPromises = filesToUpload.map(async (filePath) => {
+  //   const data = await getWidthAndHeight(filePath);
+  //   const key = path.relative(
+  //     directoryPath.split("/").slice(0, -1).join("/"),
+  //     filePath
+  //   );
+  //   await uploadWithMetadata(filePath, key, {
+  //     width: String(data?.width),
+  //     height: String(data?.height),
+  //   });
+  //   progress.update(counter++);
+  // });
+
+  // await Promise.all(uploadsPromises);
 
   progress.stop();
 }

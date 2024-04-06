@@ -134,42 +134,38 @@ async function uploadDir(directoryPath: string) {
   const format = `${dirName} | {bar} | {percentage}% | {value}/{total} | {eta}s`;
   const progress = new SingleBar({ format }, Presets.shades_classic);
 
-  const filesToUpload = await files.reduce(
-    async (aggPromise: Promise<string[]>, filePath) => {
-      const agg = await aggPromise;
+  const filesToUploadPromises = await Promise.all(
+    files.map(async (filePath) => {
       const key = path.relative(
         directoryPath.split("/").slice(0, -1).join("/"),
         filePath
       );
       const exists = await doesFileExistInS3(key);
-      console.log(key);
-      console.log(exists ? "File exists" : "File does not exist");
-      progress.update(counter++);
-      if (!exists) return [...agg, filePath];
-
-      return [...agg];
-    },
-    Promise.resolve([])
+      // console.log(key);
+      // console.log(exists ? "File exists" : "File does not exist");
+      // progress.update(counter++);
+      if (!exists) return filePath;
+    })
   );
+
+  const filesToUpload = filesToUploadPromises.filter(Boolean) as string[];
 
   progress.start(filesToUpload.length, counter);
 
-  console.log(filesToUpload);
+  const uploadsPromises = filesToUpload.map(async (filePath) => {
+    const data = await getWidthAndHeight(filePath);
+    const key = path.relative(
+      directoryPath.split("/").slice(0, -1).join("/"),
+      filePath
+    );
+    await uploadWithMetadata(filePath, key, {
+      width: String(data?.width),
+      height: String(data?.height),
+    });
+    progress.update(counter++);
+  });
 
-  // const uploadsPromises = filesToUpload.map(async (filePath) => {
-  //   const data = await getWidthAndHeight(filePath);
-  //   const key = path.relative(
-  //     directoryPath.split("/").slice(0, -1).join("/"),
-  //     filePath
-  //   );
-  //   await uploadWithMetadata(filePath, key, {
-  //     width: String(data?.width),
-  //     height: String(data?.height),
-  //   });
-  //   progress.update(counter++);
-  // });
-
-  // await Promise.all(uploadsPromises);
+  await Promise.all(uploadsPromises);
 
   progress.stop();
 }

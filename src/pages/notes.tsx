@@ -1,6 +1,7 @@
 import { Post as Note, allNotes } from "@contentlayer/generated";
-import Layout from "../components/layout";
-import { HeroPostPreview, OtherPostsPreview } from "../components/post-preview";
+import Layout from "@components/Layout";
+import { HeroPostPreview, OtherPostsPreview } from "@components/PostPreview";
+import { parseDate } from "src/lib/dateUtils";
 
 type Props = {
   posts: Note[];
@@ -19,8 +20,8 @@ const Notes = ({ posts }: Props) => {
       url="posts"
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
-      <article className="posts-overview">
-        <section className="main-section">
+      <article className="main-content posts-overview">
+        <section>
           {heroPost && <HeroPostPreview post={heroPost} />}
           {morePosts.length > 0 && <OtherPostsPreview posts={morePosts} />}
         </section>
@@ -38,11 +39,16 @@ export const getStaticProps = async () => {
       excerpt,
       cover,
       title,
-      date: date || 0,
+      date,
       published,
     }))
     .filter(({ published }) => published)
-    .sort((note1, note2) => ((note1?.date || 0) > (note2?.date || 0) ? -1 : 1));
+    .sort((note1, note2) => {
+      const date1 = parseDate(note1?.date);
+      const date2 = parseDate(note2?.date);
+
+      return date1.getTime() > date2.getTime() ? -1 : 1;
+    });
 
   return {
     props: { posts: notes },

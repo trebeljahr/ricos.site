@@ -3,12 +3,12 @@ import {
   type Podcastnote as PodcastnoteType,
 } from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
-import { BreadCrumbs } from "src/components/BreadCrumbs";
-import { MarkdownRenderers } from "src/components/CustomRenderers";
-import { ExternalLink } from "../../components/ExternalLink";
-import { ToTopButton } from "../../components/ToTopButton";
-import Layout from "../../components/layout";
-import { NewsletterForm } from "../../components/newsletter-signup";
+import { BreadCrumbs } from "@components/BreadCrumbs";
+import { MarkdownRenderers } from "@components/CustomRenderers";
+import { ExternalLink } from "@components/ExternalLink";
+import { ToTopButton } from "@components/ToTopButton";
+import Layout from "@components/Layout";
+import { NewsletterForm } from "@components/NewsletterSignup";
 
 type Props = {
   Podcastnote: PodcastnoteType;
@@ -27,8 +27,8 @@ const Podcastnote = ({ Podcastnote }: Props) => {
       description={`These are my Podcast Notes for ${Podcastnote.title}. ${Podcastnote.excerpt}`}
       url={url}
     >
-      <article>
-        <section className="Podcastnote-info main-section main-text">
+      <article className="main-content">
+        <section className="Podcastnote-info main-content">
           <BreadCrumbs path={url} />
           <div className="Podcastnote-preview-text">
             <h2 className="mt-0 pt-0">
@@ -53,10 +53,10 @@ const Podcastnote = ({ Podcastnote }: Props) => {
             </p>
           </div>
         </section>
-        <section className="main-section main-text post-body">
+        <section className="post-body">
           <PodcastnoteComponent Podcastnote={Podcastnote} />
         </section>
-        <section className="main-section">
+        <section>
           <ToTopButton />
           <NewsletterForm />
         </section>

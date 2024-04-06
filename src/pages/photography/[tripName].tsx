@@ -1,22 +1,19 @@
 import { useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { ClickHandler, Photo, PhotoAlbum } from "react-photo-album";
-import { ToTopButton } from "src/components/ToTopButton";
-import { NextJsImage } from "src/components/image-gallery/customRenderers";
+import { ToTopButton } from "@components/ToTopButton";
+import { NextJsImage } from "@components/images/CustomRenderers";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import { getDataFromS3, getS3Folders, photographyFolder } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
-import { ImageProps } from "src/utils/types";
+import { ImageProps } from "src/@types";
 import Lightbox from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
-import {
-  BreadCrumbs,
-  turnKebabIntoTitleCase,
-} from "../../components/BreadCrumbs";
-import Layout from "../../components/layout";
+import { BreadCrumbs, turnKebabIntoTitleCase } from "@components/BreadCrumbs";
+import Layout from "@components/Layout";
 
 export default function ImageGallery({
   images,

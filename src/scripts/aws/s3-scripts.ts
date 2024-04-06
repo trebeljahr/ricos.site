@@ -1,4 +1,4 @@
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { HeadObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { config } from "dotenv";
 import { readFileSync } from "fs";
 import mime from "mime";
@@ -7,9 +7,33 @@ import { createS3Client } from "src/lib/aws";
 import { getAllStorageObjectKeys, getObjectMetadata } from "../../lib/aws.js";
 import { getWidthAndHeight } from "./getWidthAndHeight.js";
 
+const Bucket = "images.trebeljahr.com";
+
 export function createKey(prefix: string, filepath: string) {
   const filename = path.basename(filepath);
   return path.join(prefix, filename);
+}
+
+export async function doesFileExistInS3(filePath: string): Promise<boolean> {
+  const command = new HeadObjectCommand({
+    Bucket,
+    Key: filePath,
+  });
+
+  const s3 = createS3Client();
+
+  try {
+    await s3.send(command);
+    return true;
+  } catch (error) {
+    console.log(error);
+
+    if ((error as Error).name === "NotFound") {
+      return false;
+    }
+
+    throw error;
+  }
 }
 
 export async function uploadWithMetadata(
@@ -17,9 +41,6 @@ export async function uploadWithMetadata(
   Key: string,
   Metadata: Record<string, string>
 ) {
-  const Bucket = "images.trebeljahr.com";
-  if (!Bucket) throw new Error("No bucket name provided in .env file");
-
   const client = createS3Client();
   const Body = readFileSync(filepath);
 

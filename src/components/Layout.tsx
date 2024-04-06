@@ -1,6 +1,7 @@
-import Meta from "./meta";
+import { toTitleCase } from "src/lib/toTitleCase";
+import Meta from "./Meta";
 import { OpenGraph } from "./OpenGraph";
-import { TailwindNavbar } from "./tailwindui-navbar";
+import { TailwindNavbar } from "./TailwindNavbar";
 
 type Props = {
   children: React.ReactNode;
@@ -21,11 +22,13 @@ const Layout = ({
   imageAlt,
   fullScreen = false,
 }: Props) => {
+  const properTitle = toTitleCase(title);
+
   return (
     <>
-      <Meta description={description} title={title} />
+      <Meta description={description} title={properTitle} />
       <OpenGraph
-        title={title}
+        title={properTitle}
         description={description}
         url={url}
         image={image}

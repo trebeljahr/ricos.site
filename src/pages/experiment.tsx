@@ -1,8 +1,8 @@
 import { allDocuments, DocumentTypes } from "@contentlayer/generated";
 import Link from "next/link";
-import Layout from "../components/layout";
-import { NewsletterForm } from "../components/newsletter-signup";
-import { ToTopButton } from "../components/ToTopButton";
+import Layout from "@components/Layout";
+import { NewsletterForm } from "@components/NewsletterSignup";
+import { ToTopButton } from "@components/ToTopButton";
 
 const mainCategories = [
   "philosophy",
@@ -83,8 +83,8 @@ const ShowTags = ({ tags, categories }: Props) => {
       description="An Experimental Overview over All Pages"
       url="experiment"
     >
-      <article>
-        <section className="main-section main-text">
+      <article className="main-content">
+        <section>
           <h2>Categories:</h2>
           <RenderTags tags={categories} />
           <h2>Tags:</h2>
@@ -92,7 +92,7 @@ const ShowTags = ({ tags, categories }: Props) => {
           <h2>Links:</h2>
           <RenderAnchors tags={categories} />
         </section>
-        <section className="main-section">
+        <section>
           <NewsletterForm />
           <ToTopButton />
         </section>

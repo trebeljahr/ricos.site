@@ -1,12 +1,8 @@
 import Link from "next/link";
+import { toTitleCase } from "src/lib/toTitleCase";
 
 export function turnKebabIntoTitleCase(kebab: string) {
-  return kebab
-    .split("-")
-    .map(
-      (substring) => substring.slice(0, 1).toUpperCase() + substring.slice(1)
-    )
-    .join(" ");
+  return kebab.split("-").map(toTitleCase).join(" ");
 }
 
 export function BreadCrumbs({

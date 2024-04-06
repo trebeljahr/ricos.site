@@ -1,4 +1,4 @@
-import { MagnitudeDemo } from "./collision-detection/MagnitudeDemo";
+import { MagnitudeDemo } from "./collisionDetection/MagnitudeDemo";
 
 export const SomeDemo = () => <MagnitudeDemo />;
 import * as THREE from "three";

@@ -173,7 +173,11 @@ export const NewsletterForm = ({
 }) => {
   const form = useNewsletterForm();
   const defaultLink = (
-    <Link as="/newsletters" href="/newsletters" className="block mt-5">
+    <Link
+      as="/newsletters"
+      href="/newsletters"
+      className="block mt-5 font-light"
+    >
       Check out what you missed so far.
     </Link>
   );
@@ -196,7 +200,7 @@ export const NewsletterForm = ({
       {link || null}
     </div>
   ) : (
-    <div>
+    <div className="mt-20">
       {heading || defaultHeading}
       {text || defaultText}
 

@@ -106,9 +106,7 @@ export const HeadingRenderer = (level: number) => {
 };
 
 export const CodeRenderer = (props: HTMLAttributes<HTMLPreElement>) => {
-  const [hidden, setHidden] = useState(true);
-
-  useEffect(() => {}, [hidden]);
+  const [hidden, setHidden] = useState(false);
 
   const toggleHidden = () => {
     setHidden((old) => !old);

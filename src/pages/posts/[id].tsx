@@ -1,13 +1,13 @@
-import PostHeader from "../../components/post-header";
-import Layout from "../../components/layout";
+import PostHeader from "@components/PostHeader";
+import Layout from "@components/Layout";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { allPosts, Post } from "@contentlayer/generated";
-import { NewsletterForm } from "../../components/newsletter-signup";
-import { ToTopButton } from "../../components/ToTopButton";
-import { ReadMore } from "../../components/more-stories";
+import { NewsletterForm } from "@components/NewsletterSignup";
+import { ToTopButton } from "@components/ToTopButton";
+import { ReadMore } from "@components/MoreStories";
 import { getRandom } from "src/lib/math/getRandom";
-import { MarkdownRenderers } from "src/components/CustomRenderers";
-import { BreadCrumbs } from "src/components/BreadCrumbs";
+import { MarkdownRenderers } from "@components/CustomRenderers";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 
 type Props = {
   children: React.ReactNode;
@@ -29,8 +29,8 @@ export const BlogLayout = ({
       url={url}
       imageAlt={cover.alt}
     >
-      <article>
-        <section className="main-section main-text post-body">
+      <article className="main-content post-body">
+        <section>
           <BreadCrumbs path={url} />
 
           <PostHeader subtitle={subtitle} title={title} date={date} />

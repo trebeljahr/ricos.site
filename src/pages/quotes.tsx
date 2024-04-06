@@ -1,7 +1,7 @@
-import { Search, useSearch } from "../components/SearchBar";
-import { ToTopButton } from "../components/ToTopButton";
-import Layout from "../components/layout";
-import { NewsletterForm } from "../components/newsletter-signup";
+import { Search, useSearch } from "@components/SearchBar";
+import { ToTopButton } from "@components/ToTopButton";
+import Layout from "@components/Layout";
+import { NewsletterForm } from "@components/NewsletterSignup";
 import quotesJSON from "../content/Notes/pages/quotes.json";
 
 const quotes: Quote[] = quotesJSON;
@@ -28,13 +28,13 @@ export default function Quotes() {
       url="quotes"
       imageAlt="a collection of handwritten notes on paper"
     >
-      <article>
-        <section className="main-section">
+      <article className="main-content">
+        <section>
           <Search setFilters={setFilters} filters={filters} />
           <h1>Quotes</h1>
           <p>Amount: {filteredQuotes.length}</p>
         </section>
-        <section className="main-section">
+        <section>
           {filteredQuotes.map(({ author, content }, index) => {
             return (
               <div key={author + index} className="quote">
@@ -46,7 +46,7 @@ export default function Quotes() {
             );
           })}
         </section>
-        <section className="main-section">
+        <section>
           <NewsletterForm />
           <ToTopButton />
         </section>

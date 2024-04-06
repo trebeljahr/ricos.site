@@ -12,7 +12,7 @@ type Props = {
 
 export const PostBodyWithoutExcerpt = ({ content }: Props) => {
   return (
-    <div className="main-text">
+    <div>
       <ReactMarkdown
         remarkPlugins={[remarkToc, remarkGfm]}
         rehypePlugins={[rehypeRaw, rehypeHighlight]}

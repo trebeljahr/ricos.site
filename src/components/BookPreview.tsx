@@ -1,6 +1,6 @@
 import { Booknote } from "@contentlayer/generated";
 import Link from "next/link";
-import { BookCover } from "./cover-image";
+import { BookCover } from "./CoverImage";
 
 type Props = {
   book: Booknote;

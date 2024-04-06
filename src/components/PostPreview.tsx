@@ -1,6 +1,6 @@
-import { Post } from "@contentlayer/generated";
+import { type Note, type Post } from "@contentlayer/generated";
 import Link from "next/link";
-import { PostCoverImage } from "./cover-image";
+import { PostCoverImage } from "./CoverImage";
 
 interface PreviewTextProps {
   title: string;
@@ -35,7 +35,7 @@ const PostPreviewImage = ({
 };
 
 type Props = {
-  post: Post;
+  post: Post | Note;
   isHeroPost?: boolean;
 };
 
@@ -51,14 +51,18 @@ export const PostPreview = ({
       passHref
     >
       <>
-        <PostPreviewImage title={title} src={cover.src} priority={isHeroPost} />
+        <PostPreviewImage
+          title={title}
+          src={cover?.src || ""}
+          priority={isHeroPost}
+        />
         <PostPreviewText title={title} excerpt={excerpt} />
       </>
     </Link>
   );
 };
 
-export const HeroPostPreview = ({ post }: { post: Post }) => {
+export const HeroPostPreview = ({ post }: { post: Post | Note }) => {
   return (
     <section>
       <h1 className="posts-page-title">Latest Post:</h1>
@@ -69,10 +73,16 @@ export const HeroPostPreview = ({ post }: { post: Post }) => {
   );
 };
 
-export const OtherPostsPreview = ({ posts }: { posts: Post[] }) => {
+export const OtherPostsPreview = ({
+  posts,
+  morePostsText = "More Posts:",
+}: {
+  posts: Post[] | Note[];
+  morePostsText?: string | null;
+}) => {
   return (
     <section>
-      <h2 className="posts-page-title">More Posts:</h2>
+      {morePostsText && <h2 className="posts-page-title">{morePostsText}</h2>}
       <div className="other-posts-container">
         {posts.map((post) => {
           return <PostPreview key={post.slug} post={post} />;

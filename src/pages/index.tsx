@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { ExternalLink } from "../components/ExternalLink";
-import { TrySomeOfThese } from "../components/intro-links";
-import Layout from "../components/layout";
-import { NewsletterForm } from "../components/newsletter-signup";
+import { ExternalLink } from "@components/ExternalLink";
+import { TrySomeOfThese } from "@components/IntroLinks";
+import Layout from "@components/Layout";
+import { NewsletterForm } from "@components/NewsletterSignup";
 
 const Index = () => {
   const description = `trebeljahr - a website about the things Rico Trebeljahr does, reads and thinks about. The topics can vary widely, 
@@ -16,8 +16,8 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
       url="/"
       imageAlt={"a person reading a book, while floating in space"}
     >
-      <article>
-        <section className="main-section">
+      <article className="main-content">
+        <section>
           <h2>Hi there 👋🏻</h2>
           <p>
             I am Rico. A programmer, traveler, photographer, writer and fellow
@@ -67,7 +67,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
           </p>
         </section>
       </article>
-      <section className="main-section">
+      <section>
         <NewsletterForm />
       </section>
     </Layout>

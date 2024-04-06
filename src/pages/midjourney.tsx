@@ -1,13 +1,13 @@
 import { useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { PhotoAlbum } from "react-photo-album";
-import { ToTopButton } from "src/components/ToTopButton";
-import { NextJsImage } from "src/components/image-gallery/customRenderers";
-import Layout from "src/components/layout";
+import { ToTopButton } from "@components/ToTopButton";
+import { NextJsImage } from "@components/images/CustomRenderers";
+import Layout from "@components/Layout";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import { getDataFromS3 } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
-import { ImageProps } from "src/utils/types";
+import { ImageProps } from "src/@types";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/styles.css";
 

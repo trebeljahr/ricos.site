@@ -1,9 +1,8 @@
 import { allNewsletters } from "@contentlayer/generated";
-import Image from "next/image";
-import Link from "next/link";
-import { ToTopButton } from "../components/ToTopButton";
-import Layout from "../components/layout";
-import { NewsletterForm } from "../components/newsletter-signup";
+import { ToTopButton } from "@components/ToTopButton";
+import Layout from "@components/Layout";
+import { NewsletterForm } from "@components/NewsletterSignup";
+import { NiceCard } from "../components/NiceCard";
 
 type NewsletterData = {
   slug: string;
@@ -36,51 +35,26 @@ const Newsletters = ({ newsletterData }: Props) => {
       description="An archive overview page of all the Newsletters I have published in the past at trebeljahr.com."
       url="newsletters"
     >
-      <article className="posts-overview">
-        <section className="main-section">
+      <article className="main-content posts-overview">
+        <section>
           {newsletterData.map(
             ({ slug, number, title, excerpt, cover }, index) => {
               const priority = index <= 1;
 
               return (
-                <div
+                <NiceCard
                   key={slug}
-                  className="overflow-hidden lg:grid mb-8 md:mb-20"
-                  style={{
-                    gridTemplateColumns: "17rem auto",
-                    gridColumnGap: "2rem",
-                  }}
-                >
-                  <div className="lg:h-full h-56 mb-4 relative">
-                    <Image
-                      src={cover.src}
-                      alt={cover.alt}
-                      fill
-                      sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
-                        priority ? 780 : 357
-                      }`}
-                      priority={priority}
-                      className="rounded-md"
-                      style={{
-                        objectFit: "cover",
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <Link href={slug}>
-                      <h2 className="pt-0">
-                        {title} | Live and Learn #{number}
-                      </h2>
-                    </Link>
-
-                    <p>{excerpt}</p>
-                  </div>
-                </div>
+                  cover={cover}
+                  slug={slug}
+                  excerpt={excerpt}
+                  priority={priority}
+                  title={`${title} | Live and Learn #${number}`}
+                />
               );
             }
           )}
         </section>
-        <section className="main-section">
+        <section>
           <NewsletterForm />
           <ToTopButton />
         </section>

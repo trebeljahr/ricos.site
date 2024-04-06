@@ -14,7 +14,6 @@ import remarkMath from "remark-math";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
 import slugify from "@sindresorhus/slugify";
-import remarkWikiLinkPlus from "remark-wiki-link-plus";
 
 function generateExcerpt(text: string, length: number): string {
   const lines = text
@@ -56,8 +55,25 @@ const PodcastLinks = defineNestedType(() => ({
 export const Note = defineDocumentType(() => ({
   name: "Note",
   contentType: "mdx",
-  filePathPattern: "**/**/*.md",
+  filePathPattern: "travel/**/*.md",
   computedFields: {
+    path: {
+      type: "string",
+      resolve: (doc) => doc._raw.flattenedPath.replace(".md", ""),
+    },
+    parentFolder: {
+      type: "string",
+      resolve: (doc) => {
+        const name = doc._raw.flattenedPath
+          .replace(".md", "")
+          .split("/")
+          .at(-2);
+
+        if (!name) console.error("No name found for " + doc._raw.flattenedPath);
+
+        return slugify(name || "");
+      },
+    },
     slug: {
       type: "string",
       resolve: (doc) => slugify(doc._raw.sourceFileName.replace(".md", "")),
@@ -68,14 +84,14 @@ export const Note = defineDocumentType(() => ({
     },
     excerpt: {
       type: "string",
-      resolve: (doc) => generateExcerpt(doc.body.raw, 200),
+      resolve: (doc) => generateExcerpt(doc.body.raw, 280),
     },
   },
   fields: {
     title: { type: "string", required: true },
     date: { type: "string", required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
-    cover: { type: "nested", of: Image, required: false },
+    cover: { type: "nested", of: Image, required: true },
     published: { type: "boolean", required: false },
   },
 }));
@@ -246,9 +262,14 @@ export default makeSource({
   contentDirPath: "src/content/Notes",
   contentDirExclude: [
     "pages/quotes.json",
-    "Newsletter Stuff/newsletter Ad Template.md",
+    "Newsletter Stuff/research/**",
+    "Newsletter Stuff/Newsletter Ad Template.md",
     "Newsletter Stuff/newsletter-template.md",
     ".obsidian/workspace.json",
+    "Attachments/**",
+    "Notes/**",
+    "Diary Entries/**",
+    "texts/**",
   ],
   documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote, Note],
   mdx: {
@@ -257,10 +278,6 @@ export default makeSource({
       remarkMdxFrontmatter,
       remarkGfm,
       remarkToc,
-      [
-        remarkWikiLinkPlus,
-        { hrefTemplate: (link: string) => `/Attachments/${link}` },
-      ],
       remarkMath,
     ],
     rehypePlugins: [

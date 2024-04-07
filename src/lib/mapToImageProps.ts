@@ -1,3 +1,4 @@
+import path from "path";
 import { ImageDataFromAWS } from "./aws";
 
 export const imageSizes = [
@@ -6,9 +7,15 @@ export const imageSizes = [
 ];
 
 export function nextImageUrl(src: string, width: number) {
-  return encodeURI(
-    `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net${src}?format=webp&width=${width}`
-  );
+  if (src.startsWith("http")) {
+    return src;
+  }
+
+  const parsedPath = path.parse(src);
+  const noExt = path.join(parsedPath.dir, parsedPath.name);
+  const fixedSource = noExt.startsWith("/") ? noExt : `/${noExt}`;
+
+  return `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net${fixedSource}/${width}.webp`;
 }
 
 export function mapToImageProps(images: ImageDataFromAWS[], prefix: string) {

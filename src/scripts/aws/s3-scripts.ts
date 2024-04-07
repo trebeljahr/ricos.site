@@ -26,12 +26,9 @@ export async function doesFileExistInS3(filePath: string): Promise<boolean> {
     await s3.send(command);
     return true;
   } catch (error) {
-    console.log(error);
-
     if ((error as Error).name === "NotFound") {
       return false;
     }
-
     throw error;
   }
 }

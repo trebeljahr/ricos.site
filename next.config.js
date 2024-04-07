@@ -3,7 +3,6 @@ import { generateRedirects } from "./src/scripts/createRedirects.js";
 
 const nextConfig = {
   images: {
-    domains: [process.env.NEXT_PUBLIC_STATIC_FILE_URL],
     loader: "custom",
     loaderFile: "./image-loader.js",
   },

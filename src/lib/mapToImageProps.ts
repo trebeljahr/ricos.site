@@ -7,6 +7,10 @@ export const imageSizes = [
 ];
 
 export function nextImageUrl(src: string, width: number) {
+  if (!imageSizes.includes(width)) {
+    throw new Error(`Invalid width for image ${src}: ${width}`);
+  }
+
   if (src.startsWith("http")) {
     return src;
   }

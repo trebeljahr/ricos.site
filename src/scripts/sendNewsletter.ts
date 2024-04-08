@@ -16,12 +16,7 @@ import slugify from "@sindresorhus/slugify";
 
 const number = sortedNewsletterNames[0].replace(".md", "");
 
-const LIVE_HOST = "https://trebeljahr.com";
-
-const HOST =
-  process.env.NODE_ENV === "production" || process.env.TESTING
-    ? LIVE_HOST
-    : "https://trebeljahr.vercel.app";
+const HOST = "https://trebeljahr.com";
 
 async function main() {
   const emailHandlebarsFile = await readFile(
@@ -48,8 +43,16 @@ async function main() {
   console.log(title.replaceAll(" ", "-").replaceAll(",", "").toLowerCase());
 
   function addHost(url: { href: string; path: string }) {
-    if (url.href.startsWith("/") && url.href.endsWith(".webp")) {
-      const smallImageUrl = nextImageUrl(url.href, 1024);
+    if (
+      url.href.startsWith("/") &&
+      (url.href.endsWith(".webp") ||
+        url.href.endsWith(".jpg") ||
+        url.href.endsWith(".png") ||
+        url.href.endsWith(".jpeg") ||
+        url.href.endsWith(".gif") ||
+        url.href.endsWith(".svg"))
+    ) {
+      const smallImageUrl = nextImageUrl(url.href, 1080);
       return smallImageUrl;
     } else if (url.href.startsWith("/")) {
       return HOST + url.path;
@@ -116,7 +119,7 @@ async function main() {
     content: file.value,
     title: realTitle,
     excerpt: excerpt || defaultExcerpt,
-    coverImageSrc: nextImageUrl(cover.src, 1024),
+    coverImageSrc: nextImageUrl(cover.src, 1080),
     coverImageAlt: cover.alt,
     webversion,
   });

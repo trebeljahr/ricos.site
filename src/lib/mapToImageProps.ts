@@ -13,13 +13,17 @@ export function nextImageUrl(src: string, width: number) {
     throw new Error(`Invalid width for image ${src}: ${width}`);
   }
 
-  if (src.startsWith("http") && !src.startsWith(cloudFrontUrl)) {
-    return src;
-  }
-
   const parsedPath = path.parse(src);
   const noExt = path.join(parsedPath.dir, parsedPath.name);
   const fixedSource = noExt.startsWith("/") ? noExt : `/${noExt}`;
+
+  if (src.startsWith(cloudFrontUrl)) {
+    return `${noExt}/${width}.webp`;
+  }
+
+  if (src.startsWith("http")) {
+    return src;
+  }
 
   return `${cloudFrontUrl}${fixedSource}/${width}.webp`;
 }

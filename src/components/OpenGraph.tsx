@@ -20,12 +20,8 @@ export const OpenGraph: React.FC<OpenGraphProps> = ({
   imageAlt = "",
 }) => {
   const baseUrl = "https://trebeljahr.com";
-  const imageBaseUrl = `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net`;
   const url = new URL(providedLinkUrl, baseUrl).toString();
-  const imageUrl = nextImageUrl(
-    new URL(providedImageUrl, imageBaseUrl).toString(),
-    1080
-  );
+  const imageUrl = nextImageUrl(providedImageUrl, 1080);
 
   return (
     <Head>

@@ -107,8 +107,6 @@ async function main() {
     .use(rehypeStringify)
     .process(content);
 
-  console.log(file.value);
-
   const template = Handlebars.compile(emailHandlebarsFile);
 
   const webversion = `${HOST}/newsletters/${slugify(title)}`;

@@ -1,3 +1,5 @@
+import slugify from "@sindresorhus/slugify";
+import "dotenv/config";
 import { readFile } from "fs/promises";
 import matter from "gray-matter";
 import Handlebars from "handlebars";
@@ -8,11 +10,10 @@ import rehypeStringify from "rehype-stringify";
 import rehypeUrls from "rehype-urls";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
+import { newsletterListMail, sendEmail } from "src/lib/mailgun.js";
 import { nextImageUrl } from "src/lib/mapToImageProps.js";
 import { unified } from "unified";
 import { newsletterPath, sortedNewsletterNames } from "./sortedNewsletters.js";
-import { sendEmail, newsletterListMail } from "src/lib/mailgun.js";
-import slugify from "@sindresorhus/slugify";
 
 const number = sortedNewsletterNames[0].replace(".md", "");
 
@@ -105,6 +106,8 @@ async function main() {
     .use(rehypePresetMinify)
     .use(rehypeStringify)
     .process(content);
+
+  console.log(file.value);
 
   const template = Handlebars.compile(emailHandlebarsFile);
 

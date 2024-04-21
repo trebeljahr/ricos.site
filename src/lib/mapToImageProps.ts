@@ -8,10 +8,14 @@ export const imageSizes = [
 
 export const cloudFrontUrl = `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net`;
 
-export function nextImageUrl(src: string, width: number) {
+console.log(cloudFrontUrl);
+
+export const nextImageUrl = (src: string, width: number) => {
   if (!imageSizes.includes(width)) {
     throw new Error(`Invalid width for image ${src}: ${width}`);
   }
+
+  console.log(cloudFrontUrl);
 
   const parsedPath = path.parse(src);
   const noExt = path.join(parsedPath.dir, parsedPath.name);
@@ -26,7 +30,7 @@ export function nextImageUrl(src: string, width: number) {
   }
 
   return `${cloudFrontUrl}${fixedSource}/${width}.webp`;
-}
+};
 
 export function mapToImageProps(images: ImageDataFromAWS[], prefix: string) {
   return images.map(({ name, width, height }, index) => {

@@ -443,7 +443,6 @@ code {
   padding-bottom: 1rem;
   height: auto;
   line-height: 1.625;
-  color: #333;
   width: 100%;
   margin-bottom: 3rem;
 }
@@ -507,14 +506,8 @@ li {
   color: black;
 }
 
-.Podcastnote-link-card h3 {
-  padding: 0;
-}
 
 .Podcastnote-link-card {
-  padding-bottom: 30px;
-  padding-top: 30px;
-  margin-bottom: 30px;
   border-bottom: 2px solid #d4d4d4;
 }
 

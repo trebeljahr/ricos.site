@@ -8,10 +8,10 @@ type Props = {
 
 const PostHeader = ({ title, subtitle, date }: Props) => {
   return (
-    <header className="not-prose post-header mb-10">
+    <header className="post-header mb-10">
       {date && <DateFormatter date={date} />}
-      <h1>{title}</h1>
-      <p className="text-lg">{subtitle}</p>
+      <h1 className="mb-0 mt-10">{title}</h1>
+      <p className="mt-1 text-lg">{subtitle}</p>
     </header>
   );
 };

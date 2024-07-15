@@ -22,7 +22,7 @@
 }
 
 .card-hover {
-  display: block;
+  /* display: block; */
   transition: all 0.3s;
   border-radius: 0.5rem;
   overflow: hidden;

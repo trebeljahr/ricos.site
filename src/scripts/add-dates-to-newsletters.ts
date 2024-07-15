@@ -34,15 +34,15 @@ files.forEach((file: string) => {
   // Calculate the publication date for this edition
   const publicationDate = subWeeks(
     latestEditionDate,
-    latestEditionNumber - parseInt(file, 10)
+    (latestEditionNumber - parseInt(file, 10)) * 2
   );
   const formattedDate = format(publicationDate, "yyyy-MM-dd");
 
   // Update the frontmatter
-  // const newData = { ...data, date: formattedDate };
-  // const newContent = matter.stringify(content, newData);
+  const newData = { ...data, date: formattedDate };
+  const newContent = matter.stringify(content, newData);
 
   // Write the file back
-  // fs.writeFileSync(filePath, newContent);
+  fs.writeFileSync(filePath, newContent);
   console.log(`Updated ${file} with date ${formattedDate}`);
 });

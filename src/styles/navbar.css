@@ -38,12 +38,6 @@ nav.primary-navigation ul li ul li {
   border-style: none;
 }
 
-a {
-  text-decoration: none;
-}
-a:hover {
-  color: #3ca0e7;
-}
 ul li ul li a {
   transition: all 0.5s ease;
 }

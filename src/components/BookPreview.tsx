@@ -1,6 +1,7 @@
 import { Booknote } from "@contentlayer/generated";
 import Link from "next/link";
 import { BookCover } from "./CoverImage";
+import Image from "next/image";
 
 type Props = {
   book: Booknote;
@@ -12,43 +13,50 @@ export function BookPreview({ book, index }: Props) {
     book;
 
   const defaultExcerpt = "";
+  const priority = index < 3;
   return (
-    <div className="flex flex-col py-5 pr-5 mb-5">
-      <div className="flex">
-        <Link
-          as={slug}
-          href={slug}
-          className="block relative mb-2 w-60 overflow-hidden rounded-md"
-        >
-          <BookCover title={title} src={bookCover} priority={index === 0} />
-        </Link>
-        <div className="flex flex-col pl-5">
-          <Link as={slug} href={slug}>
-            <p>
-              <b>
-                {title} {subtitle && `| ${subtitle}`}
-              </b>{" "}
-              by {bookAuthor}
-            </p>
-          </Link>
-          <p>
-            <b>Rated: {rating}/10</b>
-          </p>
-        </div>
+    <Link
+      as={slug}
+      href={slug}
+      className="w-full overflow-hidden md:grid mb-10 card-hover"
+      style={{
+        gridTemplateColumns: "15rem auto",
+      }}
+    >
+      <div className="h-64 md:h-full mb-4 relative">
+        <Image
+          src={bookCover}
+          alt={title}
+          fill
+          sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
+            priority ? 780 : 357
+          }`}
+          priority={priority}
+          style={{
+            objectFit: "cover",
+          }}
+        />
       </div>
 
-      <div className="pt-2">
-        {excerpt ? (
-          <>
-            <p className="mb-2">{excerpt}</p>
-            <Link as={slug} href={slug}>
-              <p className="mb-0">Read full book notes</p>
-            </Link>
-          </>
-        ) : (
-          <p>{defaultExcerpt}</p>
-        )}
+      <div className="flex flex-col p-5">
+        <h2 className="pt-0 mb-0 pb-0">
+          <b>{title}</b>
+        </h2>
+        <p className="mt-0 pt-0">by {bookAuthor}</p>
+        <p className="text-grey">
+          <b>Rated: {rating}/10</b>
+        </p>
+
+        <div className="pt-2 text-grey">
+          {excerpt ? (
+            <>
+              <p className="mb-2">{excerpt}</p>
+            </>
+          ) : (
+            <p>{defaultExcerpt}</p>
+          )}
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }

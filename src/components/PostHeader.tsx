@@ -1,5 +1,4 @@
 import DateFormatter from "./DateFormatter";
-import { PostSubTitle, PostTitle } from "./PostTitle";
 
 type Props = {
   title: string;
@@ -9,11 +8,11 @@ type Props = {
 
 const PostHeader = ({ title, subtitle, date }: Props) => {
   return (
-    <div className="post-header mb-6">
-      <PostTitle>{title}</PostTitle>
-      <PostSubTitle>{subtitle}</PostSubTitle>
+    <header className="post-header mb-10">
       {date && <DateFormatter date={date} />}
-    </div>
+      <h1 className="mb-0 mt-10">{title}</h1>
+      <p className="mt-1 text-lg">{subtitle}</p>
+    </header>
   );
 };
 

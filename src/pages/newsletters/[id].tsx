@@ -21,7 +21,7 @@ type Props = {
 };
 
 const Newsletter = ({
-  newsletter: { excerpt, title, number, slugTitle, cover, body },
+  newsletter: { excerpt, title, number, slugTitle, cover, body, date },
   nextPost,
   prevPost,
 }: Props) => {
@@ -38,14 +38,14 @@ const Newsletter = ({
     >
       <NewsletterModalPopup />
 
-      <article className="main-content maint-text newsletter-article">
+      <article className="prose maint-text newsletter-article">
         <section className="post-body mt-2">
           <BreadCrumbs
             path={url}
             overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]}
           />
 
-          <PostHeader title={fullTitle} />
+          <PostHeader title={fullTitle} date={date} />
           {excerpt && <p>{excerpt}</p>}
           <div className="header-image-container mb-5">
             <Image

@@ -28,7 +28,7 @@ export default function Quotes() {
       url="quotes"
       imageAlt="a collection of handwritten notes on paper"
     >
-      <article className="main-content">
+      <article className="prose">
         <section>
           <Search setFilters={setFilters} filters={filters} />
           <h1>Quotes</h1>

@@ -16,7 +16,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
       url="/"
       imageAlt={"a person reading a book, while floating in space"}
     >
-      <article className="main-content">
+      <article className="prose">
         <section>
           <h2>Hi there 👋🏻</h2>
           <p>

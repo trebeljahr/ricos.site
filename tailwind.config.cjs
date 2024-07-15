@@ -13,8 +13,9 @@ module.exports = {
         blue: "rgb(68, 160, 255)",
         darkBlue: "rgb(15, 76, 229)",
         successGreen: "rgb(31, 214, 85)",
+        grey: "rgb(51,51,51)",
       },
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")],
 };

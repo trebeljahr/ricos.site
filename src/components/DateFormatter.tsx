@@ -7,10 +7,11 @@ type Props = {
 
 const DateFormatter = ({ date: dateString }: Props) => {
   return (
-    <div className="publish-date mb-5 mt-5">
+    <div className="text-sm mb-5 mt-5">
       <time dateTime={dateString}>
         {format(parseDate(dateString), "LLLL	d, yyyy")}
-      </time>
+      </time>{" "}
+      by Rico Trebeljahr
     </div>
   );
 };

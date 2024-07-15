@@ -46,7 +46,7 @@ export default function EmailSignupSuccess() {
         description="This page is displayed when a user has successfully completed signup for the trebeljahr.com newsletter"
         url="email-signup-success"
       >
-        <article className="main-content">
+        <article className="prose">
           <section>
             <h1>Success</h1>
             <p>

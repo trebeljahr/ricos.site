@@ -1,6 +1,6 @@
-import { Post as Note, allNotes } from "@contentlayer/generated";
 import Layout from "@components/Layout";
-import { HeroPostPreview, OtherPostsPreview } from "@components/PostPreview";
+import { OtherPostsPreview } from "@components/PostPreview";
+import { Post as Note, allNotes } from "@contentlayer/generated";
 import { parseDate } from "src/lib/dateUtils";
 
 type Props = {
@@ -8,8 +8,6 @@ type Props = {
 };
 
 const Notes = ({ posts }: Props) => {
-  const heroPost = posts[0];
-  const morePosts = posts.slice(1);
   return (
     <Layout
       title="Notes - as of yet unstructured writing"
@@ -20,10 +18,9 @@ const Notes = ({ posts }: Props) => {
       url="posts"
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
-      <article className="main-content posts-overview">
+      <article className="posts-overview">
         <section>
-          {heroPost && <HeroPostPreview post={heroPost} />}
-          {morePosts.length > 0 && <OtherPostsPreview posts={morePosts} />}
+          {posts.length > 0 && <OtherPostsPreview posts={posts} />}
         </section>
       </article>
     </Layout>

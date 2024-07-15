@@ -30,26 +30,28 @@ export default function Podcastnotes() {
       }
       url="podcastnotes"
     >
-      <article className="main-content">
-        <section>
+      <article>
+        <section className="p-5">
           <h1>Podcastnotes</h1>
           <Search filters={filters} setFilters={setFilters} />
           <p>Amount: {filteredPodcastnotes.length}</p>
         </section>
-        <section className="allPodcastnotes">
+        <section className="allPodcastnotes prose">
           {filteredPodcastnotes.map(
             ({ slug, title, show, episode, rating, excerpt }) => {
               return (
-                <div key={slug} className="Podcastnote-link-card">
-                  <Link href={slug}>
-                    <h2>{title}</h2>
-                  </Link>
-                  <h3>
-                    {show} – Episode {episode} | Rating: {rating}
+                <Link
+                  href={slug}
+                  key={slug}
+                  className="p-5 mb-5 block no-underline card-hover"
+                >
+                  <h2 className="m-0 p-0 underline">{title}</h2>
+                  <h3 className="mt-1">
+                    {show} – Episode {episode} | Rating: {rating}/10
                   </h3>
 
-                  <p>{excerpt}</p>
-                </div>
+                  <p className="prose">{excerpt}</p>
+                </Link>
               );
             }
           )}

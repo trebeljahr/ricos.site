@@ -315,23 +315,9 @@ hr {
   line-height: 1.6;
 }
 
-hgroup,
-ul,
-ol,
-dd,
-blockquote,
-pre,
-li,
-code,
-p,
-figure,
-pre,
-table,
-fieldset,
-hr,
-input {
+body {
   font-weight: normal;
-  font-family: "Noto Sans", Helvetica, sans-serif;
+  font-family: "Inter", "Noto Sans", Helvetica, sans-serif;
 }
 
 .slider-annotation {
@@ -445,9 +431,6 @@ code {
   margin-bottom: 2rem;
 }
 
-.post-meta > .publish-date {
-  margin-right: 10px;
-}
 .post-meta > * {
   margin-top: 0;
   text-align: center;
@@ -456,37 +439,14 @@ code {
 }
 
 .main-page {
+  padding-top: 1rem;
   padding-bottom: 1rem;
   height: auto;
   line-height: 1.625;
-  color: #333;
   width: 100%;
   margin-bottom: 3rem;
 }
 
-.main-content {
-  padding-right: 16px;
-  padding-left: 16px;
-  margin: auto;
-  padding-top: 2rem;
-}
-
-.main-content > :nth-child(1).Podcastnote-link-card {
-  margin-top: -30px;
-}
-
-.main-content > h1:nth-child(1),
-.main-content > h2:nth-child(1),
-.main-content > h3:nth-child(1),
-.main-content > h4:nth-child(1) {
-  margin-top: -2rem;
-}
-
-
-.main-content > * {
-  max-width: 100%;
-  height: auto;
-}
 
 .header h1 {
   max-width: fit-content;
@@ -505,19 +465,6 @@ a:hover {
   padding-left: 40px;
 }
 
-.main-content ul {
-  padding-left: 1.2rem;
-  list-style: disc outside;
-}
-
-.main-content ol {
-  padding-left: 1.4rem;
-}
-
-.main-content ol {
-  padding-left: 1.7rem;
-  list-style: decimal outside;
-}
 
 li > p {
   display: inline;
@@ -559,14 +506,8 @@ li {
   color: black;
 }
 
-.Podcastnote-link-card h3 {
-  padding: 0;
-}
 
 .Podcastnote-link-card {
-  padding-bottom: 30px;
-  padding-top: 30px;
-  margin-bottom: 30px;
   border-bottom: 2px solid #d4d4d4;
 }
 
@@ -705,10 +646,6 @@ li {
     margin-right: auto;
   }
 
-  .main-content {
-    padding-top: 2rem;
-    width: var(--main-width);
-  }
 
   .header-motto {
     display: block;
@@ -729,18 +666,6 @@ li {
   :root {
     font-size: 21px;
   }
-
-  .main-content ul {
-    padding-left: 1.4rem;
-    list-style: disc outside;
-  }
-
-  .main-content ol {
-    padding-left: 1.8rem;
-    list-style: decimal outside;
-  }
-
- 
 }
 
 canvas {

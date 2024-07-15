@@ -1,15 +1,3 @@
-.post-preview-text {
-  color: black;
-  padding-right: 0.5rem;
-}
-.post-preview-text:hover {
-  color: black;
-}
-
-.post-preview-text > h2 {
-  padding-bottom: 0.5rem;
-}
-
 .post-preview {
   display: block;
   margin-bottom: 2rem;
@@ -33,32 +21,41 @@
   height: 30vh;
 }
 
+.card-hover {
+  /* display: block; */
+  transition: all 0.3s;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+
+.post-preview,
+.hero-post-preview {
+  display: block;
+  margin-bottom: 2rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s;
+  overflow: hidden;
+}
+
+
+
+.post-preview:hover,
+.card-hover:hover,
+.hero-post-preview:hover {
+  transform: scale(1.01);
+  box-shadow: 0 0 14px rgba(44, 44, 44, 0.4);
+}
+
 @media only screen and (min-width: 600px) {
   .hero-post-container {
     margin-bottom: 5rem;
-  }
-
-  .hero-post-preview {
-    display: block;
   }
 
   .hero-post-preview > .post-preview-image {
     height: 50vh;
   }
 
-  .post-preview,
-  .hero-post-preview {
-    margin-bottom: 2rem;
-    border-radius: 0.5rem;
-    transition: all 0.3s;
-    overflow: hidden;
-  }
-
-  .post-preview:hover,
-  .hero-post-preview:hover {
-    transform: scale(1.01);
-    box-shadow: 0 0 14px rgba(44, 44, 44, 0.4);
-  }
 
   .hero-post-preview > .post-preview-text {
     margin: 1rem;

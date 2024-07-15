@@ -2,7 +2,7 @@ import { allNewsletters } from "@contentlayer/generated";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
-import { NiceCard } from "../components/NiceCard";
+import { NiceCard } from "@components/NiceCard";
 
 type NewsletterData = {
   slug: string;
@@ -35,7 +35,7 @@ const Newsletters = ({ newsletterData }: Props) => {
       description="An archive overview page of all the Newsletters I have published in the past at trebeljahr.com."
       url="newsletters"
     >
-      <article className="main-content posts-overview">
+      <article className="main-content prose posts-overview">
         <section>
           {newsletterData.map(
             ({ slug, number, title, excerpt, cover }, index) => {

@@ -103,10 +103,10 @@ export const Post = defineDocumentType(() => ({
   fields: {
     title: { type: "string", required: true },
     subtitle: { type: "string", required: true },
-    excerpt: { type: "string", required: true },
     date: { type: "string", required: true },
     cover: { type: "nested", of: Image, required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
+    published: { type: "boolean", required: true },
   },
   computedFields: {
     slug: {
@@ -120,6 +120,10 @@ export const Post = defineDocumentType(() => ({
     id: {
       type: "string",
       resolve: (doc) => doc._raw.sourceFileName.replace(".md", ""),
+    },
+    excerpt: {
+      type: "string",
+      resolve: (doc) => generateExcerpt(doc.body.raw, 250),
     },
   },
 }));

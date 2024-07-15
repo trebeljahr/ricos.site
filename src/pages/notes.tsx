@@ -20,7 +20,7 @@ const Notes = ({ posts }: Props) => {
       url="posts"
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
-      <article className="main-content posts-overview">
+      <article className="main-content prose posts-overview">
         <section>
           {heroPost && <HeroPostPreview post={heroPost} />}
           {morePosts.length > 0 && <OtherPostsPreview posts={morePosts} />}

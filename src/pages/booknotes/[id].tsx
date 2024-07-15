@@ -55,7 +55,7 @@ const Book = ({ book }: Props) => {
       description={book.excerpt || defaultDescription}
       url={`booknotes/${book.id}`}
     >
-      <article className="main-content">
+      <article className="main-content prose">
         <BreadCrumbs path={`booknotes/${book.id}`} />
         <section className="flex">
           <div className="block relative mb-5 md:mb-0 w-60 overflow-hidden rounded-md">

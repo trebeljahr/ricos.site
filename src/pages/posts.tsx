@@ -19,7 +19,7 @@ const Posts = ({ posts }: Props) => {
       url="posts"
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
-      <article className="main-content posts-overview">
+      <article className="main-content prose posts-overview">
         <section>
           {heroPost && <HeroPostPreview post={heroPost} />}
           {morePosts.length > 0 && <OtherPostsPreview posts={morePosts} />}
@@ -32,13 +32,15 @@ const Posts = ({ posts }: Props) => {
 export default Posts;
 
 export const getStaticProps = async () => {
-  const posts = allPosts.map(({ slug, excerpt, cover, title, date }) => ({
-    slug,
-    excerpt,
-    cover,
-    title,
-    date,
-  }));
+  const posts = allPosts
+    .filter(({ published }) => published)
+    .map(({ slug, excerpt, cover, title, date }) => ({
+      slug,
+      excerpt,
+      cover,
+      title,
+      date,
+    }));
   posts.sort((post1, post2) => (post1.date > post2.date ? -1 : 1));
 
   return {

@@ -41,7 +41,7 @@ export default function Books({ booknotes }: Props) {
       url="booknotes"
       imageAlt={"a bookshelf filled with lots of books"}
     >
-      <article className="main-content allBooknotes pt-5">
+      <article className="main-content prose allBooknotes pt-5">
         <section>
           <h1>Booknotes</h1>
           <Search filters={filters} setFilters={setFilters} />

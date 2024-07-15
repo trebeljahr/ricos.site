@@ -1,6 +1,7 @@
 import { type Note, type Post } from "@contentlayer/generated";
 import Link from "next/link";
 import { PostCoverImage } from "./CoverImage";
+import { NiceCard } from "./NiceCard";
 
 interface PreviewTextProps {
   title: string;
@@ -84,8 +85,19 @@ export const OtherPostsPreview = ({
     <section>
       {morePostsText && <h2 className="posts-page-title">{morePostsText}</h2>}
       <div className="other-posts-container">
-        {posts.map((post) => {
-          return <PostPreview key={post.slug} post={post} />;
+        {posts.map(({ slug, title, excerpt, cover }, index) => {
+          const priority = index <= 1;
+
+          return (
+            <NiceCard
+              key={slug}
+              cover={cover}
+              slug={slug}
+              excerpt={excerpt}
+              priority={priority}
+              title={title}
+            />
+          );
         })}
       </div>
     </section>

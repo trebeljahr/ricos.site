@@ -1,15 +1,12 @@
-import { useRouter } from "next/router";
-import ErrorPage from "next/error";
-import Layout from "@components/Layout";
-import { PostSubTitle, PostTitle } from "@components/PostTitle";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 import { BookCover } from "@components/CoverImage";
-import { ToTopButton } from "@components/ToTopButton";
+import { MarkdownRenderers } from "@components/CustomRenderers";
 import { ExternalLink } from "@components/ExternalLink";
+import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
+import { ToTopButton } from "@components/ToTopButton";
 import { Booknote, allBooknotes } from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
-import { MarkdownRenderers } from "@components/CustomRenderers";
-import { BreadCrumbs } from "@components/BreadCrumbs";
 
 type Props = {
   book: Booknote;
@@ -55,9 +52,9 @@ const Book = ({ book }: Props) => {
       description={book.excerpt || defaultDescription}
       url={`booknotes/${book.id}`}
     >
-      <article className="main-content prose">
+      <article className="prose">
         <BreadCrumbs path={`booknotes/${book.id}`} />
-        <section className="flex">
+        <section className="flex not-prose">
           <div className="block relative mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
             <BookCover
               title={book.title}
@@ -66,10 +63,12 @@ const Book = ({ book }: Props) => {
             />
           </div>
           <div className="book-preview-text">
-            <PostTitle>{book.title}</PostTitle>
-            <PostSubTitle>{book.subtitle}</PostSubTitle>
-            <p>by {book.bookAuthor} </p>
-            <h3>Rating: {book.rating}/10</h3>
+            <h1>{book.title}</h1>
+            <p>{book.subtitle}</p>
+            <p> by {book.bookAuthor}</p>
+            <p>
+              <b>Rating: {book.rating}/10</b>
+            </p>
             <BuyItOnAmazon link={book.amazonLink} />
           </div>
         </section>

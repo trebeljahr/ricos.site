@@ -27,8 +27,8 @@ const Podcastnote = ({ Podcastnote }: Props) => {
       description={`These are my Podcast Notes for ${Podcastnote.title}. ${Podcastnote.excerpt}`}
       url={url}
     >
-      <article className="main-content prose">
-        <section className="Podcastnote-info main-content">
+      <article className="prose">
+        <section className="Podcastnote-info">
           <BreadCrumbs path={url} />
           <div className="Podcastnote-preview-text">
             <h2 className="mt-0 pt-0">

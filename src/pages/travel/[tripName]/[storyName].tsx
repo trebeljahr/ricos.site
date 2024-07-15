@@ -38,7 +38,7 @@ export const TravelBlogLayout = ({
       imageAlt={cover?.alt || ""}
     >
       <NextAndPrevArrows nextPost={nextSlug} prevPost={previousSlug} />
-      <article className="main-content prose post-body">
+      <article className="prose post-body">
         <section>
           <BreadCrumbs path={url} />
 

@@ -30,7 +30,7 @@ export default function Podcastnotes() {
       }
       url="podcastnotes"
     >
-      <article className="main-content prose">
+      <article className="prose">
         <section>
           <h1>Podcastnotes</h1>
           <Search filters={filters} setFilters={setFilters} />

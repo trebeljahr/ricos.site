@@ -35,7 +35,7 @@ const Newsletters = ({ newsletterData }: Props) => {
       description="An archive overview page of all the Newsletters I have published in the past at trebeljahr.com."
       url="newsletters"
     >
-      <article className="main-content prose posts-overview">
+      <article className="posts-overview">
         <section>
           {newsletterData.map(
             ({ slug, number, title, excerpt, cover }, index) => {

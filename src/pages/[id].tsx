@@ -20,7 +20,7 @@ export default function Page({ page }: Props) {
       image={cover.src}
       imageAlt={cover.alt}
     >
-      <article className="main-content prose">
+      <article className="prose">
         <section>
           <PostHeader subtitle={subtitle} title={title} />
           <Component />

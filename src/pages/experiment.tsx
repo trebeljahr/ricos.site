@@ -83,7 +83,7 @@ const ShowTags = ({ tags, categories }: Props) => {
       description="An Experimental Overview over All Pages"
       url="experiment"
     >
-      <article className="main-content prose">
+      <article className="prose">
         <section>
           <h2>Categories:</h2>
           <RenderTags tags={categories} />

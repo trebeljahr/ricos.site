@@ -38,7 +38,7 @@ const Newsletter = ({
     >
       <NewsletterModalPopup />
 
-      <article className="main-content prose maint-text newsletter-article">
+      <article className="prose maint-text newsletter-article">
         <section className="post-body mt-2">
           <BreadCrumbs
             path={url}

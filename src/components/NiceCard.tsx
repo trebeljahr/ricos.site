@@ -7,6 +7,7 @@ type NiceCardProps = {
   title: string;
   excerpt: string;
   priority?: boolean;
+  bigImage?: boolean;
 };
 
 export const NiceCard = ({
@@ -15,18 +16,18 @@ export const NiceCard = ({
   slug,
   title,
   excerpt,
+  bigImage = false,
 }: NiceCardProps) => {
   return (
-    <Link href={slug} className="card-hover mb-12 lg:mb-12">
+    <Link href={slug} className="not-prose block card-hover mb-12 lg:mb-12">
       <div
         key={slug}
-        className="overflow-hidden lg:grid"
+        className="overflow-hidden md:grid"
         style={{
           gridTemplateColumns: "15rem auto",
-          gridColumnGap: "2rem",
         }}
       >
-        <div className="h-64 md:h-56 lg:h-full mb-4 relative">
+        <div className="h-64 md:h-full mb-4 relative">
           <Image
             src={cover.src}
             alt={cover.alt}
@@ -41,7 +42,7 @@ export const NiceCard = ({
             }}
           />
         </div>
-        <div className="pt-4 pr-4">
+        <div className="m-5">
           <h2 className="text-black pt-0">{title}</h2>
 
           <p className="text-grey">{excerpt}</p>

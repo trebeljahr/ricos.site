@@ -62,7 +62,7 @@ const Book = ({ book }: Props) => {
               priority={true}
             />
           </div>
-          <div className="book-preview-text">
+          <header className="book-preview-text">
             <h1>{book.title}</h1>
             <p>{book.subtitle}</p>
             <p> by {book.bookAuthor}</p>
@@ -70,7 +70,7 @@ const Book = ({ book }: Props) => {
               <b>Rating: {book.rating}/10</b>
             </p>
             <BuyItOnAmazon link={book.amazonLink} />
-          </div>
+          </header>
         </section>
         <section className="post-body">
           <BooknotesWithDefault book={book} />

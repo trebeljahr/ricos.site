@@ -36,6 +36,8 @@ const Newsletters = ({ newsletterData }: Props) => {
       url="newsletters"
     >
       <article className="posts-overview">
+        <h1>Newsletters</h1>
+
         <section>
           {newsletterData.map(
             ({ slug, number, title, excerpt, cover }, index) => {

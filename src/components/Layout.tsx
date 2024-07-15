@@ -37,9 +37,7 @@ const Layout = ({
       <TailwindNavbar />
 
       <main
-        className={
-          fullScreen ? "w-100 pr-3 pl-3 mt-10 md:pr-10 md:pl-10" : "main-page"
-        }
+        className={fullScreen ? "w-full px-3 mt-10 md:px-10" : "px-3 main-page"}
       >
         {children}
       </main>

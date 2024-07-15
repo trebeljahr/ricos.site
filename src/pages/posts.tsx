@@ -1,14 +1,12 @@
-import { Post, allPosts } from "@contentlayer/generated";
 import Layout from "@components/Layout";
-import { HeroPostPreview, OtherPostsPreview } from "@components/PostPreview";
+import { OtherPostsPreview } from "@components/PostPreview";
+import { Post, allPosts } from "@contentlayer/generated";
 
 type Props = {
   posts: Post[];
 };
 
 const Posts = ({ posts }: Props) => {
-  const heroPost = posts[0];
-  const morePosts = posts.slice(1);
   return (
     <Layout
       title="Posts - writings of a curious person, about life, the universe and everything"
@@ -20,9 +18,9 @@ const Posts = ({ posts }: Props) => {
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
       <article className="posts-overview">
+        <h1>Posts</h1>
         <section>
-          {heroPost && <HeroPostPreview post={heroPost} />}
-          {morePosts.length > 0 && <OtherPostsPreview posts={morePosts} />}
+          {posts.length > 0 && <OtherPostsPreview posts={posts} />}
         </section>
       </article>
     </Layout>

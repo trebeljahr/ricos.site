@@ -27,7 +27,7 @@ export function BreadCrumbs({
           paddingLeft: 0,
         }}
       >
-        <li className="inline-flex items-center">
+        <li className="not-prose inline-flex items-center">
           <Link
             href="/"
             className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue "
@@ -50,7 +50,7 @@ export function BreadCrumbs({
           );
 
           return (
-            <li key={part}>
+            <li key={part} className="not-prose">
               <div className="flex items-center">
                 <svg
                   className="w-3 h-3 text-gray-400 mx-1"

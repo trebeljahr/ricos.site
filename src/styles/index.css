@@ -431,9 +431,6 @@ code {
   margin-bottom: 2rem;
 }
 
-.post-meta > .publish-date {
-  margin-right: 10px;
-}
 .post-meta > * {
   margin-top: 0;
   text-align: center;
@@ -442,6 +439,7 @@ code {
 }
 
 .main-page {
+  padding-top: 1rem;
   padding-bottom: 1rem;
   height: auto;
   line-height: 1.625;

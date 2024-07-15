@@ -106,27 +106,10 @@ export const HeadingRenderer = (level: number) => {
 };
 
 export const CodeRenderer = (props: HTMLAttributes<HTMLPreElement>) => {
-  const [hidden, setHidden] = useState(false);
-
-  const toggleHidden = () => {
-    setHidden((old) => !old);
-  };
-
   return (
-    <>
-      <button onClick={toggleHidden} style={{ cursor: "pointer" }}>
-        {hidden ? (
-          <span>
-            <span className="icon-chevron-down" /> Show Code
-          </span>
-        ) : (
-          <span>
-            <span className="icon-chevron-up" /> Hide Code
-          </span>
-        )}
-      </button>
-      {!hidden && <pre {...props}>{props.children}</pre>}
-    </>
+    <pre className="not-prose" {...props}>
+      {props.children}
+    </pre>
   );
 };
 

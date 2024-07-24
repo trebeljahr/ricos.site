@@ -30,7 +30,6 @@ const Posts = ({ posts }: Props) => {
 export default Posts;
 
 export const getStaticProps = async () => {
-  console.log(process.env.NODE_ENV);
   const posts = allPosts
     .filter(
       ({ published }) => published || process.env.NODE_ENV === "development"

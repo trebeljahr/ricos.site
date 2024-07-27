@@ -4,20 +4,40 @@ import * as glob from "glob";
 import matter from "gray-matter";
 import path from "path";
 
-const directory = "src/content/Notes";
+const directory = "src/content/Notes/Notes/Content/Books/Booknotes";
 
-const fields = {
-  title: "Enter title",
+const booknotesFields = {
+  title: "",
+  bookCover: "/assets/book-covers/",
+  bookAuthor: "",
   date: "01.01.1970",
-  tags: [],
-  cover: {
-    src: "Enter Cover image source",
-    alt: "Enter Cover image alt text",
-    width: 500,
-    height: 500,
-  },
+  rating: 0,
   published: false,
+  done: false,
+  tags: [],
+  summary: false,
+  detailedNotes: false,
+  amazonLink: "",
+  amazonAffiliateLink: "",
 };
+
+function parseBookTitle(fileName: string) {
+  const [title, bookAuthor] = fileName.split(" - ");
+  return { title, bookAuthor };
+}
+
+// const fields = {
+//   title: "Enter title",
+//   date: "01.01.1970",
+//   tags: [],
+//   cover: {
+//     src: "Enter Cover image source",
+//     alt: "Enter Cover image alt text",
+//     width: 500,
+//     height: 500,
+//   },
+//   published: false,
+// };
 
 const mdFiles = glob.sync(path.join(directory, "**/*.md"));
 console.log(mdFiles);
@@ -72,10 +92,11 @@ mdFiles.forEach((filePath: string) => {
 
   console.log(frontmatter.date);
 
+  const { title, bookAuthor } = parseBookTitle(fileName);
   const newFrontmatter = {
-    ...fields,
-    ...frontmatter,
-    title: fileName,
+    ...booknotesFields,
+    title,
+    bookAuthor,
     date: frontmatter.date || formatDate(parsedCreationDate),
   } as { [key: string]: any };
 

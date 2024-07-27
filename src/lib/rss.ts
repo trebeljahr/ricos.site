@@ -9,11 +9,12 @@ export default async function generateRssFeed(allPosts: Post[]) {
       : "http://localhost:3000";
 
   const feedOptions = {
-    title: "Blog posts | RSS Feed",
-    description: "Welcome to this blog posts!",
+    title: "Rico Trebeljahr | RSS Feed",
+    description:
+      "Welcome to this my posts and newsletters! Glad to have you here!",
     site_url: site_url,
     feed_url: `${site_url}/rss.xml`,
-    image_url: `${site_url}/logo.jpeg`,
+    image_url: `${site_url}/android-chrome-192x192.png`,
     pubDate: new Date(),
     copyright: `All rights reserved ${new Date().getFullYear()}`,
   };

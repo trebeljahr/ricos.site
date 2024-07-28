@@ -4,12 +4,13 @@ import * as glob from "glob";
 import matter from "gray-matter";
 import path from "path";
 
-const directory = "src/content/Notes/Notes/Content/Books/Booknotes";
+const directory = "src/content/Notes/booknotes";
 
 const booknotesFields = {
   title: "",
   bookCover: "/assets/book-covers/",
   bookAuthor: "",
+  excerpt: "",
   date: "01.01.1970",
   rating: 0,
   published: false,
@@ -22,7 +23,7 @@ const booknotesFields = {
 };
 
 function parseBookTitle(fileName: string) {
-  const [title, bookAuthor] = fileName.split(" - ");
+  const [title, bookAuthor] = fileName.split(/ - | – /);
   return { title, bookAuthor };
 }
 
@@ -98,9 +99,10 @@ mdFiles.forEach((filePath: string) => {
     title,
     bookAuthor,
     date: frontmatter.date || formatDate(parsedCreationDate),
+    ...frontmatter,
   } as { [key: string]: any };
 
-  delete newFrontmatter["excerpt"];
+  // delete newFrontmatter["excerpt"];
   delete newFrontmatter["draft"];
 
   const newContent = matter.stringify(content, newFrontmatter);

@@ -25,7 +25,7 @@ const Posts = ({ posts }: Props) => {
           subtitle="Longer Form Essays about Tech and Self-Improvement"
           title="Posts"
         />
-        <article className="posts-overview">
+        <article>
           <section>
             {posts.length > 0 && <OtherPostsPreview posts={posts} />}
           </section>

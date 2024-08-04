@@ -41,7 +41,7 @@ const Newsletters = ({ newsletterData }: Props) => {
           subtitle={"All the Live and Learn Newsletters"}
           title={"Newsletters"}
         />
-        <article className="posts-overview">
+        <article>
           <section>
             {newsletterData.map(
               ({ slug, number, title, excerpt, cover }, index) => {

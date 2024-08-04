@@ -18,7 +18,7 @@ const Notes = ({ posts }: Props) => {
       url="posts"
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
-      <article className="posts-overview">
+      <article>
         <section>
           {posts.length > 0 && <OtherPostsPreview posts={posts} />}
         </section>

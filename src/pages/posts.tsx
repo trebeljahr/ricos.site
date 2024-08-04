@@ -1,5 +1,8 @@
 import Layout from "@components/Layout";
+import { NewsletterForm } from "@components/NewsletterSignup";
+import PostHeader from "@components/PostHeader";
 import { OtherPostsPreview } from "@components/PostPreview";
+import { ToTopButton } from "@components/ToTopButton";
 import { Post, allPosts } from "@contentlayer/generated";
 
 type Props = {
@@ -17,12 +20,22 @@ const Posts = ({ posts }: Props) => {
       url="posts"
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
-      <article className="posts-overview">
-        <h1>Posts</h1>
-        <section>
-          {posts.length > 0 && <OtherPostsPreview posts={posts} />}
-        </section>
-      </article>
+      <main>
+        <PostHeader
+          subtitle="Longer Form Essays about Tech and Self-Improvement"
+          title="Posts"
+        />
+        <article className="posts-overview">
+          <section>
+            {posts.length > 0 && <OtherPostsPreview posts={posts} />}
+          </section>
+        </article>
+      </main>
+
+      <footer>
+        <NewsletterForm />
+        <ToTopButton />
+      </footer>
     </Layout>
   );
 };

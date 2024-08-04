@@ -83,20 +83,23 @@ const ShowTags = ({ tags, categories }: Props) => {
       description="An Experimental Overview over All Pages"
       url="experiment"
     >
-      <article className="prose">
-        <section>
-          <h2>Categories:</h2>
-          <RenderTags tags={categories} />
-          <h2>Tags:</h2>
-          <RenderTags tags={tags} />
-          <h2>Links:</h2>
-          <RenderAnchors tags={categories} />
-        </section>
-        <section>
-          <NewsletterForm />
-          <ToTopButton />
-        </section>
-      </article>
+      <main>
+        <article>
+          <section>
+            <h2>Categories:</h2>
+            <RenderTags tags={categories} />
+            <h2>Tags:</h2>
+            <RenderTags tags={tags} />
+            <h2>Links:</h2>
+            <RenderAnchors tags={categories} />
+          </section>
+        </article>
+      </main>
+
+      <footer>
+        <NewsletterForm />
+        <ToTopButton />
+      </footer>
     </Layout>
   );
 };

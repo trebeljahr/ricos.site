@@ -3,6 +3,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { NiceCard } from "@components/NiceCard";
+import PostHeader from "@components/PostHeader";
 
 type NewsletterData = {
   slug: string;
@@ -35,32 +36,37 @@ const Newsletters = ({ newsletterData }: Props) => {
       description="An archive overview page of all the Newsletters I have published in the past at trebeljahr.com."
       url="newsletters"
     >
-      <article className="posts-overview">
-        <h1>Newsletters</h1>
+      <main>
+        <PostHeader
+          subtitle={"All the Live and Learn Newsletters"}
+          title={"Newsletters"}
+        />
+        <article className="posts-overview">
+          <section>
+            {newsletterData.map(
+              ({ slug, number, title, excerpt, cover }, index) => {
+                const priority = index <= 1;
 
-        <section>
-          {newsletterData.map(
-            ({ slug, number, title, excerpt, cover }, index) => {
-              const priority = index <= 1;
+                return (
+                  <NiceCard
+                    key={slug}
+                    cover={cover}
+                    slug={slug}
+                    excerpt={excerpt}
+                    priority={priority}
+                    title={`${title} | Live and Learn #${number}`}
+                  />
+                );
+              }
+            )}
+          </section>
+        </article>
+      </main>
 
-              return (
-                <NiceCard
-                  key={slug}
-                  cover={cover}
-                  slug={slug}
-                  excerpt={excerpt}
-                  priority={priority}
-                  title={`${title} | Live and Learn #${number}`}
-                />
-              );
-            }
-          )}
-        </section>
-        <section>
-          <NewsletterForm />
-          <ToTopButton />
-        </section>
-      </article>
+      <footer>
+        <NewsletterForm />
+        <ToTopButton />
+      </footer>
     </Layout>
   );
 };

@@ -5,6 +5,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import { Podcastnote, allPodcastnotes } from "@contentlayer/generated";
 import { useEffect } from "react";
 import Link from "next/link";
+import PostHeader from "@components/PostHeader";
 
 function toFilters({ title, rating, tags, show }: Podcastnote) {
   return { title, rating, tags, show };
@@ -30,37 +31,41 @@ export default function Podcastnotes() {
       }
       url="podcastnotes"
     >
-      <article>
-        <section className="p-5">
-          <h1>Podcastnotes</h1>
+      <main>
+        <section>
+          <PostHeader
+            title="Podcastnotes"
+            subtitle="What I have learned while listening"
+          />
           <Search filters={filters} setFilters={setFilters} />
           <p>Amount: {filteredPodcastnotes.length}</p>
         </section>
-        <section className="allPodcastnotes prose">
+        <section>
           {filteredPodcastnotes.map(
             ({ slug, title, show, episode, rating, excerpt }) => {
               return (
                 <Link
                   href={slug}
                   key={slug}
-                  className="p-5 mb-5 block no-underline card-hover"
+                  className="p-5 mb-10 block card-hover"
                 >
-                  <h2 className="m-0 p-0 underline">{title}</h2>
+                  <h2 className="m-0 p-0 not-prose">{title}</h2>
                   <h3 className="mt-1">
                     {show} – Episode {episode} | Rating: {rating}/10
                   </h3>
 
-                  <p className="prose">{excerpt}</p>
+                  <p className="text-grey mb-1">{excerpt}</p>
                 </Link>
               );
             }
           )}
         </section>
-        <section>
-          <NewsletterForm />
-          <ToTopButton />
-        </section>
-      </article>
+      </main>
+
+      <footer>
+        <NewsletterForm />
+        <ToTopButton />
+      </footer>
     </Layout>
   );
 }

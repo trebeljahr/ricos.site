@@ -38,38 +38,41 @@ const Newsletter = ({
     >
       <NewsletterModalPopup />
 
-      <article className="prose maint-text newsletter-article">
-        <section className="post-body mt-2">
-          <BreadCrumbs
-            path={url}
-            overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]}
-          />
+      <BreadCrumbs
+        path={url}
+        overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]}
+      />
 
-          <PostHeader title={fullTitle} date={date} />
-          {excerpt && <p>{excerpt}</p>}
-          <div className="header-image-container mb-5">
-            <Image
-              priority
-              src={cover.src}
-              width={cover.width || 1}
-              height={cover.height || 1}
-              alt={cover.alt}
-              sizes="100vw"
-              style={{
-                width: "100%",
-                height: "auto",
-                objectFit: "cover",
-              }}
-            />
-          </div>
-          <PostBodyWithoutExcerpt content={body.raw} />
-        </section>
-        <section>
-          <NextAndPrevArrows nextPost={nextPost} prevPost={prevPost} />
-          <NewsletterForm />
-          <ToTopButton />
-        </section>
-      </article>
+      <main>
+        <article className="maint-text newsletter-article">
+          <section className="mt-2">
+            <PostHeader title={fullTitle} date={date} />
+            {excerpt && <p>{excerpt}</p>}
+            <div className="header-image-container mb-5">
+              <Image
+                priority
+                src={cover.src}
+                width={cover.width || 1}
+                height={cover.height || 1}
+                alt={cover.alt}
+                sizes="100vw"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  objectFit: "cover",
+                }}
+              />
+            </div>
+            <PostBodyWithoutExcerpt content={body.raw} />
+          </section>
+        </article>
+      </main>
+
+      <footer>
+        <NextAndPrevArrows nextPost={nextPost} prevPost={prevPost} />
+        <NewsletterForm />
+        <ToTopButton />
+      </footer>
     </Layout>
   );
 };

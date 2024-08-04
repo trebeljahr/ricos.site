@@ -20,16 +20,19 @@ export default function Page({ page }: Props) {
       image={cover.src}
       imageAlt={cover.alt}
     >
-      <article className="prose">
-        <section>
-          <PostHeader subtitle={subtitle} title={title} />
-          <Component />
-        </section>
-        <section>
-          <NewsletterForm />
-          <ToTopButton />
-        </section>
-      </article>
+      <PostHeader subtitle={subtitle} title={title} />
+      <main>
+        <article>
+          <section>
+            <Component />
+          </section>
+        </article>
+      </main>
+
+      <footer>
+        <NewsletterForm />
+        <ToTopButton />
+      </footer>
     </Layout>
   );
 }

@@ -36,11 +36,15 @@ const Layout = ({
       />
       <TailwindNavbar />
 
-      <main
-        className={fullScreen ? "w-full px-3 mt-10 md:px-10" : "px-3 main-page"}
+      <div
+        className={
+          fullScreen
+            ? "prose prose-a:no-underline prose-a:text-darkBlue w-full px-3 mt-10 md:px-10 !max-w-none"
+            : "prose prose-a:no-underline prose-a:text-darkBlue px-3 main-page"
+        }
       >
         {children}
-      </main>
+      </div>
     </>
   );
 };

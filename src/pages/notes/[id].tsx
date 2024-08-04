@@ -25,7 +25,7 @@ export const NotesLayout = ({
       url={url}
       imageAlt={cover?.alt || ""}
     >
-      <article className="prose post-body">
+      <article>
         <section>
           <BreadCrumbs path={url} />
 

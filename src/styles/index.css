@@ -676,10 +676,6 @@ canvas {
 }
 
 @media only screen and (min-width: 1030px) {
-  .main-page {
-    padding-top: 2rem;
-  }
-
   .placeholder-text {
     padding: 30px;
     background-color: rgb(197, 201, 203);

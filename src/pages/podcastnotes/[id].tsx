@@ -27,40 +27,45 @@ const Podcastnote = ({ Podcastnote }: Props) => {
       description={`These are my Podcast Notes for ${Podcastnote.title}. ${Podcastnote.excerpt}`}
       url={url}
     >
-      <article className="prose">
-        <section className="Podcastnote-info">
-          <BreadCrumbs path={url} />
-          <div className="Podcastnote-preview-text">
-            <h2 className="mt-0 pt-0">
-              {Podcastnote.show} | Episode – {Podcastnote.episode}
-            </h2>
+      <BreadCrumbs path={url} />
+      <main>
+        <article>
+          <section className="Podcastnote-info">
+            <div className="Podcastnote-preview-text">
+              <h2 className="mt-0 pt-0">
+                {Podcastnote.show} | Episode – {Podcastnote.episode}
+              </h2>
 
-            <h1 className="pt-4">{Podcastnote.title}</h1>
-            <p>
-              <b>Rating: {Podcastnote.rating}/10</b>
-            </p>
-            <p>
-              Listen on:{" "}
-              <ExternalLink href={Podcastnote.links.youtube}>
-                Youtube
-              </ExternalLink>{" "}
-              |{" "}
-              <ExternalLink href={Podcastnote.links.youtube}>
-                Spotify
-              </ExternalLink>{" "}
-              |{" "}
-              <ExternalLink href={Podcastnote.links.youtube}>Web</ExternalLink>
-            </p>
-          </div>
-        </section>
-        <section className="post-body">
-          <PodcastnoteComponent Podcastnote={Podcastnote} />
-        </section>
-        <section>
-          <ToTopButton />
-          <NewsletterForm />
-        </section>
-      </article>
+              <h1 className="pt-4">{Podcastnote.title}</h1>
+              <p>
+                <b>Rating: {Podcastnote.rating}/10</b>
+              </p>
+              <p>
+                Listen on:{" "}
+                <ExternalLink href={Podcastnote.links.youtube}>
+                  Youtube
+                </ExternalLink>{" "}
+                |{" "}
+                <ExternalLink href={Podcastnote.links.youtube}>
+                  Spotify
+                </ExternalLink>{" "}
+                |{" "}
+                <ExternalLink href={Podcastnote.links.youtube}>
+                  Web
+                </ExternalLink>
+              </p>
+            </div>
+          </section>
+          <section>
+            <PodcastnoteComponent Podcastnote={Podcastnote} />
+          </section>
+        </article>
+      </main>
+
+      <footer>
+        <ToTopButton />
+        <NewsletterForm />
+      </footer>
     </Layout>
   );
 };

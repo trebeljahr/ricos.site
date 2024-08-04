@@ -18,68 +18,72 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
       url="/"
       imageAlt={"a person reading a book, while floating in space"}
     >
-      <article className="prose">
-        <section>
-          <h2>Hi there 👋🏻</h2>
-          <p>
-            I am Rico. A{" "}
-            <Link href="https://github.com/trebeljahr">programmer</Link>,{" "}
-            <Link href="/travel">traveler</Link>,{" "}
-            <Link href="/photography">photographer</Link>,{" "}
-            <Link href="/posts">writer</Link> and{" "}
-            <Link href="/principles">fellow human</Link>. This is my personal
-            website.
-          </p>
-          <p>
-            It&apos;s where I <Link href="/posts">write</Link>,{" "}
-            <Link href="/newsletters">publish my newsletter</Link>,{" "}
-            <Link href="/booknotes">collect booknotes</Link>,{" "}
-            <Link href="/quotes">quotes</Link>,{" "}
-            <Link href="/travel">traveling stories</Link>,{" "}
-            <Link href="/photography">photography</Link>, and{" "}
-            <Link href="/needlestack">
-              links to my favorite places on the internet
-            </Link>
-            .
-          </p>
+      <main>
+        <article>
+          <section>
+            <header>
+              <h2>Hi there 👋🏻</h2>
+            </header>
+            <p>
+              I am Rico. A{" "}
+              <Link href="https://github.com/trebeljahr">programmer</Link>,{" "}
+              <Link href="/travel">traveler</Link>,{" "}
+              <Link href="/photography">photographer</Link>,{" "}
+              <Link href="/posts">writer</Link> and{" "}
+              <Link href="/principles">fellow human</Link>. This is my personal
+              website.
+            </p>
+            <p>
+              It&apos;s where I <Link href="/posts">write</Link>,{" "}
+              <Link href="/newsletters">publish my newsletter</Link>,{" "}
+              <Link href="/booknotes">collect booknotes</Link>,{" "}
+              <Link href="/quotes">quotes</Link>,{" "}
+              <Link href="/travel">traveling stories</Link>,{" "}
+              <Link href="/photography">photography</Link>, and{" "}
+              <Link href="/needlestack">
+                links to my favorite places on the internet
+              </Link>
+              .
+            </p>
 
-          <p>
-            This is what I do{" "}
-            <Link as={`/now`} href="/now">
-              right now
-            </Link>{" "}
-            .
-          </p>
-        </section>
+            <p>
+              This is what I do{" "}
+              <Link as={`/now`} href="/now">
+                right now
+              </Link>{" "}
+              .
+            </p>
+          </section>
 
-        <section>
-          <h3>Webpages</h3>
-          <p>
-            You can also find me on other places around the internet, like{" "}
-            <ExternalLink href="https://www.instagram.com/ricotrebeljahr/">
-              Instagram
-            </ExternalLink>
-            ,{" "}
-            <ExternalLink href="https://github.com/trebeljahr">
-              Github
-            </ExternalLink>
-            ,{" "}
-            <ExternalLink href="https://www.linkedin.com/in/trebeljahr">
-              LinkedIn
-            </ExternalLink>
-            ,{" "}
-            <ExternalLink href="https://twitter.com/ricotrebeljahr">
-              Twitter
-            </ExternalLink>
-            , or at my{" "}
-            <Link href="https://portfolio.trebeljahr.com">Portfolio</Link>.
-          </p>
-        </section>
+          <section>
+            <h3>Webpages</h3>
+            <p>
+              You can also find me on other places around the internet, like{" "}
+              <ExternalLink href="https://www.instagram.com/ricotrebeljahr/">
+                Instagram
+              </ExternalLink>
+              ,{" "}
+              <ExternalLink href="https://github.com/trebeljahr">
+                Github
+              </ExternalLink>
+              ,{" "}
+              <ExternalLink href="https://www.linkedin.com/in/trebeljahr">
+                LinkedIn
+              </ExternalLink>
+              ,{" "}
+              <ExternalLink href="https://twitter.com/ricotrebeljahr">
+                Twitter
+              </ExternalLink>
+              , or at my{" "}
+              <Link href="https://portfolio.trebeljahr.com">Portfolio</Link>.
+            </p>
+          </section>
+        </article>
+      </main>
 
-        <section>
-          <NewsletterForm />
-        </section>
-      </article>
+      <footer>
+        <NewsletterForm />
+      </footer>
     </Layout>
   );
 };

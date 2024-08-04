@@ -25,7 +25,7 @@ const Traveling = ({ posts, tripName }: Props) => {
       url="posts"
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
-      <article className="prose posts-overview">
+      <article className=" posts-overview">
         <section>
           <BreadCrumbs path={url} />
         </section>

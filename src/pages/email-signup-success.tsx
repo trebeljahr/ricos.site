@@ -47,25 +47,23 @@ export default function EmailSignupSuccess() {
         url="email-signup-success"
       >
         <article>
-          <section>
-            <h1>Success</h1>
-            <p>
-              Welcome to my newsletter, emails go out Sunday every two weeks.
-              Cant wait? You can still read all of the older newsletters that
-              you missed so far at{" "}
-              <Link as={`/newsletters`} href="/newsletters">
-                /newsletters
-              </Link>
-              .
-            </p>
-            <p>
-              Or alternatively check out some of my other writing at{" "}
-              <Link as={`/posts`} href="/posts">
-                /posts
-              </Link>
-              .
-            </p>
-          </section>
+          <h1>Success</h1>
+          <p>
+            Welcome to my newsletter, emails go out Sunday every two weeks. Cant
+            wait? You can still read all of the older newsletters that you
+            missed so far at{" "}
+            <Link as={`/newsletters`} href="/newsletters">
+              /newsletters
+            </Link>
+            .
+          </p>
+          <p>
+            Or alternatively check out some of my other writing at{" "}
+            <Link as={`/posts`} href="/posts">
+              /posts
+            </Link>
+            .
+          </p>
         </article>
       </Layout>
     </>

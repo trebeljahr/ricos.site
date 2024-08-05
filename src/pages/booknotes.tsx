@@ -5,7 +5,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import { BookPreview } from "@components/BookPreview";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
-import PostHeader from "@components/PostHeader";
+import Header from "@components/PostHeader";
 
 function toFilters({
   bookAuthor,
@@ -43,19 +43,19 @@ export default function Books({ booknotes }: Props) {
       imageAlt={"a bookshelf filled with lots of books"}
     >
       <main>
-        <PostHeader
+        <Header
           title="Booknotes"
           subtitle="What I have learned while reading"
         />
-        <section>
+        <div>
           <Search filters={filters} setFilters={setFilters} />
           <p>Amount: {filteredBooks.length}</p>
-        </section>
-        <section className="not-prose">
+        </div>
+        <div className="not-prose">
           {filteredBooks.map((book, index) => {
             return <BookPreview key={book.slug} book={book} index={index} />;
           })}
-        </section>
+        </div>
       </main>
 
       <footer>

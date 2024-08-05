@@ -1,4 +1,4 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
+import { BreadCrumbs, turnKebabIntoTitleCase } from "@components/BreadCrumbs";
 import { byDates } from "src/lib/dateUtils";
 import Layout from "@components/Layout";
 import { OtherPostsPreview } from "@components/PostPreview";
@@ -7,6 +7,7 @@ import slugify from "@sindresorhus/slugify";
 import { travelingStoryNames } from "..";
 import { sortAndFilterNotes } from "src/lib/utils";
 import { NiceCard } from "@components/NiceCard";
+import Header from "@components/PostHeader";
 
 type Props = {
   posts: Note[];
@@ -25,18 +26,19 @@ const Traveling = ({ posts, tripName }: Props) => {
       url="posts"
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
-      <article>
+      <main>
+        <BreadCrumbs path={url} />
         <section>
-          <BreadCrumbs path={url} />
-        </section>
-        <section>
+          <Header
+            title={turnKebabIntoTitleCase(tripName)}
+            subtitle="Traveling Stories from Another Place"
+          />
           {posts.map((post, index) => {
             const priority = index <= 1;
             return <NiceCard key={post.slug} priority={priority} {...post} />;
           })}
-          {/* <OtherPostsPreview posts={posts} morePostsText={null} /> */}
         </section>
-      </article>
+      </main>
     </Layout>
   );
 };

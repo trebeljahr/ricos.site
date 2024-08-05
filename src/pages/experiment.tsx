@@ -84,16 +84,14 @@ const ShowTags = ({ tags, categories }: Props) => {
       url="experiment"
     >
       <main>
-        <article>
-          <section>
-            <h2>Categories:</h2>
-            <RenderTags tags={categories} />
-            <h2>Tags:</h2>
-            <RenderTags tags={tags} />
-            <h2>Links:</h2>
-            <RenderAnchors tags={categories} />
-          </section>
-        </article>
+        <section>
+          <h2>Categories:</h2>
+          <RenderTags tags={categories} />
+          <h2>Tags:</h2>
+          <RenderTags tags={tags} />
+          <h2>Links:</h2>
+          <RenderAnchors tags={categories} />
+        </section>
       </main>
 
       <footer>

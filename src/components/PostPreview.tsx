@@ -18,24 +18,26 @@ export const PostPreview = ({
 };
 
 export const OtherPostsPreview = ({ posts }: { posts: Post[] | Note[] }) => {
-  return (
-    <section>
-      <div className="other-posts-container">
-        {posts.map(({ slug, title, excerpt, cover }, index) => {
-          const priority = index <= 1;
+  if (posts.length === 0) {
+    return null;
+  }
 
-          return (
-            <NiceCard
-              key={slug}
-              cover={cover}
-              slug={slug}
-              excerpt={excerpt}
-              priority={priority}
-              title={title}
-            />
-          );
-        })}
-      </div>
-    </section>
+  return (
+    <div className="other-posts-container">
+      {posts.map(({ slug, title, excerpt, cover }, index) => {
+        const priority = index <= 1;
+
+        return (
+          <NiceCard
+            key={slug}
+            cover={cover}
+            slug={slug}
+            excerpt={excerpt}
+            priority={priority}
+            title={title}
+          />
+        );
+      })}
+    </div>
   );
 };

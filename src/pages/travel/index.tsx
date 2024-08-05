@@ -2,7 +2,7 @@ import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { NiceCard } from "@components/NiceCard";
-import PostHeader from "@components/PostHeader";
+import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { allNotes, type Note } from "@contentlayer/generated";
 import { toTitleCase } from "src/lib/toTitleCase";
@@ -52,28 +52,26 @@ const Notes = ({ posts }: Props) => {
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
       <main>
-        <PostHeader
-          title="Traveling"
-          subtitle="Stories of the adventures and places I have been to"
-        />
-        <article>
-          <section>
-            {posts.map((post) => {
-              const meta = travelingStoriesMeta[post];
-              if (!meta) return null;
+        <section>
+          <Header
+            title="Traveling"
+            subtitle="Stories of the adventures and places I have been to"
+          />
+          {posts.map((post) => {
+            const meta = travelingStoriesMeta[post];
+            if (!meta) return null;
 
-              return (
-                <NiceCard
-                  key={post}
-                  cover={meta.cover}
-                  excerpt={meta.excerpt}
-                  title={meta.title}
-                  slug={`/travel/${post}`}
-                />
-              );
-            })}
-          </section>
-        </article>
+            return (
+              <NiceCard
+                key={post}
+                cover={meta.cover}
+                excerpt={meta.excerpt}
+                title={meta.title}
+                slug={`/travel/${post}`}
+              />
+            );
+          })}
+        </section>
       </main>
 
       <footer>

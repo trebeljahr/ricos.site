@@ -1,4 +1,4 @@
-import PostHeader from "@components/PostHeader";
+import Header from "@components/PostHeader";
 import Layout from "@components/Layout";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { allPosts, Post } from "@contentlayer/generated";
@@ -34,7 +34,7 @@ export const BlogLayout = ({
           <section>
             <BreadCrumbs path={url} />
 
-            <PostHeader subtitle={subtitle} title={title} date={date} />
+            <Header subtitle={subtitle} title={title} date={date} />
             {children}
           </section>
         </article>

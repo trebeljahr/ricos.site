@@ -1,7 +1,7 @@
 import type { Page as PageType } from "@contentlayer/generated";
 import { allPages } from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
-import PostHeader from "@components/PostHeader";
+import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
@@ -20,12 +20,10 @@ export default function Page({ page }: Props) {
       image={cover.src}
       imageAlt={cover.alt}
     >
-      <PostHeader subtitle={subtitle} title={title} />
+      <Header subtitle={subtitle} title={title} />
       <main>
         <article>
-          <section>
-            <Component />
-          </section>
+          <Component />
         </article>
       </main>
 
@@ -35,17 +33,4 @@ export default function Page({ page }: Props) {
       </footer>
     </Layout>
   );
-}
-
-export async function getStaticPaths() {
-  return {
-    paths: allPages.map(({ id }: PageType) => ({ params: { id } })),
-    fallback: false,
-  };
-}
-
-export async function getStaticProps({ params }: { params: { id: string } }) {
-  const page = allPages.find((page: PageType) => page.id === params.id);
-
-  return { props: { page } };
 }

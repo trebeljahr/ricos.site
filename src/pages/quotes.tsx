@@ -3,7 +3,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import quotesJSON from "../content/Notes/pages/quotes.json";
-import PostHeader from "@components/PostHeader";
+import Header from "@components/PostHeader";
 
 const quotes: Quote[] = quotesJSON;
 
@@ -29,30 +29,26 @@ export default function Quotes() {
       url="quotes"
       imageAlt="a collection of handwritten notes on paper"
     >
-      <section>
-        <PostHeader
-          title="Quotes"
-          subtitle="Snippets of writing that I want to remember"
-        />
-
-        <Search setFilters={setFilters} filters={filters} />
-        <p>Amount: {filteredQuotes.length}</p>
-      </section>
       <main>
-        <article>
-          <section>
-            {filteredQuotes.map(({ author, content }, index) => {
-              return (
-                <div key={author + index} className="quote">
-                  <blockquote>
-                    <p>{content}</p>
-                  </blockquote>
-                  <p>— {author}</p>
-                </div>
-              );
-            })}
-          </section>
-        </article>
+        <section>
+          <Header
+            title="Quotes"
+            subtitle="Snippets of writing that I want to remember"
+          />
+
+          <Search setFilters={setFilters} filters={filters} />
+          <p>Amount: {filteredQuotes.length}</p>
+          {filteredQuotes.map(({ author, content }, index) => {
+            return (
+              <div key={author + index} className="quote">
+                <blockquote>
+                  <p>{content}</p>
+                </blockquote>
+                <p>— {author}</p>
+              </div>
+            );
+          })}
+        </section>
       </main>
 
       <footer>

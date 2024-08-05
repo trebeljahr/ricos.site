@@ -5,7 +5,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import { Podcastnote, allPodcastnotes } from "@contentlayer/generated";
 import { useEffect } from "react";
 import Link from "next/link";
-import PostHeader from "@components/PostHeader";
+import Header from "@components/PostHeader";
 
 function toFilters({ title, rating, tags, show }: Podcastnote) {
   return { title, rating, tags, show };
@@ -33,14 +33,12 @@ export default function Podcastnotes() {
     >
       <main>
         <section>
-          <PostHeader
+          <Header
             title="Podcastnotes"
             subtitle="What I have learned while listening"
           />
           <Search filters={filters} setFilters={setFilters} />
           <p>Amount: {filteredPodcastnotes.length}</p>
-        </section>
-        <section>
           {filteredPodcastnotes.map(
             ({ slug, title, show, episode, rating, excerpt }) => {
               return (

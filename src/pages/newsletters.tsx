@@ -3,7 +3,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { NiceCard } from "@components/NiceCard";
-import PostHeader from "@components/PostHeader";
+import Header from "@components/PostHeader";
 
 type NewsletterData = {
   slug: string;
@@ -37,30 +37,28 @@ const Newsletters = ({ newsletterData }: Props) => {
       url="newsletters"
     >
       <main>
-        <PostHeader
-          subtitle={"All the Live and Learn Newsletters"}
-          title={"Newsletters"}
-        />
-        <article>
-          <section>
-            {newsletterData.map(
-              ({ slug, number, title, excerpt, cover }, index) => {
-                const priority = index <= 1;
+        <section>
+          <Header
+            subtitle={"All the Live and Learn Newsletters"}
+            title={"Newsletters"}
+          />
+          {newsletterData.map(
+            ({ slug, number, title, excerpt, cover }, index) => {
+              const priority = index <= 1;
 
-                return (
-                  <NiceCard
-                    key={slug}
-                    cover={cover}
-                    slug={slug}
-                    excerpt={excerpt}
-                    priority={priority}
-                    title={`${title} | Live and Learn #${number}`}
-                  />
-                );
-              }
-            )}
-          </section>
-        </article>
+              return (
+                <NiceCard
+                  key={slug}
+                  cover={cover}
+                  slug={slug}
+                  excerpt={excerpt}
+                  priority={priority}
+                  title={`${title} | Live and Learn #${number}`}
+                />
+              );
+            }
+          )}
+        </section>
       </main>
 
       <footer>

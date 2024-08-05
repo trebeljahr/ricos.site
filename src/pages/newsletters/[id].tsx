@@ -10,7 +10,7 @@ import {
   NewsletterModalPopup,
 } from "@components/NewsletterSignup";
 import { PostBodyWithoutExcerpt } from "@components/PostBody";
-import PostHeader from "@components/PostHeader";
+import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 
@@ -45,26 +45,24 @@ const Newsletter = ({
 
       <main>
         <article className="maint-text newsletter-article">
-          <section className="mt-2">
-            <PostHeader title={fullTitle} date={date} />
-            {excerpt && <p>{excerpt}</p>}
-            <div className="header-image-container mb-5">
-              <Image
-                priority
-                src={cover.src}
-                width={cover.width || 1}
-                height={cover.height || 1}
-                alt={cover.alt}
-                sizes="100vw"
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  objectFit: "cover",
-                }}
-              />
-            </div>
-            <PostBodyWithoutExcerpt content={body.raw} />
-          </section>
+          <Header title={fullTitle} date={date} />
+          {excerpt && <p>{excerpt}</p>}
+          <div className="header-image-container mb-5">
+            <Image
+              priority
+              src={cover.src}
+              width={cover.width || 1}
+              height={cover.height || 1}
+              alt={cover.alt}
+              sizes="100vw"
+              style={{
+                width: "100%",
+                height: "auto",
+                objectFit: "cover",
+              }}
+            />
+          </div>
+          <PostBodyWithoutExcerpt content={body.raw} />
         </article>
       </main>
 

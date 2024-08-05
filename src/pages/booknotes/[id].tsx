@@ -64,13 +64,15 @@ const Book = ({ book }: Props) => {
               />
             </div>
             <header className="book-preview-text">
-              <h1>{book.title}</h1>
-              <p>{book.subtitle}</p>
-              <p> by {book.bookAuthor}</p>
-              <p>
-                <b>Rating: {book.rating}/10</b>
-              </p>
-              <BuyItOnAmazon link={book.amazonLink} />
+              <hgroup>
+                <h1>{book.title}</h1>
+                <p>{book.subtitle}</p>
+                <p> by {book.bookAuthor}</p>
+                <p>
+                  <b>Rating: {book.rating}/10</b>
+                </p>
+                <BuyItOnAmazon link={book.amazonLink} />
+              </hgroup>
             </header>
           </section>
           <section>

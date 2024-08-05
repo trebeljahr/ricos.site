@@ -1,6 +1,6 @@
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
-import PostHeader from "@components/PostHeader";
+import Header from "@components/PostHeader";
 import { OtherPostsPreview } from "@components/PostPreview";
 import { ToTopButton } from "@components/ToTopButton";
 import { Post, allPosts } from "@contentlayer/generated";
@@ -21,15 +21,13 @@ const Posts = ({ posts }: Props) => {
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
       <main>
-        <PostHeader
-          subtitle="Longer Form Essays about Tech and Self-Improvement"
-          title="Posts"
-        />
-        <article>
-          <section>
-            {posts.length > 0 && <OtherPostsPreview posts={posts} />}
-          </section>
-        </article>
+        <section>
+          <Header
+            title="Posts"
+            subtitle="Longer Form Essays about Tech and Self-Improvement"
+          />
+          <OtherPostsPreview posts={posts} />
+        </section>
       </main>
 
       <footer>

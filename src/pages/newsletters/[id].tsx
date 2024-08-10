@@ -10,7 +10,7 @@ import {
   NewsletterModalPopup,
 } from "@components/NewsletterSignup";
 import { PostBodyWithoutExcerpt } from "@components/PostBody";
-import PostHeader from "@components/PostHeader";
+import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 
@@ -38,14 +38,14 @@ const Newsletter = ({
     >
       <NewsletterModalPopup />
 
-      <article className="prose maint-text newsletter-article">
-        <section className="post-body mt-2">
-          <BreadCrumbs
-            path={url}
-            overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]}
-          />
+      <BreadCrumbs
+        path={url}
+        overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]}
+      />
 
-          <PostHeader title={fullTitle} date={date} />
+      <main>
+        <article className="maint-text newsletter-article">
+          <Header title={fullTitle} date={date} />
           {excerpt && <p>{excerpt}</p>}
           <div className="header-image-container mb-5">
             <Image
@@ -63,13 +63,14 @@ const Newsletter = ({
             />
           </div>
           <PostBodyWithoutExcerpt content={body.raw} />
-        </section>
-        <section>
-          <NextAndPrevArrows nextPost={nextPost} prevPost={prevPost} />
-          <NewsletterForm />
-          <ToTopButton />
-        </section>
-      </article>
+        </article>
+      </main>
+
+      <footer>
+        <NextAndPrevArrows nextPost={nextPost} prevPost={prevPost} />
+        <NewsletterForm />
+        <ToTopButton />
+      </footer>
     </Layout>
   );
 };

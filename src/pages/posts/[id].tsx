@@ -1,4 +1,4 @@
-import PostHeader from "@components/PostHeader";
+import Header from "@components/PostHeader";
 import Layout from "@components/Layout";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { allPosts, Post } from "@contentlayer/generated";
@@ -29,19 +29,22 @@ export const BlogLayout = ({
       url={url}
       imageAlt={cover.alt}
     >
-      <article className="prose post-body">
-        <section>
-          <BreadCrumbs path={url} />
+      <main>
+        <article>
+          <section>
+            <BreadCrumbs path={url} />
 
-          <PostHeader subtitle={subtitle} title={title} date={date} />
-          {children}
-        </section>
-        <section>
-          <NewsletterForm />
-          {morePosts && <ReadMore posts={morePosts} />}
-          <ToTopButton />
-        </section>
-      </article>
+            <Header subtitle={subtitle} title={title} date={date} />
+            {children}
+          </section>
+        </article>
+      </main>
+
+      <footer>
+        <NewsletterForm />
+        {morePosts && <ReadMore posts={morePosts} />}
+        <ToTopButton />
+      </footer>
     </Layout>
   );
 };

@@ -1,4 +1,5 @@
 import Layout from "@components/Layout";
+import Header from "@components/PostHeader";
 import { OtherPostsPreview } from "@components/PostPreview";
 import { Post as Note, allNotes } from "@contentlayer/generated";
 import { parseDate } from "src/lib/dateUtils";
@@ -18,11 +19,12 @@ const Notes = ({ posts }: Props) => {
       url="posts"
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
-      <article className="posts-overview">
+      <main>
         <section>
-          {posts.length > 0 && <OtherPostsPreview posts={posts} />}
+          <Header title="Notes" subtitle="Unstructured Writing" />
+          <OtherPostsPreview posts={posts} />
         </section>
-      </article>
+      </main>
     </Layout>
   );
 };

@@ -170,6 +170,8 @@ export const Booknote = defineDocumentType(() => ({
   fields: {
     title: { type: "string", required: true },
     subtitle: { type: "string" },
+    date: { type: "string", required: true },
+    published: { type: "boolean", required: true },
     bookCover: { type: "string", required: true },
     excerpt: { type: "string" },
     bookAuthor: { type: "string", required: true },
@@ -178,7 +180,6 @@ export const Booknote = defineDocumentType(() => ({
     done: { type: "boolean", required: true },
     summary: { type: "boolean", required: true },
     detailedNotes: { type: "boolean", required: true },
-
     amazonLink: { type: "string", required: true },
     amazonAffiliateLink: { type: "string", required: true },
   },
@@ -205,7 +206,7 @@ export const Newsletter = defineDocumentType(() => ({
   fields: {
     title: { type: "string", required: true },
     cover: { type: "nested", of: Image, required: true },
-    excerpt: { type: "string" },
+    excerpt: { type: "string", required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
     date: { type: "string", required: true },
   },

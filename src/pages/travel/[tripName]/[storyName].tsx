@@ -3,7 +3,7 @@ import { MarkdownRenderers } from "@components/CustomRenderers";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
-import PostHeader from "@components/PostHeader";
+import Header from "@components/PostHeader";
 import {
   allNotes as allTravelStories,
   type Note,
@@ -11,6 +11,7 @@ import {
 import slugify from "@sindresorhus/slugify";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { replaceUndefinedWithNull, sortAndFilterNotes } from "src/lib/utils";
+import { NewsletterForm } from "@components/NewsletterSignup";
 
 type TravelBlogProps = {
   post: Note;
@@ -37,18 +38,19 @@ export const TravelBlogLayout = ({
       url={url}
       imageAlt={cover?.alt || ""}
     >
-      <NextAndPrevArrows nextPost={nextSlug} prevPost={previousSlug} />
-      <article className="prose post-body">
-        <section>
-          <BreadCrumbs path={url} />
-
-          <PostHeader title={title || ""} date={date} />
+      <main>
+        <BreadCrumbs path={url} />
+        <article>
+          <Header title={title || ""} date={date} />
           {children}
-        </section>
-        <section>
-          <ToTopButton />
-        </section>
-      </article>
+        </article>
+      </main>
+
+      <footer>
+        <ToTopButton />
+        <NewsletterForm />
+        <NextAndPrevArrows nextPost={nextSlug} prevPost={previousSlug} />
+      </footer>
     </Layout>
   );
 };

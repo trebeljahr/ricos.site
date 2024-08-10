@@ -3,7 +3,7 @@ import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
-import PostHeader from "@components/PostHeader";
+import Header from "@components/PostHeader";
 import { MarkdownRenderers } from "@components/CustomRenderers";
 import { useMDXComponent } from "next-contentlayer/hooks";
 
@@ -25,17 +25,18 @@ export const NotesLayout = ({
       url={url}
       imageAlt={cover?.alt || ""}
     >
-      <article className="prose post-body">
-        <section>
+      <main>
+        <article>
           <BreadCrumbs path={url} />
-
-          <PostHeader title={title || ""} date={date} />
+          <Header title={title || ""} date={date} />
           {children}
-        </section>
-        <section>
-          <ToTopButton />
-        </section>
-      </article>
+        </article>
+      </main>
+
+      <footer>
+        <ToTopButton />
+        <NewsletterForm />
+      </footer>
     </Layout>
   );
 };

@@ -1,5 +1,8 @@
 import Layout from "@components/Layout";
+import { NewsletterForm } from "@components/NewsletterSignup";
+import Header from "@components/PostHeader";
 import { OtherPostsPreview } from "@components/PostPreview";
+import { ToTopButton } from "@components/ToTopButton";
 import { Post, allPosts } from "@contentlayer/generated";
 
 type Props = {
@@ -17,12 +20,20 @@ const Posts = ({ posts }: Props) => {
       url="posts"
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
-      <article className="posts-overview">
-        <h1>Posts</h1>
+      <main>
         <section>
-          {posts.length > 0 && <OtherPostsPreview posts={posts} />}
+          <Header
+            title="Posts"
+            subtitle="Longer Form Essays about Tech and Self-Improvement"
+          />
+          <OtherPostsPreview posts={posts} />
         </section>
-      </article>
+      </main>
+
+      <footer>
+        <NewsletterForm />
+        <ToTopButton />
+      </footer>
     </Layout>
   );
 };
@@ -31,7 +42,9 @@ export default Posts;
 
 export const getStaticProps = async () => {
   const posts = allPosts
-    .filter(({ published }) => published)
+    .filter(
+      ({ published }) => published || process.env.NODE_ENV === "development"
+    )
     .map(({ slug, excerpt, cover, title, date }) => ({
       slug,
       excerpt,
@@ -39,6 +52,7 @@ export const getStaticProps = async () => {
       title,
       date,
     }));
+
   posts.sort((post1, post2) => (post1.date > post2.date ? -1 : 1));
 
   return {

@@ -60,10 +60,10 @@ export function TailwindNavbar() {
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open, close }) => (
-        <>
+        <header>
           <DesktopVersion {...{ isActive, open, close }} />
           <MobileVersion {...{ isActive, open, close }} />
-        </>
+        </header>
       )}
     </Disclosure>
   );
@@ -77,7 +77,7 @@ type NavbarProps = {
 
 function DesktopVersion({ open, isActive, close }: NavbarProps) {
   return (
-    <div className="mx-auto max-w-7xl px-2 md :px-6 lg:px-8 relative flex h-16 items-center justify-between">
+    <nav className="mx-auto max-w-7xl px-2 md :px-6 lg:px-8 relative flex h-16 items-center justify-between">
       <div className="absolute mr-2 inset-y-0 right-0 flex items-center lg:hidden">
         <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
           <span className="sr-only">Open main menu</span>
@@ -121,14 +121,14 @@ function DesktopVersion({ open, isActive, close }: NavbarProps) {
           </div>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
 
 function MobileVersion({ isActive, close }: NavbarProps) {
   return (
     <Disclosure.Panel className="lg:hidden">
-      <div className="space-y-1 flex flex-col px-2 pb-3 pt-2 items-end justify-end">
+      <nav className="space-y-1 flex flex-col px-2 pb-3 pt-2 items-end justify-end">
         {navigation.map((item) => (
           <Link
             key={item}
@@ -147,7 +147,7 @@ function MobileVersion({ isActive, close }: NavbarProps) {
 
         <MobileMenu links={resources} text="resources" closeNav={close} />
         <MobileMenu links={about} text="about" closeNav={close} />
-      </div>
+      </nav>
     </Disclosure.Panel>
   );
 }
@@ -162,7 +162,7 @@ function DesktopMenu({ links, text, closeNav }: MenuProps) {
   const router = useRouter();
   const isActive = links.some((link) => router.asPath.startsWith("/" + link));
   return (
-    <Menu as="div" className="block relative ml-3">
+    <Menu as="nav" className="block relative ml-3">
       <Menu.Button
         className={combine(
           isActive
@@ -200,7 +200,7 @@ function MobileMenu({ links, text, closeNav }: MenuProps) {
   const isActive = links.some((link) => router.asPath.startsWith("/" + link));
 
   return (
-    <Menu as="div" className="relative w-fit">
+    <Menu as="nav" className="relative w-fit">
       <Disclosure.Button as="div">
         <Menu.Button
           className={combine(

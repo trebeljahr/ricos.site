@@ -54,54 +54,60 @@ export default function ImageGallery({
       url={`/photography/${tripName}`}
       fullScreen={true}
     >
-      <div className="mb-20">
+      <section className="mb-20 ">
         <BreadCrumbs path={`photography/${tripName}`} />
-        <h1 style={{ marginTop: "-2rem", marginBottom: "1.2rem" }}>
-          {turnKebabIntoTitleCase(tripName)}
-        </h1>
-        <InfiniteScroll
-          pageStart={0}
-          loadMore={loadMoreImages}
-          hasMore={displayedImages.length < images.length}
-          loader={<div className="loader" key="0"></div>}
-        >
-          <PhotoAlbum
-            photos={displayedImages}
-            targetRowHeight={height * 0.6}
-            layout="rows"
-            onClick={openModal}
-            renderPhoto={NextJsImage}
-            defaultContainerWidth={1200}
-            sizes={{
-              size: "calc(100vw - 24px)",
-              sizes: [
-                { viewport: "(max-width: 520px)", size: "calc(80vw - 105px)" },
-                { viewport: "(max-width: 1150px)", size: "calc(80vw - 105px)" },
-              ],
-            }}
-          />
-          <Lightbox
-            open={isModalOpen}
-            close={handleClose}
-            slides={images}
-            index={currentImageIndex}
-            plugins={[Thumbnails, Zoom]}
-            thumbnails={{
-              position: "bottom",
-              width: height < 500 ? 50 : 100,
-              height: height < 500 ? 50 : 100,
-              border: 0,
-              borderRadius: 4,
-              padding: 0,
-              gap: 10,
-              imageFit: "cover",
-              vignette: true,
-            }}
-          />
-        </InfiniteScroll>
+        <h1>{turnKebabIntoTitleCase(tripName)}</h1>
+        <div className="not-prose">
+          <InfiniteScroll
+            pageStart={0}
+            loadMore={loadMoreImages}
+            hasMore={displayedImages.length < images.length}
+            loader={<div className="loader" key="0"></div>}
+          >
+            <PhotoAlbum
+              photos={displayedImages}
+              targetRowHeight={height * 0.6}
+              layout="rows"
+              onClick={openModal}
+              renderPhoto={NextJsImage}
+              defaultContainerWidth={1200}
+              sizes={{
+                size: "calc(100vw - 24px)",
+                sizes: [
+                  {
+                    viewport: "(max-width: 520px)",
+                    size: "calc(80vw - 105px)",
+                  },
+                  {
+                    viewport: "(max-width: 1150px)",
+                    size: "calc(80vw - 105px)",
+                  },
+                ],
+              }}
+            />
+            <Lightbox
+              open={isModalOpen}
+              close={handleClose}
+              slides={images}
+              index={currentImageIndex}
+              plugins={[Thumbnails, Zoom]}
+              thumbnails={{
+                position: "bottom",
+                width: height < 500 ? 50 : 100,
+                height: height < 500 ? 50 : 100,
+                border: 0,
+                borderRadius: 4,
+                padding: 0,
+                gap: 10,
+                imageFit: "cover",
+                vignette: true,
+              }}
+            />
+          </InfiniteScroll>
+        </div>
 
         <ToTopButton />
-      </div>
+      </section>
     </Layout>
   );
 }

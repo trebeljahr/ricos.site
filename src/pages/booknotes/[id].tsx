@@ -52,35 +52,40 @@ const Book = ({ book }: Props) => {
       description={book.excerpt || defaultDescription}
       url={`booknotes/${book.id}`}
     >
-      <article className="prose">
-        <BreadCrumbs path={`booknotes/${book.id}`} />
-        <section className="flex not-prose">
-          <div className="block relative mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
-            <BookCover
-              title={book.title}
-              src={book.bookCover}
-              priority={true}
-            />
-          </div>
-          <header className="book-preview-text">
-            <h1>{book.title}</h1>
-            <p>{book.subtitle}</p>
-            <p> by {book.bookAuthor}</p>
-            <p>
-              <b>Rating: {book.rating}/10</b>
-            </p>
+      <BreadCrumbs path={`booknotes/${book.id}`} />
+      <main>
+        <article>
+          <section className="flex not-prose">
+            <div className="block relative mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
+              <BookCover
+                title={book.title}
+                src={book.bookCover}
+                priority={true}
+              />
+            </div>
+            <header className="book-preview-text">
+              <hgroup>
+                <h1>{book.title}</h1>
+                <p>{book.subtitle}</p>
+                <p> by {book.bookAuthor}</p>
+                <p>
+                  <b>Rating: {book.rating}/10</b>
+                </p>
+                <BuyItOnAmazon link={book.amazonLink} />
+              </hgroup>
+            </header>
+          </section>
+          <section>
+            <BooknotesWithDefault book={book} />
             <BuyItOnAmazon link={book.amazonLink} />
-          </header>
-        </section>
-        <section className="post-body">
-          <BooknotesWithDefault book={book} />
-          <BuyItOnAmazon link={book.amazonLink} />
-        </section>
-        <section>
-          <ToTopButton />
-          <NewsletterForm />
-        </section>
-      </article>
+          </section>
+        </article>
+      </main>
+
+      <footer>
+        <ToTopButton />
+        <NewsletterForm />
+      </footer>
     </Layout>
   );
 };

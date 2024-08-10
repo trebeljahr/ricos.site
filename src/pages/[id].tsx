@@ -1,7 +1,7 @@
 import type { Page as PageType } from "@contentlayer/generated";
 import { allPages } from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
-import PostHeader from "@components/PostHeader";
+import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
@@ -20,16 +20,17 @@ export default function Page({ page }: Props) {
       image={cover.src}
       imageAlt={cover.alt}
     >
-      <article className="prose">
-        <section>
-          <PostHeader subtitle={subtitle} title={title} />
+      <Header subtitle={subtitle} title={title} />
+      <main>
+        <article>
           <Component />
-        </section>
-        <section>
-          <NewsletterForm />
-          <ToTopButton />
-        </section>
-      </article>
+        </article>
+      </main>
+
+      <footer>
+        <NewsletterForm />
+        <ToTopButton />
+      </footer>
     </Layout>
   );
 }

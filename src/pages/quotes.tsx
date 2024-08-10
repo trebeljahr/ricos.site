@@ -3,6 +3,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import quotesJSON from "../content/Notes/pages/quotes.json";
+import Header from "@components/PostHeader";
 
 const quotes: Quote[] = quotesJSON;
 
@@ -28,13 +29,15 @@ export default function Quotes() {
       url="quotes"
       imageAlt="a collection of handwritten notes on paper"
     >
-      <article className="prose">
+      <main>
         <section>
+          <Header
+            title="Quotes"
+            subtitle="Snippets of writing that I want to remember"
+          />
+
           <Search setFilters={setFilters} filters={filters} />
-          <h1>Quotes</h1>
           <p>Amount: {filteredQuotes.length}</p>
-        </section>
-        <section>
           {filteredQuotes.map(({ author, content }, index) => {
             return (
               <div key={author + index} className="quote">
@@ -46,11 +49,12 @@ export default function Quotes() {
             );
           })}
         </section>
-        <section>
-          <NewsletterForm />
-          <ToTopButton />
-        </section>
-      </article>
+      </main>
+
+      <footer>
+        <NewsletterForm />
+        <ToTopButton />
+      </footer>
     </Layout>
   );
 }

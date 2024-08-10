@@ -5,6 +5,7 @@ import { getDataFromS3, photographyFolder } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
 import { ImageProps } from "src/@types";
 import Layout from "@components/Layout";
+import Header from "@components/PostHeader";
 
 const tripNames = [
   "alps",
@@ -42,8 +43,8 @@ export default function Photography({
       url="photography"
       fullScreen={true}
     >
-      <h1 style={{ marginTop: "-2rem", marginBottom: "1rem" }}>Photography</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-20">
+      <Header subtitle="My travels in pictures" title="Photography" />
+      <main className="not-prose grid grid-cols-1 md:grid-cols-2 gap-2 mb-20">
         {trips.map(({ tripName, image }, index) => {
           return (
             <Link
@@ -69,7 +70,7 @@ export default function Photography({
             </Link>
           );
         })}
-      </div>
+      </main>
     </Layout>
   );
 }

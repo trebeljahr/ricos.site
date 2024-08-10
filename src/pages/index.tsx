@@ -3,6 +3,8 @@ import { ExternalLink } from "@components/ExternalLink";
 import { TrySomeOfThese } from "@components/IntroLinks";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
+import { allPosts } from "@contentlayer/generated";
+import generateRssFeed from "src/lib/rss";
 
 const Index = () => {
   const description = `trebeljahr - a website about the things Rico Trebeljahr does, reads and thinks about. The topics can vary widely, 
@@ -16,8 +18,8 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
       url="/"
       imageAlt={"a person reading a book, while floating in space"}
     >
-      <article className="prose">
-        <section>
+      <main>
+        <article>
           <h2>Hi there 👋🏻</h2>
           <p>
             I am Rico. A{" "}
@@ -48,9 +50,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
             </Link>{" "}
             .
           </p>
-        </section>
 
-        <section>
           <h3>Webpages</h3>
           <p>
             You can also find me on other places around the internet, like{" "}
@@ -72,14 +72,21 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
             , or at my{" "}
             <Link href="https://portfolio.trebeljahr.com">Portfolio</Link>.
           </p>
-        </section>
+        </article>
+      </main>
 
-        <section>
-          <NewsletterForm />
-        </section>
-      </article>
+      <footer>
+        <NewsletterForm />
+      </footer>
     </Layout>
   );
 };
 
 export default Index;
+
+export const getStaticProps = async () => {
+  generateRssFeed(allPosts);
+  return {
+    props: {},
+  };
+};

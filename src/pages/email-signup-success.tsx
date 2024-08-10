@@ -46,26 +46,24 @@ export default function EmailSignupSuccess() {
         description="This page is displayed when a user has successfully completed signup for the trebeljahr.com newsletter"
         url="email-signup-success"
       >
-        <article className="prose">
-          <section>
-            <h1>Success</h1>
-            <p>
-              Welcome to my newsletter, emails go out Sunday every two weeks.
-              Cant wait? You can still read all of the older newsletters that
-              you missed so far at{" "}
-              <Link as={`/newsletters`} href="/newsletters">
-                /newsletters
-              </Link>
-              .
-            </p>
-            <p>
-              Or alternatively check out some of my other writing at{" "}
-              <Link as={`/posts`} href="/posts">
-                /posts
-              </Link>
-              .
-            </p>
-          </section>
+        <article>
+          <h1>Success</h1>
+          <p>
+            Welcome to my newsletter, emails go out Sunday every two weeks. Cant
+            wait? You can still read all of the older newsletters that you
+            missed so far at{" "}
+            <Link as={`/newsletters`} href="/newsletters">
+              /newsletters
+            </Link>
+            .
+          </p>
+          <p>
+            Or alternatively check out some of my other writing at{" "}
+            <Link as={`/posts`} href="/posts">
+              /posts
+            </Link>
+            .
+          </p>
         </article>
       </Layout>
     </>

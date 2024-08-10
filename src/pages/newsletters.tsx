@@ -3,6 +3,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { NiceCard } from "@components/NiceCard";
+import Header from "@components/PostHeader";
 
 type NewsletterData = {
   slug: string;
@@ -35,10 +36,12 @@ const Newsletters = ({ newsletterData }: Props) => {
       description="An archive overview page of all the Newsletters I have published in the past at trebeljahr.com."
       url="newsletters"
     >
-      <article className="posts-overview">
-        <h1>Newsletters</h1>
-
+      <main>
         <section>
+          <Header
+            subtitle={"All the Live and Learn Newsletters"}
+            title={"Newsletters"}
+          />
           {newsletterData.map(
             ({ slug, number, title, excerpt, cover }, index) => {
               const priority = index <= 1;
@@ -56,11 +59,12 @@ const Newsletters = ({ newsletterData }: Props) => {
             }
           )}
         </section>
-        <section>
-          <NewsletterForm />
-          <ToTopButton />
-        </section>
-      </article>
+      </main>
+
+      <footer>
+        <NewsletterForm />
+        <ToTopButton />
+      </footer>
     </Layout>
   );
 };

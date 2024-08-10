@@ -25,7 +25,7 @@ function renameFilesInDirectory(directory: string): void {
 
 // Function to check if a string is a valid URL or path
 const isValidBookCover = (bookCover: string): boolean => {
-  return bookCover && bookCover.endsWith(".jpg");
+  return bookCover.endsWith(".jpg");
 };
 
 // Function to update the bookCover field

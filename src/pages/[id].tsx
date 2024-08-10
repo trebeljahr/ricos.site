@@ -34,3 +34,16 @@ export default function Page({ page }: Props) {
     </Layout>
   );
 }
+
+export async function getStaticPaths() {
+  return {
+    paths: allPages.map(({ id }: PageType) => ({ params: { id } })),
+    fallback: false,
+  };
+}
+
+export async function getStaticProps({ params }: { params: { id: string } }) {
+  const page = allPages.find((page: PageType) => page.id === params.id);
+
+  return { props: { page } };
+}

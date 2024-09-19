@@ -118,10 +118,17 @@ async function uploadDir(directoryPath: string) {
   async function getFiles(dir: string): Promise<string | string[]> {
     const dirents = await fs.readdir(dir, { withFileTypes: true });
     const files = await Promise.all(
-      dirents.map((dirent) => {
-        const res = path.resolve(dir, dirent.name);
-        return dirent.isDirectory() ? getFiles(res) : res;
-      })
+      // ignore . files
+      dirents
+        .filter(
+          (dirent) =>
+            dirent.name.startsWith(".") === false &&
+            dirent.name !== "node_modules"
+        )
+        .map((dirent) => {
+          const res = path.resolve(dir, dirent.name);
+          return dirent.isDirectory() ? getFiles(res) : res;
+        })
     );
     return Array.prototype.concat(...files);
   }
@@ -140,11 +147,16 @@ async function uploadDir(directoryPath: string) {
         directoryPath.split("/").slice(0, -1).join("/"),
         filePath
       );
+
       const exists = await doesFileExistInS3(key);
       // console.log(key);
       // console.log(exists ? "File exists" : "File does not exist");
       // progress.update(counter++);
-      if (!exists) return filePath;
+
+      const hasRightEnding = /\.(jpg|jpeg|png|webp)$/i.test(filePath);
+      // const hasRightEnding = /\.(webp)$/i.test(filePath);
+
+      if (!exists && hasRightEnding) return filePath;
     })
   );
 

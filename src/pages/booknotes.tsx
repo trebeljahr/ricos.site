@@ -69,29 +69,31 @@ export default function Books({ booknotes }: Props) {
 export function getStaticProps() {
   return {
     props: {
-      booknotes: allBooknotes.map(
-        ({
-          bookAuthor,
-          title,
-          rating,
-          tags,
-          summary,
-          detailedNotes,
-          excerpt,
-          slug,
-          bookCover,
-        }) => ({
-          bookAuthor,
-          bookCover,
-          slug,
-          title,
-          rating,
-          tags,
-          summary,
-          detailedNotes,
-          excerpt: excerpt || "",
-        })
-      ),
+      booknotes: allBooknotes
+        .filter(({ published }) => published)
+        .map(
+          ({
+            bookAuthor,
+            title,
+            rating,
+            tags,
+            summary,
+            detailedNotes,
+            excerpt,
+            slug,
+            bookCover,
+          }) => ({
+            bookAuthor,
+            bookCover,
+            slug,
+            title,
+            rating,
+            tags,
+            summary,
+            detailedNotes,
+            excerpt: excerpt || "",
+          })
+        ),
     },
   };
 }

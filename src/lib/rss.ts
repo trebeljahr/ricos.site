@@ -3,10 +3,7 @@ import fs from "fs";
 import RSS from "rss";
 
 export default async function generateRssFeed(allPosts: Post[]) {
-  const site_url =
-    process.env.NODE_ENV === "production"
-      ? "https://trebeljahr.com"
-      : "http://localhost:3000";
+  const site_url = "https://trebeljahr.com";
 
   const feedOptions = {
     title: "Rico Trebeljahr | RSS Feed",

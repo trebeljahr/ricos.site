@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "contentlayer build && next build",
+    "postbuild": "next-sitemap",
     "start": "next start",
     "typecheck": "tsc",
     "test": "vitest",
@@ -37,6 +38,7 @@
     "next": "^13.4.12",
     "next-contentlayer": "^0.3.2",
     "next-seo": "^4.26.0",
+    "next-sitemap": "^4.2.3",
     "react": "^18.2.0",
     "react-confetti": "^6.1.0",
     "react-dom": "^18.2.0",

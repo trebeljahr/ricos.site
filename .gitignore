@@ -47,3 +47,6 @@ terraform*
 # ignore weird folders added by vscode extensions
 .clj-kondo
 .lsp
+
+public/robots.txt
+public/sitemap*.xml

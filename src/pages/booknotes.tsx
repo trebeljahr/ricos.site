@@ -6,6 +6,7 @@ import { BookPreview } from "@components/BookPreview";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import Header from "@components/PostHeader";
+import { byOnlyPublished } from "src/lib/utils";
 
 function toFilters({
   bookAuthor,
@@ -70,7 +71,7 @@ export function getStaticProps() {
   return {
     props: {
       booknotes: allBooknotes
-        .filter(({ published }) => published)
+        .filter(byOnlyPublished)
         .map(
           ({
             bookAuthor,

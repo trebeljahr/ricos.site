@@ -4,6 +4,7 @@ import Header from "@components/PostHeader";
 import { OtherPostsPreview } from "@components/PostPreview";
 import { ToTopButton } from "@components/ToTopButton";
 import { Post, allPosts } from "@contentlayer/generated";
+import { byOnlyPublished } from "src/lib/utils";
 
 type Props = {
   posts: Post[];
@@ -42,9 +43,7 @@ export default Posts;
 
 export const getStaticProps = async () => {
   const posts = allPosts
-    .filter(
-      ({ published }) => published || process.env.NODE_ENV === "development"
-    )
+    .filter(byOnlyPublished)
     .map(({ slug, excerpt, cover, title, date }) => ({
       slug,
       excerpt,

@@ -5,6 +5,7 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { allPosts } from "@contentlayer/generated";
 import generateRssFeed from "src/lib/rss";
+import { byOnlyPublished } from "src/lib/utils";
 
 const Index = () => {
   const description = `trebeljahr - a website about the things Rico Trebeljahr does, reads and thinks about. The topics can vary widely, 
@@ -85,7 +86,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
 export default Index;
 
 export const getStaticProps = async () => {
-  generateRssFeed(allPosts);
+  generateRssFeed(allPosts.filter(byOnlyPublished));
   return {
     props: {},
   };

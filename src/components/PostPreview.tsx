@@ -1,4 +1,4 @@
-import { type Note, type Post } from "@contentlayer/generated";
+import { type Travelblog, type Post } from "@contentlayer/generated";
 import { NiceCard } from "./NiceCard";
 
 interface PreviewTextProps {
@@ -7,7 +7,7 @@ interface PreviewTextProps {
 }
 
 type Props = {
-  post: Post | Note;
+  post: Post | Travelblog;
   isHeroPost?: boolean;
 };
 
@@ -17,7 +17,11 @@ export const PostPreview = ({
   return <NiceCard title={title} cover={cover} excerpt={excerpt} slug={slug} />;
 };
 
-export const OtherPostsPreview = ({ posts }: { posts: Post[] | Note[] }) => {
+export const OtherPostsPreview = ({
+  posts,
+}: {
+  posts: Post[] | Travelblog[];
+}) => {
   if (posts.length === 0) {
     return null;
   }

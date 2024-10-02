@@ -52,8 +52,8 @@ const PodcastLinks = defineNestedType(() => ({
   },
 }));
 
-export const Note = defineDocumentType(() => ({
-  name: "Note",
+export const Travelblog = defineDocumentType(() => ({
+  name: "Travelblog",
   contentType: "mdx",
   filePathPattern: "travel/**/*.md",
   computedFields: {
@@ -140,6 +140,7 @@ export const Podcastnote = defineDocumentType(() => ({
     links: { type: "nested", of: PodcastLinks, required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
     rating: { type: "number", required: true },
+    date: { type: "string", required: true },
   },
   computedFields: {
     slug: {
@@ -246,6 +247,7 @@ export const Page = defineDocumentType(() => ({
     subtitle: { type: "string", required: true },
     cover: { type: "nested", of: Image, required: true },
     description: { type: "string", required: true },
+    date: { type: "string", required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
   },
   computedFields: {
@@ -277,7 +279,7 @@ export default makeSource({
     "Diary Entries/**",
     "texts/**",
   ],
-  documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote, Note],
+  documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote, Travelblog],
   mdx: {
     remarkPlugins: [
       remarkFrontmatter,

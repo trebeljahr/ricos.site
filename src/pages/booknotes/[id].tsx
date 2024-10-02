@@ -7,6 +7,7 @@ import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";
 import { Booknote, allBooknotes } from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
+import { byOnlyPublished } from "src/lib/utils";
 
 type Props = {
   book: Booknote;
@@ -99,7 +100,9 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const book = allBooknotes.find(({ id }) => params.id === id);
+  const book = allBooknotes
+    .filter(byOnlyPublished)
+    .find(({ id }) => params.id === id);
 
   return {
     props: {
@@ -109,7 +112,7 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const paths = allBooknotes.map((book) => {
+  const paths = allBooknotes.filter(byOnlyPublished).map((book) => {
     return {
       params: {
         id: book.id,

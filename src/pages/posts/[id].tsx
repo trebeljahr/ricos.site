@@ -8,6 +8,7 @@ import { ReadMore } from "@components/MoreStories";
 import { getRandom } from "src/lib/math/getRandom";
 import { MarkdownRenderers } from "@components/CustomRenderers";
 import { BreadCrumbs } from "@components/BreadCrumbs";
+import { byOnlyPublished } from "src/lib/utils";
 
 type Props = {
   children: React.ReactNode;
@@ -65,7 +66,9 @@ export default function PostComponent({ post, morePosts }: BlogProps) {
 
 export async function getStaticPaths() {
   return {
-    paths: allPosts.map(({ id }) => ({ params: { id } })),
+    paths: allPosts
+      .filter(byOnlyPublished)
+      .map(({ id }) => ({ params: { id } })),
     fallback: false,
   };
 }
@@ -73,8 +76,11 @@ export async function getStaticPaths() {
 type Params = { params: { id: string } };
 
 export async function getStaticProps({ params }: Params) {
-  const post = allPosts.find((post: Post) => post.id === params.id);
+  const post = allPosts
+    .filter(byOnlyPublished)
+    .find((post: Post) => post.id === params.id);
   const otherPosts = allPosts
+    .filter(byOnlyPublished)
     .filter((post) => post.id !== params.id)
     .map(({ title, slug, cover, id, excerpt }) => ({
       title,

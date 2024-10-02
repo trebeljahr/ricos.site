@@ -1,16 +1,14 @@
 import { BreadCrumbs, turnKebabIntoTitleCase } from "@components/BreadCrumbs";
-import { byDates } from "src/lib/dateUtils";
 import Layout from "@components/Layout";
-import { OtherPostsPreview } from "@components/PostPreview";
-import { allNotes, type Note } from "@contentlayer/generated";
-import slugify from "@sindresorhus/slugify";
-import { travelingStoryNames } from "..";
-import { sortAndFilterNotes } from "src/lib/utils";
 import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
+import { allTravelblogs, type Travelblog } from "@contentlayer/generated";
+import slugify from "@sindresorhus/slugify";
+import { sortAndFilterNotes } from "src/lib/utils";
+import { travelingStoryNames } from "..";
 
 type Props = {
-  posts: Note[];
+  posts: Travelblog[];
   tripName: string;
 };
 
@@ -59,7 +57,7 @@ export const getStaticPaths = async () => {
 };
 
 export const getStaticProps = async ({ params }: Params) => {
-  const posts = sortAndFilterNotes(allNotes, params.tripName).map(
+  const posts = sortAndFilterNotes(allTravelblogs, params.tripName).map(
     ({ parentFolder, title, slug, excerpt, date, cover }) => {
       return {
         title,

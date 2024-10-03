@@ -14,6 +14,8 @@ type Props = {
 
 const Traveling = ({ posts, tripName }: Props) => {
   const url = "/travel/" + tripName;
+  console.log(tripName);
+
   return (
     <Layout
       title={`${tripName}`}

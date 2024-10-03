@@ -6,7 +6,7 @@ export const newsletterPath = path.join(
   "src",
   "content",
   "Notes",
-  "Newsletter Stuff",
+  "newsletter-stuff",
   "newsletters"
 );
 

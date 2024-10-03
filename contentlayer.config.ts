@@ -203,7 +203,7 @@ export const Booknote = defineDocumentType(() => ({
 
 export const Newsletter = defineDocumentType(() => ({
   name: "Newsletter",
-  filePathPattern: "Newsletter Stuff/newsletters/*.md",
+  filePathPattern: "newsletter-stuff/newsletters/*.md",
   fields: {
     title: { type: "string", required: true },
     cover: { type: "nested", of: Image, required: true },
@@ -268,16 +268,25 @@ export const Page = defineDocumentType(() => ({
 
 export default makeSource({
   contentDirPath: "src/content/Notes",
+  contentDirInclude: [
+    "pages",
+    "newsletter-stuff/newsletters",
+    "booknotes",
+    "podcastnotes",
+    "travel",
+    "posts",
+  ],
   contentDirExclude: [
-    "pages/quotes.json",
-    "Newsletter Stuff/research/**",
-    "Newsletter Stuff/Newsletter Ad Template.md",
-    "Newsletter Stuff/newsletter-template.md",
-    ".obsidian/workspace.json",
-    "Attachments/**",
-    "Notes/**",
-    "Diary Entries/**",
-    "texts/**",
+    // "**/*.json",
+    // "pages/quotes.json",
+    // "newsletter-stuff/newsletter-research/**",
+    // "newsletter-stuff/Newsletter Ad Template.md",
+    // "newsletter-stuff/newsletter-template.md",
+    // ".obsidian/workspace.json",
+    // "Attachments/**",
+    // "Notes/**",
+    // "diary-entries/**",
+    // "texts/**",
   ],
   documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote, Travelblog],
   mdx: {

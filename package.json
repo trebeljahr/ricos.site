@@ -79,7 +79,6 @@
     "@types/yargs": "^17.0.33",
     "autoprefixer": "^10.4.14",
     "axios": "^1.5.1",
-    "broken-link-checker": "^0.7.8",
     "case": "^1.6.3",
     "cheerio": "^1.0.0-rc.11",
     "cli-progress": "^3.12.0",

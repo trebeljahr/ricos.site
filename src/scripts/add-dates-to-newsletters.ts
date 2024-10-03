@@ -10,7 +10,7 @@ const newslettersDir = path.join(
   "..",
   "content",
   "Notes",
-  "Newsletter Stuff",
+  "newsletter-stuff",
   "newsletters"
 );
 const files = fs

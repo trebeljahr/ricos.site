@@ -15,7 +15,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
 // Command-line argument parsing
-const argv = yargs(hideBin(process.argv))
+const argv = await yargs(hideBin(process.argv))
   .option("dirPath", {
     alias: "d",
     description: "Path to directory for upload",

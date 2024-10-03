@@ -37,8 +37,6 @@ const travelingStoriesMeta: Record<string, MetaInfo> = {
 };
 
 const Notes = ({ posts }: Props) => {
-  const url = "/travel";
-
   return (
     <Layout
       title="Traveling Stories"
@@ -88,6 +86,8 @@ export const travelingStoryNames = [
     return agg;
   }, new Set<string>()),
 ];
+
+console.log(travelingStoryNames);
 
 export const travelingStoryNamesMap = allTravelblogs.reduce((agg, current) => {
   agg[current.parentFolder] = current.path.split("/").at(-2);

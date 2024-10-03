@@ -6,6 +6,7 @@ import {
   LinkRenderer,
   ParagraphRenderer,
 } from "@components/CustomRenderers";
+import React from "react";
 import "../styles/globals.css";
 import "../styles/highlight.css";
 import "../styles/index.css";

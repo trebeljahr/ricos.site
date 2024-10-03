@@ -1,4 +1,5 @@
 import { MagnitudeDemo } from "./collisionDetection/MagnitudeDemo";
+import React from "react";
 
 export const SomeDemo = () => <MagnitudeDemo />;
 import * as THREE from "three";

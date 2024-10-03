@@ -1,5 +1,7 @@
 import Head from "next/head";
 import { nextImageUrl } from "src/lib/mapToImageProps";
+import React from "react";
+
 interface OpenGraphProps {
   title: string;
   description: string;

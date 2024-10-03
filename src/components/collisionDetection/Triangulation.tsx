@@ -12,6 +12,7 @@ import {
 } from "../../lib/math/drawHelpers";
 import { Polygon } from "../../lib/math/Poly";
 import { Vec2 } from "../../lib/math/Vector";
+import React from "react";
 
 export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

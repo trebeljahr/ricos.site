@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { nanoid } from "nanoid";
+import React from "react";
 
 type SearchProps<Filters> = {
   setFilters: Dispatch<SetStateAction<Filters>>;

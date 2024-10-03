@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { parseDate } from "../lib/dateUtils";
+import React from "react";
 
 type Props = {
   date: string;

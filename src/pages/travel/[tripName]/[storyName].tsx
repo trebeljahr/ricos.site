@@ -9,6 +9,7 @@ import slugify from "@sindresorhus/slugify";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { replaceUndefinedWithNull, sortAndFilterNotes } from "src/lib/utils";
 import { NewsletterForm } from "@components/NewsletterSignup";
+import React from "react";
 
 type TravelBlogProps = {
   post: Travelblog;

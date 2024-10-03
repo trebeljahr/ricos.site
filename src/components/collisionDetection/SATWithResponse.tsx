@@ -12,6 +12,7 @@ import {
   visualizeCollision,
 } from "../../lib/math/drawHelpers";
 import { Polygon } from "../../lib/math/Poly";
+import React from "react";
 
 export const SATWithResponse = ({
   drawProjections = true,

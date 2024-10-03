@@ -4,6 +4,7 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";
 import { toTitleCase } from "src/lib/toTitleCase";
+import React from "react";
 
 const mainCategories = [
   "philosophy",

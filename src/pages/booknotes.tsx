@@ -7,6 +7,7 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import Header from "@components/PostHeader";
 import { byOnlyPublished } from "src/lib/utils";
+import React from "react";
 
 function toFilters({
   bookAuthor,

@@ -9,6 +9,7 @@ import {
   instrument,
 } from "../../lib/math/drawHelpers";
 import { Vec2 } from "../../lib/math/Vector";
+import React from "react";
 
 export const ExampleWith2Polygons = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

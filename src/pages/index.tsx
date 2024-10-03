@@ -6,6 +6,7 @@ import { NewsletterForm } from "@components/NewsletterSignup";
 import { allPosts } from "@contentlayer/generated";
 import generateRssFeed from "src/lib/rss";
 import { byOnlyPublished } from "src/lib/utils";
+import React from "react";
 
 const Index = () => {
   const description = `trebeljahr - a website about the things Rico Trebeljahr does, reads and thinks about. The topics can vary widely, 

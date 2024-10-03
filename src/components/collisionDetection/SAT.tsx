@@ -8,6 +8,7 @@ import {
   drawAllProjections,
   drawBackground,
 } from "../../lib/math/drawHelpers";
+import React from "react";
 
 export const SAT = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

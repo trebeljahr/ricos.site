@@ -4,6 +4,7 @@ import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { allTravelblogs } from "@contentlayer/generated";
+import React from "react";
 
 type MetaInfo = {
   cover: { src: string; alt: string };

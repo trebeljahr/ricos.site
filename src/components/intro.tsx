@@ -1,4 +1,6 @@
 import Link from "next/link";
+import React from "react";
+
 interface Props {
   withLink?: boolean;
   withMotto?: boolean;

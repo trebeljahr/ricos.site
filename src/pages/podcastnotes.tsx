@@ -6,6 +6,7 @@ import { Podcastnote, allPodcastnotes } from "@contentlayer/generated";
 import { useEffect } from "react";
 import Link from "next/link";
 import Header from "@components/PostHeader";
+import React from "react";
 
 function toFilters({ title, rating, tags, show }: Podcastnote) {
   return { title, rating, tags, show };

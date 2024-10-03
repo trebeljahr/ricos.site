@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment } from "react";
+import React from "react";
 
 const navigation = ["posts", "newsletters", "photography"];
 const resources = [

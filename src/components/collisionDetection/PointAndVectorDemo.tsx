@@ -11,6 +11,7 @@ import {
   niceGreen,
 } from "../../lib/math/drawHelpers";
 import { Vec2 } from "../../lib/math/Vector";
+import React from "react";
 
 function drawCross(ctx: CanvasRenderingContext2D, c: Vec2) {
   line(ctx, new Vec2(c.x - 10, c.y - 10), new Vec2(c.x + 10, c.y + 10));

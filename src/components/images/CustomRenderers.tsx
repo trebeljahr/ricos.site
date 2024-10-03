@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { RenderPhotoProps } from "react-photo-album";
 import { ImageProps } from "src/@types";
+import React from "react";
 
 export function NextJsImage({
   photo,

@@ -1,5 +1,6 @@
 import { type Travelblog, type Post } from "@contentlayer/generated";
 import { NiceCard } from "./NiceCard";
+import React from "react";
 
 interface PreviewTextProps {
   title: string;

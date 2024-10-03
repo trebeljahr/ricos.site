@@ -6,6 +6,7 @@ import { allTravelblogs, type Travelblog } from "@contentlayer/generated";
 import slugify from "@sindresorhus/slugify";
 import { sortAndFilterNotes } from "src/lib/utils";
 import { travelingStoryNames } from "..";
+import React from "react";
 
 type Props = {
   posts: Travelblog[];

@@ -2,6 +2,7 @@ import { Booknote } from "@contentlayer/generated";
 import Link from "next/link";
 import { BookCover } from "./CoverImage";
 import Image from "next/image";
+import React from "react";
 
 type Props = {
   book: Booknote;

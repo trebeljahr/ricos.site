@@ -13,6 +13,7 @@ import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
+import { byOnlyPublished } from "src/lib/utils";
 type Props = {
   newsletter: NewsletterType;
   nextPost: null | number;
@@ -104,24 +105,18 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const newsletterTitles = allNewsletters.map(({ slugTitle }) => {
-    return {
-      params: {
-        id: slugTitle,
-      },
-    };
-  });
-
-  // const newsletterIds = allNewsletters.map(({ id }) => {
-  //   return {
-  //     params: {
-  //       id,
-  //     },
-  //   };
-  // });
+  const newsletterTitles = allNewsletters
+    .filter(byOnlyPublished)
+    .map(({ slugTitle }) => {
+      return {
+        params: {
+          id: slugTitle,
+        },
+      };
+    });
 
   return {
-    paths: newsletterTitles, //...newsletterIds],
+    paths: newsletterTitles,
     fallback: false,
   };
 }

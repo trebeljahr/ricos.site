@@ -208,6 +208,7 @@ export const Newsletter = defineDocumentType(() => ({
     title: { type: "string", required: true },
     cover: { type: "nested", of: Image, required: true },
     excerpt: { type: "string", required: true },
+    published: { type: "boolean", required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
     date: { type: "string", required: true },
   },

@@ -8,8 +8,6 @@ import { ToTopButton } from "@components/ToTopButton";
 import { Booknote, allBooknotes } from "@contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { byOnlyPublished } from "src/lib/utils";
-import React from "react";
-
 type Props = {
   book: Booknote;
 };

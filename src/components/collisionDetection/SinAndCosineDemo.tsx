@@ -6,8 +6,6 @@ import {
   drawCoordinateSystem,
 } from "../../lib/math/drawHelpers";
 import { Vec2 } from "../../lib/math/Vector";
-import React from "react";
-
 export const SinAndCosineDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();

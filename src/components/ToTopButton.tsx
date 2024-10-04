@@ -1,6 +1,4 @@
 import { ShowAfterScrolling } from "./ShowAfterScrolling";
-import React from "react";
-
 export function ToTopButton() {
   return (
     <ShowAfterScrolling hideAgain={true}>

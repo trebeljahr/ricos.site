@@ -1,7 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
-
 type NiceCardProps = {
   cover: { src: string; alt: string };
   slug: string;

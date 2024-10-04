@@ -5,8 +5,6 @@ import { OtherPostsPreview } from "@components/PostPreview";
 import { ToTopButton } from "@components/ToTopButton";
 import { Post, allPosts } from "@contentlayer/generated";
 import { byOnlyPublished } from "src/lib/utils";
-import React from "react";
-
 type Props = {
   posts: Post[];
 };

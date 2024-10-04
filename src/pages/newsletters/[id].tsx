@@ -13,8 +13,6 @@ import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
-import React from "react";
-
 type Props = {
   newsletter: NewsletterType;
   nextPost: null | number;

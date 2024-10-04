@@ -1,7 +1,6 @@
 import Head from "next/head";
+import { FC } from "react";
 import { nextImageUrl } from "src/lib/mapToImageProps";
-import React from "react";
-
 interface OpenGraphProps {
   title: string;
   description: string;
@@ -12,7 +11,7 @@ interface OpenGraphProps {
   imageAlt?: string;
 }
 
-export const OpenGraph: React.FC<OpenGraphProps> = ({
+export const OpenGraph: FC<OpenGraphProps> = ({
   title,
   description,
   url: providedLinkUrl = "",

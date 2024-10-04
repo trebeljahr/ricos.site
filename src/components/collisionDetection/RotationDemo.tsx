@@ -9,8 +9,6 @@ import {
 } from "../../lib/math/drawHelpers";
 import { Vec2 } from "../../lib/math/Vector";
 import ReactSlider from "react-slider";
-import React from "react";
-
 export const RotationDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();

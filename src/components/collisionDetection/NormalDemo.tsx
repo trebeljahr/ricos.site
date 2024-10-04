@@ -11,8 +11,6 @@ import {
   drawBackground,
 } from "../../lib/math/drawHelpers";
 import { Polygon } from "../../lib/math/Poly";
-import React from "react";
-
 export const NormalDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();

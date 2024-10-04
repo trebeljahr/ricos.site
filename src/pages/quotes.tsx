@@ -4,8 +4,6 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import quotesJSON from "../content/Notes/pages/quotes.json";
 import Header from "@components/PostHeader";
-import React from "react";
-
 const quotes: Quote[] = quotesJSON;
 
 type Quote = {

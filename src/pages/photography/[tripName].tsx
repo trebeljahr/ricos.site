@@ -14,8 +14,6 @@ import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
 import { BreadCrumbs, turnKebabIntoTitleCase } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
-import React from "react";
-
 export default function ImageGallery({
   images,
   tripName,

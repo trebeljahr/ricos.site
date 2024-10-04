@@ -5,8 +5,6 @@ import { NewsletterForm } from "@components/NewsletterSignup";
 import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
 import { byOnlyPublished } from "src/lib/utils";
-import React from "react";
-
 type NewsletterData = {
   slug: string;
   number: number;

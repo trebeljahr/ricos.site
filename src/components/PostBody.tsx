@@ -1,4 +1,3 @@
-import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkToc from "remark-toc";
 import rehypeRaw from "rehype-raw";

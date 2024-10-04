@@ -11,8 +11,6 @@ import {
   line,
 } from "../../lib/math/drawHelpers";
 import { Vec2 } from "../../lib/math/Vector";
-import React from "react";
-
 export const MagnitudeDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();

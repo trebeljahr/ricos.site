@@ -1,6 +1,6 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { SingleMenuItem } from "./SingleMenuItem";
 
 type MenuProps = {

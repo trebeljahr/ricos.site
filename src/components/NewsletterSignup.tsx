@@ -4,8 +4,6 @@ import { ReactElement } from "react-markdown/lib/react-markdown";
 import Modal from "react-modal";
 import { ClipLoader } from "react-spinners";
 import { useScrollVisibility } from "./ShowAfterScrolling";
-import React from "react";
-
 async function fetchData(input: RequestInfo, init?: RequestInit) {
   const response = await fetch(input, init);
   if (!response.ok || response.status !== 200) {

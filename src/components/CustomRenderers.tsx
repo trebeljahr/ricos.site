@@ -9,8 +9,6 @@ import {
   useState,
 } from "react";
 import { ExternalLink } from "./ExternalLink";
-import React from "react";
-
 export const ImageRenderer = ({
   src,
   alt,

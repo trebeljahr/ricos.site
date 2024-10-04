@@ -5,8 +5,6 @@ import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
-import React from "react";
-
 type Props = {
   page: PageType;
 };

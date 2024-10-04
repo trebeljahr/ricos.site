@@ -13,8 +13,6 @@ import {
 } from "../../lib/math/drawHelpers";
 import { makeBrighter } from "../../lib/math/Poly";
 import { Vec2 } from "../../lib/math/Vector";
-import React from "react";
-
 export const UnitVectorDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();

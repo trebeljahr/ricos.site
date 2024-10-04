@@ -1,8 +1,6 @@
 import { Post } from "@contentlayer/generated";
 import Link from "next/link";
 import { PostPreview } from "./PostPreview";
-import React from "react";
-
 type Props = {
   posts: Post[];
 };

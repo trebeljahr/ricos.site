@@ -13,8 +13,6 @@ import {
   niceGreen,
 } from "../../lib/math/drawHelpers";
 import { Vec2 } from "../../lib/math/Vector";
-import React from "react";
-
 export const ProjectArrowDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();

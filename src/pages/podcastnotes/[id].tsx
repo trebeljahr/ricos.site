@@ -9,8 +9,6 @@ import { ExternalLink } from "@components/ExternalLink";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
-import React from "react";
-
 type Props = {
   Podcastnote: PodcastnoteType;
 };

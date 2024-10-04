@@ -9,10 +9,10 @@ import { getRandom } from "src/lib/math/getRandom";
 import { MarkdownRenderers } from "@components/CustomRenderers";
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { byOnlyPublished } from "src/lib/utils";
-import React from "react";
+import { ReactNode } from "react";
 
 type Props = {
-  children: React.ReactNode;
+  children: ReactNode;
   morePosts: Post[];
   post: Post;
 };

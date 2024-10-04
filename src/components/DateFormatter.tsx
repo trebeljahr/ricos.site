@@ -1,6 +1,5 @@
 import { format } from "date-fns";
 import { parseDate } from "../lib/dateUtils";
-
 type Props = {
   date: string;
 };

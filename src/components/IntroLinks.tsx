@@ -1,5 +1,4 @@
 import Link from "next/link";
-
 export const TrySomeOfThese = () => {
   return (
     <p>

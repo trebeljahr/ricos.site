@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { toTitleCase } from "src/lib/toTitleCase";
-
 export function turnKebabIntoTitleCase(kebab: string) {
   return kebab.split("-").map(toTitleCase).join(" ");
 }
@@ -19,7 +18,7 @@ export function BreadCrumbs({
   const pathParts = path.split("/").filter((part) => part !== "");
 
   return (
-    <nav className="flex" aria-label="Breadcrumb">
+    <nav className="flex prose-a:no-underline" aria-label="Breadcrumb">
       <ol
         className="inline-flex items-center space-x-1 md:space-x-3"
         style={{
@@ -27,10 +26,10 @@ export function BreadCrumbs({
           paddingLeft: 0,
         }}
       >
-        <li className="not-prose inline-flex items-center">
+        <li className="inline-flex items-center">
           <Link
             href="/"
-            className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue "
+            className="inline-flex items-center text-sm font-medium  hover:text-blue "
           >
             <svg
               className="w-3 h-3 mr-2.5"
@@ -50,10 +49,10 @@ export function BreadCrumbs({
           );
 
           return (
-            <li key={part} className="not-prose">
+            <li key={part}>
               <div className="flex items-center">
                 <svg
-                  className="w-3 h-3 text-gray-400 mx-1"
+                  className="w-3 h-3 mx-1"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -69,7 +68,7 @@ export function BreadCrumbs({
                 </svg>
                 <Link
                   href={"/" + pathParts.slice(0, index + 1).join("/")}
-                  className="ml-1 text-sm font-medium text-gray-700 hover:text-blue md:ml-2"
+                  className="ml-1 text-sm font-medium  hover:text-blue md:ml-2"
                 >
                   {turnKebabIntoTitleCase(overwrite?.newText || part)}
                 </Link>

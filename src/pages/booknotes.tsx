@@ -6,7 +6,7 @@ import { BookPreview } from "@components/BookPreview";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import Header from "@components/PostHeader";
-
+import { byOnlyPublished } from "src/lib/utils";
 function toFilters({
   bookAuthor,
   title,
@@ -51,7 +51,7 @@ export default function Books({ booknotes }: Props) {
           <Search filters={filters} setFilters={setFilters} />
           <p>Amount: {filteredBooks.length}</p>
         </div>
-        <div className="not-prose">
+        <div className="prose-a:no-underline">
           {filteredBooks.map((book, index) => {
             return <BookPreview key={book.slug} book={book} index={index} />;
           })}
@@ -70,7 +70,7 @@ export function getStaticProps() {
   return {
     props: {
       booknotes: allBooknotes
-        .filter(({ published }) => published)
+        .filter(byOnlyPublished)
         .map(
           ({
             bookAuthor,

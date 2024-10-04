@@ -3,12 +3,16 @@ import crypto from "crypto";
 import { promisify } from "util";
 import { NextApiRequest } from "next";
 import { NextApiResponse } from "next";
-import { Note } from "@contentlayer/generated";
+import { Travelblog } from "@contentlayer/generated";
 import { byDates } from "./dateUtils";
 
 export function getErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
   return String(error);
+}
+
+export function byOnlyPublished({ published }: { published?: boolean }) {
+  return process.env.NODE_ENV === "development" || published;
 }
 
 const scrypt = promisify(crypto.scrypt);
@@ -50,9 +54,9 @@ export function replaceUndefinedWithNull(obj: any): any {
 
   return obj;
 }
-export function sortAndFilterNotes(stories: Note[], tripName?: string) {
+export function sortAndFilterNotes(stories: Travelblog[], tripName?: string) {
   return stories
-    .filter(({ published }) => published)
+    .filter(byOnlyPublished)
     .filter(({ parentFolder }) => !tripName || parentFolder === tripName)
     .sort(byDates);
 }

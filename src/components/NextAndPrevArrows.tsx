@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ShowAfterScrolling } from "@components/ShowAfterScrolling";
 import { useRouter } from "next/router";
-
 export const NextAndPrevArrows = ({
   nextPost,
   prevPost,

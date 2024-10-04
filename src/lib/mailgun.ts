@@ -40,7 +40,7 @@ export async function createNewMailingList() {
     address: newsletterListMail,
     name: "Trebeljahr's Newsletter List",
     description: "Default Newsletter List for newsletter.trebeljahr.com",
-    access_level: "everyone", // readonly (default), members, everyone
+    access_level: "everyone",
   });
 
   console.log(newList);

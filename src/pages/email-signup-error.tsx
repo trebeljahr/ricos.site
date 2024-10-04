@@ -1,5 +1,4 @@
 import Layout from "@components/Layout";
-
 export default function EmailSignupSuccess() {
   return (
     <Layout

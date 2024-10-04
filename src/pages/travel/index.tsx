@@ -1,12 +1,9 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
-import { allNotes, type Note } from "@contentlayer/generated";
-import { toTitleCase } from "src/lib/toTitleCase";
-
+import { allTravelblogs } from "@contentlayer/generated";
 type MetaInfo = {
   cover: { src: string; alt: string };
   excerpt: string;
@@ -39,8 +36,6 @@ const travelingStoriesMeta: Record<string, MetaInfo> = {
 };
 
 const Notes = ({ posts }: Props) => {
-  const url = "/travel";
-
   return (
     <Layout
       title="Traveling Stories"
@@ -85,13 +80,15 @@ const Notes = ({ posts }: Props) => {
 export default Notes;
 
 export const travelingStoryNames = [
-  ...allNotes.reduce((agg, current) => {
+  ...allTravelblogs.reduce((agg, current) => {
     if (current.published) agg.add(current.parentFolder);
     return agg;
   }, new Set<string>()),
 ];
 
-export const travelingStoryNamesMap = allNotes.reduce((agg, current) => {
+console.log(travelingStoryNames);
+
+export const travelingStoryNamesMap = allTravelblogs.reduce((agg, current) => {
   agg[current.parentFolder] = current.path.split("/").at(-2);
   return agg;
 }, {} as Record<string, any>);

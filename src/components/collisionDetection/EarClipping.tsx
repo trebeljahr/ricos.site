@@ -10,7 +10,6 @@ import {
 } from "../../lib/math/drawHelpers";
 import { Polygon, triangulateVisualization } from "../../lib/math/Poly";
 import { Vec2 } from "../../lib/math/Vector";
-
 export const EarClipping = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();

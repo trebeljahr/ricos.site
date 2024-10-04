@@ -6,7 +6,6 @@ import {
   useState,
 } from "react";
 import { nanoid } from "nanoid";
-
 type SearchProps<Filters> = {
   setFilters: Dispatch<SetStateAction<Filters>>;
   filters: Filters;
@@ -210,7 +209,7 @@ export function Search<T extends Filters>({
         .map(([filterKey, { value: filterValue, options }]) => {
           return (
             <Fragment key={filterKey}>
-              <div className="search-filter">
+              <div className="search-filter dark:bg-gray-900 bg-gray-200">
                 <button
                   className="remove-filter-button"
                   onClick={() => toggleFilter(filterKey)}
@@ -317,6 +316,7 @@ const InputField = ({
         name={filterKey}
         onChange={(event) => handleInput(event)}
         value={filterValue}
+        className="dark:bg-gray-800 h-5"
       />
     );
 
@@ -339,16 +339,6 @@ const InputField = ({
         filterValue={filterValue[filterValue.length - 1]?.tag ?? ""}
         growArray={growArray}
       />
-      // <input
-      //   id={filterKey}
-      //   type={"text"}
-      //   name={filterKey}
-      //   onChange={(event) => handleInput(event)}
-      //   onKeyPress={(event) => {
-      //     event.key === "Enter" && growArray(filterKey);
-      //   }}
-      //   value={filterValue[filterValue.length - 1]?.tag ?? ""}
-      // />
     );
 
   return null;
@@ -381,6 +371,7 @@ const AutoCompleteInput = ({
         onKeyPress={(event) => {
           event.key === "Enter" && growArray && growArray(filterKey);
         }}
+        className="dark:bg-gray-800 h-5"
       />
       <datalist id={`auto-complete-${filterKey}`}>
         {options.map((val) => (

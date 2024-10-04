@@ -4,7 +4,6 @@ import { ReactElement } from "react-markdown/lib/react-markdown";
 import Modal from "react-modal";
 import { ClipLoader } from "react-spinners";
 import { useScrollVisibility } from "./ShowAfterScrolling";
-
 async function fetchData(input: RequestInfo, init?: RequestInit) {
   const response = await fetch(input, init);
   if (!response.ok || response.status !== 200) {
@@ -131,14 +130,14 @@ export const NewsletterModalPopup = () => {
           zIndex: 100,
         },
       }}
-      className="fixed overflow-hidden flex items-center justify-center top-0 left-0 bg-white w-screen h-screen"
+      className="fixed overflow-hidden flex items-center justify-center top-0 left-0 bg-white dark:bg-gray-800 w-screen h-screen"
     >
       <div className="w-3/6">
         <NewsletterForm
           heading={<h2>Not subscribed yet?</h2>}
           text={<></>}
           link={
-            <button onClick={closeModal} className="flex text-black mt-10">
+            <button onClick={closeModal} className="flex mt-10">
               <span>Continue Reading</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"

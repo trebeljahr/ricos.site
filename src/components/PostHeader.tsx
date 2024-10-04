@@ -1,5 +1,4 @@
 import DateFormatter from "./DateFormatter";
-
 type Props = {
   title: string;
   date?: string;

@@ -30,9 +30,9 @@ async function customRedirects() {
       permanent: true,
     },
     {
-      source: "/feed.xml", // The URL you want to redirect
-      destination: "/rss.xml", // The target URL
-      permanent: true, // Indicates a 301 permanent redirect
+      source: "/feed.xml",
+      destination: "/rss.xml",
+      permanent: true,
     },
     {
       source: "/diatoms",

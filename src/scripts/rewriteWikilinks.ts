@@ -36,7 +36,6 @@ const wordsToCapitalize = [
 
 const directoryPath = path.join(process.cwd(), "src/content/Notes/travel");
 
-// Regular expression to match Obsidian style WikiLinks
 const wikiLinkRegex = /!\[\[([^\]]+)\]\]/g;
 
 function processDirectory(directoryPath: string) {
@@ -51,7 +50,6 @@ function processDirectory(directoryPath: string) {
     } else if (path.extname(fileName) === ".md") {
       let fileContents = fs.readFileSync(filePath, "utf8");
 
-      // Replace Obsidian style WikiLinks with Markdown links
       fileContents = fileContents.replace(wikiLinkRegex, (_, p1) => {
         const linkText = capitalizeWords(
           wordsToCapitalize,
@@ -64,7 +62,6 @@ function processDirectory(directoryPath: string) {
         return replacementText;
       });
 
-      // Write the updated contents back to the file
       fs.writeFileSync(filePath, fileContents);
     }
   });

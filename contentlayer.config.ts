@@ -52,8 +52,8 @@ const PodcastLinks = defineNestedType(() => ({
   },
 }));
 
-export const Note = defineDocumentType(() => ({
-  name: "Note",
+export const Travelblog = defineDocumentType(() => ({
+  name: "Travelblog",
   contentType: "mdx",
   filePathPattern: "travel/**/*.md",
   computedFields: {
@@ -140,6 +140,7 @@ export const Podcastnote = defineDocumentType(() => ({
     links: { type: "nested", of: PodcastLinks, required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
     rating: { type: "number", required: true },
+    date: { type: "string", required: true },
   },
   computedFields: {
     slug: {
@@ -202,11 +203,12 @@ export const Booknote = defineDocumentType(() => ({
 
 export const Newsletter = defineDocumentType(() => ({
   name: "Newsletter",
-  filePathPattern: "Newsletter Stuff/newsletters/*.md",
+  filePathPattern: "newsletter-stuff/newsletters/*.md",
   fields: {
     title: { type: "string", required: true },
     cover: { type: "nested", of: Image, required: true },
     excerpt: { type: "string", required: true },
+    published: { type: "boolean", required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
     date: { type: "string", required: true },
   },
@@ -246,6 +248,7 @@ export const Page = defineDocumentType(() => ({
     subtitle: { type: "string", required: true },
     cover: { type: "nested", of: Image, required: true },
     description: { type: "string", required: true },
+    date: { type: "string", required: true },
     tags: { type: "list", of: { type: "string" }, required: true },
   },
   computedFields: {
@@ -266,18 +269,16 @@ export const Page = defineDocumentType(() => ({
 
 export default makeSource({
   contentDirPath: "src/content/Notes",
-  contentDirExclude: [
-    "pages/quotes.json",
-    "Newsletter Stuff/research/**",
-    "Newsletter Stuff/Newsletter Ad Template.md",
-    "Newsletter Stuff/newsletter-template.md",
-    ".obsidian/workspace.json",
-    "Attachments/**",
-    "Notes/**",
-    "Diary Entries/**",
-    "texts/**",
+  contentDirInclude: [
+    "pages",
+    "newsletter-stuff/newsletters",
+    "booknotes",
+    "podcastnotes",
+    "travel",
+    "posts",
   ],
-  documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote, Note],
+  contentDirExclude: ["**/*.json"],
+  documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote, Travelblog],
   mdx: {
     remarkPlugins: [
       remarkFrontmatter,

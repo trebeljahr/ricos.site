@@ -1,5 +1,4 @@
 import Image from "next/image";
-
 type Props = {
   title: string;
   src: string;
@@ -17,7 +16,6 @@ export const PostCoverImage = ({
     <Image
       src={src}
       alt={alt || "Cover for post: " + title}
-      // placeholder="blur"
       priority={priority}
       fill
       sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${

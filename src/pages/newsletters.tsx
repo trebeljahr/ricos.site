@@ -4,6 +4,7 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
+import { byOnlyPublished } from "src/lib/utils";
 
 type NewsletterData = {
   slug: string;
@@ -72,8 +73,9 @@ const Newsletters = ({ newsletterData }: Props) => {
 export default Newsletters;
 
 export const getStaticProps = async () => {
-  const newsletterData = allNewsletters.map(
-    ({ slug, number, title, excerpt = "", cover, id }) => ({
+  const newsletterData = allNewsletters
+    .filter(byOnlyPublished)
+    .map(({ slug, number, title, excerpt = "", cover, id }) => ({
       slug,
       number,
       title,
@@ -82,8 +84,7 @@ export const getStaticProps = async () => {
       excerpt: excerpt
         .replace("Welcome to this edition of Live and Learn. ", "")
         .replace("Enjoy.", ""),
-    })
-  );
+    }));
 
   return {
     props: { newsletterData: sortByIds(newsletterData) },

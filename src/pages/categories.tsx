@@ -3,7 +3,7 @@ import Link from "next/link";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";
-
+import { toTitleCase } from "src/lib/toTitleCase";
 const mainCategories = [
   "philosophy",
   "psychology",
@@ -24,7 +24,7 @@ const mainCategories = [
 type LinksOnTag<T> = { tag: string; links: T[] };
 
 type TaggedDocumentData = LinksOnTag<
-  Pick<DocumentTypes, "title" | "slug" | "type" | "readingTime">
+  Pick<DocumentTypes, "title" | "slug" | "type" | "readingTime" | "date">
 >;
 
 type Props = {
@@ -51,23 +51,35 @@ const RenderTags = ({ tags }: { tags: TaggedDocumentData[] }) => {
   );
 };
 
+const byReadingTime = (
+  a: { readingTime: string },
+  b: { readingTime: string }
+) => {
+  const aTime = parseInt(a.readingTime.split(" ")[0]);
+  const bTime = parseInt(b.readingTime.split(" ")[0]);
+
+  return aTime - bTime;
+};
+
 const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
   return (
     <>
       {tags.map(({ tag, links }) => {
         return (
           <div key={tag}>
-            <h2 id={tag}>{tag}</h2>
+            <h2 id={tag}>{toTitleCase(tag)}</h2>
             <ul>
-              {links.map(({ slug, title, type, readingTime }) => {
-                return (
-                  <li key={slug}>
-                    <Link href={slug || ""} as={slug}>
-                      {title} ({type}) {readingTime}
-                    </Link>
-                  </li>
-                );
-              })}
+              {links
+                .sort(byReadingTime)
+                .map(({ slug, title, type, readingTime, date }) => {
+                  return (
+                    <li key={slug}>
+                      <Link href={slug || ""} as={slug}>
+                        {title} ({type}) – {readingTime}
+                      </Link>
+                    </li>
+                  );
+                })}
             </ul>
           </div>
         );
@@ -76,7 +88,7 @@ const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
   );
 };
 
-const ShowTags = ({ tags, categories }: Props) => {
+const ShowTags = ({ categories }: Props) => {
   return (
     <Layout
       title="Experiment"
@@ -87,8 +99,6 @@ const ShowTags = ({ tags, categories }: Props) => {
         <section>
           <h2>Categories:</h2>
           <RenderTags tags={categories} />
-          <h2>Tags:</h2>
-          <RenderTags tags={tags} />
           <h2>Links:</h2>
           <RenderAnchors tags={categories} />
         </section>
@@ -105,24 +115,6 @@ const ShowTags = ({ tags, categories }: Props) => {
 export default ShowTags;
 
 export async function getStaticProps() {
-  const allTags = allDocuments
-    .filter((document) => {
-      return document.type !== "Note";
-    })
-    .flatMap(({ tags }) => tags);
-  const dedupedTags = [...new Set(allTags)];
-
-  const tags = dedupedTags.map((tag) => {
-    return {
-      tag,
-      links: allDocuments
-        .filter(({ tags }) => {
-          return tags?.includes(tag || "");
-        })
-        .map(({ slug, type, title }) => ({ slug, type, title })),
-    };
-  });
-
   const categories = mainCategories.map((tag) => {
     return {
       tag,
@@ -130,18 +122,18 @@ export async function getStaticProps() {
         .filter(({ tags }) => {
           return tags?.includes(tag);
         })
-        .map(({ slug, type, title, readingTime }) => ({
+        .map(({ slug, type, title, readingTime, date }) => ({
           slug,
           type,
           title,
           readingTime,
+          date,
         })),
     };
   });
 
   return {
     props: {
-      tags,
       categories,
     },
   };

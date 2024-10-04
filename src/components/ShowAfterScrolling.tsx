@@ -1,5 +1,4 @@
 import { ReactElement, useEffect, useState } from "react";
-
 export function useScrollVisibility({
   hideAgain,
   howFarDown,

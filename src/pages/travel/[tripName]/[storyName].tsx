@@ -4,23 +4,20 @@ import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
-import {
-  allNotes as allTravelStories,
-  type Note,
-} from "@contentlayer/generated";
+import { allTravelblogs, type Travelblog } from "@contentlayer/generated";
 import slugify from "@sindresorhus/slugify";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { replaceUndefinedWithNull, sortAndFilterNotes } from "src/lib/utils";
 import { NewsletterForm } from "@components/NewsletterSignup";
-
+import { ReactNode } from "react";
 type TravelBlogProps = {
-  post: Note;
+  post: Travelblog;
   nextSlug: string | null;
   previousSlug: string | null;
 };
 
 interface LayoutProps extends TravelBlogProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export const TravelBlogLayout = ({
@@ -76,7 +73,7 @@ export default function PostComponent({
 type Params = { params: { storyName: string; tripName: string } };
 
 export async function getStaticPaths() {
-  const paths: Params[] = sortAndFilterNotes(allTravelStories).map(
+  const paths: Params[] = sortAndFilterNotes(allTravelblogs).map(
     ({ slug, parentFolder }) => ({
       params: {
         tripName: slugify(parentFolder),
@@ -94,7 +91,7 @@ export async function getStaticPaths() {
 export async function getStaticProps({
   params: { storyName, tripName },
 }: Params) {
-  const stories = sortAndFilterNotes(allTravelStories, tripName);
+  const stories = sortAndFilterNotes(allTravelblogs, tripName);
   const currentIndex = stories.findIndex((post) => post.slug === storyName);
 
   const travelingStory = stories[currentIndex];

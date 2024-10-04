@@ -1,5 +1,4 @@
 import Head from "next/head";
-
 interface Props {
   description: string;
   title: string;
@@ -7,10 +6,13 @@ interface Props {
 
 const Meta = ({ description, title }: Props) => {
   return (
-    <Head>
-      <title>{`${title} | trebeljahr.com`}</title>
-      <meta name="description" content={description} />
-    </Head>
+    <>
+      <Head>
+        <title>{`${title} | trebeljahr.com`}</title>
+
+        <meta name="description" content={description} />
+      </Head>
+    </>
   );
 };
 

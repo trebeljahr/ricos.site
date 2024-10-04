@@ -8,7 +8,6 @@ import {
   drawAllProjections,
   drawBackground,
 } from "../../lib/math/drawHelpers";
-
 export const SAT = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();

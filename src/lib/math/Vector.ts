@@ -27,7 +27,6 @@ export class Vec2 {
   }
 
   mag2() {
-    // this.dot(this) is equal to => this.x² + this.y²
     return this.dot(this);
   }
 
@@ -40,8 +39,6 @@ export class Vec2 {
   }
 
   projectOnLine(A: Vec2, B: Vec2) {
-    // https://gamedev.stackexchange.com/a/72529/163341
-    // A + (dot(AP, AB) / dot(AB, AB)) * AB;
     const AP = this.sub(A);
     const AB = B.sub(A);
     return A.add(AB.multScalar(AP.dot(AB) / AB.mag2()));

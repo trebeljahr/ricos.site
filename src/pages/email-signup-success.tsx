@@ -2,7 +2,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Confetti from "react-confetti";
 import Layout from "@components/Layout";
-
 interface Size {
   width: number | undefined;
   height: number | undefined;

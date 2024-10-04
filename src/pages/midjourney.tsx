@@ -10,7 +10,6 @@ import { mapToImageProps } from "src/lib/mapToImageProps";
 import { ImageProps } from "src/@types";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/styles.css";
-
 export default function MidjourneyGallery({
   images,
 }: {

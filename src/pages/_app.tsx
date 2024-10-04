@@ -1,11 +1,11 @@
-import { MDXProvider } from "@mdx-js/react";
-import { AppProps } from "next/app";
 import {
   HeadingRenderer,
   ImageRenderer,
   LinkRenderer,
   ParagraphRenderer,
 } from "@components/CustomRenderers";
+import { MDXProvider } from "@mdx-js/react";
+import { AppProps } from "next/app";
 import "../styles/globals.css";
 import "../styles/highlight.css";
 import "../styles/index.css";
@@ -13,6 +13,7 @@ import "../styles/navbar.css";
 import "../styles/newsletter.css";
 import "../styles/post-preview.css";
 
+import { ThemeProvider } from "next-themes";
 import Head from "next/head";
 import Script from "next/script";
 
@@ -77,7 +78,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           h6: HeadingRenderer(6),
         }}
       >
-        <Component {...pageProps} />
+        <ThemeProvider attribute="class">
+          <Component {...pageProps} />
+        </ThemeProvider>
       </MDXProvider>
     </>
   );

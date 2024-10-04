@@ -18,12 +18,12 @@ export function BookPreview({ book, index }: Props) {
     <Link
       as={slug}
       href={slug}
-      className="w-full overflow-hidden md:grid mb-10 card-hover"
+      className="no-underline prose-headings:text-inherit w-full overflow-hidden md:grid mb-10 card-hover prose-p:text-zinc-800 dark:prose-p:text-slate-300"
       style={{
         gridTemplateColumns: "15rem auto",
       }}
     >
-      <div className="h-64 md:h-full mb-4 relative">
+      <div className="h-64 md:h-full mb-4 relative not-prose">
         <Image
           src={bookCover}
           alt={title}
@@ -39,15 +39,15 @@ export function BookPreview({ book, index }: Props) {
       </div>
 
       <div className="flex flex-col p-5">
-        <h2 className="pt-0 mb-0 pb-0">
+        <h2 className="py-0 my-0">
           <b>{title}</b>
         </h2>
         <p className="mt-0 pt-0">by {bookAuthor}</p>
-        <p className="text-grey">
+        <p className="my-0 py-0">
           <b>Rated: {rating}/10</b>
         </p>
 
-        <div className="pt-2 text-grey">
+        <div>
           {excerpt ? (
             <>
               <p className="mb-2">{excerpt}</p>

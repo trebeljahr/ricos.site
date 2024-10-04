@@ -9,7 +9,6 @@ import {
   instrument,
 } from "../../lib/math/drawHelpers";
 import { Vec2 } from "../../lib/math/Vector";
-
 export const ExampleWith2Polygons = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();

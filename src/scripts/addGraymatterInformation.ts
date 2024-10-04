@@ -27,19 +27,6 @@ function parseBookTitle(fileName: string) {
   return { title, bookAuthor };
 }
 
-// const fields = {
-//   title: "Enter title",
-//   date: "01.01.1970",
-//   tags: [],
-//   cover: {
-//     src: "Enter Cover image source",
-//     alt: "Enter Cover image alt text",
-//     width: 500,
-//     height: 500,
-//   },
-//   published: false,
-// };
-
 const mdFiles = glob.sync(path.join(directory, "**/*.md"));
 console.log(mdFiles);
 
@@ -69,9 +56,6 @@ function getCreationDate(filePath: string): string {
 
   const command = `git log --diff-filter=A --follow --format=%aD -1 -- "${filename}"`;
   const result = execSync(command, { cwd: directory }).toString().trim();
-  // console.log(filename);
-  // console.log(result);
-  // console.log("-----");
   return result;
 }
 
@@ -102,7 +86,6 @@ mdFiles.forEach((filePath: string) => {
     ...frontmatter,
   } as { [key: string]: any };
 
-  // delete newFrontmatter["excerpt"];
   delete newFrontmatter["draft"];
 
   const newContent = matter.stringify(content, newFrontmatter);

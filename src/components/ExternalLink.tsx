@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-
 export const ExternalLink = ({
   href,
   children,

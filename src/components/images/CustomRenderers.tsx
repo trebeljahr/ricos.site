@@ -13,6 +13,7 @@ export function NextJsImage({
     >
       <Image
         fill
+        id={photo.name}
         src={photo}
         priority={photo.index < 3}
         placeholder={"blurDataURL" in photo ? "blur" : undefined}

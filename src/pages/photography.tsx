@@ -6,7 +6,6 @@ import { mapToImageProps } from "src/lib/mapToImageProps";
 import { ImageProps } from "src/@types";
 import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
-
 const tripNames = [
   "alps",
   "crete",

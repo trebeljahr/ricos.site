@@ -10,7 +10,6 @@ import {
 } from "../../lib/math/drawHelpers";
 import { Polygon } from "../../lib/math/Poly";
 import { Vec2 } from "../../lib/math/Vector";
-
 export const AxisByAxis = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();

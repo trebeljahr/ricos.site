@@ -11,31 +11,37 @@ import {
   uploadSingleFileToS3,
   uploadWithMetadata,
 } from "./s3-scripts";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
+
+const argv = await yargs(hideBin(process.argv))
+  .option("dirPath", {
+    alias: "d",
+    description: "Path to directory for upload",
+    type: "string",
+  })
+  .help()
+  .alias("help", "h").argv;
 
 async function main() {
-  const { dirPath } = await inquirer.prompt<{
-    dirPath: string;
-  }>([
-    {
-      type: "input",
-      message: "Please provide a path to directory for upload:",
-      name: "dirPath",
-    },
-  ]);
+  let dirPath = argv.dirPath;
+
+  if (!dirPath) {
+    const response = await inquirer.prompt<{ dirPath: string }>([
+      {
+        type: "input",
+        message: "Please provide a path to directory for upload:",
+        name: "dirPath",
+      },
+    ]);
+    dirPath = response.dirPath;
+  }
 
   if (!lstatSync(dirPath).isDirectory()) {
     throw new Error("Please input a valid directory path");
   }
 
-  const folders = await listDirectories(dirPath);
-
-  // if (folders.length === 0) {
   await uploadDir(dirPath);
-  // } else {
-  //   for (const folder of folders) {
-  //     await uploadAllImagesFromDirectoryToS3(path.join(dirPath, folder));
-  //   }
-  // }
 }
 
 main();
@@ -118,7 +124,6 @@ async function uploadDir(directoryPath: string) {
   async function getFiles(dir: string): Promise<string | string[]> {
     const dirents = await fs.readdir(dir, { withFileTypes: true });
     const files = await Promise.all(
-      // ignore . files
       dirents
         .filter(
           (dirent) =>
@@ -149,12 +154,7 @@ async function uploadDir(directoryPath: string) {
       );
 
       const exists = await doesFileExistInS3(key);
-      // console.log(key);
-      // console.log(exists ? "File exists" : "File does not exist");
-      // progress.update(counter++);
-
       const hasRightEnding = /\.(jpg|jpeg|png|webp)$/i.test(filePath);
-      // const hasRightEnding = /\.(webp)$/i.test(filePath);
 
       if (!exists && hasRightEnding) return filePath;
     })

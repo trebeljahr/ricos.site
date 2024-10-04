@@ -1,5 +1,4 @@
 import { ShowAfterScrolling } from "./ShowAfterScrolling";
-
 export function ToTopButton() {
   return (
     <ShowAfterScrolling hideAgain={true}>

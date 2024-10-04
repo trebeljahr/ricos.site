@@ -1,5 +1,4 @@
 import { HeadObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
-import { config } from "dotenv";
 import { readFileSync } from "fs";
 import mime from "mime";
 import path from "path";

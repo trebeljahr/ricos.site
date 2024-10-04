@@ -23,12 +23,10 @@ function renameFilesInDirectory(directory: string): void {
   });
 }
 
-// Function to check if a string is a valid URL or path
 const isValidBookCover = (bookCover: string): boolean => {
   return bookCover.endsWith(".jpg");
 };
 
-// Function to update the bookCover field
 const updateBookCoverField = (filePath: string, fileName: string) => {
   const fileContent = fs.readFileSync(filePath, "utf8");
   const parsedContent = matter(fileContent);
@@ -45,9 +43,7 @@ const updateBookCoverField = (filePath: string, fileName: string) => {
 };
 
 const directoryPath = "src/content/Notes/booknotes";
-// renameFilesInDirectory(directoryPath);
 
-// Read all files in the directory
 fs.readdir(directoryPath, (err, files) => {
   if (err) {
     return console.error("Unable to scan directory: " + err);

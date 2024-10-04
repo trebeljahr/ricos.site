@@ -329,7 +329,6 @@ export function instrument(
   };
 
   const updateMousePos = (event: PointerEvent) => {
-    // event.preventDefault();
     ctx.canvas.style.touchAction = "none";
 
     const mousePos = new Vec2(event.offsetX, event.offsetY);
@@ -379,12 +378,10 @@ export function instrument(
   };
 
   const handleMouseDown = (event: PointerEvent) => {
-    // event.preventDefault();
     selectPolygon(event);
   };
 
   const handleMouseUp = (event: PointerEvent) => {
-    // event.preventDefault();
     reset();
   };
 
@@ -663,10 +660,6 @@ export function drawBackground(ctx: CanvasRenderingContext2D) {
 
   ctx.fillStyle = "rgb(240, 240, 240)";
   ctx.fillRect(0, 0, w, h);
-
-  // ctx.strokeStyle = "red";
-  // line(ctx, 0, h / 2, w, h / 2);
-  // line(ctx, w / 2, 0, w / 2, h);
 }
 
 export function colorEdge(ctx: CanvasRenderingContext2D, p1: Vec2, p2: Vec2) {

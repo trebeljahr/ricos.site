@@ -16,6 +16,14 @@
   font-size: 16px;
 }
 
+:root {
+  font-family: Inter, sans-serif;
+  font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
+}
+@supports (font-variation-settings: normal) {
+  :root { font-family: InterVariable, sans-serif; }
+}
+
 
 * {
   box-sizing: border-box;
@@ -317,7 +325,6 @@ hr {
 
 body {
   font-weight: normal;
-  font-family: "Inter", "Noto Sans", Helvetica, sans-serif;
 }
 
 .slider-annotation {
@@ -358,17 +365,6 @@ canvas {
 
 .slider-thumb:hover {
   box-shadow: 0 0 0 8px var(--ultra-light-blue);
-}
-
-h5,
-h4,
-h3,
-h2,
-h1 {
-  font-family: "Spartan", sans-serif;
-  font-weight: bold;
-  padding-top: 0.8rem;
-  padding-bottom: 0.8rem;
 }
 
 pre,

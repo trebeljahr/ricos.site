@@ -37,7 +37,7 @@ export function TailwindNavbar() {
         {(isMobile: boolean) => (
           <Disclosure as="nav">
             {({ open, close }) => (
-              <div className="mx-auto max-w-7xl px-2 md:px-6 lg:px-8 flex items-center justify-between">
+              <div className="mx-auto max-w-7xl px-2 lg:px-8 flex items-center justify-between">
                 <Link
                   href="/"
                   className="flex flex-shrink-0 items-center not-prose"
@@ -49,7 +49,7 @@ export function TailwindNavbar() {
                     width={32}
                     height={32}
                   />
-                  <span className="ml-1">trebeljahr</span>
+                  <span className="ml-1 font-semibold">trebeljahr</span>
                 </Link>
                 {isMobile ? (
                   <MobileVersion {...{ open, close }} />
@@ -76,7 +76,7 @@ function MobileVersion({ open, close }: NavbarProps) {
       <div className="absolute mr-2 inset-y-0 right-0 flex items-center lg:hidden">
         <DarkModeHandler />
 
-        <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+        <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
           <span className="sr-only">Open main menu</span>
           {open ? (
             <XMarkIcon className="block h-6 w-6" aria-hidden="true" />

@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "contentlayer build && next build",
-    "postbuild": "next-sitemap",
+    "postbuild": "next-sitemap && tsx src/scripts/rss.ts",
     "start": "next start",
     "typecheck": "tsc",
     "test": "vitest",

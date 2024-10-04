@@ -1,8 +1,13 @@
-import { allNewsletters, Newsletter, Post } from "@contentlayer/generated";
+import {
+  allNewsletters,
+  Newsletter,
+  Post,
+  allPosts,
+} from "@contentlayer/generated";
 import fs from "fs";
 import RSS from "rss";
 
-export default async function generateRssFeed(allPosts: Post[]) {
+async function generateRssFeed() {
   const site_url = "https://trebeljahr.com";
 
   const feedOptions = {
@@ -33,3 +38,5 @@ export default async function generateRssFeed(allPosts: Post[]) {
   // Write the RSS feed to a file as XML.
   fs.writeFileSync("./public/rss.xml", feed.xml({ indent: true }));
 }
+
+generateRssFeed();

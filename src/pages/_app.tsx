@@ -16,10 +16,11 @@ import "../styles/post-preview.css";
 
 import Head from "next/head";
 import Script from "next/script";
+import { ThemeProvider } from "next-themes";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <>
+    <ThemeProvider attribute="class">
       <Script
         async
         src="https://www.googletagmanager.com/gtag/js?id=G-094TFMBB0J"
@@ -80,6 +81,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       >
         <Component {...pageProps} />
       </MDXProvider>
-    </>
+    </ThemeProvider>
   );
 }

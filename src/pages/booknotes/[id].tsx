@@ -55,8 +55,8 @@ const Book = ({ book }: Props) => {
       <BreadCrumbs path={`booknotes/${book.id}`} />
       <main>
         <article>
-          <section className="flex not-prose">
-            <div className="block relative mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
+          <section className="flex">
+            <div className="not-prose block relative mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
               <BookCover
                 title={book.title}
                 src={book.bookCover}
@@ -65,8 +65,8 @@ const Book = ({ book }: Props) => {
             </div>
             <header className="book-preview-text">
               <hgroup>
-                <h1>{book.title}</h1>
-                <p>{book.subtitle}</p>
+                <h1 className="my-0">{book.title}</h1>
+                <p className="my-0">{book.subtitle}</p>
                 <p> by {book.bookAuthor}</p>
                 <p>
                   <b>Rating: {book.rating}/10</b>

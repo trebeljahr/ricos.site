@@ -401,23 +401,10 @@ code {
   width: 100%;
 }
 
-.book-preview-text > h1 {
-  padding-top: 0;
-}
-
-
-.book-preview-text > h2 {
-  padding-top: 0.2rem;
-}
-
-.book-preview-text > h3 {
-  padding-top: 0.2rem;
-}
 
 .book-preview-text {
   width: 95%;
   height: fit-content;
-  color: black;
 }
 
 

@@ -26,7 +26,7 @@ const Layout = ({
   const properTitle = toTitleCase(title);
 
   return (
-    <div className="block relative overflow-auto h-screen">
+    <div className="block relative">
       <Meta description={description} title={properTitle} />
       <OpenGraph
         title={properTitle}

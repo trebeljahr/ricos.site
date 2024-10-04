@@ -42,10 +42,10 @@ export function CollapsibleMenuMobile({ links, text, closeNav }: MenuProps) {
     <Menu as="div" className="relative w-fit">
       <Disclosure.Button as="div" className="flex flex-col">
         <Menu.Button className="self-end hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md px-3 py-2 text-sm font-medium flex justify-end">
-          <p className="flex items-center justify-center">
+          <div className="flex items-center justify-center">
             <p>{text}</p>
             <ChevronDownIcon className="h-3 w-3 ml-1" />
-          </p>
+          </div>
         </Menu.Button>
         <Transition
           as={Fragment}

@@ -20,7 +20,7 @@ import { ThemeProvider } from "next-themes";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ThemeProvider attribute="class">
+    <>
       <Script
         async
         src="https://www.googletagmanager.com/gtag/js?id=G-094TFMBB0J"
@@ -66,21 +66,23 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <meta name="theme-color" content="#000" />
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
       </Head>
-      <MDXProvider
-        components={{
-          img: ImageRenderer,
-          a: LinkRenderer,
-          p: ParagraphRenderer,
-          h1: HeadingRenderer(1),
-          h2: HeadingRenderer(2),
-          h3: HeadingRenderer(3),
-          h4: HeadingRenderer(4),
-          h5: HeadingRenderer(5),
-          h6: HeadingRenderer(6),
-        }}
-      >
-        <Component {...pageProps} />
-      </MDXProvider>
-    </ThemeProvider>
+      <ThemeProvider attribute="class">
+        <MDXProvider
+          components={{
+            img: ImageRenderer,
+            a: LinkRenderer,
+            p: ParagraphRenderer,
+            h1: HeadingRenderer(1),
+            h2: HeadingRenderer(2),
+            h3: HeadingRenderer(3),
+            h4: HeadingRenderer(4),
+            h5: HeadingRenderer(5),
+            h6: HeadingRenderer(6),
+          }}
+        >
+          <Component {...pageProps} />
+        </MDXProvider>
+      </ThemeProvider>
+    </>
   );
 }

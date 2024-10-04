@@ -139,7 +139,7 @@ export const NewsletterModalPopup = () => {
           heading={<h2>Not subscribed yet?</h2>}
           text={<></>}
           link={
-            <button onClick={closeModal} className="flex text-black mt-10">
+            <button onClick={closeModal} className="flex mt-10">
               <span>Continue Reading</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"

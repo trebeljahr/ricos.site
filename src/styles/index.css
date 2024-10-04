@@ -28,18 +28,6 @@ nav span, nav p {
   font-family: Inter, sans-serif;
 }
 
-
-
-
-article p, article span, section p, section span {
-  font-family: "Bricolage Grotesque", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 200;
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
-}
-
 * {
   box-sizing: border-box;
   padding: 0;
@@ -99,16 +87,10 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  overflow-x: hidden;
 }
 
 #top-navigation {
   padding: 0;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
 }
 
 #to-top-button {
@@ -138,7 +120,6 @@ a {
 }
 
 .add-filter-button {
-  background: var(--light-blue);
   border-radius: 1em;
   padding: 0.2rem 0.6rem;
   font-size: 1rem;
@@ -156,7 +137,6 @@ a {
 
 .tag-filter.clickable {
   color: black;
-  background-color: var(--light-blue);
 }
 
 .tag-filter.clickable:hover {
@@ -191,7 +171,6 @@ a {
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  background: var(--light-blue);
   border-radius: 1em;
   padding: 0.2rem 0.6rem;
   font-size: 1rem;
@@ -236,7 +215,6 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--blue);
   padding: 0.2rem 0.6rem;
   margin-top: 0.2rem;
   margin-right: 0.2rem;
@@ -261,31 +239,12 @@ a {
   font-size: 1rem;
 }
 
-h1 {
-  font-size: 1.8rem;
-}
-
-h1,
-h2,
-h3 {
-  line-height: 1.6;
-}
-
-h2 {
-  font-size: 1.5rem;
-}
-
-h3 {
-  font-size: 1rem;
-}
-
 .header {
   height: fit-content;
   margin-bottom: 1rem;
 }
 
 blockquote {
-  background: #f9f9f9;
   border-left: 10px solid #ccc;
   margin: 1.5em 0px;
   padding: 0.5em 20px;
@@ -318,28 +277,6 @@ blockquote p {
 
 .header-title-with-link:hover {
   color: var(--blue);
-}
-
-hgroup,
-ul,
-ol,
-dd,
-blockquote,
-pre,
-li,
-code,
-p,
-figure,
-pre,
-table,
-fieldset,
-hr {
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
-}
-
-body {
-  font-weight: normal;
 }
 
 .slider-annotation {
@@ -430,11 +367,6 @@ code {
   position: relative;
 }
 
-.post-header > h1,
-.post-header > h2 {
-  padding: 0;
-}
-
 .post-meta {
   display: flex;
   align-items: center;
@@ -458,34 +390,6 @@ code {
   margin-bottom: 3rem;
 }
 
-
-.header h1 {
-  max-width: fit-content;
-}
-
-
-a {
-  color: var(--dark-blue);
-}
-
-a:hover {
-  color: var(--blue);
-}
-
-#table-of-contents + ul ul {
-  padding-left: 40px;
-}
-
-
-li > p {
-  display: inline;
-}
-
-li {
-  margin-bottom: 10px;
-}
-
-
 .book-preview {
   display: flex;
   justify-content: space-between;
@@ -494,7 +398,6 @@ li {
 .book-preview span,
 .book-preview {
   margin: 0;
-
   width: 100%;
 }
 
@@ -652,11 +555,9 @@ li {
   }
 
   .allBooks {
-    width: var(--main-width);
     margin-left: auto;
     margin-right: auto;
   }
-
 
   .header-motto {
     display: block;
@@ -664,14 +565,6 @@ li {
 
   .header-image-container {
     height: 70vh;
-  }
-
-  .search {
-    padding-bottom: 3rem;
-  }
-
-  p {
-    margin-bottom: 1rem;
   }
 
   :root {
@@ -683,10 +576,13 @@ canvas {
   box-sizing: border-box;
   outline: none;
   border-radius: 4px;
-  overflow: hidden;
 }
 
 @media only screen and (min-width: 1030px) {
+  :root {
+    --main-width: 780px;
+  }
+
   .placeholder-text {
     padding: 30px;
     background-color: rgb(197, 201, 203);
@@ -699,7 +595,4 @@ canvas {
     margin-right: auto;
   }
 
-  :root {
-    --main-width: 780px;
-  }
 } 

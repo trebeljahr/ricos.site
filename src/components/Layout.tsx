@@ -1,7 +1,7 @@
 import { toTitleCase } from "src/lib/toTitleCase";
 import Meta from "./Meta";
 import { OpenGraph } from "./OpenGraph";
-import { TailwindNavbar } from "./TailwindNavbar";
+import { TailwindNavbar } from "./Navbar/TailwindNavbar";
 import React from "react";
 
 type Props = {
@@ -26,7 +26,7 @@ const Layout = ({
   const properTitle = toTitleCase(title);
 
   return (
-    <>
+    <div className="block relative overflow-auto h-screen">
       <Meta description={description} title={properTitle} />
       <OpenGraph
         title={properTitle}
@@ -40,13 +40,13 @@ const Layout = ({
       <div
         className={
           fullScreen
-            ? "prose prose-a:no-underline prose-a:text-darkBlue w-full px-3 mt-10 md:px-10 !max-w-none"
-            : "prose prose-a:no-underline prose-a:text-darkBlue px-3 main-page"
+            ? "w-full px-3 mt-10 md:px-10 !max-w-none"
+            : "px-3 main-page"
         }
       >
         {children}
       </div>
-    </>
+    </div>
   );
 };
 

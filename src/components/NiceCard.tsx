@@ -20,7 +20,10 @@ export const NiceCard = ({
   bigImage = false,
 }: NiceCardProps) => {
   return (
-    <Link href={slug} className="not-prose block card-hover mb-12 lg:mb-12">
+    <Link
+      href={slug}
+      className="block card-hover mb-12 lg:mb-12 no-underline prose-headings:text-inherit"
+    >
       <div
         key={slug}
         className="overflow-hidden md:grid"
@@ -28,7 +31,7 @@ export const NiceCard = ({
           gridTemplateColumns: "15rem auto",
         }}
       >
-        <div className="h-64 md:h-full mb-4 relative">
+        <div className="h-64 md:h-full mb-4 relative not-prose">
           <Image
             src={cover.src}
             alt={cover.alt}
@@ -43,9 +46,9 @@ export const NiceCard = ({
             }}
           />
         </div>
-        <div className="m-5">
-          <h2 className="pt-0 font-bold leading-snug mb-5">{title}</h2>
-          <p className="text-grey">{excerpt}</p>
+        <div className="m-5 prose-headings:mt-2 prose-p:text-zinc-800 dark:prose-p:text-slate-300">
+          <h2 className="pt-0 font-bold leading-snug">{title}</h2>
+          <p>{excerpt}</p>
         </div>
       </div>
     </Link>

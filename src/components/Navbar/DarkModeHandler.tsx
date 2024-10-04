@@ -1,5 +1,9 @@
-import { useTheme } from "next-themes";
+import { useEffect, useMemo } from "react";
 import { IoMoon, IoSunny } from "react-icons/io5";
+import { useMediaQuery } from "react-responsive";
+import useLocalStorageState from "use-local-storage-state";
+import React from "react";
+import { useTheme } from "next-themes";
 
 export const DarkModeHandler = () => {
   const { theme, setTheme } = useTheme();

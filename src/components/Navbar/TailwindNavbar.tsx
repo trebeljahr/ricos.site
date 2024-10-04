@@ -12,6 +12,7 @@ import {
   CollapsibleMenuDesktop,
   CollapsibleMenuMobile,
 } from "./CollapsibleMenus";
+import { useMediaQuery } from "react-responsive";
 
 const navigation = ["posts", "newsletters", "photography"];
 const resources = [

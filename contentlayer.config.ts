@@ -2,7 +2,7 @@ import {
   defineDocumentType,
   defineNestedType,
   makeSource,
-} from "contentlayer2/source-files";
+} from "contentlayer/source-files";
 import readingTime from "reading-time";
 import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 import rehypeHighlight from "rehype-highlight";

@@ -1,4 +1,4 @@
-import { withContentlayer } from "next-contentlayer2";
+import { withContentlayer } from "next-contentlayer";
 import { generateRedirects } from "./src/scripts/createRedirects.js";
 
 const nextConfig = {

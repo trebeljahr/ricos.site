@@ -130,7 +130,7 @@ export const NewsletterModalPopup = () => {
           zIndex: 100,
         },
       }}
-      className="fixed overflow-hidden flex items-center justify-center top-0 left-0 bg-white w-screen h-screen"
+      className="fixed overflow-hidden flex items-center justify-center top-0 left-0 bg-white dark:bg-gray-800 w-screen h-screen"
     >
       <div className="w-3/6">
         <NewsletterForm

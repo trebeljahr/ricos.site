@@ -84,7 +84,7 @@ export default function ImageGallery({
       <section className="mb-20">
         <BreadCrumbs path={`photography/${tripName}`} />
         <h1>{turnKebabIntoTitleCase(tripName)}</h1>
-        <div className="not-prose scroll-p-[90px] scroll-smooth">
+        <div className="not-prose">
           <InfiniteScroll
             pageStart={0}
             loadMore={loadMoreImages}

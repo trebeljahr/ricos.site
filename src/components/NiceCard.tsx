@@ -44,7 +44,7 @@ export const NiceCard = ({
           />
         </div>
         <div className="m-5">
-          <h2 className="pt-0">{title}</h2>
+          <h2 className="pt-0 font-bold leading-snug mb-5">{title}</h2>
           <p className="text-grey">{excerpt}</p>
         </div>
       </div>

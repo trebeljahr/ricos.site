@@ -24,6 +24,21 @@
   :root { font-family: InterVariable, sans-serif; }
 }
 
+nav span, nav p {
+  font-family: Inter, sans-serif;
+}
+
+
+
+
+article p, article span, section p, section span {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
 
 * {
   box-sizing: border-box;

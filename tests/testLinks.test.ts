@@ -65,8 +65,6 @@ describe("test links", async () => {
     .concat(allNewsletters.map((doc) => "/newsletters/" + doc.number))
     .concat(allNewsletters.map((doc) => "/newsletter/" + doc.number));
 
-  // console.log(availableLinks);
-
   const transformedDocs = await Promise.all(
     allDocuments.map(async (document) => {
       const { links, anchors } = await generateLinksAndAnchors(document);
@@ -121,13 +119,10 @@ describe("test links", async () => {
         await limit(async () => {
           try {
             const response = await fetch(link, { method: "HEAD" });
-            // console.log(response.status);
 
             if (response.status === 405 || response.status === 403) {
-              // Retry with GET
               const getResponse = await fetch(link);
 
-              // console.log(getResponse.status);
               expect(getResponse.status).not.toBe(404);
             } else {
               expect(response.status).not.toBe(404);

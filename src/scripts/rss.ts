@@ -3,7 +3,7 @@ import {
   Newsletter,
   Post,
   allPosts,
-} from "@contentlayer/generated";
+} from "../../.contentlayer/generated";
 import fs from "fs";
 import RSS from "rss";
 
@@ -23,7 +23,6 @@ async function generateRssFeed() {
 
   const feed = new RSS(feedOptions);
 
-  // Add each individual post to the feed.
   [...allPosts.filter(({ published }) => published), ...allNewsletters].forEach(
     (post: Post | Newsletter) => {
       feed.item({
@@ -35,7 +34,6 @@ async function generateRssFeed() {
     }
   );
 
-  // Write the RSS feed to a file as XML.
   fs.writeFileSync("./public/rss.xml", feed.xml({ indent: true }));
 }
 

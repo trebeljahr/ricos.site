@@ -32,7 +32,6 @@ export const ImageRenderer = ({
           alt={realAlt}
           priority={!!isPriority}
           width={parseFloat(width)}
-          // placeholder="blur"
           height={parseFloat(height)}
           sizes="100vw"
           style={{

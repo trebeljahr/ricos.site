@@ -14,7 +14,6 @@ import {
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-// Command-line argument parsing
 const argv = await yargs(hideBin(process.argv))
   .option("dirPath", {
     alias: "d",
@@ -125,7 +124,6 @@ async function uploadDir(directoryPath: string) {
   async function getFiles(dir: string): Promise<string | string[]> {
     const dirents = await fs.readdir(dir, { withFileTypes: true });
     const files = await Promise.all(
-      // ignore . files
       dirents
         .filter(
           (dirent) =>

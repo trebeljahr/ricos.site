@@ -9,7 +9,6 @@ const Avatar = ({ picture }: AvatarProps) => {
       <Image
         src={picture}
         alt="avatar icon"
-        // placeholder="blur"
         className="round"
         fill
         sizes="10vw"

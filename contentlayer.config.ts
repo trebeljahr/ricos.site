@@ -276,18 +276,7 @@ export default makeSource({
     "travel",
     "posts",
   ],
-  contentDirExclude: [
-    // "**/*.json",
-    // "pages/quotes.json",
-    // "newsletter-stuff/newsletter-research/**",
-    // "newsletter-stuff/Newsletter Ad Template.md",
-    // "newsletter-stuff/newsletter-template.md",
-    // ".obsidian/workspace.json",
-    // "Attachments/**",
-    // "Notes/**",
-    // "diary-entries/**",
-    // "texts/**",
-  ],
+  contentDirExclude: ["**/*.json"],
   documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote, Travelblog],
   mdx: {
     remarkPlugins: [

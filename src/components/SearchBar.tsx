@@ -339,16 +339,6 @@ const InputField = ({
         filterValue={filterValue[filterValue.length - 1]?.tag ?? ""}
         growArray={growArray}
       />
-      // <input
-      //   id={filterKey}
-      //   type={"text"}
-      //   name={filterKey}
-      //   onChange={(event) => handleInput(event)}
-      //   onKeyPress={(event) => {
-      //     event.key === "Enter" && growArray(filterKey);
-      //   }}
-      //   value={filterValue[filterValue.length - 1]?.tag ?? ""}
-      // />
     );
 
   return null;

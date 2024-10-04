@@ -29,8 +29,6 @@ const MediaQuery = dynamic(() => import("react-responsive"), {
 });
 
 export function TailwindNavbar() {
-  // const isMobile = useMediaQuery({ query: "(max-width: 1024px)" });
-
   return (
     <header className="not-prose z-20 bg-white dark:bg-gray-900 py-3 sticky top-0 left-0">
       <MediaQuery query={"(max-width: 1024px)"}>

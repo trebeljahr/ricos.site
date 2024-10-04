@@ -181,7 +181,7 @@ export class Polygon {
 
         let angle = new_direction - old_direction;
         if (angle <= -Math.PI) {
-          angle += TWO_PI; // make it in half-open interval (-Pi, Pi]
+          angle += TWO_PI;
         } else if (angle > Math.PI) {
           angle -= TWO_PI;
         }
@@ -243,7 +243,6 @@ export class Polygon {
 
         let isEar = true;
 
-        // Does test ear contain any polygon vertices?
         for (let j = 0; j < this.vertices.length; j++) {
           if (j === a || j === b || j === c) {
             continue;
@@ -344,7 +343,6 @@ export async function triangulateVisualization(
 
     for (let i = 0; i < indexList.length; i++) {
       drawBackground(ctx);
-      // foundTriangles.forEach((tri) => tri.draw(ctx));
       getPolyFromIndexList(poly, indexList).draw(ctx);
 
       const a = indexList[i];
@@ -372,7 +370,6 @@ export async function triangulateVisualization(
 
       let isEar = true;
 
-      // Does test ear contain any polygon vertices?
       for (let j = 0; j < vertices.length; j++) {
         if (j === a || j === b || j === c) {
           continue;
@@ -403,7 +400,6 @@ export async function triangulateVisualization(
   }
 
   drawBackground(ctx);
-  // foundTriangles.forEach((tri) => tri.draw(ctx));
   getPolyFromIndexList(poly, indexList).draw(ctx);
 
   let va = poly.vertices[indexList[0]];

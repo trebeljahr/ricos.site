@@ -60,7 +60,7 @@ async function invokeLambda(funcName: string, path: string) {
     FunctionName: funcName,
     ClientContext: JSON.stringify({}),
     Payload: JSON.stringify(payload),
-    LogType: "Tail", // "None",
+    LogType: "Tail",
     InvocationType: "Event",
   });
 

@@ -24,7 +24,5 @@ export async function generateRedirects() {
     })
   );
 
-  // console.log(redirects);
-
   return redirects;
 }

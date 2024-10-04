@@ -7,10 +7,8 @@ import {
 } from "@aws-sdk/client-s3";
 import { createS3Client } from "src/lib/aws";
 
-// Initialize S3 Client
 const s3 = createS3Client();
 
-// Your bucket name
 const bucketName = "images.trebeljahr.com";
 
 async function fixFileNames() {
@@ -57,5 +55,4 @@ async function fixFileNames() {
   }
 }
 
-// Run the function
 fixFileNames();

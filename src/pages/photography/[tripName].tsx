@@ -2,7 +2,8 @@ import { BreadCrumbs, turnKebabIntoTitleCase } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { ToTopButton } from "@components/ToTopButton";
 import { NextJsImage } from "@components/images/CustomRenderers";
-import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { ClickHandler, Photo, PhotoAlbum } from "react-photo-album";
 import { ImageProps } from "src/@types";
@@ -40,15 +41,50 @@ export default function ImageGallery({
     images.slice(0, groupSize)
   );
 
-  const handleClose = () => {
-    const currentImage = displayedImages[currentImageIndex];
-
+  const handleClose = async () => {
     setIsModalOpen(false);
-    const currentImageElement = document.getElementById(currentImage.name);
+  };
 
-    if (currentImageElement) {
-      currentImageElement.scrollIntoView({ behavior: "smooth" });
-    }
+  const animateImageBackToGallery = () => {
+    const lightboxImgContainer = document.querySelector(".yarl__slide_current");
+    const lightboxImg = lightboxImgContainer?.querySelector("img");
+    const galleryImg = document.getElementById(images[currentImageIndex].name);
+    const navbar = document.querySelector<HTMLElement>("#navbar");
+
+    if (!galleryImg || !lightboxImg || !navbar) return;
+
+    const lightboxRect = lightboxImg.getBoundingClientRect();
+    const galleryRect = galleryImg.getBoundingClientRect();
+    const placeholderImg = lightboxImg.cloneNode(true) as HTMLImageElement;
+    placeholderImg.style.position = "fixed";
+    placeholderImg.style.top = `${lightboxRect.top}px`;
+    placeholderImg.style.left = `${lightboxRect.left}px`;
+    placeholderImg.style.width = `${lightboxRect.width}px`;
+    placeholderImg.style.height = `${lightboxRect.height}px`;
+    placeholderImg.style.transition = "all 0.2s cubic-bezier(0.33, 1, 0.68, 1)";
+    placeholderImg.style.zIndex = "100";
+
+    document.body.appendChild(placeholderImg);
+
+    // Force reflow to ensure the browser registers the right positions
+    placeholderImg.getBoundingClientRect();
+    galleryImg.getBoundingClientRect();
+
+    const navbarStyle = window.getComputedStyle(navbar);
+    const navbarHeight = parseFloat(navbarStyle.height);
+    const paddingTop = parseFloat(navbarStyle.paddingTop);
+    const paddingBottom = parseFloat(navbarStyle.paddingBottom);
+
+    const realNavHeight = navbarHeight - paddingTop - paddingBottom;
+
+    placeholderImg.style.top = `${galleryRect.top - realNavHeight}px`;
+    placeholderImg.style.left = `${galleryRect.left}px`;
+    placeholderImg.style.width = `${galleryRect.width}px`;
+    placeholderImg.style.height = `${galleryRect.height}px`;
+
+    placeholderImg.addEventListener("transitionend", () => {
+      placeholderImg.remove();
+    });
   };
 
   const openModal: ClickHandler<Photo> = ({ index }) => {
@@ -69,6 +105,16 @@ export default function ImageGallery({
       loadMoreImages();
     }
   }, [currentImageIndex, loadMoreImages, displayedImages]);
+
+  useEffect(() => {
+    const currentImage = images[currentImageIndex];
+
+    const currentImageElement = document.getElementById(currentImage.name);
+
+    if (currentImageElement) {
+      currentImageElement.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [currentImageIndex, images]);
 
   const { width, height } = useWindowSize();
 
@@ -134,7 +180,24 @@ export default function ImageGallery({
               view: ({ index }) => {
                 setCurrentImageIndex(index);
               },
+              exiting: () => {
+                animateImageBackToGallery();
+              },
             }}
+            // render={{
+            //   slide: ({ slide }) => (
+            //     <Image
+            //       id={"slide-" + slide.src}
+            //       width={slide.width}
+            //       height={slide.height}
+            //       src={slide.src}
+            //       alt={slide.alt || ""}
+            //       ref={lightboxImageRef} // Assign ref to the lightbox image
+            //       style={{ width: "100%", height: "auto" }}
+            //     />
+            //   ),
+            // }}
+            carousel={{ finite: true }}
             plugins={[Thumbnails, Zoom]}
             thumbnails={{
               position: "bottom",

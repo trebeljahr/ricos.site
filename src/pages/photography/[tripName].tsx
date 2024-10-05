@@ -139,7 +139,7 @@ export default function ImageGallery({
           >
             <div>
               {groupImages(displayedImages).map((group, i) => (
-                <div key={i} className="mb-[15px]">
+                <div key={i} className="mb-[5px] xs:mb-[10px] lg:mb-[15px]">
                   <PhotoAlbum
                     photos={group}
                     targetRowHeight={height * 0.6}

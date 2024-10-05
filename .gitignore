@@ -52,3 +52,5 @@ public/robots.txt
 public/sitemap.xml
 public/sitemap*.xml
 public/rss.xml
+public/atom.xml
+public/feed.json

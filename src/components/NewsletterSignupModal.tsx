@@ -9,7 +9,11 @@ import { useScrollVisibility } from "./ShowAfterScrolling";
 
 Modal.setAppElement("#__next");
 
-export const NewsletterModalPopup = () => {
+export const NewsletterModalPopup = ({
+  percentage = 1.5,
+}: {
+  percentage?: number;
+}) => {
   const [dismissed, setDismissed] = useLocalStorageState(
     "newsletter-popup-dismissed",
     {
@@ -17,7 +21,7 @@ export const NewsletterModalPopup = () => {
     }
   );
   const { visible, setVisible } = useScrollVisibility({
-    howFarDown: 1.5,
+    percentage,
   });
 
   useScrollLock(visible && !dismissed);

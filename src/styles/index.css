@@ -1,10 +1,4 @@
 :root {
-  --dark-red: rgb(204, 9, 9);
-  --red: rgb(232, 83, 83);
-  --light-red: rgb(242, 145, 145);
-
-  --light-grey-blue: rgb(233, 241, 249);
-
   --ultra-light-blue: rgb(184, 216, 249);
   --light-blue: rgb(153, 204, 255);
   --blue: rgb(68, 160, 255);
@@ -14,7 +8,12 @@
   --success-green: rgb(31, 214, 85);
 
   font-size: 16px;
+  /* transition: --tw-prose-body cubic-bezier(0.41, 0.1, 0.13, 1) 5s, cubic-bezier(0.41, 0.1, 0.13, 1) 5s --tw-prose-headings,  cubic-bezier(0.41, 0.1, 0.13, 1) 5s --tw-prose-links; */
 }
+
+/* body {
+  transition: ease 1s background-color;
+} */
 
 :root {
   font-family: Inter, sans-serif;
@@ -31,6 +30,7 @@ nav span, nav p {
 .custom-table-overflow {
   overflow-x: scroll;
 }
+
 
 * {
   box-sizing: border-box;
@@ -92,9 +92,6 @@ button {
   width: 100%;
 }
 
-body {
-  transition: cubic-bezier(0.41, 0.1, 0.13, 1) 500ms background-color, cubic-bezier(0.41, 0.1, 0.13, 1) 500ms color;
-}
 
 .newsletter-success-container { 
   height: 10px;

@@ -32,7 +32,7 @@ export function TailwindNavbar() {
           {({ open, close }) => (
             <header
               id="navbar"
-              className={`sticky top-0 left-0 z-50 w-screen not-prose glassy ${
+              className={`sticky top-0 left-0 z-50 w-screen not-prose ${
                 open ? "bg-white" : "glassy"
               } dark:bg-none dark:bg-gray-900 py-3`}
             >

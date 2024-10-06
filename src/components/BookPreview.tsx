@@ -18,7 +18,7 @@ export function BookPreview({ book, index }: Props) {
     <Link
       as={slug}
       href={slug}
-      className="no-underline prose-headings:text-inherit w-full overflow-hidden md:grid mb-10 prose-p:text-zinc-800 dark:prose-p:text-slate-300 transform transition duration-300 hover:scale-[1.02]"
+      className="no-underline prose-headings:text-inherit w-full overflow-hidden md:grid mb-10 prose-p:text-zinc-800 dark:prose-p:text-slate-300 transform transition-transform duration-300 hover:scale-[1.02]"
       style={{
         gridTemplateColumns: "15rem auto",
       }}

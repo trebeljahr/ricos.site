@@ -59,7 +59,7 @@ export default function Photography({
                 priority={index <= 3}
                 alt={"A photo from " + tripName}
                 style={{ filter: "brightness(50%)" }}
-                className="absolute inset-0 z-0 object-cover w-full h-full hover:scale-105 transition-all duration-300 ease-in-out  "
+                className="absolute inset-0 z-0 object-cover w-full h-full hover:scale-105 transform transition-transform duration-300 ease-in-out  "
               />
               <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center w-full h-full">
                 <h2 className="text-xl font-bold text-white">

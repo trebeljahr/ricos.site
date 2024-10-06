@@ -112,7 +112,10 @@ export default function ImageGallery({
     const currentImageElement = document.getElementById(currentImage.name);
 
     if (currentImageElement) {
-      currentImageElement.scrollIntoView({ behavior: "smooth" });
+      currentImageElement.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
     }
   }, [currentImageIndex, images]);
 

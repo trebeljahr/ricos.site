@@ -1,18 +1,16 @@
+import { BreadCrumbs } from "@components/BreadCrumbs";
+import Layout from "@components/Layout";
+import { NewsletterForm } from "@components/NewsletterSignup";
+import { NewsletterModalPopup } from "@components/NewsletterSignupModal";
+import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
+import { PostBodyWithoutExcerpt } from "@components/PostBody";
+import Header from "@components/PostHeader";
+import { ToTopButton } from "@components/ToTopButton";
 import {
   allNewsletters,
   type Newsletter as NewsletterType,
 } from "@contentlayer/generated";
 import Image from "next/image";
-import { BreadCrumbs } from "@components/BreadCrumbs";
-import Layout from "@components/Layout";
-import {
-  NewsletterForm,
-  NewsletterModalPopup,
-} from "@components/NewsletterSignup";
-import { PostBodyWithoutExcerpt } from "@components/PostBody";
-import Header from "@components/PostHeader";
-import { ToTopButton } from "@components/ToTopButton";
-import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import { byOnlyPublished } from "src/lib/utils";
 type Props = {
   newsletter: NewsletterType;

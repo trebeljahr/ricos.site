@@ -8,7 +8,7 @@ export function ToTopButton() {
         onClick={() => {
           window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
         }}
-        className="flex justify-center items-center"
+        className="flex justify-center items-center z-10"
       >
         <FiArrowUp />
       </button>

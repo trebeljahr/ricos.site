@@ -38,9 +38,6 @@ nav.primary-navigation ul li ul li {
   border-style: none;
 }
 
-ul li ul li a {
-  transition: all 0.5s ease;
-}
 .navlinks {
   display: flex;
   flex-direction: column;

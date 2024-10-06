@@ -40,7 +40,7 @@ export function CollapsibleMenuDesktop({ links, text, closeNav }: MenuProps) {
 export function CollapsibleMenuMobile({ links, text, closeNav }: MenuProps) {
   return (
     <Menu as="div" className="relative w-fit">
-      <Disclosure.Button as="div" className="flex flex-col">
+      <div className="flex flex-col">
         <Menu.Button className="self-end hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md px-3 py-2 text-sm font-medium flex justify-end">
           <div className="flex items-center justify-center">
             <p>{text}</p>
@@ -62,7 +62,7 @@ export function CollapsibleMenuMobile({ links, text, closeNav }: MenuProps) {
             ))}
           </Menu.Items>
         </Transition>
-      </Disclosure.Button>
+      </div>
     </Menu>
   );
 }

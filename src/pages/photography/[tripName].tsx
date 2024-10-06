@@ -61,14 +61,15 @@ export default function ImageGallery({
     placeholderImg.style.left = `${lightboxRect.left}px`;
     placeholderImg.style.width = `${lightboxRect.width}px`;
     placeholderImg.style.height = `${lightboxRect.height}px`;
-    placeholderImg.style.transition = "all 0.2s cubic-bezier(0.33, 1, 0.68, 1)";
-    placeholderImg.style.zIndex = "100";
+    placeholderImg.style.transition = "all 0.2s ease-in-out";
+    placeholderImg.style.zIndex = "2";
 
     document.body.appendChild(placeholderImg);
 
     // Force reflow to ensure the browser registers the right positions
     placeholderImg.getBoundingClientRect();
     galleryImg.getBoundingClientRect();
+    navbar.getBoundingClientRect();
 
     const navbarStyle = window.getComputedStyle(navbar);
     const navbarHeight = parseFloat(navbarStyle.height);

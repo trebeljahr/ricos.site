@@ -81,11 +81,14 @@ button {
   border: solid 1px red;
 } */
 
-html,
-body {
+ html, body {
   margin: 0;
   padding: 0;
   width: 100%;
+}
+
+body {
+  transition: ease 1s background-color, color;
 }
 
 .newsletter-success-container { 
@@ -100,7 +103,6 @@ body {
 
 #to-top-button {
   position: fixed;
-  z-index: 200;
   cursor: pointer;
   font-size: 1.2rem;
   font-size: 1.2rem;
@@ -407,6 +409,7 @@ code {
 footer {
   margin-top: 6rem; 
 }
+
 
 .glassy {
   backdrop-filter: saturate(180%) blur(20px); 

@@ -224,7 +224,7 @@ export const NewsletterForm = ({
           className="mt-5 font-thin text-left"
           onClick={() => setSuccess(null)}
         >
-          Wanna sign up with another email address?
+          Want to sign up with another email address?
         </button>
       </div>
 

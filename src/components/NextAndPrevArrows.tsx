@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShowAfterScrolling } from "@components/ShowAfterScrolling";
 import { useRouter } from "next/router";
+import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 export const NextAndPrevArrows = ({
   nextPost,
   prevPost,
@@ -21,7 +22,7 @@ export const NextAndPrevArrows = ({
             className="page-arrow left no-underline"
             passHref
           >
-            <span className="icon-arrow-left" />
+            <FiArrowLeft />
           </Link>
         )}
         {nextPost && (
@@ -30,7 +31,7 @@ export const NextAndPrevArrows = ({
             className="page-arrow right no-underline"
             passHref
           >
-            <span className="icon-arrow-right" />
+            <FiArrowRight />
           </Link>
         )}
       </>

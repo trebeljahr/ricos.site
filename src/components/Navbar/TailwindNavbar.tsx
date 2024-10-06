@@ -1,17 +1,12 @@
 import { Disclosure } from "@headlessui/react";
-import {
-  Bars3Icon,
-  ChevronDownIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
-import { DarkModeHandler } from "./DarkModeHandler";
 import {
   CollapsibleMenuDesktop,
   CollapsibleMenuMobile,
 } from "./CollapsibleMenus";
-import { useMediaQuery } from "react-responsive";
+import { DarkModeHandler } from "./DarkModeHandler";
 
 const navigation = ["posts", "newsletters", "photography"];
 const resources = [
@@ -24,6 +19,7 @@ const resources = [
 const about = ["now", "principles", "1-month-projects"];
 
 import dynamic from "next/dynamic";
+import { FiMenu, FiX } from "react-icons/fi";
 const MediaQuery = dynamic(() => import("react-responsive"), {
   ssr: false,
 });
@@ -32,7 +28,7 @@ export function TailwindNavbar() {
   return (
     <header
       id="navbar"
-      className="w-screen not-prose z-20 bg-white dark:bg-gray-900 py-3 sticky top-0 left-0 transition-colors"
+      className="w-screen not-prose z-20 glassy dark:bg-none dark:bg-gray-900 py-3 sticky top-0 left-0"
     >
       <MediaQuery query={"(max-width: 1024px)"}>
         {(isMobile: boolean) => (
@@ -44,13 +40,13 @@ export function TailwindNavbar() {
                   className="flex flex-shrink-0 items-center not-prose"
                 >
                   <Image
-                    className="h-8 w-auto"
+                    className="h-5 w-auto mr-1"
                     src="/favicon/apple-touch-icon.png"
                     alt="trebeljahr"
                     width={32}
                     height={32}
                   />
-                  <span className="ml-1 font-semibold">trebeljahr</span>
+                  <span className="ml-1 font-semibold">Rico Trebeljahr</span>
                 </Link>
                 {isMobile ? (
                   <MobileVersion {...{ open, close }} />
@@ -77,12 +73,12 @@ function MobileVersion({ open, close }: NavbarProps) {
       <div className="absolute mr-2 inset-y-0 right-0 flex items-center lg:hidden">
         <DarkModeHandler />
 
-        <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+        <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700">
           <span className="sr-only">Open main menu</span>
           {open ? (
-            <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+            <FiX className="block h-6 w-6" aria-hidden="true" />
           ) : (
-            <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+            <FiMenu className="block h-6 w-6" aria-hidden="true" />
           )}
         </Disclosure.Button>
       </div>

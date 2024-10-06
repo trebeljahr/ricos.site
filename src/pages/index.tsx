@@ -1,10 +1,8 @@
-import Link from "next/link";
 import { ExternalLink } from "@components/ExternalLink";
-import { TrySomeOfThese } from "@components/IntroLinks";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
-import { allPosts } from "@contentlayer/generated";
-import { byOnlyPublished } from "src/lib/utils";
+import Link from "next/link";
+
 const Index = () => {
   const description = `trebeljahr - a website about the things Rico Trebeljahr does, reads and thinks about. The topics can vary widely, 
 from programming, bio-chemistry, the brain, investing, physics, philosophy to photography, traveling and back...`;
@@ -74,7 +72,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
         </article>
       </main>
 
-      <footer className="pt-16">
+      <footer>
         <NewsletterForm />
       </footer>
     </Layout>

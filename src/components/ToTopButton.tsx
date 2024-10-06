@@ -1,3 +1,4 @@
+import { FiArrowUp } from "react-icons/fi";
 import { ShowAfterScrolling } from "./ShowAfterScrolling";
 export function ToTopButton() {
   return (
@@ -7,8 +8,9 @@ export function ToTopButton() {
         onClick={() => {
           window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
         }}
+        className="flex justify-center items-center"
       >
-        <span className="icon-arrow-up"></span>
+        <FiArrowUp />
       </button>
     </ShowAfterScrolling>
   );

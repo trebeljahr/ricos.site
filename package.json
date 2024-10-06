@@ -23,7 +23,6 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.215.0",
     "@headlessui/react": "^1.7.15",
-    "@heroicons/react": "^2.0.18",
     "@mdx-js/loader": "^2.1.5",
     "@mdx-js/react": "^2.1.5",
     "@next/mdx": "^12.3.1",

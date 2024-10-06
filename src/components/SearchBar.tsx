@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { nanoid } from "nanoid";
+import { FiPlus, FiTrash, FiX } from "react-icons/fi";
 type SearchProps<Filters> = {
   setFilters: Dispatch<SetStateAction<Filters>>;
   filters: Filters;
@@ -214,7 +215,7 @@ export function Search<T extends Filters>({
                   className="remove-filter-button"
                   onClick={() => toggleFilter(filterKey)}
                 >
-                  <span className="icon-close"></span>
+                  <FiX />
                 </button>
                 <p>{beautify(filterKey, { capitalize: true })}:</p>
                 <InputField
@@ -227,7 +228,7 @@ export function Search<T extends Filters>({
                 />
                 {Array.isArray(filterValue) && (
                   <button onClick={() => growArray(filterKey)}>
-                    <span className="icon-plus"></span>
+                    <FiPlus />
                   </button>
                 )}
               </div>
@@ -239,7 +240,7 @@ export function Search<T extends Filters>({
                       <div className="tag-filter" key={tag.id}>
                         <p>{tag.tag}</p>
                         <button onClick={() => removeTag(filterKey, tag.id)}>
-                          <span className="icon-bin"></span>
+                          <FiTrash />
                         </button>
                       </div>
                     );
@@ -259,7 +260,7 @@ export function Search<T extends Filters>({
                   className="add-filter-button"
                   onClick={() => toggleFilter(filterKey)}
                 >
-                  <span className="icon-plus"></span>
+                  <FiPlus />
 
                   <p>{beautify(filterKey, { capitalize: true })}</p>
                 </button>

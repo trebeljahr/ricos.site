@@ -1,7 +1,7 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 import { SingleMenuItem } from "./SingleMenuItem";
+import { FiChevronDown } from "react-icons/fi";
 
 type MenuProps = {
   links: string[];
@@ -15,7 +15,7 @@ export function CollapsibleMenuDesktop({ links, text, closeNav }: MenuProps) {
       <Menu.Button className="block hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md px-3 py-2 text-sm font-medium">
         <span className="flex items-center justify-center">
           <span>{text}</span>
-          <ChevronDownIcon className="h-3 w-3 ml-1" />
+          <FiChevronDown className="h-3 w-3 ml-1" />
         </span>
       </Menu.Button>
       <Transition
@@ -44,7 +44,7 @@ export function CollapsibleMenuMobile({ links, text, closeNav }: MenuProps) {
         <Menu.Button className="self-end hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md px-3 py-2 text-sm font-medium flex justify-end">
           <div className="flex items-center justify-center">
             <p>{text}</p>
-            <ChevronDownIcon className="h-3 w-3 ml-1" />
+            <FiChevronDown className="h-3 w-3 ml-1" />
           </div>
         </Menu.Button>
         <Transition

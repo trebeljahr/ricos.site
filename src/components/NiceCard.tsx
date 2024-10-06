@@ -21,7 +21,7 @@ export function NiceCard({
   return (
     <Link
       href={slug}
-      className="bg-white dark:bg-gray-800 block overflow-hidden mb-12 lg:mb-12 no-underline prose-headings:text-inherit transform transition duration-300 hover:scale-[1.02] shadow-lg rounded-lg"
+      className="bg-white dark:bg-gray-800 block overflow-hidden mb-12 lg:mb-12 no-underline prose-headings:text-inherit transform transition-transform duration-300 hover:scale-[1.02] shadow-lg rounded-lg"
     >
       <div
         key={slug}

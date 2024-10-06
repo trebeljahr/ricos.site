@@ -404,113 +404,13 @@ code {
   border-bottom: 2px solid #d4d4d4;
 }
 
-@font-face {
-  font-family: "icomoon";
-  src: url("/fonts/icomoon.eot");
-  src: url("/fonts/icomoon.eot") format("embedded-opentype"),
-    url("/fonts/icomoon.ttf") format("truetype"),
-    url("/fonts/icomoon.woff") format("woff"),
-    url("/fonts/icomoon.svg") format("svg");
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
+footer {
+  margin-top: 6rem; 
 }
 
-[class^="icon-"],
-[class*=" icon-"] {
-  font-family: "icomoon" !important;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.icon-triangle-up:before {
-  content: "\e90b";
-}
-.icon-chevron-up:before {
-  content: "\e90c";
-}
-.icon-triangle-down:before {
-  content: "\e906";
-}
-.icon-chevron-down:before {
-  content: "\e907";
-}
-.icon-cheveron-up1:before {
-  content: "\e90a";
-}
-.icon-cheveron-down:before {
-  content: "\e908";
-}
-.icon-cheveron-up:before {
-  content: "\e909";
-}
-.icon-close:before {
-  content: "\e905";
-}
-.icon-plus:before {
-  content: "\e903";
-}
-.icon-plus1:before {
-  content: "\e902";
-}
-.icon-check-circle:before {
-  content: "\e904";
-}
-.icon-bars:before {
-  content: "\e901";
-}
-.icon-home:before {
-  content: "\e900";
-}
-.icon-headphones:before {
-  content: "\e910";
-}
-.icon-search:before {
-  content: "\e986";
-}
-.icon-mug:before {
-  content: "\e9a2";
-}
-.icon-bin:before {
-  content: "\e9ac";
-}
-.icon-download:before {
-  content: "\e9c7";
-}
-.icon-link:before {
-  content: "\e9cb";
-}
-.icon-arrow-right:before {
-  content: "\ea3c";
-}
-.icon-arrow-left:before {
-  content: "\ea40";
-}
-.icon-arrow-up:before {
-  content: "\ea3a";
-}
-.icon-amazon:before {
-  content: "\ea87";
-}
-.icon-twitter:before {
-  content: "\ea96";
-}
-.icon-youtube:before {
-  content: "\ea9d";
-}
-.icon-youtube2:before {
-  content: "\ea9e";
-}
-.icon-github:before {
-  content: "\eab0";
-}
-.icon-linkedin:before {
-  content: "\eac9";
+.glassy {
+  backdrop-filter: saturate(180%) blur(20px); 
+  background: linear-gradient(to top,rgba(255, 255, 255, 0.5),white 100%);
 }
 
 

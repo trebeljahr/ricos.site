@@ -8,7 +8,7 @@ export default class MyDocument extends Document {
           <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
         </Head>
 
-        <body className="prose dark:bg-gray-800 dark:prose-invert hover:prose-a:text-blue transition-colors">
+        <body className="prose dark:bg-gray-800 dark:prose-invert hover:prose-a:text-blue max-w-none">
           <Main />
           <NextScript />
         </body>

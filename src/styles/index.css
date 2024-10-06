@@ -88,7 +88,7 @@ button {
 }
 
 body {
-  transition: ease 1s background-color, color;
+  transition: cubic-bezier(0.41, 0.1, 0.13, 1) 500ms background-color, cubic-bezier(0.41, 0.1, 0.13, 1) 500ms color;
 }
 
 .newsletter-success-container { 

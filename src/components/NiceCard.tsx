@@ -20,11 +20,11 @@ export const NiceCard = ({
   return (
     <Link
       href={slug}
-      className="block mb-12 lg:mb-12 no-underline prose-headings:text-inherit transform transition duration-300 hover:scale-[1.02]"
+      className="block overflow-hidden mb-12 lg:mb-12 no-underline prose-headings:text-inherit transform transition duration-300 hover:scale-[1.02] shadow-lg hover:shadow-2xl rounded-md border-4 border-gray-200 dark:border-gray-700"
     >
       <div
         key={slug}
-        className="overflow-hidden md:grid bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 rounded-md"
+        className=" md:grid bg-white dark:bg-gray-800 "
         style={{
           gridTemplateColumns: "15rem auto",
         }}

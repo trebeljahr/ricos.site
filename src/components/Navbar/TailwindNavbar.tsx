@@ -32,7 +32,7 @@ export function TailwindNavbar() {
   return (
     <header
       id="navbar"
-      className="not-prose z-20 bg-white dark:bg-gray-900 py-3 sticky top-0 left-0 transition-colors"
+      className="w-screen not-prose z-20 bg-white dark:bg-gray-900 py-3 sticky top-0 left-0 transition-colors"
     >
       <MediaQuery query={"(max-width: 1024px)"}>
         {(isMobile: boolean) => (

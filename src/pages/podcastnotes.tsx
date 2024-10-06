@@ -32,19 +32,22 @@ export default function Podcastnotes() {
     >
       <main>
         <section>
-          <Header
-            title="Podcastnotes"
-            subtitle="What I have learned while listening"
-          />
-          <Search filters={filters} setFilters={setFilters} />
-          <p>Amount: {filteredPodcastnotes.length}</p>
+          <div className="px-5">
+            <Header
+              title="Podcastnotes"
+              subtitle="What I have learned while listening"
+            />
+            <Search filters={filters} setFilters={setFilters} />
+            <p>Amount: {filteredPodcastnotes.length}</p>
+          </div>
+
           {filteredPodcastnotes.map(
             ({ slug, title, show, episode, rating, excerpt }) => {
               return (
                 <Link
                   href={slug}
                   key={slug}
-                  className="no-underline prose-headings:text-inherit p-5 mb-10 block prose-p:text-zinc-800 dark:prose-p:text-slate-300"
+                  className="no-underline prose-h2:text-inherit p-5 mb-10 block prose-p:text-zinc-800 dark:prose-p:text-slate-300 transform transition duration-300 hover:scale-[1.02]"
                 >
                   <h2 className="m-0 p-0">{title}</h2>
                   <h3 className="mt-1">

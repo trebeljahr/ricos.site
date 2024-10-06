@@ -26,7 +26,7 @@ const Layout = ({
   const properTitle = toTitleCase(title);
 
   return (
-    <div className="block relative">
+    <div className="block relative w-screen p-0 m-0">
       <Meta description={description} title={properTitle} />
       <OpenGraph
         title={properTitle}
@@ -40,8 +40,8 @@ const Layout = ({
       <div
         className={
           fullScreen
-            ? "w-full px-3 mt-10 md:px-10 !max-w-none"
-            : "px-3 main-page"
+            ? "w-screen px-3 mt-10 md:px-10 !max-w-none"
+            : "px-3 w-full mx-auto lg:max-w-3xl"
         }
       >
         {children}

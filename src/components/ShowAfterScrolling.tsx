@@ -1,24 +1,23 @@
 import { ReactElement, useEffect, useState } from "react";
-export function useScrollVisibility({
-  hideAgain,
-  howFarDown,
-}: {
-  hideAgain: boolean;
-  howFarDown: number;
-}) {
+
+export function useScrollVisibility({ howFarDown }: { howFarDown: number }) {
   const [visible, setVisible] = useState(false);
+  const [hasTriggered, setHasTriggered] = useState(false);
 
   useEffect(() => {
     const toggleVisible = () => {
       const scrolled = document.documentElement.scrollTop;
-      const isVisible = scrolled > window.innerHeight * howFarDown;
-      if (!isVisible && hideAgain) setVisible(isVisible);
-      else if (isVisible) setVisible(isVisible);
+      const shouldBeVisible = scrolled > window.innerHeight * howFarDown;
+
+      if (shouldBeVisible && !hasTriggered) {
+        setVisible(true);
+        setHasTriggered(true);
+      }
     };
 
     window.addEventListener("scroll", toggleVisible);
     return () => window.removeEventListener("scroll", toggleVisible);
-  }, [hideAgain, howFarDown]);
+  }, [howFarDown, hasTriggered]);
 
   return { visible, setVisible };
 }
@@ -26,13 +25,11 @@ export function useScrollVisibility({
 export function ShowAfterScrolling({
   children,
   howFarDown = 2,
-  hideAgain = false,
 }: {
-  hideAgain?: boolean;
   howFarDown?: number;
   children: ReactElement;
 }) {
-  const { visible } = useScrollVisibility({ howFarDown, hideAgain });
+  const { visible } = useScrollVisibility({ howFarDown });
   return (
     <div
       style={{

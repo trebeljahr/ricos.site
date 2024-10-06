@@ -1,20 +1,22 @@
+"use client";
+
 import Link from "next/link";
-import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
-import { FiChevronsRight, FiX } from "react-icons/fi";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import ConfettiExplosion, { ConfettiProps } from "react-confetti-explosion";
+import { FiChevronsRight, FiUserCheck, FiX } from "react-icons/fi";
+import { FaCheckCircle } from "react-icons/fa";
 import { ReactElement } from "react-markdown/lib/react-markdown";
 import Modal from "react-modal";
 import { ClipLoader } from "react-spinners";
 import { useScrollVisibility } from "./ShowAfterScrolling";
-import ConfettiExplosion, { ConfettiProps } from "react-confetti-explosion";
+import useLocalStorageState from "use-local-storage-state";
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
   const response = await fetch(input, init);
   if (!response.ok || response.status !== 200) {
     let err = new Error("HTTP status code: " + response.status + response);
-
     throw err;
   }
-
   return await response.json();
 }
 
@@ -24,59 +26,61 @@ const mediumConfettiProps: ConfettiProps = {
   particleCount: 200,
   width: 1000,
   zIndex: 400,
-
-  // colors: ["#9A0023", "#FF003C", "#AF739B", "#FAC7F3", "#F7DBF4"],
 };
 
 Modal.setAppElement("#__next");
 
-export const NewsletterModalPopup = () => {
-  const [open, setOpen] = useState(true);
-  const { visible } = useScrollVisibility({
-    hideAgain: false,
-    howFarDown: 1.5,
-  });
+export function useScrollLock(lock: boolean) {
+  const lockScroll = useCallback(() => {
+    document.body.style.overflow = "hidden";
+  }, []);
 
-  function closeModalForGood() {
-    setOpen(false);
-    localStorage.setItem("newsletter-popup", "closed");
-  }
-
-  function closeModal() {
-    setOpen(false);
-  }
-
-  useEffect(() => {
-    if (!localStorage) return;
-    setOpen(localStorage.getItem("newsletter-popup") !== "closed");
+  const unlockScroll = useCallback(() => {
+    document.body.style.overflow = "auto";
   }, []);
 
   useEffect(() => {
-    if (!document) return;
-
-    const root = document.getElementById("__next");
-    if (!root) return;
-
-    if (open && visible) {
-      document.documentElement.style.overflow = "hidden";
-      document.body.style.overflow = "hidden";
-      root.style.overflow = "hidden";
+    if (lock) {
+      lockScroll();
     } else {
-      document.documentElement.style.overflow = "auto";
-      document.body.style.overflow = "auto";
-      root.style.overflow = "auto";
+      unlockScroll();
     }
 
     return () => {
-      document.documentElement.style.overflow = "auto";
-      document.body.style.overflow = "auto";
-      root.style.overflow = "auto";
+      unlockScroll();
     };
-  }, [open, visible]);
+  }, [lock, lockScroll, unlockScroll]);
+}
+
+export const NewsletterModalPopup = () => {
+  const [dismissed, setDismissed] = useLocalStorageState(
+    "newsletter-popup-dismissed",
+    {
+      defaultValue: false,
+    }
+  );
+  const { visible, setVisible } = useScrollVisibility({
+    howFarDown: 1.5,
+  });
+
+  useScrollLock(visible && !dismissed);
+
+  function closeModalForGood() {
+    setVisible(false);
+    setDismissed(true);
+  }
+
+  function closeModal() {
+    setVisible(false);
+  }
+
+  if (dismissed) {
+    return null;
+  }
 
   return (
     <Modal
-      isOpen={open}
+      isOpen={visible}
       onRequestClose={closeModal}
       contentLabel="Newsletter Popup Form"
       style={{
@@ -149,6 +153,7 @@ export const NewsletterForm = ({
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const emailInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async () => {
     if (emailInputRef.current && !emailInputRef.current.checkValidity()) {
@@ -204,7 +209,6 @@ export const NewsletterForm = ({
   const defaultHeading = (
     <h2 className="pt-0 mt-0">Subscribe to Live and Learn</h2>
   );
-  const emailInputRef = useRef<HTMLInputElement>(null);
 
   return success ? (
     <div className="rounded-md overflow-hidden p-3 py-3 -ml-1 bg-white prose shadow-lg">
@@ -213,8 +217,9 @@ export const NewsletterForm = ({
         <div className="flex w-full justify-center">
           <ConfettiExplosion {...mediumConfettiProps} />
         </div>
-        <h2 className="pt-0 mt-0 mb-3">
-          Success <span className="icon-check-circle newsletter-success"></span>
+        <h2 className="pt-0 mt-0 mb-3 flex items-center">
+          Success
+          <FaCheckCircle className="newsletter-success ml-2" />
         </h2>
         <p>{success}</p>
 

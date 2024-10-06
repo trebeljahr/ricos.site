@@ -77,7 +77,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           h6: HeadingRenderer(6),
         }}
       >
-        <ThemeProvider attribute="class">
+        <ThemeProvider attribute="class" enableSystem={false}>
           <Component {...pageProps} />
         </ThemeProvider>
       </MDXProvider>

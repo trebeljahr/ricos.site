@@ -51,17 +51,17 @@
   background: var(--light-blue);
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 1099px) {
   .page-arrow.right {
-    left: 40px;
+    left: 60px;
   }
 
   .page-arrow.left {
-    left: 5px;
+    left: 10px;
   }
 }
 
-@media only screen and (min-width: 600px) {
+@media only screen and (min-width: 1100px) {
   .page-arrow {
     top: 50%;
   }

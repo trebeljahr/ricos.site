@@ -2,7 +2,7 @@ import { FiArrowUp } from "react-icons/fi";
 import { ShowAfterScrolling } from "./ShowAfterScrolling";
 export function ToTopButton() {
   return (
-    <ShowAfterScrolling hideAgain={true}>
+    <ShowAfterScrolling>
       <button
         id="to-top-button"
         onClick={() => {

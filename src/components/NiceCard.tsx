@@ -20,16 +20,16 @@ export const NiceCard = ({
   return (
     <Link
       href={slug}
-      className="block card-hover mb-12 lg:mb-12 no-underline prose-headings:text-inherit"
+      className="block mb-12 lg:mb-12 no-underline prose-headings:text-inherit transform transition duration-300 hover:scale-[1.02]"
     >
       <div
         key={slug}
-        className="overflow-hidden md:grid"
+        className="overflow-hidden md:grid bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 rounded-md"
         style={{
           gridTemplateColumns: "15rem auto",
         }}
       >
-        <div className="h-64 md:h-full mb-4 relative not-prose">
+        <div className="h-64 md:h-full mb-4 relative not-prose overflow-hidden">
           <Image
             src={cover.src}
             alt={cover.alt}
@@ -38,10 +38,7 @@ export const NiceCard = ({
               priority ? 780 : 357
             }`}
             priority={priority}
-            className="rounded-md"
-            style={{
-              objectFit: "cover",
-            }}
+            className="object-cover"
           />
         </div>
         <div className="m-5 prose-headings:mt-2 prose-p:text-zinc-800 dark:prose-p:text-slate-300">

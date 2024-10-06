@@ -48,16 +48,6 @@ button {
   max-width: 100%;
 }
 
-.card-hover {
-  transition: all 0.3s;
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
-
-.card-hover:hover {
-  transform: scale(1.01);
-  box-shadow: 0 0 14px rgba(44, 44, 44, 0.4);
-}
 
 
 .postImgWrapper {

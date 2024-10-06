@@ -11,7 +11,6 @@ import "../styles/highlight.css";
 import "../styles/index.css";
 import "../styles/navbar.css";
 import "../styles/newsletter.css";
-import "../styles/post-preview.css";
 
 import { ThemeProvider } from "next-themes";
 import Head from "next/head";

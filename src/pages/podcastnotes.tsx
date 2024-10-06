@@ -44,7 +44,7 @@ export default function Podcastnotes() {
                 <Link
                   href={slug}
                   key={slug}
-                  className="no-underline prose-headings:text-inherit p-5 mb-10 block card-hover prose-p:text-zinc-800 dark:prose-p:text-slate-300"
+                  className="no-underline prose-headings:text-inherit p-5 mb-10 block prose-p:text-zinc-800 dark:prose-p:text-slate-300"
                 >
                   <h2 className="m-0 p-0">{title}</h2>
                   <h3 className="mt-1">

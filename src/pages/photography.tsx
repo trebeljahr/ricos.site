@@ -49,7 +49,7 @@ export default function Photography({
             <Link
               href={`/photography/${tripName}`}
               key={tripName}
-              className="relative aspect-square overflow-hidden flex-shrink-0 bg-gray-100"
+              className="relative aspect-square overflow-hidden flex-shrink-0 "
             >
               <Image
                 src={image.src}

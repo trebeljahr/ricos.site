@@ -38,7 +38,7 @@ export function BookPreview({ book, index }: Props) {
         />
       </div>
 
-      <div className="flex flex-col p-5">
+      <div className="flex flex-col p-5 md:border-t-4 md:border-r-4 md:border-b-4 max-md:rounded-bl-lg max-md:rounded-br-lg md:rounded-tr-lg md:rounded-br-lg border-gray-200 dark:border-gray-700 prose-headings:mt-2 prose-p:text-zinc-800 dark:prose-p:text-slate-300">
         <h2 className="py-0 my-0">
           <b>{title}</b>
         </h2>

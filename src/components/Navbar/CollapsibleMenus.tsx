@@ -27,7 +27,7 @@ export function CollapsibleMenuDesktop({ links, text, closeNav }: MenuProps) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="overflow-hidden bg-white dark:bg-gray-800 flex-col absolute box-border right-0 z-50 mt-2 origin-top-right w-fit rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <Menu.Items className="overflow-hidden primary-bright dark:primary-dark flex-col absolute box-border right-0 z-50 mt-2 origin-top-right w-fit rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           {links.map((item) => (
             <SingleMenuItem key={item} link={item} closeNav={closeNav} />
           ))}
@@ -56,7 +56,7 @@ export function CollapsibleMenuMobile({ links, text, closeNav }: MenuProps) {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="overflow-hidden bg-white dark:bg-slate-800 mt-2 w-48 origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+          <Menu.Items className="overflow-hidden primary-bright dark:bg-slate-800 mt-2 w-48 origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
             {links.map((item) => (
               <SingleMenuItem key={item} link={item} closeNav={closeNav} />
             ))}

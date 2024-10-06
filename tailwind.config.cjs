@@ -23,6 +23,10 @@ module.exports = {
         darkBlue: "rgb(15, 76, 229)",
         successGreen: "rgb(31, 214, 85)",
         grey: "rgb(51,51,51)",
+
+        "primary-dark": "hsl(215°, 28%, 17%)",
+        "secondary-dark": "hsl(215°, 28%, 17%)",
+        "primary-bright": "hsl(0°, 0%, 100%)",
       },
     },
   },

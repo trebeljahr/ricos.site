@@ -33,7 +33,7 @@ export function TailwindNavbar() {
             <header
               id="navbar"
               className={`sticky top-0 left-0 z-50 w-screen not-prose glassy ${
-                open ? "bg-white" : "glassy"
+                open ? "primary-bright" : "glassy"
               } dark:bg-none dark:bg-gray-900 py-3`}
             >
               <nav className="mx-auto max-w-7xl px-2 lg:px-8 flex items-center justify-between">
@@ -86,7 +86,7 @@ function MobileVersion({ open, close }: NavbarProps) {
           )}
         </Disclosure.Button>
       </div>
-      <Disclosure.Panel className="absolute z-50 top-12 p-2 w-screen h-screen right-0 bg-white dark:bg-gray-900">
+      <Disclosure.Panel className="absolute z-50 top-12 p-2 w-screen h-screen right-0 primary-bright dark:bg-gray-900">
         <div className="flex flex-col px-2 pb-3 pt-2 items-end justify-end">
           {navigation.map((item) => (
             <Link

@@ -317,7 +317,7 @@ const InputField = ({
         name={filterKey}
         onChange={(event) => handleInput(event)}
         value={filterValue}
-        className="dark:bg-gray-800 h-5"
+        className="dark:primary-dark h-5"
       />
     );
 
@@ -372,7 +372,7 @@ const AutoCompleteInput = ({
         onKeyPress={(event) => {
           event.key === "Enter" && growArray && growArray(filterKey);
         }}
-        className="dark:bg-gray-800 h-5"
+        className="dark:primary-dark h-5"
       />
       <datalist id={`auto-complete-${filterKey}`}>
         {options.map((val) => (

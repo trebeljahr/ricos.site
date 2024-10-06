@@ -28,12 +28,17 @@ nav span, nav p {
   font-family: Inter, sans-serif;
 }
 
+.custom-table-overflow {
+  overflow-x: scroll;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
   scroll-behavior: smooth;
   scroll-margin-top: 80px;
+  /* overflow-x: clip; */
 }
 
 button {

@@ -41,7 +41,7 @@ const Layout = ({
         className={
           fullScreen
             ? "w-screen px-3 mt-10 md:px-10 !max-w-none"
-            : "px-3 w-full mx-auto lg:max-w-3xl"
+            : "px-3 w-full mx-auto lg:max-w-3xl overflow-x-clip"
         }
       >
         {children}

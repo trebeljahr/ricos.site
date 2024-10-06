@@ -120,7 +120,7 @@ export const NewsletterForm = ({
       <div className="newsletter-success-container mt-10" />
     </div>
   ) : (
-    <div>
+    <>
       {heading || defaultHeading}
       {text || defaultText}
 
@@ -157,6 +157,6 @@ export const NewsletterForm = ({
         </button>
         {link || defaultLink}
       </form>
-    </div>
+    </>
   );
 };

@@ -10,7 +10,7 @@ import { MarkdownRenderers } from "@components/CustomRenderers";
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { byOnlyPublished } from "src/lib/utils";
 import { ReactNode } from "react";
-import { NewsletterModalPopup } from "@components/NewsletterSignupModal";
+import { NewsletterModalPopup } from "@components/NewsletterModalPopup";
 
 type Props = {
   children: ReactNode;
@@ -44,7 +44,7 @@ export const BlogLayout = ({
       </main>
 
       <footer>
-        <NewsletterModalPopup percentage={1.5} />
+        <NewsletterModalPopup howFarDown={2} />
         <NewsletterForm />
         {morePosts && <ReadMore posts={morePosts} />}
         <ToTopButton />

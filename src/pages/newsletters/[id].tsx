@@ -1,7 +1,7 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
-import { NewsletterModalPopup } from "@components/NewsletterSignupModal";
+import { NewsletterModalPopup } from "@components/NewsletterModalPopup";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";

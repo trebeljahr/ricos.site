@@ -1,21 +1,19 @@
 import { ReactElement, useEffect, useState } from "react";
 
-export function useScrollVisibility({ percentage }: { percentage: number }) {
+export function useScrollVisibility({ howFarDown }: { howFarDown: number }) {
   const [visible, setVisible] = useState(false);
   const [hasTriggered, setHasTriggered] = useState(false);
 
   useEffect(() => {
     const toggleVisible = () => {
-      if (percentage > 100 || percentage < 0) {
-        throw new Error("percentage must be a percentage between 0 and 100");
-      }
       const scrolled = document.documentElement.scrollTop;
+      const maxHeight = document.documentElement.scrollHeight;
+      const threshold = window.innerHeight * howFarDown;
 
-      const totalHeight = document.documentElement.scrollHeight;
-      const threshold = totalHeight * (percentage / 100);
-      console.log(totalHeight, threshold, scrolled);
-
-      const shouldBeVisible = scrolled > threshold;
+      let shouldBeVisible = scrolled > threshold;
+      if (threshold > maxHeight) {
+        shouldBeVisible = scrolled > maxHeight * 0.5;
+      }
 
       if (shouldBeVisible && !hasTriggered) {
         setVisible(true);
@@ -25,19 +23,19 @@ export function useScrollVisibility({ percentage }: { percentage: number }) {
 
     window.addEventListener("scroll", toggleVisible);
     return () => window.removeEventListener("scroll", toggleVisible);
-  }, [percentage, hasTriggered]);
+  }, [howFarDown, hasTriggered]);
 
   return { visible, setVisible };
 }
 
 export function ShowAfterScrolling({
   children,
-  percentage = 50,
+  howFarDown = 50,
 }: {
-  percentage?: number;
+  howFarDown?: number;
   children: ReactElement;
 }) {
-  const { visible } = useScrollVisibility({ percentage });
+  const { visible } = useScrollVisibility({ howFarDown });
   return (
     <div
       style={{

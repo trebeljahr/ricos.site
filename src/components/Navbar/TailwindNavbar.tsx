@@ -6,7 +6,7 @@ import {
   CollapsibleMenuMobile,
 } from "./CollapsibleMenus";
 import { DarkModeHandler } from "./DarkModeHandler";
-import { useScrollLock } from "@components/NewsletterSignupModal";
+import { useScrollLock } from "@components/NewsletterModalPopup";
 import dynamic from "next/dynamic";
 import { FiMenu, FiX } from "react-icons/fi";
 

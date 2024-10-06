@@ -54,7 +54,7 @@ export const NewsletterModalPopup = () => {
           zIndex: 300,
         },
       }}
-      className="fixed overflow-hidden flex items-center justify-center top-0 left-0 primary-bright dark:primary-dark w-screen h-screen"
+      className="fixed overflow-hidden flex items-center justify-center top-0 left-0 bg-white dark:bg-gray-800 w-screen h-screen"
     >
       <button
         onClick={closeModalForGood}

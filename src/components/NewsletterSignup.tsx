@@ -95,7 +95,7 @@ export const NewsletterForm = ({
   );
 
   return success ? (
-    <div className="rounded-md overflow-hidden p-3 py-3 -ml-1 primary-bright prose shadow-lg">
+    <div className="rounded-md overflow-hidden p-3 py-3 -ml-1 bg-white prose shadow-lg">
       <div className="newsletter-success-container mb-10" />
       <div className="ml-2 md:ml-5">
         <div className="flex w-full justify-center">

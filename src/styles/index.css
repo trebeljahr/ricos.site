@@ -87,8 +87,8 @@ button {
   width: 100%;
 }
 
-* {
-  transition: ease 3s background-color, color;
+body {
+  transition: ease 1s background-color, color;
 }
 
 .newsletter-success-container { 

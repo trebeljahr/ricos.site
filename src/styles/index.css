@@ -412,7 +412,7 @@ footer {
 
 
 .glassy {
-  backdrop-filter: saturate(180%) blur(20px); 
+  backdrop-filter: saturate(180%) blur(15px); 
   background: linear-gradient(to top,rgba(255, 255, 255, 0.5),white 100%);
 }
 

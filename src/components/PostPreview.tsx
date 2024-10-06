@@ -26,7 +26,7 @@ export const OtherPostsPreview = ({
   }
 
   return (
-    <div className="other-posts-container">
+    <div>
       {posts.map(({ slug, title, excerpt, cover }, index) => {
         const priority = index <= 1;
 

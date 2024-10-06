@@ -18,7 +18,7 @@ export const NextAndPrevArrows = ({
         {prevPost && (
           <Link
             href={`${basePath}/${prevPost}`}
-            className="page-arrow left"
+            className="page-arrow left no-underline"
             passHref
           >
             <span className="icon-arrow-left" />
@@ -27,7 +27,7 @@ export const NextAndPrevArrows = ({
         {nextPost && (
           <Link
             href={`${basePath}/${nextPost}`}
-            className="page-arrow right"
+            className="page-arrow right no-underline"
             passHref
           >
             <span className="icon-arrow-right" />

@@ -1,14 +1,3 @@
-.newsletter-article .postImgWrapper,
-.header-image-container {
-  /* max-width: 780px; */
-  max-width: 780px;
-  height: auto;
-  /* height: 100%; */
-}
-.error {
-  color: var(--red);
-}
-
 .newsletter-button {
   padding: 0.5em 1em;
   width: 100%;

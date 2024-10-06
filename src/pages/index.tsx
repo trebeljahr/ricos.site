@@ -74,7 +74,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
         </article>
       </main>
 
-      <footer>
+      <footer className="pt-16">
         <NewsletterForm />
       </footer>
     </Layout>

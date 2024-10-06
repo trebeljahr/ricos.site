@@ -1,9 +1,12 @@
 import Link from "next/link";
-import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
+import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
+import { FiChevronsRight, FiX } from "react-icons/fi";
 import { ReactElement } from "react-markdown/lib/react-markdown";
 import Modal from "react-modal";
 import { ClipLoader } from "react-spinners";
 import { useScrollVisibility } from "./ShowAfterScrolling";
+import ConfettiExplosion, { ConfettiProps } from "react-confetti-explosion";
+
 async function fetchData(input: RequestInfo, init?: RequestInit) {
   const response = await fetch(input, init);
   if (!response.ok || response.status !== 200) {
@@ -15,59 +18,15 @@ async function fetchData(input: RequestInfo, init?: RequestInit) {
   return await response.json();
 }
 
-function isValidEmail(email: string) {
-  return /\S+@\S+\.\S+/.test(email);
-}
+const mediumConfettiProps: ConfettiProps = {
+  force: 0.6,
+  duration: 3000,
+  particleCount: 200,
+  width: 1000,
+  zIndex: 400,
 
-function useNewsletterForm() {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = async (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-
-    if (!isValidEmail(email)) {
-      setError("Not a valid email address");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    const headers = new Headers();
-
-    headers.append("Accept", "application/json, text/plain, */*");
-    headers.append("Content-Type", "application/json");
-
-    try {
-      const data = await fetchData("/api/signup", {
-        method: "POST",
-        body: JSON.stringify({ email }),
-        headers: headers,
-      });
-
-      setSuccess(data.success);
-      setLoading(false);
-    } catch (err) {
-      setError("Something went wrong while signing up... maybe, try again?");
-      setLoading(false);
-    }
-  };
-
-  const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
-  };
-
-  return {
-    loading,
-    handleInput,
-    handleSubmit,
-    success,
-    error,
-    email,
-  };
-}
+  // colors: ["#9A0023", "#FF003C", "#AF739B", "#FAC7F3", "#F7DBF4"],
+};
 
 Modal.setAppElement("#__next");
 
@@ -78,9 +37,13 @@ export const NewsletterModalPopup = () => {
     howFarDown: 1.5,
   });
 
-  function closeModal() {
+  function closeModalForGood() {
     setOpen(false);
     localStorage.setItem("newsletter-popup", "closed");
+  }
+
+  function closeModal() {
+    setOpen(false);
   }
 
   useEffect(() => {
@@ -119,40 +82,52 @@ export const NewsletterModalPopup = () => {
       style={{
         overlay: {
           visibility: visible ? "visible" : "hidden",
-          transition: "visibility 0.5s linear,opacity 0.5s linear",
+          transition: "visibility 0.3s linear,opacity 0.3s linear",
           opacity: visible ? 1 : 0,
-          zIndex: 100,
+          zIndex: 300,
         },
         content: {
           visibility: visible ? "visible" : "hidden",
           transition: "visibility 0.3s linear,opacity 0.3s linear",
           opacity: visible ? 1 : 0,
-          zIndex: 100,
+          zIndex: 300,
         },
       }}
       className="fixed overflow-hidden flex items-center justify-center top-0 left-0 bg-white dark:bg-gray-800 w-screen h-screen"
     >
+      <button
+        onClick={closeModalForGood}
+        className="absolute top-3 right-3 hover:bg-gray-200 dark:hover:bg-gray-700 p-1 rounded-full"
+      >
+        <FiX className="w-6 h-6" />
+      </button>
       <div className="w-3/6">
         <NewsletterForm
-          heading={<h2>Not subscribed yet?</h2>}
-          text={<></>}
+          heading={<h2 className="mt-0">Not subscribed yet?</h2>}
+          text={
+            <>
+              <p className="mb-4">
+                Join the Live and Learn Newsletter to receive bi-weekly insights
+                straight to your inbox!
+              </p>
+              <ul className="list-disc list-inside mb-4">
+                <li>✨ Inspiring quotes</li>
+                <li>✍️ Exclusive posts on fascinating topics</li>
+                <li>🖇️ Curated links to cutting-edge ideas</li>
+                <li>🌌 Travel stories</li>
+              </ul>
+              <p className="mb-4">
+                No spam. No noise. Just meaningful content to enrich your mind.
+              </p>
+            </>
+          }
           link={
-            <button onClick={closeModal} className="flex mt-10">
-              <span>Continue Reading</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M8.25 4.5l7.5 7.5-7.5 7.5"
-                />
-              </svg>
+            <button
+              onClick={closeModal}
+              className="flex mt-10 justify-center items-center"
+            >
+              <span>Continue Reading for Now</span>
+              <FiChevronsRight className="ml-2" />
             </button>
           }
         />
@@ -170,7 +145,43 @@ export const NewsletterForm = ({
   heading?: ReactElement;
   text?: ReactElement;
 }) => {
-  const form = useNewsletterForm();
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async () => {
+    if (emailInputRef.current && !emailInputRef.current.checkValidity()) {
+      setError(emailInputRef.current.validationMessage);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    const headers = new Headers();
+
+    headers.append("Accept", "application/json, text/plain, */*");
+    headers.append("Content-Type", "application/json");
+
+    try {
+      const data = await fetchData("/api/signup", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+        headers: headers,
+      });
+
+      setSuccess(data.success);
+      setLoading(false);
+    } catch (err) {
+      setError("Something went wrong while signing up... maybe, try again?");
+      setLoading(false);
+    }
+  };
+
+  const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
+  };
+
   const defaultLink = (
     <Link
       as="/newsletters"
@@ -182,53 +193,81 @@ export const NewsletterForm = ({
   );
 
   const defaultText = (
-    <p>
-      Twice a month. Quotes, photos, booknotes and interesting links. Bundled
-      together in one heck of a Newsletter. No spam. No noise.{" "}
-    </p>
+    <>
+      <p className="mb-4">
+        Join the Live and Learn Newsletter to receive bi-weekly insights
+        straight to your inbox!
+      </p>
+    </>
   );
 
-  const defaultHeading = <h2>Subscribe to Live and Learn</h2>;
+  const defaultHeading = (
+    <h2 className="pt-0 mt-0">Subscribe to Live and Learn</h2>
+  );
+  const emailInputRef = useRef<HTMLInputElement>(null);
 
-  return form.success ? (
-    <div>
-      <h2 className="pt-0">
-        Success <span className="icon-check-circle newsletter-success"></span>
-      </h2>
-      <p>{form.success}</p>
-      {link || null}
+  return success ? (
+    <div className="rounded-md overflow-hidden p-3 py-3 -ml-1 bg-white prose shadow-lg">
+      <div className="newsletter-success-container mb-10" />
+      <div className="ml-2 md:ml-5">
+        <div className="flex w-full justify-center">
+          <ConfettiExplosion {...mediumConfettiProps} />
+        </div>
+        <h2 className="pt-0 mt-0 mb-3">
+          Success <span className="icon-check-circle newsletter-success"></span>
+        </h2>
+        <p>{success}</p>
+
+        {!link && defaultLink}
+
+        <button
+          className="mt-5 font-thin text-left"
+          onClick={() => setSuccess(null)}
+        >
+          Wanna sign up with another email address?
+        </button>
+      </div>
+
+      <div className="newsletter-success-container mt-10" />
     </div>
   ) : (
-    <div className="mt-20">
+    <div>
       {heading || defaultHeading}
       {text || defaultText}
 
-      <div className="form">
+      <form className="form">
         <input
           name="email"
           type="email"
+          aria-invalid={!!error}
+          aria-describedby={error ? "email-error" : undefined}
           required
-          className="newsletter-input"
-          value={form.email}
+          autoComplete="email"
+          className={`newsletter-input ${
+            error
+              ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+              : ""
+          }`}
+          value={email}
           placeholder="Type your email..."
-          onChange={form.handleInput}
+          onChange={handleInput}
+          ref={emailInputRef}
         />
-        {form.error && <p className="error">{form.error}</p>}
 
         <button
-          className={
-            "newsletter-button " + (form.loading ? "inactive" : "active")
-          }
-          onClick={form.handleSubmit}
+          type="submit"
+          className={`newsletter-button ${loading ? "inactive" : "active"}`}
+          disabled={loading}
+          onClick={handleSubmit}
         >
-          {form.loading ? (
+          {loading ? (
             <ClipLoader color={"rgb(68, 160, 255)"} loading={true} size={20} />
           ) : (
             "Subscribe"
           )}
         </button>
         {link || defaultLink}
-      </div>
+      </form>
     </div>
   );
 };

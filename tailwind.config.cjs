@@ -14,7 +14,7 @@ module.exports = {
     extend: {
       colors: {
         darkRed: "rgb(204, 9, 9)",
-        red: "rgb(232, 83, 83)",
+        // red: "rgb(232, 83, 83)",
         lightRed: "rgb(242, 145, 145)",
         lightGreyBlue: "rgb(233, 241, 249)",
         ultraLightBlue: "rgb(184, 216, 249)",

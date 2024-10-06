@@ -54,11 +54,11 @@ export default async function handler(
     const htmlEmail = template(placeholder);
 
     const data = {
-      from: "Rico Trebeljahr <rico@newsletter.trebeljahr.com>",
+      from: "Rico Trebeljahr <rico@trebeljahr.com>",
       to: newMember.email,
-      subject: "Confirm Signup to Trebeljahr's Newsletter",
+      subject: "Confirm Signup to the Live and Learn Newsletter",
       html: htmlEmail,
-      text: `You signed up for Trebeljahr's Newsletter. You can confirm your subscription by clicking this link ${confirmLink}`,
+      text: `You signed up for Live and Learn Newsletter. You can confirm your subscription by clicking this link ${confirmLink}`,
     };
 
     await sendEmail(data);

@@ -87,8 +87,6 @@ export const travelingStoryNames = [
   }, new Set<string>()),
 ];
 
-console.log(travelingStoryNames);
-
 export const travelingStoryNamesMap = travelblogs.reduce((agg, current) => {
   agg[current.parentFolder] = current.path.split("/").at(-2);
   return agg;

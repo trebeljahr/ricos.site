@@ -29,7 +29,6 @@ function parseBookTitle(fileName: string) {
 }
 
 const mdFiles = glob.sync(path.join(directory, "**/*.md"));
-console.log(mdFiles);
 
 function parseDateFromTitle(title: string) {
   const match = title.match(/^\d{2}[-.]\d{2}[-.]\d{4}/);
@@ -39,8 +38,6 @@ function parseDateFromTitle(title: string) {
     const dateParts = dateString.split(".");
     const dateISO = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
     const parsedDate = new Date(dateISO);
-
-    console.log(title, match[0], parsedDate);
 
     if (isNaN(parsedDate.getTime())) {
       return false;
@@ -75,8 +72,6 @@ mdFiles.forEach((filePath: string) => {
 
   const parsedCreationDate =
     parseDateFromTitle(fileName) || getCreationDate(filePath);
-
-  console.log(frontmatter.date);
 
   const { title, bookAuthor } = parseBookTitle(fileName);
   const newFrontmatter = {

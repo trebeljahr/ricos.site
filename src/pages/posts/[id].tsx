@@ -59,7 +59,7 @@ type BlogProps = {
 export default function PostComponent({ post, morePosts }: BlogProps) {
   return (
     <BlogLayout post={post} morePosts={morePosts}>
-      <MDXContent code={post.content} />
+      <MDXContent source={post.content} />
     </BlogLayout>
   );
 }
@@ -68,8 +68,6 @@ export async function getStaticPaths() {
   const paths = posts
     .filter(byOnlyPublished)
     .map(({ slug }) => ({ params: { id: slug } }));
-
-  console.log(paths);
 
   return {
     paths,

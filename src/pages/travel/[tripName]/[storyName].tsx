@@ -62,7 +62,7 @@ export default function PostComponent({
       previousSlug={previousSlug}
       nextSlug={nextSlug}
     >
-      <MDXContent code={post.content} />
+      <MDXContent source={post.content} />
     </TravelBlogLayout>
   );
 }

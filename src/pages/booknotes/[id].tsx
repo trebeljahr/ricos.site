@@ -24,7 +24,7 @@ const BuyItOnAmazon = ({ link }: { link: string }) => {
 };
 
 const BooknoteComponent = ({ booknote }: Props) => {
-  return <MDXContent code={booknote.content} />;
+  return <MDXContent source={booknote.content} />;
 };
 
 const BooknotesWithDefault = ({ booknote }: Props) => {

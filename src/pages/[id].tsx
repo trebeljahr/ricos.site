@@ -21,7 +21,7 @@ export default function Page({ page }: Props) {
       <Header subtitle={subtitle} title={title} />
       <main>
         <article>
-          <MDXContent code={page.content} />
+          <MDXContent source={page.content} />
         </article>
       </main>
 
@@ -33,15 +33,21 @@ export default function Page({ page }: Props) {
   );
 }
 
+type Params = {
+  params: { id: string };
+};
+
 export async function getStaticPaths() {
   return {
-    paths: pages.map(({ slug }: PageType) => ({ params: { id: slug } })),
+    paths: pages.map<Params>(({ slug }: PageType) => ({
+      params: { id: slug },
+    })),
     fallback: false,
   };
 }
 
-export async function getStaticProps({ params }: { params: { slug: string } }) {
-  const page = pages.find((page: PageType) => page.slug === params.slug);
+export async function getStaticProps({ params }: Params) {
+  const page = pages.find((page: PageType) => page.slug === params.id);
 
   return { props: { page } };
 }

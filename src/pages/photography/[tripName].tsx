@@ -241,11 +241,16 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }: StaticProps) {
   const { tripName } = params;
   const prefix = photographyFolder + tripName;
-  const awsImageData = await getDataFromS3({
-    prefix,
-    numberOfItems: 1000,
-  });
-  const images: ImageProps[] = mapToImageProps(awsImageData, prefix);
+  try {
+    const awsImageData = await getDataFromS3({
+      prefix,
+      numberOfItems: 1000,
+    });
 
-  return { props: { images, tripName: params.tripName } };
+    const images: ImageProps[] = mapToImageProps(awsImageData, prefix);
+
+    return { props: { images, tripName: params.tripName } };
+  } catch (error) {
+    console.error(error);
+  }
 }

@@ -5,20 +5,17 @@ import { MDXContent } from "@components/MDXContent";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";
 import { podcastnotes, type Podcastnote as PodcastnoteType } from "@velite";
+
 type Props = {
   podcastnote: PodcastnoteType;
 };
 
 const PodcastnoteComponent = ({ podcastnote }: Props) => {
-  return <MDXContent code={podcastnote.content} />;
-};
-
-const Podcastnote = ({ podcastnote: Podcastnote }: Props) => {
-  const url = `podcastnotes/${Podcastnote.slug}`;
+  const url = `podcastnotes/${podcastnote.slug}`;
   return (
     <Layout
-      title={`${Podcastnote.displayTitle}`}
-      description={`These are my Podcast Notes for ${Podcastnote.title}. ${Podcastnote.excerpt}`}
+      title={`${podcastnote.displayTitle}`}
+      description={`These are my Podcast Notes for ${podcastnote.title}. ${podcastnote.excerpt}`}
       url={url}
     >
       <BreadCrumbs path={url} />
@@ -27,31 +24,31 @@ const Podcastnote = ({ podcastnote: Podcastnote }: Props) => {
           <section className="Podcastnote-info">
             <div className="Podcastnote-preview-text">
               <h2 className="mt-0 pt-0">
-                {Podcastnote.show} | Episode – {Podcastnote.episode}
+                {podcastnote.show} | Episode – {podcastnote.episode}
               </h2>
 
-              <h1 className="pt-4">{Podcastnote.title}</h1>
+              <h1 className="pt-4">{podcastnote.title}</h1>
               <p>
-                <b>Rating: {Podcastnote.rating}/10</b>
+                <b>Rating: {podcastnote.rating}/10</b>
               </p>
               <p>
                 Listen on:{" "}
-                <ExternalLink href={Podcastnote.links.youtube}>
+                <ExternalLink href={podcastnote.links.youtube}>
                   Youtube
                 </ExternalLink>{" "}
                 |{" "}
-                <ExternalLink href={Podcastnote.links.youtube}>
+                <ExternalLink href={podcastnote.links.youtube}>
                   Spotify
                 </ExternalLink>{" "}
                 |{" "}
-                <ExternalLink href={Podcastnote.links.youtube}>
+                <ExternalLink href={podcastnote.links.youtube}>
                   Web
                 </ExternalLink>
               </p>
             </div>
           </section>
           <section>
-            <PodcastnoteComponent podcastnote={Podcastnote} />
+            <MDXContent source={podcastnote.content} />
           </section>
         </article>
       </main>
@@ -64,7 +61,7 @@ const Podcastnote = ({ podcastnote: Podcastnote }: Props) => {
   );
 };
 
-export default Podcastnote;
+export default PodcastnoteComponent;
 
 type Params = {
   params: {
@@ -73,16 +70,19 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const Podcastnote = podcastnotes.find(({ slug }) => params.id === slug);
+  const podcastnote = podcastnotes.find(({ slug }) => params.id === slug);
 
   return {
     props: {
-      Podcastnote,
+      podcastnote,
     },
   };
 }
 
-export async function getStaticPaths() {
+export async function getStaticPaths(): Promise<{
+  paths: Params[];
+  fallback: boolean;
+}> {
   const paths = podcastnotes.map((podcastnote) => {
     return {
       params: {

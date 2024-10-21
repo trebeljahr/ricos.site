@@ -41,8 +41,6 @@ async function generateRssFeed() {
     } as any;
   });
 
-  // console.log(posts);
-
   const newsletters = fs
     .readdirSync("./src/content/Notes/newsletter-stuff/newsletters")
     .map((file) => {
@@ -56,8 +54,6 @@ async function generateRssFeed() {
         slug: `/newsletters/${slugify(file.replace(/\.md?/, ""))}`,
       } as any;
     });
-
-  // console.log(newsletters);
 
   const allContent = [...posts, ...newsletters];
 
@@ -78,8 +74,6 @@ async function generateRssFeed() {
       date: new Date(post.date),
     });
   });
-
-  // console.log(feed);
 
   fs.writeFileSync("./public/rss.xml", feed.rss2());
   fs.writeFileSync(`./public/atom.xml`, feed.atom1());

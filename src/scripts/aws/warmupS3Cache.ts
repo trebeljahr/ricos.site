@@ -1,16 +1,15 @@
-import "dotenv/config";
-import { getAllStorageObjectKeys, getDataFromS3 } from "src/lib/aws";
-import { mapToImageProps, nextImageUrl } from "src/lib/mapToImageProps";
+import { InvokeCommand, LambdaClient } from "@aws-sdk/client-lambda";
+import { fromEnv } from "@aws-sdk/credential-provider-env";
 import axios from "axios";
 import { Presets, SingleBar } from "cli-progress";
-import { InvokeCommand, LambdaClient, LogType } from "@aws-sdk/client-lambda";
-import { fromEnv } from "@aws-sdk/credential-provider-env";
+import "dotenv/config";
+import { getAllStorageObjectKeys } from "src/lib/aws";
+import { nextImageUrl } from "src/lib/mapToImageProps";
 
 const imageKeys = await getAllStorageObjectKeys(process.env.AWS_BUCKET_NAME!);
 let totalInvocations = 0;
 
 const imageSizes = [128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840];
-console.log("Number of Images:", imageKeys.length);
 
 let counter = 1;
 const format = `Generating previews | {bar} | {percentage}% | {value}/{total} | {eta}s`;

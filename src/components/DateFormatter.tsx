@@ -4,8 +4,6 @@ type Props = {
 };
 
 const DateFormatter = ({ date }: Props) => {
-  console.log("DateFormatter", date);
-
   return (
     <div className="text-sm mb-5 mt-5">
       <time dateTime={date}>{format(new Date(date), "LLLL	d, yyyy")}</time> by

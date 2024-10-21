@@ -4,12 +4,33 @@ import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 import rehypeHighlight from "rehype-highlight";
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
-import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
 import { defineConfig, s, ZodMeta } from "velite";
+import { readdir, readFile, stat } from "fs/promises";
+import { MDXRemoteSerializeResult } from "next-mdx-remote";
+import { serialize } from "next-mdx-remote/serialize";
+import { join, relative } from "path";
+
+function generateExcerpt(text: string, length: number): string {
+  const lines = text
+    .split("\n")
+    .filter((line) => !/^#/.test(line.trim()) || line === "");
+  const parts = lines.join(" ").split(/([.,!?])\s*/);
+  let excerpt = "";
+
+  for (let i = 0; i < parts.length - 1; i += 2) {
+    const sentence = parts[i] + parts[i + 1];
+    if (excerpt.length + sentence.length <= length) {
+      excerpt += sentence + " ";
+    } else {
+      break;
+    }
+  }
+
+  return excerpt.trim().slice(0, -1) + "...";
+}
 
 const parseGermanDate = (dateString: string) => {
   const [day, month, year] = dateString.split(".").map(Number);
@@ -27,25 +48,56 @@ const commonFields = {
     alt: s.string(),
   }),
   metadata: s.metadata(),
-  excerpt: s.excerpt(),
   published: s.boolean(),
   tags: s.array(s.string()),
-  content: s.mdx(),
+};
+
+const addBundledMDXContent = async <T extends Record<string, any>>(
+  data: T,
+  { meta }: { meta: ZodMeta }
+): Promise<
+  T & {
+    content: MDXRemoteSerializeResult<
+      Record<string, unknown>,
+      Record<string, unknown>
+    >;
+    rawContent: string;
+    excerpt: string;
+  }
+> => {
+  const remarkPlugins = [remarkGfm, remarkToc, remarkMath];
+  const rehypePlugins = [
+    rehypeHighlight,
+    rehypeKatex,
+    rehypeSlug,
+    rehypeAccessibleEmojis,
+  ];
+
+  const rawContent = meta.content || "";
+  const mdxSource = await serialize(rawContent, {
+    mdxOptions: { remarkPlugins, rehypePlugins },
+    parseFrontmatter: true,
+  });
+
+  return {
+    ...data,
+    content: mdxSource,
+    rawContent,
+    excerpt: generateExcerpt(rawContent, 280),
+  };
 };
 
 const addLinksAndSlugTransformer = (link: string = "/") => {
-  const transformer = <T extends Record<string, any>>(
+  const transformer = async <T extends Record<string, any>>(
     data: T,
     { meta }: { meta: ZodMeta }
-  ): T & { slug: string; link: string } => {
+  ): Promise<T & { slug: string; link: string }> => {
     if (!meta.stem) {
       console.error("No stem found for " + meta.path);
       throw Error("No stem found for " + meta.path);
     }
 
     const slug = slugify(meta.stem);
-
-    // console.log(slug);
 
     return {
       ...data,
@@ -59,21 +111,6 @@ const addLinksAndSlugTransformer = (link: string = "/") => {
 
 export default defineConfig({
   root: "src/content/Notes/",
-  mdx: {
-    remarkPlugins: [
-      remarkFrontmatter,
-      remarkMdxFrontmatter,
-      remarkGfm,
-      remarkToc,
-      remarkMath,
-    ],
-    rehypePlugins: [
-      rehypeHighlight,
-      rehypeKatex,
-      rehypeSlug,
-      rehypeAccessibleEmojis,
-    ],
-  },
 
   collections: {
     posts: {
@@ -81,7 +118,8 @@ export default defineConfig({
       pattern: "posts/*.md",
       schema: s
         .object({ ...commonFields, subtitle: s.string() })
-        .transform(addLinksAndSlugTransformer("posts")),
+        .transform(addLinksAndSlugTransformer("posts"))
+        .transform(addBundledMDXContent),
     },
     newsletters: {
       name: "Newsletter",
@@ -96,7 +134,8 @@ export default defineConfig({
           slug: slugify(meta.stem || ""),
           link: `/newsletters/${slugify(data.title)}`,
           number: meta.stem || "",
-        })),
+        }))
+        .transform(addBundledMDXContent),
     },
     booknotes: {
       name: "Booknote",
@@ -113,14 +152,16 @@ export default defineConfig({
           amazonLink: s.string(),
           amazonAffiliateLink: s.string(),
         })
-        .transform(addLinksAndSlugTransformer("booknotes")),
+        .transform(addLinksAndSlugTransformer("booknotes"))
+        .transform(addBundledMDXContent),
     },
     pages: {
       name: "Page",
       pattern: "pages/*.md",
       schema: s
         .object({ ...commonFields, subtitle: s.string() })
-        .transform(addLinksAndSlugTransformer()),
+        .transform(addLinksAndSlugTransformer())
+        .transform(addBundledMDXContent),
     },
     podcastnotes: {
       name: "Podcastnote",
@@ -143,28 +184,32 @@ export default defineConfig({
             displayTitle: `${data.title} | ${data.show} – Episode ${data.episode}`,
           };
         })
-        .transform(addLinksAndSlugTransformer("podcastnotes")),
+        .transform(addLinksAndSlugTransformer("podcastnotes"))
+        .transform(addBundledMDXContent),
     },
     travelblogs: {
       name: "Travelblog",
       pattern: "travel/**/*.md",
-      schema: s.object({ ...commonFields }).transform((data, { meta }) => {
-        const name = meta.path.replace(".md", "").split("/").at(-2);
+      schema: s
+        .object({ ...commonFields })
+        .transform((data, { meta }) => {
+          const name = meta.path.replace(".md", "").split("/").at(-2);
 
-        if (!name || !meta.stem) throw Error("No name found for " + meta.path);
+          if (!name || !meta.stem)
+            throw Error("No name found for " + meta.path);
 
-        const parentFolder = slugify(name);
-        const slug = slugify(meta.stem);
+          const parentFolder = slugify(name);
+          const slug = slugify(meta.stem);
 
-        return {
-          ...data,
-          slug,
-          path: meta.path,
-          link: path.join("/", "travel", parentFolder, slug),
-          parentFolder,
-        };
-      }),
-      // .transform(addLinksAndSlugs("travel")),
+          return {
+            ...data,
+            slug,
+            path: meta.path,
+            link: path.join("/", "travel", parentFolder, slug),
+            parentFolder,
+          };
+        })
+        .transform(addBundledMDXContent),
     },
   },
 });

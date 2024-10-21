@@ -41,8 +41,6 @@ async function main() {
     data: { cover, title, excerpt },
   } = matter(mdFileRaw);
 
-  console.log(title.replaceAll(" ", "-").replaceAll(",", "").toLowerCase());
-
   function addHost(url: { href: string; path: string }) {
     if (
       url.href.startsWith("/") &&
@@ -148,7 +146,7 @@ Thanks for reading plaintext emails. You're cool!
 `,
   };
 
-  console.log("Sending newsletter...");
+  console.log(title, ":\n", `Sending newsletter ${number}...`);
   await sendEmail(data);
   console.log("Successfully sent email!");
 }

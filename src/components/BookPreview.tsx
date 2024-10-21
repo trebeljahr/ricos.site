@@ -8,14 +8,14 @@ type Props = {
 };
 
 export function BookPreview({ book, index }: Props) {
-  const { slug, title, cover, excerpt, subtitle, bookAuthor, rating } = book;
+  const { link, title, cover, excerpt, subtitle, bookAuthor, rating } = book;
 
   const defaultExcerpt = "";
   const priority = index < 3;
   return (
     <Link
-      as={slug}
-      href={slug}
+      as={link}
+      href={link}
       className="no-underline prose-headings:text-inherit w-full overflow-hidden md:grid mb-10 prose-p:text-zinc-800 dark:prose-p:text-slate-300 transform transition-transform duration-300 hover:scale-[1.02]"
       style={{
         gridTemplateColumns: "15rem auto",

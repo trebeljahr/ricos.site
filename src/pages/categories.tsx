@@ -41,7 +41,10 @@ const mainCategories = [
 type LinksOnTag<T> = { tag: string; links: T[] };
 
 type TaggedDocumentData = LinksOnTag<
-  Pick<(typeof allDocuments)[0], "title" | "slug" | "metadata" | "date">
+  Pick<
+    (typeof allDocuments)[0],
+    "title" | "slug" | "link" | "metadata" | "date"
+  >
 >;
 
 type Props = {
@@ -88,10 +91,10 @@ const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
             <ul>
               {links
                 .sort(byReadingTime)
-                .map(({ slug, title, metadata: { readingTime } }) => {
+                .map(({ link, slug, title, metadata: { readingTime } }) => {
                   return (
                     <li key={slug}>
-                      <Link href={slug || ""} as={slug}>
+                      <Link href={link || ""} as={slug}>
                         {title} – {readingTime}
                       </Link>
                     </li>

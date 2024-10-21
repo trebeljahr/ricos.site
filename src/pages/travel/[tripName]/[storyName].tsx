@@ -6,7 +6,7 @@ import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
 import { allTravelblogs, type Travelblog } from "@contentlayer/generated";
 import slugify from "@sindresorhus/slugify";
-import { useMDXComponent } from "next-contentlayer/hooks";
+import { useMDXComponent } from "next-contentlayer2/hooks";
 import { replaceUndefinedWithNull, sortAndFilterNotes } from "src/lib/utils";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { ReactNode } from "react";

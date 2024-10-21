@@ -6,7 +6,7 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";
 import { Booknote, allBooknotes } from "@contentlayer/generated";
-import { useMDXComponent } from "next-contentlayer/hooks";
+import { useMDXComponent } from "next-contentlayer2/hooks";
 import { byOnlyPublished } from "src/lib/utils";
 type Props = {
   book: Booknote;

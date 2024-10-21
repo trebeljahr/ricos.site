@@ -1,6 +1,6 @@
 import Header from "@components/PostHeader";
 import Layout from "@components/Layout";
-import { useMDXComponent } from "next-contentlayer/hooks";
+import { useMDXComponent } from "next-contentlayer2/hooks";
 import { allPosts, Post } from "@contentlayer/generated";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";

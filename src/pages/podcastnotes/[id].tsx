@@ -2,7 +2,7 @@ import {
   allPodcastnotes,
   type Podcastnote as PodcastnoteType,
 } from "@contentlayer/generated";
-import { useMDXComponent } from "next-contentlayer/hooks";
+import { useMDXComponent } from "next-contentlayer2/hooks";
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { MarkdownRenderers } from "@components/CustomRenderers";
 import { ExternalLink } from "@components/ExternalLink";

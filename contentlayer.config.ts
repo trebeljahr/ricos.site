@@ -2,7 +2,7 @@ import {
   defineDocumentType,
   defineNestedType,
   makeSource,
-} from "contentlayer/source-files";
+} from "contentlayer2/source-files";
 import readingTime from "reading-time";
 import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 import rehypeHighlight from "rehype-highlight";
@@ -14,6 +14,10 @@ import remarkMath from "remark-math";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
 import slugify from "@sindresorhus/slugify";
+import remarkParse from "remark-parse";
+import remark2rehype from "remark-rehype";
+import rehypeStringify from "rehype-stringify";
+import { MarkdownUnifiedBuilderCallback } from "contentlayer2/core";
 
 function generateExcerpt(text: string, length: number): string {
   const lines = text
@@ -267,6 +271,35 @@ export const Page = defineDocumentType(() => ({
   },
 }));
 
+const customBuilder: MarkdownUnifiedBuilderCallback = (builder) => {
+  // parses out the frontmatter (which is needed for full-document parsing)
+  // builder.use(remarkFrontmatter);
+  const remarkPlugins = [
+    // remarkFrontmatter,
+    remarkMdxFrontmatter,
+    remarkGfm,
+    remarkToc,
+    remarkMath,
+  ];
+  const rehypePlugins = [
+    rehypeHighlight,
+    rehypeKatex,
+    rehypeSlug,
+    rehypeAccessibleEmojis,
+  ];
+  // parse markdown
+  builder.use(remarkParse);
+
+  builder.use(remarkPlugins);
+
+  builder.use(remark2rehype);
+
+  builder.use(rehypePlugins);
+
+  // rehype to html
+  builder.use(rehypeStringify);
+};
+
 export default makeSource({
   contentDirPath: "src/content/Notes",
   contentDirInclude: [
@@ -279,19 +312,21 @@ export default makeSource({
   ],
   contentDirExclude: ["**/*.json"],
   documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote, Travelblog],
-  mdx: {
-    remarkPlugins: [
-      remarkFrontmatter,
-      remarkMdxFrontmatter,
-      remarkGfm,
-      remarkToc,
-      remarkMath,
-    ],
-    rehypePlugins: [
-      rehypeHighlight,
-      rehypeKatex,
-      rehypeSlug,
-      rehypeAccessibleEmojis,
-    ],
-  },
+  markdown: customBuilder,
+  mdx: customBuilder as any,
+  // {
+  //   remarkPlugins: [
+  //     // remarkFrontmatter,
+  //     // remarkMdxFrontmatter,
+  //     remarkGfm,
+  //     remarkToc,
+  //     remarkMath,
+  //   ],
+  //   rehypePlugins: [
+  //     rehypeHighlight,
+  //     rehypeKatex,
+  //     rehypeSlug,
+  //     rehypeAccessibleEmojis,
+  //   ],
+  // },
 });

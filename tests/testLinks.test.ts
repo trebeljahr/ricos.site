@@ -2,12 +2,12 @@ import {
   DocumentTypes,
   allDocuments,
   allNewsletters,
-} from "@contentlayer/generated";
+} from "@contentlayer2/generated";
 import { kebab } from "case";
 import { existsSync } from "fs";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
-import remarkMath, { Root } from "remark-math";
+import remarkMath from "remark-math";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkParse from "remark-parse";
 import remarkStringify from "remark-stringify";

@@ -1,6 +1,6 @@
 import type { Page as PageType } from "@contentlayer/generated";
 import { allPages } from "@contentlayer/generated";
-import { useMDXComponent } from "next-contentlayer/hooks";
+import { useMDXComponent } from "next-contentlayer2/hooks";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
@@ -11,6 +11,8 @@ type Props = {
 
 export default function Page({ page }: Props) {
   const Component = useMDXComponent(page.body.code);
+  console.log(page);
+
   const { subtitle, title, description, cover } = page;
   return (
     <Layout

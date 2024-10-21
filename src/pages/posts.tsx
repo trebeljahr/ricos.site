@@ -3,7 +3,7 @@ import { NewsletterForm } from "@components/NewsletterSignup";
 import Header from "@components/PostHeader";
 import { OtherPostsPreview } from "@components/PostPreview";
 import { ToTopButton } from "@components/ToTopButton";
-import { Post, allPosts } from "@contentlayer/generated";
+import { Post, posts } from "@velite";
 import { byOnlyPublished } from "src/lib/utils";
 type Props = {
   posts: Post[];
@@ -41,19 +41,22 @@ const Posts = ({ posts }: Props) => {
 export default Posts;
 
 export const getStaticProps = async () => {
-  const posts = allPosts
+  const myPosts = posts
     .filter(byOnlyPublished)
-    .map(({ slug, excerpt, cover, title, date }) => ({
+    .map(({ slug, excerpt, cover, link, title, date }) => ({
       slug,
+      link,
       excerpt,
       cover,
       title,
       date,
     }));
 
-  posts.sort((post1, post2) => (post1.date > post2.date ? -1 : 1));
+  myPosts.sort((post1, post2) =>
+    new Date(post1.date) > new Date(post2.date) ? -1 : 1
+  );
 
   return {
-    props: { posts },
+    props: { posts: myPosts },
   };
 };

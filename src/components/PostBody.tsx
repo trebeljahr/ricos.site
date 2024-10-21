@@ -1,24 +1,19 @@
-import ReactMarkdown from "react-markdown";
-import remarkToc from "remark-toc";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
-import rehypeHighlight from "rehype-highlight";
-import { MarkdownRenderers } from "./CustomRenderers";
+import { Newsletter } from "@velite";
+import { MDXContent } from "./MDXContent";
+import { UnitVectorDemo } from "./collisionDetection/UnitVectorDemo";
+import { ThreeFiberDemo } from "./Demo";
 
 type Props = {
-  content: string;
+  content: Newsletter["content"];
 };
 
 export const PostBodyWithoutExcerpt = ({ content }: Props) => {
   return (
     <div>
-      <ReactMarkdown
-        remarkPlugins={[remarkToc, remarkGfm]}
-        rehypePlugins={[rehypeRaw, rehypeHighlight]}
-        components={MarkdownRenderers}
-      >
-        {content}
-      </ReactMarkdown>
+      <MDXContent
+        code={content}
+        components={{ UnitVectorDemo, ThreeFiberDemo }}
+      />
     </div>
   );
 };

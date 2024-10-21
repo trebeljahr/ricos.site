@@ -1,25 +1,20 @@
-import {
-  allPodcastnotes,
-  type Podcastnote as PodcastnoteType,
-} from "@contentlayer/generated";
-import { useMDXComponent } from "next-contentlayer2/hooks";
 import { BreadCrumbs } from "@components/BreadCrumbs";
-import { MarkdownRenderers } from "@components/CustomRenderers";
 import { ExternalLink } from "@components/ExternalLink";
-import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
+import { MDXContent } from "@components/MDXContent";
 import { NewsletterForm } from "@components/NewsletterSignup";
+import { ToTopButton } from "@components/ToTopButton";
+import { podcastnotes, type Podcastnote as PodcastnoteType } from "@velite";
 type Props = {
-  Podcastnote: PodcastnoteType;
+  podcastnote: PodcastnoteType;
 };
 
-const PodcastnoteComponent = ({ Podcastnote }: Props) => {
-  const Component = useMDXComponent(Podcastnote.body.code);
-  return <Component components={{ ...MarkdownRenderers }} />;
+const PodcastnoteComponent = ({ podcastnote }: Props) => {
+  return <MDXContent code={podcastnote.content} />;
 };
 
-const Podcastnote = ({ Podcastnote }: Props) => {
-  const url = `podcastnotes/${Podcastnote.id}`;
+const Podcastnote = ({ podcastnote: Podcastnote }: Props) => {
+  const url = `podcastnotes/${Podcastnote.slug}`;
   return (
     <Layout
       title={`${Podcastnote.displayTitle}`}
@@ -56,7 +51,7 @@ const Podcastnote = ({ Podcastnote }: Props) => {
             </div>
           </section>
           <section>
-            <PodcastnoteComponent Podcastnote={Podcastnote} />
+            <PodcastnoteComponent podcastnote={Podcastnote} />
           </section>
         </article>
       </main>
@@ -78,7 +73,7 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const Podcastnote = allPodcastnotes.find(({ id }) => params.id === id);
+  const Podcastnote = podcastnotes.find(({ slug }) => params.id === slug);
 
   return {
     props: {
@@ -88,10 +83,10 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const paths = allPodcastnotes.map((Podcastnote) => {
+  const paths = podcastnotes.map((podcastnote) => {
     return {
       params: {
-        id: Podcastnote.id,
+        id: podcastnote.slug,
       },
     };
   });

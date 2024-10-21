@@ -1,9 +1,26 @@
-import { allDocuments, DocumentTypes } from "@contentlayer/generated";
+import {
+  posts,
+  booknotes,
+  pages,
+  newsletters,
+  podcastnotes,
+  travelblogs,
+} from "@velite";
 import Link from "next/link";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";
 import { toTitleCase } from "src/lib/toTitleCase";
+
+const allDocuments = [
+  ...posts,
+  ...booknotes,
+  ...pages,
+  ...newsletters,
+  ...podcastnotes,
+  ...travelblogs,
+];
+
 const mainCategories = [
   "philosophy",
   "psychology",
@@ -24,7 +41,7 @@ const mainCategories = [
 type LinksOnTag<T> = { tag: string; links: T[] };
 
 type TaggedDocumentData = LinksOnTag<
-  Pick<DocumentTypes, "title" | "slug" | "type" | "readingTime" | "date">
+  Pick<(typeof allDocuments)[0], "title" | "slug" | "metadata" | "date">
 >;
 
 type Props = {
@@ -52,11 +69,11 @@ const RenderTags = ({ tags }: { tags: TaggedDocumentData[] }) => {
 };
 
 const byReadingTime = (
-  a: { readingTime: string },
-  b: { readingTime: string }
+  a: { metadata: { readingTime: number } },
+  b: { metadata: { readingTime: number } }
 ) => {
-  const aTime = parseInt(a.readingTime.split(" ")[0]);
-  const bTime = parseInt(b.readingTime.split(" ")[0]);
+  const aTime = a.metadata.readingTime;
+  const bTime = b.metadata.readingTime;
 
   return aTime - bTime;
 };
@@ -71,11 +88,11 @@ const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
             <ul>
               {links
                 .sort(byReadingTime)
-                .map(({ slug, title, type, readingTime, date }) => {
+                .map(({ slug, title, metadata: { readingTime } }) => {
                   return (
                     <li key={slug}>
                       <Link href={slug || ""} as={slug}>
-                        {title} ({type}) – {readingTime}
+                        {title} – {readingTime}
                       </Link>
                     </li>
                   );
@@ -122,9 +139,8 @@ export async function getStaticProps() {
         .filter(({ tags }) => {
           return tags?.includes(tag);
         })
-        .map(({ slug, type, title, readingTime, date }) => ({
+        .map(({ slug, title, metadata: { readingTime }, date }) => ({
           slug,
-          type,
           title,
           readingTime,
           date,

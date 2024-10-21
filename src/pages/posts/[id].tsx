@@ -1,16 +1,15 @@
-import Header from "@components/PostHeader";
-import Layout from "@components/Layout";
-import { useMDXComponent } from "next-contentlayer2/hooks";
-import { allPosts, Post } from "@contentlayer/generated";
-import { NewsletterForm } from "@components/NewsletterSignup";
-import { ToTopButton } from "@components/ToTopButton";
-import { ReadMore } from "@components/MoreStories";
-import { getRandom } from "src/lib/math/getRandom";
-import { MarkdownRenderers } from "@components/CustomRenderers";
 import { BreadCrumbs } from "@components/BreadCrumbs";
-import { byOnlyPublished } from "src/lib/utils";
-import { ReactNode } from "react";
+import Layout from "@components/Layout";
+import { MDXContent } from "@components/MDXContent";
+import { ReadMore } from "@components/MoreStories";
 import { NewsletterModalPopup } from "@components/NewsletterModalPopup";
+import { NewsletterForm } from "@components/NewsletterSignup";
+import Header from "@components/PostHeader";
+import { ToTopButton } from "@components/ToTopButton";
+import { Post, posts } from "@velite";
+import { ReactNode } from "react";
+import { getRandom } from "src/lib/math/getRandom";
+import { byOnlyPublished } from "src/lib/utils";
 
 type Props = {
   children: ReactNode;
@@ -21,9 +20,9 @@ type Props = {
 export const BlogLayout = ({
   children,
   morePosts,
-  post: { excerpt, title, subtitle, date, cover, id },
+  post: { excerpt, title, subtitle, date, cover, slug },
 }: Props) => {
-  const url = `posts/${id}`;
+  const url = `posts/${slug}`;
   return (
     <Layout
       description={excerpt}
@@ -58,20 +57,22 @@ type BlogProps = {
 };
 
 export default function PostComponent({ post, morePosts }: BlogProps) {
-  const Component = useMDXComponent(post.body.code);
-
   return (
     <BlogLayout post={post} morePosts={morePosts}>
-      <Component components={{ ...MarkdownRenderers }} />
+      <MDXContent code={post.content} />
     </BlogLayout>
   );
 }
 
 export async function getStaticPaths() {
+  const paths = posts
+    .filter(byOnlyPublished)
+    .map(({ slug }) => ({ params: { id: slug } }));
+
+  console.log(paths);
+
   return {
-    paths: allPosts
-      .filter(byOnlyPublished)
-      .map(({ id }) => ({ params: { id } })),
+    paths,
     fallback: false,
   };
 }
@@ -79,17 +80,16 @@ export async function getStaticPaths() {
 type Params = { params: { id: string } };
 
 export async function getStaticProps({ params }: Params) {
-  const post = allPosts
+  const post = posts
     .filter(byOnlyPublished)
-    .find((post: Post) => post.id === params.id);
-  const otherPosts = allPosts
+    .find((post: Post) => post.slug === params.id);
+  const otherPosts = posts
     .filter(byOnlyPublished)
-    .filter((post) => post.id !== params.id)
-    .map(({ title, slug, cover, id, excerpt }) => ({
+    .filter((post) => post.slug !== params.id)
+    .map(({ title, cover, slug, excerpt }) => ({
       title,
       slug,
       cover,
-      id,
       excerpt,
     }));
   const morePosts = getRandom(otherPosts, 3);

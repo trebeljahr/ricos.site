@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { promisify } from "util";
 import { NextApiRequest } from "next";
 import { NextApiResponse } from "next";
-import { Travelblog } from "@contentlayer/generated";
+import { Travelblog } from "@velite";
 import { byDates } from "./dateUtils";
 
 export function getErrorMessage(error: unknown) {

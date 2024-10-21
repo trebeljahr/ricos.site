@@ -2,9 +2,9 @@ import { BreadCrumbs, turnKebabIntoTitleCase } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
-import { allTravelblogs, type Travelblog } from "@contentlayer/generated";
+import { travelblogs, type Travelblog } from "@velite";
 import slugify from "@sindresorhus/slugify";
-import { sortAndFilterNotes } from "src/lib/utils";
+import { sortAndFilterNotes as sortAndFilterTravelBlogs } from "src/lib/utils";
 import { travelingStoryNames } from "..";
 type Props = {
   posts: Travelblog[];
@@ -13,7 +13,6 @@ type Props = {
 
 const Traveling = ({ posts, tripName }: Props) => {
   const url = "/travel/" + tripName;
-  console.log(tripName);
 
   return (
     <Layout
@@ -58,14 +57,14 @@ export const getStaticPaths = async () => {
 };
 
 export const getStaticProps = async ({ params }: Params) => {
-  const posts = sortAndFilterNotes(allTravelblogs, params.tripName).map(
-    ({ parentFolder, title, slug, excerpt, date, cover }) => {
+  const posts = sortAndFilterTravelBlogs(travelblogs, params.tripName).map(
+    ({ link, title, excerpt, date, cover }) => {
       return {
         title,
         cover,
         date,
         excerpt,
-        slug: slugify(parentFolder) + "/" + slug,
+        link,
       };
     }
   );

@@ -6,12 +6,10 @@ import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
-import {
-  allNewsletters,
-  type Newsletter as NewsletterType,
-} from "@contentlayer/generated";
+import { newsletters, type Newsletter as NewsletterType } from "@velite";
 import Image from "next/image";
 import { byOnlyPublished } from "src/lib/utils";
+
 type Props = {
   newsletter: NewsletterType;
   nextPost: null | number;
@@ -19,7 +17,7 @@ type Props = {
 };
 
 const Newsletter = ({
-  newsletter: { excerpt, title, number, slugTitle, cover, body, date },
+  newsletter: { excerpt, title, number, slugTitle, content, cover, date },
   nextPost,
   prevPost,
 }: Props) => {
@@ -49,8 +47,8 @@ const Newsletter = ({
             <Image
               priority
               src={cover.src}
-              width={cover.width || 1}
-              height={cover.height || 1}
+              width={780}
+              height={780}
               alt={cover.alt}
               sizes="100vw"
               style={{
@@ -60,7 +58,7 @@ const Newsletter = ({
               }}
             />
           </div>
-          <PostBodyWithoutExcerpt content={body.raw} />
+          <PostBodyWithoutExcerpt content={content} />
         </article>
       </main>
 
@@ -82,16 +80,17 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const newsletter = allNewsletters.find(
+  const newsletter = newsletters.find(
     ({ slugTitle }) => slugTitle === params.id
   );
   if (!newsletter) throw Error("Newsletter not found");
 
-  const next = newsletter.number + 1;
-  const prev = newsletter.number - 1;
+  const number = parseInt(newsletter.number);
+  const next = number + 1;
+  const prev = number - 1;
 
-  let nextPost = allNewsletters.find(({ number }) => number === next);
-  let prevPost = allNewsletters.find(({ number }) => number === prev);
+  let nextPost = newsletters.find(({ number }) => parseInt(number) === next);
+  let prevPost = newsletters.find(({ number }) => parseInt(number) === prev);
 
   return {
     props: {
@@ -103,7 +102,7 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const newsletterTitles = allNewsletters
+  const newsletterTitles = newsletters
     .filter(byOnlyPublished)
     .map(({ slugTitle }) => {
       return {

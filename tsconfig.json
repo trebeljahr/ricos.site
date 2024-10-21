@@ -16,7 +16,7 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@contentlayer/generated": ["./.contentlayer/generated"],
+      "@velite": ["./.velite"],
       "components/collision-detection": ["src/components/collisionDetection"],
       "@components/*": ["./src/components/*"]
     }
@@ -26,9 +26,10 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".contentlayer/generated",
+    ".velite",
     "src/scripts/createRedirects.js",
     "src/lib/generateExcerpts.js",
-    "src/scripts/sortedNewsletters.js"
+    "src/scripts/sortedNewsletters.js",
+    "next.config.js"
   ]
 }

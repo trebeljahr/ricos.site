@@ -1,5 +1,5 @@
-import { withContentlayer } from "next-contentlayer2";
 import { generateRedirects } from "./src/scripts/createRedirects.js";
+import { build } from "velite";
 
 const nextConfig = {
   images: {
@@ -12,13 +12,25 @@ const nextConfig = {
       level: "error",
     };
 
+    config.plugins.push(new VeliteWebpackPlugin());
+
     return config;
   },
 };
 
-const configWithContentlayer = withContentlayer(nextConfig);
+class VeliteWebpackPlugin {
+  static started = false;
+  apply(/** @type {import('webpack').Compiler} */ compiler) {
+    compiler.hooks.beforeCompile.tapPromise("VeliteWebpackPlugin", async () => {
+      if (VeliteWebpackPlugin.started) return;
+      VeliteWebpackPlugin.started = true;
+      const dev = compiler.options.mode === "development";
+      await build({ watch: dev, clean: !dev });
+    });
+  }
+}
 
-export default configWithContentlayer;
+export default nextConfig;
 
 async function customRedirects() {
   const redirects = await generateRedirects();

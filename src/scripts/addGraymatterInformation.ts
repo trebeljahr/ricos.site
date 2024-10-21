@@ -13,6 +13,7 @@ const booknotesFields = {
   excerpt: "",
   date: "01.01.1970",
   rating: 0,
+
   published: false,
   done: false,
   tags: [],

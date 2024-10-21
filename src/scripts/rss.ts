@@ -29,7 +29,7 @@ async function generateRssFeed() {
     },
   });
 
-  const allPosts = fs.readdirSync("./src/content/Notes/posts").map((file) => {
+  const posts = fs.readdirSync("./src/content/Notes/posts").map((file) => {
     const postContent = fs.readFileSync(
       "./src/content/Notes/posts/" + file,
       "utf8"
@@ -41,9 +41,9 @@ async function generateRssFeed() {
     } as any;
   });
 
-  // console.log(allPosts);
+  // console.log(posts);
 
-  const allNewsletters = fs
+  const newsletters = fs
     .readdirSync("./src/content/Notes/newsletter-stuff/newsletters")
     .map((file) => {
       const newsletterContent = fs.readFileSync(
@@ -57,9 +57,9 @@ async function generateRssFeed() {
       } as any;
     });
 
-  // console.log(allNewsletters);
+  // console.log(newsletters);
 
-  const allContent = [...allPosts, ...allNewsletters];
+  const allContent = [...posts, ...newsletters];
 
   allContent.filter(byOnlyPublished).forEach((post) => {
     const link = `${site_url}${post.slug}`;

@@ -1,7 +1,6 @@
-import { Booknote } from "@contentlayer/generated";
-import Link from "next/link";
-import { BookCover } from "./CoverImage";
+import { Booknote } from "@velite";
 import Image from "next/image";
+import Link from "next/link";
 
 type Props = {
   book: Booknote;
@@ -9,8 +8,7 @@ type Props = {
 };
 
 export function BookPreview({ book, index }: Props) {
-  const { slug, title, bookCover, excerpt, subtitle, bookAuthor, rating } =
-    book;
+  const { slug, title, cover, excerpt, subtitle, bookAuthor, rating } = book;
 
   const defaultExcerpt = "";
   const priority = index < 3;
@@ -25,8 +23,8 @@ export function BookPreview({ book, index }: Props) {
     >
       <div className="h-64 md:h-full mb-4 relative not-prose">
         <Image
-          src={bookCover}
-          alt={title}
+          src={cover.src}
+          alt={cover.alt}
           fill
           sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
             priority ? 780 : 357

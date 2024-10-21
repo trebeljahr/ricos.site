@@ -1,10 +1,3 @@
-import {
-  HeadingRenderer,
-  ImageRenderer,
-  LinkRenderer,
-  ParagraphRenderer,
-} from "@components/CustomRenderers";
-import { MDXProvider } from "@mdx-js/react";
 import { AppProps } from "next/app";
 import "../styles/globals.css";
 import "../styles/highlight.css";
@@ -64,23 +57,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <meta name="theme-color" content="#000" />
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
       </Head>
-      <MDXProvider
-        components={{
-          img: ImageRenderer,
-          a: LinkRenderer,
-          p: ParagraphRenderer,
-          h1: HeadingRenderer(1),
-          h2: HeadingRenderer(2),
-          h3: HeadingRenderer(3),
-          h4: HeadingRenderer(4),
-          h5: HeadingRenderer(5),
-          h6: HeadingRenderer(6),
-        }}
-      >
-        <ThemeProvider attribute="class" enableSystem={false}>
-          <Component {...pageProps} />
-        </ThemeProvider>
-      </MDXProvider>
+
+      <ThemeProvider attribute="class" enableSystem={false}>
+        <Component {...pageProps} />
+      </ThemeProvider>
     </>
   );
 }

@@ -1,30 +1,27 @@
-import type { Page as PageType } from "@contentlayer/generated";
-import { allPages } from "@contentlayer/generated";
-import { useMDXComponent } from "next-contentlayer2/hooks";
+import type { Page as PageType } from "@velite";
+import { pages } from "@velite";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
+import { MDXContent } from "@components/MDXContent";
 type Props = {
   page: PageType;
 };
 
 export default function Page({ page }: Props) {
-  const Component = useMDXComponent(page.body.code);
-  console.log(page);
-
-  const { subtitle, title, description, cover } = page;
+  const { subtitle, title, excerpt, cover } = page;
   return (
     <Layout
       title={title + " – " + subtitle}
-      description={description}
+      description={excerpt}
       image={cover.src}
       imageAlt={cover.alt}
     >
       <Header subtitle={subtitle} title={title} />
       <main>
         <article>
-          <Component />
+          <MDXContent code={page.content} />
         </article>
       </main>
 
@@ -38,13 +35,13 @@ export default function Page({ page }: Props) {
 
 export async function getStaticPaths() {
   return {
-    paths: allPages.map(({ id }: PageType) => ({ params: { id } })),
+    paths: pages.map(({ slug }: PageType) => ({ params: { id: slug } })),
     fallback: false,
   };
 }
 
-export async function getStaticProps({ params }: { params: { id: string } }) {
-  const page = allPages.find((page: PageType) => page.id === params.id);
+export async function getStaticProps({ params }: { params: { slug: string } }) {
+  const page = pages.find((page: PageType) => page.slug === params.slug);
 
   return { props: { page } };
 }

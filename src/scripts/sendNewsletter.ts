@@ -99,12 +99,12 @@ async function main() {
   }
 
   const file = await unified()
-    .use(remarkParse)
+    .use(remarkParse as any)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeUrls, addHost)
-    .use(rehypeRewrite, { rewrite })
-    .use(rehypePresetMinify)
-    .use(rehypeStringify)
+    .use(rehypeRewrite as any, { rewrite })
+    .use(rehypePresetMinify as any)
+    .use(rehypeStringify as any)
     .process(content);
 
   const template = Handlebars.compile(emailHandlebarsFile);

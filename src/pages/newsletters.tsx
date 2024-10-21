@@ -1,4 +1,4 @@
-import { allNewsletters } from "@contentlayer/generated";
+import { Newsletter, newsletters } from "@velite";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
@@ -6,28 +6,21 @@ import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
 import { byOnlyPublished } from "src/lib/utils";
 
-type NewsletterData = {
-  slug: string;
-  number: number;
-  title: string;
-  excerpt: string;
-  cover: {
-    src: string;
-    alt: string;
-  };
-  id: string;
-};
+type NewsletterData = Pick<
+  Newsletter,
+  "link" | "number" | "title" | "excerpt" | "cover"
+>;
 
 type Props = {
   newsletterData: NewsletterData[];
 };
 
-const sortByIds = (arr: NewsletterData[]) => {
+const sortByNumbers = (arr: NewsletterData[]) => {
   const collator = new Intl.Collator(undefined, {
     numeric: true,
     sensitivity: "base",
   });
-  return arr.sort((a, b) => -collator.compare(a.id, b.id));
+  return arr.sort((a, b) => -collator.compare(a.number, b.number));
 };
 
 const Newsletters = ({ newsletterData }: Props) => {
@@ -44,14 +37,14 @@ const Newsletters = ({ newsletterData }: Props) => {
             title={"Newsletters"}
           />
           {newsletterData.map(
-            ({ slug, number, title, excerpt, cover }, index) => {
+            ({ link, number, title, excerpt, cover }, index) => {
               const priority = index <= 1;
 
               return (
                 <NiceCard
-                  key={slug}
+                  key={link}
                   cover={cover}
-                  slug={slug}
+                  link={link}
                   excerpt={excerpt}
                   priority={priority}
                   title={`${title} | Live and Learn #${number}`}
@@ -73,20 +66,19 @@ const Newsletters = ({ newsletterData }: Props) => {
 export default Newsletters;
 
 export const getStaticProps = async () => {
-  const newsletterData = allNewsletters
+  const newsletterData = newsletters
     .filter(byOnlyPublished)
-    .map(({ slug, number, title, excerpt = "", cover, id }) => ({
-      slug,
+    .map(({ link, number, title, excerpt = "", cover }) => ({
+      link,
       number,
       title,
       cover,
-      id,
       excerpt: excerpt
         .replace("Welcome to this edition of Live and Learn. ", "")
         .replace("Enjoy.", ""),
     }));
 
   return {
-    props: { newsletterData: sortByIds(newsletterData) },
+    props: { newsletterData: sortByNumbers(newsletterData) },
   };
 };

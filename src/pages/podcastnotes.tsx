@@ -2,7 +2,7 @@ import Layout from "@components/Layout";
 import { Search, useSearch } from "@components/SearchBar";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";
-import { Podcastnote, allPodcastnotes } from "@contentlayer/generated";
+import { Podcastnote, podcastnotes } from "@velite";
 import { useEffect } from "react";
 import Link from "next/link";
 import Header from "@components/PostHeader";
@@ -12,9 +12,9 @@ function toFilters({ title, rating, tags, show }: Podcastnote) {
 
 export default function Podcastnotes() {
   const { byFilters, filters, setFilters } = useSearch(
-    allPodcastnotes.map(toFilters)
+    podcastnotes.map(toFilters)
   );
-  const filteredPodcastnotes = allPodcastnotes.filter(byFilters);
+  const filteredPodcastnotes = podcastnotes.filter(byFilters);
 
   useEffect(() => {
     setFilters((old) => {

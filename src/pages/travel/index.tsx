@@ -3,7 +3,8 @@ import { NewsletterForm } from "@components/NewsletterSignup";
 import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
-import { allTravelblogs } from "@contentlayer/generated";
+import { travelblogs } from "@velite";
+
 type MetaInfo = {
   cover: { src: string; alt: string };
   excerpt: string;
@@ -62,7 +63,7 @@ const Notes = ({ posts }: Props) => {
                 cover={meta.cover}
                 excerpt={meta.excerpt}
                 title={meta.title}
-                slug={`/travel/${post}`}
+                link={`/travel/${post}`}
               />
             );
           })}
@@ -80,7 +81,7 @@ const Notes = ({ posts }: Props) => {
 export default Notes;
 
 export const travelingStoryNames = [
-  ...allTravelblogs.reduce((agg, current) => {
+  ...travelblogs.reduce((agg, current) => {
     if (current.published) agg.add(current.parentFolder);
     return agg;
   }, new Set<string>()),
@@ -88,7 +89,7 @@ export const travelingStoryNames = [
 
 console.log(travelingStoryNames);
 
-export const travelingStoryNamesMap = allTravelblogs.reduce((agg, current) => {
+export const travelingStoryNamesMap = travelblogs.reduce((agg, current) => {
   agg[current.parentFolder] = current.path.split("/").at(-2);
   return agg;
 }, {} as Record<string, any>);

@@ -1,4 +1,4 @@
-import { Booknote, allBooknotes } from "@contentlayer/generated";
+import { Booknote, booknotes } from "@velite";
 import { useEffect } from "react";
 import { Search, useSearch } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
@@ -69,7 +69,7 @@ export default function Books({ booknotes }: Props) {
 export function getStaticProps() {
   return {
     props: {
-      booknotes: allBooknotes
+      booknotes: booknotes
         .filter(byOnlyPublished)
         .map(
           ({
@@ -81,10 +81,10 @@ export function getStaticProps() {
             detailedNotes,
             excerpt,
             slug,
-            bookCover,
+            cover,
           }) => ({
             bookAuthor,
-            bookCover,
+            cover,
             slug,
             title,
             rating,

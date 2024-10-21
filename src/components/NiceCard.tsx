@@ -3,7 +3,7 @@ import Link from "next/link";
 
 type NiceCardProps = {
   cover: { src: string; alt: string };
-  slug: string;
+  link: string;
   title: string;
   excerpt: string;
   priority?: boolean;
@@ -13,18 +13,16 @@ type NiceCardProps = {
 export function NiceCard({
   cover,
   priority = false,
-  slug,
+  link,
   title,
   excerpt,
-  bigImage = false,
 }: NiceCardProps) {
   return (
     <Link
-      href={slug}
+      href={link}
       className="bg-white dark:bg-gray-800 block overflow-hidden mb-12 lg:mb-12 no-underline prose-headings:text-inherit transform transition-transform duration-300 hover:scale-[1.02] rounded-lg"
     >
       <div
-        key={slug}
         className="md:grid "
         style={{
           gridTemplateColumns: "15rem auto",

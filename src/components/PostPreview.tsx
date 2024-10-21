@@ -1,4 +1,4 @@
-import { type Travelblog, type Post } from "@contentlayer/generated";
+import { type Travelblog, type Post } from "@velite";
 import { NiceCard } from "./NiceCard";
 interface PreviewTextProps {
   title: string;
@@ -13,7 +13,7 @@ type Props = {
 export const PostPreview = ({
   post: { title, cover, excerpt, slug },
 }: Props) => {
-  return <NiceCard title={title} cover={cover} excerpt={excerpt} slug={slug} />;
+  return <NiceCard title={title} cover={cover} excerpt={excerpt} link={slug} />;
 };
 
 export const OtherPostsPreview = ({
@@ -27,14 +27,14 @@ export const OtherPostsPreview = ({
 
   return (
     <div>
-      {posts.map(({ slug, title, excerpt, cover }, index) => {
+      {posts.map(({ slug, link, title, excerpt, cover }, index) => {
         const priority = index <= 1;
 
         return (
           <NiceCard
             key={slug}
             cover={cover}
-            slug={slug}
+            link={link}
             excerpt={excerpt}
             priority={priority}
             title={title}

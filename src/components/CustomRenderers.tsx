@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { ExternalLink } from "./ExternalLink";
+import { ThreeFiberDemo } from "./Demo";
 export const ImageRenderer = ({
   src,
   alt,
@@ -59,11 +60,7 @@ export const LinkRenderer = ({
   const isInternalLink = href.startsWith("/") || href.startsWith("#");
 
   if (isInternalLink) {
-    return (
-      <Link href={href} className="internalLink">
-        {children}
-      </Link>
-    );
+    return <Link href={href}>{children}</Link>;
   }
   return <ExternalLink href={href}>{children}</ExternalLink>;
 };
@@ -71,11 +68,11 @@ export const LinkRenderer = ({
 export const ParagraphRenderer = ({
   children,
 }: HTMLAttributes<HTMLParagraphElement>) => {
-  const className =
-    typeof children === "string" && children.startsWith("–")
-      ? "quote-author"
-      : "paragraph";
-  return <p className={className}>{children}</p>;
+  if (typeof children === "string" && children.startsWith("–")) {
+    return <p className="quote-author">{children}</p>;
+  }
+
+  return <p>{children}</p>;
 };
 
 export const HeadingRenderer = (level: number) => {
@@ -116,4 +113,6 @@ export const MarkdownRenderers = {
   a: LinkRenderer,
   img: ImageRenderer,
   pre: CodeRenderer,
+  ThreeFiberDemo: ThreeFiberDemo,
+  Test: () => <div>Test</div>,
 };

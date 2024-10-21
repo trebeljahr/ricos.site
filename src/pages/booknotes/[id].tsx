@@ -1,15 +1,14 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { BookCover } from "@components/CoverImage";
-import { MarkdownRenderers } from "@components/CustomRenderers";
 import { ExternalLink } from "@components/ExternalLink";
 import Layout from "@components/Layout";
+import { MDXContent } from "@components/MDXContent";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";
-import { Booknote, allBooknotes } from "@contentlayer/generated";
-import { useMDXComponent } from "next-contentlayer2/hooks";
+import { Booknote, booknotes } from "@velite";
 import { byOnlyPublished } from "src/lib/utils";
 type Props = {
-  book: Booknote;
+  booknote: Booknote;
 };
 
 const BuyItOnAmazon = ({ link }: { link: string }) => {
@@ -24,13 +23,12 @@ const BuyItOnAmazon = ({ link }: { link: string }) => {
   );
 };
 
-const BooknoteComponent = ({ book }: Props) => {
-  const Component = useMDXComponent(book.body.code);
-  return <Component components={{ ...MarkdownRenderers }} />;
+const BooknoteComponent = ({ booknote }: Props) => {
+  return <MDXContent code={booknote.content} />;
 };
 
-const BooknotesWithDefault = ({ book }: Props) => {
-  if (!book?.body?.code) {
+const BooknotesWithDefault = ({ booknote }: Props) => {
+  if (!booknote?.content) {
     return (
       <div>
         <p className="placeholder-text">
@@ -41,43 +39,44 @@ const BooknotesWithDefault = ({ book }: Props) => {
     );
   }
 
-  return <BooknoteComponent book={book} />;
+  return <BooknoteComponent booknote={booknote} />;
 };
 
-const Book = ({ book }: Props) => {
-  const defaultDescription = `These are the book Notes for ${book.title} by ${book.bookAuthor}`;
+const Book = ({ booknote }: Props) => {
+  const defaultDescription = `These are the book Notes for ${booknote.title} by ${booknote.bookAuthor}`;
   return (
     <Layout
-      title={book.title}
-      description={book.excerpt || defaultDescription}
-      url={`booknotes/${book.id}`}
+      title={booknote.title}
+      description={booknote.excerpt || defaultDescription}
+      url={`booknotes/${booknote.slug}`}
     >
-      <BreadCrumbs path={`booknotes/${book.id}`} />
+      <BreadCrumbs path={`booknotes/${booknote.slug}`} />
       <main>
         <article>
           <section className="flex">
             <div className="not-prose block relative mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
               <BookCover
-                title={book.title}
-                src={book.bookCover}
+                title={booknote.title}
+                src={booknote.cover.src}
+                alt={booknote.cover.alt}
                 priority={true}
               />
             </div>
             <header className="book-preview-text">
               <hgroup>
-                <h1 className="my-0">{book.title}</h1>
-                <p className="my-0">{book.subtitle}</p>
-                <p> by {book.bookAuthor}</p>
+                <h1 className="my-0">{booknote.title}</h1>
+                <p className="my-0">{booknote.subtitle}</p>
+                <p> by {booknote.bookAuthor}</p>
                 <p>
-                  <b>Rating: {book.rating}/10</b>
+                  <b>Rating: {booknote.rating}/10</b>
                 </p>
-                <BuyItOnAmazon link={book.amazonLink} />
+                <BuyItOnAmazon link={booknote.amazonLink} />
               </hgroup>
             </header>
           </section>
           <section>
-            <BooknotesWithDefault book={book} />
-            <BuyItOnAmazon link={book.amazonLink} />
+            <BooknotesWithDefault booknote={booknote} />
+            <BuyItOnAmazon link={booknote.amazonLink} />
           </section>
         </article>
       </main>
@@ -99,22 +98,22 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const book = allBooknotes
+  const booknote = booknotes
     .filter(byOnlyPublished)
-    .find(({ id }) => params.id === id);
+    .find(({ slug }) => params.id === slug);
 
   return {
     props: {
-      book,
+      booknote,
     },
   };
 }
 
 export async function getStaticPaths() {
-  const paths = allBooknotes.filter(byOnlyPublished).map((book) => {
+  const paths = booknotes.filter(byOnlyPublished).map((book) => {
     return {
       params: {
-        id: book.id,
+        id: book.slug,
       },
     };
   });

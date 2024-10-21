@@ -1,15 +1,14 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
-import { MarkdownRenderers } from "@components/CustomRenderers";
-import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
-import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
-import Header from "@components/PostHeader";
-import { allTravelblogs, type Travelblog } from "@contentlayer/generated";
-import slugify from "@sindresorhus/slugify";
-import { useMDXComponent } from "next-contentlayer2/hooks";
-import { replaceUndefinedWithNull, sortAndFilterNotes } from "src/lib/utils";
+import { MDXContent } from "@components/MDXContent";
 import { NewsletterForm } from "@components/NewsletterSignup";
+import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
+import Header from "@components/PostHeader";
+import { ToTopButton } from "@components/ToTopButton";
+import slugify from "@sindresorhus/slugify";
+import { travelblogs, type Travelblog } from "@velite";
 import { ReactNode } from "react";
+import { replaceUndefinedWithNull, sortAndFilterNotes } from "src/lib/utils";
 type TravelBlogProps = {
   post: Travelblog;
   nextSlug: string | null;
@@ -57,15 +56,13 @@ export default function PostComponent({
   previousSlug,
   nextSlug,
 }: TravelBlogProps) {
-  const Component = useMDXComponent(post.body.code);
-
   return (
     <TravelBlogLayout
       post={post}
       previousSlug={previousSlug}
       nextSlug={nextSlug}
     >
-      <Component components={{ ...MarkdownRenderers }} />
+      <MDXContent code={post.content} />
     </TravelBlogLayout>
   );
 }
@@ -73,7 +70,7 @@ export default function PostComponent({
 type Params = { params: { storyName: string; tripName: string } };
 
 export async function getStaticPaths() {
-  const paths: Params[] = sortAndFilterNotes(allTravelblogs).map(
+  const paths: Params[] = sortAndFilterNotes(travelblogs).map(
     ({ slug, parentFolder }) => ({
       params: {
         tripName: slugify(parentFolder),
@@ -91,7 +88,7 @@ export async function getStaticPaths() {
 export async function getStaticProps({
   params: { storyName, tripName },
 }: Params) {
-  const stories = sortAndFilterNotes(allTravelblogs, tripName);
+  const stories = sortAndFilterNotes(travelblogs, tripName);
   const currentIndex = stories.findIndex((post) => post.slug === storyName);
 
   const travelingStory = stories[currentIndex];

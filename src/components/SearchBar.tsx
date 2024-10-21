@@ -214,6 +214,7 @@ export function Search<T extends Filters>({
                 <button
                   className="remove-filter-button"
                   onClick={() => toggleFilter(filterKey)}
+                  aria-label="Remove filter"
                 >
                   <FiX />
                 </button>
@@ -227,7 +228,10 @@ export function Search<T extends Filters>({
                   handleInput={handleInput}
                 />
                 {Array.isArray(filterValue) && (
-                  <button onClick={() => growArray(filterKey)}>
+                  <button
+                    onClick={() => growArray(filterKey)}
+                    aria-label="Add another filter"
+                  >
                     <FiPlus />
                   </button>
                 )}
@@ -239,7 +243,10 @@ export function Search<T extends Filters>({
                     return (
                       <div className="tag-filter" key={tag.id}>
                         <p>{tag.tag}</p>
-                        <button onClick={() => removeTag(filterKey, tag.id)}>
+                        <button
+                          onClick={() => removeTag(filterKey, tag.id)}
+                          aria-label="Remove Tag from filters"
+                        >
                           <FiTrash />
                         </button>
                       </div>
@@ -259,6 +266,7 @@ export function Search<T extends Filters>({
                   key={filterKey}
                   className="add-filter-button"
                   onClick={() => toggleFilter(filterKey)}
+                  aria-label="Add filter"
                 >
                   <FiPlus />
 
@@ -302,7 +310,10 @@ const InputField = ({
 }: InputFieldProps) => {
   if (typeof filterValue === "boolean")
     return (
-      <button onClick={() => toggleBoolean(filterKey)}>
+      <button
+        onClick={() => toggleBoolean(filterKey)}
+        aria-label="Toggle Value of this filter"
+      >
         {filterValue ? "yes" : "no"}
       </button>
     );

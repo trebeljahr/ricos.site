@@ -9,6 +9,7 @@ export function ToTopButton() {
           window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
         }}
         className="flex justify-center items-center z-10"
+        aria-label="Scroll to top"
       >
         <FiArrowUp />
       </button>

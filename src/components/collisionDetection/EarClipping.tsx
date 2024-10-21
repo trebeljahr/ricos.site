@@ -70,7 +70,7 @@ export const EarClipping = () => {
         width={width}
         height={height}
       />
-      <button onClick={toggleVisualization}>
+      <button onClick={toggleVisualization} aria-label="Toggle Visualization">
         Visualizing: {visualizing ? "ON" : "OFF"}
       </button>
     </div>

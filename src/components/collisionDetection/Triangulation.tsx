@@ -75,7 +75,7 @@ export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
         height={height}
       />
       {responseToggle && (
-        <button onClick={toggleResponse}>
+        <button onClick={toggleResponse} aria-label="Toggle Collision Response">
           Response: {response ? "ON" : "OFF"}
         </button>
       )}

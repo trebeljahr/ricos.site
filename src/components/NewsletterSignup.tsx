@@ -112,6 +112,7 @@ export const NewsletterForm = ({
         <button
           className="mt-5 font-thin text-left"
           onClick={() => setSuccess(null)}
+          aria-label="Sign up with another email address"
         >
           Want to sign up with another email address?
         </button>
@@ -148,6 +149,7 @@ export const NewsletterForm = ({
           className={`newsletter-button ${loading ? "inactive" : "active"}`}
           disabled={loading}
           onClick={handleSubmit}
+          aria-label="Subscribe to the newsletter"
         >
           {loading ? (
             <ClipLoader color={"rgb(68, 160, 255)"} loading={true} size={20} />

@@ -65,6 +65,7 @@ export const NewsletterModalPopup = ({
       <button
         onClick={closeModalForGood}
         className="fixed top-3 right-3 hover:bg-gray-200 dark:hover:bg-gray-700 p-1 rounded-full"
+        aria-label="Close newsletter popup"
       >
         <FiX className="w-6 h-6" />
       </button>
@@ -90,6 +91,7 @@ export const NewsletterModalPopup = ({
             <button
               onClick={closeModal}
               className="flex mt-10 justify-center items-center"
+              aria-label="Continue reading"
             >
               <span>Continue Reading</span>
               <FiChevronsRight className="ml-2" />

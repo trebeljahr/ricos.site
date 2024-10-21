@@ -244,7 +244,6 @@ export async function getStaticProps({ params }: StaticProps) {
   try {
     const awsImageData = await getDataFromS3({
       prefix,
-      numberOfItems: 1000,
     });
 
     const images: ImageProps[] = mapToImageProps(awsImageData, prefix);

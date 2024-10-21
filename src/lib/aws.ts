@@ -4,6 +4,7 @@ import {
   ListObjectsV2Command,
   S3Client,
 } from "@aws-sdk/client-s3";
+import pLimit from "p-limit";
 
 export async function getObjectMetadata(Bucket: string, Key: string) {
   const client = createS3Client();
@@ -101,14 +102,71 @@ export type ImageDataFromAWS = {
   height: number;
 };
 
-type OptionsForS3 = {
+const limit = pLimit(10);
+
+interface OptionsForS3 {
   prefix?: string;
-  numberOfItems?: number;
+}
+
+export const getDataFromS3 = async ({ prefix = "" }: OptionsForS3 = {}) => {
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+  const awsRegion = process.env.AWS_REGION;
+  const bucketName = process.env.AWS_BUCKET_NAME;
+
+  if (!accessKeyId || !secretAccessKey || !awsRegion || !bucketName) {
+    throw new Error("No AWS credentials provided");
+  }
+
+  const s3Client = new S3Client({
+    region: awsRegion,
+    credentials: { accessKeyId, secretAccessKey },
+  });
+
+  let isTruncated = true;
+  let continuationToken;
+  const output = [];
+
+  while (isTruncated) {
+    const data: any = await s3Client.send(
+      new ListObjectsV2Command({
+        Bucket: bucketName,
+        Prefix: prefix,
+        MaxKeys: 1000, // Max 1000 per request
+        ContinuationToken: continuationToken, // Handle pagination
+      })
+    );
+
+    if (!data.Contents) throw new Error("No contents found");
+
+    const imagePromises = data.Contents.filter(({ Key }: { Key: any }) => {
+      if (!Key) return false;
+      const split = Key.split("/");
+      return split[split.length - 1] !== "";
+    }).map((file: any) =>
+      limit(async () => {
+        const result = await getObjectMetadata(bucketName, file.Key || "");
+        return {
+          name: (file.Key as string).replace(`${prefix}`, ""),
+          width: parseInt(result.Metadata?.width || "100"),
+          height: parseInt(result.Metadata?.height || "100"),
+        };
+      })
+    );
+
+    const batchResults = await Promise.all(imagePromises);
+    output.push(...batchResults);
+
+    // Handle pagination
+    isTruncated = data.IsTruncated || false;
+    continuationToken = data.NextContinuationToken;
+  }
+
+  return output;
 };
 
-export const getDataFromS3 = async ({
-  prefix,
-  numberOfItems = 100,
+export const getFirstImageFromS3 = async ({
+  prefix = "",
 }: OptionsForS3 = {}) => {
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
@@ -128,27 +186,24 @@ export const getDataFromS3 = async ({
     new ListObjectsV2Command({
       Bucket: bucketName,
       Prefix: prefix,
-      MaxKeys: numberOfItems,
+      MaxKeys: 1,
     })
   );
 
-  if (!data.Contents) throw new Error("No contents found");
+  if (!data.Contents || data.Contents.length === 0) {
+    throw new Error("No images found in the S3 bucket");
+  }
 
-  const output = await Promise.all(
-    data.Contents.filter(({ Key }) => {
-      if (!Key) return false;
+  const firstFile = data.Contents[0];
+  if (!firstFile.Key) {
+    throw new Error("No valid image key found");
+  }
 
-      const split = Key.split("/");
-      return split[split.length - 1] !== "";
-    }).map(async (file) => {
-      const result = await getObjectMetadata(bucketName, file.Key || "");
-      return {
-        name: (file.Key as string).replace(`${prefix}`, ""),
-        width: parseInt(result.Metadata?.width || "100"),
-        height: parseInt(result.Metadata?.height || "100"),
-      };
-    })
-  );
+  const result = await getObjectMetadata(bucketName, firstFile.Key);
 
-  return output;
+  return {
+    name: firstFile.Key.replace(`${prefix}`, ""),
+    width: parseInt(result.Metadata?.width || "100"),
+    height: parseInt(result.Metadata?.height || "100"),
+  };
 };

@@ -71,7 +71,7 @@ export default function MidjourneyGallery({
 
 export async function getStaticProps() {
   const prefix = "midjourney/";
-  const awsImageData = await getDataFromS3({ prefix, numberOfItems: 1000 });
+  const awsImageData = await getDataFromS3({ prefix });
   const images: ImageProps[] = mapToImageProps(awsImageData, prefix);
   return { props: { images } };
 }

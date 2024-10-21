@@ -1,4 +1,5 @@
 import slugify from "@sindresorhus/slugify";
+import { Newsletter, newsletters, Post, posts } from "@velite";
 import { Feed } from "feed";
 import fs from "fs";
 import matter from "gray-matter";
@@ -29,31 +30,31 @@ async function generateRssFeed() {
     },
   });
 
-  const posts = fs.readdirSync("./src/content/Notes/posts").map((file) => {
-    const postContent = fs.readFileSync(
-      "./src/content/Notes/posts/" + file,
-      "utf8"
-    );
-    const post = matter(postContent);
-    return {
-      ...post.data,
-      slug: `/posts/${slugify(file.replace(/\.md?/, ""))}`,
-    } as any;
-  });
+  // const posts = fs.readdirSync("./src/content/Notes/posts").map((file) => {
+  //   const postContent = fs.readFileSync(
+  //     "./src/content/Notes/posts/" + file,
+  //     "utf8"
+  //   );
+  //   const post = matter(postContent);
+  //   return {
+  //     ...post.data,
+  //     slug: `/posts/${slugify(file.replace(/\.md?/, ""))}`,
+  //   } as Post;
+  // });
 
-  const newsletters = fs
-    .readdirSync("./src/content/Notes/newsletter-stuff/newsletters")
-    .map((file) => {
-      const newsletterContent = fs.readFileSync(
-        "./src/content/Notes/newsletter-stuff/newsletters/" + file,
-        "utf8"
-      );
-      const newsletter = matter(newsletterContent);
-      return {
-        ...newsletter.data,
-        slug: `/newsletters/${slugify(file.replace(/\.md?/, ""))}`,
-      } as any;
-    });
+  // const newsletters = fs
+  //   .readdirSync("./src/content/Notes/newsletter-stuff/newsletters")
+  //   .map((file) => {
+  //     const newsletterContent = fs.readFileSync(
+  //       "./src/content/Notes/newsletter-stuff/newsletters/" + file,
+  //       "utf8"
+  //     );
+  //     const newsletter = matter(newsletterContent);
+  //     return {
+  //       ...newsletter.data,
+  //       slug: `/newsletters/${slugify(file.replace(/\.md?/, ""))}`,
+  //     } as Newsletter;
+  //   });
 
   const allContent = [...posts, ...newsletters];
 

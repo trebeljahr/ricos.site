@@ -271,35 +271,6 @@ export const Page = defineDocumentType(() => ({
   },
 }));
 
-const customBuilder: MarkdownUnifiedBuilderCallback = (builder) => {
-  // parses out the frontmatter (which is needed for full-document parsing)
-  // builder.use(remarkFrontmatter);
-  const remarkPlugins = [
-    // remarkFrontmatter,
-    remarkMdxFrontmatter,
-    remarkGfm,
-    remarkToc,
-    remarkMath,
-  ];
-  const rehypePlugins = [
-    rehypeHighlight,
-    rehypeKatex,
-    rehypeSlug,
-    rehypeAccessibleEmojis,
-  ];
-  // parse markdown
-  builder.use(remarkParse);
-
-  builder.use(remarkPlugins);
-
-  builder.use(remark2rehype);
-
-  builder.use(rehypePlugins);
-
-  // rehype to html
-  builder.use(rehypeStringify);
-};
-
 export default makeSource({
   contentDirPath: "src/content/Notes",
   contentDirInclude: [
@@ -312,21 +283,19 @@ export default makeSource({
   ],
   contentDirExclude: ["**/*.json"],
   documentTypes: [Post, Page, Newsletter, Booknote, Podcastnote, Travelblog],
-  markdown: customBuilder,
-  mdx: customBuilder as any,
-  // {
-  //   remarkPlugins: [
-  //     // remarkFrontmatter,
-  //     // remarkMdxFrontmatter,
-  //     remarkGfm,
-  //     remarkToc,
-  //     remarkMath,
-  //   ],
-  //   rehypePlugins: [
-  //     rehypeHighlight,
-  //     rehypeKatex,
-  //     rehypeSlug,
-  //     rehypeAccessibleEmojis,
-  //   ],
-  // },
+  mdx: {
+    remarkPlugins: [
+      // remarkFrontmatter,
+      // remarkMdxFrontmatter,
+      remarkGfm,
+      remarkToc,
+      remarkMath,
+    ],
+    rehypePlugins: [
+      rehypeHighlight,
+      rehypeKatex,
+      rehypeSlug,
+      rehypeAccessibleEmojis,
+    ],
+  },
 });

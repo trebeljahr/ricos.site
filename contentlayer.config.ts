@@ -14,10 +14,6 @@ import remarkMath from "remark-math";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkToc from "remark-toc";
 import slugify from "@sindresorhus/slugify";
-import remarkParse from "remark-parse";
-import remark2rehype from "remark-rehype";
-import rehypeStringify from "rehype-stringify";
-import { MarkdownUnifiedBuilderCallback } from "contentlayer2/core";
 
 function generateExcerpt(text: string, length: number): string {
   const lines = text
@@ -286,7 +282,7 @@ export default makeSource({
   mdx: {
     remarkPlugins: [
       // remarkFrontmatter,
-      // remarkMdxFrontmatter,
+      // [remarkMdxFrontmatter, { name: "mdx-frontmatter" }],
       remarkGfm,
       remarkToc,
       remarkMath,

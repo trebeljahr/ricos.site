@@ -41,10 +41,7 @@ const mainCategories = [
 type LinksOnTag<T> = { tag: string; links: T[] };
 
 type TaggedDocumentData = LinksOnTag<
-  Pick<
-    (typeof allDocuments)[0],
-    "title" | "slug" | "link" | "metadata" | "date"
-  >
+  Pick<(typeof allDocuments)[0], "title" | "link" | "metadata" | "date">
 >;
 
 type Props = {
@@ -91,17 +88,15 @@ const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
             <ul>
               {links
                 .sort(byReadingTime)
-                .map(
-                  ({ link, slug, title, metadata: { readingTime } = {} }) => {
-                    return (
-                      <li key={slug}>
-                        <Link href={link || ""} as={slug}>
-                          {title} – {readingTime || 0} min
-                        </Link>
-                      </li>
-                    );
-                  }
-                )}
+                .map(({ link, title, metadata: { readingTime } = {} }) => {
+                  return (
+                    <li key={title}>
+                      <Link href={link || ""} as={link}>
+                        {title} – {readingTime || 0} min
+                      </Link>
+                    </li>
+                  );
+                })}
             </ul>
           </div>
         );
@@ -144,8 +139,8 @@ export async function getStaticProps() {
         .filter(({ tags }) => {
           return tags?.includes(tag);
         })
-        .map(({ slug, title, metadata, date }) => ({
-          slug,
+        .map(({ link, title, metadata, date }) => ({
+          link,
           title,
           metadata,
           date,

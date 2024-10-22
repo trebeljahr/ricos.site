@@ -53,7 +53,7 @@ export default function Books({ booknotes }: Props) {
         </div>
         <div className="prose-a:no-underline">
           {filteredBooks.map((book, index) => {
-            return <BookPreview key={book.slug} book={book} index={index} />;
+            return <BookPreview key={book.link} book={book} index={index} />;
           })}
         </div>
       </main>

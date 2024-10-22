@@ -70,13 +70,13 @@ const Book = ({ booknote }: Props) => {
                 <p>
                   <b>Rating: {booknote.rating}/10</b>
                 </p>
-                <BuyItOnAmazon link={booknote.amazonLink} />
+                <BuyItOnAmazon link={booknote.amazonAffiliateLink} />
               </hgroup>
             </header>
           </section>
           <section>
             <BooknotesWithDefault booknote={booknote} />
-            <BuyItOnAmazon link={booknote.amazonLink} />
+            <BuyItOnAmazon link={booknote.amazonAffiliateLink} />
           </section>
         </article>
       </main>

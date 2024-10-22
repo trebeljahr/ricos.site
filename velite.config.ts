@@ -49,6 +49,7 @@ const commonFields = {
   }),
   metadata: s.metadata(),
   published: s.boolean(),
+
   tags: s.array(s.string()),
 };
 
@@ -148,7 +149,6 @@ export default defineConfig({
           rating: s.number(),
           summary: s.boolean(),
           detailedNotes: s.boolean(),
-          amazonLink: s.string(),
           amazonAffiliateLink: s.string(),
         })
         .transform(addLinksAndSlugTransformer("booknotes"))

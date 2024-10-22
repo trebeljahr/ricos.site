@@ -10,15 +10,12 @@ const booknotesFields = {
   title: "",
   bookCover: "/assets/book-covers/",
   bookAuthor: "",
-  excerpt: "",
   date: "01.01.1970",
   rating: 0,
-
   published: false,
   tags: [],
   summary: false,
   detailedNotes: false,
-  amazonLink: "",
   amazonAffiliateLink: "",
 };
 

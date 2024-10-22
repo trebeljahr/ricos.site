@@ -1,5 +1,3 @@
-import { getMDXComponent } from "mdx-bundler/client";
-import React from "react";
 import * as runtime from "react/jsx-runtime";
 import { MarkdownRenderers } from "./CustomRenderers";
 
@@ -8,24 +6,24 @@ const useMDXComponent = (code: string) => {
   return fn({ ...runtime }).default;
 };
 
-import { ThreeFiberDemo } from "./Demo";
-import { UnitVectorDemo } from "./collisionDetection/UnitVectorDemo";
 import { MDXRemote } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
-import { ProjectArrowDemo } from "./collisionDetection/ProjectArrowDemo";
-import { ProjectionDemo } from "./collisionDetection/ProjectionDemo";
-import { ExampleWith2Polygons } from "./collisionDetection/ExampleWith2Polygons";
+import { ThreeFiberDemo } from "./Demo";
 import { AxisByAxis } from "./collisionDetection/AxisByAxis";
-import { SAT } from "./collisionDetection/SAT";
-import { SATWithResponse } from "./collisionDetection/SATWithResponse";
-import { SATWithConcaveShapes } from "./collisionDetection/SATWithConcaveShapes";
+import { DotProductDemo } from "./collisionDetection/DotProductDemo";
 import { EarClipping } from "./collisionDetection/EarClipping";
-import { PointAndVectorDemo } from "./collisionDetection/PointAndVectorDemo";
+import { ExampleWith2Polygons } from "./collisionDetection/ExampleWith2Polygons";
 import { MagnitudeDemo } from "./collisionDetection/MagnitudeDemo";
 import { NormalDemo } from "./collisionDetection/NormalDemo";
+import { PointAndVectorDemo } from "./collisionDetection/PointAndVectorDemo";
+import { ProjectArrowDemo } from "./collisionDetection/ProjectArrowDemo";
+import { ProjectionDemo } from "./collisionDetection/ProjectionDemo";
 import { RotationDemo } from "./collisionDetection/RotationDemo";
-import { DotProductDemo } from "./collisionDetection/DotProductDemo";
+import { SAT } from "./collisionDetection/SAT";
+import { SATWithConcaveShapes } from "./collisionDetection/SATWithConcaveShapes";
+import { SATWithResponse } from "./collisionDetection/SATWithResponse";
 import { Triangulation } from "./collisionDetection/Triangulation";
+import { UnitVectorDemo } from "./collisionDetection/UnitVectorDemo";
 
 const allComponents = {
   ThreeFiberDemo,

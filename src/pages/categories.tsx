@@ -72,13 +72,13 @@ const RenderTags = ({ tags }: { tags: TaggedDocumentData[] }) => {
 };
 
 const byReadingTime = (
-  a: { metadata: { readingTime: number } },
-  b: { metadata: { readingTime: number } }
+  a: { metadata?: { readingTime?: number } },
+  b: { metadata?: { readingTime?: number } }
 ) => {
-  const aTime = a.metadata.readingTime;
-  const bTime = b.metadata.readingTime;
+  const aTime = a.metadata?.readingTime || 0;
+  const bTime = b.metadata?.readingTime || 0;
 
-  return aTime - bTime;
+  return bTime - aTime;
 };
 
 const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
@@ -91,15 +91,17 @@ const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
             <ul>
               {links
                 .sort(byReadingTime)
-                .map(({ link, slug, title, metadata: { readingTime } }) => {
-                  return (
-                    <li key={slug}>
-                      <Link href={link || ""} as={slug}>
-                        {title} – {readingTime}
-                      </Link>
-                    </li>
-                  );
-                })}
+                .map(
+                  ({ link, slug, title, metadata: { readingTime } = {} }) => {
+                    return (
+                      <li key={slug}>
+                        <Link href={link || ""} as={slug}>
+                          {title} – {readingTime || 0} min
+                        </Link>
+                      </li>
+                    );
+                  }
+                )}
             </ul>
           </div>
         );
@@ -142,10 +144,10 @@ export async function getStaticProps() {
         .filter(({ tags }) => {
           return tags?.includes(tag);
         })
-        .map(({ slug, title, metadata: { readingTime }, date }) => ({
+        .map(({ slug, title, metadata, date }) => ({
           slug,
           title,
-          readingTime,
+          metadata,
           date,
         })),
     };

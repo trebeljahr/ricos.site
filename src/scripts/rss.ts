@@ -1,8 +1,6 @@
-import slugify from "@sindresorhus/slugify";
-import { Newsletter, newsletters, Post, posts } from "@velite";
+import { newsletters, posts } from "@velite";
 import { Feed } from "feed";
 import fs from "fs";
-import matter from "gray-matter";
 import path from "path";
 import { byOnlyPublished } from "src/lib/utils";
 

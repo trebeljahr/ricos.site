@@ -1,9 +1,5 @@
-import { type Travelblog, type Post } from "@velite";
+import { type Post, type Travelblog } from "@velite";
 import { NiceCard } from "./NiceCard";
-interface PreviewTextProps {
-  title: string;
-  excerpt: string;
-}
 
 type Props = {
   post: Post | Travelblog;

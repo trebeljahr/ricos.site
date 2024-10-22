@@ -16,10 +16,11 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@velite": ["./.velite"],
+      "@velite": [".velite"],
       "components/collision-detection": ["src/components/collisionDetection"],
-      "@components/*": ["./src/components/*"]
-    }
+      "@components/*": ["src/components/*"]
+    },
+    "plugins": [{ "name": "next" }]
   },
   "exclude": ["node_modules"],
   "include": [

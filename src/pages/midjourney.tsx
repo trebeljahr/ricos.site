@@ -10,25 +10,13 @@ import { mapToImageProps } from "src/lib/mapToImageProps";
 import { ImageProps } from "src/@types";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/styles.css";
+import { NiceGallery } from "./photography/[tripName]";
+
 export default function MidjourneyGallery({
   images,
 }: {
   images: ImageProps[];
 }) {
-  const [displayedImages, setDisplayImages] = useState(images.slice(0, 10));
-
-  const { width, height } = useWindowSize();
-
-  if (!width || !height) return null;
-
-  const loadMoreImages = (count = 10) => {
-    const newImages = images.slice(
-      displayedImages.length,
-      displayedImages.length + count
-    );
-    setDisplayImages([...displayedImages, ...newImages]);
-  };
-
   return (
     <Layout
       title="Photography"
@@ -40,28 +28,7 @@ export default function MidjourneyGallery({
         <h1 style={{ marginTop: "-2rem", marginBottom: "1.2rem" }}>
           Midjourney Images
         </h1>
-        <InfiniteScroll
-          pageStart={0}
-          loadMore={loadMoreImages}
-          hasMore={displayedImages.length < images.length}
-          loader={<div className="loader" key="0"></div>}
-          threshold={500}
-        >
-          <PhotoAlbum
-            photos={displayedImages}
-            targetRowHeight={height * 0.6}
-            layout="rows"
-            renderPhoto={NextJsImage}
-            defaultContainerWidth={1200}
-            sizes={{
-              size: "calc(100vw - 24px)",
-              sizes: [
-                { viewport: "(max-width: 520px)", size: "calc(80vw - 105px)" },
-                { viewport: "(max-width: 1150px)", size: "calc(80vw - 105px)" },
-              ],
-            }}
-          />
-        </InfiniteScroll>
+        <NiceGallery images={images} />
 
         <ToTopButton />
       </div>

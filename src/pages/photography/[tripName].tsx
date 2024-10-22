@@ -10,7 +10,7 @@ import { ImageProps } from "src/@types";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import { getDataFromS3, getS3Folders, photographyFolder } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
-import Lightbox from "yet-another-react-lightbox";
+import Lightbox, { NoScroll, NoScrollModule } from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
@@ -28,13 +28,7 @@ function groupImages(displayedImages: ImageProps[]): ImageProps[][] {
   return groupedImages;
 }
 
-export default function ImageGallery({
-  images,
-  tripName,
-}: {
-  images: ImageProps[];
-  tripName: string;
-}) {
+export const NiceGallery = ({ images }: { images: ImageProps[] }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [displayedImages, setDisplayImages] = useState(
@@ -125,6 +119,86 @@ export default function ImageGallery({
   if (!width || !height) return null;
 
   return (
+    <div className="not-prose">
+      <InfiniteScroll
+        pageStart={0}
+        loadMore={loadMoreImages}
+        hasMore={displayedImages.length < images.length}
+        loader={<div className="loader" key="0"></div>}
+      >
+        <div>
+          {groupImages(displayedImages).map((group, i) => (
+            <div key={i} className="mb-[5px] xs:mb-[10px] lg:mb-[15px]">
+              <PhotoAlbum
+                photos={group}
+                targetRowHeight={height * 0.6}
+                layout="rows"
+                onClick={(photo) => {
+                  openModal({
+                    ...photo,
+                    index: photo.index + i * groupSize,
+                  });
+                }}
+                renderPhoto={NextJsImage}
+                defaultContainerWidth={1200}
+                sizes={{
+                  size: "calc(100vw - 24px)",
+                  sizes: [
+                    {
+                      viewport: "(max-width: 520px)",
+                      size: "calc(80vw - 105px)",
+                    },
+                    {
+                      viewport: "(max-width: 1150px)",
+                      size: "calc(80vw - 105px)",
+                    },
+                  ],
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      </InfiniteScroll>
+
+      <Lightbox
+        open={isModalOpen}
+        close={handleClose}
+        slides={images}
+        index={currentImageIndex}
+        on={{
+          view: ({ index }) => {
+            setCurrentImageIndex(index);
+          },
+          exiting: () => {
+            animateImageBackToGallery();
+          },
+        }}
+        carousel={{ finite: true }}
+        plugins={[Thumbnails, Zoom]}
+        thumbnails={{
+          position: "bottom",
+          width: height < 500 ? 50 : 100,
+          height: height < 500 ? 50 : 100,
+          border: 0,
+          borderRadius: 4,
+          padding: 0,
+          gap: 10,
+          imageFit: "cover",
+          vignette: true,
+        }}
+      />
+    </div>
+  );
+};
+
+export default function ImageGallery({
+  images,
+  tripName,
+}: {
+  images: ImageProps[];
+  tripName: string;
+}) {
+  return (
     <Layout
       title="Photography"
       description="A page with all my photography."
@@ -134,89 +208,7 @@ export default function ImageGallery({
       <section className="mb-20">
         <BreadCrumbs path={`photography/${tripName}`} />
         <h1>{turnKebabIntoTitleCase(tripName)}</h1>
-        <div className="not-prose">
-          <InfiniteScroll
-            pageStart={0}
-            loadMore={loadMoreImages}
-            hasMore={displayedImages.length < images.length}
-            loader={<div className="loader" key="0"></div>}
-          >
-            <div>
-              {groupImages(displayedImages).map((group, i) => (
-                <div key={i} className="mb-[5px] xs:mb-[10px] lg:mb-[15px]">
-                  <PhotoAlbum
-                    photos={group}
-                    targetRowHeight={height * 0.6}
-                    layout="rows"
-                    onClick={(photo) => {
-                      openModal({
-                        ...photo,
-                        index: photo.index + i * groupSize,
-                      });
-                    }}
-                    renderPhoto={NextJsImage}
-                    defaultContainerWidth={1200}
-                    sizes={{
-                      size: "calc(100vw - 24px)",
-                      sizes: [
-                        {
-                          viewport: "(max-width: 520px)",
-                          size: "calc(80vw - 105px)",
-                        },
-                        {
-                          viewport: "(max-width: 1150px)",
-                          size: "calc(80vw - 105px)",
-                        },
-                      ],
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
-          </InfiniteScroll>
-
-          <Lightbox
-            open={isModalOpen}
-            close={handleClose}
-            slides={images}
-            index={currentImageIndex}
-            on={{
-              view: ({ index }) => {
-                setCurrentImageIndex(index);
-              },
-              exiting: () => {
-                animateImageBackToGallery();
-              },
-            }}
-            // render={{
-            //   slide: ({ slide }) => (
-            //     <Image
-            //       id={"slide-" + slide.src}
-            //       width={slide.width}
-            //       height={slide.height}
-            //       src={slide.src}
-            //       alt={slide.alt || ""}
-            //       ref={lightboxImageRef} // Assign ref to the lightbox image
-            //       style={{ width: "100%", height: "auto" }}
-            //     />
-            //   ),
-            // }}
-            carousel={{ finite: true }}
-            plugins={[Thumbnails, Zoom]}
-            thumbnails={{
-              position: "bottom",
-              width: height < 500 ? 50 : 100,
-              height: height < 500 ? 50 : 100,
-              border: 0,
-              borderRadius: 4,
-              padding: 0,
-              gap: 10,
-              imageFit: "cover",
-              vignette: true,
-            }}
-          />
-        </div>
-
+        <NiceGallery images={images} />
         <ToTopButton />
       </section>
     </Layout>

@@ -3,7 +3,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "next-sitemap && tsx src/scripts/rss.ts",
+    "generateSitemap": "next-sitemap",
+    "generateRSS": "tsx src/scripts/rss.ts",
+    "postbuild": "npm run generateSitemap && npm run generateRSS",
     "start": "next start",
     "typecheck": "tsc",
     "tweet": "tsx src/scripts/tweet.ts",

@@ -15,7 +15,6 @@ const booknotesFields = {
   rating: 0,
 
   published: false,
-  done: false,
   tags: [],
   summary: false,
   detailedNotes: false,

@@ -40,5 +40,6 @@ export async function getStaticProps() {
   const prefix = "midjourney/";
   const awsImageData = await getDataFromS3({ prefix });
   const images: ImageProps[] = mapToImageProps(awsImageData, prefix);
+
   return { props: { images } };
 }

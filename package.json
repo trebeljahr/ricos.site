@@ -3,7 +3,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "next-sitemap && tsx src/scripts/rss.ts",
+    "generateSitemap": "next-sitemap",
+    "generateRSS": "tsx src/scripts/rss.ts",
+    "postbuild": "npm run generateSitemap && npm run generateRSS",
     "start": "next start",
     "typecheck": "tsc",
     "tweet": "tsx src/scripts/tweet.ts",
@@ -16,7 +18,8 @@
     "fixFolderPaths": "tsx src/scripts/aws/fix-s3-photos-in-folders.ts",
     "rewriteWikilinks": "tsx src/scripts/rewriteWikilinks.ts",
     "addGraymatterInformation": "tsx src/scripts/addGraymatterInformation.ts",
-    "vercel-install": "./vercel-submodule-workaround.sh && npm install --production=false"
+    "vercel-install": "./vercel-submodule-workaround.sh && npm install --production=false",
+    "replaceExcerpts": "tsx src/scripts/replace-excerpts.ts"
   },
   "type": "module",
   "dependencies": {
@@ -73,6 +76,7 @@
     "cli-progress": "^3.12.0",
     "concurrently": "^8.0.1",
     "dotenv": "^16.0.3",
+    "esbuild": "^0.24.0",
     "eslint": "7.32.0",
     "eslint-config-next": "^13.0.4",
     "feed": "^4.2.2",

@@ -18,7 +18,8 @@
     "fixFolderPaths": "tsx src/scripts/aws/fix-s3-photos-in-folders.ts",
     "rewriteWikilinks": "tsx src/scripts/rewriteWikilinks.ts",
     "addGraymatterInformation": "tsx src/scripts/addGraymatterInformation.ts",
-    "vercel-install": "./vercel-submodule-workaround.sh && npm install --production=false"
+    "vercel-install": "./vercel-submodule-workaround.sh && npm install --production=false",
+    "replaceExcerpts": "tsx src/scripts/replace-excerpts.ts"
   },
   "type": "module",
   "dependencies": {

@@ -37,13 +37,10 @@ const PodcastnoteComponent = ({ podcastnote }: Props) => {
                   Youtube
                 </ExternalLink>{" "}
                 |{" "}
-                <ExternalLink href={podcastnote.links.youtube}>
+                <ExternalLink href={podcastnote.links.spotify}>
                   Spotify
                 </ExternalLink>{" "}
-                |{" "}
-                <ExternalLink href={podcastnote.links.youtube}>
-                  Web
-                </ExternalLink>
+                | <ExternalLink href={podcastnote.links.web}>Web</ExternalLink>
               </p>
             </div>
           </section>

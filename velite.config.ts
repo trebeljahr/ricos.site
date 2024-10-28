@@ -1,4 +1,6 @@
 import slugify from "@sindresorhus/slugify";
+import { MDXRemoteSerializeResult } from "next-mdx-remote";
+import { serialize } from "next-mdx-remote/serialize";
 import path from "path";
 import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 import rehypeHighlight from "rehype-highlight";
@@ -8,10 +10,6 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkToc from "remark-toc";
 import { defineConfig, s, ZodMeta } from "velite";
-import { readdir, readFile, stat } from "fs/promises";
-import { MDXRemoteSerializeResult } from "next-mdx-remote";
-import { serialize } from "next-mdx-remote/serialize";
-import { join, relative } from "path";
 
 function generateExcerpt(text: string, length: number): string {
   const lines = text
@@ -29,7 +27,7 @@ function generateExcerpt(text: string, length: number): string {
     }
   }
 
-  return excerpt.trim().slice(0, -1) + "...";
+  return excerpt.trim().slice(0, -1) + ".";
 }
 
 const parseGermanDate = (dateString: string) => {
@@ -118,7 +116,11 @@ export default defineConfig({
       name: "Post",
       pattern: "posts/*.md",
       schema: s
-        .object({ ...commonFields, subtitle: s.string() })
+        .object({
+          ...commonFields,
+          subtitle: s.string(),
+        })
+        .transform((data) => ({ ...data, contentType: "Post" }))
         .transform(addLinksAndSlugTransformer("posts"))
         .transform(addBundledMDXContent),
     },
@@ -132,6 +134,7 @@ export default defineConfig({
         .transform((data, { meta }) => ({
           ...data,
           slugTitle: slugify(data.title),
+          contentType: "Newsletter",
           slug: slugify(meta.stem || ""),
           link: `/newsletters/${slugify(data.title)}`,
           number: meta.stem || "",
@@ -151,6 +154,7 @@ export default defineConfig({
           detailedNotes: s.boolean(),
           amazonAffiliateLink: s.string(),
         })
+        .transform((data) => ({ ...data, contentType: "Booknote" }))
         .transform(addLinksAndSlugTransformer("booknotes"))
         .transform(addBundledMDXContent),
     },
@@ -158,7 +162,11 @@ export default defineConfig({
       name: "Page",
       pattern: "pages/*.md",
       schema: s
-        .object({ ...commonFields, subtitle: s.string() })
+        .object({
+          ...commonFields,
+          subtitle: s.string(),
+        })
+        .transform((data) => ({ ...data, contentType: "Page" }))
         .transform(addLinksAndSlugTransformer())
         .transform(addBundledMDXContent),
     },
@@ -180,6 +188,7 @@ export default defineConfig({
         .transform((data) => {
           return {
             ...data,
+            contentType: "Podcastnote",
             displayTitle: `${data.title} | ${data.show} – Episode ${data.episode}`,
           };
         })
@@ -204,6 +213,7 @@ export default defineConfig({
             ...data,
             slug,
             path: meta.path,
+            contentType: "Travelblog",
             link: path.join("/", "travel", parentFolder, slug),
             parentFolder,
           };

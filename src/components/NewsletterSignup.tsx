@@ -75,7 +75,7 @@ export const NewsletterForm = ({
     <Link
       as="/newsletters"
       href="/newsletters"
-      className="block mt-5 font-light"
+      className="block w-fit mt-5 font-light"
     >
       Check out what you missed so far.
     </Link>

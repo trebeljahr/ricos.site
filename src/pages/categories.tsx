@@ -41,7 +41,10 @@ const mainCategories = [
 type LinksOnTag<T> = { tag: string; links: T[] };
 
 type TaggedDocumentData = LinksOnTag<
-  Pick<(typeof allDocuments)[0], "title" | "link" | "metadata" | "date">
+  Pick<
+    (typeof allDocuments)[0],
+    "title" | "link" | "metadata" | "date" | "contentType"
+  >
 >;
 
 type Props = {
@@ -51,15 +54,10 @@ type Props = {
 
 const RenderTags = ({ tags }: { tags: TaggedDocumentData[] }) => {
   return (
-    <div className="tag-filter-container">
+    <div className="flex flex-wrap items-center">
       {tags.map(({ tag, links }) => {
         return (
-          <Link
-            key={tag}
-            href={"#" + tag}
-            as={"#" + tag}
-            className="tag-filter clickable"
-          >
+          <Link key={tag} href={"#" + tag} as={"#" + tag} className="mr-4">
             {tag} ({links.length})
           </Link>
         );
@@ -88,15 +86,22 @@ const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
             <ul>
               {links
                 .sort(byReadingTime)
-                .map(({ link, title, metadata: { readingTime } = {} }) => {
-                  return (
-                    <li key={title}>
-                      <Link href={link || ""} as={link}>
-                        {title} – {readingTime || 0} min
-                      </Link>
-                    </li>
-                  );
-                })}
+                .map(
+                  ({
+                    link,
+                    title,
+                    contentType,
+                    metadata: { readingTime } = {},
+                  }) => {
+                    return (
+                      <li key={title}>
+                        <Link href={link || ""} as={link}>
+                          {title} - {contentType} - {readingTime || 0} min
+                        </Link>
+                      </li>
+                    );
+                  }
+                )}
             </ul>
           </div>
         );
@@ -132,18 +137,19 @@ const ShowTags = ({ categories }: Props) => {
 export default ShowTags;
 
 export async function getStaticProps() {
-  const categories = mainCategories.map((tag) => {
+  const categories = mainCategories.map<TaggedDocumentData>((tag) => {
     return {
       tag,
       links: allDocuments
         .filter(({ tags }) => {
           return tags?.includes(tag);
         })
-        .map(({ link, title, metadata, date }) => ({
+        .map(({ link, title, metadata, date, contentType }) => ({
           link,
           title,
           metadata,
           date,
+          contentType,
         })),
     };
   });

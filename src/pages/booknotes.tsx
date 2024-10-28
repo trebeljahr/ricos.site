@@ -34,7 +34,7 @@ export default function Books({ booknotes }: Props) {
   }, [setFilters]);
   return (
     <Layout
-      title="Booknotes - notes on the things I've read"
+      title="Booknotes - What I have learned while reading"
       description={
         "An overview of what I have read, with a filterable list of books and booknotes"
       }

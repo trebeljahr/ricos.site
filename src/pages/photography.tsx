@@ -30,8 +30,9 @@ const tripNames = [
   "south-india",
   "tenerife",
   "varanasi",
-  "Guadeloupe",
-  "Transat",
+  "guadeloupe",
+  "transat",
+  "portugal-2024",
 ];
 
 export default function Photography({

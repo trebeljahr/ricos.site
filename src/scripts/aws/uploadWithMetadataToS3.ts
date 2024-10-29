@@ -13,6 +13,7 @@ import {
 } from "./s3-scripts";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import pLimit from "p-limit";
 
 const argv = await yargs(hideBin(process.argv))
   .option("dirPath", {
@@ -120,6 +121,8 @@ export async function findFiles(dir: string, pattern: RegExp) {
   return results;
 }
 
+const limit = pLimit(5);
+
 async function uploadDir(directoryPath: string) {
   async function getFiles(dir: string): Promise<string | string[]> {
     const dirents = await fs.readdir(dir, { withFileTypes: true });
@@ -146,6 +149,9 @@ async function uploadDir(directoryPath: string) {
   const format = `${dirName} | {bar} | {percentage}% | {value}/{total} | {eta}s`;
   const progress = new SingleBar({ format }, Presets.shades_classic);
 
+  console.log("Checking for existing files...");
+  progress.start(files.length + 1, counter);
+
   const filesToUploadPromises = await Promise.all(
     files.map(async (filePath) => {
       const key = path.relative(
@@ -153,16 +159,22 @@ async function uploadDir(directoryPath: string) {
         filePath
       );
 
-      const exists = await doesFileExistInS3(key);
-      const hasRightEnding = /\.(jpg|jpeg|png|webp)$/i.test(filePath);
+      const fileDoesNotExist = !(await limit(() => doesFileExistInS3(key)));
+      const fileHasRightEnding = /\.(jpg|jpeg|png|webp)$/i.test(filePath);
 
-      if (!exists && hasRightEnding) return filePath;
+      if (fileDoesNotExist && fileHasRightEnding) {
+        progress.update(counter++);
+        return filePath;
+      }
     })
   );
 
   const filesToUpload = filesToUploadPromises.filter(Boolean) as string[];
+  progress.stop();
+  counter = 0;
 
-  progress.start(filesToUpload.length, counter);
+  console.log("Uploading Files...");
+  progress.start(filesToUpload.length + 1, counter);
 
   const uploadsPromises = filesToUpload.map(async (filePath) => {
     const data = await getWidthAndHeight(filePath);
@@ -170,10 +182,12 @@ async function uploadDir(directoryPath: string) {
       directoryPath.split("/").slice(0, -1).join("/"),
       filePath
     );
-    await uploadWithMetadata(filePath, key, {
-      width: String(data?.width),
-      height: String(data?.height),
-    });
+    limit(() =>
+      uploadWithMetadata(filePath, key, {
+        width: String(data?.width),
+        height: String(data?.height),
+      })
+    );
     progress.update(counter++);
   });
 

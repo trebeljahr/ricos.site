@@ -48,7 +48,7 @@ export async function getAllStorageObjectKeys(
   }
 }
 
-export const photographyFolder = "Attachments/Photography/";
+export const photographyFolder = "assets/photography/";
 
 export function createS3Client() {
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;

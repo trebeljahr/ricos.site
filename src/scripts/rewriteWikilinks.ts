@@ -34,7 +34,7 @@ const wordsToCapitalize = [
   "leger",
 ];
 
-const directoryPath = path.join(process.cwd(), "src/content/Notes/travel");
+const directoryPath = path.join(process.cwd(), "src/content/Notes");
 
 const wikiLinkRegex = /!\[\[([^\]]+)\]\]/g;
 
@@ -48,7 +48,11 @@ function processDirectory(directoryPath: string) {
     if (stats.isDirectory()) {
       processDirectory(filePath);
     } else if (path.extname(fileName) === ".md") {
+      const sourceName = fileName.replace(".md", "");
+
       let fileContents = fs.readFileSync(filePath, "utf8");
+
+      const basePath = path.join(process.cwd(), "src/content/Notes");
 
       fileContents = fileContents.replace(wikiLinkRegex, (_, p1) => {
         const linkText = capitalizeWords(
@@ -56,8 +60,38 @@ function processDirectory(directoryPath: string) {
           path.parse(p1.replace(/-/g, " ")).name
         );
         const parentFolder = path.basename(directoryPath);
-        const replacementText = `![${linkText}](/Attachments/Photography/${parentFolder}/${p1})`;
-        console.log(replacementText);
+
+        console.log({ p1 });
+
+        const currentLinkPath = path.resolve("/assets", p1);
+        const absoluteCurrentLinkPath = path.join(basePath, currentLinkPath);
+
+        const linkDestinationPath = path.join(
+          "/assets",
+          parentFolder,
+          sourceName,
+          p1
+        );
+        const absoluteLinkDestinationPath = path.join(
+          basePath,
+          linkDestinationPath
+        );
+        const replacementText = `![${linkText}](${linkDestinationPath})`;
+
+        try {
+          fs.mkdirSync(path.dirname(absoluteLinkDestinationPath), {
+            recursive: true,
+          });
+          fs.copyFileSync(absoluteCurrentLinkPath, absoluteLinkDestinationPath);
+          fs.rmSync(absoluteCurrentLinkPath);
+        } catch (error) {
+          console.log("------------------ ERROR ------------------");
+          console.log(error);
+
+          console.log(replacementText);
+          console.log(absoluteCurrentLinkPath);
+          console.log(absoluteLinkDestinationPath);
+        }
 
         return replacementText;
       });

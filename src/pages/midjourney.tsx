@@ -1,13 +1,8 @@
-import { useState } from "react";
-import InfiniteScroll from "react-infinite-scroller";
-import { PhotoAlbum } from "react-photo-album";
-import { ToTopButton } from "@components/ToTopButton";
-import { NextJsImage } from "@components/images/CustomRenderers";
 import Layout from "@components/Layout";
-import { useWindowSize } from "src/hooks/useWindowSize";
+import { ToTopButton } from "@components/ToTopButton";
+import { ImageProps } from "src/@types";
 import { getDataFromS3 } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
-import { ImageProps } from "src/@types";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/styles.css";
 import { NiceGallery } from "./photography/[tripName]";
@@ -19,8 +14,8 @@ export default function MidjourneyGallery({
 }) {
   return (
     <Layout
-      title="Photography"
-      description="A page with all my photography."
+      title="Midjourney Images"
+      description="A page with all my AI generated art."
       url={`/midjourney`}
       fullScreen={true}
     >
@@ -37,7 +32,7 @@ export default function MidjourneyGallery({
 }
 
 export async function getStaticProps() {
-  const prefix = "midjourney/";
+  const prefix = "assets/midjourney-gallery/";
   const awsImageData = await getDataFromS3({ prefix });
   const images: ImageProps[] = mapToImageProps(awsImageData, prefix);
 

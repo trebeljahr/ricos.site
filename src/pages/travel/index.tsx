@@ -18,7 +18,7 @@ type Props = {
 const travelingStoriesMeta: Record<string, MetaInfo> = {
   guadeloupe: {
     cover: {
-      src: "/Attachments/Photography/Guadeloupe/meditating-in-front-of-the-third-carbet-fall.jpg",
+      src: "/assets/photography/guadeloupe/meditating-in-front-of-the-third-carbet-fall.jpg",
       alt: "meditating in front of the third carbet fall",
     },
     title: "Guadeloupe",
@@ -27,7 +27,7 @@ const travelingStoriesMeta: Record<string, MetaInfo> = {
   },
   transat: {
     cover: {
-      src: "/Attachments/Photography/Transat/christian-and-rebecca-steering-the-boat-through-the-storm.jpg",
+      src: "/assets/photography/transat/christian-and-rebecca-steering-the-boat-through-the-storm.jpg",
       alt: "Christian and Rebecca steering the boat through the storm",
     },
     title: "Crossing the Atlantic",

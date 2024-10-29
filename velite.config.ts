@@ -82,7 +82,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     ...data,
     content: mdxSource,
     rawContent,
-    excerpt: generateExcerpt(rawContent, 280),
+    excerpt: data.excerpt || generateExcerpt(rawContent, 280),
   };
 };
 
@@ -130,6 +130,7 @@ export default defineConfig({
       schema: s
         .object({
           ...commonFields,
+          excerpt: s.string(),
         })
         .transform((data, { meta }) => ({
           ...data,

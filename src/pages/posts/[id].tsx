@@ -43,7 +43,6 @@ export const BlogLayout = ({
       </main>
 
       <footer>
-        <NewsletterModalPopup howFarDown={2} />
         <NewsletterForm />
         {morePosts && <ReadMore posts={morePosts} />}
         <ToTopButton />

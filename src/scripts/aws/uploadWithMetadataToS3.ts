@@ -124,24 +124,31 @@ export async function findFiles(dir: string, pattern: RegExp) {
 const limit = pLimit(5);
 
 async function uploadDir(directoryPath: string) {
-  async function getFiles(dir: string): Promise<string | string[]> {
+  async function getFiles(
+    dir: string,
+    ignoreDirectories: string[] = []
+  ): Promise<string | string[]> {
     const dirents = await fs.readdir(dir, { withFileTypes: true });
     const files = await Promise.all(
       dirents
         .filter(
           (dirent) =>
             dirent.name.startsWith(".") === false &&
-            dirent.name !== "node_modules"
+            dirent.name !== "node_modules" &&
+            !ignoreDirectories.includes(dirent.name)
         )
         .map((dirent) => {
           const res = path.resolve(dir, dirent.name);
-          return dirent.isDirectory() ? getFiles(res) : res;
+          return dirent.isDirectory() ? getFiles(res, ignoreDirectories) : res;
         })
     );
     return Array.prototype.concat(...files);
   }
 
-  const files = (await getFiles(directoryPath)) as string[];
+  const files = (await getFiles(directoryPath, [
+    "photography",
+    "midjourney-gallery",
+  ])) as string[];
 
   let counter = 1;
 
@@ -150,7 +157,7 @@ async function uploadDir(directoryPath: string) {
   const progress = new SingleBar({ format }, Presets.shades_classic);
 
   console.log("Checking for existing files...");
-  progress.start(files.length + 1, counter);
+  progress.start(files.length, counter);
 
   const filesToUploadPromises = await Promise.all(
     files.map(async (filePath) => {
@@ -163,18 +170,18 @@ async function uploadDir(directoryPath: string) {
       const fileHasRightEnding = /\.(jpg|jpeg|png|webp)$/i.test(filePath);
 
       if (fileDoesNotExist && fileHasRightEnding) {
-        progress.update(counter++);
         return filePath;
       }
+      progress.update(counter++);
     })
   );
 
   const filesToUpload = filesToUploadPromises.filter(Boolean) as string[];
   progress.stop();
-  counter = 0;
+  counter = 1;
 
   console.log("Uploading Files...");
-  progress.start(filesToUpload.length + 1, counter);
+  progress.start(filesToUpload.length, counter);
 
   const uploadsPromises = filesToUpload.map(async (filePath) => {
     const data = await getWidthAndHeight(filePath);
@@ -182,7 +189,7 @@ async function uploadDir(directoryPath: string) {
       directoryPath.split("/").slice(0, -1).join("/"),
       filePath
     );
-    limit(() =>
+    await limit(() =>
       uploadWithMetadata(filePath, key, {
         width: String(data?.width),
         height: String(data?.height),

@@ -26,9 +26,11 @@ const sortByNumbers = (arr: NewsletterData[]) => {
 const Newsletters = ({ newsletterData }: Props) => {
   return (
     <Layout
-      title="Newsletters - an archive of newsletters"
-      description="An archive overview page of all the Newsletters I have published in the past at trebeljahr.com."
+      title="Newsletters - Live and Learn"
+      description="An archive overview page of all the Live and Learn editions I have published in the past."
       url="newsletters"
+      image="/assets/midjourney/live-and-learn-cover.png"
+      imageAlt="a young boy absorbed in reading a book with sparks flying out of it"
     >
       <main>
         <section>

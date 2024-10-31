@@ -23,20 +23,6 @@
   color: var(--success-green);
 }
 
-
-.newsletter-input {
-  width: 100%;
-  border: none;
-  padding: 0.5em 0em;
-
-  border-bottom: 2px solid black;
-  margin-bottom: 1em;
-}
-
-.newsletter-input:focus {
-  outline: none;
-}
-
 .page-arrow {
   position: fixed;
   display: flex;

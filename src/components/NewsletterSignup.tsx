@@ -133,7 +133,7 @@ export const NewsletterForm = ({
           aria-describedby={error ? "email-error" : undefined}
           required
           autoComplete="email"
-          className={`newsletter-input ${
+          className={`focus:outline-none w-full border-b-2 border-gray-950 dark:border-gray-100 dark:text-white py-2 bg-inherit mb-6 ${
             error
               ? "border-red-500 focus:border-red-500 focus:ring-red-500"
               : ""

@@ -12,13 +12,13 @@ type MetaInfo = {
 };
 
 type Props = {
-  posts: string[];
+  travelingStories: string[];
 };
 
 const travelingStoriesMeta: Record<string, MetaInfo> = {
   guadeloupe: {
     cover: {
-      src: "/assets/photography/guadeloupe/meditating-in-front-of-the-third-carbet-fall.jpg",
+      src: "/assets/blog/guadeloupe/meditating-in-front-of-the-third-carbet-fall.jpg",
       alt: "meditating in front of the third carbet fall",
     },
     title: "Guadeloupe",
@@ -27,7 +27,7 @@ const travelingStoriesMeta: Record<string, MetaInfo> = {
   },
   transat: {
     cover: {
-      src: "/assets/photography/transat/christian-and-rebecca-steering-the-boat-through-the-storm.jpg",
+      src: "/assets/blog/transat/christian-and-rebecca-steering-the-boat-through-the-storm.jpg",
       alt: "Christian and Rebecca steering the boat through the storm",
     },
     title: "Crossing the Atlantic",
@@ -36,7 +36,7 @@ const travelingStoriesMeta: Record<string, MetaInfo> = {
   },
 };
 
-const Notes = ({ posts }: Props) => {
+const TravelBlogs = ({ travelingStories }: Props) => {
   return (
     <Layout
       title="Traveling Stories"
@@ -53,17 +53,19 @@ const Notes = ({ posts }: Props) => {
             title="Traveling"
             subtitle="Stories of the adventures and places I have been to"
           />
-          {posts.map((post) => {
-            const meta = travelingStoriesMeta[post];
-            if (!meta) return null;
+          {travelingStories.map((story) => {
+            const meta = travelingStoriesMeta[story] || {
+              cover: { src: "", alt: "default cover" },
+              title: story,
+            };
 
             return (
               <NiceCard
-                key={post}
+                key={story}
                 cover={meta.cover}
                 excerpt={meta.excerpt}
                 title={meta.title}
-                link={`/travel/${post}`}
+                link={`/travel/${story}`}
               />
             );
           })}
@@ -78,11 +80,12 @@ const Notes = ({ posts }: Props) => {
   );
 };
 
-export default Notes;
+export default TravelBlogs;
 
 export const travelingStoryNames = [
   ...travelblogs.reduce((agg, current) => {
-    if (current.published) agg.add(current.parentFolder);
+    if (current.published || process.env.NODE_ENV === "development")
+      agg.add(current.parentFolder);
     return agg;
   }, new Set<string>()),
 ];
@@ -94,6 +97,6 @@ export const travelingStoryNamesMap = travelblogs.reduce((agg, current) => {
 
 export const getStaticProps = async () => {
   return {
-    props: { posts: travelingStoryNames },
+    props: { travelingStories: travelingStoryNames },
   };
 };

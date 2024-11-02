@@ -45,5 +45,10 @@ async function customRedirects() {
       destination: "/posts/diatoms",
       permanent: true,
     },
+    {
+      source: "/posts/my-productivity-systems",
+      destination: "/posts/my-productivity-system",
+      permanent: true,
+    },
   ];
 }

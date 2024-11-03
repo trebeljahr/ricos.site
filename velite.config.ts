@@ -126,7 +126,7 @@ export default defineConfig({
     },
     newsletters: {
       name: "Newsletter",
-      pattern: "newsletter-stuff/newsletters/*.md",
+      pattern: "newsletters/*.md",
       schema: s
         .object({
           ...commonFields,

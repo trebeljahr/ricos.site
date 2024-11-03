@@ -1,6 +1,7 @@
 import Image, { ImageProps } from "next/image";
 import { useState } from "react";
 import clsx from "clsx";
+import ReactSparkle from "react-sparkle";
 
 export const ImageWithLoader = ({
   css,
@@ -24,26 +25,25 @@ export const ImageWithLoader = ({
         <Image
           {...props}
           alt={props.alt}
-          onLoadingComplete={() => setIsLoaded(true)}
+          onLoadingComplete={(img) => {
+            console.log(img);
+            console.log(props);
+
+            props.src !== "" && setIsLoaded(true);
+          }}
         />
       </div>
 
       {isSkeleton && (
         <div className="absolute inset-0 bg-gray-400 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
-          <style jsx>{`
-            @keyframes shimmer {
-              0% {
-                transform: translateX(-100%);
-              }
-              100% {
-                transform: translateX(100%);
-              }
-            }
-            .animate-shimmer {
-              animation: shimmer 2s infinite linear;
-            }
-          `}</style>
+          <ReactSparkle
+            color="yellow"
+            count={20}
+            minSize={5}
+            maxSize={16}
+            fadeOutSpeed={15}
+            flicker={false}
+          />
         </div>
       )}
     </div>

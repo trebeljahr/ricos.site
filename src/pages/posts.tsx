@@ -5,6 +5,7 @@ import { OtherPostsPreview } from "@components/PostPreview";
 import { ToTopButton } from "@components/ToTopButton";
 import { Post, posts } from "@velite";
 import { byOnlyPublished } from "src/lib/utils";
+
 type Props = {
   posts: Post[];
 };

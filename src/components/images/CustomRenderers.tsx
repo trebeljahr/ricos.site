@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { ImageWithLoader } from "@components/ImageWithLoader";
 import { RenderPhotoProps } from "react-photo-album";
 import { ImageProps } from "src/@types";
 
@@ -11,7 +11,7 @@ export function NextJsImage({
     <div
       style={{ ...wrapperStyle, position: "relative", background: "#f1f3f5" }}
     >
-      <Image
+      <ImageWithLoader
         fill
         id={photo.name}
         src={photo}

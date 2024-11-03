@@ -1,5 +1,5 @@
 import { Booknote } from "@velite";
-import Image from "next/image";
+import { ImageWithLoader } from "@components/ImageWithLoader";
 import Link from "next/link";
 
 type Props = {
@@ -22,7 +22,7 @@ export function BookPreview({ book, index }: Props) {
       }}
     >
       <div className="h-64 md:h-full mb-4 relative not-prose">
-        <Image
+        <ImageWithLoader
           src={cover.src}
           alt={cover.alt}
           fill

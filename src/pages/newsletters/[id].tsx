@@ -7,7 +7,7 @@ import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { newsletters, type Newsletter as NewsletterType } from "@velite";
-import Image from "next/image";
+import { ImageWithLoader } from "@components/ImageWithLoader";
 import { byOnlyPublished } from "src/lib/utils";
 
 type Props = {
@@ -44,7 +44,7 @@ const Newsletter = ({
           <Header title={fullTitle} date={date} />
           {excerpt && <p>{excerpt}</p>}
           <div className="header-image-container mb-5">
-            <Image
+            <ImageWithLoader
               priority
               src={cover.src}
               width={780}

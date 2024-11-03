@@ -1,4 +1,5 @@
-import Image from "next/image";
+import { ImageWithLoader } from "@components/ImageWithLoader";
+
 type Props = {
   title: string;
   src: string;
@@ -13,7 +14,7 @@ export const PostCoverImage = ({
   alt,
 }: Props) => {
   return (
-    <Image
+    <ImageWithLoader
       src={src}
       alt={alt || "Cover for post: " + title}
       priority={priority}
@@ -30,7 +31,7 @@ export const PostCoverImage = ({
 
 export const BookCover = ({ title, src, priority }: Props) => {
   return (
-    <Image
+    <ImageWithLoader
       src={src}
       width={1}
       height={1.6}

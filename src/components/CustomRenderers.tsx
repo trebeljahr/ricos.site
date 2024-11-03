@@ -1,15 +1,9 @@
-import Image from "next/image";
+import { ImageWithLoader } from "@components/ImageWithLoader";
 import Link from "next/link";
-import {
-  AnchorHTMLAttributes,
-  DetailedHTMLProps,
-  HTMLAttributes,
-  ImgHTMLAttributes,
-  useEffect,
-  useState,
-} from "react";
-import { ExternalLink } from "./ExternalLink";
+import { AnchorHTMLAttributes, HTMLAttributes, ImgHTMLAttributes } from "react";
 import { ThreeFiberDemo } from "./Demo";
+import { ExternalLink } from "./ExternalLink";
+
 export const ImageRenderer = ({
   src,
   alt,
@@ -28,7 +22,7 @@ export const ImageRenderer = ({
   return (
     <>
       <span className="postImgWrapper markdown-image">
-        <Image
+        <ImageWithLoader
           src={src}
           alt={realAlt}
           priority={!!isPriority}

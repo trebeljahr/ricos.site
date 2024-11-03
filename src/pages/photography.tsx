@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { ImageWithLoader } from "@components/ImageWithLoader";
 import Link from "next/link";
 import { turnKebabIntoTitleCase } from "@components/BreadCrumbs";
 import {
@@ -56,7 +56,7 @@ export default function Photography({
               key={tripName}
               className="relative aspect-square overflow-hidden flex-shrink-0 "
             >
-              <Image
+              <ImageWithLoader
                 src={image.src}
                 sizes={"calc(50vw - 40px)"}
                 blurDataURL={image.blurDataURL}

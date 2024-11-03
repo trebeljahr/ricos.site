@@ -1,14 +1,14 @@
+import { useScrollLock } from "@components/NewsletterModalPopup";
 import { Disclosure } from "@headlessui/react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
+import { FiMenu, FiX } from "react-icons/fi";
 import {
   CollapsibleMenuDesktop,
   CollapsibleMenuMobile,
 } from "./CollapsibleMenus";
 import { DarkModeHandler } from "./DarkModeHandler";
-import { useScrollLock } from "@components/NewsletterModalPopup";
-import dynamic from "next/dynamic";
-import { FiMenu, FiX } from "react-icons/fi";
 
 const navigation = ["posts", "newsletters", "photography"];
 const resources = [

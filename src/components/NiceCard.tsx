@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { ImageWithLoader } from "@components/ImageWithLoader";
 import Link from "next/link";
 
 type NiceCardProps = {
@@ -29,7 +29,7 @@ export function NiceCard({
         }}
       >
         <div className="h-64 md:h-full relative not-prose">
-          <Image
+          <ImageWithLoader
             src={cover.src}
             alt={cover.alt}
             fill

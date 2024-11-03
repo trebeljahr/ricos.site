@@ -1,4 +1,5 @@
-import Image from "next/image";
+import { ImageWithLoader } from "@components/ImageWithLoader";
+
 type AvatarProps = {
   picture: string;
 };
@@ -6,7 +7,7 @@ type AvatarProps = {
 const Avatar = ({ picture }: AvatarProps) => {
   return (
     <div className="avatar-container">
-      <Image
+      <ImageWithLoader
         src={picture}
         alt="avatar icon"
         className="round"

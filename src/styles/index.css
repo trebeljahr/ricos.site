@@ -16,15 +16,15 @@
 } */
 
 :root {
-  font-family: Inter, sans-serif;
-  font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
+  font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;  
+  font-feature-settings: 'liga' 1, 'calt' 1; 
 }
 @supports (font-variation-settings: normal) {
-  :root { font-family: InterVariable, sans-serif; }
+  :root { font-family: InterVariable, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif; }
 }
 
 nav span, nav p {
-  font-family: Inter, sans-serif;
+  font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;  
 }
 
 .custom-table-overflow {

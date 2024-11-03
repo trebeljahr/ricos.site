@@ -11,10 +11,10 @@ export const ImageWithLoader = ({
   const [isSkeleton, setIsSkeleton] = useState(true);
 
   return (
-    <div className="relative w-full overflow-hidden h-full">
+    <div className="w-full overflow-hidden h-full">
       <div
         className={clsx(
-          "transition-opacity duration-200 opacity-0 h-full",
+          "transition-opacity duration-200 opacity-0 h-full relative",
           { "opacity-100": isLoaded },
           css
         )}
@@ -25,7 +25,7 @@ export const ImageWithLoader = ({
         <Image
           {...props}
           alt={props.alt}
-          onLoadingComplete={() => {
+          onLoad={() => {
             props.src !== "" && setIsLoaded(true);
           }}
         />

@@ -1,6 +1,6 @@
+import clsx from "clsx";
 import Image, { ImageProps } from "next/image";
 import { useState } from "react";
-import clsx from "clsx";
 import ReactSparkle from "react-sparkle";
 
 export const ImageWithLoader = ({
@@ -25,19 +25,16 @@ export const ImageWithLoader = ({
         <Image
           {...props}
           alt={props.alt}
-          onLoadingComplete={(img) => {
-            console.log(img);
-            console.log(props);
-
+          onLoadingComplete={() => {
             props.src !== "" && setIsLoaded(true);
           }}
         />
       </div>
 
       {isSkeleton && (
-        <div className="absolute inset-0 bg-gray-400 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden bg-gray-200 dark:bg-gray-700">
           <ReactSparkle
-            color="yellow"
+            color="teal"
             count={20}
             minSize={5}
             maxSize={16}

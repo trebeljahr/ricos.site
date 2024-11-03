@@ -36,6 +36,11 @@ async function customRedirects() {
       permanent: true,
     },
     {
+      source: "/pages/:id*",
+      destination: "/:id*",
+      permanent: true,
+    },
+    {
       source: "/feed.xml",
       destination: "/rss.xml",
       permanent: true,

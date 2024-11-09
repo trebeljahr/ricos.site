@@ -43,7 +43,7 @@ const Newsletter = ({
         <article className="maint-text newsletter-article">
           <Header title={fullTitle} date={date} />
           {excerpt && <p>{excerpt}</p>}
-          <div className="header-image-container mb-5">
+          <div className="mb-5">
             <ImageWithLoader
               priority
               src={cover.src}

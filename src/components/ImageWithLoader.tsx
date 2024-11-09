@@ -11,7 +11,7 @@ export const ImageWithLoader = ({
   const [isSkeleton, setIsSkeleton] = useState(true);
 
   return (
-    <div className="w-full overflow-hidden h-full">
+    <div className="relative w-full overflow-hidden h-full">
       <div
         className={clsx(
           "transition-opacity duration-200 opacity-0 h-full relative",

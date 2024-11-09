@@ -40,9 +40,9 @@ export function NiceCard({
             className="object-cover"
           />
         </div>
-        <div className="break-all p-5 md:border-t-4 md:border-r-4 md:border-b-4 max-md:rounded-bl-lg max-md:rounded-br-lg md:rounded-tr-lg md:rounded-br-lg border-gray-200 dark:border-gray-700 prose-headings:mt-2 prose-p:text-zinc-800 dark:prose-p:text-slate-300 max-w-full">
+        <div className="p-5 md:border-t-4 md:border-r-4 md:border-b-4 max-md:rounded-bl-lg max-md:rounded-br-lg md:rounded-tr-lg md:rounded-br-lg border-gray-200 dark:border-gray-700 prose-headings:mt-2 prose-p:text-zinc-800 dark:prose-p:text-slate-300 max-w-full">
           <h2 className="pt-0 font-bold leading-snug">{title}</h2>
-          <p>{excerpt}</p>
+          <p className="break-words text-ellipsis w-full">{excerpt}</p>
         </div>
       </div>
     </Link>

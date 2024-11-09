@@ -20,15 +20,15 @@ export function NiceCard({
   return (
     <Link
       href={link}
-      className="bg-white dark:bg-gray-800 block overflow-hidden mb-12 lg:mb-12 no-underline prose-headings:text-inherit transform transition-transform duration-300 hover:scale-[1.02] rounded-lg"
+      className="bg-white max-w-full dark:bg-gray-800 block overflow-hidden mb-12 lg:mb-12 no-underline prose-headings:text-inherit transform transition-transform duration-300 hover:scale-[1.02] rounded-lg"
     >
       <div
-        className="md:grid "
+        className="md:grid"
         style={{
           gridTemplateColumns: "15rem auto",
         }}
       >
-        <div className="h-64 md:h-full relative not-prose">
+        <div className="h-64 md:h-full relative not-prose max-w-full">
           <ImageWithLoader
             src={cover.src}
             alt={cover.alt}
@@ -40,7 +40,7 @@ export function NiceCard({
             className="object-cover"
           />
         </div>
-        <div className="p-5 md:border-t-4 md:border-r-4 md:border-b-4 max-md:rounded-bl-lg max-md:rounded-br-lg md:rounded-tr-lg md:rounded-br-lg border-gray-200 dark:border-gray-700 prose-headings:mt-2 prose-p:text-zinc-800 dark:prose-p:text-slate-300">
+        <div className="break-all p-5 md:border-t-4 md:border-r-4 md:border-b-4 max-md:rounded-bl-lg max-md:rounded-br-lg md:rounded-tr-lg md:rounded-br-lg border-gray-200 dark:border-gray-700 prose-headings:mt-2 prose-p:text-zinc-800 dark:prose-p:text-slate-300 max-w-full">
           <h2 className="pt-0 font-bold leading-snug">{title}</h2>
           <p>{excerpt}</p>
         </div>

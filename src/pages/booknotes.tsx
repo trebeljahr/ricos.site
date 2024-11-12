@@ -15,7 +15,7 @@ function toFilters({
   summary,
   detailedNotes,
 }: Booknote) {
-  return { bookAuthor, title, rating, tags, summary, detailedNotes };
+  return { bookAuthor, title, rating, tags };
 }
 
 type Props = {
@@ -29,7 +29,7 @@ export default function Books({ booknotes }: Props) {
   const filteredBooks = booknotes.filter(byFilters);
   useEffect(() => {
     setFilters((old) => {
-      return { ...old, summary: { ...old.summary, active: true, value: true } };
+      return { ...old };
     });
   }, [setFilters]);
   return (
@@ -71,6 +71,7 @@ export function getStaticProps() {
     props: {
       booknotes: booknotes
         .filter(byOnlyPublished)
+        .filter(({ summary }) => summary)
         .map(
           ({
             bookAuthor,

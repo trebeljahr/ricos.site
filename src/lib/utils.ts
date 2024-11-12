@@ -12,7 +12,8 @@ export function getErrorMessage(error: unknown) {
 }
 
 export function byOnlyPublished({ published }: { published?: boolean }) {
-  return process.env.NODE_ENV === "development" || published;
+  // return process.env.NODE_ENV === "development" || published;
+  return published;
 }
 
 const scrypt = promisify(crypto.scrypt);

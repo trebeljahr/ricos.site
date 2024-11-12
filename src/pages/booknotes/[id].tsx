@@ -54,7 +54,7 @@ const Book = ({ booknote }: Props) => {
       <main>
         <article>
           <section className="flex">
-            <div className="not-prose block relative mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
+            <div className="not-prose block relative mr-2 mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
               <BookCover
                 title={booknote.title}
                 src={booknote.cover.src}

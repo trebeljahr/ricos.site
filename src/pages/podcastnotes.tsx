@@ -6,6 +6,7 @@ import { Podcastnote, podcastnotes } from "@velite";
 import { useEffect } from "react";
 import Link from "next/link";
 import Header from "@components/PostHeader";
+import { byOnlyPublished } from "src/lib/utils";
 function toFilters({ title, rating, tags, show }: Podcastnote) {
   return { title, rating, tags, show };
 }
@@ -14,7 +15,9 @@ export default function Podcastnotes() {
   const { byFilters, filters, setFilters } = useSearch(
     podcastnotes.map(toFilters)
   );
-  const filteredPodcastnotes = podcastnotes.filter(byFilters);
+  const filteredPodcastnotes = podcastnotes
+    .filter(byOnlyPublished)
+    .filter(byFilters);
 
   useEffect(() => {
     setFilters((old) => {

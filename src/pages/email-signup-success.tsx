@@ -42,7 +42,7 @@ export default function EmailSignupSuccess() {
 
       <Layout
         title="Email Signup Success"
-        description="This page is displayed when a user has successfully completed signup for the trebeljahr.com newsletter"
+        description="This page is displayed when a user has successfully completed signup for the Live and Learn newsletter"
         url="email-signup-success"
       >
         <article className="mt-10">

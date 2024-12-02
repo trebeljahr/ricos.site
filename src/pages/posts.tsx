@@ -14,7 +14,7 @@ const Posts = ({ posts }: Props) => {
   return (
     <Layout
       title="Posts - writings of a curious person, about life, the universe and everything"
-      description="An overview page about all the posts that I have written so far on trebeljahr.com, ordered by the date that they were published."
+      description="An overview page about all the posts that I have written so far on ricos.site, ordered by the date that they were published."
       image={
         "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg"
       }

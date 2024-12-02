@@ -58,7 +58,7 @@ export async function tweetRandomQuote() {
         { $set: { picked: true } }
       );
 
-      tweetContent = `"${quote.content}" \n– ${quote.author} \n\n #quotes #dailyquote \n\n Quote Archive at https://trebeljahr.com/quotes`;
+      tweetContent = `"${quote.content}" \n– ${quote.author} \n\n #quotes #dailyquote \n\n Quote Archive at https://ricos.site/quotes`;
       console.log(tweetContent.length);
     } while (tweetContent.length > 280);
 

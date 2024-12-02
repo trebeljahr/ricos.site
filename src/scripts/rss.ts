@@ -5,7 +5,7 @@ import path from "path";
 import { byOnlyPublished } from "src/lib/utils";
 
 async function generateRssFeed() {
-  const site_url = "https://trebeljahr.com";
+  const site_url = "https://ricos.site";
 
   const feed = new Feed({
     title: "ricos.site | RSS Feed",

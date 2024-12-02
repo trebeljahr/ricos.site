@@ -1,5 +1,5 @@
 const nextSitemapConfig = {
-  siteUrl: "https://www.trebeljahr.com",
+  siteUrl: "https://ricos.site",
   generateRobotsTxt: true,
   sitemapSize: 7000,
   robotsTxtOptions: {

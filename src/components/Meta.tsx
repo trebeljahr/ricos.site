@@ -8,7 +8,7 @@ const Meta = ({ description, title }: Props) => {
   return (
     <>
       <Head>
-        <title>{`${title} | trebeljahr.com`}</title>
+        <title>{`${title} | ricos.site`}</title>
 
         <meta name="description" content={description} />
       </Head>

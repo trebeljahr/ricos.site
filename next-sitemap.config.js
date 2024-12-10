@@ -8,7 +8,12 @@ const nextSitemapConfig = {
       { userAgent: "*", allow: "/" },
     ],
   },
-  exclude: ["/newsletter/*", "email-signup-success", "email-signup-error"],
+  exclude: [
+    "/newsletter/*",
+    "email-signup-success",
+    "email-signup-error",
+    "emergency",
+  ],
 };
 
 export default nextSitemapConfig;

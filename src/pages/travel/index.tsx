@@ -34,12 +34,12 @@ const travelingStoriesMeta: Record<string, MetaInfo> = {
     excerpt:
       "Navigating across the Atlantic Ocean was one of the craziest experiences in my entire life. I've never sailed before and hitchhiking a boat without any sailing experience has made my life richer by a lot.",
   },
-  portugal: {
+  "portugal-2024": {
     cover: {
       src: "/assets/blog/transat/starry-night.jpg",
       alt: "starry night in portugal",
     },
-    title: "Hiking the Rota Vicente - The Fisherman's Trail",
+    title: "Portugal - The Fisherman's Trail",
     excerpt:
       "Walking a little bit along the Rota Vicente, a popular hiking trail following the South West coast of Portugal made me appreciate the beauty of this country. The coastline is a natural paradise, beckoning to be explored more.",
   },

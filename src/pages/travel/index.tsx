@@ -36,7 +36,7 @@ const travelingStoriesMeta: Record<string, MetaInfo> = {
   },
   "portugal-2024": {
     cover: {
-      src: "/assets/blog/transat/starry-night.jpg",
+      src: "/assets/blog/portugal-2024/starry-night.jpg",
       alt: "starry night in portugal",
     },
     title: "Portugal - The Fisherman's Trail",

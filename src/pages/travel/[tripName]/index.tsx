@@ -3,9 +3,9 @@ import Layout from "@components/Layout";
 import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
 import { travelblogs, type Travelblog } from "@velite";
-import slugify from "@sindresorhus/slugify";
 import { sortAndFilterNotes as sortAndFilterTravelBlogs } from "src/lib/utils";
-import { travelingStoryNames } from "..";
+import { travelingStoriesMeta, travelingStoryNames } from "..";
+
 type Props = {
   posts: Travelblog[];
   tripName: string;
@@ -14,22 +14,28 @@ type Props = {
 const Traveling = ({ posts, tripName }: Props) => {
   const url = "/travel/" + tripName;
 
+  const { title, excerpt, cover, subtitle } = travelingStoriesMeta[tripName];
+  const defaultDescription = `An overview page for the stories of ${tripName}.`;
+  const defaultCover = {
+    src: "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg",
+    alt: "a hand writing down thoughts on a piece of paper",
+  };
+  const defaultSubtitle = "Traveling Stories from Another Place";
+
   return (
     <Layout
-      title={`${tripName}`}
-      description={`An overview page for the stories of ${tripName}.`}
-      image={
-        "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg"
-      }
-      url="posts"
-      imageAlt={"a hand writing down thoughts on a piece of paper"}
+      title={title || tripName}
+      description={excerpt || defaultDescription}
+      image={cover.src || defaultCover.src}
+      imageAlt={cover.alt || defaultCover.alt}
+      url={url}
     >
       <main>
         <BreadCrumbs path={url} />
         <section>
           <Header
             title={turnKebabIntoTitleCase(tripName)}
-            subtitle="Traveling Stories from Another Place"
+            subtitle={subtitle || defaultSubtitle}
           />
           {posts.map((post, index) => {
             const priority = index <= 1;

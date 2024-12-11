@@ -9,19 +9,21 @@ type MetaInfo = {
   cover: { src: string; alt: string };
   excerpt: string;
   title: string;
+  subtitle: string;
 };
 
 type Props = {
   travelingStories: string[];
 };
 
-const travelingStoriesMeta: Record<string, MetaInfo> = {
+export const travelingStoriesMeta: Record<string, MetaInfo> = {
   guadeloupe: {
     cover: {
       src: "/assets/blog/guadeloupe/meditating-in-front-of-the-third-carbet-fall.jpg",
       alt: "meditating in front of the third carbet fall",
     },
     title: "Guadeloupe",
+    subtitle: "An Island of Jungle Hikes, Beaches, and Coral Reefs",
     excerpt:
       "Traveling in Guadeloupe was beautiful. A time filled with stories, waterfalls, nice people, crazy hikes, and diving adventures. If I can I'll come back to this paradise in the Carribean once again in the future.",
   },
@@ -31,6 +33,7 @@ const travelingStoriesMeta: Record<string, MetaInfo> = {
       alt: "Christian and Rebecca steering the boat through the storm",
     },
     title: "Crossing the Atlantic",
+    subtitle: "18 days, an 11 Meter Boat, 3 people and Lots of Fun",
     excerpt:
       "Navigating across the Atlantic Ocean was one of the craziest experiences in my entire life. I've never sailed before and hitchhiking a boat without any sailing experience has made my life richer by a lot.",
   },
@@ -40,8 +43,9 @@ const travelingStoriesMeta: Record<string, MetaInfo> = {
       alt: "starry night in portugal",
     },
     title: "Portugal - The Fisherman's Trail",
+    subtitle: "Hiking Along the Rota Vicente for a Few Days",
     excerpt:
-      "Walking a little bit along the Rota Vicente, a popular hiking trail following the South West coast of Portugal made me appreciate the beauty of this country. The coastline is a natural paradise, beckoning to be explored more.",
+      "Walking along the Rota Vicente, a popular hiking trail following the South West coast of Portugal made me appreciate the beauty of this country. The coastline is a natural paradise, beckoning to be explored more.",
   },
 };
 

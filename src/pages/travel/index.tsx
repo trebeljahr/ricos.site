@@ -4,6 +4,7 @@ import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { travelblogs } from "@velite";
+import { byOnlyPublished } from "src/lib/utils";
 
 type MetaInfo = {
   cover: { src: string; alt: string };
@@ -96,9 +97,8 @@ const TravelBlogs = ({ travelingStories }: Props) => {
 export default TravelBlogs;
 
 export const travelingStoryNames = [
-  ...travelblogs.reduce((agg, current) => {
-    if (current.published || process.env.NODE_ENV === "development")
-      agg.add(current.parentFolder);
+  ...travelblogs.filter(byOnlyPublished).reduce((agg, current) => {
+    agg.add(current.parentFolder);
     return agg;
   }, new Set<string>()),
 ];

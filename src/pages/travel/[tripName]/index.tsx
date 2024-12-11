@@ -14,7 +14,8 @@ type Props = {
 const Traveling = ({ posts, tripName }: Props) => {
   const url = "/travel/" + tripName;
 
-  const { title, excerpt, cover, subtitle } = travelingStoriesMeta[tripName];
+  const { title, excerpt, cover, subtitle } =
+    travelingStoriesMeta[tripName] || {};
   const defaultDescription = `An overview page for the stories of ${tripName}.`;
   const defaultCover = {
     src: "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg",
@@ -26,8 +27,8 @@ const Traveling = ({ posts, tripName }: Props) => {
     <Layout
       title={title || tripName}
       description={excerpt || defaultDescription}
-      image={cover.src || defaultCover.src}
-      imageAlt={cover.alt || defaultCover.alt}
+      image={cover?.src || defaultCover.src}
+      imageAlt={cover?.alt || defaultCover.alt}
       url={url}
     >
       <main>

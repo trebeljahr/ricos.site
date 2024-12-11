@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { toTitleCase } from "src/lib/toTitleCase";
+
 export function turnKebabIntoTitleCase(kebab: string) {
   return kebab.split("-").map(toTitleCase).join(" ");
 }

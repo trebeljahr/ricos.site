@@ -1,10 +1,9 @@
-import { activateEmailListMember } from "./mailgun";
-import crypto from "crypto";
-import { promisify } from "util";
-import { NextApiRequest } from "next";
-import { NextApiResponse } from "next";
 import { Travelblog } from "@velite";
+import crypto from "crypto";
+import { NextApiRequest, NextApiResponse } from "next";
+import { promisify } from "util";
 import { byDates } from "./dateUtils";
+import { activateEmailListMember } from "./mailgun";
 
 export function getErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
@@ -12,13 +11,13 @@ export function getErrorMessage(error: unknown) {
 }
 
 export function byOnlyPublished({ published }: { published?: boolean }) {
-  return process.env.NODE_ENV === "development" || published;
-  // return published;
+  // return process.env.NODE_ENV === "development" || published;
+  return published;
 }
 
-const scrypt = promisify(crypto.scrypt);
-
 export async function getHash(str: string): Promise<string> {
+  const scrypt = promisify(crypto.scrypt);
+
   if (!process.env.SALT) throw Error("Please provide SALT in the .env file!");
 
   const hash: any = await scrypt(str, process.env.SALT, 32);
@@ -26,6 +25,8 @@ export async function getHash(str: string): Promise<string> {
 }
 
 export async function checkHash(str: string, hashFromUrl: string) {
+  const scrypt = promisify(crypto.scrypt);
+
   if (!process.env.SALT) throw Error("Please provide SALT in the .env file!");
 
   const inputHash: any = await scrypt(str, process.env.SALT || "", 64);
@@ -43,6 +44,7 @@ export async function confirmEmail(req: NextApiRequest, res: NextApiResponse) {
 
   await activateEmailListMember(req.query.email as string);
 }
+
 export function replaceUndefinedWithNull(obj: any): any {
   if (obj === undefined) return null;
   if (obj === null || typeof obj !== "object") return obj;
@@ -55,6 +57,7 @@ export function replaceUndefinedWithNull(obj: any): any {
 
   return obj;
 }
+
 export function sortAndFilterNotes(stories: Travelblog[], tripName?: string) {
   return stories
     .filter(byOnlyPublished)

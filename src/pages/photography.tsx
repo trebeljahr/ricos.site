@@ -34,6 +34,8 @@ const tripNames = [
   "guadeloupe",
   "transat",
   "portugal-2024",
+  "india-2023",
+  "martinique",
 ];
 
 export default function Photography({

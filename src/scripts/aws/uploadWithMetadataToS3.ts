@@ -146,7 +146,7 @@ async function uploadDir(directoryPath: string) {
   }
 
   const files = (await getFiles(directoryPath, [
-    "photography",
+    // "photography",
     "midjourney-gallery",
   ])) as string[];
 
@@ -169,10 +169,11 @@ async function uploadDir(directoryPath: string) {
       const fileDoesNotExist = !(await limit(() => doesFileExistInS3(key)));
       const fileHasRightEnding = /\.(jpg|jpeg|png|webp)$/i.test(filePath);
 
+      progress.update(counter++);
+
       if (fileDoesNotExist && fileHasRightEnding) {
         return filePath;
       }
-      progress.update(counter++);
     })
   );
 

@@ -46,7 +46,18 @@ export const travelingStoriesMeta: Record<string, MetaInfo> = {
     title: "Portugal - The Fisherman's Trail",
     subtitle: "Hiking Along the Rota Vicente for a Few Days",
     excerpt:
-      "Walking along the Rota Vicente, a popular hiking trail following the South West coast of Portugal made me appreciate the beauty of this country. The coastline is a natural paradise, beckoning to be explored more.",
+      "Walking along the Rota Vicente, a popular hiking trail following the South West coast of Portugal made me appreciate the beauty of this country. The coastline is a natural paradise, beckoning to be explored.",
+  },
+
+  "martinique-2024": {
+    cover: {
+      src: "/assets/blog/portugal-2024/starry-night.jpg",
+      alt: "starry night in portugal",
+    },
+    title: "Portugal - The Fisherman's Trail",
+    subtitle: "Hiking Along the Rota Vicente for a Few Days",
+    excerpt:
+      "Walking along the Rota Vicente, a popular hiking trail following the South West coast of Portugal made me appreciate the beauty of this country. The coastline is a natural paradise, beckoning to be explored.",
   },
 };
 
@@ -67,7 +78,7 @@ const TravelBlogs = ({ travelingStories }: Props) => {
             title="Traveling"
             subtitle="Stories of the adventures and places I have been to"
           />
-          {travelingStories.map((story) => {
+          {travelingStories.map((story, index) => {
             const meta = travelingStoriesMeta[story] || {
               cover: { src: "", alt: "default cover" },
               title: story,
@@ -78,6 +89,7 @@ const TravelBlogs = ({ travelingStories }: Props) => {
                 key={story}
                 cover={meta.cover}
                 excerpt={meta.excerpt}
+                priority={index === 0}
                 title={meta.title}
                 link={`/travel/${story}`}
               />

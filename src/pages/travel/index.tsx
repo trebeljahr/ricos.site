@@ -51,13 +51,13 @@ export const travelingStoriesMeta: Record<string, MetaInfo> = {
 
   "martinique-2024": {
     cover: {
-      src: "/assets/blog/portugal-2024/starry-night.jpg",
-      alt: "starry night in portugal",
+      src: "/assets/anse-du-sinai-panorama.jpg",
+      alt: "panorama shot of the Anse du Sinai beach in Martinique",
     },
-    title: "Portugal - The Fisherman's Trail",
-    subtitle: "Hiking Along the Rota Vicente for a Few Days",
+    title: "Martinique",
+    subtitle: "Spending a Couple of Days in this Paradise",
     excerpt:
-      "Walking along the Rota Vicente, a popular hiking trail following the South West coast of Portugal made me appreciate the beauty of this country. The coastline is a natural paradise, beckoning to be explored.",
+      "Martinique is a beautiful little island in the Carribean, with lots of jungle, pristine beaches, some crazy old trees, good rhum and friendly people. I hitchhiked around the island for 5 days and want to come back for sure!",
   },
 };
 

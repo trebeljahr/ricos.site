@@ -51,7 +51,7 @@ export const travelingStoriesMeta: Record<string, MetaInfo> = {
 
   "martinique-2024": {
     cover: {
-      src: "/assets/anse-du-sinai-panorama.jpg",
+      src: "/assets/blog/martinique-2024/anse-du-sinai-panorama.jpg",
       alt: "panorama shot of the Anse du Sinai beach in Martinique",
     },
     title: "Martinique",

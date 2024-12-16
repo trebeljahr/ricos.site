@@ -69,7 +69,10 @@ export async function getStaticPaths() {
     .map(({ slug }) => ({ params: { id: slug } }));
 
   return {
-    paths,
+    paths:
+      process.env.NODE_ENV === "development"
+        ? [...paths, { params: { id: "site-demo-post" } }]
+        : paths,
     fallback: false,
   };
 }
@@ -78,7 +81,7 @@ type Params = { params: { id: string } };
 
 export async function getStaticProps({ params }: Params) {
   const post = posts
-    .filter(byOnlyPublished)
+    // .filter(byOnlyPublished)
     .find((post: Post) => post.slug === params.id);
   const otherPosts = posts
     .filter(byOnlyPublished)

@@ -1,13 +1,6 @@
-import * as runtime from "react/jsx-runtime";
-import { MarkdownRenderers } from "./CustomRenderers";
-
-const useMDXComponent = (code: string) => {
-  const fn = new Function(code);
-  return fn({ ...runtime }).default;
-};
-
 import { MDXRemote } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
+import { MarkdownRenderers } from "./CustomRenderers";
 import { ThreeFiberDemo } from "./Demo";
 import { AxisByAxis } from "./collisionDetection/AxisByAxis";
 import { DotProductDemo } from "./collisionDetection/DotProductDemo";
@@ -24,6 +17,7 @@ import { SATWithConcaveShapes } from "./collisionDetection/SATWithConcaveShapes"
 import { SATWithResponse } from "./collisionDetection/SATWithResponse";
 import { Triangulation } from "./collisionDetection/Triangulation";
 import { UnitVectorDemo } from "./collisionDetection/UnitVectorDemo";
+import { NiceGallery, SimpleGallery } from "./NiceGallery";
 
 const allComponents = {
   ThreeFiberDemo,
@@ -42,6 +36,8 @@ const allComponents = {
   RotationDemo,
   DotProductDemo,
   Triangulation,
+  NiceGallery,
+  SimpleGallery,
 };
 
 interface MDXProps {

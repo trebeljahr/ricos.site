@@ -1,11 +1,11 @@
 import Layout from "@components/Layout";
+import { NiceGallery } from "@components/NiceGallery";
 import { ToTopButton } from "@components/ToTopButton";
 import { ImageProps } from "src/@types";
 import { getDataFromS3 } from "src/lib/aws";
 import { mapToImageProps } from "src/lib/mapToImageProps";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/styles.css";
-import { NiceGallery } from "./photography/[tripName]";
 
 export default function MidjourneyGallery({
   images,

@@ -11,8 +11,7 @@ import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkToc from "remark-toc";
-import { ImageProps } from "src/@types";
-import { getImgWidthAndHeight } from "src/lib/mapToImageProps";
+import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
 import { Node, Pluggable } from "unified/lib";
 import { visit } from "unist-util-visit";
 import { defineConfig, s, ZodMeta } from "velite";
@@ -100,41 +99,46 @@ const remarkGroupImages: Pluggable = () => {
 
     groupImages();
 
-    imageGroups.forEach(async (groupedImages) => {
-      const newNode = {
-        type: "SimpleGallery",
-        tagName: "SimpleGallery",
-        properties: {
-          images: await Promise.all(
-            groupedImages.map(async ({ node, index, parent }) => {
-              const src = (node as any).url as string;
-              const { width, height } = await getImgWidthAndHeight(src);
+    await Promise.all(
+      imageGroups.map(async (groupedImages) => {
+        const newNode = {
+          type: "SimpleGallery",
+          tagName: "SimpleGallery",
+          properties: {
+            images: JSON.stringify(
+              await Promise.all(
+                groupedImages.map(async ({ node }) => {
+                  const src = (node as any).url as string;
+                  const { width, height } =
+                    await getImgWidthAndHeightDuringBuild(src);
 
-              return {
-                key: `${src}-${index}`,
-                alt: "",
-                index,
-                name: src,
-                srcSet: [],
-                title: "",
-                src: src,
-                width,
-                height,
-              };
-            })
-          ),
-        },
-        children: [],
-      };
+                  return {
+                    alt: "",
+                    title: "",
+                    key: src,
+                    name: src,
+                    src: src,
+                    width,
+                    height,
+                  };
+                })
+              )
+            ),
+          },
+          children: [],
+        };
 
-      const firstImage = groupedImages[0];
-      const lastImage = groupedImages[groupedImages.length - 1];
-      const firstIndex = firstImage.index;
-      const lastIndex = lastImage.index;
-      const numberToDelete = lastIndex - firstIndex + 1;
+        const firstImage = groupedImages[0];
+        const lastImage = groupedImages[groupedImages.length - 1];
+        const firstIndex = firstImage.index;
+        const lastIndex = lastImage.index;
+        const numberToDelete = lastIndex - firstIndex + 1;
 
-      firstImage.parent.children.splice(firstIndex, numberToDelete, newNode);
-    });
+        firstImage.parent.children.splice(firstIndex, numberToDelete, newNode);
+
+        // console.dir(firstImage.parent, { colors: true, depth: null });
+      })
+    );
 
     // console.dir(tree, { colors: true, depth: null });
   };
@@ -169,18 +173,7 @@ const handleSimpleGalleryNode: Handler = (state, node) => {
 };
 
 const handleRecmaNodes: Pluggable = () => async (tree) => {
-  let loadedPhotos: Promise<ImageProps[]> = Promise.resolve([]);
-
-  visit(tree, (node) => {
-    console.dir(node, { colors: true, depth: null });
-
-    if (node.tagName !== "SimpleGallery") return;
-
-    // console.dir(node, { colors: true, depth: null });
-  });
-
-  const photos = await loadedPhotos;
-  // console.log(photos);
+  // visit(tree, (node) => {});
 };
 
 const addBundledMDXContent = async <T extends Record<string, any>>(
@@ -207,11 +200,11 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
 
   const recmaPlugins: Pluggable[] = [];
 
-  if (meta.basename === "site-demo-post.md") {
-    remarkPlugins.unshift(remarkGroupImages);
-    rehypePlugins.unshift(rehypeTransformGroupImages);
-    recmaPlugins.unshift(handleRecmaNodes);
-  }
+  // if (meta.basename === "site-demo-post.md") {
+  remarkPlugins.unshift(remarkGroupImages);
+  rehypePlugins.unshift(rehypeTransformGroupImages);
+  recmaPlugins.unshift(handleRecmaNodes);
+  // }
 
   const rawContent = meta.content || "";
   const mdxSource = await serialize(rawContent, {

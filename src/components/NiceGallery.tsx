@@ -23,10 +23,16 @@ function groupImages(displayedImages: ImageProps[]): ImageProps[][] {
   return groupedImages;
 }
 
-export const SimpleGallery = ({ photos }: { photos: ImageProps[] }) => {
+export const SimpleGallery = (props: { photos: ImageProps[] }) => {
+  console.log(props);
+
+  const { photos } = props;
+  // console.log("Photos from SimpleGallery", photos);
   const { width, height } = useWindowSize();
 
   if (!width || !height) return null;
+
+  console.log("Photos from SimpleGallery", photos);
 
   return (
     <PhotoAlbum
@@ -53,8 +59,6 @@ export const SimpleGallery = ({ photos }: { photos: ImageProps[] }) => {
 };
 
 export const ImageGallery = (props: { imageSources: string[] }) => {
-  console.log("Hi from Simple Gallery Component", props);
-
   const { imageSources } = props;
 
   const [photos, setPhotos] = useState<ImageProps[] | null>(null);

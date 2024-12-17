@@ -105,9 +105,9 @@ export const CodeRenderer = (props: HTMLAttributes<HTMLPreElement>) => {
 
 const handleNiceImageGalleries = (props: { images: string }) => {
   console.log("handle nice image gallery", props);
-  const imageSources = props.images.split(" ");
+  const photos = JSON.parse(props.images);
 
-  return <ImageGallery imageSources={imageSources} />;
+  return <SimpleGallery photos={photos} />;
 };
 
 const handleDivs = (props: any) => {

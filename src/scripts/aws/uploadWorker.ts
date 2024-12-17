@@ -1,4 +1,4 @@
 import { expose } from "threads/worker";
-import { uploadSingleFileToS3 } from "./s3-scripts";
+import { uploadSingleFileToS3 } from "./helpers";
 
 expose(uploadSingleFileToS3);

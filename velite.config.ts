@@ -109,18 +109,30 @@ const remarkGroupImages: Pluggable = () => {
               await Promise.all(
                 groupedImages.map(async ({ node }) => {
                   const src = (node as any).url as string;
-                  const { width, height } =
-                    await getImgWidthAndHeightDuringBuild(src);
+                  try {
+                    const { width, height } =
+                      await getImgWidthAndHeightDuringBuild(src);
 
-                  return {
-                    alt: "",
-                    title: "",
-                    key: src,
-                    name: src,
-                    src: src,
-                    width,
-                    height,
-                  };
+                    return {
+                      alt: "",
+                      title: "",
+                      key: src,
+                      name: src,
+                      src: src,
+                      width,
+                      height,
+                    };
+                  } catch (err) {
+                    return {
+                      alt: "",
+                      title: "",
+                      key: src,
+                      name: src,
+                      src: src,
+                      width: 1,
+                      height: 1,
+                    };
+                  }
                 })
               )
             ),

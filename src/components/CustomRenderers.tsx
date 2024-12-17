@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AnchorHTMLAttributes, HTMLAttributes, ImgHTMLAttributes } from "react";
 import { ThreeFiberDemo } from "./Demo";
 import { ExternalLink } from "./ExternalLink";
+import { ImageGallery } from "./NiceGallery";
 
 export const ImageRenderer = ({
   src,
@@ -102,11 +103,26 @@ export const CodeRenderer = (props: HTMLAttributes<HTMLPreElement>) => {
   );
 };
 
+const handleNiceImageGalleries = (props: { images: string }) => {
+  console.log("handle nice image gallery", props);
+  const images = props.images.split(" ");
+
+  return <ImageGallery images={images} />;
+};
+
+const handleDivs = (props: any) => {
+  console.log("handle divs", props);
+  return <div {...props} />;
+};
+
 export const MarkdownRenderers = {
   p: ParagraphRenderer,
   a: LinkRenderer,
   img: ImageRenderer,
   pre: CodeRenderer,
+  div: handleDivs,
+  SimpleGallery: handleNiceImageGalleries,
   ThreeFiberDemo: ThreeFiberDemo,
+  // NiceImageGallery: handleNiceImageGalleries,
   Test: () => <div>Test</div>,
 };

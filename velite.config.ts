@@ -1,4 +1,6 @@
 import slugify from "@sindresorhus/slugify";
+import { Handler } from "mdast-util-to-hast";
+import { Properties } from "mdast-util-to-hast/lib/handlers/code";
 import { MDXRemoteSerializeResult } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
 import path from "path";
@@ -9,7 +11,16 @@ import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkToc from "remark-toc";
+import { Node, Pluggable } from "unified/lib";
+import { visit } from "unist-util-visit";
 import { defineConfig, s, ZodMeta } from "velite";
+import { Nodes } from "mdast";
+
+declare module "mdast" {
+  interface RootContentMap {
+    SimpleGallery: Node;
+  }
+}
 
 function generateExcerpt(text: string, length: number): string {
   const lines = text
@@ -51,6 +62,108 @@ const commonFields = {
   tags: s.array(s.string()),
 };
 
+type NodeInfo = {
+  node: Node;
+  index: number;
+  parent: { children: Node[] };
+};
+
+const remarkGroupImages: Pluggable = () => {
+  return (tree: Node) => {
+    const allImages: NodeInfo[] = [];
+
+    visit(tree, (node, index, parent: { children: Node[] }) => {
+      if (node.type === "image") {
+        allImages.push({ node, index: index || 0, parent });
+      }
+
+      return undefined;
+    });
+
+    const imageGroups: NodeInfo[][] = [];
+
+    const groupImages = () => {
+      allImages.forEach((imageNodeInfo, index) => {
+        if (index === 0) imageGroups[index] = [imageNodeInfo];
+        else {
+          const current = imageNodeInfo.node.position?.start.line || 0;
+          const previous = allImages[index - 1].node.position?.start.line || 0;
+          if (current - previous === 1) {
+            imageGroups[imageGroups.length - 1].push(imageNodeInfo);
+          } else {
+            imageGroups.push([imageNodeInfo]);
+          }
+        }
+      });
+    };
+
+    groupImages();
+
+    imageGroups.forEach((groupedImages) => {
+      const newNode = {
+        type: "SimpleGallery",
+        tagName: "SimpleGallery",
+        properties: {
+          images: groupedImages.map(({ node, index, parent }) => {
+            console.log(node);
+            return (node as any).url as string;
+          }),
+        },
+        children: [],
+      };
+
+      const firstImage = groupedImages[0];
+      const lastImage = groupedImages[groupedImages.length - 1];
+      const firstIndex = firstImage.index;
+      const lastIndex = lastImage.index;
+      const numberToDelete = lastIndex - firstIndex + 1;
+
+      firstImage.parent.children.splice(firstIndex, numberToDelete, newNode);
+    });
+
+    // console.dir(tree, { colors: true, depth: null });
+  };
+};
+
+const rehypeTransformGroupImages: Pluggable = () => {
+  return (tree: Node) => {
+    visit(tree, (node) => {
+      // console.log(node);
+    });
+  };
+};
+
+const handleSimpleGalleryNode: Handler = (state, node) => {
+  console.log("Custom Handler node");
+  console.dir(node, { colors: true, depth: null });
+
+  return {
+    type: "element",
+    tagName: "SimpleGallery",
+    properties: node.properties,
+    children: state.all(node),
+    data: node.data,
+    // props: node.props,
+  };
+
+  // return node;
+
+  // return {
+  //   type: "SimpleGallery",
+  //   tagName: "SimpleGallery",
+  //   properties: {
+  //     images: [],
+  //   },
+  //   children: [],
+  // };
+};
+
+const handleRecmaNodes: Pluggable = () => (tree: Node) => {
+  visit(tree, (node) => {
+    // console.dir(node, { colors: true, depth: null });
+  });
+};
+
 const addBundledMDXContent = async <T extends Record<string, any>>(
   data: T,
   { meta }: { meta: ZodMeta }
@@ -64,17 +177,35 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     excerpt: string;
   }
 > => {
-  const remarkPlugins = [remarkGfm, remarkToc, remarkMath];
-  const rehypePlugins = [
+  // console.log(meta.basename);
+
+  const remarkPlugins: Pluggable[] = [remarkGfm, remarkToc, remarkMath];
+
+  const rehypePlugins: Pluggable[] = [
     rehypeHighlight,
     rehypeKatex,
     rehypeSlug,
     rehypeAccessibleEmojis,
   ];
 
+  const recmaPlugins: Pluggable[] = [];
+
+  // if (meta.basename === "site-demo-post.md") {
+  remarkPlugins.unshift(remarkGroupImages);
+  rehypePlugins.unshift(rehypeTransformGroupImages);
+  recmaPlugins.unshift(handleRecmaNodes);
+  // }
+
   const rawContent = meta.content || "";
   const mdxSource = await serialize(rawContent, {
-    mdxOptions: { remarkPlugins, rehypePlugins },
+    mdxOptions: {
+      remarkPlugins,
+      rehypePlugins,
+      recmaPlugins,
+      remarkRehypeOptions: {
+        handlers: { SimpleGallery: handleSimpleGalleryNode },
+      },
+    },
     parseFrontmatter: true,
   });
 

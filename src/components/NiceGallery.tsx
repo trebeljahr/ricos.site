@@ -47,10 +47,12 @@ const getImgWidthAndHeight = (src: string) => {
   return imgPromise;
 };
 
-export const SimpleGallery = ({ photos }: { photos: string[] }) => {
-  console.log("Hi from Simple Gallery Component");
+export const ImageGallery = (props: { images: string[] }) => {
+  console.log("Hi from Simple Gallery Component", props);
 
-  const [images, setImages] = useState<ImageProps[] | null>(null);
+  const { images: photos } = props;
+
+  const [images2, setImages] = useState<ImageProps[] | null>(null);
 
   useEffect(() => {
     async function loadImages() {
@@ -79,7 +81,7 @@ export const SimpleGallery = ({ photos }: { photos: string[] }) => {
 
   const { width, height } = useWindowSize();
 
-  if (!width || !height || !images) return null;
+  if (!width || !height || !images2) return null;
 
   console.log(width, height);
 
@@ -87,8 +89,8 @@ export const SimpleGallery = ({ photos }: { photos: string[] }) => {
 
   return (
     <PhotoAlbum
-      photos={images}
-      targetRowHeight={height * 0.4}
+      photos={images2}
+      targetRowHeight={height * 0.2}
       layout="rows"
       renderPhoto={NextJsImage}
       defaultContainerWidth={1200}

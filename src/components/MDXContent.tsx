@@ -17,7 +17,7 @@ import { SATWithConcaveShapes } from "./collisionDetection/SATWithConcaveShapes"
 import { SATWithResponse } from "./collisionDetection/SATWithResponse";
 import { Triangulation } from "./collisionDetection/Triangulation";
 import { UnitVectorDemo } from "./collisionDetection/UnitVectorDemo";
-import { NiceGallery, SimpleGallery } from "./NiceGallery";
+import { NiceGallery, ImageGallery } from "./NiceGallery";
 
 const allComponents = {
   ThreeFiberDemo,
@@ -36,8 +36,8 @@ const allComponents = {
   RotationDemo,
   DotProductDemo,
   Triangulation,
-  NiceGallery,
-  SimpleGallery,
+  ImageGallery,
+  // SimpleGallery,
 };
 
 interface MDXProps {

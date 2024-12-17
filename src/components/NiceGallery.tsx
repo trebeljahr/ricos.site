@@ -4,13 +4,12 @@ import InfiniteScroll from "react-infinite-scroller";
 import { ClickHandler, Photo, PhotoAlbum } from "react-photo-album";
 import { ImageProps } from "src/@types";
 import { useWindowSize } from "src/hooks/useWindowSize";
+import { getImgWidthAndHeight } from "src/lib/mapToImageProps";
 import Lightbox from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
-import "yet-another-react-lightbox/plugins/thumbnails.css";
-import { nextImageUrl } from "src/lib/mapToImageProps";
 
 const groupSize = 10;
 
@@ -24,72 +23,14 @@ function groupImages(displayedImages: ImageProps[]): ImageProps[][] {
   return groupedImages;
 }
 
-const getImgWidthAndHeight = (src: string) => {
-  const img = new Image();
-  img.src = nextImageUrl(src, 16);
-
-  const imgPromise: Promise<{ width: number; height: number }> = new Promise(
-    (resolve, reject) => {
-      img.onload = () => {
-        resolve({
-          width: img.width,
-          height: img.height,
-        });
-      };
-
-      img.onerror = (error) => {
-        console.error("Error loading image:", error);
-        reject(error);
-      };
-    }
-  );
-
-  return imgPromise;
-};
-
-export const ImageGallery = (props: { images: string[] }) => {
-  console.log("Hi from Simple Gallery Component", props);
-
-  const { images: photos } = props;
-
-  const [images2, setImages] = useState<ImageProps[] | null>(null);
-
-  useEffect(() => {
-    async function loadImages() {
-      const loadedImages = await Promise.all(
-        photos.map(async (src, index) => {
-          const { width, height } = await getImgWidthAndHeight(src);
-
-          return {
-            key: `${src}-${index}`,
-            alt: "",
-            index,
-            name: src,
-            srcSet: [],
-            title: "",
-            src: src,
-            width,
-            height,
-          };
-        })
-      );
-      setImages(loadedImages);
-    }
-
-    loadImages();
-  }, [photos]);
-
+export const SimpleGallery = ({ photos }: { photos: ImageProps[] }) => {
   const { width, height } = useWindowSize();
 
-  if (!width || !height || !images2) return null;
-
-  console.log(width, height);
-
-  console.log(photos);
+  if (!width || !height) return null;
 
   return (
     <PhotoAlbum
-      photos={images2}
+      photos={photos}
       targetRowHeight={height * 0.2}
       layout="rows"
       renderPhoto={NextJsImage}
@@ -109,6 +50,43 @@ export const ImageGallery = (props: { images: string[] }) => {
       //   }}
     />
   );
+};
+
+export const ImageGallery = (props: { imageSources: string[] }) => {
+  console.log("Hi from Simple Gallery Component", props);
+
+  const { imageSources } = props;
+
+  const [photos, setPhotos] = useState<ImageProps[] | null>(null);
+
+  useEffect(() => {
+    async function loadImages() {
+      const loadedPhotos = await Promise.all(
+        imageSources.map(async (src, index) => {
+          const { width, height } = await getImgWidthAndHeight(src);
+
+          return {
+            key: `${src}-${index}`,
+            alt: "",
+            index,
+            name: src,
+            srcSet: [],
+            title: "",
+            src: src,
+            width,
+            height,
+          };
+        })
+      );
+      setPhotos(loadedPhotos);
+    }
+
+    loadImages();
+  }, [imageSources]);
+
+  if (!photos) return null;
+
+  return <SimpleGallery photos={photos} />;
 };
 
 export const NiceGallery = ({ images }: { images: ImageProps[] }) => {

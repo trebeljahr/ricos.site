@@ -1,6 +1,6 @@
 import slugify from "@sindresorhus/slugify";
+import { Nodes } from "mdast";
 import { Handler } from "mdast-util-to-hast";
-import { Properties } from "mdast-util-to-hast/lib/handlers/code";
 import { MDXRemoteSerializeResult } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
 import path from "path";
@@ -11,10 +11,11 @@ import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkToc from "remark-toc";
+import { ImageProps } from "src/@types";
+import { getImgWidthAndHeight } from "src/lib/mapToImageProps";
 import { Node, Pluggable } from "unified/lib";
 import { visit } from "unist-util-visit";
 import { defineConfig, s, ZodMeta } from "velite";
-import { Nodes } from "mdast";
 
 declare module "mdast" {
   interface RootContentMap {
@@ -69,7 +70,7 @@ type NodeInfo = {
 };
 
 const remarkGroupImages: Pluggable = () => {
-  return (tree: Node) => {
+  return async (tree: Node) => {
     const allImages: NodeInfo[] = [];
 
     visit(tree, (node, index, parent: { children: Node[] }) => {
@@ -99,15 +100,29 @@ const remarkGroupImages: Pluggable = () => {
 
     groupImages();
 
-    imageGroups.forEach((groupedImages) => {
+    imageGroups.forEach(async (groupedImages) => {
       const newNode = {
         type: "SimpleGallery",
         tagName: "SimpleGallery",
         properties: {
-          images: groupedImages.map(({ node, index, parent }) => {
-            console.log(node);
-            return (node as any).url as string;
-          }),
+          images: await Promise.all(
+            groupedImages.map(async ({ node, index, parent }) => {
+              const src = (node as any).url as string;
+              const { width, height } = await getImgWidthAndHeight(src);
+
+              return {
+                key: `${src}-${index}`,
+                alt: "",
+                index,
+                name: src,
+                srcSet: [],
+                title: "",
+                src: src,
+                width,
+                height,
+              };
+            })
+          ),
         },
         children: [],
       };
@@ -127,16 +142,11 @@ const remarkGroupImages: Pluggable = () => {
 
 const rehypeTransformGroupImages: Pluggable = () => {
   return (tree: Node) => {
-    visit(tree, (node) => {
-      // console.log(node);
-    });
+    visit(tree, (node) => {});
   };
 };
 
 const handleSimpleGalleryNode: Handler = (state, node) => {
-  console.log("Custom Handler node");
-  console.dir(node, { colors: true, depth: null });
-
   return {
     type: "element",
     tagName: "SimpleGallery",
@@ -158,10 +168,19 @@ const handleSimpleGalleryNode: Handler = (state, node) => {
   // };
 };
 
-const handleRecmaNodes: Pluggable = () => (tree: Node) => {
+const handleRecmaNodes: Pluggable = () => async (tree) => {
+  let loadedPhotos: Promise<ImageProps[]> = Promise.resolve([]);
+
   visit(tree, (node) => {
+    console.dir(node, { colors: true, depth: null });
+
+    if (node.tagName !== "SimpleGallery") return;
+
     // console.dir(node, { colors: true, depth: null });
   });
+
+  const photos = await loadedPhotos;
+  // console.log(photos);
 };
 
 const addBundledMDXContent = async <T extends Record<string, any>>(
@@ -177,8 +196,6 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     excerpt: string;
   }
 > => {
-  // console.log(meta.basename);
-
   const remarkPlugins: Pluggable[] = [remarkGfm, remarkToc, remarkMath];
 
   const rehypePlugins: Pluggable[] = [
@@ -190,11 +207,11 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
 
   const recmaPlugins: Pluggable[] = [];
 
-  // if (meta.basename === "site-demo-post.md") {
-  remarkPlugins.unshift(remarkGroupImages);
-  rehypePlugins.unshift(rehypeTransformGroupImages);
-  recmaPlugins.unshift(handleRecmaNodes);
-  // }
+  if (meta.basename === "site-demo-post.md") {
+    remarkPlugins.unshift(remarkGroupImages);
+    rehypePlugins.unshift(rehypeTransformGroupImages);
+    recmaPlugins.unshift(handleRecmaNodes);
+  }
 
   const rawContent = meta.content || "";
   const mdxSource = await serialize(rawContent, {

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AnchorHTMLAttributes, HTMLAttributes, ImgHTMLAttributes } from "react";
 import { ThreeFiberDemo } from "./Demo";
 import { ExternalLink } from "./ExternalLink";
-import { ImageGallery } from "./NiceGallery";
+import { ImageGallery, SimpleGallery } from "./NiceGallery";
 
 export const ImageRenderer = ({
   src,
@@ -105,9 +105,9 @@ export const CodeRenderer = (props: HTMLAttributes<HTMLPreElement>) => {
 
 const handleNiceImageGalleries = (props: { images: string }) => {
   console.log("handle nice image gallery", props);
-  const images = props.images.split(" ");
+  const imageSources = props.images.split(" ");
 
-  return <ImageGallery images={images} />;
+  return <ImageGallery imageSources={imageSources} />;
 };
 
 const handleDivs = (props: any) => {

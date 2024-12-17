@@ -8,6 +8,29 @@ export const imageSizes = [
 
 export const cloudFrontUrl = `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net`;
 
+export const getImgWidthAndHeight = (src: string) => {
+  const img = new Image();
+  img.src = nextImageUrl(src, 16);
+
+  const imgPromise: Promise<{ width: number; height: number }> = new Promise(
+    (resolve, reject) => {
+      img.onload = () => {
+        resolve({
+          width: img.width,
+          height: img.height,
+        });
+      };
+
+      img.onerror = (error) => {
+        console.error("Error loading image:", error);
+        reject(error);
+      };
+    }
+  );
+
+  return imgPromise;
+};
+
 export const nextImageUrl = (src: string, width: number) => {
   if (!imageSizes.includes(width)) {
     throw new Error(`Invalid width for image ${src}: ${width}`);

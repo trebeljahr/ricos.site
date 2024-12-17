@@ -261,7 +261,7 @@ export function initPolygons(
     niceBlue
   );
 
-  const [w, h] = getWidthAndHeight(ctx);
+  const [w, h] = getWidthAndHeightFromCtx(ctx);
   const origin = new Vec2(w / 2, h / 2);
   const byScalingUp = getScalingMatrix(w * 0.1, w * 0.1);
 
@@ -521,7 +521,7 @@ export function drawAllProjections(
   });
 }
 
-export function getWidthAndHeight(ctx: CanvasRenderingContext2D) {
+export function getWidthAndHeightFromCtx(ctx: CanvasRenderingContext2D) {
   return [
     parseFloat(ctx.canvas.style.width),
     parseFloat(ctx.canvas.style.height),
@@ -531,7 +531,7 @@ export function drawCoordinateSystem(
   ctx: CanvasRenderingContext2D,
   scaleFactor: number
 ) {
-  const [w, h] = getWidthAndHeight(ctx);
+  const [w, h] = getWidthAndHeightFromCtx(ctx);
 
   ctx.strokeStyle = "black";
   line(ctx, new Vec2(0, h / 2), new Vec2(w, h / 2));

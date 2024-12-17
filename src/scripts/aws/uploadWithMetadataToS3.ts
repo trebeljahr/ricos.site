@@ -6,6 +6,11 @@ import pLimit from "p-limit";
 import path from "path";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import {
+  assetsMetadataFilePath,
+  localMetadata,
+  updateMetadataFile,
+} from "../metadataJsonFileHelpers";
 import { collectFilesInPath } from "./directoryTraversal";
 import { getWidthAndHeight } from "./getWidthAndHeight";
 import { doesFileExistInS3, uploadWithMetadata } from "./helpers";
@@ -63,6 +68,14 @@ async function uploadDir(directoryPath: string) {
         filePath
       );
 
+      const fileMetadata = localMetadata[key];
+      console.log(fileMetadata);
+
+      if (fileMetadata?.existsInS3) {
+        progress.update(counter++);
+        return;
+      }
+
       const fileDoesNotExist = !(await limit(() => doesFileExistInS3(key)));
       const fileHasRightEnding = /\.(jpg|jpeg|png|webp)$/i.test(filePath);
 
@@ -71,6 +84,16 @@ async function uploadDir(directoryPath: string) {
       if (fileDoesNotExist && fileHasRightEnding) {
         return filePath;
       }
+
+      const { width, height } = await getWidthAndHeight(key);
+
+      await updateMetadataFile(assetsMetadataFilePath, {
+        key,
+        width,
+        height,
+        aspectRatio: width / height,
+        existsInS3: true,
+      });
     })
   );
 

@@ -5,6 +5,10 @@ import path from "path";
 import { createS3Client } from "src/lib/aws";
 import { getAllStorageObjectKeys, getObjectMetadata } from "../../lib/aws.js";
 import { getWidthAndHeight } from "./getWidthAndHeight.js";
+import {
+  assetsMetadataFilePath,
+  updateMetadataFile,
+} from "../metadataJsonFileHelpers.js";
 
 const Bucket = "images.trebeljahr.com";
 
@@ -49,7 +53,17 @@ export async function uploadWithMetadata(
   });
 
   try {
-    return await client.send(command);
+    await client.send(command);
+
+    await updateMetadataFile(assetsMetadataFilePath, {
+      key: Key,
+      width: parseInt(Metadata.width),
+      height: parseInt(Metadata.height),
+      aspectRatio: parseFloat(Metadata.aspectRatio),
+      existsInS3: true,
+    });
+
+    return;
   } catch (err) {
     console.error(err);
   }
@@ -72,7 +86,7 @@ export async function readS3MetadataForAllStorageObjects(prefix: string) {
 export async function uploadSingleFileToS3(filepath: string, awsPath: string) {
   const key = createKey(awsPath, filepath);
 
-  const data = await getWidthAndHeight(filepath);
+  const data = await getWidthAndHeight(key);
 
   try {
     await uploadWithMetadata(filepath, key, {

@@ -10,16 +10,17 @@
     "typecheck": "tsc",
     "tweet": "tsx src/scripts/tweet.ts",
     "renameFiles": "tsx src/scripts/renameFiles.ts",
-    "addDatesToNewsletters": "tsx src/scripts/add-dates-to-newsletters.ts",
+    "addDatesToNewsletters": "tsx src/scripts/addDatesToNewsletters.ts",
     "uploadWithMetadataToS3": "tsx src/scripts/aws/uploadWithMetadataToS3.ts",
     "warmupS3Cache": "tsx src/scripts/aws/warmupS3Cache.ts",
+    "createImageMetadataJson": "tsx src/scripts/createImageMetadataJson.ts",
     "sendNewsletter": "tsx src/scripts/sendNewsletter.ts",
     "createRedirects": "tsx src/scripts/createRedirects.ts",
-    "fixFolderPaths": "tsx src/scripts/aws/fix-s3-photos-in-folders.ts",
+    "fixFolderPaths": "tsx src/scripts/aws/fixFileNames.ts",
     "rewriteWikilinks": "tsx src/scripts/rewriteWikilinks.ts",
     "addGraymatterInformation": "tsx src/scripts/addGraymatterInformation.ts",
     "vercel-install": "./vercel-submodule-workaround.sh && npm install --production=false",
-    "replaceExcerpts": "tsx src/scripts/replace-excerpts.ts"
+    "replaceExcerpts": "tsx src/scripts/replaceExcerpts.ts"
   },
   "type": "module",
   "dependencies": {
@@ -30,6 +31,7 @@
     "date-fns": "2.21.3",
     "form-data": "^4.0.0",
     "handlebars": "^4.7.7",
+    "image-dimensions": "^2.3.0",
     "mailgun.js": "^8.0.1",
     "nanoid": "^4.0.0",
     "next": "^14.2.15",

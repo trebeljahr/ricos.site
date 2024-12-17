@@ -1,16 +1,45 @@
-import "dotenv/config";
 import {
   HeadObjectCommand,
   ListObjectsV2Command,
   S3Client,
 } from "@aws-sdk/client-s3";
+import "dotenv/config";
 import pLimit from "p-limit";
+import {
+  getMetadataFromJsonFile,
+  ImageMetadata,
+} from "src/scripts/metadataJsonFileHelpers";
 
-export async function getObjectMetadata(Bucket: string, Key: string) {
+export async function getObjectMetadata(
+  Bucket: string,
+  Key: string
+): Promise<ImageMetadata> {
+  const localMetadata = await getMetadataFromJsonFile(Key);
+
+  if (localMetadata) {
+    return localMetadata;
+  }
+
   const client = createS3Client();
   const command = new HeadObjectCommand({ Bucket, Key });
   const response = await client.send(command);
-  return response;
+
+  if (
+    !response.Metadata ||
+    !response.Metadata.width ||
+    !response.Metadata.height ||
+    !response.Metadata.aspectRatio
+  ) {
+    throw new Error(`Some metadata missing for the object ${Key}`);
+  }
+
+  return {
+    key: Key,
+    width: parseInt(response.Metadata.width),
+    height: parseInt(response.Metadata.height),
+    aspectRatio: parseFloat(response.Metadata.aspectRatio),
+    existsInS3: true,
+  };
 }
 
 export async function getAllStorageObjectKeys(
@@ -145,11 +174,14 @@ export const getDataFromS3 = async ({ prefix = "" }: OptionsForS3 = {}) => {
       return split[split.length - 1] !== "";
     }).map((file: any) =>
       limit(async () => {
-        const result = await getObjectMetadata(bucketName, file.Key || "");
+        const { width, height } = await getObjectMetadata(
+          bucketName,
+          file.Key || ""
+        );
         return {
           name: (file.Key as string).replace(`${prefix}`, ""),
-          width: parseInt(result.Metadata?.width || "100"),
-          height: parseInt(result.Metadata?.height || "100"),
+          width,
+          height,
         };
       })
     );
@@ -199,11 +231,11 @@ export const getFirstImageFromS3 = async ({
     throw new Error("No valid image key found");
   }
 
-  const result = await getObjectMetadata(bucketName, firstFile.Key);
+  const { width, height } = await getObjectMetadata(bucketName, firstFile.Key);
 
   return {
     name: firstFile.Key.replace(`${prefix}`, ""),
-    width: parseInt(result.Metadata?.width || "100"),
-    height: parseInt(result.Metadata?.height || "100"),
+    width,
+    height,
   };
 };

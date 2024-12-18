@@ -14,9 +14,6 @@ export async function generateRedirects() {
 
       const { data } = matter(mdFileRaw);
 
-      // console.log(data.title);
-      console.log(data);
-
       const slugTitle = slugify(data.title);
 
       return {

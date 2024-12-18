@@ -104,14 +104,12 @@ export const CodeRenderer = (props: HTMLAttributes<HTMLPreElement>) => {
 };
 
 const handleNiceImageGalleries = (props: { images: string }) => {
-  console.log("handle nice image gallery", props);
   const photos = JSON.parse(props.images);
 
   return <SimpleGallery photos={photos} />;
 };
 
 const handleDivs = (props: any) => {
-  console.log("handle divs", props);
   return <div {...props} />;
 };
 

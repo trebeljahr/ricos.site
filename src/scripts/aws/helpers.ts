@@ -6,12 +6,12 @@ import { createS3Client } from "src/lib/aws";
 import {
   getAllStorageObjectKeys,
   getImageMetadataFromFileSystemOrAWS,
-} from "../../lib/aws.js";
-import { getWidthAndHeightFromFileSystem } from "./getWidthAndHeight.js";
+} from "src/lib/aws";
+import { getWidthAndHeightFromFileSystem } from "src/scripts/aws/getWidthAndHeight";
 import {
   assetsMetadataFilePath,
   updateMetadataFile,
-} from "../metadataJsonFileHelpers.js";
+} from "../metadataJsonFileHelpers";
 
 const Bucket = "images.trebeljahr.com";
 

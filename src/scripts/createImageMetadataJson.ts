@@ -1,14 +1,8 @@
-import { Presets, SingleBar } from "cli-progress";
 import "dotenv/config";
-import { promises as fs, lstatSync } from "fs";
+import { lstatSync } from "fs";
 import inquirer from "inquirer";
-import pLimit from "p-limit";
-import path from "path";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { collectFilesInPath } from "./aws/directoryTraversal";
-import { getWidthAndHeightFromFileSystem } from "./aws/getWidthAndHeight";
-import { doesFileExistInS3 } from "./aws/helpers";
 import {
   assetsMetadataFilePath,
   createMetadataFile,

@@ -4,7 +4,10 @@ import InfiniteScroll from "react-infinite-scroller";
 import { ClickHandler, Photo, PhotoAlbum } from "react-photo-album";
 import { ImageProps } from "src/@types";
 import { useWindowSize } from "src/hooks/useWindowSize";
-import { getImgWidthAndHeight } from "src/lib/mapToImageProps";
+import {
+  getImgWidthAndHeight,
+  transformToImageProps,
+} from "src/lib/mapToImageProps";
 import Lightbox from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
@@ -24,37 +27,64 @@ function groupImages(displayedImages: ImageProps[]): ImageProps[][] {
 }
 
 export const SimpleGallery = (props: { photos: ImageProps[] }) => {
-  console.log(props);
-
   const { photos } = props;
-  // console.log("Photos from SimpleGallery", photos);
   const { width, height } = useWindowSize();
+
+  const {
+    isModalOpen,
+    openModal,
+    handleClose,
+    currentImageIndex,
+    setCurrentImageIndex,
+    animateImageBackToGallery,
+  } = useCustomLightbox({ images: photos });
 
   if (!width || !height) return null;
 
-  console.log("Photos from SimpleGallery", photos);
-
   return (
-    <PhotoAlbum
-      photos={photos}
-      targetRowHeight={height * 0.2}
-      layout="rows"
-      renderPhoto={NextJsImage}
-      defaultContainerWidth={1200}
-      //   sizes={{
-      //     size: "calc(100vw - 24px)",
-      //     sizes: [
-      //       {
-      //         viewport: "(max-width: 520px)",
-      //         size: "calc(80vw - 105px)",
-      //       },
-      //       {
-      //         viewport: "(max-width: 1150px)",
-      //         size: "calc(80vw - 105px)",
-      //       },
-      //     ],
-      //   }}
-    />
+    <>
+      <PhotoAlbum
+        photos={photos}
+        targetRowHeight={height * 0.6}
+        layout="rows"
+        renderPhoto={NextJsImage}
+        defaultContainerWidth={1200}
+        onClick={(photo) => {
+          openModal({
+            ...photo,
+            index: photo.index,
+          });
+        }}
+      />
+
+      <Lightbox
+        open={isModalOpen}
+        close={handleClose}
+        slides={photos}
+        index={currentImageIndex}
+        on={{
+          view: ({ index }) => {
+            setCurrentImageIndex(index);
+          },
+          exiting: () => {
+            animateImageBackToGallery();
+          },
+        }}
+        carousel={{ finite: true }}
+        plugins={[Thumbnails, Zoom]}
+        thumbnails={{
+          position: "bottom",
+          width: height < 500 ? 50 : 100,
+          height: height < 500 ? 50 : 100,
+          border: 0,
+          borderRadius: 4,
+          padding: 0,
+          gap: 10,
+          imageFit: "cover",
+          vignette: true,
+        }}
+      />
+    </>
   );
 };
 
@@ -69,17 +99,16 @@ export const ImageGallery = (props: { imageSources: string[] }) => {
         imageSources.map(async (src, index) => {
           const { width, height } = await getImgWidthAndHeight(src);
 
-          return {
-            key: `${src}-${index}`,
-            alt: "",
-            index,
-            name: src,
-            srcSet: [],
-            title: "",
-            src: src,
-            width,
-            height,
-          };
+          const result = transformToImageProps(
+            {
+              name: src,
+              src,
+              width,
+              height,
+            },
+            index
+          );
+          return result;
         })
       );
       setPhotos(loadedPhotos);
@@ -93,12 +122,9 @@ export const ImageGallery = (props: { imageSources: string[] }) => {
   return <SimpleGallery photos={photos} />;
 };
 
-export const NiceGallery = ({ images }: { images: ImageProps[] }) => {
+const useCustomLightbox = ({ images }: { images: ImageProps[] }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [displayedImages, setDisplayImages] = useState(
-    images.slice(0, groupSize)
-  );
 
   const handleClose = async () => {
     setIsModalOpen(false);
@@ -107,7 +133,7 @@ export const NiceGallery = ({ images }: { images: ImageProps[] }) => {
   const animateImageBackToGallery = () => {
     const lightboxImgContainer = document.querySelector(".yarl__slide_current");
     const lightboxImg = lightboxImgContainer?.querySelector("img");
-    const galleryImg = document.getElementById(images[currentImageIndex].name);
+    const galleryImg = document.getElementById(images[currentImageIndex].id);
     const navbar = document.querySelector<HTMLElement>("#navbar");
 
     if (!galleryImg || !lightboxImg || !navbar) return;
@@ -152,6 +178,43 @@ export const NiceGallery = ({ images }: { images: ImageProps[] }) => {
     setIsModalOpen(true);
   };
 
+  useEffect(() => {
+    const currentImage = images[currentImageIndex];
+
+    const currentImageElement = document.getElementById(currentImage.id);
+
+    if (currentImageElement) {
+      currentImageElement.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [currentImageIndex, images]);
+
+  return {
+    openModal,
+    isModalOpen,
+    handleClose,
+    currentImageIndex,
+    setCurrentImageIndex,
+    animateImageBackToGallery,
+  };
+};
+
+export const NiceGallery = ({ images }: { images: ImageProps[] }) => {
+  const {
+    openModal,
+    isModalOpen,
+    handleClose,
+    currentImageIndex,
+    setCurrentImageIndex,
+    animateImageBackToGallery,
+  } = useCustomLightbox({ images });
+
+  const [displayedImages, setDisplayImages] = useState(
+    images.slice(0, groupSize)
+  );
+
   const loadMoreImages = useCallback(() => {
     const newImages = images.slice(
       displayedImages.length,
@@ -165,19 +228,6 @@ export const NiceGallery = ({ images }: { images: ImageProps[] }) => {
       loadMoreImages();
     }
   }, [currentImageIndex, loadMoreImages, displayedImages]);
-
-  useEffect(() => {
-    const currentImage = images[currentImageIndex];
-
-    const currentImageElement = document.getElementById(currentImage.name);
-
-    if (currentImageElement) {
-      currentImageElement.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  }, [currentImageIndex, images]);
 
   const { width, height } = useWindowSize();
 

@@ -4,7 +4,7 @@ import { NiceGallery } from "@components/NiceGallery";
 import { ToTopButton } from "@components/ToTopButton";
 import { ImageProps } from "src/@types";
 import { getDataFromS3, getS3Folders, photographyFolder } from "src/lib/aws";
-import { mapToImageProps } from "src/lib/mapToImageProps";
+import { transformToImageProps } from "src/lib/mapToImageProps";
 
 export default function SinglePhotographyShowcasePage({
   images,
@@ -53,7 +53,7 @@ export async function getStaticProps({ params }: StaticProps) {
       prefix,
     });
 
-    const images: ImageProps[] = mapToImageProps(awsImageData, prefix);
+    const images: ImageProps[] = awsImageData.map(transformToImageProps);
 
     return { props: { images, tripName: params.tripName } };
   } catch (error) {

@@ -134,6 +134,7 @@ export async function getS3Folders(prefix: string): Promise<string[]> {
 
 export type ImageDataFromAWS = {
   name: string;
+  src: string;
   width: number;
   height: number;
 };
@@ -187,6 +188,7 @@ export const getDataFromS3 = async ({ prefix = "" }: OptionsForS3 = {}) => {
         );
         return {
           name: (file.Key as string).replace(`${prefix}`, ""),
+          src: file.Key,
           width,
           height,
         };
@@ -245,6 +247,7 @@ export const getFirstImageFromS3 = async ({
 
   return {
     name: firstFile.Key.replace(`${prefix}`, ""),
+    src: firstFile.Key,
     width,
     height,
   };

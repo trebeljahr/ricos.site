@@ -1,5 +1,7 @@
 import path from "path";
 import { ImageDataFromAWS } from "./aws";
+import { ImageProps } from "src/@types";
+import { nanoid } from "nanoid";
 
 export const imageSizes = [
   16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048,
@@ -10,7 +12,7 @@ export const cloudFrontUrl = `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.c
 
 export const getImgWidthAndHeight = (src: string) => {
   const img = new Image();
-  img.src = nextImageUrl(src, 16);
+  img.src = nextImageUrl(src, 3840);
 
   const imgPromise: Promise<{ width: number; height: number }> = new Promise(
     (resolve, reject) => {
@@ -51,23 +53,24 @@ export const nextImageUrl = (src: string, width: number) => {
   return `${cloudFrontUrl}${fixedSource}/${width}.webp`;
 };
 
-export function mapToImageProps(images: ImageDataFromAWS[], prefix: string) {
-  return images.map(({ name, width, height }, index) => {
-    const src = encodeURI(`/${prefix}${name}`);
-    return {
-      width,
-      height,
-      index,
-      name,
-      src,
-      srcSet: imageSizes.map((size) => {
-        const aspectRatio = Math.round(height / width);
-        return {
-          src: nextImageUrl(src, size),
-          width: size,
-          height: aspectRatio * size,
-        };
-      }),
-    };
-  });
+export function transformToImageProps(
+  { name, src, width, height }: ImageDataFromAWS,
+  index: number
+): ImageProps {
+  return {
+    width,
+    id: nanoid(),
+    height,
+    index,
+    name,
+    src,
+    srcSet: imageSizes.map((size) => {
+      const aspectRatio = Math.round(height / width);
+      return {
+        src: nextImageUrl(src, size),
+        width: size,
+        height: aspectRatio * size,
+      };
+    }),
+  };
 }

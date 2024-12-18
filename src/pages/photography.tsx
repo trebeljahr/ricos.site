@@ -1,15 +1,11 @@
-import { ImageWithLoader } from "@components/ImageWithLoader";
-import Link from "next/link";
 import { turnKebabIntoTitleCase } from "@components/BreadCrumbs";
-import {
-  getDataFromS3,
-  getFirstImageFromS3,
-  photographyFolder,
-} from "src/lib/aws";
-import { mapToImageProps } from "src/lib/mapToImageProps";
-import { ImageProps } from "src/@types";
+import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
+import Link from "next/link";
+import { ImageProps } from "src/@types";
+import { getFirstImageFromS3, photographyFolder } from "src/lib/aws";
+import { transformToImageProps } from "src/lib/mapToImageProps";
 
 const tripNames = [
   "alps",
@@ -89,10 +85,7 @@ export async function getStaticProps() {
       const firstImage = await getFirstImageFromS3({
         prefix: photographyFolder + tripName,
       });
-      const [image] = mapToImageProps(
-        [firstImage],
-        photographyFolder + tripName
-      );
+      const [image] = [firstImage].map(transformToImageProps);
 
       return { image, tripName };
     })

@@ -2,6 +2,7 @@
 export interface ImageProps {
   index: number;
   width: number;
+  id: string;
   height: number;
   name: string;
   src: string;

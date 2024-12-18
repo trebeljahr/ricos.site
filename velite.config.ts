@@ -12,6 +12,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkToc from "remark-toc";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
+import { transformToImageProps } from "src/lib/mapToImageProps";
 import { Node, Pluggable } from "unified/lib";
 import { visit } from "unist-util-visit";
 import { defineConfig, s, ZodMeta } from "velite";
@@ -113,22 +114,22 @@ const remarkGroupImages: Pluggable = () => {
                     const { width, height } =
                       await getImgWidthAndHeightDuringBuild(src);
 
-                    return {
-                      alt: "",
-                      title: "",
-                      key: src,
-                      name: src,
-                      src: src,
-                      width,
-                      height,
-                    };
+                    const result = transformToImageProps(
+                      { name: src, src, width, height },
+                      0
+                    );
+
+                    return result;
                   } catch (err) {
+                    console.error("Error getting image dimensions", err);
+
                     return {
                       alt: "",
                       title: "",
                       key: src,
                       name: src,
                       src: src,
+                      srcSet: [],
                       width: 1,
                       height: 1,
                     };
@@ -263,7 +264,6 @@ const addLinksAndSlugTransformer = (link: string = "/") => {
 
 export default defineConfig({
   root: "src/content/Notes/",
-
   collections: {
     posts: {
       name: "Post",

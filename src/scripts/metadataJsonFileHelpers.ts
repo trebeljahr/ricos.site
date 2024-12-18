@@ -34,6 +34,23 @@ export async function getMetadataFromJsonFile(key: string) {
   }
 }
 
+export async function updateMetadataFileBulk(
+  filePath: string,
+  newMetadata: ImageMetadata[]
+) {
+  try {
+    newMetadata.forEach((metadata) => {
+      localMetadata[metadata.key] = metadata;
+    });
+
+    const jsonString = JSON.stringify(localMetadata, null, 2);
+    await fs.writeFile(filePath, jsonString, "utf-8");
+  } catch (error) {
+    console.error("Error updating local metadata file:", error);
+    throw error;
+  }
+}
+
 export async function updateMetadataFile(
   filePath: string,
   newMetadata: ImageMetadata
@@ -60,14 +77,14 @@ export interface ImageMetadata {
   existsInS3: boolean;
 }
 
-const limit = pLimit(5);
+const limit = pLimit(1000);
 
 export async function createMetadataFile(dirPath: string, outputPath: string) {
   const fileContent = await fs.readFile(outputPath, "utf-8");
   const existingMetadata = JSON.parse(fileContent);
 
   const imageFiles = await collectFilesInPath(dirPath, {
-    filePattern: /\.(jpg|jpeg|png|webp)$/i,
+    filePattern: /\.(jpg|jpeg|png|webp|gif|avif)$/i,
   });
   const progress = new SingleBar(
     {
@@ -78,8 +95,10 @@ export async function createMetadataFile(dirPath: string, outputPath: string) {
 
   progress.start(imageFiles.length, 0);
 
+  const metadataUpdates: ImageMetadata[] = [];
   for (let i = 0; i < imageFiles.length; i++) {
     const imagePath = imageFiles[i];
+
     try {
       const key = path.join("assets", path.relative(dirPath, imagePath));
       const { width, height } =
@@ -95,19 +114,23 @@ export async function createMetadataFile(dirPath: string, outputPath: string) {
       }
 
       const existsInS3 = await limit(() => doesFileExistInS3(key));
-      const metadata: ImageMetadata = {
+      const newMetadata: ImageMetadata = {
         key: key,
         width: width,
         height: height,
         aspectRatio: width / height,
         existsInS3,
       };
-      await updateMetadataFile(outputPath, metadata);
+
+      metadataUpdates.push(newMetadata);
     } catch (error) {
       console.error(`Error processing ${imagePath}:`, error);
     }
+
     progress.update(i + 1);
   }
+
+  await updateMetadataFileBulk(outputPath, metadataUpdates);
 
   progress.stop();
 }

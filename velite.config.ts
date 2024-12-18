@@ -116,7 +116,7 @@ const remarkGroupImages: Pluggable = () => {
 
                     const result = transformToImageProps(
                       { name: src, src, width, height },
-                      0
+                      999
                     );
 
                     return result;

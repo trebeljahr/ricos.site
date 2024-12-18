@@ -10,16 +10,10 @@ import {
   ImageMetadata,
 } from "src/scripts/metadataJsonFileHelpers";
 
-export async function getObjectMetadata(
+export async function getImageMetadataFromS3(
   Bucket: string,
   Key: string
 ): Promise<ImageMetadata> {
-  const localMetadata = await getMetadataFromJsonFile(Key);
-
-  if (localMetadata) {
-    return localMetadata;
-  }
-
   const client = createS3Client();
   const command = new HeadObjectCommand({ Bucket, Key });
   const response = await client.send(command);
@@ -40,6 +34,19 @@ export async function getObjectMetadata(
     aspectRatio: parseFloat(response.Metadata.aspectRatio),
     existsInS3: true,
   };
+}
+
+export async function getImageMetadataFromFileSystemOrAWS(
+  Bucket: string,
+  Key: string
+): Promise<ImageMetadata> {
+  const localMetadata = await getMetadataFromJsonFile(Key);
+
+  if (localMetadata) {
+    return localMetadata;
+  }
+
+  return await getImageMetadataFromS3(Bucket, Key);
 }
 
 export async function getAllStorageObjectKeys(
@@ -174,7 +181,7 @@ export const getDataFromS3 = async ({ prefix = "" }: OptionsForS3 = {}) => {
       return split[split.length - 1] !== "";
     }).map((file: any) =>
       limit(async () => {
-        const { width, height } = await getObjectMetadata(
+        const { width, height } = await getImageMetadataFromFileSystemOrAWS(
           bucketName,
           file.Key || ""
         );
@@ -231,7 +238,10 @@ export const getFirstImageFromS3 = async ({
     throw new Error("No valid image key found");
   }
 
-  const { width, height } = await getObjectMetadata(bucketName, firstFile.Key);
+  const { width, height } = await getImageMetadataFromFileSystemOrAWS(
+    bucketName,
+    firstFile.Key
+  );
 
   return {
     name: firstFile.Key.replace(`${prefix}`, ""),

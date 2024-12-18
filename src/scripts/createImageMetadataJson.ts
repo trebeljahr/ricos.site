@@ -7,7 +7,7 @@ import path from "path";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { collectFilesInPath } from "./aws/directoryTraversal";
-import { getWidthAndHeight } from "./aws/getWidthAndHeight";
+import { getWidthAndHeightFromFileSystem } from "./aws/getWidthAndHeight";
 import { doesFileExistInS3 } from "./aws/helpers";
 import {
   assetsMetadataFilePath,

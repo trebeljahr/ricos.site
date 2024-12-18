@@ -4,7 +4,7 @@ import { promises as fs } from "fs";
 import pLimit from "p-limit";
 import path from "path";
 import { collectFilesInPath } from "./aws/directoryTraversal";
-import { getWidthAndHeight } from "./aws/getWidthAndHeight";
+import { getWidthAndHeightFromFileSystem } from "./aws/getWidthAndHeight";
 import { doesFileExistInS3 } from "./aws/helpers";
 import { readFile } from "fs/promises";
 
@@ -82,7 +82,8 @@ export async function createMetadataFile(dirPath: string, outputPath: string) {
     const imagePath = imageFiles[i];
     try {
       const key = path.join("assets", path.relative(dirPath, imagePath));
-      const { width, height } = (await getWidthAndHeight(key)) || {};
+      const { width, height } =
+        (await getWidthAndHeightFromFileSystem(imagePath)) || {};
 
       if (!width || !height) return;
 

@@ -3,8 +3,11 @@ import { readFileSync } from "fs";
 import mime from "mime";
 import path from "path";
 import { createS3Client } from "src/lib/aws";
-import { getAllStorageObjectKeys, getObjectMetadata } from "../../lib/aws.js";
-import { getWidthAndHeight } from "./getWidthAndHeight.js";
+import {
+  getAllStorageObjectKeys,
+  getImageMetadataFromFileSystemOrAWS,
+} from "../../lib/aws.js";
+import { getWidthAndHeightFromFileSystem } from "./getWidthAndHeight.js";
 import {
   assetsMetadataFilePath,
   updateMetadataFile,
@@ -76,7 +79,7 @@ export async function readS3MetadataForAllStorageObjects(prefix: string) {
 
   const metadata = await Promise.all(
     allKeys.map((key) => {
-      return getObjectMetadata(bucketName, key);
+      return getImageMetadataFromFileSystemOrAWS(bucketName, key);
     })
   );
 
@@ -86,7 +89,7 @@ export async function readS3MetadataForAllStorageObjects(prefix: string) {
 export async function uploadSingleFileToS3(filepath: string, awsPath: string) {
   const key = createKey(awsPath, filepath);
 
-  const data = await getWidthAndHeight(key);
+  const data = await getWidthAndHeightFromFileSystem(filepath);
 
   try {
     await uploadWithMetadata(filepath, key, {

@@ -1,4 +1,4 @@
 import { expose } from "threads/worker";
-import { getWidthAndHeight } from "./getWidthAndHeight";
+import { getWidthAndHeightFromFileSystem } from "./getWidthAndHeight";
 
-expose(getWidthAndHeight);
+expose(getWidthAndHeightFromFileSystem);

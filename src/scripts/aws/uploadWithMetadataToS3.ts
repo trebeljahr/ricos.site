@@ -12,7 +12,7 @@ import {
   updateMetadataFile,
 } from "../metadataJsonFileHelpers";
 import { collectFilesInPath } from "./directoryTraversal";
-import { getWidthAndHeight } from "./getWidthAndHeight";
+import { getWidthAndHeightFromFileSystem } from "./getWidthAndHeight";
 import { doesFileExistInS3, uploadWithMetadata } from "./helpers";
 
 const argv = await yargs(hideBin(process.argv))
@@ -69,7 +69,6 @@ async function uploadDir(directoryPath: string) {
       );
 
       const fileMetadata = localMetadata[key];
-      console.log(fileMetadata);
 
       if (fileMetadata?.existsInS3) {
         progress.update(counter++);
@@ -85,7 +84,7 @@ async function uploadDir(directoryPath: string) {
         return filePath;
       }
 
-      const { width, height } = await getWidthAndHeight(key);
+      const { width, height } = await getWidthAndHeightFromFileSystem(filePath);
 
       await updateMetadataFile(assetsMetadataFilePath, {
         key,
@@ -105,7 +104,7 @@ async function uploadDir(directoryPath: string) {
   progress.start(filesToUpload.length, counter);
 
   const uploadsPromises = filesToUpload.map(async (filePath) => {
-    const data = await getWidthAndHeight(filePath);
+    const data = await getWidthAndHeightFromFileSystem(filePath);
     const key = path.relative(
       directoryPath.split("/").slice(0, -1).join("/"),
       filePath

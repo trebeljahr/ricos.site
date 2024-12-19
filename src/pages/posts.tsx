@@ -1,3 +1,4 @@
+import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import Header from "@components/PostHeader";
@@ -11,6 +12,7 @@ type Props = {
 };
 
 const Posts = ({ posts }: Props) => {
+  const url = "posts";
   return (
     <Layout
       title="Posts - writings of a curious person, about life, the universe and everything"
@@ -18,9 +20,11 @@ const Posts = ({ posts }: Props) => {
       image={
         "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg"
       }
-      url="posts"
+      url={url}
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
+      <BreadCrumbs path={url} />
+
       <main>
         <section>
           <Header

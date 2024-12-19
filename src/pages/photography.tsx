@@ -1,4 +1,4 @@
-import { turnKebabIntoTitleCase } from "@components/BreadCrumbs";
+import { BreadCrumbs, turnKebabIntoTitleCase } from "@components/BreadCrumbs";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
@@ -40,13 +40,16 @@ export default function Photography({
 }: {
   trips: { image: ImageProps; tripName: string }[];
 }) {
+  const url = "photography";
   return (
     <Layout
       title="Photography"
       description="A page with all my photography."
-      url="photography"
+      url={url}
       fullScreen={true}
     >
+      <BreadCrumbs path={url} />
+
       <Header subtitle="My travels in pictures" title="Photography" />
       <main className="not-prose grid grid-cols-1 md:grid-cols-2 gap-2 mb-20">
         {trips.map(({ tripName, image }, index) => {

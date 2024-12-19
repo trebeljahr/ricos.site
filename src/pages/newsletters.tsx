@@ -5,6 +5,7 @@ import { NewsletterForm } from "@components/NewsletterSignup";
 import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
 import { byOnlyPublished } from "src/lib/utils";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 
 type NewsletterData = Pick<
   Newsletter,
@@ -24,14 +25,16 @@ const sortByNumbers = (arr: NewsletterData[]) => {
 };
 
 const Newsletters = ({ newsletterData }: Props) => {
+  const url = "newsletters";
   return (
     <Layout
       title="Newsletters - Live and Learn"
       description="An archive overview page of all the Live and Learn editions I have published in the past."
-      url="newsletters"
+      url={url}
       image="/assets/midjourney/live-and-learn-cover.png"
       imageAlt="a young boy absorbed in reading a book with sparks flying out of it"
     >
+      <BreadCrumbs path={url} />
       <main>
         <section>
           <Header

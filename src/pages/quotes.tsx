@@ -4,6 +4,7 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import quotesJSON from "../content/Notes/pages/quotes.json";
 import Header from "@components/PostHeader";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 const quotes: Quote[] = quotesJSON;
 
 type Quote = {
@@ -19,15 +20,18 @@ function toFilters({ author }: Quote) {
 export default function Quotes() {
   const { byFilters, filters, setFilters } = useSearch(quotes.map(toFilters));
   const filteredQuotes = quotes.filter(byFilters);
+  const url = "quotes";
 
   return (
     <Layout
       title="Quotes - a collection of quotes from a curious person"
       description="Here, on this page, I collect quotes I have found from all kinds of different sources. Books, movies, series, blog posts, whenever I find a phrase I really like, I put it here eventually."
       image="/assets/midjourney/a-collection-of-notes-of-importance.jpg"
-      url="quotes"
+      url={url}
       imageAlt="a collection of handwritten notes on paper"
     >
+      <BreadCrumbs path={url} />
+
       <main>
         <section>
           <Header

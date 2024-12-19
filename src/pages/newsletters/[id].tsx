@@ -9,6 +9,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import { newsletters, type Newsletter as NewsletterType } from "@velite";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import { byOnlyPublished } from "src/lib/utils";
+import { MetadataDisplay } from "@components/DateFormatter";
 
 type Props = {
   newsletter: NewsletterType;
@@ -17,7 +18,16 @@ type Props = {
 };
 
 const Newsletter = ({
-  newsletter: { excerpt, title, number, slugTitle, content, cover, date },
+  newsletter: {
+    excerpt,
+    title,
+    number,
+    slugTitle,
+    content,
+    cover,
+    date,
+    metadata: { readingTime },
+  },
   nextPost,
   prevPost,
 }: Props) => {
@@ -39,10 +49,12 @@ const Newsletter = ({
         path={url}
         overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]}
       />
+      <MetadataDisplay date={date} readingTime={readingTime} />
 
       <main>
         <article className="maint-text newsletter-article">
-          <Header title={fullTitle} date={date} />
+          <Header title={fullTitle} />
+
           {excerpt && <p>{excerpt}</p>}
           <div className="mb-5">
             <ImageWithLoader

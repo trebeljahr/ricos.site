@@ -7,6 +7,7 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import Header from "@components/PostHeader";
 import { byOnlyPublished } from "src/lib/utils";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 function toFilters({
   bookAuthor,
   title,
@@ -32,6 +33,8 @@ export default function Books({ booknotes }: Props) {
       return { ...old };
     });
   }, [setFilters]);
+
+  const url = "booknotes";
   return (
     <Layout
       title="Booknotes - What I have learned while reading"
@@ -39,9 +42,11 @@ export default function Books({ booknotes }: Props) {
         "An overview of what I have read, with a filterable list of books and booknotes"
       }
       image="/assets/midjourney/a-bookshelf.jpg"
-      url="booknotes"
+      url={url}
       imageAlt={"a bookshelf filled with lots of books"}
     >
+      <BreadCrumbs path={url} />
+
       <main>
         <Header
           title="Booknotes"

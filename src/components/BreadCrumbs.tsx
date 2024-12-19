@@ -19,15 +19,15 @@ export function BreadCrumbs({
   const pathParts = path.split("/").filter((part) => part !== "");
 
   return (
-    <nav className="flex prose-a:no-underline" aria-label="Breadcrumb">
-      <ol
-        className="inline-flex items-center space-x-1 md:space-x-3"
+    <nav className="flex prose-a:no-underline mt-5" aria-label="Breadcrumb">
+      <div
+        className="inline-flex items-center space-x-1 md:space-x-3 m-0"
         style={{
           listStyle: "none",
           paddingLeft: 0,
         }}
       >
-        <li className="inline-flex items-center">
+        <div className="inline-flex items-center">
           <Link
             href="/"
             className="inline-flex items-center text-sm font-medium  hover:text-blue "
@@ -43,14 +43,14 @@ export function BreadCrumbs({
             </svg>
             Home
           </Link>
-        </li>
+        </div>
         {pathParts.map((part, index) => {
           const overwrite = overwrites?.find(
             ({ matchingPath }) => matchingPath === part
           );
 
           return (
-            <li key={part}>
+            <div key={part}>
               <div className="flex items-center">
                 <svg
                   className="w-3 h-3 mx-1"
@@ -74,10 +74,10 @@ export function BreadCrumbs({
                   {turnKebabIntoTitleCase(overwrite?.newText || part)}
                 </Link>
               </div>
-            </li>
+            </div>
           );
         })}
-      </ol>
+      </div>
     </nav>
   );
 }

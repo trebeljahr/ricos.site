@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import Header from "@components/PostHeader";
 import { byOnlyPublished } from "src/lib/utils";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 function toFilters({ title, rating, tags, show }: Podcastnote) {
   return { title, rating, tags, show };
 }
@@ -25,15 +26,20 @@ export default function Podcastnotes() {
     });
   }, [setFilters]);
 
+  const url = "podcastnotes";
   return (
     <Layout
       title="Podcastnotes - notes on the things I've read"
       description={
         "An overview of what I have read, with a filterable list of books and Podcastnotes"
       }
-      url="podcastnotes"
+      url={url}
     >
       <main>
+        <div className="px-5">
+          <BreadCrumbs path={url} />
+        </div>
+
         <section>
           <div className="px-5">
             <Header

@@ -1,4 +1,5 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
+import { MetadataDisplay } from "@components/DateFormatter";
 import { ExternalLink } from "@components/ExternalLink";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
@@ -20,19 +21,26 @@ const PodcastnoteComponent = ({ podcastnote }: Props) => {
       withProgressBar={true}
     >
       <BreadCrumbs path={url} />
+      <MetadataDisplay
+        date={podcastnote.date}
+        readingTime={podcastnote.metadata.readingTime}
+      />
+
       <main>
         <article>
           <section className="Podcastnote-info">
             <div className="Podcastnote-preview-text">
-              <h2 className="mt-0 pt-0">
-                {podcastnote.show} | Episode – {podcastnote.episode}
-              </h2>
-
-              <h1 className="pt-4">{podcastnote.title}</h1>
-              <p>
+              <h1 className="mt-16 mb-2">
+                <p className="text-2xl font-normal">
+                  {podcastnote.show} | Episode – {podcastnote.episode}{" "}
+                </p>
+                <p className="mt-2">{podcastnote.title}</p>
+              </h1>
+              {/* <p className="mt-10 mb-0"></p> */}
+              <p className="mt-0 mb-0">
                 <b>Rating: {podcastnote.rating}/10</b>
               </p>
-              <p>
+              <span className="mt-2">
                 Listen on:{" "}
                 <ExternalLink href={podcastnote.links.youtube}>
                   Youtube
@@ -42,7 +50,7 @@ const PodcastnoteComponent = ({ podcastnote }: Props) => {
                   Spotify
                 </ExternalLink>{" "}
                 | <ExternalLink href={podcastnote.links.web}>Web</ExternalLink>
-              </p>
+              </span>
             </div>
           </section>
           <section>

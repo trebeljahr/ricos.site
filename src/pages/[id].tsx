@@ -5,6 +5,8 @@ import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { MDXContent } from "@components/MDXContent";
+import { MetadataDisplay } from "@components/DateFormatter";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 type Props = {
   page: PageType;
 };
@@ -19,6 +21,11 @@ export default function Page({ page }: Props) {
       imageAlt={cover.alt}
       withProgressBar={true}
     >
+      <BreadCrumbs path={page.slug} />
+      <MetadataDisplay
+        date={page.date}
+        readingTime={page.metadata.readingTime}
+      />
       <Header subtitle={subtitle} title={title} />
       <main>
         <article>

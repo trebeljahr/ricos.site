@@ -11,6 +11,7 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";
 import { toTitleCase } from "src/lib/toTitleCase";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 
 const allDocuments = [
   ...posts,
@@ -111,12 +112,15 @@ const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
 };
 
 const ShowTags = ({ categories }: Props) => {
+  const url = "experiment";
   return (
     <Layout
       title="Experiment"
       description="An Experimental Overview over All Pages"
-      url="experiment"
+      url={url}
     >
+      <BreadCrumbs path={url} />
+
       <main>
         <section>
           <h2>Categories:</h2>

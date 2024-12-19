@@ -1,8 +1,8 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
+import { MetadataDisplay } from "@components/DateFormatter";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import { ReadMore } from "@components/MoreStories";
-import { NewsletterModalPopup } from "@components/NewsletterModalPopup";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
@@ -20,7 +20,15 @@ type Props = {
 export const BlogLayout = ({
   children,
   morePosts,
-  post: { excerpt, title, subtitle, date, cover, slug },
+  post: {
+    excerpt,
+    title,
+    subtitle,
+    date,
+    cover,
+    slug,
+    metadata: { readingTime, wordCount },
+  },
 }: Props) => {
   const url = `posts/${slug}`;
   return (
@@ -36,8 +44,9 @@ export const BlogLayout = ({
         <article>
           <section>
             <BreadCrumbs path={url} />
+            <MetadataDisplay date={date} readingTime={readingTime} />
 
-            <Header subtitle={subtitle} title={title} date={date} />
+            <Header subtitle={subtitle} title={title} />
             {children}
           </section>
         </article>

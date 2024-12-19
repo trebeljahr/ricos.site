@@ -1,5 +1,6 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { BookCover } from "@components/CoverImage";
+import { MetadataDisplay } from "@components/DateFormatter";
 import { ExternalLink } from "@components/ExternalLink";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
@@ -44,17 +45,22 @@ const BooknotesWithDefault = ({ booknote }: Props) => {
 
 const Book = ({ booknote }: Props) => {
   const defaultDescription = `These are the book Notes for ${booknote.title} by ${booknote.bookAuthor}`;
+  const url = `booknotes/${booknote.slug}`;
   return (
     <Layout
       title={booknote.title}
       description={booknote.excerpt || defaultDescription}
-      url={`booknotes/${booknote.slug}`}
+      url={url}
       withProgressBar={true}
     >
-      <BreadCrumbs path={`booknotes/${booknote.slug}`} />
+      <BreadCrumbs path={url} />
+      <MetadataDisplay
+        readingTime={booknote.metadata.readingTime}
+        date={booknote.date}
+      />
       <main>
         <article>
-          <section className="flex">
+          <section className="flex mt-16">
             <div className="not-prose block relative mr-2 mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
               <BookCover
                 title={booknote.title}

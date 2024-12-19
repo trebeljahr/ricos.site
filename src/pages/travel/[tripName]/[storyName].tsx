@@ -1,4 +1,5 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
+import { MetadataDisplay } from "@components/DateFormatter";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import { NewsletterForm } from "@components/NewsletterSignup";
@@ -21,7 +22,15 @@ interface LayoutProps extends TravelBlogProps {
 
 export const TravelBlogLayout = ({
   children,
-  post: { excerpt, slug, cover, title, date, parentFolder },
+  post: {
+    excerpt,
+    slug,
+    cover,
+    title,
+    date,
+    metadata: { readingTime },
+    parentFolder,
+  },
   nextSlug,
   previousSlug,
 }: LayoutProps) => {
@@ -37,8 +46,9 @@ export const TravelBlogLayout = ({
     >
       <main>
         <BreadCrumbs path={url} />
+        <MetadataDisplay date={date} readingTime={readingTime} />
         <article>
-          <Header title={title || ""} date={date} />
+          <Header title={title || ""} />
           {children}
         </article>
       </main>

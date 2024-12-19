@@ -30,6 +30,7 @@ export const BlogLayout = ({
       image={cover.src}
       url={url}
       imageAlt={cover.alt}
+      withProgressBar={true}
     >
       <main>
         <article>

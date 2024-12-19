@@ -25,7 +25,11 @@ const MediaQuery = dynamic(() => import("react-responsive"), {
   ssr: false,
 });
 
-export function TailwindNavbar() {
+export function TailwindNavbar({
+  withProgressBar = false,
+}: {
+  withProgressBar?: boolean;
+} = {}) {
   return (
     <MediaQuery query={"(max-width: 1024px)"}>
       {(isMobile: boolean) => (
@@ -35,9 +39,9 @@ export function TailwindNavbar() {
               id="navbar"
               className={`sticky top-0 left-0 z-50 w-full not-prose ${
                 open ? "bg-white" : "glassy"
-              } dark:bg-none dark:bg-gray-900 py-3`}
+              } dark:bg-none dark:bg-gray-900 pt-3`}
             >
-              <nav className="mx-auto max-w-7xl px-2 lg:px-8 flex items-center justify-between">
+              <nav className="mx-auto max-w-7xl px-2 pb-1 lg:px-8 flex items-center justify-between">
                 <Link
                   href="/"
                   className="flex flex-shrink-0 items-center not-prose"
@@ -57,7 +61,7 @@ export function TailwindNavbar() {
                   <DesktopVersion {...{ open, close }} />
                 )}
               </nav>
-              <StickyHeaderProgressBar />
+              {withProgressBar && <StickyHeaderProgressBar />}
             </header>
           )}
         </Disclosure>

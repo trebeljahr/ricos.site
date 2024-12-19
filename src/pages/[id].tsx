@@ -17,6 +17,7 @@ export default function Page({ page }: Props) {
       description={excerpt}
       image={cover.src}
       imageAlt={cover.alt}
+      withProgressBar={true}
     >
       <Header subtitle={subtitle} title={title} />
       <main>

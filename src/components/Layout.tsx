@@ -12,6 +12,7 @@ type Props = {
   image?: string;
   imageAlt?: string;
   fullScreen?: boolean;
+  withProgressBar?: boolean;
 };
 
 const Layout = ({
@@ -22,6 +23,7 @@ const Layout = ({
   image,
   imageAlt,
   fullScreen = false,
+  withProgressBar = false,
 }: Props) => {
   const properTitle = toTitleCase(title);
 
@@ -35,7 +37,7 @@ const Layout = ({
         image={image}
         imageAlt={imageAlt}
       />
-      <TailwindNavbar />
+      <TailwindNavbar withProgressBar={withProgressBar} />
 
       <div
         className={

@@ -31,6 +31,7 @@ const Newsletter = ({
       url={url}
       image={cover.src}
       imageAlt={cover.alt}
+      withProgressBar={true}
     >
       <NewsletterModalPopup />
 

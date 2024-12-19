@@ -17,6 +17,7 @@ const PodcastnoteComponent = ({ podcastnote }: Props) => {
       title={`${podcastnote.displayTitle}`}
       description={`These are my Podcast Notes for ${podcastnote.title}. ${podcastnote.excerpt}`}
       url={url}
+      withProgressBar={true}
     >
       <BreadCrumbs path={url} />
       <main>

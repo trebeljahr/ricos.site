@@ -49,6 +49,7 @@ const Book = ({ booknote }: Props) => {
       title={booknote.title}
       description={booknote.excerpt || defaultDescription}
       url={`booknotes/${booknote.slug}`}
+      withProgressBar={true}
     >
       <BreadCrumbs path={`booknotes/${booknote.slug}`} />
       <main>

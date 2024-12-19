@@ -33,6 +33,7 @@ export const TravelBlogLayout = ({
       image={cover?.src || ""}
       url={url}
       imageAlt={cover?.alt || ""}
+      withProgressBar={true}
     >
       <main>
         <BreadCrumbs path={url} />

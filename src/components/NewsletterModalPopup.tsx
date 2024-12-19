@@ -75,8 +75,8 @@ export const NewsletterModalPopup = ({
           text={
             <>
               <p className="mb-4">
-                Join the Live and Learn Newsletter to receive bi-weekly insights
-                straight to your inbox!
+                Join the Live and Learn Newsletter to receive insights straight
+                to your inbox every two weeks on Sunday!
               </p>
               <ul className="list-disc mb-4">
                 <li>✨ Inspiring quotes</li>

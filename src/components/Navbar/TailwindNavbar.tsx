@@ -9,6 +9,7 @@ import {
   CollapsibleMenuMobile,
 } from "./CollapsibleMenus";
 import { DarkModeHandler } from "./DarkModeHandler";
+import { StickyHeaderProgressBar } from "@components/ProgressBar";
 
 const navigation = ["posts", "newsletters", "photography"];
 const resources = [
@@ -56,6 +57,7 @@ export function TailwindNavbar() {
                   <DesktopVersion {...{ open, close }} />
                 )}
               </nav>
+              <StickyHeaderProgressBar />
             </header>
           )}
         </Disclosure>

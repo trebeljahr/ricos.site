@@ -1,44 +1,44 @@
-import { FC, useState, useEffect, useRef, useCallback } from "react";
+import { FC, useEffect, useRef } from "react";
 
 export const StickyHeaderProgressBar: FC = () => {
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const animationFrame = useRef<number | null>(null);
-  const lastUpdateTime = useRef(0);
-
-  const updateScrollProgress = useCallback(() => {
-    const currentTime = Date.now();
-    if (currentTime - lastUpdateTime.current < 16) {
-      animationFrame.current = requestAnimationFrame(updateScrollProgress);
-      return;
-    }
-
-    const scrollPx = document.documentElement.scrollTop;
-    const winHeightPx =
-      document.documentElement.scrollHeight -
-      document.documentElement.clientHeight;
-    const scrolled = Math.min(scrollPx / winHeightPx, 1);
-
-    setScrollProgress(scrolled * 100);
-    lastUpdateTime.current = currentTime;
-
-    animationFrame.current = requestAnimationFrame(updateScrollProgress);
-  }, []);
+  const progressBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    animationFrame.current = requestAnimationFrame(updateScrollProgress);
+    const updateProgress = () => {
+      if (!progressBarRef.current) return;
+
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const scrollTop = window.scrollY;
+      const scrollPercent = (scrollTop / (documentHeight - windowHeight)) * 100;
+
+      progressBarRef.current.style.setProperty(
+        "--scroll-percent",
+        `${scrollPercent}%`
+      );
+    };
+
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress, { passive: true });
+
+    // Initial update
+    updateProgress();
 
     return () => {
-      if (animationFrame.current) {
-        cancelAnimationFrame(animationFrame.current);
-      }
+      window.removeEventListener("scroll", updateProgress);
+      window.removeEventListener("resize", updateProgress);
     };
-  }, [updateScrollProgress]);
+  }, []);
 
   return (
-    <div className="h-1 bg-gray-200">
+    <div className="h-1 bg-gray-200 overflow-hidden">
       <div
-        className="h-1 bg-blue transition-all duration-500"
-        style={{ width: `${scrollProgress}%` }}
+        ref={progressBarRef}
+        className="h-full bg-blue w-full transform-gpu"
+        style={{
+          transform: "translateX(calc(var(--scroll-percent, 0%) - 100%))",
+          transition: "transform 0.1s linear",
+        }}
       ></div>
     </div>
   );

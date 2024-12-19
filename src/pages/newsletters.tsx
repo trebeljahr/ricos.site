@@ -9,7 +9,7 @@ import { BreadCrumbs } from "@components/BreadCrumbs";
 
 type NewsletterData = Pick<
   Newsletter,
-  "link" | "number" | "title" | "excerpt" | "cover"
+  "link" | "number" | "title" | "excerpt" | "cover" | "metadata" | "date"
 >;
 
 type Props = {
@@ -42,7 +42,18 @@ const Newsletters = ({ newsletterData }: Props) => {
             title={"Newsletters"}
           />
           {newsletterData.map(
-            ({ link, number, title, excerpt, cover }, index) => {
+            (
+              {
+                link,
+                number,
+                title,
+                excerpt,
+                cover,
+                date,
+                metadata: { readingTime },
+              },
+              index
+            ) => {
               const priority = index <= 1;
 
               return (
@@ -53,6 +64,8 @@ const Newsletters = ({ newsletterData }: Props) => {
                   excerpt={excerpt}
                   priority={priority}
                   title={`${title} | Live and Learn #${number}`}
+                  date={date}
+                  readingTime={readingTime}
                 />
               );
             }
@@ -73,11 +86,13 @@ export default Newsletters;
 export const getStaticProps = async () => {
   const newsletterData = newsletters
     .filter(byOnlyPublished)
-    .map(({ link, number, title, excerpt = "", cover }) => ({
+    .map(({ link, number, title, excerpt = "", cover, metadata, date }) => ({
       link,
       number,
       title,
       cover,
+      metadata,
+      date,
       excerpt: excerpt
         .replace("Welcome to this edition of Live and Learn. ", "")
         .replace("Enjoy.", ""),

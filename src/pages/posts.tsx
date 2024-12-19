@@ -48,13 +48,14 @@ export default Posts;
 export const getStaticProps = async () => {
   const myPosts = posts
     .filter(byOnlyPublished)
-    .map(({ slug, excerpt, cover, link, title, date }) => ({
+    .map(({ slug, excerpt, cover, link, title, date, metadata }) => ({
       slug,
       link,
       excerpt,
       cover,
       title,
       date,
+      metadata,
     }));
 
   myPosts.sort((post1, post2) =>

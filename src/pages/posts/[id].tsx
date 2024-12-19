@@ -96,11 +96,13 @@ export async function getStaticProps({ params }: Params) {
   const otherPosts = posts
     .filter(byOnlyPublished)
     .filter((post) => post.slug !== params.id)
-    .map(({ title, cover, slug, excerpt }) => ({
+    .map(({ title, cover, slug, excerpt, date, metadata }) => ({
       title,
       slug,
       cover,
       excerpt,
+      date,
+      metadata,
     }));
   const morePosts = getRandom(otherPosts, 3);
 

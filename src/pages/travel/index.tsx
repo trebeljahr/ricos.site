@@ -3,7 +3,7 @@ import { NewsletterForm } from "@components/NewsletterSignup";
 import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
-import { travelblogs } from "@velite";
+import { Travelblog, travelblogs } from "@velite";
 import { byOnlyPublished } from "src/lib/utils";
 
 type MetaInfo = {
@@ -13,8 +13,14 @@ type MetaInfo = {
   subtitle: string;
 };
 
+type TravelBlogMeta = Pick<
+  Travelblog,
+  "title" | "excerpt" | "date" | "cover" | "metadata" | "parentFolder"
+>;
+
 type Props = {
   travelingStories: string[];
+  travelingBlogsMeta: TravelBlogMeta[];
 };
 
 export const travelingStoriesMeta: Record<string, MetaInfo> = {
@@ -61,7 +67,32 @@ export const travelingStoriesMeta: Record<string, MetaInfo> = {
   },
 };
 
-const TravelBlogs = ({ travelingStories }: Props) => {
+const TravelBlogs = ({ travelingStories, travelingBlogsMeta }: Props) => {
+  const cardContent = travelingStories
+    .map((story, index) => {
+      const meta = travelingStoriesMeta[story] || {
+        cover: { src: "", alt: "default cover" },
+        title: story,
+      };
+
+      const currentBlogs = travelingBlogsMeta.filter(
+        (blog) => blog.parentFolder === story
+      );
+      const { date, readingTime } = currentBlogs.reduce(
+        (agg, current) => {
+          const currentDate = new Date(current.date);
+          return {
+            date: currentDate > agg.date ? currentDate : agg.date,
+            readingTime: agg.readingTime + current.metadata.readingTime,
+          };
+        },
+        { date: new Date(0), readingTime: 0 }
+      );
+
+      return { meta, date, readingTime, story };
+    })
+    .sort((a, b) => (a.date > b.date ? -1 : 1));
+
   return (
     <Layout
       title="Traveling Stories"
@@ -78,12 +109,7 @@ const TravelBlogs = ({ travelingStories }: Props) => {
             title="Traveling"
             subtitle="Stories of the adventures and places I have been to"
           />
-          {travelingStories.map((story, index) => {
-            const meta = travelingStoriesMeta[story] || {
-              cover: { src: "", alt: "default cover" },
-              title: story,
-            };
-
+          {cardContent.map(({ story, meta, date, readingTime }, index) => {
             return (
               <NiceCard
                 key={story}
@@ -91,6 +117,8 @@ const TravelBlogs = ({ travelingStories }: Props) => {
                 excerpt={meta.excerpt}
                 priority={index === 0}
                 title={meta.title}
+                date={date.toISOString()}
+                readingTime={readingTime}
                 link={`/travel/${story}`}
               />
             );
@@ -120,8 +148,19 @@ export const travelingStoryNamesMap = travelblogs.reduce((agg, current) => {
   return agg;
 }, {} as Record<string, any>);
 
-export const getStaticProps = async () => {
+export const getStaticProps = async (): Promise<{ props: Props }> => {
+  const travelingBlogsMeta = travelblogs
+    .filter(byOnlyPublished)
+    .map(({ title, excerpt, date, cover, metadata, parentFolder }) => ({
+      title,
+      cover,
+      date,
+      excerpt,
+      metadata,
+      parentFolder,
+    }));
+
   return {
-    props: { travelingStories: travelingStoryNames },
+    props: { travelingStories: travelingStoryNames, travelingBlogsMeta },
   };
 };

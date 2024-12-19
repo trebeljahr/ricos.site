@@ -88,6 +88,8 @@ export function getStaticProps() {
             excerpt,
             link,
             cover,
+            metadata,
+            date,
           }) => ({
             bookAuthor,
             cover,
@@ -96,10 +98,13 @@ export function getStaticProps() {
             rating,
             tags,
             summary,
+            date,
             detailedNotes,
+            metadata,
             excerpt: excerpt || "",
           })
-        ),
+        )
+        .sort((a, b) => b.date.localeCompare(a.date)),
     },
   };
 }

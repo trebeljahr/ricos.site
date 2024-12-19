@@ -39,7 +39,9 @@ export function TailwindNavbar({
               id="navbar"
               className={`sticky top-0 left-0 z-50 w-full not-prose ${
                 open ? "bg-white" : "glassy"
-              } dark:bg-none dark:bg-gray-900 pt-3`}
+              } dark:bg-none dark:bg-gray-900 pt-3 ${
+                withProgressBar ? "" : "pb-2"
+              }`}
             >
               <nav className="mx-auto max-w-7xl px-2 pb-1 lg:px-8 flex items-center justify-between">
                 <Link

@@ -40,7 +40,14 @@ const Traveling = ({ posts, tripName }: Props) => {
           />
           {posts.map((post, index) => {
             const priority = index <= 1;
-            return <NiceCard key={post.slug} priority={priority} {...post} />;
+            return (
+              <NiceCard
+                key={post.slug}
+                priority={priority}
+                readingTime={post.metadata.readingTime}
+                {...post}
+              />
+            );
           })}
         </section>
       </main>
@@ -65,12 +72,13 @@ export const getStaticPaths = async () => {
 
 export const getStaticProps = async ({ params }: Params) => {
   const posts = sortAndFilterTravelBlogs(travelblogs, params.tripName).map(
-    ({ link, title, excerpt, date, cover }) => {
+    ({ link, title, excerpt, date, cover, metadata }) => {
       return {
         title,
         cover,
         date,
         excerpt,
+        metadata,
         link,
       };
     }

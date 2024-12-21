@@ -174,7 +174,11 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
     .map(toOnlyMetadata)
     .slice(0, 15);
 
-  const postsSelection = posts.filter(byOnlyPublished).sort(byDate).slice(0, 6);
+  const postsSelection = posts
+    .filter(byOnlyPublished)
+    .sort(byDate)
+    .map(toOnlyMetadata)
+    .slice(0, 6);
 
   const newsletterSelection = newsletters
     .filter(byOnlyPublished)
@@ -186,6 +190,7 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
     .filter(byOnlyPublished)
     .filter(({ summary }) => summary)
     .sort(byDate)
+    .map(toOnlyMetadata)
     .slice(0, 30);
 
   return {

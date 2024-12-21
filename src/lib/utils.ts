@@ -1,9 +1,19 @@
 import { Travelblog } from "@velite";
 import crypto from "crypto";
+import { nanoid } from "nanoid";
 import { NextApiRequest, NextApiResponse } from "next";
 import { promisify } from "util";
 import { byDates } from "./dateUtils";
 import { activateEmailListMember } from "./mailgun";
+import { ImageProps } from "src/@types";
+
+export const addIdAndIndex = (image: ImageProps, index: number) => {
+  return {
+    ...image,
+    id: nanoid(),
+    index,
+  };
+};
 
 export type HasDate = { date: string };
 export const byDate = (a: HasDate, b: HasDate) =>

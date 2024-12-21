@@ -133,7 +133,6 @@ export async function getS3Folders(prefix: string): Promise<string[]> {
 }
 
 export type ImageDataFromAWS = {
-  name: string;
   src: string;
   width: number;
   height: number;

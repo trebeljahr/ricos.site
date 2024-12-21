@@ -4,7 +4,7 @@ import { NiceGallery } from "@components/NiceGallery";
 import { ToTopButton } from "@components/ToTopButton";
 import { ImageProps } from "src/@types";
 import { getDataFromS3, getS3Folders, photographyFolder } from "src/lib/aws";
-import { transformToImageProps } from "src/lib/mapToImageProps";
+import { imageSizes, nextImageUrl } from "src/lib/mapToImageProps";
 
 export default function SinglePhotographyShowcasePage({
   images,
@@ -13,6 +13,20 @@ export default function SinglePhotographyShowcasePage({
   images: ImageProps[];
   tripName: string;
 }) {
+  const imagesWithSrcSet = images.map((image) => {
+    return {
+      ...image,
+      srcSet: imageSizes.map((size) => {
+        const aspectRatio = Math.round(image.height / image.width);
+        return {
+          src: nextImageUrl(image.src, size),
+          width: size,
+          height: aspectRatio * size,
+        };
+      }),
+    };
+  });
+
   return (
     <Layout
       title="Photography"
@@ -24,8 +38,8 @@ export default function SinglePhotographyShowcasePage({
         <BreadCrumbs path={`photography/${tripName}`} />
 
         <section>
-          <h1>{turnKebabIntoTitleCase(tripName)}</h1>
-          <NiceGallery images={images} />
+          <h1 className="text-4xl mt-16">{turnKebabIntoTitleCase(tripName)}</h1>
+          <NiceGallery images={imagesWithSrcSet} />
           <ToTopButton />
         </section>
       </main>
@@ -56,9 +70,7 @@ export async function getStaticProps({ params }: StaticProps) {
       prefix,
     });
 
-    const images: ImageProps[] = awsImageData.map(transformToImageProps);
-
-    return { props: { images, tripName: params.tripName } };
+    return { props: { images: awsImageData, tripName: params.tripName } };
   } catch (error) {
     console.error(error);
   }

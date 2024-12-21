@@ -12,7 +12,6 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkToc from "remark-toc";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
-import { transformToImageProps } from "src/lib/mapToImageProps";
 import { Node, Pluggable } from "unified/lib";
 import { visit } from "unist-util-visit";
 import { defineConfig, s, ZodMeta } from "velite";
@@ -114,12 +113,7 @@ const remarkGroupImages: Pluggable = () => {
                     const { width, height } =
                       await getImgWidthAndHeightDuringBuild(src);
 
-                    const result = transformToImageProps(
-                      { name: src, src, width, height },
-                      999
-                    );
-
-                    return result;
+                    return { width, height, src };
                   } catch (err) {
                     console.error("Error getting image dimensions", err);
 

@@ -1,5 +1,5 @@
 import path from "path";
-import { ImageDataFromAWS } from "./aws";
+import { type ImageDataFromAWS } from "./aws";
 import { ImageProps } from "src/@types";
 import { nanoid } from "nanoid";
 
@@ -52,25 +52,3 @@ export const nextImageUrl = (src: string, width: number) => {
 
   return `${cloudFrontUrl}${fixedSource}/${width}.webp`;
 };
-
-export function transformToImageProps(
-  { name, src, width, height }: ImageDataFromAWS,
-  index: number
-): ImageProps {
-  return {
-    width,
-    id: nanoid(),
-    height,
-    index,
-    name,
-    src,
-    srcSet: imageSizes.map((size) => {
-      const aspectRatio = Math.round(height / width);
-      return {
-        src: nextImageUrl(src, size),
-        width: size,
-        height: aspectRatio * size,
-      };
-    }),
-  };
-}

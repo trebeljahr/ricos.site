@@ -5,7 +5,6 @@ import Header from "@components/PostHeader";
 import Link from "next/link";
 import { ImageProps } from "src/@types";
 import { getFirstImageFromS3, photographyFolder } from "src/lib/aws";
-import { transformToImageProps } from "src/lib/mapToImageProps";
 
 const tripNames = [
   "alps",
@@ -63,12 +62,12 @@ export default function Photography({
                 <ImageWithLoader
                   src={image.src}
                   sizes={"calc(50vw - 40px)"}
-                  blurDataURL={image.blurDataURL}
-                  fill
+                  width={image.width}
+                  height={image.height}
                   priority={index <= 3}
                   alt={"A photo from " + tripName}
                   style={{ filter: "brightness(50%)" }}
-                  className="absolute inset-0 z-0 object-cover w-full h-full hover:scale-105 transform transition-transform duration-300 ease-in-out  "
+                  className="absolute inset-0 z-0 object-cover w-full h-full hover:scale-105 transform transition-transform duration-300 ease-in-out"
                 />
                 <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center w-full h-full">
                   <h2 className="text-xl font-bold text-white">
@@ -87,10 +86,9 @@ export default function Photography({
 export async function getStaticProps() {
   const trips = await Promise.all(
     tripNames.map(async (tripName) => {
-      const firstImage = await getFirstImageFromS3({
+      const image = await getFirstImageFromS3({
         prefix: photographyFolder + tripName,
       });
-      const [image] = [firstImage].map(transformToImageProps);
 
       return { image, tripName };
     })

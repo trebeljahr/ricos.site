@@ -4,20 +4,20 @@ import { ImageProps } from "src/@types";
 
 export function NextJsImage({
   photo,
-  imageProps: { alt, title, sizes, className, onClick },
+  imageProps,
   wrapperStyle,
-}: RenderPhotoProps<ImageProps>) {
+}: RenderPhotoProps<ImageProps & { id: string; index: number }>) {
   return (
     <div
+      key={photo.id}
       style={{ ...wrapperStyle, position: "relative", background: "#f1f3f5" }}
     >
       <ImageWithLoader
-        fill
         id={photo.id}
         src={photo}
-        priority={photo.index < 3}
-        placeholder={"blurDataURL" in photo ? "blur" : undefined}
-        {...{ alt, title, sizes, className, onClick }}
+        alt=""
+        width={photo.width}
+        height={photo.height}
       />
     </div>
   );

@@ -3,7 +3,6 @@ import { NiceGallery } from "@components/NiceGallery";
 import { ToTopButton } from "@components/ToTopButton";
 import { ImageProps } from "src/@types";
 import { getDataFromS3 } from "src/lib/aws";
-import { transformToImageProps } from "src/lib/mapToImageProps";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/styles.css";
 
@@ -34,7 +33,6 @@ export default function MidjourneyGallery({
 export async function getStaticProps() {
   const prefix = "assets/midjourney-gallery/";
   const awsImageData = await getDataFromS3({ prefix });
-  const images: ImageProps[] = awsImageData.map(transformToImageProps);
 
-  return { props: { images } };
+  return { props: { images: awsImageData } };
 }

@@ -1,13 +1,11 @@
 import { NextJsImage } from "@components/images/CustomRenderers";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { ClickHandler, Photo, PhotoAlbum } from "react-photo-album";
 import { ImageProps } from "src/@types";
 import { useWindowSize } from "src/hooks/useWindowSize";
-import {
-  getImgWidthAndHeight,
-  transformToImageProps,
-} from "src/lib/mapToImageProps";
+import { getImgWidthAndHeight } from "src/lib/mapToImageProps";
+import { addIdAndIndex } from "src/lib/utils";
 import Lightbox from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
@@ -26,8 +24,9 @@ function groupImages(displayedImages: ImageProps[]): ImageProps[][] {
   return groupedImages;
 }
 
-export const SimpleGallery = (props: { photos: ImageProps[] }) => {
-  const { photos } = props;
+export const SimpleGallery = ({ photos: images }: { photos: ImageProps[] }) => {
+  const photos = useMemo(() => images.map(addIdAndIndex), [images]);
+
   const { width, height } = useWindowSize();
 
   const {
@@ -37,7 +36,7 @@ export const SimpleGallery = (props: { photos: ImageProps[] }) => {
     currentImageIndex,
     setCurrentImageIndex,
     animateImageBackToGallery,
-  } = useCustomLightbox({ images: photos });
+  } = useCustomLightbox({ photos });
 
   if (!width || !height) return null;
 
@@ -99,16 +98,11 @@ export const ImageGallery = (props: { imageSources: string[] }) => {
         imageSources.map(async (src, index) => {
           const { width, height } = await getImgWidthAndHeight(src);
 
-          const result = transformToImageProps(
-            {
-              name: src,
-              src,
-              width,
-              height,
-            },
-            index
-          );
-          return result;
+          return {
+            src,
+            width,
+            height,
+          };
         })
       );
       setPhotos(loadedPhotos);
@@ -122,7 +116,11 @@ export const ImageGallery = (props: { imageSources: string[] }) => {
   return <SimpleGallery photos={photos} />;
 };
 
-const useCustomLightbox = ({ images }: { images: ImageProps[] }) => {
+const useCustomLightbox = ({
+  photos,
+}: {
+  photos: (ImageProps & { id: string })[];
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -133,7 +131,7 @@ const useCustomLightbox = ({ images }: { images: ImageProps[] }) => {
   const animateImageBackToGallery = () => {
     const lightboxImgContainer = document.querySelector(".yarl__slide_current");
     const lightboxImg = lightboxImgContainer?.querySelector("img");
-    const galleryImg = document.getElementById(images[currentImageIndex].id);
+    const galleryImg = document.getElementById(photos[currentImageIndex].id);
     const navbar = document.querySelector<HTMLElement>("#navbar");
 
     if (!galleryImg || !lightboxImg || !navbar) return;
@@ -179,7 +177,7 @@ const useCustomLightbox = ({ images }: { images: ImageProps[] }) => {
   };
 
   useEffect(() => {
-    const currentImage = images[currentImageIndex];
+    const currentImage = photos[currentImageIndex];
 
     const currentImageElement = document.getElementById(currentImage.id);
 
@@ -189,7 +187,7 @@ const useCustomLightbox = ({ images }: { images: ImageProps[] }) => {
         block: "center",
       });
     }
-  }, [currentImageIndex, images]);
+  }, [currentImageIndex, photos]);
 
   return {
     openModal,
@@ -209,7 +207,7 @@ export const NiceGallery = ({ images }: { images: ImageProps[] }) => {
     currentImageIndex,
     setCurrentImageIndex,
     animateImageBackToGallery,
-  } = useCustomLightbox({ images });
+  } = useCustomLightbox({ photos: images.map(addIdAndIndex) });
 
   const [displayedImages, setDisplayImages] = useState(
     images.slice(0, groupSize)
@@ -245,7 +243,7 @@ export const NiceGallery = ({ images }: { images: ImageProps[] }) => {
           {groupImages(displayedImages).map((group, i) => (
             <div key={i} className="mb-[5px] xs:mb-[10px] lg:mb-[15px]">
               <PhotoAlbum
-                photos={group}
+                photos={group.map(addIdAndIndex)}
                 targetRowHeight={height * 0.6}
                 layout="rows"
                 onClick={(photo) => {

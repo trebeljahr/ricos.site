@@ -14,7 +14,7 @@ export const StickyHeaderProgressBar: FC = () => {
 
       progressBarRef.current.style.setProperty(
         "--scroll-percent",
-        `${scrollPercent}%`
+        `${isNaN(scrollPercent) ? 0 : scrollPercent}%`
       );
     };
 

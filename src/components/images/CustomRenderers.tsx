@@ -10,7 +10,8 @@ export function NextJsImage({
   return (
     <div
       key={photo.id}
-      style={{ ...wrapperStyle, position: "relative", background: "#f1f3f5" }}
+      className="block relative bg-slate-50"
+      style={{ ...wrapperStyle }}
     >
       <ImageWithLoader
         id={photo.id}

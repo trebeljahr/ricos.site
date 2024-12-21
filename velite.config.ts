@@ -1,5 +1,6 @@
 import slugify from "@sindresorhus/slugify";
 import { Nodes } from "mdast";
+import { Element, Root } from "hast";
 import { Handler } from "mdast-util-to-hast";
 import { MDXRemoteSerializeResult } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
@@ -20,6 +21,60 @@ declare module "mdast" {
   interface RootContentMap {
     SimpleGallery: Node;
   }
+}
+
+import { interactive } from "hast-util-interactive";
+import { whitespace } from "hast-util-whitespace";
+import { SKIP } from "unist-util-visit";
+
+const unknown = 1;
+const containsImage = 2;
+const containsOther = 3;
+
+const rehypeUnwrapGalleries = () => {
+  return function (tree: Root) {
+    visit(tree, "element", function (node, index, parent) {
+      if (
+        node.tagName === "p" &&
+        parent &&
+        typeof index === "number" &&
+        applicable(node, false) === containsImage
+      ) {
+        parent.children.splice(index, 1, ...node.children);
+        return [SKIP, index];
+      }
+    });
+  };
+};
+
+function applicable(node: Element, inLink: boolean): 1 | 2 | 3 {
+  let image: 1 | 2 | 3 = unknown;
+  let index = -1;
+
+  while (++index < node.children.length) {
+    const child = node.children[index];
+
+    if (child.type === "text" && whitespace(child.value)) {
+      // Whitespace is fine.
+    } else if (child.type === "element" && child.tagName === "SimpleGallery") {
+      image = containsImage;
+    } else if (!inLink && interactive(child)) {
+      // Cast as `interactive` is always `Element`.
+      const linkResult = applicable(child as Element, true);
+
+      if (linkResult === containsOther) {
+        return containsOther;
+      }
+
+      if (linkResult === containsImage) {
+        image = containsImage;
+      }
+    } else {
+      return containsOther;
+    }
+  }
+
+  return image;
 }
 
 function generateExcerpt(text: string, length: number): string {
@@ -141,6 +196,7 @@ const remarkGroupImages: Pluggable = () => {
         const lastIndex = lastImage.index;
         const numberToDelete = lastIndex - firstIndex + 1;
 
+        // console.log((firstImage.parent as any).parent);
         firstImage.parent.children.splice(firstIndex, numberToDelete, newNode);
 
         // console.dir(firstImage.parent, { colors: true, depth: null });
@@ -151,12 +207,6 @@ const remarkGroupImages: Pluggable = () => {
   };
 };
 
-const rehypeTransformGroupImages: Pluggable = () => {
-  return (tree: Node) => {
-    visit(tree, (node) => {});
-  };
-};
-
 const handleSimpleGalleryNode: Handler = (state, node) => {
   return {
     type: "element",
@@ -164,25 +214,10 @@ const handleSimpleGalleryNode: Handler = (state, node) => {
     properties: node.properties,
     children: state.all(node),
     data: node.data,
-    // props: node.props,
   };
-
-  // return node;
-
-  // return {
-  //   type: "SimpleGallery",
-  //   tagName: "SimpleGallery",
-  //   properties: {
-  //     images: [],
-  //   },
-  //   children: [],
-  // };
 };
 
-const handleRecmaNodes: Pluggable = () => async (tree) => {
-  // visit(tree, (node) => {});
-};
-
+import rehypeUnwrapImages from "rehype-unwrap-images";
 const addBundledMDXContent = async <T extends Record<string, any>>(
   data: T,
   { meta }: { meta: ZodMeta }
@@ -196,9 +231,15 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     excerpt: string;
   }
 > => {
-  const remarkPlugins: Pluggable[] = [remarkGfm, remarkToc, remarkMath];
+  const remarkPlugins: Pluggable[] = [
+    remarkGroupImages,
+    remarkGfm,
+    remarkToc,
+    remarkMath,
+  ];
 
   const rehypePlugins: Pluggable[] = [
+    rehypeUnwrapGalleries,
     rehypeHighlight,
     rehypeKatex,
     rehypeSlug,
@@ -206,12 +247,6 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   ];
 
   const recmaPlugins: Pluggable[] = [];
-
-  // if (meta.basename === "site-demo-post.md") {
-  remarkPlugins.unshift(remarkGroupImages);
-  rehypePlugins.unshift(rehypeTransformGroupImages);
-  recmaPlugins.unshift(handleRecmaNodes);
-  // }
 
   const rawContent = meta.content || "";
   const mdxSource = await serialize(rawContent, {

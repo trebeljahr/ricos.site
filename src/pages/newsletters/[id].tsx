@@ -75,7 +75,7 @@ const Newsletter = ({
         </article>
       </main>
 
-      <footer>
+      <footer className="mb-20 px-3">
         <NextAndPrevArrows nextPost={nextPost} prevPost={prevPost} />
         <NewsletterForm />
         <ToTopButton />

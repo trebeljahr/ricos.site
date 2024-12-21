@@ -17,11 +17,7 @@ const BuyItOnAmazon = ({ link }: { link: string }) => {
     return null;
   }
 
-  return (
-    <ExternalLink className="amazonLink" href={link}>
-      Buy it on Amazon
-    </ExternalLink>
-  );
+  return <ExternalLink href={link}>Buy it on Amazon</ExternalLink>;
 };
 
 const BooknoteComponent = ({ booknote }: Props) => {
@@ -69,7 +65,7 @@ const Book = ({ booknote }: Props) => {
                 priority={true}
               />
             </div>
-            <header className="book-preview-text">
+            <header className="h-fit w-full">
               <hgroup>
                 <h1 className="my-0">{booknote.title}</h1>
                 <p className="my-0">{booknote.subtitle}</p>
@@ -88,7 +84,7 @@ const Book = ({ booknote }: Props) => {
         </article>
       </main>
 
-      <footer>
+      <footer className="mb-20 px-3">
         <ToTopButton />
         <NewsletterForm />
       </footer>

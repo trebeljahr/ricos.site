@@ -63,7 +63,7 @@ export default function Books({ booknotes }: Props) {
         </div>
       </main>
 
-      <footer>
+      <footer className="mb-20 px-3">
         <NewsletterForm />
         <ToTopButton />
       </footer>

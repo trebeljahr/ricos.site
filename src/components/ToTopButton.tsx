@@ -4,11 +4,10 @@ export function ToTopButton() {
   return (
     <ShowAfterScrolling>
       <button
-        id="to-top-button"
         onClick={() => {
           window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
         }}
-        className="flex justify-center items-center z-10"
+        className="fixed bottom-[2vmin] right-[2vmin] pointer w-8 h-8 rounded-full flex justify-center items-center z-10 border-none bg-blue-300 text-center hover:bg-blue-400 sm:bottom-[4vmin] sm:right-[8vmin] text-black"
         aria-label="Scroll to top"
       >
         <FiArrowUp />

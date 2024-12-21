@@ -22,7 +22,7 @@ export const ImageRenderer = ({
 
   return (
     <>
-      <span className="postImgWrapper markdown-image">
+      <div className="w-full relative my-5 mx-0">
         <ImageWithLoader
           src={src}
           alt={realAlt}
@@ -36,7 +36,7 @@ export const ImageRenderer = ({
             objectFit: "cover",
           }}
         />
-      </span>
+      </div>
       {hasCaption ? (
         <div className="caption" aria-label={caption}>
           {caption}

@@ -63,7 +63,7 @@ export const SATWithResponse = ({
   ]);
 
   return (
-    <div className="SATWithResponseContainer">
+    <div>
       <SimpleReactCanvasComponent
         setCnv={setCnv}
         width={width}

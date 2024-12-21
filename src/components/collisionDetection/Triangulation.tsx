@@ -68,7 +68,7 @@ export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
   }, [cnv, response, drawTris]);
 
   return (
-    <div className="SATWithResponseContainer">
+    <div>
       <SimpleReactCanvasComponent
         setCnv={setCnv}
         width={width}

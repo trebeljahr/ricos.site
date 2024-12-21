@@ -7,7 +7,10 @@ export default function myLoader({ src, width, quality }) {
 
   const parsedPath = path.parse(src);
   const noExt = path.join(parsedPath.dir, parsedPath.name);
-  const fixedSource = noExt.startsWith("/") ? noExt : `/${noExt}`;
+  const fixedSlash = noExt.startsWith("/") ? noExt : `/${noExt}`;
+  const fixedSource = fixedSlash.replace(" ", "%20");
 
-  return `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net${fixedSource}/${width}.webp`;
+  const result = `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net${fixedSource}/${width}.webp`;
+
+  return result;
 }

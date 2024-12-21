@@ -35,7 +35,7 @@ const Posts = ({ posts }: Props) => {
         </section>
       </main>
 
-      <footer>
+      <footer className="mb-20 px-3">
         <NewsletterForm />
         <ToTopButton />
       </footer>

@@ -53,7 +53,7 @@ export const TravelBlogLayout = ({
         </article>
       </main>
 
-      <footer>
+      <footer className="mb-20 px-3">
         <ToTopButton />
         <NewsletterForm />
         <NextAndPrevArrows nextPost={nextSlug} prevPost={previousSlug} />

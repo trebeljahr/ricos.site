@@ -64,7 +64,6 @@ export default function Photography({
                   sizes={"calc(50vw - 40px)"}
                   width={image.width}
                   height={image.height}
-                  priority={index <= 3}
                   alt={"A photo from " + tripName}
                   style={{ filter: "brightness(50%)" }}
                   className="absolute inset-0 z-0 object-cover w-full h-full hover:scale-105 transform transition-transform duration-300 ease-in-out"

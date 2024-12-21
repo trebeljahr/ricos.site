@@ -51,13 +51,12 @@ export const RotationDemo = () => {
         height={height}
       />
       <ReactSlider
-        className="slider"
-        thumbClassName="slider-thumb"
-        trackClassName="slider-track"
         onChange={(value) => {
           setSlider((value / 100) * Math.PI * 2);
         }}
-        renderThumb={(props) => <div {...props} />}
+        renderMark={(props) => <div {...props} className="" />}
+        renderTrack={(props) => <div {...props} className="" />}
+        renderThumb={(props) => <div {...props} className="" />}
       />
       <div className="slider-annotation">
         <p>0</p>

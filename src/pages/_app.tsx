@@ -1,13 +1,8 @@
 import { AppProps } from "next/app";
 import "../styles/globals.css";
-import "../styles/highlight.css";
-import "../styles/index.css";
-import "../styles/navbar.css";
-import "../styles/newsletter.css";
 
 import { ThemeProvider } from "next-themes";
 import Head from "next/head";
-import Script from "next/script";
 
 import { Inter } from "next/font/google";
 

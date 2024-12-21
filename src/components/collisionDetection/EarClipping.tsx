@@ -64,7 +64,7 @@ export const EarClipping = () => {
   }, [cnv, visualizing, poly, isRunning]);
 
   return (
-    <div className="SATWithResponseContainer">
+    <div>
       <SimpleReactCanvasComponent
         setCnv={setCnv}
         width={width}

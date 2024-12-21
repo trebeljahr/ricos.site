@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import {
   byDate,
   byOnlyPublished,
-  CommonMetadata,
+  type CommonMetadata,
   toOnlyMetadata,
 } from "src/lib/utils";
 import { motion, useAnimation } from "framer-motion";

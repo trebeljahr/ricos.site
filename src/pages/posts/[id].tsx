@@ -40,16 +40,14 @@ export const BlogLayout = ({
       imageAlt={cover.alt}
       withProgressBar={true}
     >
-      <main>
-        <article>
-          <section>
-            <BreadCrumbs path={url} />
-            <MetadataDisplay date={date} readingTime={readingTime} />
+      <main className="mb-20 px-3">
+        <section>
+          <BreadCrumbs path={url} />
+          <MetadataDisplay date={date} readingTime={readingTime} />
 
-            <Header subtitle={subtitle} title={title} />
-            {children}
-          </section>
-        </article>
+          <Header subtitle={subtitle} title={title} />
+          {children}
+        </section>
       </main>
 
       <footer>

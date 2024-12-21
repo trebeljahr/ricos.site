@@ -48,7 +48,7 @@ export function BookPreview({ book, index }: Props) {
           readingTime={book.metadata.readingTime}
           withAuthorInfo={false}
         />
-        <p className="text-sm mt-2">🏆 Rated: {rating}/10</p>
+        <p className="text-xs mt-2">🏆 Rated: {rating}/10</p>
 
         <div>
           {excerpt ? (

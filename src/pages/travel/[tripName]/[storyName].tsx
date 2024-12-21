@@ -44,7 +44,7 @@ export const TravelBlogLayout = ({
       imageAlt={cover?.alt || ""}
       withProgressBar={true}
     >
-      <main>
+      <main className="mb-20 px-3">
         <BreadCrumbs path={url} />
         <MetadataDisplay date={date} readingTime={readingTime} />
         <article>

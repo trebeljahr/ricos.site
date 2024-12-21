@@ -20,12 +20,15 @@ export default function SinglePhotographyShowcasePage({
       url={`/photography/${tripName}`}
       fullScreen={true}
     >
-      <section className="mb-20">
+      <main className="mb-20 px-3">
         <BreadCrumbs path={`photography/${tripName}`} />
-        <h1>{turnKebabIntoTitleCase(tripName)}</h1>
-        <NiceGallery images={images} />
-        <ToTopButton />
-      </section>
+
+        <section>
+          <h1>{turnKebabIntoTitleCase(tripName)}</h1>
+          <NiceGallery images={images} />
+          <ToTopButton />
+        </section>
+      </main>
     </Layout>
   );
 }

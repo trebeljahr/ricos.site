@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { ChangeEvent, useRef, useState } from "react";
 import ConfettiExplosion, { ConfettiProps } from "react-confetti-explosion";

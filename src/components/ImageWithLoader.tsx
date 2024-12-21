@@ -14,7 +14,7 @@ export const ImageWithLoader = ({
     <div className="relative w-full overflow-hidden h-full">
       <div
         className={clsx(
-          "transition-opacity duration-200 opacity-0 h-full relative",
+          "transition-opacity duration-200 opacity-0 h-full w-full relative",
           { "opacity-100": isLoaded },
           css
         )}

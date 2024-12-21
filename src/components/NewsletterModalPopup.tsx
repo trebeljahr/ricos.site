@@ -1,5 +1,3 @@
-"use client";
-
 import { useCallback, useEffect } from "react";
 import { FiChevronsRight, FiX } from "react-icons/fi";
 import Modal from "react-modal";

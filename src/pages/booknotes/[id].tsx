@@ -53,12 +53,12 @@ const Book = ({ booknote }: Props) => {
       url={url}
       withProgressBar={true}
     >
-      <BreadCrumbs path={url} />
-      <MetadataDisplay
-        readingTime={booknote.metadata.readingTime}
-        date={booknote.date}
-      />
-      <main>
+      <main className="mb-20 px-3">
+        <BreadCrumbs path={url} />
+        <MetadataDisplay
+          readingTime={booknote.metadata.readingTime}
+          date={booknote.date}
+        />
         <article>
           <section className="flex mt-16">
             <div className="not-prose block relative mr-2 mb-5 md:mb-0 w-60 overflow-hidden rounded-md">

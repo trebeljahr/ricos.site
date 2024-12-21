@@ -9,10 +9,18 @@ import { ThemeProvider } from "next-themes";
 import Head from "next/head";
 import Script from "next/script";
 
+import { Inter } from "next/font/google";
+
+// If loading a variable font, you don't need to specify the font weight
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <>
-      <Script
+    <div className={inter.className}>
+      {/* <Script
         async
         src="https://www.googletagmanager.com/gtag/js?id=G-094TFMBB0J"
       />
@@ -23,7 +31,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           gtag('js', new Date());
           gtag('config', 'G-094TFMBB0J');
        `}
-      </Script>
+      </Script> */}
       <Head>
         <link
           rel="apple-touch-icon"
@@ -61,6 +69,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       <ThemeProvider attribute="class" enableSystem={false}>
         <Component {...pageProps} />
       </ThemeProvider>
-    </>
+    </div>
   );
 }

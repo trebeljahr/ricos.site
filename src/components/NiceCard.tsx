@@ -45,9 +45,7 @@ export function NiceCard({
             src={cover.src}
             alt={cover.alt}
             fill
-            sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
-              priority ? "780px" : "357px"
-            }`}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 30vw, 25vw"
             priority={priority}
             className="object-cover"
           />
@@ -125,7 +123,6 @@ export const SmallCardsGallery = ({
 
 export const NiceCardSmall = ({
   cover,
-  priority = false,
   link,
   title,
   excerpt,
@@ -143,10 +140,7 @@ export const NiceCardSmall = ({
           src={cover.src}
           alt={cover.alt}
           fill
-          sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
-            priority ? "780px" : "357px"
-          }`}
-          priority={priority}
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover rounded-t-lg"
         />
       </div>

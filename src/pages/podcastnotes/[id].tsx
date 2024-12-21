@@ -20,13 +20,13 @@ const PodcastnoteComponent = ({ podcastnote }: Props) => {
       url={url}
       withProgressBar={true}
     >
-      <BreadCrumbs path={url} />
-      <MetadataDisplay
-        date={podcastnote.date}
-        readingTime={podcastnote.metadata.readingTime}
-      />
+      <main className="mb-20 px-3">
+        <BreadCrumbs path={url} />
+        <MetadataDisplay
+          date={podcastnote.date}
+          readingTime={podcastnote.metadata.readingTime}
+        />
 
-      <main>
         <article>
           <section className="Podcastnote-info">
             <div className="Podcastnote-preview-text">

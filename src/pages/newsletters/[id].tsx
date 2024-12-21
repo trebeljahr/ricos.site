@@ -43,15 +43,15 @@ const Newsletter = ({
       imageAlt={cover.alt}
       withProgressBar={true}
     >
-      <NewsletterModalPopup />
+      <main className="mb-20 px-3">
+        <NewsletterModalPopup />
 
-      <BreadCrumbs
-        path={url}
-        overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]}
-      />
-      <MetadataDisplay date={date} readingTime={readingTime} />
+        <BreadCrumbs
+          path={url}
+          overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]}
+        />
+        <MetadataDisplay date={date} readingTime={readingTime} />
 
-      <main>
         <article className="maint-text newsletter-article">
           <Header title={fullTitle} />
 

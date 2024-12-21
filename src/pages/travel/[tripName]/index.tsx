@@ -31,7 +31,7 @@ const Traveling = ({ posts, tripName }: Props) => {
       imageAlt={cover?.alt || defaultCover.alt}
       url={url}
     >
-      <main>
+      <main className="mb-20 px-3">
         <BreadCrumbs path={url} />
         <section>
           <Header

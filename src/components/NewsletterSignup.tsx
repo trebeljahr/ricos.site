@@ -96,7 +96,7 @@ export const NewsletterForm = ({
   );
 
   return success ? (
-    <div className="rounded-md overflow-hidden p-3 py-3 -ml-1 bg-white prose shadow-lg">
+    <div className="rounded-md overflow-hidden p-3 py-3 bg-white prose shadow-lg mx-auto w-full">
       <div className="newsletter-success-container mb-10" />
       <div className="ml-2 md:ml-5">
         <div className="flex w-full justify-center">
@@ -152,11 +152,7 @@ export const NewsletterForm = ({
           disabled={loading}
           aria-label="Subscribe to the newsletter"
         >
-          {loading ? (
-            <ClipLoader color={"rgb(68, 160, 255)"} loading={true} size={20} />
-          ) : (
-            "Subscribe"
-          )}
+          {loading ? <ClipLoader loading={true} size={20} /> : "Subscribe"}
         </FancyButton>
         {/* <button></button> */}
         {link || defaultLink}

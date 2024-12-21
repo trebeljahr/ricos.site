@@ -181,8 +181,9 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
   const itemsPerPage = useMemo(
     () => ({
       sm: 1,
-      md: 3,
-      lg: 4,
+      md: 2,
+      lg: 3,
+      xl: 4,
     }),
     []
   );
@@ -223,7 +224,9 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
   if (!width) return null;
 
   const currentItemsPerPage =
-    width > 768
+    width > 1024
+      ? itemsPerPage.xl
+      : width > 768
       ? itemsPerPage.lg
       : width > 640
       ? itemsPerPage.md
@@ -244,7 +247,7 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
           {content.map((singlePiece, index) => (
             <div
               key={singlePiece.link}
-              className="flex w-full sm:w-1/3 md:w-1/4 px-2 sm:px-4"
+              className="flex w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 sm:px-4"
             >
               <NiceCardSmall
                 {...singlePiece}

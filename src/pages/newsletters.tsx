@@ -34,8 +34,9 @@ const Newsletters = ({ newsletterData }: Props) => {
       image="/assets/midjourney/live-and-learn-cover.png"
       imageAlt="a young boy absorbed in reading a book with sparks flying out of it"
     >
-      <BreadCrumbs path={url} />
-      <main>
+      <main className="mb-20 px-3">
+        <BreadCrumbs path={url} />
+
         <section>
           <Header
             subtitle={"All the Live and Learn Newsletters"}

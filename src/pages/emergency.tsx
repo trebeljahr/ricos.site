@@ -38,7 +38,7 @@ const EmergencyInfoComponent: React.FC = () => {
             </div>
             <button
               type="submit"
-              className={`w-full px-4 py-2 bg-blue-600  font-semibold rounded-md hover:bg-blue-700 transition-colors ${
+              className={`w-full px-4 py-2 bg-myBlue-600  font-semibold rounded-md hover:bg-myBlue-700 transition-colors ${
                 loading ? "opacity-50 cursor-not-allowed" : ""
               }`}
               disabled={loading}

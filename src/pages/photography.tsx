@@ -48,35 +48,37 @@ export default function Photography({
       url={url}
       fullScreen={true}
     >
-      <BreadCrumbs path={url} />
+      <main className="mb-20 px-3">
+        <BreadCrumbs path={url} />
 
-      <Header subtitle="My travels in pictures" title="Photography" />
-      <main className="not-prose grid grid-cols-1 md:grid-cols-2 gap-2 mb-20">
-        {trips.map(({ tripName, image }, index) => {
-          return (
-            <Link
-              href={`/photography/${tripName}`}
-              key={tripName}
-              className="relative aspect-square overflow-hidden flex-shrink-0 "
-            >
-              <ImageWithLoader
-                src={image.src}
-                sizes={"calc(50vw - 40px)"}
-                blurDataURL={image.blurDataURL}
-                fill
-                priority={index <= 3}
-                alt={"A photo from " + tripName}
-                style={{ filter: "brightness(50%)" }}
-                className="absolute inset-0 z-0 object-cover w-full h-full hover:scale-105 transform transition-transform duration-300 ease-in-out  "
-              />
-              <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center w-full h-full">
-                <h2 className="text-xl font-bold text-white">
-                  {turnKebabIntoTitleCase(tripName)}
-                </h2>
-              </div>
-            </Link>
-          );
-        })}
+        <Header subtitle="My travels in pictures" title="Photography" />
+        <div className="not-prose grid grid-cols-1 md:grid-cols-2 gap-2 mb-20">
+          {trips.map(({ tripName, image }, index) => {
+            return (
+              <Link
+                href={`/photography/${tripName}`}
+                key={tripName}
+                className="relative aspect-square overflow-hidden flex-shrink-0 "
+              >
+                <ImageWithLoader
+                  src={image.src}
+                  sizes={"calc(50vw - 40px)"}
+                  blurDataURL={image.blurDataURL}
+                  fill
+                  priority={index <= 3}
+                  alt={"A photo from " + tripName}
+                  style={{ filter: "brightness(50%)" }}
+                  className="absolute inset-0 z-0 object-cover w-full h-full hover:scale-105 transform transition-transform duration-300 ease-in-out  "
+                />
+                <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center w-full h-full">
+                  <h2 className="text-xl font-bold text-white">
+                    {turnKebabIntoTitleCase(tripName)}
+                  </h2>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
       </main>
     </Layout>
   );

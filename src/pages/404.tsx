@@ -7,11 +7,11 @@ export default function Custom404() {
       description="A 404 page, there is nothing here to look at..."
       url="404"
     >
-      <article className="mt-10">
+      <main className="mb-20 px-3">
         <h1>404 - Page Not Found</h1>
         <p>Sorry but this page doesn{"'"}t exist</p>
         <TrySomeOfThese />
-      </article>
+      </main>
     </Layout>
   );
 }

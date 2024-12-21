@@ -45,9 +45,9 @@ export default function Books({ booknotes }: Props) {
       url={url}
       imageAlt={"a bookshelf filled with lots of books"}
     >
-      <BreadCrumbs path={url} />
+      <main className="mb-20 px-3">
+        <BreadCrumbs path={url} />
 
-      <main>
         <Header
           title="Booknotes"
           subtitle="What I have learned while reading"

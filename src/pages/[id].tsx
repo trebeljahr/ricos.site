@@ -21,19 +21,20 @@ export default function Page({ page }: Props) {
       imageAlt={cover.alt}
       withProgressBar={true}
     >
-      <BreadCrumbs path={page.slug} />
-      <MetadataDisplay
-        date={page.date}
-        readingTime={page.metadata.readingTime}
-      />
-      <Header subtitle={subtitle} title={title} />
-      <main>
+      <main className="mb-20 px-3">
+        <BreadCrumbs path={page.slug} />
+        <MetadataDisplay
+          date={page.date}
+          readingTime={page.metadata.readingTime}
+        />
+        <Header subtitle={subtitle} title={title} />
+
         <article>
           <MDXContent source={page.content} />
         </article>
       </main>
 
-      <footer>
+      <footer className="mb-20 px-3">
         <NewsletterForm />
         <ToTopButton />
       </footer>

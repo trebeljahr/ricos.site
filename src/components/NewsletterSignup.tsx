@@ -6,6 +6,7 @@ import ConfettiExplosion, { ConfettiProps } from "react-confetti-explosion";
 import { FaCheckCircle } from "react-icons/fa";
 import { ReactElement } from "react-markdown/lib/react-markdown";
 import { ClipLoader } from "react-spinners";
+import { FancyButton } from "./FancyUI";
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
   const response = await fetch(input, init);
@@ -91,7 +92,7 @@ export const NewsletterForm = ({
   );
 
   const defaultHeading = (
-    <h2 className="pt-0 mt-0">Subscribe to Live and Learn</h2>
+    <h2 className="pt-0 mt-0">Subscribe to Live and Learn 🌱</h2>
   );
 
   return success ? (
@@ -144,11 +145,11 @@ export const NewsletterForm = ({
           ref={emailInputRef}
         />
 
-        <button
-          type="submit"
-          className={`newsletter-button ${loading ? "inactive" : "active"}`}
-          disabled={loading}
+        <FancyButton
           onClick={handleSubmit}
+          type="submit"
+          className={`w-full ${loading ? "inactive" : "active"}`}
+          disabled={loading}
           aria-label="Subscribe to the newsletter"
         >
           {loading ? (
@@ -156,7 +157,8 @@ export const NewsletterForm = ({
           ) : (
             "Subscribe"
           )}
-        </button>
+        </FancyButton>
+        {/* <button></button> */}
         {link || defaultLink}
       </form>
     </>

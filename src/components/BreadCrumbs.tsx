@@ -30,7 +30,7 @@ export function BreadCrumbs({
         <div className="inline-flex items-center">
           <Link
             href="/"
-            className="inline-flex items-center text-sm font-medium  hover:text-blue "
+            className="inline-flex items-center text-sm font-medium  hover:text-myBlue "
           >
             <svg
               className="w-3 h-3 mr-2.5"
@@ -69,7 +69,7 @@ export function BreadCrumbs({
                 </svg>
                 <Link
                   href={"/" + pathParts.slice(0, index + 1).join("/")}
-                  className="ml-1 text-sm font-medium  hover:text-blue md:ml-2"
+                  className="ml-1 text-sm font-medium  hover:text-myBlue md:ml-2"
                 >
                   {turnKebabIntoTitleCase(overwrite?.newText || part)}
                 </Link>

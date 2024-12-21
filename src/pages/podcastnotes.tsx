@@ -35,20 +35,16 @@ export default function Podcastnotes() {
       }
       url={url}
     >
-      <main>
-        <div className="px-5">
-          <BreadCrumbs path={url} />
-        </div>
+      <main className="mb-20 px-3">
+        <BreadCrumbs path={url} />
 
         <section>
-          <div className="px-5">
-            <Header
-              title="Podcastnotes"
-              subtitle="What I have learned while listening"
-            />
-            <Search filters={filters} setFilters={setFilters} />
-            <p>Amount: {filteredPodcastnotes.length}</p>
-          </div>
+          <Header
+            title="Podcastnotes"
+            subtitle="What I have learned while listening"
+          />
+          <Search filters={filters} setFilters={setFilters} />
+          <p>Amount: {filteredPodcastnotes.length}</p>
 
           {filteredPodcastnotes.map(
             ({ link, slug, title, show, episode, rating, excerpt }) => {

@@ -23,9 +23,9 @@ const Posts = ({ posts }: Props) => {
       url={url}
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
-      <BreadCrumbs path={url} />
+      <main className="mb-20 px-3">
+        <BreadCrumbs path={url} />
 
-      <main>
         <section>
           <Header
             title="Posts"

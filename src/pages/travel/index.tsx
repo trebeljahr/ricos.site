@@ -1,3 +1,4 @@
+import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { NiceCard } from "@components/NiceCard";
@@ -100,10 +101,12 @@ const TravelBlogs = ({ travelingStories, travelingBlogsMeta }: Props) => {
       image={
         "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg"
       }
-      url="posts"
+      url="travel"
       imageAlt={"a hand writing down thoughts on a piece of paper"}
     >
-      <main>
+      <main className="mb-20 px-3">
+        <BreadCrumbs path="travel" />
+
         <section>
           <Header
             title="Traveling"
@@ -126,7 +129,7 @@ const TravelBlogs = ({ travelingStories, travelingBlogsMeta }: Props) => {
         </section>
       </main>
 
-      <footer>
+      <footer className="mb-20 px-3">
         <NewsletterForm />
         <ToTopButton />
       </footer>

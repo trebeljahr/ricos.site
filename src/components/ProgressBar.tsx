@@ -34,7 +34,7 @@ export const StickyHeaderProgressBar: FC = () => {
     <div className="h-1 bg-gray-200 overflow-hidden">
       <div
         ref={progressBarRef}
-        className="h-full bg-blue w-full transform-gpu"
+        className="h-full bg-myBlue w-full transform-gpu"
         style={{
           transform: "translateX(calc(var(--scroll-percent, 0%) - 100%))",
           transition: "transform 0.1s linear",

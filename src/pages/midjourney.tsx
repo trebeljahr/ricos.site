@@ -19,7 +19,7 @@ export default function MidjourneyGallery({
       url={`/midjourney`}
       fullScreen={true}
     >
-      <div className="mb-20">
+      <div className="mb-20 px-3">
         <h1 style={{ marginTop: "-2rem", marginBottom: "1.2rem" }}>
           Midjourney Images
         </h1>

@@ -7,7 +7,7 @@
 }
 
 .newsletter-button.active:hover {
-  background-color: var(--blue);
+  background-color: var(--my-blue);
 }
 
 .newsletter-button.active {
@@ -57,7 +57,7 @@
   }
 
   .page-arrow:hover {
-    background-color: var(--blue);
+    background-color: var(--my-blue);
   }
 
   .page-arrow.right {

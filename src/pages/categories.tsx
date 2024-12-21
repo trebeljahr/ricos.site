@@ -119,9 +119,9 @@ const ShowTags = ({ categories }: Props) => {
       description="An Experimental Overview over All Pages"
       url={url}
     >
-      <BreadCrumbs path={url} />
+      <main className="mb-20 px-3">
+        <BreadCrumbs path={url} />
 
-      <main>
         <section>
           <h2>Categories:</h2>
           <RenderTags tags={categories} />

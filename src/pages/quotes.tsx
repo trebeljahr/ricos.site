@@ -30,9 +30,9 @@ export default function Quotes() {
       url={url}
       imageAlt="a collection of handwritten notes on paper"
     >
-      <BreadCrumbs path={url} />
+      <main className="mb-20 px-3">
+        <BreadCrumbs path={url} />
 
-      <main>
         <section>
           <Header
             title="Quotes"

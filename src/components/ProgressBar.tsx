@@ -31,7 +31,7 @@ export const StickyHeaderProgressBar: FC = () => {
   }, []);
 
   return (
-    <div className="h-1 bg-gray-200 overflow-hidden">
+    <div className="h-1 dark:bg-gray-900 overflow-hidden">
       <div
         ref={progressBarRef}
         className="h-full bg-myBlue w-full transform-gpu"

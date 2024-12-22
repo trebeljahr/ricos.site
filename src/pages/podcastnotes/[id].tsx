@@ -1,5 +1,5 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
-import { MetadataDisplay } from "@components/DateFormatter";
+import { MetadataDisplay } from "@components/MetadataDisplay";
 import { ExternalLink } from "@components/ExternalLink";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";

@@ -58,9 +58,15 @@ export function TailwindNavbar({
                   <span className="ml-1 font-semibold">Rico Trebeljahr</span>
                 </Link>
                 {isMobile ? (
-                  <MobileVersion {...{ open, close }} />
+                  <div className="flex">
+                    <DarkModeHandler />
+                    <MobileVersion {...{ open, close }} />
+                  </div>
                 ) : (
-                  <DesktopVersion {...{ open, close }} />
+                  <>
+                    <DesktopVersion {...{ open, close }} />
+                    <DarkModeHandler />
+                  </>
                 )}
               </nav>
               {withProgressBar && <StickyHeaderProgressBar />}
@@ -82,16 +88,10 @@ function MobileVersion({ open, close }: NavbarProps) {
 
   return (
     <div>
-      <div className="absolute mr-2 inset-y-0 right-0 flex items-center lg:hidden">
-        <DarkModeHandler />
-
+      <div className="flex items-center lg:hidden">
         <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700">
           <span className="sr-only">Open main menu</span>
-          {open ? (
-            <FiX className="" aria-hidden="true" />
-          ) : (
-            <FiMenu aria-hidden="true" />
-          )}
+          {open ? <FiX /> : <FiMenu />}
         </Disclosure.Button>
       </div>
       <Disclosure.Panel className="absolute z-50 top-12 p-2 w-screen h-screen right-0 bg-white dark:bg-gray-900">
@@ -124,8 +124,6 @@ function DesktopVersion({ close }: NavbarProps) {
       <div className="flex flex-1 mr-1 items-stretch justify-end lg:mr-0 lg:items-center">
         <div className="hidden lg:ml-6 lg:block sm:justify-self-end">
           <div className="flex space-x-4">
-            <DarkModeHandler />
-
             {navigation.map((item) => (
               <Link
                 key={item}

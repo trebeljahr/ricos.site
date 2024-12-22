@@ -5,6 +5,7 @@ import Header from "@components/PostHeader";
 import { travelblogs, type Travelblog } from "@velite";
 import { sortAndFilterNotes as sortAndFilterTravelBlogs } from "src/lib/utils";
 import { travelingStoriesMeta, travelingStoryNames } from "..";
+import { nanoid } from "nanoid";
 
 type Props = {
   posts: Travelblog[];
@@ -40,9 +41,10 @@ const Traveling = ({ posts, tripName }: Props) => {
           />
           {posts.map((post, index) => {
             const priority = index <= 1;
+
             return (
               <NiceCard
-                key={post.slug}
+                key={nanoid()}
                 priority={priority}
                 readingTime={post.metadata.readingTime}
                 {...post}

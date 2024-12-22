@@ -202,32 +202,36 @@ export function Search<T extends Filters>({
   };
 
   return (
-    <div className="search">
+    <div className="not-prose">
       <p>Search by:</p>
 
-      {Object.entries(filters)
-        .filter(([, { active }]) => active)
-        .map(([filterKey, { value: filterValue, options }]) => {
+      {Object.entries(filters).map(
+        ([filterKey, { active, value: filterValue, options }]) => {
           return (
             <Fragment key={filterKey}>
-              <div className="search-filter dark:bg-gray-900 bg-gray-200">
+              <div
+                className={`${
+                  active && "dark:bg-gray-900 bg-gray-200"
+                } flex place-items-center gap-2 p-1`}
+              >
                 <button
-                  className="remove-filter-button"
                   onClick={() => toggleFilter(filterKey)}
                   aria-label="Remove filter"
                 >
-                  <FiX />
+                  {active ? <FiX /> : <FiPlus />}
                 </button>
                 <p>{beautify(filterKey, { capitalize: true })}:</p>
-                <InputField
-                  options={options}
-                  growArray={growArray}
-                  filterKey={filterKey}
-                  filterValue={filterValue}
-                  toggleBoolean={toggleBoolean}
-                  handleInput={handleInput}
-                />
-                {Array.isArray(filterValue) && (
+                {active && (
+                  <InputField
+                    options={options}
+                    growArray={growArray}
+                    filterKey={filterKey}
+                    filterValue={filterValue}
+                    toggleBoolean={toggleBoolean}
+                    handleInput={handleInput}
+                  />
+                )}
+                {Array.isArray(filterValue) && active && (
                   <button
                     onClick={() => growArray(filterKey)}
                     aria-label="Add another filter"
@@ -236,12 +240,13 @@ export function Search<T extends Filters>({
                   </button>
                 )}
               </div>
-              <div className="tag-filter-container">
+              <div>
                 {Array.isArray(filterValue) &&
+                  active &&
                   filterValue.map((tag, index) => {
                     if (index === filterValue.length - 1) return null;
                     return (
-                      <div className="tag-filter" key={tag.id}>
+                      <div key={tag.id}>
                         <p>{tag.tag}</p>
                         <button
                           onClick={() => removeTag(filterKey, tag.id)}
@@ -255,27 +260,8 @@ export function Search<T extends Filters>({
               </div>
             </Fragment>
           );
-        })}
-      <div>
-        <div className="add-filter-container">
-          {Object.entries(filters)
-            .filter(([, { active }]) => !active)
-            .map(([filterKey]) => {
-              return (
-                <button
-                  key={filterKey}
-                  className="add-filter-button"
-                  onClick={() => toggleFilter(filterKey)}
-                  aria-label="Add filter"
-                >
-                  <FiPlus />
-
-                  <p>{beautify(filterKey, { capitalize: true })}</p>
-                </button>
-              );
-            })}
-        </div>
-      </div>
+        }
+      )}
     </div>
   );
 }
@@ -380,7 +366,7 @@ const AutoCompleteInput = ({
         type="text"
         value={filterValue}
         onChange={(event) => handleInput(event)}
-        onKeyPress={(event) => {
+        onKeyDown={(event) => {
           event.key === "Enter" && growArray && growArray(filterKey);
         }}
         className="dark:bg-gray-800 h-5"

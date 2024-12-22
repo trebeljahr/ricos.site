@@ -1,4 +1,5 @@
 import { NextJsImage } from "@components/images/CustomRenderers";
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { ClickHandler, Photo, PhotoAlbum } from "react-photo-album";
@@ -6,7 +7,14 @@ import { ImageProps } from "src/@types";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import { getImgWidthAndHeight } from "src/lib/mapToImageProps";
 import { addIdAndIndex } from "src/lib/utils";
-import Lightbox from "yet-another-react-lightbox";
+import Lightbox, {
+  ContainerRect,
+  isImageFitCover,
+  isImageSlide,
+  Slide,
+  useLightboxProps,
+  useLightboxState,
+} from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
@@ -22,6 +30,67 @@ function groupImages(displayedImages: ImageProps[]): ImageProps[][] {
   }
 
   return groupedImages;
+}
+
+function isNextJsImage(slide: Slide) {
+  return (
+    isImageSlide(slide) &&
+    typeof slide.width === "number" &&
+    typeof slide.height === "number"
+  );
+}
+
+export default function NextJsSlideImage({
+  slide,
+  offset,
+  rect,
+}: {
+  slide: Slide;
+  offset?: number;
+  rect: ContainerRect;
+}) {
+  const {
+    on: { click },
+    carousel: { imageFit },
+  } = useLightboxProps();
+
+  const { currentIndex } = useLightboxState();
+
+  const cover = isImageSlide(slide) && isImageFitCover(slide, imageFit);
+
+  if (!isNextJsImage(slide) || !slide.height || !slide.width) return undefined;
+
+  const width = !cover
+    ? Math.round(
+        Math.min(rect.width, (rect.height / slide.height) * slide.width)
+      )
+    : rect.width;
+
+  const height = !cover
+    ? Math.round(
+        Math.min(rect.height, (rect.width / slide.width) * slide.height)
+      )
+    : rect.height;
+
+  return (
+    <div style={{ position: "relative", width, height }}>
+      <Image
+        fill
+        alt=""
+        src={slide.src}
+        loading="eager"
+        draggable={false}
+        style={{
+          objectFit: cover ? "cover" : "contain",
+          cursor: click ? "pointer" : undefined,
+        }}
+        sizes={`${Math.ceil((width / window.innerWidth) * 100)}vw`}
+        onClick={
+          offset === 0 ? () => click?.({ index: currentIndex }) : undefined
+        }
+      />
+    </div>
+  );
 }
 
 export const SimpleGallery = ({ photos: images }: { photos: ImageProps[] }) => {
@@ -44,14 +113,13 @@ export const SimpleGallery = ({ photos: images }: { photos: ImageProps[] }) => {
     <>
       <PhotoAlbum
         photos={photos}
-        targetRowHeight={height * 0.6}
+        targetRowHeight={400}
         layout="rows"
         renderPhoto={NextJsImage}
         defaultContainerWidth={1200}
         onClick={(photo) => {
           openModal({
             ...photo,
-            index: photo.index,
           });
         }}
       />
@@ -71,6 +139,7 @@ export const SimpleGallery = ({ photos: images }: { photos: ImageProps[] }) => {
         }}
         carousel={{ finite: true }}
         plugins={[Thumbnails, Zoom]}
+        render={{ slide: NextJsSlideImage, thumbnail: NextJsSlideImage }}
         thumbnails={{
           position: "bottom",
           width: height < 500 ? 50 : 100,
@@ -199,7 +268,7 @@ const useCustomLightbox = ({
   };
 };
 
-export const NiceGallery = ({ images }: { images: ImageProps[] }) => {
+export const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
   const {
     openModal,
     isModalOpen,

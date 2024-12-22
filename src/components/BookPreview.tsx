@@ -1,7 +1,7 @@
 import { Booknote } from "@velite";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import Link from "next/link";
-import { MetadataDisplay } from "./DateFormatter";
+import { MetadataDisplay } from "./MetadataDisplay";
 
 type Props = {
   book: Booknote;

@@ -5,7 +5,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { MDXContent } from "@components/MDXContent";
-import { MetadataDisplay } from "@components/DateFormatter";
+import { MetadataDisplay } from "@components/MetadataDisplay";
 import { BreadCrumbs } from "@components/BreadCrumbs";
 type Props = {
   page: PageType;

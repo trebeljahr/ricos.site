@@ -10,7 +10,7 @@ type Props = {
 export const MetadataDisplay = ({
   date,
   readingTime,
-  withAuthorInfo = true,
+  withAuthorInfo = false,
   longFormDate = true,
 }: Props) => {
   return (

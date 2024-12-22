@@ -9,7 +9,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import { newsletters, type Newsletter as NewsletterType } from "@velite";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import { byOnlyPublished } from "src/lib/utils";
-import { MetadataDisplay } from "@components/DateFormatter";
+import { MetadataDisplay } from "@components/MetadataDisplay";
 
 type Props = {
   newsletter: NewsletterType;

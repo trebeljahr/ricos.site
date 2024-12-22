@@ -1,7 +1,7 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import Link from "next/link";
 import { CommonMetadata } from "src/lib/utils";
-import { MetadataDisplay } from "./DateFormatter";
+import { MetadataDisplay } from "./MetadataDisplay";
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useSwipeable } from "react-swipeable";
 import { FaChevronLeft } from "react-icons/fa6";

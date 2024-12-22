@@ -1,5 +1,5 @@
 import Layout from "@components/Layout";
-import { NiceGallery } from "@components/NiceGallery";
+import { InfiniteScrollGallery } from "@components/Galleries";
 import { ToTopButton } from "@components/ToTopButton";
 import { ImageProps } from "src/@types";
 import { getDataFromS3 } from "src/lib/aws";
@@ -22,7 +22,7 @@ export default function MidjourneyGallery({
         <h1 style={{ marginTop: "-2rem", marginBottom: "1.2rem" }}>
           Midjourney Images
         </h1>
-        <NiceGallery images={images} />
+        <InfiniteScrollGallery images={images} />
 
         <ToTopButton />
       </div>

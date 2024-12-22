@@ -217,7 +217,6 @@ const handleSimpleGalleryNode: Handler = (state, node) => {
   };
 };
 
-import rehypeUnwrapImages from "rehype-unwrap-images";
 const addBundledMDXContent = async <T extends Record<string, any>>(
   data: T,
   { meta }: { meta: ZodMeta }

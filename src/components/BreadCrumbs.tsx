@@ -34,7 +34,6 @@ export function BreadCrumbs({
           >
             <svg
               className="w-3 h-3 mr-2.5"
-              aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="currentColor"
               viewBox="0 0 20 20"
@@ -54,7 +53,6 @@ export function BreadCrumbs({
               <div className="flex items-center">
                 <svg
                   className="w-3 h-3 mx-1"
-                  aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 6 10"

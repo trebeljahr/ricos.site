@@ -41,7 +41,7 @@ export const NewsletterModalPopup = ({
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={false}
       onRequestClose={closeModal}
       contentLabel="Newsletter Popup Form"
       style={{

@@ -17,7 +17,7 @@ import { SATWithConcaveShapes } from "./collisionDetection/SATWithConcaveShapes"
 import { SATWithResponse } from "./collisionDetection/SATWithResponse";
 import { Triangulation } from "./collisionDetection/Triangulation";
 import { UnitVectorDemo } from "./collisionDetection/UnitVectorDemo";
-import { NiceGallery, ImageGallery } from "./NiceGallery";
+import { InfiniteScrollGallery, ImageGallery } from "./Galleries";
 
 const allComponents = {
   ThreeFiberDemo,

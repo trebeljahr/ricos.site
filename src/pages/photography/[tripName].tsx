@@ -1,6 +1,6 @@
 import { BreadCrumbs, turnKebabIntoTitleCase } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
-import { NiceGallery } from "@components/NiceGallery";
+import { InfiniteScrollGallery } from "@components/Galleries";
 import { ToTopButton } from "@components/ToTopButton";
 import { ImageProps } from "src/@types";
 import { getDataFromS3, getS3Folders, photographyFolder } from "src/lib/aws";
@@ -39,7 +39,7 @@ export default function SinglePhotographyShowcasePage({
 
         <section>
           <h1 className="text-4xl mt-16">{turnKebabIntoTitleCase(tripName)}</h1>
-          <NiceGallery images={imagesWithSrcSet} />
+          <InfiniteScrollGallery images={imagesWithSrcSet} />
           <ToTopButton />
         </section>
       </main>

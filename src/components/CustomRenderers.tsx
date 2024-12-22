@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AnchorHTMLAttributes, HTMLAttributes, ImgHTMLAttributes } from "react";
 import { ThreeFiberDemo } from "./Demo";
 import { ExternalLink } from "./ExternalLink";
-import { ImageGallery, SimpleGallery } from "./NiceGallery";
+import { ImageGallery, SimpleGallery } from "./Galleries";
 
 export const ImageRenderer = ({
   src,
@@ -60,16 +60,6 @@ export const LinkRenderer = ({
   return <ExternalLink href={href}>{children}</ExternalLink>;
 };
 
-export const ParagraphRenderer = ({
-  children,
-}: HTMLAttributes<HTMLParagraphElement>) => {
-  if (typeof children === "string" && children.startsWith("–")) {
-    return <p className="quote-author">{children}</p>;
-  }
-
-  return <p>{children}</p>;
-};
-
 export const HeadingRenderer = (level: number) => {
   return function Heading({ children }: HTMLAttributes<HTMLHeadingElement>) {
     if (typeof children !== "string") return null;
@@ -114,7 +104,6 @@ const handleDivs = (props: any) => {
 };
 
 export const MarkdownRenderers = {
-  p: ParagraphRenderer,
   a: LinkRenderer,
   img: ImageRenderer,
   pre: CodeRenderer,

@@ -1,5 +1,5 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
-import { MetadataDisplay } from "@components/DateFormatter";
+import { MetadataDisplay } from "@components/MetadataDisplay";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import { NewsletterForm } from "@components/NewsletterSignup";

@@ -144,7 +144,7 @@ export const NiceCardSmall = ({
           className="object-cover rounded-t-lg"
         />
       </div>
-      <div className="flex flex-col flex-grow align-self-stretch p-3 min-h-fit prose-p:text-zinc-800 dark:prose-p:text-slate-300 w-full border-r-4 border-l-4 border-b-4 rounded-bl-lg rounded-br-lg border-gray-200 dark:border-gray-500">
+      <div className="flex flex-col flex-grow align-self-stretch p-3 min-h-fit prose-p:text-zinc-800 dark:prose-p:text-slate-300 w-full border-r-4 border-l-4 border-b-4 rounded-bl-lg rounded-br-lg border-gray-200 dark:border-gray-700">
         <h2 className="mt-2 mb-2 tracking-tight text-lg">{title}</h2>
         {withExcerpt && <p>{excerpt}</p>}
         <div className="flex-grow mb-5"></div>

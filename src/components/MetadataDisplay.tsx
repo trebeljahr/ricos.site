@@ -14,7 +14,7 @@ export const MetadataDisplay = ({
   longFormDate = true,
 }: Props) => {
   return (
-    <div className="text-xs mt-3 text-gray-900 dark:text-white">
+    <div className="text-xs mt-3 text-gray-700 dark:text-gray-200 font-light">
       <span className="text-xs mr-4 mb-1 mt-1">🕓 {readingTime} min</span>{" "}
       <span>
         ✏️ {longFormDate && `Published on `}

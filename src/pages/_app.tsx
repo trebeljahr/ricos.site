@@ -1,12 +1,9 @@
+import { HydrationFriendlyThemeProvider } from "@components/ThemeProvider";
 import { AppProps } from "next/app";
+import { Inter } from "next/font/google";
+import Head from "next/head";
 import "../styles/globals.css";
 
-import { ThemeProvider } from "next-themes";
-import Head from "next/head";
-
-import { Inter } from "next/font/google";
-
-// If loading a variable font, you don't need to specify the font weight
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
@@ -61,9 +58,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
       </Head>
 
-      <ThemeProvider attribute="class" enableSystem={false}>
+      <HydrationFriendlyThemeProvider>
         <Component {...pageProps} />
-      </ThemeProvider>
+      </HydrationFriendlyThemeProvider>
     </div>
   );
 }

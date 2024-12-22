@@ -2,7 +2,7 @@ import { ExternalLink } from "@components/ExternalLink";
 import { FancyLink } from "@components/FancyUI";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
-import { SmallCardsGallery, SwipeableCardCarousel } from "@components/NiceCard";
+import { SmallCardsGallery } from "@components/NiceCard";
 import { booknotes, newsletters, posts, travelblogs } from "@velite";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -13,6 +13,7 @@ import {
   toOnlyMetadata,
 } from "src/lib/utils";
 import { motion, useAnimation } from "framer-motion";
+import { SwipeableCardCarousel } from "@components/SwipeableCardCarousel";
 
 export const WavingHand = () => {
   const controls = useAnimation();

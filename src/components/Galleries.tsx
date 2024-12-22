@@ -1,10 +1,10 @@
 import { NextJsImage } from "@components/images/CustomRenderers";
+import { useWindowSize } from "@react-hook/window-size";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { ClickHandler, Photo, PhotoAlbum } from "react-photo-album";
 import { ImageProps } from "src/@types";
-import { useWindowSize } from "src/hooks/useWindowSize";
 import { getImgWidthAndHeight } from "src/lib/mapToImageProps";
 import { addIdAndIndex } from "src/lib/utils";
 import Lightbox, {
@@ -96,7 +96,7 @@ export default function NextJsSlideImage({
 export const SimpleGallery = ({ photos: images }: { photos: ImageProps[] }) => {
   const photos = useMemo(() => images.map(addIdAndIndex), [images]);
 
-  const { width, height } = useWindowSize();
+  const [width, height] = useWindowSize();
 
   const {
     isModalOpen,
@@ -106,8 +106,6 @@ export const SimpleGallery = ({ photos: images }: { photos: ImageProps[] }) => {
     setCurrentImageIndex,
     animateImageBackToGallery,
   } = useCustomLightbox({ photos });
-
-  if (!width || !height) return null;
 
   return (
     <>
@@ -296,9 +294,7 @@ export const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
     }
   }, [currentImageIndex, loadMoreImages, displayedImages]);
 
-  const { width, height } = useWindowSize();
-
-  if (!width || !height) return null;
+  const [_, height] = useWindowSize();
 
   return (
     <div className="not-prose">

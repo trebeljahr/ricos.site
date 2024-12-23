@@ -245,16 +245,15 @@ const useCustomLightbox = ({
 
   useEffect(() => {
     const currentImage = photos[currentImageIndex];
-
     const currentImageElement = document.getElementById(currentImage.id);
 
-    if (currentImageElement) {
+    if (currentImageElement && isModalOpen) {
       currentImageElement.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
     }
-  }, [currentImageIndex, photos]);
+  }, [currentImageIndex, photos, isModalOpen]);
 
   return {
     openModal,

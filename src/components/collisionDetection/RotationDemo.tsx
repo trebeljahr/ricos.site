@@ -54,9 +54,9 @@ export const RotationDemo = () => {
         onChange={(value) => {
           setSlider((value / 100) * Math.PI * 2);
         }}
-        renderMark={(props) => <div {...props} className="" />}
-        renderTrack={(props) => <div {...props} className="" />}
-        renderThumb={(props) => <div {...props} className="" />}
+        renderMark={(props) => <div {...props} key={props.key} className="" />}
+        renderTrack={(props) => <div {...props} key={props.key} className="" />}
+        renderThumb={(props) => <div {...props} key={props.key} className="" />}
       />
       <div className="slider-annotation">
         <p>0</p>

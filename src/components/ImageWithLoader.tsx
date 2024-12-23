@@ -28,6 +28,7 @@ export const ImageWithLoader = ({
           onLoad={() => {
             props.src !== "" && setIsLoaded(true);
           }}
+          style={props.fill ? {} : { height: "auto", width: "auto" }}
         />
       </div>
 

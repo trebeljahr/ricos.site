@@ -79,7 +79,11 @@ export async function getStaticPaths() {
   return {
     paths:
       process.env.NODE_ENV === "development"
-        ? [...paths, { params: { id: "site-demo-post" } }]
+        ? [
+            ...paths,
+            { params: { id: "site-demo-post" } },
+            { params: { id: "test" } },
+          ]
         : paths,
     fallback: false,
   };

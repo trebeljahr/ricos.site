@@ -1,8 +1,11 @@
-import { HydrationFriendlyThemeProvider } from "@components/ThemeProvider";
+import "katex/dist/katex.min.css";
+import { ThemeProvider } from "next-themes";
 import { AppProps } from "next/app";
-import { Inter } from "next/font/google";
 import Head from "next/head";
 import "../styles/globals.css";
+
+import clsx from "clsx";
+import { Inter } from "next/font/google";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -11,19 +14,7 @@ const inter = Inter({
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <div className={inter.className}>
-      {/* <Script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=G-094TFMBB0J"
-      />
-      <Script id="gtaginit">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-094TFMBB0J');
-       `}
-      </Script> */}
+    <>
       <Head>
         <link
           rel="apple-touch-icon"
@@ -55,12 +46,19 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           content="/favicon/browserconfig.xml"
         />
         <meta name="theme-color" content="#000" />
+        {/* <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+        /> */}
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
       </Head>
 
-      <HydrationFriendlyThemeProvider>
-        <Component {...pageProps} />
-      </HydrationFriendlyThemeProvider>
-    </div>
+      <ThemeProvider attribute="class" enableSystem={false}>
+        <Component
+          {...pageProps}
+          className={clsx(pageProps.className, inter.className)}
+        />
+      </ThemeProvider>
+    </>
   );
 }

@@ -96,7 +96,7 @@ export default function NextJsSlideImage({
 export const SimpleGallery = ({ photos: images }: { photos: ImageProps[] }) => {
   const photos = useMemo(() => images.map(addIdAndIndex), [images]);
 
-  const [width, height] = useWindowSize();
+  const [_, height] = useWindowSize();
 
   const {
     isModalOpen,
@@ -116,6 +116,8 @@ export const SimpleGallery = ({ photos: images }: { photos: ImageProps[] }) => {
         renderPhoto={NextJsImage}
         defaultContainerWidth={1200}
         onClick={(photo) => {
+          console.log(photo);
+
           openModal({
             ...photo,
           });

@@ -21,8 +21,9 @@ export const NewsletterModalPopup = ({
   const { visible, setVisible } = useScrollVisibility({
     howFarDown,
   });
+  const show = !dismissed && visible;
 
-  useScrollLock(visible && !dismissed);
+  useScrollLock(show);
 
   function closeModalForGood() {
     setVisible(false);
@@ -33,27 +34,21 @@ export const NewsletterModalPopup = ({
     setVisible(false);
   }
 
-  // if (dismissed) {
-  //   return null;
-  // }
-
-  const show = !dismissed && visible;
-
   return (
     <Modal
-      isOpen={false}
+      isOpen={show}
       onRequestClose={closeModal}
       contentLabel="Newsletter Popup Form"
       style={{
         overlay: {
           visibility: show ? "visible" : "hidden",
-          transition: "visibility 0.3s linear,opacity 0.3s linear",
+          transition: "visibility 3s linear,opacity 3s linear",
           opacity: show ? 1 : 0,
           zIndex: 300,
         },
         content: {
           visibility: show ? "visible" : "hidden",
-          transition: "visibility 0.3s linear,opacity 0.3s linear",
+          transition: "visibility 3s linear,opacity 3s linear",
           opacity: show ? 1 : 0,
           zIndex: 300,
         },

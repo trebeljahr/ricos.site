@@ -31,6 +31,7 @@ export function NextJsImage({
     >
       {dimensions && (
         <ImageWithLoader
+          onClick={imageProps.onClick}
           id={photo.id}
           src={photo}
           alt=""

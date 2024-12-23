@@ -66,34 +66,6 @@ type CardGalleryProps = {
   withExcerpt?: boolean;
 };
 
-export const SmallCardsGallerySingleRow = ({
-  title,
-  content,
-  withExcerpt = false,
-}: CardGalleryProps) => {
-  return (
-    <div>
-      <div className="mx-auto max-w-3xl">
-        <h2 className="justify-self-start text-5xl col-span-1 md:col-span-2 lg:col-span-3 mb-4">
-          {title}
-        </h2>
-      </div>
-
-      <div className="mx-auto flex flex-nowrap mb-10 justify-items-center gap-2 overflow-x-scroll overflow-y-visible">
-        {content.map((singlePiece) => (
-          <div className="w-5/12" key={singlePiece.slug}>
-            <NiceCardSmall
-              readingTime={singlePiece.metadata.readingTime}
-              withExcerpt={withExcerpt}
-              {...singlePiece}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 export const SmallCardsGallery = ({
   title,
   content,

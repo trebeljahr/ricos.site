@@ -27,109 +27,53 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
 
   const itemsScrolledPerClick = 1;
 
-  const [currentIndex, setCurrentIndex] = useState(itemsPerPage - 1);
   const scrollRef = React.createRef<HTMLDivElement>();
+  const [showButtons, setShowButtons] = useState({
+    left: false,
+    right: true,
+  });
 
-  const showPrevious = currentIndex >= itemsPerPage;
-  const showNext = content && currentIndex <= content.length - itemsPerPage - 1;
+  const scrollHandler = () => {
+    const elementWidth = scrollRef.current?.children[0].clientWidth;
 
-  const scrollToCurrentIndex = (index: number) => {
-    const contentSlug = content[index]?.slug;
-    console.log(contentSlug);
-    if (!contentSlug) return;
+    // console.log("hi");
 
-    const element = document.getElementById(contentSlug);
+    if (!scrollRef.current || !elementWidth) return;
 
-    if (!element) return;
+    console.log({
+      scrollLeft: scrollRef.current.scrollLeft,
+      scrollWidth: scrollRef.current.scrollWidth,
+      width: scrollRef.current.clientWidth,
+      elementWidth,
+    });
+    setShowButtons({
+      left: scrollRef.current.scrollLeft >= elementWidth,
+      right:
+        scrollRef.current.scrollLeft <=
+        scrollRef.current.scrollWidth - elementWidth * itemsPerPage,
+    });
+  };
 
-    console.log("scrolling");
+  const handleScrolling = (direction: "left" | "right") => {
+    const elementWidth = scrollRef.current?.children[0].clientWidth;
+    if (!elementWidth) return;
 
-    // element.scrollTo;
-    element.scrollIntoView({
+    const singleOffset = direction === "left" ? -elementWidth : elementWidth;
+    const offset = singleOffset * itemsScrolledPerClick;
+
+    scrollRef.current?.scrollTo({
+      left: scrollRef.current.scrollLeft + offset,
       behavior: "smooth",
-      block: "center",
     });
   };
 
   const handlePrevious = () => {
-    // const nextIndex = Math.max(
-    //   0,
-    //   Math.min(
-    //     currentIndex - itemsScrolledPerClick,
-    //     content.length - itemsPerPage - 1
-    //   )
-    // );
-    // console.log("scrolling left to", nextIndex);
-
-    // // setCurrentIndex(nextIndex);
-    // scrollToCurrentIndex(nextIndex);
-
-    const elementWidth = scrollRef.current?.children[0].clientWidth;
-    if (!elementWidth) return;
-
-    scrollRef.current?.scrollTo({
-      left: scrollRef.current.scrollLeft - elementWidth,
-      behavior: "smooth",
-    });
+    handleScrolling("left");
   };
 
   const handleNext = () => {
-    // const nextIndex = Math.min(
-    //   content.length - 1,
-    //   Math.max(currentIndex + itemsScrolledPerClick, itemsPerPage)
-    // );
-    // console.log("scrolling right to", nextIndex);
-    // setCurrentIndex(nextIndex);
-    // scrollToCurrentIndex(nextIndex);
-    const elementWidth = scrollRef.current?.children[0].clientWidth;
-    if (!elementWidth) return;
-
-    scrollRef.current?.scrollTo({
-      left: scrollRef.current.scrollLeft + elementWidth,
-      behavior: "smooth",
-    });
+    handleScrolling("right");
   };
-
-  console.log(currentIndex);
-
-  useEffect(() => {
-    function determineElementsInView() {
-      const elements = document.querySelectorAll(".carousel-item");
-      const observer = new IntersectionObserver(
-        (entries) => {
-          const visible = entries.filter((entry) => entry.isIntersecting);
-
-          // console.log(entries);
-
-          const indices = visible.map((entry) =>
-            Number(entry.target.getAttribute("data-index"))
-          );
-
-          const index = [...indices].pop();
-          if (index) {
-            // const updateIndex = Math.min(
-            //   content.length - itemsPerPage - 1,
-            //   Math.max(itemsPerPage, index)
-            // );
-            // console.log(updateIndex);
-            setCurrentIndex(index);
-          }
-        },
-        {
-          root: scrollRef.current,
-          threshold: 0.9, // Adjust this value as needed
-        }
-      );
-
-      elements.forEach((element) => observer.observe(element));
-
-      return () => {
-        elements.forEach((element) => observer.unobserve(element));
-      };
-    }
-
-    return determineElementsInView();
-  }, [content]);
 
   return (
     <div className="relative">
@@ -140,10 +84,10 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
       <div className="flex place-items-center">
         <button
           className={`h-fit rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
-            showPrevious ? "opacity-100" : "opacity-0"
+            showButtons.left ? "visible" : "hidden"
           }`}
           onClick={handlePrevious}
-          disabled={!showPrevious}
+          disabled={!showButtons.left}
           aria-label="Previous card"
         >
           <FaChevronLeft className="h-4 w-4" />
@@ -151,6 +95,7 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
         <div
           className="overflow-x-scroll w-full overscroll-x-none snap-x flex transition-transform duration-300 ease-in-out pb-10"
           ref={scrollRef}
+          onScroll={scrollHandler}
         >
           {content.map((singlePiece, index) => (
             <div
@@ -169,10 +114,10 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
         </div>
         <button
           className={`h-fit rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
-            showNext ? "opacity-100" : "opacity-0"
+            showButtons.right ? "visible" : "hidden"
           }`}
           onClick={handleNext}
-          disabled={!showNext}
+          disabled={!showButtons.right}
           aria-label="Next card"
         >
           <FaChevronRight className="h-4 w-4" />

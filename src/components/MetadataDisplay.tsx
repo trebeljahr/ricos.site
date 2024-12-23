@@ -18,7 +18,7 @@ export const MetadataDisplay = ({
       <span className="text-xs mr-4 mb-1 mt-1">🕓 {readingTime} min</span>{" "}
       <span>
         ✏️ {longFormDate && `Published on `}
-        <time dateTime={date}>
+        <time dateTime={date} suppressHydrationWarning>
           {format(new Date(date), longFormDate ? "LLLL	d, yyyy" : "MMM d, yyyy")}
         </time>
         {withAuthorInfo && " by Rico Trebeljahr"}

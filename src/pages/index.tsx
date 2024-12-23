@@ -98,7 +98,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
           <FancyLink href="/posts" />
         </section>
 
-        <section className="pt-1 pb-20">
+        <section className="pt-1 pb-20 px-3">
           <SwipeableCardCarousel
             content={props.travelBlogsSelection}
             title="Travel Stories 🛫"

@@ -102,7 +102,7 @@ export const NiceCardSmall = ({
       className="w-full flex flex-col align-self-stretch whitespace-no-wrap mt-2 no-underline prose-headings:text-inherit transform transition-transform duration-300 hover:scale-[1.02] rounded-lg bg-white dark:bg-gray-800"
       href={link}
     >
-      <div className="h-40 relative not-prose max-w-full rounded-t-lg overflow-hidden">
+      <div className="h-60 w-full relative not-prose max-w-full rounded-t-lg overflow-hidden">
         <ImageWithLoader
           src={cover.src}
           alt={cover.alt}

@@ -1,12 +1,9 @@
-"use client";
-
-import { useWindowSize } from "@react-hook/window-size";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FaChevronRight } from "react-icons/fa";
 import { FaChevronLeft } from "react-icons/fa6";
-import { useSwipeable } from "react-swipeable";
 import { CommonMetadata } from "src/lib/utils";
 import { NiceCardSmall } from "./NiceCard";
+import { useWindowWidth } from "@react-hook/window-size";
 
 type SwipeableCardCarouselProps = {
   title: string;
@@ -19,77 +16,148 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
   content,
   withExcerpt = false,
 }) => {
-  const itemsPerPage = useMemo(
-    () => ({
-      sm: 1,
-      md: 2,
-      lg: 3,
-      xl: 4,
-    }),
-    []
-  );
+  const width = useWindowWidth();
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const carouselRef = useRef<HTMLDivElement>(null);
+  const itemsPerPage = useMemo(() => {
+    if (width > 1280) return 4;
+    if (width > 1024) return 3;
+    if (width > 768) return 2;
+    return 1;
+  }, [width]);
 
-  const showPrevious = currentIndex > 0;
-  const showNext = content && currentIndex < content.length - itemsPerPage.lg;
+  const itemsScrolledPerClick = 1;
 
-  const handlers = useSwipeable({
-    onSwipedLeft: () => showNext && handleNext(),
-    onSwipedRight: () => showPrevious && handlePrevious(),
-    trackMouse: true,
-  });
+  const [currentIndex, setCurrentIndex] = useState(itemsPerPage - 1);
+  const scrollRef = React.createRef<HTMLDivElement>();
+
+  const showPrevious = currentIndex >= itemsPerPage;
+  const showNext = content && currentIndex <= content.length - itemsPerPage - 1;
+
+  const scrollToCurrentIndex = (index: number) => {
+    const contentSlug = content[index]?.slug;
+    console.log(contentSlug);
+    if (!contentSlug) return;
+
+    const element = document.getElementById(contentSlug);
+
+    if (!element) return;
+
+    console.log("scrolling");
+
+    // element.scrollTo;
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  };
 
   const handlePrevious = () => {
-    setCurrentIndex((prevIndex) => Math.max(0, prevIndex - 1));
+    // const nextIndex = Math.max(
+    //   0,
+    //   Math.min(
+    //     currentIndex - itemsScrolledPerClick,
+    //     content.length - itemsPerPage - 1
+    //   )
+    // );
+    // console.log("scrolling left to", nextIndex);
+
+    // // setCurrentIndex(nextIndex);
+    // scrollToCurrentIndex(nextIndex);
+
+    const elementWidth = scrollRef.current?.children[0].clientWidth;
+    if (!elementWidth) return;
+
+    scrollRef.current?.scrollTo({
+      left: scrollRef.current.scrollLeft - elementWidth,
+      behavior: "smooth",
+    });
   };
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) =>
-      Math.min(content.length - itemsPerPage.lg, prevIndex + 1)
-    );
+    // const nextIndex = Math.min(
+    //   content.length - 1,
+    //   Math.max(currentIndex + itemsScrolledPerClick, itemsPerPage)
+    // );
+    // console.log("scrolling right to", nextIndex);
+    // setCurrentIndex(nextIndex);
+    // scrollToCurrentIndex(nextIndex);
+    const elementWidth = scrollRef.current?.children[0].clientWidth;
+    if (!elementWidth) return;
+
+    scrollRef.current?.scrollTo({
+      left: scrollRef.current.scrollLeft + elementWidth,
+      behavior: "smooth",
+    });
   };
 
-  const [width] = useWindowSize();
+  console.log(currentIndex);
 
   useEffect(() => {
-    if (carouselRef.current) {
-      const itemWidth = 100 / content.length;
-      carouselRef.current.style.transform = `translateX(-${
-        currentIndex * itemWidth
-      }%)`;
+    function determineElementsInView() {
+      const elements = document.querySelectorAll(".carousel-item");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const visible = entries.filter((entry) => entry.isIntersecting);
 
-      const currentItemsPerPage =
-        width > 1280
-          ? itemsPerPage.xl
-          : width > 1024
-          ? itemsPerPage.lg
-          : width > 768
-          ? itemsPerPage.md
-          : itemsPerPage.sm;
+          // console.log(entries);
 
-      carouselRef.current.style.width = `${
-        (content.length / currentItemsPerPage) * 100
-      }%`;
+          const indices = visible.map((entry) =>
+            Number(entry.target.getAttribute("data-index"))
+          );
+
+          const index = [...indices].pop();
+          if (index) {
+            // const updateIndex = Math.min(
+            //   content.length - itemsPerPage - 1,
+            //   Math.max(itemsPerPage, index)
+            // );
+            // console.log(updateIndex);
+            setCurrentIndex(index);
+          }
+        },
+        {
+          root: scrollRef.current,
+          threshold: 0.9, // Adjust this value as needed
+        }
+      );
+
+      elements.forEach((element) => observer.observe(element));
+
+      return () => {
+        elements.forEach((element) => observer.unobserve(element));
+      };
     }
-  }, [currentIndex, itemsPerPage, content, width]);
+
+    return determineElementsInView();
+  }, [content]);
 
   return (
-    <div className="relative px-10">
-      <div className="mx-auto max-w-3xl">
-        <h2 className="text-4xl font-bold mb-6 mx-auto w-fit">{title}</h2>
+    <div className="relative">
+      <div className="max-w-3xl mx-auto">
+        <h2 className="text-4xl font-bold mb-6 w-fit">{title}</h2>
       </div>
 
-      <div className="overflow-hidden" {...handlers}>
+      <div className="flex place-items-center">
+        <button
+          className={`h-fit rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
+            showPrevious ? "opacity-100" : "opacity-0"
+          }`}
+          onClick={handlePrevious}
+          disabled={!showPrevious}
+          aria-label="Previous card"
+        >
+          <FaChevronLeft className="h-4 w-4" />
+        </button>
         <div
-          ref={carouselRef}
-          className="flex transition-transform duration-300 ease-in-out pb-10"
+          className="overflow-x-scroll w-full overscroll-x-none snap-x flex transition-transform duration-300 ease-in-out pb-10"
+          ref={scrollRef}
         >
           {content.map((singlePiece, index) => (
             <div
               key={singlePiece.link}
-              className="flex w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2 sm:px-4"
+              id={singlePiece.slug}
+              data-index={index}
+              className="flex self-stretch w-full md:w-1/2 lg:w-1/3 xl:w-1/4 snap-start shrink-0 px-3 carousel-item"
             >
               <NiceCardSmall
                 {...singlePiece}
@@ -99,21 +167,8 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="absolute top-1/2 left-0 right-0 flex justify-between items-center px-4 -mt-6">
         <button
-          className={`rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
-            showPrevious ? "opacity-100" : "opacity-0"
-          }`}
-          onClick={handlePrevious}
-          disabled={!showPrevious}
-          aria-label="Previous card"
-        >
-          <FaChevronLeft className="h-4 w-4" />
-        </button>
-        <button
-          className={`rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
+          className={`h-fit rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
             showNext ? "opacity-100" : "opacity-0"
           }`}
           onClick={handleNext}
@@ -123,6 +178,8 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
           <FaChevronRight className="h-4 w-4" />
         </button>
       </div>
+
+      {/* <div className="absolute top-1/2 left-0 right-0 flex justify-between items-center px-4 -mt-6"></div> */}
     </div>
   );
 };

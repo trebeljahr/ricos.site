@@ -103,7 +103,7 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
               key={singlePiece.link}
               id={singlePiece.slug}
               data-index={index}
-              className="flex self-stretch w-full xl:w-1/2 xl:w-1/3 2xl:w-1/4 snap-start shrink-0 px-3 carousel-item"
+              className="flex self-stretch w-full lg:w-1/2 xl:w-1/3 2xl:w-1/4 snap-start shrink-0 px-3 carousel-item"
             >
               <NiceCardSmall
                 {...singlePiece}

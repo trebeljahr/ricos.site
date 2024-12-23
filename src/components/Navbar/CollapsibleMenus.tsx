@@ -3,13 +3,12 @@ import { Fragment } from "react";
 import { SingleMenuItem } from "./SingleMenuItem";
 import { FiChevronDown } from "react-icons/fi";
 
-type MenuProps = {
+type DesktopMenuProps = {
   links: string[];
   text: string;
-  closeNav: () => void;
 };
 
-export function CollapsibleMenuDesktop({ links, text, closeNav }: MenuProps) {
+export function CollapsibleMenuDesktop({ links, text }: DesktopMenuProps) {
   return (
     <Menu as="div" className="block relative ml-3">
       <Menu.Button className="block hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md px-3 py-2 text-sm font-medium">
@@ -29,7 +28,7 @@ export function CollapsibleMenuDesktop({ links, text, closeNav }: MenuProps) {
       >
         <Menu.Items className="overflow-hidden bg-white dark:bg-gray-800 flex-col absolute box-border right-0 z-50 mt-2 origin-top-right w-fit rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           {links.map((item) => (
-            <SingleMenuItem key={item} link={item} closeNav={closeNav} />
+            <SingleMenuItem key={item} link={item} />
           ))}
         </Menu.Items>
       </Transition>
@@ -37,7 +36,15 @@ export function CollapsibleMenuDesktop({ links, text, closeNav }: MenuProps) {
   );
 }
 
-export function CollapsibleMenuMobile({ links, text, closeNav }: MenuProps) {
+type MobileMenuProps = DesktopMenuProps & {
+  closeNav?: () => void;
+};
+
+export function CollapsibleMenuMobile({
+  links,
+  text,
+  closeNav,
+}: MobileMenuProps) {
   return (
     <Menu as="div" className="relative w-fit">
       <div className="flex flex-col">

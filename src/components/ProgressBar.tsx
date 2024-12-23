@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef } from "react";
 
-export const StickyHeaderProgressBar: FC = () => {
+export const ProgressBar: FC = () => {
   const progressBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -9,8 +9,8 @@ export const StickyHeaderProgressBar: FC = () => {
 
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
-      const scrollTop = window.scrollY;
-      const scrollPercent = (scrollTop / (documentHeight - windowHeight)) * 100;
+      const scrollPercent =
+        (window.scrollY / (documentHeight - windowHeight)) * 100;
 
       progressBarRef.current.style.setProperty(
         "--scroll-percent",
@@ -21,7 +21,6 @@ export const StickyHeaderProgressBar: FC = () => {
     window.addEventListener("scroll", updateProgress, { passive: true });
     window.addEventListener("resize", updateProgress, { passive: true });
 
-    // Initial update
     updateProgress();
 
     return () => {

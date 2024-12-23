@@ -76,7 +76,7 @@ export default function NextJsSlideImage({
     <div style={{ position: "relative", width, height }}>
       <Image
         fill
-        alt=""
+        alt={slide.src}
         src={slide.src}
         loading="eager"
         draggable={false}

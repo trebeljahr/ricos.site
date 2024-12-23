@@ -33,8 +33,11 @@ export function NextJsImage({
         <ImageWithLoader
           onClick={imageProps.onClick}
           id={photo.id}
-          src={photo}
-          alt=""
+          src={photo.src}
+          alt={
+            photo.src.split("/").pop()?.replace("-", " ") ||
+            "sorry but this photo doesn't have an alt text"
+          }
           width={dimensions.width}
           height={dimensions.height}
         />

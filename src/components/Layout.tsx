@@ -43,7 +43,7 @@ const Layout = ({
         className={
           fullScreen
             ? "w-full !max-w-full"
-            : "w-full mx-auto lg:max-w-3xl overflow-x-clip"
+            : "w-full mx-auto xl:max-w-3xl overflow-x-clip"
         }
       >
         {children}

@@ -36,7 +36,7 @@ export function TailwindNavbar({
             withProgressBar ? "" : "pb-2"
           }`}
         >
-          <nav className="mx-auto max-w-7xl px-2 pb-1 lg:px-8 flex items-center justify-between">
+          <nav className="mx-auto max-w-7xl px-2 pb-1 xl:px-8 flex items-center justify-between">
             <Link
               href="/"
               className="flex flex-shrink-0 items-center not-prose"
@@ -51,12 +51,12 @@ export function TailwindNavbar({
               <span className="ml-1 font-semibold">Rico Trebeljahr</span>
             </Link>
 
-            <div className="flex lg:hidden">
+            <div className="flex xl:hidden">
               <DarkModeHandler />
               <MobileVersion {...{ open, close }} />
             </div>
 
-            <div className="hidden lg:flex">
+            <div className="hidden xl:flex">
               <DesktopVersion />
               <DarkModeHandler />
             </div>
@@ -78,7 +78,7 @@ function MobileVersion({ open, close }: NavbarProps) {
 
   return (
     <div>
-      <div className="flex items-center lg:hidden">
+      <div className="flex items-center">
         <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700">
           <span className="sr-only">Open main menu</span>
           {open ? <FiX /> : <FiMenu />}
@@ -110,8 +110,8 @@ function MobileVersion({ open, close }: NavbarProps) {
 
 function DesktopVersion() {
   return (
-    <div className="w-full flex flex-1 mr-1 items-stretch justify-end lg:mr-0 lg:items-center">
-      <div className="lg:ml-6 lg:block lg:justify-self-end">
+    <div className="w-full flex flex-1 mr-0 items-center">
+      <div className="ml-6 block justify-self-end">
         <div className="flex space-x-4">
           {navigation.map((item) => (
             <Link

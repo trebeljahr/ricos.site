@@ -42,7 +42,7 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
       left: scrollRef.current.scrollLeft >= elementWidth,
       right:
         scrollRef.current.scrollLeft <=
-        elementWidth * (content.length - itemsPerPage - 1),
+        elementWidth * (content.length - itemsPerPage) + 10,
     });
   };
 
@@ -68,14 +68,12 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
   };
 
   return (
-    <div className="relative">
-      <div className="max-w-3xl mx-auto">
-        <h2 className="text-4xl font-bold mb-6 w-fit">{title}</h2>
-      </div>
+    <div className="relative max-w-3xl mx-auto">
+      <h2 className="text-4xl font-bold mb-6 w-fit">{title}</h2>
 
-      <div className="flex place-items-center">
+      <div className="flex place-items-center relative mb-10 xl:mb-0">
         <button
-          className={`h-fit mx-2 rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
+          className={`absolute left-0 top-full xl:left-[-70px] xl:top-1/2 z-20 h-fit mx-2 rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
             showButtons.left ? "opacity-1" : "opacity-0"
           }`}
           onClick={handlePrevious}
@@ -84,8 +82,19 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
         >
           <FaChevronLeft className="h-4 w-4" />
         </button>
+        <button
+          className={`absolute right-0 top-full xl:right-[-40px] xl:top-1/2 z-20 h-fit mx-2 rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
+            showButtons.right ? "opacity-1" : "opacity-0"
+          }`}
+          onClick={handleNext}
+          disabled={!showButtons.right}
+          aria-label="Next card"
+        >
+          <FaChevronRight className="h-4 w-4" />
+        </button>
+
         <div
-          className="overflow-x-scroll w-full overscroll-x-none snap-x flex transition-transform duration-300 ease-in-out pb-10"
+          className="-ml-3 overflow-x-scroll w-full overscroll-x-none snap-x snap-mandatory flex transition-transform duration-300 ease-in-out pb-5 no-scrollbar"
           ref={scrollRef}
           onScroll={scrollHandler}
         >
@@ -94,7 +103,7 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
               key={singlePiece.link}
               id={singlePiece.slug}
               data-index={index}
-              className="flex self-stretch w-full md:w-1/2 lg:w-1/3 xl:w-1/4 snap-start shrink-0 px-3 carousel-item"
+              className="flex self-stretch w-full xl:w-1/2 xl:w-1/3 2xl:w-1/4 snap-start shrink-0 px-3 carousel-item"
             >
               <NiceCardSmall
                 {...singlePiece}
@@ -104,16 +113,6 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
             </div>
           ))}
         </div>
-        <button
-          className={`h-fit mx-2 rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
-            showButtons.right ? "opacity-1" : "opacity-0"
-          }`}
-          onClick={handleNext}
-          disabled={!showButtons.right}
-          aria-label="Next card"
-        >
-          <FaChevronRight className="h-4 w-4" />
-        </button>
       </div>
 
       {/* <div className="absolute top-1/2 left-0 right-0 flex justify-between items-center px-4 -mt-6"></div> */}

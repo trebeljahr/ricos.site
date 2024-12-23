@@ -27,7 +27,7 @@ export function NiceCard({
   return (
     <Link
       href={link}
-      className="bg-white max-w-full dark:bg-gray-800 block overflow-hidden mb-12 lg:mb-12 no-underline prose-headings:text-inherit transform transition-transform duration-300 hover:scale-[1.02] rounded-lg"
+      className="bg-white max-w-full dark:bg-gray-800 block overflow-hidden mb-12 xl:mb-12 no-underline prose-headings:text-inherit transform transition-transform duration-300 hover:scale-[1.02] rounded-lg"
     >
       <div
         className="md:grid"
@@ -72,8 +72,8 @@ export const SmallCardsGallery = ({
   withExcerpt = false,
 }: CardGalleryProps) => {
   return (
-    <div className="mx-auto max-w-3xl grid gap-2 md:gap-4 lg:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max mb-10 justify-items-center">
-      <h2 className="justify-self-start text-5xl col-span-1 md:col-span-2 lg:col-span-3 mb-4">
+    <div className="mx-auto max-w-3xl grid gap-2 md:gap-4 xl:gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-max mb-10 justify-items-center">
+      <h2 className="justify-self-start text-5xl col-span-1 md:col-span-2 xl:col-span-3 mb-4">
         {title}
       </h2>
       {content.map((singlePiece) => (

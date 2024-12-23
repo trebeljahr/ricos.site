@@ -36,21 +36,13 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
   const scrollHandler = () => {
     const elementWidth = scrollRef.current?.children[0].clientWidth;
 
-    // console.log("hi");
-
     if (!scrollRef.current || !elementWidth) return;
 
-    console.log({
-      scrollLeft: scrollRef.current.scrollLeft,
-      scrollWidth: scrollRef.current.scrollWidth,
-      width: scrollRef.current.clientWidth,
-      elementWidth,
-    });
     setShowButtons({
       left: scrollRef.current.scrollLeft >= elementWidth,
       right:
         scrollRef.current.scrollLeft <=
-        scrollRef.current.scrollWidth - elementWidth * itemsPerPage,
+        elementWidth * (content.length - itemsPerPage - 1),
     });
   };
 
@@ -83,8 +75,8 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
 
       <div className="flex place-items-center">
         <button
-          className={`h-fit rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
-            showButtons.left ? "visible" : "hidden"
+          className={`h-fit mx-2 rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
+            showButtons.left ? "opacity-1" : "opacity-0"
           }`}
           onClick={handlePrevious}
           disabled={!showButtons.left}
@@ -113,8 +105,8 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
           ))}
         </div>
         <button
-          className={`h-fit rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
-            showButtons.right ? "visible" : "hidden"
+          className={`h-fit mx-2 rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
+            showButtons.right ? "opacity-1" : "opacity-0"
           }`}
           onClick={handleNext}
           disabled={!showButtons.right}

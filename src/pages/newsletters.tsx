@@ -1,4 +1,4 @@
-import { Newsletter, newsletters } from "@velite";
+import { type Newsletter, newsletters } from "@velite";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";

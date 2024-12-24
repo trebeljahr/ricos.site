@@ -1,4 +1,4 @@
-import { Post } from "@velite";
+import { type Post } from "@velite";
 import { PostPreview } from "./PostPreview";
 
 type Props = {

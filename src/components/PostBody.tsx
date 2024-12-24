@@ -1,4 +1,4 @@
-import { Newsletter } from "@velite";
+import { type Newsletter } from "@velite";
 import { MDXContent } from "./MDXContent";
 
 type Props = {

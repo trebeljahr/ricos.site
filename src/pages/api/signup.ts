@@ -4,10 +4,11 @@ import {
   isAlreadySubscribed,
   sendEmail,
 } from "../../lib/mailgun";
-import { getErrorMessage, getHash } from "../../lib/utils";
+import { getErrorMessage } from "../../lib/utils";
 import { readFile } from "fs/promises";
 import Handlebars from "handlebars";
 import path from "path";
+import { getHash } from "src/lib/emailUtils";
 
 export default async function handler(
   req: NextApiRequest,

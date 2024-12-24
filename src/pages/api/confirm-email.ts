@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { confirmEmail } from "../../lib/utils";
+import { confirmEmail } from "src/lib/emailUtils";
 
 export default async function handler(
   req: NextApiRequest,

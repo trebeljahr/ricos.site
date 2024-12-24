@@ -67,7 +67,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
             content={props.postsSelection}
             title="Writing 📝"
           />
-          <FancyLink href="/posts" />
+          <FancyLink href="/posts" text="Browse All Posts" />
         </section>
 
         <section className="pt-1 pb-20 px-3">
@@ -76,16 +76,14 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
             title="Travel Stories 🛫"
           />
 
-          <FancyLink href="/travel" />
+          <FancyLink href="/travel" text="Explore More Travel Stories" />
         </section>
 
         <section className="dark:bg-slate-900 bg-slate-100 pt-1 pb-20 px-3">
           <SmallCardsGallery
             content={props.newsletterSelection}
             title="Live and Learn Newsletter 💌"
-            // withExcerpt
           />
-          {/* <FancyLink href="/newsletters" /> */}
 
           <div className="mx-auto max-w-3xl mt-20 mb-10">
             <NewsletterForm />
@@ -98,7 +96,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
             title="Booknotes 📚"
           />
 
-          <FancyLink href="/booknotes" />
+          <FancyLink href="/booknotes" text="Search All Booknotes" />
         </section>
 
         <section className="dark:bg-slate-900 bg-slate-100 pt-1 pb-20 px-3">

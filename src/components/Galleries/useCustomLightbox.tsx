@@ -1,4 +1,3 @@
-import NextJsSlideImage from "@components/Galleries";
 import { useEffect, useState } from "react";
 import { ClickHandler, Photo } from "react-photo-album";
 import { ImageProps } from "src/@types";
@@ -7,6 +6,54 @@ import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/styles.css";
+import NextJsSlideImage from "./SlideImage";
+
+type Props = {
+  isModalOpen: boolean;
+  handleClose: () => void;
+  photos: ImageProps[];
+  currentImageIndex: number;
+  setCurrentImageIndex: (index: number) => void;
+  animateImageBackToGallery: () => void;
+};
+
+export const CustomLightBox = ({
+  isModalOpen,
+  handleClose,
+  photos,
+  currentImageIndex,
+  setCurrentImageIndex,
+  animateImageBackToGallery,
+}: Props) => {
+  return (
+    <Lightbox
+      open={isModalOpen}
+      close={handleClose}
+      slides={photos}
+      index={currentImageIndex}
+      on={{
+        view: ({ index }) => {
+          setCurrentImageIndex(index);
+        },
+        exiting: () => {
+          animateImageBackToGallery();
+        },
+      }}
+      carousel={{ finite: true }}
+      plugins={[Thumbnails, Zoom]}
+      render={{ slide: NextJsSlideImage, thumbnail: NextJsSlideImage }}
+      thumbnails={{
+        position: "bottom",
+        border: 0,
+        borderRadius: 4,
+        padding: 0,
+        gap: 10,
+        imageFit: "cover",
+        vignette: true,
+      }}
+    />
+  );
+};
 
 export const useCustomLightbox = ({
   photos,
@@ -76,37 +123,7 @@ export const useCustomLightbox = ({
     }
   }, [currentImageIndex, photos]);
 
-  const LightBox = () => (
-    <Lightbox
-      open={isModalOpen}
-      close={handleClose}
-      slides={photos}
-      index={currentImageIndex}
-      on={{
-        view: ({ index }) => {
-          setCurrentImageIndex(index);
-        },
-        exiting: () => {
-          animateImageBackToGallery();
-        },
-      }}
-      carousel={{ finite: true }}
-      plugins={[Thumbnails, Zoom]}
-      render={{ slide: NextJsSlideImage, thumbnail: NextJsSlideImage }}
-      thumbnails={{
-        position: "bottom",
-        border: 0,
-        borderRadius: 4,
-        padding: 0,
-        gap: 10,
-        imageFit: "cover",
-        vignette: true,
-      }}
-    />
-  );
-
   return {
-    LightBox,
     openModal,
     isModalOpen,
     handleClose,

@@ -16,8 +16,8 @@ import { SATWithResponse } from "./collisionDetection/SATWithResponse";
 import { Triangulation } from "./collisionDetection/Triangulation";
 import { UnitVectorDemo } from "./collisionDetection/UnitVectorDemo";
 import { MarkdownRenderers } from "./CustomRenderers";
-import { ImageGallery } from "./Galleries";
 import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
+import { MdxGallery } from "./Galleries";
 
 const allComponents = {
   ThreeFiberDemo,
@@ -36,7 +36,7 @@ const allComponents = {
   RotationDemo,
   DotProductDemo,
   Triangulation,
-  ImageGallery,
+  ImageGallery: MdxGallery,
 };
 
 interface MDXProps {

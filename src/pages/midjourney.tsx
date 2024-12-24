@@ -3,8 +3,6 @@ import { InfiniteScrollGallery } from "@components/Galleries";
 import { ToTopButton } from "@components/ToTopButton";
 import { ImageProps } from "src/@types";
 import { getDataFromS3 } from "src/lib/aws";
-import "yet-another-react-lightbox/plugins/thumbnails.css";
-import "yet-another-react-lightbox/styles.css";
 
 export default function MidjourneyGallery({
   images,

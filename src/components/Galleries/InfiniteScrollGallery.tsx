@@ -4,7 +4,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import { PhotoAlbum } from "react-photo-album";
 import { ImageProps } from "src/@types";
 import { addIdAndIndex } from "src/lib/utils";
-import { useCustomLightbox } from "./useCustomLightbox";
+import { CustomLightBox, useCustomLightbox } from "./useCustomLightbox";
 
 const groupSize = 10;
 
@@ -21,9 +21,11 @@ function groupImages<T extends ImageProps>(displayedImages: T[]): T[][] {
 const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
   const photos = useMemo(() => images.map(addIdAndIndex), [images]);
 
-  const { LightBox, openModal, currentImageIndex } = useCustomLightbox({
+  const props = useCustomLightbox({
     photos,
   });
+
+  const { openModal, currentImageIndex } = props;
 
   const [displayedPhotos, setDisplayPhotos] = useState(
     photos.slice(0, groupSize)
@@ -85,7 +87,7 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
         </div>
       </InfiniteScroll>
 
-      <LightBox />
+      <CustomLightBox {...props} photos={photos} />
     </div>
   );
 };

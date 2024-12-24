@@ -22,8 +22,8 @@ import "yet-another-react-lightbox/styles.css";
 
 const groupSize = 10;
 
-function groupImages(displayedImages: ImageProps[]): ImageProps[][] {
-  const groupedImages: ImageProps[][] = [];
+function groupImages<T extends ImageProps>(displayedImages: T[]): T[][] {
+  const groupedImages: T[][] = [];
 
   for (let i = 0; i < displayedImages.length; i += groupSize) {
     groupedImages.push(displayedImages.slice(i, i + groupSize));
@@ -116,8 +116,6 @@ export const SimpleGallery = ({ photos: images }: { photos: ImageProps[] }) => {
         renderPhoto={NextJsImage}
         defaultContainerWidth={1200}
         onClick={(photo) => {
-          console.log(photo);
-
           openModal({
             ...photo,
           });
@@ -200,10 +198,15 @@ const useCustomLightbox = ({
   const animateImageBackToGallery = () => {
     const lightboxImgContainer = document.querySelector(".yarl__slide_current");
     const lightboxImg = lightboxImgContainer?.querySelector("img");
-    const galleryImg = document.getElementById(photos[currentImageIndex].id);
-    const navbar = document.querySelector<HTMLElement>("#navbar");
+    const imageId = photos[currentImageIndex].id;
+    const galleryImg = document.getElementById(imageId);
 
-    if (!galleryImg || !lightboxImg || !navbar) return;
+    if (!galleryImg || !lightboxImg) return;
+
+    galleryImg.scrollIntoView({
+      behavior: "instant",
+      block: "center",
+    });
 
     const lightboxRect = lightboxImg.getBoundingClientRect();
     const galleryRect = galleryImg.getBoundingClientRect();
@@ -213,24 +216,15 @@ const useCustomLightbox = ({
     placeholderImg.style.left = `${lightboxRect.left}px`;
     placeholderImg.style.width = `${lightboxRect.width}px`;
     placeholderImg.style.height = `${lightboxRect.height}px`;
-    placeholderImg.style.transition = "all 0.2s ease-in-out";
-    placeholderImg.style.zIndex = "2";
+    placeholderImg.style.transition = "all 0.3s ease-in-out";
+    placeholderImg.style.zIndex = "100";
 
     document.body.appendChild(placeholderImg);
 
-    // Force reflow to ensure the browser registers the right positions
     placeholderImg.getBoundingClientRect();
     galleryImg.getBoundingClientRect();
-    navbar.getBoundingClientRect();
 
-    const navbarStyle = window.getComputedStyle(navbar);
-    const navbarHeight = parseFloat(navbarStyle.height);
-    const paddingTop = parseFloat(navbarStyle.paddingTop);
-    const paddingBottom = parseFloat(navbarStyle.paddingBottom);
-
-    const realNavHeight = navbarHeight - paddingTop - paddingBottom;
-
-    placeholderImg.style.top = `${galleryRect.top - realNavHeight}px`;
+    placeholderImg.style.top = `${galleryRect.top}px`;
     placeholderImg.style.left = `${galleryRect.left}px`;
     placeholderImg.style.width = `${galleryRect.width}px`;
     placeholderImg.style.height = `${galleryRect.height}px`;
@@ -249,13 +243,13 @@ const useCustomLightbox = ({
     const currentImage = photos[currentImageIndex];
     const currentImageElement = document.getElementById(currentImage.id);
 
-    if (currentImageElement && isModalOpen) {
+    if (currentImageElement) {
       currentImageElement.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
     }
-  }, [currentImageIndex, photos, isModalOpen]);
+  }, [currentImageIndex, photos]);
 
   return {
     openModal,
@@ -268,6 +262,8 @@ const useCustomLightbox = ({
 };
 
 export const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
+  const photos = useMemo(() => images.map(addIdAndIndex), [images]);
+
   const {
     openModal,
     isModalOpen,
@@ -275,42 +271,40 @@ export const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
     currentImageIndex,
     setCurrentImageIndex,
     animateImageBackToGallery,
-  } = useCustomLightbox({ photos: images.map(addIdAndIndex) });
+  } = useCustomLightbox({ photos });
 
-  const [displayedImages, setDisplayImages] = useState(
-    images.slice(0, groupSize)
+  const [displayedPhotos, setDisplayPhotos] = useState(
+    photos.slice(0, groupSize)
   );
 
-  const loadMoreImages = useCallback(() => {
-    const newImages = images.slice(
-      displayedImages.length,
-      displayedImages.length + groupSize
+  const loadMore = useCallback(() => {
+    const newPhotos = photos.slice(
+      displayedPhotos.length,
+      displayedPhotos.length + groupSize
     );
-    setDisplayImages([...displayedImages, ...newImages]);
-  }, [displayedImages, images]);
+    setDisplayPhotos([...displayedPhotos, ...newPhotos]);
+  }, [displayedPhotos, photos]);
 
   useEffect(() => {
-    if (currentImageIndex > displayedImages.length) {
-      loadMoreImages();
+    if (currentImageIndex > displayedPhotos.length) {
+      loadMore();
     }
-  }, [currentImageIndex, loadMoreImages, displayedImages]);
-
-  const [_, height] = useWindowSize();
+  }, [currentImageIndex, loadMore, displayedPhotos]);
 
   return (
     <div className="not-prose">
       <InfiniteScroll
         pageStart={0}
-        loadMore={loadMoreImages}
-        hasMore={displayedImages.length < images.length}
+        loadMore={loadMore}
+        hasMore={displayedPhotos.length < photos.length}
         loader={<div className="loader" key="0"></div>}
       >
         <div>
-          {groupImages(displayedImages).map((group, i) => (
+          {groupImages(displayedPhotos).map((group, i) => (
             <div key={i} className="mb-[5px] xs:mb-[10px] xl:mb-[15px]">
               <PhotoAlbum
-                photos={group.map(addIdAndIndex)}
-                targetRowHeight={height * 0.6}
+                photos={group}
+                targetRowHeight={400}
                 layout="rows"
                 onClick={(photo) => {
                   openModal({
@@ -342,7 +336,7 @@ export const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
       <Lightbox
         open={isModalOpen}
         close={handleClose}
-        slides={images}
+        slides={photos}
         index={currentImageIndex}
         on={{
           view: ({ index }) => {
@@ -352,12 +346,12 @@ export const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
             animateImageBackToGallery();
           },
         }}
+        // noScroll={{ disabled: false }}
+        render={{ slide: NextJsSlideImage, thumbnail: NextJsSlideImage }}
         carousel={{ finite: true }}
         plugins={[Thumbnails, Zoom]}
         thumbnails={{
           position: "bottom",
-          width: height < 500 ? 50 : 100,
-          height: height < 500 ? 50 : 100,
           border: 0,
           borderRadius: 4,
           padding: 0,

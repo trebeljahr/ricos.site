@@ -196,14 +196,9 @@ const remarkGroupImages: Pluggable = () => {
         const lastIndex = lastImage.index;
         const numberToDelete = lastIndex - firstIndex + 1;
 
-        // console.log((firstImage.parent as any).parent);
         firstImage.parent.children.splice(firstIndex, numberToDelete, newNode);
-
-        // console.dir(firstImage.parent, { colors: true, depth: null });
       })
     );
-
-    // console.dir(tree, { colors: true, depth: null });
   };
 };
 

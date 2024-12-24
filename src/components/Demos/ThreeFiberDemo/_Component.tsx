@@ -1,11 +1,9 @@
-import { MagnitudeDemo } from "../../collisionDetection/MagnitudeDemo";
-export const SomeDemo = () => <MagnitudeDemo />;
-import * as THREE from "three";
 import { useRef, useState } from "react";
 import { Canvas, useFrame, ThreeElements } from "@react-three/fiber";
+import { Mesh } from "three";
 
 function Box(props: ThreeElements["mesh"]) {
-  const ref = useRef<THREE.Mesh>(null!);
+  const ref = useRef<Mesh>(null!);
   const [hovered, hover] = useState(false);
   const [clicked, click] = useState(false);
   useFrame(() => (ref.current.rotation.x += 0.01));

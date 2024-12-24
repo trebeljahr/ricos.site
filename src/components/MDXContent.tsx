@@ -37,7 +37,6 @@ const allComponents = {
   DotProductDemo,
   Triangulation,
   ImageGallery,
-  // SimpleGallery,
 };
 
 interface MDXProps {

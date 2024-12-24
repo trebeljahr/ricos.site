@@ -3,7 +3,6 @@ import Link from "next/link";
 import { AnchorHTMLAttributes, HTMLAttributes, ImgHTMLAttributes } from "react";
 import { ExternalLink } from "./ExternalLink";
 import { SimpleGallery } from "./Galleries";
-import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
 
 export const ImageRenderer = ({
   src,
@@ -109,5 +108,4 @@ export const MarkdownRenderers = {
   pre: CodeRenderer,
   div: handleDivs,
   SimpleGallery: handleNiceImageGalleries,
-  ThreeFiberDemo,
 };

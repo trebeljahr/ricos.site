@@ -55,6 +55,37 @@ code {
   background: linear-gradient(to top,rgba(255, 255, 255, 0.5),white 100%);
 }
 
+@keyframes comeInOut {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-comeInOut {
+    animation: comeInOut 1500ms forwards;
+  }
+
+  .animate-spin {
+    animation: spin 1000ms linear;
+  }
+}
+
 
 pre {
   color: #f5f1d1;

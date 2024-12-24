@@ -3,8 +3,8 @@ import { ChangeEvent, useRef, useState } from "react";
 import ConfettiExplosion, { ConfettiProps } from "react-confetti-explosion";
 import { FaCheckCircle } from "react-icons/fa";
 import { ReactElement } from "react-markdown/lib/react-markdown";
-import { ClipLoader } from "react-spinners";
 import { FancyButton } from "./FancyUI";
+import { SpinningLoader } from "./SpinningLoader";
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
   const response = await fetch(input, init);
@@ -150,7 +150,7 @@ export const NewsletterForm = ({
           disabled={loading}
           aria-label="Subscribe to the newsletter"
         >
-          {loading ? <ClipLoader loading={true} size={20} /> : "Subscribe"}
+          {loading ? <SpinningLoader /> : "Subscribe"}
         </FancyButton>
         {/* <button></button> */}
         {link || defaultLink}

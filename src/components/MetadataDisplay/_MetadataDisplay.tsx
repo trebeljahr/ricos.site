@@ -7,7 +7,7 @@ type Props = {
   longFormDate?: boolean;
 };
 
-export const MetadataDisplay = ({
+const _MetadataDisplay = ({
   date,
   readingTime,
   withAuthorInfo = false,
@@ -26,3 +26,5 @@ export const MetadataDisplay = ({
     </div>
   );
 };
+
+export default _MetadataDisplay;

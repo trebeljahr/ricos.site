@@ -1,9 +1,12 @@
-import { BreadCrumbs, turnKebabIntoTitleCase } from "@components/BreadCrumbs";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
 import { travelblogs, type Travelblog } from "@velite";
-import { sortAndFilterNotes as sortAndFilterTravelBlogs } from "src/lib/utils";
+import {
+  sortAndFilterNotes as sortAndFilterTravelBlogs,
+  turnKebabIntoTitleCase,
+} from "src/lib/utils";
 import { travelingStoriesMeta, travelingStoryNames } from "..";
 import { nanoid } from "nanoid";
 

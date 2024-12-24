@@ -3,6 +3,13 @@ import { nanoid } from "nanoid";
 import { ImageProps } from "src/@types";
 import { byDates } from "./dateUtils";
 
+export const toTitleCase = (str: string) =>
+  str.slice(0, 1).toUpperCase() + str.slice(1);
+
+export function turnKebabIntoTitleCase(kebab: string) {
+  return kebab.split("-").map(toTitleCase).join(" ");
+}
+
 export const addIdAndIndex = (image: ImageProps, index: number) => {
   return {
     ...image,

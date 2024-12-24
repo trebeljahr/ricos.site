@@ -1,8 +1,8 @@
 "use client";
 import { lazy, Suspense } from "react";
-import { HandEmoji } from "./_Component";
+import { HandEmoji } from "./WavingHand";
 
-const WavingHandComponent = lazy(() => import("./_Component"));
+const WavingHandComponent = lazy(() => import("./WavingHand"));
 
 export const WavingHand = () => {
   return (

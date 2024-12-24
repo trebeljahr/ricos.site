@@ -1,10 +1,11 @@
-import { BreadCrumbs, turnKebabIntoTitleCase } from "@components/BreadCrumbs";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { InfiniteScrollGallery } from "@components/Galleries";
 import { ToTopButton } from "@components/ToTopButton";
 import { ImageProps } from "src/@types";
 import { getDataFromS3, getS3Folders, photographyFolder } from "src/lib/aws";
 import { imageSizes, nextImageUrl } from "src/lib/mapToImageProps";
+import { turnKebabIntoTitleCase } from "src/lib/utils";
 
 export default function SinglePhotographyShowcasePage({
   images,

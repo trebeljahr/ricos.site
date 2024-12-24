@@ -1,10 +1,11 @@
-import { BreadCrumbs, turnKebabIntoTitleCase } from "@components/BreadCrumbs";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
 import Link from "next/link";
 import { ImageProps } from "src/@types";
 import { getFirstImageFromS3, photographyFolder } from "src/lib/aws";
+import { turnKebabIntoTitleCase } from "src/lib/utils";
 
 const tripNames = [
   "alps",

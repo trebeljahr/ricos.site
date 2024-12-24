@@ -1,4 +1,3 @@
-import { useScrollLock } from "@components/NewsletterModalPopup";
 import { ProgressBar } from "@components/ProgressBar";
 import { Disclosure } from "@headlessui/react";
 import Image from "next/image";
@@ -9,6 +8,7 @@ import {
   CollapsibleMenuMobile,
 } from "./CollapsibleMenus";
 import { DarkModeHandler } from "./DarkModeHandler";
+import { useScrollLock } from "src/hooks/useScrollLock";
 
 const navigation = ["posts", "newsletters", "photography"];
 const resources = [

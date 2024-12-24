@@ -1,11 +1,7 @@
 import Link from "next/link";
-import { toTitleCase } from "src/lib/toTitleCase";
+import { turnKebabIntoTitleCase } from "src/lib/utils";
 
-export function turnKebabIntoTitleCase(kebab: string) {
-  return kebab.split("-").map(toTitleCase).join(" ");
-}
-
-export function BreadCrumbs({
+export default function _Component({
   path,
   overwrites,
 }: {

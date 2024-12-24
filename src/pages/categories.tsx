@@ -10,8 +10,8 @@ import Link from "next/link";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";
-import { toTitleCase } from "src/lib/toTitleCase";
 import { BreadCrumbs } from "@components/BreadCrumbs";
+import { toTitleCase } from "src/lib/utils";
 
 const allDocuments = [
   ...posts,

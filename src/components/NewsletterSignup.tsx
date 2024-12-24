@@ -95,14 +95,14 @@ export const NewsletterForm = ({
 
   return success ? (
     <div className="rounded-md overflow-hidden p-3 py-3 bg-white prose shadow-lg mx-auto w-full">
-      <div className="newsletter-success-container mb-10" />
+      <div className="newsletter-success-ribbon mb-10" />
       <div className="ml-2 md:ml-5">
         <div className="flex w-full justify-center">
           <ConfettiExplosion {...mediumConfettiProps} />
         </div>
         <h2 className="pt-0 mt-0 mb-3 flex items-center">
           Success
-          <FaCheckCircle className="newsletter-success ml-2" />
+          <FaCheckCircle className="text-green-500 ml-2" />
         </h2>
         <p>{success}</p>
 
@@ -117,7 +117,7 @@ export const NewsletterForm = ({
         </button>
       </div>
 
-      <div className="newsletter-success-container mt-10" />
+      <div className="newsletter-success-ribbon mt-10" />
     </div>
   ) : (
     <>
@@ -146,7 +146,7 @@ export const NewsletterForm = ({
         <FancyButton
           onClick={handleSubmit}
           type="submit"
-          className={`w-full ${loading ? "inactive" : "active"}`}
+          className="w-full flex justify-center"
           disabled={loading}
           aria-label="Subscribe to the newsletter"
         >

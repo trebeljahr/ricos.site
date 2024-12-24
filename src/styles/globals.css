@@ -44,7 +44,7 @@ code {
 }
 
 
-.newsletter-success-container { 
+.newsletter-success-ribbon { 
   height: 10px;
   border-radius: 0.375rem ;
   background: repeating-linear-gradient(45deg, #f47171 0 15px, #fff 15px 25px, #5aa6f2 25px 40px, #fff 40px 50px);

@@ -20,7 +20,6 @@ import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
 import { MdxGallery } from "./Galleries";
 
 const allComponents = {
-  ThreeFiberDemo,
   UnitVectorDemo,
   ProjectArrowDemo,
   ProjectionDemo,
@@ -36,6 +35,7 @@ const allComponents = {
   RotationDemo,
   DotProductDemo,
   Triangulation,
+  ThreeFiberDemo,
   ImageGallery: MdxGallery,
 };
 

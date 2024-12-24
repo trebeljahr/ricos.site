@@ -1,4 +1,4 @@
-import { MagnitudeDemo } from "./collisionDetection/MagnitudeDemo";
+import { MagnitudeDemo } from "../../collisionDetection/MagnitudeDemo";
 export const SomeDemo = () => <MagnitudeDemo />;
 import * as THREE from "three";
 import { useRef, useState } from "react";
@@ -25,7 +25,7 @@ function Box(props: ThreeElements["mesh"]) {
   );
 }
 
-export const ThreeFiberDemo = () => {
+const _Component = () => {
   return (
     <div style={{ width: "100%", height: "50vh" }}>
       <Canvas>
@@ -37,3 +37,5 @@ export const ThreeFiberDemo = () => {
     </div>
   );
 };
+
+export default _Component;

@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useWindowWidth } from "@react-hook/window-size";
+import { createRef, FC, useMemo, useState } from "react";
 import { FaChevronRight } from "react-icons/fa";
 import { FaChevronLeft } from "react-icons/fa6";
 import { CommonMetadata } from "src/lib/utils";
 import { NiceCardSmall } from "./NiceCard";
-import { useWindowWidth } from "@react-hook/window-size";
 
 type SwipeableCardCarouselProps = {
   title: string;
@@ -11,7 +11,7 @@ type SwipeableCardCarouselProps = {
   withExcerpt?: boolean;
 };
 
-export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
+export const SwipeableCardCarousel: FC<SwipeableCardCarouselProps> = ({
   title,
   content,
   withExcerpt = false,
@@ -27,7 +27,7 @@ export const SwipeableCardCarousel: React.FC<SwipeableCardCarouselProps> = ({
 
   const itemsScrolledPerClick = 1;
 
-  const scrollRef = React.createRef<HTMLDivElement>();
+  const scrollRef = createRef<HTMLDivElement>();
   const [showButtons, setShowButtons] = useState({
     left: false,
     right: true,

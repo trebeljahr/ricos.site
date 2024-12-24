@@ -1,7 +1,5 @@
 import { MDXRemote } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
-import { MarkdownRenderers } from "./CustomRenderers";
-import { ThreeFiberDemo } from "./Demo";
 import { AxisByAxis } from "./collisionDetection/AxisByAxis";
 import { DotProductDemo } from "./collisionDetection/DotProductDemo";
 import { EarClipping } from "./collisionDetection/EarClipping";
@@ -17,7 +15,9 @@ import { SATWithConcaveShapes } from "./collisionDetection/SATWithConcaveShapes"
 import { SATWithResponse } from "./collisionDetection/SATWithResponse";
 import { Triangulation } from "./collisionDetection/Triangulation";
 import { UnitVectorDemo } from "./collisionDetection/UnitVectorDemo";
-import { InfiniteScrollGallery, ImageGallery } from "./Galleries";
+import { MarkdownRenderers } from "./CustomRenderers";
+import { ImageGallery } from "./Galleries";
+import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
 
 const allComponents = {
   ThreeFiberDemo,

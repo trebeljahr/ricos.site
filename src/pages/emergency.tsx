@@ -1,13 +1,13 @@
 import Layout from "@components/Layout";
-import React, { useState } from "react";
+import { FC, FormEvent, useState } from "react";
 import { useEmergencyInfo } from "src/hooks/useEmergencyInfo";
 
-const EmergencyInfoComponent: React.FC = () => {
+const EmergencyInfoComponent: FC = () => {
   const [password, setPassword] = useState<string>("");
   const { emergencyInfo, error, loading, fetchEmergencyInfo, reset } =
     useEmergencyInfo();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     await fetchEmergencyInfo(password);
   };

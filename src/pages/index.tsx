@@ -3,44 +3,16 @@ import { FancyLink } from "@components/FancyUI";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { SmallCardsGallery } from "@components/NiceCard";
+import { SwipeableCardCarousel } from "@components/SwipeableCardCarousel";
+import { WavingHand } from "@components/WavingHand";
 import { booknotes, newsletters, posts, travelblogs } from "@velite";
 import Link from "next/link";
-import { useEffect } from "react";
 import {
   byDate,
   byOnlyPublished,
   type CommonMetadata,
   toOnlyMetadata,
 } from "src/lib/utils";
-import { motion, useAnimation } from "framer-motion";
-import { SwipeableCardCarousel } from "@components/SwipeableCardCarousel";
-
-export const WavingHand = () => {
-  const controls = useAnimation();
-
-  useEffect(() => {
-    const animation = {
-      rotate: [0, 10, 0, 10, 0, 10, 0],
-      transition: { duration: 0.5, ease: "easeInOut" },
-    };
-    const interval = setInterval(() => {
-      controls.start(animation);
-    }, 5000); // Trigger every 5 seconds
-
-    controls.start(animation);
-
-    return () => clearInterval(interval); // Cleanup interval
-  }, [controls]);
-
-  return (
-    <motion.span
-      className="inline-block origin-bottom-right"
-      animate={controls}
-    >
-      👋🏻
-    </motion.span>
-  );
-};
 
 const IndexPage = (props: Props) => {
   const description = `trebeljahr - a website about the things Rico Trebeljahr does, reads and thinks about. The topics can vary widely, 

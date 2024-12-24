@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import SimpleReactCanvasComponent from "simple-react-canvas-component";
 import { useActualSize } from "../../hooks/useWindowSize";
 import {
-  instrument,
-  niceBlue,
-  niceGreen,
-  toDegrees,
+  circle,
   drawArrow,
   drawBackground,
   drawCoordinateSystem,
-  circle,
+  instrument,
+  niceBlue,
+  niceGreen,
 } from "../../lib/math/drawHelpers";
 import { makeBrighter } from "../../lib/math/Poly";
 import { Vec2 } from "../../lib/math/Vector";

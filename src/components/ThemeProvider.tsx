@@ -1,10 +1,10 @@
 import { ThemeProvider } from "next-themes";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 
 export function HydrationFriendlyThemeProvider({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const [mounted, setMounted] = useState(false);
 

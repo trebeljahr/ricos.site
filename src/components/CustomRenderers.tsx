@@ -1,9 +1,9 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import Link from "next/link";
 import { AnchorHTMLAttributes, HTMLAttributes, ImgHTMLAttributes } from "react";
-import { ThreeFiberDemo } from "./Demo";
 import { ExternalLink } from "./ExternalLink";
-import { ImageGallery, SimpleGallery } from "./Galleries";
+import { SimpleGallery } from "./Galleries";
+import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
 
 export const ImageRenderer = ({
   src,
@@ -109,7 +109,5 @@ export const MarkdownRenderers = {
   pre: CodeRenderer,
   div: handleDivs,
   SimpleGallery: handleNiceImageGalleries,
-  ThreeFiberDemo: ThreeFiberDemo,
-  // NiceImageGallery: handleNiceImageGalleries,
-  Test: () => <div>Test</div>,
+  ThreeFiberDemo,
 };

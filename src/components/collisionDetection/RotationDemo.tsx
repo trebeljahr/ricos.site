@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import SimpleReactCanvasComponent from "simple-react-canvas-component";
 import { useActualSize } from "../../hooks/useWindowSize";
@@ -5,10 +6,11 @@ import {
   drawArrow,
   drawBackground,
   drawCoordinateSystem,
-  niceBlue,
 } from "../../lib/math/drawHelpers";
 import { Vec2 } from "../../lib/math/Vector";
-import ReactSlider from "react-slider";
+
+const ReactSlider = dynamic(() => import("react-slider"), { ssr: false });
+
 export const RotationDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   const { width, height } = useActualSize();
@@ -52,7 +54,7 @@ export const RotationDemo = () => {
       />
       <ReactSlider
         onChange={(value) => {
-          setSlider((value / 100) * Math.PI * 2);
+          setSlider(((value as number) / 100) * Math.PI * 2);
         }}
         renderMark={(props) => <div {...props} key={props.key} className="" />}
         renderTrack={(props) => <div {...props} key={props.key} className="" />}

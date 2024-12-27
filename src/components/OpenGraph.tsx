@@ -20,7 +20,7 @@ export const OpenGraph: FC<OpenGraphProps> = ({
   articlePublishedTime: publishedTime,
   imageAlt = "",
 }) => {
-  const baseUrl = "https://www.trebeljahr.com";
+  const baseUrl = "https://ricos.site";
   const url = new URL(providedLinkUrl, baseUrl).toString();
   const imageUrl = nextImageUrl(providedImageUrl, 1080);
 
@@ -31,7 +31,7 @@ export const OpenGraph: FC<OpenGraphProps> = ({
       {url && <meta property="og:url" content={url} />}
       {imageUrl && <meta property="og:image" content={imageUrl} />}
       <meta property="og:locale" content="en_US" />
-      <meta property="og:site_name" content="https://www.trebeljahr.com" />
+      <meta property="og:site_name" content="https://ricos.site" />
       <meta property="og:type" content="website" />
       <meta property="article:author" content={"Rico Trebeljahr"} />
 

@@ -5,10 +5,10 @@ import path from "path";
 import { byOnlyPublished } from "src/lib/utils";
 
 async function generateRssFeed() {
-  const site_url = "https://www.trebeljahr.com";
+  const site_url = "https://ricos.site";
 
   const feed = new Feed({
-    title: "www.trebeljahr.com | RSS Feed",
+    title: "ricos.site | RSS Feed",
     description: "Welcome to my posts and newsletters! Glad to have you here!",
     id: site_url,
     link: site_url,

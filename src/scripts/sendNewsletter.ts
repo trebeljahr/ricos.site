@@ -17,7 +17,7 @@ import { newsletterPath, sortedNewsletterNames } from "./sortedNewsletters.js";
 
 const number = sortedNewsletterNames[0].replace(".md", "");
 
-const HOST = "https://www.trebeljahr.com";
+const HOST = "https://ricos.site";
 
 async function main() {
   const emailHandlebarsFile = await readFile(

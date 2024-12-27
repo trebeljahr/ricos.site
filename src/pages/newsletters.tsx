@@ -31,6 +31,30 @@ const Newsletters = ({ newsletterData }: Props) => {
       title="Newsletters - Live and Learn"
       description="An archive overview page of all the Live and Learn editions I have published in the past."
       url={url}
+      keywords={[
+        "newsletters",
+        "live and learn",
+        "archive",
+        "past editions",
+        "all newsletters",
+        "AI",
+        "programming",
+        "machine learning",
+        "neuroscience",
+        "biochemistry",
+        "physics",
+        "evolution",
+        "engineering",
+        "personal development",
+        "AI news",
+        "programming news",
+        "machine learning news",
+        "neuroscience news",
+        "biochemistry news",
+        "AI newsletter",
+        "programming newsletter",
+        "machine learning newsletter",
+      ]}
       image="/assets/midjourney/live-and-learn-cover.png"
       imageAlt="a young boy absorbed in reading a book with sparks flying out of it"
     >

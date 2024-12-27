@@ -6,6 +6,7 @@ import { MDXContent } from "@components/MDXContent";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";
 import { podcastnotes, type Podcastnote as PodcastnoteType } from "@velite";
+import { byOnlyPublished } from "src/lib/utils";
 
 type Props = {
   podcastnote: PodcastnoteType;
@@ -18,7 +19,10 @@ const PodcastnoteComponent = ({ podcastnote }: Props) => {
       title={`${podcastnote.displayTitle}`}
       description={`These are my Podcast Notes for ${podcastnote.title}. ${podcastnote.excerpt}`}
       url={url}
+      keywords={podcastnote.tags}
       withProgressBar={true}
+      image={podcastnote.cover.src}
+      imageAlt={podcastnote.cover.alt}
     >
       <main className="mb-20 px-3">
         <BreadCrumbs path={url} />
@@ -76,7 +80,9 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const podcastnote = podcastnotes.find(({ slug }) => params.id === slug);
+  const podcastnote = podcastnotes
+    .filter(byOnlyPublished)
+    .find(({ slug }) => params.id === slug);
 
   return {
     props: {
@@ -89,7 +95,7 @@ export async function getStaticPaths(): Promise<{
   paths: Params[];
   fallback: boolean;
 }> {
-  const paths = podcastnotes.map((podcastnote) => {
+  const paths = podcastnotes.filter(byOnlyPublished).map((podcastnote) => {
     return {
       params: {
         id: podcastnote.slug,

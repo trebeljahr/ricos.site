@@ -8,10 +8,8 @@ export default class MyDocument extends Document {
         <Head>
           <Script
             src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
-            // strategy="lazyOnload"
             rel="stylesheet"
           />
-          {/* <link href="" /> */}
         </Head>
 
         <body className="prose bg-white dark:bg-gray-900 dark:prose-invert hover:prose-a:text-myBlue max-w-none prose-img:m-0">

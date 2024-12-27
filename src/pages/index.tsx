@@ -23,8 +23,27 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
       title="home - Hi there 👋🏻 I am Rico. A programmer, traveler, photographer..."
       description={description}
       image="/assets/midjourney/young-man-looking-absolutely-relaxed-while-reading-a-book-in-the-milkyway.jpg"
-      url="/"
       imageAlt={"a person reading a book, while floating in space"}
+      keywords={[
+        "programming",
+        "traveling",
+        "photography",
+        "writing",
+        "newsletter",
+        "booknotes",
+        "travel stories",
+        "life",
+        "live and learn",
+        "quotes",
+        "trebeljahr",
+        "trebeljahr.com",
+        "ricotrebeljahr.com",
+        "ricotrebeljahr.de",
+        "ricos.site",
+        "Rico Trebeljahr",
+        "philosophy",
+      ]}
+      url="/"
       fullScreen={true}
     >
       <main>

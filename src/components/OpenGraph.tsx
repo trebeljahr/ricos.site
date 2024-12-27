@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { FC } from "react";
 import { nextImageUrl } from "src/lib/mapToImageProps";
+import { baseUrl, completeUrl, tld } from "src/lib/urlUtils";
 interface OpenGraphProps {
   title: string;
   description: string;
@@ -20,8 +21,7 @@ export const OpenGraph: FC<OpenGraphProps> = ({
   articlePublishedTime: publishedTime,
   imageAlt = "",
 }) => {
-  const baseUrl = "https://ricos.site";
-  const url = new URL(providedLinkUrl, baseUrl).toString();
+  const url = completeUrl(providedLinkUrl);
   const imageUrl = nextImageUrl(providedImageUrl, 1080);
 
   return (
@@ -31,7 +31,7 @@ export const OpenGraph: FC<OpenGraphProps> = ({
       {url && <meta property="og:url" content={url} />}
       {imageUrl && <meta property="og:image" content={imageUrl} />}
       <meta property="og:locale" content="en_US" />
-      <meta property="og:site_name" content="https://ricos.site" />
+      <meta property="og:site_name" content={tld} />
       <meta property="og:type" content="website" />
       <meta property="article:author" content={"Rico Trebeljahr"} />
 

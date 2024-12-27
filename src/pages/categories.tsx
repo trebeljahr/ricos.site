@@ -118,6 +118,9 @@ const ShowTags = ({ categories }: Props) => {
       title="Experiment"
       description="An Experimental Overview over All Pages"
       url={url}
+      keywords={mainCategories}
+      image="/assets/blog/network.jpg"
+      imageAlt="a network of connected dots"
     >
       <main className="mb-20 px-3">
         <BreadCrumbs path={url} />

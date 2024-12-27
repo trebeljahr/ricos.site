@@ -1,16 +1,17 @@
-import Meta from "./Meta";
 import { OpenGraph } from "./OpenGraph";
 import { TailwindNavbar } from "./Navbar/TailwindNavbar";
 import { ReactNode } from "react";
 import { toTitleCase } from "src/lib/utils";
+import { Meta } from "./Meta";
 
 type Props = {
   children: ReactNode;
   description: string;
   title: string;
-  url?: string;
-  image?: string;
-  imageAlt?: string;
+  url: string;
+  keywords: string[];
+  image: string;
+  imageAlt: string;
   fullScreen?: boolean;
   withProgressBar?: boolean;
 };
@@ -21,6 +22,7 @@ const Layout = ({
   title,
   url,
   image,
+  keywords,
   imageAlt,
   fullScreen = false,
   withProgressBar = false,
@@ -29,7 +31,12 @@ const Layout = ({
 
   return (
     <div className="block relative w-full p-0 m-0">
-      <Meta description={description} title={properTitle} />
+      <Meta
+        description={description}
+        title={properTitle}
+        url={url}
+        keywords={keywords}
+      />
       <OpenGraph
         title={properTitle}
         description={description}

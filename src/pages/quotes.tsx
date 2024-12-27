@@ -27,8 +27,27 @@ export default function Quotes() {
       title="Quotes - a collection of quotes from a curious person"
       description="Here, on this page, I collect quotes I have found from all kinds of different sources. Books, movies, series, blog posts, whenever I find a phrase I really like, I put it here eventually."
       image="/assets/midjourney/a-collection-of-notes-of-importance.jpg"
-      url={url}
       imageAlt="a collection of handwritten notes on paper"
+      url={url}
+      keywords={[
+        "quotes",
+        "collection",
+        "writing",
+        "snippets",
+        "remember",
+        "memories",
+        "curious",
+        "archive",
+        "books",
+        "quotes from books",
+        "quotes from movies",
+        "quotes from blog posts",
+        "quotes from podcasts",
+        "quote collection",
+        "quote archive",
+        "great writing",
+        "soundbites",
+      ]}
     >
       <main className="mb-20 px-3">
         <BreadCrumbs path={url} />

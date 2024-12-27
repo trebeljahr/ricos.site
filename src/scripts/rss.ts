@@ -2,10 +2,11 @@ import { newsletters, posts } from "@velite";
 import { Feed } from "feed";
 import fs from "fs";
 import path from "path";
+import { baseUrl } from "src/lib/urlUtils";
 import { byOnlyPublished } from "src/lib/utils";
 
 async function generateRssFeed() {
-  const site_url = "https://ricos.site";
+  const site_url = baseUrl;
 
   const feed = new Feed({
     title: "ricos.site | RSS Feed",

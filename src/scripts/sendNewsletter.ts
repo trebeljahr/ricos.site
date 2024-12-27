@@ -14,10 +14,11 @@ import { newsletterListMail, sendEmail } from "src/lib/mailgun.js";
 import { nextImageUrl } from "src/lib/mapToImageProps.js";
 import { unified } from "unified";
 import { newsletterPath, sortedNewsletterNames } from "./sortedNewsletters.js";
+import { baseUrl } from "src/lib/urlUtils.js";
 
 const number = sortedNewsletterNames[0].replace(".md", "");
 
-const HOST = "https://ricos.site";
+const HOST = baseUrl;
 
 async function main() {
   const emailHandlebarsFile = await readFile(

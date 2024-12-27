@@ -44,6 +44,9 @@ export default function EmailSignupSuccess() {
         title="Email Signup Success"
         description="This page is displayed when a user has successfully completed signup for the Live and Learn newsletter"
         url="email-signup-success"
+        keywords={["newsletter", "email", "signup", "success"]}
+        image="/assets/blog/success.png"
+        imageAlt="a green success checkmark on a black background"
       >
         <article className="mt-10">
           <h1>Success</h1>

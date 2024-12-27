@@ -13,12 +13,15 @@ type Props = {
 
 export default function Page({ page }: Props) {
   const { subtitle, title, excerpt, cover } = page;
+
   return (
     <Layout
       title={title + " – " + subtitle}
       description={excerpt}
       image={cover.src}
       imageAlt={cover.alt}
+      url={page.slug}
+      keywords={page.tags}
       withProgressBar={true}
     >
       <main className="mb-20 px-3">

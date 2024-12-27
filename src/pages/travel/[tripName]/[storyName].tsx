@@ -29,6 +29,7 @@ export const TravelBlogLayout = ({
     title,
     date,
     metadata: { readingTime },
+    tags,
     parentFolder,
   },
   nextSlug,
@@ -40,8 +41,9 @@ export const TravelBlogLayout = ({
       description={excerpt || ""}
       title={title}
       image={cover?.src || ""}
-      url={url}
       imageAlt={cover?.alt || ""}
+      url={url}
+      keywords={["travel", "blog", "adventure", "stories", ...tags]}
       withProgressBar={true}
     >
       <main className="mb-20 px-3">

@@ -98,11 +98,28 @@ const TravelBlogs = ({ travelingStories, travelingBlogsMeta }: Props) => {
     <Layout
       title="Traveling Stories"
       description="An overview page about the traveling stories I have to tell"
-      image={
-        "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg"
+      image={"/assets/blog/traveling-van.png"}
+      imageAlt={
+        "a traveling van sitting in the middle of nowhere in the forest"
       }
       url="travel"
-      imageAlt={"a hand writing down thoughts on a piece of paper"}
+      keywords={[
+        "travel",
+        "blog",
+        "adventures",
+        "stories",
+        "traveling",
+        "travel stories",
+        "Guadeloupe",
+        "Martinique",
+        "Portugal",
+        "Atlantic Crossing",
+        "sailing",
+        "hiking",
+        "diving",
+        "Carribean",
+        "adventure",
+      ]}
     >
       <main className="mb-20 px-3">
         <BreadCrumbs path="travel" />

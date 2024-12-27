@@ -41,7 +41,24 @@ export default function Books({ booknotes }: Props) {
       description={
         "An overview of what I have read, with a filterable list of books and booknotes"
       }
-      image="/assets/midjourney/a-bookshelf.jpg"
+      keywords={[
+        "booknotes",
+        "books",
+        "reading",
+        "notes",
+        "book summaries",
+        "note taking",
+        "reading list",
+        "book list",
+        "bookshelf",
+        "book recommendations",
+        "book reviews",
+        "book notes",
+        "reading notes",
+        "reading summaries",
+        "reading list",
+      ]}
+      image="/assets/blog/a-bookshelf.png"
       url={url}
       imageAlt={"a bookshelf filled with lots of books"}
     >

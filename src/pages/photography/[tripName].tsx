@@ -33,6 +33,20 @@ export default function SinglePhotographyShowcasePage({
       title="Photography"
       description="A page with all my photography."
       url={`/photography/${tripName}`}
+      image="/assets/blog/photography.jpg"
+      imageAlt="A photo of a camera"
+      keywords={[
+        "photography",
+        "gallery",
+        "images",
+        "photos",
+        "art",
+        "pictures",
+        "portfolio",
+        "showcase",
+        "traveling",
+        tripName,
+      ]}
       fullScreen={true}
     >
       <main className="mb-20 px-3">

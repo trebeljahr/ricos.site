@@ -46,10 +46,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           content="/favicon/browserconfig.xml"
         />
         <meta name="theme-color" content="#000" />
-        {/* <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
-        /> */}
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
       </Head>
 

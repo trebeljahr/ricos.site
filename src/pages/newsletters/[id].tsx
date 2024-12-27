@@ -24,6 +24,7 @@ const Newsletter = ({
     number,
     slugTitle,
     content,
+    tags,
     cover,
     date,
     metadata: { readingTime },
@@ -39,6 +40,7 @@ const Newsletter = ({
       title={fullTitle}
       description={excerpt || ""}
       url={url}
+      keywords={tags}
       image={cover.src}
       imageAlt={cover.alt}
       withProgressBar={true}

@@ -16,6 +16,10 @@ const EmergencyInfoComponent: FC = () => {
     <Layout
       title="Emergency Access"
       description="Emergency Access for getting important telephone numbers"
+      url="/emergency"
+      keywords={["emergency", "important numbers", "telephone numbers"]}
+      image="/assets/blog/emergency.png"
+      imageAlt="man being rescued by a helicopter"
     >
       <div className="max-w-md mx-auto mt-12 p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-semibold mb-6">

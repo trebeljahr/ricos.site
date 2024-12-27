@@ -9,6 +9,7 @@ import { readFile } from "fs/promises";
 import Handlebars from "handlebars";
 import path from "path";
 import { getHash } from "src/lib/emailUtils";
+import { baseUrl } from "src/lib/urlUtils";
 
 export default async function handler(
   req: NextApiRequest,
@@ -32,7 +33,7 @@ export default async function handler(
     const HOST =
       process.env.NODE_ENV === "development"
         ? "http://localhost:3000"
-        : "https://ricos.site";
+        : baseUrl;
 
     const confirmLink = `${HOST}/api/confirm-email?hash=${newMember.vars.hash}&email=${newMember.email}`;
 

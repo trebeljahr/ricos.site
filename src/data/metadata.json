@@ -3,8 +3,8 @@
     "key": "assets/blog/404.jpg",
     "width": 800,
     "height": 600,
-    "aspectRatio": 1.3333333333333333,
-    "existsInS3": false
+    "aspectRatio": null,
+    "existsInS3": true
   },
   "assets/blog/barnsley-fern.jpg": {
     "key": "assets/blog/barnsley-fern.jpg",
@@ -48612,6 +48612,69 @@
     "width": 1248,
     "height": 1128,
     "aspectRatio": 1.1063829787234043,
+    "existsInS3": true
+  },
+  "assets/blog/live-and-learn.png": {
+    "key": "assets/blog/live-and-learn.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": null,
+    "existsInS3": true
+  },
+  "assets/blog/midjourney.png": {
+    "key": "assets/blog/midjourney.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": null,
+    "existsInS3": true
+  },
+  "assets/blog/photography.png": {
+    "key": "assets/blog/photography.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": null,
+    "existsInS3": true
+  },
+  "assets/blog/emergency.png": {
+    "key": "assets/blog/emergency.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": null,
+    "existsInS3": true
+  },
+  "assets/blog/error.png": {
+    "key": "assets/blog/error.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": null,
+    "existsInS3": true
+  },
+  "assets/blog/success.png": {
+    "key": "assets/blog/success.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": null,
+    "existsInS3": true
+  },
+  "assets/blog/podcastnotes.png": {
+    "key": "assets/blog/podcastnotes.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": null,
+    "existsInS3": true
+  },
+  "assets/blog/traveling-van.png": {
+    "key": "assets/blog/traveling-van.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": null,
+    "existsInS3": true
+  },
+  "assets/blog/a-bookshelf.png": {
+    "key": "assets/blog/a-bookshelf.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": null,
     "existsInS3": true
   }
 }

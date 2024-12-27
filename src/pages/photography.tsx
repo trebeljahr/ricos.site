@@ -47,6 +47,18 @@ export default function Photography({
       description="A page with all my photography."
       url={url}
       fullScreen={true}
+      image="/assets/blog/photography.png"
+      imageAlt="a high quality rendering of an old film camera"
+      keywords={[
+        "photography",
+        "gallery",
+        "images",
+        "photos",
+        "art",
+        "pictures",
+        "portfolio",
+        "showcase",
+      ]}
     >
       <main className="mb-20 px-3">
         <BreadCrumbs path={url} />

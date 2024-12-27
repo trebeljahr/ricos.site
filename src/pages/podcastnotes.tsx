@@ -33,6 +33,21 @@ export default function Podcastnotes() {
       description={
         "An overview of what I have read, with a filterable list of books and Podcastnotes"
       }
+      image="/assets/blog/podcastnotes.jpg"
+      imageAlt="a collection of hand written notes next to a podcast microphone"
+      keywords={[
+        "podcastnotes",
+        "podcasts",
+        "notes",
+        "learnings",
+        "learning",
+        "summary",
+        "podcast",
+        "podcast notes",
+        "podcast learnings",
+        "podcast summary",
+        "podcast learnings",
+      ]}
       url={url}
     >
       <main className="mb-20 px-3">

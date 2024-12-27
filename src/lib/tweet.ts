@@ -1,5 +1,6 @@
 import { TwitterApi } from "twitter-api-v2";
 import { MongoClient, WithId } from "mongodb";
+import { baseUrl } from "./urlUtils";
 
 const options = {
   appKey: process.env.TWITTER_APP_KEY,
@@ -58,7 +59,7 @@ export async function tweetRandomQuote() {
         { $set: { picked: true } }
       );
 
-      tweetContent = `"${quote.content}" \n– ${quote.author} \n\n #quotes #dailyquote \n\n Quote Archive at https://ricos.site/quotes`;
+      tweetContent = `"${quote.content}" \n– ${quote.author} \n\n #quotes #dailyquote \n\n Quote Archive at ${baseUrl}/quotes`;
       console.log(tweetContent.length);
     } while (tweetContent.length > 280);
 

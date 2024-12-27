@@ -1,6 +1,6 @@
-# trebeljahr.com - thoughts of a curious person
+# ricos.site - thoughts of a curious person
 
-This is the repository from which the site at [trebeljahr.com](trebeljahr.com) is being built. 
+This is the repository from which the site at [ricos.site](ricos.site) is being built. 
 
 It is built on Next.js, which generates static webpages from Markdown, which are then served via Vercel. This enables a blazing fast website, hosted completely for free. 
 

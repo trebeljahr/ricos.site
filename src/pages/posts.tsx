@@ -22,6 +22,26 @@ const Posts = ({ posts }: Props) => {
       }
       url={url}
       imageAlt={"a hand writing down thoughts on a piece of paper"}
+      keywords={[
+        "posts",
+        "writings",
+        "thoughts",
+        "essays",
+        "life",
+        "curious",
+        "all posts",
+        "AI",
+        "programming",
+        "machine learning",
+        "neuroscience",
+        "biochemistry",
+        "physics",
+        "evolution",
+        "engineering",
+        "personal development",
+        "growth",
+        "productivity",
+      ]}
     >
       <main className="mb-20 px-3">
         <BreadCrumbs path={url} />

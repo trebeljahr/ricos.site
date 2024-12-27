@@ -6,10 +6,13 @@ export default function Custom404() {
       title="404 Page"
       description="A 404 page, there is nothing here to look at..."
       url="404"
+      keywords={["404", "page not found", "error"]}
+      image="/assets/blog/404.jpg"
+      imageAlt="this is not a page pipe meme joke"
     >
-      <main className="mb-20 px-3">
+      <main className="mt-10 mb-20 px-3 max-w-3xl">
         <h1>404 - Page Not Found</h1>
-        <p>Sorry but this page doesn{"'"}t exist</p>
+        <p>Sorry but this page does not exist</p>
         <TrySomeOfThese />
       </main>
     </Layout>

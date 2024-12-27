@@ -26,6 +26,7 @@ export const BlogLayout = ({
     subtitle,
     date,
     cover,
+    tags,
     slug,
     metadata: { readingTime, wordCount },
   },
@@ -37,6 +38,7 @@ export const BlogLayout = ({
       title={title + " – " + subtitle}
       image={cover.src}
       url={url}
+      keywords={tags}
       imageAlt={cover.alt}
       withProgressBar={true}
     >
@@ -93,18 +95,19 @@ type Params = { params: { id: string } };
 
 export async function getStaticProps({ params }: Params) {
   const post = posts
-    // .filter(byOnlyPublished)
+    .filter(byOnlyPublished)
     .find((post: Post) => post.slug === params.id);
   const otherPosts = posts
     .filter(byOnlyPublished)
     .filter((post) => post.slug !== params.id)
-    .map(({ title, cover, slug, excerpt, date, metadata }) => ({
+    .map(({ title, cover, slug, excerpt, date, tags, metadata }) => ({
       title,
       slug,
       cover,
       excerpt,
       date,
       metadata,
+      tags,
     }));
   const morePosts = getRandom(otherPosts, 3);
 

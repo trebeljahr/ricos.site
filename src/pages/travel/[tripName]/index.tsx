@@ -34,6 +34,15 @@ const Traveling = ({ posts, tripName }: Props) => {
       image={cover?.src || defaultCover.src}
       imageAlt={cover?.alt || defaultCover.alt}
       url={url}
+      keywords={[
+        "travel",
+        "blog",
+        "adventure",
+        "stories",
+        "traveling",
+        "travel stories",
+        tripName,
+      ]}
     >
       <main className="mb-20 px-3">
         <BreadCrumbs path={url} />

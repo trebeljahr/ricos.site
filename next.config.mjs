@@ -14,6 +14,9 @@ const nextConfig = {
     loader: "custom",
     loaderFile: "./image-loader.js",
   },
+  experimental: {
+    scrollRestoration: true,
+  },
   redirects: customRedirects,
   webpack: (config) => {
     config.infrastructureLogging = {

@@ -32,7 +32,7 @@ export default async function handler(
     const HOST =
       process.env.NODE_ENV === "development"
         ? "http://localhost:3000"
-        : "https://ricos.site";
+        : "https://www.trebeljahr.com";
 
     const confirmLink = `${HOST}/api/confirm-email?hash=${newMember.vars.hash}&email=${newMember.email}`;
 

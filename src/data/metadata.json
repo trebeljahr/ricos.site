@@ -1,11 +1,4 @@
 {
-  "assets/blog/404.jpg": {
-    "key": "assets/blog/404.jpg",
-    "width": 800,
-    "height": 600,
-    "aspectRatio": null,
-    "existsInS3": true
-  },
   "assets/blog/barnsley-fern.jpg": {
     "key": "assets/blog/barnsley-fern.jpg",
     "width": 1853,
@@ -48614,67 +48607,186 @@
     "aspectRatio": 1.1063829787234043,
     "existsInS3": true
   },
-  "assets/blog/live-and-learn.png": {
-    "key": "assets/blog/live-and-learn.png",
-    "width": 1536,
-    "height": 768,
-    "aspectRatio": null,
-    "existsInS3": true
-  },
-  "assets/blog/midjourney.png": {
-    "key": "assets/blog/midjourney.png",
-    "width": 1536,
-    "height": 768,
-    "aspectRatio": null,
-    "existsInS3": true
-  },
-  "assets/blog/photography.png": {
-    "key": "assets/blog/photography.png",
-    "width": 1536,
-    "height": 768,
-    "aspectRatio": null,
+  "assets/blog/404.jpg": {
+    "key": "assets/blog/404.jpg",
+    "width": 800,
+    "height": 600,
+    "aspectRatio": 1.3333333333333333,
     "existsInS3": true
   },
   "assets/blog/emergency.png": {
     "key": "assets/blog/emergency.png",
     "width": 1536,
     "height": 768,
-    "aspectRatio": null,
-    "existsInS3": true
-  },
-  "assets/blog/error.png": {
-    "key": "assets/blog/error.png",
-    "width": 1536,
-    "height": 768,
-    "aspectRatio": null,
-    "existsInS3": true
-  },
-  "assets/blog/success.png": {
-    "key": "assets/blog/success.png",
-    "width": 1536,
-    "height": 768,
-    "aspectRatio": null,
-    "existsInS3": true
-  },
-  "assets/blog/podcastnotes.png": {
-    "key": "assets/blog/podcastnotes.png",
-    "width": 1536,
-    "height": 768,
-    "aspectRatio": null,
-    "existsInS3": true
-  },
-  "assets/blog/traveling-van.png": {
-    "key": "assets/blog/traveling-van.png",
-    "width": 1536,
-    "height": 768,
-    "aspectRatio": null,
+    "aspectRatio": 2,
     "existsInS3": true
   },
   "assets/blog/a-bookshelf.png": {
     "key": "assets/blog/a-bookshelf.png",
     "width": 1536,
     "height": 768,
-    "aspectRatio": null,
+    "aspectRatio": 2,
+    "existsInS3": true
+  },
+  "assets/blog/live-and-learn.png": {
+    "key": "assets/blog/live-and-learn.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": 2,
+    "existsInS3": true
+  },
+  "assets/blog/error.png": {
+    "key": "assets/blog/error.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": 2,
+    "existsInS3": true
+  },
+  "assets/blog/midjourney.png": {
+    "key": "assets/blog/midjourney.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": 2,
+    "existsInS3": true
+  },
+  "assets/blog/success.png": {
+    "key": "assets/blog/success.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": 2,
+    "existsInS3": true
+  },
+  "assets/blog/photography.png": {
+    "key": "assets/blog/photography.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": 2,
+    "existsInS3": true
+  },
+  "assets/blog/podcastnotes.png": {
+    "key": "assets/blog/podcastnotes.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": 2,
+    "existsInS3": true
+  },
+  "assets/blog/traveling-van.png": {
+    "key": "assets/blog/traveling-van.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": 2,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/blue-butterfly.jpg": {
+    "key": "assets/newsletter/58/blue-butterfly.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/butterfly-drawing.jpg": {
+    "key": "assets/newsletter/58/butterfly-drawing.jpg",
+    "width": 2846,
+    "height": 4080,
+    "aspectRatio": 0.6975490196078431,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/drone-shot-from-above.jpg": {
+    "key": "assets/newsletter/58/drone-shot-from-above.jpg",
+    "width": 4898,
+    "height": 6530,
+    "aspectRatio": 0.7500765696784073,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/ferns.jpg": {
+    "key": "assets/newsletter/58/ferns.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/cricket.jpg": {
+    "key": "assets/newsletter/58/cricket.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/flower-ai-art-glasses.png": {
+    "key": "assets/newsletter/58/flower-ai-art-glasses.png",
+    "width": 2048,
+    "height": 2048,
+    "aspectRatio": 1,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/flower-closeup.jpg": {
+    "key": "assets/newsletter/58/flower-closeup.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/fusa-traffic.jpg": {
+    "key": "assets/newsletter/58/fusa-traffic.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/mountain-range-and-fields.jpg": {
+    "key": "assets/newsletter/58/mountain-range-and-fields.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/pastel-yuca.jpg": {
+    "key": "assets/newsletter/58/pastel-yuca.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/quinini.jpg": {
+    "key": "assets/newsletter/58/quinini.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/shakshouka-and-pita.jpg": {
+    "key": "assets/newsletter/58/shakshouka-and-pita.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/small-house-in-columbian-mountains.jpg": {
+    "key": "assets/newsletter/58/small-house-in-columbian-mountains.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/sunset-mood.jpg": {
+    "key": "assets/newsletter/58/sunset-mood.jpg",
+    "width": 4080,
+    "height": 3072,
+    "aspectRatio": 1.328125,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/transparent-butterfly.jpg": {
+    "key": "assets/newsletter/58/transparent-butterfly.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/58/waterfall-long-exposure.jpg": {
+    "key": "assets/newsletter/58/waterfall-long-exposure.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
     "existsInS3": true
   }
 }

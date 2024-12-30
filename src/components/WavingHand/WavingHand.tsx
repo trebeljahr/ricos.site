@@ -9,7 +9,7 @@ export const HandEmoji = () => {
   );
 };
 
-const Component = () => {
+const WavingHand = () => {
   const controls = useAnimation();
 
   useEffect(() => {
@@ -36,4 +36,4 @@ const Component = () => {
   );
 };
 
-export default Component;
+export default WavingHand;

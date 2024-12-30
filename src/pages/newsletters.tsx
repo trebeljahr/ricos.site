@@ -66,40 +66,78 @@ const Newsletters = ({ newsletterData }: Props) => {
             subtitle={"All the Live and Learn Newsletters"}
             title={"Newsletters"}
           />
-          {newsletterData.map(
-            (
-              {
-                link,
-                number,
-                title,
-                excerpt,
-                cover,
-                date,
-                metadata: { readingTime },
-              },
-              index
-            ) => {
-              const priority = index <= 1;
+          {newsletterData
+            .slice(0, 2)
+            .map(
+              (
+                {
+                  link,
+                  number,
+                  title,
+                  excerpt,
+                  cover,
+                  date,
+                  metadata: { readingTime },
+                },
+                index
+              ) => {
+                const priority = index <= 1;
 
-              return (
-                <NiceCard
-                  key={link}
-                  cover={cover}
-                  link={link}
-                  excerpt={excerpt}
-                  priority={priority}
-                  title={`${title} | Live and Learn #${number}`}
-                  date={date}
-                  readingTime={readingTime}
-                />
-              );
-            }
-          )}
+                return (
+                  <NiceCard
+                    key={link}
+                    cover={cover}
+                    link={link}
+                    excerpt={excerpt}
+                    priority={priority}
+                    title={`${title} | Live and Learn #${number}`}
+                    date={date}
+                    readingTime={readingTime}
+                  />
+                );
+              }
+            )}
+
+          <div className="my-32">
+            <NewsletterForm link={<></>} />
+          </div>
+
+          {newsletterData
+            .slice(2)
+            .map(
+              (
+                {
+                  link,
+                  number,
+                  title,
+                  excerpt,
+                  cover,
+                  date,
+                  metadata: { readingTime },
+                },
+                index
+              ) => {
+                const priority = index <= 1;
+
+                return (
+                  <NiceCard
+                    key={link}
+                    cover={cover}
+                    link={link}
+                    excerpt={excerpt}
+                    priority={priority}
+                    title={`${title} | Live and Learn #${number}`}
+                    date={date}
+                    readingTime={readingTime}
+                  />
+                );
+              }
+            )}
         </section>
       </main>
 
       <footer className="mb-20 px-3">
-        <NewsletterForm />
+        <NewsletterForm link={<></>} />
         <ToTopButton />
       </footer>
     </Layout>

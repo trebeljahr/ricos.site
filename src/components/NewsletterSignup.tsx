@@ -84,7 +84,7 @@ export const NewsletterForm = ({
     <>
       <p className="mb-4">
         Join the Live and Learn Newsletter to receive updates on what happens in
-        the world of AI, technology and nice articles every two weeks on Sunday!
+        the world of AI and technology every two weeks on Sunday!
       </p>
     </>
   );

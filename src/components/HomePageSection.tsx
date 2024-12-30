@@ -1,3 +1,5 @@
+import { SectionDescription } from "@velite";
+import { MDXContent } from "./MDXContent";
 import {
   CardGallery,
   CardGalleryProps,
@@ -7,7 +9,7 @@ import {
 type HomePageSectionProps = {
   title: string;
   cardGalleryProps: CardGalleryProps;
-  description?: string;
+  description?: SectionDescription["content"];
   linkElem?: JSX.Element;
   carousel?: boolean;
 };
@@ -23,13 +25,18 @@ export const HomePageSection = ({
     <>
       <div className="mx-auto max-w-4xl">
         <h2 className="text-5xl">{title}</h2>
-        {description && <p className="mb-12 max-w-2xl">{description}</p>}
+
+        {description && (
+          <div className="mb-14 max-w-2xl">
+            <MDXContent source={description} />
+          </div>
+        )}
         {carousel ? (
           <SwipeableCardCarouselGallery {...cardGalleryProps} />
         ) : (
           <CardGallery {...cardGalleryProps} />
         )}
-        {linkElem}
+        <div className="mt-12">{linkElem}</div>
       </div>
     </>
   );

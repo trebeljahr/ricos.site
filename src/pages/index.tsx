@@ -4,7 +4,14 @@ import { HomePageSection } from "@components/HomePageSection";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { WavingHand } from "@components/WavingHand";
-import { booknotes, newsletters, posts, travelblogs } from "@velite";
+import {
+  booknotes,
+  newsletters,
+  posts,
+  sectionDescriptions,
+  SectionDescription,
+  travelblogs,
+} from "@velite";
 import Link from "next/link";
 import {
   byDate,
@@ -12,27 +19,6 @@ import {
   type CommonMetadata,
   toOnlyMetadata,
 } from "src/lib/utils";
-
-const booknotesText = `
-I read a lot and usually take notes because this is one of the best ways to learn information and remember it. My goal is to read 1000 books in my lifetime, then pick the best 50 and read them over and over again. Reading has taught me so so much already and I am sharing my notes here because I hope you can learn from them too. They can help you choose which books *you* might want to read, too.
-`;
-
-const travelingText = `
-Traveling for me is about storytelling and learning how different places *feel*. For me photography is an integral part of that and I love to capture the moments I experience and *combine* them with words so that I can inspire others to travel too. 
-
-My unwritten rule is to have an adventure a year: going around in a Tuk Tuk in India, crossing the Atlantic by sailboat, hiking across the whole Alps, or cycling across South America, I've done those!
-`;
-
-const writingText = `
-Writing, to me, is a way to think more clearly about something. In the process I gain a better understanding and aim to share this understanding with you. This is *why* this blog exists. I write about a wide wide list of things, among them philosophy, programming, AI and productivity–all topics that deeply interest me.
-
-In my writing, I strive for deep instead of shallow.
-`;
-
-const newsletterText = `
-Live and Learn is a newsletter about all the crazy things that happen in the world of AI and technology. I send it out every two weeks on a Sunday, distilling down hundreds of links and articles into a few that I think are worth sharing, and providing short summaries on why these developments matter. 
-
-Reading it should save you a couple of hours of research every two weeks.`;
 
 const IndexPage = (props: Props) => {
   const description = `trebeljahr - a website about the things Rico Trebeljahr does, reads and thinks about. The topics can vary widely, 
@@ -109,7 +95,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
               content: props.postsSelection,
             }}
             title="Writing 📝"
-            description={writingText}
+            description={props.texts.writing}
             linkElem={<FancyLink href="/posts" text="Browse All Posts" />}
           />
         </section>
@@ -120,7 +106,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
               content: props.travelBlogsSelection,
             }}
             title="Traveling Stories 🌍"
-            description={travelingText}
+            description={props.texts.traveling}
             carousel={true}
             linkElem={
               <FancyLink href="/travel" text="Explore More Travel Stories" />
@@ -134,7 +120,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
               content: props.newsletterSelection,
             }}
             title="Live and Learn Newsletter 💌"
-            description={newsletterText}
+            description={props.texts.newsletter}
             linkElem={<NewsletterForm />}
           />
         </section>
@@ -145,7 +131,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
               content: props.booknotesSelection,
             }}
             title="Booknotes 📚"
-            description={booknotesText}
+            description={props.texts.booknotes}
             carousel={true}
             linkElem={
               <FancyLink href="/booknotes" text="Search All Booknotes" />
@@ -175,7 +161,10 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
                   Twitter
                 </ExternalLink>
                 , or at my{" "}
-                <Link href="https://portfolio.trebeljahr.com">Portfolio</Link>.
+                <ExternalLink href="https://portfolio.trebeljahr.com">
+                  Portfolio
+                </ExternalLink>
+                .
               </p>
             </div>
           </div>
@@ -192,6 +181,12 @@ type Props = {
   postsSelection: CommonMetadata[];
   newsletterSelection: CommonMetadata[];
   booknotesSelection: CommonMetadata[];
+  texts: {
+    booknotes?: SectionDescription["content"];
+    traveling?: SectionDescription["content"];
+    writing?: SectionDescription["content"];
+    newsletter?: SectionDescription["content"];
+  };
 };
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
@@ -220,12 +215,27 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
     .map(toOnlyMetadata)
     .slice(0, 30);
 
+  console.log(sectionDescriptions);
+
   return {
     props: {
       travelBlogsSelection,
       postsSelection,
       newsletterSelection,
       booknotesSelection,
+      texts: {
+        booknotes: sectionDescriptions.find(
+          ({ title }) => title === "Booknotes"
+        )?.content,
+        traveling: sectionDescriptions.find(
+          ({ title }) => title === "Traveling Stories"
+        )?.content,
+        writing: sectionDescriptions.find(({ title }) => title === "Writing")
+          ?.content,
+        newsletter: sectionDescriptions.find(
+          ({ title }) => title === "Newsletter"
+        )?.content,
+      },
     },
   };
 };

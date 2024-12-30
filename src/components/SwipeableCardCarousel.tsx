@@ -12,7 +12,7 @@ export type CardGalleryProps = {
 
 export const CardGallery = ({ content, withExcerpt }: CardGalleryProps) => {
   return (
-    <div className="grid gap-2 md:gap-4 lg:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max mb-10 justify-items-center">
+    <div className="grid gap-2 md:gap-4 lg:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max  justify-items-center pb-5">
       {content.map((singlePiece) => (
         <NiceCardSmall
           key={singlePiece.slug}

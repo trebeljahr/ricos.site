@@ -26,6 +26,7 @@ declare module "mdast" {
 import { interactive } from "hast-util-interactive";
 import { whitespace } from "hast-util-whitespace";
 import { SKIP } from "unist-util-visit";
+import { title } from "process";
 
 const unknown = 1;
 const containsImage = 2;
@@ -288,6 +289,15 @@ const addLinksAndSlugTransformer = (link: string = "/") => {
 export default defineConfig({
   root: "src/content/Notes/",
   collections: {
+    sectionDescriptions: {
+      name: "SectionDescription",
+      pattern: "website-section-descriptions/*.md",
+      schema: s
+        .object({
+          title: s.string(),
+        })
+        .transform(addBundledMDXContent),
+    },
     posts: {
       name: "Post",
       pattern: "posts/*.md",

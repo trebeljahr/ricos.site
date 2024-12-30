@@ -2,17 +2,30 @@ import { useWindowWidth } from "@react-hook/window-size";
 import { createRef, FC, useEffect, useMemo, useState } from "react";
 import { FaChevronRight } from "react-icons/fa";
 import { FaChevronLeft } from "react-icons/fa6";
-import { CommonMetadata } from "src/lib/utils";
 import { NiceCardSmall } from "./NiceCard";
+import { CommonMetadata } from "src/lib/utils";
 
-type SwipeableCardCarouselProps = {
-  title: string;
+export type CardGalleryProps = {
   content: CommonMetadata[];
   withExcerpt?: boolean;
 };
 
-export const SwipeableCardCarousel: FC<SwipeableCardCarouselProps> = ({
-  title,
+export const CardGallery = ({ content, withExcerpt }: CardGalleryProps) => {
+  return (
+    <div className="grid gap-2 md:gap-4 lg:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max mb-10 justify-items-center">
+      {content.map((singlePiece) => (
+        <NiceCardSmall
+          key={singlePiece.slug}
+          readingTime={singlePiece.metadata.readingTime}
+          withExcerpt={withExcerpt}
+          {...singlePiece}
+        />
+      ))}
+    </div>
+  );
+};
+
+export const SwipeableCardCarouselGallery: FC<CardGalleryProps> = ({
   content,
   withExcerpt = false,
 }) => {
@@ -113,53 +126,47 @@ export const SwipeableCardCarousel: FC<SwipeableCardCarouselProps> = ({
   }, [handleNext, scrollRef]);
 
   return (
-    <div className="relative max-w-3xl mx-auto">
-      <h2 className="text-4xl font-bold mb-6 w-fit">{title}</h2>
-
-      <div className="flex place-items-center relative mb-10 xl:mb-0">
-        <div
-          className="-ml-3 overflow-x-scroll w-full overscroll-x-none snap-x snap-mandatory flex transition-transform duration-300 ease-in-out pb-5 no-scrollbar"
-          ref={scrollRef}
-          onScroll={scrollHandler}
-        >
-          {content.map((singlePiece, index) => (
-            <div
-              key={singlePiece.link}
-              id={singlePiece.slug}
-              data-index={index}
-              className="px-3 flex self-stretch w-full md:w-1/2 xl:w-1/3 3xl:w-1/4 snap-start shrink-0"
-            >
-              <NiceCardSmall
-                {...singlePiece}
-                withExcerpt={withExcerpt}
-                readingTime={singlePiece.metadata.readingTime}
-              />
-            </div>
-          ))}
-        </div>
-        <button
-          className={`absolute left-0 top-full xl:left-[-70px] xl:top-1/2 z-20 h-fit xl:mx-2 rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
-            showButtons.left ? "opacity-1" : "opacity-0"
-          }`}
-          onClick={handlePrevious}
-          disabled={!showButtons.left}
-          aria-label="Previous card"
-        >
-          <FaChevronLeft className="h-4 w-4" />
-        </button>
-        <button
-          className={`absolute right-6 top-full xl:right-[-40px] xl:top-1/2 z-20 h-fit xl:mx-2 rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
-            showButtons.right ? "opacity-1" : "opacity-0"
-          }`}
-          onClick={handleNext}
-          disabled={!showButtons.right}
-          aria-label="Next card"
-        >
-          <FaChevronRight className="h-4 w-4" />
-        </button>
+    <div className="flex place-items-center relative mb-10 xl:mb-0 w-full">
+      <div
+        className="-ml-3 overflow-x-scroll w-full overscroll-x-none snap-x snap-mandatory flex transition-transform duration-300 ease-in-out pb-5 no-scrollbar"
+        ref={scrollRef}
+        onScroll={scrollHandler}
+      >
+        {content.map((singlePiece, index) => (
+          <div
+            key={singlePiece.link}
+            id={singlePiece.slug}
+            data-index={index}
+            className="px-3 flex self-stretch w-full md:w-1/2 xl:w-1/3 3xl:w-1/4 snap-start shrink-0"
+          >
+            <NiceCardSmall
+              {...singlePiece}
+              withExcerpt={withExcerpt}
+              readingTime={singlePiece.metadata.readingTime}
+            />
+          </div>
+        ))}
       </div>
-
-      {/* <div className="absolute top-1/2 left-0 right-0 flex justify-between items-center px-4 -mt-6"></div> */}
+      <button
+        className={`absolute left-0 top-full xl:left-[-70px] xl:top-1/2 z-20 h-fit xl:mx-2 rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
+          showButtons.left ? "opacity-1" : "opacity-0"
+        }`}
+        onClick={handlePrevious}
+        disabled={!showButtons.left}
+        aria-label="Previous card"
+      >
+        <FaChevronLeft className="h-4 w-4" />
+      </button>
+      <button
+        className={`absolute right-6 top-full xl:right-[-40px] xl:top-1/2 z-20 h-fit xl:mx-2 rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
+          showButtons.right ? "opacity-1" : "opacity-0"
+        }`}
+        onClick={handleNext}
+        disabled={!showButtons.right}
+        aria-label="Next card"
+      >
+        <FaChevronRight className="h-4 w-4" />
+      </button>
     </div>
   );
 };

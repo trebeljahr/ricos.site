@@ -2,6 +2,10 @@ import { ImageWithLoader } from "@components/ImageWithLoader";
 import Link from "next/link";
 import { CommonMetadata } from "src/lib/utils";
 import { MetadataDisplay } from "./MetadataDisplay";
+import {
+  CardGalleryProps,
+  SwipeableCardCarouselGallery,
+} from "./SwipeableCardCarousel";
 
 type NiceCardProps = {
   cover: { src: string; alt: string };
@@ -59,34 +63,6 @@ export function NiceCard({
     </Link>
   );
 }
-
-type CardGalleryProps = {
-  title: string;
-  content: CommonMetadata[];
-  withExcerpt?: boolean;
-};
-
-export const SmallCardsGallery = ({
-  title,
-  content,
-  withExcerpt = false,
-}: CardGalleryProps) => {
-  return (
-    <div className="mx-auto max-w-3xl grid gap-2 md:gap-4 lg:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max mb-10 justify-items-center">
-      <h2 className="justify-self-start text-5xl col-span-1 md:col-span-2 lg:col-span-3 mb-4">
-        {title}
-      </h2>
-      {content.map((singlePiece) => (
-        <NiceCardSmall
-          key={singlePiece.slug}
-          readingTime={singlePiece.metadata.readingTime}
-          withExcerpt={withExcerpt}
-          {...singlePiece}
-        />
-      ))}
-    </div>
-  );
-};
 
 export const NiceCardSmall = ({
   cover,

@@ -4,6 +4,7 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import Header from "@components/PostHeader";
 import { Search } from "@components/SearchBar";
+// import Search from "@components/SearchBar/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import { Booknote, booknotes } from "@velite";
 import { useState } from "react";

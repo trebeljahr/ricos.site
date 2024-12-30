@@ -8,14 +8,14 @@ import {
 } from "react";
 import { FiSearch } from "react-icons/fi";
 
-type SearchProps<T> = {
+export type SearchProps<T extends Record<string, any>> = {
   setFiltered: Dispatch<SetStateAction<T[]>>;
   all: T[];
   searchByTitle: string;
   searchKeys: string[];
 };
 
-export function Search<T>({
+export default function Search<T extends Record<string, any>>({
   setFiltered,
   all,
   searchKeys,

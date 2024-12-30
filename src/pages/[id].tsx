@@ -21,7 +21,7 @@ export default function Page({ page }: Props) {
       image={cover.src}
       imageAlt={cover.alt}
       url={page.slug}
-      keywords={page.tags}
+      keywords={page.tags.split(",")}
       withProgressBar={true}
     >
       <main className="mb-20 px-3">

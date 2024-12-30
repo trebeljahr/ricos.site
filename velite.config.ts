@@ -117,7 +117,7 @@ const commonFields = {
 
   tags: s
     .array(s.string())
-    .transform((arr) => arr.map((tag) => tag.toLowerCase()).join(", ")),
+    .transform((arr) => arr.map((tag) => tag.toLowerCase()).join(",")),
 };
 
 type NodeInfo = {

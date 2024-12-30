@@ -47,7 +47,7 @@ const Book = ({ booknote }: Props) => {
       title={booknote.title}
       description={booknote.excerpt || defaultDescription}
       url={url}
-      keywords={booknote.tags}
+      keywords={booknote.tags.split(",")}
       image={booknote.cover.src}
       imageAlt={booknote.cover.alt}
       withProgressBar={true}

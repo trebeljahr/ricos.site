@@ -19,7 +19,7 @@ const PodcastnoteComponent = ({ podcastnote }: Props) => {
       title={`${podcastnote.displayTitle}`}
       description={`These are my Podcast Notes for ${podcastnote.title}. ${podcastnote.excerpt}`}
       url={url}
-      keywords={podcastnote.tags}
+      keywords={podcastnote.tags.split(",")}
       withProgressBar={true}
       image={podcastnote.cover.src}
       imageAlt={podcastnote.cover.alt}

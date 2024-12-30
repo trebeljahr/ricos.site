@@ -38,7 +38,7 @@ export const BlogLayout = ({
       title={title + " – " + subtitle}
       image={cover.src}
       url={url}
-      keywords={tags}
+      keywords={tags.split(",")}
       imageAlt={cover.alt}
       withProgressBar={true}
     >

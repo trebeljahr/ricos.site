@@ -2,7 +2,7 @@ import { ImageWithLoader } from "@components/ImageWithLoader";
 import Link from "next/link";
 import { CommonMetadata } from "src/lib/utils";
 import { MetadataDisplay } from "./MetadataDisplay";
-import { CardGalleryProps, CarouselCardGallery } from "./CardGalleries";
+import { CardGalleryProps, ScrollableCardGallery } from "./CardGalleries";
 
 type NiceCardProps = {
   cover: { src: string; alt: string };

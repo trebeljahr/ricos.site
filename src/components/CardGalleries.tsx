@@ -34,7 +34,7 @@ export const CardGallery = ({ content, withExcerpt }: CardGalleryProps) => {
   );
 };
 
-export const CarouselCardGallery: FC<CardGalleryProps> = ({
+export const ScrollableCardGallery: FC<CardGalleryProps> = ({
   content,
   withExcerpt = false,
 }) => {

@@ -3,7 +3,7 @@ import { MDXContent } from "./MDXContent";
 import {
   CardGallery,
   CardGalleryProps,
-  CarouselCardGallery,
+  ScrollableCardGallery,
 } from "./CardGalleries";
 
 type HomePageSectionProps = {
@@ -32,7 +32,7 @@ export const HomePageSection = ({
           </div>
         )}
         {carousel ? (
-          <CarouselCardGallery {...cardGalleryProps} />
+          <ScrollableCardGallery {...cardGalleryProps} />
         ) : (
           <CardGallery {...cardGalleryProps} />
         )}

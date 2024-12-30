@@ -8,6 +8,7 @@ import { NewsletterForm } from "@components/NewsletterSignup";
 import Header from "@components/PostHeader";
 import { byOnlyPublished } from "src/lib/utils";
 import { BreadCrumbs } from "@components/BreadCrumbs";
+
 function toFilters({
   bookAuthor,
   title,
@@ -16,7 +17,7 @@ function toFilters({
   summary,
   detailedNotes,
 }: Booknote) {
-  return { bookAuthor, title, rating, tags };
+  return { bookAuthor, title, rating };
 }
 
 type Props = {
@@ -28,6 +29,7 @@ export default function Books({ booknotes }: Props) {
     booknotes.map(toFilters)
   );
   const filteredBooks = booknotes.filter(byFilters);
+
   useEffect(() => {
     setFilters((old) => {
       return { ...old };

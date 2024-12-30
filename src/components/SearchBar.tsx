@@ -1,12 +1,15 @@
+import { nanoid } from "nanoid";
 import {
   ChangeEvent,
   Dispatch,
   Fragment,
   SetStateAction,
+  useEffect,
+  useRef,
   useState,
 } from "react";
-import { nanoid } from "nanoid";
 import { FiPlus, FiTrash, FiX } from "react-icons/fi";
+
 type SearchProps<Filters> = {
   setFilters: Dispatch<SetStateAction<Filters>>;
   filters: Filters;
@@ -36,7 +39,7 @@ type Filters = Record<string, Filter>;
 function makeEmptyForType(value: string | number | boolean | string[]) {
   if (typeof value === "string") return "";
   if (typeof value === "boolean") return false;
-  if (typeof value === "number") return 10;
+  if (typeof value === "number") return 0;
   if (Array.isArray(value)) return [];
   throw new TypeError("Filter Type is not supported!");
 }
@@ -76,7 +79,7 @@ export function createFilters<T extends EmptyFilters>(
 export function useSearch<T extends Record<string, EmptyFilterValue>>(
   emptyFilters: T[]
 ) {
-  const [filters, setFilters] = useState(createFilters(emptyFilters));
+  const [filters, setFilters] = useState(() => createFilters(emptyFilters));
   const entries = Object.entries(filters) as Entries<Filters>;
 
   const byFilters = (item: T) => {
@@ -202,8 +205,10 @@ export function Search<T extends Filters>({
   };
 
   return (
-    <div className="not-prose">
-      <p>Search by:</p>
+    <div className="not-prose p-4 bg-gray-100 dark:bg-slate-800 rounded-lg shadow-md min-h-[300px]">
+      <p className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">
+        Search by:
+      </p>
 
       {Object.entries(filters).map(
         ([filterKey, { active, value: filterValue, options }]) => {
@@ -211,16 +216,25 @@ export function Search<T extends Filters>({
             <Fragment key={filterKey}>
               <div
                 className={`${
-                  active && "dark:bg-gray-900 bg-gray-200"
-                } flex place-items-center gap-2 p-1`}
+                  active
+                    ? "bg-gray-200 dark:bg-slate-700"
+                    : "bg-white dark:bg-slate-800"
+                } flex items-center gap-2 p-2 rounded-md mb-2 transition-colors duration-200`}
               >
                 <button
                   onClick={() => toggleFilter(filterKey)}
-                  aria-label="Remove filter"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-200"
+                  aria-label={active ? "Remove filter" : "Add filter"}
                 >
-                  {active ? <FiX /> : <FiPlus />}
+                  {active ? (
+                    <FiX className="w-5 h-5" />
+                  ) : (
+                    <FiPlus className="w-5 h-5" />
+                  )}
                 </button>
-                <p>{beautify(filterKey, { capitalize: true })}:</p>
+                <p className="text-gray-700 dark:text-gray-300 min-w-fit">
+                  {beautify(filterKey, { capitalize: true })}:
+                </p>
                 {active && (
                   <InputField
                     options={options}
@@ -234,25 +248,30 @@ export function Search<T extends Filters>({
                 {Array.isArray(filterValue) && active && (
                   <button
                     onClick={() => growArray(filterKey)}
+                    className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
                     aria-label="Add another filter"
                   >
-                    <FiPlus />
+                    <FiPlus className="w-5 h-5" />
                   </button>
                 )}
               </div>
-              <div>
+              <div className="ml-8 mb-2">
                 {Array.isArray(filterValue) &&
                   active &&
                   filterValue.map((tag, index) => {
                     if (index === filterValue.length - 1) return null;
                     return (
-                      <div key={tag.id}>
-                        <p>{tag.tag}</p>
+                      <div
+                        key={tag.id}
+                        className="inline-flex items-center gap-2 mb-1 mr-2 px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full dark:bg-blue-900 dark:text-blue-300"
+                      >
+                        <span>{tag.tag}</span>
                         <button
                           onClick={() => removeTag(filterKey, tag.id)}
+                          className="text-blue-500 hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-100 transition-colors duration-200"
                           aria-label="Remove Tag from filters"
                         >
-                          <FiTrash />
+                          <FiTrash className="w-4 h-4" />
                         </button>
                       </div>
                     );
@@ -298,9 +317,10 @@ const InputField = ({
     return (
       <button
         onClick={() => toggleBoolean(filterKey)}
+        className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors duration-200"
         aria-label="Toggle Value of this filter"
       >
-        {filterValue ? "yes" : "no"}
+        {filterValue ? "Yes" : "No"}
       </button>
     );
 
@@ -314,7 +334,7 @@ const InputField = ({
         name={filterKey}
         onChange={(event) => handleInput(event)}
         value={filterValue}
-        className="dark:bg-gray-800 h-5"
+        className="w-16 px-2 py-1 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-gray-200 dark:focus:ring-blue-400"
       />
     );
 
@@ -357,27 +377,78 @@ const AutoCompleteInput = ({
   handleInput,
   growArray,
 }: AutoCompleteInputProps) => {
+  const [showOptions, setShowOptions] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const optionsRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setShowOptions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleOptionClick = (option: string) => {
+    handleInput({
+      target: { name: filterKey, value: option },
+    } as ChangeEvent<HTMLInputElement>);
+    setShowOptions(false);
+    if (growArray) {
+      growArray(filterKey);
+    }
+  };
+
   return (
-    <Fragment key={filterKey}>
+    <div className="relative w-full" ref={inputRef}>
       <input
         id={filterKey}
         name={filterKey}
-        list={`auto-complete-${filterKey}`}
         type="text"
         value={filterValue}
-        onChange={(event) => handleInput(event)}
-        onKeyDown={(event) => {
-          event.key === "Enter" && growArray && growArray(filterKey);
+        onChange={(event) => {
+          handleInput(event);
+          setShowOptions(true);
         }}
-        className="dark:bg-gray-800 h-5"
+        onFocus={() => setShowOptions(true)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" && growArray) {
+            growArray(filterKey);
+            setShowOptions(false);
+          }
+        }}
+        className="w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-gray-100 dark:focus:ring-blue-400"
       />
-      <datalist id={`auto-complete-${filterKey}`}>
-        {options.map((val) => (
-          <option key={val} value={val}>
-            {val}
-          </option>
-        ))}
-      </datalist>
-    </Fragment>
+      {showOptions && (
+        <ul
+          ref={optionsRef}
+          className="absolute z-10 w-full mt-1 max-h-60 overflow-auto bg-white border border-gray-300 rounded-md shadow-lg dark:bg-slate-700 dark:border-slate-600"
+        >
+          {options
+            .filter((option) =>
+              option
+                .toLocaleLowerCase()
+                .includes(filterValue.toLocaleLowerCase())
+            )
+            .map((option) => (
+              <li
+                key={option}
+                onClick={() => handleOptionClick(option)}
+                className="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-600 dark:text-gray-200"
+              >
+                {option}
+              </li>
+            ))}
+        </ul>
+      )}
+    </div>
   );
 };

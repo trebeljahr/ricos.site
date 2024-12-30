@@ -215,8 +215,6 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
     .map(toOnlyMetadata)
     .slice(0, 30);
 
-  console.log(sectionDescriptions);
-
   return {
     props: {
       travelBlogsSelection,

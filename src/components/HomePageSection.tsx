@@ -3,8 +3,8 @@ import { MDXContent } from "./MDXContent";
 import {
   CardGallery,
   CardGalleryProps,
-  SwipeableCardCarouselGallery,
-} from "./SwipeableCardCarousel";
+  CarouselCardGallery,
+} from "./CardGalleries";
 
 type HomePageSectionProps = {
   title: string;
@@ -32,7 +32,7 @@ export const HomePageSection = ({
           </div>
         )}
         {carousel ? (
-          <SwipeableCardCarouselGallery {...cardGalleryProps} />
+          <CarouselCardGallery {...cardGalleryProps} />
         ) : (
           <CardGallery {...cardGalleryProps} />
         )}

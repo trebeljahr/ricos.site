@@ -1,7 +1,5 @@
-import { baseUrl } from "src/lib/urlUtils";
-
 const nextSitemapConfig = {
-  siteUrl: baseUrl,
+  siteUrl: "https://ricos.site",
   generateRobotsTxt: true,
   sitemapSize: 7000,
   robotsTxtOptions: {

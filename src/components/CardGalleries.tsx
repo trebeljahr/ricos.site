@@ -144,7 +144,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
         observer.unobserve(scrollRefElem);
       }
     };
-  }, [handleNext, scrollRef]);
+  }, [handleNext, scrollRef, scrolled, hovering]);
 
   return (
     <div className="flex place-items-center relative mb-10 xl:mb-0 w-full">

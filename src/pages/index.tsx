@@ -53,8 +53,8 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
       fullScreen={true}
     >
       <main>
-        <section className="mx-auto max-w-4xl px-3 md:px-0 pb-20">
-          <div className="max-w-3xl">
+        <section className="px-3 pb-20">
+          <div className="mx-auto max-w-4xl">
             <h2 className="text-4xl">
               Hi there <WavingHand />
             </h2>

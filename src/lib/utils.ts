@@ -28,7 +28,7 @@ export type CommonMetadata = {
   date: string;
   excerpt: string;
   link: string;
-  tags: string[];
+  tags: string;
   cover: {
     src: string;
     alt: string;

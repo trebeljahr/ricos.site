@@ -1,5 +1,14 @@
 import { useWindowWidth } from "@react-hook/window-size";
-import { createRef, FC, useEffect, useMemo, useState } from "react";
+import {
+  createRef,
+  FC,
+  UIEvent,
+  UIEventHandler,
+  useEffect,
+  useMemo,
+  useState,
+  WheelEventHandler,
+} from "react";
 import { FaChevronRight } from "react-icons/fa";
 import { FaChevronLeft } from "react-icons/fa6";
 import { NiceCardSmall } from "./NiceCard";
@@ -29,6 +38,8 @@ export const CarouselCardGallery: FC<CardGalleryProps> = ({
   content,
   withExcerpt = false,
 }) => {
+  const [scrolled, setScrolled] = useState(false);
+  const [hovering, setHovering] = useState(false);
   const width = useWindowWidth();
 
   const itemsPerPage = useMemo(() => {
@@ -46,11 +57,19 @@ export const CarouselCardGallery: FC<CardGalleryProps> = ({
     right: true,
   });
 
-  const scrollHandler = () => {
+  const scrollHandler: WheelEventHandler<HTMLDivElement> = (event) => {
     const elementWidth = scrollRef.current?.children[0].clientWidth;
 
     if (!scrollRef.current || !elementWidth) return;
+    if (
+      Math.abs(event.deltaY) === 0 &&
+      Math.abs(event.deltaX) > 2 &&
+      !scrolled
+    ) {
+      return setScrolled(true);
+    }
 
+    // setScrolled(true);
     setShowButtons({
       left: scrollRef.current.scrollLeft >= elementWidth,
       right:
@@ -85,6 +104,8 @@ export const CarouselCardGallery: FC<CardGalleryProps> = ({
   );
 
   useEffect(() => {
+    if (scrolled || hovering) return;
+
     const scrollRefElem = scrollRef.current;
     const observer = new IntersectionObserver(
       (entries) => {
@@ -130,7 +151,9 @@ export const CarouselCardGallery: FC<CardGalleryProps> = ({
       <div
         className="-ml-3 overflow-x-scroll w-full overscroll-x-none snap-x snap-mandatory flex transition-transform duration-300 ease-in-out pb-5 no-scrollbar"
         ref={scrollRef}
-        onScroll={scrollHandler}
+        onWheel={scrollHandler}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
       >
         {content.map((singlePiece, index) => (
           <div

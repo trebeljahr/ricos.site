@@ -1,5 +1,5 @@
 import { useWindowWidth } from "@react-hook/window-size";
-import { createRef, FC, useMemo, useState } from "react";
+import { createRef, FC, useEffect, useMemo, useState } from "react";
 import { FaChevronRight } from "react-icons/fa";
 import { FaChevronLeft } from "react-icons/fa6";
 import { CommonMetadata } from "src/lib/utils";
@@ -46,26 +46,71 @@ export const SwipeableCardCarousel: FC<SwipeableCardCarouselProps> = ({
     });
   };
 
-  const handleScrolling = (direction: "left" | "right") => {
-    const elementWidth = scrollRef.current?.children[0].clientWidth;
-    if (!elementWidth) return;
+  const handleScrolling = useMemo(
+    () => (direction: "left" | "right") => {
+      const elementWidth = scrollRef.current?.children[0].clientWidth;
+      if (!elementWidth) return;
 
-    const singleOffset = direction === "left" ? -elementWidth : elementWidth;
-    const offset = singleOffset * itemsScrolledPerClick;
+      const singleOffset = direction === "left" ? -elementWidth : elementWidth;
+      const offset = singleOffset * itemsScrolledPerClick;
 
-    scrollRef.current?.scrollTo({
-      left: scrollRef.current.scrollLeft + offset,
-      behavior: "smooth",
-    });
-  };
+      scrollRef.current?.scrollTo({
+        left: scrollRef.current.scrollLeft + offset,
+        behavior: "smooth",
+      });
+    },
+    [itemsScrolledPerClick, scrollRef]
+  );
 
   const handlePrevious = () => {
     handleScrolling("left");
   };
 
-  const handleNext = () => {
-    handleScrolling("right");
-  };
+  const handleNext = useMemo(
+    () => () => handleScrolling("right"),
+    [handleScrolling]
+  );
+
+  useEffect(() => {
+    const scrollRefElem = scrollRef.current;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const attrib = entry.target.getAttribute("data-interval-id");
+
+          if (entry.isIntersecting) {
+            const intervalId = setInterval(() => {
+              handleNext();
+            }, 5000);
+
+            attrib === null && setTimeout(handleNext, 1000);
+
+            entry.target.setAttribute(
+              "data-interval-id",
+              intervalId.toString()
+            );
+          } else {
+            const intervalId = entry.target.getAttribute("data-interval-id");
+            if (intervalId) {
+              clearInterval(Number(intervalId));
+              entry.target.removeAttribute("data-interval-id");
+            }
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    if (scrollRefElem) {
+      observer.observe(scrollRefElem);
+    }
+
+    return () => {
+      if (scrollRefElem) {
+        observer.unobserve(scrollRefElem);
+      }
+    };
+  }, [handleNext, scrollRef]);
 
   return (
     <div className="relative max-w-3xl mx-auto">

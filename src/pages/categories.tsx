@@ -11,7 +11,7 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import { ToTopButton } from "@components/ToTopButton";
 import { BreadCrumbs } from "@components/BreadCrumbs";
-import { toTitleCase } from "src/lib/utils";
+import { byOnlyPublished, toTitleCase } from "src/lib/utils";
 
 const allDocuments = [
   ...posts,
@@ -39,6 +39,7 @@ const mainCategories = [
   "design",
   "beauty",
 ];
+
 type LinksOnTag<T> = { tag: string; links: T[] };
 
 type TaggedDocumentData = LinksOnTag<
@@ -148,6 +149,7 @@ export async function getStaticProps() {
     return {
       tag,
       links: allDocuments
+        .filter(byOnlyPublished)
         .filter(({ tags }) => {
           return tags?.includes(tag);
         })

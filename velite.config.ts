@@ -115,7 +115,9 @@ const commonFields = {
   metadata: s.metadata(),
   published: s.boolean(),
 
-  tags: s.array(s.string()),
+  tags: s
+    .array(s.string())
+    .transform((arr) => arr.map((tag) => tag.toLowerCase()).join(", ")),
 };
 
 type NodeInfo = {

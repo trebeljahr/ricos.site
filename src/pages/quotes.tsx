@@ -1,10 +1,12 @@
-import { Search, useSearch } from "@components/SearchBar";
+import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import quotesJSON from "../content/Notes/pages/quotes.json";
 import Header from "@components/PostHeader";
 import { BreadCrumbs } from "@components/BreadCrumbs";
+import { useState } from "react";
+
 const quotes: Quote[] = quotesJSON;
 
 type Quote = {
@@ -13,13 +15,8 @@ type Quote = {
   tags: string[];
 };
 
-function toFilters({ author }: Quote) {
-  return { author };
-}
-
 export default function Quotes() {
-  const { byFilters, filters, setFilters } = useSearch(quotes.map(toFilters));
-  const filteredQuotes = quotes.filter(byFilters);
+  const [filtered, setFiltered] = useState<Quote[]>([]);
   const url = "quotes";
 
   return (
@@ -58,9 +55,14 @@ export default function Quotes() {
             subtitle="Snippets of writing that I want to remember"
           />
 
-          <Search setFilters={setFilters} filters={filters} />
-          <p>Amount: {filteredQuotes.length}</p>
-          {filteredQuotes.map(({ author, content }, index) => {
+          <Search
+            all={quotes}
+            setFiltered={setFiltered}
+            searchKeys={["author"]}
+            searchByTitle="Search by author..."
+          />
+          <p>Amount: {filtered.length}</p>
+          {filtered.map(({ author, content }, index) => {
             return (
               <div key={author + index} className="quote">
                 <blockquote>

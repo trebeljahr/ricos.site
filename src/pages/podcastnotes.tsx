@@ -1,30 +1,15 @@
+import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
-import { Search, useSearch } from "@components/SearchBar";
 import { NewsletterForm } from "@components/NewsletterSignup";
+import Header from "@components/PostHeader";
+import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import { Podcastnote, podcastnotes } from "@velite";
-import { useEffect } from "react";
 import Link from "next/link";
-import Header from "@components/PostHeader";
-import { byOnlyPublished } from "src/lib/utils";
-import { BreadCrumbs } from "@components/BreadCrumbs";
-function toFilters({ title, rating, tags, show }: Podcastnote) {
-  return { title, rating, tags, show };
-}
+import { useState } from "react";
 
 export default function Podcastnotes() {
-  const { byFilters, filters, setFilters } = useSearch(
-    podcastnotes.map(toFilters)
-  );
-  const filteredPodcastnotes = podcastnotes
-    .filter(byOnlyPublished)
-    .filter(byFilters);
-
-  useEffect(() => {
-    setFilters((old) => {
-      return { ...old, summary: { ...old.summary, active: true, value: true } };
-    });
-  }, [setFilters]);
+  const [filtered, setFiltered] = useState<Podcastnote[]>([]);
 
   const url = "podcastnotes";
   return (
@@ -58,10 +43,15 @@ export default function Podcastnotes() {
             title="Podcastnotes"
             subtitle="What I have learned while listening"
           />
-          <Search filters={filters} setFilters={setFilters} />
-          <p>Amount: {filteredPodcastnotes.length}</p>
+          <Search
+            all={podcastnotes}
+            setFiltered={setFiltered}
+            searchByTitle="Search by title, show name or tags..."
+            searchKeys={["title", "show", "tags"]}
+          />
+          <p>Amount: {filtered.length}</p>
 
-          {filteredPodcastnotes.map(
+          {filtered.map(
             ({ link, slug, title, show, episode, rating, excerpt }) => {
               return (
                 <div key={slug}>

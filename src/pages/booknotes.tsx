@@ -1,42 +1,23 @@
-import { Booknote, booknotes } from "@velite";
-import { useEffect } from "react";
-import { Search, useSearch } from "@components/SearchBar";
-import { ToTopButton } from "@components/ToTopButton";
 import { BookPreview } from "@components/BookPreview";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterSignup";
 import Header from "@components/PostHeader";
+import { Search } from "@components/SearchBar";
+import { ToTopButton } from "@components/ToTopButton";
+import { Booknote, booknotes } from "@velite";
+import { useState } from "react";
 import { byOnlyPublished } from "src/lib/utils";
-import { BreadCrumbs } from "@components/BreadCrumbs";
-
-function toFilters({
-  bookAuthor,
-  title,
-  rating,
-  tags,
-  summary,
-  detailedNotes,
-}: Booknote) {
-  return { bookAuthor, title, rating };
-}
 
 type Props = {
   booknotes: Booknote[];
 };
 
 export default function Books({ booknotes }: Props) {
-  const { byFilters, filters, setFilters } = useSearch(
-    booknotes.map(toFilters)
-  );
-  const filteredBooks = booknotes.filter(byFilters);
-
-  useEffect(() => {
-    setFilters((old) => {
-      return { ...old };
-    });
-  }, [setFilters]);
+  const [filtered, setFiltered] = useState<Booknote[]>([]);
 
   const url = "booknotes";
+
   return (
     <Layout
       title="Booknotes - What I have learned while reading"
@@ -72,11 +53,16 @@ export default function Books({ booknotes }: Props) {
           subtitle="What I have learned while reading"
         />
         <div>
-          <Search filters={filters} setFilters={setFilters} />
-          <p>Amount: {filteredBooks.length}</p>
+          <Search
+            all={booknotes}
+            setFiltered={setFiltered}
+            searchByTitle="Search by author, title, or tags..."
+            searchKeys={["bookAuthor", "title", "tags"]}
+          />
+          <p>Amount: {filtered.length}</p>
         </div>
         <div className="prose-a:no-underline">
-          {filteredBooks.map((book, index) => {
+          {filtered.map((book, index) => {
             return <BookPreview key={book.link} book={book} index={index} />;
           })}
         </div>

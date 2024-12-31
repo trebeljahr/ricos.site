@@ -43,6 +43,9 @@ export type CommonMetadata = {
 
   bookAuthor?: string; // for booknotes
   rating?: number; // for booknotes
+
+  show?: string; // for podcastnotes
+  episode?: number; // for podcastnotes
 };
 
 export const toOnlyMetadata = (obj: CommonMetadata): CommonMetadata => {
@@ -59,6 +62,8 @@ export const toOnlyMetadata = (obj: CommonMetadata): CommonMetadata => {
     bookAuthor,
     rating,
     published,
+    show,
+    episode,
   } = obj;
 
   const output = deleteUndefinedValues({
@@ -66,6 +71,8 @@ export const toOnlyMetadata = (obj: CommonMetadata): CommonMetadata => {
     slug,
     date,
     excerpt,
+    show,
+    episode,
     metadata,
     cover,
     link,

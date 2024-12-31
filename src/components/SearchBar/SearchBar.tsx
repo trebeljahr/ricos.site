@@ -31,7 +31,7 @@ export default function Search<T extends Record<string, any>>({
 
     const results = fuzzysort.go(searchTerm, all, {
       keys: searchKeys,
-      threshold: -10,
+      threshold: 0.1,
     });
 
     setFiltered(results.map((result) => result.obj));

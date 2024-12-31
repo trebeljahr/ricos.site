@@ -4,12 +4,22 @@ import { NewsletterForm } from "@components/NewsletterSignup";
 import Header from "@components/PostHeader";
 import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
-import { Podcastnote, podcastnotes } from "@velite";
+import { podcastnotes as allPodcastnotes } from "@velite";
 import Link from "next/link";
 import { useState } from "react";
+import {
+  byDate,
+  byOnlyPublished,
+  CommonMetadata,
+  toOnlyMetadata,
+} from "src/lib/utils";
 
-export default function Podcastnotes() {
-  const [filtered, setFiltered] = useState<Podcastnote[]>([]);
+type Props = {
+  podcastnotes: CommonMetadata[];
+};
+
+export default function Podcastnotes({ podcastnotes }: Props) {
+  const [filtered, setFiltered] = useState<CommonMetadata[]>([]);
 
   const url = "podcastnotes";
   return (
@@ -80,4 +90,17 @@ export default function Podcastnotes() {
       </footer>
     </Layout>
   );
+}
+
+export function getStaticProps() {
+  const podcastnotes = allPodcastnotes
+    .filter(byOnlyPublished)
+    .sort(byDate)
+    .map(toOnlyMetadata);
+
+  return {
+    props: {
+      podcastnotes,
+    },
+  };
 }

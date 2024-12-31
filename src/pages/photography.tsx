@@ -61,6 +61,7 @@ const trips = [
     name: "vietnam",
   },
   { src: "", alt: "", name: "central-india" },
+  { src: "", alt: "", name: "dominica" },
   { src: "", alt: "", name: "delhi" },
   { src: "", alt: "", name: "egypt" },
   {

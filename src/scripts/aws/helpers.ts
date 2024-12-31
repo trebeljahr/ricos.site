@@ -92,9 +92,12 @@ export async function uploadSingleFileToS3(filepath: string, awsPath: string) {
   const data = await getWidthAndHeightFromFileSystem(filepath);
 
   try {
+    const w = data?.width;
+    const h = data?.height;
     await uploadWithMetadata(filepath, key, {
-      width: String(data?.width),
-      height: String(data?.height),
+      width: String(w),
+      height: String(h),
+      aspectRatio: String(w / h),
     });
   } catch (error) {
     console.error(error);

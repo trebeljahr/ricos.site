@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import SimpleReactCanvasComponent from "simple-react-canvas-component";
-import { useActualSize } from "../../hooks/useWindowSize";
+import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+
 import {
   drawProjection,
   initPolygons,
@@ -11,7 +11,6 @@ import {
 import { Vec2 } from "../../lib/math/Vector";
 export const ExampleWith2Polygons = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
-  const { width, height } = useActualSize();
 
   useEffect(() => {
     if (!cnv) return;
@@ -43,9 +42,7 @@ export const ExampleWith2Polygons = () => {
     drawFn();
 
     return cleanup;
-  }, [cnv, width, height]);
+  }, [cnv]);
 
-  return (
-    <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />
-  );
+  return <SimpleReactCanvasComponent setCnv={setCnv} />;
 };

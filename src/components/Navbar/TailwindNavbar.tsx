@@ -11,7 +11,7 @@ import { DarkModeHandler } from "./DarkModeHandler";
 import { useScrollLock } from "src/hooks/useScrollLock";
 
 const navigation = ["posts", "newsletters", "photography"];
-const resources = ["needlestack", "booknotes", "podcastnotes", "quotes"];
+const resources = ["quotes", "booknotes", "needlestack", "podcastnotes"];
 const about = ["now", "travel", "principles", "1-month-projects"];
 
 export function TailwindNavbar({
@@ -24,13 +24,13 @@ export function TailwindNavbar({
       {({ open, close }) => (
         <header
           id="navbar"
-          className={`sticky top-0 left-0 z-50 ${
-            open ? "bg-white" : "glassy"
-          } w-full not-prose dark:bg-none dark:bg-gray-900 pt-3 ${
+          className={`sticky top-0 prose-a:no-underline prose-a:hover:text-inherit prose-a:font-light font-light prose-a:text-inherit left-0 z-50 ${
+            open ? "bg-white" : "glassy hover:bg-white dark:bg-gray-900"
+          } w-full dark:bg-none dark:bg-gray-900 pt-3 transition-colors duration-300 ${
             withProgressBar ? "" : "pb-2"
           }`}
         >
-          <nav className="mx-auto max-w-7xl px-3 pb-1 flex items-center justify-between">
+          <nav className="mx-auto px-3 xl:px-10 pb-1 flex items-center justify-between">
             <Link
               href="/"
               className="flex flex-shrink-0 items-center not-prose"
@@ -42,7 +42,7 @@ export function TailwindNavbar({
                 width={32}
                 height={32}
               />
-              <span className="ml-1 font-semibold">Rico Trebeljahr</span>
+              <span className="ml-1 text-xl font-bold">Rico Trebeljahr</span>
             </Link>
 
             <div className="flex xl:hidden">
@@ -84,7 +84,7 @@ function MobileVersion({ open, close }: NavbarProps) {
             <Link
               key={item}
               href={"/" + item}
-              className="block w-fit rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 "
+              className="block w-fit rounded-md px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 "
             >
               <Disclosure.Button>{item}</Disclosure.Button>
             </Link>
@@ -110,7 +110,7 @@ function DesktopVersion() {
           {navigation.map((item) => (
             <Link
               key={item}
-              className="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 "
+              className="rounded-md px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 "
               href={"/" + item}
             >
               {item}

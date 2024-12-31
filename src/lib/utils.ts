@@ -1,7 +1,6 @@
 import { Travelblog } from "@velite";
 import { nanoid } from "nanoid";
 import { ImageProps } from "src/@types";
-import { byDates } from "./dateUtils";
 
 export const toTitleCase = (str: string) =>
   str.slice(0, 1).toUpperCase() + str.slice(1);
@@ -25,6 +24,8 @@ export const byDate = (a: HasDate, b: HasDate) =>
 export type CommonMetadata = {
   title: string;
   slug: string;
+  subtitle?: string;
+
   date: string;
   excerpt: string;
   link: string;
@@ -43,9 +44,18 @@ export type CommonMetadata = {
 
   bookAuthor?: string; // for booknotes
   rating?: number; // for booknotes
+  summary?: boolean; // for booknotes
 
   show?: string; // for podcastnotes
   episode?: number; // for podcastnotes
+
+  parentFolder?: string; // for travelblogs
+};
+
+export const extractAndSortMetadata = (
+  list: CommonMetadata[]
+): CommonMetadata[] => {
+  return list.filter(byOnlyPublished).sort(byDate).map(toOnlyMetadata);
 };
 
 export const toOnlyMetadata = (obj: CommonMetadata): CommonMetadata => {
@@ -53,12 +63,15 @@ export const toOnlyMetadata = (obj: CommonMetadata): CommonMetadata => {
     link,
     title,
     cover,
+    subtitle,
     metadata,
     date,
     slug,
     excerpt,
     tags,
+    summary,
     number,
+    parentFolder,
     bookAuthor,
     rating,
     published,
@@ -70,11 +83,14 @@ export const toOnlyMetadata = (obj: CommonMetadata): CommonMetadata => {
     title,
     slug,
     date,
+    subtitle,
     excerpt,
     show,
     episode,
     metadata,
     cover,
+    summary,
+    parentFolder,
     link,
     tags,
     number,
@@ -120,11 +136,4 @@ export function replaceUndefinedWithNull(obj: any): any {
   }
 
   return obj;
-}
-
-export function sortAndFilterNotes(stories: Travelblog[], tripName?: string) {
-  return stories
-    .filter(byOnlyPublished)
-    .filter(({ parentFolder }) => !tripName || parentFolder === tripName)
-    .sort(byDates);
 }

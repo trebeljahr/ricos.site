@@ -8,7 +8,7 @@ import {
 } from "@velite";
 import Link from "next/link";
 import Layout from "@components/Layout";
-import { NewsletterForm } from "@components/NewsletterSignup";
+import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { byOnlyPublished, toTitleCase } from "src/lib/utils";

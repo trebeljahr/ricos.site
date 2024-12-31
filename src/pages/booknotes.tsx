@@ -1,14 +1,14 @@
 import { BookPreview } from "@components/BookPreview";
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
-import { NewsletterForm } from "@components/NewsletterSignup";
+import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
 import { Search } from "@components/SearchBar";
 // import Search from "@components/SearchBar/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
-import { Booknote, booknotes } from "@velite";
+import { Booknote, booknotes as allBooknotes } from "@velite";
 import { useState } from "react";
-import { byOnlyPublished } from "src/lib/utils";
+import { byOnlyPublished, extractAndSortMetadata } from "src/lib/utils";
 
 type Props = {
   booknotes: Booknote[];
@@ -78,39 +78,13 @@ export default function Books({ booknotes }: Props) {
 }
 
 export function getStaticProps() {
+  const booknotes = extractAndSortMetadata(allBooknotes).filter(
+    ({ summary }) => summary
+  );
+
   return {
     props: {
-      booknotes: booknotes
-        .filter(byOnlyPublished)
-        .filter(({ summary }) => summary)
-        .map(
-          ({
-            bookAuthor,
-            title,
-            rating,
-            tags,
-            summary,
-            detailedNotes,
-            excerpt,
-            link,
-            cover,
-            metadata,
-            date,
-          }) => ({
-            bookAuthor,
-            cover,
-            link,
-            title,
-            rating,
-            tags,
-            summary,
-            date,
-            detailedNotes,
-            metadata,
-            excerpt: excerpt || "",
-          })
-        )
-        .sort((a, b) => b.date.localeCompare(a.date)),
+      booknotes,
     },
   };
 }

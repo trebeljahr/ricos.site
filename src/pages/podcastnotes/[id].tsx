@@ -1,9 +1,9 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
-import { MetadataDisplay } from "@components/MetadataDisplay";
 import { ExternalLink } from "@components/ExternalLink";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
-import { NewsletterForm } from "@components/NewsletterSignup";
+import { MetadataDisplay } from "@components/MetadataDisplay";
+import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
 import { podcastnotes, type Podcastnote as PodcastnoteType } from "@velite";
 import { byOnlyPublished } from "src/lib/utils";
@@ -34,7 +34,7 @@ const PodcastnoteComponent = ({ podcastnote }: Props) => {
         <article>
           <section className="Podcastnote-info">
             <div className="Podcastnote-preview-text">
-              <h1 className="mt-16 mb-2">
+              <h1 className="!mt-16 !mb-2">
                 <p className="text-2xl font-normal">
                   {podcastnote.show} | Episode – {podcastnote.episode}{" "}
                 </p>

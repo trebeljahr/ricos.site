@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import SimpleReactCanvasComponent from "simple-react-canvas-component";
-import { useActualSize } from "../../hooks/useWindowSize";
+import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+
 import {
   circle,
   drawInfiniteLine,
@@ -15,7 +15,6 @@ import {
 import { Vec2 } from "../../lib/math/Vector";
 export const ProjectArrowDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
-  const { width, height } = useActualSize();
 
   useEffect(() => {
     if (!cnv) return;
@@ -23,11 +22,14 @@ export const ProjectArrowDemo = () => {
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
+    const width = cnv.clientWidth;
+    const height = cnv.clientHeight;
+
     if (!width || !height) return;
 
-    let p1 = new Vec2(200, 200);
-    let p2 = new Vec2(500, 50);
-    let p3 = new Vec2(300, 300);
+    let p1 = new Vec2(width / 3, width / 3);
+    let p2 = new Vec2(width / 2, width / 10);
+    let p3 = new Vec2(width / 2.5, width / 2.5);
 
     const scaleFactor = Math.floor(Math.max(width, height) / 30);
     const drawFn = () => {
@@ -64,9 +66,7 @@ export const ProjectArrowDemo = () => {
       convexityCheck: false,
     });
     return cleanup;
-  }, [cnv, width, height]);
+  }, [cnv]);
 
-  return (
-    <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />
-  );
+  return <SimpleReactCanvasComponent setCnv={setCnv} />;
 };

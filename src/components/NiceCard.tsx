@@ -1,19 +1,17 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import Link from "next/link";
-import { CommonMetadata } from "src/lib/utils";
 import { MetadataDisplay } from "./MetadataDisplay";
-import { CardGalleryProps, ScrollableCardGallery } from "./CardGalleries";
 
 type NiceCardProps = {
   cover: { src: string; alt: string };
   link: string;
   title: string;
-  excerpt: string;
+  excerpt?: string;
+  subtitle?: string;
   priority?: boolean;
   bigImage?: boolean;
   date: string;
   readingTime: number;
-  withExcerpt?: boolean;
 };
 
 export function NiceCard({
@@ -22,6 +20,7 @@ export function NiceCard({
   link,
   title,
   excerpt,
+  subtitle,
   date,
   readingTime,
 }: NiceCardProps) {
@@ -47,8 +46,11 @@ export function NiceCard({
           />
         </div>
         <div className="p-1 md:p-5 md:border-t-4 md:border-r-4 md:border-b-4 max-md:rounded-bl-lg max-md:rounded-br-lg md:rounded-tr-lg md:rounded-br-lg border-gray-200 dark:border-gray-700 prose-headings:mt-2 prose-p:text-zinc-800 dark:prose-p:text-slate-300 max-w-full">
-          <h2 className="pt-0 font-bold leading-snug">{title}</h2>
-          <p className="break-words text-ellipsis w-full">{excerpt}</p>
+          {title && <h2 className="pt-0 font-bold leading-snug">{title}</h2>}
+          {subtitle && <h3 className="mt-1">{subtitle}</h3>}
+          {excerpt && (
+            <p className="break-words text-ellipsis w-full">{excerpt}</p>
+          )}
           <MetadataDisplay
             date={date}
             readingTime={readingTime}
@@ -65,10 +67,10 @@ export const NiceCardSmall = ({
   cover,
   link,
   title,
+  subtitle,
   excerpt,
   date,
   readingTime,
-  withExcerpt,
 }: NiceCardProps) => {
   return (
     <Link
@@ -85,8 +87,17 @@ export const NiceCardSmall = ({
         />
       </div>
       <div className="flex flex-col flex-grow align-self-stretch p-3 min-h-fit prose-p:text-zinc-800 dark:prose-p:text-slate-300 w-full border-r-4 border-l-4 border-b-4 rounded-bl-lg rounded-br-lg border-gray-200 dark:border-gray-700">
-        <h2 className="mt-2 mb-2 tracking-tight text-lg">{title}</h2>
-        {withExcerpt && <p>{excerpt}</p>}
+        <h2 className="!my-6 tracking-tight">{title}</h2>
+        {subtitle && (
+          <p className="!text-gray-700 font-normal text-base dark:text-gray-200">
+            {subtitle}
+          </p>
+        )}
+        {excerpt && (
+          <p className="!text-gray-700 font-normal text-base dark:text-gray-200">
+            {excerpt}
+          </p>
+        )}
         <div className="flex-grow mb-5"></div>
         <div className="place-self-end">
           <MetadataDisplay

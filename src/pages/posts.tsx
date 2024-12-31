@@ -1,14 +1,14 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
-import { NewsletterForm } from "@components/NewsletterSignup";
+import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
 import { OtherPostsPreview } from "@components/PostPreview";
 import { ToTopButton } from "@components/ToTopButton";
-import { Post, posts } from "@velite";
-import { byOnlyPublished } from "src/lib/utils";
+import { posts as allPosts } from "@velite";
+import { CommonMetadata, extractAndSortMetadata } from "src/lib/utils";
 
 type Props = {
-  posts: Post[];
+  posts: CommonMetadata[];
 };
 
 const Posts = ({ posts }: Props) => {
@@ -65,24 +65,10 @@ const Posts = ({ posts }: Props) => {
 
 export default Posts;
 
-export const getStaticProps = async () => {
-  const myPosts = posts
-    .filter(byOnlyPublished)
-    .map(({ slug, excerpt, cover, link, title, date, metadata }) => ({
-      slug,
-      link,
-      excerpt,
-      cover,
-      title,
-      date,
-      metadata,
-    }));
-
-  myPosts.sort((post1, post2) =>
-    new Date(post1.date) > new Date(post2.date) ? -1 : 1
-  );
+export const getStaticProps = async (): Promise<{ props: Props }> => {
+  const posts = extractAndSortMetadata(allPosts);
 
   return {
-    props: { posts: myPosts },
+    props: { posts },
   };
 };

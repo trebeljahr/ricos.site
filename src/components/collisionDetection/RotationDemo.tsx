@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import SimpleReactCanvasComponent from "simple-react-canvas-component";
-import { useActualSize } from "../../hooks/useWindowSize";
+import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+
 import {
   drawArrow,
   drawBackground,
@@ -13,7 +13,7 @@ const ReactSlider = dynamic(() => import("react-slider"), { ssr: false });
 
 export const RotationDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
-  const { width, height } = useActualSize();
+
   const [slider, setSlider] = useState(0);
 
   useEffect(() => {
@@ -22,6 +22,9 @@ export const RotationDemo = () => {
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
+    const width = cnv.clientWidth;
+    const height = cnv.clientHeight;
+
     if (!width || !height) return;
 
     const scalingFactor = Math.min(width, height) / 10;
@@ -42,16 +45,12 @@ export const RotationDemo = () => {
 
     ctx.strokeStyle = "black";
     drawArrow(ctx, origin, a.sub(origin).rotate(slider).add(origin));
-  }, [cnv, width, height, slider]);
+  }, [cnv, slider]);
 
   return (
     <>
       <br />
-      <SimpleReactCanvasComponent
-        setCnv={setCnv}
-        width={width}
-        height={height}
-      />
+      <SimpleReactCanvasComponent setCnv={setCnv} />
       <ReactSlider
         onChange={(value) => {
           setSlider(((value as number) / 100) * Math.PI * 2);

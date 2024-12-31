@@ -53,7 +53,9 @@ export default function SinglePhotographyShowcasePage({
         <BreadCrumbs path={`photography/${tripName}`} />
 
         <section>
-          <h1 className="text-4xl mt-16">{turnKebabIntoTitleCase(tripName)}</h1>
+          <h1 className="text-4xl !mt-16">
+            {turnKebabIntoTitleCase(tripName)}
+          </h1>
           <InfiniteScrollGallery images={imagesWithSrcSet} />
           <ToTopButton />
         </section>

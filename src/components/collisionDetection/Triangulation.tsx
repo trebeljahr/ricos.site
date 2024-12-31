@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import SimpleReactCanvasComponent from "simple-react-canvas-component";
-import { useActualSize } from "../../hooks/useWindowSize";
+import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+
 import {
   initPolygons,
   instrument,
@@ -14,7 +14,7 @@ import { Polygon } from "../../lib/math/Poly";
 import { Vec2 } from "../../lib/math/Vector";
 export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
-  const { width, height } = useActualSize();
+
   const [response, setResponse] = useState(!responseToggle);
   const toggleResponse = () => {
     setResponse((old) => !old);
@@ -32,7 +32,8 @@ export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
       new Polygon(starPoints(), niceGreen)
     );
 
-    poly1.centerOnPoint(new Vec2(cnv.width / 2, cnv.height / 2));
+    poly1.centerOnPoint(new Vec2(cnv.clientWidth / 2, cnv.clientHeight / 2));
+    poly2.centerOnPoint(new Vec2(cnv.clientWidth / 2, cnv.clientHeight / 2));
 
     const drawFn = () => {
       drawBackground(ctx);
@@ -69,11 +70,7 @@ export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
 
   return (
     <div>
-      <SimpleReactCanvasComponent
-        setCnv={setCnv}
-        width={width}
-        height={height}
-      />
+      <SimpleReactCanvasComponent setCnv={setCnv} />
       {responseToggle && (
         <button onClick={toggleResponse} aria-label="Toggle Collision Response">
           Response: {response ? "ON" : "OFF"}

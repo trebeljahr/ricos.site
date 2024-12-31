@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import SimpleReactCanvasComponent from "simple-react-canvas-component";
-import { useActualSize } from "../../hooks/useWindowSize";
+import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+
 import {
   initPolygons,
   instrument,
@@ -10,16 +10,24 @@ import {
 } from "../../lib/math/drawHelpers";
 import { Polygon, triangulateVisualization } from "../../lib/math/Poly";
 import { Vec2 } from "../../lib/math/Vector";
+import { useWindowWidth } from "@react-hook/window-size";
 export const EarClipping = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
-  const { width, height } = useActualSize();
+  //
   const [visualizing, setVisualizing] = useState(true);
   const [isRunning, setIsRunning] = useState(false);
+  const windowWidth = useWindowWidth();
 
   const [poly, setPoly] = useState<Polygon | null>(null);
   const toggleVisualization = () => {
     setVisualizing(!visualizing);
   };
+
+  useEffect(() => {
+    if (!cnv || !poly) return;
+
+    poly.centerOnPoint(new Vec2(cnv.clientWidth / 2, cnv.clientHeight / 2));
+  }, [windowWidth, poly]);
 
   useEffect(() => {
     if (!cnv) return;
@@ -30,7 +38,7 @@ export const EarClipping = () => {
 
     if (!poly) {
       const [poly1] = initPolygons(ctx, new Polygon(starPoints(), niceGreen));
-      poly1.centerOnPoint(new Vec2(cnv.width / 2, cnv.height / 2));
+      poly1.centerOnPoint(new Vec2(cnv.clientWidth / 2, cnv.clientHeight / 2));
       setPoly(poly1);
       return;
     }
@@ -65,11 +73,7 @@ export const EarClipping = () => {
 
   return (
     <div>
-      <SimpleReactCanvasComponent
-        setCnv={setCnv}
-        width={width}
-        height={height}
-      />
+      <SimpleReactCanvasComponent setCnv={setCnv} id="ear-clipping" />
       <button onClick={toggleVisualization} aria-label="Toggle Visualization">
         Visualizing: {visualizing ? "ON" : "OFF"}
       </button>

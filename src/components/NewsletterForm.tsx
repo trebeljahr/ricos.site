@@ -94,10 +94,10 @@ export const NewsletterForm = ({
   );
 
   return (
-    <div className="w-9/12">
+    <div className="w-full">
       {success ? (
-        <div className="rounded-md overflow-hidden p-3 py-3 bg-white prose shadow-lg w-full">
-          <div className="newsletter-success-ribbon mb-10" />
+        <div className="rounded-md overflow-hidden p-3 py-3 bg-white shadow-lg w-full">
+          <div className="newsletter-success-ribbon w-full" />
           <div className="ml-2 md:ml-5">
             <div className="flex w-full justify-center">
               <ConfettiExplosion {...mediumConfettiProps} />
@@ -111,7 +111,7 @@ export const NewsletterForm = ({
             {!link && defaultLink}
 
             <button
-              className="mt-5 font-thin text-left"
+              className="mt-5 font-light text-left"
               onClick={() => setSuccess(null)}
               aria-label="Sign up with another email address"
             >
@@ -122,7 +122,7 @@ export const NewsletterForm = ({
           <div className="newsletter-success-ribbon mt-10" />
         </div>
       ) : (
-        <div className="px-5 py-10 rounded-lg bg-white dark:bg-gray-800 border-4 border-gray-200 dark:border-gray-700">
+        <div className="px-5 pb-10 rounded-lg bg-white dark:bg-gray-800 border-4 border-gray-200 dark:border-gray-700">
           {heading || defaultHeading}
           {text || defaultText}
 
@@ -135,7 +135,7 @@ export const NewsletterForm = ({
                 aria-describedby={error ? "email-error" : undefined}
                 required
                 autoComplete="email"
-                className={`pl-2 focus:outline-none w-1/2 bg-slate-100 dark:bg-gray-900  dark:text-white py-2 bg-inherit ${
+                className={`pl-2 focus:outline-none w-1/2 bg-slate-100 dark:bg-gray-900  dark:text-white py-2.5 bg-inherit ${
                   error
                     ? "border-red-500 focus:border-red-500 focus:ring-red-500"
                     : ""

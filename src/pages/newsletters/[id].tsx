@@ -2,7 +2,7 @@ import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
 import { MetadataDisplay } from "@components/MetadataDisplay";
-import { NewsletterForm } from "@components/NewsletterSignup";
+import { NewsletterForm } from "@components/NewsletterForm";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";
@@ -51,16 +51,14 @@ const Newsletter = ({
         />
         <MetadataDisplay date={date} readingTime={readingTime} />
 
-        <article className="maint-text newsletter-article">
+        <article>
           <Header title={fullTitle} />
-
-          {excerpt && <p>{excerpt}</p>}
           <div className="mb-5">
             <ImageWithLoader
               priority
               src={cover.src}
-              width={780}
-              height={780}
+              width={768}
+              height={768}
               alt={cover.alt}
               sizes="100vw"
               style={{
@@ -70,7 +68,12 @@ const Newsletter = ({
               }}
             />
           </div>
-          <PostBodyWithoutExcerpt content={content} />
+
+          <div className="mx-auto max-w-prose mt-20">
+            {excerpt && <p>{excerpt}</p>}
+
+            <PostBodyWithoutExcerpt content={content} />
+          </div>
         </article>
       </main>
 

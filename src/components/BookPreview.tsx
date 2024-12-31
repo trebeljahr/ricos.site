@@ -28,7 +28,7 @@ export function BookPreview({ book, index }: Props) {
           alt={cover.alt}
           fill
           sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
-            priority ? 780 : 357
+            priority ? 768 : 357
           }`}
           priority={priority}
           style={{
@@ -48,7 +48,7 @@ export function BookPreview({ book, index }: Props) {
           readingTime={book.metadata.readingTime}
           withAuthorInfo={false}
         />
-        <p className="text-xs mt-2">🏆 Rated: {rating}/10</p>
+        <p className="text-sm mt-2">🏆 Rated: {rating}/10</p>
 
         <div>
           {excerpt ? (

@@ -17,17 +17,23 @@ import { CommonMetadata } from "src/lib/utils";
 export type CardGalleryProps = {
   content: CommonMetadata[];
   withExcerpt?: boolean;
+  withSubtitle?: boolean;
 };
 
-export const CardGallery = ({ content, withExcerpt }: CardGalleryProps) => {
+export const CardGallery = ({
+  content,
+  withExcerpt = false,
+  withSubtitle = false,
+}: CardGalleryProps) => {
   return (
     <div className="grid gap-2 md:gap-4 lg:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max  justify-items-center pb-5">
       {content.map((singlePiece) => (
         <NiceCardSmall
           key={singlePiece.slug}
           readingTime={singlePiece.metadata.readingTime}
-          withExcerpt={withExcerpt}
           {...singlePiece}
+          excerpt={withExcerpt ? singlePiece.excerpt : undefined}
+          subtitle={withSubtitle ? singlePiece.subtitle : undefined}
         />
       ))}
     </div>
@@ -37,6 +43,7 @@ export const CardGallery = ({ content, withExcerpt }: CardGalleryProps) => {
 export const ScrollableCardGallery: FC<CardGalleryProps> = ({
   content,
   withExcerpt = false,
+  withSubtitle: withDescription = false,
 }) => {
   const [scrolled, setScrolled] = useState(false);
   const [hovering, setHovering] = useState(false);
@@ -164,7 +171,8 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
           >
             <NiceCardSmall
               {...singlePiece}
-              withExcerpt={withExcerpt}
+              excerpt={withExcerpt ? singlePiece.excerpt : undefined}
+              subtitle={withDescription ? singlePiece.subtitle : undefined}
               readingTime={singlePiece.metadata.readingTime}
             />
           </div>

@@ -2,7 +2,7 @@ import { ExternalLink } from "@components/ExternalLink";
 import { FancyLink } from "@components/FancyUI";
 import { HomePageSection } from "@components/HomePageSection";
 import Layout from "@components/Layout";
-import { NewsletterForm } from "@components/NewsletterSignup";
+import { NewsletterForm } from "@components/NewsletterForm";
 import { WavingHand } from "@components/WavingHand";
 import {
   booknotes,
@@ -17,6 +17,7 @@ import {
   byDate,
   byOnlyPublished,
   type CommonMetadata,
+  extractAndSortMetadata,
   toOnlyMetadata,
 } from "src/lib/utils";
 
@@ -54,7 +55,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
     >
       <main>
         <section className="px-3 pb-20">
-          <div className="mx-auto max-w-4xl">
+          <div className="mx-auto max-w-6xl 2xl:max-w-screen-2xl">
             <h2 className="text-4xl">
               Hi there <WavingHand />
             </h2>
@@ -93,6 +94,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
           <HomePageSection
             cardGalleryProps={{
               content: props.postsSelection,
+              withSubtitle: true,
             }}
             title="Writing 📝"
             description={props.texts.writing}
@@ -140,8 +142,8 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
         </section>
 
         <section className="dark:bg-gray-950 bg-slate-100 pt-1 pb-20 px-3">
-          <div className="mx-auto max-w-4xl">
-            <div className="max-w-2xl">
+          <div className="mx-auto max-w-6xl 2xl:max-w-screen-2xl">
+            <div className="max-w-prose">
               <h2>Webpages</h2>
               <p>
                 You can also find me on other places around the internet, like{" "}
@@ -190,29 +192,14 @@ type Props = {
 };
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
-  const travelBlogsSelection = travelblogs
-    .filter(byOnlyPublished)
-    .sort(byDate)
-    .map(toOnlyMetadata)
-    .slice(0, 15);
+  const travelBlogsSelection = extractAndSortMetadata(travelblogs).slice(0, 15);
 
-  const postsSelection = posts
-    .filter(byOnlyPublished)
-    .sort(byDate)
-    .map(toOnlyMetadata)
-    .slice(0, 6);
+  const postsSelection = extractAndSortMetadata(posts).slice(0, 6);
 
-  const newsletterSelection = newsletters
-    .filter(byOnlyPublished)
-    .sort(byDate)
-    .map(toOnlyMetadata)
-    .slice(0, 6);
+  const newsletterSelection = extractAndSortMetadata(newsletters).slice(0, 6);
 
-  const booknotesSelection = booknotes
-    .filter(byOnlyPublished)
+  const booknotesSelection = extractAndSortMetadata(booknotes)
     .filter(({ summary }) => summary)
-    .sort(byDate)
-    .map(toOnlyMetadata)
     .slice(0, 30);
 
   return {

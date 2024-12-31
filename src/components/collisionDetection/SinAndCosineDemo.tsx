@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import SimpleReactCanvasComponent from "simple-react-canvas-component";
-import { useActualSize } from "../../hooks/useWindowSize";
+import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+
 import {
   drawBackground,
   drawCoordinateSystem,
@@ -8,7 +8,7 @@ import {
 import { Vec2 } from "../../lib/math/Vector";
 export const SinAndCosineDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
-  const { width, height } = useActualSize();
+
   const [angle, setAngle] = useState(0);
 
   useEffect(() => {
@@ -21,6 +21,9 @@ export const SinAndCosineDemo = () => {
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
+    const width = cnv.clientWidth;
+    const height = cnv.clientHeight;
+
     if (!width || !height) return;
 
     const scalingFactor = Math.min(width, height) / 10;
@@ -29,9 +32,7 @@ export const SinAndCosineDemo = () => {
 
     drawBackground(ctx);
     drawCoordinateSystem(ctx, scalingFactor);
-  }, [cnv, width, height, angle]);
+  }, [cnv, angle]);
 
-  return (
-    <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />
-  );
+  return <SimpleReactCanvasComponent setCnv={setCnv} />;
 };

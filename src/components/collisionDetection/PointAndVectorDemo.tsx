@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import SimpleReactCanvasComponent from "simple-react-canvas-component";
-import { useActualSize } from "../../hooks/useWindowSize";
+import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+
 import {
   drawArrow,
   drawBackground,
@@ -18,7 +18,6 @@ function drawCross(ctx: CanvasRenderingContext2D, c: Vec2) {
 
 export const PointAndVectorDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
-  const { width, height } = useActualSize();
 
   useEffect(() => {
     if (!cnv) return;
@@ -26,6 +25,9 @@ export const PointAndVectorDemo = () => {
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
+    const width = cnv.clientWidth;
+    const height = cnv.clientHeight;
+
     if (!width || !height) return;
 
     const scalingFactor = Math.min(width, height) / 10;
@@ -60,9 +62,7 @@ export const PointAndVectorDemo = () => {
       points: [a, c],
     });
     return cleanup;
-  }, [cnv, width, height]);
+  }, [cnv]);
 
-  return (
-    <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />
-  );
+  return <SimpleReactCanvasComponent setCnv={setCnv} />;
 };

@@ -1,10 +1,10 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { BookCover } from "@components/CoverImage";
-import { MetadataDisplay } from "@components/MetadataDisplay";
 import { ExternalLink } from "@components/ExternalLink";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
-import { NewsletterForm } from "@components/NewsletterSignup";
+import { MetadataDisplay } from "@components/MetadataDisplay";
+import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
 import { Booknote, booknotes } from "@velite";
 import { byOnlyPublished } from "src/lib/utils";
@@ -59,7 +59,7 @@ const Book = ({ booknote }: Props) => {
           date={booknote.date}
         />
         <article>
-          <section className="flex mt-16">
+          <section className="flex !mt-16">
             <div className="not-prose block relative mr-2 mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
               <BookCover
                 title={booknote.title}

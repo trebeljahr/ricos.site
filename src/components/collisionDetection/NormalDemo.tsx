@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import SimpleReactCanvasComponent from "simple-react-canvas-component";
-import { useActualSize } from "../../hooks/useWindowSize";
+import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+
 import {
   initPolygons,
   instrument,
@@ -13,7 +13,6 @@ import {
 import { Polygon } from "../../lib/math/Poly";
 export const NormalDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
-  const { width, height } = useActualSize();
 
   useEffect(() => {
     if (!cnv) return;
@@ -47,9 +46,7 @@ export const NormalDemo = () => {
       convexityCheck: false,
     });
     return cleanup;
-  }, [cnv, width, height]);
+  }, [cnv]);
 
-  return (
-    <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />
-  );
+  return <SimpleReactCanvasComponent setCnv={setCnv} />;
 };

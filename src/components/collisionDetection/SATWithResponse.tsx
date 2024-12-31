@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import SimpleReactCanvasComponent from "simple-react-canvas-component";
-import { useActualSize } from "../../hooks/useWindowSize";
+import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+
 import {
   initPolygons,
   instrument,
@@ -19,7 +19,7 @@ export const SATWithResponse = ({
   withStar = false,
 }) => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
-  const { width, height } = useActualSize();
+
   const [response, setResponse] = useState(!responseToggle);
 
   const toggleResponse = () => {
@@ -52,23 +52,11 @@ export const SATWithResponse = ({
       convexityCheck: !withStar,
     });
     return cleanup;
-  }, [
-    cnv,
-    width,
-    height,
-    response,
-    drawProjections,
-    changeColorOnCollision,
-    withStar,
-  ]);
+  }, [cnv, response, drawProjections, changeColorOnCollision, withStar]);
 
   return (
     <div>
-      <SimpleReactCanvasComponent
-        setCnv={setCnv}
-        width={width}
-        height={height}
-      />
+      <SimpleReactCanvasComponent setCnv={setCnv} />
       {responseToggle && (
         <button onClick={toggleResponse} aria-label="Toggle Collision Response">
           Response: {response ? "ON" : "OFF"}

@@ -1,27 +1,29 @@
 import { type Newsletter, newsletters } from "@velite";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
-import { NewsletterForm } from "@components/NewsletterSignup";
+import { NewsletterForm } from "@components/NewsletterForm";
 import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
-import { byOnlyPublished } from "src/lib/utils";
+import {
+  byOnlyPublished,
+  CommonMetadata,
+  extractAndSortMetadata,
+} from "src/lib/utils";
 import { BreadCrumbs } from "@components/BreadCrumbs";
 
-type NewsletterData = Pick<
-  Newsletter,
-  "link" | "number" | "title" | "excerpt" | "cover" | "metadata" | "date"
->;
-
 type Props = {
-  newsletterData: NewsletterData[];
+  newsletterData: CommonMetadata[];
 };
 
-const sortByNumbers = (arr: NewsletterData[]) => {
+const sortByNumbers = (arr: CommonMetadata[]) => {
   const collator = new Intl.Collator(undefined, {
     numeric: true,
     sensitivity: "base",
   });
-  return arr.sort((a, b) => -collator.compare(a.number, b.number));
+
+  return arr.sort(
+    (a, b) => -collator.compare(a.number as string, b.number as string)
+  );
 };
 
 const toNiceCard = (
@@ -33,7 +35,7 @@ const toNiceCard = (
     cover,
     date,
     metadata: { readingTime },
-  }: NewsletterData,
+  }: CommonMetadata,
   index: number
 ) => {
   const priority = index <= 1;
@@ -118,19 +120,14 @@ const Newsletters = ({ newsletterData }: Props) => {
 export default Newsletters;
 
 export const getStaticProps = async () => {
-  const newsletterData = newsletters
-    .filter(byOnlyPublished)
-    .map(({ link, number, title, excerpt = "", cover, metadata, date }) => ({
-      link,
-      number,
-      title,
-      cover,
-      metadata,
-      date,
-      excerpt: excerpt
+  const newsletterData = extractAndSortMetadata(newsletters).map(
+    (newsletter) => ({
+      ...newsletter,
+      excerpt: newsletter.excerpt
         .replace("Welcome to this edition of Live and Learn. ", "")
         .replace("Enjoy.", ""),
-    }));
+    })
+  );
 
   return {
     props: { newsletterData: sortByNumbers(newsletterData) },

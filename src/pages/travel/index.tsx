@@ -1,6 +1,6 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
-import { NewsletterForm } from "@components/NewsletterSignup";
+import { NewsletterForm } from "@components/NewsletterForm";
 import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";

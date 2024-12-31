@@ -11,13 +11,6 @@
   bottom: 0;
 }
 
-@media only screen and (min-width: 640px) {
-  :root {
-      font-size: 21px;
-  }
-}
-
-
 
 :root {
   font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;  

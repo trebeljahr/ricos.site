@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import SimpleReactCanvasComponent from "simple-react-canvas-component";
-import { useActualSize } from "../../hooks/useWindowSize";
+import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+
 import {
   circle,
   drawArrow,
@@ -15,7 +15,6 @@ import { Vec2 } from "../../lib/math/Vector";
 
 export const UnitVectorDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
-  const { width, height } = useActualSize();
 
   useEffect(() => {
     if (!cnv) return;
@@ -23,6 +22,9 @@ export const UnitVectorDemo = () => {
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
+    const width = cnv.clientWidth;
+    const height = cnv.clientHeight;
+
     if (!width || !height) return;
 
     const scalingFactor = Math.min(width, height) / 5;
@@ -49,9 +51,7 @@ export const UnitVectorDemo = () => {
       points: [a],
     });
     return cleanup;
-  }, [cnv, width, height]);
+  }, [cnv]);
 
-  return (
-    <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />
-  );
+  return <SimpleReactCanvasComponent setCnv={setCnv} />;
 };

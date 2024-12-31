@@ -1,11 +1,11 @@
+import { BreadCrumbs } from "@components/BreadCrumbs";
+import Layout from "@components/Layout";
+import { NewsletterForm } from "@components/NewsletterForm";
+import Header from "@components/PostHeader";
 import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
-import Layout from "@components/Layout";
-import { NewsletterForm } from "@components/NewsletterSignup";
-import quotesJSON from "../content/Notes/pages/quotes.json";
-import Header from "@components/PostHeader";
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import { useState } from "react";
+import quotesJSON from "../content/Notes/pages/quotes.json";
 
 const quotes: Quote[] = quotesJSON;
 
@@ -46,7 +46,7 @@ export default function Quotes() {
         "soundbites",
       ]}
     >
-      <main className="mb-20 px-3">
+      <main className="mb-20 px-3 mx-auto max-w-prose">
         <BreadCrumbs path={url} />
 
         <section>

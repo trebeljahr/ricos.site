@@ -20,7 +20,7 @@ export const PostCoverImage = ({
       priority={priority}
       fill
       sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
-        priority ? 780 : 357
+        priority ? 768 : 357
       }`}
       style={{
         objectFit: "cover",

@@ -1,4 +1,4 @@
-import { NewsletterForm } from "@components/NewsletterSignup";
+import { NewsletterForm } from "@components/NewsletterForm";
 import { useScrollVisibility } from "@components/ShowAfterScrolling";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";

@@ -11,7 +11,7 @@ type DesktopMenuProps = {
 export function CollapsibleMenuDesktop({ links, text }: DesktopMenuProps) {
   return (
     <Menu as="div" className="block relative ml-3">
-      <Menu.Button className="block hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md px-3 py-2 text-sm font-medium">
+      <Menu.Button className="block hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md px-3 py-2">
         <span className="flex items-center justify-center">
           <span>{text}</span>
           <FiChevronDown className="h-3 w-3 ml-1" />
@@ -48,9 +48,9 @@ export function CollapsibleMenuMobile({
   return (
     <Menu as="div" className="relative w-fit">
       <div className="flex flex-col">
-        <Menu.Button className="self-end hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md px-3 py-2 text-sm font-medium flex justify-end">
+        <Menu.Button className="self-end hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md px-3 py-2 flex justify-end">
           <div className="flex items-center justify-center">
-            <p>{text}</p>
+            <span>{text}</span>
             <FiChevronDown className="h-3 w-3 ml-1" />
           </div>
         </Menu.Button>

@@ -1,8 +1,9 @@
 import { type Post, type Travelblog } from "@velite";
 import { NiceCard } from "./NiceCard";
+import { CommonMetadata } from "src/lib/utils";
 
 type Props = {
-  post: Post | Travelblog;
+  post: CommonMetadata;
   isHeroPost?: boolean;
 };
 
@@ -28,11 +29,7 @@ export const PostPreview = ({
   );
 };
 
-export const OtherPostsPreview = ({
-  posts,
-}: {
-  posts: Post[] | Travelblog[];
-}) => {
+export const OtherPostsPreview = ({ posts }: { posts: CommonMetadata[] }) => {
   if (posts.length === 0) {
     return null;
   }

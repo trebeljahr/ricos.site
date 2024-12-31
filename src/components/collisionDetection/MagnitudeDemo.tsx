@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import SimpleReactCanvasComponent from "simple-react-canvas-component";
-import { useActualSize } from "../../hooks/useWindowSize";
+import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+
 import {
   instrument,
   niceBlue,
@@ -14,7 +14,6 @@ import { Vec2 } from "../../lib/math/Vector";
 
 export const MagnitudeDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
-  const { width, height } = useActualSize();
 
   useEffect(() => {
     if (!cnv) return;
@@ -22,7 +21,9 @@ export const MagnitudeDemo = () => {
 
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
-    if (!width || !height) return;
+
+    const width = cnv.clientWidth;
+    const height = cnv.clientHeight;
 
     const scalingFactor = Math.min(width, height) / 10;
     const origin = new Vec2(width / 2, height / 2);
@@ -73,9 +74,7 @@ export const MagnitudeDemo = () => {
       points: [a],
     });
     return cleanup;
-  }, [cnv, width, height]);
+  }, [cnv]);
 
-  return (
-    <SimpleReactCanvasComponent setCnv={setCnv} width={width} height={height} />
-  );
+  return <SimpleReactCanvasComponent setCnv={setCnv} />;
 };

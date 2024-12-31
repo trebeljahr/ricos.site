@@ -1,18 +1,13 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
-import { NewsletterForm } from "@components/NewsletterSignup";
+import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
 import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import { podcastnotes as allPodcastnotes } from "@velite";
 import Link from "next/link";
 import { useState } from "react";
-import {
-  byDate,
-  byOnlyPublished,
-  CommonMetadata,
-  toOnlyMetadata,
-} from "src/lib/utils";
+import { CommonMetadata, extractAndSortMetadata } from "src/lib/utils";
 
 type Props = {
   podcastnotes: CommonMetadata[];
@@ -93,10 +88,7 @@ export default function Podcastnotes({ podcastnotes }: Props) {
 }
 
 export function getStaticProps() {
-  const podcastnotes = allPodcastnotes
-    .filter(byOnlyPublished)
-    .sort(byDate)
-    .map(toOnlyMetadata);
+  const podcastnotes = extractAndSortMetadata(allPodcastnotes);
 
   return {
     props: {

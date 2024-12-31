@@ -6,9 +6,5 @@ type Props = {
 };
 
 export const PostBodyWithoutExcerpt = ({ content }: Props) => {
-  return (
-    <div>
-      <MDXContent source={content} />
-    </div>
-  );
+  return <MDXContent source={content} />;
 };

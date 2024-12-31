@@ -1,9 +1,10 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
-import { MetadataDisplay } from "@components/MetadataDisplay";
+import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
+import { MetadataDisplay } from "@components/MetadataDisplay";
 import { ReadMore } from "@components/MoreStories";
-import { NewsletterForm } from "@components/NewsletterSignup";
+import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { Post, posts } from "@velite";
@@ -48,7 +49,23 @@ export const BlogLayout = ({
           <MetadataDisplay date={date} readingTime={readingTime} />
 
           <Header subtitle={subtitle} title={title} />
-          {children}
+          <div className="mb-5">
+            <ImageWithLoader
+              priority
+              src={cover.src}
+              width={780}
+              height={780}
+              alt={cover.alt}
+              sizes="100vw"
+              style={{
+                width: "100%",
+                height: "auto",
+                objectFit: "cover",
+              }}
+            />
+          </div>
+
+          <div className="mx-auto max-w-prose mt-20">{children}</div>
         </section>
       </main>
 

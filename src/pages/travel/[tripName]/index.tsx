@@ -2,16 +2,17 @@ import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NiceCard } from "@components/NiceCard";
 import Header from "@components/PostHeader";
-import { travelblogs, type Travelblog } from "@velite";
+import { travelblogs } from "@velite";
+import { nanoid } from "nanoid";
 import {
-  sortAndFilterNotes as sortAndFilterTravelBlogs,
+  CommonMetadata,
+  extractAndSortMetadata,
   turnKebabIntoTitleCase,
 } from "src/lib/utils";
 import { travelingStoriesMeta, travelingStoryNames } from "..";
-import { nanoid } from "nanoid";
 
 type Props = {
-  posts: Travelblog[];
+  posts: CommonMetadata[];
   tripName: string;
 };
 
@@ -84,19 +85,14 @@ export const getStaticPaths = async () => {
   };
 };
 
-export const getStaticProps = async ({ params }: Params) => {
-  const posts = sortAndFilterTravelBlogs(travelblogs, params.tripName).map(
-    ({ link, title, excerpt, date, cover, metadata }) => {
-      return {
-        title,
-        cover,
-        date,
-        excerpt,
-        metadata,
-        link,
-      };
-    }
-  );
+export const getStaticProps = async ({
+  params,
+}: Params): Promise<{ props: Props }> => {
+  const posts = extractAndSortMetadata(travelblogs)
+    .filter(
+      ({ parentFolder }) => !params.tripName || parentFolder === params.tripName
+    )
+    .reverse();
 
   return {
     props: { posts, tripName: params.tripName },

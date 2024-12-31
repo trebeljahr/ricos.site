@@ -1,15 +1,22 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
-import { MetadataDisplay } from "@components/MetadataDisplay";
+import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
-import { NewsletterForm } from "@components/NewsletterSignup";
+import { MetadataDisplay } from "@components/MetadataDisplay";
+import { NewsletterForm } from "@components/NewsletterForm";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import slugify from "@sindresorhus/slugify";
 import { travelblogs, type Travelblog } from "@velite";
 import { ReactNode } from "react";
-import { replaceUndefinedWithNull, sortAndFilterNotes } from "src/lib/utils";
+import {
+  byDate,
+  byOnlyPublished,
+  extractAndSortMetadata,
+  replaceUndefinedWithNull,
+} from "src/lib/utils";
+
 type TravelBlogProps = {
   post: Travelblog;
   nextSlug: string | null;
@@ -49,10 +56,25 @@ export const TravelBlogLayout = ({
       <main className="mb-20 px-3">
         <BreadCrumbs path={url} />
         <MetadataDisplay date={date} readingTime={readingTime} />
-        <article>
-          <Header title={title || ""} />
-          {children}
-        </article>
+        <Header title={title || ""} />
+
+        <div className="mb-5">
+          <ImageWithLoader
+            priority
+            src={cover.src}
+            width={780}
+            height={780}
+            alt={cover.alt}
+            sizes="100vw"
+            style={{
+              width: "100%",
+              height: "auto",
+              objectFit: "cover",
+            }}
+          />
+        </div>
+
+        <article className="mx-auto max-w-prose">{children}</article>
       </main>
 
       <footer className="mb-20 px-3">
@@ -83,10 +105,10 @@ export default function PostComponent({
 type Params = { params: { storyName: string; tripName: string } };
 
 export async function getStaticPaths() {
-  const paths: Params[] = sortAndFilterNotes(travelblogs).map(
+  const paths: Params[] = extractAndSortMetadata(travelblogs).map(
     ({ slug, parentFolder }) => ({
       params: {
-        tripName: slugify(parentFolder),
+        tripName: slugify(parentFolder as string),
         storyName: slug,
       },
     })
@@ -101,7 +123,12 @@ export async function getStaticPaths() {
 export async function getStaticProps({
   params: { storyName, tripName },
 }: Params) {
-  const stories = sortAndFilterNotes(travelblogs, tripName);
+  const stories = travelblogs
+    .filter(byOnlyPublished)
+    .sort(byDate)
+    .reverse()
+    .filter(({ parentFolder }) => tripName === parentFolder);
+
   const currentIndex = stories.findIndex((post) => post.slug === storyName);
 
   const travelingStory = stories[currentIndex];

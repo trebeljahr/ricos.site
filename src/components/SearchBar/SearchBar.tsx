@@ -1,9 +1,11 @@
+import Fuse from "fuse.js";
 import fuzzysort from "fuzzysort";
 import {
   ChangeEvent,
   Dispatch,
   SetStateAction,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { FiSearch } from "react-icons/fi";
@@ -21,6 +23,16 @@ export default function Search<T extends Record<string, any>>({
   searchKeys,
   searchByTitle = "Search...",
 }: SearchProps<T>) {
+  const fuse = useMemo(() => {
+    const options = {
+      includeScore: true,
+      useExtendedSearch: true,
+      keys: ["title"],
+    };
+
+    return new Fuse(all, options);
+  }, [all]);
+
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -35,7 +47,8 @@ export default function Search<T extends Record<string, any>>({
     });
 
     setFiltered(results.map((result) => result.obj));
-  }, [searchTerm, all, setFiltered, searchKeys]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm]);
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);

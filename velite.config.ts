@@ -27,6 +27,7 @@ import { interactive } from "hast-util-interactive";
 import { whitespace } from "hast-util-whitespace";
 import { SKIP } from "unist-util-visit";
 import { title } from "process";
+import { MDXResult } from "src/@types";
 
 const unknown = 1;
 const containsImage = 2;
@@ -220,12 +221,10 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   { meta }: { meta: ZodMeta }
 ): Promise<
   T & {
-    content: MDXRemoteSerializeResult<
-      Record<string, unknown>,
-      Record<string, unknown>
-    >;
+    content: MDXResult;
     rawContent: string;
     excerpt: string;
+    markdownExcerpt: MDXResult;
   }
 > => {
   const remarkPlugins: Pluggable[] = [
@@ -246,7 +245,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   const recmaPlugins: Pluggable[] = [];
 
   const rawContent = meta.content || "";
-  const mdxSource = await serialize(rawContent, {
+  const mdxOptions = {
     mdxOptions: {
       remarkPlugins,
       rehypePlugins,
@@ -256,13 +255,19 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
       },
     },
     parseFrontmatter: true,
-  });
+  };
+  const mdxSource = await serialize(rawContent, mdxOptions);
+
+  const excerptString = data.excerpt || generateExcerpt(rawContent, 280);
+
+  const markdownExcerpt = await serialize(excerptString, mdxOptions);
 
   return {
     ...data,
     content: mdxSource,
     rawContent,
-    excerpt: data.excerpt || generateExcerpt(rawContent, 280),
+    excerpt: excerptString,
+    markdownExcerpt,
   };
 };
 

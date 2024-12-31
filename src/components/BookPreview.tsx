@@ -1,15 +1,25 @@
-import { Booknote } from "@velite";
 import { ImageWithLoader } from "@components/ImageWithLoader";
+import { MDXRemote } from "next-mdx-remote";
 import Link from "next/link";
+import { CommonMetadata } from "src/lib/utils";
 import { MetadataDisplay } from "./MetadataDisplay";
 
 type Props = {
-  book: Booknote;
+  book: CommonMetadata;
   index: number;
 };
 
 export function BookPreview({ book, index }: Props) {
-  const { link, title, cover, excerpt, subtitle, bookAuthor, rating } = book;
+  const {
+    link,
+    title,
+    cover,
+    excerpt,
+    subtitle,
+    bookAuthor,
+    markdownExcerpt,
+    rating,
+  } = book;
 
   const defaultExcerpt = "";
   const priority = index < 3;
@@ -41,6 +51,7 @@ export function BookPreview({ book, index }: Props) {
         <h2 className="!my-0">
           <b>{title}</b>
         </h2>
+        <p className="!my-0">{subtitle}</p>
         <p className="!my-0">by {bookAuthor}</p>
 
         <MetadataDisplay
@@ -51,10 +62,10 @@ export function BookPreview({ book, index }: Props) {
         <p className="text-sm mt-2">🏆 Rated: {rating}/10</p>
 
         <div>
-          {excerpt ? (
-            <>
-              <p className="mb-2">{excerpt}</p>
-            </>
+          {markdownExcerpt ? (
+            <MDXRemote {...markdownExcerpt} />
+          ) : excerpt ? (
+            <p className="mb-2">{excerpt}</p>
           ) : (
             <p>{defaultExcerpt}</p>
           )}

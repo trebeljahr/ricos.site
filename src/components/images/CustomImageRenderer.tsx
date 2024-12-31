@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { RenderPhotoProps } from "react-photo-album";
 import { ImageProps } from "src/@types";
 
-export function NextJsImage({
+export function CustomImageRenderer({
   photo,
   imageProps,
   wrapperStyle,
@@ -26,7 +26,7 @@ export function NextJsImage({
     <div
       key={photo.id}
       ref={containerRef}
-      className="block relative bg-slate-50"
+      className="block relative"
       style={{ ...wrapperStyle }}
     >
       {dimensions && (

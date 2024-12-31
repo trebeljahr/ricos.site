@@ -18,6 +18,7 @@ import { UnitVectorDemo } from "./collisionDetection/UnitVectorDemo";
 import { MarkdownRenderers } from "./CustomRenderers";
 import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
 import { MdxGallery } from "./Galleries";
+import { MDXResult } from "src/@types";
 
 const allComponents = {
   UnitVectorDemo,
@@ -40,7 +41,7 @@ const allComponents = {
 };
 
 interface MDXProps {
-  source: Awaited<ReturnType<typeof serialize>>;
+  source: MDXResult;
 }
 
 export const MDXContent = ({ source }: MDXProps) => {

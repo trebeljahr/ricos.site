@@ -1,6 +1,6 @@
 import { Travelblog } from "@velite";
 import { nanoid } from "nanoid";
-import { ImageProps } from "src/@types";
+import { ImageProps, MDXResult } from "src/@types";
 
 export const toTitleCase = (str: string) =>
   str.slice(0, 1).toUpperCase() + str.slice(1);
@@ -28,6 +28,7 @@ export type CommonMetadata = {
 
   date: string;
   excerpt: string;
+  markdownExcerpt: MDXResult;
   link: string;
   tags: string;
   cover: {
@@ -73,6 +74,7 @@ export const toOnlyMetadata = (obj: CommonMetadata): CommonMetadata => {
     number,
     parentFolder,
     bookAuthor,
+    markdownExcerpt,
     rating,
     published,
     show,
@@ -86,6 +88,7 @@ export const toOnlyMetadata = (obj: CommonMetadata): CommonMetadata => {
     subtitle,
     excerpt,
     show,
+    markdownExcerpt,
     episode,
     metadata,
     cover,

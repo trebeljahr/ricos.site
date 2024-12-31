@@ -41,7 +41,7 @@ export const CustomLightBox = ({
       }}
       carousel={{ finite: true }}
       plugins={[Thumbnails, Zoom]}
-      render={{ slide: NextJsSlideImage, thumbnail: NextJsSlideImage }}
+      render={{ thumbnail: NextJsSlideImage }}
       thumbnails={{
         position: "bottom",
         border: 0,

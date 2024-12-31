@@ -1,4 +1,4 @@
-import { NextJsImage } from "@components/images/CustomRenderers";
+import { CustomImageRenderer } from "@components/images/CustomImageRenderer";
 import { useMemo } from "react";
 import { PhotoAlbum } from "react-photo-album";
 import { ImageProps } from "src/@types";
@@ -16,7 +16,7 @@ const SimpleGallery = ({ photos: images }: { photos: ImageProps[] }) => {
         photos={photos}
         targetRowHeight={400}
         layout="rows"
-        renderPhoto={NextJsImage}
+        renderPhoto={CustomImageRenderer}
         defaultContainerWidth={1200}
         onClick={(photo) => {
           openModal({

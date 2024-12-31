@@ -1,4 +1,4 @@
-import { NextJsImage } from "@components/images/CustomRenderers";
+import { CustomImageRenderer } from "@components/images/CustomImageRenderer";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { PhotoAlbum } from "react-photo-album";
@@ -66,7 +66,7 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
                     index: photo.index + i * groupSize,
                   });
                 }}
-                renderPhoto={NextJsImage}
+                renderPhoto={CustomImageRenderer}
                 defaultContainerWidth={1200}
                 sizes={{
                   size: "calc(100vw - 24px)",

@@ -11,14 +11,8 @@ import { DarkModeHandler } from "./DarkModeHandler";
 import { useScrollLock } from "src/hooks/useScrollLock";
 
 const navigation = ["posts", "newsletters", "photography"];
-const resources = [
-  "needlestack",
-  "booknotes",
-  "podcastnotes",
-  "travel",
-  "quotes",
-];
-const about = ["now", "principles", "1-month-projects"];
+const resources = ["needlestack", "booknotes", "podcastnotes", "quotes"];
+const about = ["now", "travel", "principles", "1-month-projects"];
 
 export function TailwindNavbar({
   withProgressBar = false,

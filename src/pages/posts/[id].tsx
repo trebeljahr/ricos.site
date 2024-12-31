@@ -95,7 +95,7 @@ type Params = { params: { id: string } };
 
 export async function getStaticProps({ params }: Params) {
   const post = posts
-    .filter(byOnlyPublished)
+    // .filter(byOnlyPublished)
     .find((post: Post) => post.slug === params.id);
   const otherPosts = posts
     .filter(byOnlyPublished)

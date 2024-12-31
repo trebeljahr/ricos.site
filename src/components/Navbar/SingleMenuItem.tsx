@@ -1,4 +1,4 @@
-import { Menu } from "@headlessui/react";
+import { Menu, MenuItem } from "@headlessui/react";
 import Link from "next/link";
 
 type SingleMenuItemProps = {
@@ -8,7 +8,7 @@ type SingleMenuItemProps = {
 
 export function SingleMenuItem({ link, closeNav }: SingleMenuItemProps) {
   return (
-    <Menu.Item>
+    <MenuItem>
       {({ close }) => (
         <Link
           href={`/${link}`}
@@ -21,6 +21,6 @@ export function SingleMenuItem({ link, closeNav }: SingleMenuItemProps) {
           {link}
         </Link>
       )}
-    </Menu.Item>
+    </MenuItem>
   );
 }

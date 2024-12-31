@@ -79,18 +79,19 @@ const TravelBlogs = ({ travelingStories, travelingBlogsMeta }: Props) => {
       const currentBlogs = travelingBlogsMeta.filter(
         (blog) => blog.parentFolder === story
       );
-      const { date, readingTime } = currentBlogs.reduce(
+      const { date, readingTime, amountOfStories } = currentBlogs.reduce(
         (agg, current) => {
           const currentDate = new Date(current.date);
           return {
             date: currentDate > agg.date ? currentDate : agg.date,
             readingTime: agg.readingTime + current.metadata.readingTime,
+            amountOfStories: agg.amountOfStories + 1,
           };
         },
-        { date: new Date(0), readingTime: 0 }
+        { date: new Date(0), readingTime: 0, amountOfStories: 0 }
       );
 
-      return { meta, date, readingTime, story };
+      return { meta, date, readingTime, story, amountOfStories };
     })
     .sort((a, b) => (a.date > b.date ? -1 : 1));
 
@@ -129,7 +130,7 @@ const TravelBlogs = ({ travelingStories, travelingBlogsMeta }: Props) => {
             title="Traveling"
             subtitle="Stories of the adventures and places I have been to"
           />
-          {cardContent.map(({ story, meta, date, readingTime }, index) => {
+          {cardContent.map(({ story, meta, date, amountOfStories }, index) => {
             return (
               <NiceCard
                 key={story}
@@ -138,7 +139,8 @@ const TravelBlogs = ({ travelingStories, travelingBlogsMeta }: Props) => {
                 priority={index === 0}
                 title={meta.title}
                 date={date.toISOString()}
-                readingTime={readingTime}
+                // readingTime={readingTime}
+                amountOfStories={amountOfStories}
                 link={`/travel/${story}`}
               />
             );

@@ -10,8 +10,9 @@ type NiceCardProps = {
   subtitle?: string;
   priority?: boolean;
   bigImage?: boolean;
-  date: string;
-  readingTime: number;
+  amountOfStories?: number;
+  date?: string;
+  readingTime?: number;
 };
 
 export function NiceCard({
@@ -22,6 +23,7 @@ export function NiceCard({
   excerpt,
   subtitle,
   date,
+  amountOfStories,
   readingTime,
 }: NiceCardProps) {
   return (
@@ -45,18 +47,19 @@ export function NiceCard({
             className="object-cover"
           />
         </div>
-        <div className="p-1 md:p-5 md:border-t-4 md:border-r-4 md:border-b-4 max-md:rounded-bl-lg max-md:rounded-br-lg md:rounded-tr-lg md:rounded-br-lg border-gray-200 dark:border-gray-700 prose-headings:mt-2 prose-p:text-zinc-800 dark:prose-p:text-slate-300 max-w-full">
-          {title && <h2 className="pt-0 font-bold leading-snug">{title}</h2>}
-          {subtitle && <h3 className="mt-1">{subtitle}</h3>}
-          {excerpt && (
-            <p className="break-words text-ellipsis w-full">{excerpt}</p>
-          )}
-          <MetadataDisplay
-            date={date}
-            readingTime={readingTime}
-            withAuthorInfo={false}
-            longFormDate={false}
-          />
+        <div className="p-1 md:p-5 md:border-t-4 md:border-r-4 md:border-b-4 max-md:rounded-bl-lg max-md:rounded-br-lg md:rounded-tr-lg md:rounded-br-lg border-gray-200 dark:border-gray-700 prose-headings:mt-2 prose-p:text-zinc-800 dark:prose-p:text-slate-300 w-full">
+          <div className="mx-auto max-w-prose">
+            {title && <h2 className="pt-0 font-bold leading-snug">{title}</h2>}
+            {subtitle && <h3 className="mt-1">{subtitle}</h3>}
+            {excerpt && <p className="break-words text-ellipsis">{excerpt}</p>}
+            <MetadataDisplay
+              date={date}
+              readingTime={readingTime}
+              amountOfStories={amountOfStories}
+              withAuthorInfo={false}
+              longFormDate={false}
+            />
+          </div>
         </div>
       </div>
     </Link>

@@ -6,10 +6,40 @@ import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { Booknote, booknotes } from "@velite";
+import { FaInfo } from "react-icons/fa";
 import { byOnlyPublished } from "src/lib/utils";
+
 type Props = {
   booknote: Booknote;
+};
+
+const AmazonLinkDisclaimer = () => {
+  return (
+    <div className="ml-2 group relative inline-block dark:text-white">
+      <button
+        type="button"
+        className="rounded-full p-2 bg-slate-200 dark:bg-gray-800"
+      >
+        <FaInfo className="w-3 h-3" />
+      </button>
+
+      <div className="invisible absolute left-0 -mt-[2px] flex flex-col group-focus-within:visible group-active:visible">
+        <div className="ml-1 -mb-[1px] inline-block overflow-hidden">
+          <div className="h-3 w-3 origin-bottom-left rotate-45 transform  bg-slate-200 dark:bg-gray-800"></div>
+        </div>
+
+        <div className="flex w-44 flex-col rounded-md bg-slate-200 dark:bg-gray-800 p-3">
+          <span className="text-xs">
+            This is an affiliate link. If you buy the book through this link, I
+            will get a small commission. This does not affect the price you pay
+            🤗
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const BuyItOnAmazon = ({ link }: { link: string }) => {
@@ -17,7 +47,12 @@ const BuyItOnAmazon = ({ link }: { link: string }) => {
     return null;
   }
 
-  return <ExternalLink href={link}>Buy it on Amazon</ExternalLink>;
+  return (
+    <div className="flex items-center">
+      <ExternalLink href={link}>Buy it on Amazon</ExternalLink>
+      <AmazonLinkDisclaimer />
+    </div>
+  );
 };
 
 const BooknoteComponent = ({ booknote }: Props) => {
@@ -68,14 +103,12 @@ const Book = ({ booknote }: Props) => {
                 priority={true}
               />
             </div>
-            <header className="h-fit w-full">
+            <header className="h-fit w-full ml-5">
               <hgroup>
-                <h1 className="my-0">{booknote.title}</h1>
-                <p className="my-0">{booknote.subtitle}</p>
-                <p> by {booknote.bookAuthor}</p>
-                <p>
-                  <b>Rating: {booknote.rating}/10</b>
-                </p>
+                <h1 className="!my-2">{booknote.title}</h1>
+                <p className="!mt-2 !mb-0">{booknote.subtitle}</p>
+                <p className="!mt-0 !mb-2">by {booknote.bookAuthor}</p>
+                <p className="!mt-12 !mb-2">🏆 Rated: {booknote.rating}/10</p>
                 <BuyItOnAmazon link={booknote.amazonAffiliateLink} />
               </hgroup>
             </header>

@@ -73,13 +73,13 @@ const Newsletter = ({
             {excerpt && <p>{excerpt}</p>}
 
             <PostBodyWithoutExcerpt content={content} />
+            <NewsletterForm />
           </div>
         </article>
       </main>
 
       <footer className="mb-20 px-3">
         <NextAndPrevArrows nextPost={nextPost} prevPost={prevPost} />
-        <NewsletterForm />
         <ToTopButton />
       </footer>
     </Layout>

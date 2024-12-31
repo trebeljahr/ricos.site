@@ -1,5 +1,9 @@
 import { ProgressBar } from "@components/ProgressBar";
-import { Disclosure } from "@headlessui/react";
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+} from "@headlessui/react";
 import Image from "next/image";
 import Link from "next/link";
 import { FiMenu, FiX } from "react-icons/fi";
@@ -73,12 +77,12 @@ function MobileVersion({ open, close }: NavbarProps) {
   return (
     <div>
       <div className="flex items-center">
-        <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700">
+        <DisclosureButton className="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700">
           <span className="sr-only">Open main menu</span>
           {open ? <FiX /> : <FiMenu />}
-        </Disclosure.Button>
+        </DisclosureButton>
       </div>
-      <Disclosure.Panel className="absolute z-50 top-12 p-2 w-screen h-screen right-0 bg-white dark:bg-gray-900">
+      <DisclosurePanel className="absolute z-50 top-12 p-2 w-screen h-screen right-0 bg-white dark:bg-gray-900">
         <div className="flex flex-col px-2 pb-3 pt-2 items-end justify-end">
           {navigation.map((item) => (
             <Link
@@ -86,7 +90,7 @@ function MobileVersion({ open, close }: NavbarProps) {
               href={"/" + item}
               className="block w-fit rounded-md px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 "
             >
-              <Disclosure.Button>{item}</Disclosure.Button>
+              <DisclosureButton>{item}</DisclosureButton>
             </Link>
           ))}
 
@@ -97,7 +101,7 @@ function MobileVersion({ open, close }: NavbarProps) {
           />
           <CollapsibleMenuMobile links={about} text="about" closeNav={close} />
         </div>
-      </Disclosure.Panel>
+      </DisclosurePanel>
     </div>
   );
 }

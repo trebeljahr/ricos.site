@@ -89,7 +89,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
           </div>
         </section>
 
-        <section className="dark:bg-slate-900 bg-slate-100 pt-1 pb-20 px-3">
+        <section className="dark:bg-gray-950 bg-slate-100 pt-1 pb-20 px-3">
           <HomePageSection
             cardGalleryProps={{
               content: props.postsSelection,
@@ -114,7 +114,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
           />
         </section>
 
-        <section className="dark:bg-slate-900 bg-slate-100 pt-1 pb-20 px-3">
+        <section className="dark:bg-gray-950 bg-slate-100 pt-1 pb-20 px-3">
           <HomePageSection
             cardGalleryProps={{
               content: props.newsletterSelection,
@@ -139,7 +139,7 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
           />
         </section>
 
-        <section className="dark:bg-slate-900 bg-slate-100 pt-1 pb-20 px-3">
+        <section className="dark:bg-gray-950 bg-slate-100 pt-1 pb-20 px-3">
           <div className="mx-auto max-w-4xl">
             <div className="max-w-2xl">
               <h2>Webpages</h2>

@@ -1,15 +1,14 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
+import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
+import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterSignup";
-import { NewsletterModalPopup } from "@components/NewsletterModalPopup";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { newsletters, type Newsletter as NewsletterType } from "@velite";
-import { ImageWithLoader } from "@components/ImageWithLoader";
 import { byOnlyPublished } from "src/lib/utils";
-import { MetadataDisplay } from "@components/MetadataDisplay";
 
 type Props = {
   newsletter: NewsletterType;
@@ -46,8 +45,6 @@ const Newsletter = ({
       withProgressBar={true}
     >
       <main className="mb-20 px-3">
-        <NewsletterModalPopup />
-
         <BreadCrumbs
           path={url}
           overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]}

@@ -24,6 +24,34 @@ const sortByNumbers = (arr: NewsletterData[]) => {
   return arr.sort((a, b) => -collator.compare(a.number, b.number));
 };
 
+const toNiceCard = (
+  {
+    link,
+    number,
+    title,
+    excerpt,
+    cover,
+    date,
+    metadata: { readingTime },
+  }: NewsletterData,
+  index: number
+) => {
+  const priority = index <= 1;
+
+  return (
+    <NiceCard
+      key={link}
+      cover={cover}
+      link={link}
+      excerpt={excerpt}
+      priority={priority}
+      title={`${title} | Live and Learn #${number}`}
+      date={date}
+      readingTime={readingTime}
+    />
+  );
+};
+
 const Newsletters = ({ newsletterData }: Props) => {
   const url = "newsletters";
   return (
@@ -66,73 +94,16 @@ const Newsletters = ({ newsletterData }: Props) => {
             subtitle={"All the Live and Learn Newsletters"}
             title={"Newsletters"}
           />
-          {newsletterData
-            .slice(0, 2)
-            .map(
-              (
-                {
-                  link,
-                  number,
-                  title,
-                  excerpt,
-                  cover,
-                  date,
-                  metadata: { readingTime },
-                },
-                index
-              ) => {
-                const priority = index <= 1;
-
-                return (
-                  <NiceCard
-                    key={link}
-                    cover={cover}
-                    link={link}
-                    excerpt={excerpt}
-                    priority={priority}
-                    title={`${title} | Live and Learn #${number}`}
-                    date={date}
-                    readingTime={readingTime}
-                  />
-                );
-              }
-            )}
+          {newsletterData.slice(0, 2).map(toNiceCard)}
 
           <div className="my-32">
-            <NewsletterForm link={<></>} />
+            <NewsletterForm
+              link={<></>}
+              heading={<h2 className="mt-0">Not subscribed yet? 🙊</h2>}
+            />
           </div>
 
-          {newsletterData
-            .slice(2)
-            .map(
-              (
-                {
-                  link,
-                  number,
-                  title,
-                  excerpt,
-                  cover,
-                  date,
-                  metadata: { readingTime },
-                },
-                index
-              ) => {
-                const priority = index <= 1;
-
-                return (
-                  <NiceCard
-                    key={link}
-                    cover={cover}
-                    link={link}
-                    excerpt={excerpt}
-                    priority={priority}
-                    title={`${title} | Live and Learn #${number}`}
-                    date={date}
-                    readingTime={readingTime}
-                  />
-                );
-              }
-            )}
+          {newsletterData.slice(2).map(toNiceCard)}
         </section>
       </main>
 

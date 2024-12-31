@@ -36,7 +36,7 @@ export function TailwindNavbar({
             withProgressBar ? "" : "pb-2"
           }`}
         >
-          <nav className="mx-auto max-w-7xl px-2 pb-1 xl:px-8 flex items-center justify-between">
+          <nav className="mx-auto max-w-7xl px-3 pb-1 flex items-center justify-between">
             <Link
               href="/"
               className="flex flex-shrink-0 items-center not-prose"

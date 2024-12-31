@@ -93,68 +93,74 @@ export const NewsletterForm = ({
     <h2 className="pt-0 mt-0">Subscribe to Live and Learn 🌱</h2>
   );
 
-  return success ? (
-    <div className="rounded-md overflow-hidden p-3 py-3 bg-white prose shadow-lg mx-auto w-full">
-      <div className="newsletter-success-ribbon mb-10" />
-      <div className="ml-2 md:ml-5">
-        <div className="flex w-full justify-center">
-          <ConfettiExplosion {...mediumConfettiProps} />
+  return (
+    <div className="w-9/12">
+      {success ? (
+        <div className="rounded-md overflow-hidden p-3 py-3 bg-white prose shadow-lg w-full">
+          <div className="newsletter-success-ribbon mb-10" />
+          <div className="ml-2 md:ml-5">
+            <div className="flex w-full justify-center">
+              <ConfettiExplosion {...mediumConfettiProps} />
+            </div>
+            <h2 className="pt-0 mt-0 mb-3 flex items-center">
+              Success
+              <FaCheckCircle className="text-green-500 ml-2" />
+            </h2>
+            <p>{success}</p>
+
+            {!link && defaultLink}
+
+            <button
+              className="mt-5 font-thin text-left"
+              onClick={() => setSuccess(null)}
+              aria-label="Sign up with another email address"
+            >
+              Want to sign up with another email address?
+            </button>
+          </div>
+
+          <div className="newsletter-success-ribbon mt-10" />
         </div>
-        <h2 className="pt-0 mt-0 mb-3 flex items-center">
-          Success
-          <FaCheckCircle className="text-green-500 ml-2" />
-        </h2>
-        <p>{success}</p>
+      ) : (
+        <div className="px-5 py-10 rounded-lg bg-white dark:bg-gray-800 border-4 border-gray-200 dark:border-gray-700">
+          {heading || defaultHeading}
+          {text || defaultText}
 
-        {!link && defaultLink}
+          <form className="form flex flex-col justify-center">
+            <div className="flex items-center">
+              <input
+                name="email"
+                type="email"
+                aria-invalid={!!error}
+                aria-describedby={error ? "email-error" : undefined}
+                required
+                autoComplete="email"
+                className={`pl-2 focus:outline-none w-1/2 bg-slate-100 dark:bg-gray-900  dark:text-white py-2 bg-inherit ${
+                  error
+                    ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                    : ""
+                }`}
+                value={email}
+                placeholder="Type your email..."
+                onChange={handleInput}
+                ref={emailInputRef}
+              />
+              <FancyButton
+                onClick={handleSubmit}
+                type="submit"
+                className="w-40 flex justify-center min-h-fit ml-10"
+                disabled={loading}
+                aria-label="Subscribe to the newsletter"
+              >
+                {loading ? <SpinningLoader /> : "Subscribe"}
+              </FancyButton>
+            </div>
 
-        <button
-          className="mt-5 font-thin text-left"
-          onClick={() => setSuccess(null)}
-          aria-label="Sign up with another email address"
-        >
-          Want to sign up with another email address?
-        </button>
-      </div>
-
-      <div className="newsletter-success-ribbon mt-10" />
+            {/* <button></button> */}
+            {link || defaultLink}
+          </form>
+        </div>
+      )}
     </div>
-  ) : (
-    <>
-      {heading || defaultHeading}
-      {text || defaultText}
-
-      <form className="form">
-        <input
-          name="email"
-          type="email"
-          aria-invalid={!!error}
-          aria-describedby={error ? "email-error" : undefined}
-          required
-          autoComplete="email"
-          className={`focus:outline-none w-full border-b-2 border-gray-950 dark:border-gray-100 dark:text-white py-2 bg-inherit mb-6 ${
-            error
-              ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-              : ""
-          }`}
-          value={email}
-          placeholder="Type your email..."
-          onChange={handleInput}
-          ref={emailInputRef}
-        />
-
-        <FancyButton
-          onClick={handleSubmit}
-          type="submit"
-          className="w-full flex justify-center"
-          disabled={loading}
-          aria-label="Subscribe to the newsletter"
-        >
-          {loading ? <SpinningLoader /> : "Subscribe"}
-        </FancyButton>
-        {/* <button></button> */}
-        {link || defaultLink}
-      </form>
-    </>
   );
 };

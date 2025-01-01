@@ -1,5 +1,5 @@
 import { type Post, type Travelblog } from "@velite";
-import { NiceCard } from "./NiceCard";
+import { HorizontalCard } from "./NiceCards";
 import { CommonMetadata } from "src/lib/utils";
 
 type Props = {
@@ -11,17 +11,17 @@ export const PostPreview = ({
   post: {
     title,
     cover,
-    excerpt,
+    markdownExcerpt,
     slug,
     date,
     metadata: { readingTime },
   },
 }: Props) => {
   return (
-    <NiceCard
+    <HorizontalCard
       title={title}
       cover={cover}
-      excerpt={excerpt}
+      markdownExcerpt={markdownExcerpt}
       link={slug}
       date={date}
       readingTime={readingTime}
@@ -42,7 +42,7 @@ export const OtherPostsPreview = ({ posts }: { posts: CommonMetadata[] }) => {
             slug,
             link,
             title,
-            excerpt,
+            markdownExcerpt,
             cover,
             date,
             metadata: { readingTime },
@@ -52,11 +52,11 @@ export const OtherPostsPreview = ({ posts }: { posts: CommonMetadata[] }) => {
           const priority = index <= 1;
 
           return (
-            <NiceCard
+            <HorizontalCard
               key={slug}
               cover={cover}
               link={link}
-              excerpt={excerpt}
+              markdownExcerpt={markdownExcerpt}
               priority={priority}
               title={title}
               date={date}

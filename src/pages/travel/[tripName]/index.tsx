@@ -1,6 +1,6 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
-import { NiceCard } from "@components/NiceCard";
+import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { travelblogs } from "@velite";
 import { nanoid } from "nanoid";
@@ -56,7 +56,7 @@ const Traveling = ({ posts, tripName }: Props) => {
             const priority = index <= 1;
 
             return (
-              <NiceCard
+              <HorizontalCard
                 key={nanoid()}
                 priority={priority}
                 readingTime={post.metadata.readingTime}

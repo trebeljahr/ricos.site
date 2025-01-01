@@ -1,10 +1,11 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
-import { NiceCard } from "@components/NiceCard";
+import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { Travelblog, travelblogs } from "@velite";
+import { MDXResult } from "src/@types";
 import { byOnlyPublished } from "src/lib/utils";
 
 type MetaInfo = {
@@ -132,7 +133,7 @@ const TravelBlogs = ({ travelingStories, travelingBlogsMeta }: Props) => {
           />
           {cardContent.map(({ story, meta, date, amountOfStories }, index) => {
             return (
-              <NiceCard
+              <HorizontalCard
                 key={story}
                 cover={meta.cover}
                 excerpt={meta.excerpt}

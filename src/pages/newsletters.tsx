@@ -2,7 +2,7 @@ import { type Newsletter, newsletters } from "@velite";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
-import { NiceCard } from "@components/NiceCard";
+import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import {
   byOnlyPublished,
@@ -31,7 +31,7 @@ const toNiceCard = (
     link,
     number,
     title,
-    excerpt,
+    markdownExcerpt,
     cover,
     date,
     metadata: { readingTime },
@@ -41,11 +41,11 @@ const toNiceCard = (
   const priority = index <= 1;
 
   return (
-    <NiceCard
+    <HorizontalCard
       key={link}
       cover={cover}
       link={link}
-      excerpt={excerpt}
+      markdownExcerpt={markdownExcerpt}
       priority={priority}
       title={`${title} | Live and Learn #${number}`}
       date={date}

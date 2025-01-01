@@ -11,7 +11,7 @@ import {
 } from "react";
 import { FaChevronRight } from "react-icons/fa";
 import { FaChevronLeft } from "react-icons/fa6";
-import { NiceCardSmall } from "./NiceCard";
+import { VerticalCard } from "./NiceCards";
 import { CommonMetadata } from "src/lib/utils";
 
 export type CardGalleryProps = {
@@ -28,11 +28,13 @@ export const CardGallery = ({
   return (
     <div className="grid gap-2 md:gap-4 lg:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max  justify-items-center pb-5">
       {content.map((singlePiece) => (
-        <NiceCardSmall
+        <VerticalCard
           key={singlePiece.slug}
           readingTime={singlePiece.metadata.readingTime}
           {...singlePiece}
-          excerpt={withExcerpt ? singlePiece.excerpt : undefined}
+          markdownExcerpt={
+            withExcerpt ? singlePiece.markdownExcerpt : undefined
+          }
           subtitle={withSubtitle ? singlePiece.subtitle : undefined}
         />
       ))}
@@ -169,9 +171,11 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
             data-index={index}
             className="px-3 flex self-stretch w-full md:w-1/2 xl:w-1/3 3xl:w-1/4 snap-start shrink-0"
           >
-            <NiceCardSmall
+            <VerticalCard
               {...singlePiece}
-              excerpt={withExcerpt ? singlePiece.excerpt : undefined}
+              markdownExcerpt={
+                withExcerpt ? singlePiece.markdownExcerpt : undefined
+              }
               subtitle={withDescription ? singlePiece.subtitle : undefined}
               readingTime={singlePiece.metadata.readingTime}
             />

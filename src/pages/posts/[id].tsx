@@ -10,7 +10,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import { Post, posts } from "@velite";
 import { ReactNode } from "react";
 import { getRandom } from "src/lib/math/getRandom";
-import { byOnlyPublished } from "src/lib/utils";
+import { byOnlyPublished, extractAndSortMetadata } from "src/lib/utils";
 
 type Props = {
   children: ReactNode;
@@ -114,18 +114,10 @@ export async function getStaticProps({ params }: Params) {
   const post = posts
     // .filter(byOnlyPublished)
     .find((post: Post) => post.slug === params.id);
-  const otherPosts = posts
-    .filter(byOnlyPublished)
-    .filter((post) => post.slug !== params.id)
-    .map(({ title, cover, slug, excerpt, date, tags, metadata }) => ({
-      title,
-      slug,
-      cover,
-      excerpt,
-      date,
-      metadata,
-      tags,
-    }));
+  const otherPosts = extractAndSortMetadata(posts).filter(
+    (post) => post.slug !== params.id
+  );
+
   const morePosts = getRandom(otherPosts, 3);
 
   return { props: { post, morePosts } };

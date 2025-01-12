@@ -16,7 +16,7 @@ type DesktopMenuProps = {
 
 export function CollapsibleMenuDesktop({ links, text }: DesktopMenuProps) {
   return (
-    <Menu as="div" className="block relative ml-3">
+    <Menu as="div" className="h-fit block relative ml-3">
       <MenuButton className="block hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md px-3 py-2">
         <span className="flex items-center justify-center">
           <span>{text}</span>

@@ -28,7 +28,7 @@ export function TailwindNavbar({
       {({ open, close }) => (
         <header
           id="navbar"
-          className={`sticky top-0 prose-a:no-underline prose-a:hover:text-inherit prose-a:font-light font-light prose-a:text-inherit left-0 z-50 ${
+          className={`fixed top-0 prose-a:no-underline prose-a:hover:text-inherit prose-a:font-light font-light prose-a:text-inherit left-0 z-[999] ${
             open ? "bg-white" : "glassy hover:bg-white dark:bg-gray-900"
           } w-full dark:bg-none dark:bg-gray-900 pt-3 transition-colors duration-300 ${
             withProgressBar ? "" : "pb-2"
@@ -108,7 +108,7 @@ function MobileVersion({ open, close }: NavbarProps) {
 
 function DesktopVersion() {
   return (
-    <div className="w-full flex flex-1 mr-0 items-center">
+    <div className="h-fit w-full flex flex-1 mr-0 items-center">
       <div className="ml-6 block justify-self-end">
         <div className="flex space-x-4">
           {navigation.map((item) => (

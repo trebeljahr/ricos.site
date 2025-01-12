@@ -30,7 +30,7 @@ const Layout = ({
   const properTitle = toTitleCase(title);
 
   return (
-    <div className="block relative w-full p-0 m-0">
+    <div className="block relative w-full p-0 m-0 min-h-fit overflow-visible">
       <Meta
         description={description}
         title={properTitle}

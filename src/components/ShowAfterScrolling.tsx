@@ -15,17 +15,7 @@ export function useScrollVisibility({
       const scrollPercent =
         (window.scrollY / (documentHeight - windowHeight)) * 100;
 
-      // const scrolled = document.documentElement.scrollTop;
-      // const maxHeight = document.documentElement.scrollHeight;
-      // const threshold = window.innerHeight * howFarDown;
-
-      // const scrollPercentage = (scrolled / maxHeight) * 100;
-      console.log(scrollPercent);
-
       let shouldBeVisible = scrollPercent > howFarDown;
-      // if (scrollPercent > threshold) {
-      //   shouldBeVisible = scrolled > maxHeight * 0.5;
-      // }
 
       if (shouldBeVisible && !hasTriggered) {
         setVisible(true);

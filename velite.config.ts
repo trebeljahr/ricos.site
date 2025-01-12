@@ -174,7 +174,11 @@ const remarkGroupImages: Pluggable = () => {
 
                     return { width, height, src };
                   } catch (err) {
-                    console.error("Error getting image dimensions", err);
+                    console.error(
+                      "Error getting image dimensions for src:",
+                      src,
+                      err
+                    );
 
                     return {
                       alt: "",

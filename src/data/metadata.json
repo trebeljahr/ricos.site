@@ -56803,5 +56803,138 @@
     "height": 768,
     "aspectRatio": 2,
     "existsInS3": true
+  },
+  "assets/newsletter/59/clouds-and-jungle.jpeg": {
+    "key": "assets/newsletter/59/clouds-and-jungle.jpeg",
+    "width": 5120,
+    "height": 3406,
+    "aspectRatio": 1.5032295948326482,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/colombia-mountain-range.jpeg": {
+    "key": "assets/newsletter/59/colombia-mountain-range.jpeg",
+    "width": 4080,
+    "height": 3072,
+    "aspectRatio": 1.328125,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/bamboo-forest.jpeg": {
+    "key": "assets/newsletter/59/bamboo-forest.jpeg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/almuerzo.jpeg": {
+    "key": "assets/newsletter/59/almuerzo.jpeg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/clouds-and-trees.jpeg": {
+    "key": "assets/newsletter/59/clouds-and-trees.jpeg",
+    "width": 4080,
+    "height": 2147,
+    "aspectRatio": 1.9003260363297625,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/crazy-road.jpeg": {
+    "key": "assets/newsletter/59/crazy-road.jpeg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/highway-cyclist.jpeg": {
+    "key": "assets/newsletter/59/highway-cyclist.jpeg",
+    "width": 3396,
+    "height": 2738,
+    "aspectRatio": 1.2403214024835647,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/lonely-palm-tree.jpeg": {
+    "key": "assets/newsletter/59/lonely-palm-tree.jpeg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/lonely-tree.jpeg": {
+    "key": "assets/newsletter/59/lonely-tree.jpeg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/finca.jpeg": {
+    "key": "assets/newsletter/59/finca.jpeg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/mountains-colombia.jpeg": {
+    "key": "assets/newsletter/59/mountains-colombia.jpeg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/on-the-mountain-top.jpeg": {
+    "key": "assets/newsletter/59/on-the-mountain-top.jpeg",
+    "width": 4080,
+    "height": 3072,
+    "aspectRatio": 1.328125,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/palm-forest.jpeg": {
+    "key": "assets/newsletter/59/palm-forest.jpeg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/palm-forest-with-flower.jpeg": {
+    "key": "assets/newsletter/59/palm-forest-with-flower.jpeg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/palms-behind-clouds.jpeg": {
+    "key": "assets/newsletter/59/palms-behind-clouds.jpeg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/palms-japanese-art.jpeg": {
+    "key": "assets/newsletter/59/palms-japanese-art.jpeg",
+    "width": 3449,
+    "height": 2542,
+    "aspectRatio": 1.3568056648308418,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/river-panorama.jpeg": {
+    "key": "assets/newsletter/59/river-panorama.jpeg",
+    "width": 3604,
+    "height": 1645,
+    "aspectRatio": 2.1908814589665653,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/sunset-over-mountains.jpeg": {
+    "key": "assets/newsletter/59/sunset-over-mountains.jpeg",
+    "width": 4080,
+    "height": 3072,
+    "aspectRatio": 1.328125,
+    "existsInS3": true
+  },
+  "assets/newsletter/59/waterfall.jpeg": {
+    "key": "assets/newsletter/59/waterfall.jpeg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
   }
 }

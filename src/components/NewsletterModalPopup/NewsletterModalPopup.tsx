@@ -1,16 +1,17 @@
 import { NewsletterForm } from "@components/NewsletterForm";
 import { useScrollVisibility } from "@components/ShowAfterScrolling";
-import { Dialog, Transition } from "@headlessui/react";
+import {
+  Dialog,
+  DialogPanel,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 import { Fragment } from "react";
 import { FiX } from "react-icons/fi";
 import { useScrollLock } from "src/hooks/useScrollLock";
 import useLocalStorageState from "use-local-storage-state";
 
-const NewsletterModalPopup = ({
-  howFarDown = 1.5,
-}: {
-  howFarDown?: number;
-}) => {
+const NewsletterModalPopup = ({ howFarDown = 50 }: { howFarDown?: number }) => {
   const [dismissed, setDismissed] = useLocalStorageState(
     "newsletter-popup-dismissed",
     {
@@ -23,7 +24,7 @@ const NewsletterModalPopup = ({
   }
 
   function closeModalForGood() {
-    // setDismissed(true);
+    setDismissed(true);
     closeModal();
   }
 
@@ -38,7 +39,7 @@ const NewsletterModalPopup = ({
   return (
     <Transition appear show={show} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={closeModalForGood}>
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -48,10 +49,10 @@ const NewsletterModalPopup = ({
           leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-black/25" />
-        </Transition.Child>
+        </TransitionChild>
         <div className="fixed inset-0 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-1 md:p-5 text-center">
-            <Transition.Child
+            <TransitionChild
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0 scale-95"
@@ -60,7 +61,7 @@ const NewsletterModalPopup = ({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-5 pt-10 md:p-12 text-left align-middle shadow-xl transition-all">
+              <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-5 pt-10 md:p-12 text-left align-middle shadow-xl transition-all">
                 <NewsletterForm
                   heading={<h2 className="mt-0">Not subscribed yet?</h2>}
                   text={
@@ -87,8 +88,8 @@ const NewsletterModalPopup = ({
                 >
                   <FiX className="w-6 h-6" />
                 </button>
-              </Dialog.Panel>
-            </Transition.Child>
+              </DialogPanel>
+            </TransitionChild>
           </div>
         </div>
       </Dialog>

@@ -1,19 +1,31 @@
 import { ReactElement, useEffect, useState } from "react";
 
-export function useScrollVisibility({ howFarDown }: { howFarDown: number }) {
+export function useScrollVisibility({
+  howFarDown = 50,
+}: {
+  howFarDown: number;
+}) {
   const [visible, setVisible] = useState(false);
   const [hasTriggered, setHasTriggered] = useState(false);
 
   useEffect(() => {
     const toggleVisible = () => {
-      const scrolled = document.documentElement.scrollTop;
-      const maxHeight = document.documentElement.scrollHeight;
-      const threshold = window.innerHeight * howFarDown;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const scrollPercent =
+        (window.scrollY / (documentHeight - windowHeight)) * 100;
 
-      let shouldBeVisible = scrolled > threshold;
-      if (threshold > maxHeight) {
-        shouldBeVisible = scrolled > maxHeight * 0.5;
-      }
+      // const scrolled = document.documentElement.scrollTop;
+      // const maxHeight = document.documentElement.scrollHeight;
+      // const threshold = window.innerHeight * howFarDown;
+
+      // const scrollPercentage = (scrolled / maxHeight) * 100;
+      console.log(scrollPercent);
+
+      let shouldBeVisible = scrollPercent > howFarDown;
+      // if (scrollPercent > threshold) {
+      //   shouldBeVisible = scrolled > maxHeight * 0.5;
+      // }
 
       if (shouldBeVisible && !hasTriggered) {
         setVisible(true);

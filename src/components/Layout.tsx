@@ -3,6 +3,7 @@ import { TailwindNavbar } from "./Navbar/TailwindNavbar";
 import { ReactNode } from "react";
 import { toTitleCase } from "src/lib/utils";
 import { Meta } from "./Meta";
+import clsx from "clsx";
 
 type Props = {
   children: ReactNode;
@@ -47,11 +48,13 @@ const Layout = ({
       <TailwindNavbar withProgressBar={withProgressBar} />
 
       <div
-        className={
+        className={clsx(
           fullScreen
             ? "w-full mx-auto max-w-full"
-            : "w-full mx-auto max-w-5xl overflow-x-clip"
-        }
+            : "w-full mx-auto max-w-5xl overflow-x-clip",
+
+          "pt-20"
+        )}
       >
         {children}
       </div>

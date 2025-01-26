@@ -113,6 +113,7 @@ async function uploadDir(directoryPath: string) {
       uploadWithMetadata(filePath, key, {
         width: String(data?.width),
         height: String(data?.height),
+        aspectRatio: String(data?.width / data?.height),
       })
     );
     progress.update(counter++);

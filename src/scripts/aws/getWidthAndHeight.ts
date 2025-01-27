@@ -1,8 +1,9 @@
-import sizeOf from "image-size";
+import { createReadStream } from "fs";
+import probe from "probe-image-size";
 
 export async function getWidthAndHeightFromFileSystem(imagePath: string) {
   try {
-    const { width, height } = sizeOf(imagePath);
+    const { width, height } = await probe(createReadStream(imagePath));
 
     if (!width || !height) {
       throw new Error("Failed to get image dimensions");

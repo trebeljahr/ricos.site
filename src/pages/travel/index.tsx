@@ -67,6 +67,17 @@ export const travelingStoriesMeta: Record<string, MetaInfo> = {
     excerpt:
       "Martinique is a beautiful little island in the Carribean, with lots of jungle, pristine beaches, some crazy old trees, good rhum and friendly people. I hitchhiked around the island for 5 days and want to come back for sure!",
   },
+  dominica: {
+    cover: {
+      src: "/assets/blog/dominica/PXL_20240506_203704114.LONG_EXPOSURE-01.COVER~2.jpg",
+      alt: "long exposure of one of the two Trafalgar Falls called Mama falls",
+    },
+    title: "Dominica",
+    subtitle:
+      "Volcanic Activity, Hotsprings and crazy Waterfalls on a laid back Island in the Carribean",
+    excerpt:
+      "In Dominica you can feel the volcanic activity everywhere. The island is covered in lush jungle, has some of the most beautiful waterfalls I've ever seen in my life and places that are just out of this world. Boiling lakes, hot springs next to giant waterfalls, bubbling thermal vents in the ocean, and a laid back vibe that makes you want to stay forever.",
+  },
 };
 
 const TravelBlogs = ({ travelingStories, travelingBlogsMeta }: Props) => {

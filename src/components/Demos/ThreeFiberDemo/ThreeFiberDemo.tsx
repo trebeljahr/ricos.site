@@ -1,12 +1,12 @@
 import { SpinningLoader } from "@components/SpinningLoader";
 import { lazy, Suspense } from "react";
 
-const ThreeJs = lazy(() => import("./ThreeJs"));
+const ThreeJsBox = lazy(() => import("./ThreeJsBox"));
 
 const _Component = () => {
   return (
     <Suspense fallback={<SpinningLoader />}>
-      <ThreeJs />
+      <ThreeJsBox />
     </Suspense>
   );
 };

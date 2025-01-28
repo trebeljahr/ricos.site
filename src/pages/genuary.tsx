@@ -207,27 +207,24 @@ function TripleNestedLoopSketch() {
   useEffect(() => {
     const interval = setInterval(() => {
       setSize((prev) => (prev + 5 > initialSize * 5 ? initialSize : prev + 1));
-    }, 1000);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
   const boxes = useMemo(() => {
     const out: [number, number, number][] = [];
     const radius = size / 2;
-    const center = (size - 1) / 2;
-    const epsilon = 4; // Thickness of the surface (tolerance)
 
     const lengthSq = (x: number, y: number, z: number) => {
       return x * x + y * y + z * z;
     };
 
     const makeSphere = (radius: number, filled: boolean) => {
-      radius += 0.5; //I think they do this so the radius is measured from the center of the block
-      const radiusSq = radius * radius; //Square of the radius, so we don't need to use square roots for distance calcs
-      const radius1Sq = (radius - 1.0) * (radius - 1.0); //Square of the radius of a circle 1 block smaller, for making a hollow sphere
+      radius += 0.5;
+      const radiusSq = radius * radius;
+      const radius1Sq = (radius - 1.0) * (radius - 1.0);
+      const ceilRadius = Math.ceil(radius);
 
-      const ceilRadius = Math.ceil(radius); //Round the radius up
-      //Loop through x,y,z up to the rounded radius
       for (let x = 0; x <= ceilRadius; x++) {
         for (let y = 0; y <= ceilRadius; y++) {
           for (let z = 0; z <= ceilRadius; z++) {
@@ -259,24 +256,14 @@ function TripleNestedLoopSketch() {
       }
     };
 
-    // for (let x = 0; x < size * 2; x++) {
-    //   for (let y = 0; y < size * 2; y++) {
-    //     for (let z = 0; z < size * 2; z++) {
-    //       const distanceSquared =
-    //         Math.pow(x - center, 2) +
-    //         Math.pow(y - center, 2) +
-    //         Math.pow(z - center, 2);
-
-    //       if (Math.abs(distanceSquared - Math.pow(radius, 2)) <= epsilon) {
-    //         out.push({ x, y, z });
-    //       }
-    //     }
-    //   }
-    // }
     makeSphere(radius, false);
 
-    return out;
+    return [...new Set(out.map((e) => e.join(",")))].map((str) =>
+      str.split(",").map(Number)
+    );
   }, [size]);
+
+  console.log(boxes);
 
   return (
     <div className="w-[768px] h-[500px]">
@@ -285,7 +272,6 @@ function TripleNestedLoopSketch() {
         <color attach="background" args={["#FEFCFB"]} />
 
         <ambientLight />
-        {/* <pointLight position={[10, 10, 10]} /> */}
         <Stage
           key={size + "stage"}
           adjustCamera
@@ -293,15 +279,15 @@ function TripleNestedLoopSketch() {
           shadows="contact"
           environment="city"
         >
-          <Instances key={size + "instances"} limit={size * size * size}>
+          <Instances key={size + "instances"} limit={boxes.length + 1}>
             <boxGeometry args={[1, 1, 1]} />
             <meshStandardMaterial />
             {boxes.map(([x, y, z]) => (
               <Instance
-                key={`${x}-${y}-${z}`}
+                key={`${size}:${x},${y},${z}`}
                 color="#1282A2"
                 scale={2}
-                position={[x, y + 10, z]}
+                position={[x, y + 20, z]}
                 rotation={[0, 0, 0]}
               />
             ))}

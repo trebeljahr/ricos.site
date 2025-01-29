@@ -1,5 +1,7 @@
 {
-  "private": true,
+  "name": "ricos.site",
+  "author": "Rico Trebeljahr",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

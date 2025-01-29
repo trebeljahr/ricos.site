@@ -42,11 +42,11 @@ export function TailwindNavbar({
               <Image
                 className="h-5 w-auto mr-1"
                 src="/favicon/apple-touch-icon.png"
-                alt="trebeljahr"
+                alt="ricos.site logo of a chemistry beaker"
                 width={32}
                 height={32}
               />
-              <span className="ml-1 text-xl font-bold">Rico Trebeljahr</span>
+              <span className="ml-1 text-xl font-bold">ricos.site</span>
             </Link>
 
             <div className="flex xl:hidden">

@@ -22,12 +22,11 @@ import {
 } from "src/lib/utils";
 
 const IndexPage = (props: Props) => {
-  const description = `trebeljahr - a website about the things Rico Trebeljahr does, reads and thinks about. The topics can vary widely, 
-from programming, bio-chemistry, the brain, investing, physics, philosophy to photography, traveling and back...`;
+  const description = `Welcome to a wild collection of all the things Rico Trebeljahr creates: A bi-weekly newsletter, photography, booknotes, blog posts, travel stories and more.`;
 
   return (
     <Layout
-      title="home - Hi there 👋🏻 I am Rico. A programmer, traveler, photographer..."
+      title="Home"
       description={description}
       image="/assets/midjourney/young-man-looking-absolutely-relaxed-while-reading-a-book-in-the-milkyway.jpg"
       imageAlt={"a person reading a book, while floating in space"}
@@ -42,10 +41,6 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
         "life",
         "live and learn",
         "quotes",
-        "trebeljahr",
-        "trebeljahr.com",
-        "ricotrebeljahr.com",
-        "ricotrebeljahr.de",
         "ricos.site",
         "Rico Trebeljahr",
         "philosophy",
@@ -60,9 +55,9 @@ from programming, bio-chemistry, the brain, investing, physics, philosophy to ph
               Hi there <WavingHand />
             </h2>
             <span>
-              I am Rico. A programmer, traveler, photographer, writer and fellow
-              human. This is my personal website. It&apos;s where I write,
-              publish my newsletter, collect booknotes, quotes, traveling
+              I am Rico Trebeljahr. A programmer, traveler, photographer, writer
+              and fellow human. This is my personal website. It&apos;s where I
+              write, publish my newsletter, collect booknotes, quotes, traveling
               stories, and photography.
             </span>
             <p>

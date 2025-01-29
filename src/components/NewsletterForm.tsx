@@ -90,7 +90,7 @@ export const NewsletterForm = ({
   );
 
   const defaultHeading = (
-    <h2 className="pt-0 mt-0">Subscribe to Live and Learn 🌱</h2>
+    <h2 className="!mt-0">Subscribe to Live and Learn 🌱</h2>
   );
 
   return (
@@ -122,7 +122,7 @@ export const NewsletterForm = ({
           <div className="newsletter-success-ribbon mt-10" />
         </div>
       ) : (
-        <div className="px-5 pb-10 rounded-lg bg-white dark:bg-gray-800 border-4 border-gray-200 dark:border-gray-700">
+        <div className="px-5 py-10 rounded-lg bg-white dark:bg-gray-800 border-4 border-gray-200 dark:border-gray-700">
           {heading || defaultHeading}
           {text || defaultText}
 

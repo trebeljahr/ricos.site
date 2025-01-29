@@ -43,13 +43,11 @@ const generalKeywords = [
   "Rico's Writing",
   "Rico's Work",
   "Rico's Life",
-  "trebeljahr.com",
-  "www.trebeljahr.com",
   "ricos.blog",
   "ricos.garden",
   "ricos.wiki",
-  "wiki",
   "ricos.site",
+  "wiki",
   "writing",
   "blog",
 ];
@@ -68,9 +66,15 @@ export const Meta = ({
         <link rel="canonical" href={completeUrl(url)} />
 
         <meta name="description" content={description} />
-        <meta name="application-name" content="Rico's Site" />
+        <meta name="application-name" content="ricos site" />
         <meta name="author" content="Rico Trebeljahr" />
         <link rel="author" href={baseUrl} />
+
+        {/* Pinterest Domain Verification */}
+        <meta
+          name="p:domain_verify"
+          content="d355ee7955ac253c916874514a8ee100"
+        />
 
         <meta name="generator" content="Next.js" />
         <meta

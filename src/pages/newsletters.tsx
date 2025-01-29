@@ -1,15 +1,11 @@
-import { type Newsletter, newsletters } from "@velite";
-import { ToTopButton } from "@components/ToTopButton";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
-import {
-  byOnlyPublished,
-  CommonMetadata,
-  extractAndSortMetadata,
-} from "src/lib/utils";
-import { BreadCrumbs } from "@components/BreadCrumbs";
+import { ToTopButton } from "@components/ToTopButton";
+import { newsletters } from "@velite";
+import { CommonMetadata, extractAndSortMetadata } from "src/lib/utils";
 
 type Props = {
   newsletterData: CommonMetadata[];
@@ -58,7 +54,7 @@ const Newsletters = ({ newsletterData }: Props) => {
   const url = "newsletters";
   return (
     <Layout
-      title="Newsletters - Live and Learn"
+      title="Live and Learn Newsletter"
       description="An archive overview page of all the Live and Learn editions I have published in the past."
       url={url}
       keywords={[
@@ -93,15 +89,17 @@ const Newsletters = ({ newsletterData }: Props) => {
 
         <section>
           <Header
-            subtitle={"All the Live and Learn Newsletters"}
-            title={"Newsletters"}
+            subtitle={"All the newsletters I have published so far since 2022."}
+            title={"Live and Learn Newsletters 💌"}
           />
-          {newsletterData.slice(0, 2).map(toNiceCard)}
+          <div className="mt-20">
+            {newsletterData.slice(0, 2).map(toNiceCard)}
+          </div>
 
           <div className="my-32">
             <NewsletterForm
               link={<></>}
-              heading={<h2 className="mt-0">Not subscribed yet? 🙊</h2>}
+              heading={<h2 className="!mt-0">Not subscribed yet? 🙊</h2>}
             />
           </div>
 

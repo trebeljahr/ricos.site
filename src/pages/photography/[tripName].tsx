@@ -6,6 +6,7 @@ import { ImageProps } from "src/@types";
 import { getDataFromS3, getS3Folders, photographyFolder } from "src/lib/aws";
 import { imageSizes, nextImageUrl } from "src/lib/mapToImageProps";
 import { turnKebabIntoTitleCase } from "src/lib/utils";
+import { trips } from "../photography";
 
 export default function SinglePhotographyShowcasePage({
   images,
@@ -28,13 +29,18 @@ export default function SinglePhotographyShowcasePage({
     };
   });
 
+  const tripMeta = trips.find(({ name }) => name === tripName) || {
+    src: "/assets/blog/photography.jpg",
+    alt: "a high quality rendering of an old film camera",
+  };
+
   return (
     <Layout
-      title="Photography"
+      title={`Photography ${tripName}`}
       description="A page with all my photography."
       url={`/photography/${tripName}`}
-      image="/assets/blog/photography.jpg"
-      imageAlt="A photo of a camera"
+      image={tripMeta.src}
+      imageAlt={tripMeta.alt}
       keywords={[
         "photography",
         "gallery",

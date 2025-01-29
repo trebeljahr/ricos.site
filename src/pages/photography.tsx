@@ -8,7 +8,7 @@ import { getFirstImageFromS3, photographyFolder } from "src/lib/aws";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
 import { turnKebabIntoTitleCase } from "src/lib/utils";
 
-const trips = [
+export const trips = [
   {
     src: "/assets/photography/best-of/DSC02311-2.webp",
     alt: "reflection at the Taj Mahal, Agra, India, surreal looking upside down image",

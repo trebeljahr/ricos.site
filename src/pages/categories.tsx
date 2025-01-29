@@ -113,11 +113,13 @@ const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
 };
 
 const ShowTags = ({ categories }: Props) => {
-  const url = "experiment";
+  const url = "categories";
   return (
     <Layout
-      title="Experiment"
-      description="An Experimental Overview over All Pages"
+      title="Categories"
+      description={`An experimental overview over all the pages on ricos.site, sortable by different categories, such as ${mainCategories
+        .slice(0, 5)
+        .join(", ")}, and ${mainCategories[6]}.`}
       url={url}
       keywords={mainCategories}
       image="/assets/blog/network.jpg"

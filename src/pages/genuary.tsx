@@ -187,83 +187,31 @@ function SimplerReactCanvasComponent({
 }
 
 function TripleNestedLoopSketch() {
-  //   const drawFn: DrawFn = (ctx, cnv) => {
-  //     ctx.fillStyle = "black";
-  //     ctx.fillRect(0, 0, cnv.width, cnv.height);
-
-  //     ctx.fillStyle = "white";
-  //     for (let i = 0; i < 100; i++) {
-  //       for (let j = 0; j < 100; j++) {
-  //         ctx.fillStyle = randomColor();
-  //         ctx.fillRect(i * 10, j * 10, 10, 10);
-  //       }
-  //     }
-  //   };
-
-  //   return <SimplerReactCanvasComponent drawFn={drawFn} />;
-  const initialSize = 20;
-  const [size, setSize] = useState(initialSize);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSize((prev) => (prev + 5 > initialSize * 5 ? initialSize : prev + 1));
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+  const size = 60;
 
   const boxes = useMemo(() => {
-    const out: [number, number, number][] = [];
+    const out = [];
     const radius = size / 2;
+    const center = (size - 1) / 2;
+    const epsilon = 4;
 
-    const lengthSq = (x: number, y: number, z: number) => {
-      return x * x + y * y + z * z;
-    };
+    for (let x = 0; x < size * 2; x++) {
+      for (let y = 0; y < size * 2; y++) {
+        for (let z = 0; z < size * 2; z++) {
+          const distanceSquared =
+            Math.pow(x - center, 2) +
+            Math.pow(y - center, 2) +
+            Math.pow(z - center, 2);
 
-    const makeSphere = (radius: number, filled: boolean) => {
-      radius += 0.5;
-      const radiusSq = radius * radius;
-      const radius1Sq = (radius - 1.0) * (radius - 1.0);
-      const ceilRadius = Math.ceil(radius);
-
-      for (let x = 0; x <= ceilRadius; x++) {
-        for (let y = 0; y <= ceilRadius; y++) {
-          for (let z = 0; z <= ceilRadius; z++) {
-            const dSq = lengthSq(x, y, z);
-            if (dSq > radiusSq) {
-              continue;
-            }
-
-            if (
-              !filled &&
-              (dSq < radius1Sq ||
-                (lengthSq(x + 1, y, z) <= radiusSq &&
-                  lengthSq(x, y + 1, z) <= radiusSq &&
-                  lengthSq(x, y, z + 1) <= radiusSq))
-            ) {
-              continue;
-            }
-
-            out.push([x, y, z]);
-            out.push([-x, y, z]);
-            out.push([x, -y, z]);
-            out.push([x, y, -z]);
-            out.push([-x, -y, z]);
-            out.push([x, -y, -z]);
-            out.push([-x, y, -z]);
-            out.push([-x, -y, -z]);
+          if (Math.abs(distanceSquared - Math.pow(radius, 2)) <= epsilon) {
+            out.push({ x, y, z });
           }
         }
       }
-    };
+    }
 
-    makeSphere(radius, false);
-
-    return [...new Set(out.map((e) => e.join(",")))].map((str) =>
-      str.split(",").map(Number)
-    );
+    return out;
   }, [size]);
-
-  console.log(boxes);
 
   return (
     <div className="w-[768px] h-[500px]">
@@ -282,7 +230,7 @@ function TripleNestedLoopSketch() {
           <Instances key={size + "instances"} limit={boxes.length + 1}>
             <boxGeometry args={[1, 1, 1]} />
             <meshStandardMaterial />
-            {boxes.map(([x, y, z]) => (
+            {boxes.map(({ x, y, z }) => (
               <Instance
                 key={`${size}:${x},${y},${z}`}
                 color="#1282A2"

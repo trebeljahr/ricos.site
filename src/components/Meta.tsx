@@ -66,9 +66,7 @@ export const Meta = ({
         <link rel="canonical" href={completeUrl(url)} />
 
         <meta name="description" content={description} />
-        <meta name="application-name" content="ricos site" />
-        <meta name="author" content="Rico Trebeljahr" />
-        <link rel="author" href={baseUrl} />
+        <meta name="application-name" content="ricos.site" />
 
         {/* Pinterest Domain Verification */}
         <meta
@@ -83,6 +81,8 @@ export const Meta = ({
         />
         <meta name="referrer" content="origin-when-cross-origin" />
         <meta name="color-scheme" content="dark" />
+
+        <meta name="author" content="Rico Trebeljahr" />
         <meta name="creator" content="Rico Trebeljahr" />
         <meta name="publisher" content="Rico Trebeljahr" />
         <meta

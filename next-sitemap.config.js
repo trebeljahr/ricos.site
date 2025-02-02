@@ -1,11 +1,15 @@
 const nextSitemapConfig = {
   siteUrl: "https://ricos.site",
+  generateIndexSitemap: false,
   generateRobotsTxt: true,
-  sitemapSize: 7000,
   robotsTxtOptions: {
     policies: [{ userAgent: "*", allow: "/" }],
   },
-  exclude: ["email-signup-success", "email-signup-error", "emergency"],
+  exclude: [
+    "https://ricos.site/email-signup-success",
+    "https://ricos.site/email-signup-error",
+    "https://ricos.site/emergency",
+  ],
 };
 
 export default nextSitemapConfig;

@@ -59820,5 +59820,40 @@
     "height": 1637,
     "aspectRatio": 3.2046426389737324,
     "existsInS3": true
+  },
+  "assets/project-notes/misc/ikigai.jpg": {
+    "key": "assets/project-notes/misc/ikigai.jpg",
+    "width": 700,
+    "height": 661,
+    "aspectRatio": 1.059001512859304,
+    "existsInS3": true
+  },
+  "assets/project-notes/misc/Pasted image 20250128133910.png": {
+    "key": "assets/project-notes/misc/Pasted image 20250128133910.png",
+    "width": 1572,
+    "height": 422,
+    "aspectRatio": 3.7251184834123223,
+    "existsInS3": true
+  },
+  "assets/project-notes/misc/Pasted image 20250127172647.png": {
+    "key": "assets/project-notes/misc/Pasted image 20250127172647.png",
+    "width": 1924,
+    "height": 908,
+    "aspectRatio": 2.118942731277533,
+    "existsInS3": true
+  },
+  "assets/blog/mechanical-robot-writing-something.png": {
+    "key": "assets/blog/mechanical-robot-writing-something.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": 2,
+    "existsInS3": true
+  },
+  "assets/blog/refusing-to-partake-in-the-great-online-game.png": {
+    "key": "assets/blog/refusing-to-partake-in-the-great-online-game.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": 2,
+    "existsInS3": true
   }
 }

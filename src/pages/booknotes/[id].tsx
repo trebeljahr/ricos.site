@@ -79,7 +79,7 @@ const Book = ({ booknote }: Props) => {
   const url = `booknotes/${booknote.slug}`;
   return (
     <Layout
-      title={booknote.title}
+      title={`Rico's booknotes for ${booknote.title}`}
       description={booknote.excerpt || defaultDescription}
       url={url}
       keywords={booknote.tags.split(",")}

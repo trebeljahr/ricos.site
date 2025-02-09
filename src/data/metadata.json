@@ -59855,5 +59855,187 @@
     "height": 768,
     "aspectRatio": 2,
     "existsInS3": true
+  },
+  "assets/newsletter/61/butterfly-on-hand.jpg": {
+    "key": "assets/newsletter/61/butterfly-on-hand.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/close-up-fern.jpg": {
+    "key": "assets/newsletter/61/close-up-fern.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/cat-intense-look.jpg": {
+    "key": "assets/newsletter/61/cat-intense-look.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/colombian-pastures.jpg": {
+    "key": "assets/newsletter/61/colombian-pastures.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/doggo.jpg": {
+    "key": "assets/newsletter/61/doggo.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/arbol-de-las-ventanas.jpg": {
+    "key": "assets/newsletter/61/arbol-de-las-ventanas.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/ai-creating-heaven-and-hell.png": {
+    "key": "assets/newsletter/61/ai-creating-heaven-and-hell.png",
+    "width": 3072,
+    "height": 1536,
+    "aspectRatio": 2,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/dramatic-sky.jpg": {
+    "key": "assets/newsletter/61/dramatic-sky.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/feather-closeup.jpg": {
+    "key": "assets/newsletter/61/feather-closeup.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/godrays-evening.jpg": {
+    "key": "assets/newsletter/61/godrays-evening.jpg",
+    "width": 4080,
+    "height": 3072,
+    "aspectRatio": 1.328125,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/good-food.jpg": {
+    "key": "assets/newsletter/61/good-food.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/orchid-flower.jpg": {
+    "key": "assets/newsletter/61/orchid-flower.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/green-landscape-dramatic-sky.jpg": {
+    "key": "assets/newsletter/61/green-landscape-dramatic-sky.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/green-fields-with-clouds.jpg": {
+    "key": "assets/newsletter/61/green-fields-with-clouds.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/river-with-waterfalls.jpg": {
+    "key": "assets/newsletter/61/river-with-waterfalls.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/meal-on-table.jpg": {
+    "key": "assets/newsletter/61/meal-on-table.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/green-rolling-hills.jpg": {
+    "key": "assets/newsletter/61/green-rolling-hills.jpg",
+    "width": 4080,
+    "height": 3072,
+    "aspectRatio": 1.328125,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/small-river.jpg": {
+    "key": "assets/newsletter/61/small-river.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/potato-gratin.jpg": {
+    "key": "assets/newsletter/61/potato-gratin.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/project-notes/misc/Pasted image 20250204124254.png": {
+    "key": "assets/project-notes/misc/Pasted image 20250204124254.png",
+    "width": 206,
+    "height": 150,
+    "aspectRatio": 1.3733333333333333,
+    "existsInS3": true
+  },
+  "assets/project-notes/misc/Pasted image 20250203121112.png": {
+    "key": "assets/project-notes/misc/Pasted image 20250203121112.png",
+    "width": 2318,
+    "height": 1566,
+    "aspectRatio": 1.4802043422733078,
+    "existsInS3": true
+  },
+  "assets/project-notes/misc/Pasted image 20250203105151.png": {
+    "key": "assets/project-notes/misc/Pasted image 20250203105151.png",
+    "width": 2150,
+    "height": 1602,
+    "aspectRatio": 1.3420724094881398,
+    "existsInS3": true
+  },
+  "assets/project-notes/misc/Pasted image 20250204124334.png": {
+    "key": "assets/project-notes/misc/Pasted image 20250204124334.png",
+    "width": 2264,
+    "height": 1508,
+    "aspectRatio": 1.5013262599469497,
+    "existsInS3": true
+  },
+  "assets/project-notes/misc/Pasted image 20250203121044.png": {
+    "key": "assets/project-notes/misc/Pasted image 20250203121044.png",
+    "width": 1914,
+    "height": 1486,
+    "aspectRatio": 1.288021534320323,
+    "existsInS3": true
+  },
+  "assets/project-notes/misc/Pasted image 20250203121506.png": {
+    "key": "assets/project-notes/misc/Pasted image 20250203121506.png",
+    "width": 2168,
+    "height": 1460,
+    "aspectRatio": 1.484931506849315,
+    "existsInS3": true
+  },
+  "assets/newsletter/61/the-tree.jpg": {
+    "key": "assets/newsletter/61/the-tree.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
   }
 }

@@ -27,8 +27,8 @@ export default function Grass({
   const joints = 5;
   const materialRef = useRef<THREE.ShaderMaterial>(null!);
   const [texture, alphaMap] = useLoader(THREE.TextureLoader, [
-    "/grass/blade_diffuse.jpg",
-    "/grass/blade_alpha.jpg",
+    "/3d-assets/grass/blade_diffuse.jpg",
+    "/3d-assets/grass/blade_alpha.jpg",
   ]);
   const attributeData = useMemo(
     () => getAttributeData(instances, width),

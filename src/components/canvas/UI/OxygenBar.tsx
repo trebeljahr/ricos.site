@@ -63,6 +63,8 @@ export function OxygenBar() {
   const depthRef = useRef<HTMLDivElement>(null!);
 
   useFrame(() => {
+    if (!depthRef.current) return;
+
     depthRef.current.innerText = `Depth: ${(
       waterHeight - camera.position.y
     ).toFixed(0)}`;

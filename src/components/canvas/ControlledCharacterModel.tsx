@@ -3,7 +3,7 @@ import Ecctrl, { EcctrlAnimation } from "ecctrl";
 import { useRef } from "react";
 import { Group, Vector3 } from "three";
 
-const characterURL = "/Mixamo.glb";
+const characterURL = "/3d-assets/glb/Mixamo.glb";
 useGLTF.preload(characterURL);
 
 export function Model(props: JSX.IntrinsicElements["group"]) {

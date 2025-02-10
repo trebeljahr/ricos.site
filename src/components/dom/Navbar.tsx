@@ -2,10 +2,10 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 const sideStyle =
-  "z-[1500] absolute overflow-x-hidden overflow-y-auto font-leva text-sm	w-60 bg-leva-dark h-screen  transform transition-all fixed duration-700 text-leva-white p-2";
+  "z-[1500] absolute overflow-x-hidden overflow-y-auto text-sm w-60 bg-leva-dark h-screen  transform transition-all fixed duration-700 text-leva-white p-2";
 
 const buttonStyle =
-  "z-[1500] font-leva text-sm absolute w-10 h-10 bg-yellow-400 hover:w-11 hover:h-11 top-0 cursor-pointer transition-all transform duration-700 flex items-center justify-center";
+  "z-[1500] absolute w-10 h-10 bg-yellow-400 hover:w-11 hover:h-11 top-0 cursor-pointer transition-all transform duration-700 flex items-center justify-center";
 
 export const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -36,7 +36,7 @@ export const Navbar = () => {
     <>
       <button
         id="close-btn"
-        className={`${buttonStyle} ${open && "translate-x-60"}`}
+        className={`${buttonStyle} ${open && "translate-x-60"} text-leva-dark`}
         onClick={toggleOpen}
       >
         {open ? "<" : ">"}
@@ -55,6 +55,9 @@ export const Navbar = () => {
             <Link href={"/r3f/ocean"}>Ocean</Link>
             <Link href={"/r3f/ship"}>Ship</Link>
             <Link href={"/r3f/third-person-camera"}>Third Person Camera</Link>
+            <Link href={"/r3f/controlled-mixamo-model"}>
+              Controlled Mixamo Model
+            </Link>
           </nav>
         </div>
       </div>

@@ -59,7 +59,6 @@ export function useAnimationsWithCleanup<T extends AnimationClip>(
   useEffect(() => {
     const currentRoot = root;
     return () => {
-      // Clean up only when clips change, wipe out lazy actions and uncache clips
       Object.values(api.actions).forEach((action) => {
         if (currentRoot) {
           mixer.uncacheAction(action as unknown as AnimationClip, currentRoot);

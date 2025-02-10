@@ -1,5 +1,8 @@
-import * as THREE from "three";
-import React, {
+import { usePrevious } from "@hooks/usePrevious";
+import { useAnimations, useGLTF, useKeyboardControls } from "@react-three/drei";
+import { GroupProps, useFrame, useThree } from "@react-three/fiber";
+import {
+  ForwardedRef,
   forwardRef,
   MutableRefObject,
   Ref,
@@ -7,19 +10,9 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useGLTF, useAnimations, useKeyboardControls } from "@react-three/drei";
+import * as THREE from "three";
+import { Group, LoopOnce, Object3D, Vector3 } from "three";
 import { GLTF } from "three-stdlib";
-import { Camera, GroupProps, useFrame, useThree } from "@react-three/fiber";
-import {
-  AnimationAction,
-  AnimationClip,
-  AnimationMixer,
-  Group,
-  LoopOnce,
-  Object3D,
-  Vector3,
-} from "three";
-import { usePrevious } from "@hooks/usePrevious";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -132,9 +125,13 @@ export const useTrex = () => {
   return useGLTF("/Trex.glb") as unknown as GLTFResult;
 };
 
-export const Trex = React.forwardRef<Group>(function TrexModel(
-  props: GroupProps & { withAnimations?: boolean },
-  ref: Ref<Group>
+interface Props extends GroupProps {
+  withAnimations?: boolean;
+}
+
+export const Trex = forwardRef(function TrexModel(
+  props: Props,
+  ref: ForwardedRef<Group>
 ) {
   const { nodes, materials, animations } = useGLTF(
     "/Trex.glb"

@@ -6,6 +6,7 @@ import { useFish3 } from "@models/fish_pack/Fish3";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import {
+  Bone,
   BufferAttribute,
   BufferGeometry,
   Color,
@@ -256,12 +257,14 @@ export function Fishs({
     }
 
     const length = fishGeo?.index?.array.length;
-    if (length === undefined) return allFishes;
+    const fishGeoArray = fishGeo?.index?.array;
+
+    if (length === undefined || !fishGeoArray) return allFishes;
 
     for (let i = 0; i < length * amount; i++) {
       const offset =
         Math.floor(i / length) * fishGeo.getAttribute("position").count;
-      indices.push(fishGeo.index.array[i % length] + offset);
+      indices.push(fishGeoArray[i % length] + offset);
     }
 
     allFishes.setAttribute(
@@ -348,10 +351,12 @@ function useFishGeo(typeOfFish: FishType) {
 function useFishGeos(typeOfFish: FishType) {
   const { nodes } = useFishGeo(typeOfFish);
 
-  const fishGeos: BufferGeometry[] = Object.keys(nodes).reduce((agg, key) => {
-    if (!(nodes[key] instanceof SkinnedMesh)) return agg;
+  const typedNodes = nodes as Record<string, SkinnedMesh | Bone>;
 
-    return [...agg, nodes[key].geometry];
+  const fishGeos: BufferGeometry[] = Object.keys(nodes).reduce((agg, key) => {
+    if (!(typedNodes[key] instanceof SkinnedMesh)) return agg;
+
+    return [...agg, typedNodes[key].geometry];
   }, [] as BufferGeometry[]);
 
   return fishGeos;

@@ -11,6 +11,10 @@
   bottom: 0;
 }
 
+.joystick-container {
+  position: absolute;
+  z-index: 20;
+}
 
 :root {
   font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;  

@@ -18,13 +18,18 @@
     "paths": {
       "@velite": [".velite"],
       "components/collision-detection": ["src/components/collisionDetection"],
-      "@components/*": ["src/components/*"]
-    },
-    "plugins": [{ "name": "next" }]
+      "@components/*": ["src/components/*"],
+      "@contexts/*": ["src/contexts/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@shaders/*": ["src/shaders/*"],
+      "@models/*": ["src/models/*"],
+      "@pages/*": ["src/pages/*"]
+    }
   },
   "exclude": ["node_modules"],
   "include": [
     "next-env.d.ts",
+    "**/*.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".velite",

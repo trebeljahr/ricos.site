@@ -1,5 +1,5 @@
 import { FirstPersonController } from "@components/canvas/FirstPersonController";
-import Scene from "@components/canvas/Scene";
+import { CanvasWithControls } from "@components/canvas/Scene";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { Box, Sky } from "@react-three/drei";
 import { Physics, RigidBody } from "@react-three/rapier";
@@ -7,14 +7,14 @@ import { Physics, RigidBody } from "@react-three/rapier";
 export default function Page() {
   return (
     <ThreeFiberLayout>
-      <Scene>
+      <CanvasWithControls>
         <Sky azimuth={1} inclination={0.6} distance={1000} />
 
         <Physics debug colliders="hull">
           <FirstPersonController />
           <Obstacles />
         </Physics>
-      </Scene>
+      </CanvasWithControls>
     </ThreeFiberLayout>
   );
 }

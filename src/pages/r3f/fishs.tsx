@@ -1,5 +1,5 @@
 import { Fishs } from "@components/canvas/Fish";
-import Scene from "@components/canvas/Scene";
+import { CanvasWithControls } from "@components/canvas/Scene";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { Box } from "@react-three/drei";
 import { Perf } from "r3f-perf";
@@ -8,7 +8,9 @@ import { Vector3 } from "three";
 export default function Page() {
   return (
     <ThreeFiberLayout>
-      <Scene camera={{ position: new Vector3(0, 0, 50), near: 1, far: 3000 }}>
+      <CanvasWithControls
+        camera={{ position: new Vector3(0, 0, 50), near: 1, far: 3000 }}
+      >
         <Fishs />
         <Box args={[1, 1, 1]}>
           <meshPhysicalMaterial color="pink" />
@@ -32,7 +34,7 @@ export default function Page() {
           <SwimmingPlayerControls />
         </Physics>
       </KeyboardControls> */}
-      </Scene>
+      </CanvasWithControls>
     </ThreeFiberLayout>
   );
 }

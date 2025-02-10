@@ -2,11 +2,18 @@
 import { useFrame, useLoader } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import { createNoise2D } from "simplex-noise";
-import * as THREE from "three";
 // import { Geometry } from 'three-stdlib'
 // import { Geometry } from 'three/examples/jsm/deprecated/Geometry'
 import { HeightfieldCollider } from "@react-three/rapier";
 import "./GrassMaterial";
+import {
+  DoubleSide,
+  PlaneGeometry,
+  ShaderMaterial,
+  TextureLoader,
+  Vector3,
+  Vector4,
+} from "three";
 
 const noise2D = createNoise2D();
 
@@ -25,8 +32,8 @@ export default function Grass({
   const bH = size;
   const bW = size * 0.12;
   const joints = 5;
-  const materialRef = useRef<THREE.ShaderMaterial>(null!);
-  const [texture, alphaMap] = useLoader(THREE.TextureLoader, [
+  const materialRef = useRef<ShaderMaterial>(null!);
+  const [texture, alphaMap] = useLoader(TextureLoader, [
     "/3d-assets/grass/blade_diffuse.jpg",
     "/3d-assets/grass/blade_alpha.jpg",
   ]);
@@ -35,12 +42,12 @@ export default function Grass({
     [instances, width]
   );
   const baseGeom = useMemo(
-    () => new THREE.PlaneGeometry(bW, bH, 1, joints).translate(0, bH / 2, 0),
+    () => new PlaneGeometry(bW, bH, 1, joints).translate(0, bH / 2, 0),
     [size]
   );
 
   const [groundGeo, heightField] = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(width, width, width - 1, width - 1);
+    const geo = new PlaneGeometry(width, width, width - 1, width - 1);
 
     geo.scale(1, -1, 1);
     geo.rotateX(-Math.PI / 2);
@@ -108,7 +115,7 @@ export default function Grass({
         args={[width - 1, width - 1, heightField, { x: width, y: 1, z: width }]}
       />
       <mesh position={[0, 0, 0]} geometry={groundGeo}>
-        <meshStandardMaterial color="#000f00" />
+        <meshStandardMaterial color="#000f00" side={DoubleSide} />
       </mesh>
     </group>
   );
@@ -121,8 +128,8 @@ function getAttributeData(instances: number, width: number) {
   const halfRootAngleSin = [];
   const halfRootAngleCos = [];
 
-  let quaternion_0 = new THREE.Vector4();
-  let quaternion_1 = new THREE.Vector4();
+  let quaternion_0 = new Vector4();
+  let quaternion_1 = new Vector4();
 
   //The min and max angle for the growth direction (in radians)
   const min = -0.25;
@@ -142,7 +149,7 @@ function getAttributeData(instances: number, width: number) {
     halfRootAngleSin.push(Math.sin(0.5 * angle));
     halfRootAngleCos.push(Math.cos(0.5 * angle));
 
-    let RotationAxis = new THREE.Vector3(0, 1, 0);
+    let RotationAxis = new Vector3(0, 1, 0);
     let x = RotationAxis.x * Math.sin(angle / 2.0);
     let y = RotationAxis.y * Math.sin(angle / 2.0);
     let z = RotationAxis.z * Math.sin(angle / 2.0);
@@ -151,7 +158,7 @@ function getAttributeData(instances: number, width: number) {
 
     //Rotate around X
     angle = Math.random() * (max - min) + min;
-    RotationAxis = new THREE.Vector3(1, 0, 0);
+    RotationAxis = new Vector3(1, 0, 0);
     x = RotationAxis.x * Math.sin(angle / 2.0);
     y = RotationAxis.y * Math.sin(angle / 2.0);
     z = RotationAxis.z * Math.sin(angle / 2.0);
@@ -163,7 +170,7 @@ function getAttributeData(instances: number, width: number) {
 
     //Rotate around Z
     angle = Math.random() * (max - min) + min;
-    RotationAxis = new THREE.Vector3(0, 0, 1);
+    RotationAxis = new Vector3(0, 0, 1);
     x = RotationAxis.x * Math.sin(angle / 2.0);
     y = RotationAxis.y * Math.sin(angle / 2.0);
     z = RotationAxis.z * Math.sin(angle / 2.0);
@@ -197,12 +204,12 @@ function getAttributeData(instances: number, width: number) {
   };
 }
 
-function multiplyQuaternions(q1: THREE.Vector4, q2: THREE.Vector4) {
+function multiplyQuaternions(q1: Vector4, q2: Vector4) {
   const x = q1.x * q2.w + q1.y * q2.z - q1.z * q2.y + q1.w * q2.x;
   const y = -q1.x * q2.z + q1.y * q2.w + q1.z * q2.x + q1.w * q2.y;
   const z = q1.x * q2.y - q1.y * q2.x + q1.z * q2.w + q1.w * q2.z;
   const w = -q1.x * q2.x - q1.y * q2.y - q1.z * q2.z + q1.w * q2.w;
-  return new THREE.Vector4(x, y, z, w);
+  return new Vector4(x, y, z, w);
 }
 
 function getYPosition(x: number, z: number) {

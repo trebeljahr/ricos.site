@@ -1,4 +1,5 @@
 import { MDXRemoteSerializeResult } from "next-mdx-remote";
+import { Material, Mesh } from "three";
 import { GLTF } from "three-stdlib";
 
 export type ImageProps = {
@@ -14,9 +15,9 @@ export type MDXResult = MDXRemoteSerializeResult<
 
 export type GLTFResult = GLTF & {
   nodes: {
-    [x: string]: THREE.Mesh;
+    [x: string]: Mesh;
   };
   materials: {
-    [x: string]: THREE.Material;
+    [x: string]: Material;
   };
 };

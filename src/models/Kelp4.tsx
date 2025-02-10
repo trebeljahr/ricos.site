@@ -6,18 +6,18 @@ source: https://sketchfab.com/3d-models/water-plant-b536fec3648f485087c8dd280e74
 title: Water plant
 */
 
-import * as THREE from "three";
-import React, { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
+import { useRef } from "react";
+import { Bone, Group, MeshStandardMaterial, SkinnedMesh } from "three";
 import { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    Object_7: THREE.SkinnedMesh;
-    _rootJoint: THREE.Bone;
+    Object_7: SkinnedMesh;
+    _rootJoint: Bone;
   };
   materials: {
-    lambert2: THREE.MeshStandardMaterial;
+    lambert2: MeshStandardMaterial;
   };
 };
 
@@ -31,7 +31,7 @@ export function useKelp() {
 }
 
 export function Kelp4(props: JSX.IntrinsicElements["group"]) {
-  const group = useRef<THREE.Group>(null!);
+  const group = useRef<Group>(null!);
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/kelp4.glb"
   ) as unknown as GLTFResult;

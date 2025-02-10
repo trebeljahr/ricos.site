@@ -1,4 +1,4 @@
-import Scene from "@components/canvas/Scene";
+import { CanvasWithControls } from "@components/canvas/Scene";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import dynamic from "next/dynamic";
 
@@ -10,9 +10,9 @@ const ThirdPersonDemo = dynamic(
 export default function Page() {
   return (
     <ThreeFiberLayout>
-      <Scene>
+      <CanvasWithControls>
         <ThirdPersonDemo />
-      </Scene>
+      </CanvasWithControls>
     </ThreeFiberLayout>
   );
 }

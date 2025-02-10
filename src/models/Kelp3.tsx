@@ -6,17 +6,16 @@ source: https://sketchfab.com/3d-models/seaweed-for-my-game-e12401a67c8a4efa81fc
 title: SEAWEED For my Game
 */
 
-import * as THREE from "three";
-import React, { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
+import { Mesh, MeshStandardMaterial } from "three";
 import { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    Cube_0: THREE.Mesh;
+    Cube_0: Mesh;
   };
   materials: {
-    Material: THREE.MeshStandardMaterial;
+    Material: MeshStandardMaterial;
   };
 };
 

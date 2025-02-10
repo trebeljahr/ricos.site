@@ -1,4 +1,4 @@
-import Scene from "@components/canvas/Scene";
+import { CanvasWithControls } from "@components/canvas/Scene";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { UnderwaterContextProvider } from "@contexts/UnderwaterContext";
 import dynamic from "next/dynamic";
@@ -14,11 +14,11 @@ export default function Page() {
   return (
     <ThreeFiberLayout>
       <Out />
-      <Scene>
+      <CanvasWithControls>
         <UnderwaterContextProvider>
           <WaterDemo />
         </UnderwaterContextProvider>
-      </Scene>
+      </CanvasWithControls>
     </ThreeFiberLayout>
   );
 }

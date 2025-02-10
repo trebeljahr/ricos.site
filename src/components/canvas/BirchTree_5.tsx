@@ -1,18 +1,18 @@
 import React, { useLayoutEffect } from "react";
 import { useGLTF } from "@react-three/drei";
-import { DoubleSide, Mesh } from "three";
+import { DoubleSide, Mesh, MeshStandardMaterial } from "three";
 import { GroupProps, useLoader } from "@react-three/fiber";
 import { TextureLoader } from "three/src/loaders/TextureLoader";
 import { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    Cube009: THREE.Mesh;
-    Cube009_1: THREE.Mesh;
+    Cube009: Mesh;
+    Cube009_1: Mesh;
   };
   materials: {
-    BirchTree_Bark: THREE.MeshStandardMaterial;
-    BirchTree_Leaves: THREE.MeshStandardMaterial;
+    BirchTree_Bark: MeshStandardMaterial;
+    BirchTree_Leaves: MeshStandardMaterial;
   };
 };
 

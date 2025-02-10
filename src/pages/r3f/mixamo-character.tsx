@@ -1,4 +1,4 @@
-import Scene from "@components/canvas/Scene";
+import { CanvasWithControls } from "@components/canvas/Scene";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { OrbitControls, Stage } from "@react-three/drei";
 
@@ -11,7 +11,7 @@ const DynamicCharacter = dynamic(() => import("../../components/Character"), {
 export default function Page() {
   return (
     <ThreeFiberLayout>
-      <Scene>
+      <CanvasWithControls>
         <Stage
           adjustCamera
           intensity={0.5}
@@ -21,7 +21,7 @@ export default function Page() {
           <DynamicCharacter />
         </Stage>
         <OrbitControls />
-      </Scene>
+      </CanvasWithControls>
     </ThreeFiberLayout>
   );
 }

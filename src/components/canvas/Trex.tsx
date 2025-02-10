@@ -10,25 +10,35 @@ import {
   useRef,
   useState,
 } from "react";
-import * as THREE from "three";
-import { Group, LoopOnce, Object3D, Vector3 } from "three";
+
+import {
+  AnimationAction,
+  AnimationClip,
+  Bone,
+  Group,
+  LoopOnce,
+  MeshStandardMaterial,
+  Object3D,
+  SkinnedMesh,
+  Vector3,
+} from "three";
 import { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    Trex_1: THREE.SkinnedMesh;
-    Trex_2: THREE.SkinnedMesh;
-    Trex_3: THREE.SkinnedMesh;
-    Trex_4: THREE.SkinnedMesh;
-    Trex_5: THREE.SkinnedMesh;
-    root: THREE.Bone;
+    Trex_1: SkinnedMesh;
+    Trex_2: SkinnedMesh;
+    Trex_3: SkinnedMesh;
+    Trex_4: SkinnedMesh;
+    Trex_5: SkinnedMesh;
+    root: Bone;
   };
   materials: {
-    LightYellow: THREE.MeshStandardMaterial;
-    LightGreen: THREE.MeshStandardMaterial;
-    Green: THREE.MeshStandardMaterial;
-    Black: THREE.MeshStandardMaterial;
-    Red: THREE.MeshStandardMaterial;
+    LightYellow: MeshStandardMaterial;
+    LightGreen: MeshStandardMaterial;
+    Green: MeshStandardMaterial;
+    Black: MeshStandardMaterial;
+    Red: MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };
@@ -41,24 +51,24 @@ type ActionName =
   | "Armature|TRex_Run"
   | "Armature|TRex_Walk";
 
-interface GLTFAction extends THREE.AnimationClip {
+interface GLTFAction extends AnimationClip {
   name: ActionName;
 }
 
 interface PossibleActions {
-  "Armature|TRex_Attack": THREE.AnimationAction | null;
-  "Armature|TRex_Death": THREE.AnimationAction | null;
-  "Armature|TRex_Idle": THREE.AnimationAction | null;
-  "Armature|TRex_Jump": THREE.AnimationAction | null;
-  "Armature|TRex_Run": THREE.AnimationAction | null;
-  "Armature|TRex_Walk": THREE.AnimationAction | null;
+  "Armature|TRex_Attack": AnimationAction | null;
+  "Armature|TRex_Death": AnimationAction | null;
+  "Armature|TRex_Idle": AnimationAction | null;
+  "Armature|TRex_Jump": AnimationAction | null;
+  "Armature|TRex_Run": AnimationAction | null;
+  "Armature|TRex_Walk": AnimationAction | null;
 }
 
 // const rotationSpeed = 20
 // const speed = 0.5
 
 export function FollowingTrex() {
-  const group = useRef<THREE.Group>(null!);
+  const group = useRef<Group>(null!);
   const { camera } = useThree();
 
   useFrame(() => {

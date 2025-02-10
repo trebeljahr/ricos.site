@@ -1,9 +1,12 @@
 import { ControlledCharacterModel } from "@components/canvas/ControlledCharacterModel";
+import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
 import Grass from "@components/canvas/Grass";
+import { ImprovedPlayerController } from "@components/canvas/PlayerController";
+import { CanvasWithControls } from "@components/canvas/Scene";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { KeyboardControls, Sky } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Physics, RigidBody } from "@react-three/rapier";
+import { BallCollider, Physics, RigidBody } from "@react-three/rapier";
 import { EcctrlJoystick } from "ecctrl";
 import { useRef } from "react";
 import { DirectionalLight } from "three";
@@ -53,22 +56,43 @@ export function Lights() {
   );
 }
 
+const Sphere = () => {
+  return (
+    <RigidBody
+      linearDamping={4}
+      angularDamping={1}
+      friction={0.1}
+      position={[0, 10, 0]}
+      colliders={false}
+    >
+      <BallCollider args={[1]} />
+      <mesh castShadow receiveShadow>
+        <sphereGeometry args={[1, 64, 64]} />
+        <meshStandardMaterial color={"red"} />
+      </mesh>
+    </RigidBody>
+  );
+};
 export default function Page() {
   return (
     <ThreeFiberLayout>
       <EcctrlJoystick />
 
-      <Canvas>
+      <CanvasWithControls>
         <Physics debug timeStep="vary">
-          <KeyboardControls map={keyboardMap}>
-            <ControlledCharacterModel />
-          </KeyboardControls>
+          <MinecraftCreativeControlsPlayer />
+
+          {/* <KeyboardControls map={keyboardMap}> */}
+          {/* <ControlledCharacterModel /> */}
+          {/* </KeyboardControls> */}
           {/* <Floor /> */}
+          <Sphere />
+
           <Lights />
           <Sky />
           <Grass size={0.3} />
         </Physics>
-      </Canvas>
+      </CanvasWithControls>
     </ThreeFiberLayout>
   );
 }

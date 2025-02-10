@@ -12,6 +12,7 @@ export const GrassMaterial = shaderMaterial(
     time: 0,
     tipColor: new Color(0.0, 0.6, 0.0).convertSRGBToLinear(),
     bottomColor: new Color(0.0, 0.1, 0.0).convertSRGBToLinear(),
+    // depthTest: true,
   },
   vertShader,
   fragShader,
@@ -19,6 +20,7 @@ export const GrassMaterial = shaderMaterial(
     if (!self) return;
 
     self.side = DoubleSide;
+    self.depthTest = true;
   }
 );
 

@@ -1,9 +1,6 @@
-// Based on https://codepen.io/al-ro/pen/jJJygQ by al-ro, but rewritten in react-three-fiber
 import { useFrame, useLoader } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import { createNoise2D } from "simplex-noise";
-// import { Geometry } from 'three-stdlib'
-// import { Geometry } from 'three/examples/jsm/deprecated/Geometry'
 import { HeightfieldCollider } from "@react-three/rapier";
 import "./GrassMaterial";
 import {
@@ -77,7 +74,7 @@ export default function Grass({
 
   return (
     <group {...props}>
-      <mesh frustumCulled={false}>
+      <mesh position={[0, 0, 0]}>
         <instancedBufferGeometry
           index={baseGeom.index}
           attributes-position={baseGeom.attributes.position}
@@ -109,13 +106,14 @@ export default function Grass({
           map={texture}
           alphaMap={alphaMap}
           toneMapped={false}
+          depthTest={true}
         />
       </mesh>
       <HeightfieldCollider
         args={[width - 1, width - 1, heightField, { x: width, y: 1, z: width }]}
       />
       <mesh position={[0, 0, 0]} geometry={groundGeo}>
-        <meshStandardMaterial color="#000f00" side={DoubleSide} />
+        <meshStandardMaterial color="#4e3600" side={DoubleSide} />
       </mesh>
     </group>
   );

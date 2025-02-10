@@ -31,13 +31,14 @@ export function useAnimationsWithCleanup<T extends AnimationClip>(
     () => new AnimationMixer(undefined as unknown as Object3D)
   );
 
-  const lazyActions = useRef<ActionStore>(null!);
+  const lazyActions = useRef<ActionStore>();
   const [api] = useState(() => {
     const actions = {} as ActionStore;
     clips.forEach((clip) =>
       Object.defineProperty(actions, clip.name, {
         enumerable: true,
         get() {
+          if (!lazyActions.current) return null;
           return (
             lazyActions.current[clip.name] ||
             (lazyActions.current[clip.name] = mixer.clipAction(clip, root))

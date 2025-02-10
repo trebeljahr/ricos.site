@@ -36,6 +36,6 @@
     "src/scripts/createRedirects.js",
     "src/lib/generateExcerpts.js",
     "src/scripts/sortedNewsletters.js",
-    "next.config.js"
+    "next.config.cjss"
   ]
 }

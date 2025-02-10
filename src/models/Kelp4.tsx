@@ -26,13 +26,15 @@ export function useKelp() {
     nodes: {
       Object_7: { geometry },
     },
-  } = useGLTF("/kelp4.glb") as unknown as GLTFResult;
+  } = useGLTF("/3d-assets/glb/kelp4.glb") as unknown as GLTFResult;
   return { geometry };
 }
 
 export function Kelp4(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<THREE.Group>(null!);
-  const { nodes, materials } = useGLTF("/kelp4.glb") as unknown as GLTFResult;
+  const { nodes, materials } = useGLTF(
+    "/3d-assets/glb/kelp4.glb"
+  ) as unknown as GLTFResult;
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Sketchfab_Scene">
@@ -63,4 +65,4 @@ export function Kelp4(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/kelp4.glb");
+useGLTF.preload("/3d-assets/glb/kelp4.glb");

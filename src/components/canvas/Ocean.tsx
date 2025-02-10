@@ -22,7 +22,10 @@ export function OceanSurface({
 }) {
   const ref = useRef<Water>(null!);
   const gl = useThree((state) => state.gl);
-  const waterNormals = useLoader(TextureLoader, "/waternormals.jpeg");
+  const waterNormals = useLoader(
+    TextureLoader,
+    "/3d-assets/textures/waternormals.jpeg"
+  );
   waterNormals.wrapS = waterNormals.wrapT = RepeatWrapping;
   const geom = useMemo(() => new PlaneGeometry(10000, 10000), []);
   const config = useMemo(

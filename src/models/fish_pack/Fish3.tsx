@@ -30,7 +30,7 @@ interface GLTFAction extends THREE.AnimationClip {
 
 export function useFish3() {
   const { nodes, materials } = useGLTF(
-    "/glb/fish_pack/Fish3.glb"
+    "/3d-assets/glb/fish_pack/Fish3.glb"
   ) as unknown as GLTFResult;
 
   return { nodes, materials };
@@ -39,7 +39,7 @@ export function useFish3() {
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<THREE.Group>(null!);
   const { nodes, materials, animations } = useGLTF(
-    "/glb/fish_pack/Fish3.glb"
+    "/3d-assets/glb/fish_pack/Fish3.glb"
   ) as unknown as GLTFResult;
   const { actions } = useAnimationsWithCleanup(animations, group.current);
   return (
@@ -75,4 +75,4 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/glb/fish_pack/Fish3.glb");
+useGLTF.preload("/3d-assets/glb/fish_pack/Fish3.glb");

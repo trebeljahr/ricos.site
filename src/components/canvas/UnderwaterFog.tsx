@@ -35,20 +35,16 @@ class UnderwaterFogEffectImpl extends Effect {
     uTime.value += deltaTime;
     cameraPos.value = this.camera.position;
 
-    // console.log(this.uniforms.get('cameraPos').value)
-
     if (
       this.camera.position.y > surfaceLevel &&
       this.camera.far === farUnderwater
     ) {
-      console.log("over surface level");
       this.camera.far = farOverwater;
       this.camera.updateProjectionMatrix();
     } else if (
       this.camera.position.y < surfaceLevel &&
       this.camera.far === farOverwater
     ) {
-      console.log("under surface level");
       this.camera.far = farUnderwater;
       this.camera.updateProjectionMatrix();
     }

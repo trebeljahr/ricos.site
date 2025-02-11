@@ -173,8 +173,6 @@ export function Birds() {
   const windowHalfX = useMemo(() => width / 2, [width]);
   const windowHalfY = useMemo(() => height / 2, [height]);
 
-  console.log(windowHalfX, windowHalfY);
-
   useEffect(() => {
     function onPointerMove(event: PointerEvent) {
       if (event.isPrimary === false) return;
@@ -221,8 +219,6 @@ export function Birds() {
     mouseY.current = 10000;
 
     gpuCompute.compute();
-
-    // console.log(gpuCompute.getCurrentRenderTarget(positionVariable.current))
 
     if (
       !birdMaterial.current ||

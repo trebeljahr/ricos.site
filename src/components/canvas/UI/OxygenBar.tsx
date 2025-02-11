@@ -19,25 +19,6 @@ export function OxygenBar() {
   let intervalId = useRef<NodeJS.Timeout>(null!);
 
   useEffect(() => {
-    // function resetOxygen() {
-    //   setOxygenAmount(defaultOxygenAmount)
-    // }
-    // console.log('adding new subscribers')
-
-    // onSurfacing(() => {
-    //   resetOxygen()
-    //   intervalId && clearInterval(intervalId)
-    // })
-
-    // onSubmerging(() => {
-    //   if (intervalId) {
-    //     clearInterval(intervalId)
-    //   }
-    //   intervalId = setInterval(() => {
-    //     setOxygenAmount((old) => old - 1)
-    //   }, 1000)
-    // })
-
     if (!underwater) {
       intervalId.current && clearInterval(intervalId.current);
       setOxygenAmount(defaultOxygenAmount);
@@ -55,7 +36,6 @@ export function OxygenBar() {
 
   useEffect(() => {
     if (oxygenAmount <= 0) {
-      console.log("ran out of oxygen");
       clearInterval(intervalId.current);
     }
   }, [oxygenAmount]);

@@ -75,10 +75,6 @@ export function useCharacterController(
       return;
     }
 
-    // console.log(rigidBody.translation())
-
-    // console.log(camera.position)
-
     function updateCameraTarget(offset: Vector3) {
       const pos = rigidBody.translation();
       camera.position.x = pos.x + offset.x;
@@ -90,14 +86,6 @@ export function useCharacterController(
       cameraTarget.z = pos.z;
 
       orbitControls.target = cameraTarget;
-
-      // console.log(cameraTarget.current)
-      // console.log(cameraTargetRef.current)
-      // console.log(model.position)
-      // console.log(camera.position)
-      // console.log(orbitControls.target.clone().sub(model.position).length())
-
-      // console.log(camera.position.clone().sub(model.position).length())
     }
 
     function getDirectionOffset() {
@@ -183,8 +171,6 @@ export function useCharacterController(
         walkDirection.x = walkDirection.x * velocity * delta;
         walkDirection.z = walkDirection.z * velocity * delta;
 
-        // console.log(characterController)
-
         const collider = world.getCollider(rigidBody.handle);
         const api = rigidBody;
         const collider2 = api.collider(0);
@@ -222,10 +208,6 @@ export function ImprovedPlayerController() {
     enablePan: false,
     maxPolarAngle: Math.PI / 2 - 0.05,
   };
-
-  // const trexGLTF = useTrex()
-
-  // console.log(trexGLTF)
 
   return (
     <>

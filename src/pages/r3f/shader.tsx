@@ -1,7 +1,7 @@
 import { FullCanvasShader } from "@components/canvas/FullCanvasShader";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { Canvas } from "@react-three/fiber";
-import abcShader from "@shaders/standaloneFragmentShaders/abc.frag";
+import movingColorGradient from "@shaders/standaloneFragmentShaders/movingColorGradient.frag";
 
 export default function Page() {
   return (
@@ -18,7 +18,7 @@ export default function Page() {
           position: [0, 0, 1],
         }}
       >
-        <FullCanvasShader fragmentShader={abcShader} />
+        <FullCanvasShader fragmentShader={movingColorGradient} />
       </Canvas>
     </ThreeFiberLayout>
   );

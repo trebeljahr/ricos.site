@@ -44,19 +44,16 @@ export default function WaterDemo() {
   const { underwater } = useUnderwaterContext();
 
   useEffect(() => {
-    console.log(underwater);
     if (!underwater) {
       fogRef.current.density = 0.000000001;
       fogRef.current.density = 0.000000001;
       fogRef.current.color = new Color("white");
       scene.background = new Color("white");
-      console.log("setting background to white");
     } else {
       fogRef.current.density = 0.02;
       fogRef.current.density = 0.02;
       fogRef.current.color = new Color("#0086ad");
       scene.background = new Color("#0086ad");
-      console.log("setting background to blue");
       colorRef.current.set("#0086ad");
     }
   }, [underwater, scene]);

@@ -95,7 +95,6 @@ function AnimationController({ actions }: { actions: PossibleActions }) {
   useEffect(() => {
     subscribe((state) => {
       if (!actions) return;
-      // console.log({ state })
       const { attack, jump, forward, backward, left, right } = state;
       if (attack) {
         if (!actions["Armature|TRex_Attack"]) return;

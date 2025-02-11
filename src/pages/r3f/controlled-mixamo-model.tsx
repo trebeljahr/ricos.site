@@ -1,13 +1,9 @@
-import { ControlledCharacterModel } from "@components/canvas/ControlledCharacterModel";
 import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
 import Grass from "@components/canvas/Grass";
-import { ImprovedPlayerController } from "@components/canvas/PlayerController";
 import { CanvasWithControls } from "@components/canvas/Scene";
 import { ThreeFiberLayout } from "@components/dom/Layout";
-import { KeyboardControls, Sky } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
+import { Sky } from "@react-three/drei";
 import { BallCollider, Physics, RigidBody } from "@react-three/rapier";
-import { EcctrlJoystick } from "ecctrl";
 import { useRef } from "react";
 import { DirectionalLight } from "three";
 
@@ -76,8 +72,6 @@ const Sphere = () => {
 export default function Page() {
   return (
     <ThreeFiberLayout>
-      <EcctrlJoystick />
-
       <CanvasWithControls>
         <Physics debug timeStep="vary">
           <MinecraftCreativeControlsPlayer />

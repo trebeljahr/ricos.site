@@ -1,9 +1,17 @@
-import { Navbar } from "./Navbar";
+import { PropsWithChildren, ReactNode } from "react";
+import { NavbarWithLinks } from "./Navbar";
 
-export const ThreeFiberLayout = ({ children }: any) => {
+type Props = {
+  extraLinks?: ReactNode;
+};
+
+export const ThreeFiberLayout = ({
+  children,
+  extraLinks = null,
+}: PropsWithChildren<Props>) => {
   return (
     <>
-      <Navbar />
+      <NavbarWithLinks>{extraLinks}</NavbarWithLinks>
       {children}
     </>
   );

@@ -1,16 +1,19 @@
-import Link from "next/link";
+import { ThreeFiberLayout } from "@components/dom/Layout";
 import { getShaderFileNames } from "src/lib/getShaderFileNames";
+import { toLinks } from "src/lib/toLinks";
 
 export default function Page({ shaderFiles }: { shaderFiles: string[] }) {
+  const extraLinks = (
+    <>
+      <p>Shaders</p>
+      {shaderFiles.map(toLinks)}
+    </>
+  );
+
   return (
-    <div>
-      Shader Ideas/Snippets/Whatever
-      {shaderFiles.map((shaderFile) => (
-        <Link key={shaderFile} href={"/r3f/shaders/" + shaderFile}>
-          {shaderFile}
-        </Link>
-      ))}
-    </div>
+    <ThreeFiberLayout extraLinks={extraLinks}>
+      <div>Shader Ideas/Snippets/Whatever</div>
+    </ThreeFiberLayout>
   );
 }
 

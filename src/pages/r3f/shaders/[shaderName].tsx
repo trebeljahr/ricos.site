@@ -2,10 +2,24 @@ import { FullCanvasShader } from "@components/canvas/FullCanvasShader";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { Canvas } from "@react-three/fiber";
 import { getShaderFileNames } from "src/lib/getShaderFileNames";
+import { toLinks } from "src/lib/toLinks";
 
-export default function Page({ fragmentShader }: { fragmentShader: string }) {
+export default function Page({
+  fragmentShader,
+  shaderFiles,
+}: {
+  fragmentShader: string;
+  shaderFiles: string[];
+}) {
+  const extraLinks = (
+    <>
+      <b className="mt-4 text-lg">Shaders</b>
+      {shaderFiles.map(toLinks)}
+    </>
+  );
+
   return (
-    <ThreeFiberLayout>
+    <ThreeFiberLayout extraLinks={extraLinks}>
       <Canvas
         orthographic
         camera={{
@@ -18,7 +32,10 @@ export default function Page({ fragmentShader }: { fragmentShader: string }) {
           position: [0, 0, 1],
         }}
       >
-        <FullCanvasShader fragmentShader={fragmentShader} />
+        <FullCanvasShader
+          key={fragmentShader}
+          fragmentShader={fragmentShader}
+        />
       </Canvas>
     </ThreeFiberLayout>
   );
@@ -45,6 +62,7 @@ export async function getStaticProps({ params: { shaderName } }: Params) {
   return {
     props: {
       fragmentShader: fragmentShader.default,
+      shaderFiles: await getShaderFileNames(),
     },
   };
 }

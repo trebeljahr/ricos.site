@@ -9,6 +9,7 @@ const nextSitemapConfig = {
     "https://ricos.site/email-signup-success",
     "https://ricos.site/email-signup-error",
     "https://ricos.site/emergency",
+    "https://ricos.site/r3f/*",
   ],
 };
 

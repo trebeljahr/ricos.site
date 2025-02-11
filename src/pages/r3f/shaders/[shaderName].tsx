@@ -7,7 +7,9 @@ import { toLinks } from "src/lib/toLinks";
 export default function Page({
   fragmentShader,
   shaderFiles,
+  shaderName,
 }: {
+  shaderName: string;
   fragmentShader: string;
   shaderFiles: string[];
 }) {
@@ -33,7 +35,7 @@ export default function Page({
         }}
       >
         <FullCanvasShader
-          key={fragmentShader}
+          key={shaderName + Math.random()}
           fragmentShader={fragmentShader}
         />
       </Canvas>
@@ -61,6 +63,7 @@ export async function getStaticProps({ params: { shaderName } }: Params) {
 
   return {
     props: {
+      shaderName,
       fragmentShader: fragmentShader.default,
       shaderFiles: await getShaderFileNames(),
     },

@@ -61,7 +61,7 @@ export const useCustomLightbox = ({
   photos: (ImageProps & { id: string })[];
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(Infinity);
 
   const handleClose = async () => {
     setIsModalOpen(false);
@@ -70,7 +70,9 @@ export const useCustomLightbox = ({
   const animateImageBackToGallery = () => {
     const lightboxImgContainer = document.querySelector(".yarl__slide_current");
     const lightboxImg = lightboxImgContainer?.querySelector("img");
-    const imageId = photos[currentImageIndex].id;
+    const imageId = photos[currentImageIndex]?.id;
+    if (!imageId) return;
+
     const galleryImg = document.getElementById(imageId);
 
     if (!galleryImg || !lightboxImg) return;
@@ -113,9 +115,13 @@ export const useCustomLightbox = ({
 
   useEffect(() => {
     const currentImage = photos[currentImageIndex];
+    if (!currentImage) return;
+
     const currentImageElement = document.getElementById(currentImage.id);
 
     if (currentImageElement) {
+      console.log("scrolling img into view");
+
       currentImageElement.scrollIntoView({
         behavior: "smooth",
         block: "center",

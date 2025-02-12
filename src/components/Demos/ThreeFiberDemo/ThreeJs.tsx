@@ -26,6 +26,7 @@ function Box(props: ThreeElements["mesh"]) {
 const ThreeJs = () => (
   <div style={{ width: "100%", height: "50vh" }}>
     <Canvas>
+      <color attach="background" args={["#f5f5f9"]} />
       <ambientLight />
       <pointLight position={[10, 10, 10]} />
       <Box position={[-1.2, 0, 0]} />

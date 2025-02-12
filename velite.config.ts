@@ -10,7 +10,11 @@ import path from "path";
 import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 import rehypeKatex from "rehype-katex";
 import rehypePrettyCode from "rehype-pretty-code";
-import { transformerNotationDiff } from "@shikijs/transformers";
+import {
+  transformerNotationDiff,
+  transformerNotationHighlight,
+} from "@shikijs/transformers";
+import rehypeCodeTitles from "rehype-code-titles";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
@@ -264,14 +268,17 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
 
   const rehypePlugins: Pluggable[] = [
     rehypeUnwrapGalleries,
-    // rehypeHighlight,
+    rehypeCodeTitles,
     rehypeKatex,
     rehypeSlug,
     rehypeAccessibleEmojis,
     [
       rehypePrettyCode,
       {
-        transformers: [transformerNotationDiff()],
+        transformers: [
+          transformerNotationDiff(),
+          transformerNotationHighlight(),
+        ],
         theme: {
           dark: "github-dark-dimmed",
           light: "github-light",

@@ -17,6 +17,39 @@
   }
 }
 
+h1, h2, h3, h4, h5 {
+  scroll-margin-top: 80px; 
+}
+
+figure[data-rehype-pretty-code-figure] {
+  position: relative;
+  margin: 0;
+  z-index: 1;
+}
+
+.rehype-code-title {
+  margin: 0 !important;
+  margin-bottom: -1px !important;
+  display: inline-flex;
+  background: #e8e8e8;
+  color: #000; 
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+  padding: .25rem 1rem;
+  font-size: .8rem;
+  line-height: 1.5rem;
+  position: relative;
+  z-index: 2;
+  border: 1px solid rgb(107 114 128);
+
+  border-radius: 4px 4px 0 0;
+  border-top: 4px solid #5aa6f2;
+  border-bottom: none;
+}
+
+.dark .rehype-code-title {
+  background: #202224;
+  color: #bac2d0; 
+}
 
 pre[data-theme*=" "],
 code[data-theme*=" "] {

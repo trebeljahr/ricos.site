@@ -25,7 +25,7 @@ export function CodeWithCopyButton({
     <pre
       ref={preRef}
       {...props}
-      className="relative border border-gray-500"
+      className="relative border border-gray-500 !rounded-tl-none"
       data-theme="github-dark-dimmed github-light"
     >
       <button

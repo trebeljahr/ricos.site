@@ -23,7 +23,8 @@
       "@hooks/*": ["src/hooks/*"],
       "@shaders/*": ["src/shaders/*"],
       "@models/*": ["src/models/*"],
-      "@pages/*": ["src/pages/*"]
+      "@pages/*": ["src/pages/*"],
+      "@r4ai/remark-callout": ["node_modules/@r4ai/remark-callout/dist/index"]
     }
   },
   "exclude": ["node_modules"],

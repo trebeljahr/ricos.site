@@ -11,12 +11,12 @@ export default function Page({
 }: {
   shaderName: string;
   fragmentShader: string;
-  shaderFiles: string[];
+  shaderFiles: string[] | undefined;
 }) {
   const extraLinks = (
     <>
       <b className="mt-4 text-lg">Shaders</b>
-      {shaderFiles.map(toLinks)}
+      {shaderFiles?.map(toLinks)}
     </>
   );
 
@@ -57,15 +57,16 @@ export async function getStaticPaths() {
 type Params = { params: { shaderName: string } };
 
 export async function getStaticProps({ params: { shaderName } }: Params) {
-  const fragmentShader = await import(
+  const { default: fragmentShader } = await import(
     `@shaders/standaloneFragmentShaders/${shaderName}.frag`
   );
 
+  const shaderFiles = await getShaderFileNames();
   return {
     props: {
       shaderName,
-      fragmentShader: fragmentShader.default,
-      shaderFiles: await getShaderFileNames(),
+      fragmentShader,
+      shaderFiles,
     },
   };
 }

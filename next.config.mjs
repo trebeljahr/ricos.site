@@ -1,6 +1,4 @@
 import { generateRedirects } from "./src/scripts/createRedirects.js";
-import urlLoader from "url-loader";
-import fileLoader from "file-loader";
 
 const isDev = process.argv.indexOf("dev") !== -1;
 const isBuild = process.argv.indexOf("build") !== -1;

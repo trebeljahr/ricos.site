@@ -8,8 +8,9 @@ import { Handler } from "mdast-util-to-hast";
 import { serialize } from "next-mdx-remote/serialize";
 import path from "path";
 import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
-import rehypeHighlight from "rehype-highlight";
 import rehypeKatex from "rehype-katex";
+import rehypePrettyCode from "rehype-pretty-code";
+import { transformerNotationDiff } from "@shikijs/transformers";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
@@ -263,10 +264,21 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
 
   const rehypePlugins: Pluggable[] = [
     rehypeUnwrapGalleries,
-    rehypeHighlight,
+    // rehypeHighlight,
     rehypeKatex,
     rehypeSlug,
     rehypeAccessibleEmojis,
+    [
+      rehypePrettyCode,
+      {
+        transformers: [transformerNotationDiff()],
+        theme: {
+          dark: "github-dark-dimmed",
+          light: "github-light",
+        },
+        lineNumbers: true,
+      },
+    ],
   ];
 
   const recmaPlugins: Pluggable[] = [];

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AnchorHTMLAttributes, HTMLAttributes, ImgHTMLAttributes } from "react";
 import { ExternalLink } from "./ExternalLink";
 import { SimpleGallery } from "./Galleries";
+import { CodeWithCopyButton } from "./CodeCopyButton";
 
 export const ImageRenderer = ({
   src,
@@ -84,14 +85,6 @@ export const HeadingRenderer = (level: number) => {
   };
 };
 
-export const CodeRenderer = (props: HTMLAttributes<HTMLPreElement>) => {
-  return (
-    <pre className="not-prose" {...props}>
-      {props.children}
-    </pre>
-  );
-};
-
 const handleNiceImageGalleries = (props: { images: string }) => {
   const photos = JSON.parse(props.images);
 
@@ -105,7 +98,7 @@ const handleDivs = (props: any) => {
 export const MarkdownRenderers = {
   a: LinkRenderer,
   img: ImageRenderer,
-  pre: CodeRenderer,
+  pre: CodeWithCopyButton,
   div: handleDivs,
   SimpleGallery: handleNiceImageGalleries,
 };

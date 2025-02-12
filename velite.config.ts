@@ -1,8 +1,10 @@
+import remarkCallout from "@r4ai/remark-callout";
 import slugify from "@sindresorhus/slugify";
-import { Nodes } from "mdast";
 import { Element, Root } from "hast";
+import { interactive } from "hast-util-interactive";
+import { whitespace } from "hast-util-whitespace";
+import { Nodes } from "mdast";
 import { Handler } from "mdast-util-to-hast";
-import { MDXRemoteSerializeResult } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
 import path from "path";
 import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
@@ -12,9 +14,10 @@ import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkToc from "remark-toc";
+import { MDXResult } from "src/@types";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
 import { Node, Pluggable } from "unified/lib";
-import { visit } from "unist-util-visit";
+import { SKIP, visit } from "unist-util-visit";
 import { defineConfig, s, ZodMeta } from "velite";
 
 declare module "mdast" {
@@ -22,12 +25,6 @@ declare module "mdast" {
     SimpleGallery: Node;
   }
 }
-
-import { interactive } from "hast-util-interactive";
-import { whitespace } from "hast-util-whitespace";
-import { SKIP } from "unist-util-visit";
-import { title } from "process";
-import { MDXResult } from "src/@types";
 
 const unknown = 1;
 const containsImage = 2;
@@ -232,6 +229,32 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   }
 > => {
   const remarkPlugins: Pluggable[] = [
+    [
+      remarkCallout,
+      {
+        root: (callout: any) => {
+          return {
+            tagName: "callout-root",
+            properties: {
+              type: callout.type,
+              isFoldable: callout.isFoldable.toString(),
+              defaultFolded: callout.defaultFolded?.toString(),
+            },
+          };
+        },
+        title: (callout: any) => ({
+          tagName: "callout-title",
+          properties: {
+            type: callout.type,
+            isFoldable: callout.isFoldable.toString(),
+          },
+        }),
+        body: (callout: any) => ({
+          tagName: "callout-body",
+          properties: {},
+        }),
+      },
+    ],
     remarkGroupImages,
     remarkGfm,
     remarkToc,

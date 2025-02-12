@@ -19,6 +19,7 @@ import { MarkdownRenderers } from "./CustomRenderers";
 import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
 import { MdxGallery } from "./Galleries";
 import { MDXResult } from "src/@types";
+import { CalloutBody, CalloutRoot, CalloutTitle } from "./Callouts";
 
 const allComponents = {
   UnitVectorDemo,
@@ -38,6 +39,9 @@ const allComponents = {
   Triangulation,
   ThreeFiberDemo,
   ImageGallery: MdxGallery,
+  "callout-root": CalloutRoot,
+  "callout-title": CalloutTitle,
+  "callout-body": CalloutBody,
 };
 
 interface MDXProps {

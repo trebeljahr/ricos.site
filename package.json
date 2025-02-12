@@ -81,6 +81,7 @@
   },
   "devDependencies": {
     "@aws-sdk/client-lambda": "^3.427.0",
+    "@r4ai/remark-callout": "^0.6.2",
     "@sindresorhus/slugify": "^2.2.1",
     "@tailwindcss/typography": "^0.5.13",
     "@testing-library/react": "^13.4.0",

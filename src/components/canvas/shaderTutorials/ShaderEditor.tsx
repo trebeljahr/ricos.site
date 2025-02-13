@@ -24,8 +24,14 @@ export function CodeEditor({ code }: { code: string }) {
   );
 }
 
+const defaultShader = `
+void main() {
+    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+}
+`;
+
 export function SideBySideShaderEditor({
-  initialCode,
+  initialCode = defaultShader,
 }: {
   initialCode: string;
 }) {

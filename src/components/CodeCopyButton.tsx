@@ -9,10 +9,33 @@ export function CodeWithCopyButton({
   const preRef = useRef<HTMLPreElement>(null);
 
   const handleClickCopy = async () => {
-    const code = preRef.current?.textContent;
+    const codeElem = preRef.current;
+    if (!codeElem) return;
+
+    const clonedElement = codeElem.cloneNode(true) as HTMLElement;
+
+    const nodesToRemove = clonedElement.querySelectorAll(".diff.remove");
+    nodesToRemove.forEach((node: Element) => {
+      node.remove();
+    });
+
+    const code = clonedElement.textContent;
 
     if (code) {
-      await navigator.clipboard.writeText(code);
+      const splitText = code.split("\n");
+
+      const cleanedText = splitText.filter((str, index) => {
+        if (str === "") return false;
+        if (index === 0) return true;
+
+        const lastLineWasEmpty = splitText[index - 1] === "";
+        const currentLineIsEmpty = str.trim() === "";
+        if (lastLineWasEmpty && currentLineIsEmpty) return false;
+
+        return true;
+      });
+
+      await navigator.clipboard.writeText(cleanedText.join("\n"));
       setIsCopied(true);
 
       setTimeout(() => {
@@ -25,18 +48,18 @@ export function CodeWithCopyButton({
     <pre
       ref={preRef}
       {...props}
-      className="relative border border-gray-500 !rounded-tl-none"
+      className="relative border border-gray-500"
       data-theme="github-dark-dimmed github-light"
     >
       <button
         disabled={isCopied}
         onClick={handleClickCopy}
-        className="absolute right-2 size-6 z-10"
+        className="w-fit h-fit absolute bottom-2 right-2 z-10 flex place-items-center"
       >
         {isCopied ? (
-          <FaCheck className="text-green-500 dark:text-green-400" />
+          <FaCheck className="size-6 text-green-500 dark:text-green-400" />
         ) : (
-          <FaClipboard className="text-gray-700 dark:text-gray-200" />
+          <FaClipboard className="size-6 text-gray-700 dark:text-gray-200" />
         )}
       </button>
       {children}

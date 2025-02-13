@@ -9,9 +9,9 @@ import {
   instrument,
   niceBlue,
   niceGreen,
-} from "../../lib/math/drawHelpers";
-import { makeBrighter } from "../../lib/math/Poly";
-import { Vec2 } from "../../lib/math/Vector";
+} from "../../../lib/math/drawHelpers";
+import { makeBrighter } from "../../../lib/math/Poly";
+import { Vec2 } from "../../../lib/math/Vector";
 
 export const UnitVectorDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

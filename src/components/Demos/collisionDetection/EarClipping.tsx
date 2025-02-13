@@ -7,9 +7,9 @@ import {
   niceGreen,
   starPoints,
   drawBackground,
-} from "../../lib/math/drawHelpers";
-import { Polygon, triangulateVisualization } from "../../lib/math/Poly";
-import { Vec2 } from "../../lib/math/Vector";
+} from "../../../lib/math/drawHelpers";
+import { Polygon, triangulateVisualization } from "../../../lib/math/Poly";
+import { Vec2 } from "../../../lib/math/Vector";
 import { useWindowWidth } from "@react-hook/window-size";
 export const EarClipping = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

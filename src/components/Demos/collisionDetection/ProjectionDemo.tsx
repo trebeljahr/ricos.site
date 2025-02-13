@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
 
 import {
+  drawProjection,
   initPolygons,
   instrument,
-  checkCollision,
-  drawAllProjections,
   drawBackground,
-} from "../../lib/math/drawHelpers";
-export const SAT = () => {
+} from "../../../lib/math/drawHelpers";
+import { Vec2 } from "../../../lib/math/Vector";
+export const ProjectionDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -18,16 +18,17 @@ export const SAT = () => {
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
 
-    const [poly1, poly2] = initPolygons(ctx);
+    const [poly1] = initPolygons(ctx);
+
     const drawFn = () => {
       drawBackground(ctx);
-      const collision = checkCollision(poly1, poly2);
-      drawAllProjections(ctx, poly1, poly2);
-      poly1.draw(ctx, { collision });
-      poly2.draw(ctx, { collision });
+      poly1.draw(ctx);
+      const p1 = new Vec2(0, 2);
+      const p2 = new Vec2(1, -2);
+      drawProjection(ctx, poly1, p1, p2);
     };
 
-    const { cleanup } = instrument(ctx, [poly1, poly2], drawFn);
+    const { cleanup } = instrument(ctx, [poly1], drawFn);
     return cleanup;
   }, [cnv]);
 

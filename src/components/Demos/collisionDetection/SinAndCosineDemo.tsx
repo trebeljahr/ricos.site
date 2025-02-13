@@ -4,8 +4,8 @@ import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasCompone
 import {
   drawBackground,
   drawCoordinateSystem,
-} from "../../lib/math/drawHelpers";
-import { Vec2 } from "../../lib/math/Vector";
+} from "../../../lib/math/drawHelpers";
+import { Vec2 } from "../../../lib/math/Vector";
 export const SinAndCosineDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
 

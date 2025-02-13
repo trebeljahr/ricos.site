@@ -10,8 +10,8 @@ import {
   drawAllProjections,
   drawBackground,
   visualizeCollision,
-} from "../../lib/math/drawHelpers";
-import { Polygon } from "../../lib/math/Poly";
+} from "../../../lib/math/drawHelpers";
+import { Polygon } from "../../../lib/math/Poly";
 export const SATWithResponse = ({
   drawProjections = true,
   changeColorOnCollision = true,

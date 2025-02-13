@@ -7,9 +7,9 @@ import {
   instrument,
   colorEdge,
   drawBackground,
-} from "../../lib/math/drawHelpers";
-import { Polygon } from "../../lib/math/Poly";
-import { Vec2 } from "../../lib/math/Vector";
+} from "../../../lib/math/drawHelpers";
+import { Polygon } from "../../../lib/math/Poly";
+import { Vec2 } from "../../../lib/math/Vector";
 
 export const AxisByAxis = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

@@ -9,8 +9,8 @@ import {
   checkCollision,
   drawArrow,
   drawBackground,
-} from "../../lib/math/drawHelpers";
-import { Polygon } from "../../lib/math/Poly";
+} from "../../../lib/math/drawHelpers";
+import { Polygon } from "../../../lib/math/Poly";
 export const NormalDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
 

@@ -17,7 +17,9 @@
     "baseUrl": ".",
     "paths": {
       "@velite": [".velite"],
-      "components/collision-detection": ["src/components/collisionDetection"],
+      "components/collision-detection": [
+        "src/components/Demos/collisionDetection"
+      ],
       "@components/*": ["src/components/*"],
       "@contexts/*": ["src/contexts/*"],
       "@hooks/*": ["src/hooks/*"],

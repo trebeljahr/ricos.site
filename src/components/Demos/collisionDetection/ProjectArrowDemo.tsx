@@ -11,8 +11,8 @@ import {
   drawCoordinateSystem,
   niceBlue,
   niceGreen,
-} from "../../lib/math/drawHelpers";
-import { Vec2 } from "../../lib/math/Vector";
+} from "../../../lib/math/drawHelpers";
+import { Vec2 } from "../../../lib/math/Vector";
 export const ProjectArrowDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
 

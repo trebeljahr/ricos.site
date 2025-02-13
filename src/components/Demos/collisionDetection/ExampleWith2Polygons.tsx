@@ -7,8 +7,8 @@ import {
   colorEdge,
   drawBackground,
   instrument,
-} from "../../lib/math/drawHelpers";
-import { Vec2 } from "../../lib/math/Vector";
+} from "../../../lib/math/drawHelpers";
+import { Vec2 } from "../../../lib/math/Vector";
 export const ExampleWith2Polygons = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
 

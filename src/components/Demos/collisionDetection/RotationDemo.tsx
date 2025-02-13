@@ -6,8 +6,8 @@ import {
   drawArrow,
   drawBackground,
   drawCoordinateSystem,
-} from "../../lib/math/drawHelpers";
-import { Vec2 } from "../../lib/math/Vector";
+} from "../../../lib/math/drawHelpers";
+import { Vec2 } from "../../../lib/math/Vector";
 
 const ReactSlider = dynamic(() => import("react-slider"), { ssr: false });
 

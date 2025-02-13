@@ -9,9 +9,9 @@ import {
   checkCollision,
   drawBackground,
   getResponseForCollision,
-} from "../../lib/math/drawHelpers";
-import { Polygon } from "../../lib/math/Poly";
-import { Vec2 } from "../../lib/math/Vector";
+} from "../../../lib/math/drawHelpers";
+import { Polygon } from "../../../lib/math/Poly";
+import { Vec2 } from "../../../lib/math/Vector";
 export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
 

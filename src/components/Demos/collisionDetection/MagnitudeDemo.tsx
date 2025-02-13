@@ -9,8 +9,8 @@ import {
   drawBackground,
   drawCoordinateSystem,
   line,
-} from "../../lib/math/drawHelpers";
-import { Vec2 } from "../../lib/math/Vector";
+} from "../../../lib/math/drawHelpers";
+import { Vec2 } from "../../../lib/math/Vector";
 
 export const MagnitudeDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

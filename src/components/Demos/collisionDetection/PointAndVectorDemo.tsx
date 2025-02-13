@@ -9,8 +9,8 @@ import {
   line,
   niceBlue,
   niceGreen,
-} from "../../lib/math/drawHelpers";
-import { Vec2 } from "../../lib/math/Vector";
+} from "../../../lib/math/drawHelpers";
+import { Vec2 } from "../../../lib/math/Vector";
 function drawCross(ctx: CanvasRenderingContext2D, c: Vec2) {
   line(ctx, new Vec2(c.x - 10, c.y - 10), new Vec2(c.x + 10, c.y + 10));
   line(ctx, new Vec2(c.x - 10, c.y + 10), new Vec2(c.x + 10, c.y - 10));

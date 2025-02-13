@@ -16,7 +16,7 @@ function FullCanvasShaderMesh({ textures }: { textures: Texture[] }) {
     }
   });
 
-  // Create texture uniforms like: u_tex0, u_tex1, etc.
+  // Build texture uniforms: u_tex0, u_tex1, etc.
   const textureUniforms = textures.reduce((acc, texture, index) => {
     acc[`u_tex${index}`] = { value: texture };
     return acc;
@@ -30,9 +30,9 @@ function FullCanvasShaderMesh({ textures }: { textures: Texture[] }) {
         uniforms={{
           u_time: { value: 0 },
           u_resolution: { value: new Vector2(size.width, size.height) },
-          u_pixelRatio: { value: window.devicePixelRatio }, // pass the pixel ratio
+          u_pixelRatio: { value: window.devicePixelRatio },
           u_pointer: { value: new Vector2(0, 0) },
-          ...textureUniforms, // pass the texture uniforms so that they can be used in the shader
+          ...textureUniforms,
         }}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
@@ -52,19 +52,13 @@ export function ShaderWithTextureUpload() {
 
       const loader = new TextureLoader();
       const fileArray = Array.from(files);
-      const loadedTextures: Texture[] = [];
-      const urls: string[] = [];
 
       fileArray.forEach((file) => {
         const url = URL.createObjectURL(file);
-        urls.push(url);
-
         loader.load(url, (texture) => {
-          loadedTextures.push(texture);
-          if (loadedTextures.length === fileArray.length) {
-            setTextures(loadedTextures);
-            setPreviewUrls(urls);
-          }
+          // Append the new texture and its preview URL
+          setTextures((prev) => [...prev, texture]);
+          setPreviewUrls((prev) => [...prev, url]);
         });
       });
     },
@@ -72,13 +66,11 @@ export function ShaderWithTextureUpload() {
   );
 
   const handleDelete = useCallback((index: number) => {
-    // Remove texture from textures array.
     setTextures((prev) => prev.filter((_, i) => i !== index));
-    // Remove preview URL and revoke it.
     setPreviewUrls((prev) => {
-      const newUrls = prev.filter((_, i) => i !== index);
+      // Revoke the object URL before removing it from the state.
       URL.revokeObjectURL(prev[index]);
-      return newUrls;
+      return prev.filter((_, i) => i !== index);
     });
   }, []);
 

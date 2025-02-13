@@ -1,7 +1,6 @@
 import { MDXRemote } from "next-mdx-remote";
 import { MDXResult } from "src/@types";
 import { CalloutBody, CalloutRoot, CalloutTitle } from "./Callouts";
-import { SideBySideShaderEditor } from "./canvas/shaderTutorials/ShaderEditor";
 import { AxisByAxis } from "./Demos/collisionDetection/AxisByAxis";
 import { DotProductDemo } from "./Demos/collisionDetection/DotProductDemo";
 import { EarClipping } from "./Demos/collisionDetection/EarClipping";
@@ -20,6 +19,7 @@ import { UnitVectorDemo } from "./Demos/collisionDetection/UnitVectorDemo";
 import { MarkdownRenderers } from "./MarkdownRenderers";
 import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
 import { MdxGallery } from "./Galleries";
+import { ShaderEditorWithTextureUpload } from "./Demos/FullscreenShader/6-ShaderEditor";
 
 const allComponents = {
   UnitVectorDemo,
@@ -39,7 +39,7 @@ const allComponents = {
   Triangulation,
   ThreeFiberDemo,
   ImageGallery: MdxGallery,
-  ShaderEditor: SideBySideShaderEditor,
+  ShaderEditor: ShaderEditorWithTextureUpload,
   "callout-root": CalloutRoot,
   "callout-title": CalloutTitle,
   "callout-body": CalloutBody,

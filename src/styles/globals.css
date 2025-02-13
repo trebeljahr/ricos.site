@@ -38,9 +38,8 @@ figure[data-rehype-pretty-code-figure] {
 }
 
 .rehype-code-title {
-  margin: 0 !important;
-  margin-bottom: -1px !important;
-  display: inline-flex;
+  margin: 32px 0 -1px 0 !important;
+  width: fit-content;
   background: #e8e8e8;
   color: #000; 
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;

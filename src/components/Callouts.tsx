@@ -299,14 +299,5 @@ export type CalloutBodyProps = {
 };
 
 export const CalloutBody: FC<CalloutBodyProps> = ({ children }) => {
-  return (
-    <div
-      className={clsx(
-        "flex flex-col gap-2",
-        "prose-headings:my-0 prose-p:my-0 prose-blockquote:my-0 prose-pre:my-0 prose-ol:my-0 prose-ul:my-0"
-      )}
-    >
-      {children}
-    </div>
-  );
+  return <div className={"prose-p:my-2"}>{children}</div>;
 };

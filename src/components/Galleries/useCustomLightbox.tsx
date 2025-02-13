@@ -120,8 +120,6 @@ export const useCustomLightbox = ({
     const currentImageElement = document.getElementById(currentImage.id);
 
     if (currentImageElement) {
-      console.log("scrolling img into view");
-
       currentImageElement.scrollIntoView({
         behavior: "smooth",
         block: "center",

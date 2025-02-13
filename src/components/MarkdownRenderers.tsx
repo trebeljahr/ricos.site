@@ -77,8 +77,6 @@ const handleNiceImageGalleries = (props: { images: string }) => {
 };
 
 const handleDivs = (props: any) => {
-  console.log(props);
-
   return <div {...props} className={clsx(props.className, "wrapper")} />;
 };
 

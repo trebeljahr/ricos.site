@@ -33,7 +33,7 @@ export function HorizontalCard({
   return (
     <Link
       href={link}
-      className="bg-white max-w-full dark:bg-gray-800 block overflow-hidden mb-12 xl:mb-12 no-underline prose-headings:text-inherit transform transition-transform duration-300 hover:scale-[1.02] rounded-lg"
+      className="bg-white max-w-full dark:bg-gray-800 block overflow-hidden mb-12 xl:mb-12 no-underline transform transition-transform duration-300 hover:scale-[1.02] rounded-lg"
     >
       <div
         className="md:grid"
@@ -41,7 +41,7 @@ export function HorizontalCard({
           gridTemplateColumns: "15rem auto",
         }}
       >
-        <div className="h-64 md:h-full relative not-prose max-w-full">
+        <div className="h-64 md:h-full relative max-w-full">
           <ImageWithLoader
             src={cover.src}
             alt={cover.alt}
@@ -51,7 +51,7 @@ export function HorizontalCard({
             className="object-cover"
           />
         </div>
-        <div className="p-1 md:p-5 lg:pl-10 md:border-t-4 md:border-r-4 md:border-b-4 max-md:rounded-bl-lg max-md:rounded-br-lg md:rounded-tr-lg md:rounded-br-lg border-gray-200 dark:border-gray-700 prose-headings:mt-2 prose-p:text-zinc-800 dark:prose-p:text-slate-300 w-full font-normal">
+        <div className="p-1 md:p-5 lg:pl-10 md:border-t-4 md:border-r-4 md:border-b-4 max-md:rounded-bl-lg max-md:rounded-br-lg md:rounded-tr-lg md:rounded-br-lg border-gray-200 dark:border-gray-700 w-full font-normal">
           <div className="mx-auto max-w-prose">
             {title && <h2 className="pt-0 font-bold leading-snug">{title}</h2>}
             {subtitle && <p className="font-normal text-base">{subtitle}</p>}
@@ -86,10 +86,10 @@ export const VerticalCard = ({
 }: CardProps) => {
   return (
     <Link
-      className="w-full flex flex-col align-self-stretch whitespace-no-wrap mt-2 no-underline prose-headings:text-inherit transform transition-transform duration-300 hover:scale-[1.02] rounded-lg bg-white dark:bg-gray-800"
+      className="w-full flex flex-col align-self-stretch whitespace-no-wrap mt-2 no-underline transform transition-transform duration-300 hover:scale-[1.02] rounded-lg bg-white dark:bg-gray-800"
       href={link}
     >
-      <div className="h-60 w-full relative not-prose max-w-full rounded-t-lg overflow-hidden">
+      <div className="h-60 w-full relative max-w-full rounded-t-lg overflow-hidden">
         <ImageWithLoader
           src={cover.src}
           alt={cover.alt}
@@ -98,7 +98,7 @@ export const VerticalCard = ({
           className="object-cover rounded-t-lg"
         />
       </div>
-      <div className="flex flex-col flex-grow align-self-stretch p-3 min-h-fit prose-p:text-zinc-800 dark:prose-p:text-slate-300 w-full border-r-4 border-l-4 border-b-4 rounded-bl-lg rounded-br-lg border-gray-200 dark:border-gray-700">
+      <div className="flex flex-col flex-grow align-self-stretch p-3 min-h-fit w-full border-r-4 border-l-4 border-b-4 rounded-bl-lg rounded-br-lg border-gray-200 dark:border-gray-700">
         <h2 className="!my-6 tracking-tight">{title}</h2>
         {subtitle && <p className="font-normal text-base">{subtitle}</p>}
         {markdownExcerpt && <MDXRemote {...markdownExcerpt} />}

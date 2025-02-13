@@ -46,7 +46,7 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
   }, [currentImageIndex, loadMore, displayedPhotos]);
 
   return (
-    <div className="not-prose">
+    <div>
       <InfiniteScroll
         pageStart={0}
         loadMore={loadMore}

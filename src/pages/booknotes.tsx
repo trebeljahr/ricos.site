@@ -62,7 +62,7 @@ export default function Books({ booknotes }: Props) {
           />
           <p>Amount: {filtered.length}</p>
         </div>
-        <div className="prose-a:no-underline">
+        <div>
           {filtered.map((book, index) => {
             return <BookPreview key={book.link} book={book} index={index} />;
           })}

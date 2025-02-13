@@ -43,7 +43,7 @@ export default function Search<T extends Record<string, any>>({
   };
 
   return (
-    <div className="relative not-prose">
+    <div className="relative">
       <input
         type="text"
         placeholder={searchByTitle}

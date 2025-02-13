@@ -49,15 +49,24 @@ export const ImageRenderer = ({
 export const LinkRenderer = ({
   href,
   children,
+  ...props
 }: AnchorHTMLAttributes<HTMLAnchorElement>) => {
   if (!href) return null;
 
   const isInternalLink = href.startsWith("/") || href.startsWith("#");
 
   if (isInternalLink) {
-    return <Link href={href}>{children}</Link>;
+    return (
+      <Link href={href} {...props}>
+        {children}
+      </Link>
+    );
   }
-  return <ExternalLink href={href}>{children}</ExternalLink>;
+  return (
+    <ExternalLink href={href} {...props}>
+      {children}
+    </ExternalLink>
+  );
 };
 
 export const HeadingRenderer = (level: number) => {

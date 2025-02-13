@@ -22,8 +22,6 @@ function FullCanvasShaderMesh({ textures }: { textures: Texture[] }) {
     return acc;
   }, {} as { [key: string]: { value: Texture } });
 
-  console.log(textureUniforms);
-
   return (
     <mesh>
       <planeGeometry args={[2, 2]} />
@@ -32,8 +30,9 @@ function FullCanvasShaderMesh({ textures }: { textures: Texture[] }) {
         uniforms={{
           u_time: { value: 0 },
           u_resolution: { value: new Vector2(size.width, size.height) },
+          u_pixelRatio: { value: window.devicePixelRatio }, // pass the pixel ratio
           u_pointer: { value: new Vector2(0, 0) },
-          ...textureUniforms,
+          ...textureUniforms, // pass the texture uniforms so that they can be used in the shader
         }}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
@@ -71,6 +70,17 @@ export function ShaderWithTextureUpload() {
     },
     []
   );
+
+  const handleDelete = useCallback((index: number) => {
+    // Remove texture from textures array.
+    setTextures((prev) => prev.filter((_, i) => i !== index));
+    // Remove preview URL and revoke it.
+    setPreviewUrls((prev) => {
+      const newUrls = prev.filter((_, i) => i !== index);
+      URL.revokeObjectURL(prev[index]);
+      return newUrls;
+    });
+  }, []);
 
   return (
     <div className="relative w-full h-screen">
@@ -112,6 +122,12 @@ export function ShaderWithTextureUpload() {
                     className="w-12 h-12 object-cover rounded"
                   />
                   <span>{`u_tex${index}`}</span>
+                  <button
+                    onClick={() => handleDelete(index)}
+                    className="ml-auto bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                  >
+                    Delete
+                  </button>
                 </li>
               ))}
             </ul>

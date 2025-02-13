@@ -4,6 +4,7 @@ import { AnchorHTMLAttributes, HTMLAttributes, ImgHTMLAttributes } from "react";
 import { ExternalLink } from "./ExternalLink";
 import { SimpleGallery } from "./Galleries";
 import { CodeWithCopyButton } from "./CodeCopyButton";
+import clsx from "clsx";
 
 export const ImageRenderer = ({
   src,
@@ -69,31 +70,6 @@ export const LinkRenderer = ({
   );
 };
 
-export const HeadingRenderer = (level: number) => {
-  return function Heading({ children }: HTMLAttributes<HTMLHeadingElement>) {
-    if (typeof children !== "string") return null;
-    let anchor = children
-      .toLowerCase()
-      .replace(/[^a-zA-Z0-9 ]/g, "")
-      .replace(/ /g, "-");
-
-    switch (level) {
-      case 1:
-        return <h1 id={anchor}>{children}</h1>;
-      case 2:
-        return <h2 id={anchor}>{children}</h2>;
-      case 3:
-        return <h3 id={anchor}>{children}</h3>;
-      case 4:
-        return <h4 id={anchor}>{children}</h4>;
-      case 5:
-        return <h5 id={anchor}>{children}</h5>;
-      default:
-        return <h6 id={anchor}>{children}</h6>;
-    }
-  };
-};
-
 const handleNiceImageGalleries = (props: { images: string }) => {
   const photos = JSON.parse(props.images);
 
@@ -101,7 +77,9 @@ const handleNiceImageGalleries = (props: { images: string }) => {
 };
 
 const handleDivs = (props: any) => {
-  return <div {...props} />;
+  console.log(props);
+
+  return <div {...props} className={clsx(props.className, "wrapper")} />;
 };
 
 export const MarkdownRenderers = {

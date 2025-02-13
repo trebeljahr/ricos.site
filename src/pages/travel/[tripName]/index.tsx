@@ -45,7 +45,7 @@ const Traveling = ({ posts, tripName }: Props) => {
         tripName,
       ]}
     >
-      <main className="mb-20 px-3">
+      <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
         <section>
           <Header

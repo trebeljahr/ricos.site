@@ -26,7 +26,7 @@ export const CardGallery = ({
   withSubtitle = false,
 }: CardGalleryProps) => {
   return (
-    <div className="grid gap-2 md:gap-4 lg:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max  justify-items-center pb-5">
+    <div className="grid gap-2 md:gap-4 lg:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max justify-items-center pb-5">
       {content.map((singlePiece) => (
         <VerticalCard
           key={singlePiece.slug}
@@ -68,8 +68,8 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
 
   const scrollHandler: WheelEventHandler<HTMLDivElement> = (event) => {
     const elementWidth = scrollRef.current?.children[0].clientWidth;
-
     if (!scrollRef.current || !elementWidth) return;
+
     if (
       Math.abs(event.deltaY) === 0 &&
       Math.abs(event.deltaX) > 2 &&
@@ -77,8 +77,12 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
     ) {
       return setScrolled(true);
     }
+  };
 
-    // setScrolled(true);
+  const handleScrollEffect = () => {
+    const elementWidth = scrollRef.current?.children[0].clientWidth;
+    if (!scrollRef.current || !elementWidth) return;
+
     setShowButtons({
       left: scrollRef.current.scrollLeft >= elementWidth,
       right:
@@ -156,11 +160,12 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
   }, [handleNext, scrollRef, scrolled, hovering]);
 
   return (
-    <div className="flex place-items-center relative mb-10 xl:mb-0 w-full">
+    <div className="flex place-items-center relative mb-10 xl:mb-0">
       <div
         className="-ml-3 overflow-x-scroll w-full overscroll-x-none snap-x snap-mandatory flex transition-transform duration-300 ease-in-out pb-5 no-scrollbar"
         ref={scrollRef}
         onWheel={scrollHandler}
+        onScroll={handleScrollEffect}
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
       >
@@ -193,7 +198,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
         <FaChevronLeft className="h-4 w-4" />
       </button>
       <button
-        className={`absolute right-6 top-full xl:right-[-40px] xl:top-1/2 z-20 h-fit xl:mx-2 rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
+        className={`absolute right-6 top-full xl:right-[-50px] xl:top-1/2 z-20 h-fit xl:mx-2 rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
           showButtons.right ? "opacity-1" : "opacity-0"
         }`}
         onClick={handleNext}

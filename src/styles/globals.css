@@ -6,15 +6,6 @@
   * {
     box-sizing: border-box;
   }
-
-  html,
-  body,
-  #__next {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
 }
 
 h1, h2, h3, h4, h5, li {
@@ -35,6 +26,38 @@ a {
 figure[data-rehype-pretty-code-figure] {
   position: relative;
   z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .small-bleed {
+    margin-left: calc(-80vw / 2 + 65ch / 2);
+    margin-right: calc(-80vw / 2 + 65ch / 2);
+  }
+
+  .medium-bleed {
+    margin-left: calc(-85vw / 2 + 65ch / 2);
+    margin-right: calc(-85vw / 2 + 65ch / 2);
+  }
+
+  .large-bleed {
+    margin-left: calc(-90vw / 2 + 65ch / 2);
+    margin-right: calc(-90vw / 2 + 65ch / 2);
+  }
+
+}
+@media (min-width: 1300px) {
+  .large-bleed {
+    margin-left: calc(-80vw / 2 + 65ch / 2);
+    margin-right: calc(-80vw / 2 + 65ch / 2);
+  }
+  .medium-bleed {
+    margin-left: calc(-70vw / 2 + 65ch / 2);
+    margin-right: calc(-70vw / 2 + 65ch / 2);
+  }
+  .small-bleed {
+    margin-left: calc(-60vw / 2 + 65ch / 2);
+    margin-right: calc(-60vw / 2 + 65ch / 2);
+  }
 }
 
 .rehype-code-title {

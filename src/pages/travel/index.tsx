@@ -134,7 +134,7 @@ const TravelBlogs = ({ travelingStories, travelingBlogsMeta }: Props) => {
         "adventure",
       ]}
     >
-      <main className="mb-20 px-3">
+      <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path="travel" />
 
         <section>
@@ -158,12 +158,12 @@ const TravelBlogs = ({ travelingStories, travelingBlogsMeta }: Props) => {
             );
           })}
         </section>
-      </main>
 
-      <footer className="mb-20 px-3">
-        <NewsletterForm />
-        <ToTopButton />
-      </footer>
+        <footer>
+          <NewsletterForm />
+          <ToTopButton />
+        </footer>
+      </main>
     </Layout>
   );
 };

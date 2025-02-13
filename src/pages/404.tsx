@@ -10,7 +10,7 @@ export default function Custom404() {
       image="/assets/blog/404.jpg"
       imageAlt="this is not a page pipe meme joke"
     >
-      <main className="mt-10 mb-20 px-3 max-w-3xl">
+      <main className="py-20 px-3 max-w-5xl mx-auto">
         <h1>404 - Page Not Found</h1>
         <p>Sorry but this page does not exist</p>
         <TrySomeOfThese />

@@ -24,7 +24,7 @@ export default function Page({ page }: Props) {
       keywords={page.tags.split(",")}
       withProgressBar={true}
     >
-      <main className="mb-20 px-3">
+      <main className="py-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose">
           <BreadCrumbs path={page.slug} />
           <MetadataDisplay
@@ -35,12 +35,12 @@ export default function Page({ page }: Props) {
 
           <MDXContent source={page.content} />
         </article>
-      </main>
 
-      <footer className="mb-20 px-3">
-        <NewsletterForm />
-        <ToTopButton />
-      </footer>
+        <footer>
+          <NewsletterForm />
+          <ToTopButton />
+        </footer>
+      </main>
     </Layout>
   );
 }

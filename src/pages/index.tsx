@@ -48,40 +48,42 @@ const IndexPage = (props: Props) => {
       url="/"
       fullScreen={true}
     >
-      <main>
+      <main className="mt-32">
         <section className="px-3 pb-20">
-          <div className="mx-auto max-w-6xl 2xl:max-w-screen-2xl">
-            <h2 className="text-4xl">
-              Hi there <WavingHand />
-            </h2>
-            <span>
-              I am Rico Trebeljahr. A programmer, traveler, photographer, writer
-              and fellow human. This is my personal website. It&apos;s where I
-              write, publish my newsletter, collect booknotes, quotes, traveling
-              stories, and photography.
-            </span>
-            <p>
-              Wanna know what I like on the internet? I have a{" "}
-              <Link as={`/needlestack`} href="/needlestack">
-                /needlestack
-              </Link>{" "}
-              page.
-            </p>
-            <p>
-              Wanna know what makes me tick? I have a{" "}
-              <Link as={`/principles`} href="/principles">
-                /principles
-              </Link>{" "}
-              page.
-            </p>
+          <div className="mx-auto max-w-screen-lg">
+            <div className="max-w-prose">
+              <h2 className="text-4xl">
+                Hi there <WavingHand />
+              </h2>
+              <span>
+                I am Rico Trebeljahr. A programmer, traveler, photographer,
+                writer and fellow human. This is my personal website. It&apos;s
+                where I write, publish my newsletter, collect booknotes, quotes,
+                traveling stories, and photography.
+              </span>
+              <p>
+                Wanna know what I like on the internet? I have a{" "}
+                <Link as={`/needlestack`} href="/needlestack">
+                  /needlestack
+                </Link>{" "}
+                page.
+              </p>
+              <p>
+                Wanna know what makes me tick? I have a{" "}
+                <Link as={`/principles`} href="/principles">
+                  /principles
+                </Link>{" "}
+                page.
+              </p>
 
-            <p>
-              Wanna know what I am up to? I have a{" "}
-              <Link as={`/now`} href="/now">
-                /now
-              </Link>{" "}
-              page.
-            </p>
+              <p>
+                Wanna know what I am up to? I have a{" "}
+                <Link as={`/now`} href="/now">
+                  /now
+                </Link>{" "}
+                page.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -137,7 +139,7 @@ const IndexPage = (props: Props) => {
         </section>
 
         <section className="dark:bg-gray-950 bg-slate-100 pt-1 pb-20 px-3">
-          <div className="mx-auto max-w-6xl 2xl:max-w-screen-2xl">
+          <div className="mx-auto max-w-screen-lg">
             <div className="max-w-prose">
               <h2>Webpages</h2>
               <p>

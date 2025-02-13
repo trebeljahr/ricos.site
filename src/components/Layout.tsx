@@ -47,17 +47,7 @@ const Layout = ({
       />
       <TailwindNavbar withProgressBar={withProgressBar} />
 
-      <div
-        className={clsx(
-          fullScreen
-            ? "w-full mx-auto max-w-full"
-            : "w-full mx-auto max-w-5xl overflow-x-clip",
-
-          "pt-20"
-        )}
-      >
-        {children}
-      </div>
+      {children}
     </div>
   );
 };

@@ -28,7 +28,7 @@ export function TailwindNavbar({
       {({ open, close }) => (
         <header
           id="navbar"
-          className={`fixed top-0 prose-a:no-underline prose-a:hover:text-inherit prose-a:font-normal font-normal prose-a:text-inherit left-0 z-[999] ${
+          className={`fixed top-0 w-screen prose-a:no-underline prose-a:hover:text-inherit prose-a:font-normal font-normal prose-a:text-inherit left-0 z-[999] ${
             open ? "bg-white" : "glassy hover:bg-white dark:bg-gray-900"
           } w-full dark:bg-none dark:bg-gray-900 pt-3 transition-colors duration-300 ${
             withProgressBar ? "" : "pb-2"

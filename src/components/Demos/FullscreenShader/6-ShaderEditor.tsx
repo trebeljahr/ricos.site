@@ -56,7 +56,7 @@ export function ShaderEditorWithTextureUpload() {
   }, []);
 
   return (
-    <div className="relative w-full h-screen">
+    <div className="relative h-screen full-bleed">
       <FullCanvasShaderEditor textures={textures} />
 
       <TextureUploadMenu

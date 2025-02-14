@@ -160,7 +160,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
   }, [handleNext, scrollRef, scrolled, hovering]);
 
   return (
-    <div className="flex place-items-center relative mb-10 xl:mb-0">
+    <div className="flex place-items-center relative">
       <div
         className="-ml-3 overflow-x-scroll w-full overscroll-x-none snap-x snap-mandatory flex transition-transform duration-300 ease-in-out pb-5 no-scrollbar"
         ref={scrollRef}

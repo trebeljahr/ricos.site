@@ -16,14 +16,12 @@ const _MetadataDisplay = ({
   longFormDate = true,
 }: Props) => {
   return (
-    <div className="text-sm mt-3 text-gray-700 dark:text-gray-200">
+    <div className="text-sm text-gray-700 dark:text-gray-200">
       {readingTime && (
-        <span className="text-sm mr-4 mb-1 mt-1">🕓 {readingTime} min</span>
+        <span className="text-sm mr-4">🕓 {readingTime} min</span>
       )}
       {amountOfStories && (
-        <span className="text-sm mr-4 mb-1 mt-1">
-          📚 {amountOfStories} stories
-        </span>
+        <span className="text-sm mr-4">📚 {amountOfStories} stories</span>
       )}
       {date && (
         <span>

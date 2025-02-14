@@ -69,7 +69,7 @@ export default function Podcastnotes({ podcastnotes }: Props) {
                       {show} – Episode {episode} | Rating: {rating}/10
                     </h3>
 
-                    <p className="mb-1">{excerpt}</p>
+                    <p>{excerpt}</p>
                   </Link>
                   <div className="h-px bg-slate-500" />
                 </div>

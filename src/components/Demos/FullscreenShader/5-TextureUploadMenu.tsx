@@ -22,7 +22,7 @@ export function TextureUploadMenu({
 
   return (
     <div className="absolute top-2 right-2 bg-white bg-opacity-90 p-4 rounded shadow-lg max-h-[90vh] overflow-y-auto">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between">
         <span className="font-bold">Uploaded Textures</span>
         <button onClick={handleToggleMenu} className="focus:outline-none">
           {menuOpen ? <FaChevronUp /> : <FaChevronDown />}
@@ -35,7 +35,7 @@ export function TextureUploadMenu({
             multiple
             accept="image/*"
             onChange={onFileChange}
-            className="block mb-4"
+            className="block"
           />
           {previewUrls.length > 0 && (
             <ul className="space-y-2">

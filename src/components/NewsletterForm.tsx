@@ -71,26 +71,24 @@ export const NewsletterForm = ({
   };
 
   const defaultLink = (
-    <Link as="/newsletters" href="/newsletters" className="block w-fit mt-5">
+    <Link as="/newsletters" href="/newsletters" className="block w-fit">
       Check out what you missed so far.
     </Link>
   );
 
   const defaultText = (
     <>
-      <p className="mb-4">
+      <p>
         Join the Live and Learn Newsletter to receive updates on what happens in
         the world of AI and technology every two weeks on Sunday!
       </p>
     </>
   );
 
-  const defaultHeading = (
-    <h2 className="!mt-0">Subscribe to Live and Learn 🌱</h2>
-  );
+  const defaultHeading = <h2>Subscribe to Live and Learn 🌱</h2>;
 
   return (
-    <div className="w-full mt-32">
+    <div className="w-full">
       {success ? (
         <div className="rounded-md overflow-hidden p-3 py-3 bg-white shadow-lg w-full">
           <div className="newsletter-success-ribbon w-full" />
@@ -98,7 +96,7 @@ export const NewsletterForm = ({
             <div className="flex w-full justify-center">
               <ConfettiExplosion {...mediumConfettiProps} />
             </div>
-            <h2 className="pt-0 mt-0 mb-3 flex items-center">
+            <h2 className="pt-0 flex items-center">
               Success
               <FaCheckCircle className="text-green-500 ml-2" />
             </h2>
@@ -107,7 +105,7 @@ export const NewsletterForm = ({
             {!link && defaultLink}
 
             <button
-              className="mt-5 text-left"
+              className="text-left"
               onClick={() => setSuccess(null)}
               aria-label="Sign up with another email address"
             >
@@ -115,7 +113,7 @@ export const NewsletterForm = ({
             </button>
           </div>
 
-          <div className="newsletter-success-ribbon mt-10" />
+          <div className="newsletter-success-ribbon" />
         </div>
       ) : (
         <div className="px-5 py-10 rounded-lg bg-white dark:bg-gray-800 border-4 border-gray-200 dark:border-gray-700">

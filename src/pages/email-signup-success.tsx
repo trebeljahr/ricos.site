@@ -48,7 +48,7 @@ export default function EmailSignupSuccess() {
         image="/assets/blog/success.png"
         imageAlt="a green success checkmark on a black background"
       >
-        <article className="mt-10">
+        <article>
           <h1>Success</h1>
           <p>
             Welcome to my newsletter, emails go out Sunday every two weeks. Cant

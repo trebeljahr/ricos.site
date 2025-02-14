@@ -33,7 +33,7 @@ export function HorizontalCard({
   return (
     <Link
       href={link}
-      className="bg-white max-w-full dark:bg-gray-800 block overflow-hidden mb-12 xl:mb-12 no-underline transform transition-transform duration-300 hover:scale-[1.02] rounded-lg"
+      className="bg-white max-w-full dark:bg-gray-800 block overflow-hidden no-underline transform transition-transform duration-300 hover:scale-[1.02] rounded-lg"
     >
       <div
         className="md:grid"
@@ -86,7 +86,7 @@ export const VerticalCard = ({
 }: CardProps) => {
   return (
     <Link
-      className="w-full flex flex-col align-self-stretch whitespace-no-wrap mt-2 no-underline transform transition-transform duration-300 hover:scale-[1.02] rounded-lg bg-white dark:bg-gray-800"
+      className="w-full flex flex-col align-self-stretch whitespace-no-wrap no-underline transform transition-transform duration-300 hover:scale-[1.02] rounded-lg bg-white dark:bg-gray-800"
       href={link}
     >
       <div className="h-60 w-full relative max-w-full rounded-t-lg overflow-hidden">
@@ -102,7 +102,7 @@ export const VerticalCard = ({
         <h2 className="!my-6 tracking-tight">{title}</h2>
         {subtitle && <p className="font-normal text-base">{subtitle}</p>}
         {markdownExcerpt && <MDXRemote {...markdownExcerpt} />}
-        <div className="flex-grow mb-5"></div>
+        <div className="flex-grow"></div>
         <div className="place-self-end">
           <MetadataDisplay
             date={date}

@@ -31,7 +31,7 @@ export default function MidjourneyGallery({
         "AI generated art",
       ]}
     >
-      <div className="mb-20 px-3">
+      <div className="px-3">
         <h1>Midjourney Images</h1>
         <InfiniteScrollGallery images={images} />
 

@@ -123,11 +123,11 @@ export default function Photography({ trips }: Props) {
         "showcase",
       ]}
     >
-      <main className="mb-20 px-3 max-w-7xl mx-auto">
+      <main className="px-3 max-w-7xl mx-auto">
         <BreadCrumbs path={url} />
 
         <Header subtitle="My travels in pictures" title="Photography" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {trips.map(({ tripName, image }, index) => {
             return (
               <Link

@@ -34,17 +34,16 @@ const PodcastnoteComponent = ({ podcastnote }: Props) => {
         <article>
           <section className="Podcastnote-info">
             <div className="Podcastnote-preview-text">
-              <h1 className="!mt-16 !mb-2">
+              <h1>
                 <p className="text-2xl font-normal">
                   {podcastnote.show} | Episode – {podcastnote.episode}{" "}
                 </p>
-                <p className="mt-2">{podcastnote.title}</p>
+                <p>{podcastnote.title}</p>
               </h1>
-              {/* <p className="mt-10 mb-0"></p> */}
-              <p className="mt-0 mb-0">
+              <p>
                 <b>Rating: {podcastnote.rating}/10</b>
               </p>
-              <span className="mt-2">
+              <span>
                 Listen on:{" "}
                 <ExternalLink href={podcastnote.links.youtube}>
                   Youtube

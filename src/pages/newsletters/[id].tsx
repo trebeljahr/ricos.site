@@ -53,7 +53,7 @@ const Newsletter = ({
 
         <article>
           <Header title={fullTitle} />
-          <div className="mb-5">
+          <div>
             <ImageWithLoader
               priority
               src={cover.src}

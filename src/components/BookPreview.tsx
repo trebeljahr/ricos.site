@@ -27,12 +27,12 @@ export function BookPreview({ book, index }: Props) {
     <Link
       as={link}
       href={link}
-      className="no-underline w-full overflow-hidden md:grid transform transition-transform duration-300 hover:scale-[1.02]"
+      className="no-underline w-full overflow-hidden md:grid mb-10 transform transition-transform duration-300 hover:scale-[1.02]"
       style={{
         gridTemplateColumns: "15rem auto",
       }}
     >
-      <div className="h-64 md:h-full relative">
+      <div className="h-64 md:h-full mb-4 relative">
         <ImageWithLoader
           src={cover.src}
           alt={cover.alt}
@@ -59,13 +59,13 @@ export function BookPreview({ book, index }: Props) {
           readingTime={book.metadata.readingTime}
           withAuthorInfo={false}
         />
-        <p className="text-sm">🏆 Rated: {rating}/10</p>
+        <p className="text-sm mt-2">🏆 Rated: {rating}/10</p>
 
         <div>
           {markdownExcerpt ? (
             <MDXRemote {...markdownExcerpt} />
           ) : excerpt ? (
-            <p>{excerpt}</p>
+            <p className="mb-2">{excerpt}</p>
           ) : (
             <p>{defaultExcerpt}</p>
           )}

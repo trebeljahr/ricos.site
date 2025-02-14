@@ -21,12 +21,14 @@ const EmergencyInfoComponent: FC = () => {
       image="/assets/blog/emergency.png"
       imageAlt="man being rescued by a helicopter"
     >
-      <div className="max-w-md mx-auto p-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold">Access Emergency Information</h2>
+      <div className="max-w-md mx-auto mt-12 p-8 rounded-lg shadow-md">
+        <h2 className="text-2xl font-semibold mb-6">
+          Access Emergency Information
+        </h2>
         {!emergencyInfo ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="password" className="block font-medium">
+              <label htmlFor="password" className="block font-medium mb-2">
                 Enter Password:
               </label>
               <input
@@ -51,8 +53,8 @@ const EmergencyInfoComponent: FC = () => {
           </form>
         ) : (
           <div>
-            <h3 className="text-xl font-semibold">Emergency Numbers</h3>
-            <ul className="space-y-2 list-none">
+            <h3 className="text-xl font-semibold mb-4">Emergency Numbers</h3>
+            <ul className="space-y-2 mb-6 list-none">
               <li className="flex justify-between">
                 <span className="font-medium">Mum:</span>
                 <span>{emergencyInfo.importantNumbers.mum}</span>

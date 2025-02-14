@@ -26,7 +26,7 @@ const AmazonLinkDisclaimer = () => {
       </button>
 
       <div className="invisible absolute left-0 -mt-[2px] flex flex-col group-focus-within:visible group-active:visible">
-        <div className="ml-1 inline-block overflow-hidden">
+        <div className="ml-1 -mb-[1px] inline-block overflow-hidden">
           <div className="h-3 w-3 origin-bottom-left rotate-45 transform  bg-slate-200 dark:bg-gray-800"></div>
         </div>
 
@@ -95,7 +95,7 @@ const Book = ({ booknote }: Props) => {
         />
         <article>
           <section className="flex !mt-16">
-            <div className="block relative mr-2 w-60 overflow-hidden rounded-md">
+            <div className="block relative mr-2 mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
               <BookCover
                 title={booknote.title}
                 src={booknote.cover.src}
@@ -106,9 +106,9 @@ const Book = ({ booknote }: Props) => {
             <header className="h-fit w-full ml-5">
               <hgroup>
                 <h1 className="!my-2">{booknote.title}</h1>
-                <p>{booknote.subtitle}</p>
-                <p>by {booknote.bookAuthor}</p>
-                <p>🏆 Rated: {booknote.rating}/10</p>
+                <p className="!mt-2 !mb-0">{booknote.subtitle}</p>
+                <p className="!mt-0 !mb-2">by {booknote.bookAuthor}</p>
+                <p className="!mt-12 !mb-2">🏆 Rated: {booknote.rating}/10</p>
                 <BuyItOnAmazon link={booknote.amazonAffiliateLink} />
               </hgroup>
             </header>

@@ -49,7 +49,7 @@ export const BlogLayout = ({
           <MetadataDisplay date={date} readingTime={readingTime} />
 
           <Header subtitle={subtitle} title={title} />
-          <div>
+          <div className="mb-5">
             <ImageWithLoader
               priority
               src={cover.src}

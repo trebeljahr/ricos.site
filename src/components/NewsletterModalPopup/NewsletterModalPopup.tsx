@@ -63,20 +63,20 @@ const NewsletterModalPopup = ({ howFarDown = 50 }: { howFarDown?: number }) => {
             >
               <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-5 pt-10 md:p-12 text-left align-middle shadow-xl transition-all">
                 <NewsletterForm
-                  heading={<h2>Not subscribed yet?</h2>}
+                  heading={<h2 className="mt-0">Not subscribed yet?</h2>}
                   text={
                     <>
-                      <p>
+                      <p className="mb-4">
                         Join the Live and Learn Newsletter to receive insights
                         straight to your inbox every two weeks!
                       </p>
-                      <ul className="list-disc pl-3">
+                      <ul className="list-disc mb-4 pl-3">
                         <li>✨ Inspiring quotes</li>
                         <li>✍️ Exclusive posts on fascinating topics</li>
                         <li>🖇️ Curated links to cutting-edge ideas</li>
                         <li>🌌 Travel stories</li>
                       </ul>
-                      <p>No spam. No noise.</p>
+                      <p className="mb-4">No spam. No noise.</p>
                     </>
                   }
                   link={<></>}

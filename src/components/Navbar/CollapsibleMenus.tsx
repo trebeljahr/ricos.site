@@ -32,7 +32,7 @@ export function CollapsibleMenuDesktop({ links, text }: DesktopMenuProps) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <MenuItems className="overflow-hidden bg-white dark:bg-gray-800 flex-col absolute box-border right-0 z-50 origin-top-right w-fit rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <MenuItems className="overflow-hidden bg-white dark:bg-gray-800 flex-col absolute box-border right-0 z-50 mt-2 origin-top-right w-fit rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           {links.map((item) => (
             <SingleMenuItem key={item} link={item} />
           ))}
@@ -69,7 +69,7 @@ export function CollapsibleMenuMobile({
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <MenuItems className="overflow-hidden bg-white dark:bg-slate-800 w-48 origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+          <MenuItems className="overflow-hidden bg-white dark:bg-slate-800 mt-2 w-48 origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
             {links.map((item) => (
               <SingleMenuItem key={item} link={item} closeNav={closeNav} />
             ))}

@@ -57,7 +57,7 @@ export function SideBySideShaderEditor({
   const key = Math.random();
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full mt-10">
       <ReactCodeMirror
         value={value}
         height="100%"

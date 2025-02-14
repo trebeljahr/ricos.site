@@ -55,7 +55,7 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
       >
         <div>
           {groupImages(displayedPhotos).map((group, i) => (
-            <div key={i}>
+            <div key={i} className="mb-[5px] xs:mb-[10px] xl:mb-[15px]">
               <PhotoAlbum
                 photos={group}
                 targetRowHeight={400}

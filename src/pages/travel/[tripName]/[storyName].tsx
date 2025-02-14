@@ -58,7 +58,7 @@ export const TravelBlogLayout = ({
         <MetadataDisplay date={date} readingTime={readingTime} />
         <Header title={title || ""} />
 
-        <div>
+        <div className="mb-5">
           <ImageWithLoader
             priority
             src={cover.src}

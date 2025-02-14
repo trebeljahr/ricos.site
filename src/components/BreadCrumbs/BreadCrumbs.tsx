@@ -15,7 +15,7 @@ export default function _Component({
   const pathParts = path.split("/").filter((part) => part !== "");
 
   return (
-    <nav className="flex" aria-label="Breadcrumb">
+    <nav className="flex mt-5" aria-label="Breadcrumb">
       <div
         className="inline-flex items-center space-x-1 md:space-x-3 m-0"
         style={{

@@ -27,7 +27,7 @@ export const HomePageSection = ({
         <h2 className="text-5xl">{title}</h2>
 
         {description && (
-          <div className="max-w-prose">
+          <div className="mb-14 max-w-prose">
             <MDXContent source={description} />
           </div>
         )}
@@ -36,7 +36,7 @@ export const HomePageSection = ({
         ) : (
           <CardGallery {...cardGalleryProps} />
         )}
-        <div>{linkElem}</div>
+        <div className="mt-12">{linkElem}</div>
       </div>
     </>
   );

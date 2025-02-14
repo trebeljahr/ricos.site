@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useCallback, useRef, useState } from "react";
 import { ShaderMaterial, Texture, Vector2 } from "three";
-import initialShader from "./fragmentShader.glsl"; // [!code --]
+import initialShader from "./fragmentShader.glsl";
 import vertexShader from "./vertexShader.glsl";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";

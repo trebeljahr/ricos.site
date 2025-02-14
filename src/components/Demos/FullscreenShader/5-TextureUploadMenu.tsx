@@ -63,7 +63,12 @@ type PreviewUrlProps = {
   index: number;
 };
 
-function PreviewUrl({ url, onDelete, onUpdate, index }: PreviewUrlProps) {
+export function PreviewUrl({
+  url,
+  onDelete,
+  onUpdate,
+  index,
+}: PreviewUrlProps) {
   const handleUpdateFileChange = (
     index: number,
     event: React.ChangeEvent<HTMLInputElement>

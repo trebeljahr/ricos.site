@@ -70,6 +70,7 @@
     "react-markdown": "^8.0.3",
     "react-modal": "^3.16.1",
     "react-photo-album": "^2.2.2",
+    "react-rnd": "^10.4.14",
     "react-slider": "^2.0.4",
     "simple-react-canvas-component": "^0.1.14",
     "simplex-noise": "^4.0.3",

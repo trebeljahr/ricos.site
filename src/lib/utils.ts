@@ -34,6 +34,8 @@ export type CommonMetadata = {
   cover: {
     src: string;
     alt: string;
+    width: number;
+    height: number;
   };
   metadata: {
     readingTime: number;

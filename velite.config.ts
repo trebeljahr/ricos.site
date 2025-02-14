@@ -111,10 +111,26 @@ const commonFields = {
     .string()
     .refine((date) => /^\d{2}\.\d{2}\.\d{4}$/.test(date), "Invalid date format")
     .transform((date) => parseGermanDate(date)),
-  cover: s.object({
-    src: s.string(),
-    alt: s.string(),
-  }),
+  "date-last-updated": s
+    .string()
+    .refine((date) => /^\d{2}\.\d{2}\.\d{4}$/.test(date), "Invalid date format")
+    .transform((date) => parseGermanDate(date)),
+  cover: s
+    .object({
+      src: s.string(),
+      alt: s.string(),
+    })
+    .transform(async (cover) => {
+      const defaultCover = "assets/midjourney/the-door-to-the-ocean.jpg";
+      const { width, height } = await getImgWidthAndHeightDuringBuild(
+        cover.src === "" ? defaultCover : cover.src
+      );
+      return {
+        ...cover,
+        width,
+        height,
+      };
+    }),
   metadata: s.metadata(),
   published: s.boolean(),
 
@@ -275,9 +291,10 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     [
       rehypePrettyCode,
       {
+        matchAlgorithm: "v3",
         transformers: [
-          transformerNotationDiff(),
-          transformerNotationHighlight(),
+          transformerNotationDiff({ matchAlgorithm: "v3" }),
+          transformerNotationHighlight({ matchAlgorithm: "v3" }),
         ],
         theme: {
           dark: "github-dark-dimmed",

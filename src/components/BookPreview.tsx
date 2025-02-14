@@ -36,12 +36,15 @@ export function BookPreview({ book, index }: Props) {
         <ImageWithLoader
           src={cover.src}
           alt={cover.alt}
-          fill
           sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
             priority ? 768 : 357
           }`}
+          width={cover.width}
+          height={cover.height}
           priority={priority}
           style={{
+            width: "100%",
+            height: "100%",
             objectFit: "cover",
           }}
         />

@@ -138,7 +138,8 @@ export default function Photography({ trips }: Props) {
                 <ImageWithLoader
                   src={image.src}
                   sizes={"calc(50vw - 40px)"}
-                  fill
+                  width={image.width}
+                  height={image.height}
                   priority={index < 2}
                   alt={"A photo from " + tripName}
                   style={{ filter: "brightness(50%)" }}

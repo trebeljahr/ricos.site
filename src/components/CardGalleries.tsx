@@ -52,7 +52,6 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
   const width = useWindowWidth();
 
   const itemsPerPage = useMemo(() => {
-    if (width > 1920) return 4;
     if (width > 1280) return 3;
     if (width > 768) return 2;
     return 1;
@@ -174,7 +173,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
             key={singlePiece.link}
             id={singlePiece.slug}
             data-index={index}
-            className="px-3 flex self-stretch w-full md:w-1/2 xl:w-1/3 3xl:w-1/4 snap-start shrink-0"
+            className="px-3 flex self-stretch w-full md:w-1/2 xl:w-1/3 snap-start shrink-0"
           >
             <VerticalCard
               {...singlePiece}

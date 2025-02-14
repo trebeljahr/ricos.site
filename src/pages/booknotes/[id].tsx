@@ -98,8 +98,7 @@ const Book = ({ booknote }: Props) => {
             <div className="not-prose block relative mr-2 mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
               <BookCover
                 title={booknote.title}
-                src={booknote.cover.src}
-                alt={booknote.cover.alt}
+                cover={booknote.cover}
                 priority={true}
               />
             </div>

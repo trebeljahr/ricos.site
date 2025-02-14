@@ -12,31 +12,22 @@ export const ImageWithLoader = ({
   const [isSkeleton, setIsSkeleton] = useState(true);
 
   return (
-    <div className="relative w-full overflow-hidden h-full" id={id}>
-      <div
-        className={clsx(
-          "transition-opacity duration-200 h-full w-full relative z-10"
-        )}
-      >
-        <Image
-          {...props}
-          alt={props.alt}
-          onLoad={() => {
-            props.src !== "" && setIsSkeleton(false);
-          }}
-          style={
-            props.fill
-              ? props.style
-              : { ...props.style, height: "auto", width: "auto" }
-          }
-        />
-      </div>
+    <>
+      <Image
+        id={id}
+        {...props}
+        alt={props.alt}
+        onLoad={() => {
+          props.src !== "" && setIsSkeleton(false);
+        }}
+        style={{ ...props.style }}
+      />
 
       {isSkeleton && (
-        <div className="absolute inset-0 overflow-hidden bg-gray-400 dark:bg-gray-700 cursor-wait">
+        <div className="absolute inset-0 overflow-hidden bg-gray-400 dark:bg-gray-700 cursor-wait w-full h-full">
           <Sparkles />
         </div>
       )}
-    </div>
+    </>
   );
 };

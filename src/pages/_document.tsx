@@ -12,7 +12,7 @@ export default class MyDocument extends Document {
           />
         </Head>
 
-        <body className="bg-white dark:bg-gray-900 max-w-none w-full">
+        <body className="prose md:prose-lg xl:prose-xl bg-white dark:bg-gray-900 dark:prose-invert hover:prose-a:text-myBlue max-w-none prose-img:m-0 w-full">
           <Main />
           <NextScript />
         </body>

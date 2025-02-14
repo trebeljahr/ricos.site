@@ -62,7 +62,7 @@ export default function Podcastnotes({ podcastnotes }: Props) {
                 <div key={slug}>
                   <Link
                     href={link}
-                    className="no-underline p-5 my-10 block transform transition duration-300 hover:scale-[1.02]"
+                    className="no-underline prose-h2:text-inherit p-5 my-10 block prose-p:text-zinc-800 dark:prose-p:text-slate-300 transform transition duration-300 hover:scale-[1.02]"
                   >
                     <h2 className="m-0 p-0">{title}</h2>
                     <h3 className="mt-1">

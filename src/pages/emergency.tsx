@@ -54,7 +54,7 @@ const EmergencyInfoComponent: FC = () => {
         ) : (
           <div>
             <h3 className="text-xl font-semibold mb-4">Emergency Numbers</h3>
-            <ul className="space-y-2 mb-6 list-none">
+            <ul className="space-y-2 mb-6 list-none not-prose">
               <li className="flex justify-between">
                 <span className="font-medium">Mum:</span>
                 <span>{emergencyInfo.importantNumbers.mum}</span>

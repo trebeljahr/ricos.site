@@ -299,5 +299,5 @@ export type CalloutBodyProps = {
 };
 
 export const CalloutBody: FC<CalloutBodyProps> = ({ children }) => {
-  return <div>{children}</div>;
+  return <div className={"prose-p:my-2"}>{children}</div>;
 };

@@ -60037,5 +60037,40 @@
     "height": 4080,
     "aspectRatio": 0.7529411764705882,
     "existsInS3": true
+  },
+  "assets/newsletter/54/ai-bitcoin.png": {
+    "key": "assets/newsletter/54/ai-bitcoin.png",
+    "width": 1024,
+    "height": 1024,
+    "aspectRatio": 1,
+    "existsInS3": true
+  },
+  "assets/newsletter/56/foundational-generative-audio-transformer-opus.png": {
+    "key": "assets/newsletter/56/foundational-generative-audio-transformer-opus.png",
+    "width": 1024,
+    "height": 1024,
+    "aspectRatio": 1,
+    "existsInS3": true
+  },
+  "assets/newsletter/57/a-ethereal-ai-robot-ghost-half-machine-half-ghost-flying-around-the-stars.png": {
+    "key": "assets/newsletter/57/a-ethereal-ai-robot-ghost-half-machine-half-ghost-flying-around-the-stars.png",
+    "width": 2048,
+    "height": 2048,
+    "aspectRatio": 1,
+    "existsInS3": true
+  },
+  "assets/book-covers/transformer.jpg": {
+    "key": "assets/book-covers/transformer.jpg",
+    "width": 977,
+    "height": 1500,
+    "aspectRatio": 0.6513333333333333,
+    "existsInS3": true
+  },
+  "assets/blog/missing-puzzle-piece.jpg": {
+    "key": "assets/blog/missing-puzzle-piece.jpg",
+    "width": 5184,
+    "height": 3456,
+    "aspectRatio": 1.5,
+    "existsInS3": true
   }
 }

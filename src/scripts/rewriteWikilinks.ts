@@ -61,7 +61,7 @@ function processDirectory(directoryPath: string) {
         );
         const parentFolder = path.basename(directoryPath);
 
-        console.log({ p1 });
+        console.info({ p1 });
 
         const currentLinkPath = path.resolve("/assets", p1);
         const absoluteCurrentLinkPath = path.join(basePath, currentLinkPath);
@@ -85,12 +85,12 @@ function processDirectory(directoryPath: string) {
           fs.copyFileSync(absoluteCurrentLinkPath, absoluteLinkDestinationPath);
           fs.rmSync(absoluteCurrentLinkPath);
         } catch (error) {
-          console.log("------------------ ERROR ------------------");
-          console.log(error);
+          console.info("------------------ ERROR ------------------");
+          console.info(error);
 
-          console.log(replacementText);
-          console.log(absoluteCurrentLinkPath);
-          console.log(absoluteLinkDestinationPath);
+          console.info(replacementText);
+          console.info(absoluteCurrentLinkPath);
+          console.info(absoluteLinkDestinationPath);
         }
 
         return replacementText;

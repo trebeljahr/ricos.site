@@ -53,7 +53,7 @@ export const TravelBlogLayout = ({
       keywords={["travel", "blog", "adventure", "stories", ...tags]}
       withProgressBar={true}
     >
-      <main className="mb-20 px-3">
+      <main className="py-20 px-3  max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
         <MetadataDisplay date={date} readingTime={readingTime} />
         <Header title={title || ""} />
@@ -75,13 +75,13 @@ export const TravelBlogLayout = ({
         </div>
 
         <article className="mx-auto max-w-prose">{children}</article>
-      </main>
 
-      <footer className="mb-20 px-3">
-        <ToTopButton />
-        <NewsletterForm />
-        <NextAndPrevArrows nextPost={nextSlug} prevPost={previousSlug} />
-      </footer>
+        <footer>
+          <ToTopButton />
+          <NewsletterForm />
+          <NextAndPrevArrows nextPost={nextSlug} prevPost={previousSlug} />
+        </footer>
+      </main>
     </Layout>
   );
 };

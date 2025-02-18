@@ -46,7 +46,7 @@ export default function Books({ booknotes }: Props) {
       url={url}
       imageAlt={"a bookshelf filled with lots of books"}
     >
-      <main className="mb-20 px-3">
+      <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
 
         <Header
@@ -67,12 +67,12 @@ export default function Books({ booknotes }: Props) {
             return <BookPreview key={book.link} book={book} index={index} />;
           })}
         </div>
-      </main>
 
-      <footer className="mb-20 px-3">
-        <NewsletterForm />
-        <ToTopButton />
-      </footer>
+        <footer>
+          <NewsletterForm />
+          <ToTopButton />
+        </footer>
+      </main>
     </Layout>
   );
 }

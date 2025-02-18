@@ -71,11 +71,7 @@ export const NewsletterForm = ({
   };
 
   const defaultLink = (
-    <Link
-      as="/newsletters"
-      href="/newsletters"
-      className="block w-fit mt-5 font-light"
-    >
+    <Link as="/newsletters" href="/newsletters" className="block w-fit mt-5">
       Check out what you missed so far.
     </Link>
   );
@@ -111,7 +107,7 @@ export const NewsletterForm = ({
             {!link && defaultLink}
 
             <button
-              className="mt-5 font-light text-left"
+              className="mt-5 text-left"
               onClick={() => setSuccess(null)}
               aria-label="Sign up with another email address"
             >

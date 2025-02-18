@@ -17,20 +17,29 @@
     "baseUrl": ".",
     "paths": {
       "@velite": [".velite"],
-      "components/collision-detection": ["src/components/collisionDetection"],
-      "@components/*": ["src/components/*"]
-    },
-    "plugins": [{ "name": "next" }]
+      "components/collision-detection": [
+        "src/components/Demos/collisionDetection"
+      ],
+      "@components/*": ["src/components/*"],
+      "@contexts/*": ["src/contexts/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@shaders/*": ["src/shaders/*"],
+      "@models/*": ["src/models/*"],
+      "@pages/*": ["src/pages/*"],
+      "@r4ai/remark-callout": ["node_modules/@r4ai/remark-callout/dist/index"]
+    }
   },
   "exclude": ["node_modules"],
   "include": [
     "next-env.d.ts",
+    "**/*.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".velite",
     "src/scripts/createRedirects.js",
     "src/lib/generateExcerpts.js",
     "src/scripts/sortedNewsletters.js",
-    "next.config.js"
+    "next.config.cjss",
+    "src/components/Demos/FullscreenShader/withContext"
   ]
 }

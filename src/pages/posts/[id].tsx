@@ -43,7 +43,7 @@ export const BlogLayout = ({
       imageAlt={cover.alt}
       withProgressBar={true}
     >
-      <main className="mb-20 px-3">
+      <main className="py-20 px-3 max-w-5xl mx-auto">
         <section>
           <BreadCrumbs path={url} />
           <MetadataDisplay date={date} readingTime={readingTime} />
@@ -56,24 +56,20 @@ export const BlogLayout = ({
               width={780}
               height={780}
               alt={cover.alt}
-              sizes="100vw"
-              style={{
-                width: "100%",
-                height: "auto",
-                objectFit: "cover",
-              }}
+              sizes="(max-width: 768px) calc(100vw - 24px), 65ch"
+              className="w-full h-full"
             />
           </div>
 
           <div className="mx-auto max-w-prose mt-20">{children}</div>
         </section>
-      </main>
 
-      <footer className="mb-20 px-3">
-        <NewsletterForm />
-        {morePosts && <ReadMore posts={morePosts} />}
-        <ToTopButton />
-      </footer>
+        <footer>
+          <NewsletterForm />
+          {morePosts && <ReadMore posts={morePosts} />}
+          <ToTopButton />
+        </footer>
+      </main>
     </Layout>
   );
 };

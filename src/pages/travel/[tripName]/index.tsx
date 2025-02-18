@@ -9,7 +9,7 @@ import {
   extractAndSortMetadata,
   turnKebabIntoTitleCase,
 } from "src/lib/utils";
-import { travelingStoriesMeta, travelingStoryNames } from "..";
+import { travelingStoriesMetaRaw, travelingStoryNames } from "..";
 
 type Props = {
   posts: CommonMetadata[];
@@ -20,7 +20,7 @@ const Traveling = ({ posts, tripName }: Props) => {
   const url = "/travel/" + tripName;
 
   const { title, excerpt, cover, subtitle } =
-    travelingStoriesMeta[tripName] || {};
+    travelingStoriesMetaRaw[tripName] || {};
   const defaultDescription = `An overview page for the stories of ${tripName}.`;
   const defaultCover = {
     src: "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg",
@@ -45,7 +45,7 @@ const Traveling = ({ posts, tripName }: Props) => {
         tripName,
       ]}
     >
-      <main className="mb-20 px-3">
+      <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
         <section>
           <Header

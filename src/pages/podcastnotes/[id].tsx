@@ -24,7 +24,7 @@ const PodcastnoteComponent = ({ podcastnote }: Props) => {
       image={podcastnote.cover.src}
       imageAlt={podcastnote.cover.alt}
     >
-      <main className="mb-20 px-3">
+      <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
         <MetadataDisplay
           date={podcastnote.date}
@@ -61,12 +61,12 @@ const PodcastnoteComponent = ({ podcastnote }: Props) => {
             <MDXContent source={podcastnote.content} />
           </section>
         </article>
-      </main>
 
-      <footer className="mb-20 px-3">
-        <ToTopButton />
-        <NewsletterForm />
-      </footer>
+        <footer>
+          <ToTopButton />
+          <NewsletterForm />
+        </footer>
+      </main>
     </Layout>
   );
 };

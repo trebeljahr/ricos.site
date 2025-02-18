@@ -44,7 +44,7 @@ const Newsletter = ({
       imageAlt={cover.alt}
       withProgressBar={true}
     >
-      <main className="mb-20 px-3">
+      <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs
           path={url}
           overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]}
@@ -76,12 +76,12 @@ const Newsletter = ({
             <NewsletterForm />
           </div>
         </article>
-      </main>
 
-      <footer className="mb-20 px-3">
-        <NextAndPrevArrows nextPost={nextPost} prevPost={prevPost} />
-        <ToTopButton />
-      </footer>
+        <footer>
+          <NextAndPrevArrows nextPost={nextPost} prevPost={prevPost} />
+          <ToTopButton />
+        </footer>
+      </main>
     </Layout>
   );
 };

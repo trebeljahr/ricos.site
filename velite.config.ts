@@ -1,20 +1,28 @@
+import remarkCallout from "@r4ai/remark-callout";
 import slugify from "@sindresorhus/slugify";
-import { Nodes } from "mdast";
 import { Element, Root } from "hast";
+import { interactive } from "hast-util-interactive";
+import { whitespace } from "hast-util-whitespace";
+import { Nodes } from "mdast";
 import { Handler } from "mdast-util-to-hast";
-import { MDXRemoteSerializeResult } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
 import path from "path";
 import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
-import rehypeHighlight from "rehype-highlight";
 import rehypeKatex from "rehype-katex";
+import rehypePrettyCode from "rehype-pretty-code";
+import {
+  transformerNotationDiff,
+  transformerNotationHighlight,
+} from "@shikijs/transformers";
+import rehypeCodeTitles from "rehype-code-titles";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkToc from "remark-toc";
+import { MDXResult } from "src/@types";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
 import { Node, Pluggable } from "unified/lib";
-import { visit } from "unist-util-visit";
+import { SKIP, visit } from "unist-util-visit";
 import { defineConfig, s, ZodMeta } from "velite";
 
 declare module "mdast" {
@@ -22,12 +30,6 @@ declare module "mdast" {
     SimpleGallery: Node;
   }
 }
-
-import { interactive } from "hast-util-interactive";
-import { whitespace } from "hast-util-whitespace";
-import { SKIP } from "unist-util-visit";
-import { title } from "process";
-import { MDXResult } from "src/@types";
 
 const unknown = 1;
 const containsImage = 2;
@@ -109,10 +111,26 @@ const commonFields = {
     .string()
     .refine((date) => /^\d{2}\.\d{2}\.\d{4}$/.test(date), "Invalid date format")
     .transform((date) => parseGermanDate(date)),
-  cover: s.object({
-    src: s.string(),
-    alt: s.string(),
-  }),
+  "date-last-updated": s
+    .string()
+    .refine((date) => /^\d{2}\.\d{2}\.\d{4}$/.test(date), "Invalid date format")
+    .transform((date) => parseGermanDate(date)),
+  cover: s
+    .object({
+      src: s.string(),
+      alt: s.string(),
+    })
+    .transform(async (cover) => {
+      const defaultCover = "assets/midjourney/the-door-to-the-ocean.jpg";
+      const { width, height } = await getImgWidthAndHeightDuringBuild(
+        cover.src === "" ? defaultCover : cover.src
+      );
+      return {
+        ...cover,
+        width,
+        height,
+      };
+    }),
   metadata: s.metadata(),
   published: s.boolean(),
 
@@ -232,6 +250,32 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   }
 > => {
   const remarkPlugins: Pluggable[] = [
+    [
+      remarkCallout,
+      {
+        root: (callout: any) => {
+          return {
+            tagName: "callout-root",
+            properties: {
+              type: callout.type,
+              isFoldable: callout.isFoldable.toString(),
+              defaultFolded: callout.defaultFolded?.toString(),
+            },
+          };
+        },
+        title: (callout: any) => ({
+          tagName: "callout-title",
+          properties: {
+            type: callout.type,
+            isFoldable: callout.isFoldable.toString(),
+          },
+        }),
+        body: (callout: any) => ({
+          tagName: "callout-body",
+          properties: {},
+        }),
+      },
+    ],
     remarkGroupImages,
     remarkGfm,
     remarkToc,
@@ -240,10 +284,25 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
 
   const rehypePlugins: Pluggable[] = [
     rehypeUnwrapGalleries,
-    rehypeHighlight,
+    rehypeCodeTitles,
     rehypeKatex,
     rehypeSlug,
     rehypeAccessibleEmojis,
+    [
+      rehypePrettyCode,
+      {
+        matchAlgorithm: "v3",
+        transformers: [
+          transformerNotationDiff({ matchAlgorithm: "v3" }),
+          transformerNotationHighlight({ matchAlgorithm: "v3" }),
+        ],
+        theme: {
+          dark: "github-dark-dimmed",
+          light: "github-light",
+        },
+        lineNumbers: true,
+      },
+    ],
   ];
 
   const recmaPlugins: Pluggable[] = [];

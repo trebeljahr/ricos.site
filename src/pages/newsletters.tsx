@@ -84,7 +84,7 @@ const Newsletters = ({ newsletterData }: Props) => {
       image="/assets/midjourney/live-and-learn-cover.png"
       imageAlt="a young boy absorbed in reading a book with sparks flying out of it"
     >
-      <main className="mb-20 px-3">
+      <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
 
         <section>
@@ -105,12 +105,11 @@ const Newsletters = ({ newsletterData }: Props) => {
 
           {newsletterData.slice(2).map(toNiceCard)}
         </section>
+        <footer>
+          <NewsletterForm link={<></>} />
+          <ToTopButton />
+        </footer>
       </main>
-
-      <footer className="mb-20 px-3">
-        <NewsletterForm link={<></>} />
-        <ToTopButton />
-      </footer>
     </Layout>
   );
 };

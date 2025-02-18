@@ -40,7 +40,7 @@ export default function Podcastnotes({ podcastnotes }: Props) {
       ]}
       url={url}
     >
-      <main className="mb-20 px-3">
+      <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
 
         <section>
@@ -77,12 +77,12 @@ export default function Podcastnotes({ podcastnotes }: Props) {
             }
           )}
         </section>
-      </main>
 
-      <footer className="mb-20 px-3">
-        <NewsletterForm />
-        <ToTopButton />
-      </footer>
+        <footer>
+          <NewsletterForm />
+          <ToTopButton />
+        </footer>
+      </main>
     </Layout>
   );
 }

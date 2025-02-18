@@ -15,10 +15,35 @@ const nextConfig = {
     loaderFile: "./image-loader.js",
   },
   redirects: customRedirects,
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.infrastructureLogging = {
       level: "error",
     };
+
+    config.module.rules.push({
+      test: /\.(ogg|mp3|wav|mpe?g)$/i,
+      exclude: config.exclude,
+      use: [
+        {
+          loader: "url-loader",
+          options: {
+            limit: config.inlineImageLimit,
+            fallback: "file-loader",
+            publicPath: `${config.assetPrefix}/_next/static/images/`,
+            outputPath: `${isServer ? "../" : ""}static/images/`,
+            name: "[name]-[hash].[ext]",
+            esModule: config.esModule || false,
+          },
+        },
+      ],
+    });
+
+    // shader support
+    config.module.rules.push({
+      test: /\.(glsl|vs|fs|vert|frag)$/,
+      exclude: /(node_modules|withContext)/,
+      use: ["raw-loader", "glslify-loader"],
+    });
 
     return config;
   },

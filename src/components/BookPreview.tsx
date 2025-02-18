@@ -27,21 +27,21 @@ export function BookPreview({ book, index }: Props) {
     <Link
       as={link}
       href={link}
-      className="no-underline prose-headings:text-inherit w-full overflow-hidden md:grid mb-10 prose-p:text-zinc-800 dark:prose-p:text-slate-300 transform transition-transform duration-300 hover:scale-[1.02]"
-      style={{
-        gridTemplateColumns: "15rem auto",
-      }}
+      className="no-underline prose-headings:text-inherit w-full overflow-hidden mb-10 prose-p:text-zinc-800 dark:prose-p:text-slate-300 transform transition-transform duration-300 hover:scale-[1.02] md:grid md:grid-cols-[15rem_auto]"
     >
       <div className="h-64 md:h-full mb-4 relative not-prose">
         <ImageWithLoader
           src={cover.src}
           alt={cover.alt}
-          fill
           sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
             priority ? 768 : 357
           }`}
+          width={cover.width}
+          height={cover.height}
           priority={priority}
           style={{
+            width: "100%",
+            height: "100%",
             objectFit: "cover",
           }}
         />

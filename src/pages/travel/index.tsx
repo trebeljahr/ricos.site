@@ -4,9 +4,9 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
-import { Travelblog, travelblogs } from "@velite";
-import { MDXResult } from "src/@types";
-import { byOnlyPublished } from "src/lib/utils";
+import { travelblogs } from "@velite";
+import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
+import { byOnlyPublished, CommonMetadata } from "src/lib/utils";
 
 type MetaInfo = {
   cover: { src: string; alt: string };
@@ -15,17 +15,21 @@ type MetaInfo = {
   subtitle: string;
 };
 
-type TravelBlogMeta = Pick<
-  Travelblog,
-  "title" | "excerpt" | "date" | "cover" | "metadata" | "parentFolder"
->;
-
-type Props = {
-  travelingStories: string[];
-  travelingBlogsMeta: TravelBlogMeta[];
+type CardContent = {
+  meta: MetaInfo & {
+    cover: CommonMetadata["cover"];
+  };
+  date: string;
+  readingTime: number;
+  story: string;
+  amountOfStories: number;
 };
 
-export const travelingStoriesMeta: Record<string, MetaInfo> = {
+type Props = {
+  cardContent: CardContent[];
+};
+
+export const travelingStoriesMetaRaw: Record<string, MetaInfo> = {
   guadeloupe: {
     cover: {
       src: "/assets/blog/guadeloupe/meditating-in-front-of-the-third-carbet-fall.jpg",
@@ -80,33 +84,7 @@ export const travelingStoriesMeta: Record<string, MetaInfo> = {
   },
 };
 
-const TravelBlogs = ({ travelingStories, travelingBlogsMeta }: Props) => {
-  const cardContent = travelingStories
-    .map((story, index) => {
-      const meta = travelingStoriesMeta[story] || {
-        cover: { src: "", alt: "default cover" },
-        title: story,
-      };
-
-      const currentBlogs = travelingBlogsMeta.filter(
-        (blog) => blog.parentFolder === story
-      );
-      const { date, readingTime, amountOfStories } = currentBlogs.reduce(
-        (agg, current) => {
-          const currentDate = new Date(current.date);
-          return {
-            date: currentDate > agg.date ? currentDate : agg.date,
-            readingTime: agg.readingTime + current.metadata.readingTime,
-            amountOfStories: agg.amountOfStories + 1,
-          };
-        },
-        { date: new Date(0), readingTime: 0, amountOfStories: 0 }
-      );
-
-      return { meta, date, readingTime, story, amountOfStories };
-    })
-    .sort((a, b) => (a.date > b.date ? -1 : 1));
-
+const TravelBlogs = ({ cardContent }: Props) => {
   return (
     <Layout
       title="Traveling Stories"
@@ -134,7 +112,7 @@ const TravelBlogs = ({ travelingStories, travelingBlogsMeta }: Props) => {
         "adventure",
       ]}
     >
-      <main className="mb-20 px-3">
+      <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path="travel" />
 
         <section>
@@ -150,7 +128,7 @@ const TravelBlogs = ({ travelingStories, travelingBlogsMeta }: Props) => {
                 excerpt={meta.excerpt}
                 priority={index === 0}
                 title={meta.title}
-                date={date.toISOString()}
+                date={date}
                 // readingTime={readingTime}
                 amountOfStories={amountOfStories}
                 link={`/travel/${story}`}
@@ -158,12 +136,12 @@ const TravelBlogs = ({ travelingStories, travelingBlogsMeta }: Props) => {
             );
           })}
         </section>
-      </main>
 
-      <footer className="mb-20 px-3">
-        <NewsletterForm />
-        <ToTopButton />
-      </footer>
+        <footer>
+          <NewsletterForm />
+          <ToTopButton />
+        </footer>
+      </main>
     </Layout>
   );
 };
@@ -194,7 +172,61 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
       parentFolder,
     }));
 
+  const travelingStoriesMeta = {} as Record<
+    string,
+    MetaInfo & { cover: CommonMetadata["cover"] }
+  >;
+
+  const keys = Object.keys(travelingStoriesMetaRaw);
+  for (const key of keys) {
+    const val = travelingStoriesMetaRaw[key];
+    const { width, height } = await getImgWidthAndHeightDuringBuild(
+      val.cover.src
+    );
+    travelingStoriesMeta[key] = {
+      ...val,
+      cover: { ...val.cover, width, height },
+    };
+  }
+  const cardContent = travelingStoryNames
+    .map((story) => {
+      const meta = travelingStoriesMeta[story] || {
+        cover: { src: "", alt: "default cover" },
+        title: story,
+      };
+
+      const currentBlogs = travelingBlogsMeta.filter(
+        (blog) => blog.parentFolder === story
+      );
+      const { date, readingTime, amountOfStories } = currentBlogs.reduce(
+        (agg, current) => {
+          const currentDate = new Date(current.date);
+          return {
+            date: currentDate > agg.date ? currentDate : agg.date,
+            readingTime: agg.readingTime + current.metadata.readingTime,
+            amountOfStories: agg.amountOfStories + 1,
+          };
+        },
+        { date: new Date(0), readingTime: 0, amountOfStories: 0 }
+      );
+
+      return {
+        meta,
+        date,
+        readingTime,
+        story,
+        amountOfStories,
+      };
+    })
+    .sort((a, b) => (a.date > b.date ? -1 : 1))
+    .map((cardContent) => ({
+      ...cardContent,
+      date: cardContent.date.toDateString(),
+    }));
+
   return {
-    props: { travelingStories: travelingStoryNames, travelingBlogsMeta },
+    props: {
+      cardContent,
+    },
   };
 };

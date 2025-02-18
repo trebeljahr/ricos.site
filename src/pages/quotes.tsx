@@ -46,7 +46,7 @@ export default function Quotes() {
         "soundbites",
       ]}
     >
-      <main className="mb-20 px-3 mx-auto max-w-prose">
+      <main className="py-20 px-3 mx-auto max-w-prose">
         <BreadCrumbs path={url} />
 
         <section>
@@ -73,12 +73,12 @@ export default function Quotes() {
             );
           })}
         </section>
-      </main>
 
-      <footer className="mb-20 px-3">
-        <NewsletterForm />
-        <ToTopButton />
-      </footer>
+        <footer>
+          <NewsletterForm />
+          <ToTopButton />
+        </footer>
+      </main>
     </Layout>
   );
 }

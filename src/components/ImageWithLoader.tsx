@@ -12,7 +12,7 @@ export const ImageWithLoader = ({
   const [isSkeleton, setIsSkeleton] = useState(true);
 
   return (
-    <>
+    <div className="w-full h-full relative">
       <Image
         id={id}
         {...props}
@@ -28,6 +28,6 @@ export const ImageWithLoader = ({
           <Sparkles />
         </div>
       )}
-    </>
+    </div>
   );
 };

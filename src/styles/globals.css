@@ -30,13 +30,8 @@ figure[data-rehype-pretty-code-figure] {
 
 @media (min-width: 768px) {
   .small-bleed {
-    margin-left: calc(-80vw / 2 + 65ch / 2);
-    margin-right: calc(-80vw / 2 + 65ch / 2);
-  }
-
-  .medium-bleed {
-    margin-left: calc(-85vw / 2 + 65ch / 2);
-    margin-right: calc(-85vw / 2 + 65ch / 2);
+    margin-left: calc(-90ch / 2 + 65ch / 2);
+    margin-right: calc(-90ch / 2 + 65ch / 2);
   }
 
   .large-bleed {
@@ -45,18 +40,19 @@ figure[data-rehype-pretty-code-figure] {
   }
 
 }
+
 @media (min-width: 1300px) {
   .large-bleed {
     margin-left: calc(-85vw / 2 + 65ch / 2);
     margin-right: calc(-85vw / 2 + 65ch / 2);
   }
-  .medium-bleed {
-    margin-left: calc(-70vw / 2 + 65ch / 2);
-    margin-right: calc(-70vw / 2 + 65ch / 2);
-  }
-  .small-bleed {
-    margin-left: calc(-60vw / 2 + 65ch / 2);
-    margin-right: calc(-60vw / 2 + 65ch / 2);
+}
+
+
+@media (min-width: 1600px) {
+  .large-bleed {
+    margin-left: calc(-90ch / 2 + 65ch / 2);
+    margin-right: calc(-90ch / 2 + 65ch / 2);
   }
 }
 

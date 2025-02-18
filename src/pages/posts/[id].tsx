@@ -56,12 +56,8 @@ export const BlogLayout = ({
               width={780}
               height={780}
               alt={cover.alt}
-              sizes="100vw"
-              style={{
-                width: "100%",
-                height: "auto",
-                objectFit: "cover",
-              }}
+              sizes="(max-width: 768px) calc(100vw - 24px), 65ch"
+              className="w-full h-full"
             />
           </div>
 

@@ -37,17 +37,13 @@ type CompleteShaderEditorProps = {
   shaderName: keyof typeof EXAMPLE_SHADERS;
 };
 
-export const CompleteShaderEditor = ({
-  shaderName,
-}: CompleteShaderEditorProps) => {
-  console.log(shaderName);
+const _CompleteShaderEditor = ({ shaderName }: CompleteShaderEditorProps) => {
   const initialShader = EXAMPLE_SHADERS[shaderName] || defaultShader;
   return <ShaderEditor initialShader={initialShader} />;
 };
 
 import shadertoyExample1 from "./shaders/shadertoyExample1.glsl";
 import shadertoyExample2 from "./shaders/shadertoyExample2.glsl";
-
 import timeExample from "./shaders/timeExample.glsl";
 import mouseExample from "./shaders/mouseExample.glsl";
 import textureExample from "./shaders/textureExample.glsl";
@@ -59,3 +55,5 @@ const EXAMPLE_SHADERS = {
   mouseExample,
   textureExample,
 };
+
+export default _CompleteShaderEditor;

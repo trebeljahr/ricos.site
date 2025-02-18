@@ -19,7 +19,7 @@ import { UnitVectorDemo } from "./Demos/collisionDetection/UnitVectorDemo";
 import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
 import { MdxGallery } from "./Galleries";
 import { MarkdownRenderers } from "./MarkdownRenderers";
-import { CompleteShaderEditor } from "./Demos/FullscreenShader/withContext/CompleteShaderEditorWithContext";
+import { CompleteShaderEditor } from "./Demos/FullscreenShader";
 
 const allComponents = {
   UnitVectorDemo,

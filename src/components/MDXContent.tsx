@@ -1,6 +1,5 @@
 import { MDXRemote } from "next-mdx-remote";
 import { MDXResult } from "src/@types";
-import { CalloutBody, CalloutRoot, CalloutTitle } from "./Callouts";
 import { AxisByAxis } from "./Demos/collisionDetection/AxisByAxis";
 import { DotProductDemo } from "./Demos/collisionDetection/DotProductDemo";
 import { EarClipping } from "./Demos/collisionDetection/EarClipping";
@@ -16,10 +15,9 @@ import { SATWithConcaveShapes } from "./Demos/collisionDetection/SATWithConcaveS
 import { SATWithResponse } from "./Demos/collisionDetection/SATWithResponse";
 import { Triangulation } from "./Demos/collisionDetection/Triangulation";
 import { UnitVectorDemo } from "./Demos/collisionDetection/UnitVectorDemo";
-import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
-import { MdxGallery } from "./Galleries";
-import { MarkdownRenderers } from "./MarkdownRenderers";
 import { CompleteShaderEditor } from "./Demos/FullscreenShader";
+import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
+import { MarkdownRenderers } from "./MarkdownRenderers";
 
 const allComponents = {
   UnitVectorDemo,
@@ -38,11 +36,7 @@ const allComponents = {
   DotProductDemo,
   Triangulation,
   ThreeFiberDemo,
-  ImageGallery: MdxGallery,
   ShaderEditor: CompleteShaderEditor,
-  "callout-root": CalloutRoot,
-  "callout-title": CalloutTitle,
-  "callout-body": CalloutBody,
 };
 
 interface MDXProps {

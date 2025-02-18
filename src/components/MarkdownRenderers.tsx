@@ -5,6 +5,7 @@ import { ExternalLink } from "./ExternalLink";
 import { SimpleGallery } from "./Galleries";
 import { CodeWithCopyButton } from "./CodeCopyButton";
 import clsx from "clsx";
+import { CalloutBody, CalloutRoot, CalloutTitle } from "./Callouts";
 
 export const ImageRenderer = ({
   src,
@@ -86,4 +87,7 @@ export const MarkdownRenderers = {
   pre: CodeWithCopyButton,
   div: handleDivs,
   SimpleGallery: handleNiceImageGalleries,
+  "callout-root": CalloutRoot,
+  "callout-title": CalloutTitle,
+  "callout-body": CalloutBody,
 };

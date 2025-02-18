@@ -34,21 +34,16 @@ export function HorizontalCard({
   return (
     <Link
       href={link}
-      className="bg-white w-fit max-w-full dark:bg-gray-800 block overflow-hidden mb-12 xl:mb-12 no-underline prose-headings:text-inherit transform transition-transform duration-300 hover:scale-[1.02] rounded-lg"
+      className="bg-white md:w-fit md:max-w-full dark:bg-gray-800 block overflow-hidden mb-12 xl:mb-12 no-underline prose-headings:text-inherit transform transition-transform duration-300 hover:scale-[1.02] rounded-lg"
     >
-      <div
-        className="md:grid"
-        style={{
-          gridTemplateColumns: "15rem auto",
-        }}
-      >
+      <div className="md:grid md:grid-cols-[15rem_auto]">
         <div className="h-72 w-full md:h-auto md:w-auto relative not-prose max-w-full">
           <ImageWithLoader
             src={cover.src}
             alt={cover.alt}
             width={cover.width}
             height={cover.height}
-            sizes={`(max-width: 768px) 100vw, (max-width: 1092px) 20vw`}
+            sizes={`(max-width: 768px) calc(100vw-24px), 240px`}
             priority={priority}
             className="object-cover w-full h-full"
           />
@@ -97,7 +92,7 @@ export const VerticalCard = ({
           alt={cover.alt}
           width={cover.width}
           height={cover.height}
-          sizes={`(max-width: 768px) 100vw, (max-width: 1092px) 50vw, 325px`}
+          sizes={`(max-width: 768px) calc(100vw-24px), (max-width: 1092px) calc(50vw-24px-16px), 325px`}
           className="object-cover rounded-t-lg w-full h-full"
         />
       </div>

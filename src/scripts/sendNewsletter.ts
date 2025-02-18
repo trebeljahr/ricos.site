@@ -147,9 +147,9 @@ Thanks for reading plaintext emails. You're cool!
 `,
   };
 
-  console.log(title, ":\n", `Sending newsletter ${number}...`);
+  console.info(title, ":\n", `Sending newsletter ${number}...`);
   await sendEmail(data);
-  console.log("Successfully sent email!");
+  console.info("Successfully sent email!");
 }
 
 main();

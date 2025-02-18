@@ -58,7 +58,7 @@ async function uploadDir(directoryPath: string) {
   const format = `${dirName} | {bar} | {percentage}% | {value}/{total} | {eta}s`;
   const progress = new SingleBar({ format }, Presets.shades_classic);
 
-  console.log("Checking for existing files...");
+  console.info("Checking for existing files...");
   progress.start(files.length, counter);
 
   const filesToUploadPromises = await Promise.all(
@@ -100,7 +100,7 @@ async function uploadDir(directoryPath: string) {
   progress.stop();
   counter = 1;
 
-  console.log("Uploading Files...");
+  console.info("Uploading Files...");
   progress.start(filesToUpload.length, counter);
 
   const uploadsPromises = filesToUpload.map(async (filePath) => {

@@ -38,7 +38,7 @@ async function processMarkdownFiles(directory: string) {
         // Write the updated content back to the file
         await fs.writeFile(filePath, newContent, "utf-8");
 
-        console.log(`Processed and updated file: ${filePath}`, excerptContent);
+        console.info(`Processed and updated file: ${filePath}`, excerptContent);
       }
     }
   }

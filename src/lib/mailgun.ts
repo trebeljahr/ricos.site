@@ -33,13 +33,13 @@ export async function deleteDomain() {
   const destroyedDomain = await mg.domains.destroy(
     "sandboxf09111c8e9aa47da869eb96201663b74.mailgun.org"
   );
-  console.log("destroyedDomain", destroyedDomain);
+  console.info("destroyedDomain", destroyedDomain);
 }
 
 export async function createNewMailingList() {
   const mg = createMgClient();
   const existingLists = await mg.lists.list();
-  console.log(existingLists.items);
+  console.info(existingLists.items);
 
   if (existingLists.items.length !== 0) return;
 
@@ -50,7 +50,7 @@ export async function createNewMailingList() {
     access_level: "everyone",
   });
 
-  console.log(newList);
+  console.info(newList);
 }
 
 export type Member = {
@@ -85,7 +85,7 @@ export async function addNewMemberToEmailList(newMember: Member) {
     upsert: "yes",
   });
 
-  console.log(member);
+  console.info(member);
 }
 
 export async function activateEmailListMember(email: string) {
@@ -99,7 +99,7 @@ export async function activateEmailListMember(email: string) {
     } as unknown as CreateUpdateMailListMembers
   );
 
-  console.log(newMember);
+  console.info(newMember);
 }
 
 export async function sendEmail(data: EmailData) {

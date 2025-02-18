@@ -18,7 +18,7 @@ function renameFilesInDirectory(directory: string): void {
         title.toLowerCase().replace(/ /g, "-") + path.extname(file);
       const newFilePath = path.join(directory, newFileName);
       fs.renameSync(filePath, newFilePath);
-      console.log(`Renamed: ${file} -> ${newFileName}`);
+      console.info(`Renamed: ${file} -> ${newFileName}`);
     }
   });
 }
@@ -38,7 +38,7 @@ const updateBookCoverField = (filePath: string, fileName: string) => {
       parsedContent.data
     );
     fs.writeFileSync(filePath, updatedContent, "utf8");
-    console.log(`Updated bookCover for file: ${fileName}`);
+    console.info(`Updated bookCover for file: ${fileName}`);
   }
 };
 

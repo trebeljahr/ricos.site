@@ -38,5 +38,5 @@ files.forEach((file: string) => {
   const newContent = matter.stringify(content, newData);
 
   fs.writeFileSync(filePath, newContent);
-  console.log(`Updated ${file} with date ${formattedDate}`);
+  console.info(`Updated ${file} with date ${formattedDate}`);
 });

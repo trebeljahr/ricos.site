@@ -34,7 +34,7 @@ export function FullCanvasShaderMesh({ textures }: { textures: Texture[] }) {
   useFrame(({ clock }) => {
     if (shaderRef.current) {
       shaderRef.current.uniforms.u_time.value = clock.getElapsedTime();
-      shaderRef.current.uniforms.u_pointer.value.copy(pointer);
+      shaderRef.current.uniforms.u_mouse.value.copy(pointer);
     }
   });
 
@@ -53,7 +53,7 @@ export function FullCanvasShaderMesh({ textures }: { textures: Texture[] }) {
           u_time: { value: 0 },
           u_resolution: { value: new Vector2(size.width, size.height) },
           u_pixelRatio: { value: window.devicePixelRatio },
-          u_pointer: { value: new Vector2(0, 0) },
+          u_mouse: { value: new Vector2(0, 0) },
           ...textureUniforms,
         }}
         vertexShader={vertexShader}

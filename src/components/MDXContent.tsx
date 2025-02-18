@@ -16,10 +16,10 @@ import { SATWithConcaveShapes } from "./Demos/collisionDetection/SATWithConcaveS
 import { SATWithResponse } from "./Demos/collisionDetection/SATWithResponse";
 import { Triangulation } from "./Demos/collisionDetection/Triangulation";
 import { UnitVectorDemo } from "./Demos/collisionDetection/UnitVectorDemo";
-import { MarkdownRenderers } from "./MarkdownRenderers";
 import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
 import { MdxGallery } from "./Galleries";
-import { ShaderEditorWithTextureUpload } from "./Demos/FullscreenShader/6-ShaderEditor";
+import { MarkdownRenderers } from "./MarkdownRenderers";
+import { CompleteShaderEditor } from "./Demos/FullscreenShader/withContext/CompleteShaderEditorWithContext";
 
 const allComponents = {
   UnitVectorDemo,
@@ -39,7 +39,7 @@ const allComponents = {
   Triangulation,
   ThreeFiberDemo,
   ImageGallery: MdxGallery,
-  ShaderEditor: ShaderEditorWithTextureUpload,
+  ShaderEditor: CompleteShaderEditor,
   "callout-root": CalloutRoot,
   "callout-title": CalloutTitle,
   "callout-body": CalloutBody,

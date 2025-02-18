@@ -17,7 +17,7 @@ export const CodeEditor = () => {
     <ReactCodeMirror
       value={code}
       onChange={onChange}
-      height="100%"
+      maxHeight="512px"
       theme={vscodeDark}
       extensions={[cppLanguage]}
     />

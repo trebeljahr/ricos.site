@@ -60065,5 +60065,12 @@
     "height": 1500,
     "aspectRatio": 0.6513333333333333,
     "existsInS3": true
+  },
+  "assets/blog/missing-puzzle-piece.jpg": {
+    "key": "assets/blog/missing-puzzle-piece.jpg",
+    "width": 5184,
+    "height": 3456,
+    "aspectRatio": 1.5,
+    "existsInS3": true
   }
 }

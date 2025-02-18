@@ -1,14 +1,8 @@
-import React, {
-  createContext,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useState,
-} from "react";
+import React, { useCallback, useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { Texture, TextureLoader } from "three";
-import { PreviewUrl } from "../5-TextureUploadMenu";
+import { TextureLoader } from "three";
 import { useEditorContext } from "./EditorContextProvider";
+import { PreviewUrl } from "./PreviewUrl";
 
 export const TextureUploadUI = () => {
   const { setTextures } = useEditorContext();
@@ -74,8 +68,12 @@ export const TextureUploadUI = () => {
   };
 
   return (
-    <div className="absolute top-2 right-2 bg-white bg-opacity-90 p-4 rounded shadow-lg max-h-[90vh] overflow-y-auto z-10">
-      <div className="flex items-center justify-between mb-4">
+    <div className="absolute top-2 right-2 bg-white bg-opacity-90 p-4 rounded shadow-lg max-h-[90vh] overflow-y-auto z-10 w-72">
+      <div
+        className={`flex items-center justify-between ${
+          menuOpen ? "mb-4" : ""
+        }`}
+      >
         <span className="font-bold">Uploaded Textures</span>
         <button onClick={handleToggleMenu} className="focus:outline-none">
           {menuOpen ? <FaChevronUp /> : <FaChevronDown />}
@@ -88,7 +86,7 @@ export const TextureUploadUI = () => {
             multiple
             accept="image/*"
             onChange={handleFileChange}
-            className="block mb-4"
+            className="block mb-4 w-full"
           />
           {previewUrls.length > 0 && (
             <ul className="space-y-2">

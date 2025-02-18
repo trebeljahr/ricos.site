@@ -39,6 +39,7 @@
     "src/scripts/createRedirects.js",
     "src/lib/generateExcerpts.js",
     "src/scripts/sortedNewsletters.js",
-    "next.config.cjss"
+    "next.config.cjss",
+    "src/components/Demos/FullscreenShader/withContext"
   ]
 }

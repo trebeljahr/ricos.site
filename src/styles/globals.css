@@ -47,8 +47,8 @@ figure[data-rehype-pretty-code-figure] {
 }
 @media (min-width: 1300px) {
   .large-bleed {
-    margin-left: calc(-80vw / 2 + 65ch / 2);
-    margin-right: calc(-80vw / 2 + 65ch / 2);
+    margin-left: calc(-85vw / 2 + 65ch / 2);
+    margin-right: calc(-85vw / 2 + 65ch / 2);
   }
   .medium-bleed {
     margin-left: calc(-70vw / 2 + 65ch / 2);
@@ -124,7 +124,7 @@ pre[data-theme*=" "] code .diff {
 pre[data-theme*=" "] code .diff:after {
   position: absolute;
   top: 0;
-  right: 10px;
+  left: 25px;
 }
 
 pre[data-theme*=" "] code .diff.add:after {
@@ -161,7 +161,7 @@ code[data-line-numbers] > [data-line]::before {
   /* Other styling */
   display: inline-block;
   width: 0.75rem;
-  margin-right: 1rem;
+  margin-right: 1.2rem;
   text-align: right;
   color: gray;
 }

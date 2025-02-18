@@ -1,6 +1,3 @@
-import { cppLanguage } from "@codemirror/lang-cpp";
-import { vscodeDark } from "@uiw/codemirror-theme-vscode";
-import ReactCodeMirror from "@uiw/react-codemirror";
 import {
   createContext,
   Dispatch,

@@ -1,5 +1,5 @@
 import { OpenGraph } from "./OpenGraph";
-import { TailwindNavbar } from "./Navbar/TailwindNavbar";
+import { LeftSmallNavbar, TailwindNavbar } from "./Navbar/TailwindNavbar";
 import { ReactNode } from "react";
 import { toTitleCase } from "src/lib/utils";
 import { Meta } from "./Meta";
@@ -14,6 +14,7 @@ type Props = {
   image: string;
   imageAlt: string;
   fullScreen?: boolean;
+  leftSmallNavbar?: boolean;
   withProgressBar?: boolean;
 };
 
@@ -25,7 +26,7 @@ const Layout = ({
   image,
   keywords,
   imageAlt,
-  fullScreen = false,
+  leftSmallNavbar = false,
   withProgressBar = false,
 }: Props) => {
   const properTitle = toTitleCase(title);
@@ -45,7 +46,11 @@ const Layout = ({
         image={image}
         imageAlt={imageAlt}
       />
-      <TailwindNavbar withProgressBar={withProgressBar} />
+      {leftSmallNavbar ? (
+        <LeftSmallNavbar />
+      ) : (
+        <TailwindNavbar withProgressBar={withProgressBar} />
+      )}
 
       {children}
     </div>

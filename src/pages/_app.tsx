@@ -49,7 +49,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
       </Head>
 
-      <ThemeProvider attribute="class" enableSystem={false}>
+      <ThemeProvider attribute="class" enableSystem={false} defaultTheme="dark">
         <Component
           {...pageProps}
           className={clsx(pageProps.className, inter.className)}

@@ -5,7 +5,7 @@ import { useCallback } from "react";
 import { useEditorContext } from "./EditorContextProvider";
 
 export const CodeEditor = () => {
-  const { code, setCode } = useEditorContext();
+  const { code, setCode, expanded } = useEditorContext();
   const onChange = useCallback(
     (val: string) => {
       setCode(val);
@@ -17,7 +17,7 @@ export const CodeEditor = () => {
     <ReactCodeMirror
       value={code}
       onChange={onChange}
-      maxHeight="512px"
+      height={expanded ? "calc(100vh - 34px)" : "512px"}
       theme={vscodeDark}
       extensions={[cppLanguage]}
     />

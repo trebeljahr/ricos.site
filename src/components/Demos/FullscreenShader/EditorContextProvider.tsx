@@ -13,6 +13,8 @@ type EditorContextType = {
   setCode: Dispatch<SetStateAction<string>>;
   textures: Texture[];
   setTextures: Dispatch<SetStateAction<Texture[]>>;
+  expanded: boolean;
+  setExpanded: Dispatch<SetStateAction<boolean>>;
 };
 
 const EditorContext = createContext({} as EditorContextType);
@@ -27,8 +29,11 @@ export const EditorContextProvider = ({
 }: PropsWithChildren<{ initialCode: string }>) => {
   const [code, setCode] = useState(initialCode);
   const [textures, setTextures] = useState<Texture[]>([]);
+  const [expanded, setExpanded] = useState(false);
   return (
-    <EditorContext.Provider value={{ code, textures, setCode, setTextures }}>
+    <EditorContext.Provider
+      value={{ code, textures, expanded, setExpanded, setCode, setTextures }}
+    >
       {children}
     </EditorContext.Provider>
   );

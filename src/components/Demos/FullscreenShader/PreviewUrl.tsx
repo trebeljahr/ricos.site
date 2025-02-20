@@ -79,22 +79,15 @@ export function PreviewUrl({
     }
   };
   return (
-    <li className="flex items-center space-x-2">
+    <div className="flex items-center">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={url}
         alt={`Texture ${index}`}
         className="w-12 h-12 object-cover rounded"
       />
-      <span>{`u_tex${index}`}</span>
+      <span className="ml-2">{`u_tex${index}`}</span>
       <div className="flex space-x-2 ml-auto">
-        <button
-          onClick={() => onDelete(index)}
-          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-          title="Delete texture"
-        >
-          <FaTrash />
-        </button>
         <label
           htmlFor={`update-file-${index}`}
           className="bg-blue-500 text-white px-2 py-1 rounded cursor-pointer hover:bg-blue-600"
@@ -109,7 +102,14 @@ export function PreviewUrl({
           onChange={(e) => handleUpdateFileChange(index, e)}
           className="hidden"
         />
+        <button
+          onClick={() => onDelete(index)}
+          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+          title="Delete texture"
+        >
+          <FaTrash />
+        </button>
       </div>
-    </li>
+    </div>
   );
 }

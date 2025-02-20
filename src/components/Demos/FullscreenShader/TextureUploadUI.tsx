@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaImage } from "react-icons/fa";
 import { TextureLoader } from "three";
 import { useEditorContext } from "./EditorContextProvider";
 import { PreviewUrl } from "./PreviewUrl";
@@ -61,35 +61,31 @@ export const TextureUploadUI = () => {
     [setTextures]
   );
 
-  const [menuOpen, setMenuOpen] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleToggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
 
   return (
-    <div className=" bg-white dark:bg-gray-700 p-4 rounded shadow-lg overflow-y-auto w-72">
-      <div
-        className={`flex items-center justify-between ${
-          menuOpen ? "mb-4" : ""
-        }`}
+    <div className="bg-inherit overflow-y-auto w-fit">
+      <button
+        onClick={handleToggleMenu}
+        className="flex place-items-center p-2"
       >
-        <span className="font-bold">Uploaded Textures</span>
-        <button onClick={handleToggleMenu} className="focus:outline-none">
-          {menuOpen ? <FaChevronUp /> : <FaChevronDown />}
-        </button>
-      </div>
+        <FaImage />
+      </button>
       {menuOpen && (
-        <>
+        <div className="absolute z-20 top-[34px] right-0 w-72 h-fit bg-[#0a0a0a] p-2">
           <input
             type="file"
             multiple
             accept="image/*"
             onChange={handleFileChange}
-            className="block mb-4 w-full"
+            className="block w-full"
           />
           {previewUrls.length > 0 && (
-            <ul className="space-y-2">
+            <div className="mt-4">
               {previewUrls.map((url, index) => (
                 <PreviewUrl
                   key={index}
@@ -99,9 +95,9 @@ export const TextureUploadUI = () => {
                   index={index}
                 />
               ))}
-            </ul>
+            </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );

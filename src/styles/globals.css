@@ -22,6 +22,10 @@ a {
   }
 }
 
+body:has(.popup) {
+  overflow: hidden !important;
+}
+
 
 figure[data-rehype-pretty-code-figure] {
   position: relative;

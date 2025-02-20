@@ -43,7 +43,7 @@ export function HorizontalCard({
             alt={cover.alt}
             width={cover.width}
             height={cover.height}
-            sizes={`(max-width: 768px) calc(100vw-24px), 240px`}
+            sizes={`(max-width: 768px) calc(100vw-24px), 350px`}
             priority={priority}
             className="object-cover w-full h-full"
           />

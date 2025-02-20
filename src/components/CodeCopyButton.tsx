@@ -5,7 +5,6 @@ export function CodeWithCopyButton({
   children,
   ...props
 }: DetailedHTMLProps<HTMLAttributes<HTMLPreElement>, HTMLPreElement>) {
-  const [isCopied, setIsCopied] = useState(false);
   const preRef = useRef<HTMLPreElement>(null);
 
   const handleClickCopy = async () => {
@@ -36,11 +35,6 @@ export function CodeWithCopyButton({
       });
 
       await navigator.clipboard.writeText(cleanedText.join("\n"));
-      setIsCopied(true);
-
-      setTimeout(() => {
-        setIsCopied(false);
-      }, 3000);
     }
   };
 
@@ -51,18 +45,38 @@ export function CodeWithCopyButton({
       className="relative border border-gray-500"
       data-theme="github-dark-dimmed github-light"
     >
-      <button
-        disabled={isCopied}
-        onClick={handleClickCopy}
-        className="w-fit h-fit absolute bottom-2 right-2 z-10 flex place-items-center"
-      >
-        {isCopied ? (
-          <FaCheck className="size-6 text-green-500 dark:text-green-400" />
-        ) : (
-          <FaClipboard className="size-6 text-gray-700 dark:text-gray-200" />
-        )}
-      </button>
+      <CopyButton handleClick={handleClickCopy} />
       {children}
     </pre>
   );
 }
+
+type CopyButtonProps = {
+  handleClick: () => void;
+};
+
+export const CopyButton = ({ handleClick }: CopyButtonProps) => {
+  const [disabled, setDisabled] = useState(false);
+
+  const handleClickAndDisable = () => {
+    handleClick();
+    setDisabled(true);
+    setTimeout(() => {
+      setDisabled(false);
+    }, 3000);
+  };
+
+  return (
+    <button
+      disabled={disabled}
+      onClick={handleClickAndDisable}
+      className="w-fit h-fit absolute bottom-2 right-2 z-10 flex place-items-center bg-inherit p-2 rounded-full"
+    >
+      {disabled ? (
+        <FaCheck className="size-6 text-green-500 dark:text-green-400" />
+      ) : (
+        <FaClipboard className="size-6 text-gray-700 dark:text-gray-200" />
+      )}
+    </button>
+  );
+};

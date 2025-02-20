@@ -12,7 +12,7 @@ export const ThreeFiberLayout = ({
   return (
     <>
       <NavbarWithLinks>{extraLinks}</NavbarWithLinks>
-      {children}
+      <div className="w-screen h-screen">{children}</div>
     </>
   );
 };

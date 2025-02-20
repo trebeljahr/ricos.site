@@ -17,11 +17,15 @@ export function FullCanvasShader({
   useFrame(({ clock }) => {
     if (shaderRef.current) {
       shaderRef.current.uniforms.u_time.value = clock.getElapsedTime();
+      shaderRef.current.uniforms.u_resolution.value.set(
+        size.width,
+        size.height
+      );
     }
   });
 
   return (
-    <mesh>
+    <mesh key={Math.random()}>
       <planeGeometry args={[2, 2]} />
       <shaderMaterial
         ref={shaderRef}
@@ -29,6 +33,7 @@ export function FullCanvasShader({
           ...otherUniforms,
           u_time: { value: 0 },
           u_resolution: { value: new Vector2(size.width, size.height) },
+          u_pixelRatio: { value: window.devicePixelRatio },
         }}
         vertexShader={`
           varying vec2 vUv;

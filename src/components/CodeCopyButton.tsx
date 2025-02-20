@@ -70,7 +70,7 @@ export const CopyButton = ({ handleClick }: CopyButtonProps) => {
     <button
       disabled={disabled}
       onClick={handleClickAndDisable}
-      className="w-fit h-fit absolute bottom-2 right-2 z-10 flex place-items-center bg-inherit p-2 rounded-full"
+      className="w-fit h-fit absolute bottom-2 right-2 z-10 flex place-items-center bg-inherit rounded-full"
     >
       {disabled ? (
         <FaCheck className="size-6 text-green-500 dark:text-green-400" />

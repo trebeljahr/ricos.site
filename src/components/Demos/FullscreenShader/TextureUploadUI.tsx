@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { Rnd } from "react-rnd";
 import { TextureLoader } from "three";
 import { useEditorContext } from "./EditorContextProvider";
 import { PreviewUrl } from "./PreviewUrl";
@@ -68,41 +69,43 @@ export const TextureUploadUI = () => {
   };
 
   return (
-    <div className="absolute top-2 right-2 bg-white bg-opacity-90 p-4 rounded shadow-lg max-h-[90vh] overflow-y-auto z-10 w-72">
-      <div
-        className={`flex items-center justify-between ${
-          menuOpen ? "mb-4" : ""
-        }`}
-      >
-        <span className="font-bold">Uploaded Textures</span>
-        <button onClick={handleToggleMenu} className="focus:outline-none">
-          {menuOpen ? <FaChevronUp /> : <FaChevronDown />}
-        </button>
+    <Rnd enableResizing={false} className="absolute top-2 right-2 w-72">
+      <div className=" bg-white dark:bg-gray-700 p-4 rounded shadow-lg overflow-y-auto z-10 w-72">
+        <div
+          className={`flex items-center justify-between ${
+            menuOpen ? "mb-4" : ""
+          }`}
+        >
+          <span className="font-bold">Uploaded Textures</span>
+          <button onClick={handleToggleMenu} className="focus:outline-none">
+            {menuOpen ? <FaChevronUp /> : <FaChevronDown />}
+          </button>
+        </div>
+        {menuOpen && (
+          <>
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleFileChange}
+              className="block mb-4 w-full"
+            />
+            {previewUrls.length > 0 && (
+              <ul className="space-y-2">
+                {previewUrls.map((url, index) => (
+                  <PreviewUrl
+                    key={index}
+                    url={url}
+                    onDelete={handleDelete}
+                    onUpdate={handleUpdate}
+                    index={index}
+                  />
+                ))}
+              </ul>
+            )}
+          </>
+        )}
       </div>
-      {menuOpen && (
-        <>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={handleFileChange}
-            className="block mb-4 w-full"
-          />
-          {previewUrls.length > 0 && (
-            <ul className="space-y-2">
-              {previewUrls.map((url, index) => (
-                <PreviewUrl
-                  key={index}
-                  url={url}
-                  onDelete={handleDelete}
-                  onUpdate={handleUpdate}
-                  index={index}
-                />
-              ))}
-            </ul>
-          )}
-        </>
-      )}
-    </div>
+    </Rnd>
   );
 };

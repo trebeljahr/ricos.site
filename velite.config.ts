@@ -291,6 +291,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     [
       rehypePrettyCode,
       {
+        defaultLang: "shell",
         matchAlgorithm: "v3",
         transformers: [
           transformerNotationDiff({ matchAlgorithm: "v3" }),

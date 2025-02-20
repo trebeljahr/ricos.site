@@ -61,6 +61,15 @@ const canonicalCallouts = {
       title: "text-yellow-600 dark:text-yellow-400",
     },
   },
+  aside: {
+    label: "Question",
+    aliases: [],
+    icon: <FaQuestion className="size-5 shrink-0" />,
+    className: {
+      root: "bg-gray-500/10 border-gray-600/20 dark:border-gray-800/20",
+      title: "text-black-600 dark:text-black-400",
+    },
+  },
   warning: {
     label: "Warning",
     aliases: ["caution", "attention"],
@@ -221,7 +230,9 @@ type SummaryProps = {
 
 const Summary: FC<SummaryProps> = ({ isFoldable, children, ...props }) => {
   return isFoldable ? (
-    <summary {...props}>{children}</summary>
+    <summary {...props} className={clsx(props.className, "cursor-pointer")}>
+      {children}
+    </summary>
   ) : (
     <div {...props}>{children}</div>
   );

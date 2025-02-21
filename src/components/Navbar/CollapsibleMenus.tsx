@@ -24,21 +24,12 @@ export function CollapsibleMenuDesktop({ links, text }: DesktopMenuProps) {
           <FiChevronDown className="h-3 w-3 ml-1" />
         </span>
       </MenuButton>
-      <Transition
-        as={Fragment}
-        enter="transition ease-out duration-200"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
-      >
-        <MenuItems className="overflow-hidden bg-white dark:bg-gray-800 flex-col absolute box-border right-0 z-50 mt-2 origin-top-right w-fit rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-          {links.map((item) => (
-            <SingleMenuItem key={item} link={item} />
-          ))}
-        </MenuItems>
-      </Transition>
+
+      <MenuItems className="overflow-hidden bg-white dark:bg-gray-800 flex-col absolute box-border right-0 z-50 mt-2 origin-top-right w-fit rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        {links.map((item) => (
+          <SingleMenuItem key={item} link={item} />
+        ))}
+      </MenuItems>
     </Menu>
   );
 }
@@ -68,26 +59,17 @@ export function CollapsibleMenuMobile({
             <FiChevronDown className="h-3 w-3 ml-1" />
           </div>
         </MenuButton>
-        <Transition
-          as={Fragment}
-          enter="transition ease-out duration-200"
-          enterFrom="transform opacity-0 scale-95"
-          enterTo="transform opacity-100 scale-100"
-          leave="transition ease-in duration-75"
-          leaveFrom="transform opacity-100 scale-100"
-          leaveTo="transform opacity-0 scale-95"
-        >
-          <MenuItems className="overflow-hidden bg-white dark:bg-slate-800 mt-2 w-48 origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
-            {links.map((item) => (
-              <SingleMenuItem
-                key={item}
-                link={item}
-                closeNav={closeNav}
-                left={left}
-              />
-            ))}
-          </MenuItems>
-        </Transition>
+
+        <MenuItems className="overflow-hidden bg-white dark:bg-slate-800 mt-2 w-48 origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+          {links.map((item) => (
+            <SingleMenuItem
+              key={item}
+              link={item}
+              closeNav={closeNav}
+              left={left}
+            />
+          ))}
+        </MenuItems>
       </div>
     </Menu>
   );

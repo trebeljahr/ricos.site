@@ -1,9 +1,9 @@
-import { OpenGraph } from "./OpenGraph";
-import { LeftSmallNavbar, TailwindNavbar } from "./Navbar/TailwindNavbar";
 import { ReactNode } from "react";
 import { toTitleCase } from "src/lib/utils";
 import { Meta } from "./Meta";
-import clsx from "clsx";
+import { TailwindNavbar } from "./Navbar/TailwindNavbar";
+import { OpenGraph } from "./OpenGraph";
+import { LeftNavbar } from "./Navbar/LeftNavbar";
 
 type Props = {
   children: ReactNode;
@@ -47,7 +47,7 @@ const Layout = ({
         imageAlt={imageAlt}
       />
       {leftSmallNavbar ? (
-        <LeftSmallNavbar />
+        <LeftNavbar />
       ) : (
         <TailwindNavbar withProgressBar={withProgressBar} />
       )}

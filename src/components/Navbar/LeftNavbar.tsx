@@ -34,11 +34,14 @@ export const LeftNavbar = () => {
     </motion.nav>
   );
 };
+
 const navVariants = {
   open: {
+    display: "block",
     transition: { staggerChildren: 0.07, delayChildren: 0.2 },
   },
   closed: {
+    display: "none",
     transition: { staggerChildren: 0.05, staggerDirection: -1 },
   },
 };
@@ -70,7 +73,7 @@ const AnimatedMenuItem = ({ children }: PropsWithChildren) => {
 
 const Navigation = () => {
   return (
-    <motion.nav
+    <motion.div
       className="m-0 absolute top-16 left-0 px-3 prose-a:no-underline prose-a:hover:text-inherit prose-a:font-normal font-normal prose-a:text-inherit"
       variants={navVariants}
     >
@@ -92,7 +95,7 @@ const Navigation = () => {
       <AnimatedMenuItem>
         <CollapsibleMenuMobile links={about} text="about" left />
       </AnimatedMenuItem>
-    </motion.nav>
+    </motion.div>
   );
 };
 

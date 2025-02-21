@@ -70,10 +70,10 @@ const InfoButton = () => {
       <AnimatePresence>
         {showInfo && (
           <motion.div
-            initial={{ x: -690 }}
-            animate={{ x: 0 }}
-            exit={{ x: -690 }}
-            transition={{ duration: 0.3 }}
+            initial={{ y: 472 + 24 }}
+            animate={{ y: 0 }}
+            exit={{ y: 472 + 24 }}
+            transition={{ duration: 0.4 }}
             className="absolute bottom-0 left-0 z-10 bg-white dark:bg-gray-900 p-3 px-5 rounded-md"
           >
             <div className="max-w-prose">

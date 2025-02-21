@@ -12,10 +12,10 @@ const fadeDownVariants = {
 
 const sidebarVariants = {
   show: (height: number) => {
-    console.log(height);
+    const clipPath = `circle(${height * 2 + 200}px at 0px ${height}px)`;
 
     return {
-      clipPath: `circle(${height * 2 + 200}px at 0px 0px)`,
+      clipPath,
       transition: {
         type: "spring",
         stiffness: 20,
@@ -23,14 +23,16 @@ const sidebarVariants = {
       },
     };
   },
-  hidden: {
-    clipPath: "circle(40px at 0px 0px)",
-    transition: {
-      delay: 0.2,
-      type: "spring",
-      stiffness: 400,
-      damping: 40,
-    },
+  hidden: (height: number) => {
+    return {
+      clipPath: `circle(19px at 28px ${height - 28}px)`,
+      transition: {
+        delay: 0.2,
+        type: "spring",
+        stiffness: 400,
+        damping: 40,
+      },
+    };
   },
 };
 
@@ -46,14 +48,13 @@ export const InfoBox = () => {
     <>
       <button
         onClick={toggleInfo}
-        className="w-fit h-fit absolute p-3 bottom-2 left-2 z-10 flex place-items-center bg-white dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700  rounded-full"
+        className="w-fit h-fit absolute p-3 bottom-2 left-2 z-20 flex place-items-center"
       >
         <FaInfo className="size-4" />
       </button>
-
       <motion.div
         transition={{
-          duration: 0.3,
+          duration: 5,
           ease: [0, 0.71, 0.2, 1.01],
         }}
         initial="hidden"
@@ -61,25 +62,36 @@ export const InfoBox = () => {
         animate={showInfo ? "show" : "hidden"}
         viewport={{ once: true }}
         variants={{
-          hidden: {
-            display: "none",
-          },
-          show: {
-            display: "block",
-            transition: {
-              staggerChildren: 0.15,
-            },
-          },
+          hidden: {},
+          show: {},
         }}
-        className="absolute bottom-0 left-0 z-10 p-3 px-5 rounded-md"
+        className="fixed bottom-0 left-0 z-10 w-full lg:w-[60vw] h-fit flex items-center justify-center"
       >
         <motion.div
-          className="absolute bottom-0 left-0 w-prose h-full bg-gray-200 dark:bg-gray-800"
+          className="absolute bottom-0 left-0 w-full h-full bg-white dark:bg-gray-800"
           variants={sidebarVariants}
           custom={height}
           ref={ref}
         />
-        <div className="max-w-prose">
+        <motion.div
+          className="relative z-10 h-fit w-screen max-w-prose py-5"
+          variants={{
+            hidden: {
+              visibility: "hidden",
+              transition: {
+                when: "afterChildren",
+              },
+            },
+            show: {
+              visibility: "visible",
+              transition: {
+                when: "beforeChildren",
+                staggerChildren: 0.15,
+                staggerDirection: -1,
+              },
+            },
+          }}
+        >
           <motion.p className="pr-5" variants={fadeDownVariants}>
             This shader art demo allows you to control a fractal shader with
             sliders. Go create something cool! You can share your current
@@ -89,7 +101,7 @@ export const InfoBox = () => {
           <motion.p className="!mb-0" variants={fadeDownVariants}>
             Try some presets!
           </motion.p>
-          <motion.p variants={fadeDownVariants}>
+          <motion.p className="!mt-0" variants={fadeDownVariants}>
             <Link href="/r3f/shader-art-demo?chosenShape=0&chosenPalette=5&repetitions=2.1&speedFactor=0.6&scaleFactor=2.2&space=7.2&depth=4.199999999999999&contrast=1.1&strength=0.0073&rgbStrength=%5B1%2C1%2C1%5D">
               1
             </Link>
@@ -161,13 +173,14 @@ export const InfoBox = () => {
             <a href="https://pmnd.rs/">pmndrs</a> ecosystem. Thanks for building
             all these crazy tools! 😊
           </motion.p>
-        </div>
-        <button
-          className="absolute top-2 right-2 bg-white dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded-full"
+        </motion.div>
+        <motion.button
+          variants={fadeDownVariants}
+          className="absolute top-2 right-2 bg-white dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded-full z-20"
           onClick={toggleInfo}
         >
           <FiX className="size-5 " />
-        </button>
+        </motion.button>
       </motion.div>
     </>
   );

@@ -3,11 +3,15 @@ import Layout from "@components/Layout";
 import { InfoBox } from "@components/ShaderArtDemo/InfoButton";
 import { ShareWithOthersButton } from "@components/ShaderArtDemo/ShareWithOthersButton";
 import { Canvas } from "@react-three/fiber";
-import controllableShaderArt from "@shaders/controllableShaderArt.frag";
+import controllableShaderArt from "@shaders/controllableShaderArt.glsl";
 import { useControls } from "leva";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { IUniform } from "three";
+
+// export default function Abc() {
+//   return <InfoBox />;
+// }
 
 export default function ShaderArtDemo() {
   const searchParams = useSearchParams();

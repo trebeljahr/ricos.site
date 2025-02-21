@@ -60072,5 +60072,12 @@
     "height": 3456,
     "aspectRatio": 1.5,
     "existsInS3": true
+  },
+  "assets/blog/shader-art-demo.png": {
+    "key": "assets/blog/shader-art-demo.png",
+    "width": 2446,
+    "height": 1322,
+    "aspectRatio": 1.8502269288956128,
+    "existsInS3": true
   }
 }

@@ -48,24 +48,33 @@ export const InfoBox = () => {
     <>
       <button
         onClick={toggleInfo}
-        className="w-fit h-fit absolute p-3 bottom-2 left-2 z-20 flex place-items-center"
+        className="w-fit h-fit absolute p-3 bottom-2 left-2 z-20 flex place-items-center bg-white dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full"
       >
         <FaInfo className="size-4" />
       </button>
       <motion.div
         transition={{
-          duration: 5,
-          ease: [0, 0.71, 0.2, 1.01],
+          duration: 0,
         }}
         initial="hidden"
         exit="hidden"
         animate={showInfo ? "show" : "hidden"}
         viewport={{ once: true }}
         variants={{
-          hidden: {},
-          show: {},
+          hidden: {
+            visibility: "hidden",
+            transition: {
+              when: "afterChildren",
+            },
+          },
+          show: {
+            transition: {
+              when: "beforeChildren",
+            },
+            visibility: "visible",
+          },
         }}
-        className="fixed bottom-0 left-0 z-10 w-full lg:w-[60vw] h-fit flex items-center justify-center"
+        className="fixed bottom-0 left-0 z-10 w-full lg:w-[60vw] h-fit flex items-center justify-center rounded-md"
       >
         <motion.div
           className="absolute bottom-0 left-0 w-full h-full bg-white dark:bg-gray-800"
@@ -78,9 +87,6 @@ export const InfoBox = () => {
           variants={{
             hidden: {
               visibility: "hidden",
-              transition: {
-                when: "afterChildren",
-              },
             },
             show: {
               visibility: "visible",

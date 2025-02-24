@@ -60079,5 +60079,40 @@
     "height": 1322,
     "aspectRatio": 1.8502269288956128,
     "existsInS3": true
+  },
+  "assets/newsletter/62/PXL_20250210_174845625~2.jpg": {
+    "key": "assets/newsletter/62/PXL_20250210_174845625~2.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/62/PXL_20250213_154310833~2.jpg": {
+    "key": "assets/newsletter/62/PXL_20250213_154310833~2.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/62/PXL_20250216_143449662~2.jpg": {
+    "key": "assets/newsletter/62/PXL_20250216_143449662~2.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/62/ai-helix-scientist.png": {
+    "key": "assets/newsletter/62/ai-helix-scientist.png",
+    "width": 3072,
+    "height": 1536,
+    "aspectRatio": 2,
+    "existsInS3": true
+  },
+  "assets/newsletter/62/PXL_20250210_204415476~2.jpg": {
+    "key": "assets/newsletter/62/PXL_20250210_204415476~2.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
   }
 }

@@ -6,16 +6,19 @@ import {
   MeshStandardMaterial,
   Mesh,
   DoubleSide,
+  BufferGeometry,
+  Float32BufferAttribute,
 } from "three";
 import { createNoise2D } from "simplex-noise";
 
+const debug = false;
 const cellSize = 10;
-const visibleRadius = 2;
+const visibleRadius = 20;
 
 const simplex = createNoise2D();
 
-const NOISE_SCALE = 0.005;
-const HEIGHT_SCALE = 30;
+const NOISE_SCALE = 0.02;
+const HEIGHT_SCALE = 20;
 const DETAIL_LEVELS = 3;
 const PERSISTENCE = 0.5;
 
@@ -76,7 +79,7 @@ export const WorldManager = () => {
         return (
           <>
             <TerrainTile key={`${pos.x},${pos.z}`} position={pos} />
-            <Tile key={`${pos.x},${pos.z}grid`} position={pos} />
+            {debug && <Tile key={`${pos.x},${pos.z}grid`} position={pos} />}
           </>
         );
       })}
@@ -107,31 +110,62 @@ function getFractalNoise(worldX: number, worldZ: number) {
 export const TerrainTile = ({ position }: { position: Vector3 }) => {
   const geometry = useMemo(() => {
     const resolution = 32;
-    const geo = new PlaneGeometry(
-      cellSize,
-      cellSize,
-      resolution - 1,
-      resolution - 1
-    );
+    const geo = new BufferGeometry();
 
-    // const tileWorldX = position.x;
-    // const tileWorldZ = position.z;
+    // Arrays to hold vertex data
+    const vertices = [];
+    const normals = [];
+    const uvs = [];
+    const indices = [];
 
-    // const positionAttribute = geo.attributes.position;
-    // const vertices = positionAttribute.count;
+    // Generate a grid of vertices
+    const step = cellSize / (resolution - 1);
 
-    // for (let i = 0; i < vertices; i++) {
-    //   const x = positionAttribute.getX(i);
-    //   const z = positionAttribute.getZ(i);
+    for (let z = 0; z < resolution; z++) {
+      for (let x = 0; x < resolution; x++) {
+        // Calculate local position within the tile
+        const localX = x * step - cellSize / 2;
+        const localZ = z * step - cellSize / 2;
 
-    //   const worldX = tileWorldX + x;
-    //   const worldZ = tileWorldZ + z;
+        // Convert to world coordinates for noise calculation
+        const worldX = position.x + localX;
+        const worldZ = position.z + localZ;
 
-    //   const height = getFractalNoise(worldX, worldZ) * HEIGHT_SCALE;
-    //   positionAttribute.setY(i, height);
-    // }
+        // Calculate height using our noise function
+        const height = getFractalNoise(worldX, worldZ) * HEIGHT_SCALE;
 
-    // geo.computeVertexNormals();
+        // Add vertex (x, height, z)
+        vertices.push(localX, height, localZ);
+
+        // Simple normal pointing up for now
+        normals.push(0, 1, 0);
+
+        // Add UV coordinates
+        uvs.push(x / (resolution - 1), z / (resolution - 1));
+
+        // Create faces (two triangles per grid cell)
+        if (x < resolution - 1 && z < resolution - 1) {
+          const vertexIndex = x + z * resolution;
+
+          // First triangle
+          indices.push(vertexIndex, vertexIndex + 1, vertexIndex + resolution);
+
+          // Second triangle
+          indices.push(
+            vertexIndex + 1,
+            vertexIndex + resolution + 1,
+            vertexIndex + resolution
+          );
+        }
+      }
+    }
+
+    // Set the attributes
+    geo.setAttribute("position", new Float32BufferAttribute(vertices, 3));
+    geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
+    geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
+    geo.setIndex(indices);
+
     return geo;
   }, [position]);
 
@@ -139,17 +173,15 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
     return new MeshStandardMaterial({
       color: "#82e000",
       wireframe: false,
-      flatShading: true,
+      //   flatShading: true,
       side: DoubleSide,
     });
   }, []);
 
-  console.log(position);
-
   return (
     <mesh
       position={position}
-      rotation={[-Math.PI / 2, 0, 0]}
+      rotation={[0, 0, 0]}
       geometry={geometry}
       material={material}
     />

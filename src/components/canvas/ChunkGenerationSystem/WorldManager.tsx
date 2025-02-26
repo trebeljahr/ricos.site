@@ -7,56 +7,24 @@ import {
   BufferGeometry,
   Float32BufferAttribute,
   Color,
-  MathUtils,
-  Vector2,
 } from "three";
-import { createNoise2D, createNoise3D } from "simplex-noise";
+import { createNoise2D } from "simplex-noise";
 
 const debug = false;
 const cellSize = 10;
 const visibleRadius = 20;
 
-const heightNoise = createNoise2D();
-const temperatureNoise = createNoise2D();
+const simplex = createNoise2D();
+const biomeNoise = createNoise2D();
 const moistureNoise = createNoise2D();
-const warpNoise1 = createNoise2D();
-const warpNoise2 = createNoise2D();
-const noise3D = createNoise3D();
 
-const NOISE_SCALE = 0.01; // Reduced for larger terrain features
-const HEIGHT_SCALE = 35; // Increased for taller mountains
+const NOISE_SCALE = 0.02;
+const HEIGHT_SCALE = 20;
 const DETAIL_LEVELS = 3;
 const PERSISTENCE = 0.5;
 
-const WARP_SCALE = 0.003; // Reduced for larger patterns
-const WARP_STRENGTH = 35.0;
-
-const TEMP_MOISTURE_SCALE = 0.0008; // Reduced for larger biomes
-const TRANSITION_ZONE = 0.08;
-
-interface BiomeGradient {
-  height: number;
-  temp: number;
-  moisture: number;
-  color: Color;
-}
-
-const BIOME_GRADIENTS: BiomeGradient[] = [
-  { height: 0.2, temp: 0, moisture: 0, color: new Color("#0047AB") },
-  { height: 0.28, temp: 0, moisture: 0, color: new Color("#0077BE") },
-  { height: 0.34, temp: 0, moisture: 0, color: new Color("#C2B280") },
-  { height: 0.38, temp: 0.8, moisture: 0.2, color: new Color("#E4A672") },
-  { height: 0.38, temp: 0.7, moisture: 0.4, color: new Color("#D4B95E") },
-  { height: 0.38, temp: 0.7, moisture: 0.8, color: new Color("#4CBB17") },
-  { height: 0.38, temp: 0.4, moisture: 0.3, color: new Color("#DAA520") },
-  { height: 0.38, temp: 0.4, moisture: 0.6, color: new Color("#228B22") },
-  { height: 0.38, temp: 0.4, moisture: 0.8, color: new Color("#006400") },
-  { height: 0.38, temp: 0.2, moisture: 0.3, color: new Color("#B5B5B5") },
-  { height: 0.38, temp: 0.2, moisture: 0.7, color: new Color("#5E7F5E") },
-  { height: 0.65, temp: 0, moisture: 0, color: new Color("#8E8E8E") },
-  { height: 0.75, temp: 0, moisture: 0, color: new Color("#CCCCCC") },
-  { height: 0.85, temp: 0, moisture: 0, color: new Color("#FFFFFF") },
-];
+const BIOME_SCALE = 0.005;
+const MOISTURE_SCALE = 0.004;
 
 export const WorldManager = () => {
   const { camera } = useThree();
@@ -105,7 +73,9 @@ export const WorldManager = () => {
 
         if (distanceSquared <= radiusSquared) {
           const chunkKey = `${x},${z}`;
+
           const position = new Vector3(x * cellSize, 0, z * cellSize);
+
           newVisibleChunks.set(chunkKey, position);
         }
       }
@@ -151,243 +121,144 @@ export const WorldManager = () => {
   );
 };
 
-function getWarpedCoordinates(x: number, y: number): Vector2 {
-  let warpedX = x;
-  let warpedY = y;
-
-  const warp1X = warpNoise1(x * WARP_SCALE, y * WARP_SCALE) * WARP_STRENGTH;
-  const warp1Y = warpNoise1(y * WARP_SCALE, x * WARP_SCALE) * WARP_STRENGTH;
-
-  warpedX += warp1X;
-  warpedY += warp1Y;
-
-  const warp2X =
-    warpNoise2(warpedX * WARP_SCALE * 2, warpedY * WARP_SCALE * 2) *
-    (WARP_STRENGTH * 0.5);
-  const warp2Y =
-    warpNoise2(warpedY * WARP_SCALE * 2, warpedX * WARP_SCALE * 2) *
-    (WARP_STRENGTH * 0.5);
-
-  warpedX += warp2X;
-  warpedY += warp2Y;
-
-  return new Vector2(warpedX, warpedY);
-}
-
-function getFractalNoise(worldX: number, worldZ: number): number {
-  const warped = getWarpedCoordinates(worldX, worldZ);
-
+function getFractalNoise(worldX: number, worldZ: number) {
   let amplitude = 1;
   let frequency = 1;
   let noiseValue = 0;
   let totalAmplitude = 0;
 
   for (let i = 0; i < DETAIL_LEVELS; i++) {
-    const noiseX = warped.x * NOISE_SCALE * frequency;
-    const noiseZ = warped.y * NOISE_SCALE * frequency;
-    const noiseTime = i * 100;
+    const noiseX = worldX * NOISE_SCALE * frequency;
+    const noiseZ = worldZ * NOISE_SCALE * frequency;
 
-    const octaveNoise =
-      heightNoise(noiseX, noiseZ) * 0.7 +
-      noise3D(noiseX, noiseZ, noiseTime) * 0.3;
+    noiseValue += simplex(noiseX, noiseZ) * amplitude;
 
-    noiseValue += octaveNoise * amplitude;
     totalAmplitude += amplitude;
     amplitude *= PERSISTENCE;
     frequency *= 2;
   }
 
-  const rawNoise = noiseValue / totalAmplitude;
-
-  // Create plateaus and flat areas by applying a terrace function
-  const terraceCount = 8; // More distinct levels
-  const terraceStrength = 0.8; // Stronger terracing effect for flatter plains
-
-  // Calculate which terrace this height belongs to
-  const terraceHeight = Math.floor(rawNoise * terraceCount) / terraceCount;
-  const nextTerraceHeight =
-    (Math.floor(rawNoise * terraceCount) + 1) / terraceCount;
-
-  // Calculate how far between terraces we are (0-1)
-  const terraceBlend = (rawNoise - terraceHeight) * terraceCount;
-
-  // Apply smoothstep to create smooth transitions between flat areas
-  const smoothBlend = terraceBlend * terraceBlend * (3 - 2 * terraceBlend);
-
-  // Mix between terraced height and smooth height
-  const terracedNoise = MathUtils.lerp(
-    terraceHeight,
-    nextTerraceHeight,
-    smoothBlend
-  );
-
-  // Apply stronger terracing to mid-range heights (plains and plateaus)
-  // but keep mountains and valleys more natural
-  let finalTerraceStrength = terraceStrength;
-  if (rawNoise > 0.3 && rawNoise < 0.7) {
-    finalTerraceStrength = terraceStrength * 1.25; // Even flatter plains
-  } else if (rawNoise > 0.8) {
-    finalTerraceStrength = terraceStrength * 0.5; // More natural looking mountains
-  }
-
-  // Enhance mountain heights (apply exponential curve to upper heights)
-  let heightEnhanced = MathUtils.lerp(
-    rawNoise,
-    terracedNoise,
-    finalTerraceStrength
-  );
-  if (heightEnhanced > 0.65) {
-    const mountainFactor = (heightEnhanced - 0.65) / 0.35;
-    const enhancementStrength = 0.3; // How much extra height to add
-    heightEnhanced += mountainFactor * mountainFactor * enhancementStrength;
-  }
-
-  return heightEnhanced;
+  return noiseValue / totalAmplitude;
 }
 
-function getBiomeFactors(
-  worldX: number,
-  worldZ: number
-): { temperature: number; moisture: number } {
-  const warped = getWarpedCoordinates(worldX, worldZ);
-
-  const temperature = noise3D(
-    warped.x * TEMP_MOISTURE_SCALE,
-    warped.y * TEMP_MOISTURE_SCALE,
-    100
+function getBiome(worldX: number, worldZ: number, height: number) {
+  const temperature = biomeNoise(worldX * BIOME_SCALE, worldZ * BIOME_SCALE);
+  const moisture = moistureNoise(
+    worldX * MOISTURE_SCALE,
+    worldZ * MOISTURE_SCALE
   );
 
-  const moisture = noise3D(
-    warped.x * TEMP_MOISTURE_SCALE * 1.5,
-    warped.y * TEMP_MOISTURE_SCALE * 1.5,
-    200
-  );
+  const normalizedHeight = (height + HEIGHT_SCALE) / (HEIGHT_SCALE * 2);
+
+  if (normalizedHeight > 0.7) {
+    return {
+      color: new Color("#FFFFFF"),
+      name: "Snow",
+    };
+  }
+
+  if (normalizedHeight > 0.6) {
+    return {
+      color: new Color("#A0A0A0"),
+      name: "Mountain",
+    };
+  }
+
+  if (normalizedHeight < 0.3) {
+    if (moisture > 0.6) {
+      return {
+        color: new Color("#0077BE"),
+        name: "Ocean",
+      };
+    }
+    if (moisture > 0.3) {
+      return {
+        color: new Color("#C2B280"),
+        name: "Beach",
+      };
+    }
+  }
+
+  if (temperature > 0.6) {
+    if (moisture < 0.3) {
+      return {
+        color: new Color("#EDC9AF"),
+        name: "Desert",
+      };
+    }
+    if (moisture < 0.6) {
+      return {
+        color: new Color("#ADFF2F"),
+        name: "Savanna",
+      };
+    }
+    return {
+      color: new Color("#228B22"),
+      name: "Tropical Forest",
+    };
+  }
+
+  if (temperature > 0.3) {
+    if (moisture < 0.4) {
+      return {
+        color: new Color("#DAA520"),
+        name: "Plains",
+      };
+    }
+    if (moisture < 0.7) {
+      return {
+        color: new Color("#228B22"),
+        name: "Forest",
+      };
+    }
+    return {
+      color: new Color("#006400"),
+      name: "Dense Forest",
+    };
+  }
+
+  if (moisture < 0.4) {
+    return {
+      color: new Color("#B5B5B5"),
+      name: "Tundra",
+    };
+  }
 
   return {
-    temperature: (temperature + 1) * 0.5,
-    moisture: (moisture + 1) * 0.5,
+    color: new Color("#006400"),
+    name: "Taiga",
   };
 }
 
-function smoothWeight(value: number, min: number, max: number): number {
-  if (value < min) return 0;
-  if (value > max) return 1;
-
-  const t = (value - min) / (max - min);
-  return t * t * (3 - 2 * t);
-}
-
-function getBiomeGradientColor(
-  worldX: number,
-  worldZ: number,
-  normalizedHeight: number
-): Color {
-  const { temperature, moisture } = getBiomeFactors(worldX, worldZ);
-
-  const gradientWeights: { gradient: BiomeGradient; weight: number }[] = [];
-
-  BIOME_GRADIENTS.forEach((gradient) => {
-    let weight = 1.0;
-
-    if (gradient.height > 0) {
-      if (normalizedHeight < gradient.height - TRANSITION_ZONE) {
-        weight = 0;
-      } else if (normalizedHeight < gradient.height) {
-        weight = smoothWeight(
-          normalizedHeight,
-          gradient.height - TRANSITION_ZONE,
-          gradient.height
-        );
-      }
-    }
-
-    if (gradient.height >= 0.35 && weight > 0 && gradient.temp > 0) {
-      const tempDiff = Math.abs(temperature - gradient.temp);
-      if (tempDiff > TRANSITION_ZONE * 1.5) {
-        weight *= Math.max(0, 1 - (tempDiff - TRANSITION_ZONE * 1.5) * 2);
-      }
-    }
-
-    if (gradient.height >= 0.35 && weight > 0 && gradient.moisture > 0) {
-      const moistDiff = Math.abs(moisture - gradient.moisture);
-      if (moistDiff > TRANSITION_ZONE * 1.5) {
-        weight *= Math.max(0, 1 - (moistDiff - TRANSITION_ZONE * 1.5) * 2);
-      }
-    }
-
-    if (gradient.height < 0.35) {
-      if (normalizedHeight > gradient.height) {
-        weight = 0;
-      } else if (normalizedHeight > gradient.height - TRANSITION_ZONE) {
-        weight =
-          1 -
-          smoothWeight(
-            normalizedHeight,
-            gradient.height - TRANSITION_ZONE,
-            gradient.height
-          );
-      }
-    }
-
-    if (weight > 0.01) {
-      gradientWeights.push({ gradient, weight });
-    }
-  });
-
-  if (gradientWeights.length === 0) {
-    return new Color("#7CFC00");
-  }
-
-  const totalWeight = gradientWeights.reduce(
-    (sum, item) => sum + item.weight,
-    0
-  );
-
-  const blendedColor = new Color(0, 0, 0);
-
-  gradientWeights.forEach(({ gradient, weight }) => {
-    const normalizedWeight = weight / totalWeight;
-    blendedColor.r += gradient.color.r * normalizedWeight;
-    blendedColor.g += gradient.color.g * normalizedWeight;
-    blendedColor.b += gradient.color.b * normalizedWeight;
-  });
-
-  return blendedColor;
-}
-
 export const TerrainTile = ({ position }: { position: Vector3 }) => {
-  const resolution = 48;
+  const resolution = 32;
 
-  const { geometry } = useMemo(() => {
+  const { geometry, vertexColors } = useMemo(() => {
     const geo = new BufferGeometry();
 
-    const vertices: number[] = [];
-    const normals: number[] = [];
-    const uvs: number[] = [];
-    const indices: number[] = [];
-    const colors: number[] = [];
+    const vertices = [];
+    const normals = [];
+    const uvs = [];
+    const indices = [];
+    const colors = [];
 
     const step = cellSize / (resolution - 1);
 
-    const getHeightAt = (worldX: number, worldZ: number): number => {
-      return getFractalNoise(worldX, worldZ) * HEIGHT_SCALE;
-    };
-
-    const padding = 2;
-    const paddedSize = resolution + padding * 2;
-    const heightMap: number[][] = Array(paddedSize)
+    // Calculate heights including neighboring vertices to ensure seamless transitions
+    const heightMap = new Array(resolution + 2)
       .fill(0)
-      .map(() => Array(paddedSize).fill(0));
+      .map(() => new Array(resolution + 2).fill(0));
 
-    for (let z = -padding; z < resolution + padding; z++) {
-      for (let x = -padding; x < resolution + padding; x++) {
+    for (let z = -1; z <= resolution; z++) {
+      for (let x = -1; x <= resolution; x++) {
         const localX = x * step - cellSize / 2;
         const localZ = z * step - cellSize / 2;
 
         const worldX = position.x + localX;
         const worldZ = position.z + localZ;
 
-        heightMap[z + padding][x + padding] = getHeightAt(worldX, worldZ);
+        heightMap[z + 1][x + 1] =
+          getFractalNoise(worldX, worldZ) * HEIGHT_SCALE;
       }
     }
 
@@ -399,41 +270,25 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
         const worldX = position.x + localX;
         const worldZ = position.z + localZ;
 
-        const height = heightMap[z + padding][x + padding];
+        const height = heightMap[z + 1][x + 1];
 
         vertices.push(localX, height, localZ);
 
-        const normalizedHeight = (height + HEIGHT_SCALE) / (HEIGHT_SCALE * 2);
+        // Determine biome and color
+        const biome = getBiome(worldX, worldZ, height);
+        colors.push(biome.color.r, biome.color.g, biome.color.b);
 
-        const vertexColor = getBiomeGradientColor(
-          worldX,
-          worldZ,
-          normalizedHeight
-        );
-        colors.push(vertexColor.r, vertexColor.g, vertexColor.b);
+        // Calculate normals using neighboring heights for smoother transitions
+        const hL = heightMap[z + 1][x];
+        const hR = heightMap[z + 1][x + 2];
+        const hU = heightMap[z][x + 1];
+        const hD = heightMap[z + 2][x + 1];
 
-        const n = new Vector3(0, 0, 0);
+        const nX = (hL - hR) / (2 * step);
+        const nZ = (hU - hD) / (2 * step);
 
-        for (let nz = -1; nz <= 1; nz += 1) {
-          for (let nx = -1; nx <= 1; nx += 1) {
-            if (nx === 0 && nz === 0) continue;
-
-            const hL = heightMap[z + padding + nz][x + padding - 1];
-            const hR = heightMap[z + padding + nz][x + padding + 1];
-            const hU = heightMap[z + padding - 1][x + padding + nx];
-            const hD = heightMap[z + padding + 1][x + padding + nx];
-
-            const nxContrib = (hL - hR) / (2 * step);
-            const nzContrib = (hU - hD) / (2 * step);
-
-            n.x += nxContrib;
-            n.z += nzContrib;
-            n.y += 8;
-          }
-        }
-
-        n.normalize();
-        normals.push(n.x, n.y, n.z);
+        const normal = new Vector3(nX, 1, nZ).normalize();
+        normals.push(normal.x, normal.y, normal.z);
 
         uvs.push(x / (resolution - 1), z / (resolution - 1));
 
@@ -441,6 +296,7 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
           const vertexIndex = x + z * resolution;
 
           indices.push(vertexIndex, vertexIndex + 1, vertexIndex + resolution);
+
           indices.push(
             vertexIndex + 1,
             vertexIndex + resolution + 1,
@@ -456,7 +312,7 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
     geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
     geo.setIndex(indices);
 
-    return { geometry: geo };
+    return { geometry: geo, vertexColors: colors };
   }, [position]);
 
   const material = useMemo(() => {
@@ -465,8 +321,6 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
       wireframe: false,
       side: DoubleSide,
       flatShading: false,
-      roughness: 0.85,
-      metalness: 0.05,
     });
   }, []);
 

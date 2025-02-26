@@ -7,8 +7,6 @@ import vertexShader from "./shaders/vertexShader.glsl";
 import shadertoyDefinitions from "./shaders/shadertoyDefinitions.glsl";
 
 export function FullCanvasShader() {
-  console.log("re-rendering full canvas");
-
   return (
     <Canvas
       orthographic

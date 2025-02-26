@@ -7,10 +7,7 @@ export const surfaceLevel = waterHeight;
 export const farUnderwater = 50;
 export const farOverwater = 100;
 
-export function CanvasWithControls({
-  children,
-  ...props
-}: PropsWithChildren<CanvasProps>) {
+export const KeyboardControlsProvider = ({ children }: PropsWithChildren) => {
   return (
     <KeyboardControls
       map={[
@@ -24,11 +21,21 @@ export function CanvasWithControls({
         { name: "attack", keys: ["F", "f"] },
       ]}
     >
+      {children}
+    </KeyboardControls>
+  );
+};
+export function CanvasWithControls({
+  children,
+  ...props
+}: PropsWithChildren<CanvasProps>) {
+  return (
+    <KeyboardControlsProvider>
       <Canvas {...props} gl={{ logarithmicDepthBuffer: true }}>
         <ambientLight />
         {children}
         <Preload all />
       </Canvas>
-    </KeyboardControls>
+    </KeyboardControlsProvider>
   );
 }

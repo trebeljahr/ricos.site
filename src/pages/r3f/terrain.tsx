@@ -5,9 +5,10 @@ import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { useControls } from "leva";
 
+const defaultSpeed = 25;
 const Page = () => {
   const { speed } = useControls({
-    speed: { value: 10, min: 1, max: 50, step: 1 },
+    speed: { value: defaultSpeed, min: 1, max: 50, step: 1 },
   });
   return (
     <div style={{ width: "100vw", height: "100vh" }}>

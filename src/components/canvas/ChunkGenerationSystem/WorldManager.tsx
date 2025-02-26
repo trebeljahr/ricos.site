@@ -272,7 +272,7 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
 
         const height = heightMap[z + 1][x + 1];
 
-        vertices.push(localX, height, localZ);
+        vertices.push(localX, 0, localZ);
 
         // Determine biome and color
         const biome = getBiome(worldX, worldZ, height);

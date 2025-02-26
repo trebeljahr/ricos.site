@@ -249,18 +249,8 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
       .fill(0)
       .map(() => new Array(resolution + 2).fill(0));
 
-    for (let z = -1; z <= resolution; z++) {
-      for (let x = -1; x <= resolution; x++) {
-        const localX = x * step - cellSize / 2;
-        const localZ = z * step - cellSize / 2;
-
-        const worldX = position.x + localX;
-        const worldZ = position.z + localZ;
-
-        heightMap[z + 1][x + 1] =
-          getFractalNoise(worldX, worldZ) * HEIGHT_SCALE;
-      }
-    }
+    const noiseMap = [];
+    const noiseColorMap = [];
 
     for (let z = 0; z < resolution; z++) {
       for (let x = 0; x < resolution; x++) {
@@ -270,22 +260,52 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
         const worldX = position.x + localX;
         const worldZ = position.z + localZ;
 
-        const height = heightMap[z + 1][x + 1];
+        const noiseSample = getFractalNoise(worldX, worldZ);
+        const remappedSample = (noiseSample + 1) / 2;
 
-        vertices.push(localX, height, localZ);
+        heightMap[z][x] = remappedSample * HEIGHT_SCALE;
+
+        noiseMap.push(remappedSample);
+        noiseColorMap.push(remappedSample, remappedSample, remappedSample);
+      }
+    }
+
+    // const { min, max } = noiseMap.reduce(
+    //   (acc, elem) => {
+    //     return {
+    //       min: Math.min(acc.min, elem),
+    //       max: Math.max(acc.max, elem),
+    //     };
+    //   },
+    //   { min: Infinity, max: -Infinity }
+    // );
+    // console.log(min, max);
+
+    for (let z = 0; z < resolution; z++) {
+      for (let x = 0; x < resolution; x++) {
+        const localX = x * step - cellSize / 2;
+        const localZ = z * step - cellSize / 2;
+
+        const worldX = position.x + localX;
+        const worldZ = position.z + localZ;
+
+        const height = heightMap[z][x];
+
+        // vertices.push(localX, Math.pow(1.2, height), localZ);
+        vertices.push(localX, 0, localZ);
 
         // Determine biome and color
         const biome = getBiome(worldX, worldZ, height);
         colors.push(biome.color.r, biome.color.g, biome.color.b);
 
-        const R = heightMap[z + 1][x + 2];
-        const L = heightMap[z + 1][x];
-        const B = heightMap[z + 2][x];
-        const T = heightMap[z][x + 1];
+        const R = heightMap[z][x + 1];
+        const L = heightMap[z][Math.max(x - 1, 0)];
+        const B = heightMap[Math.max(z - 1, 0)][x];
+        const T = heightMap[z + 1][x];
         const normal = new Vector3(2 * (R - L), -4, 2 * (B - T)).normalize();
         normals.push(normal.x, normal.y, normal.z);
 
-        uvs.push(x / (resolution - 1), z / (resolution - 1));
+        uvs.push(x / resolution, z / resolution);
 
         if (x < resolution - 1 && z < resolution - 1) {
           const vertexIndex = x + z * resolution;
@@ -301,10 +321,22 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
       }
     }
 
+    const colorsFromHeightmap = noiseMap
+      .map((h) => {
+        return [h, h, h];
+      })
+      .flat();
+
+    // console.log(
+    //   colorsFromHeightmap.length,
+    //   colors.length,
+    //   noiseColorMap.length
+    // );
     geo.setAttribute("position", new Float32BufferAttribute(vertices, 3));
     geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
     geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
-    geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
+    geo.setAttribute("color", new Float32BufferAttribute(noiseColorMap, 3));
+    // geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
     geo.setIndex(indices);
 
     return { geometry: geo, vertexColors: colors };

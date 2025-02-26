@@ -12,8 +12,8 @@ import { createNoise2D } from "simplex-noise";
 import { useControls } from "leva";
 
 const debug = false;
-const size = 10;
-const visibleRadius = 20;
+const tileSize = 10;
+const tilesDistance = 20;
 
 const heightNoise = createNoise2D();
 const biomeNoise = createNoise2D();
@@ -27,17 +27,17 @@ export const WorldManager = () => {
   const { camera } = useThree();
   const [cameraGridPosition, setCameraGridPosition] = useState(
     new Vector3(
-      Math.floor(camera.position.x / size),
+      Math.floor(camera.position.x / tileSize),
       0,
-      Math.floor(camera.position.z / size)
+      Math.floor(camera.position.z / tileSize)
     )
   );
 
   const activeChunks = useRef(new Map());
 
   useFrame(() => {
-    const currentGridX = Math.floor(camera.position.x / size);
-    const currentGridZ = Math.floor(camera.position.z / size);
+    const currentGridX = Math.floor(camera.position.x / tileSize);
+    const currentGridZ = Math.floor(camera.position.z / tileSize);
 
     if (
       currentGridX !== cameraGridPosition.x ||
@@ -48,20 +48,20 @@ export const WorldManager = () => {
   });
 
   const visibleChunks = useMemo(() => {
-    const radiusSquared = visibleRadius * visibleRadius;
+    const radiusSquared = tilesDistance * tilesDistance;
     const playerGridX = cameraGridPosition.x;
     const playerGridZ = cameraGridPosition.z;
 
     const newVisibleChunks = new Map();
 
     for (
-      let x = playerGridX - visibleRadius;
-      x <= playerGridX + visibleRadius;
+      let x = playerGridX - tilesDistance;
+      x <= playerGridX + tilesDistance;
       x++
     ) {
       for (
-        let z = playerGridZ - visibleRadius;
-        z <= playerGridZ + visibleRadius;
+        let z = playerGridZ - tilesDistance;
+        z <= playerGridZ + tilesDistance;
         z++
       ) {
         const distanceSquared =
@@ -71,7 +71,7 @@ export const WorldManager = () => {
         if (distanceSquared <= radiusSquared) {
           const chunkKey = `${x},${z}`;
 
-          const position = new Vector3(x * size, 0, z * size);
+          const position = new Vector3(x * tileSize, 0, z * tileSize);
 
           newVisibleChunks.set(chunkKey, position);
         }
@@ -148,8 +148,8 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
 
     const _color = new Color();
 
-    const halfSize = size / 2;
-    const segmentSize = size / resolution;
+    const halfSize = tileSize / 2;
+    const segmentSize = tileSize / resolution;
 
     for (let i = 0; i <= resolution + 2; i++) {
       for (let j = 0; j <= resolution + 2; j++) {
@@ -197,8 +197,8 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
             normalizedMoisture
           );
         } else if (mode === "debug") {
-          const r = x / size + 0.5;
-          const g = z / size + 0.5;
+          const r = x / tileSize + 0.5;
+          const g = z / tileSize + 0.5;
           _color.setRGB(r, g, 1);
           colors.push(_color.r, _color.g, _color.b);
         } else if (mode === "landscape") {
@@ -373,5 +373,5 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
 };
 
 export const Tile = ({ position }: { position: Vector3 }) => {
-  return <gridHelper args={[size, 1]} position={position} />;
+  return <gridHelper args={[tileSize, 1]} position={position} />;
 };

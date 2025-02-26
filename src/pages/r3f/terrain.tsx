@@ -3,7 +3,7 @@ import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer
 import { KeyboardControlsProvider } from "@components/canvas/Scene";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
-import { useControls } from "leva";
+import { Leva, useControls } from "leva";
 
 const defaultSpeed = 25;
 const Page = () => {
@@ -14,6 +14,7 @@ const Page = () => {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <KeyboardControlsProvider>
+        <Leva />
         <Canvas>
           <Physics>
             <ambientLight intensity={1.0} />

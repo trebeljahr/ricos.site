@@ -11,6 +11,8 @@ const Page = () => {
         <Canvas>
           <Physics>
             <ambientLight intensity={0.5} />
+            <directionalLight position={[10, 10, 5]} intensity={1} />
+            <fogExp2 attach="fog" args={["#f0f0f0", 0.1]} />
             <WorldManager />
             <MinecraftCreativeControlsPlayer speed={20} />
           </Physics>

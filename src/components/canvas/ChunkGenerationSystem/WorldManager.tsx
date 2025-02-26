@@ -197,7 +197,32 @@ function getFractalNoise(worldX: number, worldZ: number): number {
     frequency *= 2;
   }
 
-  return noiseValue / totalAmplitude;
+  const rawNoise = noiseValue / totalAmplitude;
+
+  // Create plateaus and flat areas by applying a terrace function
+  const terraceCount = 6;
+  const terraceStrength = 0.65;
+
+  // Calculate which terrace this height belongs to
+  const terraceHeight = Math.floor(rawNoise * terraceCount) / terraceCount;
+  const nextTerraceHeight =
+    (Math.floor(rawNoise * terraceCount) + 1) / terraceCount;
+
+  // Calculate how far between terraces we are (0-1)
+  const terraceBlend = (rawNoise - terraceHeight) * terraceCount;
+
+  // Apply smoothstep to create smooth transitions between flat areas
+  const smoothBlend = terraceBlend * terraceBlend * (3 - 2 * terraceBlend);
+
+  // Mix between terraced height and smooth height
+  const terracedNoise = MathUtils.lerp(
+    terraceHeight,
+    nextTerraceHeight,
+    smoothBlend
+  );
+
+  // Control how much terracing to apply vs original noise
+  return MathUtils.lerp(rawNoise, terracedNoise, terraceStrength);
 }
 
 function getBiomeFactors(

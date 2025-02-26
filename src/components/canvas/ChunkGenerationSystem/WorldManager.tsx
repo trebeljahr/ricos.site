@@ -272,22 +272,17 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
 
         const height = heightMap[z + 1][x + 1];
 
-        vertices.push(localX, 0, localZ);
+        vertices.push(localX, height, localZ);
 
         // Determine biome and color
         const biome = getBiome(worldX, worldZ, height);
         colors.push(biome.color.r, biome.color.g, biome.color.b);
 
-        // Calculate normals using neighboring heights for smoother transitions
-        const hL = heightMap[z + 1][x];
-        const hR = heightMap[z + 1][x + 2];
-        const hU = heightMap[z][x + 1];
-        const hD = heightMap[z + 2][x + 1];
-
-        const nX = (hL - hR) / (2 * step);
-        const nZ = (hU - hD) / (2 * step);
-
-        const normal = new Vector3(nX, 1, nZ).normalize();
+        const R = heightMap[z + 1][x + 2];
+        const L = heightMap[z + 1][x];
+        const B = heightMap[z + 2][x];
+        const T = heightMap[z][x + 1];
+        const normal = new Vector3(2 * (R - L), -4, 2 * (B - T)).normalize();
         normals.push(normal.x, normal.y, normal.z);
 
         uvs.push(x / (resolution - 1), z / (resolution - 1));

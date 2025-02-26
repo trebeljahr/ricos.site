@@ -2,12 +2,11 @@ import { useThree, useFrame } from "@react-three/fiber";
 import { useMemo, useState, useRef, useEffect } from "react";
 import {
   Vector3,
-  PlaneGeometry,
   MeshStandardMaterial,
-  Mesh,
   DoubleSide,
   BufferGeometry,
   Float32BufferAttribute,
+  Color,
 } from "three";
 import { createNoise2D } from "simplex-noise";
 
@@ -16,11 +15,16 @@ const cellSize = 10;
 const visibleRadius = 20;
 
 const simplex = createNoise2D();
+const biomeNoise = createNoise2D();
+const moistureNoise = createNoise2D();
 
 const NOISE_SCALE = 0.02;
 const HEIGHT_SCALE = 20;
 const DETAIL_LEVELS = 3;
 const PERSISTENCE = 0.5;
+
+const BIOME_SCALE = 0.005;
+const MOISTURE_SCALE = 0.004;
 
 export const WorldManager = () => {
   const { camera } = useThree();
@@ -105,7 +109,6 @@ export const WorldManager = () => {
 
   return (
     <group>
-      {/* Convert the Map to an array to render the chunks */}
       {Array.from(chunks).map(([key, position]) => {
         return (
           <group key={key}>
@@ -138,17 +141,126 @@ function getFractalNoise(worldX: number, worldZ: number) {
   return noiseValue / totalAmplitude;
 }
 
+function getBiome(worldX: number, worldZ: number, height: number) {
+  const temperature = biomeNoise(worldX * BIOME_SCALE, worldZ * BIOME_SCALE);
+  const moisture = moistureNoise(
+    worldX * MOISTURE_SCALE,
+    worldZ * MOISTURE_SCALE
+  );
+
+  const normalizedHeight = (height + HEIGHT_SCALE) / (HEIGHT_SCALE * 2);
+
+  if (normalizedHeight > 0.7) {
+    return {
+      color: new Color("#FFFFFF"),
+      name: "Snow",
+    };
+  }
+
+  if (normalizedHeight > 0.6) {
+    return {
+      color: new Color("#A0A0A0"),
+      name: "Mountain",
+    };
+  }
+
+  if (normalizedHeight < 0.3) {
+    if (moisture > 0.6) {
+      return {
+        color: new Color("#0077BE"),
+        name: "Ocean",
+      };
+    }
+    if (moisture > 0.3) {
+      return {
+        color: new Color("#C2B280"),
+        name: "Beach",
+      };
+    }
+  }
+
+  if (temperature > 0.6) {
+    if (moisture < 0.3) {
+      return {
+        color: new Color("#EDC9AF"),
+        name: "Desert",
+      };
+    }
+    if (moisture < 0.6) {
+      return {
+        color: new Color("#ADFF2F"),
+        name: "Savanna",
+      };
+    }
+    return {
+      color: new Color("#228B22"),
+      name: "Tropical Forest",
+    };
+  }
+
+  if (temperature > 0.3) {
+    if (moisture < 0.4) {
+      return {
+        color: new Color("#DAA520"),
+        name: "Plains",
+      };
+    }
+    if (moisture < 0.7) {
+      return {
+        color: new Color("#228B22"),
+        name: "Forest",
+      };
+    }
+    return {
+      color: new Color("#006400"),
+      name: "Dense Forest",
+    };
+  }
+
+  if (moisture < 0.4) {
+    return {
+      color: new Color("#B5B5B5"),
+      name: "Tundra",
+    };
+  }
+
+  return {
+    color: new Color("#006400"),
+    name: "Taiga",
+  };
+}
+
 export const TerrainTile = ({ position }: { position: Vector3 }) => {
-  const geometry = useMemo(() => {
-    const resolution = 32;
+  const resolution = 32;
+
+  const { geometry, vertexColors } = useMemo(() => {
     const geo = new BufferGeometry();
 
     const vertices = [];
     const normals = [];
     const uvs = [];
     const indices = [];
+    const colors = [];
 
     const step = cellSize / (resolution - 1);
+
+    // Calculate heights including neighboring vertices to ensure seamless transitions
+    const heightMap = new Array(resolution + 2)
+      .fill(0)
+      .map(() => new Array(resolution + 2).fill(0));
+
+    for (let z = -1; z <= resolution; z++) {
+      for (let x = -1; x <= resolution; x++) {
+        const localX = x * step - cellSize / 2;
+        const localZ = z * step - cellSize / 2;
+
+        const worldX = position.x + localX;
+        const worldZ = position.z + localZ;
+
+        heightMap[z + 1][x + 1] =
+          getFractalNoise(worldX, worldZ) * HEIGHT_SCALE;
+      }
+    }
 
     for (let z = 0; z < resolution; z++) {
       for (let x = 0; x < resolution; x++) {
@@ -158,11 +270,25 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
         const worldX = position.x + localX;
         const worldZ = position.z + localZ;
 
-        const height = getFractalNoise(worldX, worldZ) * HEIGHT_SCALE;
+        const height = heightMap[z + 1][x + 1];
 
         vertices.push(localX, height, localZ);
 
-        normals.push(0, 1, 0);
+        // Determine biome and color
+        const biome = getBiome(worldX, worldZ, height);
+        colors.push(biome.color.r, biome.color.g, biome.color.b);
+
+        // Calculate normals using neighboring heights for smoother transitions
+        const hL = heightMap[z + 1][x];
+        const hR = heightMap[z + 1][x + 2];
+        const hU = heightMap[z][x + 1];
+        const hD = heightMap[z + 2][x + 1];
+
+        const nX = (hL - hR) / (2 * step);
+        const nZ = (hU - hD) / (2 * step);
+
+        const normal = new Vector3(nX, 1, nZ).normalize();
+        normals.push(normal.x, normal.y, normal.z);
 
         uvs.push(x / (resolution - 1), z / (resolution - 1));
 
@@ -183,18 +309,18 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
     geo.setAttribute("position", new Float32BufferAttribute(vertices, 3));
     geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
     geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
+    geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
     geo.setIndex(indices);
 
-    geo.computeVertexNormals();
-
-    return geo;
+    return { geometry: geo, vertexColors: colors };
   }, [position]);
 
   const material = useMemo(() => {
     return new MeshStandardMaterial({
-      color: "#82e000",
+      vertexColors: true,
       wireframe: false,
       side: DoubleSide,
+      flatShading: false,
     });
   }, []);
 

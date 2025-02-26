@@ -3,11 +3,10 @@ import { useEffect, useMemo, useState } from "react";
 import { Vector3 } from "three";
 
 const cellSize = 10;
-const visibleRadius = 10; // Radius in tile units, adjust as needed
+const visibleRadius = 10;
 
 export const WorldManager = () => {
   const { camera } = useThree();
-  // Store the camera position in a state to trigger re-renders
   const [cameraGridPosition, setCameraGridPosition] = useState(
     new Vector3(
       Math.floor(camera.position.x / cellSize),
@@ -16,13 +15,10 @@ export const WorldManager = () => {
     )
   );
 
-  // Subscribe to frame updates to check for camera movement
   useFrame(() => {
-    // Calculate current grid position
     const currentGridX = Math.floor(camera.position.x / cellSize);
     const currentGridZ = Math.floor(camera.position.z / cellSize);
 
-    // Only update state if the grid position has changed
     if (
       currentGridX !== cameraGridPosition.x ||
       currentGridZ !== cameraGridPosition.z
@@ -31,7 +27,6 @@ export const WorldManager = () => {
     }
   });
 
-  // Generate chunks based on camera grid position
   const chunks = useMemo(() => {
     const chunks = [];
     const radiusSquared = visibleRadius * visibleRadius;

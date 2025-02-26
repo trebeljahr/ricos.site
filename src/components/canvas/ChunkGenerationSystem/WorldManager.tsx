@@ -23,15 +23,15 @@ const warpNoise1 = createNoise2D();
 const warpNoise2 = createNoise2D();
 const noise3D = createNoise3D();
 
-const NOISE_SCALE = 0.02;
-const HEIGHT_SCALE = 20;
+const NOISE_SCALE = 0.01; // Reduced for larger terrain features
+const HEIGHT_SCALE = 35; // Increased for taller mountains
 const DETAIL_LEVELS = 3;
 const PERSISTENCE = 0.5;
 
-const WARP_SCALE = 0.005;
+const WARP_SCALE = 0.003; // Reduced for larger patterns
 const WARP_STRENGTH = 35.0;
 
-const TEMP_MOISTURE_SCALE = 0.002;
+const TEMP_MOISTURE_SCALE = 0.0008; // Reduced for larger biomes
 const TRANSITION_ZONE = 0.08;
 
 interface BiomeGradient {
@@ -200,8 +200,8 @@ function getFractalNoise(worldX: number, worldZ: number): number {
   const rawNoise = noiseValue / totalAmplitude;
 
   // Create plateaus and flat areas by applying a terrace function
-  const terraceCount = 6;
-  const terraceStrength = 0.65;
+  const terraceCount = 8; // More distinct levels
+  const terraceStrength = 0.8; // Stronger terracing effect for flatter plains
 
   // Calculate which terrace this height belongs to
   const terraceHeight = Math.floor(rawNoise * terraceCount) / terraceCount;
@@ -221,8 +221,28 @@ function getFractalNoise(worldX: number, worldZ: number): number {
     smoothBlend
   );
 
-  // Control how much terracing to apply vs original noise
-  return MathUtils.lerp(rawNoise, terracedNoise, terraceStrength);
+  // Apply stronger terracing to mid-range heights (plains and plateaus)
+  // but keep mountains and valleys more natural
+  let finalTerraceStrength = terraceStrength;
+  if (rawNoise > 0.3 && rawNoise < 0.7) {
+    finalTerraceStrength = terraceStrength * 1.25; // Even flatter plains
+  } else if (rawNoise > 0.8) {
+    finalTerraceStrength = terraceStrength * 0.5; // More natural looking mountains
+  }
+
+  // Enhance mountain heights (apply exponential curve to upper heights)
+  let heightEnhanced = MathUtils.lerp(
+    rawNoise,
+    terracedNoise,
+    finalTerraceStrength
+  );
+  if (heightEnhanced > 0.65) {
+    const mountainFactor = (heightEnhanced - 0.65) / 0.35;
+    const enhancementStrength = 0.3; // How much extra height to add
+    heightEnhanced += mountainFactor * mountainFactor * enhancementStrength;
+  }
+
+  return heightEnhanced;
 }
 
 function getBiomeFactors(

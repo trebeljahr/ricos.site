@@ -1,5 +1,5 @@
 import { useThree, useFrame } from "@react-three/fiber";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import {
   Vector3,
   PlaneGeometry,
@@ -32,6 +32,8 @@ export const WorldManager = () => {
     )
   );
 
+  const activeChunks = useRef(new Map());
+
   useFrame(() => {
     const currentGridX = Math.floor(camera.position.x / cellSize);
     const currentGridZ = Math.floor(camera.position.z / cellSize);
@@ -44,12 +46,12 @@ export const WorldManager = () => {
     }
   });
 
-  const chunks = useMemo(() => {
-    const chunks = [];
+  const visibleChunks = useMemo(() => {
     const radiusSquared = visibleRadius * visibleRadius;
-
     const playerGridX = cameraGridPosition.x;
     const playerGridZ = cameraGridPosition.z;
+
+    const newVisibleChunks = new Map();
 
     for (
       let x = playerGridX - visibleRadius;
@@ -66,21 +68,50 @@ export const WorldManager = () => {
           (z - playerGridZ) * (z - playerGridZ);
 
         if (distanceSquared <= radiusSquared) {
-          chunks.push(new Vector3(x * cellSize, 0, z * cellSize));
+          const chunkKey = `${x},${z}`;
+
+          const position = new Vector3(x * cellSize, 0, z * cellSize);
+
+          newVisibleChunks.set(chunkKey, position);
         }
       }
     }
-    return chunks;
+
+    return newVisibleChunks;
   }, [cameraGridPosition]);
+
+  const [chunks, setChunks] = useState(new Map());
+
+  useEffect(() => {
+    const currentActiveChunks = activeChunks.current;
+    const newChunks = new Map(chunks);
+
+    currentActiveChunks.forEach((_, key) => {
+      if (!visibleChunks.has(key)) {
+        newChunks.delete(key);
+        currentActiveChunks.delete(key);
+      }
+    });
+
+    visibleChunks.forEach((position, key) => {
+      if (!currentActiveChunks.has(key)) {
+        newChunks.set(key, position);
+        currentActiveChunks.set(key, true);
+      }
+    });
+
+    setChunks(newChunks);
+  }, [visibleChunks]);
 
   return (
     <group>
-      {chunks.map((pos) => {
+      {/* Convert the Map to an array to render the chunks */}
+      {Array.from(chunks).map(([key, position]) => {
         return (
-          <>
-            <TerrainTile key={`${pos.x},${pos.z}`} position={pos} />
-            {debug && <Tile key={`${pos.x},${pos.z}grid`} position={pos} />}
-          </>
+          <group key={key}>
+            <TerrainTile position={position} />
+            {debug && <Tile position={position} />}
+          </group>
         );
       })}
     </group>
@@ -112,45 +143,34 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
     const resolution = 32;
     const geo = new BufferGeometry();
 
-    // Arrays to hold vertex data
     const vertices = [];
     const normals = [];
     const uvs = [];
     const indices = [];
 
-    // Generate a grid of vertices
     const step = cellSize / (resolution - 1);
 
     for (let z = 0; z < resolution; z++) {
       for (let x = 0; x < resolution; x++) {
-        // Calculate local position within the tile
         const localX = x * step - cellSize / 2;
         const localZ = z * step - cellSize / 2;
 
-        // Convert to world coordinates for noise calculation
         const worldX = position.x + localX;
         const worldZ = position.z + localZ;
 
-        // Calculate height using our noise function
         const height = getFractalNoise(worldX, worldZ) * HEIGHT_SCALE;
 
-        // Add vertex (x, height, z)
         vertices.push(localX, height, localZ);
 
-        // Simple normal pointing up for now
         normals.push(0, 1, 0);
 
-        // Add UV coordinates
         uvs.push(x / (resolution - 1), z / (resolution - 1));
 
-        // Create faces (two triangles per grid cell)
         if (x < resolution - 1 && z < resolution - 1) {
           const vertexIndex = x + z * resolution;
 
-          // First triangle
           indices.push(vertexIndex, vertexIndex + 1, vertexIndex + resolution);
 
-          // Second triangle
           indices.push(
             vertexIndex + 1,
             vertexIndex + resolution + 1,
@@ -160,11 +180,12 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
       }
     }
 
-    // Set the attributes
     geo.setAttribute("position", new Float32BufferAttribute(vertices, 3));
     geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
     geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
     geo.setIndex(indices);
+
+    geo.computeVertexNormals();
 
     return geo;
   }, [position]);
@@ -173,7 +194,6 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
     return new MeshStandardMaterial({
       color: "#82e000",
       wireframe: false,
-      //   flatShading: true,
       side: DoubleSide,
     });
   }, []);

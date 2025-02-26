@@ -1,19 +1,25 @@
-import { useThree, useFrame } from "@react-three/fiber";
-import { useMemo, useState, useRef, useEffect } from "react";
-import {
-  Vector3,
-  MeshStandardMaterial,
-  DoubleSide,
-  BufferGeometry,
-  Float32BufferAttribute,
-  Color,
-} from "three";
+import { useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createNoise2D } from "simplex-noise";
-import { useControls } from "leva";
+import {
+  BufferGeometry,
+  Color,
+  DoubleSide,
+  Float32BufferAttribute,
+  MeshStandardMaterial,
+  Vector3,
+} from "three";
+
+type Modes = "height" | "biome" | "moisture" | "landscape" | "debug";
 
 const debug = false;
 const tileSize = 10;
 const tilesDistance = 20;
+const mode: Modes = "biome" as Modes;
+const heightNoiseScale = 0.02;
+const biomeNoiseScale = 0.005;
+const moistureNoiseScale = 0.004;
+const resolution = 32;
 
 const heightNoise = createNoise2D();
 const biomeNoise = createNoise2D();
@@ -119,20 +125,6 @@ export const WorldManager = () => {
 };
 
 export const TerrainTile = ({ position }: { position: Vector3 }) => {
-  const { heightNoiseScale, biomeNoiseScale, moistureNoiseScale, mode } =
-    useControls({
-      heightNoiseScale: { value: 0.02, min: 0.0001, max: 0.1, step: 0.0001 },
-      biomeNoiseScale: { value: 0.005, min: 0.0001, max: 0.1, step: 0.0001 },
-      moistureNoiseScale: { value: 0.004, min: 0.0001, max: 0.1, step: 0.0001 },
-      resolution: { value: 32, min: 2, max: 128, step: 1 },
-      mode: {
-        value: "height",
-        options: ["height", "biome", "moisture", "debug", "landscape"],
-      },
-    });
-
-  const resolution = 32;
-
   const { geometry } = useMemo(() => {
     const geo = new BufferGeometry();
 
@@ -142,7 +134,7 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
     const indices = [];
     const colors = [];
 
-    const heightMap = new Array(resolution + 3)
+    const heightMap: number[][] = new Array(resolution + 3)
       .fill(0)
       .map(() => new Array(resolution + 3).fill(0));
 
@@ -171,24 +163,24 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
 
       for (let j = 0; j <= resolution; j++) {
         const x = j * segmentSize - halfSize;
-        vertices.push(x, 0, z);
 
         const hx = i + 1;
         const hz = j + 1;
         const h = heightMap[hx][hz];
+        const height = h * HEIGHT_SCALE;
+        vertices.push(x, mode === "landscape" ? height : 0, z);
 
+        const worldX = position.x + x;
+        const worldZ = position.z + z;
         if (mode === "height") {
           colors.push(h, h, h);
-        } else if (mode === "biome") {
-          const height = h * HEIGHT_SCALE;
-          const worldX = position.x + x;
-          const worldZ = position.z + z;
+        } else if (mode === "biome" || mode === "landscape") {
           const biome = getBiome(worldX, worldZ, heightMap[hx][hz]);
           colors.push(biome.color.r, biome.color.g, biome.color.b);
         } else if (mode === "moisture") {
           const moisture = moistureNoise(
-            (position.x + x) * moistureNoiseScale,
-            (position.z + z) * moistureNoiseScale
+            worldX * moistureNoiseScale,
+            worldZ * moistureNoiseScale
           );
           const normalizedMoisture = (moisture + 1) / 2;
           colors.push(
@@ -211,6 +203,8 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
           normals.push(normal.x, normal.y, normal.z);
 
           uvs.push(x / resolution, z / resolution);
+        } else {
+          throw Error("Invalid mode");
         }
       }
     }
@@ -227,138 +221,17 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
       }
     }
 
+    if (mode === "landscape") {
+      geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
+      geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
+    }
+
     geo.setAttribute("position", new Float32BufferAttribute(vertices, 3));
-    geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
-    geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
     geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
     geo.setIndex(indices);
 
-    function getFractalNoise(worldX: number, worldZ: number) {
-      let amplitude = 1;
-      let frequency = 1;
-      let noiseValue = 0;
-      let totalAmplitude = 0;
-
-      for (let i = 0; i < DETAIL_LEVELS; i++) {
-        const noiseX = worldX * heightNoiseScale * frequency;
-        const noiseZ = worldZ * heightNoiseScale * frequency;
-
-        noiseValue += heightNoise(noiseX, noiseZ) * amplitude;
-
-        totalAmplitude += amplitude;
-        amplitude *= PERSISTENCE;
-        frequency *= 2;
-      }
-
-      return noiseValue / totalAmplitude;
-    }
-
-    function getBiome(worldX: number, worldZ: number, height?: number) {
-      const temperature = biomeNoise(
-        worldX * biomeNoiseScale,
-        worldZ * biomeNoiseScale
-      );
-      const moisture = moistureNoise(
-        worldX * moistureNoiseScale,
-        worldZ * moistureNoiseScale
-      );
-      const normalizedHeight =
-        height ||
-        (heightNoise(worldX * heightNoiseScale, worldZ * heightNoiseScale) +
-          1) /
-          2;
-      const normalizedMoisture = (moisture + 1) / 2;
-      const normalizedTemperature = (temperature + 1) / 2;
-
-      if (normalizedHeight > 0.7) {
-        return {
-          color: new Color("#FFFFFF"),
-          name: "Snow",
-        };
-      }
-
-      if (normalizedHeight > 0.6) {
-        return {
-          color: new Color("#A0A0A0"),
-          name: "Mountain",
-        };
-      }
-
-      if (normalizedHeight < 0.3) {
-        if (normalizedMoisture > 0.6) {
-          return {
-            color: new Color("#0077BE"),
-            name: "Ocean",
-          };
-        }
-        if (normalizedMoisture > 0.3) {
-          return {
-            color: new Color("#C2B280"),
-            name: "Beach",
-          };
-        }
-      }
-
-      if (normalizedTemperature > 0.6) {
-        if (normalizedMoisture < 0.3) {
-          return {
-            color: new Color("#EDC9AF"),
-            name: "Desert",
-          };
-        }
-        if (normalizedMoisture < 0.6) {
-          return {
-            color: new Color("#ADFF2F"),
-            name: "Savanna",
-          };
-        }
-        return {
-          color: new Color("#228B22"),
-          name: "Tropical Forest",
-        };
-      }
-
-      if (normalizedTemperature > 0.3) {
-        if (normalizedMoisture < 0.4) {
-          return {
-            color: new Color("#DAA520"),
-            name: "Plains",
-          };
-        }
-        if (normalizedMoisture < 0.7) {
-          return {
-            color: new Color("#228B22"),
-            name: "Forest",
-          };
-        }
-        return {
-          color: new Color("#006400"),
-          name: "Dense Forest",
-        };
-      }
-
-      if (normalizedMoisture < 0.4) {
-        return {
-          color: new Color("#B5B5B5"),
-          name: "Tundra",
-        };
-      }
-
-      return {
-        color: new Color("#006400"),
-        name: "Taiga",
-      };
-    }
-
     return { geometry: geo };
-  }, [
-    position,
-    biomeNoiseScale,
-    heightNoiseScale,
-    mode,
-    resolution,
-    moistureNoiseScale,
-  ]);
+  }, [position]);
 
   const material = useMemo(() => {
     return new MeshStandardMaterial({
@@ -375,3 +248,118 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
 export const Tile = ({ position }: { position: Vector3 }) => {
   return <gridHelper args={[tileSize, 1]} position={position} />;
 };
+
+function getFractalNoise(worldX: number, worldZ: number) {
+  let amplitude = 1;
+  let frequency = 1;
+  let noiseValue = 0;
+  let totalAmplitude = 0;
+
+  for (let i = 0; i < DETAIL_LEVELS; i++) {
+    const noiseX = worldX * heightNoiseScale * frequency;
+    const noiseZ = worldZ * heightNoiseScale * frequency;
+
+    noiseValue += heightNoise(noiseX, noiseZ) * amplitude;
+
+    totalAmplitude += amplitude;
+    amplitude *= PERSISTENCE;
+    frequency *= 2;
+  }
+
+  return noiseValue / totalAmplitude;
+}
+
+function getBiome(worldX: number, worldZ: number, height?: number) {
+  const temperature = biomeNoise(
+    worldX * biomeNoiseScale,
+    worldZ * biomeNoiseScale
+  );
+  const moisture = moistureNoise(
+    worldX * moistureNoiseScale,
+    worldZ * moistureNoiseScale
+  );
+  const normalizedHeight =
+    height ||
+    (heightNoise(worldX * heightNoiseScale, worldZ * heightNoiseScale) + 1) / 2;
+  const normalizedMoisture = (moisture + 1) / 2;
+  const normalizedTemperature = (temperature + 1) / 2;
+
+  if (normalizedHeight > 0.7) {
+    return {
+      color: new Color("#FFFFFF"),
+      name: "Snow",
+    };
+  }
+
+  if (normalizedHeight > 0.6) {
+    return {
+      color: new Color("#A0A0A0"),
+      name: "Mountain",
+    };
+  }
+
+  if (normalizedHeight < 0.3) {
+    if (normalizedMoisture > 0.6) {
+      return {
+        color: new Color("#0077BE"),
+        name: "Ocean",
+      };
+    }
+    if (normalizedMoisture > 0.3) {
+      return {
+        color: new Color("#C2B280"),
+        name: "Beach",
+      };
+    }
+  }
+
+  if (normalizedTemperature > 0.6) {
+    if (normalizedMoisture < 0.3) {
+      return {
+        color: new Color("#EDC9AF"),
+        name: "Desert",
+      };
+    }
+    if (normalizedMoisture < 0.6) {
+      return {
+        color: new Color("#ADFF2F"),
+        name: "Savanna",
+      };
+    }
+    return {
+      color: new Color("#228B22"),
+      name: "Tropical Forest",
+    };
+  }
+
+  if (normalizedTemperature > 0.3) {
+    if (normalizedMoisture < 0.4) {
+      return {
+        color: new Color("#DAA520"),
+        name: "Plains",
+      };
+    }
+    if (normalizedMoisture < 0.7) {
+      return {
+        color: new Color("#228B22"),
+        name: "Forest",
+      };
+    }
+    return {
+      color: new Color("#006400"),
+      name: "Dense Forest",
+    };
+  }
+
+  if (normalizedMoisture < 0.4) {
+    return {
+      color: new Color("#B5B5B5"),
+      name: "Tundra",
+    };
+  }
+
+  return {
+    color: new Color("#006400"),
+    name: "Taiga",
+  };
+}

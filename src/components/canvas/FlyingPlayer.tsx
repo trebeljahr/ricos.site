@@ -84,7 +84,7 @@ export function MinecraftCreativeControlsPlayer({
 }: PropsWithChildren<{ speed?: number }>) {
   const [, get] = useKeyboardControls();
   const rigidBodyRef = useRef<RapierRigidBody>(null!);
-  const { camera } = useThree();
+  const { camera, gl } = useThree();
 
   useFrame(() => {
     if (!rigidBodyRef.current) return;
@@ -122,7 +122,7 @@ export function MinecraftCreativeControlsPlayer({
       >
         {children}
       </RigidBody>
-      <PointerLockControls />
+      <PointerLockControls domElement={gl.domElement} />
     </>
   );
 }

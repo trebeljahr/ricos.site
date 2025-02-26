@@ -1,5 +1,5 @@
 import { useThree, useFrame } from "@react-three/fiber";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Vector3 } from "three";
 
 const cellSize = 10;
@@ -54,19 +54,20 @@ export const WorldManager = () => {
           (z - playerGridZ) * (z - playerGridZ);
 
         if (distanceSquared <= radiusSquared) {
-          chunks.push(
-            <Tile
-              key={`${x},${z}`}
-              position={new Vector3(x * cellSize, 0, z * cellSize)}
-            />
-          );
+          chunks.push(new Vector3(x * cellSize, 0, z * cellSize));
         }
       }
     }
     return chunks;
   }, [cameraGridPosition]);
 
-  return <group>{chunks}</group>;
+  return (
+    <group>
+      {chunks.map((pos) => {
+        return <Tile key={`${pos.x},${pos.z}`} position={pos} />;
+      })}
+    </group>
+  );
 };
 
 export const Tile = ({ position }: { position: Vector3 }) => {

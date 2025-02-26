@@ -79,8 +79,9 @@ export function SwimmingPlayerControls({ children }: PropsWithChildren) {
 }
 
 export function MinecraftCreativeControlsPlayer({
+  speed = SPEED,
   children,
-}: PropsWithChildren) {
+}: PropsWithChildren<{ speed?: number }>) {
   const [, get] = useKeyboardControls();
   const rigidBodyRef = useRef<RapierRigidBody>(null!);
   const { camera } = useThree();
@@ -99,9 +100,9 @@ export function MinecraftCreativeControlsPlayer({
     direction
       .subVectors(frontVector, sideVector)
       .normalize()
-      .multiplyScalar(SPEED)
+      .multiplyScalar(speed)
       .applyEuler(camera.rotation)
-      .setY((+jump - +descend) * SPEED);
+      .setY((+jump - +descend) * speed);
 
     rigidBodyRef.current.setLinvel(
       { x: direction.x, y: direction.y, z: direction.z },

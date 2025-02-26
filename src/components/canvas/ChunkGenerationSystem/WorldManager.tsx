@@ -7,6 +7,7 @@ import {
   BufferGeometry,
   Float32BufferAttribute,
   Color,
+  MathUtils,
 } from "three";
 import { createNoise2D } from "simplex-noise";
 
@@ -14,8 +15,8 @@ const debug = false;
 const cellSize = 10;
 const visibleRadius = 20;
 
-const simplex = createNoise2D();
-const biomeNoise = createNoise2D();
+const heightNoise = createNoise2D();
+const temperatureNoise = createNoise2D();
 const moistureNoise = createNoise2D();
 
 const NOISE_SCALE = 0.02;
@@ -23,8 +24,10 @@ const HEIGHT_SCALE = 20;
 const DETAIL_LEVELS = 3;
 const PERSISTENCE = 0.5;
 
-const BIOME_SCALE = 0.005;
-const MOISTURE_SCALE = 0.004;
+const TEMPERATURE_SCALE = 0.003;
+const MOISTURE_SCALE = 0.0025;
+
+const BIOME_BLEND_DISTANCE = 2.0;
 
 export const WorldManager = () => {
   const { camera } = useThree();
@@ -73,9 +76,7 @@ export const WorldManager = () => {
 
         if (distanceSquared <= radiusSquared) {
           const chunkKey = `${x},${z}`;
-
           const position = new Vector3(x * cellSize, 0, z * cellSize);
-
           newVisibleChunks.set(chunkKey, position);
         }
       }
@@ -131,7 +132,7 @@ function getFractalNoise(worldX: number, worldZ: number) {
     const noiseX = worldX * NOISE_SCALE * frequency;
     const noiseZ = worldZ * NOISE_SCALE * frequency;
 
-    noiseValue += simplex(noiseX, noiseZ) * amplitude;
+    noiseValue += heightNoise(noiseX, noiseZ) * amplitude;
 
     totalAmplitude += amplitude;
     amplitude *= PERSISTENCE;
@@ -141,99 +142,221 @@ function getFractalNoise(worldX: number, worldZ: number) {
   return noiseValue / totalAmplitude;
 }
 
-function getBiome(worldX: number, worldZ: number, height: number) {
-  const temperature = biomeNoise(worldX * BIOME_SCALE, worldZ * BIOME_SCALE);
-  const moisture = moistureNoise(
-    worldX * MOISTURE_SCALE,
-    worldZ * MOISTURE_SCALE
+function getClimateParameters(worldX: number, worldZ: number) {
+  const warpStrength = 10.0;
+  const warpX = heightNoise(worldX * 0.01, worldZ * 0.01) * warpStrength;
+  const warpZ = heightNoise(worldZ * 0.01, worldX * 0.01) * warpStrength;
+
+  const distortedX = worldX + warpX;
+  const distortedZ = worldZ + warpZ;
+
+  const temperature = temperatureNoise(
+    distortedX * TEMPERATURE_SCALE,
+    distortedZ * TEMPERATURE_SCALE
   );
 
-  const normalizedHeight = (height + HEIGHT_SCALE) / (HEIGHT_SCALE * 2);
-
-  if (normalizedHeight > 0.7) {
-    return {
-      color: new Color("#FFFFFF"),
-      name: "Snow",
-    };
-  }
-
-  if (normalizedHeight > 0.6) {
-    return {
-      color: new Color("#A0A0A0"),
-      name: "Mountain",
-    };
-  }
-
-  if (normalizedHeight < 0.3) {
-    if (moisture > 0.6) {
-      return {
-        color: new Color("#0077BE"),
-        name: "Ocean",
-      };
-    }
-    if (moisture > 0.3) {
-      return {
-        color: new Color("#C2B280"),
-        name: "Beach",
-      };
-    }
-  }
-
-  if (temperature > 0.6) {
-    if (moisture < 0.3) {
-      return {
-        color: new Color("#EDC9AF"),
-        name: "Desert",
-      };
-    }
-    if (moisture < 0.6) {
-      return {
-        color: new Color("#ADFF2F"),
-        name: "Savanna",
-      };
-    }
-    return {
-      color: new Color("#228B22"),
-      name: "Tropical Forest",
-    };
-  }
-
-  if (temperature > 0.3) {
-    if (moisture < 0.4) {
-      return {
-        color: new Color("#DAA520"),
-        name: "Plains",
-      };
-    }
-    if (moisture < 0.7) {
-      return {
-        color: new Color("#228B22"),
-        name: "Forest",
-      };
-    }
-    return {
-      color: new Color("#006400"),
-      name: "Dense Forest",
-    };
-  }
-
-  if (moisture < 0.4) {
-    return {
-      color: new Color("#B5B5B5"),
-      name: "Tundra",
-    };
-  }
+  const moisture = moistureNoise(
+    distortedX * MOISTURE_SCALE + 100,
+    distortedZ * MOISTURE_SCALE + 100
+  );
 
   return {
-    color: new Color("#006400"),
-    name: "Taiga",
+    temperature: (temperature + 1) * 0.5,
+    moisture: (moisture + 1) * 0.5,
   };
+}
+
+const BIOMES = [
+  {
+    name: "Ocean",
+    color: new Color("#0077BE"),
+    heightThreshold: 0.3,
+    temperatureWeight: 0,
+    moistureWeight: 0,
+  },
+  {
+    name: "Beach",
+    color: new Color("#C2B280"),
+    heightThreshold: 0.32,
+    temperatureWeight: 0,
+    moistureWeight: 0,
+  },
+  {
+    name: "Desert",
+    color: new Color("#EDC9AF"),
+    heightThreshold: 0.35,
+    temperatureThreshold: 0.7,
+    moistureThreshold: 0.3,
+  },
+  {
+    name: "Savanna",
+    color: new Color("#ADFF2F"),
+    heightThreshold: 0.35,
+    temperatureThreshold: 0.7,
+    moistureThreshold: 0.6,
+  },
+  {
+    name: "Tropical Forest",
+    color: new Color("#228B22"),
+    heightThreshold: 0.35,
+    temperatureThreshold: 0.7,
+    moistureThreshold: 1.0,
+  },
+  {
+    name: "Plains",
+    color: new Color("#DAA520"),
+    heightThreshold: 0.35,
+    temperatureThreshold: 0.4,
+    moistureThreshold: 0.4,
+  },
+  {
+    name: "Forest",
+    color: new Color("#228B22"),
+    heightThreshold: 0.35,
+    temperatureThreshold: 0.4,
+    moistureThreshold: 0.7,
+  },
+  {
+    name: "Dense Forest",
+    color: new Color("#006400"),
+    heightThreshold: 0.35,
+    temperatureThreshold: 0.4,
+    moistureThreshold: 1.0,
+  },
+  {
+    name: "Tundra",
+    color: new Color("#B5B5B5"),
+    heightThreshold: 0.35,
+    temperatureThreshold: 0.0,
+    moistureThreshold: 0.4,
+  },
+  {
+    name: "Taiga",
+    color: new Color("#006400"),
+    heightThreshold: 0.35,
+    temperatureThreshold: 0.0,
+    moistureThreshold: 1.0,
+  },
+  {
+    name: "Mountain",
+    color: new Color("#A0A0A0"),
+    heightThreshold: 0.7,
+    temperatureWeight: 0,
+    moistureWeight: 0,
+  },
+  {
+    name: "Snow",
+    color: new Color("#FFFFFF"),
+    heightThreshold: 0.8,
+    temperatureWeight: 0,
+    moistureWeight: 0,
+  },
+];
+
+function smoothstep(edge0: number, edge1: number, x: number) {
+  const t = MathUtils.clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+  return t * t * (3 - 2 * t);
+}
+
+type Biome = {
+  biome: {
+    name: string;
+    color: Color;
+    heightThreshold?: number;
+    temperatureWeight?: number;
+    moistureWeight?: number;
+    temperatureThreshold?: number;
+    moistureThreshold?: number;
+  };
+  weight: number;
+};
+
+function getBiomeColor(worldX: number, worldZ: number, height: number) {
+  const normalizedHeight = (height + HEIGHT_SCALE) / (HEIGHT_SCALE * 2);
+
+  const { temperature, moisture } = getClimateParameters(worldX, worldZ);
+
+  const applicableBiomes: Biome[] = [];
+
+  BIOMES.forEach((biome) => {
+    let weight = 1.0;
+
+    if (biome.heightThreshold !== undefined) {
+      if (normalizedHeight > biome.heightThreshold) {
+        const nextBiomeThreshold = biome.heightThreshold + 0.03;
+        weight *= smoothstep(
+          biome.heightThreshold,
+          nextBiomeThreshold,
+          normalizedHeight
+        );
+      } else {
+        weight = 0;
+      }
+    }
+
+    if (biome.temperatureThreshold !== undefined && weight > 0) {
+      const tempWeight =
+        biome.temperatureThreshold > temperature
+          ? smoothstep(
+              biome.temperatureThreshold - 0.1,
+              biome.temperatureThreshold,
+              temperature
+            )
+          : 1.0 -
+            smoothstep(
+              biome.temperatureThreshold,
+              biome.temperatureThreshold + 0.1,
+              temperature
+            );
+      weight *= tempWeight;
+    }
+
+    if (biome.moistureThreshold !== undefined && weight > 0) {
+      const moistWeight =
+        moisture < biome.moistureThreshold
+          ? smoothstep(
+              biome.moistureThreshold - 0.1,
+              biome.moistureThreshold,
+              moisture
+            )
+          : 1.0;
+      weight *= moistWeight;
+    }
+
+    if (weight > 0.01) {
+      const bio = {
+        biome,
+        weight,
+      };
+      applicableBiomes.push(bio);
+    }
+  });
+
+  if (applicableBiomes.length === 0) {
+    return new Color("#7CFC00");
+  }
+
+  const totalWeight = applicableBiomes.reduce(
+    (sum, item) => sum + item.weight,
+    0
+  );
+
+  const blendedColor = new Color(0, 0, 0);
+
+  applicableBiomes.forEach(({ biome, weight }) => {
+    const normalizedWeight = weight / totalWeight;
+    blendedColor.r += biome.color.r * normalizedWeight;
+    blendedColor.g += biome.color.g * normalizedWeight;
+    blendedColor.b += biome.color.b * normalizedWeight;
+  });
+
+  return blendedColor;
 }
 
 export const TerrainTile = ({ position }: { position: Vector3 }) => {
   const resolution = 32;
 
-  const { geometry, vertexColors } = useMemo(() => {
+  const { geometry } = useMemo(() => {
     const geo = new BufferGeometry();
 
     const vertices = [];
@@ -244,7 +367,6 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
 
     const step = cellSize / (resolution - 1);
 
-    // Calculate heights including neighboring vertices to ensure seamless transitions
     const heightMap = new Array(resolution + 2)
       .fill(0)
       .map(() => new Array(resolution + 2).fill(0));
@@ -274,11 +396,9 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
 
         vertices.push(localX, height, localZ);
 
-        // Determine biome and color
-        const biome = getBiome(worldX, worldZ, height);
-        colors.push(biome.color.r, biome.color.g, biome.color.b);
+        const vertexColor = getBiomeColor(worldX, worldZ, height);
+        colors.push(vertexColor.r, vertexColor.g, vertexColor.b);
 
-        // Calculate normals using neighboring heights for smoother transitions
         const hL = heightMap[z + 1][x];
         const hR = heightMap[z + 1][x + 2];
         const hU = heightMap[z][x + 1];
@@ -296,7 +416,6 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
           const vertexIndex = x + z * resolution;
 
           indices.push(vertexIndex, vertexIndex + 1, vertexIndex + resolution);
-
           indices.push(
             vertexIndex + 1,
             vertexIndex + resolution + 1,
@@ -312,7 +431,7 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
     geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
     geo.setIndex(indices);
 
-    return { geometry: geo, vertexColors: colors };
+    return { geometry: geo };
   }, [position]);
 
   const material = useMemo(() => {
@@ -321,6 +440,8 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
       wireframe: false,
       side: DoubleSide,
       flatShading: false,
+      roughness: 0.8,
+      metalness: 0.1,
     });
   }, []);
 

@@ -3,19 +3,23 @@ import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer
 import { KeyboardControlsProvider } from "@components/canvas/Scene";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
+import { useControls } from "leva";
 
 const Page = () => {
+  const { speed } = useControls({
+    speed: { value: 10, min: 1, max: 50, step: 1 },
+  });
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <KeyboardControlsProvider>
         <Canvas>
           <Physics>
-            <ambientLight intensity={0.5} />
+            <ambientLight intensity={1.0} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
-            <fogExp2 attach="fog" args={["#f0f0f0", 0.02]} />
+            <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
             <color args={["#f0f0f0"]} attach="background" />
             <WorldManager />
-            <MinecraftCreativeControlsPlayer speed={5} />
+            <MinecraftCreativeControlsPlayer speed={speed} />
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>

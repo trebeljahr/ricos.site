@@ -12,9 +12,10 @@ const Page = () => {
           <Physics>
             <ambientLight intensity={0.5} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
-            <fogExp2 attach="fog" args={["#f0f0f0", 0.1]} />
+            <fogExp2 attach="fog" args={["#f0f0f0", 0.02]} />
+            <color args={["#f0f0f0"]} attach="background" />
             <WorldManager />
-            <MinecraftCreativeControlsPlayer speed={20} />
+            <MinecraftCreativeControlsPlayer speed={5} />
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>

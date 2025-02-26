@@ -238,37 +238,37 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
 
     const vertices = [];
     const normals = [];
-    const uvs = [];
+    // const uvs = [];
     const indices = [];
     const colors = [];
 
-    const step = cellSize / (resolution - 1);
+    // const step = cellSize / (resolution - 1);
 
     // Calculate heights including neighboring vertices to ensure seamless transitions
-    const heightMap = new Array(resolution + 2)
-      .fill(0)
-      .map(() => new Array(resolution + 2).fill(0));
+    // const heightMap = new Array(resolution + 1)
+    //   .fill(0)
+    //   .map(() => new Array(resolution + 1).fill(0));
 
-    const noiseMap = [];
-    const noiseColorMap = [];
+    // const noiseMap = [];
+    // const noiseColorMap = [];
 
-    for (let z = 0; z < resolution; z++) {
-      for (let x = 0; x < resolution; x++) {
-        const localX = x * step - cellSize / 2;
-        const localZ = z * step - cellSize / 2;
+    // for (let z = 0; z < resolution; z++) {
+    //   for (let x = 0; x < resolution; x++) {
+    //     const localX = x * step - cellSize / 2;
+    //     const localZ = z * step - cellSize / 2;
 
-        const worldX = position.x + localX;
-        const worldZ = position.z + localZ;
+    //     const worldX = position.x + localX;
+    //     const worldZ = position.z + localZ;
 
-        const noiseSample = getFractalNoise(worldX, worldZ);
-        const remappedSample = (noiseSample + 1) / 2;
+    //     const noiseSample = getFractalNoise(worldX, worldZ);
+    //     const remappedSample = (noiseSample + 1) / 2;
 
-        heightMap[z][x] = remappedSample * HEIGHT_SCALE;
+    //     heightMap[z][x] = remappedSample * HEIGHT_SCALE;
 
-        noiseMap.push(remappedSample);
-        noiseColorMap.push(remappedSample, remappedSample, remappedSample);
-      }
-    }
+    //     noiseMap.push(remappedSample);
+    //     noiseColorMap.push(remappedSample, remappedSample, remappedSample);
+    //   }
+    // }
 
     // const { min, max } = noiseMap.reduce(
     //   (acc, elem) => {
@@ -281,51 +281,86 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
     // );
     // console.log(min, max);
 
-    for (let z = 0; z < resolution; z++) {
-      for (let x = 0; x < resolution; x++) {
-        const localX = x * step - cellSize / 2;
-        const localZ = z * step - cellSize / 2;
+    // for (let z = 0; z < resolution; z++) {
+    //   for (let x = 0; x < resolution; x++) {
+    //     const localX = x * step - cellSize / 2;
+    //     const localZ = z * step - cellSize / 2;
 
-        const worldX = position.x + localX;
-        const worldZ = position.z + localZ;
+    //     const worldX = position.x + localX;
+    //     const worldZ = position.z + localZ;
 
-        const height = heightMap[z][x];
+    //     const height = heightMap[z][x];
 
-        // vertices.push(localX, Math.pow(1.2, height), localZ);
-        vertices.push(localX, 0, localZ);
+    //     // vertices.push(localX, Math.pow(1.2, height), localZ);
+    //     vertices.push(localX, 0, localZ);
 
-        // Determine biome and color
-        const biome = getBiome(worldX, worldZ, height);
-        colors.push(biome.color.r, biome.color.g, biome.color.b);
+    //     // Determine biome and color
+    //     const biome = getBiome(worldX, worldZ, height);
+    //     colors.push(biome.color.r, biome.color.g, biome.color.b);
 
-        const R = heightMap[z][x + 1];
-        const L = heightMap[z][Math.max(x - 1, 0)];
-        const B = heightMap[Math.max(z - 1, 0)][x];
-        const T = heightMap[z + 1][x];
-        const normal = new Vector3(2 * (R - L), -4, 2 * (B - T)).normalize();
-        normals.push(normal.x, normal.y, normal.z);
+    //     const R = heightMap[z][x + 1];
+    //     const L = heightMap[z][Math.max(x - 1, 0)];
+    //     const B = heightMap[Math.max(z - 1, 0)][x];
+    //     const T = heightMap[z + 1][x];
+    //     const normal = new Vector3(2 * (R - L), -4, 2 * (B - T)).normalize();
+    //     normals.push(normal.x, normal.y, normal.z);
 
-        uvs.push(x / resolution, z / resolution);
+    //     uvs.push(x / resolution, z / resolution);
+    //   }
+    // }
 
-        if (x < resolution - 1 && z < resolution - 1) {
-          const vertexIndex = x + z * resolution;
+    const _color = new Color();
 
-          indices.push(vertexIndex, vertexIndex + 1, vertexIndex + resolution);
+    const halfSize = cellSize / 2;
+    const segmentSize = cellSize / resolution;
 
-          indices.push(
-            vertexIndex + 1,
-            vertexIndex + resolution + 1,
-            vertexIndex + resolution
-          );
-        }
+    for (let i = 0; i <= resolution; i++) {
+      const y = i * segmentSize - halfSize;
+
+      for (let j = 0; j <= resolution; j++) {
+        const x = j * segmentSize - halfSize;
+
+        vertices.push(x, -y, 0);
+        normals.push(0, 0, 1);
+
+        const r = x / cellSize + 0.5;
+        const g = y / cellSize + 0.5;
+
+        _color.setRGB(r, g, 1);
+
+        colors.push(_color.r, _color.g, _color.b);
       }
     }
 
-    const colorsFromHeightmap = noiseMap
-      .map((h) => {
-        return [h, h, h];
-      })
-      .flat();
+    for (let i = 0; i < resolution; i++) {
+      for (let j = 0; j < resolution; j++) {
+        const a = i * (resolution + 1) + (j + 1);
+        const b = i * (resolution + 1) + j;
+        const c = (i + 1) * (resolution + 1) + j;
+        const d = (i + 1) * (resolution + 1) + (j + 1);
+
+        // generate two faces (triangles) per iteration
+
+        indices.push(a, b, d); // face one
+        indices.push(b, c, d); // face two
+      }
+    }
+
+    // const hColors = noiseMap
+    //   .map((h) => {
+    //     return [h, 0, 0];
+    //   })
+    //   .flat();
+
+    // console.log(
+    //   indices.length,
+    //   resolution * resolution * 6,
+    //   vertices.length,
+    //   resolution * resolution * 3,
+    //   hColors.length,
+    //   colors.length,
+    //   noiseColorMap.length
+    // );
 
     // console.log(
     //   colorsFromHeightmap.length,
@@ -334,13 +369,15 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
     // );
     geo.setAttribute("position", new Float32BufferAttribute(vertices, 3));
     geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
-    geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
-    geo.setAttribute("color", new Float32BufferAttribute(noiseColorMap, 3));
-    // geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
+    // geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
+    // geo.setAttribute("color", new Float32BufferAttribute(noiseColorMap, 3));
+    // geo.setAttribute("color", new Float32BufferAttribute(hColors, 3));
+    geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
     geo.setIndex(indices);
 
     return { geometry: geo, vertexColors: colors };
-  }, [position]);
+    // }, [position]);
+  }, []);
 
   const material = useMemo(() => {
     return new MeshStandardMaterial({
@@ -354,7 +391,7 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
   return (
     <mesh
       position={position}
-      rotation={[0, 0, 0]}
+      rotation={[-Math.PI / 2, 0, 0]}
       geometry={geometry}
       material={material}
     />

@@ -1,6 +1,6 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { createNoise2D } from "simplex-noise";
+import { createNoise2D, NoiseFunction2D } from "simplex-noise";
 import {
   BufferGeometry,
   Color,
@@ -10,20 +10,42 @@ import {
   Vector3,
 } from "three";
 
-type Modes = "height" | "biome" | "moisture" | "landscape" | "debug";
+type Modes =
+  | "height"
+  | "biome"
+  | "moisture"
+  | "landscape"
+  | "debug"
+  | "temperature"
+  | "normals";
 
 const debug = false;
 const tileSize = 10;
 const tilesDistance = 20;
-const mode: Modes = "biome" as Modes;
+const mode: Modes = "landscape" as Modes;
 const heightNoiseScale = 0.02;
-const biomeNoiseScale = 0.005;
+const temperatureNoiseScale = 0.005;
 const moistureNoiseScale = 0.004;
 const resolution = 32;
+const wireframe = false;
+
+const normalizeNoise = (func: NoiseFunction2D) => {
+  return (x: number, y: number) => (func(x, y) + 1) / 2;
+};
+
+const scaleNoise = (func: NoiseFunction2D, scale: number) => {
+  return (x: number, y: number) => func(x * scale, y * scale);
+};
 
 const heightNoise = createNoise2D();
-const biomeNoise = createNoise2D();
-const moistureNoise = createNoise2D();
+const temperatureNoise = scaleNoise(
+  normalizeNoise(createNoise2D()),
+  temperatureNoiseScale
+);
+const moistureNoise = scaleNoise(
+  normalizeNoise(createNoise2D()),
+  moistureNoiseScale
+);
 
 const HEIGHT_SCALE = 20;
 const DETAIL_LEVELS = 3;
@@ -138,6 +160,18 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
       .fill(0)
       .map(() => new Array(resolution + 3).fill(0));
 
+    const heightNoiseMap = new Array(resolution + 3)
+      .fill(0)
+      .map(() => new Array(resolution + 3).fill(0));
+
+    const moistureMap: number[][] = new Array(resolution + 3)
+      .fill(0)
+      .map(() => new Array(resolution + 3).fill(0));
+
+    const temperatureMap: number[][] = new Array(resolution + 3)
+      .fill(0)
+      .map(() => new Array(resolution + 3).fill(0));
+
     const _color = new Color();
 
     const halfSize = tileSize / 2;
@@ -153,8 +187,13 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
 
         const noiseSample = getFractalNoise(worldX, worldZ);
         const remappedSample = (noiseSample + 1) / 2;
+        const moisture = moistureNoise(worldX, worldZ);
+        const temperature = temperatureNoise(worldX, worldZ);
 
-        heightMap[i][j] = remappedSample;
+        heightNoiseMap[i][j] = remappedSample;
+        heightMap[i][j] = noiseSample * HEIGHT_SCALE;
+        moistureMap[i][j] = moisture;
+        temperatureMap[i][j] = temperature;
       }
     }
 
@@ -166,43 +205,54 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
 
         const hx = i + 1;
         const hz = j + 1;
-        const h = heightMap[hx][hz];
-        const height = h * HEIGHT_SCALE;
-        vertices.push(x, mode === "landscape" ? height : 0, z);
+        const h = heightNoiseMap[hx][hz];
+        const moisture = moistureMap[hx][hz];
+        const temperature = temperatureMap[hx][hz];
+
+        const scaledHeight = heightMap[hx][hz];
 
         const worldX = position.x + x;
         const worldZ = position.z + z;
+
+        const R = heightMap[hx][hz + 1];
+        const L = heightMap[hx][hz - 1];
+        const B = heightMap[hx - 1][hz];
+        const T = heightMap[hx + 1][hz];
+
+        const gradientX = (R - L) * 2;
+        const gradientZ = (B - T) * 2;
+
+        const normal = new Vector3(gradientX, -4, gradientZ).normalize();
+
+        const height =
+          mode === "landscape" || mode === "normals" ? scaledHeight : 0;
+
+        vertices.push(x, height, z);
+        uvs.push(x / resolution, z / resolution);
+        normals.push(normal.x, normal.y, normal.z);
+
+        const biome = getBiome(
+          temperatureMap[hx][hz],
+          moistureMap[hx][hz],
+          heightNoiseMap[hx][hz]
+        );
+
+        const r = x / tileSize + 0.5;
+        const g = z / tileSize + 0.5;
+        _color.setRGB(r, g, 1);
+
         if (mode === "height") {
           colors.push(h, h, h);
         } else if (mode === "biome" || mode === "landscape") {
-          const biome = getBiome(worldX, worldZ, heightMap[hx][hz]);
           colors.push(biome.color.r, biome.color.g, biome.color.b);
         } else if (mode === "moisture") {
-          const moisture = moistureNoise(
-            worldX * moistureNoiseScale,
-            worldZ * moistureNoiseScale
-          );
-          const normalizedMoisture = (moisture + 1) / 2;
-          colors.push(
-            normalizedMoisture,
-            normalizedMoisture,
-            normalizedMoisture
-          );
+          colors.push(0, moisture, moisture);
+        } else if (mode === "temperature") {
+          colors.push(temperature, temperature, temperature);
         } else if (mode === "debug") {
-          const r = x / tileSize + 0.5;
-          const g = z / tileSize + 0.5;
-          _color.setRGB(r, g, 1);
           colors.push(_color.r, _color.g, _color.b);
-        } else if (mode === "landscape") {
-          const R = heightMap[hx][hz + 1];
-          const L = heightMap[hx][hz - 1];
-          const B = heightMap[hx - 1][hz];
-          const T = heightMap[hx + 1][hz];
-
-          const normal = new Vector3(2 * (R - L), -4, 2 * (B - T)).normalize();
-          normals.push(normal.x, normal.y, normal.z);
-
-          uvs.push(x / resolution, z / resolution);
+        } else if (mode === "normals") {
+          colors.push(normal.x, normal.y, normal.z);
         } else {
           throw Error("Invalid mode");
         }
@@ -236,7 +286,7 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
   const material = useMemo(() => {
     return new MeshStandardMaterial({
       vertexColors: true,
-      wireframe: false,
+      wireframe,
       side: DoubleSide,
       flatShading: false,
     });
@@ -269,43 +319,29 @@ function getFractalNoise(worldX: number, worldZ: number) {
   return noiseValue / totalAmplitude;
 }
 
-function getBiome(worldX: number, worldZ: number, height?: number) {
-  const temperature = biomeNoise(
-    worldX * biomeNoiseScale,
-    worldZ * biomeNoiseScale
-  );
-  const moisture = moistureNoise(
-    worldX * moistureNoiseScale,
-    worldZ * moistureNoiseScale
-  );
-  const normalizedHeight =
-    height ||
-    (heightNoise(worldX * heightNoiseScale, worldZ * heightNoiseScale) + 1) / 2;
-  const normalizedMoisture = (moisture + 1) / 2;
-  const normalizedTemperature = (temperature + 1) / 2;
-
-  if (normalizedHeight > 0.7) {
+function getBiome(nTemp: number, nMoist: number, nHeight: number) {
+  if (nHeight > 0.7) {
     return {
       color: new Color("#FFFFFF"),
       name: "Snow",
     };
   }
 
-  if (normalizedHeight > 0.6) {
+  if (nHeight > 0.6) {
     return {
       color: new Color("#A0A0A0"),
       name: "Mountain",
     };
   }
 
-  if (normalizedHeight < 0.3) {
-    if (normalizedMoisture > 0.6) {
+  if (nHeight < 0.3) {
+    if (nMoist > 0.6) {
       return {
         color: new Color("#0077BE"),
         name: "Ocean",
       };
     }
-    if (normalizedMoisture > 0.3) {
+    if (nMoist > 0.3) {
       return {
         color: new Color("#C2B280"),
         name: "Beach",
@@ -313,14 +349,14 @@ function getBiome(worldX: number, worldZ: number, height?: number) {
     }
   }
 
-  if (normalizedTemperature > 0.6) {
-    if (normalizedMoisture < 0.3) {
+  if (nTemp > 0.6) {
+    if (nMoist < 0.3) {
       return {
         color: new Color("#EDC9AF"),
         name: "Desert",
       };
     }
-    if (normalizedMoisture < 0.6) {
+    if (nMoist < 0.6) {
       return {
         color: new Color("#ADFF2F"),
         name: "Savanna",
@@ -332,14 +368,14 @@ function getBiome(worldX: number, worldZ: number, height?: number) {
     };
   }
 
-  if (normalizedTemperature > 0.3) {
-    if (normalizedMoisture < 0.4) {
+  if (nTemp > 0.3) {
+    if (nMoist < 0.4) {
       return {
         color: new Color("#DAA520"),
         name: "Plains",
       };
     }
-    if (normalizedMoisture < 0.7) {
+    if (nMoist < 0.7) {
       return {
         color: new Color("#228B22"),
         name: "Forest",
@@ -351,7 +387,7 @@ function getBiome(worldX: number, worldZ: number, height?: number) {
     };
   }
 
-  if (normalizedMoisture < 0.4) {
+  if (nMoist < 0.4) {
     return {
       color: new Color("#B5B5B5"),
       name: "Tundra",

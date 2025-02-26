@@ -16,7 +16,6 @@ const debug = false;
 const cellSize = 10;
 const visibleRadius = 20;
 
-// Use different seeded noise generators for each feature
 const heightNoise = createNoise2D();
 const temperatureNoise = createNoise2D();
 const moistureNoise = createNoise2D();
@@ -24,22 +23,40 @@ const warpNoise1 = createNoise2D();
 const warpNoise2 = createNoise2D();
 const noise3D = createNoise3D();
 
-// Terrain configuration
 const NOISE_SCALE = 0.02;
 const HEIGHT_SCALE = 20;
 const DETAIL_LEVELS = 3;
 const PERSISTENCE = 0.5;
 
-// More extreme domain warping to break up visible patterns
 const WARP_SCALE = 0.005;
 const WARP_STRENGTH = 35.0;
 
-// Biome mapping parameters
-const TEMP_MOISTURE_SCALE = 0.001;
-const BIOME_GRADIENT_SCALE = 0.07;
+const TEMP_MOISTURE_SCALE = 0.002;
+const TRANSITION_ZONE = 0.08;
 
-// Larger transition zones between biomes
-const TRANSITION_ZONE = 0.15;
+interface BiomeGradient {
+  height: number;
+  temp: number;
+  moisture: number;
+  color: Color;
+}
+
+const BIOME_GRADIENTS: BiomeGradient[] = [
+  { height: 0.2, temp: 0, moisture: 0, color: new Color("#0047AB") },
+  { height: 0.28, temp: 0, moisture: 0, color: new Color("#0077BE") },
+  { height: 0.34, temp: 0, moisture: 0, color: new Color("#C2B280") },
+  { height: 0.38, temp: 0.8, moisture: 0.2, color: new Color("#E4A672") },
+  { height: 0.38, temp: 0.7, moisture: 0.4, color: new Color("#D4B95E") },
+  { height: 0.38, temp: 0.7, moisture: 0.8, color: new Color("#4CBB17") },
+  { height: 0.38, temp: 0.4, moisture: 0.3, color: new Color("#DAA520") },
+  { height: 0.38, temp: 0.4, moisture: 0.6, color: new Color("#228B22") },
+  { height: 0.38, temp: 0.4, moisture: 0.8, color: new Color("#006400") },
+  { height: 0.38, temp: 0.2, moisture: 0.3, color: new Color("#B5B5B5") },
+  { height: 0.38, temp: 0.2, moisture: 0.7, color: new Color("#5E7F5E") },
+  { height: 0.65, temp: 0, moisture: 0, color: new Color("#8E8E8E") },
+  { height: 0.75, temp: 0, moisture: 0, color: new Color("#CCCCCC") },
+  { height: 0.85, temp: 0, moisture: 0, color: new Color("#FFFFFF") },
+];
 
 export const WorldManager = () => {
   const { camera } = useThree();
@@ -134,7 +151,6 @@ export const WorldManager = () => {
   );
 };
 
-// Advanced domain warping function using multiple octaves and 2D flow field
 function getWarpedCoordinates(x: number, y: number): Vector2 {
   let warpedX = x;
   let warpedY = y;
@@ -158,7 +174,6 @@ function getWarpedCoordinates(x: number, y: number): Vector2 {
   return new Vector2(warpedX, warpedY);
 }
 
-// Enhanced fractal noise with domain warping to eliminate patterns
 function getFractalNoise(worldX: number, worldZ: number): number {
   const warped = getWarpedCoordinates(worldX, worldZ);
 
@@ -185,7 +200,6 @@ function getFractalNoise(worldX: number, worldZ: number): number {
   return noiseValue / totalAmplitude;
 }
 
-// Temperature and moisture generation with enhanced variability
 function getBiomeFactors(
   worldX: number,
   worldZ: number
@@ -210,118 +224,14 @@ function getBiomeFactors(
   };
 }
 
-// Smooth weighting function with wider transitions
 function smoothWeight(value: number, min: number, max: number): number {
   if (value < min) return 0;
   if (value > max) return 1;
 
   const t = (value - min) / (max - min);
-
   return t * t * (3 - 2 * t);
 }
 
-// Define biome gradient key points (height, temp, moisture) and colors
-const BIOME_GRADIENTS = [
-  {
-    height: 0.15,
-    temp: 0,
-    moisture: 0,
-    color: new Color("#0047AB"),
-  },
-
-  {
-    height: 0.25,
-    temp: 0,
-    moisture: 0,
-    color: new Color("#0077BE"),
-  },
-
-  {
-    height: 0.35,
-    temp: 0,
-    moisture: 0,
-    color: new Color("#C2B280"),
-  },
-
-  {
-    height: 0.45,
-    temp: 0.8,
-    moisture: 0.2,
-    color: new Color("#EDC9AF"),
-  },
-
-  {
-    height: 0.45,
-    temp: 0.7,
-    moisture: 0.4,
-    color: new Color("#BDB76B"),
-  },
-
-  {
-    height: 0.45,
-    temp: 0.7,
-    moisture: 0.8,
-    color: new Color("#228B22"),
-  },
-
-  {
-    height: 0.45,
-    temp: 0.4,
-    moisture: 0.3,
-    color: new Color("#DAA520"),
-  },
-
-  {
-    height: 0.45,
-    temp: 0.4,
-    moisture: 0.6,
-    color: new Color("#228B22"),
-  },
-
-  {
-    height: 0.45,
-    temp: 0.4,
-    moisture: 0.8,
-    color: new Color("#006400"),
-  },
-
-  {
-    height: 0.45,
-    temp: 0.2,
-    moisture: 0.3,
-    color: new Color("#B5B5B5"),
-  },
-
-  {
-    height: 0.45,
-    temp: 0.2,
-    moisture: 0.7,
-    color: new Color("#006400"),
-  },
-
-  {
-    height: 0.7,
-    temp: 0,
-    moisture: 0,
-    color: new Color("#A0A0A0"),
-  },
-
-  {
-    height: 0.8,
-    temp: 0,
-    moisture: 0,
-    color: new Color("#CCCCCC"),
-  },
-
-  {
-    height: 0.9,
-    temp: 0,
-    moisture: 0,
-    color: new Color("#FFFFFF"),
-  },
-];
-
-// Get a smooth biome color by interpolating between different biome gradients
 function getBiomeGradientColor(
   worldX: number,
   worldZ: number,
@@ -329,10 +239,7 @@ function getBiomeGradientColor(
 ): Color {
   const { temperature, moisture } = getBiomeFactors(worldX, worldZ);
 
-  const gradientWeights: {
-    gradient: (typeof BIOME_GRADIENTS)[0];
-    weight: number;
-  }[] = [];
+  const gradientWeights: { gradient: BiomeGradient; weight: number }[] = [];
 
   BIOME_GRADIENTS.forEach((gradient) => {
     let weight = 1.0;
@@ -351,15 +258,15 @@ function getBiomeGradientColor(
 
     if (gradient.height >= 0.35 && weight > 0 && gradient.temp > 0) {
       const tempDiff = Math.abs(temperature - gradient.temp);
-      if (tempDiff > TRANSITION_ZONE) {
-        weight *= Math.max(0, 1 - (tempDiff - TRANSITION_ZONE));
+      if (tempDiff > TRANSITION_ZONE * 1.5) {
+        weight *= Math.max(0, 1 - (tempDiff - TRANSITION_ZONE * 1.5) * 2);
       }
     }
 
     if (gradient.height >= 0.35 && weight > 0 && gradient.moisture > 0) {
       const moistDiff = Math.abs(moisture - gradient.moisture);
-      if (moistDiff > TRANSITION_ZONE) {
-        weight *= Math.max(0, 1 - (moistDiff - TRANSITION_ZONE));
+      if (moistDiff > TRANSITION_ZONE * 1.5) {
+        weight *= Math.max(0, 1 - (moistDiff - TRANSITION_ZONE * 1.5) * 2);
       }
     }
 

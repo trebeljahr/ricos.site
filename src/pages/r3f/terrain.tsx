@@ -1,3 +1,5 @@
+import { physicsDebug } from "@components/canvas/ChunkGenerationSystem/config";
+import { RigidBallSpawner } from "@components/canvas/ChunkGenerationSystem/RigidBall";
 import { WorldManager } from "@components/canvas/ChunkGenerationSystem/WorldManager";
 import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
 import { KeyboardControlsProvider } from "@components/canvas/Scene";
@@ -16,13 +18,14 @@ const Page = () => {
       <KeyboardControlsProvider>
         <Leva />
         <Canvas>
-          <Physics debug>
+          <Physics debug={physicsDebug}>
             <ambientLight intensity={1.0} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
             <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
             <color args={["#f0f0f0"]} attach="background" />
             <WorldManager />
             <MinecraftCreativeControlsPlayer speed={speed} />
+            <RigidBallSpawner />
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>

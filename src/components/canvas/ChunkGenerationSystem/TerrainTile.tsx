@@ -12,7 +12,7 @@ import {
 } from "three";
 import { VertexNormalsHelper } from "three-stdlib";
 import {
-  HEIGHT_SCALE,
+  heightScale,
   mode,
   normalsDebug,
   tileSize,
@@ -26,7 +26,8 @@ import {
   temperatureNoise,
 } from "./noise";
 import { BirchTree } from "../BirchTree";
-import { HeightfieldCollider } from "@react-three/rapier";
+import { HeightfieldCollider, RigidBody } from "@react-three/rapier";
+import { RigidBall } from "./RigidBall";
 
 export const TerrainTile = ({
   position,
@@ -77,7 +78,7 @@ export const TerrainTile = ({
 
         const noiseSample = getFractalNoise(worldX, worldZ);
         const remappedSample = (noiseSample + 1) / 2;
-        const expHeight = Math.pow(remappedSample * HEIGHT_SCALE, 2);
+        const expHeight = Math.pow(remappedSample * heightScale, 2);
 
         const moisture = moistureNoise(worldX, worldZ);
         const temperature = temperatureNoise(worldX, worldZ);
@@ -121,7 +122,8 @@ export const TerrainTile = ({
         const scaledHeight = heightMap[hz][hx];
         const height = visualizeHeight ? scaledHeight : 0;
 
-        heightfield.push(height);
+        const heightForHeightfield = heightMap[hz][resolution - hx];
+        heightfield.push(heightForHeightfield);
 
         vertices.push(localX, height, localZ);
         uvs.push(localX / resolution, localZ / resolution);
@@ -180,8 +182,6 @@ export const TerrainTile = ({
     // geo.rotateX(-Math.PI / 2);
     // geo.rotateY(-Math.PI / 2);
 
-    console.log(heightfield.length, resolution * resolution);
-
     return { geometry: geo, heightfield };
   }, [position, resolution]);
 
@@ -201,67 +201,38 @@ export const TerrainTile = ({
   const heightAdjustedPosition = useMemo(() => {
     const noiseSample = getFractalNoise(position.x, position.z);
     const remappedSample = (noiseSample + 1) / 2;
-    const expHeight = Math.pow(remappedSample * HEIGHT_SCALE, 2);
-    return new Vector3(position.x, expHeight, position.z);
+    const expHeight = Math.pow(remappedSample * heightScale, 2);
+    return new Vector3(0, expHeight, 0);
   }, [position]);
 
-  // const { heightFieldGeometry, heightField } = useHeightfieldGeo({
-  //   width: resolution,
-  // });
+  const aboveGround = useMemo(() => {
+    return new Vector3(0, heightAdjustedPosition.y + 30, 0);
+  }, [heightAdjustedPosition]);
 
   return (
     <group position={position}>
-      <mesh
-        ref={meshRef}
-        // position={position}
-        geometry={geometry}
-        material={material}
-      ></mesh>
-      {/* <BirchTree position={heightAdjustedPosition} scale={[2, 2, 2]} /> */}
-      <HeightfieldCollider
-        args={[
-          resolution - 1,
-          resolution - 1,
-          heightfield,
-          { x: tileSize, y: 1, z: tileSize },
-        ]}
-        scale={[1, 1, -1]}
-        rotation={[0, -Math.PI / 2, 0]}
-      />
+      <BirchTree position={heightAdjustedPosition} scale={[2, 2, 2]} />
+      {/* <RigidBall position={aboveGround} /> */}
+      <RigidBody colliders={false}>
+        <mesh ref={meshRef} geometry={geometry} material={material}></mesh>
+        <group scale={[1, 1, 1]} rotation={[0, -Math.PI / 2, 0]}>
+          <HeightfieldCollider
+            args={[
+              resolution - 1,
+              resolution - 1,
+              heightfield,
+              { x: tileSize, y: 1, z: tileSize },
+            ]}
+          />
+        </group>
+      </RigidBody>
     </group>
   );
-};
-
-const useHeightfieldGeo = ({ width }: { width: number }) => {
-  const heightField = Array.from({
-    length: width * width,
-  }).map((_, index) => {
-    const x = index % width;
-    const z = Math.floor(index / width);
-    return getYPosition(x, z);
-  });
-
-  const heightFieldGeometry = new PlaneGeometry(
-    width,
-    width,
-    width - 1,
-    width - 1
-  );
-
-  heightField.forEach((v, index) => {
-    heightFieldGeometry.attributes.position.setY(index, v);
-  });
-
-  heightFieldGeometry.scale(1, -1, 1);
-  heightFieldGeometry.rotateX(-Math.PI / 2);
-  heightFieldGeometry.rotateY(-Math.PI / 2);
-  heightFieldGeometry.computeVertexNormals();
-  return { heightFieldGeometry, heightField };
 };
 
 function getYPosition(x: number, z: number) {
   const noiseSample = getFractalNoise(x, z);
   const remappedSample = (noiseSample + 1) / 2;
-  const expHeight = Math.pow(remappedSample * HEIGHT_SCALE, 2);
+  const expHeight = Math.pow(remappedSample * heightScale, 2);
   return expHeight;
 }

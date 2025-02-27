@@ -31,7 +31,7 @@ import {
   Willow_4,
   Willow_5,
 } from "@models/nature_pack";
-import { Tree1, Tree3, Tree4 } from "@models/simple_nature_pack";
+import { Tree1, Tree2, Tree4 } from "@models/simple_nature_pack";
 import { memo } from "react";
 import { Vector3 } from "three";
 import { BirchTree } from "../BirchTree";
@@ -51,7 +51,7 @@ const BirchTrees = [
 const AcaciaTrees = [
   (props: Props) => <Tree1 {...props} />,
   (props: Props) => <Tree4 {...props} />,
-  (props: Props) => <Tree3 {...props} />,
+  (props: Props) => <Tree2 {...props} />,
 ];
 
 const PineTrees = [
@@ -101,7 +101,7 @@ export const Tree = memo(
     scale = [1, 1, 1],
   }: {
     type: TreeType;
-    position: [number, number, number];
+    position: Vector3;
     scale?: [number, number, number];
     rotation?: [number, number, number];
   }) => {

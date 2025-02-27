@@ -7,14 +7,12 @@ import {
   Float32BufferAttribute,
   Mesh,
   MeshStandardMaterial,
+  PlaneGeometry,
   Vector3,
 } from "three";
 import { VertexNormalsHelper } from "three-stdlib";
 import {
-  debug,
-  DETAIL_LEVELS,
   HEIGHT_SCALE,
-  lodLevels,
   mode,
   normalsDebug,
   tileSize,
@@ -27,6 +25,8 @@ import {
   moistureNoise,
   temperatureNoise,
 } from "./noise";
+import { BirchTree } from "../BirchTree";
+import { HeightfieldCollider } from "@react-three/rapier";
 
 export const TerrainTile = ({
   position,
@@ -37,7 +37,7 @@ export const TerrainTile = ({
   resolution: number;
   lodLevel: number;
 }) => {
-  const { geometry } = useMemo(() => {
+  const { geometry, heightfield } = useMemo(() => {
     const geo = new BufferGeometry();
 
     const vertices = [];
@@ -77,15 +77,19 @@ export const TerrainTile = ({
 
         const noiseSample = getFractalNoise(worldX, worldZ);
         const remappedSample = (noiseSample + 1) / 2;
+        const expHeight = Math.pow(remappedSample * HEIGHT_SCALE, 2);
+
         const moisture = moistureNoise(worldX, worldZ);
         const temperature = temperatureNoise(worldX, worldZ);
 
         heightNoiseMap[z + 1][x + 1] = remappedSample;
-        heightMap[z + 1][x + 1] = noiseSample * HEIGHT_SCALE;
+        heightMap[z + 1][x + 1] = expHeight;
         moistureMap[z + 1][x + 1] = moisture;
         temperatureMap[z + 1][x + 1] = temperature;
       }
     }
+
+    const heightfield = [];
 
     for (let z = 0; z < resolution; z++) {
       const localZ = z * segmentSize - halfSize;
@@ -98,8 +102,6 @@ export const TerrainTile = ({
         const h = heightNoiseMap[hz][hx];
         const moisture = moistureMap[hz][hx];
         const temperature = temperatureMap[hz][hx];
-
-        const scaledHeight = heightMap[hz][hx];
 
         const L = heightMap[hz][hx - 1];
         const R = heightMap[hz][hx + 1];
@@ -116,7 +118,10 @@ export const TerrainTile = ({
 
         const normal = topToBot.cross(leftToRight).normalize();
 
+        const scaledHeight = heightMap[hz][hx];
         const height = visualizeHeight ? scaledHeight : 0;
+
+        heightfield.push(height);
 
         vertices.push(localX, height, localZ);
         uvs.push(localX / resolution, localZ / resolution);
@@ -171,7 +176,13 @@ export const TerrainTile = ({
     geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
     geo.setIndex(indices);
 
-    return { geometry: geo };
+    geo.scale(1, 1, 1);
+    // geo.rotateX(-Math.PI / 2);
+    // geo.rotateY(-Math.PI / 2);
+
+    console.log(heightfield.length, resolution * resolution);
+
+    return { geometry: geo, heightfield };
   }, [position, resolution]);
 
   const material = useMemo(() => {
@@ -187,14 +198,70 @@ export const TerrainTile = ({
 
   useHelper(normalsDebug && meshRef, VertexNormalsHelper, 1, 0xff0000);
 
+  const heightAdjustedPosition = useMemo(() => {
+    const noiseSample = getFractalNoise(position.x, position.z);
+    const remappedSample = (noiseSample + 1) / 2;
+    const expHeight = Math.pow(remappedSample * HEIGHT_SCALE, 2);
+    return new Vector3(position.x, expHeight, position.z);
+  }, [position]);
+
+  // const { heightFieldGeometry, heightField } = useHeightfieldGeo({
+  //   width: resolution,
+  // });
+
   return (
-    <>
+    <group position={position}>
       <mesh
         ref={meshRef}
-        position={position}
+        // position={position}
         geometry={geometry}
         material={material}
       ></mesh>
-    </>
+      {/* <BirchTree position={heightAdjustedPosition} scale={[2, 2, 2]} /> */}
+      <HeightfieldCollider
+        args={[
+          resolution - 1,
+          resolution - 1,
+          heightfield,
+          { x: tileSize, y: 1, z: tileSize },
+        ]}
+        scale={[1, 1, -1]}
+        rotation={[0, -Math.PI / 2, 0]}
+      />
+    </group>
   );
 };
+
+const useHeightfieldGeo = ({ width }: { width: number }) => {
+  const heightField = Array.from({
+    length: width * width,
+  }).map((_, index) => {
+    const x = index % width;
+    const z = Math.floor(index / width);
+    return getYPosition(x, z);
+  });
+
+  const heightFieldGeometry = new PlaneGeometry(
+    width,
+    width,
+    width - 1,
+    width - 1
+  );
+
+  heightField.forEach((v, index) => {
+    heightFieldGeometry.attributes.position.setY(index, v);
+  });
+
+  heightFieldGeometry.scale(1, -1, 1);
+  heightFieldGeometry.rotateX(-Math.PI / 2);
+  heightFieldGeometry.rotateY(-Math.PI / 2);
+  heightFieldGeometry.computeVertexNormals();
+  return { heightFieldGeometry, heightField };
+};
+
+function getYPosition(x: number, z: number) {
+  const noiseSample = getFractalNoise(x, z);
+  const remappedSample = (noiseSample + 1) / 2;
+  const expHeight = Math.pow(remappedSample * HEIGHT_SCALE, 2);
+  return expHeight;
+}

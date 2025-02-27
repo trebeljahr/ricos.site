@@ -16,7 +16,7 @@ const Page = () => {
       <KeyboardControlsProvider>
         <Leva />
         <Canvas>
-          <Physics>
+          <Physics debug>
             <ambientLight intensity={1.0} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
             <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />

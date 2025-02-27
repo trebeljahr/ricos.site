@@ -28,11 +28,11 @@ const normalsDebug = false;
 const visualizeHeight = true;
 const tileSize = 20;
 const tilesDistance = 10;
-const mode: Modes = "flat" as Modes;
+const mode: Modes = "landscape" as Modes;
 const heightNoiseScale = 0.02;
 const temperatureNoiseScale = 0.005;
 const moistureNoiseScale = 0.004;
-const resolution = 32;
+const resolution = 10;
 const wireframe = false;
 
 const normalizeNoise = (func: NoiseFunction2D) => {
@@ -247,9 +247,9 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
         normals.push(normal.x, normal.y, normal.z);
 
         const biome = getBiome(
-          temperatureMap[hx][hz],
-          moistureMap[hx][hz],
-          heightNoiseMap[hx][hz]
+          temperatureMap[hz][hx],
+          moistureMap[hz][hx],
+          heightNoiseMap[hz][hx]
         );
 
         const r = localX / tileSize + 0.5;

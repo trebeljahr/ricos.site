@@ -112,7 +112,6 @@ export function MinecraftCreativeControlsPlayer({
 
   if (!gl.domElement) return null;
 
-  console.log(gl.domElement);
   return (
     <>
       <RigidBody

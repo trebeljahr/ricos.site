@@ -18,14 +18,17 @@ type Modes =
   | "biome"
   | "moisture"
   | "landscape"
-  | "debug"
+  | "flat"
   | "temperature"
-  | "normals";
+  | "normals"
+  | "colors";
 
 const debug = false;
-const tileSize = 10;
-const tilesDistance = 5;
-const mode: Modes = "normals" as Modes;
+const normalsDebug = false;
+const visualizeHeight = true;
+const tileSize = 20;
+const tilesDistance = 10;
+const mode: Modes = "flat" as Modes;
 const heightNoiseScale = 0.02;
 const temperatureNoiseScale = 0.005;
 const moistureNoiseScale = 0.004;
@@ -159,31 +162,31 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
     const indices = [];
     const colors = [];
 
-    const heightMap: number[][] = new Array(resolution + 3)
+    const heightMap: number[][] = new Array(resolution + 2)
       .fill(0)
-      .map(() => new Array(resolution + 3).fill(0));
+      .map(() => new Array(resolution + 2).fill(0));
 
-    const heightNoiseMap = new Array(resolution + 3)
+    const heightNoiseMap = new Array(resolution + 2)
       .fill(0)
-      .map(() => new Array(resolution + 3).fill(0));
+      .map(() => new Array(resolution + 2).fill(0));
 
-    const moistureMap: number[][] = new Array(resolution + 3)
+    const moistureMap: number[][] = new Array(resolution + 2)
       .fill(0)
-      .map(() => new Array(resolution + 3).fill(0));
+      .map(() => new Array(resolution + 2).fill(0));
 
-    const temperatureMap: number[][] = new Array(resolution + 3)
+    const temperatureMap: number[][] = new Array(resolution + 2)
       .fill(0)
-      .map(() => new Array(resolution + 3).fill(0));
+      .map(() => new Array(resolution + 2).fill(0));
 
     const _color = new Color();
 
     const halfSize = tileSize / 2;
-    const segmentSize = tileSize / resolution;
+    const segmentSize = tileSize / (resolution - 1);
 
-    for (let i = 0; i <= resolution + 2; i++) {
-      for (let j = 0; j <= resolution + 2; j++) {
-        const localX = j * segmentSize - halfSize;
-        const localZ = i * segmentSize - halfSize;
+    for (let z = -1; z <= resolution; z++) {
+      for (let x = -1; x <= resolution; x++) {
+        const localX = x * segmentSize - halfSize;
+        const localZ = z * segmentSize - halfSize;
 
         const worldX = position.x + localX;
         const worldZ = position.z + localZ;
@@ -193,51 +196,55 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
         const moisture = moistureNoise(worldX, worldZ);
         const temperature = temperatureNoise(worldX, worldZ);
 
-        heightNoiseMap[i][j] = remappedSample;
-        heightMap[i][j] = noiseSample * HEIGHT_SCALE;
-        moistureMap[i][j] = moisture;
-        temperatureMap[i][j] = temperature;
+        heightNoiseMap[z + 1][x + 1] = remappedSample;
+        heightMap[z + 1][x + 1] = noiseSample * HEIGHT_SCALE;
+        moistureMap[z + 1][x + 1] = moisture;
+        temperatureMap[z + 1][x + 1] = temperature;
       }
     }
 
-    for (let i = 0; i <= resolution; i++) {
-      const z = i * segmentSize - halfSize;
+    for (let z = 0; z < resolution; z++) {
+      const localZ = z * segmentSize - halfSize;
 
-      for (let j = 0; j <= resolution; j++) {
-        const x = j * segmentSize - halfSize;
+      for (let x = 0; x < resolution; x++) {
+        const localX = x * segmentSize - halfSize;
 
-        const hx = i + 1;
-        const hz = j + 1;
-        const h = heightNoiseMap[hx][hz];
-        const moisture = moistureMap[hx][hz];
-        const temperature = temperatureMap[hx][hz];
+        const hx = x + 1;
+        const hz = z + 1;
+        const h = heightNoiseMap[hz][hx];
+        const moisture = moistureMap[hz][hx];
+        const temperature = temperatureMap[hz][hx];
 
-        const scaledHeight = heightMap[hx][hz];
+        // const worldX = position.x + localX;
+        // const worldZ = position.z + localZ;
+        // const noiseSample = getFractalNoise(worldX, worldZ);
+        // const H = noiseSample * HEIGHT_SCALE;
+        // const remappedSample = (noiseSample + 1) / 2;
+        // console.log(remappedSample === h);
 
-        const worldX = position.x + x;
-        const worldZ = position.z + z;
+        const scaledHeight = heightMap[hz][hx];
+        // console.log(H === scaledHeight);
 
-        const R = heightMap[hx][hz + 1];
-        const L = heightMap[hx][hz - 1];
-        const B = heightMap[hx - 1][hz];
-        const T = heightMap[hx + 1][hz];
+        const L = heightMap[hz][hx - 1];
+        const R = heightMap[hz][hx + 1];
+        const B = heightMap[hz - 1][hx];
+        const T = heightMap[hz + 1][hx];
 
-        const gradientX = R - L;
-        const gradientZ = B - T;
+        const vecBot = new Vector3(0, B, -segmentSize);
+        const vecTop = new Vector3(0, T, +segmentSize);
+        const vecLeft = new Vector3(-segmentSize, L, 0);
+        const vecRight = new Vector3(+segmentSize, R, 0);
 
-        const horizontal = new Vector3(0, gradientX, segmentSize);
-        const vertical = new Vector3(segmentSize, gradientZ, 0);
+        const topToBot = vecBot.sub(vecTop);
+        const leftToRight = vecLeft.sub(vecRight);
 
-        const newNormal = horizontal.cross(vertical).normalize();
+        const normal = topToBot.cross(leftToRight).normalize();
 
-        const normal = new Vector3(gradientX, -4, gradientZ).normalize();
+        const height = visualizeHeight ? scaledHeight : 0;
 
-        const height =
-          mode === "landscape" || mode === "normals" ? scaledHeight : 0;
-
-        vertices.push(x, height, z);
-        uvs.push(x / resolution, z / resolution);
-        normals.push(newNormal.x, newNormal.y, newNormal.z);
+        vertices.push(localX, height, localZ);
+        uvs.push(localX / resolution, localZ / resolution);
+        normals.push(normal.x, normal.y, normal.z);
 
         const biome = getBiome(
           temperatureMap[hx][hz],
@@ -245,8 +252,8 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
           heightNoiseMap[hx][hz]
         );
 
-        const r = x / tileSize + 0.5;
-        const g = z / tileSize + 0.5;
+        const r = localX / tileSize + 0.5;
+        const g = localZ / tileSize + 0.5;
         _color.setRGB(r, g, 1);
 
         if (mode === "height") {
@@ -257,27 +264,41 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
           colors.push(0, moisture, moisture);
         } else if (mode === "temperature") {
           colors.push(temperature, temperature, temperature);
-        } else if (mode === "debug") {
-          colors.push(_color.r, _color.g, _color.b);
+        } else if (mode === "flat") {
+          colors.push(1, 1, 1);
         } else if (mode === "normals") {
           colors.push(normal.x, normal.y, normal.z);
+        } else if (mode === "colors") {
+          colors.push(_color.r, _color.g, _color.b);
         } else {
           throw Error("Invalid mode");
+        }
+
+        if (x < resolution - 1 && z < resolution - 1) {
+          const vertexIndex = x + z * resolution;
+
+          indices.push(vertexIndex, vertexIndex + 1, vertexIndex + resolution);
+
+          indices.push(
+            vertexIndex + 1,
+            vertexIndex + resolution + 1,
+            vertexIndex + resolution
+          );
         }
       }
     }
 
-    for (let i = 0; i < resolution; i++) {
-      for (let j = 0; j < resolution; j++) {
-        const a = i * (resolution + 1) + (j + 1);
-        const b = i * (resolution + 1) + j;
-        const c = (i + 1) * (resolution + 1) + j;
-        const d = (i + 1) * (resolution + 1) + (j + 1);
+    // for (let i = 0; i < resolution - 1; i++) {
+    //   for (let j = 0; j < resolution - 1; j++) {
+    //     const a = i * (resolution + 1) + (j + 1);
+    //     const b = i * (resolution + 1) + j;
+    //     const c = (i + 1) * (resolution + 1) + j;
+    //     const d = (i + 1) * (resolution + 1) + (j + 1);
 
-        indices.push(a, b, d);
-        indices.push(b, c, d);
-      }
-    }
+    //     indices.push(a, b, d);
+    //     indices.push(b, c, d);
+    //   }
+    // }
 
     geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
     geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
@@ -300,7 +321,7 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
 
   const meshRef = useRef<Mesh>(null!);
 
-  useHelper(meshRef.current && meshRef, VertexNormalsHelper, 1, 0xff0000);
+  useHelper(normalsDebug && meshRef, VertexNormalsHelper, 1, 0xff0000);
 
   return (
     <>

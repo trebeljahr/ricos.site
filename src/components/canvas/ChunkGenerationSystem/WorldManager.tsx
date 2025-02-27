@@ -1,3 +1,4 @@
+import { Helper, useHelper } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createNoise2D, NoiseFunction2D } from "simplex-noise";
@@ -6,9 +7,11 @@ import {
   Color,
   DoubleSide,
   Float32BufferAttribute,
+  Mesh,
   MeshStandardMaterial,
   Vector3,
 } from "three";
+import { VertexNormalsHelper } from "three-stdlib";
 
 type Modes =
   | "height"
@@ -21,8 +24,8 @@ type Modes =
 
 const debug = false;
 const tileSize = 10;
-const tilesDistance = 20;
-const mode: Modes = "landscape" as Modes;
+const tilesDistance = 5;
+const mode: Modes = "normals" as Modes;
 const heightNoiseScale = 0.02;
 const temperatureNoiseScale = 0.005;
 const moistureNoiseScale = 0.004;
@@ -47,7 +50,7 @@ const moistureNoise = scaleNoise(
   moistureNoiseScale
 );
 
-const HEIGHT_SCALE = 20;
+const HEIGHT_SCALE = 30;
 const DETAIL_LEVELS = 3;
 const PERSISTENCE = 0.5;
 
@@ -219,8 +222,13 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
         const B = heightMap[hx - 1][hz];
         const T = heightMap[hx + 1][hz];
 
-        const gradientX = (R - L) * 2;
-        const gradientZ = (B - T) * 2;
+        const gradientX = R - L;
+        const gradientZ = B - T;
+
+        const horizontal = new Vector3(0, gradientX, segmentSize);
+        const vertical = new Vector3(segmentSize, gradientZ, 0);
+
+        const newNormal = horizontal.cross(vertical).normalize();
 
         const normal = new Vector3(gradientX, -4, gradientZ).normalize();
 
@@ -229,7 +237,7 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
 
         vertices.push(x, height, z);
         uvs.push(x / resolution, z / resolution);
-        normals.push(normal.x, normal.y, normal.z);
+        normals.push(newNormal.x, newNormal.y, newNormal.z);
 
         const biome = getBiome(
           temperatureMap[hx][hz],
@@ -271,10 +279,8 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
       }
     }
 
-    if (mode === "landscape") {
-      geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
-      geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
-    }
+    geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
+    geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
 
     geo.setAttribute("position", new Float32BufferAttribute(vertices, 3));
     geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
@@ -292,7 +298,20 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
     });
   }, []);
 
-  return <mesh position={position} geometry={geometry} material={material} />;
+  const meshRef = useRef<Mesh>(null!);
+
+  useHelper(meshRef.current && meshRef, VertexNormalsHelper, 1, 0xff0000);
+
+  return (
+    <>
+      <mesh
+        ref={meshRef}
+        position={position}
+        geometry={geometry}
+        material={material}
+      ></mesh>
+    </>
+  );
 };
 
 export const Tile = ({ position }: { position: Vector3 }) => {

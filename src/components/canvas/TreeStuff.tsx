@@ -1,14 +1,13 @@
 import { BirchTree_1 } from "@models/nature_pack";
 import { useTree1 } from "@models/nature_pack/CommonTree_1";
-import { default as Tree1 } from "@models/simple_nature_pack/Tree1";
+import { Tree1 } from "@models/simple_nature_pack";
 import {
   CylinderCollider,
   InstancedRigidBodies,
   RigidBody,
-  Vector3Array,
 } from "@react-three/rapier";
 import { useRef } from "react";
-import { Vector3 } from "three";
+import { Vector3, Vector3Tuple } from "three";
 import { randFloat } from "three/src/math/MathUtils";
 
 export const InstancedTreesWithPhysics = () => {
@@ -16,13 +15,13 @@ export const InstancedTreesWithPhysics = () => {
 
   const { nodes, materials } = useTree1();
   const COUNT = 10;
-  const positions: Vector3Array[] = Array.from({ length: COUNT }, () => [
+  const positions: Vector3Tuple[] = Array.from({ length: COUNT }, () => [
     randFloat(-10, 10),
     0,
     randFloat(-10, 10),
   ]);
   const scaleFactor = 20;
-  const rotations: Vector3Array[] = Array.from({ length: COUNT }, () => [
+  const rotations: Vector3Tuple[] = Array.from({ length: COUNT }, () => [
     0,
     0,
     Math.PI / 2,

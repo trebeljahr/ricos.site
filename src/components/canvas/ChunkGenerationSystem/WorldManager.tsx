@@ -60,17 +60,13 @@ export const WorldManager = () => {
           const chunkKey = `${x},${z}`;
           const position = new Vector3(x * tileSize, 0, z * tileSize);
 
-          // Calculate LOD level based on distance
           const distance = Math.sqrt(distanceSquared);
           let lodLevel = Math.floor(
             Math.log(distance + 1) / Math.log(lodDistanceFactor)
           );
 
-          // Clamp LOD level between 0 (highest detail) and lodLevels-1 (lowest detail)
           lodLevel = Math.max(0, Math.min(lodLevels - 1, lodLevel));
 
-          // Calculate resolution for this LOD level
-          // Each level halves the resolution from the previous level
           const resolution = Math.max(
             4,
             Math.floor(baseResolution / Math.pow(2, lodLevel))
@@ -102,7 +98,6 @@ export const WorldManager = () => {
         newChunks.set(key, chunkData);
         currentActiveChunks.set(key, true);
       } else {
-        // Update existing chunk if LOD level has changed
         const existingChunk = newChunks.get(key);
         if (existingChunk.lodLevel !== chunkData.lodLevel) {
           newChunks.set(key, chunkData);

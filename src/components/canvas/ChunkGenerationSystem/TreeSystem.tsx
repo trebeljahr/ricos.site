@@ -1,5 +1,6 @@
 import { Vector3 } from "three";
 import { BiomeType } from "./Biomes";
+import { baseResolution } from "./config";
 
 export enum TreeType {
   BIRCH = "BIRCH",
@@ -92,7 +93,7 @@ export function generateTreePositions(
   const halfSize = tileSize / 2;
   const segmentSize = tileSize / (resolution - 1);
 
-  const numSamplePoints = Math.floor(resolution * resolution * 0.1);
+  const numSamplePoints = Math.floor(baseResolution * baseResolution * 0.1);
   for (let i = 0; i < numSamplePoints; i++) {
     const gridX = Math.floor(random() * (resolution - 2)) + 1;
     const gridZ = Math.floor(random() * (resolution - 2)) + 1;
@@ -140,7 +141,11 @@ export function generateTreePositions(
 
     trees.push({
       type: selectedTree.type,
-      position: new Vector3(localX, height + selectedTree.heightOffset, localZ),
+      position: new Vector3(
+        localX,
+        height + selectedTree.heightOffset - 1,
+        localZ
+      ),
       scale: selectedTree.scale,
       rotation: [0, random() * Math.PI * 2, 0],
     });

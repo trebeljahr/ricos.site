@@ -1,5 +1,5 @@
 import { Vector3 } from "three";
-import { BiomeName, BiomeType } from "./noise";
+import { BiomeType } from "./Biomes";
 
 export enum TreeType {
   BIRCH = "BIRCH",

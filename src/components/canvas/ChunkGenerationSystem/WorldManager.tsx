@@ -124,17 +124,6 @@ export const WorldManager = () => {
           </group>
         );
       })}
-
-      <RigidBody type="fixed" colliders="cuboid" name="floor">
-        <Box
-          position={[0, 2, 0]}
-          scale={[200, 10, 200]}
-          rotation={[0, 0, 0]}
-          receiveShadow
-        >
-          <meshPhysicalMaterial color="#000000" />
-        </Box>
-      </RigidBody>
     </group>
   );
 };

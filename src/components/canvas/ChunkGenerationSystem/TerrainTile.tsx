@@ -19,13 +19,9 @@ import {
   visualizeHeight,
   wireframe,
 } from "./config";
-import {
-  BiomeType,
-  getBiome,
-  getFractalNoise,
-  moistureNoise,
-  temperatureNoise,
-} from "./noise";
+import { getFractalNoise, moistureNoise, temperatureNoise } from "./noise";
+import { BiomeType, getBiome } from "./Biomes";
+
 import {
   addTreeVariation,
   avoidTreeOverlap,

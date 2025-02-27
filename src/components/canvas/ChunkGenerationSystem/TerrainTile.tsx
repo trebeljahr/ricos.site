@@ -229,17 +229,20 @@ export const TerrainTile = ({
     return addTreeVariation(nonOverlappingTrees);
   }, [position, resolution, biomeMap, heightMap, slopeMap]);
 
+  const offset = useMemo(() => new Vector3(0, -0.2, 0), []);
   return (
     <group position={position}>
       {/* Render multiple trees based on biome */}
       {trees.map((tree, index) => (
-        <Tree
-          key={`tree-${index}`}
-          type={tree.type}
-          position={[tree.position.x, tree.position.y - 2, tree.position.z]}
-          scale={tree.scale}
-          rotation={tree.rotation}
-        />
+        <group position={tree.position}>
+          <Tree
+            key={`tree-${index}`}
+            type={tree.type}
+            scale={tree.scale}
+            position={offset}
+            rotation={tree.rotation}
+          />
+        </group>
       ))}
 
       <RigidBody colliders={false}>

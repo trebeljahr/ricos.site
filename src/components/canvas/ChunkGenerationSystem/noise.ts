@@ -46,11 +46,32 @@ function getFractalNoise(worldX: number, worldZ: number) {
   return noiseValue / totalAmplitude;
 }
 
-function getBiome(nTemp: number, nMoist: number, nHeight: number) {
+export type BiomeName =
+  | "Snow"
+  | "Mountain"
+  | "Ocean"
+  | "Beach"
+  | "Desert"
+  | "Savanna"
+  | "Tropical Forest"
+  | "Forest"
+  | "Dense Forest"
+  | "Plains"
+  | "Tundra"
+  | "Taiga";
+
+export type BiomeType = {
+  color: Color;
+  name: BiomeName;
+  treeDensity: number;
+};
+
+function getBiome(nTemp: number, nMoist: number, nHeight: number): BiomeType {
   if (nHeight > 0.7) {
     return {
       color: new Color("#FFFFFF"),
       name: "Snow",
+      treeDensity: 0.1,
     };
   }
 
@@ -58,6 +79,7 @@ function getBiome(nTemp: number, nMoist: number, nHeight: number) {
     return {
       color: new Color("#A0A0A0"),
       name: "Mountain",
+      treeDensity: 0.4,
     };
   }
 
@@ -66,12 +88,14 @@ function getBiome(nTemp: number, nMoist: number, nHeight: number) {
       return {
         color: new Color("#0077BE"),
         name: "Ocean",
+        treeDensity: 0,
       };
     }
     if (nMoist > 0.3) {
       return {
         color: new Color("#C2B280"),
         name: "Beach",
+        treeDensity: 0.15,
       };
     }
   }
@@ -81,36 +105,42 @@ function getBiome(nTemp: number, nMoist: number, nHeight: number) {
       return {
         color: new Color("#EDC9AF"),
         name: "Desert",
+        treeDensity: 0.05,
       };
     }
     if (nMoist < 0.6) {
       return {
         color: new Color("#ADFF2F"),
         name: "Savanna",
+        treeDensity: 0.3,
       };
     }
     return {
       color: new Color("#228B22"),
       name: "Tropical Forest",
+      treeDensity: 0.8,
     };
   }
 
   if (nTemp > 0.3) {
     if (nMoist < 0.4) {
       return {
-        color: new Color("#DAA520"),
+        color: new Color("#b2da20"),
         name: "Plains",
+        treeDensity: 0.3,
       };
     }
     if (nMoist < 0.7) {
       return {
         color: new Color("#228B22"),
         name: "Forest",
+        treeDensity: 0.7,
       };
     }
     return {
       color: new Color("#006400"),
       name: "Dense Forest",
+      treeDensity: 0.7,
     };
   }
 
@@ -118,12 +148,14 @@ function getBiome(nTemp: number, nMoist: number, nHeight: number) {
     return {
       color: new Color("#B5B5B5"),
       name: "Tundra",
+      treeDensity: 0.1,
     };
   }
 
   return {
-    color: new Color("#006400"),
+    color: new Color("#9de19d"),
     name: "Taiga",
+    treeDensity: 0.6,
   };
 }
 

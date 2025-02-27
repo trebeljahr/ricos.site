@@ -1,5 +1,5 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { Vector3 } from "three";
 import {
   baseResolution,
@@ -10,6 +10,8 @@ import {
   tileSize,
 } from "./config";
 import { TerrainTile } from "./TerrainTile";
+import { RigidBody } from "@react-three/rapier";
+import { Box, Sphere } from "@react-three/drei";
 
 export const WorldManager = () => {
   const { camera } = useThree();
@@ -122,6 +124,17 @@ export const WorldManager = () => {
           </group>
         );
       })}
+
+      <RigidBody type="fixed" colliders="cuboid" name="floor">
+        <Box
+          position={[0, 2, 0]}
+          scale={[200, 10, 200]}
+          rotation={[0, 0, 0]}
+          receiveShadow
+        >
+          <meshPhysicalMaterial color="#000000" />
+        </Box>
+      </RigidBody>
     </group>
   );
 };

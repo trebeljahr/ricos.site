@@ -12,18 +12,19 @@ const debug = false;
 const normalsDebug = false;
 const visualizeHeight = true;
 const tileSize = 50;
-const tilesDistance = 2;
+const tilesDistance = 5;
 const mode: Modes = "landscape" as Modes;
 const heightNoiseScale = 0.0007;
 const temperatureNoiseScale = 0.00005;
 const moistureNoiseScale = 0.00004;
-const wireframe = true;
+const wireframe = false;
 const lodLevels = 10;
 const baseResolution = 32;
 const lodDistanceFactor = 4;
-const HEIGHT_SCALE = 30;
-const DETAIL_LEVELS = 3;
-const PERSISTENCE = 0.5;
+const heightScale = 30;
+const detailLevels = 3;
+const persistence = 0.5;
+const physicsDebug = false;
 
 export {
   debug,
@@ -39,7 +40,8 @@ export {
   lodLevels,
   baseResolution,
   lodDistanceFactor,
-  HEIGHT_SCALE,
-  DETAIL_LEVELS,
-  PERSISTENCE,
+  heightScale,
+  detailLevels,
+  persistence,
+  physicsDebug,
 };

@@ -5,7 +5,6 @@ export enum TreeType {
   BIRCH = "BIRCH",
   OAK = "OAK",
   PINE = "PINE",
-  SPRUCE = "SPRUCE",
   PALM = "PALM",
   ACACIA = "ACACIA",
   JUNGLE = "JUNGLE",
@@ -38,13 +37,6 @@ export const TREE_PROPERTIES: Record<TreeType, TreeProperties> = {
     heightOffset: 0,
     densityFactor: 0.9,
   },
-
-  [TreeType.SPRUCE]: {
-    type: TreeType.SPRUCE,
-    scale: [2, 3.5, 2],
-    heightOffset: 0,
-    densityFactor: 0.85,
-  },
   [TreeType.PALM]: {
     type: TreeType.PALM,
     scale: [2.2, 2.8, 2.2],
@@ -75,6 +67,7 @@ interface TreePlacementInfo {
   type: TreeType;
   position: Vector3;
   scale: [number, number, number];
+  rotation: [number, number, number];
 }
 
 export function seededRandom(seed: number): () => number {
@@ -149,6 +142,7 @@ export function generateTreePositions(
       type: selectedTree.type,
       position: new Vector3(localX, height + selectedTree.heightOffset, localZ),
       scale: selectedTree.scale,
+      rotation: [0, random() * Math.PI * 2, 0],
     });
   }
 

@@ -33,7 +33,7 @@ const Biomes: Record<BiomeName, BiomeType> = {
     name: "Mountain",
     color: new Color("#A0A0A0"),
     treeDensity: 0.4,
-    treeTypes: [TreeType.PINE, TreeType.SPRUCE],
+    treeTypes: [TreeType.PINE],
   },
   Ocean: {
     name: "Ocean",
@@ -100,9 +100,9 @@ const Biomes: Record<BiomeName, BiomeType> = {
 
   Taiga: {
     name: "Taiga",
-    color: new Color("#9de19d"),
+    color: new Color("#b7f5e9"),
     treeDensity: 0.6,
-    treeTypes: [TreeType.PINE, TreeType.SPRUCE],
+    treeTypes: [TreeType.PINE],
   },
 };
 

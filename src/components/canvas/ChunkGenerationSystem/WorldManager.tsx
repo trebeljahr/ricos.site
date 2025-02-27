@@ -27,13 +27,17 @@ const debug = false;
 const normalsDebug = false;
 const visualizeHeight = true;
 const tileSize = 20;
-const tilesDistance = 10;
+const tilesDistance = 30;
 const mode: Modes = "landscape" as Modes;
 const heightNoiseScale = 0.02;
 const temperatureNoiseScale = 0.005;
 const moistureNoiseScale = 0.004;
-const resolution = 10;
 const wireframe = false;
+
+// LOD (Level of Detail) Configuration
+const lodLevels = 10; // Number of LOD levels (from highest to lowest detail)
+const baseResolution = 64; // Resolution of closest chunks (highest detail)
+const lodDistanceFactor = 4; // How quickly LOD levels drop with distance
 
 const normalizeNoise = (func: NoiseFunction2D) => {
   return (x: number, y: number) => (func(x, y) + 1) / 2;
@@ -104,10 +108,25 @@ export const WorldManager = () => {
 
         if (distanceSquared <= radiusSquared) {
           const chunkKey = `${x},${z}`;
-
           const position = new Vector3(x * tileSize, 0, z * tileSize);
 
-          newVisibleChunks.set(chunkKey, position);
+          // Calculate LOD level based on distance
+          const distance = Math.sqrt(distanceSquared);
+          let lodLevel = Math.floor(
+            Math.log(distance + 1) / Math.log(lodDistanceFactor)
+          );
+
+          // Clamp LOD level between 0 (highest detail) and lodLevels-1 (lowest detail)
+          lodLevel = Math.max(0, Math.min(lodLevels - 1, lodLevel));
+
+          // Calculate resolution for this LOD level
+          // Each level halves the resolution from the previous level
+          const resolution = Math.max(
+            4,
+            Math.floor(baseResolution / Math.pow(2, lodLevel))
+          );
+
+          newVisibleChunks.set(chunkKey, { position, resolution, lodLevel });
         }
       }
     }
@@ -128,10 +147,16 @@ export const WorldManager = () => {
       }
     });
 
-    visibleChunks.forEach((position, key) => {
+    visibleChunks.forEach((chunkData, key) => {
       if (!currentActiveChunks.has(key)) {
-        newChunks.set(key, position);
+        newChunks.set(key, chunkData);
         currentActiveChunks.set(key, true);
+      } else {
+        // Update existing chunk if LOD level has changed
+        const existingChunk = newChunks.get(key);
+        if (existingChunk.lodLevel !== chunkData.lodLevel) {
+          newChunks.set(key, chunkData);
+        }
       }
     });
 
@@ -140,11 +165,15 @@ export const WorldManager = () => {
 
   return (
     <group>
-      {Array.from(chunks).map(([key, position]) => {
+      {Array.from(chunks).map(([key, chunkData]) => {
         return (
           <group key={key}>
-            <TerrainTile position={position} />
-            {debug && <Tile position={position} />}
+            <TerrainTile
+              position={chunkData.position}
+              resolution={chunkData.resolution}
+              lodLevel={chunkData.lodLevel}
+            />
+            {debug && <Tile position={chunkData.position} />}
           </group>
         );
       })}
@@ -152,7 +181,15 @@ export const WorldManager = () => {
   );
 };
 
-export const TerrainTile = ({ position }: { position: Vector3 }) => {
+export const TerrainTile = ({
+  position,
+  resolution,
+  lodLevel,
+}: {
+  position: Vector3;
+  resolution: number;
+  lodLevel: number;
+}) => {
   const { geometry } = useMemo(() => {
     const geo = new BufferGeometry();
 
@@ -215,15 +252,7 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
         const moisture = moistureMap[hz][hx];
         const temperature = temperatureMap[hz][hx];
 
-        // const worldX = position.x + localX;
-        // const worldZ = position.z + localZ;
-        // const noiseSample = getFractalNoise(worldX, worldZ);
-        // const H = noiseSample * HEIGHT_SCALE;
-        // const remappedSample = (noiseSample + 1) / 2;
-        // console.log(remappedSample === h);
-
         const scaledHeight = heightMap[hz][hx];
-        // console.log(H === scaledHeight);
 
         const L = heightMap[hz][hx - 1];
         const R = heightMap[hz][hx + 1];
@@ -288,18 +317,6 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
       }
     }
 
-    // for (let i = 0; i < resolution - 1; i++) {
-    //   for (let j = 0; j < resolution - 1; j++) {
-    //     const a = i * (resolution + 1) + (j + 1);
-    //     const b = i * (resolution + 1) + j;
-    //     const c = (i + 1) * (resolution + 1) + j;
-    //     const d = (i + 1) * (resolution + 1) + (j + 1);
-
-    //     indices.push(a, b, d);
-    //     indices.push(b, c, d);
-    //   }
-    // }
-
     geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
     geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
 
@@ -308,7 +325,7 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
     geo.setIndex(indices);
 
     return { geometry: geo };
-  }, [position]);
+  }, [position, resolution]);
 
   const material = useMemo(() => {
     return new MeshStandardMaterial({
@@ -331,6 +348,14 @@ export const TerrainTile = ({ position }: { position: Vector3 }) => {
         geometry={geometry}
         material={material}
       ></mesh>
+      {debug && (
+        <mesh position={[position.x, position.y + 5, position.z]}>
+          <sphereGeometry args={[0.5, 8, 8]} />
+          <meshBasicMaterial
+            color={new Color().setHSL(lodLevel / (lodLevels - 1), 1, 0.5)}
+          />
+        </mesh>
+      )}
     </>
   );
 };

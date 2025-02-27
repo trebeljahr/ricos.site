@@ -128,8 +128,7 @@ export const TerrainTile = ({
 
           const normal = topToBot.cross(leftToRight).normalize();
 
-          // Calculate slope for tree placement
-          const slope = 1 - Math.abs(normal.y); // 0 = flat, 1 = vertical
+          const slope = 1 - Math.abs(normal.y);
           slopeMap[hz][hx] = slope;
 
           const scaledHeight = heightMap[hz][hx];
@@ -215,9 +214,7 @@ export const TerrainTile = ({
 
   useHelper(normalsDebug && meshRef, VertexNormalsHelper, 1, 0xff0000);
 
-  // Generate tree placements based on biome
   const trees = useMemo(() => {
-    // Generate initial tree positions with biome consideration
     const initialTrees = generateTreePositions(
       position,
       resolution,
@@ -227,10 +224,8 @@ export const TerrainTile = ({
       slopeMap
     );
 
-    // Avoid overlap between trees
     const nonOverlappingTrees = avoidTreeOverlap(initialTrees, 3);
 
-    // Add variation to make trees look more natural
     return addTreeVariation(nonOverlappingTrees);
   }, [position, resolution, biomeMap, heightMap, slopeMap]);
 
@@ -241,8 +236,9 @@ export const TerrainTile = ({
         <Tree
           key={`tree-${index}`}
           type={tree.type}
-          position={tree.position}
+          position={[tree.position.x, tree.position.y - 2, tree.position.z]}
           scale={tree.scale}
+          rotation={tree.rotation}
         />
       ))}
 

@@ -26,6 +26,14 @@ const Page = () => {
 
               return (
                 <group key={index} position={[index * 3, 0, -10]}>
+                  <Html
+                    center
+                    position={[0, -0.5, 0]}
+                    scale={[-1, 1, 1]}
+                    transform
+                  >
+                    <div style={{ color: "black" }}>{key}</div>
+                  </Html>
                   <Asset />
                 </group>
               );

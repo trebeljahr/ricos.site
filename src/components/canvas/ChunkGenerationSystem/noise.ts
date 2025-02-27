@@ -1,9 +1,9 @@
 import { createNoise2D, NoiseFunction2D } from "simplex-noise";
 import {
-  DETAIL_LEVELS,
+  detailLevels,
   heightNoiseScale,
   moistureNoiseScale,
-  PERSISTENCE,
+  persistence,
   temperatureNoiseScale,
 } from "./config";
 import { Color } from "three";
@@ -32,14 +32,14 @@ function getFractalNoise(worldX: number, worldZ: number) {
   let noiseValue = 0;
   let totalAmplitude = 0;
 
-  for (let i = 0; i < DETAIL_LEVELS; i++) {
+  for (let i = 0; i < detailLevels; i++) {
     const noiseX = worldX * heightNoiseScale * frequency;
     const noiseZ = worldZ * heightNoiseScale * frequency;
 
     noiseValue += heightNoise(noiseX, noiseZ) * amplitude;
 
     totalAmplitude += amplitude;
-    amplitude *= PERSISTENCE;
+    amplitude *= persistence;
     frequency *= 2;
   }
 

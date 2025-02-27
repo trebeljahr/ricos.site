@@ -75,6 +75,7 @@
     "simplex-noise": "^4.0.3",
     "three": "^0.173.0",
     "three-custom-shader-material": "^6.3.0",
+    "three-stdlib": "^2.35.14",
     "tunnel-rat": "^0.1.2",
     "use-local-storage-state": "^19.4.0",
     "yet-another-react-lightbox": "^3.9.0"

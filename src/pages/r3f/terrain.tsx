@@ -1,5 +1,6 @@
 import { physicsDebug } from "@components/canvas/ChunkGenerationSystem/config";
 import { RigidBallSpawner } from "@components/canvas/ChunkGenerationSystem/RigidBall";
+import { SingleAnimal } from "@components/canvas/ChunkGenerationSystem/SingleAnimal";
 import { WorldManager } from "@components/canvas/ChunkGenerationSystem/WorldManager";
 import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
 import { KeyboardControlsProvider } from "@components/canvas/Scene";
@@ -26,6 +27,7 @@ const Page = () => {
             <WorldManager />
             <MinecraftCreativeControlsPlayer speed={speed} />
             <RigidBallSpawner />
+            <SingleAnimal />
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>

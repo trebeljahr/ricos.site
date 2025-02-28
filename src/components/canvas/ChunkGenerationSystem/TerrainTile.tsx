@@ -93,7 +93,7 @@ export const TerrainTile = ({
           const temperature = temperatureNoise(worldX, worldZ);
 
           heightNoiseMap[z + 1][x + 1] = remappedSample;
-          heightMap[z + 1][x + 1] = expHeight;
+          heightMap[z + 1][x + 1] = visualizeHeight ? expHeight : 0;
           moistureMap[z + 1][x + 1] = moisture;
           temperatureMap[z + 1][x + 1] = temperature;
         }
@@ -110,6 +110,7 @@ export const TerrainTile = ({
           const hx = x + 1;
           const hz = z + 1;
           const h = heightNoiseMap[hz][hx];
+          const height = heightMap[hz][hx];
           const moisture = moistureMap[hz][hx];
           const temperature = temperatureMap[hz][hx];
 
@@ -130,9 +131,6 @@ export const TerrainTile = ({
 
           const slope = 1 - Math.abs(normal.y);
           slopeMap[hz][hx] = slope;
-
-          const scaledHeight = heightMap[hz][hx];
-          const height = visualizeHeight ? scaledHeight : 0;
 
           const heightForHeightfield = heightMap[hz][resolution - hx];
           heightfield.push(heightForHeightfield);

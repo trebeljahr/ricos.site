@@ -7,13 +7,17 @@ import {
   SeekBehavior,
   Time,
   Vehicle,
+  WanderBehavior,
 } from "yuka";
-import { Euler, Matrix4, Mesh, Quaternion, Vector3 } from "three";
+import { Euler, Group, Matrix4, Mesh, Quaternion, Vector3 } from "three";
 import { RenderCallback } from "yuka/src/core/GameEntity";
+import { Trex } from "../Trex";
+import { Velociraptor } from "@models/dinosaurs_pack";
+import { Stag } from "@models/animals_pack";
 
 export function YukaSimulation() {
-  const vehicleMeshRef = useRef<Mesh>(null!);
-  const targetMeshRef = useRef<Mesh>(null!);
+  const vehicleMeshRef = useRef<Group>(null!);
+  const targetMeshRef = useRef<Group>(null!);
 
   const entityManager = useRef(new EntityManager());
   const time = useRef(new Time());
@@ -38,7 +42,7 @@ export function YukaSimulation() {
         );
       });
 
-      vehicleMeshRef.current.geometry.rotateX(Math.PI * 0.5);
+      //   vehicleMeshRef.current.geometry.rotateX(Math.PI * 0.5);
     }
     if (targetMeshRef.current) {
       target.current.setRenderComponent(targetMeshRef.current, (entity) => {
@@ -59,30 +63,22 @@ export function YukaSimulation() {
     entityManager.current.add(vehicle.current);
     entityManager.current.add(target.current);
 
-    vehicle.current.position.set(-2, 0, -2);
+    vehicle.current.position.set(-5, 0, 0);
     target.current.position.set(0, 0, 0);
 
     const seekBehavior = new SeekBehavior(target.current.position);
     vehicle.current.steering.add(seekBehavior);
     vehicle.current.maxSpeed = 2;
 
-    const fleeBehavior = new FleeBehavior(vehicle.current.position, 5);
+    const fleeBehavior = new FleeBehavior(vehicle.current.position, 10);
     target.current.steering.add(fleeBehavior);
-
-    const interval = setInterval(() => {
-      const x = Math.random() * 10;
-      const z = Math.random() * 10;
-      const y = 0; // Math.random() * 20;
-
-      target.current.position.set(x, y, z);
-    }, 3000);
+    const wanderingBehavior = new WanderBehavior(10);
+    target.current.steering.add(wanderingBehavior);
+    target.current.maxSpeed = 3;
 
     camera.lookAt(
       new Vector3(vehicle.current.position.x, 0, vehicle.current.position.z)
     );
-    return () => {
-      clearInterval(interval);
-    };
   }, []);
 
   useFrame(() => {
@@ -92,19 +88,18 @@ export function YukaSimulation() {
 
   return (
     <group>
-      <mesh
+      <group
         ref={vehicleMeshRef}
         matrixAutoUpdate={true}
         // rotation={[Math.PI * 0.5, 0, 0]}
       >
-        <coneGeometry args={[0.1, 0.5, 8]} />
-        <meshNormalMaterial />
-      </mesh>
+        <Velociraptor animationAction="Armature|Velociraptor_Run" scale={0.2} />
+      </group>
 
-      <mesh ref={targetMeshRef} matrixAutoUpdate={true}>
-        <sphereGeometry args={[0.1, 32, 32]} />
-        <meshPhongMaterial color={0xffea00} />
-      </mesh>
+      <group ref={targetMeshRef} matrixAutoUpdate={true}>
+        <Stag animationAction="AnimalArmature|Gallop" scale={0.2} />
+      </group>
+
       <gridHelper args={[20, 10]} />
     </group>
   );

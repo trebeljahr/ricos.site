@@ -34,7 +34,7 @@ type GLTFResult = GLTF & {
   animations: GLTFAction[];
 };
 
-type ActionName =
+export type ActionName =
   | "AnimalArmature|Attack_Headbutt"
   | "AnimalArmature|Attack_Kick"
   | "AnimalArmature|Death"
@@ -63,6 +63,9 @@ export default function Model(props: Props) {
     "/3d-assets/glb/animals_pack/Stag.glb"
   ) as unknown as GLTFResult;
   const { actions } = useAnimations(animations, group);
+
+  console.log("rendering");
+
   return (
     <group ref={group} {...props} dispose={null}>
       <GenericAnimationController

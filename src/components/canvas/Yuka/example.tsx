@@ -22,18 +22,19 @@ import { Trex } from "../Trex";
 import { Velociraptor } from "@models/dinosaurs_pack";
 import { Stag } from "@models/animals_pack";
 import { ActionName } from "@models/animals_pack/Stag";
+import { usePrevious } from "@hooks/usePrevious";
 
 export function YukaSimulation() {
   const chaserMeshRef = useRef<Group>(null!);
   const targetMeshRef = useRef<Group>(null!);
 
-  const panicRadius = 2;
+  const panicRadius = 5;
+  const safetyRadius = panicRadius * 3;
   const seekerSpeed = 3;
-  const fleeSpeed = seekerSpeed + 0.2;
-  //   const wanderSpeed = 0.5;
+  const fleeSpeed = seekerSpeed + 2;
+  const wanderSpeed = 1;
 
   const entityManager = useRef(new EntityManager());
-  const time = useRef(new Time());
   const chaser = useRef(new Vehicle());
   const target = useRef(new Vehicle());
 
@@ -87,10 +88,11 @@ export function YukaSimulation() {
     chaser.current.steering.add(seekBehavior);
     chaser.current.maxSpeed = seekerSpeed;
 
-    const fleeBehavior = new FleeBehavior(chaser.current.position, panicRadius);
-
+    const fleeBehavior = new FleeBehavior(chaser.current.position);
     const wanderingBehavior = new WanderBehavior();
-    wanderingBehavior.weight = 5;
+    fleeBehavior.active = false;
+    wanderingBehavior.active = true;
+    wanderingBehavior.weight = 2;
 
     target.current.steering.add(fleeBehavior);
     target.current.steering.add(wanderingBehavior);
@@ -111,37 +113,45 @@ export function YukaSimulation() {
     };
   }, []);
 
-  const isPanicked = useRef(false);
+  const [isPanicked, setIsPanicked] = useState(false);
+  const [animation, setAnimation] = useState<ActionName>("AnimalArmature|Walk");
+  const prevIsPanicked = usePrevious(isPanicked);
+
+  useEffect(() => {
+    if (isPanicked) {
+      target.current.maxSpeed = fleeSpeed;
+      target.current.steering.behaviors.forEach((behavior) => {
+        if (behavior instanceof FleeBehavior) {
+          behavior.active = true;
+        }
+      });
+      setAnimation("AnimalArmature|Gallop");
+    } else {
+      target.current.maxSpeed = wanderSpeed;
+      target.current.steering.behaviors.forEach((behavior) => {
+        if (behavior instanceof FleeBehavior) {
+          behavior.active = false;
+        }
+      });
+      setAnimation("AnimalArmature|Walk");
+    }
+  }, [isPanicked]);
 
   useFrame((_, delta) => {
-    // const delta = time.current.update().getDelta();
     entityManager.current.update(delta);
-
-    // target.current.velocity.multiplyScalar(0.99);
-    // chaser.current.velocity.multiplyScalar(0.99);
-    // console.log(chaser.current.position);
-
-    // isPanicked.current = checkPanicMode();
-    // console.log(isPanicked);
-
-    // if (isPanicked.current) {
-    //   target.current.maxSpeed = fleeSpeed;
-    // } else {
-    //   target.current.maxSpeed = wanderSpeed;
-    // }
-    // target.current.maxSpeed = isPanicked.current ? 2 : 1;
-    // console.log(target.current.maxSpeed);
-  });
-
-  const checkPanicMode = () => {
-    if (!target.current || !chaser.current) return false;
 
     const distance = chaser.current.position.distanceTo(
       target.current.position
     );
 
-    return distance <= panicRadius * 2;
-  };
+    if (distance < panicRadius && prevIsPanicked === false) {
+      setIsPanicked(true);
+    }
+
+    if (distance > safetyRadius && prevIsPanicked === true) {
+      setIsPanicked(false);
+    }
+  });
 
   return (
     <group>
@@ -155,7 +165,7 @@ export function YukaSimulation() {
       </group>
 
       <group ref={targetMeshRef} matrixAutoUpdate={true}>
-        <Stag animationAction={"AnimalArmature|Gallop"} scale={0.2} />
+        <Stag animationAction={animation} scale={0.2} />
       </group>
 
       <gridHelper args={[80, 20]} />

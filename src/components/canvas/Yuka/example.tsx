@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { EntityManager, GameEntity, SeekBehavior, Time, Vehicle } from "yuka";
-import { Matrix4, Mesh, Vector3 } from "three";
+import { Euler, Matrix4, Mesh, Quaternion, Vector3 } from "three";
 import { RenderCallback } from "yuka/src/core/GameEntity";
 
 export function YukaSimulation() {
@@ -14,7 +14,33 @@ export function YukaSimulation() {
   const target = useRef(new GameEntity());
 
   const sync: RenderCallback<Mesh> = (entity, renderComponent) => {
+    // renderComponent.matrix.copy(entity.worldMatrix as unknown as Matrix4);
+    // renderComponent.applyMatrix4(renderComponent.matrix);
+
+    // renderComponent.setRotationFromQuaternion(
+    //   entity.rotation as unknown as Quaternion
+    // );
+
+    // const quaternion = new Quaternion(
+    //   entity.rotation.x,
+    //   entity.rotation.y,
+    //   entity.rotation.z,
+    //   entity.rotation.w
+    // );
+
+    // renderComponent.rotation.setFromQuaternion(quaternion);
+
+    // renderComponent.position.copy(entity.position as unknown as Vector3);
+
+    // renderComponent.applyQuaternion(entity.rotation);
+    // renderComponent.rotation.copy(entity.rotation as unknown as Euler);
+
     renderComponent.matrix.copy(entity.worldMatrix as unknown as Matrix4);
+    renderComponent.matrix.decompose(
+      renderComponent.position,
+      renderComponent.quaternion,
+      renderComponent.scale
+    );
   };
 
   const { camera } = useThree();
@@ -40,6 +66,9 @@ export function YukaSimulation() {
       const x = Math.random() * 3;
       const z = Math.random() * 3;
       target.current.position.set(x, 0, z);
+
+      console.log(vehicle.current.rotation);
+      console.log(vehicleMeshRef.current.rotation);
     }, 5000);
 
     camera.lookAt(

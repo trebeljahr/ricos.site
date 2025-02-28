@@ -1,6 +1,13 @@
 import React, { useRef, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { EntityManager, GameEntity, SeekBehavior, Time, Vehicle } from "yuka";
+import {
+  EntityManager,
+  FleeBehavior,
+  GameEntity,
+  SeekBehavior,
+  Time,
+  Vehicle,
+} from "yuka";
 import { Euler, Matrix4, Mesh, Quaternion, Vector3 } from "three";
 import { RenderCallback } from "yuka/src/core/GameEntity";
 
@@ -11,7 +18,7 @@ export function YukaSimulation() {
   const entityManager = useRef(new EntityManager());
   const time = useRef(new Time());
   const vehicle = useRef(new Vehicle());
-  const target = useRef(new GameEntity());
+  const target = useRef(new Vehicle());
 
   const { camera } = useThree();
 
@@ -19,20 +26,32 @@ export function YukaSimulation() {
     if (vehicleMeshRef.current) {
       vehicle.current.setRenderComponent(vehicleMeshRef.current, (entity) => {
         vehicleMeshRef.current.position.copy(
-          entity.position as unknown as Vector3
+          new Vector3(entity.position.x, entity.position.y, entity.position.z)
         );
         vehicleMeshRef.current.quaternion.copy(
-          entity.rotation as unknown as Quaternion
+          new Quaternion(
+            entity.rotation.x,
+            entity.rotation.y,
+            entity.rotation.z,
+            entity.rotation.w
+          )
         );
       });
+
+      vehicleMeshRef.current.geometry.rotateX(Math.PI * 0.5);
     }
     if (targetMeshRef.current) {
       target.current.setRenderComponent(targetMeshRef.current, (entity) => {
         targetMeshRef.current.position.copy(
-          entity.position as unknown as Vector3
+          new Vector3(entity.position.x, entity.position.y, entity.position.z)
         );
         targetMeshRef.current.quaternion.copy(
-          entity.rotation as unknown as Quaternion
+          new Quaternion(
+            entity.rotation.x,
+            entity.rotation.y,
+            entity.rotation.z,
+            entity.rotation.w
+          )
         );
       });
     }
@@ -45,7 +64,10 @@ export function YukaSimulation() {
 
     const seekBehavior = new SeekBehavior(target.current.position);
     vehicle.current.steering.add(seekBehavior);
-    vehicle.current.maxSpeed = 0.1;
+    vehicle.current.maxSpeed = 2;
+
+    const fleeBehavior = new FleeBehavior(vehicle.current.position, 5);
+    target.current.steering.add(fleeBehavior);
 
     const interval = setInterval(() => {
       const x = Math.random() * 10;
@@ -69,11 +91,11 @@ export function YukaSimulation() {
   });
 
   return (
-    <>
+    <group>
       <mesh
         ref={vehicleMeshRef}
         matrixAutoUpdate={true}
-        rotation={[Math.PI * 0.5, 0, 0]}
+        // rotation={[Math.PI * 0.5, 0, 0]}
       >
         <coneGeometry args={[0.1, 0.5, 8]} />
         <meshNormalMaterial />
@@ -84,6 +106,6 @@ export function YukaSimulation() {
         <meshPhongMaterial color={0xffea00} />
       </mesh>
       <gridHelper args={[20, 10]} />
-    </>
+    </group>
   );
 }

@@ -1,15 +1,48 @@
 import { physicsDebug } from "@components/canvas/ChunkGenerationSystem/config";
 import { RigidBallSpawner } from "@components/canvas/ChunkGenerationSystem/RigidBall";
-import { WorldManager } from "@components/canvas/ChunkGenerationSystem/WorldManager";
 import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
 import { KeyboardControlsProvider } from "@components/canvas/Scene";
+import * as animals from "@models/animals_pack";
+import * as dinosaurs from "@models/dinosaurs_pack";
+import * as natureAssets from "@models/nature_pack";
+import * as simpleNatureAssets from "@models/simple_nature_pack";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Leva } from "leva";
-import * as assets from "@models/simple_nature_pack";
-import * as moreAssets from "@models/nature_pack";
-import { Html, Plane } from "@react-three/drei";
+
+import { Plane, Text } from "@react-three/drei";
+import { PropsWithChildren } from "react";
 import { DoubleSide } from "three";
+
+const AssetWithText = ({
+  index,
+  text,
+  children,
+}: PropsWithChildren<{ index: number; text: string }>) => {
+  return (
+    <group
+      key={index}
+      position={[(index - (index % 10)) / 2, 0, (index % 10) * 4]}
+    >
+      <Text
+        position={[0, 0.3, -1.5]}
+        scale={[-1, 1, 1]}
+        fontSize={0.4}
+        color={"#000000"}
+      >
+        {text}
+      </Text>
+      {children}
+    </group>
+  );
+};
+
+const allAssets = {
+  ...simpleNatureAssets,
+  ...natureAssets,
+  ...animals,
+  ...dinosaurs,
+};
 
 const Page = () => {
   const groundColor = "#84fb34";
@@ -39,45 +72,12 @@ const Page = () => {
             // hemiLight.position.set( 0, 50, 0 ); */}
             <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
             <color args={["#f0f0f0"]} attach="background" />
-            {Object.entries(assets).map(([key, Asset], index) => {
-              console.log(key);
 
+            {Object.entries(allAssets).map(([key, Asset], index) => {
               return (
-                <group key={index} position={[index * 3, 0, -10]}>
-                  <Html
-                    center
-                    position={[0, 0.5, -2]}
-                    scale={[-1, 1, 1]}
-                    transform
-                    occlude="blending"
-                    className="text-black bg-white p-2"
-                  >
-                    {key}
-                  </Html>
+                <AssetWithText key={key} index={index} text={key}>
                   <Asset />
-                </group>
-              );
-            })}
-            {Object.entries(moreAssets).map(([key, Asset], index) => {
-              console.log(key);
-
-              return (
-                <group
-                  key={index}
-                  position={[(index - (index % 10)) / 2, 0, (index % 10) * 4]}
-                >
-                  <Html
-                    center
-                    position={[0, 0.5, -2]}
-                    scale={[-1, 1, 1]}
-                    transform
-                    occlude="blending"
-                    className="text-black bg-white p-2"
-                  >
-                    {key}
-                  </Html>
-                  <Asset />
-                </group>
+                </AssetWithText>
               );
             })}
             <MinecraftCreativeControlsPlayer speed={25} />

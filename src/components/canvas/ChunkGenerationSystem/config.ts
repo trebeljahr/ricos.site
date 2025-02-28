@@ -10,7 +10,7 @@ type Modes =
 
 const debug = false;
 const normalsDebug = false;
-const visualizeHeight = true;
+const visualizeHeight = false;
 const tileSize = 50;
 const tilesDistance = 5;
 const mode: Modes = "landscape" as Modes;

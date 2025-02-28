@@ -23,6 +23,7 @@ import {
   Vector3,
 } from "three";
 import { GLTF } from "three-stdlib";
+import { AnimationController } from "./GenericAnimationController";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -84,50 +85,6 @@ export function FollowingTrex() {
       <Trex />
     </group>
   );
-}
-
-function AnimationController({ actions }: { actions: PossibleActions }) {
-  const [state, setState] = useState<ActionName>("Armature|TRex_Idle");
-  const previousState = usePrevious(state);
-
-  const [subscribe] = useKeyboardControls();
-
-  useEffect(() => {
-    subscribe((state) => {
-      if (!actions) return;
-      const { attack, jump, forward, backward, left, right } = state;
-      if (attack) {
-        if (!actions["Armature|TRex_Attack"]) return;
-        actions["Armature|TRex_Attack"].setLoop(LoopOnce, 1);
-        actions["Armature|TRex_Attack"].clampWhenFinished = true;
-        actions["Armature|TRex_Attack"].reset().play();
-      }
-      if (jump) {
-        if (!actions["Armature|TRex_Jump"]?.isRunning()) {
-          if (!actions["Armature|TRex_Jump"]) return;
-          actions["Armature|TRex_Jump"].setLoop(LoopOnce, 1);
-          actions["Armature|TRex_Jump"].clampWhenFinished = true;
-          actions["Armature|TRex_Jump"].reset().play();
-        }
-      }
-      if (forward || backward || left || right) {
-        return setState("Armature|TRex_Run");
-      }
-      return setState("Armature|TRex_Idle");
-    });
-  }, [actions, subscribe]);
-
-  useEffect(() => {
-    const fadeDuration = 0.5;
-    if (!previousState) return;
-
-    const current = actions[previousState];
-    const toPlay = actions[state];
-    current?.fadeOut(fadeDuration);
-    toPlay?.reset().fadeIn(fadeDuration).play();
-  }, [state, actions, previousState]);
-
-  return null;
 }
 
 export const useTrex = () => {

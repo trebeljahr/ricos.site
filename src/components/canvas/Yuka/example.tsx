@@ -1,33 +1,39 @@
-import React, {
-  useRef,
-  useEffect,
-  useState,
-  PropsWithChildren,
-  createContext,
-} from "react";
+import { usePrevious } from "@hooks/usePrevious";
+import { Stag } from "@models/animals_pack";
+import { ActionName } from "@models/animals_pack/Stag";
+import { Velociraptor } from "@models/dinosaurs_pack";
 import { useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useRef, useState } from "react";
+import {
+  Box3,
+  BoxGeometry,
+  ColorRepresentation,
+  Group,
+  Mesh,
+  MeshPhongMaterial,
+  Object3D,
+  Quaternion,
+  Sphere,
+  Vector3,
+} from "three";
 import {
   EntityManager,
   FleeBehavior,
   GameEntity,
-  SeekBehavior,
-  Time,
-  Vehicle,
   Matrix4,
+  ObstacleAvoidanceBehavior,
+  SeekBehavior,
+  Vehicle,
   WanderBehavior,
+  Vector3 as YukaVec3,
 } from "yuka";
-import { Euler, Group, Mesh, Quaternion, Vector3 } from "three";
-import { RenderCallback } from "yuka/src/core/GameEntity";
-import { Trex } from "../Trex";
-import { Velociraptor } from "@models/dinosaurs_pack";
-import { Stag } from "@models/animals_pack";
-import { ActionName } from "@models/animals_pack/Stag";
-import { usePrevious } from "@hooks/usePrevious";
 
 export function YukaSimulation() {
   const chaserMeshRef = useRef<Group>(null!);
   const targetMeshRef = useRef<Group>(null!);
 
+  const gridSize = 80;
+  const halfGridSize = gridSize / 2;
   const panicRadius = 5;
   const safetyRadius = panicRadius * 3;
   const seekerSpeed = 3;
@@ -37,42 +43,90 @@ export function YukaSimulation() {
   const entityManager = useRef(new EntityManager());
   const chaser = useRef(new Vehicle());
   const target = useRef(new Vehicle());
+  const obstacles = useRef<GameEntity[]>([]);
+  const obstacleMeshes = useRef<Mesh[]>([]);
 
   const { camera } = useThree();
 
   useEffect(() => {
-    if (chaserMeshRef.current) {
-      chaser.current.setRenderComponent(chaserMeshRef.current, (entity) => {
-        chaserMeshRef.current.position.copy(
-          new Vector3(entity.position.x, entity.position.y, entity.position.z)
-        );
-        chaserMeshRef.current.quaternion.copy(
-          new Quaternion(
-            entity.rotation.x,
-            entity.rotation.y,
-            entity.rotation.z,
-            entity.rotation.w
-          )
-        );
-      });
+    if (!chaserMeshRef.current || !targetMeshRef.current) return;
 
-      //   vehicleMeshRef.current.geometry.rotateX(Math.PI * 0.5);
+    obstacles.current = [];
+    obstacleMeshes.current = [];
+
+    const createObstacle = ({
+      x,
+      y,
+      z,
+      w,
+      h,
+      d,
+      color,
+    }: {
+      x?: number;
+      y?: number;
+      z?: number;
+      w?: number;
+      h?: number;
+      d?: number;
+      color?: ColorRepresentation;
+    } = {}) => {
+      const geometry = new BoxGeometry(w || 1, h || 1, d || 1);
+      geometry.computeBoundingSphere();
+      if (geometry.boundingSphere?.radius === undefined) {
+        return;
+      }
+
+      const material = new MeshPhongMaterial({ color: color || 0xff0000 });
+
+      const mesh = new Mesh(geometry, material);
+
+      mesh.position.set(
+        x || Math.random() * gridSize - halfGridSize,
+        y || 0,
+        z || Math.random() * gridSize - halfGridSize
+      );
+
+      obstacleMeshes.current.push(mesh);
+
+      const obstacle = new GameEntity();
+      obstacle.position.copy(mesh.position as unknown as YukaVec3);
+      obstacle.boundingRadius = geometry.boundingSphere.radius;
+      entityManager.current.add(obstacle);
+      obstacles.current.push(obstacle);
+    };
+
+    for (let i = 0; i < 100; i++) {
+      createObstacle({ color: "#56c700" });
     }
-    if (targetMeshRef.current) {
-      target.current.setRenderComponent(targetMeshRef.current, (entity) => {
-        targetMeshRef.current.position.copy(
-          new Vector3(entity.position.x, entity.position.y, entity.position.z)
-        );
-        targetMeshRef.current.quaternion.copy(
-          new Quaternion(
-            entity.rotation.x,
-            entity.rotation.y,
-            entity.rotation.z,
-            entity.rotation.w
-          )
-        );
-      });
-    }
+
+    chaser.current.setRenderComponent(chaserMeshRef.current, (entity) => {
+      chaserMeshRef.current.position.copy(
+        new Vector3(entity.position.x, entity.position.y, entity.position.z)
+      );
+      chaserMeshRef.current.quaternion.copy(
+        new Quaternion(
+          entity.rotation.x,
+          entity.rotation.y,
+          entity.rotation.z,
+          entity.rotation.w
+        )
+      );
+    });
+
+    target.current.setRenderComponent(targetMeshRef.current, (entity) => {
+      targetMeshRef.current.position.copy(
+        new Vector3(entity.position.x, entity.position.y, entity.position.z)
+      );
+      targetMeshRef.current.quaternion.copy(
+        new Quaternion(
+          entity.rotation.x,
+          entity.rotation.y,
+          entity.rotation.z,
+          entity.rotation.w
+        )
+      );
+    });
 
     chaser.current.worldMatrix.copy(new Matrix4());
     target.current.worldMatrix.copy(new Matrix4());
@@ -84,18 +138,27 @@ export function YukaSimulation() {
     chaserMeshRef.current.rotateX(Math.PI * 0.5);
 
     const seekBehavior = new SeekBehavior(target.current.position);
-
+    const seekerObstacleAvoidanceBehavior = new ObstacleAvoidanceBehavior(
+      obstacles.current
+    );
+    seekerObstacleAvoidanceBehavior.weight = 10;
     chaser.current.steering.add(seekBehavior);
+    chaser.current.steering.add(seekerObstacleAvoidanceBehavior);
     chaser.current.maxSpeed = seekerSpeed;
 
     const fleeBehavior = new FleeBehavior(chaser.current.position);
     const wanderingBehavior = new WanderBehavior();
+    const obstacleAvoidanceBehavior = new ObstacleAvoidanceBehavior(
+      obstacles.current
+    );
     fleeBehavior.active = false;
     wanderingBehavior.active = true;
     wanderingBehavior.weight = 2;
+    obstacleAvoidanceBehavior.weight = 10;
 
     target.current.steering.add(fleeBehavior);
     target.current.steering.add(wanderingBehavior);
+    target.current.steering.add(obstacleAvoidanceBehavior);
     target.current.maxSpeed = fleeSpeed;
 
     camera.position.set(0, 10, 10);
@@ -164,11 +227,40 @@ export function YukaSimulation() {
         <Velociraptor animationAction="Armature|Velociraptor_Run" />
       </group>
 
+      {obstacleMeshes.current.map((mesh, index) => (
+        <group>
+          <primitive key={index} object={mesh} />
+          <BoundingSphere object={mesh} />
+        </group>
+      ))}
+
       <group ref={targetMeshRef} matrixAutoUpdate={true}>
         <Stag animationAction={animation} scale={0.2} />
       </group>
 
-      <gridHelper args={[80, 20]} />
+      <gridHelper args={[gridSize, 20]} />
     </group>
+  );
+}
+
+function BoundingSphere({ object }: { object: Object3D }) {
+  const ref = useRef<Mesh>(null!);
+  const sphere = new Sphere();
+
+  useFrame(() => {
+    if (object) {
+      const box = new Box3().setFromObject(object);
+      box.getBoundingSphere(sphere);
+
+      ref.current.position.copy(sphere.center);
+      ref.current.scale.setScalar(sphere.radius);
+    }
+  });
+
+  return (
+    <mesh ref={ref}>
+      <sphereGeometry args={[1, 32, 32]} />
+      <meshBasicMaterial color="red" wireframe />
+    </mesh>
   );
 }

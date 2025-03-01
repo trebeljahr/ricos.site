@@ -44,6 +44,28 @@ export function usePalmTree1() {
   return { nodes, materials };
 }
 
+
+export function InstancedPalmTree1({
+  positions,
+}: {
+  positions: Vector3[];
+}) {
+  const meshMaterialCombos: MeshMaterialCombos = [
+    ["PalmTree_1_1", "Wood"],
+    ["PalmTree_1_2", "Green"],
+    ["PalmTree_1_3", "DarkGreen"]
+  ];
+
+  return (
+    <GenericInstancedSystem
+      positions={positions}
+      meshMaterialCombos={meshMaterialCombos}
+      modelPath={"/3d-assets/glb/nature_pack/PalmTree_1.glb"}
+    />
+  );
+}
+
+
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/nature_pack/PalmTree_1.glb"

@@ -6,7 +6,6 @@ import { Color, DoubleSide } from "three";
 
 export const GrassMaterial = shaderMaterial(
   {
-    bladeHeight: 0.5,
     map: null,
     alphaMap: null,
     time: 0,

@@ -21,13 +21,13 @@ declare module "@react-three/fiber" {
 }
 
 export default function Grass({
-  size = 10,
+  size = 1,
   width = 32,
   instances = 100000,
   ...props
 }) {
-  const bH = size;
-  const bW = size * 0.12;
+  const bH = 0.02;
+  const bW = bH / 8;
   const joints = 5;
   const materialRef = useRef<ShaderMaterial>(null!);
   const [texture, alphaMap] = useLoader(TextureLoader, [
@@ -74,7 +74,7 @@ export default function Grass({
 
   return (
     <group {...props}>
-      <mesh position={[0, 0, 0]}>
+      <mesh position={[0, 0, 0]} frustumCulled={false}>
         <instancedBufferGeometry
           index={baseGeom.index}
           attributes-position={baseGeom.attributes.position}
@@ -107,14 +107,15 @@ export default function Grass({
           alphaMap={alphaMap}
           toneMapped={false}
           depthTest={true}
+          bladeHeight={bH}
         />
       </mesh>
-      <HeightfieldCollider
+      {/* <HeightfieldCollider
         args={[width - 1, width - 1, heightField, { x: width, y: 1, z: width }]}
-      />
-      <mesh position={[0, 0, 0]} geometry={groundGeo}>
-        <meshStandardMaterial color="#4e3600" side={DoubleSide} />
-      </mesh>
+      /> */}
+      {/* <mesh position={[0, 0, 0]} geometry={groundGeo}>
+        <meshStandardMaterial color="#2b4e00" side={DoubleSide} />
+      </mesh> */}
     </group>
   );
 }

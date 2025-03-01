@@ -1,6 +1,6 @@
 import { Vector3 } from "three";
-import { BiomeType } from "./Biomes";
-import { baseResolution } from "./config";
+import { BiomeType } from "../ChunkGenerationSystem/Biomes";
+import { baseResolution } from "../ChunkGenerationSystem/config";
 
 export enum TreeType {
   BIRCH = "BIRCH",

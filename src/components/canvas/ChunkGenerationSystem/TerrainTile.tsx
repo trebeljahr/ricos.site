@@ -26,8 +26,8 @@ import {
   addTreeVariation,
   avoidTreeOverlap,
   generateTreePositions,
-} from "./TreeSystem";
-import { Tree } from "./Tree";
+} from "../Trees/TreeSystem";
+import { Tree } from "../Trees/Tree";
 
 export const TerrainTile = ({
   position,

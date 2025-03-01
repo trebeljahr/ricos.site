@@ -34,9 +34,9 @@ import {
 import { Tree1, Tree2, Tree4 } from "@models/simple_nature_pack";
 import { memo } from "react";
 import { Vector3 } from "three";
-import { BirchTree } from "../BirchTree";
+import { BirchTree } from "./BirchTree";
 import { TreeType } from "./TreeSystem";
-import { pickRandomFromArray } from "./utils";
+import { pickRandomFromArray } from "../ChunkGenerationSystem/utils";
 
 type Props = JSX.IntrinsicElements["group"];
 
@@ -93,35 +93,33 @@ const OakTrees = [
   (props: Props) => <CommonTree_5 {...props} />,
 ];
 
-export const Tree = memo(
-  ({
-    type,
-    position,
-    rotation = [0, 0, 0],
-    scale = [1, 1, 1],
-  }: {
-    type: TreeType;
-    position: Vector3;
-    scale?: [number, number, number];
-    rotation?: [number, number, number];
-  }) => {
-    switch (type) {
-      case TreeType.BIRCH:
-        return pickRandomFromArray(BirchTrees)({ position, scale, rotation });
-      case TreeType.OAK:
-        return pickRandomFromArray(OakTrees)({ position, scale, rotation });
-      case TreeType.PINE:
-        return pickRandomFromArray(PineTrees)({ position, scale, rotation });
-      case TreeType.PALM:
-        return pickRandomFromArray(PalmTrees)({ position, scale, rotation });
-      case TreeType.ACACIA:
-        return pickRandomFromArray(AcaciaTrees)({ position, scale, rotation });
-      case TreeType.JUNGLE:
-        return pickRandomFromArray(WillowTrees)({ position, scale, rotation });
-      default:
-        return (
-          <BirchTree position={position} scale={scale} rotation={rotation} />
-        );
-    }
+export const Tree = memo(function Tree({
+  type,
+  position,
+  rotation = [0, 0, 0],
+  scale = [1, 1, 1],
+}: {
+  type: TreeType;
+  position: Vector3;
+  scale?: [number, number, number];
+  rotation?: [number, number, number];
+}) {
+  switch (type) {
+    case TreeType.BIRCH:
+      return pickRandomFromArray(BirchTrees)({ position, scale, rotation });
+    case TreeType.OAK:
+      return pickRandomFromArray(OakTrees)({ position, scale, rotation });
+    case TreeType.PINE:
+      return pickRandomFromArray(PineTrees)({ position, scale, rotation });
+    case TreeType.PALM:
+      return pickRandomFromArray(PalmTrees)({ position, scale, rotation });
+    case TreeType.ACACIA:
+      return pickRandomFromArray(AcaciaTrees)({ position, scale, rotation });
+    case TreeType.JUNGLE:
+      return pickRandomFromArray(WillowTrees)({ position, scale, rotation });
+    default:
+      return (
+        <BirchTree position={position} scale={scale} rotation={rotation} />
+      );
   }
-);
+});

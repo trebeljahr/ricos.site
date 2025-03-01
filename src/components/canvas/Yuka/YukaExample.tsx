@@ -222,10 +222,9 @@ export function YukaSimulation() {
   });
 
   const treePositions = useMemo(
-    () => generateTreePositions(gridSize * 2, gridSize * 2, 1, 50),
+    () => generateTreePositions(gridSize * 2, gridSize * 2, 1, 2),
     []
   );
-  console.log(treePositions.length);
 
   return (
     <group>
@@ -256,7 +255,7 @@ export function YukaSimulation() {
   );
 }
 
-export function Trees({ positions }: { positions: Vector2[] }) {
+export function Trees({ positions }: { positions: Vector3[] }) {
   const meshRef = useRef<InstancedMesh>(null!);
   const temp = new Object3D();
 
@@ -264,7 +263,7 @@ export function Trees({ positions }: { positions: Vector2[] }) {
     if (!meshRef.current) return;
 
     positions.forEach((pos, i) => {
-      temp.position.set(pos.x, 0, pos.y);
+      temp.position.set(pos.x, pos.y, pos.z);
       temp.updateMatrix();
       meshRef.current.setMatrixAt(i, temp.matrix);
     });
@@ -306,35 +305,35 @@ export function BoundingSphere({ object }: { object: Object3D }) {
 }
 
 export function generateTreePositions(
-  width: number,
-  depth: number,
+  xWidth: number,
+  zWidth: number,
   minDistance: number,
   densityScale = 0.5
 ) {
   const points = [];
 
   const gridSize =
-    Math.ceil(width / minDistance) * Math.ceil(depth / minDistance);
+    Math.ceil(xWidth / minDistance) * Math.ceil(zWidth / minDistance);
 
   for (let i = 0; i < gridSize; i++) {
-    const x = Math.random() * width - width / 2;
-    const z = Math.random() * depth - depth / 2;
+    const x = Math.random() * xWidth - xWidth / 2;
+    const z = Math.random() * zWidth - zWidth / 2;
 
-    // Perlin noise for clustering
-    const noiseValue = perlin2(x * 0.01, z * 0.01); // Adjust scale
-    if (Math.random() > noiseValue * densityScale) continue; // Skip some points
+    const noiseValue = perlin2(x * 0.01, z * 0.01);
+    if (Math.random() > noiseValue * densityScale) continue;
 
-    // Check for overlaps
     let valid = true;
     for (const p of points) {
-      if (new Vector2(p.x, p.y).distanceTo(new Vector2(x, z)) < minDistance) {
+      if (
+        new Vector3(p.x, 0, p.z).distanceTo(new Vector3(x, 0, z)) < minDistance
+      ) {
         valid = false;
         break;
       }
     }
 
     if (valid) {
-      points.push(new Vector2(x, z));
+      points.push(new Vector3(x, 0, z));
     }
   }
 

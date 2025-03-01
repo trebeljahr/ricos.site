@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 
 import { useGLTF } from "@react-three/drei";
 import { generateTreePositions } from "../Yuka/YukaExample";
-import { Group, InstancedMesh, Mesh, Object3D, Vector2 } from "three";
+import { Group, InstancedMesh, Mesh, Object3D, Vector2, Vector3 } from "three";
 
 const treeArray = [
   {
@@ -78,7 +78,7 @@ function InstancedTrees({
 
 type Props = {
   typeIndex: number;
-  positions: Vector2[];
+  positions: Vector3[];
   modelPath: string;
 };
 

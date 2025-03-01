@@ -1,5 +1,12 @@
 # Development Guidelines for ricos.site
 
+## Build & Development Commands
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run typecheck` - Run TypeScript type checking
+- `npm run lint` - Run linting (through Next.js ESLint integration)
+- `npm test` - Run tests (use Vitest for testing)
+
 ## Code Style Guidelines
 - **TypeScript**: Use TypeScript for all new files with strict typing
 - **Components**: Use function components with proper type definitions

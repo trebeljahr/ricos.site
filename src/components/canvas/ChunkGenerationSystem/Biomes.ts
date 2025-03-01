@@ -1,5 +1,5 @@
 import { Color } from "three";
-import { TreeType } from "./TreeSystem";
+import { TreeType } from "../Trees/TreeSystem";
 
 export type BiomeName =
   | "Snow"

@@ -3,17 +3,22 @@ import { Stag } from "@models/animals_pack";
 import { ActionName } from "@models/animals_pack/Stag";
 import { Velociraptor } from "@models/dinosaurs_pack";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
+import { perlin2 } from "simplenoise";
+import { createNoise2D } from "simplex-noise";
+
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Box3,
   BoxGeometry,
   ColorRepresentation,
   Group,
+  InstancedMesh,
   Mesh,
   MeshPhongMaterial,
   Object3D,
   Quaternion,
   Sphere,
+  Vector2,
   Vector3,
 } from "three";
 import {
@@ -28,17 +33,17 @@ import {
   Vector3 as YukaVec3,
 } from "yuka";
 
+const gridSize = 80;
+const halfGridSize = gridSize / 2;
+const panicRadius = 5;
+const safetyRadius = panicRadius * 3;
+const seekerSpeed = 3;
+const fleeSpeed = seekerSpeed + 2;
+const wanderSpeed = 1;
+
 export function YukaSimulation() {
   const chaserMeshRef = useRef<Group>(null!);
   const targetMeshRef = useRef<Group>(null!);
-
-  const gridSize = 80;
-  const halfGridSize = gridSize / 2;
-  const panicRadius = 5;
-  const safetyRadius = panicRadius * 3;
-  const seekerSpeed = 3;
-  const fleeSpeed = seekerSpeed + 2;
-  const wanderSpeed = 1;
 
   const entityManager = useRef(new EntityManager());
   const chaser = useRef(new Vehicle());
@@ -174,7 +179,7 @@ export function YukaSimulation() {
       entityManager.current.remove(target.current);
       entityManager.current.clear();
     };
-  }, []);
+  }, [camera]);
 
   const [isPanicked, setIsPanicked] = useState(false);
   const [animation, setAnimation] = useState<ActionName>("AnimalArmature|Walk");
@@ -216,6 +221,12 @@ export function YukaSimulation() {
     }
   });
 
+  const treePositions = useMemo(
+    () => generateTreePositions(gridSize * 2, gridSize * 2, 1, 50),
+    []
+  );
+  console.log(treePositions.length);
+
   return (
     <group>
       <group
@@ -227,12 +238,14 @@ export function YukaSimulation() {
         <Velociraptor animationAction="Armature|Velociraptor_Run" />
       </group>
 
-      {obstacleMeshes.current.map((mesh, index) => (
+      {/* {obstacleMeshes.current.map((mesh, index) => (
         <group>
           <primitive key={index} object={mesh} />
           <BoundingSphere object={mesh} />
         </group>
-      ))}
+      ))} */}
+
+      <Trees positions={treePositions} />
 
       <group ref={targetMeshRef} matrixAutoUpdate={true}>
         <Stag animationAction={animation} scale={0.2} />
@@ -243,7 +256,34 @@ export function YukaSimulation() {
   );
 }
 
-function BoundingSphere({ object }: { object: Object3D }) {
+export function Trees({ positions }: { positions: Vector2[] }) {
+  const meshRef = useRef<InstancedMesh>(null!);
+  const temp = new Object3D();
+
+  useEffect(() => {
+    if (!meshRef.current) return;
+
+    positions.forEach((pos, i) => {
+      temp.position.set(pos.x, 0, pos.y);
+      temp.updateMatrix();
+      meshRef.current.setMatrixAt(i, temp.matrix);
+    });
+
+    meshRef.current.instanceMatrix.needsUpdate = true;
+  }, [positions]);
+
+  return (
+    <instancedMesh
+      ref={meshRef}
+      args={[undefined, undefined, positions.length]}
+    >
+      <sphereGeometry args={[0.5, 32, 32]} />
+      <meshBasicMaterial color="green" />
+    </instancedMesh>
+  );
+}
+
+export function BoundingSphere({ object }: { object: Object3D }) {
   const ref = useRef<Mesh>(null!);
   const sphere = new Sphere();
 
@@ -263,4 +303,40 @@ function BoundingSphere({ object }: { object: Object3D }) {
       <meshBasicMaterial color="red" wireframe />
     </mesh>
   );
+}
+
+export function generateTreePositions(
+  width: number,
+  depth: number,
+  minDistance: number,
+  densityScale = 0.5
+) {
+  const points = [];
+
+  const gridSize =
+    Math.ceil(width / minDistance) * Math.ceil(depth / minDistance);
+
+  for (let i = 0; i < gridSize; i++) {
+    const x = Math.random() * width - width / 2;
+    const z = Math.random() * depth - depth / 2;
+
+    // Perlin noise for clustering
+    const noiseValue = perlin2(x * 0.01, z * 0.01); // Adjust scale
+    if (Math.random() > noiseValue * densityScale) continue; // Skip some points
+
+    // Check for overlaps
+    let valid = true;
+    for (const p of points) {
+      if (new Vector2(p.x, p.y).distanceTo(new Vector2(x, z)) < minDistance) {
+        valid = false;
+        break;
+      }
+    }
+
+    if (valid) {
+      points.push(new Vector2(x, z));
+    }
+  }
+
+  return points;
 }

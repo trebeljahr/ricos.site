@@ -1,6 +1,6 @@
 import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
 import { KeyboardControlsProvider } from "@components/canvas/Scene";
-import { YukaSimulation } from "@components/canvas/Yuka/YukaExample";
+import { InstancedTreeSystem } from "@components/canvas/Trees/InstancedTreeSystem";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 
@@ -15,7 +15,7 @@ const Page = () => {
             <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
             <color args={["#f0f0f0"]} attach="background" />
             <MinecraftCreativeControlsPlayer speed={25} />
-            <YukaSimulation />
+            <InstancedTreeSystem />
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>

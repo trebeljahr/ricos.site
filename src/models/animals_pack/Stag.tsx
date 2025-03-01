@@ -63,8 +63,6 @@ export default function Model(props: Props) {
   ) as unknown as GLTFResult;
   const { actions } = useAnimations(animations, group);
 
-  console.log("rendering");
-
   return (
     <group ref={group} {...props} dispose={null}>
       <GenericAnimationController

@@ -10,6 +10,47 @@ import { DoubleSide, Vector2, Vector3 } from "three";
 import { debug, tileSize } from "../ChunkGenerationSystem/config";
 import { Sphere } from "@react-three/drei";
 import { nanoid } from "nanoid";
+import { Chunk } from "../ChunkGenerationSystem/WorldManager";
+import { InstancedBush2 } from "@models/nature_pack/Bush_2";
+
+export const Forest = ({ chunks }: { chunks: Map<string, Chunk> }) => {
+  const { groups, models } = useMemo(() => {
+    const positions: Vector3[] = [];
+    chunks.forEach((chunk) => {
+      console.log(chunk.position.x, chunk.position.z);
+      const newPositions = poissonDiskSample(tileSize, 3, 20, {
+        offset: new Vector2(chunk.position.x, chunk.position.z),
+      });
+      console.log(newPositions);
+
+      positions.push(
+        ...newPositions.map(
+          (pos) =>
+            new Vector3(pos.x + chunk.position.x, 0, pos.z + chunk.position.z)
+        )
+      );
+    });
+
+    const groups = splitIntoRandomGroups(positions, 5);
+    const models = [
+      InstancedBirchTree1,
+      InstancedBush2,
+      InstancedPineTree1,
+      InstancedWillow1,
+      InstancedCommonTree5,
+    ];
+
+    return { groups, models };
+  }, [chunks]);
+
+  return (
+    <group>
+      {models.map((Model, index) => (
+        <Model key={index} positions={groups[index]} />
+      ))}
+    </group>
+  );
+};
 
 export const TreeTile = ({
   size = 100,
@@ -29,32 +70,11 @@ export const TreeTile = ({
     InstancedCommonTree5,
   ];
 
-  const debugPositions = [
-    new Vector3(-size / 2, 0, 0),
-    new Vector3(size / 2, 0, 0),
-    new Vector3(0, 0, -size / 2),
-    new Vector3(0, 0, size / 2),
-    // new Vector3(0, 0, 0),
-
-    // new Vector3(0, 0, 0),
-    // new Vector3(0, 0, 0),
-
-    // new Vector3(0, 0, 0),
-    // new Vector3(0, 0, 0),
-    // new Vector3(0, 0, 0),
-    // new Vector3(0, 0, 0),
-
-    // new Vector3(0, 0, size),
-    // new Vector3(size, 0, 0),
-    // new Vector3(size, 0, size),
-  ];
-
   return (
     <group>
       {models.map((Model, index) => (
         <Model key={index} positions={groups[index]} />
       ))}
-      {/* <InstancedBirchTree1 positions={positions} /> */}
 
       {debug && (
         <>

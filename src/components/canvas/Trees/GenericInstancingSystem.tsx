@@ -80,7 +80,6 @@ export const GenericInstancedSystem = ({
   return (
     <group>
       {materialMeshCombosWithIds.map(([meshName, materialName, id]) => {
-        // console.log(id);
         return (
           <SingleInstancedMesh
             key={id}

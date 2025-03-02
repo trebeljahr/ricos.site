@@ -9,13 +9,14 @@ import { useMemo } from "react";
 import { DoubleSide, Vector2, Vector3 } from "three";
 import { debug, tileSize } from "../ChunkGenerationSystem/config";
 import { Sphere } from "@react-three/drei";
+import { nanoid } from "nanoid";
 
 export const TreeTile = ({
   size = 100,
   offset = new Vector2(0, 0),
 }: { size?: number; offset?: Vector2 } = {}) => {
   const positions = useMemo(
-    () => poissonDiskSample(size, 1.5, 20, { offset }),
+    () => poissonDiskSample(size, 3, 20, { offset }),
     [size, offset]
   );
 
@@ -50,27 +51,29 @@ export const TreeTile = ({
 
   return (
     <group>
-      {/* {models.map((Model, index) => (
+      {models.map((Model, index) => (
         <Model key={index} positions={groups[index]} />
-      ))} */}
+      ))}
       {/* <InstancedBirchTree1 positions={positions} /> */}
 
       {debug && (
         <>
-          <group position={[tileSize / 2, -1, tileSize / 2]}>
+          <group position={[tileSize / 2, 0, tileSize / 2]}>
             <mesh rotation={[Math.PI / 2, 0, 0]}>
               <planeGeometry args={[size, size]} />
               <meshBasicMaterial color={"#6aff00"} side={DoubleSide} />
             </mesh>
           </group>
-          {positions.map((position, index) => (
-            <group key={index} position={position}>
-              {/* <axesHelper args={[1]} /> */}
-              <Sphere args={[0.5, 16, 16]}>
-                <meshBasicMaterial color={"#005105"} />
-              </Sphere>
-            </group>
-          ))}
+
+          {/* {positions.map((position, index) => {
+            return (
+              <group key={nanoid() + index} position={position}>
+                <Sphere args={[0.5, 16, 16]}>
+                  <meshBasicMaterial color={"#005105"} />
+                </Sphere>
+              </group>
+            );
+          })} */}
         </>
       )}
     </group>

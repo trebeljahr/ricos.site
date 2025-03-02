@@ -1,5 +1,6 @@
 import { useGLTF } from "@react-three/drei";
-import { useEffect, useRef } from "react";
+import { nanoid } from "nanoid";
+import { useEffect, useMemo, useRef } from "react";
 import { InstancedMesh, Material, Mesh, Object3D, Vector3 } from "three";
 import { GLTF } from "three-stdlib";
 
@@ -69,12 +70,18 @@ export const GenericInstancedSystem = ({
     modelPath
   ) as unknown as GenericGltfResult;
 
+  const materialMeshCombosWithIds: [string, string, string][] = useMemo(
+    () => materialMeshCombos.map((combo) => [...combo, nanoid()]),
+    [materialMeshCombos]
+  );
+
   return (
     <group>
-      {materialMeshCombos.map(([meshName, materialName], index) => {
+      {materialMeshCombosWithIds.map(([meshName, materialName, id]) => {
+        // console.log(id);
         return (
           <SingleInstancedMesh
-            key={index}
+            key={id}
             positions={positions}
             geo={nodes[meshName].geometry}
             material={materials[materialName]}

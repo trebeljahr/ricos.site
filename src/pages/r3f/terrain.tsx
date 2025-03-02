@@ -7,6 +7,7 @@ import { KeyboardControlsProvider } from "@components/canvas/Scene";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Leva, useControls } from "leva";
+import { Perf } from "r3f-perf";
 
 const defaultSpeed = 25;
 const Page = () => {
@@ -19,10 +20,11 @@ const Page = () => {
       <KeyboardControlsProvider>
         <Leva />
         <Canvas>
+          <Perf position="top-left" />
           <Physics debug={physicsDebug}>
             <ambientLight intensity={1.0} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
-            <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
+            <fogExp2 attach="fog" args={["#f0f0f0", 0.008]} />
             <color args={["#f0f0f0"]} attach="background" />
             <WorldManager />
             <MinecraftCreativeControlsPlayer speed={speed} />

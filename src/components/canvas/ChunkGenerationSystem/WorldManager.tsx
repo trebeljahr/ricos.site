@@ -16,118 +16,111 @@ const tempVec = new Vector3();
 
 export const WorldManager = () => {
   const { camera } = useThree();
-  const [cameraGridPosition, setCameraGridPosition] = useState(
-    new Vector3(
-      Math.floor(camera.position.x / tileSize),
-      0,
-      Math.floor(camera.position.z / tileSize)
-    )
-  );
+
+  const [chunks, setChunks] = useState(new Map<string, any>());
+  const oldCameraGridPosition = useRef(new Vector3(0, 0, 0));
 
   useFrame(() => {
     camera.getWorldPosition(tempVec);
 
-    const currentGridX = Math.floor(tempVec.x / tileSize);
-    const currentGridZ = Math.floor(tempVec.z / tileSize);
+    tempVec.divideScalar(tileSize).floor();
 
-    if (
-      currentGridX !== cameraGridPosition.x ||
-      currentGridZ !== cameraGridPosition.z
-    ) {
-      setCameraGridPosition(new Vector3(currentGridX, 0, currentGridZ));
+    const playerGridX = tempVec.x;
+    const playerGridZ = tempVec.z;
+    const oldPlayerGridX = oldCameraGridPosition.current.x;
+    const oldPlayerGridZ = oldCameraGridPosition.current.z;
+
+    if (playerGridX === oldPlayerGridX && playerGridZ === oldPlayerGridZ) {
+      oldCameraGridPosition.current.copy(tempVec);
+
+      return;
     }
-  });
+    oldCameraGridPosition.current.copy(tempVec);
 
-  const [chunks, setChunks] = useState(new Map());
+    const radiusSquared = tilesDistance * tilesDistance * tileSize * tileSize;
 
-  useEffect(() => {
-    setChunks((prev) => {
-      const radiusSquared = tilesDistance * tilesDistance;
-      const playerGridX = cameraGridPosition.x;
-      const playerGridZ = cameraGridPosition.z;
+    const newChunks = new Map();
+    for (let x = -tilesDistance; x <= tilesDistance; x++) {
+      const worldX = (x + playerGridX) * tileSize;
 
-      const newChunks = new Map();
-      for (let x = -tilesDistance; x <= tilesDistance; x++) {
-        const worldX = x + playerGridX;
+      for (let z = -tilesDistance; z <= tilesDistance; z++) {
+        const worldZ = (z + playerGridZ) * tileSize;
 
-        for (let z = -tilesDistance; z <= tilesDistance; z++) {
-          const worldZ = z + playerGridZ;
+        const playerX = playerGridX * tileSize;
+        const playerZ = playerGridZ * tileSize;
 
-          const distanceSquared =
-            (worldX - playerGridX) * (worldX - playerGridX) +
-            (worldZ - playerGridZ) * (worldZ - playerGridZ);
+        const distanceSquared =
+          (worldX - playerX) * (worldX - playerX) +
+          (worldZ - playerZ) * (worldZ - playerZ);
 
-          if (distanceSquared <= radiusSquared) {
-            const chunkKey = `${worldX},${worldZ}`;
-            const position = new Vector3(
-              worldX * tileSize,
-              0,
-              worldZ * tileSize
-            );
+        if (distanceSquared <= radiusSquared) {
+          const chunkKey = `${worldX},${worldZ}`;
+          const position = new Vector3(worldX, 0, worldZ);
 
-            const distance = Math.sqrt(distanceSquared);
-            let lodLevel = Math.floor(
-              Math.log(distance + 1) / Math.log(lodDistanceFactor)
-            );
+          const distance = Math.sqrt(distanceSquared);
+          let lodLevel = Math.floor(
+            Math.log(distance + 1) / Math.log(lodDistanceFactor)
+          );
 
-            lodLevel = Math.max(0, Math.min(lodLevels - 1, lodLevel));
+          lodLevel = Math.max(0, Math.min(lodLevels - 1, lodLevel));
 
-            const resolution = Math.max(
-              4,
-              Math.floor(baseResolution / Math.pow(2, lodLevel))
-            );
+          const resolution = Math.max(
+            4,
+            Math.floor(baseResolution / Math.pow(2, lodLevel))
+          );
 
-            newChunks.set(chunkKey, {
-              position,
-              resolution,
-              lodLevel,
-            });
-          }
+          newChunks.set(chunkKey, {
+            position,
+            resolution,
+            lodLevel,
+          });
         }
       }
+    }
 
-      // console.log(newChunks);
-
-      return newChunks;
-    });
-
-    // return newVisibleChunks;
-  }, [cameraGridPosition]);
-
-  // console.log("rendering chunks");
+    setChunks(newChunks);
+  });
 
   return (
     <group>
       {Array.from(chunks).map(([key, chunkData]) => {
-        return <Chunk key={key} chunkData={chunkData} debug={debug} />;
+        return (
+          <Chunk key={key} chunkId={key} chunkData={chunkData} debug={debug} />
+        );
       })}
     </group>
   );
 };
 
-const Chunk = memo(function MemoChunk({
-  chunkData,
-  debug,
-}: {
-  chunkData: any;
-  debug: boolean;
-}) {
-  // console.log(chunkData.position);
-  return (
-    <group position={chunkData.position}>
-      {/* <TerrainTile
+const Chunk = memo(
+  function MemoChunk({
+    chunkData,
+    debug,
+    chunkId,
+  }: {
+    chunkData: any;
+    debug: boolean;
+    chunkId: string;
+  }) {
+    return (
+      <group position={chunkData.position}>
+        {/* <TerrainTile
         position={chunkData.position}
         resolution={chunkData.resolution}
         lodLevel={chunkData.lodLevel}
       /> */}
-      {/* <TreeTile
+        {/* <TreeTile
         size={tileSize}
         offset={new Vector2(chunkData.position.x, chunkData.position.z)}
       /> */}
-      {debug && <DebugTile position={chunkData.position} />}
-    </group>
-  );
-});
+        {debug && <DebugTile position={chunkData.position} />}
+      </group>
+    );
+  },
+  (prevProps, nextProps) => {
+    return prevProps.chunkId === nextProps.chunkId;
+  }
+);
 
 export const DebugTile = ({ position }: { position: Vector3 }) => {
   const textRef = useRef<any>(null!);

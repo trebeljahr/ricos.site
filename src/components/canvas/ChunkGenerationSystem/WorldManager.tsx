@@ -2,7 +2,7 @@ import { Text } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { memo, useRef, useState } from "react";
 import { Vector2, Vector3 } from "three";
-import { Forest, TreeTile } from "../Trees/TreeTile";
+import { Forest, SimpleGrassGroundPlane, TreeTile } from "../Trees/TreeTile";
 import {
   baseResolution,
   debug,
@@ -90,9 +90,9 @@ export const WorldManager = () => {
 
   return (
     <group>
-      {/* {Array.from(chunks).map(([key, chunkData]) => {
+      {Array.from(chunks).map(([key, chunkData]) => {
         return <Chunk key={key} chunkData={chunkData} />;
-      })} */}
+      })}
 
       <Forest chunks={chunks} />
     </group>
@@ -138,10 +138,11 @@ export const SingleTile = ({ position }: { position: Vector3 }) => {
       )}
 
       <group position={[-tileSize / 2, 0, -tileSize / 2]}>
-        <TreeTile
+        <SimpleGrassGroundPlane />
+        {/* <TreeTile
           size={tileSize}
           offset={new Vector2(position.x, position.z)}
-        />
+        /> */}
         {/* <TerrainTile
           position={chunkData.position}
           resolution={chunkData.resolution}

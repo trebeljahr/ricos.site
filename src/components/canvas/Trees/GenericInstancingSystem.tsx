@@ -1,5 +1,4 @@
 import { useGLTF } from "@react-three/drei";
-import { useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import { InstancedMesh, Material, Mesh, Object3D, Vector3 } from "three";
 import { GLTF } from "three-stdlib";
@@ -24,6 +23,43 @@ type GenericGltfResult<
   materials: Record<MaterialNames, Material>;
 };
 
+type SingleInstanceProps = {
+  positions: Vector3[];
+  geo: Mesh["geometry"];
+  material: Material;
+};
+
+const SingleInstancedMesh = ({
+  positions,
+  geo,
+  material,
+}: SingleInstanceProps) => {
+  const singleInstanceRef = useRef<InstancedMesh>(null!);
+
+  useEffect(() => {
+    if (!singleInstanceRef.current) return;
+
+    positions.forEach((pos, i) => {
+      temp.position.set(pos.x, pos.y, pos.z);
+
+      temp.scale.setScalar(200);
+      temp.rotation.set(-Math.PI / 2, 0, 0);
+
+      temp.updateMatrix();
+
+      singleInstanceRef.current.setMatrixAt(i, temp.matrix);
+    });
+  }, [positions]);
+
+  return (
+    <instancedMesh
+      frustumCulled={false}
+      ref={singleInstanceRef}
+      args={[geo, material, positions.length]}
+    />
+  );
+};
+
 export const GenericInstancedSystem = ({
   meshMaterialCombos: materialMeshCombos,
   modelPath,
@@ -33,53 +69,15 @@ export const GenericInstancedSystem = ({
     modelPath
   ) as unknown as GenericGltfResult;
 
-  const instancedMeshesRefs = useRef<(InstancedMesh | null)[]>([]);
-
-  useEffect(() => {
-    instancedMeshesRefs.current = instancedMeshesRefs.current.slice(
-      0,
-      positions.length
-    );
-  }, [positions.length]);
-
-  const { camera } = useThree();
-
-  useEffect(() => {
-    if (!instancedMeshesRefs.current) return;
-
-    positions.forEach((pos, i) => {
-      temp.position.set(pos.x, pos.y, pos.z);
-
-      temp.scale.setScalar(100);
-      temp.rotation.set(-Math.PI / 2, 0, 0);
-
-      temp.updateMatrix();
-
-      instancedMeshesRefs.current.forEach((instancedMeshRef) => {
-        if (!instancedMeshRef) return;
-        instancedMeshRef.setMatrixAt(i, temp.matrix);
-      });
-
-      camera.position.set(0, 2, 5);
-      camera.lookAt(0, 0, 0);
-    });
-  }, [positions, camera]);
-
   return (
     <group>
-      {materialMeshCombos.map(([meshName, materialName], i) => {
+      {materialMeshCombos.map(([meshName, materialName], index) => {
         return (
-          <instancedMesh
-            key={i}
-            ref={(el) => {
-              instancedMeshesRefs.current[i] = el;
-              return;
-            }}
-            args={[
-              nodes[meshName].geometry,
-              materials[materialName],
-              positions.length,
-            ]}
+          <SingleInstancedMesh
+            key={index}
+            positions={positions}
+            geo={nodes[meshName].geometry}
+            material={materials[materialName]}
           />
         );
       })}

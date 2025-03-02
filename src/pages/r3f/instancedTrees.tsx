@@ -1,12 +1,12 @@
 import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
 import { KeyboardControlsProvider } from "@components/canvas/Scene";
-import { generateTreePositions } from "@components/canvas/Yuka/YukaExample";
-import { InstancedBirchTreeSnow5 } from "@models/nature_pack/BirchTree_Snow_5";
+import { TreeTile } from "@components/canvas/Trees/TreeTile";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 
+const gridHelperSize = 100;
+
 const Page = () => {
-  const positions = generateTreePositions(100, 100, 1.5, 3);
   return (
     <div className="h-screen w-screen">
       <KeyboardControlsProvider>
@@ -18,8 +18,8 @@ const Page = () => {
             <color args={["#f0f0f0"]} attach="background" />
             <MinecraftCreativeControlsPlayer speed={25} />
             {/* <InstancedTreeSystem /> */}
-            <gridHelper args={[100, 100]} />
-            <InstancedBirchTreeSnow5 positions={positions} />
+            <gridHelper args={[gridHelperSize, 100]} />
+            <TreeTile />
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>

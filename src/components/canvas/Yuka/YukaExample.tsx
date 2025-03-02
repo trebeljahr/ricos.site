@@ -32,6 +32,7 @@ import {
   WanderBehavior,
   Vector3 as YukaVec3,
 } from "yuka";
+import PoissonDiskSampling from "poisson-disk-sampling";
 
 const gridSize = 80;
 const halfGridSize = gridSize / 2;
@@ -302,6 +303,40 @@ export function BoundingSphere({ object }: { object: Object3D }) {
       <meshBasicMaterial color="red" wireframe />
     </mesh>
   );
+}
+
+export function poissonDiskSample(
+  width: number,
+  min = 4,
+  max = 5,
+  {
+    tries = 10,
+    offset = { x: 0, y: 0 },
+  }: { tries?: number; offset?: { x: number; y: number } } = {}
+) {
+  let p = new PoissonDiskSampling({
+    shape: [width, width],
+    minDistance: min,
+    maxDistance: max,
+    tries,
+  });
+  const noiseScale = 0.05;
+  const threshold = -0.2;
+
+  let points = p.fill().filter(([x, z]) => {
+    const noiseValue = perlin2(
+      (x + offset.x) * noiseScale,
+      (z + offset.y) * noiseScale
+    );
+
+    if (noiseValue > threshold) {
+      return true;
+    }
+
+    return false;
+  });
+
+  return points.map(([x, z]) => new Vector3(x, 0, z));
 }
 
 export function generateTreePositions(

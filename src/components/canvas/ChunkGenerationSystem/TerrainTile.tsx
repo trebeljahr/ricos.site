@@ -212,36 +212,35 @@ export const TerrainTile = ({
 
   useHelper(normalsDebug && meshRef, VertexNormalsHelper, 1, 0xff0000);
 
-  const trees = useMemo(() => {
-    const initialTrees = generateTreePositions(
-      position,
-      resolution,
-      tileSize,
-      biomeMap,
-      heightMap,
-      slopeMap
-    );
+  // const trees = useMemo(() => {
+  //   const initialTrees = generateTreePositions(
+  //     position,
+  //     resolution,
+  //     tileSize,
+  //     biomeMap,
+  //     heightMap,
+  //     slopeMap
+  //   );
 
-    const nonOverlappingTrees = avoidTreeOverlap(initialTrees, 3);
+  //   const nonOverlappingTrees = avoidTreeOverlap(initialTrees, 3);
 
-    return addTreeVariation(nonOverlappingTrees);
-  }, [position, resolution, biomeMap, heightMap, slopeMap]);
+  //   return addTreeVariation(nonOverlappingTrees);
+  // }, [position, resolution, biomeMap, heightMap, slopeMap]);
 
-  const offset = useMemo(() => new Vector3(0, -0.2, 0), []);
+  // const offset = useMemo(() => new Vector3(0, -0.2, 0), []);
   return (
     <group position={position}>
       {/* Render multiple trees based on biome */}
-      {trees.map((tree, index) => (
-        <group position={tree.position}>
+      {/* {trees.map((tree, index) => (
+        <group key={`tree-${index}`} position={tree.position}>
           <Tree
-            key={`tree-${index}`}
             type={tree.type}
             scale={tree.scale}
             position={offset}
             rotation={tree.rotation}
           />
         </group>
-      ))}
+      ))} */}
 
       <RigidBody colliders={false}>
         <mesh ref={meshRef} geometry={geometry} material={material}></mesh>

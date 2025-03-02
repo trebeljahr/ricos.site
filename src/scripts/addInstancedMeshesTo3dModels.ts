@@ -117,6 +117,5 @@ ${combosArray}
 
     // Write the updated file back
     fs.writeFileSync(filePath, content, "utf-8");
-    console.log(`Updated file: ${filePath}`);
   });
 });

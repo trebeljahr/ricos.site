@@ -64,8 +64,7 @@ export const TreeTile = ({
               <meshBasicMaterial color={"#6aff00"} side={DoubleSide} />
             </mesh>
           </group>
-
-          {/* {positions.map((position, index) => {
+          {positions.map((position, index) => {
             return (
               <group key={nanoid() + index} position={position}>
                 <Sphere args={[0.5, 16, 16]}>
@@ -73,7 +72,7 @@ export const TreeTile = ({
                 </Sphere>
               </group>
             );
-          })} */}
+          })}
         </>
       )}
     </group>

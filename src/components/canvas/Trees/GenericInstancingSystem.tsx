@@ -50,6 +50,8 @@ const SingleInstancedMesh = ({
 
       singleInstanceRef.current.setMatrixAt(i, temp.matrix);
     });
+
+    singleInstanceRef.current.instanceMatrix.needsUpdate = true;
   }, [positions]);
 
   return (

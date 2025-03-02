@@ -18,7 +18,7 @@ export const WorldManager = () => {
   const { camera } = useThree();
 
   const [chunks, setChunks] = useState(new Map<string, any>());
-  const oldCameraGridPosition = useRef(new Vector3(0, 0, 0));
+  const oldCameraGridPosition = useRef(new Vector3(-Infinity, 0, 0));
 
   useFrame(() => {
     camera.getWorldPosition(tempVec);
@@ -32,7 +32,6 @@ export const WorldManager = () => {
 
     if (playerGridX === oldPlayerGridX && playerGridZ === oldPlayerGridZ) {
       oldCameraGridPosition.current.copy(tempVec);
-
       return;
     }
     oldCameraGridPosition.current.copy(tempVec);
@@ -126,22 +125,26 @@ export const DebugTile = ({ position }: { position: Vector3 }) => {
   const textRef = useRef<any>(null!);
 
   useFrame(({ camera }) => {
-    textRef.current.quaternion.copy(camera.quaternion);
+    debug && textRef.current.quaternion.copy(camera.quaternion);
   });
 
   return (
     <group>
-      <Text
-        ref={textRef}
-        position={[0, 0, 0]}
-        scale={[1, 1, 1]}
-        fontSize={2}
-        color={"#000000"}
-      >
-        {position.x},{position.z}
-      </Text>
-      <gridHelper args={[tileSize, 1]} />
-      <axesHelper args={[6]} position={[0, 0.5, 0]} />
+      {debug && (
+        <>
+          <Text
+            ref={textRef}
+            position={[0, 0, 0]}
+            scale={[1, 1, 1]}
+            fontSize={2}
+            color={"#000000"}
+          >
+            {position.x},{position.z}
+          </Text>
+          <gridHelper args={[tileSize, 1]} />
+          <axesHelper args={[6]} position={[0, 0.5, 0]} />
+        </>
+      )}
 
       <group position={[-tileSize / 2, 0, -tileSize / 2]}>
         <TreeTile

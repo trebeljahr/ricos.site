@@ -1,7 +1,8 @@
+import { Text } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { Vector2, Vector3 } from "three";
-import { TreeTile } from "../Trees/TreeTile";
+import { Forest, TreeTile } from "../Trees/TreeTile";
 import {
   baseResolution,
   debug,
@@ -10,14 +11,20 @@ import {
   tilesDistance,
   tileSize,
 } from "./config";
-import { Text } from "@react-three/drei";
 
 const tempVec = new Vector3();
+
+export type Chunk = {
+  position: Vector3;
+  resolution: number;
+  lodLevel: number;
+  chunkId: string;
+};
 
 export const WorldManager = () => {
   const { camera } = useThree();
 
-  const [chunks, setChunks] = useState(new Map<string, any>());
+  const [chunks, setChunks] = useState(new Map<string, Chunk>());
   const oldCameraGridPosition = useRef(new Vector3(-Infinity, 0, 0));
 
   useFrame(() => {
@@ -53,7 +60,7 @@ export const WorldManager = () => {
           (worldZ - playerZ) * (worldZ - playerZ);
 
         if (distanceSquared <= radiusSquared) {
-          const chunkKey = `${worldX},${worldZ}`;
+          const chunkId = `${worldX},${worldZ}`;
           const position = new Vector3(worldX, 0, worldZ);
 
           const distance = Math.sqrt(distanceSquared);
@@ -68,10 +75,11 @@ export const WorldManager = () => {
             Math.floor(baseResolution / Math.pow(2, lodLevel))
           );
 
-          newChunks.set(chunkKey, {
+          newChunks.set(chunkId, {
             position,
             resolution,
             lodLevel,
+            chunkId,
           });
         }
       }
@@ -82,46 +90,29 @@ export const WorldManager = () => {
 
   return (
     <group>
-      {Array.from(chunks).map(([key, chunkData]) => {
-        return (
-          <Chunk key={key} chunkId={key} chunkData={chunkData} debug={debug} />
-        );
-      })}
+      {/* {Array.from(chunks).map(([key, chunkData]) => {
+        return <Chunk key={key} chunkData={chunkData} />;
+      })} */}
+
+      <Forest chunks={chunks} />
     </group>
   );
 };
 
 const Chunk = memo(
-  function MemoChunk({
-    chunkData,
-    debug,
-    chunkId,
-  }: {
-    chunkData: any;
-    debug: boolean;
-    chunkId: string;
-  }) {
+  function MemoChunk({ chunkData }: { chunkData: Chunk }) {
     return (
       <group position={chunkData.position}>
-        {/* <TerrainTile
-        position={chunkData.position}
-        resolution={chunkData.resolution}
-        lodLevel={chunkData.lodLevel}
-      /> */}
-        {/* <TreeTile
-        size={tileSize}
-        offset={new Vector2(chunkData.position.x, chunkData.position.z)}
-      /> */}
-        {debug && <DebugTile position={chunkData.position} />}
+        <SingleTile position={chunkData.position} />
       </group>
     );
   },
   (prevProps, nextProps) => {
-    return prevProps.chunkId === nextProps.chunkId;
+    return prevProps.chunkData.chunkId === nextProps.chunkData.chunkId;
   }
 );
 
-export const DebugTile = ({ position }: { position: Vector3 }) => {
+export const SingleTile = ({ position }: { position: Vector3 }) => {
   const textRef = useRef<any>(null!);
 
   useFrame(({ camera }) => {
@@ -151,6 +142,11 @@ export const DebugTile = ({ position }: { position: Vector3 }) => {
           size={tileSize}
           offset={new Vector2(position.x, position.z)}
         />
+        {/* <TerrainTile
+          position={chunkData.position}
+          resolution={chunkData.resolution}
+          lodLevel={chunkData.lodLevel}
+        /> */}
       </group>
     </group>
   );

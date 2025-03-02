@@ -8,11 +8,11 @@ type Modes =
   | "normals"
   | "colors";
 
-const debug = false;
+const debug = true;
 const normalsDebug = false;
 const visualizeHeight = false;
-const tileSize = 50;
-const tilesDistance = 5;
+const tileSize = 20;
+const tilesDistance = 2;
 const mode: Modes = "landscape" as Modes;
 const heightNoiseScale = 0.0007;
 const temperatureNoiseScale = 0.00005;

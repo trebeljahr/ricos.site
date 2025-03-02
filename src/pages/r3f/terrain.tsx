@@ -26,8 +26,8 @@ const Page = () => {
             <color args={["#f0f0f0"]} attach="background" />
             <WorldManager />
             <MinecraftCreativeControlsPlayer speed={speed} />
-            <RigidBallSpawner />
-            <SingleAnimal />
+            {/* <RigidBallSpawner /> */}
+            {/* <SingleAnimal /> */}
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>

@@ -1,6 +1,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
-import { Vector3 } from "three";
+import { Vector2, Vector3 } from "three";
+import { TreeTile } from "../Trees/TreeTile";
 import {
   baseResolution,
   debug,
@@ -9,9 +10,9 @@ import {
   tilesDistance,
   tileSize,
 } from "./config";
-import { TerrainTile } from "./TerrainTile";
-import { RigidBody } from "@react-three/rapier";
-import { Box, Sphere } from "@react-three/drei";
+import { Text } from "@react-three/drei";
+
+const tempVec = new Vector3();
 
 export const WorldManager = () => {
   const { camera } = useThree();
@@ -23,11 +24,11 @@ export const WorldManager = () => {
     )
   );
 
-  const activeChunks = useRef(new Map());
-
   useFrame(() => {
-    const currentGridX = Math.floor(camera.position.x / tileSize);
-    const currentGridZ = Math.floor(camera.position.z / tileSize);
+    camera.getWorldPosition(tempVec);
+
+    const currentGridX = Math.floor(tempVec.x / tileSize);
+    const currentGridZ = Math.floor(tempVec.z / tileSize);
 
     if (
       currentGridX !== cameraGridPosition.x ||
@@ -37,97 +38,124 @@ export const WorldManager = () => {
     }
   });
 
-  const visibleChunks = useMemo(() => {
-    const radiusSquared = tilesDistance * tilesDistance;
-    const playerGridX = cameraGridPosition.x;
-    const playerGridZ = cameraGridPosition.z;
-
-    const newVisibleChunks = new Map();
-
-    for (
-      let x = playerGridX - tilesDistance;
-      x <= playerGridX + tilesDistance;
-      x++
-    ) {
-      for (
-        let z = playerGridZ - tilesDistance;
-        z <= playerGridZ + tilesDistance;
-        z++
-      ) {
-        const distanceSquared =
-          (x - playerGridX) * (x - playerGridX) +
-          (z - playerGridZ) * (z - playerGridZ);
-
-        if (distanceSquared <= radiusSquared) {
-          const chunkKey = `${x},${z}`;
-          const position = new Vector3(x * tileSize, 0, z * tileSize);
-
-          const distance = Math.sqrt(distanceSquared);
-          let lodLevel = Math.floor(
-            Math.log(distance + 1) / Math.log(lodDistanceFactor)
-          );
-
-          lodLevel = Math.max(0, Math.min(lodLevels - 1, lodLevel));
-
-          const resolution = Math.max(
-            4,
-            Math.floor(baseResolution / Math.pow(2, lodLevel))
-          );
-
-          newVisibleChunks.set(chunkKey, { position, resolution, lodLevel });
-        }
-      }
-    }
-
-    return newVisibleChunks;
-  }, [cameraGridPosition]);
-
   const [chunks, setChunks] = useState(new Map());
 
   useEffect(() => {
-    const currentActiveChunks = activeChunks.current;
-    const newChunks = new Map(chunks);
+    setChunks((prev) => {
+      const radiusSquared = tilesDistance * tilesDistance;
+      const playerGridX = cameraGridPosition.x;
+      const playerGridZ = cameraGridPosition.z;
 
-    currentActiveChunks.forEach((_, key) => {
-      if (!visibleChunks.has(key)) {
-        newChunks.delete(key);
-        currentActiveChunks.delete(key);
-      }
-    });
+      const newChunks = new Map();
+      for (let x = -tilesDistance; x <= tilesDistance; x++) {
+        const worldX = x + playerGridX;
 
-    visibleChunks.forEach((chunkData, key) => {
-      if (!currentActiveChunks.has(key)) {
-        newChunks.set(key, chunkData);
-        currentActiveChunks.set(key, true);
-      } else {
-        const existingChunk = newChunks.get(key);
-        if (existingChunk.lodLevel !== chunkData.lodLevel) {
-          newChunks.set(key, chunkData);
+        for (let z = -tilesDistance; z <= tilesDistance; z++) {
+          const worldZ = z + playerGridZ;
+
+          const distanceSquared =
+            (worldX - playerGridX) * (worldX - playerGridX) +
+            (worldZ - playerGridZ) * (worldZ - playerGridZ);
+
+          if (distanceSquared <= radiusSquared) {
+            const chunkKey = `${worldX},${worldZ}`;
+            const position = new Vector3(
+              worldX * tileSize,
+              0,
+              worldZ * tileSize
+            );
+
+            const distance = Math.sqrt(distanceSquared);
+            let lodLevel = Math.floor(
+              Math.log(distance + 1) / Math.log(lodDistanceFactor)
+            );
+
+            lodLevel = Math.max(0, Math.min(lodLevels - 1, lodLevel));
+
+            const resolution = Math.max(
+              4,
+              Math.floor(baseResolution / Math.pow(2, lodLevel))
+            );
+
+            newChunks.set(chunkKey, {
+              position,
+              resolution,
+              lodLevel,
+            });
+          }
         }
       }
+
+      // console.log(newChunks);
+
+      return newChunks;
     });
 
-    setChunks(newChunks);
-  }, [visibleChunks, chunks]);
+    // return newVisibleChunks;
+  }, [cameraGridPosition]);
+
+  // console.log("rendering chunks");
 
   return (
     <group>
       {Array.from(chunks).map(([key, chunkData]) => {
-        return (
-          <group key={key}>
-            <TerrainTile
-              position={chunkData.position}
-              resolution={chunkData.resolution}
-              lodLevel={chunkData.lodLevel}
-            />
-            {debug && <Tile position={chunkData.position} />}
-          </group>
-        );
+        return <Chunk key={key} chunkData={chunkData} debug={debug} />;
       })}
     </group>
   );
 };
 
-export const Tile = ({ position }: { position: Vector3 }) => {
-  return <gridHelper args={[tileSize, 1]} position={position} />;
+const Chunk = memo(function MemoChunk({
+  chunkData,
+  debug,
+}: {
+  chunkData: any;
+  debug: boolean;
+}) {
+  // console.log(chunkData.position);
+  return (
+    <group position={chunkData.position}>
+      {/* <TerrainTile
+        position={chunkData.position}
+        resolution={chunkData.resolution}
+        lodLevel={chunkData.lodLevel}
+      /> */}
+      {/* <TreeTile
+        size={tileSize}
+        offset={new Vector2(chunkData.position.x, chunkData.position.z)}
+      /> */}
+      {debug && <DebugTile position={chunkData.position} />}
+    </group>
+  );
+});
+
+export const DebugTile = ({ position }: { position: Vector3 }) => {
+  const textRef = useRef<any>(null!);
+
+  useFrame(({ camera }) => {
+    textRef.current.quaternion.copy(camera.quaternion);
+  });
+
+  return (
+    <group>
+      <Text
+        ref={textRef}
+        position={[0, 0, 0]}
+        scale={[1, 1, 1]}
+        fontSize={2}
+        color={"#000000"}
+      >
+        {position.x},{position.z}
+      </Text>
+      <gridHelper args={[tileSize, 1]} />
+      <axesHelper args={[6]} position={[0, 0.5, 0]} />
+
+      <group position={[-tileSize / 2, 0, -tileSize / 2]}>
+        <TreeTile
+          size={tileSize}
+          offset={new Vector2(position.x, position.z)}
+        />
+      </group>
+    </group>
+  );
 };

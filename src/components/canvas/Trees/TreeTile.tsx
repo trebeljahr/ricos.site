@@ -115,14 +115,10 @@ export const TreeTile = ({
         <Model key={index} positions={groups[index]} />
       ))}
 
+      <SimpleGrassGroundPlane size={size} />
+
       {debug && (
         <>
-          <group position={[tileSize / 2, 0, tileSize / 2]}>
-            <mesh rotation={[Math.PI / 2, 0, 0]}>
-              <planeGeometry args={[size, size]} />
-              <meshBasicMaterial color={"#6aff00"} side={DoubleSide} />
-            </mesh>
-          </group>
           {positions.map((position, index) => {
             return (
               <group key={nanoid() + index} position={position}>
@@ -134,6 +130,21 @@ export const TreeTile = ({
           })}
         </>
       )}
+    </group>
+  );
+};
+
+export const SimpleGrassGroundPlane = ({
+  size = tileSize,
+}: {
+  size?: number;
+} = {}) => {
+  return (
+    <group position={[size / 2, 0, size / 2]}>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[size, size]} />
+        <meshStandardMaterial color={"#378301"} side={DoubleSide} />
+      </mesh>
     </group>
   );
 };

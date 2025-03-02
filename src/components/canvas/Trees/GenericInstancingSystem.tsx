@@ -56,7 +56,6 @@ const SingleInstancedMesh = ({
 
   return (
     <instancedMesh
-      frustumCulled={false}
       ref={singleInstanceRef}
       args={[geo, material, positions.length]}
     />

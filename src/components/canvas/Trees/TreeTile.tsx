@@ -2,43 +2,18 @@ import { splitIntoRandomGroups } from "@components/canvas/Trees/utils";
 import { poissonDiskSample } from "@components/canvas/Yuka/YukaExample";
 import { InstancedBirchTree1 } from "@models/nature_pack/BirchTree_1";
 import { InstancedBush1 } from "@models/nature_pack/Bush_1";
+import { InstancedBush2 } from "@models/nature_pack/Bush_2";
 import { InstancedCommonTree5 } from "@models/nature_pack/CommonTree_5";
 import { InstancedPineTree1 } from "@models/nature_pack/PineTree_1";
 import { InstancedWillow1 } from "@models/nature_pack/Willow_1";
-import { useEffect, useMemo, useRef } from "react";
-import { DoubleSide, Quaternion, Vector2, Vector3 } from "three";
-import { debug, tileSize } from "../ChunkGenerationSystem/config";
-import { Sphere, useKeyboardControls } from "@react-three/drei";
+import { Sphere } from "@react-three/drei";
 import { nanoid } from "nanoid";
-import { InstancedBush2 } from "@models/nature_pack/Bush_2";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useMemo, useRef } from "react";
+import { DoubleSide, Vector2, Vector3 } from "three";
 import { ChunkMap } from "../ChunkGenerationSystem/ChunkProvider";
+import { debug, tileSize } from "../ChunkGenerationSystem/config";
 
 export const Forest = ({ chunks }: { chunks: ChunkMap }) => {
-  const [sub] = useKeyboardControls();
-
-  const { camera } = useThree();
-
-  useEffect(() => {
-    sub(
-      (state) => state.attack,
-      (pressed) => {
-        if (pressed) {
-          console.log("attack");
-          console.log(camera.position);
-          console.log(camera.quaternion);
-
-          const worldPos = new Vector3();
-          camera.getWorldDirection(worldPos);
-          const worldRotation = new Quaternion();
-          camera.getWorldQuaternion(worldRotation);
-
-          console.log(worldPos);
-          console.log(worldRotation);
-        }
-      }
-    );
-  }, [sub, camera]);
   const positionsRef = useRef<Record<string, Vector3[][]>>({});
 
   const prevChunksRef = useRef<Set<string>>(new Set());

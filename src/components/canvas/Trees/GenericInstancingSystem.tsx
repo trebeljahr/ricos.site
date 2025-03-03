@@ -4,12 +4,13 @@ import { useEffect, useMemo, useRef } from "react";
 import { InstancedMesh, Material, Mesh, Object3D, Vector3 } from "three";
 import { GLTF } from "three-stdlib";
 import { InstancedMesh2Component } from "./InstancedMesh2";
+import { Single } from "./useInstancedMesh2";
 
 const temp = new Object3D();
 
 export type MeshMaterialCombos = [meshName: string, materialName: string][];
 
-type Props = {
+export type GenericInstancingProps = {
   meshMaterialCombos: MeshMaterialCombos;
   modelPath: string;
   positions: Vector3[];
@@ -17,7 +18,7 @@ type Props = {
   rotations?: number[];
 };
 
-type GenericGltfResult<
+export type GenericGltfResult<
   MeshNames extends string = string,
   MaterialNames extends string = string
 > = GLTF & {
@@ -25,7 +26,7 @@ type GenericGltfResult<
   materials: Record<MaterialNames, Material>;
 };
 
-type SingleInstanceProps = {
+export type SingleInstanceProps = {
   positions: Vector3[];
   geo: Mesh["geometry"];
   material: Material;
@@ -64,22 +65,22 @@ const SingleInstancedMesh = ({
 };
 
 export const GenericInstancedSystem = ({
-  meshMaterialCombos: materialMeshCombos,
+  meshMaterialCombos,
   modelPath,
   positions,
-}: Props) => {
+}: GenericInstancingProps) => {
   const { nodes, materials } = useGLTF(
     modelPath
   ) as unknown as GenericGltfResult;
 
-  const materialMeshCombosWithIds: [string, string, string][] = useMemo(
-    () => materialMeshCombos.map((combo) => [...combo, nanoid()]),
-    [materialMeshCombos]
+  const meshMaterialCombosWithIds: [string, string, string][] = useMemo(
+    () => meshMaterialCombos.map((combo) => [...combo, nanoid()]),
+    [meshMaterialCombos]
   );
 
   return (
     <group>
-      {materialMeshCombosWithIds.map(([meshName, materialName, id]) => {
+      {meshMaterialCombosWithIds.map(([meshName, materialName, id]) => {
         // return (
         //   <SingleInstancedMesh
         //     key={id}
@@ -88,12 +89,20 @@ export const GenericInstancedSystem = ({
         //     material={materials[materialName]}
         //   />
         // );
+        // return (
+        // <InstancedMesh2Component
+        //   key={id}
+        //   geometry={nodes[meshName].geometry}
+        //   material={materials[materialName]}
+        //   positions={positions}
+        // />
+        // );
         return (
-          <InstancedMesh2Component
+          <Single
             key={id}
-            geometry={nodes[meshName].geometry}
-            material={materials[materialName]}
             positions={positions}
+            geo={nodes[meshName].geometry}
+            material={materials[materialName]}
           />
         );
       })}

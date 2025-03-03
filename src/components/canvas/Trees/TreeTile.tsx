@@ -10,11 +10,11 @@ import { DoubleSide, Quaternion, Vector2, Vector3 } from "three";
 import { debug, tileSize } from "../ChunkGenerationSystem/config";
 import { Sphere, useKeyboardControls } from "@react-three/drei";
 import { nanoid } from "nanoid";
-import { Chunk } from "../ChunkGenerationSystem/WorldManager";
 import { InstancedBush2 } from "@models/nature_pack/Bush_2";
 import { useFrame, useThree } from "@react-three/fiber";
+import { ChunkMap } from "../ChunkGenerationSystem/ChunkProvider";
 
-export const Forest = ({ chunks }: { chunks: Map<string, Chunk> }) => {
+export const Forest = ({ chunks }: { chunks: ChunkMap }) => {
   const [sub] = useKeyboardControls();
 
   const { camera } = useThree();

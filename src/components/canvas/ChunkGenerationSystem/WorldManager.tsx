@@ -12,11 +12,13 @@ import {
   tileSize,
 } from "./config";
 import { ChunkProvider, MemoizedChunk, useChunkContext } from "./ChunkProvider";
+import { InstancedMeshForChunks } from "../Trees/useInstancedMesh2";
 
 export const WorldManager = () => {
   return (
     <ChunkProvider>
       <WorldManagerWithChunks />
+      <InstancedMeshForChunks />
     </ChunkProvider>
   );
 };
@@ -34,7 +36,7 @@ const WorldManagerWithChunks = () => {
         );
       })}
 
-      <Forest chunks={chunks} />
+      {/* <Forest chunks={chunks} /> */}
     </group>
   );
 };

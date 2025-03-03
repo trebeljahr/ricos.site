@@ -1,7 +1,7 @@
 import { extend, Object3DNode, useThree } from "@react-three/fiber";
 import { InstancedMesh2 } from "@three.ez/instanced-mesh";
-import { useEffect, useMemo, useRef } from "react";
-import { BufferGeometry, Material, Object3D, Vector3 } from "three";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { BufferGeometry, Material, Object3D, Vector2, Vector3 } from "three";
 import {
   GenericGltfResult,
   GenericInstancingProps,
@@ -13,6 +13,9 @@ import { useGLTF } from "@react-three/drei";
 import { nanoid } from "nanoid";
 import { pickRandomFromArray } from "../ChunkGenerationSystem/utils";
 import { tileSize } from "../ChunkGenerationSystem/config";
+import { useChunkContext } from "../ChunkGenerationSystem/ChunkProvider";
+import { poissonDiskSample } from "../Yuka/YukaExample";
+import { splitIntoRandomGroups } from "./utils";
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
@@ -23,11 +26,90 @@ declare module "@react-three/fiber" {
 extend({ InstancedMesh2 });
 
 const temp = new Object3D();
-
+const center = new Vector3(-tileSize / 2, 0, -tileSize / 2);
 type SingleHookProps = {
   material: Material;
   geometry: BufferGeometry;
 };
+
+type PositionsUpdateHookProps = {
+  addPositions: (positionsToAdd: Vector3[]) => void;
+  removePositions: (positionsToRemove: Vector3[]) => void;
+};
+const ChunkPositionUpdater = ({
+  addPositions,
+  removePositions,
+}: PositionsUpdateHookProps) => {
+  const chunks = useChunkContext();
+
+  const positionsRef = useRef<Record<string, Vector3[]>>({});
+
+  const prevChunksRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    const currentChunkKeys = new Set(chunks.keys());
+    const prevChunkKeys = prevChunksRef.current;
+
+    const newChunkKeys = Array.from(currentChunkKeys).filter(
+      (key) => !prevChunkKeys.has(key)
+    );
+
+    const removedChunks = Array.from(prevChunkKeys).filter(
+      (key) => !currentChunkKeys.has(key)
+    );
+
+    prevChunksRef.current = currentChunkKeys;
+
+    removedChunks.forEach((key) => {
+      if (!positionsRef.current[key]) return;
+
+      removePositions(positionsRef.current[key]);
+      delete positionsRef.current[key];
+    });
+
+    newChunkKeys.forEach((chunkKey) => {
+      const chunk = chunks.get(chunkKey)!;
+
+      const newPositions = poissonDiskSample(tileSize, 3, 20, {
+        offset: new Vector2(chunk.position.x, chunk.position.z),
+      }).map((pos) => pos.add(chunk.position).add(center));
+
+      positionsRef.current[chunkKey] = newPositions;
+
+      if (!positionsRef.current[chunkKey]) return;
+
+      addPositions(newPositions);
+    });
+  }, [chunks, addPositions, removePositions]);
+
+  return null;
+};
+
+const meshMaterialCombos: MeshMaterialCombos = [
+  ["BirchTree_1_1", "White"],
+  ["BirchTree_1_2", "Black"],
+  ["BirchTree_1_3", "DarkGreen"],
+  ["BirchTree_1_4", "Green"],
+];
+
+export const InstancedMeshForChunks = memo(() => {
+  const modelPath = "/3d-assets/glb/nature_pack/BirchTree_1.glb";
+  const { InstancedMeshes, addPositions, removePositions } =
+    useMultiInstancedMesh2({
+      meshMaterialCombos,
+      modelPath,
+    });
+
+  return (
+    <>
+      <ChunkPositionUpdater
+        addPositions={addPositions}
+        removePositions={removePositions}
+      />
+      <InstancedMeshes />
+    </>
+  );
+});
 
 export const useMultiInstancedMesh2 = ({
   meshMaterialCombos,
@@ -46,26 +128,19 @@ export const useMultiInstancedMesh2 = ({
     ((positionsToRemove: Vector3[]) => void)[]
   >([]);
 
-  const addPositions = (newPositions: Vector3[]) => {
-    addPositionFunctions.current.forEach((fn) => fn(newPositions));
+  const addPositions = (positionsToAdd: Vector3[]) => {
+    addPositionFunctions.current.forEach((fn) => fn(positionsToAdd));
   };
 
   const removePositions = (positionsToRemove: Vector3[]) => {
     removePositionFunctions.current.forEach((fn) => fn(positionsToRemove));
   };
 
-  useEffect(() => {
-    refs.current?.forEach((ref) => {
-      ref.computeBVH();
-      (ref as any).frustumCulled = false;
-    });
-  }, []);
-
   const InstancedMeshes = () => {
-    return meshMaterialCombos.map(([meshName, materialName]) => {
+    return meshMaterialCombos.map(([meshName, materialName], index) => {
       return (
         <instancedMesh2
-          key={nanoid()}
+          key={index}
           args={[
             nodes[meshName].geometry,
             materials[materialName],
@@ -74,16 +149,18 @@ export const useMultiInstancedMesh2 = ({
           ref={(node) => {
             if (!node) return;
 
+            const index = refs.current.length;
+
             refs.current.push(node);
-
+            refs.current[index].computeBVH();
+            (refs.current[index] as any).frustumCulled = false;
             const addPositions = (newPositions: Vector3[]) => {
-              const instancedMesh2 = node;
-              if (!instancedMesh2) return;
+              const instancedMesh2Ref = refs.current[index];
 
-              console.log(instancedMesh2.instances?.length);
+              if (!instancedMesh2Ref) return;
 
               let counter = 0;
-              instancedMesh2.addInstances(newPositions.length, (obj) => {
+              instancedMesh2Ref.addInstances(newPositions.length, (obj) => {
                 obj.matrix.copy(temp.matrix);
                 obj.scale.set(1, 1, 1);
                 obj.position.copy(newPositions[counter++]);
@@ -95,10 +172,11 @@ export const useMultiInstancedMesh2 = ({
             };
 
             const removePositions = (positionsToRemove: Vector3[]) => {
-              const instancedMesh2 = node;
-              if (!instancedMesh2) return;
+              const instancedMesh2Ref = node;
+              if (!instancedMesh2Ref) return;
 
-              const indexes = instancedMesh2.instances
+              const instances = instancedMesh2Ref.instances || [];
+              const indexes = instances
                 .map((instance, index) => {
                   const found = positionsToRemove.find((positionToRemove) =>
                     positionToRemove.equals(instance.position)
@@ -112,7 +190,7 @@ export const useMultiInstancedMesh2 = ({
                 })
                 .filter((index) => index !== -1);
 
-              instancedMesh2.removeInstances(...indexes);
+              instancedMesh2Ref.removeInstances(...indexes);
             };
 
             addPositionFunctions.current.push(addPositions);
@@ -122,6 +200,7 @@ export const useMultiInstancedMesh2 = ({
       );
     });
   };
+
   return {
     InstancedMeshes,
     addPositions,
@@ -136,9 +215,7 @@ export const useInstancedMesh2 = ({ material, geometry }: SingleHookProps) => {
 
   const addPositions = (newPositions: Vector3[]) => {
     const instancedMesh2 = ref.current;
-    if (!instancedMesh2) return;
-
-    console.log(instancedMesh2.instances?.length);
+    if (!instancedMesh2.instances) return;
 
     let counter = 0;
     instancedMesh2.addInstances(newPositions.length, (obj) => {
@@ -321,11 +398,7 @@ export const Single = ({ positions, geo, material }: SingleInstanceProps) => {
     });
 
   useEffect(() => {
-    // console.log("hi");
-    // console.log(positions);
-    // console.log(prevPositions);
     const prev = prevPositions || [];
-    // if (!prevPositions) return;
 
     const newPositions = positions.filter(
       (pos) => !prev.some((prevPos) => prevPos.equals(pos))
@@ -334,9 +407,6 @@ export const Single = ({ positions, geo, material }: SingleInstanceProps) => {
     const removedPositions = prev.filter(
       (prevPos) => !positions.some((pos) => pos.equals(prevPos))
     );
-
-    console.log(removedPositions);
-    console.log(newPositions);
 
     addPositions(newPositions);
     removePositions(removedPositions);

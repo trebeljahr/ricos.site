@@ -5,6 +5,7 @@ import { BufferGeometry, Material, Object3D, Vector3 } from "three";
 import {
   GenericGltfResult,
   GenericInstancingProps,
+  MeshMaterialCombos,
   SingleInstanceProps,
 } from "./GenericInstancingSystem";
 import { usePrevious } from "@hooks/usePrevious";
@@ -28,6 +29,107 @@ type SingleHookProps = {
   geometry: BufferGeometry;
 };
 
+export const useMultiInstancedMesh2 = ({
+  meshMaterialCombos,
+  modelPath,
+}: {
+  meshMaterialCombos: MeshMaterialCombos;
+  modelPath: string;
+}) => {
+  const { nodes, materials } = useGLTF(modelPath) as any as GenericGltfResult;
+  const { gl } = useThree();
+  const refs = useRef<InstancedMesh2[]>([]);
+  const addPositionFunctions = useRef<((newPositions: Vector3[]) => void)[]>(
+    []
+  );
+  const removePositionFunctions = useRef<
+    ((positionsToRemove: Vector3[]) => void)[]
+  >([]);
+
+  const addPositions = (newPositions: Vector3[]) => {
+    addPositionFunctions.current.forEach((fn) => fn(newPositions));
+  };
+
+  const removePositions = (positionsToRemove: Vector3[]) => {
+    removePositionFunctions.current.forEach((fn) => fn(positionsToRemove));
+  };
+
+  useEffect(() => {
+    refs.current?.forEach((ref) => {
+      ref.computeBVH();
+      (ref as any).frustumCulled = false;
+    });
+  }, []);
+
+  const InstancedMeshes = () => {
+    return meshMaterialCombos.map(([meshName, materialName]) => {
+      return (
+        <instancedMesh2
+          key={nanoid()}
+          args={[
+            nodes[meshName].geometry,
+            materials[materialName],
+            { renderer: gl, createEntities: true },
+          ]}
+          ref={(node) => {
+            if (!node) return;
+
+            refs.current.push(node);
+
+            const addPositions = (newPositions: Vector3[]) => {
+              const instancedMesh2 = node;
+              if (!instancedMesh2) return;
+
+              console.log(instancedMesh2.instances?.length);
+
+              let counter = 0;
+              instancedMesh2.addInstances(newPositions.length, (obj) => {
+                obj.matrix.copy(temp.matrix);
+                obj.scale.set(1, 1, 1);
+                obj.position.copy(newPositions[counter++]);
+
+                temp.rotation.set(-Math.PI / 2, 0, 0);
+                obj.quaternion.copy(temp.quaternion);
+                obj.scale.multiplyScalar(100);
+              });
+            };
+
+            const removePositions = (positionsToRemove: Vector3[]) => {
+              const instancedMesh2 = node;
+              if (!instancedMesh2) return;
+
+              const indexes = instancedMesh2.instances
+                .map((instance, index) => {
+                  const found = positionsToRemove.find((positionToRemove) =>
+                    positionToRemove.equals(instance.position)
+                  );
+
+                  if (found) {
+                    return index;
+                  }
+
+                  return -1;
+                })
+                .filter((index) => index !== -1);
+
+              instancedMesh2.removeInstances(...indexes);
+            };
+
+            addPositionFunctions.current.push(addPositions);
+            removePositionFunctions.current.push(removePositions);
+          }}
+        />
+      );
+    });
+  };
+  return {
+    InstancedMeshes,
+    addPositions,
+    removePositions,
+    refs,
+  };
+};
+
 export const useInstancedMesh2 = ({ material, geometry }: SingleHookProps) => {
   const ref = useRef<InstancedMesh2>(null!);
   const { gl } = useThree();
@@ -43,7 +145,6 @@ export const useInstancedMesh2 = ({ material, geometry }: SingleHookProps) => {
       obj.matrix.copy(temp.matrix);
       obj.scale.set(1, 1, 1);
       obj.position.copy(newPositions[counter++]);
-      // obj.active = true;
 
       temp.rotation.set(-Math.PI / 2, 0, 0);
       obj.quaternion.copy(temp.quaternion);
@@ -131,6 +232,53 @@ export const InstancedTileSpawner = ({
   }, [removePositions, addPositions, ref]);
 
   return <InstancedMesh />;
+};
+
+export const MultiInstancedTileSpawner = ({
+  meshMaterialCombos,
+  modelPath,
+}: {
+  meshMaterialCombos: MeshMaterialCombos;
+  modelPath: string;
+}) => {
+  const { InstancedMeshes, addPositions, removePositions, refs } =
+    useMultiInstancedMesh2({
+      meshMaterialCombos,
+      modelPath,
+    });
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const { key } = event;
+
+      const pressedF = key === "f";
+      const pressedG = key === "g";
+
+      if (pressedF) {
+        const newPositions = [
+          new Vector3(Math.random() * tileSize, 0, Math.random() * tileSize),
+        ];
+        addPositions(newPositions);
+      }
+
+      if (pressedG) {
+        const randomPositions = pickRandomFromArray(
+          refs.current[0].instances
+            .filter((obj) => obj.active)
+            .map((obj) => obj.position),
+          1
+        );
+
+        removePositions(randomPositions);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [removePositions, addPositions, refs]);
+
+  return <InstancedMeshes />;
 };
 
 export const InstancedMesh2Group = ({

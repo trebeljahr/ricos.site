@@ -17,7 +17,10 @@ import {
   Vignette,
 } from "@react-three/postprocessing";
 import LensFlare from "@components/canvas/Lensflare";
-import { InstancedRocks } from "@components/canvas/Trees/InstancedRocks";
+import {
+  InstancedRocks,
+  InstancedTrees,
+} from "@components/canvas/Trees/InstancedRocks";
 import { CameraHelperComponent } from "@components/canvas/Trees/CameraHelper";
 
 const lensflareProps = {
@@ -62,7 +65,8 @@ const Page = () => {
             <color args={[skyColor]} attach="background" />
             {/* <CameraHelperComponent /> */}
             <group position={[-tileSize / 2, 0, -tileSize / 2]}>
-              <InstancedRocks />
+              {/* <InstancedRocks /> */}
+              <InstancedTrees />
             </group>
             <gridHelper args={[tileSize, 100]} />
 

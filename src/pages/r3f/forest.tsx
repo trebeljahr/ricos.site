@@ -42,7 +42,7 @@ const lensflareProps = {
 };
 
 const Page = () => {
-  const skyColor = "#f9c185";
+  const skyColor = "#85c7f9";
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <KeyboardControlsProvider>
@@ -52,14 +52,14 @@ const Page = () => {
             <hemisphereLight intensity={0.35} />
             <ambientLight intensity={1.0} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
-            {/* <fogExp2 attach="fog" args={[skyColor, 0.008]} /> */}
-            <fog attach="fog" args={[skyColor, 0.8, 50]} />
+            <fogExp2 attach="fog" args={[skyColor, 0.008]} />
+            {/* <fog attach="fog" args={[skyColor, 0.8, 50]} /> */}
             <color args={[skyColor]} attach="background" />
-            <Bvh>
-              <WorldManager />
-            </Bvh>
+            {/* <Bvh> */}
+            <WorldManager />
+            {/* </Bvh> */}
 
-            {/* <Sky /> */}
+            <Sky />
             <MinecraftCreativeControlsPlayer speed={25} />
           </Physics>
 

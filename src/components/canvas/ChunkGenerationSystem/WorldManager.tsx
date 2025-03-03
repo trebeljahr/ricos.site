@@ -125,7 +125,7 @@ export const SingleTile = ({ position }: { position: Vector3 }) => {
         <>
           <Text
             ref={textRef}
-            position={[0, 0, 0]}
+            position={[0, 10, 0]}
             scale={[1, 1, 1]}
             fontSize={2}
             color={"#000000"}

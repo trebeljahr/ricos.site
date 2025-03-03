@@ -33,6 +33,8 @@ import {
   Vector3 as YukaVec3,
 } from "yuka";
 import PoissonDiskSampling from "poisson-disk-sampling";
+import { BoundingSphere } from "../Trees/BoundingSphere";
+import { debug } from "../ChunkGenerationSystem/config";
 
 const gridSize = 80;
 const halfGridSize = gridSize / 2;
@@ -238,12 +240,13 @@ export function YukaSimulation() {
         <Velociraptor animationAction="Armature|Velociraptor_Run" />
       </group>
 
-      {/* {obstacleMeshes.current.map((mesh, index) => (
-        <group>
-          <primitive key={index} object={mesh} />
-          <BoundingSphere object={mesh} />
-        </group>
-      ))} */}
+      {debug &&
+        obstacleMeshes.current.map((mesh, index) => (
+          <group key={index}>
+            <primitive object={mesh} />
+            <BoundingSphere object={mesh} />
+          </group>
+        ))}
 
       <Trees positions={treePositions} />
 
@@ -280,28 +283,6 @@ export function Trees({ positions }: { positions: Vector3[] }) {
       <sphereGeometry args={[0.5, 32, 32]} />
       <meshBasicMaterial color="green" />
     </instancedMesh>
-  );
-}
-
-export function BoundingSphere({ object }: { object: Object3D }) {
-  const ref = useRef<Mesh>(null!);
-  const sphere = new Sphere();
-
-  useFrame(() => {
-    if (object) {
-      const box = new Box3().setFromObject(object);
-      box.getBoundingSphere(sphere);
-
-      ref.current.position.copy(sphere.center);
-      ref.current.scale.setScalar(sphere.radius);
-    }
-  });
-
-  return (
-    <mesh ref={ref}>
-      <sphereGeometry args={[1, 32, 32]} />
-      <meshBasicMaterial color="red" wireframe />
-    </mesh>
   );
 }
 

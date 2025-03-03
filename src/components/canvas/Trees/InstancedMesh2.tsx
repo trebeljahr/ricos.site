@@ -1,3 +1,4 @@
+import { usePrevious } from "@hooks/usePrevious";
 import { extend, type Node, Object3DNode, useThree } from "@react-three/fiber";
 import { InstancedMesh2 } from "@three.ez/instanced-mesh";
 import { useEffect, useRef } from "react";

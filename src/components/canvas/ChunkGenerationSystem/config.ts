@@ -8,7 +8,7 @@ type Modes =
   | "normals"
   | "colors";
 
-const debug = false;
+const debug = true;
 const normalsDebug = false;
 const visualizeHeight = false;
 const tileSize = 50;

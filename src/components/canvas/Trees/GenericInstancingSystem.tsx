@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import { useEffect, useMemo, useRef } from "react";
 import { InstancedMesh, Material, Mesh, Object3D, Vector3 } from "three";
 import { GLTF } from "three-stdlib";
+import { InstancedMesh2Component } from "./InstancedMesh2";
 
 const temp = new Object3D();
 
@@ -79,12 +80,20 @@ export const GenericInstancedSystem = ({
   return (
     <group>
       {materialMeshCombosWithIds.map(([meshName, materialName, id]) => {
+        // return (
+        //   <SingleInstancedMesh
+        //     key={id}
+        //     positions={positions}
+        //     geo={nodes[meshName].geometry}
+        //     material={materials[materialName]}
+        //   />
+        // );
         return (
-          <SingleInstancedMesh
+          <InstancedMesh2Component
             key={id}
-            positions={positions}
-            geo={nodes[meshName].geometry}
+            geometry={nodes[meshName].geometry}
             material={materials[materialName]}
+            positions={positions}
           />
         );
       })}

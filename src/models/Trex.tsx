@@ -23,7 +23,7 @@ import {
   Vector3,
 } from "three";
 import { GLTF } from "three-stdlib";
-import { AnimationController } from "@components/canvas/Controllers/GenericAnimationController";
+import { TrexAnimationController } from "@components/canvas/Controllers/GenericAnimationController";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -110,7 +110,7 @@ export const Trex = forwardRef(function TrexModel(
 
   return (
     <group {...props} ref={ref} dispose={null}>
-      {withAnimations && <AnimationController actions={actions} />}
+      {withAnimations && <TrexAnimationController actions={actions} />}
       <group name="Armature" rotation={[-Math.PI / 2, 0, Math.PI]} scale={300}>
         <primitive object={nodes.root} />
       </group>

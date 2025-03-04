@@ -1,10 +1,56 @@
 import { usePrevious } from "@hooks/usePrevious";
 import { useKeyboardControls } from "@react-three/drei";
-import { PropsWithChildren, useEffect, useState } from "react";
-import { AnimationAction, LoopOnce } from "three";
+import { PropsWithChildren, useEffect, useRef, useState } from "react";
+import { AnimationAction, LoopOnce, LoopRepeat } from "three";
 
 const fadeDuration = 0.5;
 export type ActionStore = Record<string, AnimationAction | null>;
+
+export const useGenericAnimationController = ({
+  actions,
+  fadeDuration = 0.5,
+}: {
+  actions: ActionStore;
+  fadeDuration?: number;
+}) => {
+  const actionNames = Object.keys(actions);
+  const defaultAction =
+    actionNames.find((name) => name.toLowerCase().includes("idle")) ||
+    actionNames.find((name) => name.toLowerCase().includes("walk")) ||
+    actionNames.find((name) => name.toLowerCase().includes("flying")) ||
+    actionNames.find((name) => name.toLowerCase().includes("forward")) ||
+    actionNames.find((name) => name.toLowerCase().includes("normal")) ||
+    actionNames[0];
+
+  const animationName = defaultAction;
+
+  const previous = useRef(animationName);
+
+  const updateAnimation = (
+    newAnimation: string,
+    {
+      looping = false,
+      fade = fadeDuration,
+    }: { looping?: boolean; fade?: number } = {}
+  ) => {
+    const current = actions[previous.current];
+    const toPlay = actions[newAnimation];
+
+    previous.current = newAnimation;
+
+    current?.fadeOut(fade);
+
+    if (!toPlay) return;
+
+    toPlay.reset().fadeIn(fade).play();
+    toPlay.setLoop(looping ? LoopRepeat : LoopOnce, looping ? Infinity : 1);
+    toPlay.clampWhenFinished = true;
+  };
+
+  updateAnimation(animationName, { looping: true });
+
+  return { updateAnimation };
+};
 
 export const GenericAnimationController = ({
   actions,
@@ -35,7 +81,7 @@ export const GenericAnimationController = ({
   return <>{children}</>;
 };
 
-export function AnimationController({ actions }: { actions: ActionStore }) {
+export function TrexAnimationController({ actions }: { actions: ActionStore }) {
   const [state, setState] = useState<string>("Armature|TRex_Idle");
   const previousState = usePrevious(state);
 

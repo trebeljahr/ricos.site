@@ -2,10 +2,6 @@ import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import {
-  BirchTreesForChunks,
-  RocksForChunks,
-} from "../InstancedMeshSystem/useInstancedMesh2";
-import {
   Chunk,
   ChunkProvider,
   MemoizedChunk,
@@ -13,6 +9,7 @@ import {
 } from "./ChunkProvider";
 import { debug, tileSize } from "./config";
 import { TerrainTile } from "./TerrainTile";
+import { BirchTreesForChunks, RocksForChunks } from "./ChunkInstancedMeshes";
 
 export const WorldManager = () => {
   return (

@@ -1,42 +1,129 @@
-import { useFBX } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useKeyboardInput } from "@hooks/useKeyboardInput";
+import { useAnimations, useFBX } from "@react-three/drei";
+import { useControls } from "leva";
 import { useEffect, useRef } from "react";
-import { AnimationAction, AnimationMixer, Mesh } from "three";
+import {
+  AnimationAction,
+  type AnimationClip,
+  AnimationMixer,
+  Event,
+  EventListener,
+  Mesh,
+} from "three";
+import { useGenericAnimationController } from "./canvas/Controllers/GenericAnimationController";
 
-interface Animations {
-  [name: string]: {
-    clip: AnimationAction;
-  };
+interface GLTFAction extends AnimationClip {
+  name: string;
 }
 
 export default function Character() {
   const characterMeshRef = useRef<Mesh>(null!);
   const characterModel = useFBX("/3d-assets/fbx/character/Michelle.fbx");
 
-  const animations: Animations = {};
-  const mixer = new AnimationMixer(characterModel);
+  const running = useFBX("/3d-assets/fbx/animations/running.fbx");
+  const idle = useFBX("/3d-assets/fbx/animations/idle.fbx");
+  const jump = useFBX("/3d-assets/fbx/animations/jump.fbx");
+  const dance = useFBX("/3d-assets/fbx/animations/dance.fbx");
+  const walking = useFBX("/3d-assets/fbx/animations/walking.fbx");
+  const breakdance = useFBX("/3d-assets/fbx/animations/breakdance.fbx");
+  const yawning = useFBX("/3d-assets/fbx/animations/yawning.fbx");
+  const angry = useFBX("/3d-assets/fbx/animations/angry.fbx");
+  const bow = useFBX("/3d-assets/fbx/animations/bow.fbx");
+  const crawl = useFBX("/3d-assets/fbx/animations/crawl.fbx");
+  const death = useFBX("/3d-assets/fbx/animations/death.fbx");
+  const happyJump = useFBX("/3d-assets/fbx/animations/happy-jump.fbx");
+  const jumpingUp = useFBX("/3d-assets/fbx/animations/jumping-up.fbx");
+  const kickLeft = useFBX("/3d-assets/fbx/animations/kick-left.fbx");
+  const kickRight = useFBX("/3d-assets/fbx/animations/kick-right.fbx");
+  const martelo = useFBX("/3d-assets/fbx/animations/martelo.fbx");
+  const paddle = useFBX("/3d-assets/fbx/animations/paddle.fbx");
+  const pickUpLeft = useFBX("/3d-assets/fbx/animations/picking-up-left.fbx");
+  const pickUpRight = useFBX("/3d-assets/fbx/animations/picking-up-right.fbx");
+  const punchLeft = useFBX("/3d-assets/fbx/animations/punch-left.fbx");
+  const punchRight = useFBX("/3d-assets/fbx/animations/punch-right.fbx");
+  const salute = useFBX("/3d-assets/fbx/animations/salute.fbx");
+  const shrug = useFBX("/3d-assets/fbx/animations/shrug.fbx");
+  const sillyDance = useFBX("/3d-assets/fbx/animations/silly-dance.fbx");
+  const swim = useFBX("/3d-assets/fbx/animations/swim.fbx");
+  const threatGesture = useFBX("/3d-assets/fbx/animations/threat-gesture.fbx");
+  const wave = useFBX("/3d-assets/fbx/animations/wave.fbx");
 
-  const running = useFBX("/3d-assets/fbx/animations/in/running.fbx");
+  const animationsForHook = [
+    { ...idle.animations[0], name: "idle" },
+    { ...walking.animations[0], name: "walking" },
+    { ...running.animations[0], name: "running" },
+    { ...dance.animations[0], name: "dance" },
+    { ...breakdance.animations[0], name: "breakdance" },
+    { ...jump.animations[0], name: "jump" },
+    { ...yawning.animations[0], name: "yawning" },
+    { ...angry.animations[0], name: "angry" },
+    { ...bow.animations[0], name: "bow" },
+    { ...crawl.animations[0], name: "crawl" },
+    { ...death.animations[0], name: "death" },
+    { ...happyJump.animations[0], name: "happyJump" },
+    { ...jumpingUp.animations[0], name: "jumpingUp" },
+    { ...kickLeft.animations[0], name: "kickLeft" },
+    { ...kickRight.animations[0], name: "kickRight" },
+    { ...martelo.animations[0], name: "martelo" },
+    { ...paddle.animations[0], name: "paddle" },
+    { ...pickUpLeft.animations[0], name: "pickingUpLeft" },
+    { ...pickUpRight.animations[0], name: "pickingUpRight" },
+    { ...punchLeft.animations[0], name: "punchLeft" },
+    { ...punchRight.animations[0], name: "punchRight" },
+    { ...salute.animations[0], name: "salute" },
+    { ...shrug.animations[0], name: "shrug" },
+    { ...sillyDance.animations[0], name: "sillyDance" },
+    { ...swim.animations[0], name: "swim" },
+    { ...threatGesture.animations[0], name: "threatGesture" },
+    { ...wave.animations[0], name: "wave" },
+  ] as GLTFAction[];
 
-  animations.running = {
-    clip: mixer.clipAction(running.animations[0]),
-  };
-
-  const idle = useFBX("/3d-assets/fbx/animations/in/idle.fbx");
-  animations.idle = {
-    clip: mixer.clipAction(idle.animations[0]),
-  };
+  const result = useAnimations(animationsForHook, characterMeshRef);
 
   useEffect(() => {
-    animations.idle.clip.play();
+    const listener = () => {
+      updateAnimation("idle", { looping: true });
+    };
+
+    result.mixer.addEventListener("finished", listener);
+
     return () => {
-      mixer.stopAllAction();
+      result.mixer.removeEventListener("finished", listener);
     };
   }, []);
 
-  useFrame((_, delta) => {
-    mixer.update(delta);
+  // const [currentAnimation, setCurrentAnimation] = useState<string>("idle");
+
+  const { updateAnimation } = useGenericAnimationController({
+    actions: result.actions,
   });
 
-  return <primitive object={characterModel} ref={characterMeshRef} />;
+  useControls(
+    {
+      animation: {
+        options: animationsForHook.map((animation) => animation.name),
+        value: "idle",
+        onChange: (value: string) => {
+          updateAnimation(value);
+        },
+      },
+    },
+    {
+      collapsed: true,
+    }
+  );
+
+  useKeyboardInput(({ key }) => {
+    animationsForHook.forEach((_, index) => {
+      if (key === `${index + 1}`) {
+        updateAnimation(animationsForHook[index].name);
+      }
+    });
+  });
+
+  return (
+    <>
+      <primitive object={characterModel} ref={characterMeshRef} />
+    </>
+  );
 }

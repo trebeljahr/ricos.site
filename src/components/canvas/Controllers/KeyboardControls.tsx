@@ -16,7 +16,6 @@ export const keymap = [
   { name: "rightward", keys: ["ArrowRight", "KeyD"] },
   { name: "jump", keys: ["Space"] },
   { name: "descend", keys: ["c", "C"] },
-  { name: "sprint", keys: ["Shift"] },
   { name: "run", keys: ["Shift"] },
   { name: "attack", keys: ["F", "f"] },
 ];

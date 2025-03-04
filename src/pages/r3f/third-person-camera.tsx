@@ -1,4 +1,4 @@
-import { CanvasWithControls } from "@components/canvas/Controllers/KeyboardControls";
+import { CanvasWithKeyboardInput } from "@components/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import dynamic from "next/dynamic";
 
@@ -10,9 +10,9 @@ const ThirdPersonDemo = dynamic(
 export default function Page() {
   return (
     <ThreeFiberLayout>
-      <CanvasWithControls>
+      <CanvasWithKeyboardInput>
         <ThirdPersonDemo />
-      </CanvasWithControls>
+      </CanvasWithKeyboardInput>
     </ThreeFiberLayout>
   );
 }

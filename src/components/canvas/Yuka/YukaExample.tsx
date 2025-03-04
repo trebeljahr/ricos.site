@@ -14,6 +14,7 @@ import {
   MeshPhongMaterial,
   Object3D,
   Quaternion,
+  Vector2,
   Vector3,
 } from "three";
 import {
@@ -27,11 +28,16 @@ import {
   WanderBehavior,
   Vector3 as YukaVec3,
 } from "yuka";
-import { debug } from "../ChunkGenerationSystem/config";
+import {
+  debug,
+  tileSize,
+  treeMaxDistance,
+  treeMinDistance,
+} from "../ChunkGenerationSystem/config";
 import { BoundingSphereAround } from "../Helpers/BoundingSphere";
-import { generateTreePositions } from "../../../lib/utils/noise";
+import { poissonDiskSample } from "src/lib/utils/noise";
 
-const gridSize = 80;
+const gridSize = tileSize;
 const halfGridSize = gridSize / 2;
 const panicRadius = 5;
 const safetyRadius = panicRadius * 3;
@@ -227,19 +233,18 @@ export function YukaSimulation() {
     }
   });
 
-  const treePositions = useMemo(
-    () => generateTreePositions(gridSize * 2, gridSize * 2, 1, 2),
-    []
-  );
+  const treePositions = useMemo(() => {
+    const positions = poissonDiskSample(
+      tileSize,
+      treeMinDistance,
+      treeMaxDistance
+    );
+    return positions;
+  }, []);
 
   return (
     <group>
-      <group
-        ref={chaserMeshRef}
-        matrixAutoUpdate={true}
-        scale={0.1}
-        // rotation={[Math.PI * 0.5, 0, 0]}
-      >
+      <group ref={chaserMeshRef} matrixAutoUpdate={true} scale={0.1}>
         <Velociraptor animationAction="Armature|Velociraptor_Run" />
       </group>
 
@@ -251,7 +256,9 @@ export function YukaSimulation() {
           </group>
         ))}
 
-      <Trees positions={treePositions} />
+      <group position={[-halfGridSize, 0, -halfGridSize]}>
+        <Trees positions={treePositions} />
+      </group>
 
       <group ref={targetMeshRef} matrixAutoUpdate={true}>
         <Stag animationAction={animation} scale={0.2} />

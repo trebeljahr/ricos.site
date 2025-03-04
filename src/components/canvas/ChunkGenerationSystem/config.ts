@@ -15,7 +15,7 @@ const wireframe = false;
 const flatShading = false;
 const onlyRenderOnce = false;
 const debugCamera = false;
-
+const perf = true;
 const visualizeHeight = true;
 
 const tileSize = 100;
@@ -41,6 +41,7 @@ export {
   tilesDistance,
   mode,
   onlyRenderOnce,
+  perf,
   treeMaxDistance,
   treeMinDistance,
   heightNoiseScale,

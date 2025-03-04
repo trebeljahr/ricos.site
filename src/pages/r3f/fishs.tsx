@@ -1,14 +1,15 @@
 import { Fishs } from "@components/canvas/FBOExperiments/Fish";
-import { CanvasWithControls } from "@components/canvas/Controllers/KeyboardControls";
+import { CanvasWithKeyboardInput } from "@components/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { Box } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 import { Vector3 } from "three";
+import { perf } from "@components/canvas/ChunkGenerationSystem/config";
 
 export default function Page() {
   return (
     <ThreeFiberLayout>
-      <CanvasWithControls
+      <CanvasWithKeyboardInput
         camera={{ position: new Vector3(0, 0, 50), near: 1, far: 3000 }}
       >
         <Fishs />
@@ -17,7 +18,7 @@ export default function Page() {
         </Box>
         <ambientLight />
         <fog color={0xffffff} near={100} far={1000} />
-        <Perf position="bottom-right" />
+        {perf && <Perf position="bottom-right" />}
         {/* <OrbitControls /> */}
         {/* <KeyboardControls
         map={[
@@ -34,7 +35,7 @@ export default function Page() {
           <SwimmingPlayerControls />
         </Physics>
       </KeyboardControls> */}
-      </CanvasWithControls>
+      </CanvasWithKeyboardInput>
     </ThreeFiberLayout>
   );
 }

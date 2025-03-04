@@ -1,4 +1,4 @@
-import { CanvasWithControls } from "@components/canvas/Controllers/KeyboardControls";
+import { CanvasWithKeyboardInput } from "@components/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { UnderwaterContextProvider } from "@contexts/UnderwaterContext";
 import dynamic from "next/dynamic";
@@ -17,11 +17,11 @@ export default function Page() {
   return (
     <ThreeFiberLayout>
       <Out />
-      <CanvasWithControls>
+      <CanvasWithKeyboardInput>
         <UnderwaterContextProvider>
           <WaterDemo />
         </UnderwaterContextProvider>
-      </CanvasWithControls>
+      </CanvasWithKeyboardInput>
     </ThreeFiberLayout>
   );
 }

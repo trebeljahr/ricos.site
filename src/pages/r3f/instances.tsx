@@ -1,4 +1,5 @@
 import {
+  perf,
   physicsDebug,
   tileSize,
 } from "@components/canvas/ChunkGenerationSystem/config";
@@ -44,7 +45,7 @@ const Page = () => {
     <ThreeFiberLayout>
       <KeyboardControlsProvider>
         <Canvas>
-          <Perf position="bottom-right" />
+          {perf && <Perf position="bottom-right" />}
           <Physics debug={physicsDebug}>
             <hemisphereLight intensity={0.35} />
             <ambientLight intensity={1.0} />

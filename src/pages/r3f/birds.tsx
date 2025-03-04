@@ -1,3 +1,4 @@
+import { perf } from "@components/canvas/ChunkGenerationSystem/config";
 import { Birds } from "@components/canvas/FBOExperiments/Birds";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { OrbitControls } from "@react-three/drei";
@@ -11,7 +12,7 @@ export default function Page() {
       <Canvas camera={{ position: new Vector3(0, 0, 350), near: 1, far: 3000 }}>
         <Birds />
         <fog color={0xffffff} near={100} far={1000} />
-        <Perf position="bottom-right" />
+        {perf && <Perf position="bottom-right" />}
         <OrbitControls />
       </Canvas>
     </ThreeFiberLayout>

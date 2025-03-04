@@ -1,4 +1,8 @@
-import { physicsDebug } from "@components/canvas/ChunkGenerationSystem/config";
+import {
+  debug,
+  physicsDebug,
+  tileSize,
+} from "@components/canvas/ChunkGenerationSystem/config";
 import { RigidBallSpawner } from "@components/canvas/Helpers/RigidBall";
 import { MinecraftCreativeController } from "@components/canvas/Controllers/MinecraftCreativeController";
 import { KeyboardControlsProvider } from "@components/canvas/Controllers/KeyboardControls";
@@ -6,51 +10,75 @@ import * as animals from "@models/animals_pack";
 import * as dinosaurs from "@models/dinosaurs_pack";
 import * as natureAssets from "@models/nature_pack";
 import * as simpleNatureAssets from "@models/simple_nature_pack";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Leva } from "leva";
 
 import { Plane, Text } from "@react-three/drei";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useRef } from "react";
 import { DoubleSide } from "three";
+import { ThreeFiberLayout } from "@components/dom/Layout";
+
+const allNatureAssets = {
+  ...simpleNatureAssets,
+  ...natureAssets,
+};
+
+const animalAssets = {
+  ...animals,
+  ...dinosaurs,
+};
+
+const natureKeysLength = Object.keys(allNatureAssets).length;
+
+const length = [...Object.keys(allNatureAssets), ...Object.keys(animalAssets)]
+  .length;
+
+const amountPerColumn = 10;
+const rowSize = tileSize / amountPerColumn;
+const columnSize = tileSize / (length / amountPerColumn);
 
 const AssetWithText = ({
   index,
   text,
   children,
 }: PropsWithChildren<{ index: number; text: string }>) => {
+  const x = (index - (index % 10)) / 10;
+  const z = index % 10;
+
+  const textRef = useRef<any>(null!);
+
+  useFrame(({ camera }) => {
+    textRef.current.quaternion.copy(camera.quaternion);
+  });
+
   return (
     <group
       key={index}
-      position={[(index - (index % 10)) / 2, 0, (index % 10) * 4]}
+      position={[(x + 0.5) * columnSize, 0, (z + 0.5) * rowSize]}
     >
       <Text
-        position={[0, 0.3, -1.5]}
-        scale={[-1, 1, 1]}
+        ref={textRef}
+        position={[0, 0.3, 1.5]}
+        // scale={[-1, 1, 1]}
         fontSize={0.4}
         color={"#000000"}
       >
-        {text}
+        {text} {debug && `${x},${z}`}
       </Text>
-      {children}
+      <group rotation={[0, -Math.PI, 0]}>{children}</group>
     </group>
   );
 };
 
-const allAssets = {
-  ...simpleNatureAssets,
-  ...natureAssets,
-  ...animals,
-  ...dinosaurs,
-};
-
 const Page = () => {
   const groundColor = "#84fb34";
+
   return (
-    <div className="w-screen h-screen bg-white">
+    <ThreeFiberLayout>
       <KeyboardControlsProvider>
         <Leva />
-        <Canvas>
+        <Canvas camera={{ position: [0, 5, tileSize / 2] }}>
           <Physics debug={physicsDebug}>
             <ambientLight intensity={1.0} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
@@ -59,33 +87,44 @@ const Page = () => {
               position={[0, 50, 0]}
               groundColor={groundColor}
             />
-            <Plane
-              args={[100, 100]}
-              rotation={[-Math.PI / 2, 0, 0]}
-              position={[40, 0, 0]}
-            >
-              <meshStandardMaterial color={groundColor} side={DoubleSide} />
-            </Plane>
-            {/* // const hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 2
-            // ); hemiLight.color.setHSL( 0.6, 1, 0.6 );
-            // hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
-            // hemiLight.position.set( 0, 50, 0 ); */}
+
             <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
             <color args={["#f0f0f0"]} attach="background" />
 
-            {Object.entries(allAssets).map(([key, Asset], index) => {
-              return (
-                <AssetWithText key={key} index={index} text={key}>
-                  <Asset />
-                </AssetWithText>
-              );
-            })}
+            <Plane args={[tileSize, 100]} rotation={[-Math.PI / 2, 0, 0]}>
+              <meshStandardMaterial color={groundColor} side={DoubleSide} />
+            </Plane>
+            <gridHelper args={[tileSize, 100]} position={[0, 0.001, 0]} />
+
+            <group position={[-tileSize / 2, 0.1, -tileSize / 2]}>
+              <axesHelper args={[5]} />
+
+              {Object.entries(allNatureAssets).map(([key, Asset], index) => {
+                return (
+                  <AssetWithText key={key} index={index} text={key}>
+                    <Asset />
+                  </AssetWithText>
+                );
+              })}
+
+              {Object.entries(animalAssets).map(([key, Asset], index) => {
+                const combinedIndex = index + natureKeysLength;
+
+                return (
+                  <AssetWithText key={key} index={combinedIndex} text={key}>
+                    <group rotation={[0, -Math.PI, 0]}>
+                      <Asset scale={0.2} />
+                    </group>
+                  </AssetWithText>
+                );
+              })}
+            </group>
+
             <MinecraftCreativeController speed={25} />
-            <RigidBallSpawner />
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>
-    </div>
+    </ThreeFiberLayout>
   );
 };
 

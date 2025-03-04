@@ -13,6 +13,7 @@ import {
   baseResolution,
   lodDistanceFactor,
   lodLevels,
+  onlyRenderOnce,
   tilesDistance,
   tileSize,
 } from "./config";
@@ -40,14 +41,16 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
 
   const renderedOnce = useRef(false);
   useFrame(() => {
-    if (renderedOnce.current) return;
+    if (renderedOnce.current && onlyRenderOnce) return;
 
     camera.getWorldPosition(tempVec);
 
-    tempVec.divideScalar(tileSize * 2).floor();
+    const playerGridX = Math.round(tempVec.x / tileSize); // tempVec.x;
+    const playerGridZ = Math.round(tempVec.z / tileSize); // tempVec.z;
 
-    const playerGridX = tempVec.x;
-    const playerGridZ = tempVec.z;
+    tempVec.setX(playerGridX);
+    tempVec.setZ(playerGridZ);
+
     const oldPlayerGridX = oldCameraGridPosition.current.x;
     const oldPlayerGridZ = oldCameraGridPosition.current.z;
 
@@ -57,8 +60,7 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
     }
     oldCameraGridPosition.current.copy(tempVec);
 
-    const radiusSquared =
-      tilesDistance * tilesDistance * tileSize * 2 * tileSize * 2;
+    const radiusSquared = tilesDistance * tilesDistance * tileSize * tileSize;
 
     const newChunks = new Map();
     for (let x = -tilesDistance; x <= tilesDistance; x++) {

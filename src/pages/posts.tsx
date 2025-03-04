@@ -5,7 +5,8 @@ import Header from "@components/PostHeader";
 import { OtherPostsPreview } from "@components/PostPreview";
 import { ToTopButton } from "@components/ToTopButton";
 import { posts as allPosts } from "@velite";
-import { CommonMetadata, extractAndSortMetadata } from "src/lib/utils";
+import { CommonMetadata } from "src/@types";
+import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
   posts: CommonMetadata[];

@@ -8,7 +8,8 @@ import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import { Booknote, booknotes as allBooknotes } from "@velite";
 import { useState } from "react";
-import { byOnlyPublished, extractAndSortMetadata } from "src/lib/utils";
+import { byOnlyPublished } from "src/lib/utils/filters";
+import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
   booknotes: Booknote[];

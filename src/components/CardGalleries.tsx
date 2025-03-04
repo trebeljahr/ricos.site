@@ -11,7 +11,7 @@ import {
 } from "react";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import { VerticalCard } from "./NiceCards";
-import { CommonMetadata } from "src/lib/utils";
+import { CommonMetadata } from "src/@types";
 
 export type CardGalleryProps = {
   content: CommonMetadata[];

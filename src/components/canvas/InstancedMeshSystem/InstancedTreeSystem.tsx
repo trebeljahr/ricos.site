@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 
 import { useGLTF } from "@react-three/drei";
-import { generateTreePositions } from "../Yuka/YukaExample";
+import { generateTreePositions } from "../../../lib/utils/noise";
 import { Group, InstancedMesh, Mesh, Object3D, Vector2, Vector3 } from "three";
 
 const treeArray = [

@@ -11,7 +11,8 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
 import { BreadCrumbs } from "@components/BreadCrumbs";
-import { byOnlyPublished, toTitleCase } from "src/lib/utils";
+import { byReadingTime, toTitleCase } from "src/lib/utils/misc";
+import { byOnlyPublished } from "src/lib/utils/filters";
 
 const allDocuments = [
   ...posts,
@@ -66,16 +67,6 @@ const RenderTags = ({ tags }: { tags: TaggedDocumentData[] }) => {
       })}
     </div>
   );
-};
-
-const byReadingTime = (
-  a: { metadata?: { readingTime?: number } },
-  b: { metadata?: { readingTime?: number } }
-) => {
-  const aTime = a.metadata?.readingTime || 0;
-  const bTime = b.metadata?.readingTime || 0;
-
-  return bTime - aTime;
 };
 
 const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {

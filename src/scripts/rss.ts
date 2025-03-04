@@ -3,7 +3,7 @@ import { Feed } from "feed";
 import fs from "fs";
 import path from "path";
 import { baseUrl } from "src/lib/urlUtils";
-import { byOnlyPublished } from "src/lib/utils";
+import { byOnlyPublished } from "src/lib/utils/filters";
 
 async function generateRssFeed() {
   const site_url = baseUrl;

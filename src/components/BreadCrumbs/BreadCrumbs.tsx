@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { turnKebabIntoTitleCase } from "src/lib/utils";
+import { turnKebabIntoTitleCase } from "src/lib/utils/misc";
 
 export default function _Component({
   path,

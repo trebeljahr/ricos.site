@@ -16,6 +16,7 @@ import { Perf } from "r3f-perf";
 import { CameraPositionLogger } from "@components/canvas/Helpers/CameraPositionLogger";
 import { RayCaster } from "@components/canvas/Helpers/RayCaster";
 import { SwitchController } from "@components/canvas/Controllers/SwitchControllers";
+import { ThreeFiberLayout } from "@components/dom/Layout";
 
 const defaultSpeed = 25;
 const Page = () => {
@@ -24,12 +25,12 @@ const Page = () => {
   });
 
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
+    <ThreeFiberLayout>
       <KeyboardControlsProvider>
         <Leva />
         <Canvas>
           <CameraPositionLogger />
-          <Perf position="top-left" />
+          <Perf position="bottom-right" />
           <Physics debug={physicsDebug}>
             <hemisphereLight intensity={0.35} />
             <ambientLight intensity={1.0} />
@@ -48,7 +49,7 @@ const Page = () => {
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>
-    </div>
+    </ThreeFiberLayout>
   );
 };
 

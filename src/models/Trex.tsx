@@ -23,7 +23,7 @@ import {
   Vector3,
 } from "three";
 import { GLTF } from "three-stdlib";
-import { AnimationController } from "../components/canvas/Controllers/GenericAnimationController";
+import { AnimationController } from "@components/canvas/Controllers/GenericAnimationController";
 
 type GLTFResult = GLTF & {
   nodes: {

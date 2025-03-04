@@ -1,7 +1,7 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import { MDXRemote } from "next-mdx-remote";
 import Link from "next/link";
-import { CommonMetadata } from "src/lib/utils";
+import { CommonMetadata } from "src/@types";
 import { MetadataDisplay } from "./MetadataDisplay";
 
 type Props = {

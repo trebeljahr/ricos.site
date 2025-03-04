@@ -3,12 +3,9 @@ import { Stag } from "@models/animals_pack";
 import { ActionName } from "@models/animals_pack/Stag";
 import { Velociraptor } from "@models/dinosaurs_pack";
 import { useFrame, useThree } from "@react-three/fiber";
-import { perlin2 } from "simplenoise";
-import { createNoise2D } from "simplex-noise";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Box3,
   BoxGeometry,
   ColorRepresentation,
   Group,
@@ -17,8 +14,6 @@ import {
   MeshPhongMaterial,
   Object3D,
   Quaternion,
-  Sphere,
-  Vector2,
   Vector3,
 } from "three";
 import {
@@ -32,9 +27,9 @@ import {
   WanderBehavior,
   Vector3 as YukaVec3,
 } from "yuka";
-import PoissonDiskSampling from "poisson-disk-sampling";
-import { BoundingSphere } from "../Helpers/BoundingSphere";
 import { debug } from "../ChunkGenerationSystem/config";
+import { BoundingSphereAround } from "../Helpers/BoundingSphere";
+import { generateTreePositions } from "../../../lib/utils/noise";
 
 const gridSize = 80;
 const halfGridSize = gridSize / 2;
@@ -58,6 +53,10 @@ export function YukaSimulation() {
 
   useEffect(() => {
     if (!chaserMeshRef.current || !targetMeshRef.current) return;
+
+    const currentManager = entityManager.current;
+    const currentChaser = chaser.current;
+    const currentTarget = target.current;
 
     obstacles.current = [];
     obstacleMeshes.current = [];
@@ -100,7 +99,7 @@ export function YukaSimulation() {
       const obstacle = new GameEntity();
       obstacle.position.copy(mesh.position as unknown as YukaVec3);
       obstacle.boundingRadius = geometry.boundingSphere.radius;
-      entityManager.current.add(obstacle);
+      currentManager.add(obstacle);
       obstacles.current.push(obstacle);
     };
 
@@ -108,7 +107,7 @@ export function YukaSimulation() {
       createObstacle({ color: "#56c700" });
     }
 
-    chaser.current.setRenderComponent(chaserMeshRef.current, (entity) => {
+    currentChaser.setRenderComponent(chaserMeshRef.current, (entity) => {
       chaserMeshRef.current.position.copy(
         new Vector3(entity.position.x, entity.position.y, entity.position.z)
       );
@@ -122,7 +121,7 @@ export function YukaSimulation() {
       );
     });
 
-    target.current.setRenderComponent(targetMeshRef.current, (entity) => {
+    currentTarget.setRenderComponent(targetMeshRef.current, (entity) => {
       targetMeshRef.current.position.copy(
         new Vector3(entity.position.x, entity.position.y, entity.position.z)
       );
@@ -136,25 +135,25 @@ export function YukaSimulation() {
       );
     });
 
-    chaser.current.worldMatrix.copy(new Matrix4());
-    target.current.worldMatrix.copy(new Matrix4());
+    currentChaser.worldMatrix.copy(new Matrix4());
+    currentTarget.worldMatrix.copy(new Matrix4());
 
-    chaser.current.position.set(-5, 0, 0);
-    target.current.position.set(0, 0, 0);
+    currentChaser.position.set(-5, 0, 0);
+    currentTarget.position.set(0, 0, 0);
 
     targetMeshRef.current.rotateX(Math.PI * 0.5);
     chaserMeshRef.current.rotateX(Math.PI * 0.5);
 
-    const seekBehavior = new SeekBehavior(target.current.position);
+    const seekBehavior = new SeekBehavior(currentTarget.position);
     const seekerObstacleAvoidanceBehavior = new ObstacleAvoidanceBehavior(
       obstacles.current
     );
     seekerObstacleAvoidanceBehavior.weight = 10;
-    chaser.current.steering.add(seekBehavior);
-    chaser.current.steering.add(seekerObstacleAvoidanceBehavior);
-    chaser.current.maxSpeed = seekerSpeed;
+    currentChaser.steering.add(seekBehavior);
+    currentChaser.steering.add(seekerObstacleAvoidanceBehavior);
+    currentChaser.maxSpeed = seekerSpeed;
 
-    const fleeBehavior = new FleeBehavior(chaser.current.position);
+    const fleeBehavior = new FleeBehavior(currentChaser.position);
     const wanderingBehavior = new WanderBehavior();
     const obstacleAvoidanceBehavior = new ObstacleAvoidanceBehavior(
       obstacles.current
@@ -164,23 +163,23 @@ export function YukaSimulation() {
     wanderingBehavior.weight = 2;
     obstacleAvoidanceBehavior.weight = 10;
 
-    target.current.steering.add(fleeBehavior);
-    target.current.steering.add(wanderingBehavior);
-    target.current.steering.add(obstacleAvoidanceBehavior);
-    target.current.maxSpeed = fleeSpeed;
+    currentTarget.steering.add(fleeBehavior);
+    currentTarget.steering.add(wanderingBehavior);
+    currentTarget.steering.add(obstacleAvoidanceBehavior);
+    currentTarget.maxSpeed = fleeSpeed;
 
     camera.position.set(0, 10, 10);
     camera.lookAt(
-      new Vector3(target.current.position.x, 0, target.current.position.y)
+      new Vector3(currentTarget.position.x, 0, currentTarget.position.y)
     );
 
-    entityManager.current.add(chaser.current);
-    entityManager.current.add(target.current);
+    currentManager.add(currentChaser);
+    currentManager.add(currentTarget);
 
     return () => {
-      entityManager.current.remove(chaser.current);
-      entityManager.current.remove(target.current);
-      entityManager.current.clear();
+      currentManager.remove(currentChaser);
+      currentManager.remove(currentTarget);
+      currentManager.clear();
     };
   }, [camera]);
 
@@ -189,17 +188,19 @@ export function YukaSimulation() {
   const prevIsPanicked = usePrevious(isPanicked);
 
   useEffect(() => {
+    const currentTarget = target.current;
+
     if (isPanicked) {
-      target.current.maxSpeed = fleeSpeed;
-      target.current.steering.behaviors.forEach((behavior) => {
+      currentTarget.maxSpeed = fleeSpeed;
+      currentTarget.steering.behaviors.forEach((behavior) => {
         if (behavior instanceof FleeBehavior) {
           behavior.active = true;
         }
       });
       setAnimation("AnimalArmature|Gallop");
     } else {
-      target.current.maxSpeed = wanderSpeed;
-      target.current.steering.behaviors.forEach((behavior) => {
+      currentTarget.maxSpeed = wanderSpeed;
+      currentTarget.steering.behaviors.forEach((behavior) => {
         if (behavior instanceof FleeBehavior) {
           behavior.active = false;
         }
@@ -209,11 +210,13 @@ export function YukaSimulation() {
   }, [isPanicked]);
 
   useFrame((_, delta) => {
-    entityManager.current.update(delta);
+    const currentTarget = target.current;
+    const currentChaser = chaser.current;
+    const currentManager = entityManager.current;
 
-    const distance = chaser.current.position.distanceTo(
-      target.current.position
-    );
+    currentManager.update(delta);
+
+    const distance = currentChaser.position.distanceTo(currentTarget.position);
 
     if (distance < panicRadius && prevIsPanicked === false) {
       setIsPanicked(true);
@@ -244,7 +247,7 @@ export function YukaSimulation() {
         obstacleMeshes.current.map((mesh, index) => (
           <group key={index}>
             <primitive object={mesh} />
-            <BoundingSphere object={mesh} />
+            <BoundingSphereAround object={mesh} />
           </group>
         ))}
 
@@ -259,9 +262,10 @@ export function YukaSimulation() {
   );
 }
 
+const temp = new Object3D();
+
 export function Trees({ positions }: { positions: Vector3[] }) {
   const meshRef = useRef<InstancedMesh>(null!);
-  const temp = new Object3D();
 
   useEffect(() => {
     if (!meshRef.current) return;
@@ -284,74 +288,4 @@ export function Trees({ positions }: { positions: Vector3[] }) {
       <meshBasicMaterial color="green" />
     </instancedMesh>
   );
-}
-
-export function poissonDiskSample(
-  width: number,
-  min = 4,
-  max = 5,
-  {
-    tries = 10,
-    offset = { x: 0, y: 0 },
-  }: { tries?: number; offset?: { x: number; y: number } } = {}
-) {
-  let p = new PoissonDiskSampling({
-    shape: [width, width],
-    minDistance: min,
-    maxDistance: max,
-    tries,
-  });
-  const noiseScale = 0.05;
-  const threshold = -0.2;
-
-  let points = p.fill().filter(([x, z]) => {
-    const noiseValue = perlin2(
-      (x + offset.x) * noiseScale,
-      (z + offset.y) * noiseScale
-    );
-
-    if (noiseValue > threshold) {
-      return true;
-    }
-
-    return false;
-  });
-
-  return points.map(([x, z]) => new Vector3(x, 0, z));
-}
-
-export function generateTreePositions(
-  xWidth: number,
-  zWidth: number,
-  minDistance: number,
-  densityScale = 0.5
-) {
-  const points = [];
-
-  const gridSize =
-    Math.ceil(xWidth / minDistance) * Math.ceil(zWidth / minDistance);
-
-  for (let i = 0; i < gridSize; i++) {
-    const x = Math.random() * xWidth - xWidth / 2;
-    const z = Math.random() * zWidth - zWidth / 2;
-
-    const noiseValue = perlin2(x * 0.01, z * 0.01);
-    if (Math.random() > noiseValue * densityScale) continue;
-
-    let valid = true;
-    for (const p of points) {
-      if (
-        new Vector3(p.x, 0, p.z).distanceTo(new Vector3(x, 0, z)) < minDistance
-      ) {
-        valid = false;
-        break;
-      }
-    }
-
-    if (valid) {
-      points.push(new Vector3(x, 0, z));
-    }
-  }
-
-  return points;
 }

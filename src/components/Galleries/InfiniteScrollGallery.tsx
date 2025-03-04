@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { PhotoAlbum } from "react-photo-album";
 import { ImageProps } from "src/@types";
-import { addIdAndIndex } from "src/lib/utils";
+import { addIdAndIndex } from "src/lib/utils/misc";
 import { CustomLightBox, useCustomLightbox } from "./useCustomLightbox";
 
 const groupSize = 10;

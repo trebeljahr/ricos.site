@@ -3,7 +3,7 @@ import { MDXRemote } from "next-mdx-remote";
 import Link from "next/link";
 import { MDXResult } from "src/@types";
 import { MetadataDisplay } from "./MetadataDisplay";
-import { CommonMetadata } from "src/lib/utils";
+import { CommonMetadata } from "src/@types";
 
 type CardProps = {
   cover: CommonMetadata["cover"];

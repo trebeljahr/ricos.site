@@ -21,7 +21,11 @@ import {
   wireframe,
   flatShading,
 } from "./config";
-import { getFractalNoise, moistureNoise, temperatureNoise } from "./noise";
+import {
+  getFractalNoise,
+  moistureNoise,
+  temperatureNoise,
+} from "../../../lib/utils/noise";
 
 export const TerrainTile = ({
   position,

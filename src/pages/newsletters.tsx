@@ -5,7 +5,8 @@ import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { newsletters } from "@velite";
-import { CommonMetadata, extractAndSortMetadata } from "src/lib/utils";
+import { CommonMetadata } from "src/@types";
+import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
   newsletterData: CommonMetadata[];

@@ -1,6 +1,6 @@
 import { type Post, type Travelblog } from "@velite";
 import { HorizontalCard } from "./NiceCards";
-import { CommonMetadata } from "src/lib/utils";
+import { CommonMetadata } from "src/@types";
 
 type Props = {
   post: CommonMetadata;

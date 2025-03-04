@@ -2,7 +2,7 @@ import { CustomImageRenderer } from "@components/images/CustomImageRenderer";
 import { useMemo } from "react";
 import { PhotoAlbum } from "react-photo-album";
 import { ImageProps } from "src/@types";
-import { addIdAndIndex } from "src/lib/utils";
+import { addIdAndIndex } from "src/lib/utils/misc";
 import { CustomLightBox, useCustomLightbox } from "./useCustomLightbox";
 
 const SimpleGallery = ({ photos: images }: { photos: ImageProps[] }) => {

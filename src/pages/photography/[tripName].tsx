@@ -5,7 +5,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import { ImageProps } from "src/@types";
 import { getDataFromS3, getS3Folders, photographyFolder } from "src/lib/aws";
 import { imageSizes, nextImageUrl } from "src/lib/mapToImageProps";
-import { turnKebabIntoTitleCase } from "src/lib/utils";
+import { turnKebabIntoTitleCase } from "src/lib/utils/misc";
 import { trips } from "../photography";
 
 export default function SinglePhotographyShowcasePage({

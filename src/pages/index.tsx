@@ -13,13 +13,11 @@ import {
   travelblogs,
 } from "@velite";
 import Link from "next/link";
-import {
-  byDate,
-  byOnlyPublished,
-  type CommonMetadata,
-  extractAndSortMetadata,
-  toOnlyMetadata,
-} from "src/lib/utils";
+import { byDate } from "src/lib/utils/misc";
+import { byOnlyPublished } from "src/lib/utils/filters";
+import { type CommonMetadata } from "src/@types";
+import { toOnlyMetadata } from "src/lib/utils/toOnlyMetadata";
+import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 const IndexPage = (props: Props) => {
   const description = `Welcome to a wild collection of all the things Rico Trebeljahr creates: A bi-weekly newsletter, photography, booknotes, blog posts, travel stories and more.`;

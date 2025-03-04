@@ -237,8 +237,6 @@ export const useMultiInstancedMesh2 = ({
                 obj.scale.set(1, 1, 1);
                 obj.position.copy(newPositions[posIndex]);
 
-                console.log(obj.position);
-
                 const rotation = newRotations
                   ? newRotations[posIndex] || emptyRotation
                   : emptyRotation;

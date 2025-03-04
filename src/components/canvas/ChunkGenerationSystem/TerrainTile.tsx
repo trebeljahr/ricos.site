@@ -19,6 +19,7 @@ import {
   tileSize,
   visualizeHeight,
   wireframe,
+  flatShading,
 } from "./config";
 import { getFractalNoise, moistureNoise, temperatureNoise } from "./noise";
 
@@ -195,7 +196,7 @@ export const TerrainTile = ({
       vertexColors: true,
       wireframe,
       side: DoubleSide,
-      flatShading: false,
+      flatShading,
     });
   }, []);
 

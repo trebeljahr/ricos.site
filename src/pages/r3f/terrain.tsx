@@ -1,4 +1,8 @@
-import { physicsDebug } from "@components/canvas/ChunkGenerationSystem/config";
+import {
+  debug,
+  physicsDebug,
+  tileSize,
+} from "@components/canvas/ChunkGenerationSystem/config";
 import { RigidBallSpawner } from "@components/canvas/ChunkGenerationSystem/RigidBall";
 import { SingleAnimal } from "@components/canvas/ChunkGenerationSystem/SingleAnimal";
 import { WorldManager } from "@components/canvas/ChunkGenerationSystem/WorldManager";
@@ -28,6 +32,7 @@ const Page = () => {
             <fogExp2 attach="fog" args={["#f0f0f0", 0.008]} />
             <color args={["#f0f0f0"]} attach="background" />
             <WorldManager />
+            {debug && <gridHelper args={[tileSize, 100]} />}
             <MinecraftCreativeControlsPlayer speed={speed} />
             {/* <RigidBallSpawner /> */}
             {/* <SingleAnimal /> */}

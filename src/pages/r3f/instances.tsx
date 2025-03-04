@@ -2,26 +2,14 @@ import {
   physicsDebug,
   tileSize,
 } from "@components/canvas/ChunkGenerationSystem/config";
-import { WorldManager } from "@components/canvas/ChunkGenerationSystem/WorldManager";
 import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
 import { KeyboardControlsProvider } from "@components/canvas/Scene";
-import { Bvh, Sky } from "@react-three/drei";
+import { InstancedTrees } from "@components/canvas/Trees/InstancedRocks";
+import { Sky } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Perf } from "r3f-perf";
 import { Color } from "three";
-import {
-  Bloom,
-  EffectComposer,
-  SMAA,
-  Vignette,
-} from "@react-three/postprocessing";
-import LensFlare from "@components/canvas/Lensflare";
-import {
-  InstancedRocks,
-  InstancedTrees,
-} from "@components/canvas/Trees/InstancedRocks";
-import { CameraHelperComponent } from "@components/canvas/Trees/CameraHelper";
 
 const lensflareProps = {
   enabled: true,
@@ -63,7 +51,6 @@ const Page = () => {
             <fogExp2 attach="fog" args={[skyColor, 0.008]} />
             {/* <fog attach="fog" args={[skyColor, 0.8, 50]} /> */}
             <color args={[skyColor]} attach="background" />
-            {/* <CameraHelperComponent /> */}
             <group position={[-tileSize / 2, 0, -tileSize / 2]}>
               {/* <InstancedRocks /> */}
               <InstancedTrees />

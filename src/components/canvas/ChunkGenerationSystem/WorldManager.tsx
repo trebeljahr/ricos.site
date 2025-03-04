@@ -11,14 +11,24 @@ import {
   tilesDistance,
   tileSize,
 } from "./config";
-import { ChunkProvider, MemoizedChunk, useChunkContext } from "./ChunkProvider";
-import { InstancedMeshForChunks } from "../Trees/useInstancedMesh2";
+import {
+  Chunk,
+  ChunkProvider,
+  MemoizedChunk,
+  useChunkContext,
+} from "./ChunkProvider";
+import {
+  BirchTreesForChunks,
+  RocksForChunks,
+} from "../Trees/useInstancedMesh2";
+import { TerrainTile } from "./TerrainTile";
 
 export const WorldManager = () => {
   return (
     <ChunkProvider>
       <WorldManagerWithChunks />
-      <InstancedMeshForChunks />
+      <BirchTreesForChunks />
+      <RocksForChunks />
     </ChunkProvider>
   );
 };
@@ -31,7 +41,7 @@ const WorldManagerWithChunks = () => {
       {Array.from(chunks).map(([key, chunkData]) => {
         return (
           <MemoizedChunk key={key} chunkData={chunkData}>
-            <SingleTile position={chunkData.position} />
+            <SingleTile chunkData={chunkData} />
           </MemoizedChunk>
         );
       })}
@@ -41,8 +51,9 @@ const WorldManagerWithChunks = () => {
   );
 };
 
-export const SingleTile = ({ position }: { position: Vector3 }) => {
+export const SingleTile = ({ chunkData }: { chunkData: Chunk }) => {
   const textRef = useRef<any>(null!);
+  const position = chunkData.position;
 
   useFrame(({ camera }) => {
     debug && textRef.current.quaternion.copy(camera.quaternion);
@@ -66,17 +77,14 @@ export const SingleTile = ({ position }: { position: Vector3 }) => {
         </>
       )}
 
-      <group position={[-tileSize / 2, 0, -tileSize / 2]}>
-        <SimpleGrassGroundPlane />
-        {/* <TreeTile
-          size={tileSize}
-          offset={new Vector2(position.x, position.z)}
-        /> */}
-        {/* <TerrainTile
+      <group>
+        {/* <SimpleGrassGroundPlane /> */}
+
+        <TerrainTile
           position={chunkData.position}
           resolution={chunkData.resolution}
           lodLevel={chunkData.lodLevel}
-        /> */}
+        />
       </group>
     </group>
   );

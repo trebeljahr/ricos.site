@@ -12,10 +12,15 @@ import { usePrevious } from "@hooks/usePrevious";
 import { useGLTF } from "@react-three/drei";
 import { nanoid } from "nanoid";
 import { pickRandomFromArray } from "../ChunkGenerationSystem/utils";
-import { tileSize } from "../ChunkGenerationSystem/config";
+import {
+  tileSize,
+  treeMaxDistance,
+  treeMinDistance,
+} from "../ChunkGenerationSystem/config";
 import { useChunkContext } from "../ChunkGenerationSystem/ChunkProvider";
 import { poissonDiskSample } from "../Yuka/YukaExample";
 import { splitIntoRandomGroups } from "./utils";
+import { getHeight } from "../ChunkGenerationSystem/TerrainTile";
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
@@ -33,7 +38,11 @@ type SingleHookProps = {
 };
 
 type PositionsUpdateHookProps = {
-  addPositions: (positionsToAdd: Vector3[]) => void;
+  addPositions: (
+    positionsToAdd: Vector3[],
+    rotations?: Vector3[],
+    scales?: number[]
+  ) => void;
   removePositions: (positionsToRemove: Vector3[]) => void;
 };
 const ChunkPositionUpdater = ({
@@ -70,15 +79,38 @@ const ChunkPositionUpdater = ({
     newChunkKeys.forEach((chunkKey) => {
       const chunk = chunks.get(chunkKey)!;
 
-      const newPositions = poissonDiskSample(tileSize, 3, 20, {
-        offset: new Vector2(chunk.position.x, chunk.position.z),
-      }).map((pos) => pos.add(chunk.position).add(center));
+      const { positions, scales, rotations } = poissonDiskSample(
+        tileSize,
+        treeMinDistance,
+        treeMaxDistance,
+        {
+          offset: new Vector2(chunk.position.x, chunk.position.z),
+        }
+      ).reduce(
+        (agg, pos) => {
+          const worldPosition = pos.add(chunk.position);
+          const { height } = getHeight(worldPosition.x, worldPosition.y);
+          const position = worldPosition.add(center).setY(height);
+          const scale = Math.random() + 1;
+          const rotation = new Vector3(0, Math.random() * Math.PI * 2, 0);
+          agg.positions.push(position);
+          agg.scales.push(scale);
+          agg.rotations.push(rotation);
 
-      positionsRef.current[chunkKey] = newPositions;
+          return agg;
+        },
+        {
+          positions: [] as Vector3[],
+          scales: [] as number[],
+          rotations: [] as Vector3[],
+        }
+      );
+
+      positionsRef.current[chunkKey] = positions;
 
       if (!positionsRef.current[chunkKey]) return;
 
-      addPositions(newPositions);
+      addPositions(positions, rotations, scales);
     });
   }, [chunks, addPositions, removePositions]);
 
@@ -92,7 +124,7 @@ const meshMaterialCombos: MeshMaterialCombos = [
   ["BirchTree_1_4", "Green"],
 ];
 
-export const InstancedMeshForChunks = memo(() => {
+export const BirchTreesForChunks = memo(() => {
   const modelPath = "/3d-assets/glb/nature_pack/BirchTree_1.glb";
   const { InstancedMeshes, addPositions, removePositions } =
     useMultiInstancedMesh2({
@@ -111,6 +143,29 @@ export const InstancedMeshForChunks = memo(() => {
   );
 });
 
+export const RocksForChunks = memo(() => {
+  const modelPath = "/3d-assets/glb/nature_pack/Rock_1.glb";
+  const rockMeshMaterialCombos: MeshMaterialCombos = [["Rock_1", "Rock"]];
+
+  const { InstancedMeshes, addPositions, removePositions } =
+    useMultiInstancedMesh2({
+      meshMaterialCombos: rockMeshMaterialCombos,
+      modelPath,
+    });
+
+  return (
+    <>
+      <ChunkPositionUpdater
+        addPositions={addPositions}
+        removePositions={removePositions}
+      />
+      <InstancedMeshes />
+    </>
+  );
+});
+
+const emptyRotation = new Vector3(0, 0, 0);
+
 export const useMultiInstancedMesh2 = ({
   meshMaterialCombos,
   modelPath,
@@ -121,15 +176,25 @@ export const useMultiInstancedMesh2 = ({
   const { nodes, materials } = useGLTF(modelPath) as any as GenericGltfResult;
   const { gl } = useThree();
   const refs = useRef<InstancedMesh2[]>([]);
-  const addPositionFunctions = useRef<((newPositions: Vector3[]) => void)[]>(
-    []
-  );
+  const addPositionFunctions = useRef<
+    ((
+      newPositions: Vector3[],
+      rotations?: Vector3[],
+      scales?: number[]
+    ) => void)[]
+  >([]);
   const removePositionFunctions = useRef<
     ((positionsToRemove: Vector3[]) => void)[]
   >([]);
 
-  const addPositions = (positionsToAdd: Vector3[]) => {
-    addPositionFunctions.current.forEach((fn) => fn(positionsToAdd));
+  const addPositions = (
+    positionsToAdd: Vector3[],
+    rotations?: Vector3[],
+    scales?: number[]
+  ) => {
+    addPositionFunctions.current.forEach((fn) =>
+      fn(positionsToAdd, rotations, scales)
+    );
   };
 
   const removePositions = (positionsToRemove: Vector3[]) => {
@@ -149,25 +214,39 @@ export const useMultiInstancedMesh2 = ({
           ref={(node) => {
             if (!node) return;
 
-            const index = refs.current.length;
+            const i = refs.current.length || 0;
 
             refs.current.push(node);
-            refs.current[index].computeBVH();
-            (refs.current[index] as any).frustumCulled = false;
-            const addPositions = (newPositions: Vector3[]) => {
-              const instancedMesh2Ref = refs.current[index];
+            refs.current[i].computeBVH();
+            (refs.current[i] as any).frustumCulled = false;
+            const addPositions = (
+              newPositions: Vector3[],
+              newRotations?: Vector3[],
+              scales?: number[]
+            ) => {
+              const instancedMesh2Ref = refs.current[i];
 
               if (!instancedMesh2Ref) return;
 
-              let counter = 0;
+              let posIndex = 0;
               instancedMesh2Ref.addInstances(newPositions.length, (obj) => {
                 obj.matrix.copy(temp.matrix);
                 obj.scale.set(1, 1, 1);
-                obj.position.copy(newPositions[counter++]);
+                obj.position.copy(newPositions[posIndex]);
 
-                temp.rotation.set(-Math.PI / 2, 0, 0);
+                console.log(obj.position);
+
+                const rotation = newRotations
+                  ? newRotations[posIndex] || emptyRotation
+                  : emptyRotation;
+
+                temp.rotation.set(-Math.PI / 2, 0, rotation.y);
                 obj.quaternion.copy(temp.quaternion);
-                obj.scale.multiplyScalar(100);
+
+                const scale = scales ? scales[posIndex] : 1;
+                obj.scale.multiplyScalar(100 * scale);
+
+                posIndex++;
               });
             };
 

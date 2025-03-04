@@ -41,7 +41,7 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
   useFrame(() => {
     camera.getWorldPosition(tempVec);
 
-    tempVec.divideScalar(tileSize).floor();
+    tempVec.divideScalar(tileSize * 2).floor();
 
     const playerGridX = tempVec.x;
     const playerGridZ = tempVec.z;
@@ -54,7 +54,8 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
     }
     oldCameraGridPosition.current.copy(tempVec);
 
-    const radiusSquared = tilesDistance * tilesDistance * tileSize * tileSize;
+    const radiusSquared =
+      tilesDistance * tilesDistance * tileSize * 2 * tileSize * 2;
 
     const newChunks = new Map();
     for (let x = -tilesDistance; x <= tilesDistance; x++) {
@@ -79,12 +80,14 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
             Math.log(distance + 1) / Math.log(lodDistanceFactor)
           );
 
-          lodLevel = Math.max(0, Math.min(lodLevels - 1, lodLevel));
+          lodLevel = lodLevel; // Math.max(0, Math.min(lodLevels - 1, lodLevel));
 
-          const resolution = Math.max(
-            4,
-            Math.floor(baseResolution / Math.pow(2, lodLevel))
-          );
+          const resolution = 32;
+
+          // Math.max(
+          //   4,
+          //   Math.floor(baseResolution / Math.pow(2, lodLevel))
+          // );
 
           newChunks.set(chunkId, {
             position,

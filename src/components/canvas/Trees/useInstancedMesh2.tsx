@@ -89,7 +89,10 @@ const ChunkPositionUpdater = ({
       ).reduce(
         (agg, pos) => {
           const worldPosition = pos.add(chunk.position);
-          const { height } = getHeight(worldPosition.x, worldPosition.y);
+          const { height } = getHeight(
+            worldPosition.x - 1,
+            worldPosition.z - 1
+          );
           const position = worldPosition.add(center).setY(height);
           const scale = Math.random() + 1;
           const rotation = new Vector3(0, Math.random() * Math.PI * 2, 0);

@@ -21,6 +21,7 @@ import { useChunkContext } from "../ChunkGenerationSystem/ChunkProvider";
 import { poissonDiskSample } from "../Yuka/YukaExample";
 import { splitIntoRandomGroups } from "../Helpers/utils";
 import { getHeight } from "../ChunkGenerationSystem/TerrainTile";
+import { useKeyboardInput } from "@hooks/useKeyboardInput";
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
@@ -357,36 +358,28 @@ export const InstancedTileSpawner = ({
   const { InstancedMesh, addPositions, removePositions, ref } =
     useInstancedMesh2({ geometry, material });
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const { key } = event;
+  useKeyboardInput(({ key }) => {
+    const pressedF = key === "f";
+    const pressedG = key === "g";
 
-      const pressedF = key === "f";
-      const pressedG = key === "g";
+    if (pressedF) {
+      const newPositions = [
+        new Vector3(Math.random() * tileSize, 0, Math.random() * tileSize),
+      ];
+      addPositions(newPositions);
+    }
 
-      if (pressedF) {
-        const newPositions = [
-          new Vector3(Math.random() * tileSize, 0, Math.random() * tileSize),
-        ];
-        addPositions(newPositions);
-      }
+    if (pressedG) {
+      const randomPositions = pickRandomFromArray(
+        ref.current.instances
+          .filter((obj) => obj.active)
+          .map((obj) => obj.position),
+        1
+      );
 
-      if (pressedG) {
-        const randomPositions = pickRandomFromArray(
-          ref.current.instances
-            .filter((obj) => obj.active)
-            .map((obj) => obj.position),
-          1
-        );
-
-        removePositions(randomPositions);
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [removePositions, addPositions, ref]);
+      removePositions(randomPositions);
+    }
+  });
 
   return <InstancedMesh />;
 };

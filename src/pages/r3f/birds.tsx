@@ -1,4 +1,4 @@
-import { Birds } from "@components/canvas/Birds";
+import { Birds } from "@components/canvas/FBOExperiments/Birds";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";

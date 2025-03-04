@@ -14,6 +14,7 @@ const physicsDebug = false;
 const wireframe = false;
 const flatShading = false;
 const onlyRenderOnce = false;
+const debugCamera = false;
 
 const visualizeHeight = true;
 
@@ -54,4 +55,5 @@ export {
   detailLevels,
   persistence,
   physicsDebug,
+  debugCamera,
 };

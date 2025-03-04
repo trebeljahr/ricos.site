@@ -3,15 +3,19 @@ import {
   physicsDebug,
   tileSize,
 } from "@components/canvas/ChunkGenerationSystem/config";
-import { RigidBallSpawner } from "@components/canvas/ChunkGenerationSystem/RigidBall";
-import { SingleAnimal } from "@components/canvas/ChunkGenerationSystem/SingleAnimal";
+import { RigidBallSpawner } from "@components/canvas/Helpers/RigidBall";
+import { SingleAnimal } from "@components/canvas/Helpers/SingleAnimal";
 import { WorldManager } from "@components/canvas/ChunkGenerationSystem/WorldManager";
-import { MinecraftCreativeControlsPlayer } from "@components/canvas/Controllers/FlyingPlayer";
+import { EcctrlController } from "@components/canvas/Controllers/EcctrlController";
+import { MinecraftCreativeController } from "@components/canvas/Controllers/MinecraftCreativeController";
 import { KeyboardControlsProvider } from "@components/canvas/Controllers/KeyboardControls";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Leva, useControls } from "leva";
 import { Perf } from "r3f-perf";
+import { CameraPositionLogger } from "@components/canvas/Helpers/CameraPositionLogger";
+import { RayCaster } from "@components/canvas/Helpers/RayCaster";
+import { SwitchController } from "@components/canvas/Controllers/SwitchControllers";
 
 const defaultSpeed = 25;
 const Page = () => {
@@ -24,6 +28,7 @@ const Page = () => {
       <KeyboardControlsProvider>
         <Leva />
         <Canvas>
+          <CameraPositionLogger />
           <Perf position="top-left" />
           <Physics debug={physicsDebug}>
             <hemisphereLight intensity={0.35} />
@@ -32,9 +37,13 @@ const Page = () => {
             <fogExp2 attach="fog" args={["#f0f0f0", 0.008]} />
             <color args={["#f0f0f0"]} attach="background" />
             <WorldManager />
+            <RayCaster />
             {debug && <gridHelper args={[tileSize, 100]} />}
-            <MinecraftCreativeControlsPlayer speed={speed} />
-            {/* <RigidBallSpawner /> */}
+            {/* <ControlledCharacterModel /> */}
+
+            {/* <MinecraftCreativeController speed={speed} /> */}
+            <SwitchController />
+            <RigidBallSpawner />
             {/* <SingleAnimal /> */}
           </Physics>
         </Canvas>

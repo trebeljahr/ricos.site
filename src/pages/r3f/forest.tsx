@@ -4,7 +4,7 @@ import {
   tileSize,
 } from "@components/canvas/ChunkGenerationSystem/config";
 import { WorldManager } from "@components/canvas/ChunkGenerationSystem/WorldManager";
-import { MinecraftCreativeControlsPlayer } from "@components/canvas/Controllers/FlyingPlayer";
+import { MinecraftCreativeController } from "@components/canvas/Controllers/MinecraftCreativeController";
 import { KeyboardControlsProvider } from "@components/canvas/Controllers/KeyboardControls";
 import { Bvh, Sky } from "@react-three/drei";
 import { Sky as SkyImpl } from "three-stdlib";
@@ -74,7 +74,7 @@ const Page = () => {
             <WorldManager />
             {/* </Bvh> */}
             <MovingSky />
-            <MinecraftCreativeControlsPlayer speed={25} />
+            <MinecraftCreativeController speed={25} />
           </Physics>
 
           {/* <EffectComposer>

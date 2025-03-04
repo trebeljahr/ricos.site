@@ -20,7 +20,7 @@ export function MinecraftCreativeController({
   useFrame(() => {
     if (!rigidBodyRef.current) return;
 
-    const { forward, backward, left, right, jump, descend } = get();
+    const { forward, backward, left, right, jump, descend, run } = get();
 
     const { x, y, z } = rigidBodyRef.current.translation();
     camera.position.set(x, y, z);
@@ -28,10 +28,11 @@ export function MinecraftCreativeController({
     frontVector.set(0, 0, +backward - +forward);
     sideVector.set(+left - +right, 0, 0);
 
+    const sprintMultiplier = run ? 2 : 1;
     direction
       .subVectors(frontVector, sideVector)
       .normalize()
-      .multiplyScalar(speed)
+      .multiplyScalar(speed * sprintMultiplier)
       .applyEuler(camera.rotation)
       .setY((+jump - +descend) * speed);
 

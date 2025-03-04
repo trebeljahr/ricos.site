@@ -12,12 +12,9 @@ export default function Page() {
   return (
     <ThreeFiberLayout>
       <CanvasWithKeyboardInput>
-        <Stage
-          adjustCamera
-          intensity={0.5}
-          shadows="contact"
-          environment="city"
-        >
+        <color attach="background" args={["skyblue"]} />
+        <ambientLight intensity={1} />
+        <Stage adjustCamera={true}>
           <DynamicCharacter />
         </Stage>
         <OrbitControls />

@@ -4,7 +4,7 @@ import { GLTF } from "three-stdlib";
 import {
   InstancedTileSpawner,
   MultiInstancedTileSpawner,
-} from "./useInstancedMesh2";
+} from "./InstancedTileSpawner";
 import { MeshMaterialCombos } from "./GenericInstancingSystem";
 
 type GLTFResult = GLTF & {

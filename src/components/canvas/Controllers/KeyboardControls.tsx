@@ -7,23 +7,22 @@ export const surfaceLevel = waterHeight;
 export const farUnderwater = 50;
 export const farOverwater = 100;
 
+export const keymap = [
+  { name: "forward", keys: ["ArrowUp", "w", "W", "KeyW"] },
+  { name: "backward", keys: ["ArrowDown", "s", "S", "KeyS"] },
+  { name: "left", keys: ["ArrowLeft", "a", "A", "KeyA"] },
+  { name: "right", keys: ["ArrowRight", "d", "D", "KeyD"] },
+  { name: "leftward", keys: ["ArrowLeft", "KeyA"] },
+  { name: "rightward", keys: ["ArrowRight", "KeyD"] },
+  { name: "jump", keys: ["Space"] },
+  { name: "descend", keys: ["c", "C"] },
+  { name: "sprint", keys: ["Shift"] },
+  { name: "run", keys: ["Shift"] },
+  { name: "attack", keys: ["F", "f"] },
+];
+
 export const KeyboardControlsProvider = ({ children }: PropsWithChildren) => {
-  return (
-    <KeyboardControls
-      map={[
-        { name: "forward", keys: ["ArrowUp", "w", "W"] },
-        { name: "backward", keys: ["ArrowDown", "s", "S"] },
-        { name: "left", keys: ["ArrowLeft", "a", "A"] },
-        { name: "right", keys: ["ArrowRight", "d", "D"] },
-        { name: "jump", keys: ["Space"] },
-        { name: "descend", keys: ["c", "C"] },
-        { name: "sprint", keys: ["Shift"] },
-        { name: "attack", keys: ["F", "f"] },
-      ]}
-    >
-      {children}
-    </KeyboardControls>
-  );
+  return <KeyboardControls map={keymap}>{children}</KeyboardControls>;
 };
 
 export function CanvasWithControls({

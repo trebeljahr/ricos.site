@@ -17,10 +17,10 @@ import {
   GPUComputationRenderer,
   Variable,
 } from "three/examples/jsm/misc/GPUComputationRenderer";
-import positionShader from "./position.frag";
-import velocityShader from "./velocity.frag";
-import birdVertex from "./birds.vert";
-import birdFragment from "./birds.frag";
+import positionShader from "./shaders/position.frag";
+import velocityShader from "./shaders/velocity.frag";
+import birdVertex from "./shaders/birds.vert";
+import birdFragment from "./shaders/birds.frag";
 
 const WIDTH = 100;
 const BOUNDS = 800;

@@ -6,7 +6,7 @@ import { Group, Vector3 } from "three";
 const characterURL = "/3d-assets/glb/Mixamo.glb";
 useGLTF.preload(characterURL);
 
-export function Model(props: JSX.IntrinsicElements["group"]) {
+export function DefaultModel(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<Group>(null!);
   const { nodes, materials } = useGLTF(characterURL) as any;
 
@@ -41,23 +41,21 @@ const animationSet = {
   jumpLand: "Jump_Land",
 };
 
-export function ControlledCharacterModel() {
+export const EcctrlController = ({
+  Model = DefaultModel,
+}: {
+  Model?: typeof DefaultModel;
+}) => {
   return (
     <Ecctrl
       position={[0, 3, 0]}
       animated
       slopeDownExtraForce={0}
       camCollision={false}
-      //   springK={2}
-      //   dampingC={0.2}
-      //   autoBalanceSpringK={1.2}
-      //   autoBalanceDampingC={0.04}
-      //   autoBalanceSpringOnY={0.7}
-      //   autoBalanceDampingOnY={0.05}
     >
       <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
         <Model />
       </EcctrlAnimation>
     </Ecctrl>
   );
-}
+};

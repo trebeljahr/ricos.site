@@ -2,7 +2,7 @@ import {
   physicsDebug,
   tileSize,
 } from "@components/canvas/ChunkGenerationSystem/config";
-import { MinecraftCreativeControlsPlayer } from "@components/canvas/Controllers/FlyingPlayer";
+import { MinecraftCreativeController } from "@components/canvas/Controllers/MinecraftCreativeController";
 import { KeyboardControlsProvider } from "@components/canvas/Controllers/KeyboardControls";
 import { InstancedTrees } from "@components/canvas/InstancedMeshSystem/InstancedRocks";
 import { Sky } from "@react-three/drei";
@@ -58,7 +58,7 @@ const Page = () => {
             <gridHelper args={[tileSize, 100]} />
 
             <Sky />
-            <MinecraftCreativeControlsPlayer speed={25} />
+            <MinecraftCreativeController speed={25} />
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>

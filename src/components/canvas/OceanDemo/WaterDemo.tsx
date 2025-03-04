@@ -7,11 +7,11 @@ import { Perf } from "r3f-perf";
 import { useEffect, useRef } from "react";
 import { Color, FogExp2, Group, Vector3 } from "three";
 import { Sky as SkyImpl } from "three-stdlib";
-import { FishType, Fishs } from "../Fish";
-import { SwimmingPlayerControls } from "../Controllers/FlyingPlayer";
+import { FishType, Fishs } from "../FBOExperiments/Fish";
 import { OceanSurface } from "./Ocean";
 import { Terrain } from "./Terrain";
 import { UI } from "./OxygenBar";
+import { SwimmingController } from "../Controllers/SwimmingController";
 
 function MovingInCircle() {
   const whaleRef = useRef<Group>(null!);
@@ -63,7 +63,7 @@ export default function WaterDemo() {
       {/* <Environment preset='forest' /> */}
       <UI />
       <Physics>
-        <SwimmingPlayerControls />
+        <SwimmingController />
       </Physics>
       <Perf />
 

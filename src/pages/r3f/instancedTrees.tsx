@@ -1,4 +1,4 @@
-import { MinecraftCreativeControlsPlayer } from "@components/canvas/Controllers/FlyingPlayer";
+import { MinecraftCreativeController } from "@components/canvas/Controllers/MinecraftCreativeController";
 import { KeyboardControlsProvider } from "@components/canvas/Controllers/KeyboardControls";
 import { TreeTile } from "@components/canvas/Trees/TreeTile";
 import { Canvas } from "@react-three/fiber";
@@ -16,7 +16,7 @@ const Page = () => {
             <directionalLight position={[10, 10, 5]} intensity={1} />
             <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
             <color args={["#f0f0f0"]} attach="background" />
-            <MinecraftCreativeControlsPlayer speed={25} />
+            <MinecraftCreativeController speed={25} />
             {/* <InstancedTreeSystem /> */}
             <gridHelper args={[gridHelperSize, 100]} />
             <TreeTile />

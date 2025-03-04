@@ -103,9 +103,6 @@ export const FirstPersonController = (
 
     const factor = 1 - Math.pow(smoothing, delta);
 
-    // frontVector.set(0, 0, Number(backward) - Number(forward))
-    // sideVector.set(Number(left) - Number(right), 0, 0)
-
     const { leveledX, leveledY } = joystick.getData();
     frontVector.set(0, 0, -leveledY);
     sideVector.set(-leveledX, 0, 0);
@@ -193,18 +190,16 @@ export const FirstPersonController = (
   });
 
   return (
-    <>
-      <RigidBody
-        {...props}
-        ref={characterRigidBody}
-        colliders={false}
-        mass={1}
-        type="kinematicPosition"
-        position={[0, 0, 0]}
-        enabledRotations={[false, false, false]}
-      >
-        <CapsuleCollider args={[0.5, 0.5]} />
-      </RigidBody>
-    </>
+    <RigidBody
+      {...props}
+      ref={characterRigidBody}
+      colliders={false}
+      mass={1}
+      type="kinematicPosition"
+      position={[0, 0, 0]}
+      enabledRotations={[false, false, false]}
+    >
+      <CapsuleCollider args={[0.5, 0.5]} />
+    </RigidBody>
   );
 };

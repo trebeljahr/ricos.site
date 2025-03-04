@@ -1,6 +1,6 @@
 import { physicsDebug } from "@components/canvas/ChunkGenerationSystem/config";
-import { RigidBallSpawner } from "@components/canvas/ChunkGenerationSystem/RigidBall";
-import { MinecraftCreativeControlsPlayer } from "@components/canvas/Controllers/FlyingPlayer";
+import { RigidBallSpawner } from "@components/canvas/Helpers/RigidBall";
+import { MinecraftCreativeController } from "@components/canvas/Controllers/MinecraftCreativeController";
 import { KeyboardControlsProvider } from "@components/canvas/Controllers/KeyboardControls";
 import * as animals from "@models/animals_pack";
 import * as dinosaurs from "@models/dinosaurs_pack";
@@ -80,7 +80,7 @@ const Page = () => {
                 </AssetWithText>
               );
             })}
-            <MinecraftCreativeControlsPlayer speed={25} />
+            <MinecraftCreativeController speed={25} />
             <RigidBallSpawner />
           </Physics>
         </Canvas>

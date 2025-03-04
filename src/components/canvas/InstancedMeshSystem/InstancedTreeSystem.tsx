@@ -32,8 +32,6 @@ function InstancedTrees({
     if (!groupRef.current) return;
 
     treeInstances.forEach(({ positions, modelPath }, typeIndex) => {
-      // const { nodes, materials } = useGLTF(modelPath);
-
       positions.forEach((pos, i) => {
         temp.position.set(pos.x, 0, pos.y);
         temp.rotation.y = Math.random() * Math.PI * 2;
@@ -56,9 +54,6 @@ function InstancedTrees({
       );
     });
   }, [treeInstances]);
-
-  // const birchTree = useGLTF("/3d-assets/glb/nature_pack/BirchTree_1.glb");
-  // const commonTree = useGLTF("/3d-assets/glb/nature_pack/CommonTree_5.glb");
 
   return (
     <group ref={groupRef}>

@@ -1,4 +1,4 @@
-import { CanvasWithControls } from "@components/canvas/Scene";
+import { CanvasWithControls } from "@components/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { OrbitControls, Stage } from "@react-three/drei";
 

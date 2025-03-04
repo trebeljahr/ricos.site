@@ -9,13 +9,11 @@ import {
   BirchTree_Autumn_3,
   BirchTree_Autumn_4,
   BirchTree_Autumn_5,
-  BirchTree_Snow_1,
   CommonTree_1,
   CommonTree_2,
   CommonTree_3,
   CommonTree_4,
   CommonTree_5,
-  CommonTree_Dead_4,
   PalmTree_1,
   PalmTree_2,
   PalmTree_3,
@@ -34,9 +32,9 @@ import {
 import { Tree1, Tree2, Tree4 } from "@models/simple_nature_pack";
 import { memo } from "react";
 import { Vector3 } from "three";
-import { BirchTree } from "./BirchTree";
-import { TreeType } from "./TreeSystem";
+import { BirchTree } from "../../../models/BirchTree";
 import { pickRandomFromArray } from "../ChunkGenerationSystem/utils";
+import { TreeType } from "./TreeSystem";
 
 type Props = JSX.IntrinsicElements["group"];
 

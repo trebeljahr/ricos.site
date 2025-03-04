@@ -1,6 +1,6 @@
-import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
+import { MinecraftCreativeControlsPlayer } from "@components/canvas/Controllers/FlyingPlayer";
 import Grass from "@components/canvas/Grass";
-import { CanvasWithControls } from "@components/canvas/Scene";
+import { CanvasWithControls } from "@components/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { Sky } from "@react-three/drei";
 import { BallCollider, Physics, RigidBody } from "@react-three/rapier";

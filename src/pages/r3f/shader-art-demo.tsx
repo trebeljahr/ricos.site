@@ -1,4 +1,4 @@
-import { FullCanvasShader } from "@components/canvas/shaderTutorials/FullCanvasShader";
+import { FullCanvasShader } from "@components/canvas/Tutorials/FullCanvasShader";
 import { CopyButton } from "@components/CodeCopyButton";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import Layout from "@components/Layout";

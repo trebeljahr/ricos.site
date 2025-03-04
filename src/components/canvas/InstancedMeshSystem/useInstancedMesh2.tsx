@@ -19,7 +19,7 @@ import {
 } from "../ChunkGenerationSystem/config";
 import { useChunkContext } from "../ChunkGenerationSystem/ChunkProvider";
 import { poissonDiskSample } from "../Yuka/YukaExample";
-import { splitIntoRandomGroups } from "./utils";
+import { splitIntoRandomGroups } from "../Helpers/utils";
 import { getHeight } from "../ChunkGenerationSystem/TerrainTile";
 
 declare module "@react-three/fiber" {

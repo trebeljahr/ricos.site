@@ -1,5 +1,5 @@
 import { Fishs } from "@components/canvas/Fish";
-import { CanvasWithControls } from "@components/canvas/Scene";
+import { CanvasWithControls } from "@components/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { Box } from "@react-three/drei";
 import { Perf } from "r3f-perf";

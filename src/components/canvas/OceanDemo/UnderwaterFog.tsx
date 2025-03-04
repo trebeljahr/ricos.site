@@ -9,7 +9,11 @@ import {
   Vector3,
   WebGLRenderer,
 } from "three";
-import { farOverwater, farUnderwater, surfaceLevel } from "./Scene";
+import {
+  farOverwater,
+  farUnderwater,
+  surfaceLevel,
+} from "../Controllers/KeyboardControls";
 
 class UnderwaterFogEffectImpl extends Effect {
   public camera: PerspectiveCamera;

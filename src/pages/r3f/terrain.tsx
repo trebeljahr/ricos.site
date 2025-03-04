@@ -6,8 +6,8 @@ import {
 import { RigidBallSpawner } from "@components/canvas/ChunkGenerationSystem/RigidBall";
 import { SingleAnimal } from "@components/canvas/ChunkGenerationSystem/SingleAnimal";
 import { WorldManager } from "@components/canvas/ChunkGenerationSystem/WorldManager";
-import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
-import { KeyboardControlsProvider } from "@components/canvas/Scene";
+import { MinecraftCreativeControlsPlayer } from "@components/canvas/Controllers/FlyingPlayer";
+import { KeyboardControlsProvider } from "@components/canvas/Controllers/KeyboardControls";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Leva, useControls } from "leva";

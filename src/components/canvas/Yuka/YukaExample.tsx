@@ -33,7 +33,7 @@ import {
   Vector3 as YukaVec3,
 } from "yuka";
 import PoissonDiskSampling from "poisson-disk-sampling";
-import { BoundingSphere } from "../Trees/BoundingSphere";
+import { BoundingSphere } from "../Helpers/BoundingSphere";
 import { debug } from "../ChunkGenerationSystem/config";
 
 const gridSize = 80;

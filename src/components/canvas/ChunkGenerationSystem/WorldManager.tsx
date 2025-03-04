@@ -20,7 +20,7 @@ import {
 import {
   BirchTreesForChunks,
   RocksForChunks,
-} from "../Trees/useInstancedMesh2";
+} from "../InstancedMeshSystem/useInstancedMesh2";
 import { TerrainTile } from "./TerrainTile";
 
 export const WorldManager = () => {

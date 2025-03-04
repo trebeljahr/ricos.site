@@ -1,12 +1,12 @@
-import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
-import { OceanSurface } from "@components/canvas/Ocean";
-import { CanvasWithControls } from "@components/canvas/Scene";
+import { MinecraftCreativeControlsPlayer } from "@components/canvas/Controllers/FlyingPlayer";
+import { OceanSurface } from "@components/canvas/OceanDemo/Ocean";
+import { CanvasWithControls } from "@components/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { PointerLockControls, Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import dynamic from "next/dynamic";
 
-const Ship = dynamic(() => import("@components/canvas/Ship"), { ssr: false });
+const Ship = dynamic(() => import("@models/Ship"), { ssr: false });
 
 export default function Page() {
   return (

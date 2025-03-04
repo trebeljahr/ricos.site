@@ -2,9 +2,9 @@ import {
   physicsDebug,
   tileSize,
 } from "@components/canvas/ChunkGenerationSystem/config";
-import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
-import { KeyboardControlsProvider } from "@components/canvas/Scene";
-import { InstancedTrees } from "@components/canvas/Trees/InstancedRocks";
+import { MinecraftCreativeControlsPlayer } from "@components/canvas/Controllers/FlyingPlayer";
+import { KeyboardControlsProvider } from "@components/canvas/Controllers/KeyboardControls";
+import { InstancedTrees } from "@components/canvas/InstancedMeshSystem/InstancedRocks";
 import { Sky } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";

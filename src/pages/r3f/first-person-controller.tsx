@@ -1,5 +1,5 @@
-import { FirstPersonController } from "@components/canvas/FirstPersonController";
-import { CanvasWithControls } from "@components/canvas/Scene";
+import { FirstPersonController } from "@components/canvas/Controllers/FirstPersonController";
+import { CanvasWithControls } from "@components/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { Box, Sky } from "@react-three/drei";
 import { Physics, RigidBody } from "@react-three/rapier";

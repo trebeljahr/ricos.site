@@ -1,7 +1,7 @@
 import { physicsDebug } from "@components/canvas/ChunkGenerationSystem/config";
 import { RigidBallSpawner } from "@components/canvas/ChunkGenerationSystem/RigidBall";
-import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
-import { KeyboardControlsProvider } from "@components/canvas/Scene";
+import { MinecraftCreativeControlsPlayer } from "@components/canvas/Controllers/FlyingPlayer";
+import { KeyboardControlsProvider } from "@components/canvas/Controllers/KeyboardControls";
 import * as animals from "@models/animals_pack";
 import * as dinosaurs from "@models/dinosaurs_pack";
 import * as natureAssets from "@models/nature_pack";

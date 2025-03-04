@@ -1,5 +1,5 @@
-import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
-import { KeyboardControlsProvider } from "@components/canvas/Scene";
+import { MinecraftCreativeControlsPlayer } from "@components/canvas/Controllers/FlyingPlayer";
+import { KeyboardControlsProvider } from "@components/canvas/Controllers/KeyboardControls";
 import { TreeTile } from "@components/canvas/Trees/TreeTile";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";

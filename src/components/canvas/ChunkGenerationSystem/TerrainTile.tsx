@@ -11,6 +11,7 @@ import {
   Vector3,
 } from "three";
 import { VertexNormalsHelper } from "three-stdlib";
+import { BiomeType, getBiome } from "./Biomes";
 import {
   heightScale,
   mode,
@@ -20,14 +21,6 @@ import {
   wireframe,
 } from "./config";
 import { getFractalNoise, moistureNoise, temperatureNoise } from "./noise";
-import { BiomeType, getBiome } from "./Biomes";
-
-import {
-  addTreeVariation,
-  avoidTreeOverlap,
-  generateTreePositions,
-} from "../Trees/TreeSystem";
-import { Tree } from "../Trees/Tree";
 
 export const TerrainTile = ({
   position,
@@ -38,6 +31,8 @@ export const TerrainTile = ({
   resolution: number;
   lodLevel: number;
 }) => {
+  const size = tileSize;
+
   const { geometry, heightfield, biomeMap, heightMap, slopeMap } =
     useMemo(() => {
       const geo = new BufferGeometry();
@@ -73,27 +68,23 @@ export const TerrainTile = ({
         .map(() => new Array(resolution + 2).fill("plains"));
 
       const _color = new Color();
-
-      const halfSize = tileSize / 2;
-      const segmentSize = tileSize / (resolution - 1);
+      const halfSize = size / 2;
+      const segmentSize = size / (resolution - 1);
 
       for (let z = -1; z <= resolution; z++) {
         for (let x = -1; x <= resolution; x++) {
           const localX = x * segmentSize - halfSize;
           const localZ = z * segmentSize - halfSize;
 
-          const worldX = position.x + localX;
-          const worldZ = position.z + localZ;
+          const worldX = position.x - halfSize + localX;
+          const worldZ = position.z - halfSize + localZ;
 
-          const noiseSample = getFractalNoise(worldX, worldZ);
-          const remappedSample = (noiseSample + 1) / 2;
-          const expHeight = Math.pow(remappedSample * heightScale, 2);
-
+          const { height, remappedSample } = getHeight(worldX, worldZ);
           const moisture = moistureNoise(worldX, worldZ);
           const temperature = temperatureNoise(worldX, worldZ);
 
           heightNoiseMap[z + 1][x + 1] = remappedSample;
-          heightMap[z + 1][x + 1] = visualizeHeight ? expHeight : 0;
+          heightMap[z + 1][x + 1] = visualizeHeight ? height : 0;
           moistureMap[z + 1][x + 1] = moisture;
           temperatureMap[z + 1][x + 1] = temperature;
         }
@@ -147,8 +138,8 @@ export const TerrainTile = ({
 
           biomeMap[hz][hx] = biome;
 
-          const r = localX / tileSize + 0.5;
-          const g = localZ / tileSize + 0.5;
+          const r = localX / size + 0.5;
+          const g = localZ / size + 0.5;
           _color.setRGB(r, g, 1);
 
           if (mode === "height") {
@@ -197,7 +188,7 @@ export const TerrainTile = ({
       geo.scale(1, 1, 1);
 
       return { geometry: geo, heightfield, biomeMap, heightMap, slopeMap };
-    }, [position, resolution]);
+    }, [position, resolution, size]);
 
   const material = useMemo(() => {
     return new MeshStandardMaterial({
@@ -212,45 +203,22 @@ export const TerrainTile = ({
 
   useHelper(normalsDebug && meshRef, VertexNormalsHelper, 1, 0xff0000);
 
-  // const trees = useMemo(() => {
-  //   const initialTrees = generateTreePositions(
-  //     position,
-  //     resolution,
-  //     tileSize,
-  //     biomeMap,
-  //     heightMap,
-  //     slopeMap
-  //   );
-
-  //   const nonOverlappingTrees = avoidTreeOverlap(initialTrees, 3);
-
-  //   return addTreeVariation(nonOverlappingTrees);
-  // }, [position, resolution, biomeMap, heightMap, slopeMap]);
-
-  // const offset = useMemo(() => new Vector3(0, -0.2, 0), []);
   return (
-    <group position={position}>
-      {/* Render multiple trees based on biome */}
-      {/* {trees.map((tree, index) => (
-        <group key={`tree-${index}`} position={tree.position}>
-          <Tree
-            type={tree.type}
-            scale={tree.scale}
-            position={offset}
-            rotation={tree.rotation}
-          />
-        </group>
-      ))} */}
-
+    <group>
       <RigidBody colliders={false}>
-        <mesh ref={meshRef} geometry={geometry} material={material}></mesh>
+        <mesh
+          scale={[1, 1, 1]}
+          ref={meshRef}
+          geometry={geometry}
+          material={material}
+        ></mesh>
         <group scale={[1, 1, 1]} rotation={[0, -Math.PI / 2, 0]}>
           <HeightfieldCollider
             args={[
               resolution - 1,
               resolution - 1,
               heightfield,
-              { x: tileSize, y: 1, z: tileSize },
+              { x: size, y: 1, z: size },
             ]}
           />
         </group>
@@ -259,9 +227,9 @@ export const TerrainTile = ({
   );
 };
 
-function getYPosition(x: number, z: number) {
-  const noiseSample = getFractalNoise(x, z);
-  const remappedSample = (noiseSample + 1) / 2;
-  const expHeight = Math.pow(remappedSample * heightScale, 2);
-  return expHeight;
+export function getHeight(x: number, z: number) {
+  const original = getFractalNoise(x, z);
+  const remappedSample = (original + 1) / 2;
+  const height = remappedSample * heightScale * 2;
+  return { height, remappedSample, original };
 }

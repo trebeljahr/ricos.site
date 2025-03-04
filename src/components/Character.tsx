@@ -1,15 +1,9 @@
 import { useKeyboardInput } from "@hooks/useKeyboardInput";
-import { useAnimations, useFBX } from "@react-three/drei";
+import { useAnimations, useFBX, useGLTF } from "@react-three/drei";
+import { useThree } from "@react-three/fiber";
 import { useControls } from "leva";
 import { useEffect, useRef } from "react";
-import {
-  AnimationAction,
-  type AnimationClip,
-  AnimationMixer,
-  Event,
-  EventListener,
-  Mesh,
-} from "three";
+import { type AnimationClip, Mesh } from "three";
 import { useGenericAnimationController } from "./canvas/Controllers/GenericAnimationController";
 
 interface GLTFAction extends AnimationClip {
@@ -18,7 +12,11 @@ interface GLTFAction extends AnimationClip {
 
 export default function Character() {
   const characterMeshRef = useRef<Mesh>(null!);
-  const characterModel = useFBX("/3d-assets/fbx/character/Michelle.fbx");
+  const characterModelFbx = useFBX("/3d-assets/fbx/character/Punk.fbx");
+  const characterModel = useGLTF("/3d-assets/glb/xbot.glb");
+
+  console.log(characterModel);
+  console.log(characterModelFbx);
 
   const running = useFBX("/3d-assets/fbx/animations/running.fbx");
   const idle = useFBX("/3d-assets/fbx/animations/idle.fbx");
@@ -78,7 +76,7 @@ export default function Character() {
     { ...wave.animations[0], name: "wave" },
   ] as GLTFAction[];
 
-  const result = useAnimations(animationsForHook, characterMeshRef);
+  const result = useAnimations(animationsForHook, characterModel.scene);
 
   useEffect(() => {
     const listener = () => {
@@ -91,8 +89,6 @@ export default function Character() {
       result.mixer.removeEventListener("finished", listener);
     };
   }, []);
-
-  // const [currentAnimation, setCurrentAnimation] = useState<string>("idle");
 
   const { updateAnimation } = useGenericAnimationController({
     actions: result.actions,
@@ -121,9 +117,20 @@ export default function Character() {
     });
   });
 
-  return (
-    <>
-      <primitive object={characterModel} ref={characterMeshRef} />
-    </>
-  );
+  const { scene } = useThree();
+
+  useEffect(() => {
+    const mesh = characterMeshRef.current;
+    // console.log(mesh);
+
+    scene.traverse((child: any) => {
+      if (child.material) {
+        // console.log(child.material);
+        // child.material.metalness = 0.5;
+        // child.material.
+      }
+    });
+  }, []);
+
+  return <primitive object={characterModel.scene} ref={characterMeshRef} />;
 }

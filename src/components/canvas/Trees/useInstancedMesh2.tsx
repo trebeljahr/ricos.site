@@ -88,13 +88,13 @@ const ChunkPositionUpdater = ({
         }
       ).reduce(
         (agg, pos) => {
-          const worldPosition = pos.add(chunk.position);
+          const worldPosition = pos.add(chunk.position).add(center);
           const { height } = getHeight(
-            worldPosition.x - 1,
-            worldPosition.z - 1
+            worldPosition.x + center.x,
+            worldPosition.z + center.z
           );
-          const position = worldPosition.add(center).setY(height);
-          const scale = Math.random() + 1;
+          const position = worldPosition.setY(height);
+          const scale = 1; // Math.random() + 1;
           const rotation = new Vector3(0, Math.random() * Math.PI * 2, 0);
           agg.positions.push(position);
           agg.scales.push(scale);

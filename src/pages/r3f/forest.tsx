@@ -1,4 +1,5 @@
 import {
+  perf,
   physicsDebug,
   tilesDistance,
   tileSize,
@@ -63,7 +64,7 @@ const Page = () => {
     <ThreeFiberLayout>
       <KeyboardControlsProvider>
         <Canvas camera={{ near: 0.1, far: tileSize * (tilesDistance - 1) }}>
-          <Perf position="bottom-right" />
+          {perf && <Perf position="bottom-right" />}
           <Physics debug={physicsDebug}>
             <hemisphereLight intensity={0.35} />
             <ambientLight intensity={1.0} />

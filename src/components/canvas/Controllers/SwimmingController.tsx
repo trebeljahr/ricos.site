@@ -73,7 +73,7 @@ export function SwimmingController({ children }: PropsWithChildren) {
       >
         {children}
       </RigidBody>
-      <PointerLockControls />
+      <PointerLockControls selector={"canvas"} />
     </>
   );
 }

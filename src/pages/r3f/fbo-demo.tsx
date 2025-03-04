@@ -1,16 +1,16 @@
 import { FBOParticles } from "@components/canvas/FBOExperiments/Particles";
-import { CanvasWithControls } from "@components/canvas/Controllers/KeyboardControls";
+import { CanvasWithKeyboardInput } from "@components/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { OrbitControls } from "@react-three/drei";
 
 export default function Page() {
   return (
     <ThreeFiberLayout>
-      <CanvasWithControls>
+      <CanvasWithKeyboardInput>
         <FBOParticles />
         <OrbitControls />
         <color attach="background" args={["#20222B"]} />
-      </CanvasWithControls>
+      </CanvasWithKeyboardInput>
     </ThreeFiberLayout>
   );
 }

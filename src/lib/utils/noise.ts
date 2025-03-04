@@ -82,38 +82,3 @@ export function poissonDiskSample(
 
   return points.map(([x, z]) => new Vector3(x, 0, z));
 }
-export function generateTreePositions(
-  xWidth: number,
-  zWidth: number,
-  minDistance: number,
-  densityScale = 0.5
-) {
-  const points = [];
-
-  const gridSize =
-    Math.ceil(xWidth / minDistance) * Math.ceil(zWidth / minDistance);
-
-  for (let i = 0; i < gridSize; i++) {
-    const x = Math.random() * xWidth - xWidth / 2;
-    const z = Math.random() * zWidth - zWidth / 2;
-
-    const noiseValue = perlin2(x * 0.01, z * 0.01);
-    if (Math.random() > noiseValue * densityScale) continue;
-
-    let valid = true;
-    for (const p of points) {
-      if (
-        new Vector3(p.x, 0, p.z).distanceTo(new Vector3(x, 0, z)) < minDistance
-      ) {
-        valid = false;
-        break;
-      }
-    }
-
-    if (valid) {
-      points.push(new Vector3(x, 0, z));
-    }
-  }
-
-  return points;
-}

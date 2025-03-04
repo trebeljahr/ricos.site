@@ -17,7 +17,6 @@ const Page = () => {
             <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
             <color args={["#f0f0f0"]} attach="background" />
             <MinecraftCreativeController speed={25} />
-            {/* <InstancedTreeSystem /> */}
             <gridHelper args={[tileSize, 100]} />
             <TreeTile />
           </Physics>

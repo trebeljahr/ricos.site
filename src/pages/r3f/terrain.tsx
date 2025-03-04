@@ -1,5 +1,6 @@
 import {
   debug,
+  perf,
   physicsDebug,
   tileSize,
 } from "@components/canvas/ChunkGenerationSystem/config";
@@ -30,7 +31,7 @@ const Page = () => {
         <Leva />
         <Canvas>
           <CameraPositionLogger />
-          <Perf position="bottom-right" />
+          {perf && <Perf position="bottom-right" />}
           <Physics debug={physicsDebug}>
             <hemisphereLight intensity={0.35} />
             <ambientLight intensity={1.0} />

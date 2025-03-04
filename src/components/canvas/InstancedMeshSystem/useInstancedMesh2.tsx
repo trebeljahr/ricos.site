@@ -396,36 +396,28 @@ export const MultiInstancedTileSpawner = ({
       modelPath,
     });
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const { key } = event;
+  useKeyboardInput(({ key }) => {
+    const pressedF = key === "f";
+    const pressedG = key === "g";
 
-      const pressedF = key === "f";
-      const pressedG = key === "g";
+    if (pressedF) {
+      const newPositions = [
+        new Vector3(Math.random() * tileSize, 0, Math.random() * tileSize),
+      ];
+      addPositions(newPositions);
+    }
 
-      if (pressedF) {
-        const newPositions = [
-          new Vector3(Math.random() * tileSize, 0, Math.random() * tileSize),
-        ];
-        addPositions(newPositions);
-      }
+    if (pressedG) {
+      const randomPositions = pickRandomFromArray(
+        refs.current[0].instances
+          .filter((obj) => obj.active)
+          .map((obj) => obj.position),
+        1
+      );
 
-      if (pressedG) {
-        const randomPositions = pickRandomFromArray(
-          refs.current[0].instances
-            .filter((obj) => obj.active)
-            .map((obj) => obj.position),
-          1
-        );
-
-        removePositions(randomPositions);
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [removePositions, addPositions, refs]);
+      removePositions(randomPositions);
+    }
+  });
 
   return <InstancedMeshes />;
 };

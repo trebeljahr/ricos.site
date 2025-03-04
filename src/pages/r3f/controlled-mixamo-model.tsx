@@ -1,5 +1,5 @@
 import { EcctrlController } from "@components/canvas/Controllers/EcctrlController";
-import { CanvasWithControls } from "@components/canvas/Controllers/KeyboardControls";
+import { CanvasWithKeyboardInput } from "@components/canvas/Controllers/KeyboardControls";
 import Grass from "@components/canvas/Grass";
 import { Lights } from "@components/canvas/Helpers/Lights";
 import { ThreeFiberLayout } from "@components/dom/Layout";
@@ -9,7 +9,7 @@ import { Physics } from "@react-three/rapier";
 export default function Page() {
   return (
     <ThreeFiberLayout>
-      <CanvasWithControls>
+      <CanvasWithKeyboardInput>
         <Physics debug timeStep="vary">
           <Lights />
           <Sky />
@@ -18,7 +18,7 @@ export default function Page() {
 
           <Grass size={0.3} />
         </Physics>
-      </CanvasWithControls>
+      </CanvasWithKeyboardInput>
     </ThreeFiberLayout>
   );
 }

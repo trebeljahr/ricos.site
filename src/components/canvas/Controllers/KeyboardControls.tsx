@@ -25,10 +25,10 @@ export const KeyboardControlsProvider = ({ children }: PropsWithChildren) => {
   return <KeyboardControls map={keymap}>{children}</KeyboardControls>;
 };
 
-export function CanvasWithControls({
+export const CanvasWithKeyboardInput = ({
   children,
   ...props
-}: PropsWithChildren<CanvasProps>) {
+}: PropsWithChildren<CanvasProps>) => {
   return (
     <KeyboardControlsProvider>
       <Canvas {...props} gl={{ logarithmicDepthBuffer: true }}>
@@ -38,4 +38,4 @@ export function CanvasWithControls({
       </Canvas>
     </KeyboardControlsProvider>
   );
-}
+};

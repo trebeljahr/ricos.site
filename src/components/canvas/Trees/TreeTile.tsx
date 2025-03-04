@@ -1,4 +1,4 @@
-import { splitIntoRandomGroups } from "@components/canvas/Trees/utils";
+import { splitIntoRandomGroups } from "@components/canvas/Helpers/utils";
 import { poissonDiskSample } from "@components/canvas/Yuka/YukaExample";
 import { InstancedBirchTree1 } from "@models/nature_pack/BirchTree_1";
 import { InstancedBush1 } from "@models/nature_pack/Bush_1";

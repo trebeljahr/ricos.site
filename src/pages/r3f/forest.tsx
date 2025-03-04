@@ -4,8 +4,8 @@ import {
   tileSize,
 } from "@components/canvas/ChunkGenerationSystem/config";
 import { WorldManager } from "@components/canvas/ChunkGenerationSystem/WorldManager";
-import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
-import { KeyboardControlsProvider } from "@components/canvas/Scene";
+import { MinecraftCreativeControlsPlayer } from "@components/canvas/Controllers/FlyingPlayer";
+import { KeyboardControlsProvider } from "@components/canvas/Controllers/KeyboardControls";
 import { Bvh, Sky } from "@react-three/drei";
 import { Sky as SkyImpl } from "three-stdlib";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -18,7 +18,7 @@ import {
   SMAA,
   Vignette,
 } from "@react-three/postprocessing";
-import LensFlare from "@components/canvas/Lensflare";
+import LensFlare from "@components/canvas/Effects/Lensflare";
 import { useRef } from "react";
 
 const lensflareProps = {

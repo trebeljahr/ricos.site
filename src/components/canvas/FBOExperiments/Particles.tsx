@@ -18,11 +18,11 @@ import {
   ShaderMaterial,
 } from "three";
 
-import fragmentShader from "./shader.frag";
-import vertexShader from "./shader.vert";
+import fragmentShader from "./shaders/shader.frag";
+import vertexShader from "./shaders/shader.vert";
 
-import simulationFragmentShader from "./simulation.frag";
-import simulationVertexShader from "./simulation.vert";
+import simulationFragmentShader from "./shaders/simulation.frag";
+import simulationVertexShader from "./shaders/simulation.vert";
 
 import { SimulationMaterial } from "./SimulationMaterial";
 

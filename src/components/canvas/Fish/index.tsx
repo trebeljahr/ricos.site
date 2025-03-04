@@ -26,10 +26,10 @@ import {
   GPUComputationRenderer,
   Variable,
 } from "three/examples/jsm/misc/GPUComputationRenderer";
-import fishFragment from "./fishFrag.glsl";
-import fishVertex from "./fishVert.glsl";
-import positionShader from "./positionFrag.glsl";
-import velocityShader from "./velocityFrag.glsl";
+import fishFragment from "./shaders/fishFrag.glsl";
+import fishVertex from "./shaders/fishVert.glsl";
+import positionShader from "./shaders/positionFrag.glsl";
+import velocityShader from "./shaders/velocityFrag.glsl";
 import { useWhale } from "@models/fish_pack/Whale";
 import { useDolphin } from "@models/fish_pack/Dolphin";
 import { useShark } from "@models/fish_pack/Shark";

@@ -4,7 +4,7 @@ import { RapierRigidBody, RigidBody, useRapier } from "@react-three/rapier";
 import { MutableRefObject, useEffect, useRef } from "react";
 import { Group, Quaternion, Vector3 } from "three";
 import { OrbitControls as OrbitControlsImpl } from "three-stdlib";
-import { Trex } from "./Trex";
+import { Trex } from "../../../models/Trex";
 import { KinematicCharacterController, Ray } from "@dimforge/rapier3d-compat";
 
 const velocity = 20;

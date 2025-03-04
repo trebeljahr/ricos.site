@@ -25,6 +25,7 @@ export const KeyboardControlsProvider = ({ children }: PropsWithChildren) => {
     </KeyboardControls>
   );
 };
+
 export function CanvasWithControls({
   children,
   ...props

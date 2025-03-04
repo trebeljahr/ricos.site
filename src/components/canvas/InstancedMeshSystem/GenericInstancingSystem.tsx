@@ -3,7 +3,6 @@ import { nanoid } from "nanoid";
 import { useEffect, useMemo, useRef } from "react";
 import { InstancedMesh, Material, Mesh, Object3D, Vector3 } from "three";
 import { GLTF } from "three-stdlib";
-import { InstancedMesh2Component } from "./InstancedMesh2";
 import { Single } from "./useInstancedMesh2";
 
 const temp = new Object3D();

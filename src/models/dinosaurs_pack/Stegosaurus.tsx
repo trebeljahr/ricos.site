@@ -6,7 +6,7 @@ import React, { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 import { useAnimations } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
-import { GenericAnimationController } from "@components/canvas/GenericAnimationController";
+import { GenericAnimationController } from "@components/canvas/Controllers/GenericAnimationController";
 
 type GLTFResult = GLTF & {
   nodes: {

@@ -8,12 +8,12 @@ type Modes =
   | "normals"
   | "colors";
 
-const debug = true;
-const normalsDebug = true;
-const visualizeHeight = true;
-const physicsDebug = true;
+const debug = false;
+const normalsDebug = false;
+const physicsDebug = false;
+const wireframe = false;
 
-const wireframe = true;
+const visualizeHeight = true;
 
 const tileSize = 100;
 const tilesDistance = 1;

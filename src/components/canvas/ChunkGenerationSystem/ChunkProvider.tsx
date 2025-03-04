@@ -8,11 +8,8 @@ import {
   useState,
 } from "react";
 import { Vector3 } from "three";
-import { Forest } from "../Trees/TreeTile";
 import {
-  baseResolution,
   lodDistanceFactor,
-  lodLevels,
   onlyRenderOnce,
   tilesDistance,
   tileSize,

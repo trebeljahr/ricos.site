@@ -10,6 +10,7 @@ import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Perf } from "r3f-perf";
 import { Color } from "three";
+import { ThreeFiberLayout } from "@components/dom/Layout";
 
 const lensflareProps = {
   enabled: true,
@@ -40,10 +41,10 @@ const lensflareProps = {
 const Page = () => {
   const skyColor = "#85c7f9";
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
+    <ThreeFiberLayout>
       <KeyboardControlsProvider>
         <Canvas>
-          <Perf position="top-left" />
+          <Perf position="bottom-right" />
           <Physics debug={physicsDebug}>
             <hemisphereLight intensity={0.35} />
             <ambientLight intensity={1.0} />
@@ -62,7 +63,7 @@ const Page = () => {
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>
-    </div>
+    </ThreeFiberLayout>
   );
 };
 

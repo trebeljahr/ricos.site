@@ -17,7 +17,7 @@ export default function Page() {
         </Box>
         <ambientLight />
         <fog color={0xffffff} near={100} far={1000} />
-        <Perf />
+        <Perf position="bottom-right" />
         {/* <OrbitControls /> */}
         {/* <KeyboardControls
         map={[

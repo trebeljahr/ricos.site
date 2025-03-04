@@ -4,7 +4,7 @@ import { OrbitControls, Stage } from "@react-three/drei";
 
 import dynamic from "next/dynamic";
 
-const DynamicCharacter = dynamic(() => import("../../components/Character"), {
+const DynamicCharacter = dynamic(() => import("@components/Character"), {
   ssr: false,
 });
 

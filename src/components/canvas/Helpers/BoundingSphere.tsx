@@ -2,7 +2,7 @@ import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import { Box3, Mesh, Object3D, Sphere } from "three";
 
-export function BoundingSphere({ object }: { object: Object3D }) {
+export function BoundingSphereAround({ object }: { object: Object3D }) {
   const ref = useRef<Mesh>(null!);
   const sphere = new Sphere();
 

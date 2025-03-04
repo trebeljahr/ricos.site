@@ -6,7 +6,7 @@ import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
 import { podcastnotes, type Podcastnote as PodcastnoteType } from "@velite";
-import { byOnlyPublished } from "src/lib/utils";
+import { byOnlyPublished } from "src/lib/utils/filters";
 
 type Props = {
   podcastnote: PodcastnoteType;

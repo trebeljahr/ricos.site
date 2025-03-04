@@ -11,17 +11,16 @@ import {
 import { usePrevious } from "@hooks/usePrevious";
 import { useGLTF } from "@react-three/drei";
 import { nanoid } from "nanoid";
-import { pickRandomFromArray } from "../ChunkGenerationSystem/utils";
+import { pickRandomFromArray } from "../../../lib/utils/randomFromArray";
 import {
   tileSize,
   treeMaxDistance,
   treeMinDistance,
 } from "../ChunkGenerationSystem/config";
 import { useChunkContext } from "../ChunkGenerationSystem/ChunkProvider";
-import { poissonDiskSample } from "../Yuka/YukaExample";
-import { splitIntoRandomGroups } from "../Helpers/utils";
 import { getHeight } from "../ChunkGenerationSystem/TerrainTile";
 import { useKeyboardInput } from "@hooks/useKeyboardInput";
+import { poissonDiskSample } from "../../../lib/utils/noise";
 
 declare module "@react-three/fiber" {
   interface ThreeElements {

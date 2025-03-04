@@ -1,26 +1,17 @@
 import { Text } from "@react-three/drei";
-import { useFrame, useThree } from "@react-three/fiber";
-import { memo, useRef, useState } from "react";
-import { Vector2, Vector3 } from "three";
-import { Forest, SimpleGrassGroundPlane, TreeTile } from "../Trees/TreeTile";
+import { useFrame } from "@react-three/fiber";
+import { useRef } from "react";
 import {
-  baseResolution,
-  debug,
-  lodDistanceFactor,
-  lodLevels,
-  tilesDistance,
-  tileSize,
-} from "./config";
+  BirchTreesForChunks,
+  RocksForChunks,
+} from "../InstancedMeshSystem/useInstancedMesh2";
 import {
   Chunk,
   ChunkProvider,
   MemoizedChunk,
   useChunkContext,
 } from "./ChunkProvider";
-import {
-  BirchTreesForChunks,
-  RocksForChunks,
-} from "../InstancedMeshSystem/useInstancedMesh2";
+import { debug, tileSize } from "./config";
 import { TerrainTile } from "./TerrainTile";
 
 export const WorldManager = () => {
@@ -45,8 +36,6 @@ const WorldManagerWithChunks = () => {
           </MemoizedChunk>
         );
       })}
-
-      {/* <Forest chunks={chunks} /> */}
     </group>
   );
 };
@@ -78,8 +67,6 @@ export const SingleTile = ({ chunkData }: { chunkData: Chunk }) => {
       )}
 
       <group>
-        {/* <SimpleGrassGroundPlane /> */}
-
         <TerrainTile
           position={chunkData.position}
           resolution={chunkData.resolution}

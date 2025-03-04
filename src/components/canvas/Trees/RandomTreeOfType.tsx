@@ -33,7 +33,7 @@ import { Tree1, Tree2, Tree4 } from "@models/simple_nature_pack";
 import { memo } from "react";
 import { Vector3 } from "three";
 import { BirchTree } from "../../../models/BirchTree";
-import { pickRandomFromArray } from "../ChunkGenerationSystem/utils";
+import { pickRandomFromArray } from "../../../lib/utils/randomFromArray";
 import { TreeType } from "./TreeSystem";
 
 type Props = JSX.IntrinsicElements["group"];
@@ -91,7 +91,7 @@ const OakTrees = [
   (props: Props) => <CommonTree_5 {...props} />,
 ];
 
-export const Tree = memo(function Tree({
+export const RandomTreeOfType = memo(function Tree({
   type,
   position,
   rotation = [0, 0, 0],

@@ -21,3 +21,37 @@ export type GLTFResult = GLTF & {
     [x: string]: Material;
   };
 };
+export type CommonMetadata = {
+  title: string;
+  slug: string;
+  subtitle?: string;
+
+  date: string;
+  excerpt: string;
+  markdownExcerpt: MDXResult;
+  link: string;
+  tags: string;
+  cover: {
+    src: string;
+    alt: string;
+    width: number;
+    height: number;
+  };
+  metadata: {
+    readingTime: number;
+    wordCount: number;
+  };
+  published: boolean;
+  number?: string;
+  slugTitle?: string;
+
+  bookAuthor?: string;
+  rating?: number;
+  summary?: boolean;
+
+  show?: string;
+  episode?: number;
+
+  parentFolder?: string;
+};
+export type HasDate = { date: string };

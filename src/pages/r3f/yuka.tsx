@@ -3,10 +3,11 @@ import { KeyboardControlsProvider } from "@components/canvas/Controllers/Keyboar
 import { YukaSimulation } from "@components/canvas/Yuka/YukaExample";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
+import { ThreeFiberLayout } from "@components/dom/Layout";
 
 const Page = () => {
   return (
-    <div className="h-screen w-screen">
+    <ThreeFiberLayout>
       <KeyboardControlsProvider>
         <Canvas>
           <Physics>
@@ -19,7 +20,7 @@ const Page = () => {
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>
-    </div>
+    </ThreeFiberLayout>
   );
 };
 

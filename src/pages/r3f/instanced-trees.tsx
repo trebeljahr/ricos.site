@@ -3,12 +3,12 @@ import { KeyboardControlsProvider } from "@components/canvas/Controllers/Keyboar
 import { TreeTile } from "@components/canvas/Trees/TreeTile";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
-
-const gridHelperSize = 100;
+import { ThreeFiberLayout } from "@components/dom/Layout";
+import { tileSize } from "@components/canvas/ChunkGenerationSystem/config";
 
 const Page = () => {
   return (
-    <div className="h-screen w-screen">
+    <ThreeFiberLayout>
       <KeyboardControlsProvider>
         <Canvas>
           <Physics>
@@ -18,12 +18,12 @@ const Page = () => {
             <color args={["#f0f0f0"]} attach="background" />
             <MinecraftCreativeController speed={25} />
             {/* <InstancedTreeSystem /> */}
-            <gridHelper args={[gridHelperSize, 100]} />
+            <gridHelper args={[tileSize, 100]} />
             <TreeTile />
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>
-    </div>
+    </ThreeFiberLayout>
   );
 };
 

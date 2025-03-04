@@ -10,12 +10,10 @@ import { ToTopButton } from "@components/ToTopButton";
 import slugify from "@sindresorhus/slugify";
 import { travelblogs, type Travelblog } from "@velite";
 import { ReactNode } from "react";
-import {
-  byDate,
-  byOnlyPublished,
-  extractAndSortMetadata,
-  replaceUndefinedWithNull,
-} from "src/lib/utils";
+import { byDate } from "src/lib/utils/misc";
+import { byOnlyPublished } from "src/lib/utils/filters";
+import { replaceUndefinedWithNull } from "src/lib/utils/replaceUndefinedWithNull";
+import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type TravelBlogProps = {
   post: Travelblog;

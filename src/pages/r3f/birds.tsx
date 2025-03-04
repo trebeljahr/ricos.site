@@ -11,7 +11,7 @@ export default function Page() {
       <Canvas camera={{ position: new Vector3(0, 0, 350), near: 1, far: 3000 }}>
         <Birds />
         <fog color={0xffffff} near={100} far={1000} />
-        <Perf />
+        <Perf position="bottom-right" />
         <OrbitControls />
       </Canvas>
     </ThreeFiberLayout>

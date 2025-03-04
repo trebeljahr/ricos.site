@@ -20,6 +20,7 @@ import {
 } from "@react-three/postprocessing";
 import LensFlare from "@components/canvas/Effects/Lensflare";
 import { useRef } from "react";
+import { ThreeFiberLayout } from "@components/dom/Layout";
 
 const lensflareProps = {
   enabled: true,
@@ -59,10 +60,10 @@ const MovingSky = () => {
 const Page = () => {
   const skyColor = "#d4e7f5";
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
+    <ThreeFiberLayout>
       <KeyboardControlsProvider>
         <Canvas camera={{ near: 0.1, far: tileSize * (tilesDistance - 1) }}>
-          <Perf position="top-left" />
+          <Perf position="bottom-right" />
           <Physics debug={physicsDebug}>
             <hemisphereLight intensity={0.35} />
             <ambientLight intensity={1.0} />
@@ -94,7 +95,7 @@ const Page = () => {
           </EffectComposer> */}
         </Canvas>
       </KeyboardControlsProvider>
-    </div>
+    </ThreeFiberLayout>
   );
 };
 

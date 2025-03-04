@@ -1,22 +1,13 @@
 import { FullCanvasShader } from "@components/canvas/Tutorials/FullCanvasShader";
-import { CopyButton } from "@components/CodeCopyButton";
-import { ThreeFiberLayout } from "@components/dom/Layout";
 import Layout from "@components/Layout";
 import { Canvas } from "@react-three/fiber";
 import controllableShaderArt from "@shaders/controllableShaderArt.glsl";
 import { AnimatePresence, motion } from "framer-motion";
-import { Leva, useControls } from "leva";
+import { useControls } from "leva";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  FaCheck,
-  FaClipboard,
-  FaInfo,
-  FaShareAlt,
-  FaTimes,
-} from "react-icons/fa";
-import { FaX } from "react-icons/fa6";
+import { FaCheck, FaInfo, FaShareAlt } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
 import { IUniform } from "three";
 

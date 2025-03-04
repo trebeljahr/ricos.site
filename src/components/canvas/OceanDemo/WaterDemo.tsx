@@ -1,17 +1,17 @@
 import { useUnderwaterContext, waterHeight } from "@contexts/UnderwaterContext";
 import Whale from "@models/fish_pack/Whale";
-import { Environment, Sky } from "@react-three/drei";
+import { Sky } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Perf } from "r3f-perf";
 import { useEffect, useRef } from "react";
 import { Color, FogExp2, Group, Vector3 } from "three";
 import { Sky as SkyImpl } from "three-stdlib";
+import { SwimmingController } from "../Controllers/SwimmingController";
 import { FishType, Fishs } from "../FBOExperiments/Fish";
 import { OceanSurface } from "./Ocean";
-import { Terrain } from "./Terrain";
 import { UI } from "./OxygenBar";
-import { SwimmingController } from "../Controllers/SwimmingController";
+import { Terrain } from "./Terrain";
 
 function MovingInCircle() {
   const whaleRef = useRef<Group>(null!);
@@ -60,12 +60,11 @@ export default function WaterDemo() {
 
   return (
     <>
-      {/* <Environment preset='forest' /> */}
       <UI />
       <Physics>
         <SwimmingController />
       </Physics>
-      <Perf />
+      <Perf position="bottom-right" />
 
       <fogExp2 ref={fogRef} attach="fog" color="#0086ad" density={0.02} />
       <color ref={colorRef} attach="background" args={["#0086ad"]} />
@@ -88,7 +87,6 @@ export default function WaterDemo() {
         fishType={FishType.DoctorFish}
         color="#1ea8ed"
       />
-      {/* <Fishs position={new Vector3(20, 10, 5)} fishType={FishType.Whale} color='#0b4171' scaleFactor={3} /> */}
       <Fishs
         position={new Vector3(15, 10, 10)}
         fishType={FishType.Whale}

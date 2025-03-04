@@ -78,7 +78,7 @@ export function seededRandom(seed: number): () => number {
   };
 }
 
-export function generateTreePositions(
+export function genTreesPositionsForBiomes(
   chunkPosition: Vector3,
   resolution: number,
   tileSize: number,

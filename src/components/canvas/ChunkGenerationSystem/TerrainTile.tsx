@@ -123,7 +123,7 @@ export const TerrainTile = ({
           const slope = 1 - Math.abs(normal.y);
           slopeMap[hz][hx] = slope;
 
-          const heightForHeightfield = heightMap[hz][resolution - hx];
+          const heightForHeightfield = heightMap[hz][resolution + 1 - hx];
           heightfield.push(heightForHeightfield);
 
           vertices.push(localX, height, localZ);

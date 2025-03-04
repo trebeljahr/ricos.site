@@ -38,7 +38,10 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
   const [chunks, setChunks] = useState(new Map<string, Chunk>());
   const oldCameraGridPosition = useRef(new Vector3(-Infinity, 0, 0));
 
+  const renderedOnce = useRef(false);
   useFrame(() => {
+    if (renderedOnce.current) return;
+
     camera.getWorldPosition(tempVec);
 
     tempVec.divideScalar(tileSize * 2).floor();
@@ -99,6 +102,7 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
       }
     }
 
+    renderedOnce.current = true;
     setChunks(newChunks);
   });
 

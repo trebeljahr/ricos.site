@@ -11,40 +11,64 @@ interface GLTFAction extends AnimationClip {
 }
 
 export default function Character() {
+  const { characterName } = useControls({
+    characterName: {
+      value: "x-bot",
+      label: "Character Name",
+      options: [
+        "arissa",
+        "ely",
+        "jaime", // not working for now
+        "michelle",
+        "ninja",
+        "pirate", // some coordinate issues
+        "punk",
+        "wildling",
+        "worker", // not working for now
+        "x-bot",
+        "y-bot",
+      ],
+    },
+  });
+
   const characterMeshRef = useRef<Mesh>(null!);
-  const characterModelFbx = useFBX("/3d-assets/fbx/character/Punk.fbx");
-  const characterModel = useGLTF("/3d-assets/glb/xbot.glb");
+  const characterModel = useGLTF(
+    `/3d-assets/glb/characters/${characterName}.glb`
+  );
+  // const characterModelGlb = useGLTF("/3d-assets/glb/xbot.glb");
 
+  // console.log(characterModelGlb);
   console.log(characterModel);
-  console.log(characterModelFbx);
 
-  const running = useFBX("/3d-assets/fbx/animations/running.fbx");
-  const idle = useFBX("/3d-assets/fbx/animations/idle.fbx");
-  const jump = useFBX("/3d-assets/fbx/animations/jump.fbx");
-  const dance = useFBX("/3d-assets/fbx/animations/dance.fbx");
-  const walking = useFBX("/3d-assets/fbx/animations/walking.fbx");
-  const breakdance = useFBX("/3d-assets/fbx/animations/breakdance.fbx");
-  const yawning = useFBX("/3d-assets/fbx/animations/yawning.fbx");
-  const angry = useFBX("/3d-assets/fbx/animations/angry.fbx");
-  const bow = useFBX("/3d-assets/fbx/animations/bow.fbx");
-  const crawl = useFBX("/3d-assets/fbx/animations/crawl.fbx");
-  const death = useFBX("/3d-assets/fbx/animations/death.fbx");
-  const happyJump = useFBX("/3d-assets/fbx/animations/happy-jump.fbx");
-  const jumpingUp = useFBX("/3d-assets/fbx/animations/jumping-up.fbx");
-  const kickLeft = useFBX("/3d-assets/fbx/animations/kick-left.fbx");
-  const kickRight = useFBX("/3d-assets/fbx/animations/kick-right.fbx");
-  const martelo = useFBX("/3d-assets/fbx/animations/martelo.fbx");
-  const paddle = useFBX("/3d-assets/fbx/animations/paddle.fbx");
-  const pickUpLeft = useFBX("/3d-assets/fbx/animations/picking-up-left.fbx");
-  const pickUpRight = useFBX("/3d-assets/fbx/animations/picking-up-right.fbx");
-  const punchLeft = useFBX("/3d-assets/fbx/animations/punch-left.fbx");
-  const punchRight = useFBX("/3d-assets/fbx/animations/punch-right.fbx");
-  const salute = useFBX("/3d-assets/fbx/animations/salute.fbx");
-  const shrug = useFBX("/3d-assets/fbx/animations/shrug.fbx");
-  const sillyDance = useFBX("/3d-assets/fbx/animations/silly-dance.fbx");
-  const swim = useFBX("/3d-assets/fbx/animations/swim.fbx");
-  const threatGesture = useFBX("/3d-assets/fbx/animations/threat-gesture.fbx");
-  const wave = useFBX("/3d-assets/fbx/animations/wave.fbx");
+  const running = useGLTF("/3d-assets/glb/animations/running.glb");
+  const idle = useGLTF("/3d-assets/glb/animations/idle.glb");
+  const jump = useGLTF("/3d-assets/glb/animations/jump.glb");
+  const dance = useGLTF("/3d-assets/glb/animations/dance.glb");
+  const walking = useGLTF("/3d-assets/glb/animations/walking.glb");
+  const breakdance = useGLTF("/3d-assets/glb/animations/breakdance.glb");
+  const yawning = useGLTF("/3d-assets/glb/animations/yawning.glb");
+  const angry = useGLTF("/3d-assets/glb/animations/angry.glb");
+  const bow = useGLTF("/3d-assets/glb/animations/bow.glb");
+  const crawl = useGLTF("/3d-assets/glb/animations/crawl.glb");
+  const death = useGLTF("/3d-assets/glb/animations/death.glb");
+  const happyJump = useGLTF("/3d-assets/glb/animations/happy-jump.glb");
+  const jumpingUp = useGLTF("/3d-assets/glb/animations/jumping-up.glb");
+  const kickLeft = useGLTF("/3d-assets/glb/animations/kick-left.glb");
+  const kickRight = useGLTF("/3d-assets/glb/animations/kick-right.glb");
+  const martelo = useGLTF("/3d-assets/glb/animations/martelo.glb");
+  const paddle = useGLTF("/3d-assets/glb/animations/paddle.glb");
+  const pickUpLeft = useGLTF("/3d-assets/glb/animations/picking-up-left.glb");
+  const pickUpRight = useGLTF("/3d-assets/glb/animations/picking-up-right.glb");
+  const punchLeft = useGLTF("/3d-assets/glb/animations/punch-left.glb");
+  const punchRight = useGLTF("/3d-assets/glb/animations/punch-right.glb");
+  const salute = useGLTF("/3d-assets/glb/animations/salute.glb");
+  const shrug = useGLTF("/3d-assets/glb/animations/shrug.glb");
+  const sillyDance = useGLTF("/3d-assets/glb/animations/silly-dance.glb");
+  const swim = useGLTF("/3d-assets/glb/animations/swim.glb");
+  const threatGesture = useGLTF("/3d-assets/glb/animations/threat-gesture.glb");
+  const wave = useGLTF("/3d-assets/glb/animations/wave.glb");
+
+  console.log(running, characterModel);
 
   const animationsForHook = [
     { ...idle.animations[0], name: "idle" },
@@ -130,7 +154,7 @@ export default function Character() {
         // child.material.
       }
     });
-  }, []);
+  }, [scene]);
 
   return <primitive object={characterModel.scene} ref={characterMeshRef} />;
 }

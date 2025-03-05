@@ -16,15 +16,22 @@ export default function Character() {
       value: "x-bot",
       label: "Character Name",
       options: [
+        "alien",
+        "archer",
         "arissa",
         "ely",
-        "jaime", // not working for now
+        "eve",
+        "exo",
+        "ganfaul",
+        "heraklios",
+        "kachujin",
         "michelle",
         "ninja",
-        "pirate", // some coordinate issues
-        "punk",
+        "paladin",
+        "pirate",
+        "special-ops",
+        "vanguard",
         "wildling",
-        "worker", // not working for now
         "x-bot",
         "y-bot",
       ],
@@ -35,11 +42,6 @@ export default function Character() {
   const characterModel = useGLTF(
     `/3d-assets/glb/characters/${characterName}.glb`
   );
-  
-  // const characterModelGlb = useGLTF("/3d-assets/glb/xbot.glb");
-
-  // console.log(characterModelGlb);
-  console.log(characterModel);
 
   const running = useGLTF("/3d-assets/glb/animations/running.glb");
   const idle = useGLTF("/3d-assets/glb/animations/idle.glb");
@@ -68,8 +70,6 @@ export default function Character() {
   const swim = useGLTF("/3d-assets/glb/animations/swim.glb");
   const threatGesture = useGLTF("/3d-assets/glb/animations/threat-gesture.glb");
   const wave = useGLTF("/3d-assets/glb/animations/wave.glb");
-
-  console.log(running, characterModel);
 
   const animationsForHook = [
     { ...idle.animations[0], name: "idle" },
@@ -103,6 +103,12 @@ export default function Character() {
 
   const result = useAnimations(animationsForHook, characterModel.scene);
 
+  const { updateAnimation } = useGenericAnimationController({
+    actions: result.actions,
+  });
+
+  updateAnimation("idle", { looping: true });
+
   useEffect(() => {
     const listener = () => {
       updateAnimation("idle", { looping: true });
@@ -113,11 +119,7 @@ export default function Character() {
     return () => {
       result.mixer.removeEventListener("finished", listener);
     };
-  }, []);
-
-  const { updateAnimation } = useGenericAnimationController({
-    actions: result.actions,
-  });
+  }, [result.mixer, updateAnimation]);
 
   useControls(
     {
@@ -141,21 +143,6 @@ export default function Character() {
       }
     });
   });
-
-  const { scene } = useThree();
-
-  useEffect(() => {
-    const mesh = characterMeshRef.current;
-    // console.log(mesh);
-
-    scene.traverse((child: any) => {
-      if (child.material) {
-        // console.log(child.material);
-        // child.material.metalness = 0.5;
-        // child.material.
-      }
-    });
-  }, [scene]);
 
   return <primitive object={characterModel.scene} ref={characterMeshRef} />;
 }

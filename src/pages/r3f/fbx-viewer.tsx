@@ -1,0 +1,51 @@
+import { CanvasWithKeyboardInput } from "@components/canvas/Controllers/KeyboardControls";
+import { ThreeFiberLayout } from "@components/dom/Layout";
+import { OrbitControls, Stage, useFBX } from "@react-three/drei";
+import { useControls } from "leva";
+import { useRef } from "react";
+import { Mesh } from "three";
+
+const FbxViewer = () => {
+  const { characterName } = useControls({
+    characterName: {
+      value: "x-bot",
+      label: "Character Name",
+      options: [
+        "arissa",
+        "ely",
+        "jaime", // not working for now
+        "michelle",
+        "ninja",
+        "pirate", // some coordinate issues
+        "punk",
+        "wildling",
+        "worker", // not working for now
+        "x-bot",
+        "y-bot",
+      ],
+    },
+  });
+
+  const characterMeshRef = useRef<Mesh>(null!);
+  //   const characterModel = useFBX(
+  //     `/3d-assets/fbx/characters/${characterName}.fbx`
+  //   );
+
+  const characterModel = useFBX(`/3d-assets/fbx/character/Ch48_nonPBR.fbx`);
+  return <primitive object={characterModel} ref={characterMeshRef} />;
+};
+
+export default function Page() {
+  return (
+    <ThreeFiberLayout>
+      <CanvasWithKeyboardInput>
+        <color attach="background" args={["skyblue"]} />
+        <ambientLight intensity={2} />
+        <Stage adjustCamera={true}>
+          <FbxViewer />
+        </Stage>
+        <OrbitControls />
+      </CanvasWithKeyboardInput>
+    </ThreeFiberLayout>
+  );
+}

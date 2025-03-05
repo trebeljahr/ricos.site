@@ -13,7 +13,6 @@ export default function Page() {
     <ThreeFiberLayout>
       <CanvasWithKeyboardInput>
         <color attach="background" args={["skyblue"]} />
-        <ambientLight intensity={2} />
         <Stage adjustCamera={true}>
           <DynamicCharacter />
         </Stage>

@@ -35,6 +35,7 @@ export default function Character() {
   const characterModel = useGLTF(
     `/3d-assets/glb/characters/${characterName}.glb`
   );
+  
   // const characterModelGlb = useGLTF("/3d-assets/glb/xbot.glb");
 
   // console.log(characterModelGlb);

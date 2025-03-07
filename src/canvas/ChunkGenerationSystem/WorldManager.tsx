@@ -10,6 +10,7 @@ import {
 import { debug, tileSize } from "./config";
 import { TerrainTile } from "./TerrainTile";
 import { BirchTreesForChunks, RocksForChunks } from "./ChunkInstancedMeshes";
+import { Vector3 } from "three";
 
 export const WorldManager = () => {
   return (
@@ -37,39 +38,39 @@ const WorldManagerWithChunks = () => {
   );
 };
 
-export const SingleTile = ({ chunkData }: { chunkData: Chunk }) => {
+export const DebugTile = ({ position }: { position: Vector3 }) => {
   const textRef = useRef<any>(null!);
-  const position = chunkData.position;
 
   useFrame(({ camera }) => {
-    debug && textRef.current.quaternion.copy(camera.quaternion);
+    textRef.current.quaternion.copy(camera.quaternion);
   });
 
   return (
-    <group>
-      {debug && (
-        <>
-          <Text
-            ref={textRef}
-            position={[0, 10, 0]}
-            scale={[1, 1, 1]}
-            fontSize={2}
-            color={"#000000"}
-          >
-            {position.x},{position.z}
-          </Text>
-          <gridHelper args={[tileSize, 1]} />
-          <axesHelper args={[6]} position={[0, 0.5, 0]} />
-        </>
-      )}
+    <>
+      <Text
+        ref={textRef}
+        position={[0, 10, 0]}
+        scale={[1, 1, 1]}
+        fontSize={2}
+        color={"#000000"}
+      >
+        {position.x},{position.z}
+      </Text>
+      <gridHelper args={[tileSize, 1]} />
+      <axesHelper args={[6]} position={[0, 0.5, 0]} />
+    </>
+  );
+};
 
-      <group>
-        <TerrainTile
-          position={chunkData.position}
-          resolution={chunkData.resolution}
-          lodLevel={chunkData.lodLevel}
-        />
-      </group>
+export const SingleTile = ({ chunkData }: { chunkData: Chunk }) => {
+  return (
+    <group>
+      {debug && <DebugTile position={chunkData.position} />}
+      <TerrainTile
+        position={chunkData.position}
+        resolution={chunkData.resolution}
+        lodLevel={chunkData.lodLevel}
+      />
     </group>
   );
 };

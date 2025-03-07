@@ -20,6 +20,8 @@ export const NavLinks = () => {
       <Link href={"/r3f/fishs"}>Fish</Link>
       <Link href={"/r3f/ocean"}>Ocean</Link>
       <Link href={"/r3f/ship"}>Ship</Link>
+      <Link href={"/r3f/dungeon-rooms"}>Dungeon Rooms</Link>
+
       <Link href={"/r3f/third-person-controller"}>
         Custom Third Person Controller
       </Link>

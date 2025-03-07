@@ -1,5 +1,5 @@
-import { perf } from "@components/canvas/ChunkGenerationSystem/config";
-import { Birds } from "@components/canvas/FBOExperiments/Birds";
+import { perf } from "src/canvas/ChunkGenerationSystem/config";
+import { Birds } from "src/canvas/FBOExperiments/Birds";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";

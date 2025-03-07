@@ -2,14 +2,14 @@ import {
   debug,
   physicsDebug,
   tileSize,
-} from "@components/canvas/ChunkGenerationSystem/config";
-import { RigidBallSpawner } from "@components/canvas/Helpers/RigidBall";
-import { MinecraftCreativeController } from "@components/canvas/Controllers/MinecraftCreativeController";
-import { KeyboardControlsProvider } from "@components/canvas/Controllers/KeyboardControls";
-import * as animals from "@models/animals_pack";
-import * as dinosaurs from "@models/dinosaurs_pack";
-import * as natureAssets from "@models/nature_pack";
-import * as simpleNatureAssets from "@models/simple_nature_pack";
+} from "src/canvas/ChunkGenerationSystem/config";
+import { RigidBallSpawner } from "src/canvas/Helpers/RigidBall";
+import { MinecraftCreativeController } from "src/canvas/Controllers/MinecraftCreativeController";
+import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
+import * as animals from "src/canvas/models/animals_pack";
+import * as dinosaurs from "src/canvas/models/dinosaurs_pack";
+import * as natureAssets from "src/canvas/models/nature_pack";
+import * as simpleNatureAssets from "src/canvas/models/simple_nature_pack";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Leva } from "leva";

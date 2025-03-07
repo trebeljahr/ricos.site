@@ -1,9 +1,9 @@
-import { CanvasWithKeyboardInput } from "@components/canvas/Controllers/KeyboardControls";
+import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import dynamic from "next/dynamic";
 
 const ThirdPersonDemo = dynamic(
-  () => import("@components/canvas/DemoScenes/ThirdPersonDemo"),
+  () => import("src/canvas/DemoScenes/ThirdPersonDemo"),
   { ssr: false }
 );
 

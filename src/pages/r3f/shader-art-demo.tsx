@@ -1,4 +1,4 @@
-import { FullCanvasShader } from "@components/canvas/Tutorials/FullCanvasShader";
+import { FullCanvasShader } from "src/canvas/Tutorials/FullCanvasShader";
 import Layout from "@components/Layout";
 import { Canvas } from "@react-three/fiber";
 import controllableShaderArt from "@shaders/controllableShaderArt.glsl";

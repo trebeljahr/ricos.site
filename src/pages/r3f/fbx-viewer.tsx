@@ -1,4 +1,4 @@
-import { CanvasWithKeyboardInput } from "@components/canvas/Controllers/KeyboardControls";
+import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { OrbitControls, Stage, useFBX } from "@react-three/drei";
 import { useControls } from "leva";

@@ -1,10 +1,10 @@
-import { Fishs } from "@components/canvas/FBOExperiments/Fish";
-import { CanvasWithKeyboardInput } from "@components/canvas/Controllers/KeyboardControls";
+import { Fishs } from "src/canvas/FBOExperiments/Fish";
+import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { Box } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 import { Vector3 } from "three";
-import { perf } from "@components/canvas/ChunkGenerationSystem/config";
+import { perf } from "src/canvas/ChunkGenerationSystem/config";
 
 export default function Page() {
   return (

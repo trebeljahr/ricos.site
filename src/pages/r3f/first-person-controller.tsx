@@ -1,6 +1,6 @@
-import { FirstPersonController } from "@components/canvas/Controllers/FirstPersonController";
-import { CanvasWithKeyboardInput } from "@components/canvas/Controllers/KeyboardControls";
-import { Obstacles } from "@components/canvas/Scenes/Obstacles";
+import { FirstPersonController } from "src/canvas/Controllers/FirstPersonController";
+import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
+import { Obstacles } from "src/canvas/Scenes/Obstacles";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";

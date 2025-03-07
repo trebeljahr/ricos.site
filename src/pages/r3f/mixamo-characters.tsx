@@ -4,7 +4,7 @@ import { Canvas } from "@react-three/fiber";
 
 import dynamic from "next/dynamic";
 
-const DynamicCharacter = dynamic(() => import("@components/Character"), {
+const DynamicCharacter = dynamic(() => import("src/canvas/Character"), {
   ssr: false,
 });
 

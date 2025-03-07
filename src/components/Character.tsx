@@ -40,7 +40,7 @@ export default function Character() {
 
   const characterMeshRef = useRef<Mesh>(null!);
   const characterModel = useGLTF(
-    `/3d-assets/glb/characters/${characterName}.glb`
+    `/3d-assets/glb/characters/${characterName}-transformed.glb`
   );
 
   const running = useGLTF("/3d-assets/glb/animations/running.glb");

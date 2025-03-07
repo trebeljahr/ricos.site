@@ -1,16 +1,20 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
-import { Cat } from "@models/Cat";
 import { OrbitControls, Stage } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+
+import dynamic from "next/dynamic";
+
+const DynamicCharacter = dynamic(() => import("@components/Character"), {
+  ssr: false,
+});
 
 export default function Page() {
   return (
     <ThreeFiberLayout>
-      <Canvas>
-        <color attach="background" args={["#ffcc32"]} />
-
-        <Stage>
-          <Cat />
+      <Canvas camera={{ position: [0, 1, 2] }}>
+        <color attach="background" args={["skyblue"]} />
+        <Stage adjustCamera={false}>
+          <DynamicCharacter />
         </Stage>
         <OrbitControls />
       </Canvas>

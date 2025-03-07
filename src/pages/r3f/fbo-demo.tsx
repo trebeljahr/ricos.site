@@ -9,7 +9,7 @@ export default function Page() {
       <CanvasWithKeyboardInput>
         <FBOParticles />
         <OrbitControls />
-        <color attach="background" args={["#20222B"]} />
+        <color attach="background" args={["#393c4a"]} />
       </CanvasWithKeyboardInput>
     </ThreeFiberLayout>
   );

@@ -9,6 +9,7 @@ import {
 import { useRef } from "react";
 import { Vector3, Vector3Tuple } from "three";
 import { randFloat } from "three/src/math/MathUtils";
+import { floorLevel } from "../Scenes/Obstacles";
 
 export const InstancedTreesWithPhysics = () => {
   const api = useRef(null);
@@ -59,10 +60,36 @@ export const InstancedTreesWithPhysics = () => {
   );
 };
 
+export const TreeWithBallPhysics = () => {
+  return (
+    <RigidBody
+      position={new Vector3(4, floorLevel, 12)}
+      rotation={[-Math.PI / 2, 0, 0]}
+      type="fixed"
+      colliders="ball"
+    >
+      <Tree1 rotation={[Math.PI / 2, 0, 0]} />
+    </RigidBody>
+  );
+};
+
+export const TreeWithCuboidPhysics = () => {
+  return (
+    <RigidBody
+      position={new Vector3(4, floorLevel, 8)}
+      rotation={[-Math.PI / 2, 0, 0]}
+      type="fixed"
+      colliders="cuboid"
+    >
+      <Tree1 rotation={[Math.PI / 2, 0, 0]} />
+    </RigidBody>
+  );
+};
+
 export const TreeWithHullPhysics = () => {
   return (
     <RigidBody
-      position={new Vector3(0, -7.5, 12)}
+      position={new Vector3(0, floorLevel, 12)}
       type="fixed"
       colliders="hull"
     >
@@ -71,36 +98,12 @@ export const TreeWithHullPhysics = () => {
   );
 };
 
-export const TreeWithBallPhysics = () => {
-  return (
-    <RigidBody
-      position={new Vector3(4, -7.5, 12)}
-      type="fixed"
-      colliders="ball"
-    >
-      <Tree1 />
-    </RigidBody>
-  );
-};
-
-export const TreeWithCuboidPhysics = () => {
-  return (
-    <RigidBody
-      position={new Vector3(4, -7.5, 8)}
-      type="fixed"
-      colliders="cuboid"
-    >
-      <Tree1 />
-    </RigidBody>
-  );
-};
-
-export const TreeWithPhysics = () => {
+export const TreeWithTrimeshPhysics = () => {
   return (
     <RigidBody
       type="fixed"
       colliders="trimesh"
-      position={new Vector3(0, -7.5, 8)}
+      position={new Vector3(0, floorLevel, 8)}
     >
       <Tree1 />
     </RigidBody>

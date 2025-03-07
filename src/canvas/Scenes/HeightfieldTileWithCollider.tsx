@@ -5,10 +5,12 @@ import { HeightfieldCollider, RigidBody } from "@react-three/rapier";
 import { useControls } from "leva";
 import { useMemo, useRef } from "react";
 import {
+  BackSide,
   BufferGeometry,
   Color,
   DoubleSide,
   Float32BufferAttribute,
+  Matrix4,
   Mesh,
   PlaneGeometry,
   Vector3,
@@ -61,7 +63,7 @@ export const HeightfieldTileWithCollider = ({
 
   const alternate = useMemo(() => {
     const resolution = divisions;
-    const halfSize = 0;
+    const halfSize = size / 2;
     const segmentSize = size / (resolution - 1);
 
     const geo = new BufferGeometry();
@@ -112,13 +114,18 @@ export const HeightfieldTileWithCollider = ({
 
         const topToBot = vecTop.sub(vecBot);
         const leftToRight = vecLeft.sub(vecRight);
-        const normal = topToBot.cross(leftToRight).normalize();
+        const oldNormal = topToBot.cross(leftToRight).negate().normalize();
 
+        const normal = oldNormal; // .negate();
+        // rotate normal by 180 degrees around x axis
+        // const normal = new Vector3(oldNormal.x, -oldNormal.y, oldNormal.z);
+
+        // normal.x = -normal.x;
         // store height for heightfield collider => traverse heights in x direction in reverse order because that's how the heightfield collider expects it
         const heightForHeightfield = heightMap[hz][resolution + 1 - hx];
         heightfield.push(heightForHeightfield);
 
-        vertices.push(localX, height, localZ);
+        vertices.push(localX - halfSize, height, localZ - halfSize);
         uvs.push(localX / resolution, localZ / resolution);
         normals.push(normal.x, normal.y, normal.z);
 
@@ -151,7 +158,7 @@ export const HeightfieldTileWithCollider = ({
       <RigidBody colliders={false}>
         {withComputeNormals ? (
           <mesh ref={meshRef} geometry={geo} castShadow receiveShadow>
-            <meshPhysicalMaterial color={"#c1c1c1"} side={DoubleSide} />
+            <meshPhysicalMaterial color={"#c1c1c1"} />
           </mesh>
         ) : (
           <mesh
@@ -160,7 +167,7 @@ export const HeightfieldTileWithCollider = ({
             castShadow
             receiveShadow
           >
-            <meshPhysicalMaterial color={"#c1c1c1"} side={DoubleSide} />
+            <meshPhysicalMaterial color={"#c1c1c1"} side={BackSide} />
           </mesh>
         )}
 

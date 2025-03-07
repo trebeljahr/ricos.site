@@ -29,20 +29,24 @@ export const HeightfieldTileWithCollider = ({
 
   const { geo, heightfield } = useMemo(() => {
     const geo = new PlaneGeometry(size, size, divisions - 1, divisions - 1);
-    const { position } = geo.attributes;
+
+    const positionAttribute = geo.getAttribute("position");
+
+    const vertex = new Vector3();
     const heightfield = [];
-    for (let i = 0; i < position.count; i++) {
+
+    for (let i = 0; i < positionAttribute.count; i++) {
+      vertex.fromBufferAttribute(positionAttribute, i);
+
       const { height } = getHeight(
-        position.getX(i) + worldOffset.x,
-        position.getZ(i) + worldOffset.z
+        vertex.x + worldOffset.x,
+        vertex.z + worldOffset.z
       );
-
-      position.setY(i, height);
-
+      positionAttribute.setXYZ(i, vertex.x, height, vertex.z);
       heightfield.push(height);
     }
 
-    position.needsUpdate = true;
+    positionAttribute.needsUpdate = true;
     geo.computeVertexNormals();
 
     return { geo, heightfield };

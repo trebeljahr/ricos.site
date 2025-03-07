@@ -28,29 +28,29 @@ export const HeightfieldTileWithCollider = ({
   const meshRef = useRef<Mesh>(null!);
 
   const { geo, heightfield } = useMemo(() => {
+    const heights = Array.from({
+      length: divisions * divisions,
+    }).map((_, index) => {
+      const x = index % size;
+      const z = Math.floor(index / size);
+
+      const { height } = getHeight(x + worldOffset.x, z + worldOffset.z);
+      return height;
+    });
+
     const geo = new PlaneGeometry(size, size, divisions - 1, divisions - 1);
 
-    const positionAttribute = geo.getAttribute("position");
+    heights.forEach((height, i) => {
+      geo.attributes.position.setY(i, height);
+    });
 
-    const vertex = new Vector3();
-    const heightfield = [];
-
-    for (let i = 0; i < positionAttribute.count; i++) {
-      vertex.fromBufferAttribute(positionAttribute, i);
-
-      const { height } = getHeight(
-        vertex.x + worldOffset.x,
-        vertex.z + worldOffset.z
-      );
-      positionAttribute.setXYZ(i, vertex.x, height, vertex.z);
-      heightfield.push(height);
-    }
-
-    positionAttribute.needsUpdate = true;
+    geo.scale(1, -1, 1);
+    geo.rotateX(-Math.PI / 2);
+    geo.rotateY(-Math.PI / 2);
     geo.computeVertexNormals();
 
-    return { geo, heightfield };
-  }, [size, divisions, worldOffset]);
+    return { geo, heightfield: heights };
+  }, [size, worldOffset, divisions]);
 
   console.log(heightfield);
 
@@ -58,11 +58,10 @@ export const HeightfieldTileWithCollider = ({
 
   return (
     <group>
-      {/* <gridHelper args={[size, size / divisions]} /> */}
-
       <RigidBody colliders={false}>
-        <mesh ref={meshRef} geometry={geo}>
-          <meshStandardMaterial
+        <mesh ref={meshRef} geometry={geo} castShadow receiveShadow>
+          {/* <planeBufferGeometry args={[size, size, size - 1, size - 1]} /> */}
+          <meshPhysicalMaterial
             color={"#c1c1c1"}
             side={DoubleSide}
             vertexColors={true}
@@ -70,16 +69,14 @@ export const HeightfieldTileWithCollider = ({
         </mesh>
 
         {/* rotate around Y-axis once */}
-        <group rotation={[0, -Math.PI / 2, 0]}>
-          <HeightfieldCollider
-            args={[
-              divisions - 1,
-              divisions - 1,
-              heightfield,
-              { x: size, y: 1, z: size },
-            ]}
-          />
-        </group>
+        <HeightfieldCollider
+          args={[
+            divisions - 1,
+            divisions - 1,
+            heightfield,
+            { x: size, y: 1, z: size },
+          ]}
+        />
       </RigidBody>
     </group>
   );

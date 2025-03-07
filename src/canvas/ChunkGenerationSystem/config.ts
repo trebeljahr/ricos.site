@@ -18,7 +18,7 @@ const debugCamera = false;
 const perf = true;
 const visualizeHeight = true;
 
-const tileSize = 100;
+const tileSize = 10;
 const tilesDistance = 5;
 const mode: Modes = "landscape" as Modes;
 const heightNoiseScale = 0.003;
@@ -27,7 +27,7 @@ const moistureNoiseScale = 0.0004;
 const lodLevels = 10;
 const baseResolution = 32;
 const lodDistanceFactor = 4;
-const heightScale = 10;
+const heightScale = 20;
 const detailLevels = 3;
 const persistence = 0.5;
 const treeMinDistance = 5;

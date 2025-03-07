@@ -4,10 +4,11 @@ import {
   MemoizedChunk,
   useChunkContext,
 } from "@r3f/ChunkGenerationSystem/ChunkProvider";
-import { tileSize } from "@r3f/ChunkGenerationSystem/config";
+import { physicsDebug, tileSize } from "@r3f/ChunkGenerationSystem/config";
 import { DebugTile } from "@r3f/ChunkGenerationSystem/DebugTile";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { MinecraftCreativeController } from "@r3f/Controllers/MinecraftCreativeController";
+import { RigidBallSpawner } from "@r3f/Helpers/RigidBall";
 import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
 import { OrbitControls, Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
@@ -36,20 +37,22 @@ const ChunkRenderer = () => {
 };
 
 const OverheadLights = () => {
-  const intensity = 100;
+  const intensity = 50;
   const height = 0;
+  console.log("rendering");
+
   return (
     <>
-      <directionalLight
+      {/* <directionalLight
         intensity={intensity}
-        position={[-100, height, -100]}
+        position={[-tileSize, height, -tileSize]}
         color={"#808080"}
         target-position={[0, 0, 0]}
         castShadow={false}
-      />
+      /> */}
       <directionalLight
         intensity={intensity}
-        position={[100, height, -100]}
+        position={[tileSize, height, -tileSize]}
         color="#404040"
         target-position={[0, 0, 0]}
         castShadow={false}
@@ -63,21 +66,23 @@ export default function Page() {
     <ThreeFiberLayout>
       <CanvasWithKeyboardInput camera={{ position: [0, 100, 0] }}>
         <color attach="background" args={["skyblue"]} />
-        {/* <ambientLight intensity={0.5} />
+        {/* <ambientLight intensity={0.5} /> */}
+        <ambientLight intensity={0.1} />
         <hemisphereLight
-          intensity={0.5}
+          intensity={0.1}
           color={"#c1f2ff"}
           groundColor={"#58cc0a"}
-        /> */}
-        {/* <Sky sunPosition={[100, 10, 100]} /> */}
+        />
+        <Sky sunPosition={[100, 10, 100]} />
 
         <OverheadLights />
 
-        <Physics>
+        <Physics debug={physicsDebug}>
           <MinecraftCreativeController speed={30} />
           <ChunkProvider>
             <ChunkRenderer />
           </ChunkProvider>
+          <RigidBallSpawner />
         </Physics>
       </CanvasWithKeyboardInput>
     </ThreeFiberLayout>

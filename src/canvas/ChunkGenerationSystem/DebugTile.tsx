@@ -23,7 +23,7 @@ export const DebugTile = ({ position }: { position: Vector3 }) => {
         {position.x},{position.z}
       </Text>
       <gridHelper args={[tileSize, tileSize / 10]} />
-      <axesHelper args={[6]} position={[0, 0.5, 0]} />
+      <axesHelper args={[1]} position={[0, 0.5, 0]} />
     </>
   );
 };

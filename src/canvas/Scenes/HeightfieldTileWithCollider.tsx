@@ -28,31 +28,31 @@ export const HeightfieldTileWithCollider = ({
   const meshRef = useRef<Mesh>(null!);
 
   const { geo, heightfield } = useMemo(() => {
-    const heights = Array.from({
-      length: divisions * divisions,
-    }).map((_, index) => {
-      const x = index % size;
-      const z = Math.floor(index / size);
-
-      const { height } = getHeight(x + worldOffset.x, z + worldOffset.z);
-      return height;
-    });
-
     const geo = new PlaneGeometry(size, size, divisions - 1, divisions - 1);
-
-    heights.forEach((height, i) => {
-      geo.attributes.position.setY(i, height);
-    });
-
-    geo.scale(1, -1, 1);
     geo.rotateX(-Math.PI / 2);
-    geo.rotateY(-Math.PI / 2);
+
+    const positions = geo.attributes.position as Float32BufferAttribute;
+
+    const n = divisions;
+    const heightMap: number[][] = Array.from(Array(n), () => new Array(n));
+    for (let i = 0; i < positions.count; i++) {
+      const x = positions.getX(i);
+      const z = positions.getZ(i);
+
+      const ix = Math.floor(i % divisions);
+      const iz = Math.floor(i / divisions);
+
+      const height = getHeight(x + worldOffset.x, z + worldOffset.z).height;
+      positions.setY(i, height);
+      heightMap[iz][divisions + 1 - ix] = height;
+    }
+
+    const heights = heightMap.flat();
+    geo.attributes.position.needsUpdate = true;
     geo.computeVertexNormals();
 
     return { geo, heightfield: heights };
   }, [size, worldOffset, divisions]);
-
-  console.log(heightfield);
 
   useHelper(normalsDebug && meshRef, VertexNormalsHelper, 1, 0xff0000);
 
@@ -60,23 +60,24 @@ export const HeightfieldTileWithCollider = ({
     <group>
       <RigidBody colliders={false}>
         <mesh ref={meshRef} geometry={geo} castShadow receiveShadow>
-          {/* <planeBufferGeometry args={[size, size, size - 1, size - 1]} /> */}
           <meshPhysicalMaterial
             color={"#c1c1c1"}
             side={DoubleSide}
-            vertexColors={true}
+            // vertexColors={true}
           />
         </mesh>
 
-        {/* rotate around Y-axis once */}
-        <HeightfieldCollider
-          args={[
-            divisions - 1,
-            divisions - 1,
-            heightfield,
-            { x: size, y: 1, z: size },
-          ]}
-        />
+        <group rotation={[0, -Math.PI / 2, 0]}>
+          <HeightfieldCollider
+            // scale={[1, 1, -1]}
+            args={[
+              divisions - 1,
+              divisions - 1,
+              heightfield,
+              { x: size, y: 1, z: size },
+            ]}
+          />
+        </group>
       </RigidBody>
     </group>
   );

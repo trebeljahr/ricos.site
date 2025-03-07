@@ -1,3 +1,15 @@
+import { ThreeFiberLayout } from "@components/dom/Layout";
+import {
+  BirchTreesForChunks,
+  RocksForChunks,
+} from "@r3f/ChunkGenerationSystem/ChunkInstancedMeshes";
+import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
+import { BirchTree } from "@r3f/models/BirchTree";
+import { Sky } from "@react-three/drei";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Physics } from "@react-three/rapier";
+import { Perf } from "r3f-perf";
+import { useRef } from "react";
 import {
   perf,
   physicsDebug,
@@ -5,23 +17,10 @@ import {
   tileSize,
 } from "src/canvas/ChunkGenerationSystem/config";
 import { WorldManager } from "src/canvas/ChunkGenerationSystem/WorldManager";
-import { MinecraftCreativeController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
-import { Bvh, Sky } from "@react-three/drei";
-import { Sky as SkyImpl } from "three-stdlib";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Physics } from "@react-three/rapier";
-import { Perf } from "r3f-perf";
+import { MinecraftCreativeController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { Color } from "three";
-import {
-  Bloom,
-  EffectComposer,
-  SMAA,
-  Vignette,
-} from "@react-three/postprocessing";
-import LensFlare from "src/canvas/Effects/Lensflare";
-import { useRef } from "react";
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { Sky as SkyImpl } from "three-stdlib";
 
 const lensflareProps = {
   enabled: true,
@@ -70,30 +69,14 @@ const Page = () => {
             <ambientLight intensity={1.0} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
             <fogExp2 attach="fog" args={[skyColor, 0.015]} />
-            {/* <fog attach="fog" args={[skyColor, 0.8, 50]} /> */}
             <color args={[skyColor]} attach="background" />
-            {/* <Bvh> */}
-            <WorldManager />
-            {/* </Bvh> */}
+            <ChunkProvider>
+              <BirchTreesForChunks />
+              <RocksForChunks />
+            </ChunkProvider>
             <MovingSky />
             <MinecraftCreativeController speed={25} />
           </Physics>
-
-          {/* <EffectComposer>
-            <LensFlare
-              {...lensflareProps}
-              dirtTextureFile={"/3d-assets/textures/lensDirtTexture.png"}
-            />
-            <Vignette />
-            <Bloom
-              mipmapBlur
-              radius={0.9}
-              luminanceThreshold={0.966}
-              intensity={2}
-              levels={4}
-            />
-            <SMAA />
-          </EffectComposer> */}
         </Canvas>
       </KeyboardControlsProvider>
     </ThreeFiberLayout>

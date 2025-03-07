@@ -13,7 +13,7 @@ export const CameraPositionLogger = () => {
   useSubscribeToKeyPress("t", () => {
     if (!debugCamera) return;
 
-    console.log(
+    console.info(
       "local position",
       camera.position.x,
       camera.position.y,
@@ -21,13 +21,13 @@ export const CameraPositionLogger = () => {
     );
 
     camera.getWorldPosition(temp);
-    console.log("world position", temp.x, temp.y, temp.z);
+    console.info("world position", temp.x, temp.y, temp.z);
   });
 
   useSubscribeToKeyPress("r", () => {
     if (!debugCamera) return;
 
-    console.log(
+    console.info(
       "local rotation",
       camera.rotation.x,
       camera.rotation.y,
@@ -35,7 +35,7 @@ export const CameraPositionLogger = () => {
     );
 
     camera.getWorldQuaternion(tempQuaternion);
-    console.log(
+    console.info(
       "world quaternion",
       tempQuaternion.x,
       tempQuaternion.y,
@@ -44,7 +44,7 @@ export const CameraPositionLogger = () => {
     );
 
     tempEuler.setFromQuaternion(tempQuaternion);
-    console.log("world rotation", tempEuler.x, tempEuler.y, tempEuler.z);
+    console.info("world rotation", tempEuler.x, tempEuler.y, tempEuler.z);
   });
 
   return null;

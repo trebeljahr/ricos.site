@@ -2,7 +2,7 @@ import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
 
 export function RayCaster() {
   useSubscribeToKeyPress("r", () => {
-    console.log("RayCaster");
+    console.info("Trying to cast a ray");
   });
   return null;
 }

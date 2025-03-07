@@ -31,13 +31,14 @@ export function SwimmingController({ children }: PropsWithChildren) {
   useFrame((_, delta) => {
     if (!rigidBodyRef.current) return;
 
-    const { forward, backward, left, right, jump, descend, sprint } = get();
+    const { forward, backward, leftward, rightward, jump, descend, sprint } =
+      get();
 
     const { x, y, z } = rigidBodyRef.current.translation();
     camera.position.set(x, y, z);
 
     frontVector.set(0, 0, +backward - +forward);
-    sideVector.set(+left - +right, 0, 0);
+    sideVector.set(+leftward - +rightward, 0, 0);
 
     const desiredSpeed = sprint ? 2 : 1;
     lerpConstant.current += 0.1;

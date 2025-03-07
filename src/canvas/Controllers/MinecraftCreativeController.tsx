@@ -20,13 +20,14 @@ export function MinecraftCreativeController({
   useFrame(() => {
     if (!rigidBodyRef.current) return;
 
-    const { forward, backward, left, right, jump, descend, run } = get();
+    const { forward, backward, leftward, rightward, jump, descend, run } =
+      get();
 
     const { x, y, z } = rigidBodyRef.current.translation();
     camera.position.set(x, y, z);
 
     frontVector.set(0, 0, +backward - +forward);
-    sideVector.set(+left - +right, 0, 0);
+    sideVector.set(+leftward - +rightward, 0, 0);
 
     const sprintMultiplier = run ? 2 : 1;
     direction

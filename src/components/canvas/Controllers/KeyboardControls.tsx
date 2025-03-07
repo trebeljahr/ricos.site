@@ -10,10 +10,8 @@ export const farOverwater = 100;
 export const keymap = [
   { name: "forward", keys: ["ArrowUp", "w", "W", "KeyW"] },
   { name: "backward", keys: ["ArrowDown", "s", "S", "KeyS"] },
-  { name: "left", keys: ["ArrowLeft", "a", "A", "KeyA"] },
-  { name: "right", keys: ["ArrowRight", "d", "D", "KeyD"] },
-  { name: "leftward", keys: ["ArrowLeft", "KeyA"] },
-  { name: "rightward", keys: ["ArrowRight", "KeyD"] },
+  { name: "leftward", keys: ["ArrowLeft", "a", "A", "KeyA"] },
+  { name: "rightward", keys: ["ArrowRight", "d", "D", "KeyD"] },
   { name: "jump", keys: ["Space"] },
   { name: "descend", keys: ["c", "C"] },
   { name: "run", keys: ["Shift"] },

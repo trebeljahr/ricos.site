@@ -13,13 +13,19 @@ export const NavLinks = () => {
       <Link href={"/r3f"}>Home</Link>
       <Link href={"/r3f/birds"}>Birds</Link>
       <Link href={"/r3f/fbo-demo"}>FBO Demo</Link>
-      <Link href={"/r3f/mixamo-character"}>Mixamo Character</Link>
-      <Link href={"/r3f/first-person-controller"}>First Person Controller</Link>
+      <Link href={"/r3f/mixamo-characters"}>Mixamo Character</Link>
+      <Link href={"/r3f/first-person-controller"}>
+        Custom First Person Controller
+      </Link>
       <Link href={"/r3f/fishs"}>Fish</Link>
       <Link href={"/r3f/ocean"}>Ocean</Link>
       <Link href={"/r3f/ship"}>Ship</Link>
-      <Link href={"/r3f/third-person-camera"}>Third Person Camera</Link>
-      <Link href={"/r3f/controlled-mixamo-model"}>Controlled Mixamo Model</Link>
+      <Link href={"/r3f/third-person-controller"}>
+        Custom Third Person Controller
+      </Link>
+      <Link href={"/r3f/ecctrl-controller"}>
+        Ecctrl Third Person Controller
+      </Link>
       <Link href={"/r3f/terrain"}>Terrain</Link>
       <Link href={"/r3f/forest"}>Forest</Link>
       <Link href={"/r3f/all-models"}>All Models</Link>

@@ -19,22 +19,6 @@ export default function Page() {
         <ambientLight />
         <fog color={0xffffff} near={100} far={1000} />
         {perf && <Perf position="bottom-right" />}
-        {/* <OrbitControls /> */}
-        {/* <KeyboardControls
-        map={[
-          { name: 'forward', keys: ['ArrowUp', 'w', 'W'] },
-          { name: 'backward', keys: ['ArrowDown', 's', 'S'] },
-          { name: 'left', keys: ['ArrowLeft', 'a', 'A'] },
-          { name: 'right', keys: ['ArrowRight', 'd', 'D'] },
-          { name: 'jump', keys: ['Space'] },
-          { name: 'descend', keys: ['c', 'C'] },
-          { name: 'sprint', keys: ['Shift'] },
-          { name: 'attack', keys: ['F', 'f'] },
-        ]}>
-        <Physics>
-          <SwimmingPlayerControls />
-        </Physics>
-      </KeyboardControls> */}
       </CanvasWithKeyboardInput>
     </ThreeFiberLayout>
   );

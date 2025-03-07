@@ -108,27 +108,27 @@ export function useCharacterController(
 
     function getDirectionOffset() {
       let directionOffset = 0;
-      const { forward, left, right, backward } = get();
-      if (!forward && !left && !right && !backward)
+      const { forward, leftward, rightward, backward } = get();
+      if (!forward && !leftward && !rightward && !backward)
         return { directionOffset, isMoving: false };
 
       if (forward) {
-        if (left) {
+        if (leftward) {
           directionOffset = Math.PI / 4;
-        } else if (right) {
+        } else if (rightward) {
           directionOffset = -Math.PI / 4;
         }
       } else if (backward) {
-        if (left) {
+        if (leftward) {
           directionOffset = Math.PI / 4 + Math.PI / 2;
-        } else if (right) {
+        } else if (rightward) {
           directionOffset = -Math.PI / 4 - Math.PI / 2;
         } else {
           directionOffset = Math.PI;
         }
-      } else if (left) {
+      } else if (leftward) {
         directionOffset = Math.PI / 2;
-      } else if (right) {
+      } else if (rightward) {
         directionOffset = -Math.PI / 2;
       }
 

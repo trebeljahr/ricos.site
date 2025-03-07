@@ -37,6 +37,7 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
   const oldCameraGridPosition = useRef(new Vector3(-Infinity, 0, 0));
 
   const renderedOnce = useRef(false);
+
   useFrame(() => {
     if (renderedOnce.current && onlyRenderOnce) return;
 
@@ -82,14 +83,7 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
             Math.log(distance + 1) / Math.log(lodDistanceFactor)
           );
 
-          lodLevel = lodLevel; // Math.max(0, Math.min(lodLevels - 1, lodLevel));
-
           const resolution = 32;
-
-          // Math.max(
-          //   4,
-          //   Math.floor(baseResolution / Math.pow(2, lodLevel))
-          // );
 
           newChunks.set(chunkId, {
             position,
@@ -115,7 +109,14 @@ export const MemoizedChunk = memo(
     chunkData,
     children,
   }: PropsWithChildren<{ chunkData: Chunk }>) {
-    return <group position={chunkData.position}>{children}</group>;
+    return (
+      <group
+        position={[chunkData.position.x, 0, chunkData.position.z]}
+        rotation={[0, 0, 0]}
+      >
+        {children}
+      </group>
+    );
   },
   (prevProps, nextProps) => {
     return prevProps.chunkData.chunkId === nextProps.chunkData.chunkId;

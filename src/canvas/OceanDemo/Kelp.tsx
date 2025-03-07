@@ -20,7 +20,7 @@ import {
 import CustomShaderMaterial from "three-custom-shader-material";
 import CustomShaderMaterialType from "three-custom-shader-material/vanilla";
 import { randFloat } from "three/src/math/MathUtils";
-import { scale } from "./Terrain";
+import { scale } from "./OceanFloor";
 
 export function CustomKelpShaderMaterial() {
   const materialRef = useRef<CustomShaderMaterialType>();

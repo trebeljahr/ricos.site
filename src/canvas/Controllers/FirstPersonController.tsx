@@ -93,7 +93,7 @@ export const FirstPersonController = (
     )
       return;
 
-    const { forward, backward, left, right, jump, sprint } = get();
+    const { forward, backward, leftward, rightward, jump, sprint } = get();
     const speed = 15 * delta * (sprint ? 1.5 : 1);
 
     const grounded = characterController.current.computedGrounded();

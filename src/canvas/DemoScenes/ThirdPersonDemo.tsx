@@ -1,7 +1,7 @@
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import { ThirdPersonController } from "../Controllers/ThirdPersonController";
-import { Floor } from "../OceanDemo/Terrain";
+import { Floor } from "../OceanDemo/OceanFloor";
 import { InstancedTreesWithPhysics } from "../Trees/TreesWithPhysics";
 
 export default function ThirdPersonDemo() {

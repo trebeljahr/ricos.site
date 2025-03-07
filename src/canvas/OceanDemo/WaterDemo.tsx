@@ -11,7 +11,7 @@ import { SwimmingController } from "../Controllers/SwimmingController";
 import { FishType, Fishs } from "../FBOExperiments/Fish";
 import { OceanSurface } from "./Ocean";
 import { UI } from "./OxygenBar";
-import { Terrain } from "./Terrain";
+import { Terrain } from "./OceanFloor";
 import { perf } from "../ChunkGenerationSystem/config";
 
 function MovingInCircle() {

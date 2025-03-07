@@ -90,7 +90,7 @@ export function TrexAnimationController({ actions }: { actions: ActionStore }) {
   useEffect(() => {
     subscribe((state) => {
       if (!actions) return;
-      const { attack, jump, forward, backward, left, right } = state;
+      const { attack, jump, forward, backward, leftward, rightward } = state;
       if (attack) {
         if (!actions["Armature|TRex_Attack"]) return;
         actions["Armature|TRex_Attack"].setLoop(LoopOnce, 1);
@@ -105,7 +105,7 @@ export function TrexAnimationController({ actions }: { actions: ActionStore }) {
           actions["Armature|TRex_Jump"].reset().play();
         }
       }
-      if (forward || backward || left || right) {
+      if (forward || backward || leftward || rightward) {
         return setState("Armature|TRex_Run");
       }
       return setState("Armature|TRex_Idle");

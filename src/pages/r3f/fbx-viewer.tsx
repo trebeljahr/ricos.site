@@ -10,28 +10,12 @@ const FbxViewer = () => {
     characterName: {
       value: "x-bot",
       label: "Character Name",
-      options: [
-        "arissa",
-        "ely",
-        "jaime", // not working for now
-        "michelle",
-        "ninja",
-        "pirate", // some coordinate issues
-        "punk",
-        "wildling",
-        "worker", // not working for now
-        "x-bot",
-        "y-bot",
-      ],
+      options: ["michelle", "x-bot", "y-bot"],
     },
   });
 
   const characterMeshRef = useRef<Mesh>(null!);
-  //   const characterModel = useFBX(
-  //     `/3d-assets/fbx/characters/${characterName}.fbx`
-  //   );
-
-  const characterModel = useFBX(`/3d-assets/fbx/character/Ch48_nonPBR.fbx`);
+  const characterModel = useFBX(`/3d-assets/fbx/${characterName}.fbx`);
   return <primitive object={characterModel} ref={characterMeshRef} />;
 };
 

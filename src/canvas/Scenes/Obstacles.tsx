@@ -44,11 +44,17 @@ export const Obstacles = () => {
           <meshPhysicalMaterial />
         </Box>
       </RigidBody>
+    </>
+  );
+};
 
+export const TreeObstacles = () => {
+  return (
+    <group>
       <TreeWithTrimeshPhysics />
       <TreeWithBallPhysics />
       <TreeWithHullPhysics />
       <TreeWithCuboidPhysics />
-    </>
+    </group>
   );
 };

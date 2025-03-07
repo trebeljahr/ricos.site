@@ -10,7 +10,7 @@ type Modes =
 
 const debug = false;
 const normalsDebug = false;
-const physicsDebug = true;
+const physicsDebug = false;
 const wireframe = false;
 const flatShading = false;
 const onlyRenderOnce = true;
@@ -18,7 +18,7 @@ const debugCamera = false;
 const perf = true;
 const visualizeHeight = true;
 
-const tileSize = 10;
+const tileSize = 100;
 const tilesDistance = 5;
 const mode: Modes = "landscape" as Modes;
 const heightNoiseScale = 0.003;

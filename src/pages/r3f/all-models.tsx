@@ -97,7 +97,7 @@ const Page = () => {
             <gridHelper args={[tileSize, 100]} position={[0, 0.001, 0]} />
 
             <group position={[-tileSize / 2, 0.1, -tileSize / 2]}>
-              <axesHelper args={[5]} />
+              <axesHelper args={[1]} />
 
               {Object.entries(allNatureAssets).map(([key, Asset], index) => {
                 return (

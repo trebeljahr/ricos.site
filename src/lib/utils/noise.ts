@@ -6,7 +6,7 @@ import {
   moistureNoiseScale,
   persistence,
   temperatureNoiseScale,
-} from "@components/canvas/ChunkGenerationSystem/config";
+} from "src/canvas/ChunkGenerationSystem/config";
 
 import PoissonDiskSampling from "poisson-disk-sampling";
 import { Vector3 } from "three";

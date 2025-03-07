@@ -1,11 +1,11 @@
-import { CanvasWithKeyboardInput } from "@components/canvas/Controllers/KeyboardControls";
+import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { UnderwaterContextProvider } from "@contexts/UnderwaterContext";
 import dynamic from "next/dynamic";
 import tunnel from "tunnel-rat";
 
 const WaterDemo = dynamic(
-  () => import("@components/canvas/OceanDemo/WaterDemo"),
+  () => import("src/canvas/OceanDemo/WaterDemo"),
   {
     ssr: false,
   }

@@ -3,10 +3,10 @@ import {
   physicsDebug,
   tilesDistance,
   tileSize,
-} from "@components/canvas/ChunkGenerationSystem/config";
-import { WorldManager } from "@components/canvas/ChunkGenerationSystem/WorldManager";
-import { MinecraftCreativeController } from "@components/canvas/Controllers/MinecraftCreativeController";
-import { KeyboardControlsProvider } from "@components/canvas/Controllers/KeyboardControls";
+} from "src/canvas/ChunkGenerationSystem/config";
+import { WorldManager } from "src/canvas/ChunkGenerationSystem/WorldManager";
+import { MinecraftCreativeController } from "src/canvas/Controllers/MinecraftCreativeController";
+import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
 import { Bvh, Sky } from "@react-three/drei";
 import { Sky as SkyImpl } from "three-stdlib";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -19,7 +19,7 @@ import {
   SMAA,
   Vignette,
 } from "@react-three/postprocessing";
-import LensFlare from "@components/canvas/Effects/Lensflare";
+import LensFlare from "src/canvas/Effects/Lensflare";
 import { useRef } from "react";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 

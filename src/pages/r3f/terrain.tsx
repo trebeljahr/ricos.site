@@ -3,20 +3,20 @@ import {
   perf,
   physicsDebug,
   tileSize,
-} from "@components/canvas/ChunkGenerationSystem/config";
-import { RigidBallSpawner } from "@components/canvas/Helpers/RigidBall";
-import { SingleAnimal } from "@components/canvas/Helpers/SingleAnimal";
-import { WorldManager } from "@components/canvas/ChunkGenerationSystem/WorldManager";
-import { EcctrlController } from "@components/canvas/Controllers/EcctrlController";
-import { MinecraftCreativeController } from "@components/canvas/Controllers/MinecraftCreativeController";
-import { KeyboardControlsProvider } from "@components/canvas/Controllers/KeyboardControls";
+} from "src/canvas/ChunkGenerationSystem/config";
+import { RigidBallSpawner } from "src/canvas/Helpers/RigidBall";
+import { SingleAnimal } from "src/canvas/Helpers/SingleAnimal";
+import { WorldManager } from "src/canvas/ChunkGenerationSystem/WorldManager";
+import { EcctrlController } from "src/canvas/Controllers/EcctrlController";
+import { MinecraftCreativeController } from "src/canvas/Controllers/MinecraftCreativeController";
+import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Leva, useControls } from "leva";
 import { Perf } from "r3f-perf";
-import { CameraPositionLogger } from "@components/canvas/Helpers/CameraPositionLogger";
-import { RayCaster } from "@components/canvas/Helpers/RayCaster";
-import { SwitchController } from "@components/canvas/Controllers/SwitchControllers";
+import { CameraPositionLogger } from "src/canvas/Helpers/CameraPositionLogger";
+import { RayCaster } from "src/canvas/Helpers/RayCaster";
+import { SwitchController } from "src/canvas/Controllers/SwitchControllers";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 
 const defaultSpeed = 25;

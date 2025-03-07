@@ -1,10 +1,10 @@
-import { MinecraftCreativeController } from "@components/canvas/Controllers/MinecraftCreativeController";
-import { KeyboardControlsProvider } from "@components/canvas/Controllers/KeyboardControls";
-import { TreeTile } from "@components/canvas/Trees/TreeTile";
+import { MinecraftCreativeController } from "src/canvas/Controllers/MinecraftCreativeController";
+import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
+import { TreeTile } from "src/canvas/Trees/TreeTile";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { ThreeFiberLayout } from "@components/dom/Layout";
-import { tileSize } from "@components/canvas/ChunkGenerationSystem/config";
+import { tileSize } from "src/canvas/ChunkGenerationSystem/config";
 
 const Page = () => {
   return (

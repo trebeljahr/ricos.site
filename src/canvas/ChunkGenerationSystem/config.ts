@@ -9,7 +9,7 @@ type Modes =
   | "colors";
 
 const debug = false;
-const normalsDebug = false;
+const normalsDebug = true;
 const physicsDebug = false;
 const wireframe = false;
 const flatShading = false;

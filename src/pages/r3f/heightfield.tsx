@@ -11,6 +11,7 @@ import {
   tileSize,
 } from "@r3f/ChunkGenerationSystem/config";
 import { DebugTile } from "@r3f/ChunkGenerationSystem/DebugTile";
+import { getHeight } from "@r3f/ChunkGenerationSystem/TerrainTile";
 import { EcctrlController } from "@r3f/Controllers/EcctrlController";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { RigidBallSpawner } from "@r3f/Helpers/RigidBall";
@@ -66,6 +67,7 @@ const OverheadLights = () => {
 
 export default function Page() {
   const skyColor = "#c1f2ff";
+  const { height: y } = getHeight(0, 0);
   return (
     <ThreeFiberLayout>
       <CanvasWithKeyboardInput camera={{ position: [0, 100, 0] }}>
@@ -86,7 +88,7 @@ export default function Page() {
 
         <Physics debug={physicsDebug}>
           {/* <MinecraftCreativeController speed={30} /> */}
-          <EcctrlController />
+          <EcctrlController position={[0, y + 1, 0]} />
 
           <ChunkProvider>
             <ChunkRenderer />

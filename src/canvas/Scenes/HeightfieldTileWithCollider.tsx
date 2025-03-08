@@ -111,13 +111,8 @@ export const HeightfieldTileWithCollider = ({
 
         const topToBot = vecTop.sub(vecBot);
         const leftToRight = vecLeft.sub(vecRight);
-        const oldNormal = topToBot.cross(leftToRight).negate().normalize();
+        const normal = topToBot.cross(leftToRight).negate().normalize();
 
-        const normal = oldNormal; // .negate();
-        // rotate normal by 180 degrees around x axis
-        // const normal = new Vector3(oldNormal.x, -oldNormal.y, oldNormal.z);
-
-        // normal.x = -normal.x;
         // store height for heightfield collider => traverse heights in x direction in reverse order because that's how the heightfield collider expects it
         const heightForHeightfield = heightMap[hz][resolution + 1 - hx];
         heightfield.push(heightForHeightfield);

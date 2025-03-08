@@ -33,3 +33,15 @@ export const byReadingTime = (
 
   return bTime - aTime;
 };
+
+export const lerp = (a: number, b: number, t: number) => a + t * (b - a);
+
+export const inLerp = (a: number, b: number, v: number) => (v - a) / (b - a);
+
+export const remap = (
+  v: number,
+  oMin: number,
+  oMax: number,
+  rMin: number,
+  rMax: number
+) => lerp(rMin, rMax, inLerp(oMin, oMax, v));

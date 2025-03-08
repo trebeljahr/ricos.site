@@ -10,11 +10,15 @@ import {
 import { Vector3 } from "three";
 import {
   baseResolution,
-  lodDistanceFactor,
+  firstLodLevelDistance,
+  maxLodLevel,
   onlyRenderOnce,
+  secondLodLevelDistance,
+  thirdLodLevelDistance,
   tilesDistance,
   tileSize,
 } from "./config";
+import { remap } from "src/lib/utils/misc";
 
 const tempVec = new Vector3();
 
@@ -75,24 +79,30 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
           (worldX - playerX) * (worldX - playerX) +
           (worldZ - playerZ) * (worldZ - playerZ);
 
-        if (distanceSquared <= radiusSquared) {
-          const chunkId = `${worldX},${worldZ}`;
-          const position = new Vector3(worldX, 0, worldZ);
+        const chunkId = `${worldX},${worldZ}`;
+        const position = new Vector3(worldX, 0, worldZ);
 
-          const distance = Math.sqrt(distanceSquared);
-          let lodLevel = Math.floor(
-            Math.log(distance + 1) / Math.log(lodDistanceFactor)
-          );
+        const distanceInTiles = Math.max(Math.abs(x), Math.abs(z));
 
-          const resolution = baseResolution;
-
-          newChunks.set(chunkId, {
-            position,
-            resolution,
-            lodLevel,
-            chunkId,
-          });
+        let lodLevel = maxLodLevel;
+        const stepDecrease = Math.floor(maxLodLevel / 3);
+        if (distanceInTiles > firstLodLevelDistance) {
+          lodLevel -= stepDecrease;
         }
+        if (distanceInTiles > secondLodLevelDistance) {
+          lodLevel -= stepDecrease;
+        }
+        if (distanceInTiles > thirdLodLevelDistance) {
+          lodLevel -= 1;
+        }
+
+        const resolution = Math.pow(2, lodLevel);
+
+        newChunks.set(chunkId, {
+          position,
+          resolution,
+          chunkId,
+        });
       }
     }
 
@@ -120,6 +130,9 @@ export const MemoizedChunk = memo(
     );
   },
   (prevProps, nextProps) => {
-    return prevProps.chunkData.chunkId === nextProps.chunkData.chunkId;
+    return (
+      prevProps.chunkData.chunkId === nextProps.chunkData.chunkId &&
+      prevProps.chunkData.resolution === nextProps.chunkData.resolution
+    );
   }
 );

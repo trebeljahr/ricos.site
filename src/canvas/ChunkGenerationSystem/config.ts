@@ -9,23 +9,23 @@ type Modes =
   | "colors";
 
 const debug = false;
-const normalsDebug = true;
+const normalsDebug = false;
 const physicsDebug = false;
 const wireframe = false;
 const flatShading = false;
-const onlyRenderOnce = true;
+const onlyRenderOnce = false;
 const debugCamera = false;
-const perf = true;
+const perf = false;
 const visualizeHeight = true;
 
 const tileSize = 100;
-const tilesDistance = 5;
+const tilesDistance = 6;
 const mode: Modes = "landscape" as Modes;
-const heightNoiseScale = 0.003;
+const heightNoiseScale = 0.007;
 const temperatureNoiseScale = 0.0005;
 const moistureNoiseScale = 0.0004;
 const lodLevels = 10;
-const baseResolution = 32;
+const baseResolution = 64;
 const lodDistanceFactor = 4;
 const heightScale = 20;
 const detailLevels = 3;

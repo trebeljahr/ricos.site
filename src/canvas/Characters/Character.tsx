@@ -4,7 +4,7 @@ import { useThree } from "@react-three/fiber";
 import { useControls } from "leva";
 import { useEffect, useRef } from "react";
 import { type AnimationClip, Mesh } from "three";
-import { useGenericAnimationController } from "./Controllers/GenericAnimationController";
+import { useGenericAnimationController } from "../Controllers/GenericAnimationController";
 
 interface GLTFAction extends AnimationClip {
   name: string;

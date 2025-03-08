@@ -7,6 +7,7 @@ import { useMemo, useRef } from "react";
 import {
   BufferGeometry,
   Color,
+  DoubleSide,
   Float32BufferAttribute,
   Mesh,
   PlaneGeometry,
@@ -162,7 +163,12 @@ export const HeightfieldTileWithCollider = ({
             castShadow
             receiveShadow
           >
-            <meshPhysicalMaterial color={"#c1c1c1"} />
+            <meshPhysicalMaterial
+              color={"#EDC9AF"}
+              side={DoubleSide}
+              flatShading={true}
+              wireframe={true}
+            />
           </mesh>
         )}
 

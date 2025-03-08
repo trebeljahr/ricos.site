@@ -14,8 +14,7 @@ export default function Page() {
         <Physics debug timeStep="vary">
           <Lights />
           <Sky />
-
-          <EcctrlController />
+          <EcctrlController position={[0, 10, 5]} />
           <Obstacles />
           <TreeObstacles />
         </Physics>

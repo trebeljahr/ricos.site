@@ -1,17 +1,18 @@
 import { Ray } from "@dimforge/rapier3d-compat";
 import { OrbitControls, useKeyboardControls } from "@react-three/drei";
-import { useFrame, useThree } from "@react-three/fiber";
+import { Object3DNode, useFrame, useThree } from "@react-three/fiber";
 import { RapierRigidBody, RigidBody, useRapier } from "@react-three/rapier";
 import { MutableRefObject, useEffect, useRef } from "react";
-import { Group, Quaternion, Vector3 } from "three";
+import { Group, Object3D, Quaternion, Vector3 } from "three";
 import { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { Trex } from "../models/Trex";
+import { ModelType } from "./EcctrlController";
 
 const velocity = 20;
 
 export const lerp = (x: number, y: number, a: number) => x * (1 - a) + y * a;
 
-export function ThirdPersonController() {
+export function ThirdPersonController({ Model }: { Model: ModelType }) {
   const modelRef = useRef<Group>(null!);
   const rigidBodyRef = useRef<RapierRigidBody>(null!);
   const orbitControlsRef = useRef<OrbitControlsImpl>(null!);
@@ -34,7 +35,7 @@ export function ThirdPersonController() {
         type="kinematicPosition"
         enabledRotations={[false, false, false]}
       >
-        <Trex withAnimations={true} ref={modelRef} />
+        <Model ref={modelRef} />
       </RigidBody>
       <OrbitControls ref={orbitControlsRef} {...orbitControlsProps} />
     </>

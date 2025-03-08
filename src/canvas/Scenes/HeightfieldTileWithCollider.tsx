@@ -5,12 +5,9 @@ import { HeightfieldCollider, RigidBody } from "@react-three/rapier";
 import { useControls } from "leva";
 import { useMemo, useRef } from "react";
 import {
-  BackSide,
   BufferGeometry,
   Color,
-  DoubleSide,
   Float32BufferAttribute,
-  Matrix4,
   Mesh,
   PlaneGeometry,
   Vector3,
@@ -29,7 +26,7 @@ export const HeightfieldTileWithCollider = ({
   size: number;
 }) => {
   const { withComputeNormals } = useControls({
-    withComputeNormals: true,
+    withComputeNormals: false,
   });
 
   const meshRef = useRef<Mesh>(null!);
@@ -146,7 +143,10 @@ export const HeightfieldTileWithCollider = ({
     geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
     geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
     geo.setAttribute("position", new Float32BufferAttribute(vertices, 3));
-    geo.setIndex(indices);
+
+    // the .reverse() is necessary to correct the winding order!
+    // if not set the "back" of the plane will be facing up
+    geo.setIndex(indices.reverse());
 
     return { geometry: geo, heightfield, heightMap };
   }, [worldOffset, divisions, size]);
@@ -167,7 +167,7 @@ export const HeightfieldTileWithCollider = ({
             castShadow
             receiveShadow
           >
-            <meshPhysicalMaterial color={"#c1c1c1"} side={BackSide} />
+            <meshPhysicalMaterial color={"#c1c1c1"} />
           </mesh>
         )}
 

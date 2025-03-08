@@ -43,7 +43,6 @@ export const ChunkRenderer = () => {
 const OverheadLights = () => {
   const intensity = 10;
   const height = 10;
-  console.log("rendering");
 
   return (
     <>

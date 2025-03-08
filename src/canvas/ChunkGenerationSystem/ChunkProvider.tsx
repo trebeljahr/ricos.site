@@ -9,6 +9,7 @@ import {
 } from "react";
 import { Vector3 } from "three";
 import {
+  baseResolution,
   lodDistanceFactor,
   onlyRenderOnce,
   tilesDistance,
@@ -83,7 +84,7 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
             Math.log(distance + 1) / Math.log(lodDistanceFactor)
           );
 
-          const resolution = 32;
+          const resolution = baseResolution;
 
           newChunks.set(chunkId, {
             position,

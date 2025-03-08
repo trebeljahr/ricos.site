@@ -5,6 +5,7 @@ import { MinecraftCreativeController } from "./MinecraftCreativeController";
 import { FirstPersonController } from "./FirstPersonController";
 import { ThirdPersonController } from "./ThirdPersonController";
 import { useKeyboardInput } from "@hooks/useKeyboardInput";
+import { ModelType } from "./EcctrlController";
 
 type PossibleControllers =
   | "FirstPersonController"
@@ -13,7 +14,7 @@ type PossibleControllers =
   | "ThirdPersonController"
   | "FirstPersonController";
 
-export const SwitchController = () => {
+export const SwitchController = ({ Model }: { Model: ModelType }) => {
   const [controller, setController] = useState<PossibleControllers>(
     "MinecraftCreativeController"
   );
@@ -49,5 +50,5 @@ export const SwitchController = () => {
     }
   }, [controller]);
 
-  return <Controller />;
+  return <Controller Model={Model} />;
 };

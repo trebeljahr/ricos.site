@@ -4,16 +4,20 @@ import {
   MemoizedChunk,
   useChunkContext,
 } from "@r3f/ChunkGenerationSystem/ChunkProvider";
-import { physicsDebug, tileSize } from "@r3f/ChunkGenerationSystem/config";
+import {
+  debug,
+  physicsDebug,
+  tilesDistance,
+  tileSize,
+} from "@r3f/ChunkGenerationSystem/config";
 import { DebugTile } from "@r3f/ChunkGenerationSystem/DebugTile";
+import { EcctrlController } from "@r3f/Controllers/EcctrlController";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
-import { MinecraftCreativeController } from "@r3f/Controllers/MinecraftCreativeController";
 import { RigidBallSpawner } from "@r3f/Helpers/RigidBall";
 import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
-import { OrbitControls, Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 
-const ChunkRenderer = () => {
+export const ChunkRenderer = () => {
   const chunks = useChunkContext();
 
   return (
@@ -22,7 +26,7 @@ const ChunkRenderer = () => {
         return (
           <MemoizedChunk key={key} chunkData={chunkData}>
             <group position={[0, 0, 0]}>
-              <DebugTile position={chunkData.position} />
+              {debug && <DebugTile position={chunkData.position} />}
               <HeightfieldTileWithCollider
                 size={tileSize}
                 divisions={chunkData.resolution}
@@ -37,19 +41,19 @@ const ChunkRenderer = () => {
 };
 
 const OverheadLights = () => {
-  const intensity = 50;
-  const height = 0;
+  const intensity = 10;
+  const height = 10;
   console.log("rendering");
 
   return (
     <>
-      {/* <directionalLight
+      <directionalLight
         intensity={intensity}
         position={[-tileSize, height, -tileSize]}
         color={"#808080"}
         target-position={[0, 0, 0]}
         castShadow={false}
-      /> */}
+      />
       <directionalLight
         intensity={intensity}
         position={[tileSize, height, -tileSize]}
@@ -62,23 +66,29 @@ const OverheadLights = () => {
 };
 
 export default function Page() {
+  const skyColor = "#c1f2ff";
   return (
     <ThreeFiberLayout>
       <CanvasWithKeyboardInput camera={{ position: [0, 100, 0] }}>
-        <color attach="background" args={["skyblue"]} />
+        <color attach="background" args={[skyColor]} />
         {/* <ambientLight intensity={0.5} /> */}
         <ambientLight intensity={0.1} />
         <hemisphereLight
           intensity={0.1}
-          color={"#c1f2ff"}
-          groundColor={"#58cc0a"}
+          // color={"#c1f2ff"}
+          // groundColor={"#58cc0a"}
         />
-        <Sky sunPosition={[100, 10, 100]} />
+        <fog
+          attach="fog"
+          args={[skyColor, 0, tileSize * (tilesDistance - 1)]}
+        />
 
         <OverheadLights />
 
         <Physics debug={physicsDebug}>
-          <MinecraftCreativeController speed={30} />
+          {/* <MinecraftCreativeController speed={30} /> */}
+          <EcctrlController />
+
           <ChunkProvider>
             <ChunkRenderer />
           </ChunkProvider>

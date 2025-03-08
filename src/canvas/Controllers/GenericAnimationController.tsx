@@ -33,11 +33,12 @@ export const useGenericAnimationController = ({
       fade = fadeDuration,
     }: { looping?: boolean; fade?: number } = {}
   ) => {
+    if (newAnimation === previous.current) return;
+
     const current = actions[previous.current];
     const toPlay = actions[newAnimation];
 
     previous.current = newAnimation;
-
     current?.fadeOut(fade);
 
     if (!toPlay) return;

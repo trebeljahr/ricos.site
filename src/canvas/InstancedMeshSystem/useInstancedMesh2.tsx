@@ -58,7 +58,7 @@ export const useInstancedMesh2 = ({ material, geometry }: SingleHookProps) => {
     const indexes = instancedMesh2.instances
       .map((instance, index) => {
         const found = positionsToRemove.find((positionToRemove) =>
-          positionToRemove.equals(instance.position)
+          instance.position.equals(positionToRemove)
         );
 
         if (found) {

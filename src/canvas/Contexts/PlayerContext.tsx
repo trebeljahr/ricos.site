@@ -1,4 +1,4 @@
-import { getHeight } from "@r3f/ChunkGenerationSystem/TerrainTile";
+import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { vec3 } from "gl-matrix";

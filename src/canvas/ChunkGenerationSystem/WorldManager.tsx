@@ -1,7 +1,7 @@
+import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
 import { Chunk, MemoizedChunk, useChunkContext } from "./ChunkProvider";
 import { debug } from "./config";
 import { DebugTile } from "./DebugTile";
-import { TerrainTile } from "./TerrainTile";
 
 export const WorldManager = () => {
   const chunks = useChunkContext();
@@ -23,10 +23,9 @@ export const SingleTile = ({ chunkData }: { chunkData: Chunk }) => {
   return (
     <group>
       {debug && <DebugTile position={chunkData.position} />}
-      <TerrainTile
-        position={chunkData.position}
-        resolution={chunkData.resolution}
-        lodLevel={chunkData.lodLevel}
+      <HeightfieldTileWithCollider
+        worldOffset={chunkData.position}
+        divisions={chunkData.resolution}
       />
     </group>
   );

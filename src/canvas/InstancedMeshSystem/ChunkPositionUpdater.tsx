@@ -7,7 +7,7 @@ import {
   treeMaxDistance,
   treeMinDistance,
 } from "../ChunkGenerationSystem/config";
-import { getHeight } from "../ChunkGenerationSystem/TerrainTile";
+import { getHeight } from "../ChunkGenerationSystem/getHeight";
 
 const center = new Vector3(-tileSize / 2, 0, -tileSize / 2);
 
@@ -64,10 +64,7 @@ export const ChunkPositionUpdater = ({
       ).reduce(
         (agg, pos) => {
           const worldPosition = pos.add(chunk.position).add(center);
-          const { height } = getHeight(
-            worldPosition.x + center.x,
-            worldPosition.z + center.z
-          );
+          const { height } = getHeight(worldPosition.x, worldPosition.z);
           const position = worldPosition.setY(height);
           const scale = 1; // Math.random() + 1;
           const rotation = new Vector3(0, Math.random() * Math.PI * 2, 0);

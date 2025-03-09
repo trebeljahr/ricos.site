@@ -3,14 +3,23 @@ import {
   BirchTreesForChunks,
   RocksForChunks,
 } from "@r3f/ChunkGenerationSystem/ChunkInstancedMeshes";
-import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
-import { BirchTree } from "@r3f/models/BirchTree";
-import { Sky } from "@react-three/drei";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Physics } from "@react-three/rapier";
-import { Perf } from "r3f-perf";
-import { useRef } from "react";
 import {
+  ChunkProvider,
+  MemoizedChunk,
+  useChunkContext,
+} from "@r3f/ChunkGenerationSystem/ChunkProvider";
+import { DebugTile } from "@r3f/ChunkGenerationSystem/DebugTile";
+import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
+import { BirchTree } from "@r3f/models/BirchTree";
+import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
+import { LightsAndFog } from "@r3f/Scenes/LightsAndFog";
+import { Sky } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { HeightfieldCollider, Physics } from "@react-three/rapier";
+import { Perf } from "r3f-perf";
+import { useEffect, useRef } from "react";
+import {
+  debug,
   perf,
   physicsDebug,
   tilesDistance,
@@ -21,6 +30,7 @@ import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControl
 import { MinecraftCreativeController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { Color } from "three";
 import { Sky as SkyImpl } from "three-stdlib";
+import { Vector3 } from "yuka";
 
 const lensflareProps = {
   enabled: true,
@@ -57,25 +67,54 @@ const MovingSky = () => {
   return <Sky ref={skyRef} />;
 };
 
+const ChunkRenderer = () => {
+  const chunks = useChunkContext();
+  return (
+    <group>
+      {Array.from(chunks).map(([key, chunkData]) => {
+        return (
+          <MemoizedChunk key={key} chunkData={chunkData}>
+            <group position={[0, 0, 0]}>
+              {debug && <DebugTile position={chunkData.position} />}
+              <HeightfieldTileWithCollider
+                divisions={chunkData.resolution}
+                worldOffset={chunkData.position}
+              />
+            </group>
+          </MemoizedChunk>
+        );
+      })}
+    </group>
+  );
+};
+
 const Page = () => {
-  const skyColor = "#d4e7f5";
+  const { height: y } = getHeight(0, 0);
+
   return (
     <ThreeFiberLayout>
       <KeyboardControlsProvider>
-        <Canvas camera={{ near: 0.1, far: tileSize * (tilesDistance - 1) }}>
+        <Canvas
+          camera={{
+            near: 0.1,
+            far: tileSize * (tilesDistance - 1),
+          }}
+        >
           {perf && <Perf position="bottom-right" />}
           <Physics debug={physicsDebug}>
-            <hemisphereLight intensity={0.35} />
-            <ambientLight intensity={1.0} />
-            <directionalLight position={[10, 10, 5]} intensity={1} />
-            <fogExp2 attach="fog" args={[skyColor, 0.015]} />
-            <color args={[skyColor]} attach="background" />
+            <LightsAndFog skyColor={"#c1f2ff"} />
+
             <ChunkProvider>
+              <ChunkRenderer />
               <BirchTreesForChunks />
               <RocksForChunks />
             </ChunkProvider>
-            <MovingSky />
-            <MinecraftCreativeController speed={25} />
+
+            <MinecraftCreativeController
+              speed={25}
+              initialLookat={[10, y, 0]}
+              initialPosition={[0, y + 10, 0]}
+            />
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>

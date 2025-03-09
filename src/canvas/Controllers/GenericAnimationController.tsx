@@ -6,6 +6,17 @@ import { AnimationAction, LoopOnce, LoopRepeat } from "three";
 const fadeDuration = 0.5;
 export type ActionStore = Record<string, AnimationAction | null>;
 
+function useDebounce(cb: (...args: any) => void, delay: number) {
+  const timeoutId = useRef<NodeJS.Timeout>();
+
+  return function (...args: any) {
+    if (timeoutId.current) {
+      clearTimeout(timeoutId.current);
+    }
+    timeoutId.current = setTimeout(() => cb(...args), delay);
+  };
+}
+
 export const useGenericAnimationController = ({
   actions,
   fadeDuration = 0.5,
@@ -13,18 +24,7 @@ export const useGenericAnimationController = ({
   actions: ActionStore;
   fadeDuration?: number;
 }) => {
-  const actionNames = Object.keys(actions);
-  const defaultAction =
-    actionNames.find((name) => name.toLowerCase().includes("idle")) ||
-    actionNames.find((name) => name.toLowerCase().includes("walk")) ||
-    actionNames.find((name) => name.toLowerCase().includes("flying")) ||
-    actionNames.find((name) => name.toLowerCase().includes("forward")) ||
-    actionNames.find((name) => name.toLowerCase().includes("normal")) ||
-    actionNames[0];
-
-  const animationName = defaultAction;
-
-  const previous = useRef(animationName);
+  const previous = useRef("t-pose");
 
   const updateAnimation = (
     newAnimation: string,
@@ -48,9 +48,7 @@ export const useGenericAnimationController = ({
     toPlay.clampWhenFinished = true;
   };
 
-  updateAnimation(animationName, { looping: true });
-
-  return { updateAnimation };
+  return { updateAnimation: useDebounce(updateAnimation, 100) };
 };
 
 export const GenericAnimationController = ({

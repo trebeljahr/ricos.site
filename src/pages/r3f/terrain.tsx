@@ -4,6 +4,7 @@ import {
   RocksForChunks,
 } from "@r3f/ChunkGenerationSystem/ChunkInstancedMeshes";
 import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
+import { MinecraftCreativeController } from "@r3f/Controllers/MinecraftCreativeController";
 import { Trex } from "@r3f/models/Trex";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
@@ -47,7 +48,7 @@ const Page = () => {
             <RayCaster />
             {debug && <gridHelper args={[tileSize, 100]} />}
 
-            <SwitchController Model={Trex} />
+            <MinecraftCreativeController speed={speed} />
             <RigidBallSpawner />
           </Physics>
         </Canvas>

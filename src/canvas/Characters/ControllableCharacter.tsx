@@ -1,10 +1,8 @@
-import { useKeyboardInput } from "@hooks/useKeyboardInput";
 import { useAnimations, useGLTF, useKeyboardControls } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import { type AnimationClip, Mesh } from "three";
 import { useGenericAnimationController } from "../Controllers/GenericAnimationController";
-import { usePlayerContext } from "@r3f/Contexts/PlayerContext";
-import { useFrame } from "@react-three/fiber";
 
 interface GLTFAction extends AnimationClip {
   name: string;
@@ -48,7 +46,9 @@ export default function CharacterWithAnimations({
     actions: result.actions,
   });
 
-  updateAnimation("idle", { looping: true });
+  useEffect(() => {
+    updateAnimation("idle", { looping: true });
+  }, [updateAnimation]);
 
   useEffect(() => {
     const listener = () => {
@@ -62,7 +62,6 @@ export default function CharacterWithAnimations({
     };
   }, [result.mixer, updateAnimation]);
 
-  const player = usePlayerContext();
   const [, get] = useKeyboardControls();
 
   useFrame(() => {

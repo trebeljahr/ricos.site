@@ -1,4 +1,4 @@
-import { getHeight } from "@r3f/ChunkGenerationSystem/TerrainTile";
+import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { usePointerContext } from "@r3f/Contexts/PointerContext";
 import { useFrame } from "@react-three/fiber";
 import { mat4, quat2, vec3 } from "gl-matrix";

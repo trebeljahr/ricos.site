@@ -60114,5 +60114,117 @@
     "height": 4080,
     "aspectRatio": 0.7529411764705882,
     "existsInS3": true
+  },
+  "assets/newsletter/63/cortical-computer.png": {
+    "key": "assets/newsletter/63/cortical-computer.png",
+    "width": 1536,
+    "height": 768,
+    "aspectRatio": 2,
+    "existsInS3": true
+  },
+  "assets/newsletter/63/evening-mood.jpg": {
+    "key": "assets/newsletter/63/evening-mood.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/63/flowers.jpg": {
+    "key": "assets/newsletter/63/flowers.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/63/frailejones.jpg": {
+    "key": "assets/newsletter/63/frailejones.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/63/in-the-clouds.jpg": {
+    "key": "assets/newsletter/63/in-the-clouds.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/63/fog-tractor.jpg": {
+    "key": "assets/newsletter/63/fog-tractor.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/63/cat-on-the-lap.jpg": {
+    "key": "assets/newsletter/63/cat-on-the-lap.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/63/mountain-lake.jpg": {
+    "key": "assets/newsletter/63/mountain-lake.jpg",
+    "width": 4080,
+    "height": 3072,
+    "aspectRatio": 1.328125,
+    "existsInS3": true
+  },
+  "assets/newsletter/63/waterfall-tequendama.jpg": {
+    "key": "assets/newsletter/63/waterfall-tequendama.jpg",
+    "width": 4080,
+    "height": 3072,
+    "aspectRatio": 1.328125,
+    "existsInS3": true
+  },
+  "assets/newsletter/63/sitting-near-a-mountain-lake.jpg": {
+    "key": "assets/newsletter/63/sitting-near-a-mountain-lake.jpg",
+    "width": 4080,
+    "height": 3072,
+    "aspectRatio": 1.328125,
+    "existsInS3": true
+  },
+  "assets/newsletter/63/mirror-water.jpg": {
+    "key": "assets/newsletter/63/mirror-water.jpg",
+    "width": 4898,
+    "height": 6530,
+    "aspectRatio": 0.7500765696784073,
+    "existsInS3": true
+  },
+  "assets/newsletter/63/water-mirror-with-duck.jpg": {
+    "key": "assets/newsletter/63/water-mirror-with-duck.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/63/sunset-behind-clouds.jpg": {
+    "key": "assets/newsletter/63/sunset-behind-clouds.jpg",
+    "width": 4080,
+    "height": 3072,
+    "aspectRatio": 1.328125,
+    "existsInS3": true
+  },
+  "assets/newsletter/63/laguna-colorada.jpg": {
+    "key": "assets/newsletter/63/laguna-colorada.jpg",
+    "width": 3072,
+    "height": 4080,
+    "aspectRatio": 0.7529411764705882,
+    "existsInS3": true
+  },
+  "assets/newsletter/63/clouds.jpg": {
+    "key": "assets/newsletter/63/clouds.jpg",
+    "width": 4080,
+    "height": 3072,
+    "aspectRatio": 1.328125,
+    "existsInS3": true
+  },
+  "assets/newsletter/63/waterfall.jpg": {
+    "key": "assets/newsletter/63/waterfall.jpg",
+    "width": 4000,
+    "height": 2250,
+    "aspectRatio": 1.7777777777777777,
+    "existsInS3": true
   }
 }

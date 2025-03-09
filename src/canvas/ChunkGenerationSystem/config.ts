@@ -8,7 +8,7 @@ type Modes =
   | "normals"
   | "colors";
 
-const debug = false;
+const debug = true;
 const normalsDebug = false;
 const physicsDebug = false;
 const wireframe = false;
@@ -19,7 +19,7 @@ const perf = true;
 const visualizeHeight = true;
 
 const tileSize = 100;
-const tilesDistance = 2;
+const tilesDistance = 1;
 const mode: Modes = "landscape" as Modes;
 const heightNoiseScale = 0.007;
 const temperatureNoiseScale = 0.0005;

@@ -4,7 +4,7 @@ import {
   getFractalNoiseFromWorker,
   poissonDiskSampleFromWorker,
 } from "@r3f/Workers/noise/pool";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Vector3 } from "three";
 
 async function workerNoiseSample() {
@@ -33,11 +33,24 @@ async function workerGetHeightDataSample() {
 }
 
 export default function Page() {
+  const workerRef = useRef<Worker>();
+
+  useEffect(() => {
+    workerRef.current = new Worker(
+      new URL("../../canvas/workers/exampleWorker.ts", import.meta.url)
+    );
+    workerRef.current.onmessage = (event: MessageEvent<number>) => {
+      console.log(`WebWorker Response`);
+      console.log(event.data);
+    };
+
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
+
   const handleClick = () => {
-    // workerNoiseSample().then(console.log);
-    // workerPoissonSample().then(console.log);
-    workerInstanceDataSample().then(console.log);
-    // workerGetHeightDataSample().then(console.log);
+    workerRef.current?.postMessage({ x: Math.random(), y: Math.random() });
   };
 
   return (

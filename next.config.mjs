@@ -1,4 +1,5 @@
 import { generateRedirects } from "./src/scripts/createRedirects.js";
+import ThreadsPlugin from "threads-plugin";
 
 const isDev = process.argv.indexOf("dev") !== -1;
 const isBuild = process.argv.indexOf("build") !== -1;
@@ -45,6 +46,7 @@ const nextConfig = {
       use: ["raw-loader", "glslify-loader"],
     });
 
+    config.plugins.push(new ThreadsPlugin());
     return config;
   },
 };

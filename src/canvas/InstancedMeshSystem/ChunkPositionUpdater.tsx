@@ -8,6 +8,7 @@ import {
   treeMinDistance,
 } from "../ChunkGenerationSystem/config";
 import { getHeight } from "../ChunkGenerationSystem/getHeight";
+import { generateInstanceDataFromWorker } from "@r3f/Workers/noise/pool";
 
 const center = new Vector3(-tileSize / 2, 0, -tileSize / 2);
 
@@ -47,39 +48,15 @@ export const ChunkPositionUpdater = ({
     removedChunks.forEach((key) => {
       if (!positionsRef.current[key]) return;
 
-      removePositions(positionsRef.current[key]);
+      removePositions(positionsRef.current[key] || []);
       delete positionsRef.current[key];
     });
 
-    newChunkKeys.forEach((chunkKey) => {
+    newChunkKeys.forEach(async (chunkKey) => {
       const chunk = chunks.get(chunkKey)!;
 
-      const { positions, scales, rotations } = poissonDiskSample(
-        tileSize,
-        treeMinDistance,
-        treeMaxDistance,
-        {
-          offset: new Vector2(chunk.position.x, chunk.position.z),
-        }
-      ).reduce(
-        (agg, pos) => {
-          const worldPosition = pos.add(chunk.position).add(center);
-          const { height } = getHeight(worldPosition.x, worldPosition.z);
-          const position = worldPosition.setY(height);
-          const scale = 1; // Math.random() + 1;
-          const rotation = new Vector3(0, Math.random() * Math.PI * 2, 0);
-          agg.positions.push(position);
-          agg.scales.push(scale);
-          agg.rotations.push(rotation);
-
-          return agg;
-        },
-        {
-          positions: [] as Vector3[],
-          scales: [] as number[],
-          rotations: [] as Vector3[],
-        }
-      );
+      const { positions, rotations, scales } =
+        await generateInstanceDataFromWorker(chunk.position);
 
       positionsRef.current[chunkKey] = positions;
 

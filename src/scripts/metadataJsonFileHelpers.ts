@@ -13,7 +13,9 @@ const __dirname = path.resolve(path.dirname(""));
 export const assetsMetadataFilePath = path.join(
   __dirname,
   "src",
-  "data",
+  "content",
+  "Notes",
+  "_data",
   "metadata.json"
 );
 

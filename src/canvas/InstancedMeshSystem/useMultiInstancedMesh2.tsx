@@ -75,9 +75,10 @@ export const useMultiInstancedMesh2 = ({
 
               let posIndex = 0;
               instancedMesh2Ref.addInstances(newPositions.length, (obj) => {
+                const pos = newPositions[posIndex];
                 obj.matrix.copy(temp.matrix);
                 obj.scale.set(1, 1, 1);
-                obj.position.copy(newPositions[posIndex]);
+                obj.position.set(pos.x, pos.y, pos.z);
 
                 const rotation = newRotations
                   ? newRotations[posIndex] || emptyRotation

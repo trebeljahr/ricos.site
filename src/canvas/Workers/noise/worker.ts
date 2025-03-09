@@ -1,3 +1,4 @@
+import { XYZ } from "@r3f/InstancedMeshSystem/ChunkPositionUpdater";
 import { vec3 } from "gl-matrix";
 import PoissonDiskSampling from "poisson-disk-sampling";
 import { perlin2 } from "simplenoise";
@@ -15,8 +16,9 @@ import {
 } from "src/canvas/ChunkGenerationSystem/config";
 import { expose } from "threads/worker";
 import { Vector2, Vector3 } from "three";
+import { generateInstanceData } from "./generateInstanceData";
 
-const center = new Vector3(-tileSize / 2, 0, -tileSize / 2);
+const center = new Vector3(tileSize / 2, 0, tileSize / 2);
 
 const normalizeNoise = (func: NoiseFunction2D) => {
   return (x: number, y: number) => (func(x, y) + 1) / 2;
@@ -97,46 +99,6 @@ const getHeight = (x: number, z: number) => {
   const remappedSample = (original + 1) / 2;
   const height = remappedSample * heightScale * 2 - heightScale / 2;
   return { height, remappedSample, original };
-};
-
-type XYZ = {
-  x: number;
-  y: number;
-  z: number;
-};
-
-const generateInstanceData = (chunkOffset: XYZ) => {
-  const { positions, scales, rotations } = poissonDiskSample(
-    tileSize,
-    treeMinDistance,
-    treeMaxDistance,
-    {
-      offset: new Vector2(chunkOffset.x, chunkOffset.z),
-    }
-  ).reduce(
-    (agg, pos) => {
-      const worldPosition = pos
-        .add(new Vector3(chunkOffset.x, chunkOffset.y, chunkOffset.z))
-        .add(center);
-      const { height } = getHeight(worldPosition.x, worldPosition.z);
-      const position = worldPosition.setY(height);
-      const scale = 1; // Math.random() + 1;
-      const rotation = new Vector3(0, Math.random() * Math.PI * 2, 0);
-
-      agg.positions.push(position);
-      agg.scales.push(scale);
-      agg.rotations.push(rotation);
-
-      return agg;
-    },
-    {
-      positions: [] as XYZ[],
-      scales: [] as number[],
-      rotations: [] as XYZ[],
-    }
-  );
-
-  return { positions, scales, rotations };
 };
 
 const noiseWorker = {

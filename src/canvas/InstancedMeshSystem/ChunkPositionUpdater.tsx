@@ -14,11 +14,17 @@ const center = new Vector3(-tileSize / 2, 0, -tileSize / 2);
 
 type PositionsUpdateHookProps = {
   addPositions: (
-    positionsToAdd: Vector3[],
-    rotations?: Vector3[],
+    positionsToAdd: (Vector3 | XYZ)[],
+    rotations?: (Vector3 | XYZ)[],
     scales?: number[]
   ) => void;
-  removePositions: (positionsToRemove: Vector3[]) => void;
+  removePositions: (positionsToRemove: (Vector3 | XYZ)[]) => void;
+};
+
+export type XYZ = {
+  x: number;
+  y: number;
+  z: number;
 };
 
 export const ChunkPositionUpdater = ({
@@ -27,7 +33,7 @@ export const ChunkPositionUpdater = ({
 }: PositionsUpdateHookProps) => {
   const chunks = useChunkContext();
 
-  const positionsRef = useRef<Record<string, Vector3[]>>({});
+  const positionsRef = useRef<Record<string, XYZ[]>>({});
 
   const prevChunksRef = useRef<Set<string>>(new Set());
 

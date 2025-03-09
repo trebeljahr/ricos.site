@@ -8,6 +8,7 @@ import {
   GenericGltfResult,
 } from "./GenericInstancingSystem";
 import { temp } from "./useInstancedMesh2";
+import { XYZ } from "./ChunkPositionUpdater";
 
 const emptyRotation = new Vector3(0, 0, 0);
 
@@ -22,19 +23,15 @@ export const useMultiInstancedMesh2 = ({
   const { gl } = useThree();
   const refs = useRef<InstancedMesh2[]>([]);
   const addPositionFunctions = useRef<
-    ((
-      newPositions: Vector3[],
-      rotations?: Vector3[],
-      scales?: number[]
-    ) => void)[]
+    ((newPositions: XYZ[], rotations?: XYZ[], scales?: number[]) => void)[]
   >([]);
   const removePositionFunctions = useRef<
-    ((positionsToRemove: Vector3[]) => void)[]
+    ((positionsToRemove: XYZ[]) => void)[]
   >([]);
 
   const addPositions = (
-    positionsToAdd: Vector3[],
-    rotations?: Vector3[],
+    positionsToAdd: XYZ[],
+    rotations?: XYZ[],
     scales?: number[]
   ) => {
     addPositionFunctions.current.forEach((fn) =>
@@ -42,7 +39,7 @@ export const useMultiInstancedMesh2 = ({
     );
   };
 
-  const removePositions = (positionsToRemove: Vector3[]) => {
+  const removePositions = (positionsToRemove: XYZ[]) => {
     removePositionFunctions.current.forEach((fn) => fn(positionsToRemove));
   };
 
@@ -65,8 +62,8 @@ export const useMultiInstancedMesh2 = ({
             refs.current[i].computeBVH();
             (refs.current[i] as any).frustumCulled = false;
             const addPositions = (
-              newPositions: Vector3[],
-              newRotations?: Vector3[],
+              newPositions: XYZ[],
+              newRotations?: XYZ[],
               scales?: number[]
             ) => {
               const instancedMesh2Ref = refs.current[i];
@@ -94,15 +91,18 @@ export const useMultiInstancedMesh2 = ({
               });
             };
 
-            const removePositions = (positionsToRemove: Vector3[]) => {
+            const removePositions = (positionsToRemove: XYZ[]) => {
               const instancedMesh2Ref = node;
               if (!instancedMesh2Ref) return;
 
               const instances = instancedMesh2Ref.instances || [];
               const indexes = instances
                 .map((instance, index) => {
-                  const found = positionsToRemove.find((positionToRemove) =>
-                    positionToRemove.equals(instance.position)
+                  const found = positionsToRemove.find(
+                    (positionToRemove) =>
+                      positionToRemove.x === instance.position.x &&
+                      positionToRemove.y === instance.position.y &&
+                      positionToRemove.z === instance.position.z
                   );
 
                   if (found) {

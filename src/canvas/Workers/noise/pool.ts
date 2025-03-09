@@ -42,8 +42,6 @@ export const getFractalNoiseFromWorker = async (x: number, z: number) => {
   return noise;
 };
 
-const tempVec3 = new Vector3();
-
 export const generateInstanceDataFromWorker = async (chunkOffset: Vector3) => {
   const worker = createWorker();
 
@@ -55,17 +53,7 @@ export const generateInstanceDataFromWorker = async (chunkOffset: Vector3) => {
 
   await Thread.terminate(noiseWorker);
 
-  const positionVectors = positions.map(({ x, y, z }) => {
-    tempVec3.set(x, y, z);
-    return tempVec3.clone();
-  });
-
-  const rotationVectors = rotations.map(({ x, y, z }) => {
-    tempVec3.set(x, y, z);
-    return tempVec3.clone();
-  });
-
-  return { positions: positionVectors, rotations: rotationVectors, scales };
+  return { positions, rotations, scales };
 };
 
 export const getHeightFromWorker = async (x: number, z: number) => {

@@ -1,34 +1,45 @@
-import { normalsDebug } from "@r3f/ChunkGenerationSystem/config";
-import { getHeight } from "@r3f/ChunkGenerationSystem/TerrainTile";
+import { BiomeType, getBiome } from "@r3f/ChunkGenerationSystem/Biomes";
+import {
+  flatShading,
+  mode,
+  normalsDebug,
+  tileSize,
+  wireframe,
+  withAutoComputedNormals,
+} from "@r3f/ChunkGenerationSystem/config";
+import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { useHelper } from "@react-three/drei";
 import { HeightfieldCollider, RigidBody } from "@react-three/rapier";
 import { useControls } from "leva";
 import { useMemo, useRef } from "react";
+import { moistureNoise, temperatureNoise } from "src/lib/utils/noise";
 import {
   BufferGeometry,
   Color,
   DoubleSide,
   Float32BufferAttribute,
   Mesh,
+  MeshPhysicalMaterial,
   PlaneGeometry,
   Vector3,
 } from "three";
 import { VertexNormalsHelper } from "three-stdlib";
 
-const defaultTileSize = 10;
-const color = new Color("#c1c1c1");
+const mat = new MeshPhysicalMaterial({
+  color: "#EDC9AF",
+  side: DoubleSide,
+  flatShading,
+  wireframe,
+});
+
 export const HeightfieldTileWithCollider = ({
   worldOffset,
   divisions,
-  size = defaultTileSize,
 }: {
   worldOffset: Vector3;
   divisions: number;
-  size: number;
 }) => {
-  const { withComputeNormals } = useControls({
-    withComputeNormals: false,
-  });
+  const size = tileSize;
 
   const meshRef = useRef<Mesh>(null!);
 
@@ -66,6 +77,7 @@ export const HeightfieldTileWithCollider = ({
 
     const geo = new BufferGeometry();
     const vertices = [];
+    const colors = [];
     const normals = [];
     const uvs = [];
     const indices = [];
@@ -74,6 +86,23 @@ export const HeightfieldTileWithCollider = ({
     const n = resolution + 2;
     const heightMap: number[][] = Array.from(Array(n), () => new Array(n));
 
+    const heightNoiseMap = new Array(resolution + 2)
+      .fill(0)
+      .map(() => new Array(resolution + 2).fill(0));
+
+    const moistureMap: number[][] = new Array(resolution + 2)
+      .fill(0)
+      .map(() => new Array(resolution + 2).fill(0));
+
+    const temperatureMap: number[][] = new Array(resolution + 2)
+      .fill(0)
+      .map(() => new Array(resolution + 2).fill(0));
+
+    const biomeMap: BiomeType[][] = new Array(resolution + 2)
+      .fill(0)
+      .map(() => new Array(resolution + 2).fill("plains"));
+
+    const _color = new Color();
     for (let z = -1; z <= resolution; z++) {
       const localZ = z * segmentSize - halfSize;
       const worldZ = worldOffset.z + localZ;
@@ -82,8 +111,14 @@ export const HeightfieldTileWithCollider = ({
         const localX = x * segmentSize - halfSize;
         const worldX = worldOffset.x + localX;
 
-        const { height } = getHeight(worldX, worldZ);
+        const { height, remappedSample } = getHeight(worldX, worldZ);
+        const moisture = moistureNoise(worldX, worldZ);
+        const temperature = temperatureNoise(worldX, worldZ);
+
         heightMap[z + 1][x + 1] = height;
+        heightNoiseMap[z + 1][x + 1] = remappedSample;
+        moistureMap[z + 1][x + 1] = moisture;
+        temperatureMap[z + 1][x + 1] = temperature;
       }
     }
 
@@ -122,6 +157,40 @@ export const HeightfieldTileWithCollider = ({
         uvs.push(localX / resolution, localZ / resolution);
         normals.push(normal.x, normal.y, normal.z);
 
+        const biome = getBiome(
+          temperatureMap[hz][hx],
+          moistureMap[hz][hx],
+          heightNoiseMap[hz][hx]
+        );
+
+        const moisture = moistureMap[hz][hx];
+        const temperature = temperatureMap[hz][hx];
+        const h = heightNoiseMap[hz][hx];
+
+        biomeMap[hz][hx] = biome;
+
+        const r = localX / size + 0.5;
+        const g = localZ / size + 0.5;
+        _color.setRGB(r, g, 1);
+
+        if (mode === "height") {
+          colors.push(h, h, h);
+        } else if (mode === "biome" || mode === "landscape") {
+          colors.push(biome.color.r, biome.color.g, biome.color.b);
+        } else if (mode === "moisture") {
+          colors.push(0, moisture, moisture);
+        } else if (mode === "temperature") {
+          colors.push(temperature, temperature, temperature);
+        } else if (mode === "flat") {
+          colors.push(1, 1, 1);
+        } else if (mode === "normals") {
+          colors.push(normal.x, normal.y, normal.z);
+        } else if (mode === "colors") {
+          colors.push(_color.r, _color.g, _color.b);
+        } else {
+          throw Error("Invalid mode");
+        }
+
         if (x < resolution - 1 && z < resolution - 1) {
           const vertexIndex = x + z * resolution;
 
@@ -139,6 +208,7 @@ export const HeightfieldTileWithCollider = ({
     geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
     geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
     geo.setAttribute("position", new Float32BufferAttribute(vertices, 3));
+    geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
 
     // the .reverse() is necessary to correct the winding order!
     // if not set the "back" of the plane will be facing up
@@ -152,24 +222,22 @@ export const HeightfieldTileWithCollider = ({
   return (
     <group>
       <RigidBody colliders={false}>
-        {withComputeNormals ? (
-          <mesh ref={meshRef} geometry={geo} castShadow receiveShadow>
-            <meshPhysicalMaterial color={"#c1c1c1"} />
-          </mesh>
+        {withAutoComputedNormals ? (
+          <mesh
+            ref={meshRef}
+            geometry={geo}
+            castShadow
+            receiveShadow
+            material={mat}
+          />
         ) : (
           <mesh
             ref={meshRef}
             geometry={alternate.geometry}
+            material={mat}
             castShadow
             receiveShadow
-          >
-            <meshPhysicalMaterial
-              color={"#EDC9AF"}
-              side={DoubleSide}
-              flatShading={true}
-              wireframe={true}
-            />
-          </mesh>
+          />
         )}
 
         <group rotation={[0, -Math.PI / 2, 0]}>
@@ -178,7 +246,7 @@ export const HeightfieldTileWithCollider = ({
             args={[
               divisions - 1,
               divisions - 1,
-              withComputeNormals ? heightfield : alternate.heightfield,
+              withAutoComputedNormals ? heightfield : alternate.heightfield,
               { x: size, y: 1, z: size },
             ]}
           />

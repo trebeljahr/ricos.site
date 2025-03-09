@@ -1,7 +1,8 @@
+import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { PointerLockControls, useKeyboardControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { RapierRigidBody, RigidBody } from "@react-three/rapier";
-import { PropsWithChildren, useRef } from "react";
+import { PropsWithChildren, useEffect, useLayoutEffect, useRef } from "react";
 import { Vector3 } from "three";
 
 const SPEED = 5;
@@ -9,13 +10,26 @@ const direction = new Vector3();
 const frontVector = new Vector3();
 const sideVector = new Vector3();
 
+type Props = {
+  speed?: number;
+  initialPosition?: [number, number, number];
+  initialLookat?: [number, number, number];
+};
+
 export function MinecraftCreativeController({
   speed = SPEED,
+  initialPosition = [0, 0, 0],
+  initialLookat = [0, 0, -1],
   children,
-}: PropsWithChildren<{ speed?: number }>) {
+}: PropsWithChildren<Props>) {
   const [, get] = useKeyboardControls();
   const rigidBodyRef = useRef<RapierRigidBody>(null!);
   const { camera, gl } = useThree();
+
+  useLayoutEffect(() => {
+    camera.lookAt(...initialLookat);
+    camera.position.fromArray(initialPosition);
+  }, []);
 
   useFrame(() => {
     if (!rigidBodyRef.current) return;

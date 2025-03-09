@@ -13,25 +13,20 @@ import { useRef } from "react";
 import { Group, Quaternion } from "three";
 
 const tempQ = new Quaternion();
-const DemoComponent = () => {
-  const boxRef = useRef<Group>(null!);
 
+const Character = () => {
+  const playerGroupRef = useRef<Group>(null!);
   const player = usePlayerContext();
 
   useFrame(() => {
-    boxRef.current.position.fromArray(player.position.current);
-    boxRef.current.rotation.y = player.rotation;
+    playerGroupRef.current.position.fromArray(player.position.current);
+    playerGroupRef.current.rotation.y = player.rotation;
   });
 
   return (
-    <group>
-      {/* <Box ref={boxRef} args={[1, 1, 1]} castShadow receiveShadow>
-        <meshPhysicalMaterial color="pink" />
-      </Box> */}
-      <group ref={boxRef}>
-        <group position={[0, 0, 0]} rotation={[0, Math.PI, 0]}>
-          <CharacterWithAnimations characterName="michelle" />
-        </group>
+    <group ref={playerGroupRef}>
+      <group rotation={[0, Math.PI, 0]}>
+        <CharacterWithAnimations characterName="michelle" />
       </group>
     </group>
   );
@@ -44,7 +39,7 @@ export const BrunoSimonController = () => {
         <FlyCameraContextProvider>
           <ThirdPersonCameraContextProvider>
             <PlayerContextProvider>
-              <DemoComponent />
+              <Character />
             </PlayerContextProvider>
           </ThirdPersonCameraContextProvider>
         </FlyCameraContextProvider>

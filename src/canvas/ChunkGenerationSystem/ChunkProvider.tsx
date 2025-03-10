@@ -171,10 +171,33 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
     }
 
     for (const chunkId of newChunkKeys) {
-      const [x, z] = chunkId.split(",").map(Number);
+      let [chunkX, chunkZ] = chunkId.split(",").map(Number);
+      camera.getWorldPosition(tempVec);
+
+      const playerGridX = Math.round(tempVec.x / tileSize); // tempVec.x;
+      const playerGridZ = Math.round(tempVec.z / tileSize); // tempVec.z;
+      const x = chunkX - playerGridX;
+      const z = chunkZ - playerGridZ;
+
+      const distanceInTiles = Math.max(Math.abs(x), Math.abs(z));
+
+      let lodLevel = maxLodLevel;
+      const stepDecrease = Math.floor(maxLodLevel / 3);
+      if (distanceInTiles > firstLodLevelDistance) {
+        lodLevel -= stepDecrease;
+      }
+      if (distanceInTiles > secondLodLevelDistance) {
+        lodLevel -= stepDecrease;
+      }
+      if (distanceInTiles > thirdLodLevelDistance) {
+        lodLevel -= 1;
+      }
+
+      const resolution = 64; //Math.pow(2, lodLevel);
+
       workerRef.current.postMessage({
-        worldOffset: { x: x, z: z },
-        divisions: 32,
+        worldOffset: { x: chunkX, z: chunkZ },
+        divisions: resolution,
         chunkId,
       });
     }

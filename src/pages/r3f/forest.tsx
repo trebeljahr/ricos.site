@@ -57,8 +57,8 @@ const Page = () => {
             <ChunkProvider>
               <ChunkRenderer />
               <BirchTreesForChunks />
-              {/* <PineTreesForChunks /> */}
-              <RocksForChunks />
+              <PineTreesForChunks />
+              {/* <RocksForChunks /> */}
             </ChunkProvider>
 
             <MinecraftCreativeController

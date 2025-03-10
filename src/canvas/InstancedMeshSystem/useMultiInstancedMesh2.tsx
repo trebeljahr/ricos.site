@@ -52,7 +52,7 @@ export const useMultiInstancedMesh2 = ({
           args={[
             nodes[meshName].geometry,
             materials[materialName],
-            { renderer: gl, createEntities: true },
+            { renderer: gl },
           ]}
           ref={(node) => {
             if (!node) return;
@@ -88,7 +88,7 @@ export const useMultiInstancedMesh2 = ({
                   temp.rotation.set(-Math.PI / 2, 0, rotation.y);
                   obj.quaternion.copy(temp.quaternion);
 
-                  const scale = scales ? scales[posIndex] : 1;
+                  const scale = scales ? scales[posIndex] : 4;
                   obj.scale.multiplyScalar(100 * scale);
 
                   posIndex++;

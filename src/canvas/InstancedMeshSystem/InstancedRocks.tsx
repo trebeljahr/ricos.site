@@ -2,6 +2,7 @@ import { useGLTF } from "@react-three/drei";
 import { Mesh, MeshStandardMaterial } from "three";
 import { GLTF } from "three-stdlib";
 import {
+  InstancedMeshSpawnerMultiMaterial,
   InstancedTileSpawner,
   MultiInstancedTileSpawner,
 } from "./InstancedTileSpawner";
@@ -42,5 +43,11 @@ export const InstancedTrees = () => {
       meshMaterialCombos={meshMaterialCombos}
       modelPath={"/3d-assets/glb/nature_pack/BirchTree_1.glb"}
     />
+  );
+};
+
+export const InstancedTreesWithMultiMaterial = () => {
+  return (
+    <InstancedMeshSpawnerMultiMaterial modelPath="/3d-assets/glb/nature_pack/BirchTree_1.glb" />
   );
 };

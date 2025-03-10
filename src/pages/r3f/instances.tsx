@@ -5,7 +5,10 @@ import {
 } from "src/canvas/ChunkGenerationSystem/config";
 import { MinecraftCreativeController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
-import { InstancedTrees } from "src/canvas/InstancedMeshSystem/InstancedRocks";
+import {
+  InstancedTrees,
+  InstancedTreesWithMultiMaterial,
+} from "src/canvas/InstancedMeshSystem/InstancedRocks";
 import { Sky } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
@@ -55,7 +58,8 @@ const Page = () => {
             <color args={[skyColor]} attach="background" />
             <group position={[-tileSize / 2, 0, -tileSize / 2]}>
               {/* <InstancedRocks /> */}
-              <InstancedTrees />
+              {/* <InstancedTrees /> */}
+              <InstancedTreesWithMultiMaterial />
             </group>
             <gridHelper args={[tileSize, 100]} />
 

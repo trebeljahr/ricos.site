@@ -25,7 +25,7 @@ export const generateInstanceData = (chunkOffset: XYZ) => {
         .add(center);
       const { height } = getHeight(worldPosition.x, worldPosition.z);
       const position = worldPosition.setY(height);
-      const scale = 1; // Math.random() + 1;
+      const scale = (Math.random() + 1) * 2;
       const rotation = new Vector3(0, Math.random() * Math.PI * 2, 0);
 
       agg.positions.push(position);

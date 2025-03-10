@@ -37,10 +37,11 @@ export const useInstancedMesh2 = ({ material, geometry }: SingleHookProps) => {
 
   const addPositions = (newPositions: Vector3[]) => {
     const instancedMesh2 = ref.current;
-    if (!instancedMesh2.instances) return;
+    if (!instancedMesh2.instances) return [];
 
     let counter = 0;
-    instancedMesh2.addInstances(newPositions.length, (obj) => {
+    let indices: number[] = [];
+    instancedMesh2.addInstances(newPositions.length, (obj, index) => {
       obj.matrix.copy(temp.matrix);
       obj.scale.set(1, 1, 1);
       obj.position.copy(newPositions[counter++]);
@@ -48,28 +49,17 @@ export const useInstancedMesh2 = ({ material, geometry }: SingleHookProps) => {
       temp.rotation.set(-Math.PI / 2, 0, 0);
       obj.quaternion.copy(temp.quaternion);
       obj.scale.multiplyScalar(100);
+      indices.push(index);
     });
+
+    return indices;
   };
 
-  const removePositions = (positionsToRemove: Vector3[]) => {
+  const removePositions = (indicesToRemove: number[]) => {
     const instancedMesh2 = ref.current;
     if (!instancedMesh2) return;
 
-    const indexes = instancedMesh2.instances
-      .map((instance, index) => {
-        const found = positionsToRemove.find((positionToRemove) =>
-          instance.position.equals(positionToRemove)
-        );
-
-        if (found) {
-          return index;
-        }
-
-        return -1;
-      })
-      .filter((index) => index !== -1);
-
-    instancedMesh2.removeInstances(...indexes);
+    instancedMesh2.removeInstances(...indicesToRemove);
   };
 
   const InstancedMesh = () => {
@@ -138,12 +128,7 @@ export const Single = ({ positions, geo, material }: SingleInstanceProps) => {
       (pos) => !prev.some((prevPos) => prevPos.equals(pos))
     );
 
-    const removedPositions = prev.filter(
-      (prevPos) => !positions.some((pos) => pos.equals(prevPos))
-    );
-
     addPositions(newPositions);
-    removePositions(removedPositions);
   }, [positions, prevPositions, addPositions, removePositions]);
 
   return <InstancedMesh />;

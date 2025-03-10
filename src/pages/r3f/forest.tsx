@@ -1,6 +1,7 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import {
   BirchTreesForChunks,
+  PineTreesForChunks,
   RocksForChunks,
 } from "@r3f/ChunkGenerationSystem/ChunkInstancedMeshes";
 import {
@@ -56,6 +57,7 @@ const Page = () => {
             <ChunkProvider>
               <ChunkRenderer />
               <BirchTreesForChunks />
+              {/* <PineTreesForChunks /> */}
               <RocksForChunks />
             </ChunkProvider>
 

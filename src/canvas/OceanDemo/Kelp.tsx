@@ -1,7 +1,7 @@
-import { useKelp } from "src/canvas/models/Kelp4";
-import { useFrame, useThree } from "@react-three/fiber";
-import kelpVert from "@shaders/kelp.vert";
+import { useFrame } from "@react-three/fiber";
 import kelpFrag from "@shaders/kelp.frag";
+import kelpVert from "@shaders/kelp.vert";
+import { useKelp } from "src/canvas/models/Kelp4";
 
 import FastPoissonDiskSampling from "fast-2d-poisson-disk-sampling";
 import { memo, useEffect, useMemo, useRef } from "react";
@@ -9,13 +9,10 @@ import {
   BufferGeometry,
   DynamicDrawUsage,
   InstancedMesh,
-  Matrix4,
   MeshPhysicalMaterial,
   Object3D,
-  Quaternion,
   ShaderMaterial,
   Vector2,
-  Vector3,
 } from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import CustomShaderMaterialType from "three-custom-shader-material/vanilla";

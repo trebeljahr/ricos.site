@@ -49,3 +49,27 @@ export const RocksForChunks = memo(() => {
     </>
   );
 });
+
+export const PineTreesForChunks = memo(() => {
+  const meshMaterialCombos: MeshMaterialCombos = [
+    ["PineTree_1_1", "Wood"],
+    ["PineTree_1_2", "Green"],
+  ];
+  const modelPath = "/3d-assets/glb/nature_pack/PineTree_1.glb";
+
+  const { InstancedMeshes, addPositions, removePositions } =
+    useMultiInstancedMesh2({
+      meshMaterialCombos,
+      modelPath,
+    });
+
+  return (
+    <>
+      <ChunkPositionUpdater
+        addPositions={addPositions}
+        removePositions={removePositions}
+      />
+      <InstancedMeshes />
+    </>
+  );
+});

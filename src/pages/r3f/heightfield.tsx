@@ -26,15 +26,7 @@ export const ChunkRenderer = () => {
   return (
     <group>
       {Array.from(chunks).map(([key, chunkData]) => {
-        return (
-          <MemoizedChunk key={key} chunkData={chunkData}>
-            {debug && <DebugTile position={chunkData.position} />}
-            <HeightfieldTileWithCollider
-              divisions={chunkData.resolution}
-              worldOffset={chunkData.position}
-            />
-          </MemoizedChunk>
-        );
+        return <MemoizedChunk key={key} chunkData={chunkData} />;
       })}
     </group>
   );

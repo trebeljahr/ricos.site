@@ -9,6 +9,6 @@ addEventListener(
       z: event.data.z,
     });
 
-    postMessage({ ...data, chunkKey: `${event.data.x},${event.data.z}` });
+    postMessage({ ...data, chunkId: `${event.data.x},${event.data.z}` });
   }
 );

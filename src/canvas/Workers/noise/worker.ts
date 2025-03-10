@@ -16,7 +16,7 @@ import {
 } from "src/canvas/ChunkGenerationSystem/config";
 import { expose } from "threads/worker";
 import { Vector2, Vector3 } from "three";
-import { generateInstanceData } from "./generateInstanceData";
+import { generateInstanceData } from "./genInstanceData";
 
 const center = new Vector3(tileSize / 2, 0, tileSize / 2);
 

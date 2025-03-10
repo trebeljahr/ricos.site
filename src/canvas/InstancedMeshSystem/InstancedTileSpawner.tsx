@@ -78,7 +78,7 @@ export const MultiInstancedTileSpawner = ({
       const randomPositions = pickRandomFromArray(
         refs.current[0].instances
           .filter((obj) => obj.active)
-          .map((obj) => obj.position),
+          .map((obj, index) => index),
         1
       );
 

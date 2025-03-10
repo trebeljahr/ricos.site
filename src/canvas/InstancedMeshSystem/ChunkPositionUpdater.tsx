@@ -1,14 +1,7 @@
 import { useEffect, useRef } from "react";
-import { Vector2, Vector3 } from "three";
-import { poissonDiskSample } from "../../lib/utils/noise";
+import { Vector3 } from "three";
 import { useChunkContext } from "../ChunkGenerationSystem/ChunkProvider";
-import {
-  tileSize,
-  treeMaxDistance,
-  treeMinDistance,
-} from "../ChunkGenerationSystem/config";
-import { getHeight } from "../ChunkGenerationSystem/getHeight";
-import { generateInstanceDataFromWorker } from "@r3f/Workers/noise/pool";
+import { tileSize } from "../ChunkGenerationSystem/config";
 
 const center = new Vector3(-tileSize / 2, 0, -tileSize / 2);
 
@@ -17,8 +10,8 @@ type PositionsUpdateHookProps = {
     positionsToAdd: (Vector3 | XYZ)[],
     rotations?: (Vector3 | XYZ)[],
     scales?: number[]
-  ) => void;
-  removePositions: (positionsToRemove: (Vector3 | XYZ)[]) => void;
+  ) => number[];
+  removePositions: (indicesToRemove: number[]) => void;
 };
 
 export type XYZ = {
@@ -33,9 +26,38 @@ export const ChunkPositionUpdater = ({
 }: PositionsUpdateHookProps) => {
   const chunks = useChunkContext();
 
-  const positionsRef = useRef<Record<string, XYZ[]>>({});
-
+  const indicesPerChunk = useRef<Record<string, number[]>>({});
   const prevChunksRef = useRef<Set<string>>(new Set());
+
+  const workerRef = useRef<Worker>();
+
+  useEffect(() => {
+    workerRef.current = new Worker(
+      new URL("../workers/exampleWorker.ts", import.meta.url)
+    );
+
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!workerRef.current) return;
+
+    workerRef.current.onmessage = (
+      event: MessageEvent<{
+        positions: XYZ[];
+        scales: number[];
+        rotations: XYZ[];
+        chunkKey: string;
+      }>
+    ) => {
+      const { positions, scales, rotations, chunkKey } = event.data;
+
+      const indices = addPositions(positions, rotations, scales);
+      indicesPerChunk.current[chunkKey] = indices;
+    };
+  }, [addPositions]);
 
   useEffect(() => {
     const currentChunkKeys = new Set(chunks.keys());
@@ -52,23 +74,18 @@ export const ChunkPositionUpdater = ({
     prevChunksRef.current = currentChunkKeys;
 
     removedChunks.forEach((key) => {
-      if (!positionsRef.current[key]) return;
+      if (!indicesPerChunk.current[key]) return;
 
-      removePositions(positionsRef.current[key] || []);
-      delete positionsRef.current[key];
+      removePositions(indicesPerChunk.current[key] || []);
+      delete indicesPerChunk.current[key];
     });
 
-    newChunkKeys.forEach(async (chunkKey) => {
+    newChunkKeys.forEach((chunkKey) => {
       const chunk = chunks.get(chunkKey)!;
 
-      const { positions, rotations, scales } =
-        await generateInstanceDataFromWorker(chunk.position);
+      if (!workerRef.current) return;
 
-      positionsRef.current[chunkKey] = positions;
-
-      if (!positionsRef.current[chunkKey]) return;
-
-      addPositions(positions, rotations, scales);
+      workerRef.current?.postMessage(chunk.position);
     });
   }, [chunks, addPositions, removePositions]);
 

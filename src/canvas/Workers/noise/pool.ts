@@ -16,9 +16,6 @@ const createWorker = () => {
 // const worker = createWorker();
 
 // const url = new URL("./worker.ts", import.meta.url);
-// console.log(url);
-// console.log(url.toString());
-// console.log(import.meta.url);
 
 // const stringified = url.toString();
 // const pool = Pool(() => {

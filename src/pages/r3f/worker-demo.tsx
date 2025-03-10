@@ -1,7 +1,7 @@
-import { getHeightFromWorker } from "@r3f/ChunkGenerationSystem/getHeight";
 import {
   generateInstanceDataFromWorker,
   getFractalNoiseFromWorker,
+  getHeightFromWorker,
   poissonDiskSampleFromWorker,
 } from "@r3f/Workers/noise/pool";
 import { useEffect, useRef } from "react";
@@ -39,10 +39,7 @@ export default function Page() {
     workerRef.current = new Worker(
       new URL("../../canvas/workers/exampleWorker.ts", import.meta.url)
     );
-    workerRef.current.onmessage = (event: MessageEvent<number>) => {
-      console.log(`WebWorker Response`);
-      console.log(event.data);
-    };
+    workerRef.current.onmessage = (event: MessageEvent<number>) => {};
 
     return () => {
       workerRef.current?.terminate();

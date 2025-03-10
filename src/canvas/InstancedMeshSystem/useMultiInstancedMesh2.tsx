@@ -23,10 +23,10 @@ export const useMultiInstancedMesh2 = ({
   const { gl } = useThree();
   const refs = useRef<InstancedMesh2[]>([]);
   const addPositionFunctions = useRef<
-    ((newPositions: XYZ[], rotations?: XYZ[], scales?: number[]) => void)[]
+    ((newPositions: XYZ[], rotations?: XYZ[], scales?: number[]) => number[])[]
   >([]);
   const removePositionFunctions = useRef<
-    ((positionsToRemove: XYZ[]) => void)[]
+    ((indicesToRemove: number[]) => void)[]
   >([]);
 
   const addPositions = (
@@ -34,13 +34,14 @@ export const useMultiInstancedMesh2 = ({
     rotations?: XYZ[],
     scales?: number[]
   ) => {
-    addPositionFunctions.current.forEach((fn) =>
-      fn(positionsToAdd, rotations, scales)
-    );
+    const indices = addPositionFunctions.current
+      .map((fn) => fn(positionsToAdd, rotations, scales))
+      .flat();
+    return indices;
   };
 
-  const removePositions = (positionsToRemove: XYZ[]) => {
-    removePositionFunctions.current.forEach((fn) => fn(positionsToRemove));
+  const removePositions = (indicesToRemove: number[]) => {
+    removePositionFunctions.current.forEach((fn) => fn(indicesToRemove));
   };
 
   const InstancedMeshes = () => {
@@ -68,52 +69,42 @@ export const useMultiInstancedMesh2 = ({
             ) => {
               const instancedMesh2Ref = refs.current[i];
 
-              if (!instancedMesh2Ref) return;
+              if (!instancedMesh2Ref) return [];
 
               let posIndex = 0;
-              instancedMesh2Ref.addInstances(newPositions.length, (obj) => {
-                const pos = newPositions[posIndex];
-                obj.matrix.copy(temp.matrix);
-                obj.scale.set(1, 1, 1);
-                obj.position.set(pos.x, pos.y, pos.z);
+              let indices: number[] = [];
+              instancedMesh2Ref.addInstances(
+                newPositions.length,
+                (obj, index) => {
+                  const pos = newPositions[posIndex];
+                  obj.matrix.copy(temp.matrix);
+                  obj.scale.set(1, 1, 1);
+                  obj.position.set(pos.x, pos.y, pos.z);
 
-                const rotation = newRotations
-                  ? newRotations[posIndex] || emptyRotation
-                  : emptyRotation;
+                  const rotation = newRotations
+                    ? newRotations[posIndex] || emptyRotation
+                    : emptyRotation;
 
-                temp.rotation.set(-Math.PI / 2, 0, rotation.y);
-                obj.quaternion.copy(temp.quaternion);
+                  temp.rotation.set(-Math.PI / 2, 0, rotation.y);
+                  obj.quaternion.copy(temp.quaternion);
 
-                const scale = scales ? scales[posIndex] : 1;
-                obj.scale.multiplyScalar(100 * scale);
+                  const scale = scales ? scales[posIndex] : 1;
+                  obj.scale.multiplyScalar(100 * scale);
 
-                posIndex++;
-              });
+                  posIndex++;
+                  indices.push(index);
+                }
+              );
+              return indices;
             };
 
-            const removePositions = (positionsToRemove: XYZ[]) => {
+            const removePositions = (indecesToRemove: number[]) => {
               const instancedMesh2Ref = node;
               if (!instancedMesh2Ref) return;
 
               const instances = instancedMesh2Ref.instances || [];
-              const indexes = instances
-                .map((instance, index) => {
-                  const found = positionsToRemove.find(
-                    (positionToRemove) =>
-                      positionToRemove.x === instance.position.x &&
-                      positionToRemove.y === instance.position.y &&
-                      positionToRemove.z === instance.position.z
-                  );
 
-                  if (found) {
-                    return index;
-                  }
-
-                  return -1;
-                })
-                .filter((index) => index !== -1);
-
-              instancedMesh2Ref.removeInstances(...indexes);
+              instancedMesh2Ref.removeInstances(...indecesToRemove);
             };
 
             addPositionFunctions.current.push(addPositions);

@@ -8,7 +8,7 @@ import {
 import { poissonDiskSample } from "src/lib/utils/noise";
 import { Vector2, Vector3 } from "three";
 
-const center = new Vector3(tileSize / 2, 0, tileSize / 2);
+const center = new Vector3(-tileSize / 2, 0, -tileSize / 2);
 
 export const generateInstanceData = (chunkOffset: XYZ) => {
   const { positions, scales, rotations } = poissonDiskSample(

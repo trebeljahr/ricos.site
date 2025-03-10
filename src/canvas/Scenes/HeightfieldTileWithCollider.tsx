@@ -8,10 +8,11 @@ import {
   withAutoComputedNormals,
 } from "@r3f/ChunkGenerationSystem/config";
 import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
+import { TerrainData } from "@r3f/Workers/terrain/worker";
 import { useHelper } from "@react-three/drei";
 import { HeightfieldCollider, RigidBody } from "@react-three/rapier";
 import { useControls } from "leva";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { moistureNoise, temperatureNoise } from "src/lib/utils/noise";
 import {
   BufferGeometry,
@@ -39,12 +40,16 @@ export const HeightfieldTileWithCollider = ({
   worldOffset: Vector3;
   divisions: number;
 }) => {
-  const size = tileSize;
-
-  const meshRef = useRef<Mesh>(null!);
-
   const { geo, heightfield } = useMemo(() => {
-    const geo = new PlaneGeometry(size, size, divisions - 1, divisions - 1);
+    const geo = new PlaneGeometry(
+      tileSize,
+      tileSize,
+      divisions - 1,
+      divisions - 1
+    );
+
+    if (!withAutoComputedNormals) return { geo, heightfield: [] };
+
     geo.rotateX(-Math.PI / 2);
 
     const positions = geo.attributes.position as Float32BufferAttribute;
@@ -63,195 +68,116 @@ export const HeightfieldTileWithCollider = ({
       heightMap[iz][divisions + 1 - ix] = height;
     }
 
-    const heights = heightMap.flat();
     geo.attributes.position.needsUpdate = true;
     geo.computeVertexNormals();
 
-    return { geo, heightfield: heights };
-  }, [size, worldOffset, divisions]);
+    return { geo, heightfield: heightMap.flat() };
+  }, [worldOffset, divisions]);
 
-  const alternate = useMemo(() => {
-    const resolution = divisions;
-    const halfSize = size / 2;
-    const segmentSize = size / (resolution - 1);
+  const workerRef = useRef<Worker>();
 
-    const geo = new BufferGeometry();
-    const vertices = [];
-    const colors = [];
-    const normals = [];
-    const uvs = [];
-    const indices = [];
+  const [ready, setReady] = useState(false);
 
-    // have 2 extra rows and columns to calculate normals with offsets
-    const n = resolution + 2;
-    const heightMap: number[][] = Array.from(Array(n), () => new Array(n));
+  const geoRef = useRef(new BufferGeometry());
+  const heightfieldRef = useRef<number[]>(
+    Array.from(Array(Math.pow(divisions - 1, 2)), () => 0)
+  );
 
-    const heightNoiseMap = new Array(resolution + 2)
-      .fill(0)
-      .map(() => new Array(resolution + 2).fill(0));
+  useEffect(() => {
+    workerRef.current = new Worker(
+      new URL("../workers/terrain/worker.ts", import.meta.url)
+    );
 
-    const moistureMap: number[][] = new Array(resolution + 2)
-      .fill(0)
-      .map(() => new Array(resolution + 2).fill(0));
+    workerRef.current.onmessage = (event: MessageEvent<TerrainData>) => {
+      const { normals, uvs, vertices, colors, indices, heightfield } =
+        event.data;
 
-    const temperatureMap: number[][] = new Array(resolution + 2)
-      .fill(0)
-      .map(() => new Array(resolution + 2).fill(0));
+      heightfieldRef.current = heightfield;
+      const geo = geoRef.current;
 
-    const biomeMap: BiomeType[][] = new Array(resolution + 2)
-      .fill(0)
-      .map(() => new Array(resolution + 2).fill("plains"));
+      geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
+      geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
+      geo.setAttribute("position", new Float32BufferAttribute(vertices, 3));
+      geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
 
-    const _color = new Color();
-    for (let z = -1; z <= resolution; z++) {
-      const localZ = z * segmentSize - halfSize;
-      const worldZ = worldOffset.z + localZ;
+      geo.setIndex(indices);
+      geo.attributes.position.needsUpdate = true;
+      geo.attributes.normal.needsUpdate = true;
+      geo.attributes.uv.needsUpdate = true;
+      geo.attributes.color.needsUpdate = true;
 
-      for (let x = -1; x <= resolution; x++) {
-        const localX = x * segmentSize - halfSize;
-        const worldX = worldOffset.x + localX;
+      setReady(true);
+    };
 
-        const { height, remappedSample } = getHeight(worldX, worldZ);
-        const moisture = moistureNoise(worldX, worldZ);
-        const temperature = temperatureNoise(worldX, worldZ);
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
 
-        heightMap[z + 1][x + 1] = height;
-        heightNoiseMap[z + 1][x + 1] = remappedSample;
-        moistureMap[z + 1][x + 1] = moisture;
-        temperatureMap[z + 1][x + 1] = temperature;
-      }
-    }
+  useEffect(() => {
+    if (!workerRef.current) return;
 
-    const heightfield = [];
+    console.log("Posting message to terrain worker");
+    setReady(false);
+    workerRef.current.postMessage({ worldOffset, divisions });
+  }, [worldOffset, divisions]);
 
-    for (let z = 0; z < resolution; z++) {
-      const localZ = z * segmentSize;
+  if (!ready) return null;
 
-      for (let x = 0; x < resolution; x++) {
-        const localX = x * segmentSize;
+  console.log(heightfieldRef.current.length, divisions - 1);
 
-        const hx = x + 1; // offset by 1 to account for extra row and column
-        const hz = z + 1; // offset by 1 to account for extra row and column
+  return (
+    <RenderHeightfield
+      geo={geoRef.current}
+      heightfield={heightfieldRef.current}
+      divisions={divisions}
+    />
+  );
+};
 
-        const height = heightMap[hz][hx];
-        // get heights of surrounding vertices
-        const L = heightMap[hz][hx - 1];
-        const R = heightMap[hz][hx + 1];
-        const B = heightMap[hz - 1][hx];
-        const T = heightMap[hz + 1][hx];
-
-        const vecBot = new Vector3(0, B, -segmentSize);
-        const vecTop = new Vector3(0, T, +segmentSize);
-        const vecLeft = new Vector3(-segmentSize, L, 0);
-        const vecRight = new Vector3(+segmentSize, R, 0);
-
-        const topToBot = vecTop.sub(vecBot);
-        const leftToRight = vecLeft.sub(vecRight);
-        const normal = topToBot.cross(leftToRight).negate().normalize();
-
-        // store height for heightfield collider => traverse heights in x direction in reverse order because that's how the heightfield collider expects it
-        const heightForHeightfield = heightMap[hz][resolution + 1 - hx];
-        heightfield.push(heightForHeightfield);
-
-        vertices.push(localX - halfSize, height, localZ - halfSize);
-        uvs.push(localX / resolution, localZ / resolution);
-        normals.push(normal.x, normal.y, normal.z);
-
-        const biome = getBiome(
-          temperatureMap[hz][hx],
-          moistureMap[hz][hx],
-          heightNoiseMap[hz][hx]
-        );
-
-        const moisture = moistureMap[hz][hx];
-        const temperature = temperatureMap[hz][hx];
-        const h = heightNoiseMap[hz][hx];
-
-        biomeMap[hz][hx] = biome;
-
-        const r = localX / size + 0.5;
-        const g = localZ / size + 0.5;
-        _color.setRGB(r, g, 1);
-
-        if (mode === "height") {
-          colors.push(h, h, h);
-        } else if (mode === "biome" || mode === "landscape") {
-          colors.push(biome.color.r, biome.color.g, biome.color.b);
-        } else if (mode === "moisture") {
-          colors.push(0, moisture, moisture);
-        } else if (mode === "temperature") {
-          colors.push(temperature, temperature, temperature);
-        } else if (mode === "flat") {
-          colors.push(1, 1, 1);
-        } else if (mode === "normals") {
-          colors.push(normal.x, normal.y, normal.z);
-        } else if (mode === "colors") {
-          colors.push(_color.r, _color.g, _color.b);
-        } else {
-          throw Error("Invalid mode");
-        }
-
-        if (x < resolution - 1 && z < resolution - 1) {
-          const vertexIndex = x + z * resolution;
-
-          indices.push(vertexIndex, vertexIndex + 1, vertexIndex + resolution);
-
-          indices.push(
-            vertexIndex + 1,
-            vertexIndex + resolution + 1,
-            vertexIndex + resolution
-          );
-        }
-      }
-    }
-
-    geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
-    geo.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
-    geo.setAttribute("position", new Float32BufferAttribute(vertices, 3));
-    geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
-
-    // the .reverse() is necessary to correct the winding order!
-    // if not set the "back" of the plane will be facing up
-    geo.setIndex(indices.reverse());
-
-    return { geometry: geo, heightfield, heightMap };
-  }, [worldOffset, divisions, size]);
+const RenderHeightfield = ({
+  geo,
+  heightfield,
+  divisions,
+}: {
+  geo: BufferGeometry;
+  heightfield: number[];
+  divisions: number;
+}) => {
+  const meshRef = useRef<Mesh>(null!);
 
   useHelper(normalsDebug && meshRef, VertexNormalsHelper, 1, 0xff0000);
 
   return (
-    <group>
-      <RigidBody colliders={false}>
-        {withAutoComputedNormals ? (
-          <mesh
-            ref={meshRef}
-            geometry={geo}
-            castShadow
-            receiveShadow
-            material={mat}
-          />
-        ) : (
-          <mesh
-            ref={meshRef}
-            geometry={alternate.geometry}
-            material={mat}
-            castShadow
-            receiveShadow
-          />
-        )}
+    <RigidBody colliders={false}>
+      {withAutoComputedNormals ? (
+        <mesh
+          ref={meshRef}
+          geometry={geo}
+          castShadow
+          receiveShadow
+          material={mat}
+        />
+      ) : (
+        <mesh
+          ref={meshRef}
+          geometry={geo}
+          material={mat}
+          castShadow
+          receiveShadow
+        />
+      )}
 
-        <group rotation={[0, -Math.PI / 2, 0]}>
-          <HeightfieldCollider
-            // scale={[1, 1, -1]}
-            args={[
-              divisions - 1,
-              divisions - 1,
-              withAutoComputedNormals ? heightfield : alternate.heightfield,
-              { x: size, y: 1, z: size },
-            ]}
-          />
-        </group>
-      </RigidBody>
-    </group>
+      <group rotation={[0, -Math.PI / 2, 0]}>
+        {/* <HeightfieldCollider
+          args={[
+            divisions - 1,
+            divisions - 1,
+            heightfield,
+            { x: tileSize, y: 1, z: tileSize },
+          ]}
+        /> */}
+      </group>
+    </RigidBody>
   );
 };

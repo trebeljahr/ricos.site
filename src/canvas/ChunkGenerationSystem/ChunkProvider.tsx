@@ -79,7 +79,7 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
           (worldX - playerX) * (worldX - playerX) +
           (worldZ - playerZ) * (worldZ - playerZ);
 
-        const chunkId = `${worldX},${worldZ}`;
+        const chunkKey = `${worldX},${worldZ}`;
         const position = new Vector3(worldX, 0, worldZ);
 
         const distanceInTiles = Math.max(Math.abs(x), Math.abs(z));
@@ -98,10 +98,10 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
 
         const resolution = Math.pow(2, lodLevel);
 
-        newChunks.set(chunkId, {
+        newChunks.set(chunkKey, {
           position,
           resolution,
-          chunkId,
+          chunkId: chunkKey,
         });
       }
     }

@@ -1,4 +1,3 @@
-import { perlin2 } from "simplenoise";
 import { createNoise2D, NoiseFunction2D } from "simplex-noise";
 import {
   detailLevels,
@@ -10,6 +9,14 @@ import {
 
 import PoissonDiskSampling from "poisson-disk-sampling";
 import { Vector3 } from "three";
+// import { mkAlea } from "@spissvinkel/alea";
+import { alea } from "seedrandom";
+
+const SEED_VALUE = "1234567890";
+// const { random } = mkAlea(SEED_VALUE);
+
+// @ts-ignore-next-line
+const random = new alea(SEED_VALUE);
 
 const normalizeNoise = (func: NoiseFunction2D) => {
   return (x: number, y: number) => (func(x, y) + 1) / 2;
@@ -19,15 +26,17 @@ const scaleNoise = (func: NoiseFunction2D, scale: number) => {
   return (x: number, y: number) => func(x * scale, y * scale);
 };
 
-const heightNoise = createNoise2D();
+const heightNoise = createNoise2D(random);
 export const temperatureNoise = scaleNoise(
-  normalizeNoise(createNoise2D()),
+  normalizeNoise(createNoise2D(random)),
   temperatureNoiseScale
 );
 export const moistureNoise = scaleNoise(
-  normalizeNoise(createNoise2D()),
+  normalizeNoise(createNoise2D(random)),
   moistureNoiseScale
 );
+
+export const treeNoise = createNoise2D(random);
 
 export function getFractalNoise(worldX: number, worldZ: number) {
   let amplitude = 1;
@@ -58,17 +67,21 @@ export function poissonDiskSample(
     offset = { x: 0, y: 0 },
   }: { tries?: number; offset?: { x: number; y: number } } = {}
 ) {
-  let p = new PoissonDiskSampling({
-    shape: [width, width],
-    minDistance: min,
-    maxDistance: max,
-    tries,
-  });
+  let p = new PoissonDiskSampling(
+    {
+      shape: [width, width],
+      minDistance: min,
+      maxDistance: max,
+      tries,
+    },
+    random
+  );
+
   const noiseScale = 0.05;
   const threshold = -0.2;
 
   let points = p.fill().filter(([x, z]) => {
-    const noiseValue = perlin2(
+    const noiseValue = treeNoise(
       (x + offset.x) * noiseScale,
       (z + offset.y) * noiseScale
     );

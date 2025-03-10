@@ -8,6 +8,7 @@ export type TerrainData = ReturnType<typeof generateTerrainData>;
 
 function generateTerrainData(
   worldOffset: { x: number; z: number },
+  chunkId: string,
   resolution: number
 ) {
   const size = tileSize;
@@ -161,6 +162,7 @@ function generateTerrainData(
     moistureMap,
     heightMap,
     heightNoiseMap,
+    chunkId,
   };
 }
 
@@ -170,10 +172,12 @@ addEventListener(
     event: MessageEvent<{
       worldOffset: { x: number; z: number };
       divisions: number;
+      chunkId: string;
     }>
   ) => {
     const data = await generateTerrainData(
       event.data.worldOffset,
+      event.data.chunkId,
       event.data.divisions
     );
 

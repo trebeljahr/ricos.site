@@ -9,8 +9,8 @@ type Modes =
   | "colors";
 
 const debug = true;
+const physicsDebug = true;
 const normalsDebug = false;
-const physicsDebug = false;
 const wireframe = false;
 const flatShading = false;
 const onlyRenderOnce = false;

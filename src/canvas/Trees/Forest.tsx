@@ -41,8 +41,8 @@ export const Forest = ({ chunks }: { chunks: ChunkMap }) => {
       delete positionsRef.current[key];
     });
 
-    newChunkKeys.forEach((chunkKey) => {
-      const chunk = chunks.get(chunkKey)!;
+    newChunkKeys.forEach((chunkId) => {
+      const chunk = chunks.get(chunkId)!;
 
       const newPositions = poissonDiskSample(tileSize, 3, 20, {
         offset: new Vector2(chunk.position.x, chunk.position.z),
@@ -56,7 +56,7 @@ export const Forest = ({ chunks }: { chunks: ChunkMap }) => {
         5
       );
 
-      positionsRef.current[chunkKey] = groups;
+      positionsRef.current[chunkId] = groups;
     });
 
     const mergedGroups: Vector3[][] = Array.from(

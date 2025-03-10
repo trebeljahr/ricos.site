@@ -49,13 +49,13 @@ export const ChunkPositionUpdater = ({
         positions: XYZ[];
         scales: number[];
         rotations: XYZ[];
-        chunkKey: string;
+        chunkId: string;
       }>
     ) => {
-      const { positions, scales, rotations, chunkKey } = event.data;
+      const { positions, scales, rotations, chunkId } = event.data;
 
       const indices = addPositions(positions, rotations, scales);
-      indicesPerChunk.current[chunkKey] = indices;
+      indicesPerChunk.current[chunkId] = indices;
     };
   }, [addPositions]);
 
@@ -80,8 +80,8 @@ export const ChunkPositionUpdater = ({
       delete indicesPerChunk.current[key];
     });
 
-    newChunkKeys.forEach((chunkKey) => {
-      const chunk = chunks.get(chunkKey)!;
+    newChunkKeys.forEach((chunkId) => {
+      const chunk = chunks.get(chunkId)!;
 
       if (!workerRef.current) return;
 

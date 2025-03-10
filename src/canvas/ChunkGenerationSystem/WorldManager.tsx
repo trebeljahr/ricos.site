@@ -20,12 +20,14 @@ export const WorldManager = () => {
 };
 
 export const SingleTile = ({ chunkData }: { chunkData: Chunk }) => {
+  if (!chunkData.data) return null;
+
   return (
     <group>
       {debug && <DebugTile position={chunkData.position} />}
       <HeightfieldTileWithCollider
-        worldOffset={chunkData.position}
-        divisions={chunkData.resolution}
+        geo={chunkData.data.geo}
+        heightfield={chunkData.data.heightfield}
       />
     </group>
   );

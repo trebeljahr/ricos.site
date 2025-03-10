@@ -27,20 +27,11 @@ import { MinecraftCreativeController } from "src/canvas/Controllers/MinecraftCre
 
 const ChunkRenderer = () => {
   const chunks = useChunkContext();
+
   return (
     <group>
-      {Array.from(chunks).map(([key, chunkData]) => {
-        return (
-          <MemoizedChunk key={key} chunkData={chunkData}>
-            <group position={[0, 0, 0]}>
-              {debug && <DebugTile position={chunkData.position} />}
-              <HeightfieldTileWithCollider
-                divisions={chunkData.resolution}
-                worldOffset={chunkData.position}
-              />
-            </group>
-          </MemoizedChunk>
-        );
+      {Array.from(chunks).map(([key, chunkData], index) => {
+        return <MemoizedChunk key={index} chunkData={chunkData} />;
       })}
     </group>
   );

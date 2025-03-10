@@ -74,7 +74,7 @@ export function poissonDiskSample(
     tries,
   });
 
-  const noiseScale = 0.05;
+  const noiseScale = 0.005;
   const threshold = -0.2;
 
   let points = p.fill().filter(([x, z]) => {

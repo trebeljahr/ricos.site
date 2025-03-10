@@ -37,7 +37,7 @@ export default function Page() {
 
   useEffect(() => {
     workerRef.current = new Worker(
-      new URL("../../canvas/workers/exampleWorker.ts", import.meta.url)
+      new URL("../../canvas/workers/noiseWorker.ts", import.meta.url)
     );
     workerRef.current.onmessage = (event: MessageEvent<number>) => {};
 

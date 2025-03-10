@@ -8,7 +8,7 @@ import {
   withAutoComputedNormals,
 } from "@r3f/ChunkGenerationSystem/config";
 import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
-import { TerrainData } from "@r3f/Workers/terrain/worker";
+import { TerrainData } from "@r3f/Workers/terrainWorker";
 import { useHelper } from "@react-three/drei";
 import { HeightfieldCollider, RigidBody } from "@react-three/rapier";
 import { useControls } from "leva";

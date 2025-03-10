@@ -36,7 +36,7 @@ export const moistureNoise = scaleNoise(
   moistureNoiseScale
 );
 
-export const treeNoise = createNoise2D(random);
+export const sampleNoise = createNoise2D();
 
 export function getFractalNoise(worldX: number, worldZ: number) {
   let amplitude = 1;
@@ -67,21 +67,18 @@ export function poissonDiskSample(
     offset = { x: 0, y: 0 },
   }: { tries?: number; offset?: { x: number; y: number } } = {}
 ) {
-  let p = new PoissonDiskSampling(
-    {
-      shape: [width, width],
-      minDistance: min,
-      maxDistance: max,
-      tries,
-    },
-    random
-  );
+  let p = new PoissonDiskSampling({
+    shape: [width, width],
+    minDistance: min,
+    maxDistance: max,
+    tries,
+  });
 
   const noiseScale = 0.05;
   const threshold = -0.2;
 
   let points = p.fill().filter(([x, z]) => {
-    const noiseValue = treeNoise(
+    const noiseValue = sampleNoise(
       (x + offset.x) * noiseScale,
       (z + offset.y) * noiseScale
     );

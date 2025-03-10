@@ -8,8 +8,8 @@ type Modes =
   | "normals"
   | "colors";
 
-const debug = true;
-const physicsDebug = true;
+const debug = false;
+const physicsDebug = false;
 const normalsDebug = false;
 const wireframe = false;
 const flatShading = false;

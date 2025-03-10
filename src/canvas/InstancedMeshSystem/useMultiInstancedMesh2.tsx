@@ -62,7 +62,7 @@ export const useMultiInstancedMesh2 = ({
             refs.current.push(node);
             refs.current[i].computeBVH();
             (refs.current[i] as any).frustumCulled = false;
-            const addPositions = (
+            const internalAdd = (
               newPositions: XYZ[],
               newRotations?: XYZ[],
               scales?: number[]
@@ -98,17 +98,15 @@ export const useMultiInstancedMesh2 = ({
               return indices;
             };
 
-            const removePositions = (indecesToRemove: number[]) => {
+            const internalRemove = (indecesToRemove: number[]) => {
               const instancedMesh2Ref = node;
               if (!instancedMesh2Ref) return;
-
-              const instances = instancedMesh2Ref.instances || [];
 
               instancedMesh2Ref.removeInstances(...indecesToRemove);
             };
 
-            addPositionFunctions.current.push(addPositions);
-            removePositionFunctions.current.push(removePositions);
+            addPositionFunctions.current.push(internalAdd);
+            removePositionFunctions.current.push(internalRemove);
           }}
         />
       );

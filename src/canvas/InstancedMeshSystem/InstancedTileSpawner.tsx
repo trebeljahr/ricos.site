@@ -24,6 +24,8 @@ export const InstancedTileSpawner = ({
   const { InstancedMesh, addPositions, removePositions, ref } =
     useInstancedMesh2({ geometry, material });
 
+  const indicesRef = useRef<number[]>([]);
+
   useKeyboardInput(({ key }) => {
     const pressedF = key === "f";
     const pressedG = key === "g";
@@ -32,16 +34,12 @@ export const InstancedTileSpawner = ({
       const newPositions = [
         new Vector3(Math.random() * tileSize, 0, Math.random() * tileSize),
       ];
-      addPositions(newPositions);
+      const indices = addPositions(newPositions);
+      indicesRef.current = indices;
     }
 
     if (pressedG) {
-      const randomPositions = pickRandomFromArray(
-        ref.current.instances
-          .filter((obj) => obj.active)
-          .map((obj) => obj.position),
-        1
-      );
+      const randomPositions = pickRandomFromArray(indicesRef.current, 1);
 
       removePositions(randomPositions);
     }
@@ -63,6 +61,8 @@ export const MultiInstancedTileSpawner = ({
       modelPath,
     });
 
+  const indexRef = useRef<number[]>([]);
+
   useKeyboardInput(({ key }) => {
     const pressedF = key === "f";
     const pressedG = key === "g";
@@ -71,17 +71,12 @@ export const MultiInstancedTileSpawner = ({
       const newPositions = [
         new Vector3(Math.random() * tileSize, 0, Math.random() * tileSize),
       ];
-      addPositions(newPositions);
+      const indexes = addPositions(newPositions);
+      indexRef.current = indexes;
     }
 
     if (pressedG) {
-      const randomPositions = pickRandomFromArray(
-        refs.current[0].instances
-          .filter((obj) => obj.active)
-          .map((obj, index) => index),
-        1
-      );
-
+      const randomPositions = pickRandomFromArray(indexRef.current, 1);
       removePositions(randomPositions);
     }
   });

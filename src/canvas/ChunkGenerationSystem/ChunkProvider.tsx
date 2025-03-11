@@ -11,6 +11,7 @@ import {
 } from "react";
 import { BufferGeometry, Float32BufferAttribute, Vector3 } from "three";
 import {
+  debug,
   firstLodLevelDistance,
   maxLodLevel,
   onlyRenderOnce,
@@ -18,11 +19,8 @@ import {
   thirdLodLevelDistance,
   tilesDistance,
   tileSize,
-  debug,
 } from "./config";
-import next from "next";
 import { DebugTile } from "./DebugTile";
-import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
 
 const tempVec = new Vector3();
 
@@ -222,11 +220,6 @@ export const MemoizedChunk = memo(
         {debug && <DebugTile position={chunkData.position} />}
 
         {children}
-
-        <HeightfieldTileWithCollider
-          geo={chunkData.data!.geo}
-          heightfield={chunkData.data!.heightfield}
-        />
       </group>
     );
   },

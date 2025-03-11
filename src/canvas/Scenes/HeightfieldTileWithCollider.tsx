@@ -6,34 +6,28 @@ import {
 } from "@r3f/ChunkGenerationSystem/config";
 import { useHelper } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
-import { useRef } from "react";
-import {
-  BufferGeometry,
-  DoubleSide,
-  Material,
-  Mesh,
-  MeshPhysicalMaterial,
-} from "three";
+import { ReactNode, useEffect, useRef } from "react";
+import { BufferGeometry, DoubleSide, Material, Mesh } from "three";
 import { VertexNormalsHelper } from "three-stdlib";
 
-const defaultMaterial = new MeshPhysicalMaterial({
-  color: "#dee6ef",
-  side: DoubleSide,
-  flatShading,
-  wireframe,
-});
+const defaultMaterial = () => (
+  <meshPhysicalMaterial
+    color="#dee6ef"
+    side={DoubleSide}
+    flatShading={flatShading}
+    wireframe={wireframe}
+  />
+);
 
 export const HeightfieldTileWithCollider = ({
-  geometry: geometry,
+  geometry,
   heightfield,
-  material = defaultMaterial,
+  material: MaterialComponent = defaultMaterial,
 }: {
   geometry: BufferGeometry;
   heightfield: number[];
-  material?: Material;
+  material?: (...args: any) => ReactNode;
 }) => {
-  const divisions = Math.sqrt(heightfield.length);
-
   const meshRef = useRef<Mesh>(null!);
 
   useHelper(normalsDebug && meshRef, VertexNormalsHelper, 1, 0xff0000);
@@ -44,11 +38,12 @@ export const HeightfieldTileWithCollider = ({
         <mesh
           ref={meshRef}
           geometry={geometry}
-          material={material}
           // castShadow={true}
           receiveShadow={true}
           visible={mode !== "none"}
-        />
+        >
+          <MaterialComponent displacementScale={0} />
+        </mesh>
       </RigidBody>
       {/* <RigidBody colliders={false}>
         <group rotation={[0, -Math.PI / 2, 0]}>

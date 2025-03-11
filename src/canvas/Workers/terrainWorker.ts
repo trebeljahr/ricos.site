@@ -94,7 +94,7 @@ function generateTerrainData(
       heightfield.push(heightForHeightfield);
 
       vertices.push(localX - halfSize, height, localZ - halfSize);
-      uvs.push(localX / resolution, localZ / resolution);
+      uvs.push((localX / resolution) * 5, (localZ / resolution) * 5);
       normals.push(normal.x, normal.y, normal.z);
 
       const biome = getBiome(

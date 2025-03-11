@@ -6,7 +6,10 @@ import { BufferGeometry, Material, Object3D, Vector3 } from "three";
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
-    instancedMesh2: Object3DNode<InstancedMesh2, typeof InstancedMesh2>;
+    instancedMesh2: Object3DNode<
+      InstancedMesh2 & Object3D,
+      typeof InstancedMesh2
+    >;
   }
 }
 
@@ -25,7 +28,7 @@ export function InstancedMesh2Component({
   material,
   positions,
 }: Props) {
-  const ref = useRef<InstancedMesh2>(null!);
+  const ref = useRef<InstancedMesh2 & Object3D>(null!);
   const { gl } = useThree();
 
   useEffect(() => {

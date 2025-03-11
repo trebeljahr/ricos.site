@@ -1,4 +1,3 @@
-import { useKeyboardInput } from "@hooks/useKeyboardInput";
 import { usePrevious } from "@hooks/usePrevious";
 import { useGLTF } from "@react-three/drei";
 import { extend, Object3DNode, useThree } from "@react-three/fiber";
@@ -6,19 +5,18 @@ import { InstancedMesh2 } from "@three.ez/instanced-mesh";
 import { nanoid } from "nanoid";
 import { useEffect, useMemo, useRef } from "react";
 import { BufferGeometry, Material, Object3D, Vector3 } from "three";
-import { pickRandomFromArray } from "../../lib/utils/randomFromArray";
-import { tileSize } from "../ChunkGenerationSystem/config";
 import {
   GenericGltfResult,
   GenericInstancingProps,
-  MeshMaterialCombos,
   SingleInstanceProps,
 } from "./GenericInstancingSystem";
-import { useMultiInstancedMesh2 } from "./useMultiInstancedMesh2";
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
-    instancedMesh2: Object3DNode<InstancedMesh2, typeof InstancedMesh2>;
+    instancedMesh2: Object3DNode<
+      InstancedMesh2 & Object3D,
+      typeof InstancedMesh2
+    >;
   }
 }
 

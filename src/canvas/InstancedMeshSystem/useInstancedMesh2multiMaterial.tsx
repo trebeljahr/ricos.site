@@ -1,14 +1,38 @@
 import { useGLTF } from "@react-three/drei";
-import { useThree } from "@react-three/fiber";
+import { extend, Object3DNode, useThree } from "@react-three/fiber";
 import { InstancedMesh2 } from "@three.ez/instanced-mesh";
-import { useEffect, useRef } from "react";
-import { Mesh, Object3D, Vector3 } from "three";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import {
+  BoxGeometry,
+  Mesh,
+  MeshLambertMaterial,
+  Object3D,
+  Vector3,
+} from "three";
 import { mergeBufferGeometries } from "three-stdlib";
 import { XYZ } from "./ChunkPositionUpdater";
 import { GenericGltfResult } from "./GenericInstancingSystem";
-import { temp } from "./useInstancedMesh2";
+
+declare module "@react-three/fiber" {
+  interface ThreeElements {
+    instancedMesh2: Object3DNode<
+      InstancedMesh2 & Object3D,
+      typeof InstancedMesh2
+    >;
+  }
+}
+
+extend({ InstancedMesh2 });
 
 const emptyRotation = new Vector3(0, 0, 0);
+const temp = new Object3D();
+
+export type InstancedMeshMultiMaterialHook = ReturnType<
+  typeof useInstancedMeshMultiMaterial
+>;
+
+export type addPositions = InstancedMeshMultiMaterialHook["addPositions"];
+export type removePositions = InstancedMeshMultiMaterialHook["removePositions"];
 
 export const useInstancedMeshMultiMaterial = ({
   modelPath,
@@ -16,10 +40,7 @@ export const useInstancedMeshMultiMaterial = ({
   modelPath: string;
 }) => {
   const result = useGLTF(modelPath) as any as GenericGltfResult;
-  console.log(result);
   const { nodes, materials } = result;
-
-  console.log(nodes, materials);
 
   const { gl } = useThree();
 
@@ -30,6 +51,7 @@ export const useInstancedMeshMultiMaterial = ({
   ) => {
     let posIndex = 0;
     let indices: number[] = [];
+
     ref.current.addInstances(positionsToAdd.length, (obj, index) => {
       const pos = positionsToAdd[posIndex];
       obj.matrix.copy(temp.matrix);
@@ -49,44 +71,60 @@ export const useInstancedMeshMultiMaterial = ({
       posIndex++;
       indices.push(index);
     });
+
     return indices;
   };
-
-  useEffect(() => {
-    if (!ref.current) return;
-
-    ref.current.computeBVH();
-    ref.current.frustumCulled = false;
-  }, []);
 
   const ref = useRef<InstancedMesh2 & Object3D>(null!);
   const removePositions = (indicesToRemove: number[]) => {
     ref.current.removeInstances(...indicesToRemove);
   };
 
-  const mergedGeos = mergeBufferGeometries(
-    Object.values(nodes)
-      .filter((x) => {
-        return x instanceof Mesh;
-      })
-      .map((x) => x.geometry),
-    true
+  const mergedGeos = useMemo(
+    () =>
+      mergeBufferGeometries(
+        Object.values(nodes)
+          .filter((x) => {
+            return x instanceof Mesh;
+          })
+          .map((x) => x.geometry),
+        true
+      ),
+    [nodes]
   );
 
   if (!mergedGeos) {
     throw Error("No geometries found");
   }
 
-  const mergedMaterials = Object.values(materials);
+  const mergedMaterials = useMemo(() => Object.values(materials), [materials]);
 
-  const InstancedMesh = () => {
+  const InstancedMesh = useCallback(() => {
+    useEffect(() => {
+      if (!ref.current) return;
+
+      ref.current.addLOD(
+        new BoxGeometry(100, 1000, 100),
+        new MeshLambertMaterial(),
+        100
+      );
+
+      ref.current.addShadowLOD(ref.current.geometry);
+      ref.current.addShadowLOD(new BoxGeometry(100, 1000, 100), 50);
+
+      ref.current.computeBVH();
+    }, []);
+
     return (
       <instancedMesh2
         args={[mergedGeos, mergedMaterials, { renderer: gl }]}
         ref={ref}
+        frustumCulled={false}
+        castShadow={true}
+        // receiveShadow={true}
       />
     );
-  };
+  }, [mergedGeos, mergedMaterials]);
 
   return {
     InstancedMesh,

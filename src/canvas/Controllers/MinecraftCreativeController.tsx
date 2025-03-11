@@ -18,8 +18,8 @@ type Props = {
 
 export function MinecraftCreativeController({
   speed = SPEED,
-  initialPosition = [0, 10, 0],
-  initialLookat = [0, 4, -1],
+  initialPosition = [0, 0, -1],
+  initialLookat = [0, 0, 0],
   children,
 }: PropsWithChildren<Props>) {
   const [, get] = useKeyboardControls();

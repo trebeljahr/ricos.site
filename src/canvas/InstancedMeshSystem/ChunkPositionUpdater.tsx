@@ -2,16 +2,16 @@ import { useEffect, useRef } from "react";
 import { Vector3 } from "three";
 import { useChunkContext } from "../ChunkGenerationSystem/ChunkProvider";
 import { tileSize } from "../ChunkGenerationSystem/config";
+import {
+  addPositions,
+  removePositions,
+} from "./useInstancedMesh2multiMaterial";
 
 const center = new Vector3(-tileSize / 2, 0, -tileSize / 2);
 
 type PositionsUpdateHookProps = {
-  addPositions: (
-    positionsToAdd: (Vector3 | XYZ)[],
-    rotations?: (Vector3 | XYZ)[],
-    scales?: number[]
-  ) => number[];
-  removePositions: (indicesToRemove: number[]) => void;
+  addPositions: addPositions;
+  removePositions: removePositions;
 };
 
 export type XYZ = {

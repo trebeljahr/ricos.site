@@ -13,6 +13,7 @@ import { DebugTile } from "@r3f/ChunkGenerationSystem/DebugTile";
 import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
 import { LightsAndFog } from "@r3f/Scenes/LightsAndFog";
+import { AnimatedSkyBox } from "@r3f/Scenes/OverheadLights";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Perf } from "r3f-perf";
@@ -47,12 +48,14 @@ const Page = () => {
         <Canvas
           camera={{
             near: 0.1,
-            far: tileSize * (tilesDistance - 1),
+            far: tileSize * (tilesDistance + 2),
           }}
         >
           {perf && <Perf position="bottom-right" />}
+          <AnimatedSkyBox />
+
           <Physics debug={physicsDebug}>
-            <LightsAndFog skyColor={"#c1f2ff"} />
+            {/* <LightsAndFog skyColor={"#c1f2ff"} /> */}
 
             <ChunkProvider>
               <ChunkRenderer />

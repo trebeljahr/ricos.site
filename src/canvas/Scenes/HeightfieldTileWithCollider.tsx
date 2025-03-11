@@ -52,8 +52,8 @@ export const HeightfieldTileWithCollider = ({
         ref={meshRef}
         geometry={geo}
         material={mat}
-        castShadow
-        receiveShadow
+        // castShadow={true}
+        receiveShadow={true}
       />
 
       <group rotation={[0, -Math.PI / 2, 0]}>

@@ -14,7 +14,6 @@ export const LightsAndFog = ({
       <ambientLight intensity={0.1} />
       <hemisphereLight intensity={0.1} />
       <fog attach="fog" args={[skyColor, 0, tileSize * (tilesDistance - 1)]} />
-
       <OverheadLights />
     </>
   );

@@ -48,7 +48,7 @@ export const useGenericAnimationController = ({
     toPlay.clampWhenFinished = true;
   };
 
-  return { updateAnimation: useDebounce(updateAnimation, 100) };
+  return { updateAnimation };
 };
 
 export const GenericAnimationController = ({

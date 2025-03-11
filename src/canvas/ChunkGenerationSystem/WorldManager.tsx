@@ -26,7 +26,7 @@ export const SingleTile = ({ chunkData }: { chunkData: Chunk }) => {
     <group>
       {debug && <DebugTile position={chunkData.position} />}
       <HeightfieldTileWithCollider
-        geo={chunkData.data.geo}
+        geometry={chunkData.data.geo}
         heightfield={chunkData.data.heightfield}
       />
     </group>

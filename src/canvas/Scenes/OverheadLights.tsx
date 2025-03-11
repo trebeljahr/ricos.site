@@ -42,62 +42,24 @@ export const OverheadLights = () => {
   );
 };
 
-const sun = new Vector3();
-const sunOffset = new Vector3();
 const temp = new Vector3();
 const offset = 3000;
 
 export const AnimatedSkyBox = () => {
-  const { sunValue } = useControls({
-    sunValue: { value: 70, min: 0, max: 360, step: 1 },
-  });
-
-  const { gl, camera } = useThree();
+  const { gl } = useThree();
 
   const fogRef = useRef<FogExp2>(null!);
   const dirLightRef = useRef<DirectionalLight>(null!);
-  const skyRef = useRef<SkyImpl>(null!);
 
   useFrame(({ camera }) => {
     const dirLight = dirLightRef.current;
     camera.getWorldPosition(temp);
-    // temp.copy(camera.position);
 
-    // dirLight.position.copy(temp).setZ(temp.y + 40); // .add(offset);
-    // dirLight.target.position.copy(temp).setZ(temp.y);
-    // dirLight.shadow.camera.updateProjectionMatrix();
-
-    // temp.add(new Vector3(0, 0, 0.1));
     dirLight.position.set(temp.x, dirLight.position.y, temp.z + offset);
     dirLight.target.position.set(temp.x, dirLight.target.position.y, temp.z);
     dirLight.updateMatrixWorld();
     dirLight.target.updateMatrixWorld();
   });
-
-  useEffect(() => {
-    // const sky = skyRef.current;
-    // const fog = fogRef.current;
-    const dirLight = dirLightRef.current;
-    // const uniforms = sky.material.uniforms;
-
-    sun.setFromSphericalCoords(
-      1,
-      Math.PI / -1.9 + sunValue * 0.02,
-      Math.PI / 1.4
-    );
-    // uniforms["sunPosition"].value.copy(sun);
-
-    const intensity = 3;
-    dirLight.intensity =
-      sun.y > 0.05 ? intensity : Math.max(0, (sun.y / 0.05) * intensity);
-    sunOffset.copy(sun).multiplyScalar(100);
-
-    // fog.color.setHSL(0, 0, sun.y);
-    // dirLight.color.setHSL(0, 0, sun.y);
-
-    // dirLight.position.copy(camera.position).setY(0).add(sunOffset);
-    // dirLight.target.position.copy(camera.position).setY(0);
-  }, [sunValue]);
 
   useEffect(() => {
     const dirLight = dirLightRef.current;
@@ -106,6 +68,7 @@ export const AnimatedSkyBox = () => {
     const shadowRange = 200;
     const heightSkyLight = 1000;
 
+    dirLight.intensity = 5;
     dirLight.shadow.mapSize.set(shadowSize, shadowSize);
     dirLight.shadow.camera.left = -shadowRange;
     dirLight.shadow.camera.right = shadowRange;
@@ -118,30 +81,20 @@ export const AnimatedSkyBox = () => {
     dirLight.position.set(temp.x, heightSkyLight, temp.z);
     dirLight.target.position.set(temp.x, 0, temp.z);
 
-    // const sky = skyRef.current;
-
-    // sky.scale.setScalar(450000);
-
-    // const uniforms = sky.material.uniforms;
-    // uniforms["turbidity"].value = 5;
-    // uniforms["rayleigh"].value = 2;
-
     gl.shadowMap.enabled = true;
     gl.shadowMap.type = PCFSoftShadowMap;
   }, []);
 
-  // useHelper(dirLightRef.current?.shadow.camera, CameraHelper);
   useShadowHelper(dirLightRef);
 
   return (
     <>
-      {/* <Sky ref={skyRef} /> */}
-      <color attach="background" args={["#f9df8b"]} />
+      {/* <Sky /> */}
+      <color attach="background" args={["#76c1ff"]} />
       <ambientLight intensity={0.2} />
-      {/* <cameraHelper camera={dirLightRef.current.shadow.camera} /> */}
-      <fogExp2 ref={fogRef} attach="fog" color="#f6e787" density={0.01} />
+      <fogExp2 ref={fogRef} attach="fog" color="#fbf2b9" density={0.01} />
 
-      <directionalLight ref={dirLightRef} color="#face3d" />
+      <directionalLight ref={dirLightRef} color="#fff0bd" />
     </>
   );
 };

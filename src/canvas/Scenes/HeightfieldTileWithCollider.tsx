@@ -1,44 +1,36 @@
-import { BiomeType, getBiome } from "@r3f/ChunkGenerationSystem/Biomes";
 import {
   flatShading,
   mode,
   normalsDebug,
-  tileSize,
   wireframe,
-  withAutoComputedNormals,
 } from "@r3f/ChunkGenerationSystem/config";
-import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
-import { TerrainData } from "@r3f/Workers/terrainWorker";
 import { useHelper } from "@react-three/drei";
-import { HeightfieldCollider, RigidBody } from "@react-three/rapier";
-import { useControls } from "leva";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { moistureNoise, temperatureNoise } from "src/lib/utils/noise";
+import { RigidBody } from "@react-three/rapier";
+import { useRef } from "react";
 import {
   BufferGeometry,
-  Color,
   DoubleSide,
-  Float32BufferAttribute,
+  Material,
   Mesh,
   MeshPhysicalMaterial,
-  PlaneGeometry,
-  Vector3,
 } from "three";
 import { VertexNormalsHelper } from "three-stdlib";
 
-const mat = new MeshPhysicalMaterial({
-  color: "#EDC9AF",
+const defaultMaterial = new MeshPhysicalMaterial({
+  color: "#dee6ef",
   side: DoubleSide,
   flatShading,
   wireframe,
 });
 
 export const HeightfieldTileWithCollider = ({
-  geo,
+  geometry: geometry,
   heightfield,
+  material = defaultMaterial,
 }: {
-  geo: BufferGeometry;
+  geometry: BufferGeometry;
   heightfield: number[];
+  material?: Material;
 }) => {
   const divisions = Math.sqrt(heightfield.length);
 
@@ -51,8 +43,8 @@ export const HeightfieldTileWithCollider = ({
       <RigidBody type="fixed" colliders="trimesh">
         <mesh
           ref={meshRef}
-          geometry={geo}
-          material={mat}
+          geometry={geometry}
+          material={material}
           // castShadow={true}
           receiveShadow={true}
           visible={mode !== "none"}

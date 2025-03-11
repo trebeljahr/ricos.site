@@ -20,6 +20,7 @@ import { AnimatedSkyBox } from "@r3f/Scenes/OverheadLights";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Perf } from "r3f-perf";
+import { Suspense } from "react";
 import {
   debug,
   perf,
@@ -29,6 +30,10 @@ import {
 } from "src/canvas/ChunkGenerationSystem/config";
 import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
 import { MinecraftCreativeController } from "src/canvas/Controllers/MinecraftCreativeController";
+import {
+  ForestFloorMaterial1,
+  SnowMaterial,
+} from "src/Materials/TextureMaterials";
 
 const ChunkRenderer = () => {
   const chunks = useChunkContext();
@@ -36,7 +41,17 @@ const ChunkRenderer = () => {
   return (
     <group>
       {Array.from(chunks).map(([key, chunkData], index) => {
-        return <MemoizedChunk key={index} chunkData={chunkData} />;
+        return (
+          <Suspense key={index}>
+            <MemoizedChunk chunkData={chunkData}>
+              <HeightfieldTileWithCollider
+                geometry={chunkData.data!.geo}
+                heightfield={chunkData.data!.heightfield}
+                material={ForestFloorMaterial1}
+              />
+            </MemoizedChunk>
+          </Suspense>
+        );
       })}
     </group>
   );
@@ -56,6 +71,7 @@ const Page = () => {
         >
           {perf && <Perf position="bottom-right" />}
           <AnimatedSkyBox />
+          <ambientLight intensity={1} />
 
           <Physics debug={physicsDebug}>
             <ChunkProvider>

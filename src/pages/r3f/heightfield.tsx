@@ -4,20 +4,12 @@ import {
   MemoizedChunk,
   useChunkContext,
 } from "@r3f/ChunkGenerationSystem/ChunkProvider";
-import {
-  debug,
-  physicsDebug,
-  tilesDistance,
-  tileSize,
-} from "@r3f/ChunkGenerationSystem/config";
-import { DebugTile } from "@r3f/ChunkGenerationSystem/DebugTile";
+import { physicsDebug } from "@r3f/ChunkGenerationSystem/config";
 import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { EcctrlController } from "@r3f/Controllers/EcctrlController";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { RigidBallSpawner } from "@r3f/Helpers/RigidBall";
-import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
 import { LightsAndFog } from "@r3f/Scenes/LightsAndFog";
-import { OverheadLights } from "@r3f/Scenes/OverheadLights";
 import { Physics } from "@react-three/rapier";
 
 export const ChunkRenderer = () => {

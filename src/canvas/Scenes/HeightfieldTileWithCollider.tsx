@@ -47,25 +47,29 @@ export const HeightfieldTileWithCollider = ({
   useHelper(normalsDebug && meshRef, VertexNormalsHelper, 1, 0xff0000);
 
   return (
-    <RigidBody colliders={false}>
-      <mesh
-        ref={meshRef}
-        geometry={geo}
-        material={mat}
-        // castShadow={true}
-        receiveShadow={true}
-      />
-
-      <group rotation={[0, -Math.PI / 2, 0]}>
-        <HeightfieldCollider
-          args={[
-            divisions - 1,
-            divisions - 1,
-            heightfield,
-            { x: tileSize, y: 1, z: tileSize },
-          ]}
+    <>
+      <RigidBody type="fixed" colliders="trimesh">
+        <mesh
+          ref={meshRef}
+          geometry={geo}
+          material={mat}
+          // castShadow={true}
+          receiveShadow={true}
+          visible={mode !== "none"}
         />
-      </group>
-    </RigidBody>
+      </RigidBody>
+      {/* <RigidBody colliders={false}>
+        <group rotation={[0, -Math.PI / 2, 0]}>
+          <HeightfieldCollider
+            args={[
+              divisions - 1,
+              divisions - 1,
+              heightfield,
+              { x: tileSize, y: 1, z: tileSize },
+            ]}
+          />
+        </group>
+      </RigidBody> */}
+    </>
   );
 };

@@ -128,7 +128,7 @@ function generateTerrainData(
       } else if (mode === "colors") {
         colors.push(_color.r, _color.g, _color.b);
       } else {
-        throw Error("Invalid mode");
+        colors.push(0.5, 0.5, 0.5);
       }
 
       if (x < resolution - 1 && z < resolution - 1) {
@@ -175,7 +175,7 @@ addEventListener(
       chunkId: string;
     }>
   ) => {
-    const data = await generateTerrainData(
+    const data = generateTerrainData(
       event.data.worldOffset,
       event.data.chunkId,
       event.data.divisions

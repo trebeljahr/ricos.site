@@ -3,6 +3,7 @@ import {
   BirchTreesForChunks,
   PineTreesForChunks,
   RocksForChunks,
+  SnowyPineTreesForChunks,
 } from "@r3f/ChunkGenerationSystem/ChunkInstancedMeshes";
 import {
   ChunkProvider,
@@ -11,6 +12,8 @@ import {
 } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { DebugTile } from "@r3f/ChunkGenerationSystem/DebugTile";
 import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
+import { BrunoSimonController } from "@r3f/Controllers/BrunoSimonController";
+import { EcctrlController } from "@r3f/Controllers/EcctrlController";
 import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
 import { LightsAndFog } from "@r3f/Scenes/LightsAndFog";
 import { AnimatedSkyBox } from "@r3f/Scenes/OverheadLights";
@@ -55,14 +58,15 @@ const Page = () => {
           <AnimatedSkyBox />
 
           <Physics debug={physicsDebug}>
-            {/* <LightsAndFog skyColor={"#c1f2ff"} /> */}
-
             <ChunkProvider>
               <ChunkRenderer />
-              <BirchTreesForChunks />
-              <PineTreesForChunks />
+              <SnowyPineTreesForChunks />
               {/* <RocksForChunks /> */}
             </ChunkProvider>
+
+            {/* <BrunoSimonController /> */}
+
+            {/* <EcctrlController position={[0, 100, 0]} /> */}
 
             <MinecraftCreativeController
               speed={25}

@@ -6,7 +6,8 @@ type Modes =
   | "flat"
   | "temperature"
   | "normals"
-  | "colors";
+  | "colors"
+  | "none";
 
 const debug = false;
 const physicsDebug = false;
@@ -15,12 +16,12 @@ const wireframe = false;
 const flatShading = false;
 const onlyRenderOnce = false;
 const debugCamera = false;
-const perf = true;
+const perf = false;
 const visualizeHeight = true;
 
 const tileSize = 100;
-const tilesDistance = 3;
-const mode: Modes = "landscape" as Modes;
+const tilesDistance = 4;
+const mode: Modes = "flat" as Modes;
 const heightNoiseScale = 0.007;
 const temperatureNoiseScale = 0.0005;
 const moistureNoiseScale = 0.0004;
@@ -30,8 +31,8 @@ const lodDistanceFactor = 1.2;
 const heightScale = 20;
 const detailLevels = 3;
 const persistence = 0.5;
-const treeMinDistance = 5;
-const treeMaxDistance = 10;
+const treeMinDistance = 6;
+const treeMaxDistance = treeMinDistance * 3;
 const withAutoComputedNormals = false;
 
 const firstLodLevelDistance = 2;

@@ -103,15 +103,15 @@ function getRandomRoomType(config: DungeonConfig): RoomType {
 function getRoomSize(type: RoomType): number {
   switch (type) {
     case "small":
-      return getRandomIntUneven(3, 5);
+      return getRandomIntUneven(5, 9);
     case "medium":
-      return getRandomIntUneven(6, 8);
+      return getRandomIntUneven(9, 13);
     case "large":
-      return getRandomIntUneven(9, 12);
+      return getRandomIntUneven(13, 17);
     case "hall":
-      return getRandomIntUneven(7, 15);
+      return getRandomIntUneven(17, 21);
     default:
-      return 5;
+      return 7;
   }
 }
 

@@ -73,7 +73,7 @@ const Page = () => {
 
             <MinecraftCreativeController
               speed={25}
-              initialLookat={[10, y, 0]}
+              initialLookat={[10, 0, 0]}
               initialPosition={[0, y + 20, 0]}
             />
           </Physics>

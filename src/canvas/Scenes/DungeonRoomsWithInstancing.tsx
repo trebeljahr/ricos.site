@@ -24,15 +24,15 @@ const Floors = ({
   rotations: XYZ[];
 }) => {
   // const { material, geometry} =
-  const { addPositions } = useInstancedMeshMultiMaterial({
+  const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Floor_Modular.glb",
   });
 
   useEffect(() => {
     addPositions(positions, rotations);
-  }, [positions, rotations]);
+  }, [positions, rotations, addPositions]);
 
-  return null;
+  return <InstancedMesh />;
 };
 
 const Walls = ({
@@ -42,15 +42,15 @@ const Walls = ({
   positions: XYZ[];
   rotations: XYZ[];
 }) => {
-  const { addPositions } = useInstancedMeshMultiMaterial({
+  const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Wall_Modular.glb",
   });
 
   useEffect(() => {
     addPositions(positions, rotations);
-  }, [positions, rotations]);
+  }, [positions, rotations, addPositions]);
 
-  return null;
+  return <InstancedMesh />;
 };
 
 const Arches = ({
@@ -60,15 +60,15 @@ const Arches = ({
   positions: XYZ[];
   rotations: XYZ[];
 }) => {
-  const { addPositions } = useInstancedMeshMultiMaterial({
+  const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Arch.glb",
   });
 
   useEffect(() => {
     addPositions(positions, rotations);
-  }, [positions, rotations]);
+  }, [addPositions, positions, rotations]);
 
-  return null;
+  return <InstancedMesh />;
 };
 
 export const DungeonFromLayout = () => {

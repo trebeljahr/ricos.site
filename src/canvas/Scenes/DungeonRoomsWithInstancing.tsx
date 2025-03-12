@@ -4,49 +4,81 @@ import {
   Wall_Modular,
 } from "@r3f/models/modular_dungeon_pack_1";
 import { GroupProps } from "@react-three/fiber";
-import { calculateDungeonLayout } from "./DungeonRoomsLayoutCalculator";
+import {
+  calculateDungeonLayout,
+  convertLayoutToPositions,
+  Position,
+  Rotation,
+} from "./DungeonRoomsLayoutCalculator";
+import { useInstancedMesh2 } from "@r3f/InstancedMeshSystem/useInstancedMesh2";
+import { useInstancedMeshMultiMaterial } from "@r3f/InstancedMeshSystem/useInstancedMesh2multiMaterial";
+import { useEffect } from "react";
+import { XYZ } from "@r3f/InstancedMeshSystem/ChunkPositionUpdater";
+
+const Floors = ({
+  positions,
+  rotations,
+}: {
+  positions: XYZ[];
+  rotations: XYZ[];
+}) => {
+  // const { material, geometry} =
+  const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
+    modelPath: "/3d-assets/glb/modular_dungeon_1/Floor_Modular.glb",
+  });
+
+  useEffect(() => {
+    addPositions(positions, rotations);
+  }, [positions, rotations]);
+
+  return <InstancedMesh />;
+};
+
+const Walls = ({
+  positions,
+  rotations,
+}: {
+  positions: XYZ[];
+  rotations: XYZ[];
+}) => {
+  const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
+    modelPath: "/3d-assets/glb/modular_dungeon_1/Wall_Modular.glb",
+  });
+
+  useEffect(() => {
+    addPositions(positions, rotations);
+  }, [positions, rotations]);
+
+  return <InstancedMesh />;
+};
+
+const Arches = ({
+  positions,
+  rotations,
+}: {
+  positions: XYZ[];
+  rotations: XYZ[];
+}) => {
+  const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
+    modelPath: "/3d-assets/glb/modular_dungeon_1/Arch.glb",
+  });
+
+  useEffect(() => {
+    addPositions(positions, rotations);
+  }, [positions, rotations]);
+
+  return <InstancedMesh />;
+};
 
 export const DungeonFromLayout = (props: GroupProps) => {
   const components = calculateDungeonLayout();
+  const { arches, walls, floors } = convertLayoutToPositions(components);
 
   return (
-    <group {...props}>
-      {components.map((component, index) => {
-        const { type, position, rotation = [0, 0, 0] } = component;
-
-        switch (type) {
-          case "floor":
-            return (
-              <Floor_Modular
-                key={`floor-${index}`}
-                position={[position[0], position[1], position[2]]}
-                rotation={[rotation[0], rotation[1], rotation[2]]}
-              />
-            );
-
-          case "wall":
-            return (
-              <Wall_Modular
-                key={`wall-${index}`}
-                position={[position[0], position[1], position[2]]}
-                rotation={[rotation[0], rotation[1], rotation[2]]}
-              />
-            );
-
-          case "arch":
-            return (
-              <Arch
-                key={`arch-${index}`}
-                position={[position[0], position[1], position[2]]}
-                rotation={[rotation[0], rotation[1], rotation[2]]}
-                scale-x={0.8}
-              />
-            );
-
-          default:
-            return null;
-        }
-      })}
-    </group>
+    <>
+      <Floors positions={floors.positions} rotations={floors.rotations} />
+      <Walls positions={walls.positions} rotations={walls.rotations} />
+      <Arches positions={arches.positions} rotations={arches.rotations} />
+    </>
   );
 };

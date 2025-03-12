@@ -13,8 +13,8 @@ import {
 import { useInstancedMesh2 } from "@r3f/InstancedMeshSystem/useInstancedMesh2";
 import { useInstancedMeshMultiMaterial } from "@r3f/InstancedMeshSystem/useInstancedMesh2multiMaterial";
 import { useEffect } from "react";
-import { XYZ } from "@r3f/InstancedMeshSystem/ChunkPositionUpdater";
 import { generateCustomDungeon } from "./ProceduralDungeonGenerator";
+import { XYZ } from "src/@types";
 
 const Floors = ({
   positions,
@@ -24,7 +24,7 @@ const Floors = ({
   rotations: XYZ[];
 }) => {
   // const { material, geometry} =
-  const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
+  const { addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Floor_Modular.glb",
   });
 
@@ -32,7 +32,7 @@ const Floors = ({
     addPositions(positions, rotations);
   }, [positions, rotations]);
 
-  return <InstancedMesh />;
+  return null;
 };
 
 const Walls = ({
@@ -42,7 +42,7 @@ const Walls = ({
   positions: XYZ[];
   rotations: XYZ[];
 }) => {
-  const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
+  const { addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Wall_Modular.glb",
   });
 
@@ -50,7 +50,7 @@ const Walls = ({
     addPositions(positions, rotations);
   }, [positions, rotations]);
 
-  return <InstancedMesh />;
+  return null;
 };
 
 const Arches = ({
@@ -60,7 +60,7 @@ const Arches = ({
   positions: XYZ[];
   rotations: XYZ[];
 }) => {
-  const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
+  const { addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Arch.glb",
   });
 
@@ -68,7 +68,7 @@ const Arches = ({
     addPositions(positions, rotations);
   }, [positions, rotations]);
 
-  return <InstancedMesh />;
+  return null;
 };
 
 export const DungeonFromLayout = () => {

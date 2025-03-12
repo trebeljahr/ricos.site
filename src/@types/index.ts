@@ -8,6 +8,12 @@ export type ImageProps = {
   src: string;
 };
 
+export type XYZ = {
+  x: number;
+  y: number;
+  z: number;
+};
+
 export type MDXResult = MDXRemoteSerializeResult<
   Record<string, unknown>,
   Record<string, unknown>

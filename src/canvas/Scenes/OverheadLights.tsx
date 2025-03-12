@@ -90,7 +90,7 @@ export const AnimatedSkyBox = () => {
   return (
     <>
       {/* <Sky /> */}
-      <color attach="background" args={["#76c1ff"]} />
+      <color attach="background" args={["#f9f1bd"]} />
       <ambientLight intensity={0.2} />
       <fogExp2 ref={fogRef} attach="fog" color="#fbf2b9" density={0.01} />
 

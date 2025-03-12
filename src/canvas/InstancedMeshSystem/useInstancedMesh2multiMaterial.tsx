@@ -1,7 +1,7 @@
 import { useGLTF } from "@react-three/drei";
 import { extend, Object3DNode, useThree } from "@react-three/fiber";
 import { InstancedMesh2 } from "@three.ez/instanced-mesh";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   BoxGeometry,
   Mesh,
@@ -10,19 +10,19 @@ import {
   Vector3,
 } from "three";
 import { mergeBufferGeometries } from "three-stdlib";
-import { XYZ } from "./ChunkPositionUpdater";
 import { GenericGltfResult } from "./GenericInstancingSystem";
+import { XYZ } from "src/@types";
 
-declare module "@react-three/fiber" {
-  interface ThreeElements {
-    instancedMesh2: Object3DNode<
-      InstancedMesh2 & Object3D,
-      typeof InstancedMesh2
-    >;
-  }
-}
+// declare module "@react-three/fiber" {
+//   interface ThreeElements {
+//     instancedMesh2: Object3DNode<
+//       InstancedMesh2 & Object3D,
+//       typeof InstancedMesh2
+//     >;
+//   }
+// }
 
-extend({ InstancedMesh2 });
+// extend({ InstancedMesh2 });
 
 const emptyRotation = new Vector3(0, 0, 0);
 const temp = new Object3D();
@@ -44,7 +44,7 @@ export const useInstancedMeshMultiMaterial = ({
   const result = useGLTF(modelPath) as any as GenericGltfResult;
   const { nodes, materials } = result;
 
-  const { gl } = useThree();
+  const { gl, scene } = useThree();
 
   const addPositions = (
     positionsToAdd: XYZ[],
@@ -77,10 +77,11 @@ export const useInstancedMeshMultiMaterial = ({
     return indices;
   };
 
-  const ref = useRef<InstancedMesh2 & Object3D>(null!);
   const removePositions = (indicesToRemove: number[]) => {
     ref.current.removeInstances(...indicesToRemove);
   };
+
+  const ref = useRef<InstancedMesh2 & Object3D>(null!);
 
   const mergedGeos = useMemo(
     () =>
@@ -101,35 +102,37 @@ export const useInstancedMeshMultiMaterial = ({
 
   const mergedMaterials = useMemo(() => Object.values(materials), [materials]);
 
-  const InstancedMesh = useCallback(() => {
-    useEffect(() => {
-      if (!ref.current) return;
+  useEffect(() => {
+    ref.current = new InstancedMesh2(mergedGeos, mergedMaterials, {
+      renderer: gl,
+    }) as InstancedMesh2 & Object3D;
 
-      ref.current.addLOD(
-        new BoxGeometry(100, 1000, 100),
-        new MeshLambertMaterial(),
-        100
-      );
+    ref.current.frustumCulled = false;
+    ref.current.castShadow = true;
 
-      ref.current.addShadowLOD(ref.current.geometry);
-      ref.current.addShadowLOD(new BoxGeometry(100, 1000, 100), 50);
-
-      ref.current.computeBVH();
-    }, []);
-
-    return (
-      <instancedMesh2
-        args={[mergedGeos, mergedMaterials, { renderer: gl }]}
-        ref={ref}
-        frustumCulled={false}
-        castShadow={true}
-        // receiveShadow={true}
-      />
+    ref.current.addLOD(
+      new BoxGeometry(100, 1000, 100),
+      new MeshLambertMaterial(),
+      100
     );
-  }, [mergedGeos, mergedMaterials]);
+
+    ref.current.addShadowLOD(ref.current.geometry);
+    ref.current.addShadowLOD(new BoxGeometry(100, 1000, 100), 50);
+
+    ref.current.computeBVH();
+
+    scene.add(ref.current);
+
+    return () => {
+      console.log("cleaning up instanced mesh!");
+      scene.remove(ref.current);
+      ref.current.dispose();
+    };
+  }, []);
+
+  console.log("rendering instanced mesh");
 
   return {
-    InstancedMesh,
     addPositions,
     removePositions,
     ref,

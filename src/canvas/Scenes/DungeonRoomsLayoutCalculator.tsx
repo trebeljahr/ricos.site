@@ -1,4 +1,4 @@
-import { XYZ } from "@r3f/InstancedMeshSystem/ChunkPositionUpdater";
+import { XYZ } from "src/@types";
 
 export const fullTile = 2;
 export const halfTile = 1;

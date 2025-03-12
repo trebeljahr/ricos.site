@@ -8,7 +8,7 @@ import {
   GenericGltfResult,
 } from "./GenericInstancingSystem";
 import { temp } from "./useInstancedMesh2";
-import { XYZ } from "./ChunkPositionUpdater";
+import { XYZ } from "src/@types";
 
 const emptyRotation = new Vector3(0, 0, 0);
 

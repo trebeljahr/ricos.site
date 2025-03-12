@@ -1,23 +1,14 @@
 import { useEffect, useRef } from "react";
-import { Vector3 } from "three";
 import { useChunkContext } from "../ChunkGenerationSystem/ChunkProvider";
-import { tileSize } from "../ChunkGenerationSystem/config";
 import {
   addPositions,
   removePositions,
 } from "./useInstancedMesh2multiMaterial";
+import { XYZ } from "src/@types";
 
-const center = new Vector3(-tileSize / 2, 0, -tileSize / 2);
-
-type PositionsUpdateHookProps = {
+export type PositionsUpdateHookProps = {
   addPositions: addPositions;
   removePositions: removePositions;
-};
-
-export type XYZ = {
-  x: number;
-  y: number;
-  z: number;
 };
 
 export const ChunkPositionUpdater = ({
@@ -53,6 +44,7 @@ export const ChunkPositionUpdater = ({
       }>
     ) => {
       const { positions, scales, rotations, chunkId } = event.data;
+      // console.log("added chunk", chunkId);
 
       const indices = addPositions(positions, rotations, scales);
       indicesPerChunk.current[chunkId] = indices;

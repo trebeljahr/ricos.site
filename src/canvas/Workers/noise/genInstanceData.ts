@@ -1,5 +1,5 @@
 import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
-import { XYZ } from "@r3f/InstancedMeshSystem/ChunkPositionUpdater";
+import { XYZ } from "src/@types";
 import {
   tileSize,
   treeMaxDistance,

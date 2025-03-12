@@ -2,13 +2,6 @@
 const fullTile = 2;
 const halfTile = 1;
 
-export enum Directions {
-  north = "north",
-  east = "east",
-  south = "south",
-  west = "west",
-}
-
 // Types
 export type Position = [number, number, number];
 export type Rotation = [number, number, number];
@@ -18,6 +11,13 @@ export type Component = {
   rotation?: Rotation;
 };
 
+export enum Directions {
+  north = "north",
+  east = "east",
+  south = "south",
+  west = "west",
+}
+
 export type DoorDirections = {
   [Directions.north]: boolean;
   [Directions.east]: boolean;
@@ -25,7 +25,7 @@ export type DoorDirections = {
   [Directions.west]: boolean;
 };
 
-export const NoDoors: DoorDirections = {
+const NoDoors: DoorDirections = {
   west: false,
   south: false,
   north: false,
@@ -71,48 +71,103 @@ export const calculateHallwayFloor = (
   return components;
 };
 
-export const calculateWalls = (
+// Calculate walls along the X-axis (facing north or south)
+export const calculateWallsX = (
   length: number,
   withDoor: boolean = false,
   basePosition: Position = [0, 0, 0],
-  rotation: Rotation = [0, 0, 0]
+  isFacingNorth: boolean = false
 ): Component[] => {
   const components: Component[] = [];
   const [baseX, baseY, baseZ] = basePosition;
 
+  // Adjust the z-coordinate based on which direction the wall is facing
+  const zOffset = isFacingNorth ? halfTile : -halfTile;
+
   for (let x = 0; x < length; x++) {
-    const downWallPosition: Position = [
-      baseX + x * fullTile,
-      baseY + halfTile,
-      baseZ - halfTile,
-    ];
-    const upWallPosition: Position = [
-      baseX + x * fullTile,
+    const wallX = baseX + x * fullTile;
+
+    // Bottom wall segment
+    const bottomPos: Position = [wallX, baseY + halfTile, baseZ + zOffset];
+
+    // Top wall segment
+    const topPos: Position = [
+      wallX,
       baseY + halfTile + fullTile,
-      baseZ - halfTile,
+      baseZ + zOffset,
     ];
 
     if (withDoor && x === Math.floor(length / 2)) {
+      // Place arch for door
       components.push({
         type: "arch",
-        position: [
-          downWallPosition[0],
-          downWallPosition[1] - halfTile,
-          downWallPosition[2],
-        ],
-        rotation,
+        position: [bottomPos[0], bottomPos[1] - halfTile, bottomPos[2]],
+        rotation: [0, 0, 0], // No rotation for north/south facing walls
       });
     } else {
+      // Place regular wall segments
       components.push({
         type: "wall",
-        position: downWallPosition,
-        rotation,
+        position: bottomPos,
+        rotation: [0, 0, 0],
       });
 
       components.push({
         type: "wall",
-        position: upWallPosition,
-        rotation,
+        position: topPos,
+        rotation: [0, 0, 0],
+      });
+    }
+  }
+
+  return components;
+};
+
+// Calculate walls along the Z-axis (facing east or west)
+export const calculateWallsZ = (
+  length: number,
+  withDoor: boolean = false,
+  basePosition: Position = [0, 0, 0],
+  isFacingEast: boolean = false
+): Component[] => {
+  const components: Component[] = [];
+  const [baseX, baseY, baseZ] = basePosition;
+
+  // Adjust the x-coordinate based on which direction the wall is facing
+  const xOffset = isFacingEast ? -halfTile : halfTile;
+
+  for (let z = 0; z < length; z++) {
+    const wallZ = baseZ + z * fullTile;
+
+    // Bottom wall segment
+    const bottomPos: Position = [baseX + xOffset, baseY + halfTile, wallZ];
+
+    // Top wall segment
+    const topPos: Position = [
+      baseX + xOffset,
+      baseY + halfTile + fullTile,
+      wallZ,
+    ];
+
+    if (withDoor && z === Math.floor(length / 2)) {
+      // Place arch for door - note the rotation for east/west facing walls
+      components.push({
+        type: "arch",
+        position: [bottomPos[0], bottomPos[1] - halfTile, bottomPos[2]],
+        rotation: [0, Math.PI / 2, 0], // Rotate for east/west facing walls
+      });
+    } else {
+      // Place regular wall segments
+      components.push({
+        type: "wall",
+        position: bottomPos,
+        rotation: [0, Math.PI / 2, 0], // Rotate for east/west facing walls
+      });
+
+      components.push({
+        type: "wall",
+        position: topPos,
+        rotation: [0, Math.PI / 2, 0], // Rotate for east/west facing walls
       });
     }
   }
@@ -130,16 +185,16 @@ export const calculateHallwayWalls = (
 
   // South wall
   components.push(
-    ...calculateWalls(length, false, [baseX, baseY, baseZ], [0, 0, 0])
+    ...calculateWallsX(length, false, [baseX, baseY, baseZ], false)
   );
 
   // North wall
   components.push(
-    ...calculateWalls(
+    ...calculateWallsX(
       length,
       false,
-      [baseX, baseY, baseZ + width * fullTile],
-      [0, 0, 0]
+      [baseX, baseY, baseZ + (width - 1) * fullTile],
+      true
     )
   );
 
@@ -170,38 +225,38 @@ export const calculateRoomSquare = (
   // Floor
   components.push(...calculateFloorSquare(size, basePosition));
 
-  // South wall
+  // South wall (along x-axis at z=0, facing south)
   components.push(
-    ...calculateWalls(size, doors.south, [baseX, baseY, baseZ], [0, 0, 0])
+    ...calculateWallsX(size, doors.south, [baseX, baseY, baseZ], false)
   );
 
-  // North wall
+  // North wall (along x-axis at z=size*fullTile, facing north)
   components.push(
-    ...calculateWalls(
+    ...calculateWallsX(
       size,
       doors.north,
-      [baseX, baseY, baseZ + size * fullTile],
-      [0, 0, 0]
+      [baseX, baseY, baseZ + (size - 1) * fullTile],
+      true
     )
   );
 
-  // East wall
+  // West wall (along z-axis at x=0, facing west)
   components.push(
-    ...calculateWalls(
-      size,
-      doors.east,
-      [baseX, baseY, baseZ + fullTile * size - fullTile],
-      [0, Math.PI / 2, 0]
-    )
-  );
-
-  // West wall
-  components.push(
-    ...calculateWalls(
+    ...calculateWallsZ(
       size,
       doors.west,
-      [baseX + size * fullTile, baseY, baseZ + fullTile * size - fullTile],
-      [0, Math.PI / 2, 0]
+      [baseX - fullTile, baseY, baseZ],
+      false
+    )
+  );
+
+  // East wall (along z-axis at x=size*fullTile, facing east)
+  components.push(
+    ...calculateWallsZ(
+      size,
+      doors.east,
+      [baseX + size * fullTile, baseY, baseZ],
+      true
     )
   );
 
@@ -221,12 +276,12 @@ export const calculateDungeonLayout = (): Component[] => {
 
   // Main room
   components.push(
-    ...calculateRoomSquare(11, createSingleDoor(Directions.east), [0, 0, 0])
+    ...calculateRoomSquare(11, createSingleDoor(Directions.west), [0, 0, 0])
   );
 
   // Side room
   components.push(
-    ...calculateRoomSquare(5, createSingleDoor(Directions.west), [
+    ...calculateRoomSquare(5, createSingleDoor(Directions.east), [
       -fullTile * 7,
       0,
       3 * fullTile,

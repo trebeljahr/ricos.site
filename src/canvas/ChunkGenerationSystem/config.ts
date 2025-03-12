@@ -16,7 +16,7 @@ const wireframe = false;
 const flatShading = false;
 const onlyRenderOnce = false;
 const debugCamera = false;
-const perf = false;
+const perf = true;
 const visualizeHeight = true;
 
 const tileSize = 100;

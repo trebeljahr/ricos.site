@@ -44,8 +44,6 @@ export const useInstancedMeshMultiMaterial = ({
   const result = useGLTF(modelPath) as any as GenericGltfResult;
   const { nodes, materials } = result;
 
-  console.log(nodes, materials);
-
   const { gl } = useThree();
 
   const addPositions = (

@@ -1,7 +1,7 @@
 import { XYZ } from "@r3f/InstancedMeshSystem/ChunkPositionUpdater";
 
-const fullTile = 2;
-const halfTile = 1;
+export const fullTile = 2;
+export const halfTile = 1;
 
 export type Position = [number, number, number];
 export type Rotation = [number, number, number];
@@ -162,9 +162,10 @@ export const calculateWallsZ = (
   return components;
 };
 
-export const calculateHallwayWalls = (
+const hallWidth = 3;
+
+export const calculateHallwayWallsX = (
   length: number,
-  width: number,
   basePosition: Position = [0, 0, 0]
 ): Component[] => {
   const components: Component[] = [];
@@ -178,7 +179,7 @@ export const calculateHallwayWalls = (
     ...calculateWallsX(
       length,
       false,
-      [baseX, baseY, baseZ + (width - 1) * fullTile],
+      [baseX, baseY, baseZ + (hallWidth - 1) * fullTile],
       true
     )
   );
@@ -186,15 +187,49 @@ export const calculateHallwayWalls = (
   return components;
 };
 
-export const calculateHallway = (
+export const calculateHallwayWallsZ = (
   length: number,
-  width: number,
+  basePosition: Position = [0, 0, 0]
+): Component[] => {
+  const components: Component[] = [];
+  const [baseX, baseY, baseZ] = basePosition;
+
+  components.push(
+    ...calculateWallsZ(length, false, [baseX - fullTile, baseY, baseZ], false)
+  );
+
+  components.push(
+    ...calculateWallsZ(
+      length,
+      false,
+      [baseX + length * fullTile, baseY, baseZ],
+      true
+    )
+  );
+
+  return components;
+};
+
+export const calculateHallwayX = (
+  length: number,
   basePosition: Position = [0, 0, 0]
 ): Component[] => {
   const components: Component[] = [];
 
-  components.push(...calculateHallwayFloor(length, width, basePosition));
-  components.push(...calculateHallwayWalls(length, width, basePosition));
+  components.push(...calculateHallwayFloor(length, hallWidth, basePosition));
+  components.push(...calculateHallwayWallsX(length, basePosition));
+
+  return components;
+};
+
+export const calculateHallwayZ = (
+  length: number,
+  basePosition: Position = [0, 0, 0]
+): Component[] => {
+  const components: Component[] = [];
+
+  components.push(...calculateHallwayFloor(hallWidth, length, basePosition));
+  components.push(...calculateHallwayWallsZ(length, basePosition));
 
   return components;
 };
@@ -265,7 +300,7 @@ export const calculateDungeonLayout = (): Component[] => {
     ])
   );
 
-  components.push(...calculateHallway(2, 3, [-fullTile * 2, 0, 4 * fullTile]));
+  components.push(...calculateHallwayX(2, [-fullTile * 2, 0, 4 * fullTile]));
 
   return components;
 };

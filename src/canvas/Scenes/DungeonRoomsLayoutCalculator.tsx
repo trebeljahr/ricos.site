@@ -1,3 +1,5 @@
+import { XYZ } from "@r3f/InstancedMeshSystem/ChunkPositionUpdater";
+
 const fullTile = 2;
 const halfTile = 1;
 
@@ -6,7 +8,7 @@ export type Rotation = [number, number, number];
 export type Component = {
   type: "floor" | "wall" | "arch";
   position: Position;
-  rotation?: Rotation;
+  rotation: Rotation;
 };
 
 export enum Directions {
@@ -60,6 +62,7 @@ export const calculateHallwayFloor = (
       components.push({
         type: "floor",
         position: [baseX + x * fullTile, baseY, baseZ + z * fullTile],
+        rotation: [0, 0, 0],
       });
     }
   }
@@ -265,4 +268,63 @@ export const calculateDungeonLayout = (): Component[] => {
   components.push(...calculateHallway(2, 3, [-fullTile * 2, 0, 4 * fullTile]));
 
   return components;
+};
+
+export const convertLayoutToPositions = (layout: Component[]) => {
+  const output = layout.reduce(
+    (agg, component) => {
+      const [x, y, z] = component.position;
+      const [rx, ry, rz] = component.rotation;
+
+      if (component.type === "floor") {
+        return {
+          ...agg,
+          floors: {
+            positions: [...agg.floors.positions, { x, y, z }],
+            rotations: [...agg.floors.rotations, { x: rx, y: ry, z: rz }],
+          },
+        };
+      }
+      if (component.type === "wall") {
+        return {
+          ...agg,
+          walls: {
+            positions: [...agg.walls.positions, { x, y, z }],
+            rotations: [...agg.walls.rotations, { x: rx, y: ry, z: rz }],
+          },
+        };
+      }
+      if (component.type === "arch") {
+        return {
+          ...agg,
+          arches: {
+            positions: [...agg.arches.positions, { x, y, z }],
+            rotations: [...agg.arches.rotations, { x: rx, y: ry, z: rz }],
+          },
+        };
+      }
+
+      return { ...agg };
+    },
+    {
+      floors: {
+        positions: [],
+        rotations: [],
+      },
+      walls: {
+        positions: [],
+        rotations: [],
+      },
+      arches: {
+        positions: [],
+        rotations: [],
+      },
+    } as {
+      floors: { positions: XYZ[]; rotations: XYZ[] };
+      walls: { positions: XYZ[]; rotations: XYZ[] };
+      arches: { positions: XYZ[]; rotations: XYZ[] };
+    }
+  );
+
+  return output;
 };

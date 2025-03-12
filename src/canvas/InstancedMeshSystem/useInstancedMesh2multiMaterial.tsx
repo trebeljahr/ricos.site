@@ -36,8 +36,10 @@ export type removePositions = InstancedMeshMultiMaterialHook["removePositions"];
 
 export const useInstancedMeshMultiMaterial = ({
   modelPath,
+  defaultScale = 1,
 }: {
   modelPath: string;
+  defaultScale?: number;
 }) => {
   const result = useGLTF(modelPath) as any as GenericGltfResult;
   const { nodes, materials } = result;
@@ -67,7 +69,7 @@ export const useInstancedMeshMultiMaterial = ({
       temp.rotation.set(-Math.PI / 2, 0, rotation.y);
       obj.quaternion.copy(temp.quaternion);
 
-      const scale = scales ? scales[posIndex] : 4;
+      const scale = scales ? scales[posIndex] : defaultScale;
       obj.scale.multiplyScalar(100 * scale);
 
       posIndex++;

@@ -18,7 +18,7 @@ export default function Page() {
           <DungeonFromLayout />
         </Stage>
         <Physics>
-          <MinecraftCreativeController />
+          <MinecraftCreativeController initialPosition={[0, 10, 0]} />
         </Physics>
         {/* <OrbitControls /> */}
       </CanvasWithKeyboardInput>

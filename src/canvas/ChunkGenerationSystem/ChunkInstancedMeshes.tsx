@@ -1,18 +1,11 @@
-import {
-  ChunkPositionUpdater,
-  PositionsUpdateHookProps,
-} from "@r3f/InstancedMeshSystem/ChunkPositionUpdater";
+import { ChunkPositionUpdater } from "@r3f/InstancedMeshSystem/ChunkPositionUpdater";
 import { useInstancedMeshMultiMaterial } from "@r3f/InstancedMeshSystem/useInstancedMesh2multiMaterial";
-import { memo } from "react";
-import { Vector3 } from "three";
-import { tileSize } from "./config";
 
-const center = new Vector3(-tileSize / 2, 0, -tileSize / 2);
-
-const InstancedMeshForChunks = memo(({ modelPath }: { modelPath: string }) => {
-  const { addPositions, removePositions } = useInstancedMeshMultiMaterial({
-    modelPath,
-  });
+const InstancedMeshForChunks = ({ modelPath }: { modelPath: string }) => {
+  const { InstancedMesh, addPositions, removePositions } =
+    useInstancedMeshMultiMaterial({
+      modelPath,
+    });
 
   return (
     <>
@@ -20,21 +13,7 @@ const InstancedMeshForChunks = memo(({ modelPath }: { modelPath: string }) => {
         addPositions={addPositions}
         removePositions={removePositions}
       />
-      {/* <InstancedMesh /> */}
-    </>
-  );
-});
-
-const ChunkUpdater = ({
-  addPositions,
-  removePositions,
-}: PositionsUpdateHookProps) => {
-  return (
-    <>
-      <ChunkPositionUpdater
-        addPositions={addPositions}
-        removePositions={removePositions}
-      />
+      <InstancedMesh />
     </>
   );
 };

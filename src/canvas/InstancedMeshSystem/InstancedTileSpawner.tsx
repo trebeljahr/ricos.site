@@ -54,9 +54,10 @@ export const InstancedMeshSpawnerMultiMaterial = ({
 }: {
   modelPath: string;
 }) => {
-  const { addPositions, removePositions } = useInstancedMeshMultiMaterial({
-    modelPath,
-  });
+  const { InstancedMesh, addPositions, removePositions } =
+    useInstancedMeshMultiMaterial({
+      modelPath,
+    });
   const indexRef = useRef<number[]>([]);
 
   useKeyboardInput(({ key }) => {
@@ -78,7 +79,7 @@ export const InstancedMeshSpawnerMultiMaterial = ({
     }
   });
 
-  return null;
+  return <InstancedMesh />;
 };
 
 export const MultiInstancedTileSpawner = ({

@@ -1,4 +1,3 @@
-import { getFractalNoiseFromWorker } from "@r3f/Workers/noise/pool";
 import { heightScale } from "./config";
 import { getFractalNoise } from "src/lib/utils/noise";
 

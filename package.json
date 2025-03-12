@@ -60,6 +60,7 @@
     "lamina": "^1.1.23",
     "leva": "^0.10.0",
     "mailgun.js": "^8.0.1",
+    "meshoptimizer": "^0.22.0",
     "motion": "^11.15.0",
     "nanoid": "^5.0.9",
     "next": "^14.2.15",

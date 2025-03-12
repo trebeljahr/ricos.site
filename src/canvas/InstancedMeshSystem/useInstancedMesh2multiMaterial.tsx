@@ -5,24 +5,27 @@ import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   BoxGeometry,
   Mesh,
+  MeshBasicMaterial,
   MeshLambertMaterial,
   Object3D,
   Vector3,
 } from "three";
-import { mergeBufferGeometries } from "three-stdlib";
+import { mergeBufferGeometries, mergeVertices } from "three-stdlib";
 import { GenericGltfResult } from "./GenericInstancingSystem";
 import { XYZ } from "src/@types";
+import { createSimplifiedGeometry } from "./createSimplifiedGeometry";
+import { tileSize } from "@r3f/ChunkGenerationSystem/config";
 
-// declare module "@react-three/fiber" {
-//   interface ThreeElements {
-//     instancedMesh2: Object3DNode<
-//       InstancedMesh2 & Object3D,
-//       typeof InstancedMesh2
-//     >;
-//   }
-// }
+declare module "@react-three/fiber" {
+  interface ThreeElements {
+    instancedMesh2: Object3DNode<
+      InstancedMesh2 & Object3D,
+      typeof InstancedMesh2
+    >;
+  }
+}
 
-// extend({ InstancedMesh2 });
+extend({ InstancedMesh2 });
 
 const emptyRotation = new Vector3(0, 0, 0);
 const temp = new Object3D();
@@ -43,8 +46,6 @@ export const useInstancedMeshMultiMaterial = ({
 }) => {
   const result = useGLTF(modelPath) as any as GenericGltfResult;
   const { nodes, materials } = result;
-
-  const { gl, scene } = useThree();
 
   const addPositions = (
     positionsToAdd: XYZ[],
@@ -102,37 +103,63 @@ export const useInstancedMeshMultiMaterial = ({
 
   const mergedMaterials = useMemo(() => Object.values(materials), [materials]);
 
-  useEffect(() => {
-    ref.current = new InstancedMesh2(mergedGeos, mergedMaterials, {
-      renderer: gl,
-    }) as InstancedMesh2 & Object3D;
+  const InstancedMesh = () => {
+    const { gl } = useThree();
 
-    ref.current.frustumCulled = false;
-    ref.current.castShadow = true;
+    useEffect(() => {
+      if (!ref.current) return;
 
-    ref.current.addLOD(
-      new BoxGeometry(100, 1000, 100),
-      new MeshLambertMaterial(),
-      100
+      async function optimizeMesh() {
+        // const mergedGeo = mergeVertices(ref.current.geometry);
+        const mergedGeo = ref.current.geometry;
+        const lod1 = await createSimplifiedGeometry(mergedGeo, {
+          ratio: 0.07,
+          error: 0.2,
+          prune: true,
+        });
+        const lod2 = await createSimplifiedGeometry(mergedGeo, {
+          ratio: 0.05,
+          error: 0.2,
+          prune: true,
+        });
+        const lod3 = await createSimplifiedGeometry(mergedGeo, {
+          ratio: 0.03,
+          error: 0.2,
+          prune: true,
+        });
+        const lod4 = await createSimplifiedGeometry(mergedGeo, {
+          ratio: 0.02,
+          error: 0.2,
+          prune: true,
+        });
+
+        ref.current.addLOD(lod1, mergedMaterials, (tileSize / 2) * 1);
+        ref.current.addLOD(lod2, mergedMaterials, (tileSize / 2) * 2);
+        ref.current.addLOD(lod3, mergedMaterials, (tileSize / 2) * 3);
+        ref.current.addLOD(lod4, mergedMaterials, (tileSize / 2) * 4);
+
+        ref.current.addShadowLOD(ref.current.geometry);
+        ref.current.addShadowLOD(new BoxGeometry(10, 20, 10), 5);
+
+        ref.current.computeBVH();
+      }
+
+      optimizeMesh();
+    }, []);
+
+    return (
+      <instancedMesh2
+        ref={ref}
+        args={[mergedGeos, mergedMaterials, { renderer: gl }]}
+        frustumCulled={false}
+        castShadow={true}
+        receiveShadow={false}
+      />
     );
-
-    ref.current.addShadowLOD(ref.current.geometry);
-    ref.current.addShadowLOD(new BoxGeometry(100, 1000, 100), 50);
-
-    ref.current.computeBVH();
-
-    scene.add(ref.current);
-
-    return () => {
-      console.log("cleaning up instanced mesh!");
-      scene.remove(ref.current);
-      ref.current.dispose();
-    };
-  }, []);
-
-  console.log("rendering instanced mesh");
+  };
 
   return {
+    InstancedMesh,
     addPositions,
     removePositions,
     ref,

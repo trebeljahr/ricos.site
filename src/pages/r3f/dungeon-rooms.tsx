@@ -9,6 +9,10 @@ import {
   Wall_Modular,
 } from "@r3f/models/modular_dungeon_pack_1";
 import { DungeonRooom } from "@r3f/Scenes/DungeonRooms";
+import {
+  CustomDungeon,
+  DungeonFromLayout,
+} from "@r3f/Scenes/DungeonRoomsWithInstancing";
 import { OrbitControls, Stage } from "@react-three/drei";
 import { Canvas, GroupProps } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
@@ -22,7 +26,7 @@ export default function Page() {
         <color attach="background" args={["#fbf1d1"]} />
         {perf && <Perf position="bottom-right" />}
         <Stage>
-          <DungeonRooom />
+          <CustomDungeon />
         </Stage>
         <Physics>
           <MinecraftCreativeController />

@@ -29,7 +29,7 @@ export function MinecraftCreativeController({
   useLayoutEffect(() => {
     camera.lookAt(...initialLookat);
     camera.position.fromArray(initialPosition);
-  }, []);
+  }, [camera, initialLookat, initialPosition]);
 
   useFrame(() => {
     if (!rigidBodyRef.current) return;

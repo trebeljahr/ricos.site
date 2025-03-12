@@ -85,20 +85,38 @@ export const calculateWallsX = (
     const wallX = baseX + x * fullTile;
 
     const bottomPos: Position = [wallX, baseY + halfTile, baseZ + zOffset];
-
-    const topPos: Position = [
+    const middlePos: Position = [
       wallX,
       baseY + halfTile + fullTile,
       baseZ + zOffset,
     ];
 
-    if (withDoor && x === Math.floor(length / 2)) {
+    const topPos: Position = [
+      wallX,
+      baseY + halfTile + 2 * fullTile,
+      baseZ + zOffset,
+    ];
+
+    const superTopPos: Position = [
+      wallX,
+      baseY + halfTile + 3 * fullTile,
+      baseZ + zOffset,
+    ];
+
+    const placeArch = withDoor && x === Math.floor(length / 2);
+    const cutoutDoor =
+      withDoor &&
+      (x === Math.floor(length / 2) ||
+        x === Math.floor(length / 2) + 1 ||
+        x === Math.floor(length / 2) - 1);
+
+    if (placeArch) {
       components.push({
         type: "arch",
         position: [bottomPos[0], bottomPos[1] - halfTile, bottomPos[2]],
         rotation: [0, 0, 0],
       });
-    } else {
+    } else if (!cutoutDoor) {
       components.push({
         type: "wall",
         position: bottomPos,
@@ -107,7 +125,19 @@ export const calculateWallsX = (
 
       components.push({
         type: "wall",
+        position: middlePos,
+        rotation: [0, 0, 0],
+      });
+
+      components.push({
+        type: "wall",
         position: topPos,
+        rotation: [0, 0, 0],
+      });
+
+      components.push({
+        type: "wall",
+        position: superTopPos,
         rotation: [0, 0, 0],
       });
     }
@@ -132,19 +162,44 @@ export const calculateWallsZ = (
 
     const bottomPos: Position = [baseX + xOffset, baseY + halfTile, wallZ];
 
-    const topPos: Position = [
+    const middlePos: Position = [
       baseX + xOffset,
       baseY + halfTile + fullTile,
       wallZ,
     ];
 
-    if (withDoor && z === Math.floor(length / 2)) {
+    const topPos: Position = [
+      baseX + xOffset,
+      baseY + halfTile + 2 * fullTile,
+      wallZ,
+    ];
+
+    const superTopPos: Position = [
+      baseX + xOffset,
+      baseY + halfTile + 3 * fullTile,
+      wallZ,
+    ];
+
+    const placeArch = withDoor && z === Math.floor(length / 2);
+    const cutoutDoor =
+      withDoor &&
+      (z === Math.floor(length / 2) ||
+        z === Math.floor(length / 2) + 1 ||
+        z === Math.floor(length / 2) - 1);
+
+    if (placeArch) {
       components.push({
         type: "arch",
         position: [bottomPos[0], bottomPos[1] - halfTile, bottomPos[2]],
         rotation: [0, Math.PI / 2, 0],
       });
-    } else {
+
+      // components.push({
+      //   type: "wall",
+      //   position: topPos,
+      //   rotation: [0, Math.PI / 2, 0],
+      // });
+    } else if (!cutoutDoor) {
       components.push({
         type: "wall",
         position: bottomPos,
@@ -154,6 +209,17 @@ export const calculateWallsZ = (
       components.push({
         type: "wall",
         position: topPos,
+        rotation: [0, Math.PI / 2, 0],
+      });
+
+      components.push({
+        type: "wall",
+        position: middlePos,
+        rotation: [0, Math.PI / 2, 0],
+      });
+      components.push({
+        type: "wall",
+        position: superTopPos,
         rotation: [0, Math.PI / 2, 0],
       });
     }

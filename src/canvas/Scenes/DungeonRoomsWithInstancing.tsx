@@ -4,15 +4,8 @@ import {
   Wall_Modular,
 } from "@r3f/models/modular_dungeon_pack_1";
 import { GroupProps } from "@react-three/fiber";
-import {
-  calculateDungeonLayout,
-  calculateHallway,
-  calculateRoomSquare,
-  createSingleDoor,
-  Directions,
-} from "./DungeonRoomsLayoutCalculator";
+import { calculateDungeonLayout } from "./DungeonRoomsLayoutCalculator";
 
-// Render a complete dungeon based on calculated layout data
 export const DungeonFromLayout = (props: GroupProps) => {
   const components = calculateDungeonLayout();
 
@@ -20,19 +13,6 @@ export const DungeonFromLayout = (props: GroupProps) => {
     <group {...props}>
       {components.map((component, index) => {
         const { type, position, rotation = [0, 0, 0] } = component;
-
-        // Convert arrays to objects with x, y, z properties for R3F
-        const positionObj = {
-          x: position[0],
-          y: position[1],
-          z: position[2],
-        };
-
-        const rotationObj = {
-          x: rotation[0],
-          y: rotation[1],
-          z: rotation[2],
-        };
 
         switch (type) {
           case "floor":

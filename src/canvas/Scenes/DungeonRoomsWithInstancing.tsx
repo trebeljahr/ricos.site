@@ -14,6 +14,7 @@ import { useInstancedMesh2 } from "@r3f/InstancedMeshSystem/useInstancedMesh2";
 import { useInstancedMeshMultiMaterial } from "@r3f/InstancedMeshSystem/useInstancedMesh2multiMaterial";
 import { useEffect } from "react";
 import { XYZ } from "@r3f/InstancedMeshSystem/ChunkPositionUpdater";
+import { generateCustomDungeon } from "./ProceduralDungeonGenerator";
 
 const Floors = ({
   positions,
@@ -70,8 +71,21 @@ const Arches = ({
   return <InstancedMesh />;
 };
 
-export const DungeonFromLayout = (props: GroupProps) => {
-  const components = calculateDungeonLayout();
+export const DungeonFromLayout = () => {
+  const components = generateCustomDungeon({
+    minRooms: 10,
+    maxRooms: 15,
+    complexity: 70,
+    sparseness: 40,
+    roomDistribution: {
+      small: 25,
+      medium: 40,
+      large: 25,
+      hall: 10,
+    },
+    corridorWidthRange: [1, 2],
+    corridorLengthRange: [2, 4],
+  });
   const { arches, walls, floors } = convertLayoutToPositions(components);
 
   return (

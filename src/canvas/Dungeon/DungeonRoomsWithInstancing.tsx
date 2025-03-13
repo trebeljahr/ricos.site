@@ -164,12 +164,6 @@ const Walls = ({
   positions: XYZ[];
   rotations: XYZ[];
 }) => {
-  const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/modular_dungeon_1/Wall_Modular.glb"
-  ) as unknown as GLTFResult;
-
-  console.log({ nodes, materials });
-
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Wall_Modular.glb",
   });

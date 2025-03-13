@@ -21,6 +21,7 @@ import {
   MeshType,
 } from "@r3f/Dungeon/DungeonGenerator3D/ConvertToMesh";
 import { Arches, Floors, Walls } from "@r3f/Dungeon/DungeonRoomsWithInstancing";
+import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 
 const materials = {
   room: new MeshStandardMaterial({
@@ -189,23 +190,17 @@ const RenderDungeon = () => {
   console.log(renderPass);
 
   useEffect(() => {
-    console.log(grid3D);
+    const roomInstances = roomInstancesRef.current;
+    const hallwayInstances = hallwayInstancesRef.current;
+    const stairsInstances = stairsInstancesRef.current;
 
-    camera.position.set(30, 30, 30);
-    camera.lookAt(0, 0, 0);
+    if (!roomInstances || !hallwayInstances || !stairsInstances) return;
 
     const centerOffset = new Vector3(
       -grid3D.size.x / 2,
       -grid3D.size.y / 2,
       -grid3D.size.z / 2
     );
-
-    camera.position.set(grid3D.size.x, grid3D.size.y * 1.5, grid3D.size.z);
-    camera.lookAt(0, 0, 0);
-
-    const roomInstances = roomInstancesRef.current;
-    const hallwayInstances = hallwayInstancesRef.current;
-    const stairsInstances = stairsInstancesRef.current;
 
     const matrix = new Matrix4();
 
@@ -240,13 +235,6 @@ const RenderDungeon = () => {
     roomInstances.instanceMatrix.needsUpdate = true;
     hallwayInstances.instanceMatrix.needsUpdate = true;
     stairsInstances.instanceMatrix.needsUpdate = true;
-
-    roomInstances.castShadow = true;
-    roomInstances.receiveShadow = true;
-    hallwayInstances.castShadow = true;
-    hallwayInstances.receiveShadow = true;
-    stairsInstances.castShadow = true;
-    stairsInstances.receiveShadow = true;
   });
 
   return (
@@ -263,7 +251,7 @@ const RenderDungeon = () => {
         />
       </mesh>
 
-      <instancedMesh
+      {/* <instancedMesh
         args={[geometries.room, materials.room, counts.room]}
         ref={roomInstancesRef}
         frustumCulled={false}
@@ -277,12 +265,14 @@ const RenderDungeon = () => {
         args={[geometries.stairs, materials.stairs, counts.stairs]}
         ref={stairsInstancesRef}
         frustumCulled={false}
-      />
+      /> */}
 
-      <Arches {...renderPass.doorFrames} />
-      <Walls {...renderPass.walls} />
-      <Floors {...renderPass.floors} />
-      <Floors {...renderPass.ceilings} />
+      <group position={[-25, 0.5, -25]}>
+        <Arches {...renderPass.doorFrames} />
+        <Walls {...renderPass.walls} />
+        <Floors {...renderPass.floors} />
+        <Floors {...renderPass.ceilings} />
+      </group>
     </group>
   );
 };
@@ -297,12 +287,12 @@ export default function Page() {
   return (
     <ThreeFiberLayout>
       <CanvasWithKeyboardInput camera={{ position: [25, 30, 25] }}>
-        <OrbitControls target={[25, 0, 25]} />
         <ambientLight args={["#404040", 1]} />
         <directionalLight args={["#ffffff", 0.8]} position={[50, 50, 50]} />
         <color attach="background" args={["#222222"]} />
         <RenderDungeon />
         <gridHelper position={[24.5, 0, 24.5]} args={[50, 50]} />
+        <MinecraftSpectatorController speed={0.5} />
       </CanvasWithKeyboardInput>
       <button onClick={handleClick} className="absolute top-0 right-0 z-20">
         Click for new dungeon

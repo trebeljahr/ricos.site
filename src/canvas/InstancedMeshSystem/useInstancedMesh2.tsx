@@ -101,6 +101,12 @@ export const useInstancedMesh2 = ({
 
       instancedMesh2.computeBVH();
       instancedMesh2.frustumCulled = false;
+
+      return () => {
+        instancedMesh2.clearInstances();
+        instancedMesh2.clear();
+        instancedMesh2.dispose();
+      };
     }, []);
 
     return (

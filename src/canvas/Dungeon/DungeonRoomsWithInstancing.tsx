@@ -184,6 +184,8 @@ export const Arches = ({
   positions: XYZ[];
   rotations: XYZ[];
 }) => {
+  console.log("positions", positions);
+
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Arch.glb",
     defaultScale: 0.25,

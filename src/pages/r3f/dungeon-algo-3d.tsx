@@ -6,8 +6,8 @@ import {
   Vector3,
   Vector3Int,
 } from "@r3f/Dungeon/DungeonGenerator3D/Types";
-import { OrbitControls } from "@react-three/drei";
-import { useEffect, useRef, useState } from "react";
+import { OrbitControls, Sky } from "@react-three/drei";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useThree } from "@react-three/fiber";
 import {
   BoxGeometry,
@@ -22,6 +22,11 @@ import {
 } from "@r3f/Dungeon/DungeonGenerator3D/ConvertToMesh";
 import { Arches, Floors, Walls } from "@r3f/Dungeon/DungeonRoomsWithInstancing";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
+import {
+  useKeyboardInput,
+  useSubscribeToKeyPress,
+} from "@hooks/useKeyboardInput";
+import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
 
 const materials = {
   room: new MeshStandardMaterial({
@@ -48,10 +53,18 @@ const geometries = {
 };
 
 const RenderDungeon = () => {
-  const { camera } = useThree();
+  const [showDebug, setShowDebug] = useState(true);
+
   const roomInstancesRef = useRef<InstancedMesh>(null!);
   const hallwayInstancesRef = useRef<InstancedMesh>(null!);
   const stairsInstancesRef = useRef<InstancedMesh>(null!);
+
+  const handleDebug = () => {
+    setShowDebug((prev) => !prev);
+  };
+
+  useSubscribeToKeyPress("f", handleDebug);
+  console.log("rendering dungeon");
 
   const generator3D = new DungeonGenerator3D(
     new Vector3Int(50, 5, 50),
@@ -59,6 +72,7 @@ const RenderDungeon = () => {
     new Vector3Int(6, 1, 6),
     Math.random() * 1000
   );
+
   const grid3D = generator3D.generate();
 
   const counts = grid3D.data.reduce(
@@ -238,10 +252,7 @@ const RenderDungeon = () => {
   });
 
   return (
-    <group position={[25, -0.1, 25]}>
-      <ambientLight args={["#404040", 1]} />
-      <directionalLight args={["#ffffff", 0.8]} position={[50, 50, 50]} />
-      <color attach="background" args={["#222222"]} />
+    <group position={[grid3D.size.x / 2, -0.1, grid3D.size.z / 2]} scale={4}>
       <mesh rotation-x={-Math.PI / 2}>
         <planeGeometry args={[grid3D.size.x, grid3D.size.z]} />
         <meshStandardMaterial
@@ -251,28 +262,34 @@ const RenderDungeon = () => {
         />
       </mesh>
 
-      {/* <instancedMesh
-        args={[geometries.room, materials.room, counts.room]}
-        ref={roomInstancesRef}
-        frustumCulled={false}
-      />
-      <instancedMesh
-        args={[geometries.hallway, materials.hallway, counts.hallway]}
-        ref={hallwayInstancesRef}
-        frustumCulled={false}
-      />
-      <instancedMesh
-        args={[geometries.stairs, materials.stairs, counts.stairs]}
-        ref={stairsInstancesRef}
-        frustumCulled={false}
-      /> */}
+      <gridHelper args={[grid3D.size.x, grid3D.size.z]} position-y={0.1} />
 
-      <group position={[-25, 0.5, -25]}>
-        <Arches {...renderPass.doorFrames} />
-        <Walls {...renderPass.walls} />
-        <Floors {...renderPass.floors} />
-        <Floors {...renderPass.ceilings} />
-      </group>
+      {showDebug ? (
+        <>
+          <instancedMesh
+            args={[geometries.room, materials.room, counts.room]}
+            ref={roomInstancesRef}
+            frustumCulled={false}
+          />
+          <instancedMesh
+            args={[geometries.hallway, materials.hallway, counts.hallway]}
+            ref={hallwayInstancesRef}
+            frustumCulled={false}
+          />
+          <instancedMesh
+            args={[geometries.stairs, materials.stairs, counts.stairs]}
+            ref={stairsInstancesRef}
+            frustumCulled={false}
+          />
+        </>
+      ) : (
+        <group position={[-grid3D.size.x / 2, 0, -grid3D.size.z / 2]}>
+          <Arches {...renderPass.doorFrames} />
+          <Walls {...renderPass.walls} />
+          <Floors {...renderPass.floors} />
+          <Floors {...renderPass.ceilings} />
+        </group>
+      )}
     </group>
   );
 };
@@ -286,14 +303,13 @@ export default function Page() {
 
   return (
     <ThreeFiberLayout>
-      <CanvasWithKeyboardInput
-        camera={{ position: [25, 30, 25], near: 0, far: 50, fov: 50 }}
-      >
+      <CanvasWithKeyboardInput camera={{ near: 0.001, position: [25, 10, 25] }}>
         <ambientLight args={["#404040", 1]} />
         <directionalLight args={["#ffffff", 0.8]} position={[50, 50, 50]} />
-        <color attach="background" args={["#222222"]} />
+        <Sky />
         <RenderDungeon />
-        <gridHelper position={[24.5, 0, 24.5]} args={[50, 50]} />
+        <CameraPositionLogger />
+
         <MinecraftSpectatorController speed={0.2} />
       </CanvasWithKeyboardInput>
       <button onClick={handleClick} className="absolute top-0 right-0 z-20">

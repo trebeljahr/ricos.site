@@ -1,6 +1,6 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
-import { MinecraftCreativeController } from "@r3f/Controllers/MinecraftCreativeController";
+import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Leva, useControls } from "leva";
@@ -42,7 +42,7 @@ const Page = () => {
             <RayCaster />
             {debug && <gridHelper args={[tileSize, 100]} />}
 
-            <MinecraftCreativeController speed={speed} />
+            <MinecraftSpectatorController speed={speed} />
             <RigidBallSpawner />
           </Physics>
         </Canvas>

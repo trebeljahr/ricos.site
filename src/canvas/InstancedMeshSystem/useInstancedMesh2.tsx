@@ -4,12 +4,19 @@ import { extend, Object3DNode, useThree } from "@react-three/fiber";
 import { InstancedMesh2 } from "@three.ez/instanced-mesh";
 import { nanoid } from "nanoid";
 import { useEffect, useMemo, useRef } from "react";
-import { BufferGeometry, Material, Object3D, Vector3 } from "three";
+import {
+  BufferGeometry,
+  Material,
+  MeshStandardMaterial,
+  Object3D,
+  Vector3,
+} from "three";
 import {
   GenericGltfResult,
   GenericInstancingProps,
   SingleInstanceProps,
 } from "./GenericInstancingSystem";
+import { XYZ } from "src/@types";
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
@@ -23,30 +30,51 @@ declare module "@react-three/fiber" {
 extend({ InstancedMesh2 });
 
 export const temp = new Object3D();
+const emptyRotation = new Vector3(0, 0, 0);
 
 export type SingleHookProps = {
-  material: Material;
+  material: Material | Material[];
   geometry: BufferGeometry;
+  defaultScale?: number;
+  emissiveColor?: string;
+  emissiveIntensity?: number;
 };
 
-export const useInstancedMesh2 = ({ material, geometry }: SingleHookProps) => {
+export const useInstancedMesh2 = ({
+  material,
+  geometry,
+  defaultScale = 1,
+  emissiveColor,
+  emissiveIntensity,
+}: SingleHookProps) => {
   const ref = useRef<InstancedMesh2 & Object3D>(null!);
   const { gl } = useThree();
 
-  const addPositions = (newPositions: Vector3[]) => {
+  const addPositions = (
+    newPositions: XYZ[],
+    rotations?: XYZ[],
+    scales?: number[]
+  ) => {
     const instancedMesh2 = ref.current;
-    if (!instancedMesh2.instances) return [];
-
     let counter = 0;
     let indices: number[] = [];
     instancedMesh2.addInstances(newPositions.length, (obj, index) => {
+      const pos = newPositions[counter];
       obj.matrix.copy(temp.matrix);
       obj.scale.set(1, 1, 1);
-      obj.position.copy(newPositions[counter++]);
+      obj.position.set(pos.x, pos.y, pos.z);
 
-      temp.rotation.set(-Math.PI / 2, 0, 0);
+      const rotation = rotations
+        ? rotations[counter] || emptyRotation
+        : emptyRotation;
+
+      temp.rotation.set(-Math.PI / 2, 0, rotation.y);
       obj.quaternion.copy(temp.quaternion);
-      obj.scale.multiplyScalar(100);
+
+      const scale = scales ? scales[counter] : defaultScale;
+      obj.scale.multiplyScalar(100 * scale);
+
+      counter++;
       indices.push(index);
     });
 
@@ -62,6 +90,12 @@ export const useInstancedMesh2 = ({ material, geometry }: SingleHookProps) => {
 
   const InstancedMesh = () => {
     useEffect(() => {
+      if (material instanceof MeshStandardMaterial && emissiveColor) {
+        material.emissive.set(emissiveColor);
+        material.emissiveIntensity = emissiveIntensity || 1;
+        material.toneMapped = false;
+      }
+
       const instancedMesh2 = ref.current;
       if (!instancedMesh2) return;
 
@@ -70,10 +104,7 @@ export const useInstancedMesh2 = ({ material, geometry }: SingleHookProps) => {
     }, []);
 
     return (
-      <instancedMesh2
-        args={[geometry, material, { renderer: gl, createEntities: true }]}
-        ref={ref}
-      />
+      <instancedMesh2 args={[geometry, material, { renderer: gl }]} ref={ref} />
     );
   };
 

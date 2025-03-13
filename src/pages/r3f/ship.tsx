@@ -1,4 +1,4 @@
-import { MinecraftCreativeController } from "src/canvas/Controllers/MinecraftCreativeController";
+import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { OceanSurface } from "src/canvas/OceanDemo/Ocean";
 import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
@@ -16,7 +16,7 @@ export default function Page() {
       <CanvasWithKeyboardInput>
         <Sky azimuth={1} inclination={0.6} distance={1000} />
         <Physics>
-          <MinecraftCreativeController />
+          <MinecraftSpectatorController />
         </Physics>
         <Ship />
         <OceanSurface />

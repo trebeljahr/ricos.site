@@ -11,8 +11,6 @@ export const CameraPositionLogger = () => {
   const { camera } = useThree();
 
   useSubscribeToKeyPress("t", () => {
-    if (!debugCamera) return;
-
     console.info(
       "local position",
       camera.position.x,
@@ -25,8 +23,6 @@ export const CameraPositionLogger = () => {
   });
 
   useSubscribeToKeyPress("r", () => {
-    if (!debugCamera) return;
-
     console.info(
       "local rotation",
       camera.rotation.x,

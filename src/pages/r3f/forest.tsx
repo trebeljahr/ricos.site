@@ -19,7 +19,7 @@ import {
   tileSize,
 } from "src/canvas/ChunkGenerationSystem/config";
 import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
-import { MinecraftCreativeController } from "src/canvas/Controllers/MinecraftCreativeController";
+import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 
 const ChunkRenderer = () => {
   const chunks = useChunkContext();
@@ -71,7 +71,7 @@ const Page = () => {
 
             {/* <EcctrlController position={[0, 100, 0]} /> */}
 
-            <MinecraftCreativeController
+            <MinecraftSpectatorController
               speed={25}
               initialLookat={[10, 0, 0]}
               initialPosition={[0, y + 20, 0]}

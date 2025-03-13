@@ -1,4 +1,4 @@
-import { MinecraftCreativeController } from "src/canvas/Controllers/MinecraftCreativeController";
+import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
 import { YukaSimulation } from "src/canvas/Yuka/YukaExample";
 import { Canvas } from "@react-three/fiber";
@@ -15,7 +15,7 @@ const Page = () => {
             <directionalLight position={[10, 10, 5]} intensity={1} />
             <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
             <color args={["#f0f0f0"]} attach="background" />
-            <MinecraftCreativeController speed={25} />
+            <MinecraftSpectatorController speed={25} />
             <YukaSimulation />
           </Physics>
         </Canvas>

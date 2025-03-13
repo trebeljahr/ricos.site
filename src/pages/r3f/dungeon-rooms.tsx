@@ -3,8 +3,8 @@ import { perf } from "@r3f/ChunkGenerationSystem/config";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
-import { DungeonFromLayout } from "@r3f/Scenes/DungeonRoomsWithInstancing";
-import { generateCustomDungeon } from "@r3f/Scenes/ProceduralDungeonGenerator";
+import { DungeonFromLayout } from "@r3f/Dungeon/DungeonRoomsWithInstancing";
+import { generateCustomDungeon } from "@r3f/Dungeon/ProceduralDungeonGenerator";
 import {
   Bloom,
   EffectComposer,

@@ -4,7 +4,7 @@ import {
   tileSize,
 } from "src/canvas/ChunkGenerationSystem/config";
 import { RigidBallSpawner } from "src/canvas/Helpers/RigidBall";
-import { MinecraftCreativeController } from "src/canvas/Controllers/MinecraftCreativeController";
+import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
 import * as animals from "src/canvas/models/animals_pack";
 import * as dinosaurs from "src/canvas/models/dinosaurs_pack";
@@ -120,7 +120,7 @@ const Page = () => {
               })}
             </group>
 
-            <MinecraftCreativeController speed={25} />
+            <MinecraftSpectatorController speed={25} />
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>

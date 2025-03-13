@@ -1,20 +1,138 @@
-import {
-  Arch,
-  Floor_Modular,
-  Wall_Modular,
-} from "@r3f/models/modular_dungeon_pack_1";
-import { GroupProps } from "@react-three/fiber";
-import {
-  calculateDungeonLayout,
-  convertLayoutToPositions,
-  Position,
-  Rotation,
-} from "./DungeonRoomsLayoutCalculator";
-import { useInstancedMesh2 } from "@r3f/InstancedMeshSystem/useInstancedMesh2";
 import { useInstancedMeshMultiMaterial } from "@r3f/InstancedMeshSystem/useInstancedMesh2multiMaterial";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { GLTFResult, XYZ } from "src/@types";
+import {
+  Component,
+  convertLayoutToPositions,
+} from "./DungeonRoomsLayoutCalculator";
 import { generateCustomDungeon } from "./ProceduralDungeonGenerator";
-import { XYZ } from "src/@types";
+import { Environment, PointMaterial, useGLTF } from "@react-three/drei";
+import { Color, DynamicDrawUsage, Points } from "three";
+import { useFrame } from "@react-three/fiber";
+import { useInstancedMesh2 } from "@r3f/InstancedMeshSystem/useInstancedMesh2";
+
+function Particles({
+  positions,
+  colors,
+}: {
+  positions: Float32Array;
+  colors: Float32Array;
+}) {
+  // const points = useRef<Points>(null!);
+  // useFrame((state) => {
+  //   const t = state.clock.elapsedTime;
+  //   positions.forEach(
+  //     (p, i) => (positions[i] += Math[i % 2 ? "sin" : "cos"](10 * i + t) / 20)
+  //   );
+  //   points.current.geometry.attributes.position.needsUpdate = true;
+  // });
+  return (
+    <points frustumCulled={false}>
+      <bufferGeometry>
+        <bufferAttribute
+          usage={DynamicDrawUsage}
+          attach="attributes-position"
+          args={[positions, 3]}
+        />
+        <bufferAttribute
+          usage={DynamicDrawUsage}
+          attach="attributes-color"
+          args={[colors, 3]}
+        />
+      </bufferGeometry>
+      <PointMaterial
+        emissive={new Color(colors[0], colors[1], colors[2])}
+        emissiveIntensity={1}
+        transparent
+        vertexColors
+        size={2}
+        sizeAttenuation={true}
+        depthWrite={false}
+        toneMapped={false}
+      />
+    </points>
+  );
+}
+
+const Torches = ({
+  positions,
+  rotations,
+}: {
+  positions: XYZ[];
+  rotations: XYZ[];
+}) => {
+  const { nodes, materials } = useGLTF(
+    "/3d-assets/glb/modular_dungeon_1/Torch.glb"
+  ) as unknown as GLTFResult;
+
+  const { InstancedMesh: Holders, addPositions: addHolders } =
+    useInstancedMesh2({
+      geometry: nodes.Torch_1.geometry,
+      material: materials.DarkMetal,
+    });
+  const color = "#00f7ff";
+
+  const { InstancedMesh: Fires, addPositions: addFires } = useInstancedMesh2({
+    geometry: nodes.Torch_2.geometry,
+    material: materials.Fire,
+    emissiveColor: color,
+    emissiveIntensity: 5,
+  });
+
+  // const {
+  //   InstancedMesh,
+  //   addPositions: addPositions2,
+  //   ref,
+  // } = useInstancedMesh2();
+
+  useEffect(() => {
+    addFires(positions, rotations);
+    addHolders(positions, rotations);
+  }, [addFires, addHolders, positions, rotations]);
+
+  // const lights = positions.slice(0, 5);
+
+  const pos = new Float32Array(
+    positions.map(({ x, y, z }) => [x, y + 0.6, z]).flat()
+  );
+
+  const colorArray = Array.from({ length: positions.length }, () =>
+    new Color(color).toArray()
+  ).flat();
+  const colors = new Float32Array(colorArray);
+
+  return (
+    <>
+      {/* {lights.map((pos, index) => {
+        const rot = rotations[index];
+
+        return (
+          <>
+            <group key={index} rotation={[rot.x, rot.y, rot.z]}>
+              <pointLight
+                frustumCulled={true}
+                distance={100}
+                intensity={20}
+                color={"#ff9500"}
+                position={[pos.x, pos.y + 0.5, pos.z + 0.5]}
+                castShadow={false}
+              />
+            </group>
+          </>
+        );
+      })} */}
+      {/* <Particles positions={pos} colors={colors} /> */}
+
+      <Environment resolution={256} frames={Infinity}>
+        <Particles positions={pos} colors={colors} />
+      </Environment>
+
+      <Fires />
+      <Holders />
+      {/* <InstancedMesh /> */}
+    </>
+  );
+};
 
 const Floors = ({
   positions,
@@ -23,9 +141,13 @@ const Floors = ({
   positions: XYZ[];
   rotations: XYZ[];
 }) => {
-  // const { material, geometry} =
-  const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
-    modelPath: "/3d-assets/glb/modular_dungeon_1/Floor_Modular.glb",
+  const { nodes, materials } = useGLTF(
+    "/3d-assets/glb/modular_dungeon_1/Floor_Modular.glb"
+  ) as unknown as GLTFResult;
+
+  const { InstancedMesh, addPositions } = useInstancedMesh2({
+    geometry: nodes.Floor_Modular.geometry,
+    material: materials.Grey_Floor,
   });
 
   useEffect(() => {
@@ -42,6 +164,12 @@ const Walls = ({
   positions: XYZ[];
   rotations: XYZ[];
 }) => {
+  const { nodes, materials } = useGLTF(
+    "/3d-assets/glb/modular_dungeon_1/Wall_Modular.glb"
+  ) as unknown as GLTFResult;
+
+  console.log({ nodes, materials });
+
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Wall_Modular.glb",
   });
@@ -72,28 +200,20 @@ const Arches = ({
   return <InstancedMesh />;
 };
 
-export const DungeonFromLayout = () => {
-  const components = generateCustomDungeon({
-    minRooms: 10,
-    maxRooms: 15,
-    complexity: 70,
-    sparseness: 40,
-    roomDistribution: {
-      small: 25,
-      medium: 40,
-      large: 25,
-      hall: 10,
-    },
-    corridorWidthRange: [1, 2],
-    corridorLengthRange: [2, 4],
-  });
-  const { arches, walls, floors } = convertLayoutToPositions(components);
+export const DungeonFromLayout = ({
+  components,
+}: {
+  components: Component[];
+}) => {
+  const { arches, walls, floors, torches } =
+    convertLayoutToPositions(components);
 
   return (
     <>
       <Floors positions={floors.positions} rotations={floors.rotations} />
       <Walls positions={walls.positions} rotations={walls.rotations} />
       <Arches positions={arches.positions} rotations={arches.rotations} />
+      <Torches positions={torches.positions} rotations={torches.rotations} />
     </>
   );
 };

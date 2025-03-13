@@ -1,29 +1,54 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { perf } from "@r3f/ChunkGenerationSystem/config";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
-import { MinecraftCreativeController } from "@r3f/Controllers/MinecraftCreativeController";
+import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
+import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
 import { DungeonFromLayout } from "@r3f/Scenes/DungeonRoomsWithInstancing";
-import { OrbitControls, Stage } from "@react-three/drei";
-import { Physics } from "@react-three/rapier";
+import { generateCustomDungeon } from "@r3f/Scenes/ProceduralDungeonGenerator";
+import {
+  Bloom,
+  EffectComposer,
+  ToneMapping,
+} from "@react-three/postprocessing";
 import { Perf } from "r3f-perf";
 
 export default function Page() {
+  const backgroundColor = "#191616";
+  const viewDistance = 30;
+  const components = generateCustomDungeon({
+    minRooms: 10,
+    maxRooms: 15,
+    torches: true,
+    torchInterval: 5,
+    complexity: 70,
+    sparseness: 40,
+    roomDistribution: {
+      small: 25,
+      medium: 40,
+      large: 25,
+      hall: 10,
+    },
+    corridorWidthRange: [1, 2],
+    corridorLengthRange: [2, 4],
+  });
+
   return (
     <ThreeFiberLayout>
-      <CanvasWithKeyboardInput camera={{ position: [0, 20, 0] }}>
-        <ambientLight intensity={2} />
-        <directionalLight intensity={1} />
-        <color attach="background" args={["#fbf1d1"]} />
+      <CanvasWithKeyboardInput
+        camera={{ position: [0, 10, 0], near: 0.1, far: viewDistance }}
+      >
+        <fog attach="fog" args={[backgroundColor, 0.1, viewDistance]} />
+        <color attach="background" args={[backgroundColor]} />
         {perf && <Perf position="bottom-right" />}
-        <DungeonFromLayout />
+        <DungeonFromLayout components={components} />
+        <CameraPositionLogger />
 
-        <Physics>
-          <MinecraftCreativeController
-            initialPosition={[0, 30, 0]}
-            speed={25}
-          />
-        </Physics>
-        {/* <OrbitControls /> */}
+        <EffectComposer>
+          <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />
+          <ToneMapping />
+        </EffectComposer>
+
+        <MinecraftSpectatorController initialPosition={[0, 25, 0]} speed={1} />
       </CanvasWithKeyboardInput>
     </ThreeFiberLayout>
   );

@@ -6,7 +6,7 @@ export const halfTile = 1;
 export type Position = [number, number, number];
 export type Rotation = [number, number, number];
 export type Component = {
-  type: "floor" | "wall" | "arch";
+  type: "floor" | "wall" | "arch" | "torch";
   position: Position;
   rotation: Rotation;
 };
@@ -64,6 +64,15 @@ export const calculateHallwayFloor = (
         position: [baseX + x * fullTile, baseY, baseZ + z * fullTile],
         rotation: [0, 0, 0],
       });
+      components.push({
+        type: "floor",
+        position: [
+          baseX + x * fullTile,
+          baseY + fullTile * 4,
+          baseZ + z * fullTile,
+        ],
+        rotation: [0, 0, 0],
+      });
     }
   }
 
@@ -74,7 +83,9 @@ export const calculateWallsX = (
   length: number,
   withDoor: boolean = false,
   basePosition: Position = [0, 0, 0],
-  isFacingNorth: boolean = false
+  isFacingNorth: boolean = false,
+  placeTorches: boolean,
+  torchInterval: number
 ): Component[] => {
   const components: Component[] = [];
   const [baseX, baseY, baseZ] = basePosition;
@@ -140,6 +151,22 @@ export const calculateWallsX = (
         position: superTopPos,
         rotation: [0, 0, 0],
       });
+
+      if (placeTorches && x % torchInterval === 1) {
+        const torchPos: Position = [
+          wallX,
+          baseY + fullTile + halfTile,
+          baseZ + (isFacingNorth ? halfTile * 0.5 : -halfTile * 0.5),
+        ];
+
+        const torchRotation: Rotation = [0, isFacingNorth ? Math.PI : 0, 0];
+
+        components.push({
+          type: "torch",
+          position: torchPos,
+          rotation: torchRotation,
+        });
+      }
     }
   }
 
@@ -150,7 +177,9 @@ export const calculateWallsZ = (
   length: number,
   withDoor: boolean = false,
   basePosition: Position = [0, 0, 0],
-  isFacingEast: boolean = false
+  isFacingEast: boolean = false,
+  placeTorches: boolean,
+  torchInterval: number
 ): Component[] => {
   const components: Component[] = [];
   const [baseX, baseY, baseZ] = basePosition;
@@ -193,12 +222,6 @@ export const calculateWallsZ = (
         position: [bottomPos[0], bottomPos[1] - halfTile, bottomPos[2]],
         rotation: [0, Math.PI / 2, 0],
       });
-
-      // components.push({
-      //   type: "wall",
-      //   position: topPos,
-      //   rotation: [0, Math.PI / 2, 0],
-      // });
     } else if (!cutoutDoor) {
       components.push({
         type: "wall",
@@ -222,6 +245,29 @@ export const calculateWallsZ = (
         position: superTopPos,
         rotation: [0, Math.PI / 2, 0],
       });
+
+      if (placeTorches && z % torchInterval === 1) {
+        const torchPos: Position = [
+          baseX +
+            (isFacingEast
+              ? -fullTile + halfTile * 0.5
+              : fullTile - halfTile * 0.5),
+          baseY + fullTile + halfTile,
+          wallZ,
+        ];
+
+        const torchRotation: Rotation = [
+          0,
+          isFacingEast ? -Math.PI / 2 : Math.PI / 2,
+          0,
+        ];
+
+        components.push({
+          type: "torch",
+          position: torchPos,
+          rotation: torchRotation,
+        });
+      }
     }
   }
 
@@ -232,13 +278,22 @@ const hallWidth = 3;
 
 export const calculateHallwayWallsX = (
   length: number,
-  basePosition: Position = [0, 0, 0]
+  basePosition: Position = [0, 0, 0],
+  placeTorches: boolean,
+  torchInterval: number
 ): Component[] => {
   const components: Component[] = [];
   const [baseX, baseY, baseZ] = basePosition;
 
   components.push(
-    ...calculateWallsX(length, false, [baseX, baseY, baseZ], false)
+    ...calculateWallsX(
+      length,
+      false,
+      [baseX, baseY, baseZ],
+      false,
+      placeTorches,
+      torchInterval
+    )
   );
 
   components.push(
@@ -246,7 +301,9 @@ export const calculateHallwayWallsX = (
       length,
       false,
       [baseX, baseY, baseZ + (hallWidth - 1) * fullTile],
-      true
+      true,
+      placeTorches,
+      torchInterval
     )
   );
 
@@ -255,13 +312,22 @@ export const calculateHallwayWallsX = (
 
 export const calculateHallwayWallsZ = (
   length: number,
-  basePosition: Position = [0, 0, 0]
+  basePosition: Position = [0, 0, 0],
+  placeTorches: boolean,
+  torchInterval: number
 ): Component[] => {
   const components: Component[] = [];
   const [baseX, baseY, baseZ] = basePosition;
 
   components.push(
-    ...calculateWallsZ(length, false, [baseX - fullTile, baseY, baseZ], false)
+    ...calculateWallsZ(
+      length,
+      false,
+      [baseX - fullTile, baseY, baseZ],
+      false,
+      placeTorches,
+      torchInterval
+    )
   );
 
   components.push(
@@ -269,7 +335,9 @@ export const calculateHallwayWallsZ = (
       length,
       false,
       [baseX + length * fullTile, baseY, baseZ],
-      true
+      true,
+      placeTorches,
+      torchInterval
     )
   );
 
@@ -278,24 +346,32 @@ export const calculateHallwayWallsZ = (
 
 export const calculateHallwayX = (
   length: number,
-  basePosition: Position = [0, 0, 0]
+  basePosition: Position = [0, 0, 0],
+  placeTorches: boolean,
+  torchInterval: number
 ): Component[] => {
   const components: Component[] = [];
 
   components.push(...calculateHallwayFloor(length, hallWidth, basePosition));
-  components.push(...calculateHallwayWallsX(length, basePosition));
+  components.push(
+    ...calculateHallwayWallsX(length, basePosition, placeTorches, torchInterval)
+  );
 
   return components;
 };
 
 export const calculateHallwayZ = (
   length: number,
-  basePosition: Position = [0, 0, 0]
+  basePosition: Position = [0, 0, 0],
+  placeTorches: boolean,
+  torchInterval: number
 ): Component[] => {
   const components: Component[] = [];
 
   components.push(...calculateHallwayFloor(hallWidth, length, basePosition));
-  components.push(...calculateHallwayWallsZ(length, basePosition));
+  components.push(
+    ...calculateHallwayWallsZ(length, basePosition, placeTorches, torchInterval)
+  );
 
   return components;
 };
@@ -303,7 +379,9 @@ export const calculateHallwayZ = (
 export const calculateRoomSquare = (
   size: number,
   doors: DoorDirections = NoDoors,
-  basePosition: Position = [0, 0, 0]
+  basePosition: Position = [0, 0, 0],
+  placeTorches: boolean,
+  torchInterval: number
 ): Component[] => {
   const components: Component[] = [];
   const [baseX, baseY, baseZ] = basePosition;
@@ -311,7 +389,14 @@ export const calculateRoomSquare = (
   components.push(...calculateFloorSquare(size, basePosition));
 
   components.push(
-    ...calculateWallsX(size, doors.south, [baseX, baseY, baseZ], false)
+    ...calculateWallsX(
+      size,
+      doors.south,
+      [baseX, baseY, baseZ],
+      false,
+      placeTorches,
+      torchInterval
+    )
   );
 
   components.push(
@@ -319,7 +404,9 @@ export const calculateRoomSquare = (
       size,
       doors.north,
       [baseX, baseY, baseZ + (size - 1) * fullTile],
-      true
+      true,
+      placeTorches,
+      torchInterval
     )
   );
 
@@ -328,7 +415,9 @@ export const calculateRoomSquare = (
       size,
       doors.west,
       [baseX - fullTile, baseY, baseZ],
-      false
+      false,
+      placeTorches,
+      torchInterval
     )
   );
 
@@ -337,7 +426,9 @@ export const calculateRoomSquare = (
       size,
       doors.east,
       [baseX + size * fullTile, baseY, baseZ],
-      true
+      true,
+      placeTorches,
+      torchInterval
     )
   );
 
@@ -351,22 +442,23 @@ export const calculateFloorSquare = (
   return calculateHallwayFloor(size, size, basePosition);
 };
 
-export const calculateDungeonLayout = (): Component[] => {
+export const placeTorchesAtPositions = (
+  positions: Position[],
+  rotations: Rotation[]
+): Component[] => {
+  if (positions.length !== rotations.length) {
+    throw new Error("Number of positions must match number of rotations");
+  }
+
   const components: Component[] = [];
 
-  components.push(
-    ...calculateRoomSquare(11, createSingleDoor(Directions.west), [0, 0, 0])
-  );
-
-  components.push(
-    ...calculateRoomSquare(5, createSingleDoor(Directions.east), [
-      -fullTile * 7,
-      0,
-      3 * fullTile,
-    ])
-  );
-
-  components.push(...calculateHallwayX(2, [-fullTile * 2, 0, 4 * fullTile]));
+  for (let i = 0; i < positions.length; i++) {
+    components.push({
+      type: "torch",
+      position: positions[i],
+      rotation: rotations[i],
+    });
+  }
 
   return components;
 };
@@ -404,6 +496,15 @@ export const convertLayoutToPositions = (layout: Component[]) => {
           },
         };
       }
+      if (component.type === "torch") {
+        return {
+          ...agg,
+          torches: {
+            positions: [...agg.torches.positions, { x, y, z }],
+            rotations: [...agg.torches.rotations, { x: rx, y: ry, z: rz }],
+          },
+        };
+      }
 
       return { ...agg };
     },
@@ -420,10 +521,15 @@ export const convertLayoutToPositions = (layout: Component[]) => {
         positions: [],
         rotations: [],
       },
+      torches: {
+        positions: [],
+        rotations: [],
+      },
     } as {
       floors: { positions: XYZ[]; rotations: XYZ[] };
       walls: { positions: XYZ[]; rotations: XYZ[] };
       arches: { positions: XYZ[]; rotations: XYZ[] };
+      torches: { positions: XYZ[]; rotations: XYZ[] };
     }
   );
 

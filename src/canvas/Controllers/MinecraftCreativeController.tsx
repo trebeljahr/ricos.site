@@ -3,7 +3,7 @@ import { PointerLockControls, useKeyboardControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { RapierRigidBody, RigidBody } from "@react-three/rapier";
 import { PropsWithChildren, useEffect, useLayoutEffect, useRef } from "react";
-import { Vector3 } from "three";
+import { Group, Vector3 } from "three";
 
 const SPEED = 5;
 const direction = new Vector3();
@@ -71,5 +71,47 @@ export function MinecraftCreativeController({
       </RigidBody>
       <PointerLockControls selector={"canvas"} />
     </>
+  );
+}
+
+export function MinecraftSpectatorController({
+  speed = SPEED,
+  initialPosition = [0, 0, -1],
+  initialLookat = [0, 0, 0],
+  children,
+}: PropsWithChildren<Props>) {
+  const [, get] = useKeyboardControls();
+  const ref = useRef<Group>(null!);
+  const { camera } = useThree();
+
+  useLayoutEffect(() => {
+    camera.lookAt(...initialLookat);
+    camera.position.fromArray(initialPosition);
+  }, [camera, initialLookat, initialPosition]);
+
+  useFrame(() => {
+    const { forward, backward, leftward, rightward, jump, descend, run } =
+      get();
+
+    frontVector.set(0, 0, +backward - +forward);
+    sideVector.set(+leftward - +rightward, 0, 0);
+
+    const sprintMultiplier = run ? 2 : 1;
+    direction
+      .subVectors(frontVector, sideVector)
+      .normalize()
+      .multiplyScalar(speed * sprintMultiplier)
+      .applyEuler(camera.rotation)
+      .setY((+jump - +descend) * speed);
+
+    camera.position.add(direction);
+    camera.getWorldDirection(ref.current.position);
+  });
+
+  return (
+    <group ref={ref}>
+      {children}
+      <PointerLockControls selector={"canvas"} />
+    </group>
   );
 }

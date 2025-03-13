@@ -1,7 +1,7 @@
 import { OrbitControls, useKeyboardControls } from "@react-three/drei";
 import { useMemo, useState } from "react";
 import { SwimmingController } from "./SwimmingController";
-import { MinecraftCreativeController } from "./MinecraftCreativeController";
+import { MinecraftSpectatorController } from "./MinecraftCreativeController";
 import { FirstPersonController } from "./FirstPersonController";
 import { ThirdPersonController } from "./ThirdPersonController";
 import { useKeyboardInput } from "@hooks/useKeyboardInput";
@@ -40,7 +40,7 @@ export const SwitchController = ({ Model }: { Model: ModelType }) => {
       case "SwimmingController":
         return SwimmingController;
       case "MinecraftCreativeController":
-        return MinecraftCreativeController;
+        return MinecraftSpectatorController;
       case "FirstPersonController":
         return FirstPersonController;
       case "ThirdPersonController":

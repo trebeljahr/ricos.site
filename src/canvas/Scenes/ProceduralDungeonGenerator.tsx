@@ -41,11 +41,15 @@ interface DungeonConfig {
   corridorLengthRange: [number, number];
   sparseness: number;
   complexity: number;
+  torches: boolean;
+  torchInterval: number;
 }
 
 const defaultConfig: DungeonConfig = {
   minRooms: 5,
   maxRooms: 10,
+  torches: true,
+  torchInterval: 3,
   roomDistribution: {
     small: 40,
     medium: 30,
@@ -463,7 +467,9 @@ export function generateDungeon(
     const roomComponents = calculateRoomSquare(
       room.size,
       room.doors,
-      room.position
+      room.position,
+      config.torches,
+      config.torchInterval
     );
     allComponents.push(...roomComponents);
 
@@ -481,13 +487,17 @@ export function generateDungeon(
           if (corridor.orientation === "x") {
             const hallComponents = calculateHallwayX(
               corridor.length,
-              corridor.position
+              corridor.position,
+              config.torches,
+              config.torchInterval
             );
             allComponents.push(...hallComponents);
           } else {
             const hallComponents = calculateHallwayZ(
               corridor.length,
-              corridor.position
+              corridor.position,
+              config.torches,
+              config.torchInterval
             );
             allComponents.push(...hallComponents);
           }

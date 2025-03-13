@@ -20,7 +20,7 @@ export class MeshInstance {
   ) {}
 }
 
-const scale = 2;
+const scale = 1;
 
 export class DungeonMeshGenerator {
   private static readonly directions = [
@@ -86,15 +86,15 @@ export class DungeonMeshGenerator {
           meshType = MeshType.Wall;
 
           const offset = this.directions[i].multiply(scale);
-          worldPos.x += offset.x;
+          worldPos.x += offset.x * 0.5;
           worldPos.y += offset.y;
-          worldPos.z += offset.z;
+          worldPos.z += offset.z * 0.5;
         } else if (i === 4) {
           meshType = MeshType.Ceiling;
-          worldPos.y += scale;
+          worldPos.y += scale * 0.5;
         } else {
           meshType = MeshType.Floor;
-          worldPos.y -= scale;
+          worldPos.y -= scale * 0.5;
         }
 
         meshes.push(new MeshInstance(worldPos, this.rotations[i], meshType));
@@ -106,9 +106,9 @@ export class DungeonMeshGenerator {
         );
 
         const offset = this.directions[i].multiply(scale);
-        worldPos.x += offset.x;
-        worldPos.y += offset.y;
-        worldPos.z += offset.z;
+        worldPos.x += offset.x * 0.5;
+        worldPos.y -= 0.5; // += offset.y;
+        worldPos.z += offset.z * 0.5;
 
         meshes.push(
           new MeshInstance(worldPos, this.rotations[i], MeshType.DoorFrame)
@@ -144,15 +144,15 @@ export class DungeonMeshGenerator {
           meshType = MeshType.Wall;
 
           const offset = this.directions[i].multiply(scale);
-          worldPos.x += offset.x;
+          worldPos.x += offset.x * 0.5;
           worldPos.y += offset.y;
-          worldPos.z += offset.z;
+          worldPos.z += offset.z * 0.5;
         } else if (i === 4) {
           meshType = MeshType.Ceiling;
-          worldPos.y += scale;
+          worldPos.y += scale * 0.5;
         } else {
           meshType = MeshType.Floor;
-          worldPos.y -= scale;
+          worldPos.y -= scale * 0.5;
         }
 
         meshes.push(new MeshInstance(worldPos, this.rotations[i], meshType));
@@ -165,7 +165,7 @@ export class DungeonMeshGenerator {
     pos: Vector3Int,
     meshes: MeshInstance[]
   ): void {
-    const worldPos = new Vector3(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5);
+    const worldPos = new Vector3(pos.x, pos.y, pos.z);
 
     let stairDirection = this.determineStairDirection(grid, pos);
 
@@ -183,9 +183,9 @@ export class DungeonMeshGenerator {
         const wallPos = new Vector3(worldPos.x, worldPos.y, worldPos.z);
 
         const offset = this.directions[i].multiply(scale);
-        wallPos.x += offset.x;
-        wallPos.y += offset.y;
-        wallPos.z += offset.z;
+        wallPos.x += offset.x * 0.5;
+        wallPos.y += offset.y * 0.5;
+        wallPos.z += offset.z * 0.5;
 
         meshes.push(
           new MeshInstance(wallPos, this.rotations[i], MeshType.Wall)

@@ -286,13 +286,15 @@ export default function Page() {
 
   return (
     <ThreeFiberLayout>
-      <CanvasWithKeyboardInput camera={{ position: [25, 30, 25] }}>
+      <CanvasWithKeyboardInput
+        camera={{ position: [25, 30, 25], near: 0, far: 50, fov: 50 }}
+      >
         <ambientLight args={["#404040", 1]} />
         <directionalLight args={["#ffffff", 0.8]} position={[50, 50, 50]} />
         <color attach="background" args={["#222222"]} />
         <RenderDungeon />
         <gridHelper position={[24.5, 0, 24.5]} args={[50, 50]} />
-        <MinecraftSpectatorController speed={0.5} />
+        <MinecraftSpectatorController speed={0.2} />
       </CanvasWithKeyboardInput>
       <button onClick={handleClick} className="absolute top-0 right-0 z-20">
         Click for new dungeon

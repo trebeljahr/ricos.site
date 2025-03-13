@@ -44,7 +44,6 @@ export const ChunkPositionUpdater = ({
       }>
     ) => {
       const { positions, scales, rotations, chunkId } = event.data;
-      // console.log("added chunk", chunkId);
 
       const indices = addPositions(positions, rotations, scales);
       indicesPerChunk.current[chunkId] = indices;

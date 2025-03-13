@@ -44,8 +44,6 @@ export async function createSimplifiedGeometry(
     flags
   );
 
-  console.log(`targetCount: ${targetCount}, count: ${dstIndexArray.length}`);
-
   (dstGeometry.index.array as any).set(dstIndexArray);
   dstGeometry.index.needsUpdate = true;
 

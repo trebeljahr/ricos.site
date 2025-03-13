@@ -148,6 +148,7 @@ export const Floors = ({
   const { InstancedMesh, addPositions } = useInstancedMesh2({
     geometry: nodes.Floor_Modular.geometry,
     material: materials.Grey_Floor,
+    defaultScale: 0.5,
   });
 
   useEffect(() => {
@@ -166,6 +167,7 @@ export const Walls = ({
 }) => {
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Wall_Modular.glb",
+    defaultScale: 0.5,
   });
 
   useEffect(() => {
@@ -184,7 +186,7 @@ export const Arches = ({
 }) => {
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Arch.glb",
-    defaultScale: 1,
+    defaultScale: 0.25,
   });
 
   useEffect(() => {

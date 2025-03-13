@@ -20,6 +20,8 @@ export class MeshInstance {
   ) {}
 }
 
+const scale = 2;
+
 export class DungeonMeshGenerator {
   private static readonly directions = [
     new Vector3Int(1, 0, 0),
@@ -31,12 +33,12 @@ export class DungeonMeshGenerator {
   ];
 
   private static readonly rotations = [
-    new Vector3(0, 90, 0),
-    new Vector3(0, 270, 0),
+    new Vector3(0, Math.PI / 2, 0),
+    new Vector3(0, Math.PI + Math.PI / 2, 0),
     new Vector3(0, 0, 0),
-    new Vector3(0, 180, 0),
+    new Vector3(0, Math.PI, 0),
     new Vector3(0, 0, 0),
-    new Vector3(180, 0, 0),
+    new Vector3(Math.PI, 0, 0),
   ];
 
   static generateMeshes(grid: Grid3D<CellType3D>): MeshInstance[] {
@@ -67,35 +69,43 @@ export class DungeonMeshGenerator {
     meshes: MeshInstance[]
   ): void {
     for (let i = 0; i < this.directions.length; i++) {
-      const neighborPos = pos.add(this.directions[i]);
+      const neighborPos = pos.add(this.directions[i].multiply(scale));
 
       if (
         !grid.inBounds(neighborPos) ||
         grid.getValue(neighborPos) === CellType3D.None
       ) {
-        const worldPos = new Vector3(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5);
+        const worldPos = new Vector3(
+          pos.x + 0.5 * scale,
+          pos.y + 0.5 * scale,
+          pos.z + 0.5 * scale
+        );
 
         let meshType: MeshType;
         if (i < 4) {
           meshType = MeshType.Wall;
 
-          const offset = this.directions[i].multiply(0.5);
+          const offset = this.directions[i].multiply(0.5 * scale);
           worldPos.x += offset.x;
           worldPos.y += offset.y;
           worldPos.z += offset.z;
         } else if (i === 4) {
           meshType = MeshType.Ceiling;
-          worldPos.y += 0.5;
+          worldPos.y += 0.5 * scale;
         } else {
           meshType = MeshType.Floor;
-          worldPos.y -= 0.5;
+          worldPos.y -= 0.5 * scale;
         }
 
         meshes.push(new MeshInstance(worldPos, this.rotations[i], meshType));
       } else if (grid.getValue(neighborPos) === CellType3D.Hallway && i < 4) {
-        const worldPos = new Vector3(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5);
+        const worldPos = new Vector3(
+          pos.x + 0.5 * scale,
+          pos.y + 0.5 * scale,
+          pos.z + 0.5 * scale
+        );
 
-        const offset = this.directions[i].multiply(0.5);
+        const offset = this.directions[i].multiply(0.5 * scale);
         worldPos.x += offset.x;
         worldPos.y += offset.y;
         worldPos.z += offset.z;
@@ -117,28 +127,32 @@ export class DungeonMeshGenerator {
     meshes: MeshInstance[]
   ): void {
     for (let i = 0; i < this.directions.length; i++) {
-      const neighborPos = pos.add(this.directions[i]);
+      const neighborPos = pos.add(this.directions[i].multiply(scale));
 
       if (
         !grid.inBounds(neighborPos) ||
         grid.getValue(neighborPos) === CellType3D.None
       ) {
-        const worldPos = new Vector3(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5);
+        const worldPos = new Vector3(
+          pos.x + 0.5 * scale,
+          pos.y + 0.5 * scale,
+          pos.z + 0.5 * scale
+        );
 
         let meshType: MeshType;
         if (i < 4) {
           meshType = MeshType.Wall;
 
-          const offset = this.directions[i].multiply(0.5);
+          const offset = this.directions[i].multiply(0.5 * scale);
           worldPos.x += offset.x;
           worldPos.y += offset.y;
           worldPos.z += offset.z;
         } else if (i === 4) {
           meshType = MeshType.Ceiling;
-          worldPos.y += 0.5;
+          worldPos.y += 0.5 * scale;
         } else {
           meshType = MeshType.Floor;
-          worldPos.y -= 0.5;
+          worldPos.y -= 0.5 * scale;
         }
 
         meshes.push(new MeshInstance(worldPos, this.rotations[i], meshType));
@@ -160,7 +174,7 @@ export class DungeonMeshGenerator {
     this.addStairRailings(grid, pos, stairDirection, meshes);
 
     for (let i = 0; i < 4; i++) {
-      const neighborPos = pos.add(this.directions[i]);
+      const neighborPos = pos.add(this.directions[i].multiply(scale));
 
       if (
         !grid.inBounds(neighborPos) ||
@@ -168,7 +182,7 @@ export class DungeonMeshGenerator {
       ) {
         const wallPos = new Vector3(worldPos.x, worldPos.y, worldPos.z);
 
-        const offset = this.directions[i].multiply(0.5);
+        const offset = this.directions[i].multiply(0.5 * scale);
         wallPos.x += offset.x;
         wallPos.y += offset.y;
         wallPos.z += offset.z;
@@ -220,12 +234,16 @@ export class DungeonMeshGenerator {
     stairDirection: Vector3,
     meshes: MeshInstance[]
   ): void {
-    const worldPos = new Vector3(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5);
+    const worldPos = new Vector3(
+      pos.x + 0.5 * scale,
+      pos.y + 0.5 * scale,
+      pos.z + 0.5 * scale
+    );
 
     let forwardDir: Vector3Int;
     let rightDir: Vector3Int;
 
-    if (stairDirection.y === 0 || stairDirection.y === 180) {
+    if (stairDirection.y === 0 || stairDirection.y === Math.PI) {
       forwardDir = new Vector3Int(0, 0, 1);
       rightDir = new Vector3Int(1, 0, 0);
     } else {
@@ -239,9 +257,9 @@ export class DungeonMeshGenerator {
       grid.getValue(rightNeighbor) === CellType3D.None
     ) {
       const railingPos = new Vector3(
-        worldPos.x + rightDir.x * 0.5,
+        worldPos.x + rightDir.x * 0.5 * scale,
         worldPos.y,
-        worldPos.z + rightDir.z * 0.5
+        worldPos.z + rightDir.z * 0.5 * scale
       );
 
       meshes.push(
@@ -255,18 +273,13 @@ export class DungeonMeshGenerator {
       grid.getValue(leftNeighbor) === CellType3D.None
     ) {
       const railingPos = new Vector3(
-        worldPos.x + rightDir.x * -0.5,
+        worldPos.x + rightDir.x * -0.5 * scale,
         worldPos.y,
-        worldPos.z + rightDir.z * -0.5
+        worldPos.z + rightDir.z * -0.5 * scale
       );
 
       meshes.push(
-        new MeshInstance(
-          railingPos,
-          stairDirection,
-          MeshType.StairsRailing,
-          new Vector3(1, 1, -1)
-        )
+        new MeshInstance(railingPos, stairDirection, MeshType.StairsRailing)
       );
     }
   }

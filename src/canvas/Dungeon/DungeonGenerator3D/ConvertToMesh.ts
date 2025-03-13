@@ -76,36 +76,36 @@ export class DungeonMeshGenerator {
         grid.getValue(neighborPos) === CellType3D.None
       ) {
         const worldPos = new Vector3(
-          pos.x + 0.5 * scale,
-          pos.y + 0.5 * scale,
-          pos.z + 0.5 * scale
+          pos.x * scale,
+          pos.y * scale,
+          pos.z * scale
         );
 
         let meshType: MeshType;
         if (i < 4) {
           meshType = MeshType.Wall;
 
-          const offset = this.directions[i].multiply(0.5 * scale);
+          const offset = this.directions[i].multiply(scale);
           worldPos.x += offset.x;
           worldPos.y += offset.y;
           worldPos.z += offset.z;
         } else if (i === 4) {
           meshType = MeshType.Ceiling;
-          worldPos.y += 0.5 * scale;
+          worldPos.y += scale;
         } else {
           meshType = MeshType.Floor;
-          worldPos.y -= 0.5 * scale;
+          worldPos.y -= scale;
         }
 
         meshes.push(new MeshInstance(worldPos, this.rotations[i], meshType));
       } else if (grid.getValue(neighborPos) === CellType3D.Hallway && i < 4) {
         const worldPos = new Vector3(
-          pos.x + 0.5 * scale,
-          pos.y + 0.5 * scale,
-          pos.z + 0.5 * scale
+          pos.x * scale,
+          pos.y * scale,
+          pos.z * scale
         );
 
-        const offset = this.directions[i].multiply(0.5 * scale);
+        const offset = this.directions[i].multiply(scale);
         worldPos.x += offset.x;
         worldPos.y += offset.y;
         worldPos.z += offset.z;
@@ -134,25 +134,25 @@ export class DungeonMeshGenerator {
         grid.getValue(neighborPos) === CellType3D.None
       ) {
         const worldPos = new Vector3(
-          pos.x + 0.5 * scale,
-          pos.y + 0.5 * scale,
-          pos.z + 0.5 * scale
+          pos.x * scale,
+          pos.y * scale,
+          pos.z * scale
         );
 
         let meshType: MeshType;
         if (i < 4) {
           meshType = MeshType.Wall;
 
-          const offset = this.directions[i].multiply(0.5 * scale);
+          const offset = this.directions[i].multiply(scale);
           worldPos.x += offset.x;
           worldPos.y += offset.y;
           worldPos.z += offset.z;
         } else if (i === 4) {
           meshType = MeshType.Ceiling;
-          worldPos.y += 0.5 * scale;
+          worldPos.y += scale;
         } else {
           meshType = MeshType.Floor;
-          worldPos.y -= 0.5 * scale;
+          worldPos.y -= scale;
         }
 
         meshes.push(new MeshInstance(worldPos, this.rotations[i], meshType));
@@ -182,7 +182,7 @@ export class DungeonMeshGenerator {
       ) {
         const wallPos = new Vector3(worldPos.x, worldPos.y, worldPos.z);
 
-        const offset = this.directions[i].multiply(0.5 * scale);
+        const offset = this.directions[i].multiply(scale);
         wallPos.x += offset.x;
         wallPos.y += offset.y;
         wallPos.z += offset.z;
@@ -234,11 +234,7 @@ export class DungeonMeshGenerator {
     stairDirection: Vector3,
     meshes: MeshInstance[]
   ): void {
-    const worldPos = new Vector3(
-      pos.x + 0.5 * scale,
-      pos.y + 0.5 * scale,
-      pos.z + 0.5 * scale
-    );
+    const worldPos = new Vector3(pos.x * scale, pos.y * scale, pos.z * scale);
 
     let forwardDir: Vector3Int;
     let rightDir: Vector3Int;
@@ -257,9 +253,9 @@ export class DungeonMeshGenerator {
       grid.getValue(rightNeighbor) === CellType3D.None
     ) {
       const railingPos = new Vector3(
-        worldPos.x + rightDir.x * 0.5 * scale,
+        worldPos.x + rightDir.x * scale,
         worldPos.y,
-        worldPos.z + rightDir.z * 0.5 * scale
+        worldPos.z + rightDir.z * scale
       );
 
       meshes.push(
@@ -273,9 +269,9 @@ export class DungeonMeshGenerator {
       grid.getValue(leftNeighbor) === CellType3D.None
     ) {
       const railingPos = new Vector3(
-        worldPos.x + rightDir.x * -0.5 * scale,
+        worldPos.x + rightDir.x * scale,
         worldPos.y,
-        worldPos.z + rightDir.z * -0.5 * scale
+        worldPos.z + rightDir.z * scale
       );
 
       meshes.push(

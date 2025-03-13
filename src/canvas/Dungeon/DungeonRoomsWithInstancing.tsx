@@ -134,7 +134,7 @@ const Torches = ({
   );
 };
 
-const Floors = ({
+export const Floors = ({
   positions,
   rotations,
 }: {
@@ -157,7 +157,7 @@ const Floors = ({
   return <InstancedMesh />;
 };
 
-const Walls = ({
+export const Walls = ({
   positions,
   rotations,
 }: {
@@ -175,7 +175,7 @@ const Walls = ({
   return <InstancedMesh />;
 };
 
-const Arches = ({
+export const Arches = ({
   positions,
   rotations,
 }: {
@@ -184,7 +184,7 @@ const Arches = ({
 }) => {
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Arch.glb",
-    defaultScale: 2,
+    defaultScale: 1,
   });
 
   useEffect(() => {

@@ -134,6 +134,25 @@ const Torches = ({
   );
 };
 
+export const Stairs = ({
+  positions,
+  rotations,
+}: {
+  positions: XYZ[];
+  rotations: XYZ[];
+}) => {
+  const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
+    modelPath: "/3d-assets/glb/modular_dungeon_1/Stairs_Modular.glb",
+    defaultScale: 0.5,
+  });
+
+  useEffect(() => {
+    addPositions(positions, rotations);
+  }, [addPositions, positions, rotations]);
+
+  return <InstancedMesh />;
+};
+
 export const Floors = ({
   positions,
   rotations,

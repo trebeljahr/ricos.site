@@ -20,7 +20,12 @@ import {
   DungeonMeshGenerator,
   MeshType,
 } from "@r3f/Dungeon/DungeonGenerator3D/ConvertToMesh";
-import { Arches, Floors, Walls } from "@r3f/Dungeon/DungeonRoomsWithInstancing";
+import {
+  Arches,
+  Floors,
+  Stairs,
+  Walls,
+} from "@r3f/Dungeon/DungeonRoomsWithInstancing";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import {
   useKeyboardInput,
@@ -280,11 +285,22 @@ const RenderDungeon = () => {
           />
         </>
       ) : (
-        <group position={[-grid3D.size.x / 2, 0, -grid3D.size.z / 2]}>
+        <group position={[-grid3D.size.x / 2, 1, -grid3D.size.z / 2]}>
           <Arches {...renderPass.doorFrames} />
           <Walls {...renderPass.walls} />
-          <Floors {...renderPass.floors} />
-          <Floors {...renderPass.ceilings} />
+          <Floors
+            {...{
+              rotations: [
+                ...renderPass.floors.rotations,
+                ...renderPass.ceilings.rotations,
+              ],
+              positions: [
+                ...renderPass.floors.positions,
+                ...renderPass.ceilings.positions,
+              ],
+            }}
+          />
+          <Stairs {...renderPass.stairs} />
         </group>
       )}
     </group>

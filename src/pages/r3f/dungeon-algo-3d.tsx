@@ -64,144 +64,141 @@ const RenderDungeon = () => {
   };
 
   useSubscribeToKeyPress("f", handleDebug);
-  console.log("rendering dungeon");
 
-  const generator3D = new DungeonGenerator3D(
-    new Vector3Int(50, 5, 50),
-    30,
-    new Vector3Int(6, 1, 6),
-    Math.random() * 1000
-  );
+  const { generator3D, grid3D, renderPass, counts } = useMemo(() => {
+    const generator3D = new DungeonGenerator3D(
+      new Vector3Int(50, 5, 50),
+      30,
+      new Vector3Int(6, 1, 6),
+      Math.random() * 1000
+    );
 
-  const grid3D = generator3D.generate();
+    const grid3D = generator3D.generate();
 
-  const counts = grid3D.data.reduce(
-    (acc, cellType) => {
-      if (cellType === CellType3D.None) return acc;
+    const counts = grid3D.data.reduce(
+      (acc, cellType) => {
+        if (cellType === CellType3D.None) return acc;
 
-      switch (cellType) {
-        case CellType3D.Room:
-          acc.room++;
-          break;
-        case CellType3D.Hallway:
-          acc.hallway++;
-          break;
-        case CellType3D.Stairs:
-          acc.stairs++;
-          break;
+        switch (cellType) {
+          case CellType3D.Room:
+            acc.room++;
+            break;
+          case CellType3D.Hallway:
+            acc.hallway++;
+            break;
+          case CellType3D.Stairs:
+            acc.stairs++;
+            break;
+        }
+
+        return acc;
+      },
+      { room: 0, hallway: 0, stairs: 0 }
+    );
+
+    const meshes = DungeonMeshGenerator.generateMeshes(grid3D);
+
+    const renderPass = meshes.reduce(
+      (acc, mesh) => {
+        switch (mesh.meshType) {
+          case MeshType.Door:
+            return {
+              ...acc,
+              doors: {
+                ...acc.doors,
+                positions: [...acc.doors.positions, mesh.position],
+                rotations: [...acc.doors.rotations, mesh.rotation],
+              },
+            };
+          case MeshType.DoorFrame:
+            return {
+              ...acc,
+              doorFrames: {
+                ...acc.doorFrames,
+                positions: [...acc.doorFrames.positions, mesh.position],
+                rotations: [...acc.doorFrames.rotations, mesh.rotation],
+              },
+            };
+          case MeshType.Stairs:
+            return {
+              ...acc,
+              stairs: {
+                ...acc.stairs,
+                positions: [...acc.stairs.positions, mesh.position],
+                rotations: [...acc.stairs.rotations, mesh.rotation],
+              },
+            };
+          case MeshType.StairsRailing:
+            return {
+              ...acc,
+              stairsRailing: {
+                ...acc.stairsRailing,
+                positions: [...acc.stairsRailing.positions, mesh.position],
+                rotations: [...acc.stairsRailing.rotations, mesh.rotation],
+              },
+            };
+          case MeshType.Wall:
+            return {
+              ...acc,
+              walls: {
+                ...acc.walls,
+                positions: [...acc.walls.positions, mesh.position],
+                rotations: [...acc.walls.rotations, mesh.rotation],
+              },
+            };
+          case MeshType.Ceiling:
+            return {
+              ...acc,
+              ceilings: {
+                ...acc.ceilings,
+                positions: [...acc.ceilings.positions, mesh.position],
+                rotations: [...acc.ceilings.rotations, mesh.rotation],
+              },
+            };
+          case MeshType.Floor:
+            return {
+              ...acc,
+              floors: {
+                ...acc.floors,
+                positions: [...acc.floors.positions, mesh.position],
+                rotations: [...acc.floors.rotations, mesh.rotation],
+              },
+            };
+        }
+      },
+      {
+        walls: { positions: [], rotations: [] } as {
+          positions: Vector3[];
+          rotations: Vector3[];
+        },
+        ceilings: { positions: [], rotations: [] } as {
+          positions: Vector3[];
+          rotations: Vector3[];
+        },
+        floors: { positions: [], rotations: [] } as {
+          positions: Vector3[];
+          rotations: Vector3[];
+        },
+        doors: { positions: [], rotations: [] } as {
+          positions: Vector3[];
+          rotations: Vector3[];
+        },
+        doorFrames: { positions: [], rotations: [] } as {
+          positions: Vector3[];
+          rotations: Vector3[];
+        },
+        stairs: { positions: [], rotations: [] } as {
+          positions: Vector3[];
+          rotations: Vector3[];
+        },
+        stairsRailing: { positions: [], rotations: [] } as {
+          positions: Vector3[];
+          rotations: Vector3[];
+        },
       }
-
-      return acc;
-    },
-    { room: 0, hallway: 0, stairs: 0 }
-  );
-
-  console.log(counts);
-
-  const meshes = DungeonMeshGenerator.generateMeshes(grid3D);
-  console.log(meshes);
-
-  const renderPass = meshes.reduce(
-    (acc, mesh) => {
-      switch (mesh.meshType) {
-        case MeshType.Door:
-          return {
-            ...acc,
-            doors: {
-              ...acc.doors,
-              positions: [...acc.doors.positions, mesh.position],
-              rotations: [...acc.doors.rotations, mesh.rotation],
-            },
-          };
-        case MeshType.DoorFrame:
-          return {
-            ...acc,
-            doorFrames: {
-              ...acc.doorFrames,
-              positions: [...acc.doorFrames.positions, mesh.position],
-              rotations: [...acc.doorFrames.rotations, mesh.rotation],
-            },
-          };
-        case MeshType.Stairs:
-          return {
-            ...acc,
-            stairs: {
-              ...acc.stairs,
-              positions: [...acc.stairs.positions, mesh.position],
-              rotations: [...acc.stairs.rotations, mesh.rotation],
-            },
-          };
-        case MeshType.StairsRailing:
-          return {
-            ...acc,
-            stairsRailing: {
-              ...acc.stairsRailing,
-              positions: [...acc.stairsRailing.positions, mesh.position],
-              rotations: [...acc.stairsRailing.rotations, mesh.rotation],
-            },
-          };
-        case MeshType.Wall:
-          return {
-            ...acc,
-            walls: {
-              ...acc.walls,
-              positions: [...acc.walls.positions, mesh.position],
-              rotations: [...acc.walls.rotations, mesh.rotation],
-            },
-          };
-        case MeshType.Ceiling:
-          return {
-            ...acc,
-            ceilings: {
-              ...acc.ceilings,
-              positions: [...acc.ceilings.positions, mesh.position],
-              rotations: [...acc.ceilings.rotations, mesh.rotation],
-            },
-          };
-        case MeshType.Floor:
-          return {
-            ...acc,
-            floors: {
-              ...acc.floors,
-              positions: [...acc.floors.positions, mesh.position],
-              rotations: [...acc.floors.rotations, mesh.rotation],
-            },
-          };
-      }
-    },
-    {
-      walls: { positions: [], rotations: [] } as {
-        positions: Vector3[];
-        rotations: Vector3[];
-      },
-      ceilings: { positions: [], rotations: [] } as {
-        positions: Vector3[];
-        rotations: Vector3[];
-      },
-      floors: { positions: [], rotations: [] } as {
-        positions: Vector3[];
-        rotations: Vector3[];
-      },
-      doors: { positions: [], rotations: [] } as {
-        positions: Vector3[];
-        rotations: Vector3[];
-      },
-      doorFrames: { positions: [], rotations: [] } as {
-        positions: Vector3[];
-        rotations: Vector3[];
-      },
-      stairs: { positions: [], rotations: [] } as {
-        positions: Vector3[];
-        rotations: Vector3[];
-      },
-      stairsRailing: { positions: [], rotations: [] } as {
-        positions: Vector3[];
-        rotations: Vector3[];
-      },
-    }
-  );
-
-  console.log(renderPass);
+    );
+    return { generator3D, grid3D, renderPass, counts };
+  }, []);
 
   useEffect(() => {
     const roomInstances = roomInstancesRef.current;

@@ -84,11 +84,6 @@ export function MinecraftSpectatorController({
   const ref = useRef<Group>(null!);
   const { camera } = useThree();
 
-  useLayoutEffect(() => {
-    camera.lookAt(...initialLookat);
-    camera.position.fromArray(initialPosition);
-  }, [camera, initialLookat, initialPosition]);
-
   useFrame(() => {
     const { forward, backward, leftward, rightward, jump, descend, run } =
       get();

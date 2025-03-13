@@ -43,7 +43,7 @@ export function InstancedMesh2Component({
     });
 
     ref.current.computeBVH();
-    (ref.current as any).frustumCulled = false;
+    ref.current.frustumCulled = false;
   }, [positions]);
 
   return (

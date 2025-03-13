@@ -1,7 +1,11 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { DungeonGenerator3D } from "@r3f/Dungeon/DungeonGenerator3D/Generator";
-import { CellType3D, Vector3Int } from "@r3f/Dungeon/DungeonGenerator3D/Types";
+import {
+  CellType3D,
+  Vector3,
+  Vector3Int,
+} from "@r3f/Dungeon/DungeonGenerator3D/Types";
 import { OrbitControls } from "@react-three/drei";
 import { useEffect, useRef, useState } from "react";
 import { useThree } from "@react-three/fiber";
@@ -10,8 +14,13 @@ import {
   InstancedMesh,
   Matrix4,
   MeshStandardMaterial,
-  Vector3,
+  Vector3 as Vector3FromThreeJS,
 } from "three";
+import {
+  DungeonMeshGenerator,
+  MeshType,
+} from "@r3f/Dungeon/DungeonGenerator3D/ConvertToMesh";
+import { Arches, Floors, Walls } from "@r3f/Dungeon/DungeonRoomsWithInstancing";
 
 const materials = {
   room: new MeshStandardMaterial({
@@ -74,6 +83,111 @@ const RenderDungeon = () => {
 
   console.log(counts);
 
+  const meshes = DungeonMeshGenerator.generateMeshes(grid3D);
+  console.log(meshes);
+
+  const renderPass = meshes.reduce(
+    (acc, mesh) => {
+      switch (mesh.meshType) {
+        case MeshType.Door:
+          return {
+            ...acc,
+            doors: {
+              ...acc.doors,
+              positions: [...acc.doors.positions, mesh.position],
+              rotations: [...acc.doors.rotations, mesh.rotation],
+            },
+          };
+        case MeshType.DoorFrame:
+          return {
+            ...acc,
+            doorFrames: {
+              ...acc.doorFrames,
+              positions: [...acc.doorFrames.positions, mesh.position],
+              rotations: [...acc.doorFrames.rotations, mesh.rotation],
+            },
+          };
+        case MeshType.Stairs:
+          return {
+            ...acc,
+            stairs: {
+              ...acc.stairs,
+              positions: [...acc.stairs.positions, mesh.position],
+              rotations: [...acc.stairs.rotations, mesh.rotation],
+            },
+          };
+        case MeshType.StairsRailing:
+          return {
+            ...acc,
+            stairsRailing: {
+              ...acc.stairsRailing,
+              positions: [...acc.stairsRailing.positions, mesh.position],
+              rotations: [...acc.stairsRailing.rotations, mesh.rotation],
+            },
+          };
+        case MeshType.Wall:
+          return {
+            ...acc,
+            walls: {
+              ...acc.walls,
+              positions: [...acc.walls.positions, mesh.position],
+              rotations: [...acc.walls.rotations, mesh.rotation],
+            },
+          };
+        case MeshType.Ceiling:
+          return {
+            ...acc,
+            ceilings: {
+              ...acc.ceilings,
+              positions: [...acc.ceilings.positions, mesh.position],
+              rotations: [...acc.ceilings.rotations, mesh.rotation],
+            },
+          };
+        case MeshType.Floor:
+          return {
+            ...acc,
+            floors: {
+              ...acc.floors,
+              positions: [...acc.floors.positions, mesh.position],
+              rotations: [...acc.floors.rotations, mesh.rotation],
+            },
+          };
+      }
+    },
+    {
+      walls: { positions: [], rotations: [] } as {
+        positions: Vector3[];
+        rotations: Vector3[];
+      },
+      ceilings: { positions: [], rotations: [] } as {
+        positions: Vector3[];
+        rotations: Vector3[];
+      },
+      floors: { positions: [], rotations: [] } as {
+        positions: Vector3[];
+        rotations: Vector3[];
+      },
+      doors: { positions: [], rotations: [] } as {
+        positions: Vector3[];
+        rotations: Vector3[];
+      },
+      doorFrames: { positions: [], rotations: [] } as {
+        positions: Vector3[];
+        rotations: Vector3[];
+      },
+      stairs: { positions: [], rotations: [] } as {
+        positions: Vector3[];
+        rotations: Vector3[];
+      },
+      stairsRailing: { positions: [], rotations: [] } as {
+        positions: Vector3[];
+        rotations: Vector3[];
+      },
+    }
+  );
+
+  console.log(renderPass);
+
   useEffect(() => {
     console.log(grid3D);
 
@@ -102,7 +216,7 @@ const RenderDungeon = () => {
     grid3D.forEach((pos, cellType) => {
       if (cellType === CellType3D.None) return;
 
-      const worldPos = new Vector3(
+      const worldPos = new Vector3FromThreeJS(
         pos.x + centerOffset.x,
         pos.y + 1,
         pos.z + centerOffset.z
@@ -164,6 +278,11 @@ const RenderDungeon = () => {
         ref={stairsInstancesRef}
         frustumCulled={false}
       />
+
+      <Arches {...renderPass.doorFrames} />
+      <Walls {...renderPass.walls} />
+      <Floors {...renderPass.floors} />
+      <Floors {...renderPass.ceilings} />
     </group>
   );
 };

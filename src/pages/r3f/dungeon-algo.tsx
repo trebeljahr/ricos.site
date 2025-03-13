@@ -5,6 +5,8 @@ import {
   CellType,
   Vector2Int,
 } from "@r3f/Dungeon/DungeonGenerator/TypeStructure";
+import { DungeonGenerator3D } from "@r3f/Dungeon/DungeonGenerator3D/Generator";
+import { Vector3Int } from "@r3f/Dungeon/DungeonGenerator3D/Types";
 import { OrbitControls } from "@react-three/drei";
 import { useState } from "react";
 import { BoxGeometry, Mesh, MeshStandardMaterial, PlaneGeometry } from "three";
@@ -27,13 +29,13 @@ export default function Page() {
   const grid = generator.generate();
 
   const roomMaterial = new MeshStandardMaterial({
-    color: 0xcd5c5c,
+    color: "#cd5c5c",
     roughness: 0.7,
     metalness: 0.2,
   });
 
   const hallwayMaterial = new MeshStandardMaterial({
-    color: 0x4682b4,
+    color: "#4682b4",
     roughness: 0.5,
     metalness: 0.3,
   });
@@ -67,7 +69,7 @@ export default function Page() {
 
   const floorGeometry = new PlaneGeometry(size.x, size.y);
   const floorMaterial = new MeshStandardMaterial({
-    color: 0x333333,
+    color: "#333333",
     roughness: 0.9,
     metalness: 0.1,
   });

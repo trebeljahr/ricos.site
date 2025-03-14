@@ -1,26 +1,35 @@
+import { alea } from "seedrandom";
 import { Delaunay3D } from "./Delauney3D";
 import { DungeonPathfinder3D, GraphNode3D } from "./DungeonPathFinder3D";
 import { Edge, Vertex, VertexWithData } from "./GraphStructures";
 import { Grid3D } from "./Grid3D";
 import { PrimMST } from "./MinimumSpanningTree";
 import { CellType3D, Mathf, Room3D, Vector3Int } from "./Types";
+import { createRandomFunction, getRandomIntUneven } from "src/lib/utils/misc";
 
-class DungeonGenerator3D {
-  private grid: Grid3D<CellType3D>;
-  private rooms: Room3D[] = [];
+type StairCase = {
+  cells: [Vector3Int, Vector3Int, Vector3Int, Vector3Int];
+  direction: Vector3Int;
+};
+
+export class DungeonGenerator3D {
+  public grid: Grid3D<CellType3D>;
+  public rooms: Room3D[] = [];
+  public stairCases: StairCase[] = [];
   private random: () => number;
   private pathfinder: DungeonPathfinder3D;
-  private seed: number;
+  private seed: string;
 
   constructor(
     private size: Vector3Int,
     private roomCount: number,
     private roomMaxSize: Vector3Int,
-    seed?: number
+    private roomMinSize: Vector3Int,
+    seed?: string
   ) {
-    this.seed = seed !== undefined ? seed : Math.floor(Math.random() * 1000000);
+    this.seed = seed !== undefined ? seed : Math.random().toString();
 
-    this.random = this.createRandomFunction(this.seed);
+    this.random = createRandomFunction(this.seed);
 
     this.grid = new Grid3D<CellType3D>(size, Vector3Int.zero());
     for (let x = 0; x < size.x; x++) {
@@ -34,14 +43,12 @@ class DungeonGenerator3D {
     this.pathfinder = new DungeonPathfinder3D(size);
   }
 
-  private createRandomFunction(seed: number): () => number {
-    return () => {
-      seed ^= seed << 13;
-      seed ^= seed >> 17;
-      seed ^= seed << 5;
-      seed = Math.abs(seed);
-      return (seed % 1000000) / 1000000;
-    };
+  findBelongingRoom(point: Vector3Int): Room3D | undefined {
+    for (const room of this.rooms) {
+      if (room.containsPoint(point)) {
+        return room;
+      }
+    }
   }
 
   generate(): Grid3D<CellType3D> {
@@ -85,9 +92,9 @@ class DungeonGenerator3D {
       );
 
       const roomSize = new Vector3Int(
-        Math.floor(this.random() * this.roomMaxSize.x) + 1,
-        Math.floor(this.random() * this.roomMaxSize.y) + 1,
-        Math.floor(this.random() * this.roomMaxSize.z) + 1
+        getRandomIntUneven(this.roomMinSize.x, this.roomMaxSize.x, this.random),
+        getRandomIntUneven(this.roomMinSize.y, this.roomMaxSize.y, this.random),
+        getRandomIntUneven(this.roomMinSize.z, this.roomMaxSize.z, this.random)
       );
 
       let canPlace = true;
@@ -121,7 +128,14 @@ class DungeonGenerator3D {
         this.rooms.push(newRoom);
 
         for (const pos of newRoom.bounds.allPositionsWithin()) {
-          this.grid.setValue(pos, CellType3D.Room);
+          const center = newRoom.bounds.center;
+
+          const isAlignedWithCenter = pos.x === center.x || pos.z === center.z;
+          if (isAlignedWithCenter) {
+            this.grid.setValue(pos, CellType3D.RoomCenterAxis);
+          } else {
+            this.grid.setValue(pos, CellType3D.Room);
+          }
         }
       }
     }
@@ -259,6 +273,10 @@ class DungeonGenerator3D {
               this.grid.setValue(stairPos2, CellType3D.Stairs);
               this.grid.setValue(stairPos3, CellType3D.Stairs);
               this.grid.setValue(stairPos4, CellType3D.Stairs);
+              this.stairCases.push({
+                cells: [stairPos1, stairPos2, stairPos3, stairPos4],
+                direction: horizontalOffset,
+              });
             }
           }
         }
@@ -267,10 +285,11 @@ class DungeonGenerator3D {
   }
 
   getStats(): {
-    seed: number;
+    seed: string;
     size: Vector3Int;
     roomCount: number;
     roomMaxSize: Vector3Int;
+    roomMinSize: Vector3Int;
     placedRooms: number;
     cellCounts: Record<CellType3D, number>;
   } {
@@ -279,6 +298,7 @@ class DungeonGenerator3D {
       [CellType3D.Room]: 0,
       [CellType3D.Hallway]: 0,
       [CellType3D.Stairs]: 0,
+      [CellType3D.RoomCenterAxis]: 0,
     };
 
     this.grid.forEach((pos, cell) => {
@@ -290,10 +310,9 @@ class DungeonGenerator3D {
       size: this.size,
       roomCount: this.roomCount,
       roomMaxSize: this.roomMaxSize,
+      roomMinSize: this.roomMinSize,
       placedRooms: this.rooms.length,
       cellCounts,
     };
   }
 }
-
-export { DungeonGenerator3D };

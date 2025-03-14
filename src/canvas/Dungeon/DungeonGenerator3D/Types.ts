@@ -2,6 +2,7 @@ export enum CellType3D {
   None,
   Room,
   Hallway,
+  RoomCenterAxis,
   Stairs,
 }
 
@@ -10,6 +11,10 @@ export class Room3D {
 
   constructor(location: Vector3Int, size: Vector3Int) {
     this.bounds = new BoundsInt3D(location, size);
+  }
+
+  containsPoint(point: Vector3Int): boolean {
+    return this.bounds.contains(point);
   }
 
   static intersect(a: Room3D, b: Room3D): boolean {
@@ -152,9 +157,9 @@ export class BoundsInt3D {
 
   get center(): Vector3 {
     return new Vector3(
-      this.position.x + this.size.x / 2,
-      this.position.y + this.size.y / 2,
-      this.position.z + this.size.z / 2
+      Math.floor(this.position.x + this.size.x / 2),
+      Math.floor(this.position.y + this.size.y / 2),
+      Math.floor(this.position.z + this.size.z / 2)
     );
   }
 

@@ -1,14 +1,36 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
+import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
+import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
+import {
+  DungeonMeshGenerator,
+  MeshType,
+} from "@r3f/Dungeon/DungeonGenerator3D/ConvertToMesh";
 import { DungeonGenerator3D } from "@r3f/Dungeon/DungeonGenerator3D/Generator";
 import {
   CellType3D,
   Vector3,
   Vector3Int,
 } from "@r3f/Dungeon/DungeonGenerator3D/Types";
-import { OrbitControls, Sky } from "@react-three/drei";
+import {
+  Arches,
+  Coins,
+  Floors,
+  Railings,
+  SideWallStairs,
+  Stairs,
+  Torches,
+  Walls,
+} from "@r3f/Dungeon/DungeonRoomsWithInstancing";
+import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
+import { Sky } from "@react-three/drei";
+import {
+  Bloom,
+  EffectComposer,
+  ToneMapping,
+} from "@react-three/postprocessing";
+import { Perf } from "r3f-perf";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useThree } from "@react-three/fiber";
 import {
   BoxGeometry,
   InstancedMesh,
@@ -16,41 +38,33 @@ import {
   MeshStandardMaterial,
   Vector3 as Vector3FromThreeJS,
 } from "three";
-import {
-  DungeonMeshGenerator,
-  MeshType,
-} from "@r3f/Dungeon/DungeonGenerator3D/ConvertToMesh";
-import {
-  Arches,
-  Coins,
-  Floors,
-  SideWallStairs,
-  Stairs,
-  Torches,
-  Walls,
-} from "@r3f/Dungeon/DungeonRoomsWithInstancing";
-import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
-import {
-  useKeyboardInput,
-  useSubscribeToKeyPress,
-} from "@hooks/useKeyboardInput";
-import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
+
+const wireframe = false;
 
 const materials = {
   room: new MeshStandardMaterial({
     color: "#cd5c5c",
     roughness: 0.7,
     metalness: 0.2,
+    wireframe,
   }),
   hallway: new MeshStandardMaterial({
     color: "#4682b4",
     roughness: 0.5,
     metalness: 0.3,
+    wireframe,
   }),
   stairs: new MeshStandardMaterial({
     color: "#2e8b57",
     roughness: 0.6,
     metalness: 0.3,
+    wireframe,
+  }),
+  door: new MeshStandardMaterial({
+    color: "#ffe601",
+    roughness: 0.6,
+    metalness: 0.3,
+    wireframe,
   }),
 };
 
@@ -58,6 +72,7 @@ const geometries = {
   room: new BoxGeometry(1, 1, 1),
   hallway: new BoxGeometry(1, 1, 1),
   stairs: new BoxGeometry(1, 1, 1),
+  door: new BoxGeometry(1, 1, 1),
 };
 
 const RenderDungeon = ({ seed }: { seed?: number }) => {
@@ -66,6 +81,7 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
   const roomInstancesRef = useRef<InstancedMesh>(null!);
   const hallwayInstancesRef = useRef<InstancedMesh>(null!);
   const stairsInstancesRef = useRef<InstancedMesh>(null!);
+  const doorsInstancesRef = useRef<InstancedMesh>(null!);
 
   const handleDebug = () => {
     setShowDebug((prev) => !prev);
@@ -78,7 +94,8 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
       new Vector3Int(50, 5, 50),
       30,
       new Vector3Int(6, 1, 6),
-      seed || Math.random() * 1000
+      new Vector3Int(3, 1, 3),
+      seed?.toString() || (Math.random() * 1000).toString()
     );
 
     const grid3D = generator3D.generate();
@@ -89,22 +106,26 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
 
         switch (cellType) {
           case CellType3D.Room:
-            acc.room++;
+            acc.rooms++;
             break;
           case CellType3D.Hallway:
-            acc.hallway++;
+            acc.hallways++;
             break;
           case CellType3D.Stairs:
             acc.stairs++;
+            break;
+          case CellType3D.RoomCenterAxis:
+            acc.doors++;
             break;
         }
 
         return acc;
       },
-      { room: 0, hallway: 0, stairs: 0 }
+      { rooms: 0, hallways: 0, stairs: 0, doors: 0 }
     );
 
-    const meshes = DungeonMeshGenerator.generateMeshes(grid3D);
+    const meshGenerator = new DungeonMeshGenerator(grid3D, seed?.toString());
+    const meshes = meshGenerator.generateMeshes();
 
     const initEmpty = () =>
       ({ positions: [], rotations: [] } as {
@@ -133,8 +154,14 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
         [MeshType.Stairs]: initEmpty(),
         [MeshType.StairsRailing]: initEmpty(),
         [MeshType.StairWall]: initEmpty(),
+        [MeshType.Torch]: initEmpty(),
       }
     );
+    // renderPass[MeshType.Torch] = {
+    //   positions: renderPass[MeshType.Wall].positions,
+    //   rotations: renderPass[MeshType.Wall].rotations,
+    // };
+
     return { generator3D, grid3D, renderPass, counts };
   }, [seed]);
 
@@ -142,6 +169,7 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
     const roomInstances = roomInstancesRef.current;
     const hallwayInstances = hallwayInstancesRef.current;
     const stairsInstances = stairsInstancesRef.current;
+    const doorsInstances = doorsInstancesRef.current;
 
     if (!roomInstances || !hallwayInstances || !stairsInstances) return;
 
@@ -156,6 +184,7 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
     let roomInstancesCount = 0;
     let hallwayInstancesCount = 0;
     let stairsInstancesCount = 0;
+    let doorsInstancesCount = 0;
 
     grid3D.forEach((pos, cellType) => {
       if (cellType === CellType3D.None) return;
@@ -178,12 +207,16 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
         case CellType3D.Stairs:
           stairsInstances.setMatrixAt(stairsInstancesCount++, matrix);
           break;
+        case CellType3D.RoomCenterAxis:
+          doorsInstances.setMatrixAt(doorsInstancesCount++, matrix);
+          break;
       }
     });
 
     roomInstances.instanceMatrix.needsUpdate = true;
     hallwayInstances.instanceMatrix.needsUpdate = true;
     stairsInstances.instanceMatrix.needsUpdate = true;
+    doorsInstances.instanceMatrix.needsUpdate = true;
   });
 
   return (
@@ -204,12 +237,17 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
       {showDebug ? (
         <>
           <instancedMesh
-            args={[geometries.room, materials.room, counts.room]}
+            args={[geometries.room, materials.room, counts.rooms]}
             ref={roomInstancesRef}
             frustumCulled={false}
           />
           <instancedMesh
-            args={[geometries.hallway, materials.hallway, counts.hallway]}
+            args={[geometries.door, materials.door, counts.doors]}
+            ref={doorsInstancesRef}
+            frustumCulled={false}
+          />
+          <instancedMesh
+            args={[geometries.hallway, materials.hallway, counts.hallways]}
             ref={hallwayInstancesRef}
             frustumCulled={false}
           />
@@ -224,7 +262,9 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
           <Arches {...renderPass[MeshType.DoorFrame]} />
           <Walls {...renderPass[MeshType.Wall]} />
           <Coins {...renderPass[MeshType.Debug]} />
+          <Torches {...renderPass[MeshType.Torch]} />
           <SideWallStairs {...renderPass[MeshType.StairWall]} />
+          <Railings {...renderPass[MeshType.StairsRailing]} />
           <Floors
             {...{
               rotations: [
@@ -250,21 +290,37 @@ export default function Page() {
   const handleClick = () => {
     setSeed((prev) => prev + 1);
   };
+  const backgroundColor = "#191616";
+  const viewDistance = 20;
 
   return (
-    <ThreeFiberLayout>
-      <CanvasWithKeyboardInput camera={{ near: 0.001, position: [25, 10, 25] }}>
+    // <ThreeFiberLayout>
+    <div className="w-screen h-screen">
+      <CanvasWithKeyboardInput
+        camera={{ far: viewDistance, position: [25, 10, 25] }}
+      >
+        <fog attach="fog" args={[backgroundColor, 5, viewDistance]} />
+        <color attach="background" args={[backgroundColor]} />
+
         <ambientLight args={["#404040", 1]} />
-        <directionalLight args={["#ffffff", 0.8]} position={[50, 50, 50]} />
-        <Sky />
+        <Perf position="bottom-right" />
+        {/* <directionalLight args={["#ffffff", 0.8]} position={[50, 50, 50]} /> */}
+        {/* <Sky /> */}
         <RenderDungeon seed={seed} />
         <CameraPositionLogger />
 
+        <EffectComposer>
+          <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />
+          <ToneMapping />
+        </EffectComposer>
+
         <MinecraftSpectatorController speed={0.2} />
       </CanvasWithKeyboardInput>
-      <button onClick={handleClick} className="absolute top-0 right-0 z-20">
+      {/* <button onClick={handleClick} className="absolute top-0 right-0 z-20">
         Click for new dungeon
-      </button>
-    </ThreeFiberLayout>
+      </button> */}
+    </div>
+
+    // </ThreeFiberLayout>
   );
 }

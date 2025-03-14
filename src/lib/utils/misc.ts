@@ -1,5 +1,6 @@
 import { Travelblog } from "@velite";
 import { nanoid } from "nanoid";
+import { alea } from "seedrandom";
 import { HasDate, ImageProps } from "src/@types";
 
 export const toTitleCase = (str: string) =>
@@ -7,6 +8,26 @@ export const toTitleCase = (str: string) =>
 
 export function turnKebabIntoTitleCase(kebab: string) {
   return kebab.split("-").map(toTitleCase).join(" ");
+}
+
+export function getRandomInt(
+  min: number,
+  max: number,
+  randFunc: () => number = Math.random
+): number {
+  return Math.floor(randFunc() * (max - min + 1)) + min;
+}
+
+export function getRandomIntUneven(
+  min: number,
+  max: number,
+  randFunc?: () => number
+): number {
+  return makeUneven(getRandomInt(min, max - 1, randFunc));
+}
+
+export function makeUneven(value: number): number {
+  return value % 2 === 0 ? value + 1 : value;
 }
 
 export const addIdAndIndex = (image: ImageProps, index: number) => {
@@ -32,6 +53,12 @@ export const byReadingTime = (
   const bTime = b.metadata?.readingTime || 0;
 
   return bTime - aTime;
+};
+
+export const createRandomFunction = (seed: string): (() => number) => {
+  // @ts-ignore-next-line
+  const prng = new alea(seed);
+  return prng;
 };
 
 export const lerp = (a: number, b: number, t: number) => a + t * (b - a);

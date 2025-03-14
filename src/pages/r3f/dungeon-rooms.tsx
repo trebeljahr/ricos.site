@@ -33,13 +33,14 @@ export default function Page() {
   });
 
   return (
-    <ThreeFiberLayout>
+    // <ThreeFiberLayout>
+    <div className="w-screen h-screen">
       <CanvasWithKeyboardInput
         camera={{ position: [0, 10, 0], near: 0.1, far: viewDistance }}
       >
         <fog attach="fog" args={[backgroundColor, 0.1, viewDistance]} />
         <color attach="background" args={[backgroundColor]} />
-        {perf && <Perf position="bottom-right" />}
+        {/* {perf && <Perf position="bottom-right" />} */}
         <DungeonFromLayout components={components} />
         <CameraPositionLogger />
 
@@ -48,8 +49,12 @@ export default function Page() {
           <ToneMapping />
         </EffectComposer>
 
-        <MinecraftSpectatorController initialPosition={[0, 25, 0]} speed={1} />
+        <MinecraftSpectatorController
+          initialPosition={[0, 25, 0]}
+          speed={0.5}
+        />
       </CanvasWithKeyboardInput>
-    </ThreeFiberLayout>
+    </div>
+    // </ThreeFiberLayout>
   );
 }

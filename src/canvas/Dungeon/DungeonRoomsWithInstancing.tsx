@@ -1,15 +1,13 @@
+import { useInstancedMesh2 } from "@r3f/InstancedMeshSystem/useInstancedMesh2";
 import { useInstancedMeshMultiMaterial } from "@r3f/InstancedMeshSystem/useInstancedMesh2multiMaterial";
-import { useEffect, useRef } from "react";
+import { Environment, PointMaterial, useGLTF } from "@react-three/drei";
+import { useEffect } from "react";
 import { GLTFResult, XYZ } from "src/@types";
+import { Color, DynamicDrawUsage } from "three";
 import {
   Component,
   convertLayoutToPositions,
 } from "./DungeonRoomsLayoutCalculator";
-import { generateCustomDungeon } from "./ProceduralDungeonGenerator";
-import { Environment, PointMaterial, useGLTF } from "@react-three/drei";
-import { Color, DynamicDrawUsage, Points } from "three";
-import { useFrame } from "@react-three/fiber";
-import { useInstancedMesh2 } from "@r3f/InstancedMeshSystem/useInstancedMesh2";
 
 function Particles({
   positions,
@@ -46,6 +44,25 @@ function Particles({
   );
 }
 
+export const Railings = ({
+  positions,
+  rotations,
+}: {
+  positions: XYZ[];
+  rotations: XYZ[];
+}) => {
+  const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
+    modelPath: "/3d-assets/glb/modular_dungeon_1/Fence_Straight_Modular.glb",
+    defaultScale: 0.5,
+  });
+
+  useEffect(() => {
+    addPositions(positions, rotations);
+  }, [addPositions, positions, rotations]);
+
+  return <InstancedMesh />;
+};
+
 export const SideWallStairs = ({
   positions,
   rotations,
@@ -60,7 +77,7 @@ export const SideWallStairs = ({
 
   useEffect(() => {
     addPositions(positions, rotations);
-  }, [addPositions]);
+  }, [addPositions, positions, rotations]);
 
   return <InstancedMesh />;
 };
@@ -80,6 +97,7 @@ export const Torches = ({
     useInstancedMesh2({
       geometry: nodes.Torch_1.geometry,
       material: materials.DarkMetal,
+      defaultScale: 0.25,
     });
   const color = "#00f7ff";
 
@@ -88,6 +106,7 @@ export const Torches = ({
     material: materials.Fire,
     emissiveColor: color,
     emissiveIntensity: 5,
+    defaultScale: 0.25,
   });
 
   // const {

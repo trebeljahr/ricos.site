@@ -51,4 +51,4 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/glb/modular_dungeon_1/Arch_Door.glb");
+useGLTF.preload("/3d-assets/glb/modular_dungeon_1/Arch_Door.glb");

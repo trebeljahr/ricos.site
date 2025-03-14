@@ -1,3 +1,4 @@
+import { getRandomIntUneven } from "src/lib/utils/misc";
 import {
   calculateHallwayX,
   calculateHallwayZ,
@@ -61,18 +62,6 @@ const defaultConfig: DungeonConfig = {
   sparseness: 60,
   complexity: 50,
 };
-
-function getRandomInt(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function getRandomIntUneven(min: number, max: number): number {
-  return makeUneven(getRandomInt(min, max - 1));
-}
-
-function makeUneven(value: number): number {
-  return value % 2 === 0 ? value + 1 : value;
-}
 
 function getRandomItem<T>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)];

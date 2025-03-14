@@ -38,4 +38,4 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/glb/modular_dungeon_1/Trap_spikes.glb");
+useGLTF.preload("/3d-assets/glb/modular_dungeon_1/Trap_spikes.glb");

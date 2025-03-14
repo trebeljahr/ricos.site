@@ -1,4 +1,3 @@
-// import { useFBO } from '@react-three/drei'
 import { extend, Object3DNode, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import {
@@ -87,12 +86,6 @@ export function Birds() {
 
   useEffect(() => {
     function initComputeRenderer() {
-      //   gpuCompute = new GPUComputationRenderer(WIDTH, WIDTH, renderer)
-
-      //   if (renderer.capabilities.isWebGL2 === false) {
-      //     gpuCompute.setDataType(HalfFloatType)
-      //   }
-
       const dtPosition = gpuCompute.createTexture();
       const dtVelocity = gpuCompute.createTexture();
       fillPositionTexture(dtPosition);
@@ -191,13 +184,10 @@ export function Birds() {
   const last = useRef(performance.now());
 
   useFrame(() => {
-    // const delta = clock.getDelta()
-    // const now = clock.getElapsedTime()
-
     const now = performance.now();
     let delta = (now - last.current) / 1000;
 
-    if (delta > 1) delta = 1; // safety cap on large deltas
+    if (delta > 1) delta = 1;
     last.current = now;
 
     if (!positionUniforms.current || !velocityUniforms.current) return;

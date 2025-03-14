@@ -1,9 +1,9 @@
 
-      // FOG
-      #include <common>
-      #include <fog_pars_vertex>
-      // FOG
-      #include <shadowmap_pars_vertex>
+// FOG
+#include <common>
+#include <fog_pars_vertex>
+// FOG
+#include <shadowmap_pars_vertex>
 uniform sampler2D uNoiseTexture;
 uniform float uNoiseScale;
 uniform float uTime;
@@ -16,23 +16,23 @@ varying vec3 vViewPosition;
 varying vec2 vWindColor;
 
 void main() {
-        #include <color_vertex>
+      #include <color_vertex>
 
-        // FOG
-        #include <begin_vertex>
-        #include <project_vertex>
-        #include <fog_vertex>
-        // FOG
+      // FOG
+      #include <begin_vertex>
+      #include <project_vertex>
+      #include <fog_vertex>
+      // FOG
 
-        // SHADOW
-        #include <beginnormal_vertex>
-        #include <defaultnormal_vertex>
-        #include <worldpos_vertex>
-        #include <shadowmap_vertex>
-        // SHADOW
+      // SHADOW
+      #include <beginnormal_vertex>
+      #include <defaultnormal_vertex>
+      #include <worldpos_vertex>
+      #include <shadowmap_vertex>
+      // SHADOW
 
-        // wind effect
-  vec2 uWindDirection = vec2(1.0, 1.0);
+      // wind effect
+      vec2 uWindDirection = vec2(1.0, 1.0);
   float uWindAmp = 0.1;
   float uWindFreq = 50.;
   float uSpeed = 1.0;

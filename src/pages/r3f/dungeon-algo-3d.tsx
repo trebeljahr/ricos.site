@@ -188,16 +188,18 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
 
   return (
     <group position={[grid3D.size.x / 2, -0.1, grid3D.size.z / 2]} scale={4}>
-      <mesh rotation-x={-Math.PI / 2}>
-        <planeGeometry args={[grid3D.size.x, grid3D.size.z]} />
-        <meshStandardMaterial
-          color={"#333333"}
-          roughness={0.9}
-          metalness={0.1}
-        />
-      </mesh>
+      <group position={[-0.5, 0, -0.5]}>
+        <mesh rotation-x={-Math.PI / 2}>
+          <planeGeometry args={[grid3D.size.x, grid3D.size.z]} />
+          <meshStandardMaterial
+            color={"#333333"}
+            roughness={0.9}
+            metalness={0.1}
+          />
+        </mesh>
 
-      <gridHelper args={[grid3D.size.x, grid3D.size.z]} position-y={0.1} />
+        <gridHelper args={[grid3D.size.x, grid3D.size.z]} position-y={0.001} />
+      </group>
 
       {showDebug ? (
         <>

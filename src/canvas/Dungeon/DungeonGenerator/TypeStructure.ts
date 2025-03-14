@@ -145,29 +145,22 @@ export class Room {
     );
   }
 }
-// Priority Queue implementation (replacement for BlueRaja SimplePriorityQueue)
+
 export class PriorityQueue<T> {
-  // Array to store items with their priorities
   private items: { item: T; priority: number }[] = [];
 
-  // Map to quickly look up items
   private itemMap = new Map<T, number>();
 
   constructor() {}
 
-  // Add an item to the queue with a given priority
   enqueue(item: T, priority: number): void {
-    // Store the item with its priority
     this.items.push({ item, priority });
 
-    // Sort by priority (ascending)
     this.items.sort((a, b) => a.priority - b.priority);
 
-    // Store the item in our map for quick lookup
     this.itemMap.set(item, priority);
   }
 
-  // Remove and return the highest priority item
   dequeue(): T | undefined {
     if (this.isEmpty()) return undefined;
 
@@ -180,27 +173,22 @@ export class PriorityQueue<T> {
     return undefined;
   }
 
-  // Check if the queue is empty
   isEmpty(): boolean {
     return this.items.length === 0;
   }
 
-  // Get the number of items in the queue
   get count(): number {
     return this.items.length;
   }
 
-  // Check if an item is in the queue
   contains(item: T): boolean {
     return this.itemMap.has(item);
   }
 
-  // Get the priority of an item
   getPriority(item: T): number | undefined {
     return this.itemMap.get(item);
   }
 
-  // Try to get the priority of an item
   tryGetPriority(item: T, outPriority: { value: number }): boolean {
     const priority = this.itemMap.get(item);
     if (priority !== undefined) {
@@ -210,23 +198,17 @@ export class PriorityQueue<T> {
     return false;
   }
 
-  // Update the priority of an item
   updatePriority(item: T, priority: number): void {
-    // First check if the item exists
     if (!this.contains(item)) return;
 
-    // Find the item in our array
     const index = this.items.findIndex((entry) => entry.item === item);
     if (index !== -1) {
-      // Remove it from the current position
       this.items.splice(index, 1);
 
-      // Add it back with the new priority
       this.enqueue(item, priority);
     }
   }
 
-  // Clear the queue
   clear(): void {
     this.items = [];
     this.itemMap.clear();

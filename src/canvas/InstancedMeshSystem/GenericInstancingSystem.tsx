@@ -80,22 +80,6 @@ export const GenericInstancedSystem = ({
   return (
     <group>
       {meshMaterialCombosWithIds.map(([meshName, materialName, id]) => {
-        // return (
-        //   <SingleInstancedMesh
-        //     key={id}
-        //     positions={positions}
-        //     geo={nodes[meshName].geometry}
-        //     material={materials[materialName]}
-        //   />
-        // );
-        // return (
-        // <InstancedMesh2Component
-        //   key={id}
-        //   geometry={nodes[meshName].geometry}
-        //   material={materials[materialName]}
-        //   positions={positions}
-        // />
-        // );
         return (
           <Single
             key={id}

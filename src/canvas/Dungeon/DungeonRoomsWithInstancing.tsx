@@ -18,14 +18,6 @@ function Particles({
   positions: Float32Array;
   colors: Float32Array;
 }) {
-  // const points = useRef<Points>(null!);
-  // useFrame((state) => {
-  //   const t = state.clock.elapsedTime;
-  //   positions.forEach(
-  //     (p, i) => (positions[i] += Math[i % 2 ? "sin" : "cos"](10 * i + t) / 20)
-  //   );
-  //   points.current.geometry.attributes.position.needsUpdate = true;
-  // });
   return (
     <points frustumCulled={false}>
       <bufferGeometry>

@@ -262,25 +262,25 @@ export class DungeonMeshGenerator {
     const neighborAbove = pos.add(this.directions[4]);
     const neighborBelow = pos.add(this.directions[5]);
 
-    // for (let i = 0; i < 4; i++) {
-    //   const neighborPos = pos.add(this.directions[i].multiply(scale));
+    for (let i = 0; i < 4; i++) {
+      const neighborPos = pos.add(this.directions[i].multiply(scale));
 
-    //   if (
-    //     !grid.inBounds(neighborPos) ||
-    //     grid.getValue(neighborPos) === CellType3D.None
-    //   ) {
-    //     const wallPos = new Vector3(worldPos.x, worldPos.y, worldPos.z);
+      if (
+        !grid.inBounds(neighborPos) ||
+        grid.getValue(neighborPos) === CellType3D.None
+      ) {
+        const wallPos = new Vector3(worldPos.x, worldPos.y, worldPos.z);
 
-    //     const offset = this.directions[i].multiply(scale);
-    //     wallPos.x += offset.x * 0.5;
-    //     wallPos.y += offset.y * 0.5;
-    //     wallPos.z += offset.z * 0.5;
+        const offset = this.directions[i].multiply(scale);
+        wallPos.x += offset.x * 0.5;
+        wallPos.y += offset.y * 0.5;
+        wallPos.z += offset.z * 0.5;
 
-    //     meshes.push(
-    //       new MeshInstance(wallPos, this.rotations[i], MeshType.Wall)
-    //     );
-    //   }
-    // }
+        meshes.push(
+          new MeshInstance(wallPos, this.rotations[i], MeshType.Wall)
+        );
+      }
+    }
 
     if (!stairDirection) {
       // this is no stair!
@@ -333,85 +333,6 @@ export class DungeonMeshGenerator {
         );
       }
     }
-
-    // // const stairDirection = this.convertStairRotationToDirection(stairRotation);
-    // const neighbourInStairDirection = pos.add(
-    //   new Vector3Int(stairDirection.x * scale, scale, stairDirection.z * scale)
-    // );
-
-    // const neighbourInStairDirectionPos = new Vector3(
-    //   neighbourInStairDirection.x,
-    //   neighbourInStairDirection.y,
-    //   neighbourInStairDirection.z
-    // );
-
-    // console.log(neighbourInStairDirection);
-    // console.log(
-    //   grid.inBounds(neighbourInStairDirection) &&
-    //     grid.getValue(neighbourInStairDirection)
-    // );
-
-    // const upStairIsHallway =
-    //   grid.inBounds(neighbourInStairDirection) &&
-    //   grid.getValue(neighbourInStairDirection) === CellType3D.Hallway;
-
-    // if (upStairIsHallway) {
-
-    // }
-
-    // if (
-    //   // grid.inBounds(neighborBelow) &&
-    //   grid.getValue(neighborBelow) !== CellType3D.Stairs
-    // ) {
-    //   if (upStairIsHallway) {
-    //   } else {
-
-    //   }
-
-    // meshes.push(
-    //   new MeshInstance(
-    //     neighbourInStairDirectionPos,
-    //     stairRotation,
-    //     MeshType.Debug
-    //   )
-    // );
-    // } else {
-
-    // }
-  }
-
-  private static determineStairRotation(
-    grid: Grid3D<CellType3D>,
-    pos: Vector3Int
-  ): Vector3 {
-    for (let i = 0; i < 4; i++) {
-      const dir = this.directions[i];
-      const neighborPos = pos.add(dir);
-
-      if (
-        grid.inBounds(neighborPos) &&
-        grid.getValue(neighborPos) === CellType3D.Stairs
-      ) {
-        const aboveNeighbor = neighborPos.add(this.directions[4]);
-        const belowNeighbor = neighborPos.add(this.directions[5]);
-
-        if (
-          grid.inBounds(aboveNeighbor) &&
-          grid.getValue(aboveNeighbor) === CellType3D.Stairs
-        ) {
-          return this.rotations[i];
-        }
-
-        if (
-          grid.inBounds(belowNeighbor) &&
-          grid.getValue(belowNeighbor) === CellType3D.Stairs
-        ) {
-          return this.rotations[i];
-        }
-      }
-    }
-
-    return this.rotations[2];
   }
 
   private static addStairRailings(

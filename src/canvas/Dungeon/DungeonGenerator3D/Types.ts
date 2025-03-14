@@ -1,36 +1,18 @@
-/**
- * Enum for cell types in the dungeon
- */
 export enum CellType3D {
-  None, // Empty space
-  Room, // Part of a room
-  Hallway, // Part of a hallway
-  Stairs, // Part of a staircase
+  None,
+  Room,
+  Hallway,
+  Stairs,
 }
 
-/**
- * Class representing a room in the dungeon
- */
 export class Room3D {
   public bounds: BoundsInt3D;
 
-  /**
-   * Create a new room
-   * @param location Bottom corner of the room
-   * @param size Size of the room in x, y, z
-   */
   constructor(location: Vector3Int, size: Vector3Int) {
     this.bounds = new BoundsInt3D(location, size);
   }
 
-  /**
-   * Check if two rooms intersect
-   * @param a First room
-   * @param b Second room
-   * @returns True if the rooms intersect
-   */
   static intersect(a: Room3D, b: Room3D): boolean {
-    // Two rooms intersect if they overlap on all three axes
     return !(
       a.bounds.xMin >= b.bounds.xMax ||
       a.bounds.xMax <= b.bounds.xMin ||
@@ -41,9 +23,6 @@ export class Room3D {
     );
   }
 
-  /**
-   * Create a string representation of the room
-   */
   toString(): string {
     return `Room at ${this.bounds.position.toString()} with size ${this.bounds.size.toString()}`;
   }
@@ -136,12 +115,10 @@ export class Vector3Int {
     return `(${this.x}, ${this.y}, ${this.z})`;
   }
 
-  // Convert to Vector3 (float)
   toVector3(): Vector3 {
     return new Vector3(this.x, this.y, this.z);
   }
 
-  // Create from Vector3 (floor values)
   static fromVector3(v: Vector3): Vector3Int {
     return new Vector3Int(Math.floor(v.x), Math.floor(v.y), Math.floor(v.z));
   }
@@ -192,7 +169,6 @@ export class BoundsInt3D {
     );
   }
 
-  // Iterate through all positions within bounds
   *allPositionsWithin(): Generator<Vector3Int> {
     for (let x = this.xMin; x < this.xMax; x++) {
       for (let y = this.yMin; y < this.yMax; y++) {
@@ -204,7 +180,6 @@ export class BoundsInt3D {
   }
 }
 
-// Helper functions similar to Unity's Mathf
 export class Mathf {
   static clamp(value: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, value));

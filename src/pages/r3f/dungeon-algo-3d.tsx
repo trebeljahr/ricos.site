@@ -22,8 +22,11 @@ import {
 } from "@r3f/Dungeon/DungeonGenerator3D/ConvertToMesh";
 import {
   Arches,
+  Coins,
   Floors,
+  SideWallStairs,
   Stairs,
+  Torches,
   Walls,
 } from "@r3f/Dungeon/DungeonRoomsWithInstancing";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
@@ -57,7 +60,7 @@ const geometries = {
   stairs: new BoxGeometry(1, 1, 1),
 };
 
-const RenderDungeon = () => {
+const RenderDungeon = ({ seed }: { seed?: number }) => {
   const [showDebug, setShowDebug] = useState(true);
 
   const roomInstancesRef = useRef<InstancedMesh>(null!);
@@ -75,7 +78,7 @@ const RenderDungeon = () => {
       new Vector3Int(50, 5, 50),
       30,
       new Vector3Int(6, 1, 6),
-      Math.random() * 1000
+      seed || Math.random() * 1000
     );
 
     const grid3D = generator3D.generate();
@@ -103,107 +106,37 @@ const RenderDungeon = () => {
 
     const meshes = DungeonMeshGenerator.generateMeshes(grid3D);
 
+    const initEmpty = () =>
+      ({ positions: [], rotations: [] } as {
+        positions: Vector3[];
+        rotations: Vector3[];
+      });
+
     const renderPass = meshes.reduce(
       (acc, mesh) => {
-        switch (mesh.meshType) {
-          case MeshType.Door:
-            return {
-              ...acc,
-              doors: {
-                ...acc.doors,
-                positions: [...acc.doors.positions, mesh.position],
-                rotations: [...acc.doors.rotations, mesh.rotation],
-              },
-            };
-          case MeshType.DoorFrame:
-            return {
-              ...acc,
-              doorFrames: {
-                ...acc.doorFrames,
-                positions: [...acc.doorFrames.positions, mesh.position],
-                rotations: [...acc.doorFrames.rotations, mesh.rotation],
-              },
-            };
-          case MeshType.Stairs:
-            return {
-              ...acc,
-              stairs: {
-                ...acc.stairs,
-                positions: [...acc.stairs.positions, mesh.position],
-                rotations: [...acc.stairs.rotations, mesh.rotation],
-              },
-            };
-          case MeshType.StairsRailing:
-            return {
-              ...acc,
-              stairsRailing: {
-                ...acc.stairsRailing,
-                positions: [...acc.stairsRailing.positions, mesh.position],
-                rotations: [...acc.stairsRailing.rotations, mesh.rotation],
-              },
-            };
-          case MeshType.Wall:
-            return {
-              ...acc,
-              walls: {
-                ...acc.walls,
-                positions: [...acc.walls.positions, mesh.position],
-                rotations: [...acc.walls.rotations, mesh.rotation],
-              },
-            };
-          case MeshType.Ceiling:
-            return {
-              ...acc,
-              ceilings: {
-                ...acc.ceilings,
-                positions: [...acc.ceilings.positions, mesh.position],
-                rotations: [...acc.ceilings.rotations, mesh.rotation],
-              },
-            };
-          case MeshType.Floor:
-            return {
-              ...acc,
-              floors: {
-                ...acc.floors,
-                positions: [...acc.floors.positions, mesh.position],
-                rotations: [...acc.floors.rotations, mesh.rotation],
-              },
-            };
-        }
+        return {
+          ...acc,
+          [mesh.meshType]: {
+            ...acc[mesh.meshType],
+            positions: [...acc[mesh.meshType].positions, mesh.position],
+            rotations: [...acc[mesh.meshType].rotations, mesh.rotation],
+          },
+        };
       },
       {
-        walls: { positions: [], rotations: [] } as {
-          positions: Vector3[];
-          rotations: Vector3[];
-        },
-        ceilings: { positions: [], rotations: [] } as {
-          positions: Vector3[];
-          rotations: Vector3[];
-        },
-        floors: { positions: [], rotations: [] } as {
-          positions: Vector3[];
-          rotations: Vector3[];
-        },
-        doors: { positions: [], rotations: [] } as {
-          positions: Vector3[];
-          rotations: Vector3[];
-        },
-        doorFrames: { positions: [], rotations: [] } as {
-          positions: Vector3[];
-          rotations: Vector3[];
-        },
-        stairs: { positions: [], rotations: [] } as {
-          positions: Vector3[];
-          rotations: Vector3[];
-        },
-        stairsRailing: { positions: [], rotations: [] } as {
-          positions: Vector3[];
-          rotations: Vector3[];
-        },
+        [MeshType.Floor]: initEmpty(),
+        [MeshType.Ceiling]: initEmpty(),
+        [MeshType.Debug]: initEmpty(),
+        [MeshType.Wall]: initEmpty(),
+        [MeshType.Door]: initEmpty(),
+        [MeshType.DoorFrame]: initEmpty(),
+        [MeshType.Stairs]: initEmpty(),
+        [MeshType.StairsRailing]: initEmpty(),
+        [MeshType.StairWall]: initEmpty(),
       }
     );
     return { generator3D, grid3D, renderPass, counts };
-  }, []);
+  }, [seed]);
 
   useEffect(() => {
     const roomInstances = roomInstancesRef.current;
@@ -286,21 +219,23 @@ const RenderDungeon = () => {
         </>
       ) : (
         <group position={[-grid3D.size.x / 2, 1, -grid3D.size.z / 2]}>
-          <Arches {...renderPass.doorFrames} />
-          <Walls {...renderPass.walls} />
+          <Arches {...renderPass[MeshType.DoorFrame]} />
+          <Walls {...renderPass[MeshType.Wall]} />
+          <Coins {...renderPass[MeshType.Debug]} />
+          <SideWallStairs {...renderPass[MeshType.StairWall]} />
           <Floors
             {...{
               rotations: [
-                ...renderPass.floors.rotations,
-                ...renderPass.ceilings.rotations,
+                ...renderPass[MeshType.Floor].rotations,
+                ...renderPass[MeshType.Ceiling].rotations,
               ],
               positions: [
-                ...renderPass.floors.positions,
-                ...renderPass.ceilings.positions,
+                ...renderPass[MeshType.Floor].positions,
+                ...renderPass[MeshType.Ceiling].positions,
               ],
             }}
           />
-          <Stairs {...renderPass.stairs} />
+          <Stairs {...renderPass[MeshType.Stairs]} />
         </group>
       )}
     </group>
@@ -308,10 +243,10 @@ const RenderDungeon = () => {
 };
 
 export default function Page() {
-  const [state, setState] = useState(0);
+  const [seed, setSeed] = useState(0);
 
   const handleClick = () => {
-    setState((prev) => prev + 1);
+    setSeed((prev) => prev + 1);
   };
 
   return (
@@ -320,7 +255,7 @@ export default function Page() {
         <ambientLight args={["#404040", 1]} />
         <directionalLight args={["#ffffff", 0.8]} position={[50, 50, 50]} />
         <Sky />
-        <RenderDungeon />
+        <RenderDungeon seed={seed} />
         <CameraPositionLogger />
 
         <MinecraftSpectatorController speed={0.2} />

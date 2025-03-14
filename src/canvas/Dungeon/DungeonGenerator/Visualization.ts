@@ -52,8 +52,6 @@ function renderDungeon(scene: THREE.Scene): void {
 
   const grid = generator.generate();
 
-  console.log(grid);
-
   const roomMaterial = new THREE.MeshStandardMaterial({
     color: 0xcd5c5c,
     roughness: 0.7,

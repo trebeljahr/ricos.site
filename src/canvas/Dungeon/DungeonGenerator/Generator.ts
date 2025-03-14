@@ -37,23 +37,18 @@ export class DungeonGenerator {
   }
 
   generate(): Grid2D<CellType> {
-    console.log("Starting dungeon generation...");
-
     this.placeRooms();
-    console.log(`Placed ${this.rooms.length} rooms`);
 
     if (this.rooms.length < 2) {
-      console.log("Not enough rooms to create hallways");
+      console.error("Not enough rooms to create hallways");
       return this.grid;
     }
 
     const vertices = this.createVerticesFromRooms();
 
     const edges = DelaunayHelper.triangulate(vertices);
-    console.log(`Created ${edges.length} edges from triangulation`);
 
     const mstEdges = PrimMST.minimumSpanningTree(edges, vertices[0]);
-    console.log(`MST contains ${mstEdges.length} edges`);
 
     const finalEdges = PrimMST.addRandomConnections(
       edges,
@@ -61,18 +56,13 @@ export class DungeonGenerator {
       0.125,
       this.random
     );
-    console.log(
-      `Added ${finalEdges.length - mstEdges.length} additional connections`
-    );
 
     this.pathfindHallways(finalEdges);
-    console.log("Completed hallway pathfinding");
 
     return this.grid;
   }
 
   private placeRooms(): void {
-    console.log(`Attempting to place ${this.roomCount} rooms`);
     let placedRooms = 0;
     let attempts = 0;
     const maxAttempts = this.roomCount * 3;
@@ -123,8 +113,6 @@ export class DungeonGenerator {
         }
       }
     }
-
-    console.log(`Placed ${placedRooms} rooms after ${attempts} attempts`);
   }
 
   private createVerticesFromRooms(): Vertex[] {
@@ -216,7 +204,5 @@ export class DungeonGenerator {
 
       output += row + "\n";
     }
-
-    console.log(output);
   }
 }

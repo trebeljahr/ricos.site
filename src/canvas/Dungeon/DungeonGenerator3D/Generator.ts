@@ -66,15 +66,12 @@ class DungeonGenerator3D {
    * @returns The dungeon grid
    */
   generate(): Grid3D<CellType3D> {
-    console.log(`Starting 3D dungeon generation with seed: ${this.seed}`);
-
     // Step 1: Place rooms
     this.placeRooms();
-    console.log(`Placed ${this.rooms.length} rooms`);
 
     // If we have fewer than 2 rooms, we can't create hallways
     if (this.rooms.length < 2) {
-      console.log("Not enough rooms to create hallways");
+      console.warn("Not enough rooms to create hallways");
       return this.grid;
     }
 
@@ -82,14 +79,10 @@ class DungeonGenerator3D {
     const vertices = this.createVerticesFromRooms();
 
     // Step 3: Triangulate the vertices
-    console.log("Creating Delaunay triangulation...");
     const delaunay = Delaunay3D.triangulate(vertices);
-    console.log(`Created ${delaunay.edges.length} edges from triangulation`);
 
     // Step 4: Create minimum spanning tree
-    console.log("Creating minimum spanning tree...");
     const mstEdges = PrimMST.minimumSpanningTree(delaunay.edges, vertices[0]);
-    console.log(`MST contains ${mstEdges.length} edges`);
 
     // Step 5: Add some random additional connections
     const finalEdges = PrimMST.addRandomConnections(
@@ -98,14 +91,9 @@ class DungeonGenerator3D {
       0.125, // 12.5% chance to add non-MST edges
       this.random
     );
-    console.log(
-      `Added ${finalEdges.length - mstEdges.length} additional connections`
-    );
 
     // Step 6: Pathfind hallways between connected rooms
-    console.log("Pathfinding hallways and stairs...");
     this.pathfindHallways(finalEdges);
-    console.log("Completed hallway pathfinding");
 
     return this.grid;
   }
@@ -114,7 +102,6 @@ class DungeonGenerator3D {
    * Place random rooms on the grid
    */
   private placeRooms(): void {
-    console.log(`Attempting to place ${this.roomCount} rooms`);
     let placedRooms = 0;
     let attempts = 0;
     const maxAttempts = this.roomCount * 3; // Limit attempts to avoid infinite loops
@@ -175,8 +162,6 @@ class DungeonGenerator3D {
         }
       }
     }
-
-    console.log(`Placed ${placedRooms} rooms after ${attempts} attempts`);
   }
 
   /**

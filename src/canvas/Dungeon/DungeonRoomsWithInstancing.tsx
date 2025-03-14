@@ -54,7 +54,26 @@ function Particles({
   );
 }
 
-const Torches = ({
+export const SideWallStairs = ({
+  positions,
+  rotations,
+}: {
+  positions: XYZ[];
+  rotations: XYZ[];
+}) => {
+  const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
+    modelPath: "/3d-assets/glb/modular_dungeon_1/Stairs_SideCover.glb",
+    defaultScale: 0.5,
+  });
+
+  useEffect(() => {
+    addPositions(positions, rotations);
+  }, [addPositions]);
+
+  return <InstancedMesh />;
+};
+
+export const Torches = ({
   positions,
   rotations,
 }: {
@@ -153,6 +172,25 @@ export const Stairs = ({
   return <InstancedMesh />;
 };
 
+export const Coins = ({
+  positions,
+  rotations,
+}: {
+  positions: XYZ[];
+  rotations: XYZ[];
+}) => {
+  const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
+    modelPath: "/3d-assets/glb/modular_dungeon_1/Coin_Pile.glb",
+    defaultScale: 5,
+  });
+
+  useEffect(() => {
+    addPositions(positions, rotations);
+  }, [addPositions, positions, rotations]);
+
+  return <InstancedMesh />;
+};
+
 export const Floors = ({
   positions,
   rotations,
@@ -203,8 +241,6 @@ export const Arches = ({
   positions: XYZ[];
   rotations: XYZ[];
 }) => {
-  console.log("positions", positions);
-
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Arch.glb",
     defaultScale: 0.25,

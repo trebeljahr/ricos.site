@@ -9,6 +9,8 @@ export enum MeshType {
   Door,
   Stairs,
   StairsRailing,
+  StairWall,
+  Debug,
 }
 
 export class MeshInstance {
@@ -139,27 +141,115 @@ export class DungeonMeshGenerator {
           pos.z * scale
         );
 
-        let meshType: MeshType;
         if (i < 4) {
-          meshType = MeshType.Wall;
-
           const offset = this.directions[i].multiply(scale);
           worldPos.x += offset.x * 0.5;
           worldPos.y += offset.y;
           worldPos.z += offset.z * 0.5;
+          meshes.push(
+            new MeshInstance(worldPos, this.rotations[i], MeshType.Wall)
+          );
         } else if (i === 4) {
-          meshType = MeshType.Ceiling;
-          worldPos.y += scale * 0.5;
+          const cellAbove = grid.getValue(pos.add(this.directions[4]));
+          if (
+            cellAbove !== CellType3D.Hallway &&
+            cellAbove !== CellType3D.Room
+          ) {
+            worldPos.y += scale * 0.5;
+            meshes.push(
+              new MeshInstance(worldPos, this.rotations[i], MeshType.Ceiling)
+            );
+          } else {
+            worldPos.y += scale * 0.5;
+            meshes.push(
+              new MeshInstance(worldPos, this.rotations[i], MeshType.Debug)
+            );
+          }
         } else {
-          meshType = MeshType.Floor;
           worldPos.y -= scale * 0.5;
+          meshes.push(
+            new MeshInstance(worldPos, this.rotations[i], MeshType.Floor)
+          );
         }
-
-        meshes.push(new MeshInstance(worldPos, this.rotations[i], meshType));
       }
     }
   }
 
+  private static convertStairRotationToDirection(rotation: Vector3) {
+    if (rotation.y === 0) {
+      return new Vector3Int(0, 0, -1);
+    }
+    if (rotation.y === Math.PI) {
+      return new Vector3Int(0, 0, 1);
+    }
+    if (rotation.y === Math.PI / 2) {
+      return new Vector3Int(-1, 0, 0);
+    }
+    if (rotation.y === Math.PI + Math.PI / 2) {
+      return new Vector3Int(1, 0, 0);
+    }
+
+    return new Vector3Int(0, 0, 0);
+  }
+
+  private static convertStairDirectionToRotation(direction: Vector3Int) {
+    console.log(direction);
+    if (new Vector3Int(0, 0, -1).equals(direction)) {
+      return new Vector3(0, 0, 0);
+    }
+    if (new Vector3Int(0, 0, 1).equals(direction)) {
+      return new Vector3(0, Math.PI, 0);
+    }
+    if (new Vector3Int(-1, 0, 0).equals(direction)) {
+      return new Vector3(0, Math.PI / 2, 0);
+    }
+    if (new Vector3Int(1, 0, 0).equals(direction)) {
+      return new Vector3(0, Math.PI + Math.PI / 2, 0);
+    }
+
+    return new Vector3(0, 0, 0);
+  }
+
+  private static determineStairsDirection(
+    grid: Grid3D<CellType3D>,
+    pos: Vector3Int
+  ): Vector3Int | false {
+    for (let i = 0; i < 4; i++) {
+      const dir = this.directions[i];
+      const neighborPos = pos.add(dir.multiply(scale));
+      const oppositeNeighbor = pos.add(dir.multiply(-scale));
+      const oppositeNeighbor2 = pos.add(dir.multiply(-scale * 2));
+      const below = pos.add(this.directions[5]);
+
+      const neighborAndUpPos = neighborPos.add(
+        this.directions[4].multiply(scale)
+      );
+
+      if (
+        grid.getValue(neighborAndUpPos) === CellType3D.Hallway &&
+        grid.getValue(oppositeNeighbor) === CellType3D.Stairs &&
+        grid.getValue(below) !== CellType3D.Stairs &&
+        grid.getValue(neighborPos) !== CellType3D.Hallway &&
+        grid.getValue(oppositeNeighbor2) === CellType3D.Hallway
+      ) {
+        return this.directions[i];
+      }
+    }
+
+    return false;
+  }
+
+  private static getRightAngleDirections(direction: Vector3Int) {
+    if (direction.x === 0) {
+      return [new Vector3Int(1, 0, 0), new Vector3Int(-1, 0, 0)];
+    }
+
+    if (direction.z === 0) {
+      return [new Vector3Int(0, 0, 1), new Vector3Int(0, 0, -1)];
+    }
+
+    return [];
+  }
   private static generateStairsMeshes(
     grid: Grid3D<CellType3D>,
     pos: Vector3Int,
@@ -167,34 +257,130 @@ export class DungeonMeshGenerator {
   ): void {
     const worldPos = new Vector3(pos.x, pos.y, pos.z);
 
-    let stairDirection = this.determineStairDirection(grid, pos);
+    const stairDirection = this.determineStairsDirection(grid, pos);
 
-    meshes.push(new MeshInstance(worldPos, stairDirection, MeshType.Stairs));
+    const neighborAbove = pos.add(this.directions[4]);
+    const neighborBelow = pos.add(this.directions[5]);
 
-    this.addStairRailings(grid, pos, stairDirection, meshes);
+    // for (let i = 0; i < 4; i++) {
+    //   const neighborPos = pos.add(this.directions[i].multiply(scale));
 
-    for (let i = 0; i < 4; i++) {
-      const neighborPos = pos.add(this.directions[i].multiply(scale));
+    //   if (
+    //     !grid.inBounds(neighborPos) ||
+    //     grid.getValue(neighborPos) === CellType3D.None
+    //   ) {
+    //     const wallPos = new Vector3(worldPos.x, worldPos.y, worldPos.z);
 
+    //     const offset = this.directions[i].multiply(scale);
+    //     wallPos.x += offset.x * 0.5;
+    //     wallPos.y += offset.y * 0.5;
+    //     wallPos.z += offset.z * 0.5;
+
+    //     meshes.push(
+    //       new MeshInstance(wallPos, this.rotations[i], MeshType.Wall)
+    //     );
+    //   }
+    // }
+
+    if (!stairDirection) {
+      // this is no stair!
+
+      if (grid.getValue(neighborAbove) !== CellType3D.Stairs) {
+        meshes.push(
+          new MeshInstance(
+            new Vector3(pos.x, pos.y + scale * 0.5, pos.z),
+            this.rotations[2],
+            MeshType.Floor
+          )
+        );
+      }
+
+      if (grid.getValue(neighborBelow) !== CellType3D.Stairs) {
+        meshes.push(
+          new MeshInstance(
+            new Vector3(pos.x, pos.y - scale * 0.5, pos.z),
+            this.rotations[2],
+            MeshType.Floor
+          )
+        );
+      }
+
+      return;
+    }
+
+    const stairRotation = this.convertStairDirectionToRotation(stairDirection);
+    this.addStairRailings(grid, pos, stairRotation, meshes);
+
+    meshes.push(new MeshInstance(worldPos, stairRotation, MeshType.Stairs));
+
+    const leftAndRightDirectionsFromStair =
+      this.getRightAngleDirections(stairDirection);
+
+    for (const dir of leftAndRightDirectionsFromStair) {
+      const neighborPos = pos.add(dir.multiply(scale));
       if (
-        !grid.inBounds(neighborPos) ||
-        grid.getValue(neighborPos) === CellType3D.None
+        grid.getValue(neighborPos) === CellType3D.Hallway ||
+        grid.getValue(neighborPos) === CellType3D.Room
       ) {
         const wallPos = new Vector3(worldPos.x, worldPos.y, worldPos.z);
 
-        const offset = this.directions[i].multiply(scale);
-        wallPos.x += offset.x * 0.5;
-        wallPos.y += offset.y * 0.5;
-        wallPos.z += offset.z * 0.5;
+        const offset = dir.multiply(scale);
+        wallPos.x += offset.x;
+        wallPos.z += offset.z;
 
         meshes.push(
-          new MeshInstance(wallPos, this.rotations[i], MeshType.Wall)
+          new MeshInstance(wallPos, stairRotation, MeshType.StairWall)
         );
       }
     }
+
+    // // const stairDirection = this.convertStairRotationToDirection(stairRotation);
+    // const neighbourInStairDirection = pos.add(
+    //   new Vector3Int(stairDirection.x * scale, scale, stairDirection.z * scale)
+    // );
+
+    // const neighbourInStairDirectionPos = new Vector3(
+    //   neighbourInStairDirection.x,
+    //   neighbourInStairDirection.y,
+    //   neighbourInStairDirection.z
+    // );
+
+    // console.log(neighbourInStairDirection);
+    // console.log(
+    //   grid.inBounds(neighbourInStairDirection) &&
+    //     grid.getValue(neighbourInStairDirection)
+    // );
+
+    // const upStairIsHallway =
+    //   grid.inBounds(neighbourInStairDirection) &&
+    //   grid.getValue(neighbourInStairDirection) === CellType3D.Hallway;
+
+    // if (upStairIsHallway) {
+
+    // }
+
+    // if (
+    //   // grid.inBounds(neighborBelow) &&
+    //   grid.getValue(neighborBelow) !== CellType3D.Stairs
+    // ) {
+    //   if (upStairIsHallway) {
+    //   } else {
+
+    //   }
+
+    // meshes.push(
+    //   new MeshInstance(
+    //     neighbourInStairDirectionPos,
+    //     stairRotation,
+    //     MeshType.Debug
+    //   )
+    // );
+    // } else {
+
+    // }
   }
 
-  private static determineStairDirection(
+  private static determineStairRotation(
     grid: Grid3D<CellType3D>,
     pos: Vector3Int
   ): Vector3 {

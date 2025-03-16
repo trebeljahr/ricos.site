@@ -9,16 +9,26 @@ import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { EcctrlController } from "@r3f/Controllers/EcctrlController";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { RigidBallSpawner } from "@r3f/Helpers/RigidBall";
+import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
 import { LightsAndFog } from "@r3f/Scenes/LightsAndFog";
 import { Physics } from "@react-three/rapier";
+import { Material } from "three";
 
-export const ChunkRenderer = () => {
+export const ChunkRenderer = ({ material }: { material?: Material }) => {
   const chunks = useChunkContext();
 
   return (
     <group>
       {Array.from(chunks).map(([key, chunkData]) => {
-        return <MemoizedChunk key={key} chunkData={chunkData} />;
+        return (
+          <MemoizedChunk key={key} chunkData={chunkData}>
+            <HeightfieldTileWithCollider
+              geometry={chunkData.data!.geo}
+              heightfield={chunkData.data!.heightfield}
+              material={material}
+            />
+          </MemoizedChunk>
+        );
       })}
     </group>
   );

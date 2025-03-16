@@ -22,15 +22,18 @@ const defaultMaterial = () => (
 export const HeightfieldTileWithCollider = ({
   geometry,
   heightfield,
-  material: MaterialComponent = defaultMaterial,
+  material = defaultMaterial,
 }: {
   geometry: BufferGeometry;
   heightfield: number[];
-  material?: (...args: any) => ReactNode;
+  material?: ((...args: any) => ReactNode) | Material;
 }) => {
   const meshRef = useRef<Mesh>(null!);
 
   useHelper(normalsDebug && meshRef, VertexNormalsHelper, 1, 0xff0000);
+  const MaterialComponent =
+    !(material instanceof Material) &&
+    (material as (...args: any) => ReactNode);
 
   return (
     <>
@@ -38,11 +41,12 @@ export const HeightfieldTileWithCollider = ({
         <mesh
           ref={meshRef}
           geometry={geometry}
+          material={material instanceof Material ? material : undefined}
           // castShadow={true}
           receiveShadow={true}
           visible={mode !== "none"}
         >
-          <MaterialComponent displacementScale={0} />
+          {MaterialComponent && <MaterialComponent displacementScale={0} />}
         </mesh>
       </RigidBody>
       {/* <RigidBody colliders={false}>

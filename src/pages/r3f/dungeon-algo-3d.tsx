@@ -1,5 +1,6 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
+import { perf } from "@r3f/ChunkGenerationSystem/config";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import {
@@ -40,6 +41,9 @@ import {
 } from "three";
 
 const wireframe = false;
+
+const backgroundColor = "#191616";
+const viewDistance = 30;
 
 const materials = {
   room: new MeshStandardMaterial({
@@ -256,6 +260,8 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
             ref={stairsInstancesRef}
             frustumCulled={false}
           />
+          <Sky />
+          <directionalLight args={["#ffffff", 0.8]} position={[50, 50, 50]} />
         </>
       ) : (
         <group position={[-grid3D.size.x / 2, 1, -grid3D.size.z / 2]}>
@@ -278,6 +284,11 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
             }}
           />
           <Stairs {...renderPass[MeshType.Stairs]} />
+
+          <EffectComposer>
+            <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />
+            <ToneMapping />
+          </EffectComposer>
         </group>
       )}
     </group>
@@ -290,12 +301,9 @@ export default function Page() {
   const handleClick = () => {
     setSeed((prev) => prev + 1);
   };
-  const backgroundColor = "#191616";
-  const viewDistance = 20;
 
   return (
-    // <ThreeFiberLayout>
-    <div className="w-screen h-screen">
+    <ThreeFiberLayout>
       <CanvasWithKeyboardInput
         camera={{ far: viewDistance, position: [25, 10, 25] }}
       >
@@ -303,24 +311,15 @@ export default function Page() {
         <color attach="background" args={[backgroundColor]} />
 
         <ambientLight args={["#404040", 1]} />
-        <Perf position="bottom-right" />
-        {/* <directionalLight args={["#ffffff", 0.8]} position={[50, 50, 50]} /> */}
-        {/* <Sky /> */}
+        {perf && <Perf position="bottom-right" />}
         <RenderDungeon seed={seed} />
         <CameraPositionLogger />
-
-        <EffectComposer>
-          <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />
-          <ToneMapping />
-        </EffectComposer>
 
         <MinecraftSpectatorController speed={0.2} />
       </CanvasWithKeyboardInput>
       {/* <button onClick={handleClick} className="absolute top-0 right-0 z-20">
         Click for new dungeon
       </button> */}
-    </div>
-
-    // </ThreeFiberLayout>
+    </ThreeFiberLayout>
   );
 }

@@ -165,8 +165,8 @@ const CanvasContent = () => {
     });
 
     lightRef.current.castShadow = true;
-    lightRef.current.shadow.mapSize.width = 2048;
-    lightRef.current.shadow.mapSize.height = 2048;
+    lightRef.current.shadow.mapSize.width = 4096;
+    lightRef.current.shadow.mapSize.height = 4096;
     lightRef.current.shadow.camera.far = 400;
     lightRef.current.shadow.camera.left = -200;
     lightRef.current.shadow.camera.right = 200;
@@ -295,7 +295,7 @@ const CanvasContent = () => {
 
       {/* <Wall length={4} position={[-3, 1, -8]} /> */}
 
-      <gridHelper args={[100, 50]} position={[0, 0, 0]} />
+      {/* <gridHelper args={[100, 50]} position={[0, 0, 0]} /> */}
       <Plane
         args={[100, 100]}
         position={[0, -0.1, 0]}
@@ -308,8 +308,6 @@ const CanvasContent = () => {
           metalness={0.1}
         />
       </Plane>
-
-      <MinecraftSpectatorController initialPosition={[0, 25, 0]} speed={0.5} />
     </>
   );
 };
@@ -321,6 +319,11 @@ export default function Page() {
         camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
       >
         <CanvasContent />
+
+        <MinecraftSpectatorController
+          initialPosition={[0, 25, 0]}
+          speed={0.5}
+        />
       </CanvasWithKeyboardInput>
     </ThreeFiberLayout>
   );

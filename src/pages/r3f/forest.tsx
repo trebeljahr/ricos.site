@@ -72,7 +72,7 @@ const Page = () => {
             {/* <EcctrlController position={[0, 100, 0]} /> */}
 
             <MinecraftSpectatorController
-              speed={25}
+              speed={1}
               initialLookat={[10, 0, 0]}
               initialPosition={[0, y + 20, 0]}
             />

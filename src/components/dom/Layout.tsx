@@ -1,5 +1,6 @@
 import { PropsWithChildren, ReactNode } from "react";
 import { NavbarWithLinks } from "./Navbar";
+import { nav } from "@r3f/ChunkGenerationSystem/config";
 
 type Props = {
   extraLinks?: ReactNode;
@@ -11,7 +12,7 @@ export const ThreeFiberLayout = ({
 }: PropsWithChildren<Props>) => {
   return (
     <>
-      <NavbarWithLinks>{extraLinks}</NavbarWithLinks>
+      {nav && <NavbarWithLinks>{extraLinks}</NavbarWithLinks>}
       <div className="w-screen h-screen">{children}</div>
     </>
   );

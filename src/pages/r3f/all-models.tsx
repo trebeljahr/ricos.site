@@ -120,7 +120,7 @@ const Page = () => {
               })}
             </group>
 
-            <MinecraftSpectatorController speed={25} />
+            <MinecraftSpectatorController speed={1} />
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>

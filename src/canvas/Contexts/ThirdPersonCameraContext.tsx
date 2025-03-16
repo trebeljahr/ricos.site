@@ -10,7 +10,7 @@ const defaultThirdPersonCameraState = {
   gameUp: vec3.fromValues(0, 1, 0),
   position: vec3.create(),
   quaternion: quat2.create(),
-  distance: 15,
+  distance: 5,
   phi: Math.PI * 0.45,
   theta: -Math.PI * 0.25,
   aboveOffset: 2,

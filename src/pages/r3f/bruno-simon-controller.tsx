@@ -6,6 +6,7 @@ import { Physics } from "@react-three/rapier";
 import { physicsDebug } from "src/canvas/ChunkGenerationSystem/config";
 import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
 import { ChunkRenderer } from "./heightfield";
+import { MeshStandardMaterial } from "three";
 
 const Page = () => {
   return (
@@ -20,7 +21,16 @@ const Page = () => {
             <color args={["#f0f0f0"]} attach="background" />
 
             <ChunkProvider>
-              <ChunkRenderer />
+              <ChunkRenderer
+                material={
+                  new MeshStandardMaterial({
+                    color: "#8bcd5c",
+                    roughness: 0.7,
+                    metalness: 0.2,
+                    wireframe: false,
+                  })
+                }
+              />
             </ChunkProvider>
           </Physics>
           <BrunoSimonController />

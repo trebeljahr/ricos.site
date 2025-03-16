@@ -29,7 +29,7 @@ const Page = () => {
             <gridHelper args={[tileSize, 100]} />
 
             <Sky />
-            <MinecraftSpectatorController speed={25} />
+            <MinecraftSpectatorController speed={1} />
           </Physics>
         </Canvas>
       </KeyboardControlsProvider>

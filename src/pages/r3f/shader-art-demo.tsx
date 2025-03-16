@@ -3,13 +3,14 @@ import Layout from "@components/Layout";
 import { Canvas } from "@react-three/fiber";
 import controllableShaderArt from "@shaders/controllableShaderArt.glsl";
 import { AnimatePresence, motion } from "framer-motion";
-import { useControls } from "leva";
+import { Leva, useControls } from "leva";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaCheck, FaInfo, FaShareAlt } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
 import { IUniform } from "three";
+import { recording } from "@r3f/ChunkGenerationSystem/config";
 
 function ShareWithOthersButton() {
   const handleClick = async () => {
@@ -253,6 +254,8 @@ export default function ShaderEditorPage() {
       imageAlt="Shader Art Demo"
       leftSmallNavbar
     >
+      <Leva hidden={recording} />
+
       <div className="w-screen h-screen relative bg-leva-medium dark:bg-leva-dark">
         <Canvas
           orthographic
@@ -273,8 +276,8 @@ export default function ShaderEditorPage() {
             otherUniforms={otherUniforms}
           />
         </Canvas>
-        <ShareWithOthersButton />
-        <InfoButton />
+        {!recording && <ShareWithOthersButton />}
+        {!recording && <InfoButton />}
       </div>
     </Layout>
   );

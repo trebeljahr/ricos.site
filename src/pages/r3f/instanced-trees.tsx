@@ -16,7 +16,7 @@ const Page = () => {
             <directionalLight position={[10, 10, 5]} intensity={1} />
             <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
             <color args={["#f0f0f0"]} attach="background" />
-            <MinecraftSpectatorController speed={25} />
+            <MinecraftSpectatorController speed={1} />
             <gridHelper args={[tileSize, 100]} />
             <TreeTile />
           </Physics>

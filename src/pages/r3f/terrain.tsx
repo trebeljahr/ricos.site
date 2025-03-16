@@ -17,10 +17,9 @@ import { CameraPositionLogger } from "src/canvas/Helpers/CameraPositionLogger";
 import { RayCaster } from "src/canvas/Helpers/RayCaster";
 import { RigidBallSpawner } from "src/canvas/Helpers/RigidBall";
 
-const defaultSpeed = 25;
 const Page = () => {
   const { speed } = useControls({
-    speed: { value: defaultSpeed, min: 1, max: 50, step: 1 },
+    speed: { value: 1, min: 0.1, max: 10, step: 0.1 },
   });
 
   return (

@@ -16,7 +16,7 @@ export default function Page() {
       <CanvasWithKeyboardInput>
         <Sky azimuth={1} inclination={0.6} distance={1000} />
         <Physics>
-          <MinecraftSpectatorController />
+          <MinecraftSpectatorController speed={1} />
         </Physics>
         <Ship />
         <OceanSurface />

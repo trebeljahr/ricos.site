@@ -47,7 +47,7 @@ export default function Model(props: Props) {
   const { actions } = useAnimations(animations, group);
 
   return (
-    <group ref={group} {...props} dispose={null} position={[0, -3, 0]}>
+    <group ref={group} {...props} dispose={null}>
       <GenericAnimationController
         actions={actions}
         animation={props.animationAction}

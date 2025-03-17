@@ -20,7 +20,7 @@ export const HealthbarsDemo = () => {
         waveAmp={0}
         fillColor={"#ff0000"}
         secondColor={"#1fb141"}
-        borderWidth={0.01}
+        borderWidth={0.018}
       />
 
       <GenericHealthBar

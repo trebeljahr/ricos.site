@@ -58,23 +58,10 @@ export const HealthContextProvider = ({
 
   const { viewport } = useThree();
 
-  //   const groupRef = useRef<Group>(null!);
-
-  //   useFrame((state) => {
-  //     if (groupRef.current) {
-  //       groupRef.current.position.copy(state.camera.position);
-  //       groupRef.current.rotation.copy(state.camera.rotation);
-  //       groupRef.current.position.z += 0.5;
-  //     }
-  //   });
-
-  console.log(viewport);
-
   return (
     <HealthContext.Provider value={{ health, damage, heal, setHealth }}>
       {!hideUI && (
         <Hud renderPriority={1}>
-          {/* <OrthographicCamera makeDefault position={[0, 0, 1]} /> */}
           <PerspectiveCamera makeDefault position={[0, 0, 10]} />
 
           <group position={[-viewport.width / 2 + 7, 0, 0]}>

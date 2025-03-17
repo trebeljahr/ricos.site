@@ -1,7 +1,8 @@
 import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
 import { Chunk, MemoizedChunk, useChunkContext } from "./ChunkProvider";
-import { debug } from "./config";
+import { debug, flatShading, wireframe } from "./config";
 import { DebugTile } from "./DebugTile";
+import { DoubleSide, MeshStandardMaterial } from "three";
 
 export const WorldManager = () => {
   const chunks = useChunkContext();
@@ -28,6 +29,15 @@ export const SingleTile = ({ chunkData }: { chunkData: Chunk }) => {
       <HeightfieldTileWithCollider
         geometry={chunkData.data.geo}
         heightfield={chunkData.data.heightfield}
+        material={
+          new MeshStandardMaterial({
+            // color="#dee6ef"
+            vertexColors: true,
+            side: DoubleSide,
+            flatShading: flatShading,
+            wireframe: wireframe,
+          })
+        }
       />
     </group>
   );

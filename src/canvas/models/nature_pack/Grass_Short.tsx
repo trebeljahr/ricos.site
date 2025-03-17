@@ -27,14 +27,14 @@ export function InstancedGrassShort({ positions }: { positions: Vector3[] }) {
     <GenericInstancedSystem
       positions={positions}
       meshMaterialCombos={meshMaterialCombos}
-      modelPath={"/3d-assets/glb/nature_pack/Grass_Short.glb"}
+      modelPath={"/3d-assets/glb/nature_pack/Grass_Short-transformed.glb"}
     />
   );
 }
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/nature_pack/Grass_Short.glb"
+    "/3d-assets/glb/nature_pack/Grass_Short-transformed.glb"
   ) as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>

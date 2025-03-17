@@ -21,7 +21,7 @@ type GLTFResult = GLTF & {
 
 export function useKelp() {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/kelp3.glb"
+    "/3d-assets/kelp3-transformed.glb"
   ) as unknown as GLTFResult;
 
   return { nodes, materials };
@@ -29,7 +29,7 @@ export function useKelp() {
 
 export function Kelp3(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/kelp3.glb"
+    "/3d-assets/kelp3-transformed.glb"
   ) as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
@@ -50,4 +50,4 @@ export function Kelp3(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/kelp3.glb");
+useGLTF.preload("/kelp3-transformed.glb");

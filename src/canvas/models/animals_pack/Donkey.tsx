@@ -63,7 +63,7 @@ type Props = JSX.IntrinsicElements["group"] & {
 export default function Model(props: Props) {
   const group = useRef<THREE.Group>(null!);
   const { nodes, materials, animations } = useGLTF(
-    "/3d-assets/glb/animals_pack/Donkey.glb"
+    "/3d-assets/glb/animals_pack/Donkey-transformed.glb"
   ) as unknown as GLTFResult;
   const { actions } = useAnimations(animations, group);
   return (
@@ -141,4 +141,4 @@ export default function Model(props: Props) {
   );
 }
 
-useGLTF.preload("/3d-assets/glb/animals_pack/Donkey.glb");
+useGLTF.preload("/3d-assets/glb/animals_pack/Donkey-transformed.glb");

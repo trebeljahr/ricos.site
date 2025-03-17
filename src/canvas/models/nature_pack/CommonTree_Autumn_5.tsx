@@ -36,14 +36,16 @@ export function InstancedCommonTreeAutumn5({
     <GenericInstancedSystem
       positions={positions}
       meshMaterialCombos={meshMaterialCombos}
-      modelPath={"/3d-assets/glb/nature_pack/CommonTree_Autumn_5.glb"}
+      modelPath={
+        "/3d-assets/glb/nature_pack/CommonTree_Autumn_5-transformed.glb"
+      }
     />
   );
 }
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/nature_pack/CommonTree_Autumn_5.glb"
+    "/3d-assets/glb/nature_pack/CommonTree_Autumn_5-transformed.glb"
   ) as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>

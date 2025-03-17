@@ -24,7 +24,7 @@ type GLTFResult = GLTF & {
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/modular_dungeon_1/Banner.glb"
+    "/3d-assets/glb/modular_dungeon_1/Banner-transformed.glb"
   ) as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
@@ -41,4 +41,4 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/3d-assets/glb/modular_dungeon_1/Banner.glb");
+useGLTF.preload("/3d-assets/glb/modular_dungeon_1/Banner-transformed.glb");

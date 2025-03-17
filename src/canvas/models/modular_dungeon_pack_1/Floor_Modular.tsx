@@ -18,7 +18,7 @@ type GLTFResult = GLTF & {
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/modular_dungeon_1/Floor_Modular.glb"
+    "/3d-assets/glb/modular_dungeon_1/Floor_Modular-transformed.glb"
   ) as unknown as GLTFResult;
 
   return (
@@ -33,4 +33,6 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/3d-assets/glb/modular_dungeon_1/Floor_Modular.glb");
+useGLTF.preload(
+  "/3d-assets/glb/modular_dungeon_1/Floor_Modular-transformed.glb"
+);

@@ -9,7 +9,7 @@ const nodesRegex = /nodes\s*:\s*{([^}]+)}/m;
 // Regex to match the materials object inside the GLTFResult type
 const materialsRegex = /materials\s*:\s*{([^}]+)}/m;
 // Regex to match the useGLTF call and extract the model path (assumes double or single quotes)
-const useGLTFRegex = /useGLTF\(\s*["']([^"']+\.glb)["']\s*\)/m;
+const useGLTFRegex = /useGLTF\(\s*["']([^"']+\-transformed.glb)["']\s*\)/m;
 // Regex to find the default export function to insert before it
 const defaultExportRegex = /export\s+default\s+function\s+Model\s*\(/m;
 
@@ -69,8 +69,8 @@ fs.readdir(folderPath, (err, files) => {
     const modelPath = useGLTFMatch[1];
 
     // Derive a model name from the file path string in the modelPath.
-    // For example, "/3d-assets/glb/nature_pack/BirchTree_1.glb" -> "BirchTree_1"
-    const baseName = path.basename(modelPath, ".glb");
+    // For example, "/3d-assets/glb/nature_pack/BirchTree_1-transformed.glb" -> "BirchTree_1"
+    const baseName = path.basename(modelPath, "-transformed.glb");
     // Create the new instanced function name, e.g., InstancedBirchTree1
     const instancedName = "Instanced" + baseName.replace(/_/g, "");
 

@@ -40,36 +40,58 @@ export default function Character() {
 
   const characterMeshRef = useRef<Mesh>(null!);
   const characterModel = useGLTF(
-    `/3d-assets/glb/characters/${characterName}-transformed.glb`
+    `/3d-assets/glb/characters/${characterName}-transformed-transformed.glb`
   );
 
-  const running = useGLTF("/3d-assets/glb/animations/running.glb");
-  const idle = useGLTF("/3d-assets/glb/animations/idle.glb");
-  const jump = useGLTF("/3d-assets/glb/animations/jump.glb");
-  const dance = useGLTF("/3d-assets/glb/animations/dance.glb");
-  const walking = useGLTF("/3d-assets/glb/animations/walking.glb");
-  const breakdance = useGLTF("/3d-assets/glb/animations/breakdance.glb");
-  const yawning = useGLTF("/3d-assets/glb/animations/yawning.glb");
-  const angry = useGLTF("/3d-assets/glb/animations/angry.glb");
-  const bow = useGLTF("/3d-assets/glb/animations/bow.glb");
-  const crawl = useGLTF("/3d-assets/glb/animations/crawl.glb");
-  const death = useGLTF("/3d-assets/glb/animations/death.glb");
-  const happyJump = useGLTF("/3d-assets/glb/animations/happy-jump.glb");
-  const jumpingUp = useGLTF("/3d-assets/glb/animations/jumping-up.glb");
-  const kickLeft = useGLTF("/3d-assets/glb/animations/kick-left.glb");
-  const kickRight = useGLTF("/3d-assets/glb/animations/kick-right.glb");
-  const martelo = useGLTF("/3d-assets/glb/animations/martelo.glb");
-  const paddle = useGLTF("/3d-assets/glb/animations/paddle.glb");
-  const pickUpLeft = useGLTF("/3d-assets/glb/animations/picking-up-left.glb");
-  const pickUpRight = useGLTF("/3d-assets/glb/animations/picking-up-right.glb");
-  const punchLeft = useGLTF("/3d-assets/glb/animations/punch-left.glb");
-  const punchRight = useGLTF("/3d-assets/glb/animations/punch-right.glb");
-  const salute = useGLTF("/3d-assets/glb/animations/salute.glb");
-  const shrug = useGLTF("/3d-assets/glb/animations/shrug.glb");
-  const sillyDance = useGLTF("/3d-assets/glb/animations/silly-dance.glb");
-  const swim = useGLTF("/3d-assets/glb/animations/swim.glb");
-  const threatGesture = useGLTF("/3d-assets/glb/animations/threat-gesture.glb");
-  const wave = useGLTF("/3d-assets/glb/animations/wave.glb");
+  const running = useGLTF("/3d-assets/glb/animations/running-transformed.glb");
+  const idle = useGLTF("/3d-assets/glb/animations/idle-transformed.glb");
+  const jump = useGLTF("/3d-assets/glb/animations/jump-transformed.glb");
+  const dance = useGLTF("/3d-assets/glb/animations/dance-transformed.glb");
+  const walking = useGLTF("/3d-assets/glb/animations/walking-transformed.glb");
+  const breakdance = useGLTF(
+    "/3d-assets/glb/animations/breakdance-transformed.glb"
+  );
+  const yawning = useGLTF("/3d-assets/glb/animations/yawning-transformed.glb");
+  const angry = useGLTF("/3d-assets/glb/animations/angry-transformed.glb");
+  const bow = useGLTF("/3d-assets/glb/animations/bow-transformed.glb");
+  const crawl = useGLTF("/3d-assets/glb/animations/crawl-transformed.glb");
+  const death = useGLTF("/3d-assets/glb/animations/death-transformed.glb");
+  const happyJump = useGLTF(
+    "/3d-assets/glb/animations/happy-jump-transformed.glb"
+  );
+  const jumpingUp = useGLTF(
+    "/3d-assets/glb/animations/jumping-up-transformed.glb"
+  );
+  const kickLeft = useGLTF(
+    "/3d-assets/glb/animations/kick-left-transformed.glb"
+  );
+  const kickRight = useGLTF(
+    "/3d-assets/glb/animations/kick-right-transformed.glb"
+  );
+  const martelo = useGLTF("/3d-assets/glb/animations/martelo-transformed.glb");
+  const paddle = useGLTF("/3d-assets/glb/animations/paddle-transformed.glb");
+  const pickUpLeft = useGLTF(
+    "/3d-assets/glb/animations/picking-up-left-transformed.glb"
+  );
+  const pickUpRight = useGLTF(
+    "/3d-assets/glb/animations/picking-up-right-transformed.glb"
+  );
+  const punchLeft = useGLTF(
+    "/3d-assets/glb/animations/punch-left-transformed.glb"
+  );
+  const punchRight = useGLTF(
+    "/3d-assets/glb/animations/punch-right-transformed.glb"
+  );
+  const salute = useGLTF("/3d-assets/glb/animations/salute-transformed.glb");
+  const shrug = useGLTF("/3d-assets/glb/animations/shrug-transformed.glb");
+  const sillyDance = useGLTF(
+    "/3d-assets/glb/animations/silly-dance-transformed.glb"
+  );
+  const swim = useGLTF("/3d-assets/glb/animations/swim-transformed.glb");
+  const threatGesture = useGLTF(
+    "/3d-assets/glb/animations/threat-gesture-transformed.glb"
+  );
+  const wave = useGLTF("/3d-assets/glb/animations/wave-transformed.glb");
 
   const animationsForHook = [
     { ...idle.animations[0], name: "idle" },

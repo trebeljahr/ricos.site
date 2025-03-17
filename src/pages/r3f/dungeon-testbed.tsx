@@ -25,12 +25,28 @@ import {
   Woodfire,
 } from "@r3f/models/modular_dungeon_pack_1";
 import {
+  Armor_Black,
+  Armor_Golden,
+  Armor_Leather,
+  Armor_Metal,
+  Armor_Metal2,
   Axe_Double,
   Axe_Double_Golden,
   Axe_small,
   Axe_small_Golden,
   Bow_Golden,
   Bow_Wooden,
+  Potion10_Filled,
+  Potion11_Filled,
+  Potion1_Filled,
+  Potion2_Filled,
+  Potion3_Filled,
+  Potion4_Filled,
+  Potion5_Filled,
+  Potion6_Filled,
+  Potion7_Filled,
+  Potion8_Filled,
+  Potion9_Filled,
   Sword_big,
   Sword_Golden,
 } from "@r3f/models/rpg_items_pack/";
@@ -47,7 +63,14 @@ import {
   RigidBody,
 } from "@react-three/rapier";
 import { Perf } from "r3f-perf";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  ComponentType,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   DirectionalLight,
   Group,
@@ -65,15 +88,15 @@ import {
   HealthContextProvider,
   useHealthContext,
 } from "@r3f/Contexts/HealthbarContext";
+import { ReactElement } from "react-markdown/lib/react-markdown";
 
 const WalkingSound = () => {
   const [play] = useSound(ambientLoop, { volume: 0.2, loop: true });
 };
 
-const initialHealth = 100;
+const HealingPotion = () => {};
 
 const SpikeTrap = ({ interval = 2000 }: { interval?: number }) => {
-  // const health = useRef(initialHealth);
   const { health, damage } = useHealthContext();
   const [extended, setExtended] = useState(false);
   const [inHitBox, setInHitBox] = useState(false);
@@ -93,7 +116,6 @@ const SpikeTrap = ({ interval = 2000 }: { interval?: number }) => {
 
   useFrame(() => {
     if (extended && inHitBox) {
-      // health.current -= 0.01;
       damage(0.01);
 
       if (health.current <= 0) {
@@ -166,51 +188,106 @@ const BackgroundMusicLoop = () => {
   return null;
 };
 
-const HealingPotionSpawner = () => {};
+const armorTypes = [
+  (props: GroupProps) => <Armor_Black position={[0, 0.5, 0]} {...props} />,
+  (props: GroupProps) => <Armor_Golden position={[0, 0.5, 0]} {...props} />,
+  (props: GroupProps) => <Armor_Leather position={[0, 0.5, 0]} {...props} />,
+  (props: GroupProps) => <Armor_Metal position={[0, 0.5, 0]} {...props} />,
+  (props: GroupProps) => <Armor_Metal2 position={[0, 0.5, 0]} {...props} />,
+];
 
-const ItemSpawner = (props: GroupProps) => {
+const ArmorSpawner = (props: SpawnerProps) => {
+  const Armor = useMemo(() => {
+    return pickRandomFromArray(armorTypes);
+  }, []);
+
+  return <ItemSpawner Item={Armor} {...props} />;
+};
+
+const potionTypes = [
+  Potion1_Filled,
+  Potion2_Filled,
+  Potion3_Filled,
+  Potion4_Filled,
+  Potion5_Filled,
+  Potion6_Filled,
+  Potion7_Filled,
+  Potion8_Filled,
+  Potion9_Filled,
+  Potion10_Filled,
+  Potion11_Filled,
+];
+
+const PotionSpawner = (props: SpawnerProps) => {
+  const Potion = useMemo(() => {
+    return pickRandomFromArray(potionTypes);
+  }, []);
+
+  return <ItemSpawner Item={Potion} {...props} />;
+};
+
+type SpawnerProps = GroupProps & {
+  respawnTime?: number;
+  onCollect?: (data: any) => void;
+};
+
+
+const weaponTypes = [
+  Sword_Golden,
+  Axe_Double,
+  (props: GroupProps) => <Sword_big position={[0, -0.5, 0]} {...props} />,
+  Axe_Double_Golden,
+  Axe_small,
+  Axe_small_Golden,
+  (props: GroupProps) => <Bow_Golden position={[0, 0.5, 0]} {...props} />,
+  (props: GroupProps) => <Bow_Wooden position={[0, 0.5, 0]} {...props} />,
+];
+
+const RandomWeaponsSpawner = (props: SpawnerProps) => {
+  const Weapon: ComponentType<GroupProps> = useMemo(() => {
+    return pickRandomFromArray(weaponTypes);
+  }, []);
+
+  return <ItemSpawner Item={Weapon} {...props} />;
+};
+
+const ItemSpawner = ({
+  Item,
+  respawnTime,
+  ...props
+}: SpawnerProps & {
+  Item: ComponentType<GroupProps>;
+}) => {
   const [intersection, setIntersection] = useState(false);
   const [play] = useSound(achievementSound, { volume: 0.5 });
-
-  const Sword = useMemo(() => {
-    const types = [
-      Sword_Golden,
-      Axe_Double,
-      () => <Sword_big position={[0, -0.5, 0]} />,
-      Axe_Double_Golden,
-      Axe_small,
-      Axe_small_Golden,
-      () => <Bow_Golden position={[0, 0.5, 0]} />,
-      () => <Bow_Wooden position={[0, 0.5, 0]} />,
-    ];
-
-    return pickRandomFromArray(types);
-  }, []);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
     if (intersection) {
       play();
+
+      if (!respawnTime) return;
+
       timeout = setTimeout(() => {
         setIntersection(false);
-      }, 3000);
+      }, respawnTime);
     }
 
     return () => {
       clearTimeout(timeout);
     };
-  }, [intersection, play]);
+  }, [intersection, play, respawnTime]);
 
-  const swordRef = useRef<Group>(null!);
+  const ItemRef = useRef<Group>(null!);
 
   useFrame(({ clock }) => {
-    if (!swordRef.current) return;
+    if (!ItemRef.current) return;
 
-    swordRef.current.rotation.y += 0.01;
-    swordRef.current.position.y = Math.sin(clock.getElapsedTime()) * 0.1 - 0.6;
+    ItemRef.current.rotation.y += 0.01;
+    ItemRef.current.position.y = Math.sin(clock.getElapsedTime()) * 0.1 - 0.6;
   });
 
-  if (intersection || !Sword) return null;
+  if (intersection) return null;
 
   return (
     <group {...props}>
@@ -228,8 +305,8 @@ const ItemSpawner = (props: GroupProps) => {
             setIntersection(true);
           }}
         >
-          <group ref={swordRef}>
-            <Sword />
+          <group ref={ItemRef}>
+            <Item />
           </group>
         </CapsuleCollider>
       </RigidBody>
@@ -237,7 +314,7 @@ const ItemSpawner = (props: GroupProps) => {
   );
 };
 
-const Box = ({
+const DungeonBox = ({
   depth,
   width,
   ...props
@@ -380,8 +457,21 @@ const CanvasContent = () => {
   return (
     <>
       {items.map((_, i) => (
-        <ItemSpawner key={i} position={[i * 5, 0, -20]} />
+        <RandomWeaponsSpawner
+          key={i}
+          position={[i * 5, 0, -20]}
+          respawnTime={2000}
+        />
       ))}
+
+      {items.map((_, i) => (
+        <PotionSpawner key={i} position={[i * 5, 0, -25]} respawnTime={2000} />
+      ))}
+
+      {items.map((_, i) => (
+        <ArmorSpawner key={i} position={[i * 5, 0, -30]} respawnTime={2000} />
+      ))}
+
       <BackgroundMusicLoop />
       <SpikeTrap />
       {/* <Sword_Golden /> */}
@@ -394,8 +484,9 @@ const CanvasContent = () => {
         position={[20, 10, 20]}
       />
       <ambientLight args={["#404040", 1]} />
-      <Box position={[16, 0, 16]} width={4} depth={4} />
-      <Box position={[-16, 0, 30]} width={10} depth={10} />
+      {/* <Box position={[16, 0, 16]} width={4} depth={4} />
+      <Box position={[-16, 0, 30]} width={10} depth={10} /> */}
+
       <Arch position={[0, 0, 0]} />
       <group position={[0, 0, -1]}>
         <Floor_Modular position-x={-3} />
@@ -510,7 +601,7 @@ export default function Page() {
         camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
       >
         <HealthContextProvider>
-          <Physics>
+          <Physics debug>
             <CanvasContent />
             <MinecraftCreativeController
               initialPosition={[0, 25, 0]}

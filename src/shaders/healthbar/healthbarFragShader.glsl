@@ -39,7 +39,6 @@ vec3 GetObjectScale() {
   return vec3(length(vec3(modelMatrix[0].xyz)), length(vec3(modelMatrix[1].xyz)), length(vec3(modelMatrix[2].xyz)));
 }
 
-// Best SDF reference: https://iquilezles.org/articles
 float CircleSDF(vec2 p, float radius) {
   return length(p) - radius;
 }
@@ -68,7 +67,7 @@ void main() {
   vec3 objectScale = GetObjectScale();
 
   // leave some margin space
-  float minScale = min(objectScale.x, objectScale.y);
+  float minScale = min(objectScale.x, objectScale.z);
   float margin = minScale * 0.1;
 
   // we 'elongate' instead of 'scaling' SDF to keep euclidean distance (so we can apply antialias easily)
@@ -76,7 +75,8 @@ void main() {
 
   // Apply elongation operation to fragment position
   vec3 p = (vPosition) * objectScale;
-  vec3 q = Elongate(p, shapeElongation);
+  vec3 p2 = vec3(p.x, p.z, p.y);
+  vec3 q = Elongate(p2, shapeElongation);
   vec2 q2 = vec2(q.x, q.z);
 
   // CONTAINER
@@ -98,7 +98,7 @@ void main() {
   // LIQUID/FILLER
   // min(sin) term is used to decrease effect of wave near 0 and 1.0 healthNormalized.
   float waveOffset = waveAmp * cos(waveFreq * (vUv.x + time * waveSpeed)) * min(1.3 * sin(PI * health), 1.0);
-  float marginNormalizedY = margin / objectScale.y;
+  float marginNormalizedY = margin / objectScale.z;
   float borderNormalizedY = borderWidth;
   float fillOffset = marginNormalizedY + borderNormalizedY;
 
@@ -107,7 +107,7 @@ void main() {
   float fillMask = GetSmoothMask(fillSDF);
 
   // BORDER 
-  float borderSDF = healthBarSDF + borderWidth * objectScale.y;
+  float borderSDF = healthBarSDF + borderWidth * objectScale.z;
   float borderMask = 1.0 - GetSmoothMask(borderSDF);
 
   // Get final color by combining masks
@@ -118,10 +118,10 @@ void main() {
   outColor *= vec4(val, val, val, 1);
 
   // Add flash effect on low life
-  if(health < lowHealthThreshold) {
-    float flash = cos(6.0 * time);
-    outColor.xyz += flash;
-  }
+  // if(health < lowHealthThreshold) {
+  //   float flash = cos(6.0 * time) - 0.5;
+  //   outColor.xyz += flash;
+  // }
 
   gl_FragColor = outColor;
   // gl_FragColor = vec4(healthBarMask, healthBarMask, healthBarMask, 1.0);

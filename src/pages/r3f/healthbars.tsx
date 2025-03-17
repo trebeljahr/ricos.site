@@ -12,12 +12,12 @@ const HealthBarExample = () => {
         <pointLight position={[10, 10, 10]} />
 
         {/* Circle Health Bar */}
-        <HealthBar
+        {/* <HealthBar
           position={[0, 1, 0]}
           scale={[2, 0.3, 0.05]}
           shape={Shapes.CIRCLE}
           fillColor={[0, 0.8, 0.2, 1]}
-        />
+        /> */}
 
         {/* Box Health Bar */}
         {/* <HealthBar
@@ -31,7 +31,7 @@ const HealthBarExample = () => {
         <HealthBar
           position={[0, -1, 0]}
           scale={[2, 0.3, 0.05]}
-          shape={Shapes.RHOMBUS}
+          shape={Shapes.BOX}
           fillColor={[0.2, 0.5, 1, 1]} // Blue
         />
 

@@ -1,118 +1,184 @@
-import React, { useRef, useMemo, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { DoubleSide, Mesh, ShaderMaterial, Vector3, Vector4 } from "three";
 import fragmentShader from "@shaders/healthbar/healthbarFragShader.glsl";
 import vertexShader from "@shaders/healthbar/healthbarVertShader.glsl";
-import { Mesh, ShaderMaterial, Vector3, Vector4 } from "three";
 
 // Shape enum
-const Shapes = {
+export const Shapes = {
   CIRCLE: 0,
   BOX: 1,
   RHOMBUS: 2,
 };
 
-const HealthBar = ({
-  position = [0, 0, 0] as [number, number, number],
-  rotation = [0, 0, 0] as [number, number, number],
-  scale = [1, 0.2, 0.05],
-  lowHealthThreshold = 0.2,
-  fillColor = [0, 1, 0, 1], // Green
-  backgroundColor = [0.1, 0.1, 0.1, 0.5],
-  borderColor = [0.3, 0.3, 0.3, 1],
-  borderWidth = 0.02,
-  waveAmp = 0.01,
-  waveFreq = 8,
-  waveSpeed = 0.5,
-  shape = Shapes.CIRCLE,
-}) => {
-  const [health, setHealth] = useState(0.8);
+export const HealthBar = forwardRef(
+  (
+    {
+      initialHealth = 0.75, // Initial health value (0-1)
+      position = [0, 0, 0],
+      rotation = [0, 0, 0],
+      scale = [1, 0.2, 0.05],
+      lowHealthThreshold = 0.2,
+      fillColor = [0, 1, 0, 1], // Green
+      backgroundColor = [0.1, 0.1, 0.1, 0.5],
+      borderColor = [0.3, 0.3, 0.3, 1],
+      borderWidth = 0.02,
+      waveAmp = 0.01,
+      waveFreq = 8,
+      waveSpeed = 0.5,
+      shape = Shapes.CIRCLE,
+      autoAnimate = false,
+      animationSpeed = 0.01,
+      onHealthChange,
+      minHealth = 0,
+      maxHealth = 1,
+    }: {
+      initialHealth?: number;
+      position?: [number, number, number];
+      rotation?: [number, number, number];
+      scale?: [number, number, number];
+      lowHealthThreshold?: number;
+      fillColor?: [number, number, number, number];
+      backgroundColor?: [number, number, number, number];
+      borderColor?: [number, number, number, number];
+      borderWidth?: number;
+      waveAmp?: number;
+      waveFreq?: number;
+      waveSpeed?: number;
+      shape?: number;
+      autoAnimate?: boolean;
+      animationSpeed?: number;
+      onHealthChange?: (health: number) => void;
+      minHealth?: number;
+      maxHealth?: number;
+    },
+    ref
+  ) => {
+    const meshRef = useRef<Mesh>(null!);
+    const materialRef = useRef<ShaderMaterial>(null!);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setHealth((prev) => {
-        const newHealth = prev - 0.01;
-        return newHealth <= 0 ? 1.0 : newHealth;
-      });
-    }, 200);
+    const [health, setHealth] = useState(initialHealth);
 
-    return () => clearInterval(timer);
-  }, []);
+    // Optional auto-animation
+    useEffect(() => {
+      if (!autoAnimate) return;
 
-  useEffect(() => {
-    // console.log("Health:", health);
-  }, [health]);
+      const timer = setInterval(() => {
+        setHealth((prev) => {
+          const newHealth = prev - animationSpeed;
+          if (newHealth <= minHealth) {
+            return maxHealth;
+          }
+          return newHealth;
+        });
+      }, 200);
 
-  const mesh = useRef<Mesh>(null!);
-  const material = useRef<ShaderMaterial>(null!);
+      return () => clearInterval(timer);
+    }, [autoAnimate, animationSpeed, minHealth, maxHealth]);
 
-  // Convert color arrays to Vector4
-  const fillColorVec = useMemo(() => new Vector4(...fillColor), [fillColor]);
-  const backgroundColorVec = useMemo(
-    () => new Vector4(...backgroundColor),
-    [backgroundColor]
-  );
-  const borderColorVec = useMemo(
-    () => new Vector4(...borderColor),
-    [borderColor]
-  );
-  const sizeVec = useMemo(() => new Vector3(...scale), [scale]);
+    // Notify parent when health changes
+    useEffect(() => {
+      if (onHealthChange) {
+        onHealthChange(health);
+      }
+    }, [health, onHealthChange]);
 
-  // Create shader uniforms
-  const uniforms = useMemo(
-    () => ({
-      healthNormalized: { value: health },
-      lowHealthThreshold: { value: lowHealthThreshold },
-      fillColor: { value: fillColorVec },
-      backgroundColor: { value: backgroundColorVec },
-      borderColor: { value: borderColorVec },
-      borderWidth: { value: borderWidth },
-      waveAmp: { value: waveAmp },
-      waveFreq: { value: waveFreq },
-      waveSpeed: { value: waveSpeed },
-      time: { value: 0 },
-      size: { value: sizeVec },
-      shape: { value: shape },
-    }),
-    [
-      health,
-      lowHealthThreshold,
-      fillColorVec,
-      backgroundColorVec,
-      borderColorVec,
-      borderWidth,
-      waveAmp,
-      waveFreq,
-      waveSpeed,
-      sizeVec,
-      shape,
-    ]
-  );
+    // Convert color arrays to Vector4
+    const fillColorVec = useMemo(() => new Vector4(...fillColor), [fillColor]);
+    const backgroundColorVec = useMemo(
+      () => new Vector4(...backgroundColor),
+      [backgroundColor]
+    );
+    const borderColorVec = useMemo(
+      () => new Vector4(...borderColor),
+      [borderColor]
+    );
+    const sizeVec = useMemo(() => new Vector3(...scale), [scale]);
 
-  // Update time and health values in the shader
-  useFrame((state) => {
-    if (material.current) {
-      material.current.uniforms.time.value = state.clock.getElapsedTime();
-      material.current.uniforms.healthNormalized.value = health;
-    }
-  });
+    // Create shader uniforms
+    const uniforms = useMemo(
+      () => ({
+        healthNormalized: { value: health },
+        lowHealthThreshold: { value: lowHealthThreshold },
+        fillColor: { value: fillColorVec },
+        backgroundColor: { value: backgroundColorVec },
+        borderColor: { value: borderColorVec },
+        borderWidth: { value: borderWidth },
+        waveAmp: { value: waveAmp },
+        waveFreq: { value: waveFreq },
+        waveSpeed: { value: waveSpeed },
+        time: { value: 0 },
+        size: { value: sizeVec },
+        shape: { value: shape },
+      }),
+      [
+        health,
+        lowHealthThreshold,
+        fillColorVec,
+        backgroundColorVec,
+        borderColorVec,
+        borderWidth,
+        waveAmp,
+        waveFreq,
+        waveSpeed,
+        sizeVec,
+        shape,
+      ]
+    );
 
-  return (
-    <mesh
-      ref={mesh}
-      position={position}
-      rotation={rotation}
-      scale={1} // We handle scaling in the shader
-    >
-      <planeGeometry args={[1, 1]} />
-      <shaderMaterial
-        ref={material}
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        uniforms={uniforms}
-        transparent={true}
-      />
-    </mesh>
-  );
-};
+    // Update time and health values in the shader
+    useFrame((state) => {
+      if (materialRef.current) {
+        materialRef.current.uniforms.time.value = state.clock.getElapsedTime();
+        materialRef.current.uniforms.healthNormalized.value = health;
+      }
+    });
 
-export { HealthBar, Shapes };
+    // Expose methods to parent component
+    useImperativeHandle(
+      ref,
+      () => {
+        const increaseHealth = (amount = 0.1) => {
+          setHealth((prev) => Math.min(maxHealth, prev + amount));
+        };
+
+        const decreaseHealth = (amount = 0.1) => {
+          setHealth((prev) => Math.max(minHealth, prev - amount));
+        };
+
+        const setHealthValue = (value: number) => {
+          setHealth(Math.max(minHealth, Math.min(maxHealth, value)));
+        };
+
+        return {
+          increaseHealth,
+          decreaseHealth,
+          setHealthValue,
+          getHealth: () => health,
+        };
+      },
+      [health, maxHealth, minHealth]
+    );
+
+    return (
+      <mesh ref={meshRef} position={position} rotation={rotation} scale={scale}>
+        <planeGeometry args={[1, 1, 1, 1]} />
+        <shaderMaterial
+          ref={materialRef}
+          vertexShader={vertexShader}
+          fragmentShader={fragmentShader}
+          uniforms={uniforms}
+          transparent={true}
+          side={DoubleSide}
+        />
+      </mesh>
+    );
+  }
+);

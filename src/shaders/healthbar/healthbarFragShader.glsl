@@ -10,77 +10,104 @@ uniform float waveAmp;
 uniform float waveFreq;
 uniform float waveSpeed;
 uniform float time;
-uniform vec3 size;
+uniform vec2 size;
 uniform int shape; // 0 = Circle, 1 = Box, 2 = Rhombus
 
 varying vec2 vUv;
 varying vec3 vPosition;
 
 // SDF Functions
-float CircleSDF(vec2 p, float r) {
-  return length(p) - r;
+float CircleSDF(vec2 p, float radius) {
+  return length(p) - radius;
 }
 
-float BoxSDF(vec2 p, vec2 b) {
-  vec2 d = abs(p) - b;
-  return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
+float BoxSDF( in vec2 p, in vec2 b )
+{
+    vec2 d = abs(p)-b;
+    return length(max(d,0.0)) + min(max(d.x,d.y),0.0);
 }
 
-float RhombusSDF(vec2 p, float size) {
-  return max(abs(p.x) + abs(p.y) * 0.5, abs(p.y)) - size;
+float RhombusSDF(vec2 p, vec2 size) {
+  vec2 q = abs(p.xy);
+  return max(q.x + q.y * 0.5, q.y) - size.x;
 }
 
+// Elongate function to maintain proper distance scaling
+vec2 Elongate(vec2 p, vec2 elongation) {
+  return p - clamp(p, -elongation, elongation);
+}
+
+// Smooth mask from SDF
 float GetSmoothMask(float dist) {
-  return 1.0 - smoothstep(-0.005, 0.005, dist);
+  return 1.0 - smoothstep(-0.01, 0.01, dist);
 }
 
 void main() {
-  vec2 centeredUV = vUv - 0.5;
+  // Get object scale from uniform
+  vec2 objectScale = size;
 
-  float aspect = size.x / size.y;
-  vec2 normalizedUV = vec2(centeredUV.x * aspect, centeredUV.y);
+  // Leave some margin space
+  float minScale = min(objectScale.x, objectScale.y);
+  float margin = minScale * 0.1;
+  float halfSize = minScale / 2.0 - margin;
 
-  float sdf;
+  // We 'elongate' instead of 'scaling' SDF to keep euclidean distance
+  vec2 shapeElongation = (objectScale - minScale) / 2.0;
+
+  // Apply elongation operation to fragment position
+  vec2 p = vPosition.xy * objectScale;
+  vec2 q = Elongate(p, shapeElongation);
+  
+  float healthBarSDF;
+  vec2 topCorner = vec2(0.0 - margin, 0.0 - margin);
+  vec2 bottomCorner = size + vec2(margin, margin);
+
   if(shape == 0) {
-    sdf = CircleSDF(normalizedUV, 0.5);
+    // Circle
+    healthBarSDF = CircleSDF(q, halfSize);
   } else if(shape == 1) {
-    sdf = BoxSDF(normalizedUV, vec2(0.5));
+    healthBarSDF = BoxSDF(topCorner , bottomCorner );
   } else {
-    sdf = RhombusSDF(normalizedUV, 0.35);
+    // Rhombus
+    healthBarSDF = RhombusSDF(q, vec2(halfSize, halfSize));
   }
 
-  float shapeMask = GetSmoothMask(sdf);
+  float healthBarMask = GetSmoothMask(healthBarSDF);
 
-  float borderSdf = sdf + borderWidth;
-  float borderMask = GetSmoothMask(borderSdf) - shapeMask;
+  // LIQUID/FILLER
+  // min(sin) term is used to decrease effect of wave near 0 and 1 healthNormalized
+  float waveOffset = waveAmp * cos(waveFreq * (vUv.x + time * waveSpeed)) *
+    min(1.3 * sin(PI * health), 1.0);
+  float marginNormalizedY = margin / objectScale.y;
+  float borderNormalizedY = borderWidth;
+  float fillOffset = marginNormalizedY + borderNormalizedY;
 
-  float waveEffect = waveAmp * sin(waveFreq * vUv.x + time * waveSpeed) * sin(PI * health);
+  float healthMapped = mix(fillOffset - 0.01, 1.0 - fillOffset, health);
+  float fillSDF = vUv.y - health + waveOffset;
+  float fillMask = GetSmoothMask(fillSDF);
 
-  float isFilled = 1.0 - step(health, vUv.y);
+  // BORDER
+  float borderSDF = healthBarSDF + borderWidth * objectScale.y;
+  float borderMask = 1.0 - GetSmoothMask(borderSDF);
 
-  vec4 finalColor = vec4(0.0, 0.0, 0.0, 0.0);
-  finalColor += fillColor * isFilled * shapeMask;
-  finalColor += backgroundColor * (1.0 - isFilled) * shapeMask;
-  finalColor += borderColor * borderMask;
+  // Get final color by combining masks
+  vec4 outColor = healthBarMask * (fillMask * (1.0 - borderMask) * fillColor +
+    (1.0 - fillMask) * (1.0 - borderMask) * backgroundColor +
+    borderMask * borderColor);
 
-  // Add flash effect for low health
-  if(health < lowHealthThreshold) {
-    float flash = 0.1 * sin(6.0 * time) + 0.1;
-    finalColor.rgb += flash * shapeMask * isFilled;
-  }
+  // Highlight center
+  outColor *= vec4(2.0 - healthBarSDF / (minScale / 2.0), 2.0 - healthBarSDF / (minScale / 2.0), 2.0 - healthBarSDF / (minScale / 2.0), 1.0);
 
-  // Add subtle highlight
-  float highlight = 0.2 * (1.0 - length(normalizedUV * 2.0));
-  finalColor.rgb += highlight * shapeMask;
+  // Add flash effect on low life
+  // if(health < lowHealthThreshold) {
+  //   float flash = 0.1 * cos(6.0 * time) + 0.1;
+  //   outColor.rgb += flash;
+  // }
 
-  // gl_FragColor = vec4(vUv.yyy, 1.0);
-  // gl_FragColor = vec4(health, health, health, 1.0);
-  // float fracTime = fract(time);
-  // gl_FragColor = vec4(fracTime, fracTime, fracTime, 1.0);
-  // gl_FragColor = vec4(health, health, health, 1.0);
-
-  gl_FragColor = finalColor;
-
-  if(finalColor.a < 0.01)
-    discard;
+  gl_FragColor = outColor;
+  // gl_FragColor = vec4(healthBarMask, healthBarMask, healthBarMask, 1.0);
+  // gl_FragColor = vec4(fillMask, fillMask, fillMask, 1.0);
+  // gl_FragColor = vec4(borderMask, borderMask, borderMask, 1.0);
+  // gl_FragColor = vec4(vUv.x, vUv.x, vUv.x, 1.0);
+  // gl_FragColor = vec4(size.x, size.x, size.x, 1.0);
 }

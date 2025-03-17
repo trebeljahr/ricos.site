@@ -14,7 +14,7 @@ import {
   DoubleSide,
   Mesh,
   ShaderMaterial,
-  Vector3,
+  Vector2,
   Vector4,
 } from "three";
 
@@ -32,14 +32,14 @@ export const HealthBar = ({
   health,
   position = [0, 0, 0],
   rotation = [0, 0, 0],
-  scale = [1, 0.2, 0.05],
+  scale = [1, 1, 1],
   lowHealthThreshold = 0.2,
   fillColor = "#15ff00",
-  bgColor = "#000000",
-  borderColor = "#ffffff",
-  borderWidth = 0.2,
-  waveAmp = 0.1,
-  waveFreq = 3,
+  bgColor = "#1c1c1c",
+  borderColor = "#2f2f2f",
+  borderWidth = 0.005,
+  waveAmp = 0.0001,
+  waveFreq = 32,
   waveSpeed = 0.5,
   shape = Shapes.CIRCLE,
   animationSpeed = 0.01,
@@ -79,7 +79,9 @@ export const HealthBar = ({
     [borderColor]
   );
 
-  const sizeVec = useMemo(() => new Vector3(...scale), [scale]);
+  console.log(scale);
+
+  const sizeVec = useMemo(() => new Vector2(scale[0], scale[2]), [scale]);
 
   const uniforms = useMemo(
     () => ({
@@ -122,7 +124,7 @@ export const HealthBar = ({
 
   return (
     <mesh ref={meshRef} position={position} rotation={rotation} scale={scale}>
-      <planeGeometry args={[4, 4, 1, 1]} />
+      <planeGeometry args={[scale[0], scale[2], 1, 1]} />
       <shaderMaterial
         ref={materialRef}
         vertexShader={vertexShader}

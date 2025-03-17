@@ -15,9 +15,9 @@ const Healthbars = () => {
     <>
       <HealthBar
         health={health}
-        position={[0, 1, 0]}
+        position={[0, 1.5, 0]}
         rotation={[0, 0, -Math.PI / 2]}
-        scale={[4, 0.5, 0.5]}
+        scale={[1, 1, 4]}
         shape={Shapes.BOX}
         fillColor={"#00e5ff"}
       />
@@ -25,29 +25,25 @@ const Healthbars = () => {
       <HealthBar
         health={health}
         position={[0, 0, 0]}
-        scale={[2, 0.3, 5]}
+        scale={[1, 1, 1]}
         shape={Shapes.BOX}
         fillColor={"#00ff15"}
       />
+
       <HealthBar
         health={health}
-        position={[0, -1, 0]}
-        scale={[2, 0.3, 0.05]}
+        position={[0, -1.5, 0]}
+        scale={[1, 1, 1]}
         shape={Shapes.RHOMBUS}
         fillColor={"#1ddaa7"}
       />
 
       <HealthBar
         health={health}
-        position={[0, -2, 0]}
-        scale={[2, 0.3, 0.05]}
+        position={[0, -3, 0]}
+        scale={[1, 1, 1]}
         shape={Shapes.CIRCLE}
-        lowHealthThreshold={0.3}
         fillColor={"#f73b11"}
-        borderWidth={0.04}
-        waveAmp={0.02}
-        waveFreq={12}
-        waveSpeed={0.8}
       />
     </>
   );

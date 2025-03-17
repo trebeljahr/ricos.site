@@ -1,6 +1,6 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
-import { perf } from "@r3f/ChunkGenerationSystem/config";
+import { perf, wireframe } from "@r3f/ChunkGenerationSystem/config";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import {
@@ -40,10 +40,8 @@ import {
   Vector3 as Vector3FromThreeJS,
 } from "three";
 
-const wireframe = false;
-
 const backgroundColor = "#191616";
-const viewDistance = 30;
+const viewDistance = 300;
 
 const materials = {
   room: new MeshStandardMaterial({
@@ -307,8 +305,8 @@ export default function Page() {
       <CanvasWithKeyboardInput
         camera={{ far: viewDistance, position: [25, 10, 25] }}
       >
-        <fog attach="fog" args={[backgroundColor, 5, viewDistance]} />
-        <color attach="background" args={[backgroundColor]} />
+        {/* <fog attach="fog" args={[backgroundColor, 5, viewDistance]} /> */}
+        {/* <color attach="background" args={[backgroundColor]} /> */}
 
         <ambientLight args={["#404040", 1]} />
         {perf && <Perf position="bottom-right" />}

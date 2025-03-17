@@ -33,7 +33,7 @@ const Healthbars = () => {
       <HealthBar
         health={health}
         position={[0, -1.5, 0]}
-        scale={[1, 1, 1]}
+        scale={[2, 1, 1]}
         shape={Shapes.RHOMBUS}
         fillColor={"#1ddaa7"}
       />
@@ -41,7 +41,7 @@ const Healthbars = () => {
       <HealthBar
         health={health}
         position={[0, -3, 0]}
-        scale={[1, 1, 1]}
+        scale={[1, 1, 3]}
         shape={Shapes.CIRCLE}
         fillColor={"#f73b11"}
       />

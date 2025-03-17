@@ -110,27 +110,24 @@ export const GenericHealthBar = ({
 
   const sizeVec = useMemo(() => new Vector2(scale[0], scale[2]), [scale]);
 
-  useEffect(() => {
-    if (!materialRef.current) return;
-
-    materialRef.current.size = sizeVec;
-    materialRef.current.minHealth = minHealth;
-    materialRef.current.maxHealth = maxHealth;
-    materialRef.current.shape = shape || Shapes.RHOMBUS;
-    materialRef.current.waveAmp = waveAmp;
-    materialRef.current.waveFreq = waveFreq;
-    materialRef.current.waveSpeed = waveSpeed;
-    materialRef.current.borderWidth = borderWidth;
-    materialRef.current.animationSpeed = animationSpeed;
-    materialRef.current.bgColor = convertToVec4(new Color(bgColor));
-    materialRef.current.borderColor = convertToVec4(new Color(borderColor));
-  }, []);
-
   useFrame((state) => {
     if (!materialRef.current || health.current === null) return;
 
     materialRef.current.time = state.clock.getElapsedTime();
     materialRef.current.health = health.current;
+
+    materialRef.current.size = sizeVec;
+    materialRef.current.minHealth = minHealth;
+    materialRef.current.maxHealth = maxHealth;
+    materialRef.current.shape = shape === undefined ? Shapes.RHOMBUS : shape;
+    materialRef.current.waveAmp = waveAmp;
+    materialRef.current.waveFreq = waveFreq;
+    materialRef.current.waveSpeed = waveSpeed;
+    materialRef.current.borderWidth = borderWidth;
+    materialRef.current.animationSpeed = animationSpeed;
+    materialRef.current.fillColor = convertToVec4(new Color(fillColor));
+    materialRef.current.bgColor = convertToVec4(new Color(bgColor));
+    materialRef.current.borderColor = convertToVec4(new Color(borderColor));
 
     if (secondColor) {
       const blendColor = new Color(fillColor).lerp(

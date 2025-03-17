@@ -1,4 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
+import { perf } from "@r3f/ChunkGenerationSystem/config";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { MinecraftCreativeController } from "@r3f/Controllers/MinecraftCreativeController";
 import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
@@ -23,19 +24,164 @@ import {
   WallCover_Modular,
   Woodfire,
 } from "@r3f/models/modular_dungeon_pack_1";
-import { Sword_Golden } from "@r3f/models/rpg_items_pack/";
-import { Plane, Sky } from "@react-three/drei";
+import {
+  Axe_Double,
+  Axe_Double_Golden,
+  Axe_small,
+  Axe_small_Golden,
+  Bow_Golden,
+  Bow_Wooden,
+  Sword_big,
+  Sword_Golden,
+} from "@r3f/models/rpg_items_pack/";
+import {
+  Plane,
+  PositionalAudio as PositionalAudioComponent,
+  Sky,
+} from "@react-three/drei";
 import { GroupProps, useFrame, useThree } from "@react-three/fiber";
-import { CapsuleCollider, Physics, RigidBody } from "@react-three/rapier";
-import { useEffect, useRef, useState } from "react";
-import { DirectionalLight, Group, Mesh, PCFSoftShadowMap } from "three";
+import {
+  CapsuleCollider,
+  CuboidCollider,
+  Physics,
+  RigidBody,
+} from "@react-three/rapier";
+import { Perf } from "r3f-perf";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  DirectionalLight,
+  Group,
+  Mesh,
+  PCFSoftShadowMap,
+  PositionalAudio,
+} from "three";
+import useSound from "use-sound";
+import achievementSound from "@sounds/positive-pickup-sound.mp3";
+import ambientLoop from "@sounds/ambient-pads-loop.mp3";
+import spikeTrapSound from "@sounds/spike-trap.mp3";
+import closeSpikeTrapSound from "@sounds/close-spike-trap.mp3";
+import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
 
-const SpawnerForItem = () => {
+const WalkingSound = () => {
+  const [play] = useSound(ambientLoop, { volume: 0.2, loop: true });
+};
+
+const initialHealth = 100;
+
+const SpikeTrap = ({ interval = 2000 }: { interval?: number }) => {
+  const health = useRef(initialHealth);
+  const [extended, setExtended] = useState(false);
+  const [inHitBox, setInHitBox] = useState(false);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setExtended((prev) => !prev);
+    }, interval);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [interval]);
+
+  const openAudioRef = useRef<PositionalAudio>(null!);
+  const closeAudioRef = useRef<PositionalAudio>(null!);
+
+  useFrame(() => {
+    if (extended && inHitBox) {
+      health.current--;
+      if (health.current <= 0) {
+        console.log("you're dead!");
+      }
+    }
+  });
+
+  useEffect(() => {
+    const openSound = openAudioRef.current;
+    const closeSound = closeAudioRef.current;
+    if (extended) {
+      openSound.play();
+    } else {
+      closeSound.play();
+    }
+
+    return () => {
+      openSound.stop();
+      closeSound.stop();
+    };
+  }, [extended, inHitBox]);
+
+  const hitSpikeTrap = () => {
+    setInHitBox(true);
+  };
+
+  const leaveSpikeTrap = () => {
+    setInHitBox(false);
+  };
+
+  return (
+    <group>
+      <RigidBody
+        position={[0, 0.6, 0]}
+        type="fixed"
+        sensor
+        onIntersectionEnter={hitSpikeTrap}
+        onIntersectionExit={leaveSpikeTrap}
+      >
+        <CuboidCollider args={[1, 0.6, 1]} />
+      </RigidBody>
+
+      {extended ? <Trap_spikes position={[0, 0, 0]} /> : <Trap_empty />}
+      <PositionalAudioComponent
+        ref={openAudioRef}
+        url={spikeTrapSound}
+        distance={1}
+        loop={false}
+      />
+      <PositionalAudioComponent
+        ref={closeAudioRef}
+        url={closeSpikeTrapSound}
+        distance={1}
+        loop={false}
+      />
+    </group>
+  );
+};
+
+const BackgroundMusicLoop = () => {
+  const [play, { stop }] = useSound(ambientLoop, { volume: 0.2, loop: true });
+  useEffect(() => {
+    play();
+    return () => {
+      stop();
+    };
+  }, [play, stop]);
+
+  return null;
+};
+
+const ItemSpawner = (props: GroupProps) => {
   const [intersection, setIntersection] = useState(false);
+  const [play] = useSound(achievementSound, { volume: 0.5 });
+
+  const Sword = useMemo(() => {
+    const types = [
+      Sword_Golden,
+      Axe_Double,
+      () => <Sword_big position={[0, -0.5, 0]} />,
+      Axe_Double_Golden,
+      Axe_small,
+      Axe_small_Golden,
+      () => <Bow_Golden position={[0, 0.5, 0]} />,
+      () => <Bow_Wooden position={[0, 0.5, 0]} />,
+    ];
+
+    return pickRandomFromArray(types);
+  }, []);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
     if (intersection) {
+      play();
       timeout = setTimeout(() => {
         setIntersection(false);
       }, 3000);
@@ -44,7 +190,7 @@ const SpawnerForItem = () => {
     return () => {
       clearTimeout(timeout);
     };
-  }, [intersection]);
+  }, [intersection, play]);
 
   const swordRef = useRef<Group>(null!);
 
@@ -55,28 +201,30 @@ const SpawnerForItem = () => {
     swordRef.current.position.y = Math.sin(clock.getElapsedTime()) * 0.1 - 0.6;
   });
 
-  if (intersection) return null;
+  if (intersection || !Sword) return null;
 
   return (
-    <RigidBody
-      position={[0, 0.5, 0]}
-      type="fixed"
-      scale={0.5}
-      colliders={false}
-    >
-      <CapsuleCollider
-        position={[0, 0.7, 0]}
-        args={[0.8, 0.5]}
-        sensor
-        onIntersectionEnter={() => {
-          setIntersection(true);
-        }}
+    <group {...props}>
+      <RigidBody
+        position={[0, 0.5, 0]}
+        type="fixed"
+        scale={0.5}
+        colliders={false}
       >
-        <group ref={swordRef}>
-          <Sword_Golden />
-        </group>
-      </CapsuleCollider>
-    </RigidBody>
+        <CapsuleCollider
+          position={[0, 0.7, 0]}
+          args={[0.8, 0.5]}
+          sensor
+          onIntersectionEnter={() => {
+            setIntersection(true);
+          }}
+        >
+          <group ref={swordRef}>
+            <Sword />
+          </group>
+        </CapsuleCollider>
+      </RigidBody>
+    </group>
   );
 };
 
@@ -219,26 +367,27 @@ const CanvasContent = () => {
 
   useShadowHelper(lightRef);
 
+  const items = Array.from({ length: 10 });
   return (
     <>
-      <SpawnerForItem />
+      {items.map((_, i) => (
+        <ItemSpawner key={i} position={[i * 5, 0, -20]} />
+      ))}
+      <BackgroundMusicLoop />
+      <SpikeTrap />
       {/* <Sword_Golden /> */}
-
       <CameraPositionLogger />
       <Sky />
-      {/* {perf && <Perf position="bottom-right" />} */}
+      {perf && <Perf position="bottom-right" />}
       <directionalLight
         ref={lightRef}
         args={["#ffffff", 5]}
         position={[20, 10, 20]}
       />
       <ambientLight args={["#404040", 1]} />
-
       <Box position={[16, 0, 16]} width={4} depth={4} />
       <Box position={[-16, 0, 30]} width={10} depth={10} />
-
       <Arch position={[0, 0, 0]} />
-
       <group position={[0, 0, -1]}>
         <Floor_Modular position-x={-3} />
         <Floor_Modular position-x={-1} />
@@ -260,18 +409,14 @@ const CanvasContent = () => {
         <Floor_Modular position-x={1} position-z={-6} />
         <Floor_Modular position-x={3} position-z={-6} />
       </group>
-
       <StairCase position={[-11, 1, 0]} />
       {/* <StairCase position={[-11, 5, -8]} /> */}
-
       <Wall_Modular position={[3, 1, 0]} />
       <Wall_Modular position={[3, 3, 0]} />
       {/* <Wall_Modular position={[3, 3, 0]} /> */}
-
       <Wall_Modular position={[-3, 1, 0]} />
       <Wall_Modular position={[-3, 2, 0]} />
       <Wall_Modular position={[-3, 3, 0]} />
-
       <group rotation-y={Math.PI / 2} position-x={4}>
         <Wall_Modular position={[1, 1, 0]} />
         <Wall_Modular position={[1, 2, 0]} />
@@ -289,7 +434,6 @@ const CanvasContent = () => {
         <Wall_Modular position={[7, 2, 0]} />
         <Wall_Modular position={[7, 3, 0]} />
       </group>
-
       <group rotation-y={Math.PI / 2} position-x={-4}>
         <Wall_Modular position={[1, 1, 0]} />
         <Wall_Modular position={[1, 2, 0]} />
@@ -307,12 +451,10 @@ const CanvasContent = () => {
         <Wall_Modular position={[7, 2, 0]} />
         <Wall_Modular position={[7, 3, 0]} />
       </group>
-
       <Column2 position={[4, 0, 0]} />
       <Column2 position={[-4, 0, 0]} />
       <Column2 position={[4, 0, -8]} />
       <Column2 position={[-4, 0, -8]} />
-
       <group position={[10, 0, 0]}>
         <Stairs_Modular position={[4, 0, 0]} />
         <WallCover_Modular position={[6, 0, 0]} />
@@ -330,14 +472,11 @@ const CanvasContent = () => {
         <Trap_empty position-z={3} position-x={-1} />
         <Trap_spikes position-z={5} position-x={-1} />
       </group>
-
       <Wall length={4} position={[-3, 1, -8]} />
       <Wall length={4} position={[-4, 1, -9]} rotation-y={Math.PI / 2} />
       <Wall length={4} position={[4, 1, -9]} rotation-y={Math.PI / 2} />
       <Wall length={4} position={[-3, 1, -16]} />
-
       {/* <Wall length={4} position={[-3, 1, -8]} /> */}
-
       {/* <gridHelper args={[100, 50]} position={[0, 0, 0]} /> */}
       <Plane
         args={[100, 100]}
@@ -361,10 +500,10 @@ export default function Page() {
       <CanvasWithKeyboardInput
         camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
       >
-        <Physics debug>
+        <Physics>
           <CanvasContent />
           <MinecraftCreativeController initialPosition={[0, 25, 0]} speed={20}>
-            <CapsuleCollider args={[0.2, 0.5]} />
+            <CapsuleCollider args={[0.2, 0.1]} />
           </MinecraftCreativeController>
         </Physics>
       </CanvasWithKeyboardInput>

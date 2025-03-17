@@ -91,6 +91,7 @@
     "three-stdlib": "^2.35.14",
     "tunnel-rat": "^0.1.2",
     "use-local-storage-state": "^19.4.0",
+    "use-sound": "^5.0.0",
     "yet-another-react-lightbox": "^3.9.0",
     "yuka": "^0.7.8"
   },

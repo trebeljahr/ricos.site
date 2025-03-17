@@ -28,7 +28,8 @@
       "@models/*": ["src/canvas/models/*"],
       "@shaders/*": ["src/shaders/*"],
       "@pages/*": ["src/pages/*"],
-      "@r4ai/remark-callout": ["node_modules/@r4ai/remark-callout/dist/index"]
+      "@r4ai/remark-callout": ["node_modules/@r4ai/remark-callout/dist/index"],
+      "@sounds/*": ["src/sounds/*"]
     }
   },
   "exclude": ["node_modules"],

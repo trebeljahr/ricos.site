@@ -115,23 +115,13 @@ export const HealthBar = ({
   });
 
   return (
-    // <Plane
-    //   ref={meshRef}
-    //   args={[scale[0], scale[2]]}
-    //   position={position}
-    //   rotation={rotation}
-    // >
-    //   <shaderMaterial
-    //     ref={materialRef}
-    //     vertexShader={vertexShader}
-    //     fragmentShader={fragmentShader}
-    //     uniforms={uniforms}
-    //     transparent={true}
-    //     side={DoubleSide}
-    //   />
-    // </Plane>
-    <mesh ref={meshRef} position={position} rotation={rotation} scale={scale}>
-      <planeGeometry args={[scale[0], scale[2], 1, 1]} />
+    <Plane
+      ref={meshRef}
+      args={[scale[0], scale[2]]}
+      position={position}
+      rotation={rotation}
+      scale={scale}
+    >
       <shaderMaterial
         ref={materialRef}
         vertexShader={vertexShader}
@@ -140,6 +130,17 @@ export const HealthBar = ({
         transparent={true}
         side={DoubleSide}
       />
-    </mesh>
+    </Plane>
+    // <mesh ref={meshRef} position={position} rotation={rotation} scale={scale}>
+    //   <planeGeometry args={[scale[0], scale[2], 1, 1]} />
+    //   <shaderMaterial
+    //     ref={materialRef}
+    //     vertexShader={vertexShader}
+    //     fragmentShader={fragmentShader}
+    //     uniforms={uniforms}
+    //     transparent={true}
+    //     side={DoubleSide}
+    //   />
+    // </mesh>
   );
 };

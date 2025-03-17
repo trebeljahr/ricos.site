@@ -66,6 +66,7 @@ export function MinecraftCreativeController({
         type="dynamic"
         position={initialPosition || camera.position}
         enabledRotations={[false, false, false]}
+        gravityScale={0}
       >
         {children}
       </RigidBody>

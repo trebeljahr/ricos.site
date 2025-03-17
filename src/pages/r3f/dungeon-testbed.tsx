@@ -1,20 +1,10 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
-import { perf } from "@r3f/ChunkGenerationSystem/config";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
-import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
+import { MinecraftCreativeController } from "@r3f/Controllers/MinecraftCreativeController";
 import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
-import { DungeonFromLayout } from "@r3f/Dungeon/DungeonRoomsWithInstancing";
-import { generateCustomDungeon } from "@r3f/Dungeon/ProceduralDungeonGenerator";
-import {
-  Bloom,
-  EffectComposer,
-  ToneMapping,
-} from "@react-three/postprocessing";
-import { Perf } from "r3f-perf";
-import { Plane, Sky } from "@react-three/drei";
+import useShadowHelper from "@r3f/Scenes/OverheadLights";
 import {
   Arch,
-  Column,
   Column2,
   Fence_90_Modular,
   Fence_End_Modular,
@@ -33,12 +23,62 @@ import {
   WallCover_Modular,
   Woodfire,
 } from "@r3f/models/modular_dungeon_pack_1";
-import { GroupProps, useThree } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { Sword_Golden } from "@r3f/models/rpg_items_pack/";
+import { Plane, Sky } from "@react-three/drei";
+import { GroupProps, useFrame, useThree } from "@react-three/fiber";
+import { CapsuleCollider, Physics, RigidBody } from "@react-three/rapier";
+import { useEffect, useRef, useState } from "react";
 import { DirectionalLight, Group, Mesh, PCFSoftShadowMap } from "three";
-import useShadowHelper from "@r3f/Scenes/OverheadLights";
 
-const Corner = () => {};
+const SpawnerForItem = () => {
+  const [intersection, setIntersection] = useState(false);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (intersection) {
+      timeout = setTimeout(() => {
+        setIntersection(false);
+      }, 3000);
+    }
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [intersection]);
+
+  const swordRef = useRef<Group>(null!);
+
+  useFrame(({ clock }) => {
+    if (!swordRef.current) return;
+
+    swordRef.current.rotation.y += 0.01;
+    swordRef.current.position.y = Math.sin(clock.getElapsedTime()) * 0.1 - 0.6;
+  });
+
+  if (intersection) return null;
+
+  return (
+    <RigidBody
+      position={[0, 0.5, 0]}
+      type="fixed"
+      scale={0.5}
+      colliders={false}
+    >
+      <CapsuleCollider
+        position={[0, 0.7, 0]}
+        args={[0.8, 0.5]}
+        sensor
+        onIntersectionEnter={() => {
+          setIntersection(true);
+        }}
+      >
+        <group ref={swordRef}>
+          <Sword_Golden />
+        </group>
+      </CapsuleCollider>
+    </RigidBody>
+  );
+};
 
 const Box = ({
   depth,
@@ -181,6 +221,9 @@ const CanvasContent = () => {
 
   return (
     <>
+      <SpawnerForItem />
+      {/* <Sword_Golden /> */}
+
       <CameraPositionLogger />
       <Sky />
       {/* {perf && <Perf position="bottom-right" />} */}
@@ -318,12 +361,12 @@ export default function Page() {
       <CanvasWithKeyboardInput
         camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
       >
-        <CanvasContent />
-
-        <MinecraftSpectatorController
-          initialPosition={[0, 25, 0]}
-          speed={0.5}
-        />
+        <Physics debug>
+          <CanvasContent />
+          <MinecraftCreativeController initialPosition={[0, 25, 0]} speed={20}>
+            <CapsuleCollider args={[0.2, 0.5]} />
+          </MinecraftCreativeController>
+        </Physics>
       </CanvasWithKeyboardInput>
     </ThreeFiberLayout>
   );

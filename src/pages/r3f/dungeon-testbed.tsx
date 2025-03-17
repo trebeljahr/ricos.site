@@ -61,6 +61,10 @@ import ambientLoop from "@sounds/ambient-pads-loop.mp3";
 import spikeTrapSound from "@sounds/spike-trap.mp3";
 import closeSpikeTrapSound from "@sounds/close-spike-trap.mp3";
 import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
+import {
+  HealthContextProvider,
+  useHealthContext,
+} from "@r3f/Contexts/HealthbarContext";
 
 const WalkingSound = () => {
   const [play] = useSound(ambientLoop, { volume: 0.2, loop: true });
@@ -69,7 +73,8 @@ const WalkingSound = () => {
 const initialHealth = 100;
 
 const SpikeTrap = ({ interval = 2000 }: { interval?: number }) => {
-  const health = useRef(initialHealth);
+  // const health = useRef(initialHealth);
+  const { health, damage } = useHealthContext();
   const [extended, setExtended] = useState(false);
   const [inHitBox, setInHitBox] = useState(false);
 
@@ -88,7 +93,9 @@ const SpikeTrap = ({ interval = 2000 }: { interval?: number }) => {
 
   useFrame(() => {
     if (extended && inHitBox) {
-      health.current--;
+      // health.current -= 0.01;
+      damage(0.01);
+
       if (health.current <= 0) {
         console.log("you're dead!");
       }
@@ -158,6 +165,8 @@ const BackgroundMusicLoop = () => {
 
   return null;
 };
+
+const HealingPotionSpawner = () => {};
 
 const ItemSpawner = (props: GroupProps) => {
   const [intersection, setIntersection] = useState(false);
@@ -500,12 +509,17 @@ export default function Page() {
       <CanvasWithKeyboardInput
         camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
       >
-        <Physics>
-          <CanvasContent />
-          <MinecraftCreativeController initialPosition={[0, 25, 0]} speed={20}>
-            <CapsuleCollider args={[0.2, 0.1]} />
-          </MinecraftCreativeController>
-        </Physics>
+        <HealthContextProvider>
+          <Physics>
+            <CanvasContent />
+            <MinecraftCreativeController
+              initialPosition={[0, 25, 0]}
+              speed={20}
+            >
+              <CapsuleCollider args={[0.2, 0.1]} />
+            </MinecraftCreativeController>
+          </Physics>
+        </HealthContextProvider>
       </CanvasWithKeyboardInput>
     </ThreeFiberLayout>
   );

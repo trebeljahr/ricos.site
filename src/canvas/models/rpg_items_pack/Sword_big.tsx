@@ -9,12 +9,6 @@ import { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    Sword_WallMount: THREE.Mesh;
-    Sword_1: THREE.Mesh;
-    Sword_2: THREE.Mesh;
-    Sword_3: THREE.Mesh;
-    Sword_4: THREE.Mesh;
-    Sword_5: THREE.Mesh;
     Sword_big_1: THREE.Mesh;
     Sword_big_2: THREE.Mesh;
     Sword_big_3: THREE.Mesh;
@@ -24,27 +18,42 @@ type GLTFResult = GLTF & {
   materials: {
     DarkWood: THREE.MeshStandardMaterial;
     DarkSteel: THREE.MeshStandardMaterial;
-    ["DarkWood.001"]: THREE.MeshStandardMaterial;
     LightWood: THREE.MeshStandardMaterial;
-    LightSteel: THREE.MeshStandardMaterial;
     Steel: THREE.MeshStandardMaterial;
+    LightSteel: THREE.MeshStandardMaterial;
   };
 };
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/modular_dungeon_1/Sword_WallMount-transformed.glb"
+    "/3d-assets/glb/rpg_items_pack/Sword_big.glb"
   ) as unknown as GLTFResult;
-
-  console.log(nodes);
-
   return (
     <group {...props} dispose={null}>
-      <primitive object={nodes.Sword_WallMount} />
+      <group rotation={[-Math.PI / 2, 0, 0]} scale={100}>
+        <mesh
+          geometry={nodes.Sword_big_1.geometry}
+          material={materials.DarkWood}
+        />
+        <mesh
+          geometry={nodes.Sword_big_2.geometry}
+          material={materials.DarkSteel}
+        />
+        <mesh
+          geometry={nodes.Sword_big_3.geometry}
+          material={materials.LightWood}
+        />
+        <mesh
+          geometry={nodes.Sword_big_4.geometry}
+          material={materials.Steel}
+        />
+        <mesh
+          geometry={nodes.Sword_big_5.geometry}
+          material={materials.LightSteel}
+        />
+      </group>
     </group>
   );
 }
 
-useGLTF.preload(
-  "/3d-assets/glb/modular_dungeon_1/Sword_WallMount-transformed.glb"
-);
+useGLTF.preload("/3d-assets/glb/rpg_items_pack/Sword_big.glb");

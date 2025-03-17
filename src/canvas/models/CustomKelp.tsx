@@ -21,14 +21,14 @@ export function useKelp() {
     nodes: {
       Cylinder: { geometry },
     },
-  } = useGLTF("/3d-assets/CustomKelp.glb") as unknown as GLTFResult;
+  } = useGLTF("/3d-assets/CustomKelp-transformed.glb") as unknown as GLTFResult;
 
   return { geometry };
 }
 
 export function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/CustomKelp.glb"
+    "/3d-assets/CustomKelp-transformed.glb"
   ) as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
@@ -37,4 +37,4 @@ export function Model(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/CustomKelp.glb");
+useGLTF.preload("/CustomKelp-transformed.glb");

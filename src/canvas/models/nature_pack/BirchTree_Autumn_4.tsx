@@ -42,14 +42,16 @@ export function InstancedBirchTreeAutumn4({
     <GenericInstancedSystem
       positions={positions}
       meshMaterialCombos={meshMaterialCombos}
-      modelPath={"/3d-assets/glb/nature_pack/BirchTree_Autumn_4.glb"}
+      modelPath={
+        "/3d-assets/glb/nature_pack/BirchTree_Autumn_4-transformed.glb"
+      }
     />
   );
 }
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/nature_pack/BirchTree_Autumn_4.glb"
+    "/3d-assets/glb/nature_pack/BirchTree_Autumn_4-transformed.glb"
   ) as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>

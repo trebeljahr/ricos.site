@@ -24,7 +24,7 @@ type GLTFResult = GLTF & {
 
 export function useTree1() {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/nature_pack/CommonTree_1.glb"
+    "/3d-assets/glb/nature_pack/CommonTree_1-transformed.glb"
   ) as unknown as GLTFResult;
   return { nodes, materials };
 }
@@ -39,14 +39,14 @@ export function InstancedCommonTree1({ positions }: { positions: Vector3[] }) {
     <GenericInstancedSystem
       positions={positions}
       meshMaterialCombos={meshMaterialCombos}
-      modelPath={"/3d-assets/glb/nature_pack/CommonTree_1.glb"}
+      modelPath={"/3d-assets/glb/nature_pack/CommonTree_1-transformed.glb"}
     />
   );
 }
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/nature_pack/CommonTree_1.glb"
+    "/3d-assets/glb/nature_pack/CommonTree_1-transformed.glb"
   ) as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>

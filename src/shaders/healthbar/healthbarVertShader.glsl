@@ -1,10 +1,8 @@
-// HealthBar.glsl
-// Vertex Shader
 varying vec2 vUv;
-varying vec4 vPosition;
+varying vec3 vPosition;
 
 void main() {
   vUv = uv;
-  vPosition = vec4(position, 1.0);
+  vPosition = position;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }

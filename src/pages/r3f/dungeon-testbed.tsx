@@ -94,12 +94,9 @@ import {
   useHealthContext,
 } from "@r3f/Contexts/HealthbarContext";
 import { ReactElement } from "react-markdown/lib/react-markdown";
-
-const WalkingSound = () => {
-  const [play] = useSound(ambientLoop, { volume: 0.2, loop: true });
-};
-
-const HealingPotion = () => {};
+import { RandomWeaponsSpawner } from "@r3f/Helpers/ItemSpawners/WeaponSpawner";
+import { RandomArmorSpawner } from "@r3f/Helpers/ItemSpawners/ArmorSpawner";
+import { RandomPotionSpawner } from "@r3f/Helpers/ItemSpawners/PotionSpawner";
 
 const SpikeTrap = ({ interval = 2000 }: { interval?: number }) => {
   const { health, damage } = useHealthContext();
@@ -191,312 +188,6 @@ const BackgroundMusicLoop = () => {
   }, [play, stop]);
 
   return null;
-};
-
-enum Rarity {
-  Medium,
-  Rare,
-}
-
-type PotionData = {
-  health: number;
-};
-
-type SpawnerImplementation = <T>(props: SpawnerProps<T>) => JSX.Element;
-
-type SpawnerProps<T> = GroupProps & {
-  respawnTime?: number;
-  onCollected?: (data: T) => void;
-};
-
-enum WeaponTypes {
-  Sword,
-  Sword_Big,
-  Axe,
-  DoubleAxe,
-  Bow,
-  Dagger,
-}
-
-enum ArmorTypes {
-  Leather = "Leather",
-  Metal = "Metal",
-  Black = "Black",
-  Golden = "Golden",
-  Metal2 = "Metal2",
-}
-
-type ArmorData = {
-  defense: number;
-  durability: number;
-  rarity: Rarity;
-  type: ArmorTypes;
-};
-
-const potionTypes = [
-  { Component: Potion1_Filled, data: { health: 0.1 } },
-  { Component: Potion2_Filled, data: { health: 0.1 } },
-  { Component: Potion3_Filled, data: { health: 0.1 } },
-  { Component: Potion4_Filled, data: { health: 0.1 } },
-  { Component: Potion5_Filled, data: { health: 0.1 } },
-  { Component: Potion6_Filled, data: { health: 0.1 } },
-  { Component: Potion7_Filled, data: { health: 0.1 } },
-  { Component: Potion8_Filled, data: { health: 0.1 } },
-  { Component: Potion9_Filled, data: { health: 0.1 } },
-  { Component: Potion10_Filled, data: { health: 0.1 } },
-  { Component: Potion11_Filled, data: { health: 0.1 } },
-];
-
-const armorTypes = [
-  {
-    Component: (props: GroupProps) => (
-      <Armor_Black position={[0, 0.5, 0]} {...props} />
-    ),
-    data: {
-      defense: 10,
-      durability: 10,
-      rarity: Rarity.Medium,
-      type: ArmorTypes.Black,
-    },
-  },
-  {
-    Component: (props: GroupProps) => (
-      <Armor_Golden position={[0, 0.5, 0]} {...props} />
-    ),
-    data: {
-      defense: 10,
-      durability: 10,
-      rarity: Rarity.Medium,
-      type: ArmorTypes.Golden,
-    },
-  },
-  {
-    Component: (props: GroupProps) => (
-      <Armor_Leather position={[0, 0.5, 0]} {...props} />
-    ),
-    data: {
-      defense: 10,
-      durability: 10,
-      rarity: Rarity.Medium,
-      type: ArmorTypes.Leather,
-    },
-  },
-  {
-    Component: (props: GroupProps) => (
-      <Armor_Metal position={[0, 0.5, 0]} {...props} />
-    ),
-    data: {
-      defense: 10,
-      durability: 10,
-      rarity: Rarity.Medium,
-      type: ArmorTypes.Metal,
-    },
-  },
-  {
-    Component: (props: GroupProps) => (
-      <Armor_Metal2 position={[0, 0.5, 0]} {...props} />
-    ),
-    data: {
-      defense: 10,
-      durability: 10,
-      rarity: Rarity.Medium,
-      type: ArmorTypes.Metal2,
-    },
-  },
-];
-
-const ArmorSpawner: SpawnerImplementation = (props) => {
-  const Armor: Collectible<ArmorData> = useMemo(() => {
-    return pickRandomFromArray(armorTypes);
-  }, []);
-
-  const onCollected = (data: any) => {
-    console.log(data);
-  };
-  return (
-    <ItemSpawner
-      Item={Armor.Component}
-      {...props}
-      onCollected={onCollected}
-      data={Armor.data}
-    />
-  );
-};
-
-const PotionSpawner: SpawnerImplementation = (props) => {
-  const Potion: Collectible<PotionData> = useMemo(() => {
-    return potionTypes[1];
-    // return pickRandomFromArray(potionTypes);
-  }, []);
-
-  const { heal } = useHealthContext();
-
-  const onCollected = (data: PotionData) => {
-    console.log("collected", data);
-    heal(0.1);
-  };
-
-  return (
-    <ItemSpawner
-      Item={Potion.Component}
-      {...props}
-      onCollected={onCollected}
-      data={Potion.data}
-    />
-  );
-};
-
-const weaponTypes = [
-  {
-    Component: Sword_Golden,
-    data: { type: WeaponTypes.Sword, rarity: Rarity.Rare, damage: 10 },
-  },
-  {
-    Component: Dagger,
-    data: { type: WeaponTypes.Dagger, rarity: Rarity.Medium, damage: 5 },
-  },
-  {
-    Component: Dagger_Golden,
-    data: { type: WeaponTypes.Dagger, rarity: Rarity.Rare, damage: 10 },
-  },
-  {
-    Component: Sword,
-    data: { type: WeaponTypes.Sword, rarity: Rarity.Medium, damage: 10 },
-  },
-  {
-    Component: Sword_big,
-    data: { type: WeaponTypes.Sword_Big, rarity: Rarity.Medium, damage: 5 },
-  },
-  {
-    Component: Sword_big_Golden,
-    data: { type: WeaponTypes.Sword_Big, rarity: Rarity.Rare, damage: 10 },
-  },
-  {
-    Component: Axe_Double,
-    data: { type: WeaponTypes.Axe, rarity: Rarity.Medium, damage: 15 },
-  },
-  {
-    Component: Axe_Double_Golden,
-    data: { type: WeaponTypes.Axe, rarity: Rarity.Rare, damage: 20 },
-  },
-  {
-    Component: Axe_small,
-    data: { type: WeaponTypes.Axe, rarity: Rarity.Medium, damage: 10 },
-  },
-  {
-    Component: Axe_small_Golden,
-    data: { type: WeaponTypes.Axe, rarity: Rarity.Rare, damage: 15 },
-  },
-  {
-    Component: Bow_Wooden,
-    data: { type: WeaponTypes.Bow, rarity: Rarity.Medium, damage: 10 },
-  },
-  {
-    Component: Bow_Golden,
-    data: { type: WeaponTypes.Bow, rarity: Rarity.Rare, damage: 20 },
-  },
-];
-
-type WeaponData = {
-  type: WeaponTypes;
-  rarity: Rarity;
-  damage: number;
-};
-
-type Collectible<T> = {
-  Component: ComponentType<GroupProps>;
-  data: T;
-};
-
-const RandomWeaponsSpawner: SpawnerImplementation = (props) => {
-  const Weapon: Collectible<WeaponData> = useMemo(() => {
-    return pickRandomFromArray(weaponTypes);
-  }, []);
-
-  const onCollected = (data: WeaponData) => {
-    console.log("collected", data);
-  };
-
-  return (
-    <ItemSpawner
-      Item={Weapon.Component}
-      {...props}
-      onCollected={onCollected}
-      data={Weapon.data}
-    />
-  );
-};
-
-type ItemSpawnerType = <T>(
-  props: SpawnerProps<T> & {
-    Item: ComponentType<GroupProps>;
-    data: T;
-  }
-) => JSX.Element | null;
-
-const ItemSpawner: ItemSpawnerType = ({
-  Item,
-  respawnTime,
-  onCollected = () => {},
-  data,
-  ...props
-}) => {
-  const [intersection, setIntersection] = useState(false);
-  const [play] = useSound(achievementSound, { volume: 0.5 });
-
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    if (intersection) {
-      play();
-
-      onCollected(data as any);
-
-      if (!respawnTime) return;
-
-      timeout = setTimeout(() => {
-        setIntersection(false);
-      }, respawnTime);
-    }
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [intersection, play, respawnTime]);
-
-  const ItemRef = useRef<Group>(null!);
-
-  useFrame(({ clock }) => {
-    if (!ItemRef.current) return;
-
-    ItemRef.current.rotation.y += 0.01;
-    ItemRef.current.position.y = Math.sin(clock.getElapsedTime()) * 0.1 - 0.6;
-  });
-
-  if (intersection) return null;
-
-  return (
-    <group {...props}>
-      <RigidBody
-        position={[0, 0.5, 0]}
-        type="fixed"
-        scale={0.5}
-        colliders={false}
-      >
-        <CapsuleCollider
-          position={[0, 0.7, 0]}
-          args={[0.8, 0.5]}
-          sensor
-          onIntersectionEnter={() => {
-            setIntersection(true);
-          }}
-        >
-          <group ref={ItemRef}>
-            <Item />
-          </group>
-        </CapsuleCollider>
-      </RigidBody>
-    </group>
-  );
 };
 
 const DungeonBox = ({
@@ -650,11 +341,19 @@ const CanvasContent = () => {
       ))}
 
       {items.map((_, i) => (
-        <PotionSpawner key={i} position={[i * 5, 0, -25]} respawnTime={2000} />
+        <RandomPotionSpawner
+          key={i}
+          position={[i * 5, 0, -25]}
+          respawnTime={2000}
+        />
       ))}
 
       {items.map((_, i) => (
-        <ArmorSpawner key={i} position={[i * 5, 0, -30]} respawnTime={2000} />
+        <RandomArmorSpawner
+          key={i}
+          position={[i * 5, 0, -30]}
+          respawnTime={2000}
+        />
       ))}
 
       <BackgroundMusicLoop />

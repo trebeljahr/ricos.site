@@ -27,7 +27,10 @@ import { SkeletonArrow } from "@r3f/AllModels/weapons/Skeleton Arrow";
 import { SkeletonRogue } from "@r3f/AllModels/enemies/Skeleton Rogue";
 import { GLTFResult } from "src/@types";
 import { useGLTF } from "@react-three/drei";
-import { Group, Mesh } from "three";
+import { Bone, Group, Mesh, Object3D } from "three";
+import { PropsWithChildren, useEffect, useMemo, useRef } from "react";
+import { SkeletonEnemyProps } from "./SkeletonEnemy";
+import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
 
 const useSkeletonStaff = () => {
   const result = useGLTF(
@@ -279,6 +282,141 @@ const useShield = () => {
   return { shield: shieldMesh };
 };
 
+const getRandomItemType = () => {
+  const itemTypes = Object.values(ItemTypes);
+  const randomItemType = pickRandomFromArray(itemTypes);
+  return randomItemType;
+};
+
+const useRandomItem = () => {
+  const item = useItem(getRandomItemType());
+  return item;
+};
+
+const useItem = (itemType: ItemTypes) => {
+  switch (itemType) {
+    case SwordType.Sword1:
+      return useSword1().sword;
+    case SwordType.Sword2:
+      return useSword2().sword;
+    case SwordType.Sword3:
+      return useSword3().sword;
+    case SwordType.Sword4:
+      return useSword4().sword;
+    case StaffType.Staff1:
+      return useStaff1().staff;
+    case StaffType.Staff2:
+      return useStaff2().staff;
+    case StaffType.Staff3:
+      return useStaff3().staff;
+    case StaffType.Staff4:
+      return useStaff4().staff;
+    case StaffType.Staff5:
+      return useStaff5().staff;
+    case ShieldType.Shield1:
+      return useShield().shield;
+    case ShieldType.Shield2:
+      return useShield2().shield2;
+  }
+};
+
+enum SkeletonType {
+  Rogue = "Rogue",
+  Warrior = "Warrior",
+  Mage = "Mage",
+  Minion = "Minion",
+}
+
+enum SwordType {
+  Sword1 = "Sword1",
+  Sword2 = "Sword2",
+  Sword3 = "Sword3",
+  Sword4 = "Sword4",
+}
+
+enum StaffType {
+  Staff1 = "Staff1",
+  Staff2 = "Staff2",
+  Staff3 = "Staff3",
+  Staff4 = "Staff4",
+  Staff5 = "Staff5",
+}
+
+enum ShieldType {
+  Shield1 = "Shield1",
+  Shield2 = "Shield2",
+}
+
+export const ItemTypes = {
+  ...SwordType,
+  ...StaffType,
+  ...ShieldType,
+};
+export type ItemTypes = (typeof ItemTypes)[keyof typeof ItemTypes];
+
+export const SkeletonWithWeapons = ({
+  ItemRight: ProvidedItemRight,
+  ItemLeft: ProvidedItemLeft,
+  skeletonType = SkeletonType.Warrior,
+  animationToPlay = CommonActions.Idle,
+  ...props
+}: SkeletonEnemyProps & {
+  ItemRight?: ItemTypes;
+  ItemLeft?: ItemTypes;
+  skeletonType?: SkeletonType;
+}) => {
+  const itemRight = useItem(ProvidedItemRight || getRandomItemType());
+  const itemLeft = useItem(ProvidedItemLeft || getRandomItemType());
+
+  const groupRef = useRef<Group>(null!);
+
+  useEffect(() => {
+    let leftHand: Object3D<Bone>;
+    let rightHand: Object3D<Bone>;
+    groupRef.current.traverse((child) => {
+      if (child.name === "handslotl" && itemLeft) {
+        child.add(itemLeft);
+        leftHand = child as Object3D<Bone>;
+      }
+      if (child.name === "handslotr" && itemRight) {
+        child.add(itemRight);
+
+        rightHand = child as Object3D<Bone>;
+      }
+    });
+
+    return () => {
+      if (leftHand && itemLeft) {
+        leftHand.remove(itemLeft);
+      }
+      if (rightHand && itemRight) {
+        rightHand.remove(itemRight);
+      }
+    };
+  }, [itemLeft, itemRight]);
+
+  const SkeletonOfType = useMemo(() => {
+    switch (skeletonType) {
+      case SkeletonType.Rogue:
+        return SkeletonRogue;
+      case SkeletonType.Warrior:
+        return SkeletonWarrior;
+      case SkeletonType.Mage:
+        return SkeletonMage;
+      case SkeletonType.Minion:
+        return SkeletonMinion;
+      default:
+        return SkeletonWarrior;
+    }
+  }, [skeletonType]);
+
+  return (
+    <group ref={groupRef}>
+      <SkeletonOfType animationToPlay={animationToPlay} {...props} />
+    </group>
+  );
+};
+
 export const Enemies = () => {
   const { currentAction } = useControls({
     currentAction: {
@@ -287,35 +425,40 @@ export const Enemies = () => {
     },
   });
 
-  // const { staff } = useSkeletonStaff();
-  // const { staff } = useStaff1();
-  // const { staff } = useStaff2();
-  // const { staff } = useStaff3();
-  // const { staff } = useStaff4();
-  // const { staff } = useStaff5();
-
-  // const { sword } = useSword1();
-  const { sword: sword2 } = useSword2();
-  const { sword } = useSword4();
-
-  const { sword: sword2ForSkelly2 } = useSword2();
-  const { sword: sword4ForSkelly1 } = useSword4();
-
-  const { shield } = useShield();
-  const { shield2 } = useShield2();
-
   const enemys = {
     Anne: () => <AnimatedAnne animationToPlay={currentAction} />,
     SkeletonWarrior: () => (
-      <SkeletonWarrior
+      <SkeletonWithWeapons
+        skeletonType={SkeletonType.Warrior}
         animationToPlay={currentAction}
-        ItemRight={sword}
-        ItemLeft={sword2}
+        ItemRight={ItemTypes.Sword1}
+        ItemLeft={ItemTypes.Sword2}
       />
     ),
-    SkeletonMage: () => <SkeletonMage animationToPlay={currentAction} />,
-    SkeletonMinion: () => <SkeletonMinion animationToPlay={currentAction} />,
-    SkeletonRogue: () => <SkeletonRogue animationToPlay={currentAction} />,
+    SkeletonMage: () => (
+      <SkeletonWithWeapons
+        skeletonType={SkeletonType.Mage}
+        animationToPlay={currentAction}
+        ItemRight={ItemTypes.Staff2}
+        ItemLeft={ItemTypes.Shield1}
+      />
+    ),
+    SkeletonMinion: () => (
+      <SkeletonWithWeapons
+        skeletonType={SkeletonType.Minion}
+        animationToPlay={currentAction}
+        ItemRight={ItemTypes.Sword3}
+        ItemLeft={ItemTypes.Shield2}
+      />
+    ),
+    SkeletonRogue: () => (
+      <SkeletonWithWeapons
+        skeletonType={SkeletonType.Rogue}
+        animationToPlay={currentAction}
+        ItemRight={ItemTypes.Sword4}
+        ItemLeft={ItemTypes.Shield1}
+      />
+    ),
     Skeleton,
     SkeletonWithoutHead,
     GhostSkull,
@@ -341,11 +484,11 @@ export const Enemies = () => {
     <group position={[-30, 0, -50]}>
       <GridOfModels assets={enemys} rotation={[0, Math.PI, 0]} />
 
-      <SkeletonWarrior
+      <SkeletonWithWeapons
+        ItemRight={ItemTypes.Shield1}
+        ItemLeft={ItemTypes.Staff3}
         position={[-10, 0, -10]}
         animationToPlay={currentAction}
-        ItemRight={sword2ForSkelly2}
-        ItemLeft={sword4ForSkelly1}
       />
     </group>
   );

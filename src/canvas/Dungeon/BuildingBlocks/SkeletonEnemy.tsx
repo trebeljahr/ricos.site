@@ -15,8 +15,6 @@ import { useGenericAnimationController } from "@r3f/Controllers/GenericAnimation
 
 export type SkeletonEnemyProps = GroupProps & {
   animationToPlay?: CommonActions;
-  ItemLeft?: Mesh | Group;
-  ItemRight?: Mesh | Group;
 };
 
 interface GLTFAction extends AnimationClip {

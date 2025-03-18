@@ -45,8 +45,6 @@ type GLTFResult = GLTF & {
 
 export function SkeletonRogue({
   animationToPlay = CommonActions.Idle,
-  ItemLeft,
-  ItemRight,
   ...props
 }: SkeletonEnemyProps) {
   const group = useRef<Group>(null!);

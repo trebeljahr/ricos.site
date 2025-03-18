@@ -15,20 +15,18 @@ export default function CharacterWithAnimations({
 }) {
   const characterMeshRef = useRef<Mesh>(null!);
   const characterModel = useGLTF(
-    `/3d-assets/glb/characters/${characterName}-transformed-transformed.glb`
+    `/3d-assets/glb/characters/${characterName}-transformed.glb`
   );
 
-  const running = useGLTF("/3d-assets/glb/animations/running-transformed.glb");
-  const idle = useGLTF("/3d-assets/glb/animations/idle-transformed.glb");
-  const jump = useGLTF("/3d-assets/glb/animations/jump-transformed.glb");
-  const dance = useGLTF("/3d-assets/glb/animations/dance-transformed.glb");
-  const walking = useGLTF("/3d-assets/glb/animations/walking-transformed.glb");
-  const death = useGLTF("/3d-assets/glb/animations/death-transformed.glb");
-  const jumpingUp = useGLTF(
-    "/3d-assets/glb/animations/jumping-up-transformed.glb"
-  );
-  const swim = useGLTF("/3d-assets/glb/animations/swim-transformed.glb");
-  const wave = useGLTF("/3d-assets/glb/animations/wave-transformed.glb");
+  const running = useGLTF("/3d-assets/glb/animations/running.glb");
+  const idle = useGLTF("/3d-assets/glb/animations/idle.glb");
+  const jump = useGLTF("/3d-assets/glb/animations/jump.glb");
+  const dance = useGLTF("/3d-assets/glb/animations/dance.glb");
+  const walking = useGLTF("/3d-assets/glb/animations/walking.glb");
+  const death = useGLTF("/3d-assets/glb/animations/death.glb");
+  const jumpingUp = useGLTF("/3d-assets/glb/animations/jumping-up.glb");
+  const swim = useGLTF("/3d-assets/glb/animations/swim.glb");
+  const wave = useGLTF("/3d-assets/glb/animations/wave.glb");
 
   const animationsForHook = [
     { ...idle.animations[0], name: "idle" },

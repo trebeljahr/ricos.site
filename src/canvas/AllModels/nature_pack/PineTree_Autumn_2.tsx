@@ -39,14 +39,14 @@ export function InstancedPineTreeAutumn2({
     <GenericInstancedSystem
       positions={positions}
       meshMaterialCombos={meshMaterialCombos}
-      modelPath={"/3d-assets/glb/nature_pack/PineTree_Autumn_2-transformed.glb"}
+      modelPath={"/3d-assets/glb/nature_pack/PineTree_Autumn_2.glb"}
     />
   );
 }
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/nature_pack/PineTree_Autumn_2-transformed.glb"
+    "/3d-assets/glb/nature_pack/PineTree_Autumn_2.glb"
   ) as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>

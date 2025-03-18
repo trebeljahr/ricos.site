@@ -36,14 +36,14 @@ export function InstancedTreeStumpMoss({
     <GenericInstancedSystem
       positions={positions}
       meshMaterialCombos={meshMaterialCombos}
-      modelPath={"/3d-assets/glb/nature_pack/TreeStump_Moss-transformed.glb"}
+      modelPath={"/3d-assets/glb/nature_pack/TreeStump_Moss.glb"}
     />
   );
 }
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/nature_pack/TreeStump_Moss-transformed.glb"
+    "/3d-assets/glb/nature_pack/TreeStump_Moss.glb"
   ) as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>

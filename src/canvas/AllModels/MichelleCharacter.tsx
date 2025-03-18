@@ -2,7 +2,7 @@ import { useGLTF } from "@react-three/drei";
 import { useRef } from "react";
 import { Group } from "three";
 
-export const michelleGlbUrl = "/3d-assets/glb/Mixamo-transformed.glb";
+export const michelleGlbUrl = "/3d-assets/glb/Mixamo.glb";
 useGLTF.preload(michelleGlbUrl);
 
 export const MichelleCharacter = (props: JSX.IntrinsicElements["group"]) => {

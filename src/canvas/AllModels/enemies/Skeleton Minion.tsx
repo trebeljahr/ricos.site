@@ -1,104 +1,12 @@
 import * as THREE from "three";
-import React from "react";
-import { useGraph } from "@react-three/fiber";
+import React, { useEffect } from "react";
+import { GroupProps, useGraph } from "@react-three/fiber";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { GLTF, SkeletonUtils } from "three-stdlib";
-
-type ActionName =
-  | "1H_Melee_Attack_Chop"
-  | "1H_Melee_Attack_Jump_Chop"
-  | "1H_Melee_Attack_Slice_Diagonal"
-  | "1H_Melee_Attack_Slice_Horizontal"
-  | "1H_Melee_Attack_Stab"
-  | "1H_Ranged_Aiming"
-  | "1H_Ranged_Reload"
-  | "1H_Ranged_Shoot"
-  | "1H_Ranged_Shooting"
-  | "2H_Melee_Attack_Chop"
-  | "2H_Melee_Attack_Slice"
-  | "2H_Melee_Attack_Spin"
-  | "2H_Melee_Attack_Spinning"
-  | "2H_Melee_Attack_Stab"
-  | "2H_Melee_Idle"
-  | "2H_Ranged_Aiming"
-  | "2H_Ranged_Reload"
-  | "2H_Ranged_Shoot"
-  | "2H_Ranged_Shooting"
-  | "Block"
-  | "Block_Attack"
-  | "Block_Hit"
-  | "Blocking"
-  | "Cheer"
-  | "Death_A"
-  | "Death_A_Pose"
-  | "Death_B"
-  | "Death_B_Pose"
-  | "Death_C_Pose"
-  | "Death_C_Skeletons"
-  | "Death_C_Skeletons_Resurrect"
-  | "Dodge_Backward"
-  | "Dodge_Forward"
-  | "Dodge_Left"
-  | "Dodge_Right"
-  | "Dualwield_Melee_Attack_Chop"
-  | "Dualwield_Melee_Attack_Slice"
-  | "Dualwield_Melee_Attack_Stab"
-  | "Hit_A"
-  | "Hit_B"
-  | "Idle"
-  | "Idle_Combat"
-  | "Interact"
-  | "Jump_Full_Long"
-  | "Jump_Full_Short"
-  | "Jump_Idle"
-  | "Jump_Start"
-  | "Jump_Land"
-  | "Lie_Down"
-  | "Lie_Idle"
-  | "Lie_Pose"
-  | "Lie_StandUp"
-  | "PickUp"
-  | "Running_A"
-  | "Running_B"
-  | "Running_C"
-  | "Running_Strafe_Left"
-  | "Running_Strafe_Right"
-  | "Sit_Chair_Down"
-  | "Sit_Chair_Idle"
-  | "Sit_Chair_Pose"
-  | "Sit_Floor_Down"
-  | "Sit_Floor_Idle"
-  | "Sit_Floor_Pose"
-  | "Sit_Chair_StandUp"
-  | "Sit_Floor_StandUp"
-  | "Skeleton_Inactive_Standing_Pose"
-  | "Skeletons_Awaken_Floor"
-  | "Skeletons_Awaken_Floor_Long"
-  | "Skeletons_Inactive_Floor_Pose"
-  | "Skeletons_Awaken_Standing"
-  | "Spawn_Air"
-  | "Spawn_Ground"
-  | "Spawn_Ground_Skeletons"
-  | "Spellcast_Long"
-  | "Spellcast_Raise"
-  | "Spellcast_Shoot"
-  | "Spellcast_Summon"
-  | "Spellcasting"
-  | "Taunt"
-  | "Taunt_Longer"
-  | "Throw"
-  | "Unarmed_Idle"
-  | "Unarmed_Melee_Attack_Kick"
-  | "Unarmed_Melee_Attack_Punch_A"
-  | "Unarmed_Melee_Attack_Punch_B"
-  | "Unarmed_Pose"
-  | "Use_Item"
-  | "Walking_A"
-  | "Walking_B"
-  | "Walking_Backwards"
-  | "Walking_C"
-  | "Walking_D_Skeletons"
-  | "Idle_B";
+import { CommonActions } from "@r3f/Dungeon/BuildingBlocks/CommonEnemy";
+import { useGenericAnimationController } from "@r3f/Controllers/GenericAnimationController";
+import { ActionName } from "../animals_pack/Stag";
+import { mapCommonActionToSkeletonAction } from "@r3f/Dungeon/BuildingBlocks/SkeletonEnemy";
 
 interface GLTFAction extends THREE.AnimationClip {
   name: ActionName;
@@ -124,7 +32,10 @@ type GLTFResult = GLTF & {
   animations: GLTFAction[];
 };
 
-export function Model(props: JSX.IntrinsicElements["group"]) {
+export function SkeletonMinion({
+  animationToPlay = CommonActions.Idle,
+  ...props
+}: GroupProps & { animationToPlay?: CommonActions }) {
   const group = React.useRef<THREE.Group>(null!);
   const { scene, animations } = useGLTF(
     "/3d-assets/glb/enemies/Skeleton Minion-transformed.glb"
@@ -132,6 +43,16 @@ export function Model(props: JSX.IntrinsicElements["group"]) {
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
+
+  const result = useGenericAnimationController({ actions, fadeDuration: 0.5 });
+  const { updateAnimation } = result;
+
+  useEffect(() => {
+    updateAnimation(mapCommonActionToSkeletonAction[animationToPlay], {
+      looping: true,
+    });
+  }, [updateAnimation, animationToPlay]);
+
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Root_Scene">

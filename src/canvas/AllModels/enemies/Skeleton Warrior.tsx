@@ -46,8 +46,6 @@ type GLTFResult = GLTF & {
 
 export function SkeletonWarrior({
   animationToPlay = CommonActions.Idle,
-  ItemLeft,
-  ItemRight,
   ...props
 }: SkeletonEnemyProps) {
   const group = useRef<Group>(null!);
@@ -70,41 +68,6 @@ export function SkeletonWarrior({
       looping: true,
     });
   }, [updateAnimation, animationToPlay]);
-
-  useEffect(() => {
-    let leftHand: Object3D<Bone>;
-    let rightHand: Object3D<Bone>;
-    group.current.traverse((child) => {
-      if (child.name === "handslotl" && ItemLeft) {
-        console.log("found left hand");
-
-        child.add(ItemLeft);
-        // child.children.push(ItemLeft);
-        console.log(ItemLeft);
-        console.log(child);
-        leftHand = child as Object3D<Bone>;
-      }
-      if (child.name === "handslotr" && ItemRight) {
-        child.add(ItemRight);
-        console.log("found right hand");
-        console.log(ItemRight);
-        console.log(child);
-
-        rightHand = child as Object3D<Bone>;
-      }
-    });
-
-    return () => {
-      if (leftHand && ItemLeft) {
-        console.log("removing left hand item");
-        leftHand.remove(ItemLeft);
-      }
-      if (rightHand && ItemRight) {
-        console.log("removing right hand item");
-        rightHand.remove(ItemRight);
-      }
-    };
-  }, [ItemLeft, ItemRight]);
 
   return (
     <group ref={group} {...props} dispose={null}>

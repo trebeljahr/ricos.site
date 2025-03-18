@@ -33,7 +33,7 @@ type GLTFResult = GLTF & {
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/modular_dungeon_1/Sword_WallMount-transformed.glb"
+    "/3d-assets/glb/modular_dungeon_1/Sword_WallMount.glb"
   ) as unknown as GLTFResult;
 
   console.log(nodes);
@@ -45,6 +45,4 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload(
-  "/3d-assets/glb/modular_dungeon_1/Sword_WallMount-transformed.glb"
-);
+useGLTF.preload("/3d-assets/glb/modular_dungeon_1/Sword_WallMount.glb");

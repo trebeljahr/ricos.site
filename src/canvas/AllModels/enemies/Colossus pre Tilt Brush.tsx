@@ -12,9 +12,9 @@ type GLTFResult = GLTF & {
   };
 };
 
-export function Model(props: JSX.IntrinsicElements["group"]) {
+export function Collosus(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/enemiesColossus pre Tilt Brush-transformed.glb"
+    "/3d-assets/glb/enemies/Colossus pre Tilt Brush-transformed.glb"
   ) as GLTFResult;
   return (
     <group {...props} dispose={null}>

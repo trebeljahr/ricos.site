@@ -21,7 +21,7 @@ type GLTFResult = GLTF & {
   };
 };
 
-export function Model(props: JSX.IntrinsicElements["group"]) {
+export function Robot(props: JSX.IntrinsicElements["group"]) {
   const { scene } = useGLTF(
     "/3d-assets/glb/enemies/Rigged robot-transformed.glb"
   );

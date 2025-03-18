@@ -109,7 +109,7 @@ type GLTFResult = GLTF & {
   animations: GLTFAction[];
 };
 
-export function Model(props: JSX.IntrinsicElements["group"]) {
+export function Slime(props: JSX.IntrinsicElements["group"]) {
   const group = React.useRef<THREE.Group>(null!);
   const { scene, animations } = useGLTF(
     "/3d-assets/glb/enemies/Slime Enemy-transformed.glb"

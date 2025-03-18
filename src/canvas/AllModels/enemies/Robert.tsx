@@ -19,7 +19,7 @@ type GLTFResult = GLTF & {
   };
 };
 
-export function Model(props: JSX.IntrinsicElements["group"]) {
+export function RobertDinosaur(props: JSX.IntrinsicElements["group"]) {
   const { scene } = useGLTF("/3d-assets/glb/enemies/Robert-transformed.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;

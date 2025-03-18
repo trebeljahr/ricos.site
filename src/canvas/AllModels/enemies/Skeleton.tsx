@@ -37,7 +37,7 @@ type GLTFResult = GLTF & {
   animations: GLTFAction[];
 };
 
-export function Model(props: JSX.IntrinsicElements["group"]) {
+export function Skeleton(props: JSX.IntrinsicElements["group"]) {
   const group = React.useRef<THREE.Group>(null!);
   const { scene, animations } = useGLTF(
     "/3d-assets/glb/enemies/Skeleton-transformed.glb"

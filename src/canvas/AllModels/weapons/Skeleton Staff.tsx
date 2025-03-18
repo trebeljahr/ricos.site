@@ -12,10 +12,14 @@ type GLTFResult = GLTF & {
   };
 };
 
-export function Model(props: JSX.IntrinsicElements["group"]) {
-  const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/enemiesSkeleton Staff-transformed.glb"
+export function SkeletonStaff(props: JSX.IntrinsicElements["group"]) {
+  const result = useGLTF(
+    "/3d-assets/glb/weapons/Skeleton Staff-transformed.glb"
   ) as GLTFResult;
+
+  const { nodes, materials } = result;
+
+  console.log(result);
   return (
     <group {...props} dispose={null}>
       <mesh
@@ -27,4 +31,4 @@ export function Model(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/3d-assets/glb/enemies/Skeleton Staff-transformed.glb");
+useGLTF.preload("/3d-assets/glb/weapons/Skeleton Staff-transformed.glb");

@@ -5,21 +5,21 @@ import { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    Skeleton_Shield_Large_A: THREE.Mesh;
+    Skeleton_Axe: THREE.Mesh;
   };
   materials: {
     skeleton: THREE.MeshStandardMaterial;
   };
 };
 
-export function SkeletonShield1(props: JSX.IntrinsicElements["group"]) {
+export function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/weapons/Skeleton Shield-transformed.glb"
+    "/3d-assets/glb/weapons/Axe-transformed.glb"
   ) as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <mesh
-        geometry={nodes.Skeleton_Shield_Large_A.geometry}
+        geometry={nodes.Skeleton_Axe.geometry}
         material={materials.skeleton}
         scale={100}
       />
@@ -27,4 +27,4 @@ export function SkeletonShield1(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/3d-assets/glb/weapons/Skeleton Shield-transformed.glb");
+useGLTF.preload("/3d-assets/glb/weapons/Axe-transformed.glb");

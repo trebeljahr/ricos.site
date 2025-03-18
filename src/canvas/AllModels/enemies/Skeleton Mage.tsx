@@ -15,6 +15,7 @@ import { useGenericAnimationController } from "@r3f/Controllers/GenericAnimation
 import {
   mapCommonActionToSkeletonAction,
   SkeletonActionName,
+  SkeletonEnemyProps,
 } from "@r3f/Dungeon/BuildingBlocks/SkeletonEnemy";
 
 interface GLTFAction extends AnimationClip {
@@ -44,7 +45,7 @@ type GLTFResult = GLTF & {
 export function SkeletonMage({
   animationToPlay = CommonActions.Idle,
   ...props
-}: GroupProps & { animationToPlay?: CommonActions }) {
+}: SkeletonEnemyProps) {
   const group = useRef<Group>(null!);
   const { scene, animations } = useGLTF(
     "/3d-assets/glb/enemies/Skeleton Mage-transformed.glb"

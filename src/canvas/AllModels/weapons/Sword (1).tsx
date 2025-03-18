@@ -5,26 +5,27 @@ import { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    Skeleton_Arrow: THREE.Mesh;
+    Sword1: THREE.Mesh;
   };
   materials: {
-    skeleton: THREE.MeshStandardMaterial;
+    Material: THREE.MeshStandardMaterial;
   };
 };
 
-export function SkeletonArrow(props: JSX.IntrinsicElements["group"]) {
+export function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/weapons/Skeleton Arrow-transformed.glb"
+    "/3d-assets/glb/weapons/Sword (1)-transformed.glb"
   ) as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <mesh
-        geometry={nodes.Skeleton_Arrow.geometry}
-        material={materials.skeleton}
+        geometry={nodes.Sword1.geometry}
+        material={materials.Material}
+        rotation={[-Math.PI / 2, 0, 0]}
         scale={100}
       />
     </group>
   );
 }
 
-useGLTF.preload("/3d-assets/glb/weapons/Skeleton Arrow-transformed.glb");
+useGLTF.preload("/3d-assets/glb/weapons/Sword (1)-transformed.glb");

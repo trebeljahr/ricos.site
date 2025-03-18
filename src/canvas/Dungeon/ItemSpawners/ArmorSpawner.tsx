@@ -4,7 +4,7 @@ import {
   Armor_Leather,
   Armor_Metal,
   Armor_Metal2,
-} from "@r3f/models/rpg_items_pack/";
+} from "@r3f/AllModels/rpg_items_pack";
 import { GroupProps } from "@react-three/fiber";
 import { useMemo } from "react";
 import { pickRandomFromArray } from "src/lib/utils/randomFromArray";

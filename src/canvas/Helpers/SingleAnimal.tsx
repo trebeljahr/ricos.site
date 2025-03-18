@@ -1,4 +1,4 @@
-import { Trex } from "src/canvas/models/dinosaurs_pack";
+import { Trex } from "@r3f/AllModels/dinosaurs_pack";
 
 export const SingleAnimal = () => {
   return (

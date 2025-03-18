@@ -1,9 +1,9 @@
 import { splitIntoRandomGroups } from "src/lib/utils/randomGroups";
-import { InstancedBirchTree1 } from "src/canvas/models/nature_pack/BirchTree_1";
-import { InstancedBush2 } from "src/canvas/models/nature_pack/Bush_2";
-import { InstancedCommonTree5 } from "src/canvas/models/nature_pack/CommonTree_5";
-import { InstancedPineTree1 } from "src/canvas/models/nature_pack/PineTree_1";
-import { InstancedWillow1 } from "src/canvas/models/nature_pack/Willow_1";
+import { InstancedBirchTree1 } from "@r3f/AllModels/nature_pack/BirchTree_1";
+import { InstancedBush2 } from "@r3f/AllModels/nature_pack/Bush_2";
+import { InstancedCommonTree5 } from "@r3f/AllModels/nature_pack/CommonTree_5";
+import { InstancedPineTree1 } from "@r3f/AllModels/nature_pack/PineTree_1";
+import { InstancedWillow1 } from "@r3f/AllModels/nature_pack/Willow_1";
 import { useMemo, useRef } from "react";
 import { Vector2, Vector3 } from "three";
 import { ChunkMap } from "../ChunkGenerationSystem/ChunkProvider";

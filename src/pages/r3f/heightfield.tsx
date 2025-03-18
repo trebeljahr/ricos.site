@@ -10,7 +10,7 @@ import { EcctrlController } from "@r3f/Controllers/EcctrlController";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { RigidBallSpawner } from "@r3f/Helpers/RigidBall";
 import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
-import { LightsAndFog } from "@r3f/Scenes/LightsAndFog";
+import { LightsAndFog } from "@r3f/Helpers/LightsAndFog";
 import { Physics } from "@react-three/rapier";
 import { Material } from "three";
 

@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import kelpFrag from "@shaders/kelp.frag";
 import kelpVert from "@shaders/kelp.vert";
-import { useKelp } from "src/canvas/models/Kelp4";
+import { useKelp } from "@r3f/AllModels/Kelp4";
 
 import FastPoissonDiskSampling from "fast-2d-poisson-disk-sampling";
 import { memo, useEffect, useMemo, useRef } from "react";

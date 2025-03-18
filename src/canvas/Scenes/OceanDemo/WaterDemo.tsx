@@ -1,5 +1,5 @@
 import { useUnderwaterContext, waterHeight } from "@contexts/UnderwaterContext";
-import Whale from "src/canvas/models/fish_pack/Whale";
+import Whale from "@r3f/AllModels/fish_pack/Whale";
 import { Sky } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
@@ -7,12 +7,12 @@ import { Perf } from "r3f-perf";
 import { useEffect, useRef } from "react";
 import { Color, FogExp2, Group, Vector3 } from "three";
 import { Sky as SkyImpl } from "three-stdlib";
-import { SwimmingController } from "../Controllers/SwimmingController";
+import { SwimmingController } from "../../Controllers/SwimmingController";
 import { FishType, Fishs } from "../FBOExperiments/Fish";
 import { OceanSurface } from "./Ocean";
 import { UI } from "./OxygenBar";
 import { Terrain } from "./OceanFloor";
-import { perf } from "../ChunkGenerationSystem/config";
+import { perf } from "../../ChunkGenerationSystem/config";
 
 function MovingInCircle() {
   const whaleRef = useRef<Group>(null!);

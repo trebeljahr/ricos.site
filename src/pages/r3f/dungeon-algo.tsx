@@ -1,12 +1,9 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
-import { DungeonGenerator } from "@r3f/Dungeon/DungeonGenerator/Generator";
-import {
-  CellType,
-  Vector2Int,
-} from "@r3f/Dungeon/DungeonGenerator/TypeStructure";
-import { DungeonGenerator3D } from "@r3f/Dungeon/DungeonGenerator3D/Generator";
-import { Vector3Int } from "@r3f/Dungeon/DungeonGenerator3D/Types";
+import { DungeonGenerator } from "@r3f/Dungeon/Generator2D/Generator";
+import { CellType, Vector2Int } from "@r3f/Dungeon/Generator2D/TypeStructure";
+import { DungeonGenerator3D } from "@r3f/Dungeon/Generator3D/Generator";
+import { Vector3Int } from "@r3f/Dungeon/Generator3D/Types";
 import { OrbitControls } from "@react-three/drei";
 import { useState } from "react";
 import { BoxGeometry, Mesh, MeshStandardMaterial, PlaneGeometry } from "three";

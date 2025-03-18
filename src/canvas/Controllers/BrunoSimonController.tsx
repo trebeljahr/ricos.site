@@ -7,7 +7,7 @@ import {
 } from "@r3f/Contexts/PlayerContext";
 import { PointerContextProvider } from "@r3f/Contexts/PointerContext";
 import { ThirdPersonCameraContextProvider } from "@r3f/Contexts/ThirdPersonCameraContext";
-import { MichelleCharacter } from "@r3f/models/MichelleCharacter";
+import { MichelleCharacter } from "@r3f/AllModels/MichelleCharacter";
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import { Group, Quaternion } from "three";

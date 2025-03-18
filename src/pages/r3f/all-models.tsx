@@ -6,10 +6,10 @@ import {
 import { RigidBallSpawner } from "src/canvas/Helpers/RigidBall";
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
-import * as animals from "src/canvas/models/animals_pack";
-import * as dinosaurs from "src/canvas/models/dinosaurs_pack";
-import * as natureAssets from "src/canvas/models/nature_pack";
-import * as simpleNatureAssets from "src/canvas/models/simple_nature_pack";
+import * as animals from "@r3f/AllModels/animals_pack";
+import * as dinosaurs from "@r3f/AllModels/dinosaurs_pack";
+import * as natureAssets from "@r3f/AllModels/nature_pack";
+import * as simpleNatureAssets from "@r3f/AllModels/simple_nature_pack";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Leva } from "leva";

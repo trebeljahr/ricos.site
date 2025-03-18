@@ -1,8 +1,8 @@
 import { EcctrlController } from "src/canvas/Controllers/EcctrlController";
 import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
-import Grass from "src/canvas/Grass";
+import Grass from "@r3f/Scenes/Grass";
 import { Lights } from "src/canvas/Helpers/Lights";
-import { Obstacles, TreeObstacles } from "src/canvas/Scenes/Obstacles";
+import { Obstacles, TreeObstacles } from "@r3f/Helpers/Obstacles";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";

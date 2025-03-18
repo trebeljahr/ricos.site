@@ -1,5 +1,5 @@
 import { EffectComposer } from "@react-three/postprocessing";
-import { UnderwaterFogEffect } from "../OceanDemo/UnderwaterFog";
+import { UnderwaterFogEffect } from "../Scenes/OceanDemo/UnderwaterFog";
 
 export function Effects() {
   return (

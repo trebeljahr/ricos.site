@@ -1,4 +1,4 @@
-import { PriorityQueue } from "../DungeonGenerator/TypeStructure";
+import { PriorityQueue } from "../Generator2D/TypeStructure";
 import { Grid3D } from "./Grid3D";
 import { Mathf, Vector3Int } from "./Types";
 

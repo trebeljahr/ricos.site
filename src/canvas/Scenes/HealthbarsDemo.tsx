@@ -1,4 +1,4 @@
-import { GenericHealthBar, Shapes } from "@r3f/Helpers/Healthbar";
+import { GenericHealthBar, Shapes } from "@r3f/Dungeon/Healthbar/Healthbar";
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 

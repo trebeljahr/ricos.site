@@ -1,4 +1,4 @@
-import { useBeachMaterial } from "src/canvas/models/useBeachMaterial";
+import { useBeachMaterial } from "@r3f/AllModels/useBeachMaterial";
 import { Box } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";

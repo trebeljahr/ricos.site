@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 // import { useFBO } from '@react-three/drei'
-import { useFish1 } from "src/canvas/models/fish_pack/Fish1";
-import { useFish2 } from "src/canvas/models/fish_pack/Fish2";
-import { useFish3 } from "src/canvas/models/fish_pack/Fish3";
+import { useFish1 } from "@r3f/AllModels/fish_pack/Fish1";
+import { useFish2 } from "@r3f/AllModels/fish_pack/Fish2";
+import { useFish3 } from "@r3f/AllModels/fish_pack/Fish3";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import {
@@ -30,10 +30,10 @@ import fishFragment from "./shaders/fishFrag.glsl";
 import fishVertex from "./shaders/fishVert.glsl";
 import positionShader from "./shaders/positionFrag.glsl";
 import velocityShader from "./shaders/velocityFrag.glsl";
-import { useWhale } from "src/canvas/models/fish_pack/Whale";
-import { useDolphin } from "src/canvas/models/fish_pack/Dolphin";
-import { useShark } from "src/canvas/models/fish_pack/Shark";
-import { useMantaRay } from "src/canvas/models/fish_pack/Ray";
+import { useWhale } from "@r3f/AllModels/fish_pack/Whale";
+import { useDolphin } from "@r3f/AllModels/fish_pack/Dolphin";
+import { useShark } from "@r3f/AllModels/fish_pack/Shark";
+import { useMantaRay } from "@r3f/AllModels/fish_pack/Ray";
 
 export enum FishType {
   BlueTang,

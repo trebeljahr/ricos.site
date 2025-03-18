@@ -1,6 +1,6 @@
-import { BirchTree_1 } from "src/canvas/models/nature_pack";
-import { useTree1 } from "src/canvas/models/nature_pack/CommonTree_1";
-import { Tree1 } from "src/canvas/models/simple_nature_pack";
+import { BirchTree_1 } from "@r3f/AllModels/nature_pack";
+import { useTree1 } from "@r3f/AllModels/nature_pack/CommonTree_1";
+import { Tree1 } from "@r3f/AllModels/simple_nature_pack";
 import {
   CylinderCollider,
   InstancedRigidBodies,
@@ -9,7 +9,7 @@ import {
 import { useRef } from "react";
 import { Vector3, Vector3Tuple } from "three";
 import { randFloat } from "three/src/math/MathUtils";
-import { floorLevel } from "../Scenes/Obstacles";
+import { floorLevel } from "../Helpers/Obstacles";
 
 export const InstancedTreesWithPhysics = () => {
   const api = useRef(null);

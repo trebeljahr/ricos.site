@@ -1,7 +1,7 @@
 import { usePrevious } from "@hooks/usePrevious";
-import { Stag } from "src/canvas/models/animals_pack";
-import { ActionName } from "src/canvas/models/animals_pack/Stag";
-import { Velociraptor } from "src/canvas/models/dinosaurs_pack";
+import { Stag } from "@r3f/AllModels/animals_pack";
+import { ActionName } from "@r3f/AllModels/animals_pack/Stag";
+import { Velociraptor } from "@r3f/AllModels/dinosaurs_pack";
 import { useFrame, useThree } from "@react-three/fiber";
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -33,8 +33,8 @@ import {
   tileSize,
   treeMaxDistance,
   treeMinDistance,
-} from "../ChunkGenerationSystem/config";
-import { BoundingSphereAround } from "../Helpers/BoundingSphere";
+} from "../../ChunkGenerationSystem/config";
+import { BoundingSphereAround } from "../../Helpers/BoundingSphere";
 import { poissonDiskSample } from "src/lib/utils/noise";
 
 const gridSize = tileSize;

@@ -7,7 +7,7 @@ import {
 } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
-import { AnimatedSkyBox } from "@r3f/Scenes/OverheadLights";
+import { AnimatedSkyBox } from "@r3f/Helpers/OverheadLights";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Perf } from "r3f-perf";

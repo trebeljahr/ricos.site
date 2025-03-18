@@ -1,7 +1,7 @@
 import {
   MichelleCharacter,
   michelleGlbUrl,
-} from "src/canvas/models/MichelleCharacter";
+} from "@r3f/AllModels/MichelleCharacter";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
 import { GroupProps, Object3DProps } from "@react-three/fiber";
 import {

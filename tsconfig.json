@@ -25,7 +25,7 @@
       "@contexts/*": ["src/contexts/*"],
       "@hooks/*": ["src/hooks/*"],
       "@r3f/*": ["src/canvas/*"],
-      "@models/*": ["src/canvas/models/*"],
+      "@models/*": ["src/canvas/AllModels/*"],
       "@shaders/*": ["src/shaders/*"],
       "@pages/*": ["src/pages/*"],
       "@r4ai/remark-callout": ["node_modules/@r4ai/remark-callout/dist/index"],

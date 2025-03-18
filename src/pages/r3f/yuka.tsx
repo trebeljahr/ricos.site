@@ -1,6 +1,6 @@
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
-import { YukaSimulation } from "src/canvas/Yuka/YukaExample";
+import { YukaSimulation } from "src/canvas/Scenes/Yuka/YukaExample";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { ThreeFiberLayout } from "@components/dom/Layout";

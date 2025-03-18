@@ -10,12 +10,12 @@ import * as animals from "@r3f/AllModels/animals_pack";
 import * as dinosaurs from "@r3f/AllModels/dinosaurs_pack";
 import * as natureAssets from "@r3f/AllModels/nature_pack";
 import * as simpleNatureAssets from "@r3f/AllModels/simple_nature_pack";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, GroupProps, Props, useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Leva } from "leva";
 
 import { Plane, Text } from "@react-three/drei";
-import { PropsWithChildren, useRef } from "react";
+import { ComponentType, PropsWithChildren, useRef } from "react";
 import { DoubleSide } from "three";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 
@@ -38,7 +38,7 @@ const amountPerColumn = 10;
 const rowSize = tileSize / amountPerColumn;
 const columnSize = tileSize / (length / amountPerColumn);
 
-const AssetWithText = ({
+export const AssetWithText = ({
   index,
   text,
   children,
@@ -71,6 +71,34 @@ const AssetWithText = ({
   );
 };
 
+export const GridOfModels = ({
+  assets,
+  indexOffset = 0,
+  rotation = [0, 0, 0],
+  scale = 1,
+}: {
+  assets: Record<string, ComponentType<GroupProps>>;
+  indexOffset?: number;
+  rotation?: [number, number, number];
+  scale?: number;
+}) => {
+  return (
+    <>
+      {Object.entries(assets).map(([key, Asset], index) => {
+        const combinedIndex = index + indexOffset;
+
+        return (
+          <AssetWithText key={key} index={combinedIndex} text={key}>
+            <group rotation={rotation}>
+              <Asset scale={scale} />
+            </group>
+          </AssetWithText>
+        );
+      })}
+    </>
+  );
+};
+
 const Page = () => {
   const groundColor = "#84fb34";
 
@@ -98,26 +126,13 @@ const Page = () => {
 
             <group position={[-tileSize / 2, 0.1, -tileSize / 2]}>
               <axesHelper args={[1]} />
-
-              {Object.entries(allNatureAssets).map(([key, Asset], index) => {
-                return (
-                  <AssetWithText key={key} index={index} text={key}>
-                    <Asset />
-                  </AssetWithText>
-                );
-              })}
-
-              {Object.entries(animalAssets).map(([key, Asset], index) => {
-                const combinedIndex = index + natureKeysLength;
-
-                return (
-                  <AssetWithText key={key} index={combinedIndex} text={key}>
-                    <group rotation={[0, -Math.PI, 0]}>
-                      <Asset scale={0.2} />
-                    </group>
-                  </AssetWithText>
-                );
-              })}
+              <GridOfModels assets={allNatureAssets} />
+              <GridOfModels
+                assets={animalAssets}
+                indexOffset={natureKeysLength}
+                rotation={[0, -Math.PI, 0]}
+                scale={0.2}
+              />
             </group>
 
             <MinecraftSpectatorController speed={1} />

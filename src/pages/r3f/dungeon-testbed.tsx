@@ -22,6 +22,7 @@ import { HealthContextProvider } from "@r3f/Contexts/HealthbarContext";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { MinecraftCreativeController } from "@r3f/Controllers/MinecraftCreativeController";
 import { BackgroundMusicLoop } from "@r3f/Dungeon/BuildingBlocks/BackgroundMusic";
+import { Enemies } from "@r3f/Dungeon/BuildingBlocks/Enemies";
 import { SpikeTrap } from "@r3f/Dungeon/BuildingBlocks/SpikeTrap";
 import { StairCase } from "@r3f/Dungeon/BuildingBlocks/StairCase";
 import { RandomArmorSpawner } from "@r3f/Dungeon/ItemSpawners/ArmorSpawner";
@@ -98,6 +99,8 @@ const CanvasContent = () => {
       ))}
 
       <BackgroundMusicLoop />
+
+      <Enemies />
       <SpikeTrap />
       <CameraPositionLogger />
 

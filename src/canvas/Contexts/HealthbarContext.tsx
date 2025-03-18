@@ -75,7 +75,7 @@ export const HealthContextProvider = ({
           <group position={[-0.9 + 0.2, -0.9, 0]}>
             <GenericHealthBar
               health={health}
-              scale={[0.2, 1, 0.6]}
+              scale={[0.3, 1, 0.6]}
               rotation={[0, 0, -Math.PI / 2]}
               shape={Shapes.RHOMBUS}
               waveAmp={0}

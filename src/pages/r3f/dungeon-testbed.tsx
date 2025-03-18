@@ -193,59 +193,16 @@ const BackgroundMusicLoop = () => {
   return null;
 };
 
-const armorTypes = [
-  (props: GroupProps) => <Armor_Black position={[0, 0.5, 0]} {...props} />,
-  (props: GroupProps) => <Armor_Golden position={[0, 0.5, 0]} {...props} />,
-  (props: GroupProps) => <Armor_Leather position={[0, 0.5, 0]} {...props} />,
-  (props: GroupProps) => <Armor_Metal position={[0, 0.5, 0]} {...props} />,
-  (props: GroupProps) => <Armor_Metal2 position={[0, 0.5, 0]} {...props} />,
-];
+enum Rarity {
+  Medium,
+  Rare,
+}
 
-const ArmorSpawner: SpawnerImplementation = (props) => {
-  const Armor = useMemo(() => {
-    return pickRandomFromArray(armorTypes);
-  }, []);
-
-  return <ItemSpawner Item={Armor} {...props} />;
+type PotionData = {
+  health: number;
 };
-
-const potionTypes = [
-  Potion1_Filled,
-  Potion2_Filled,
-  Potion3_Filled,
-  Potion4_Filled,
-  Potion5_Filled,
-  Potion6_Filled,
-  Potion7_Filled,
-  Potion8_Filled,
-  Potion9_Filled,
-  Potion10_Filled,
-  Potion11_Filled,
-];
 
 type SpawnerImplementation = <T>(props: SpawnerProps<T>) => JSX.Element;
-
-const PotionSpawner: SpawnerImplementation = (props) => {
-  const Potion = useMemo(() => {
-    return pickRandomFromArray(potionTypes);
-  }, []);
-
-  const { heal } = useHealthContext();
-
-  const onCollected = (data: WeaponData) => {
-    console.log("collected", data);
-    heal(0.1);
-  };
-
-  return (
-    <ItemSpawner
-      Item={Potion}
-      {...props}
-      onCollected={onCollected}
-      data={{} as any}
-    />
-  );
-};
 
 type SpawnerProps<T> = GroupProps & {
   respawnTime?: number;
@@ -261,10 +218,133 @@ enum WeaponTypes {
   Dagger,
 }
 
-enum Rarity {
-  Medium,
-  Rare,
+enum ArmorTypes {
+  Leather = "Leather",
+  Metal = "Metal",
+  Black = "Black",
+  Golden = "Golden",
+  Metal2 = "Metal2",
 }
+
+type ArmorData = {
+  defense: number;
+  durability: number;
+  rarity: Rarity;
+  type: ArmorTypes;
+};
+
+const potionTypes = [
+  { Component: Potion1_Filled, data: { health: 0.1 } },
+  { Component: Potion2_Filled, data: { health: 0.1 } },
+  { Component: Potion3_Filled, data: { health: 0.1 } },
+  { Component: Potion4_Filled, data: { health: 0.1 } },
+  { Component: Potion5_Filled, data: { health: 0.1 } },
+  { Component: Potion6_Filled, data: { health: 0.1 } },
+  { Component: Potion7_Filled, data: { health: 0.1 } },
+  { Component: Potion8_Filled, data: { health: 0.1 } },
+  { Component: Potion9_Filled, data: { health: 0.1 } },
+  { Component: Potion10_Filled, data: { health: 0.1 } },
+  { Component: Potion11_Filled, data: { health: 0.1 } },
+];
+
+const armorTypes = [
+  {
+    Component: (props: GroupProps) => (
+      <Armor_Black position={[0, 0.5, 0]} {...props} />
+    ),
+    data: {
+      defense: 10,
+      durability: 10,
+      rarity: Rarity.Medium,
+      type: ArmorTypes.Black,
+    },
+  },
+  {
+    Component: (props: GroupProps) => (
+      <Armor_Golden position={[0, 0.5, 0]} {...props} />
+    ),
+    data: {
+      defense: 10,
+      durability: 10,
+      rarity: Rarity.Medium,
+      type: ArmorTypes.Golden,
+    },
+  },
+  {
+    Component: (props: GroupProps) => (
+      <Armor_Leather position={[0, 0.5, 0]} {...props} />
+    ),
+    data: {
+      defense: 10,
+      durability: 10,
+      rarity: Rarity.Medium,
+      type: ArmorTypes.Leather,
+    },
+  },
+  {
+    Component: (props: GroupProps) => (
+      <Armor_Metal position={[0, 0.5, 0]} {...props} />
+    ),
+    data: {
+      defense: 10,
+      durability: 10,
+      rarity: Rarity.Medium,
+      type: ArmorTypes.Metal,
+    },
+  },
+  {
+    Component: (props: GroupProps) => (
+      <Armor_Metal2 position={[0, 0.5, 0]} {...props} />
+    ),
+    data: {
+      defense: 10,
+      durability: 10,
+      rarity: Rarity.Medium,
+      type: ArmorTypes.Metal2,
+    },
+  },
+];
+
+const ArmorSpawner: SpawnerImplementation = (props) => {
+  const Armor: Collectible<ArmorData> = useMemo(() => {
+    return pickRandomFromArray(armorTypes);
+  }, []);
+
+  const onCollected = (data: any) => {
+    console.log(data);
+  };
+  return (
+    <ItemSpawner
+      Item={Armor.Component}
+      {...props}
+      onCollected={onCollected}
+      data={Armor.data}
+    />
+  );
+};
+
+const PotionSpawner: SpawnerImplementation = (props) => {
+  const Potion: Collectible<PotionData> = useMemo(() => {
+    return potionTypes[1];
+    // return pickRandomFromArray(potionTypes);
+  }, []);
+
+  const { heal } = useHealthContext();
+
+  const onCollected = (data: PotionData) => {
+    console.log("collected", data);
+    heal(0.1);
+  };
+
+  return (
+    <ItemSpawner
+      Item={Potion.Component}
+      {...props}
+      onCollected={onCollected}
+      data={Potion.data}
+    />
+  );
+};
 
 const weaponTypes = [
   {
@@ -342,7 +422,7 @@ const RandomWeaponsSpawner: SpawnerImplementation = (props) => {
       Item={Weapon.Component}
       {...props}
       onCollected={onCollected}
-      data={Weapon.data as any}
+      data={Weapon.data}
     />
   );
 };
@@ -350,7 +430,7 @@ const RandomWeaponsSpawner: SpawnerImplementation = (props) => {
 type ItemSpawnerType = <T>(
   props: SpawnerProps<T> & {
     Item: ComponentType<GroupProps>;
-    data: Collectible<T>;
+    data: T;
   }
 ) => JSX.Element | null;
 

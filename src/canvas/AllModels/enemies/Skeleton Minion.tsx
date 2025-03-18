@@ -1,33 +1,42 @@
-import * as THREE from "three";
-import React, { useEffect } from "react";
-import { GroupProps, useGraph } from "@react-three/fiber";
-import { useGLTF, useAnimations } from "@react-three/drei";
-import { GLTF, SkeletonUtils } from "three-stdlib";
-import { CommonActions } from "@r3f/Dungeon/BuildingBlocks/CommonEnemy";
 import { useGenericAnimationController } from "@r3f/Controllers/GenericAnimationController";
+import {
+  mapCommonActionToSkeletonAction,
+  SkeletonEnemyProps,
+} from "@r3f/Dungeon/BuildingBlocks/SkeletonEnemy";
+import { useAnimations, useGLTF } from "@react-three/drei";
+import { useGraph } from "@react-three/fiber";
+import { useEffect, useMemo, useRef } from "react";
+import {
+  AnimationClip,
+  Bone,
+  Group,
+  MeshStandardMaterial,
+  SkinnedMesh,
+} from "three";
+import { GLTF, SkeletonUtils } from "three-stdlib";
 import { ActionName } from "../animals_pack/Stag";
-import { mapCommonActionToSkeletonAction } from "@r3f/Dungeon/BuildingBlocks/SkeletonEnemy";
+import { CommonActions } from "@r3f/Dungeon/BuildingBlocks/CommonEnemy";
 
-interface GLTFAction extends THREE.AnimationClip {
+interface GLTFAction extends AnimationClip {
   name: ActionName;
 }
 
 type GLTFResult = GLTF & {
   nodes: {
-    Skeleton_Minion_ArmLeft: THREE.SkinnedMesh;
-    Skeleton_Minion_ArmRight: THREE.SkinnedMesh;
-    Skeleton_Minion_Body: THREE.SkinnedMesh;
-    Skeleton_Minion_Cloak: THREE.SkinnedMesh;
-    Skeleton_Minion_LegLeft: THREE.SkinnedMesh;
-    Skeleton_Minion_LegRight: THREE.SkinnedMesh;
-    Skeleton_Minion_Eyes: THREE.SkinnedMesh;
-    Skeleton_Minion_Head: THREE.SkinnedMesh;
-    Skeleton_Minion_Jaw: THREE.SkinnedMesh;
-    root: THREE.Bone;
+    Skeleton_Minion_ArmLeft: SkinnedMesh;
+    Skeleton_Minion_ArmRight: SkinnedMesh;
+    Skeleton_Minion_Body: SkinnedMesh;
+    Skeleton_Minion_Cloak: SkinnedMesh;
+    Skeleton_Minion_LegLeft: SkinnedMesh;
+    Skeleton_Minion_LegRight: SkinnedMesh;
+    Skeleton_Minion_Eyes: SkinnedMesh;
+    Skeleton_Minion_Head: SkinnedMesh;
+    Skeleton_Minion_Jaw: SkinnedMesh;
+    root: Bone;
   };
   materials: {
-    skeleton: THREE.MeshStandardMaterial;
-    Glow: THREE.MeshStandardMaterial;
+    skeleton: MeshStandardMaterial;
+    Glow: MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };
@@ -35,12 +44,12 @@ type GLTFResult = GLTF & {
 export function SkeletonMinion({
   animationToPlay = CommonActions.Idle,
   ...props
-}: GroupProps & { animationToPlay?: CommonActions }) {
-  const group = React.useRef<THREE.Group>(null!);
+}: SkeletonEnemyProps) {
+  const group = useRef<Group>(null!);
   const { scene, animations } = useGLTF(
     "/3d-assets/glb/enemies/Skeleton Minion-transformed.glb"
   );
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
 

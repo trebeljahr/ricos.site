@@ -44,14 +44,14 @@ export function InstancedBirchTreeSnow5({
     <GenericInstancedSystem
       positions={positions}
       meshMaterialCombos={meshMaterialCombos}
-      modelPath={"/3d-assets/glb/nature_pack/BirchTree_Snow_5-transformed.glb"}
+      modelPath={"/3d-assets/glb/nature_pack/BirchTree_Snow_5.glb"}
     />
   );
 }
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/nature_pack/BirchTree_Snow_5-transformed.glb"
+    "/3d-assets/glb/nature_pack/BirchTree_Snow_5.glb"
   ) as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>

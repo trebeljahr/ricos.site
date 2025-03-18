@@ -42,7 +42,7 @@ const temp = new Object3D();
 
 export function usePalmTree1() {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/nature_pack/PalmTree_1-transformed.glb"
+    "/3d-assets/glb/nature_pack/PalmTree_1.glb"
   ) as unknown as GLTFResult;
 
   return { nodes, materials };
@@ -59,14 +59,14 @@ export function InstancedPalmTree1({ positions }: { positions: Vector3[] }) {
     <GenericInstancedSystem
       positions={positions}
       meshMaterialCombos={meshMaterialCombos}
-      modelPath={"/3d-assets/glb/nature_pack/PalmTree_1-transformed.glb"}
+      modelPath={"/3d-assets/glb/nature_pack/PalmTree_1.glb"}
     />
   );
 }
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/nature_pack/PalmTree_1-transformed.glb"
+    "/3d-assets/glb/nature_pack/PalmTree_1.glb"
   ) as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
@@ -159,4 +159,4 @@ export const InstancedPalmTree = forwardRef(function InstancedPalmTree(
   );
 });
 
-useGLTF.preload("/3d-assets/glb/nature_pack/PalmTree_1-transformed.glb");
+useGLTF.preload("/3d-assets/glb/nature_pack/PalmTree_1.glb");

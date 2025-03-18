@@ -52,8 +52,7 @@ export const Railings = ({
   rotations: XYZ[];
 }) => {
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
-    modelPath:
-      "/3d-assets/glb/modular_dungeon_1/Fence_Straight_Modular-transformed.glb",
+    modelPath: "/3d-assets/glb/modular_dungeon_1/Fence_Straight_Modular.glb",
     defaultScale: 0.5,
   });
 
@@ -72,8 +71,7 @@ export const SideWallStairs = ({
   rotations: XYZ[];
 }) => {
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
-    modelPath:
-      "/3d-assets/glb/modular_dungeon_1/Stairs_SideCover-transformed.glb",
+    modelPath: "/3d-assets/glb/modular_dungeon_1/Stairs_SideCover.glb",
     defaultScale: 0.5,
   });
 
@@ -92,7 +90,7 @@ export const Torches = ({
   rotations: XYZ[];
 }) => {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/modular_dungeon_1/Torch-transformed.glb"
+    "/3d-assets/glb/modular_dungeon_1/Torch.glb"
   ) as unknown as GLTFResult;
 
   const { InstancedMesh: Holders, addPositions: addHolders } =
@@ -174,8 +172,7 @@ export const Stairs = ({
   rotations: XYZ[];
 }) => {
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
-    modelPath:
-      "/3d-assets/glb/modular_dungeon_1/Stairs_Modular-transformed.glb",
+    modelPath: "/3d-assets/glb/modular_dungeon_1/Stairs_Modular.glb",
     defaultScale: 0.5,
   });
 
@@ -194,7 +191,7 @@ export const Coins = ({
   rotations: XYZ[];
 }) => {
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
-    modelPath: "/3d-assets/glb/modular_dungeon_1/Coin_Pile-transformed.glb",
+    modelPath: "/3d-assets/glb/modular_dungeon_1/Coin_Pile.glb",
     defaultScale: 5,
   });
 
@@ -213,7 +210,7 @@ export const Floors = ({
   rotations: XYZ[];
 }) => {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/modular_dungeon_1/Floor_Modular-transformed.glb"
+    "/3d-assets/glb/modular_dungeon_1/Floor_Modular.glb"
   ) as unknown as GLTFResult;
 
   const { InstancedMesh, addPositions } = useInstancedMesh2({
@@ -237,7 +234,7 @@ export const Walls = ({
   rotations: XYZ[];
 }) => {
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
-    modelPath: "/3d-assets/glb/modular_dungeon_1/Wall_Modular-transformed.glb",
+    modelPath: "/3d-assets/glb/modular_dungeon_1/Wall_Modular.glb",
     defaultScale: 0.5,
   });
 
@@ -256,7 +253,7 @@ export const Arches = ({
   rotations: XYZ[];
 }) => {
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
-    modelPath: "/3d-assets/glb/modular_dungeon_1/Arch-transformed.glb",
+    modelPath: "/3d-assets/glb/modular_dungeon_1/Arch.glb",
     defaultScale: 0.25,
   });
 

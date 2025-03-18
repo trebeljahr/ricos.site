@@ -34,7 +34,7 @@ interface GLTFAction extends AnimationClip {
 
 export function useDolphin() {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/fish_pack/Dolphin-transformed.glb"
+    "/3d-assets/glb/fish_pack/Dolphin.glb"
   ) as unknown as GLTFResult;
 
   return { nodes, materials };
@@ -43,7 +43,7 @@ export function useDolphin() {
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<Group>(null!);
   const { nodes, materials, animations } = useGLTF(
-    "/3d-assets/glb/fish_pack/Dolphin-transformed.glb"
+    "/3d-assets/glb/fish_pack/Dolphin.glb"
   ) as unknown as GLTFResult;
   const { actions } = useAnimations(animations, group);
   return (
@@ -83,4 +83,4 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/3d-assets/glb/fish_pack/Dolphin-transformed.glb");
+useGLTF.preload("/3d-assets/glb/fish_pack/Dolphin.glb");

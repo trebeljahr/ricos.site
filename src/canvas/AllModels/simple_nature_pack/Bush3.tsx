@@ -20,7 +20,7 @@ type GLTFResult = GLTF & {
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/simple_nature_pack/Bush3-transformed.glb"
+    "/3d-assets/glb/simple_nature_pack/Bush3.glb"
   ) as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
@@ -32,4 +32,4 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/3d-assets/glb/simple_nature_pack/Bush3-transformed.glb");
+useGLTF.preload("/3d-assets/glb/simple_nature_pack/Bush3.glb");

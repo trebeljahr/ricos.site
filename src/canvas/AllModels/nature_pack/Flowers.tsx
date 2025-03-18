@@ -35,14 +35,14 @@ export function InstancedFlowers({ positions }: { positions: Vector3[] }) {
     <GenericInstancedSystem
       positions={positions}
       meshMaterialCombos={meshMaterialCombos}
-      modelPath={"/3d-assets/glb/nature_pack/Flowers-transformed.glb"}
+      modelPath={"/3d-assets/glb/nature_pack/Flowers.glb"}
     />
   );
 }
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/nature_pack/Flowers-transformed.glb"
+    "/3d-assets/glb/nature_pack/Flowers.glb"
   ) as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>

@@ -17,8 +17,8 @@ type GLTFResult = GLTF & {
 
 export function useBeachMaterial() {
   return useGLTF(
-    "/3d-assets/glb/aerial_beach_01_1k-transformed.glb"
+    "/3d-assets/glb/aerial_beach_01_1k.glb"
   ) as unknown as GLTFResult;
 }
 
-useGLTF.preload("/3d-assets/glb/aerial_beach_01_1k-transformed.glb");
+useGLTF.preload("/3d-assets/glb/aerial_beach_01_1k.glb");

@@ -17,7 +17,7 @@ type GLTFResult = GLTF & {
 
 export const InstancedRocks = () => {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/simple_nature_pack/Rock3-transformed.glb"
+    "/3d-assets/glb/simple_nature_pack/Rock3.glb"
   ) as unknown as GLTFResult;
 
   return (
@@ -30,6 +30,6 @@ export const InstancedRocks = () => {
 
 export const InstancedTreesWithMultiMaterial = () => {
   return (
-    <InstancedMeshSpawnerMultiMaterial modelPath="/3d-assets/glb/nature_pack/BirchTree_1-transformed.glb" />
+    <InstancedMeshSpawnerMultiMaterial modelPath="/3d-assets/glb/nature_pack/BirchTree_1.glb" />
   );
 };

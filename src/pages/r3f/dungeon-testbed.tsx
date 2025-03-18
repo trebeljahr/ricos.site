@@ -36,6 +36,8 @@ import {
   Axe_small_Golden,
   Bow_Golden,
   Bow_Wooden,
+  Dagger,
+  Dagger_Golden,
   Potion10_Filled,
   Potion11_Filled,
   Potion1_Filled,
@@ -47,7 +49,9 @@ import {
   Potion7_Filled,
   Potion8_Filled,
   Potion9_Filled,
+  Sword,
   Sword_big,
+  Sword_big_Golden,
   Sword_Golden,
 } from "@r3f/models/rpg_items_pack/";
 import {
@@ -66,6 +70,7 @@ import { Perf } from "r3f-perf";
 import {
   ComponentType,
   ReactNode,
+  use,
   useEffect,
   useMemo,
   useRef,
@@ -196,7 +201,7 @@ const armorTypes = [
   (props: GroupProps) => <Armor_Metal2 position={[0, 0.5, 0]} {...props} />,
 ];
 
-const ArmorSpawner = (props: SpawnerProps) => {
+const ArmorSpawner: SpawnerImplementation = (props) => {
   const Armor = useMemo(() => {
     return pickRandomFromArray(armorTypes);
   }, []);
@@ -218,45 +223,143 @@ const potionTypes = [
   Potion11_Filled,
 ];
 
-const PotionSpawner = (props: SpawnerProps) => {
+type SpawnerImplementation = <T>(props: SpawnerProps<T>) => JSX.Element;
+
+const PotionSpawner: SpawnerImplementation = (props) => {
   const Potion = useMemo(() => {
     return pickRandomFromArray(potionTypes);
   }, []);
 
-  return <ItemSpawner Item={Potion} {...props} />;
+  const { heal } = useHealthContext();
+
+  const onCollected = (data: WeaponData) => {
+    console.log("collected", data);
+    heal(0.1);
+  };
+
+  return (
+    <ItemSpawner
+      Item={Potion}
+      {...props}
+      onCollected={onCollected}
+      data={{} as any}
+    />
+  );
 };
 
-type SpawnerProps = GroupProps & {
+type SpawnerProps<T> = GroupProps & {
   respawnTime?: number;
-  onCollect?: (data: any) => void;
+  onCollected?: (data: T) => void;
 };
 
+enum WeaponTypes {
+  Sword,
+  Sword_Big,
+  Axe,
+  DoubleAxe,
+  Bow,
+  Dagger,
+}
+
+enum Rarity {
+  Medium,
+  Rare,
+}
 
 const weaponTypes = [
-  Sword_Golden,
-  Axe_Double,
-  (props: GroupProps) => <Sword_big position={[0, -0.5, 0]} {...props} />,
-  Axe_Double_Golden,
-  Axe_small,
-  Axe_small_Golden,
-  (props: GroupProps) => <Bow_Golden position={[0, 0.5, 0]} {...props} />,
-  (props: GroupProps) => <Bow_Wooden position={[0, 0.5, 0]} {...props} />,
+  {
+    Component: Sword_Golden,
+    data: { type: WeaponTypes.Sword, rarity: Rarity.Rare, damage: 10 },
+  },
+  {
+    Component: Dagger,
+    data: { type: WeaponTypes.Dagger, rarity: Rarity.Medium, damage: 5 },
+  },
+  {
+    Component: Dagger_Golden,
+    data: { type: WeaponTypes.Dagger, rarity: Rarity.Rare, damage: 10 },
+  },
+  {
+    Component: Sword,
+    data: { type: WeaponTypes.Sword, rarity: Rarity.Medium, damage: 10 },
+  },
+  {
+    Component: Sword_big,
+    data: { type: WeaponTypes.Sword_Big, rarity: Rarity.Medium, damage: 5 },
+  },
+  {
+    Component: Sword_big_Golden,
+    data: { type: WeaponTypes.Sword_Big, rarity: Rarity.Rare, damage: 10 },
+  },
+  {
+    Component: Axe_Double,
+    data: { type: WeaponTypes.Axe, rarity: Rarity.Medium, damage: 15 },
+  },
+  {
+    Component: Axe_Double_Golden,
+    data: { type: WeaponTypes.Axe, rarity: Rarity.Rare, damage: 20 },
+  },
+  {
+    Component: Axe_small,
+    data: { type: WeaponTypes.Axe, rarity: Rarity.Medium, damage: 10 },
+  },
+  {
+    Component: Axe_small_Golden,
+    data: { type: WeaponTypes.Axe, rarity: Rarity.Rare, damage: 15 },
+  },
+  {
+    Component: Bow_Wooden,
+    data: { type: WeaponTypes.Bow, rarity: Rarity.Medium, damage: 10 },
+  },
+  {
+    Component: Bow_Golden,
+    data: { type: WeaponTypes.Bow, rarity: Rarity.Rare, damage: 20 },
+  },
 ];
 
-const RandomWeaponsSpawner = (props: SpawnerProps) => {
-  const Weapon: ComponentType<GroupProps> = useMemo(() => {
+type WeaponData = {
+  type: WeaponTypes;
+  rarity: Rarity;
+  damage: number;
+};
+
+type Collectible<T> = {
+  Component: ComponentType<GroupProps>;
+  data: T;
+};
+
+const RandomWeaponsSpawner: SpawnerImplementation = (props) => {
+  const Weapon: Collectible<WeaponData> = useMemo(() => {
     return pickRandomFromArray(weaponTypes);
   }, []);
 
-  return <ItemSpawner Item={Weapon} {...props} />;
+  const onCollected = (data: WeaponData) => {
+    console.log("collected", data);
+  };
+
+  return (
+    <ItemSpawner
+      Item={Weapon.Component}
+      {...props}
+      onCollected={onCollected}
+      data={Weapon.data as any}
+    />
+  );
 };
 
-const ItemSpawner = ({
+type ItemSpawnerType = <T>(
+  props: SpawnerProps<T> & {
+    Item: ComponentType<GroupProps>;
+    data: Collectible<T>;
+  }
+) => JSX.Element | null;
+
+const ItemSpawner: ItemSpawnerType = ({
   Item,
   respawnTime,
+  onCollected = () => {},
+  data,
   ...props
-}: SpawnerProps & {
-  Item: ComponentType<GroupProps>;
 }) => {
   const [intersection, setIntersection] = useState(false);
   const [play] = useSound(achievementSound, { volume: 0.5 });
@@ -265,6 +368,8 @@ const ItemSpawner = ({
     let timeout: NodeJS.Timeout;
     if (intersection) {
       play();
+
+      onCollected(data as any);
 
       if (!respawnTime) return;
 

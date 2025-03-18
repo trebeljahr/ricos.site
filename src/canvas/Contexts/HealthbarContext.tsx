@@ -1,6 +1,7 @@
 import { GenericHealthBar, Shapes } from "@r3f/Helpers/Healthbar";
 import {
   Billboard,
+  Box,
   Hud,
   OrthographicCamera,
   PerspectiveCamera,
@@ -62,19 +63,27 @@ export const HealthContextProvider = ({
     <HealthContext.Provider value={{ health, damage, heal, setHealth }}>
       {!hideUI && (
         <Hud renderPriority={1}>
-          <PerspectiveCamera makeDefault position={[0, 0, 10]} />
-
-          <group position={[-viewport.width / 2 + 7, 0, 0]}>
+          <OrthographicCamera
+            makeDefault
+            position={[0, 0, 1]}
+            left={-1}
+            top={1}
+            right={1}
+            bottom={-1}
+          />
+          {/* <color attach={"background"} args={["#000000"]} /> */}
+          <group position={[-0.9 + 0.2, -0.9, 0]}>
             <GenericHealthBar
               health={health}
+              scale={[0.2, 1, 0.6]}
               rotation={[0, 0, -Math.PI / 2]}
-              scale={[1, 1, 5]}
               shape={Shapes.RHOMBUS}
               waveAmp={0}
               fillColor={"#ff0000"}
               secondColor={"#1fb141"}
               borderWidth={0.01}
             />
+            {/* <Box args={[1, 1, 1]} position={[0, 0, 0]} /> */}
           </group>
         </Hud>
       )}

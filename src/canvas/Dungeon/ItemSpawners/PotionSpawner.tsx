@@ -11,7 +11,7 @@ import {
   Potion7_Filled,
   Potion8_Filled,
   Potion9_Filled,
-} from "@r3f/models/rpg_items_pack/";
+} from "@r3f/AllModels/rpg_items_pack";
 import { useMemo } from "react";
 import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
 import {

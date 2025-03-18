@@ -6,13 +6,13 @@ import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreative
 import {
   DungeonMeshGenerator,
   MeshType,
-} from "@r3f/Dungeon/DungeonGenerator3D/ConvertToMesh";
-import { DungeonGenerator3D } from "@r3f/Dungeon/DungeonGenerator3D/Generator";
+} from "@r3f/Dungeon/Generator3D/ConvertToMesh";
+import { DungeonGenerator3D } from "@r3f/Dungeon/Generator3D/Generator";
 import {
   CellType3D,
   Vector3,
   Vector3Int,
-} from "@r3f/Dungeon/DungeonGenerator3D/Types";
+} from "@r3f/Dungeon/Generator3D/Types";
 import {
   Arches,
   Coins,

@@ -1,4 +1,4 @@
-import { FBOParticles } from "src/canvas/FBOExperiments/Particles/Particles";
+import { FBOParticles } from "@r3f/Scenes/FBOExperiments/Particles/Particles";
 import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { OrbitControls } from "@react-three/drei";

@@ -1,5 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
-import { Cat } from "src/canvas/models/Cat";
+import { Cat } from "@r3f/AllModels/Cat";
 import { OrbitControls, Stage } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 

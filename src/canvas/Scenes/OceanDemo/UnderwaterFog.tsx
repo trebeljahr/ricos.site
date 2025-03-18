@@ -13,7 +13,7 @@ import {
   farOverwater,
   farUnderwater,
   surfaceLevel,
-} from "../Controllers/KeyboardControls";
+} from "../../Controllers/KeyboardControls";
 
 class UnderwaterFogEffectImpl extends Effect {
   public camera: PerspectiveCamera;

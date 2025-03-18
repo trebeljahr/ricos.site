@@ -11,7 +11,7 @@ import {
   Sword_big,
   Sword_big_Golden,
   Sword_Golden,
-} from "@r3f/models/rpg_items_pack/";
+} from "@r3f/AllModels/rpg_items_pack";
 import { useMemo } from "react";
 import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
 import {

@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import tunnel from "tunnel-rat";
 
 const WaterDemo = dynamic(
-  () => import("src/canvas/OceanDemo/WaterDemo"),
+  () => import("src/canvas/Scenes/OceanDemo/WaterDemo"),
   {
     ssr: false,
   }

@@ -1,12 +1,12 @@
-import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
-import { OceanSurface } from "src/canvas/OceanDemo/Ocean";
-import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
-import { PointerLockControls, Sky } from "@react-three/drei";
+import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import dynamic from "next/dynamic";
+import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
+import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
+import { OceanSurface } from "src/canvas/Scenes/OceanDemo/Ocean";
 
-const Ship = dynamic(() => import("src/canvas/models/Ship"), {
+const Ship = dynamic(() => import("@r3f/AllModels/Ship"), {
   ssr: false,
 });
 

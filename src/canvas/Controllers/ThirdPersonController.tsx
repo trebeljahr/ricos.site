@@ -5,7 +5,7 @@ import { RapierRigidBody, RigidBody, useRapier } from "@react-three/rapier";
 import { MutableRefObject, useEffect, useRef } from "react";
 import { Group, Object3D, Quaternion, Vector3 } from "three";
 import { OrbitControls as OrbitControlsImpl } from "three-stdlib";
-import { Trex } from "../models/Trex";
+import { Trex } from "../AllModels/Trex";
 import { ModelType } from "./EcctrlController";
 
 const velocity = 20;

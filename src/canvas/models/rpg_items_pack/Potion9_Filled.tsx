@@ -24,6 +24,11 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/rpg_items_pack/Potion9_Filled.glb"
   ) as unknown as GLTFResult;
+
+  materials.Glass.transparent = true;
+  materials.Glass.opacity = 0.5;
+  materials.Liquid_Green.color = new THREE.Color("#00ff55");
+
   return (
     <group {...props} dispose={null}>
       <group rotation={[-Math.PI / 2, 0, 0]} scale={100}>

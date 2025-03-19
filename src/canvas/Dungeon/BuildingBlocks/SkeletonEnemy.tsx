@@ -1,17 +1,20 @@
+import { SkeletonMage } from "@r3f/AllModels/enemies/Skeleton Mage";
+import { SkeletonMinion } from "@r3f/AllModels/enemies/Skeleton Minion";
+import { SkeletonRogue } from "@r3f/AllModels/enemies/Skeleton Rogue";
+import { SkeletonWarrior } from "@r3f/AllModels/enemies/Skeleton Warrior";
+import { GroupProps } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
-import { CommonActions } from "./CommonEnemy";
 import {
   AnimationClip,
   Bone,
   Group,
-  Mesh,
   MeshStandardMaterial,
+  Object3D,
   SkinnedMesh,
 } from "three";
-import { GLTF, SkeletonUtils } from "three-stdlib";
-import { GroupProps, useGraph } from "@react-three/fiber";
-import { useAnimations, useGLTF } from "@react-three/drei";
-import { useGenericAnimationController } from "@r3f/Controllers/GenericAnimationController";
+import { GLTF } from "three-stdlib";
+import { CommonActions } from "./CommonEnemy";
+import { WeaponTypes, useItem } from "../Enemies/Weapons";
 
 export type SkeletonEnemyProps = GroupProps & {
   animationToPlay?: CommonActions;
@@ -142,4 +145,74 @@ export const mapCommonActionToSkeletonAction: Record<
   [CommonActions.Death]: "Death_A",
   [CommonActions.Attack]: "Dualwield_Melee_Attack_Stab",
   [CommonActions.HitReact]: "Hit_A",
+};
+
+export enum SkeletonTypes {
+  Rogue = "Rogue",
+  Warrior = "Warrior",
+  Mage = "Mage",
+  Minion = "Minion",
+}
+
+export const SkeletonWithWeapons = ({
+  ItemRight: ProvidedItemRight,
+  ItemLeft: ProvidedItemLeft,
+  skeletonType = SkeletonTypes.Warrior,
+  animationToPlay = CommonActions.Idle,
+  ...props
+}: SkeletonEnemyProps & {
+  ItemRight: WeaponTypes;
+  ItemLeft: WeaponTypes;
+  skeletonType?: SkeletonTypes;
+}) => {
+  const itemRight = useItem(ProvidedItemRight);
+  const itemLeft = useItem(ProvidedItemLeft);
+
+  const groupRef = useRef<Group>(null!);
+
+  useEffect(() => {
+    let leftHand: Object3D<Bone>;
+    let rightHand: Object3D<Bone>;
+    groupRef.current.traverse((child) => {
+      if (child.name === "handslotl" && itemLeft) {
+        child.add(itemLeft);
+        leftHand = child as Object3D<Bone>;
+      }
+      if (child.name === "handslotr" && itemRight) {
+        child.add(itemRight);
+
+        rightHand = child as Object3D<Bone>;
+      }
+    });
+
+    return () => {
+      if (leftHand && itemLeft) {
+        leftHand.remove(itemLeft);
+      }
+      if (rightHand && itemRight) {
+        rightHand.remove(itemRight);
+      }
+    };
+  }, [itemLeft, itemRight]);
+
+  const SkeletonOfType = useMemo(() => {
+    switch (skeletonType) {
+      case SkeletonTypes.Rogue:
+        return SkeletonRogue;
+      case SkeletonTypes.Warrior:
+        return SkeletonWarrior;
+      case SkeletonTypes.Mage:
+        return SkeletonMage;
+      case SkeletonTypes.Minion:
+        return SkeletonMinion;
+      default:
+        return SkeletonWarrior;
+    }
+  }, [skeletonType]);
+
+  return (
+    <group ref={groupRef}>
+      <SkeletonOfType animationToPlay={animationToPlay} {...props} />
+    </group>
+  );
 };

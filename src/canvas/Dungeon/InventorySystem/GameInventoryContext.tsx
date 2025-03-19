@@ -5,13 +5,6 @@ import React, {
   ReactNode,
   useCallback,
 } from "react";
-import {
-  DndContext,
-  DragEndEvent,
-  useSensor,
-  useSensors,
-  PointerSensor,
-} from "@dnd-kit/core";
 
 // Define types for our inventory system
 export type ItemType = "weapon" | "armor" | "consumable" | "material" | "quest";
@@ -61,6 +54,8 @@ interface InventoryContextType {
   equipItem: (item: Item, slot: ArmorSlot | HandSlot) => boolean;
   unequipItem: (slot: ArmorSlot | HandSlot) => Item | null;
   moveItem: (sourceId: string, destinationId: string) => void;
+  handleItemDrop: (event: any) => void;
+  handleItemDoubleClick: (item: Item) => void;
 
   // Utility methods
   inventoryIsFull: () => boolean;
@@ -98,14 +93,18 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
     rightHand: null,
   });
 
-  // Configure DnD sensors
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    })
-  );
+  const getEquippedItemBySlot = (slot: ArmorSlot | HandSlot): Item | null => {
+    const slotMapping: Record<string, keyof EquippedItems> = {
+      head: "head",
+      chest: "chest",
+      legs: "legs",
+      feet: "feet",
+      left: "leftHand",
+      right: "rightHand",
+    };
+
+    return equippedItems[slotMapping[slot]];
+  };
 
   // Inventory open/close methods
   const openInventory = useCallback(() => setIsOpen(true), []);
@@ -337,9 +336,8 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
     [addItem]
   );
 
-  // Handle moving items within the inventory (drag and drop)
+  // Handle item movement within the inventory
   const moveItem = useCallback((sourceId: string, destinationId: string) => {
-    // This is a simplified version - you'd need to expand this based on your specific requirements
     setItems((prevItems) => {
       const sourceIndex = prevItems.findIndex((item) => item.id === sourceId);
       const destinationIndex = prevItems.findIndex(
@@ -358,16 +356,132 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
     });
   }, []);
 
-  // DnD handler for drag end
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      const { active, over } = event;
+  // Handler for FormKit drag and drop
+  const handleItemDrop = useCallback(
+    (event: any) => {
+      const { payload, from, to } = event;
 
-      if (over && active.id !== over.id) {
-        moveItem(active.id as string, over.id as string);
+      // Handle drops between regular inventory slots
+      if (from.id.startsWith("slot-") && to.id.startsWith("slot-")) {
+        const sourceItem = payload;
+        const sourceId = sourceItem.id;
+        const destinationId = to.id.replace("slot-", "");
+
+        // Find if there's an item at the destination
+        const destinationItemIndex = items.findIndex(
+          (_, index) => `slot-${index}` === to.id
+        );
+        const destinationItem =
+          destinationItemIndex !== -1 ? items[destinationItemIndex] : null;
+
+        if (destinationItem) {
+          // Swap items
+          setItems((prevItems) => {
+            const newItems = [...prevItems];
+            const sourceIndex = newItems.findIndex(
+              (item) => item.id === sourceId
+            );
+
+            if (sourceIndex !== -1) {
+              // Swap positions
+              [newItems[sourceIndex], newItems[destinationItemIndex]] = [
+                newItems[destinationItemIndex],
+                newItems[sourceIndex],
+              ];
+            }
+
+            return newItems;
+          });
+        } else {
+          // Just reorder (moving to an empty slot)
+          setItems((prevItems) => {
+            const newItems = [...prevItems];
+            const sourceIndex = newItems.findIndex(
+              (item) => item.id === sourceId
+            );
+
+            if (sourceIndex !== -1) {
+              const [movedItem] = newItems.splice(sourceIndex, 1);
+              // Insert at the destination index
+              const destIndex = parseInt(destinationId);
+              newItems.splice(
+                Math.min(destIndex, newItems.length),
+                0,
+                movedItem
+              );
+            }
+
+            return newItems;
+          });
+        }
+      }
+
+      // Handle drops from inventory to equipment slots
+      else if (from.id.startsWith("slot-") && to.id.startsWith("equipment-")) {
+        const item = payload;
+        const equipmentSlot = to.id.replace("equipment-", "") as
+          | ArmorSlot
+          | HandSlot;
+
+        // Check if item can be equipped in this slot
+        if (item.equipable && item.equipSlot === equipmentSlot) {
+          equipItem(item, equipmentSlot);
+        }
+      }
+
+      // Handle drops from equipment slots to inventory
+      else if (from.id.startsWith("equipment-") && to.id.startsWith("slot-")) {
+        const equipmentSlot = from.id.replace("equipment-", "") as
+          | ArmorSlot
+          | HandSlot;
+        unequipItem(equipmentSlot);
+      }
+
+      // Handle drops between equipment slots
+      else if (
+        from.id.startsWith("equipment-") &&
+        to.id.startsWith("equipment-")
+      ) {
+        const sourceSlot = from.id.replace("equipment-", "") as
+          | ArmorSlot
+          | HandSlot;
+        const destSlot = to.id.replace("equipment-", "") as
+          | ArmorSlot
+          | HandSlot;
+
+        const sourceItem = getEquippedItemBySlot(sourceSlot);
+
+        if (sourceItem && sourceItem.equipSlot === destSlot) {
+          // Unequip from source slot
+          const item = unequipItem(sourceSlot);
+          // Equip to destination slot if possible
+          if (item) {
+            equipItem(item, destSlot);
+          }
+        }
       }
     },
-    [moveItem]
+    [items, equipItem, unequipItem]
+  );
+
+  // Handle double clicking on an item (for equipping or using)
+  const handleItemDoubleClick = useCallback(
+    (item: Item) => {
+      // If the item is equipable, equip it
+      if (item.equipable && item.equipSlot) {
+        equipItem(item, item.equipSlot);
+      }
+
+      // For consumables, you could add usage logic here
+      if (item.type === "consumable") {
+        // Example: Remove one from the stack
+        removeItem(item.id);
+
+        // You could add effects here (heal player, etc)
+        console.log(`Used ${item.name}`);
+      }
+    },
+    [equipItem, removeItem]
   );
 
   // Utility methods
@@ -428,16 +542,16 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
     equipItem,
     unequipItem,
     moveItem,
+    handleItemDrop,
     inventoryIsFull,
     getTotalWeight,
     canAddItem,
+    handleItemDoubleClick,
   };
 
   return (
     <InventoryContext.Provider value={contextValue}>
-      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-        {children}
-      </DndContext>
+      {children}
     </InventoryContext.Provider>
   );
 };

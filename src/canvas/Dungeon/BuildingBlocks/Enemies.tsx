@@ -214,7 +214,7 @@ const useStaff2 = () => {
   group.add(staffMesh4);
 
   group.scale.set(0.003, 0.003, 0.003);
-  group.position.set(0, 0.008, 0);
+  group.position.set(-0.002, 0.008, 0);
 
   return { staff: group };
 };
@@ -295,46 +295,46 @@ const useRandomItem = () => {
 
 const useItem = (itemType: ItemTypes) => {
   switch (itemType) {
-    case SwordType.Sword1:
+    case SwordTypes.Sword1:
       return useSword1().sword;
-    case SwordType.Sword2:
+    case SwordTypes.Sword2:
       return useSword2().sword;
-    case SwordType.Sword3:
+    case SwordTypes.Sword3:
       return useSword3().sword;
-    case SwordType.Sword4:
+    case SwordTypes.Sword4:
       return useSword4().sword;
-    case StaffType.Staff1:
+    case StaffTypes.Staff1:
       return useStaff1().staff;
-    case StaffType.Staff2:
+    case StaffTypes.Staff2:
       return useStaff2().staff;
-    case StaffType.Staff3:
+    case StaffTypes.Staff3:
       return useStaff3().staff;
-    case StaffType.Staff4:
+    case StaffTypes.Staff4:
       return useStaff4().staff;
-    case StaffType.Staff5:
+    case StaffTypes.Staff5:
       return useStaff5().staff;
-    case ShieldType.Shield1:
+    case ShieldTypes.Shield1:
       return useShield().shield;
-    case ShieldType.Shield2:
+    case ShieldTypes.Shield2:
       return useShield2().shield2;
   }
 };
 
-enum SkeletonType {
+enum SkeletonTypes {
   Rogue = "Rogue",
   Warrior = "Warrior",
   Mage = "Mage",
   Minion = "Minion",
 }
 
-enum SwordType {
+enum SwordTypes {
   Sword1 = "Sword1",
   Sword2 = "Sword2",
   Sword3 = "Sword3",
   Sword4 = "Sword4",
 }
 
-enum StaffType {
+enum StaffTypes {
   Staff1 = "Staff1",
   Staff2 = "Staff2",
   Staff3 = "Staff3",
@@ -342,31 +342,31 @@ enum StaffType {
   Staff5 = "Staff5",
 }
 
-enum ShieldType {
+enum ShieldTypes {
   Shield1 = "Shield1",
   Shield2 = "Shield2",
 }
 
 export const ItemTypes = {
-  ...SwordType,
-  ...StaffType,
-  ...ShieldType,
+  ...SwordTypes,
+  ...StaffTypes,
+  ...ShieldTypes,
 };
 export type ItemTypes = (typeof ItemTypes)[keyof typeof ItemTypes];
 
 export const SkeletonWithWeapons = ({
   ItemRight: ProvidedItemRight,
   ItemLeft: ProvidedItemLeft,
-  skeletonType = SkeletonType.Warrior,
+  skeletonType = SkeletonTypes.Warrior,
   animationToPlay = CommonActions.Idle,
   ...props
 }: SkeletonEnemyProps & {
-  ItemRight?: ItemTypes;
-  ItemLeft?: ItemTypes;
-  skeletonType?: SkeletonType;
+  ItemRight: ItemTypes;
+  ItemLeft: ItemTypes;
+  skeletonType?: SkeletonTypes;
 }) => {
-  const itemRight = useItem(ProvidedItemRight || getRandomItemType());
-  const itemLeft = useItem(ProvidedItemLeft || getRandomItemType());
+  const itemRight = useItem(ProvidedItemRight);
+  const itemLeft = useItem(ProvidedItemLeft);
 
   const groupRef = useRef<Group>(null!);
 
@@ -397,13 +397,13 @@ export const SkeletonWithWeapons = ({
 
   const SkeletonOfType = useMemo(() => {
     switch (skeletonType) {
-      case SkeletonType.Rogue:
+      case SkeletonTypes.Rogue:
         return SkeletonRogue;
-      case SkeletonType.Warrior:
+      case SkeletonTypes.Warrior:
         return SkeletonWarrior;
-      case SkeletonType.Mage:
+      case SkeletonTypes.Mage:
         return SkeletonMage;
-      case SkeletonType.Minion:
+      case SkeletonTypes.Minion:
         return SkeletonMinion;
       default:
         return SkeletonWarrior;
@@ -429,7 +429,7 @@ export const Enemies = () => {
     Anne: () => <AnimatedAnne animationToPlay={currentAction} />,
     SkeletonWarrior: () => (
       <SkeletonWithWeapons
-        skeletonType={SkeletonType.Warrior}
+        skeletonType={SkeletonTypes.Warrior}
         animationToPlay={currentAction}
         ItemRight={ItemTypes.Sword1}
         ItemLeft={ItemTypes.Sword2}
@@ -437,7 +437,7 @@ export const Enemies = () => {
     ),
     SkeletonMage: () => (
       <SkeletonWithWeapons
-        skeletonType={SkeletonType.Mage}
+        skeletonType={SkeletonTypes.Mage}
         animationToPlay={currentAction}
         ItemRight={ItemTypes.Staff2}
         ItemLeft={ItemTypes.Shield1}
@@ -445,7 +445,7 @@ export const Enemies = () => {
     ),
     SkeletonMinion: () => (
       <SkeletonWithWeapons
-        skeletonType={SkeletonType.Minion}
+        skeletonType={SkeletonTypes.Minion}
         animationToPlay={currentAction}
         ItemRight={ItemTypes.Sword3}
         ItemLeft={ItemTypes.Shield2}
@@ -453,7 +453,7 @@ export const Enemies = () => {
     ),
     SkeletonRogue: () => (
       <SkeletonWithWeapons
-        skeletonType={SkeletonType.Rogue}
+        skeletonType={SkeletonTypes.Rogue}
         animationToPlay={currentAction}
         ItemRight={ItemTypes.Sword4}
         ItemLeft={ItemTypes.Shield1}
@@ -480,16 +480,36 @@ export const Enemies = () => {
     SkeletonArrow,
   };
 
+  const skeletonTypes = useMemo(
+    () =>
+      Array.from({ length: 10 }, () => {
+        const skeletonType = pickRandomFromArray(Object.values(SkeletonTypes));
+        const itemLeft = getRandomItemType();
+        const itemRight = getRandomItemType();
+        return {
+          skeletonType,
+          itemLeft,
+          itemRight,
+        };
+      }),
+    []
+  );
+
   return (
     <group position={[-30, 0, -50]}>
       <GridOfModels assets={enemys} rotation={[0, Math.PI, 0]} />
-
-      <SkeletonWithWeapons
-        ItemRight={ItemTypes.Shield1}
-        ItemLeft={ItemTypes.Staff3}
-        position={[-10, 0, -10]}
-        animationToPlay={currentAction}
-      />
+      {skeletonTypes.map(({ skeletonType, itemLeft, itemRight }, index) => {
+        return (
+          <SkeletonWithWeapons
+            key={index}
+            skeletonType={skeletonType}
+            ItemLeft={itemLeft}
+            ItemRight={itemRight}
+            animationToPlay={currentAction}
+            position={[index * 5, 0, 0]}
+          />
+        );
+      })}
     </group>
   );
 };

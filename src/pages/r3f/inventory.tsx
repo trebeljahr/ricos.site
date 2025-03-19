@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   InventoryProvider,
   useInventory,
@@ -35,7 +35,7 @@ const createItem = (
 
 export default function Game() {
   return (
-    <InventoryProvider maxSlots={24} maxWeight={100}>
+    <InventoryProvider maxSlots={28} maxWeight={100}>
       <GameWorld />
       <Inventory />
       <InventoryToggleButton />
@@ -89,10 +89,9 @@ const GameWorld: React.FC = () => {
     createItem("quest1", "Ancient Scroll", "quest", "/icons/scroll.png"),
   ];
 
-  // Add a random item when the player clicks the "Find Item" button
   const findRandomItem = () => {
     if (inventoryIsFull()) {
-      alert("Your inventory is full!");
+      console.warn("Your inventory is full!");
       return;
     }
 
@@ -109,15 +108,21 @@ const GameWorld: React.FC = () => {
     const added = addItem(newItem);
 
     if (added) {
-      alert(
+      console.info(
         `You found: ${newItem.name} ${
           newItem.quantity > 1 ? `(x${newItem.quantity})` : ""
         }!`
       );
     } else {
-      alert("Couldn't add item to inventory!");
+      console.info("Couldn't add item to inventory!");
     }
   };
+
+  useEffect(() => {
+    for (let i = 0; i < 5; i++) {
+      findRandomItem();
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-800 text-white p-6">

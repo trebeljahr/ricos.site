@@ -8,7 +8,6 @@ import {
   InventoryProvider,
 } from "./GameInventoryContext";
 
-// InventorySlot component for regular inventory grid slots
 interface InventorySlotProps {
   item?: Item;
   index: number;
@@ -18,18 +17,18 @@ export const InventorySlot: React.FC<InventorySlotProps> = ({
   item,
   index,
 }) => {
-  const { setNodeRef: setDroppableRef } = useDroppable({
+  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
     id: `slot-${index}`,
+    data: { item, slotIndex: index },
   });
 
-  // If there's an item, make it draggable
   const {
     attributes,
     listeners,
     setNodeRef: setDraggableRef,
     transform,
   } = useDraggable({
-    id: item?.id || `empty-${index}`,
+    id: `item-${index}`,
     data: { item, slotIndex: index },
     disabled: !item,
   });
@@ -41,20 +40,17 @@ export const InventorySlot: React.FC<InventorySlotProps> = ({
       }
     : undefined;
 
-  // Set both refs to the same element
-  const setRef = (element: HTMLDivElement) => {
-    setDroppableRef(element);
-    if (item) setDraggableRef(element);
-  };
-
   return (
     <div
-      ref={setRef}
       className="w-16 h-16 bg-gray-800 border-2 border-gray-700 rounded-md flex items-center justify-center relative"
-      {...(item ? { ...attributes, ...listeners, style } : {})}
+      ref={setDroppableRef}
     >
       {item ? (
-        <div className="w-full h-full p-1 flex flex-col items-center">
+        <div
+          className="w-full h-full p-1 flex flex-col items-center"
+          ref={setDraggableRef}
+          {...(item ? { ...attributes, ...listeners, style } : {})}
+        >
           <div
             className="w-10 h-10 bg-contain bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${item.icon})` }}
@@ -65,7 +61,9 @@ export const InventorySlot: React.FC<InventorySlotProps> = ({
             </span>
           )}
         </div>
-      ) : null}
+      ) : (
+        <div className="w-full h-full p-1 flex flex-col items-center" />
+      )}
     </div>
   );
 };
@@ -240,20 +238,12 @@ export const Inventory: React.FC = () => {
   if (!isOpen) return null;
 
   // Calculate empty slots to fill the grid
-  const emptySlots = Math.max(0, maxSlots - items.length);
-  const allSlots = [
-    ...items.map((item, index) => ({ item, index })),
-    ...Array(emptySlots)
-      .fill(null)
-      .map((_, i) => ({ index: items.length + i, item: undefined })),
-  ];
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-gray-900 rounded-lg shadow-2xl max-w-4xl w-full max-h-screen overflow-auto">
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
           <h2 className="text-xl text-gray-200">Inventory</h2>
-          <div className="flex gap-4 items-center">
+          <div className="flex items-center">
             <div className="text-gray-300 text-sm">
               Weight: {getTotalWeight().toFixed(1)} / 100
             </div>
@@ -278,14 +268,16 @@ export const Inventory: React.FC = () => {
           {/* Inventory grid */}
           <div className="flex-1">
             <h3 className="text-lg text-gray-200 mb-4">Items</h3>
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2">
-              {allSlots.map(({ item, index }) => (
-                <InventorySlot
-                  key={item?.id || `empty-${index}`}
-                  item={item}
-                  index={index}
-                />
-              ))}
+            <div className="w-fit grid grid-cols-4 md:grid-cols-7 gap-2">
+              {items.map((item, i) => {
+                return (
+                  <InventorySlot
+                    key={(item?.id || "empty") + "-" + i}
+                    item={item === null ? undefined : item}
+                    index={i}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>

@@ -175,7 +175,23 @@ export const SkeletonWithWeapons = ({
     let rightHand: Object3D<Bone>;
     groupRef.current.traverse((child) => {
       if (child.name === "handslotl" && itemLeft) {
+        if (ProvidedItemLeft === WeaponTypes.Bow1) {
+          itemLeft.scale.set(
+            itemLeft.scale.x,
+            -itemLeft.scale.y,
+            itemLeft.scale.z
+          );
+        }
+
+        if (ProvidedItemLeft === WeaponTypes.Sword5) {
+          itemLeft.scale.set(
+            -itemLeft.scale.x,
+            itemLeft.scale.y,
+            itemLeft.scale.z
+          );
+        }
         child.add(itemLeft);
+
         leftHand = child as Object3D<Bone>;
       }
       if (child.name === "handslotr" && itemRight) {

@@ -36,18 +36,18 @@ export const InventorySlot: React.FC<InventorySlotProps> = ({
   const style = transform
     ? {
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-        zIndex: 10,
+        zIndex: 20,
       }
     : undefined;
 
   return (
     <div
-      className="w-16 h-16 bg-gray-800 border-2 border-gray-700 rounded-md flex items-center justify-center relative"
+      className="w-16 h-16 bg-gray-800 border-2 border-gray-700 rounded-md flex items-center justify-center"
       ref={setDroppableRef}
     >
       {item ? (
         <div
-          className="w-full h-full p-1 flex flex-col items-center"
+          className="w-full h-full p-1 flex flex-col items-center relative"
           ref={setDraggableRef}
           {...(item ? { ...attributes, ...listeners, style } : {})}
         >
@@ -68,7 +68,6 @@ export const InventorySlot: React.FC<InventorySlotProps> = ({
   );
 };
 
-// EquipmentSlot component for character equipment
 interface EquipmentSlotProps {
   type: ArmorSlot | HandSlot;
   label: string;
@@ -78,9 +77,8 @@ export const EquipmentSlot: React.FC<EquipmentSlotProps> = ({
   type,
   label,
 }) => {
-  const { equippedItems, equipItem, unequipItem } = useInventory();
+  const { equippedItems, unequipItem } = useInventory();
 
-  // Map slot type to the equipped item
   const getEquippedItem = () => {
     switch (type) {
       case "head":
@@ -102,9 +100,9 @@ export const EquipmentSlot: React.FC<EquipmentSlotProps> = ({
 
   const item = getEquippedItem();
 
-  const { setNodeRef } = useDroppable({
+  const { setNodeRef: setDroppableRef } = useDroppable({
     id: `equipment-${type}`,
-    data: { type, isEquipmentSlot: true },
+    data: { type, isEquipmentSlot: true, slotType: type },
   });
 
   const {
@@ -121,17 +119,10 @@ export const EquipmentSlot: React.FC<EquipmentSlotProps> = ({
   const style = transform
     ? {
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-        zIndex: 10,
+        zIndex: 20,
       }
     : undefined;
 
-  // Set both refs to the same element
-  const setRef = (element: HTMLDivElement) => {
-    setNodeRef(element);
-    if (item) setDraggableRef(element);
-  };
-
-  // Handle double click to unequip
   const handleDoubleClick = () => {
     if (item) {
       unequipItem(type);
@@ -142,20 +133,22 @@ export const EquipmentSlot: React.FC<EquipmentSlotProps> = ({
     <div className="flex flex-col items-center gap-1">
       <span className="text-xs text-gray-300">{label}</span>
       <div
-        ref={setRef}
-        className="w-16 h-16 bg-gray-800 border-2 border-gray-600 rounded-md flex items-center justify-center relative"
-        {...(item ? { ...attributes, ...listeners, style } : {})}
+        className="w-16 h-16 bg-gray-800 border-2 border-gray-600 rounded-md flex items-center justify-center"
         onDoubleClick={handleDoubleClick}
+        ref={setDroppableRef}
       >
         {item ? (
-          <div className="w-full h-full p-1 flex items-center justify-center">
+          <div
+            className="w-full h-full p-1 flex items-center justify-center"
+            ref={setDraggableRef}
+            {...(item ? { ...attributes, ...listeners, style } : {})}
+          >
             <div
               className="w-10 h-10 bg-contain bg-center bg-no-repeat"
               style={{ backgroundImage: `url(${item.icon})` }}
             />
           </div>
         ) : (
-          // Show a faded silhouette based on the slot type
           <div className="w-8 h-8 opacity-20">
             {type === "head" && (
               <div className="w-full h-full bg-gray-400 rounded-full" />
@@ -179,70 +172,35 @@ export const EquipmentSlot: React.FC<EquipmentSlotProps> = ({
   );
 };
 
-// Character Equipment component
 export const CharacterEquipment: React.FC = () => {
   return (
-    <div className="flex flex-col items-center bg-gray-900 p-4 rounded-lg border border-gray-700">
-      <h3 className="text-lg text-gray-200 mb-4">Equipment</h3>
-
-      <div className="relative w-48 h-64">
-        {/* Character silhouette */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-10">
-          <svg viewBox="0 0 24 24" className="w-32 h-48 text-gray-400">
-            <path
-              fill="currentColor"
-              d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"
-            />
-          </svg>
-        </div>
-
-        {/* Head slot */}
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2">
-          <EquipmentSlot type="head" label="Head" />
-        </div>
-
-        {/* Chest slot */}
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2">
-          <EquipmentSlot type="chest" label="Chest" />
-        </div>
-
-        {/* Legs slot */}
-        <div className="absolute top-36 left-1/2 transform -translate-x-1/2">
-          <EquipmentSlot type="legs" label="Legs" />
-        </div>
-
-        {/* Feet slot */}
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
-          <EquipmentSlot type="feet" label="Feet" />
-        </div>
-
-        {/* Left hand slot */}
-        <div className="absolute top-24 left-0">
+    <div className="w-fit flex flex-col items-center bg-gray-900 p-4 rounded-lg border border-gray-700">
+      <div className="w-48 h-fit">
+        <EquipmentSlot type="head" label="Head" />
+        <div className="flex">
           <EquipmentSlot type="left" label="Left Hand" />
-        </div>
-
-        {/* Right hand slot */}
-        <div className="absolute top-24 right-0">
+          <EquipmentSlot type="chest" label="Chest" />
           <EquipmentSlot type="right" label="Right Hand" />
         </div>
+        <EquipmentSlot type="legs" label="Legs" />
+        <EquipmentSlot type="feet" label="Feet" />
       </div>
     </div>
   );
 };
 
-// Main Inventory component
 export const Inventory: React.FC = () => {
   const { isOpen, closeInventory, items, maxSlots, getTotalWeight } =
     useInventory();
 
   if (!isOpen) return null;
 
-  // Calculate empty slots to fill the grid
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="not-prose fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-gray-900 rounded-lg shadow-2xl max-w-4xl w-full max-h-screen overflow-auto">
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
-          <h2 className="text-xl text-gray-200">Inventory</h2>
+          <p className="mt-0 font-bold text-white">Inventory</p>
+
           <div className="flex items-center">
             <div className="text-gray-300 text-sm">
               Weight: {getTotalWeight().toFixed(1)} / 100
@@ -261,13 +219,10 @@ export const Inventory: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-4 flex flex-col md:flex-row gap-6">
-          {/* Character equipment section */}
+        <div className="p-4 flex flex-col sm:flex-row gap-6 relative">
           <CharacterEquipment />
 
-          {/* Inventory grid */}
           <div className="flex-1">
-            <h3 className="text-lg text-gray-200 mb-4">Items</h3>
             <div className="w-fit grid grid-cols-4 md:grid-cols-7 gap-2">
               {items.map((item, i) => {
                 return (
@@ -286,7 +241,6 @@ export const Inventory: React.FC = () => {
   );
 };
 
-// InventoryToggleButton component
 export const InventoryToggleButton: React.FC = () => {
   const { toggleInventory } = useInventory();
 
@@ -302,24 +256,5 @@ export const InventoryToggleButton: React.FC = () => {
         />
       </svg>
     </button>
-  );
-};
-
-// Example of how to use the inventory in your game
-export const GameInventorySystem: React.FC = () => {
-  return (
-    <InventoryProvider maxSlots={24} maxWeight={100}>
-      {/* Your game components here */}
-      <div className="min-h-screen bg-gray-800 text-white p-4">
-        <h1 className="text-2xl mb-4">Your Game</h1>
-
-        {/* Game content */}
-        <p>Press the inventory button to manage your items.</p>
-
-        {/* Inventory UI components */}
-        <Inventory />
-        <InventoryToggleButton />
-      </div>
-    </InventoryProvider>
   );
 };

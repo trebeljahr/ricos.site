@@ -25,7 +25,7 @@ export interface Item {
   icon: string;
   description: string;
   stackable: boolean;
-  maxStack?: number;
+  maxStack: number;
   quantity: number;
   value: number;
   weight: number;
@@ -51,13 +51,16 @@ interface InventoryContextType {
   openInventory: () => void;
   closeInventory: () => void;
   toggleInventory: () => void;
-  addItem: (item: Item) => boolean;
-  removeItem: (itemId: string) => boolean;
+  addItem: (item: Item) => { amountLeft: number };
+  removeItem: (index: number) => boolean;
   updateItem: (updatedItem: Item) => boolean;
   getItems: () => (Item | null)[];
   getItem: (itemId: string) => Item | null;
-  equipItem: (item: Item, slot: ArmorSlot | HandSlot) => boolean;
-  unequipItem: (slot: ArmorSlot | HandSlot) => Item | null;
+  equipItem: (
+    inventorySlot: number,
+    equipmentSlot: ArmorSlot | HandSlot
+  ) => boolean;
+  unequipItem: (slot: ArmorSlot | HandSlot) => void;
   moveItem: (sourceIndex: number, destinationIndex: number) => void;
 
   inventoryIsFull: () => boolean;
@@ -108,85 +111,74 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
   const closeInventory = useCallback(() => setIsOpen(false), []);
   const toggleInventory = useCallback(() => setIsOpen((prev) => !prev), []);
 
-  const addItem = useCallback(
-    (newItem: Item): boolean => {
-      if (inventoryIsFull() && !newItem.stackable) {
-        return false;
-      }
-
-      setItems((prevItems) => {
-        if (newItem.stackable) {
-          const existingItemIndex = prevItems.findIndex((item) => {
-            if (!item) return false;
-
-            return (
-              item.id === newItem.id ||
-              (item.name === newItem.name && item.type === newItem.type)
-            );
-          });
-
-          if (existingItemIndex !== -1) {
-            const updatedItems = [...prevItems];
-            const updatedItem = updatedItems[existingItemIndex];
-            if (!updatedItem) return [...prevItems, newItem];
-
-            const existingItem = { ...updatedItem };
-            if (
-              existingItem.maxStack &&
-              existingItem.quantity + newItem.quantity > existingItem.maxStack
-            ) {
-              const canAdd = existingItem.maxStack - existingItem.quantity;
-
-              if (canAdd <= 0) {
-                return [...prevItems, newItem];
-              }
-
-              existingItem.quantity += canAdd;
-              updatedItems[existingItemIndex] = existingItem;
-
-              if (newItem.quantity - canAdd > 0) {
-                const remainderItem = {
-                  ...newItem,
-                  quantity: newItem.quantity - canAdd,
-                };
-                return [...updatedItems, remainderItem];
-              }
-
-              return updatedItems;
-            } else {
-              existingItem.quantity += newItem.quantity;
-              updatedItems[existingItemIndex] = existingItem;
-              return updatedItems;
-            }
-          }
-        }
-
-        const freeIndex = prevItems.findIndex((item) => item === null);
-        if (freeIndex === -1) {
-          return prevItems;
-        }
-
-        const updatedItems = [...prevItems];
-        updatedItems[freeIndex] = newItem;
-
-        return [...updatedItems];
-      });
-
-      return true;
-    },
-    [items, maxSlots]
-  );
-
-  const removeItem = useCallback((itemId: string): boolean => {
-    let removed = false;
+  const addItem = (
+    newItem: Item
+  ): { amountLeft: number; amountAdded: number } => {
+    let amountLeft = 0;
 
     setItems((prevItems) => {
-      const itemIndex = prevItems.findIndex((item) => item?.id === itemId);
+      if (newItem.stackable) {
+        let stillToAdd = newItem.quantity;
+        const newItems = prevItems.map((item) => {
+          if (item === null) {
+            if (stillToAdd > 0) {
+              console.log(newItem.maxStack);
 
-      if (itemIndex === -1) {
+              const canAdd = Math.min(newItem.maxStack, stillToAdd);
+              stillToAdd -= canAdd;
+              return { ...newItem, quantity: canAdd };
+            }
+
+            return item;
+          }
+
+          if (item.name === newItem.name && item.type === newItem.type) {
+            const canAdd = Math.min(stillToAdd, item.maxStack - item.quantity);
+
+            if (canAdd <= 0) {
+              return item;
+            }
+
+            if (stillToAdd <= 0) {
+              return item;
+            }
+
+            stillToAdd -= canAdd;
+            return {
+              ...item,
+              quantity: item.quantity + canAdd,
+            };
+          }
+
+          return item;
+        });
+
+        amountLeft = stillToAdd;
+
+        return newItems;
+      }
+
+      const freeIndex = prevItems.findIndex((item) => item === null);
+      if (freeIndex === -1) {
         return prevItems;
       }
 
+      const updatedItems = [...prevItems];
+      updatedItems[freeIndex] = newItem;
+
+      amountLeft = 0;
+
+      return updatedItems;
+    });
+
+    return { amountLeft, amountAdded: newItem.quantity - amountLeft };
+  };
+
+  const removeItem = (itemIndex: number): boolean => {
+    let removed = false;
+    if (itemIndex === undefined) return false;
+
+    setItems((prevItems) => {
       const itemToRemove = prevItems[itemIndex];
 
       if (itemToRemove?.stackable && itemToRemove.quantity > 1) {
@@ -199,14 +191,16 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
         return updatedItems;
       } else {
         removed = true;
-        return prevItems.filter((item) => item?.id !== itemId);
+        const newItems = [...prevItems];
+        newItems[itemIndex] = null;
+        return newItems;
       }
     });
 
     return removed;
-  }, []);
+  };
 
-  const updateItem = useCallback((updatedItem: Item): boolean => {
+  const updateItem = (updatedItem: Item): boolean => {
     let updated = false;
 
     setItems((prevItems) => {
@@ -225,7 +219,7 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
     });
 
     return updated;
-  }, []);
+  };
 
   const getItems = useCallback((): (Item | null)[] => {
     return items;
@@ -242,113 +236,127 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
     [items]
   );
 
-  const equipItem = useCallback(
-    (item: Item, slot: ArmorSlot | HandSlot): boolean => {
-      if (!item.equipable || !item.equipSlot) {
-        return false;
+  const equipItem = (fromSlot: number, slot: ArmorSlot | HandSlot): boolean => {
+    const item = items[fromSlot];
+    if (!item) {
+      return false;
+    }
+
+    if (!item.equipable || !item.equipSlot) {
+      return false;
+    }
+
+    if (item.equipSlot !== slot) {
+      return false;
+    }
+
+    setEquippedItems((currentlyEquipped) => {
+      const newEquippedItems = { ...currentlyEquipped };
+
+      const slotMapping: Record<string, keyof EquippedItems> = {
+        head: "head",
+        chest: "chest",
+        legs: "legs",
+        feet: "feet",
+        left: "leftHand",
+        right: "rightHand",
+      };
+
+      const targetSlot = slotMapping[slot];
+      const itemFromEquipped = currentlyEquipped[targetSlot];
+
+      console.log(itemFromEquipped);
+
+      if (itemFromEquipped) {
+        setItems((prevItems) => {
+          const newItems = [...prevItems];
+          newItems[fromSlot] = itemFromEquipped;
+          return newItems;
+        });
+      } else {
+        removeItem(fromSlot);
       }
 
-      if (item.equipSlot !== slot) {
-        return false;
+      newEquippedItems[targetSlot] = item;
+
+      return newEquippedItems;
+    });
+
+    return true;
+  };
+
+  const unequipItem = (
+    slot: ArmorSlot | HandSlot,
+    indexToUnequipTo?: number
+  ) => {
+    const slotMapping: Record<string, keyof EquippedItems> = {
+      head: "head",
+      chest: "chest",
+      legs: "legs",
+      feet: "feet",
+      left: "leftHand",
+      right: "rightHand",
+    };
+
+    const mappedEquipmentSlot = slotMapping[slot];
+
+    const itemInEquipmentSlot = equippedItems[mappedEquipmentSlot];
+    const inventorySlot =
+      indexToUnequipTo ?? items.findIndex((item) => item === null);
+    const noItemInInventorySlot = items[inventorySlot] === null;
+    const canMoveItem = itemInEquipmentSlot !== null && noItemInInventorySlot;
+
+    console.log({
+      canMoveItem,
+      itemInEquipmentSlot,
+      inventorySlot,
+      equippedItems,
+      items,
+    });
+
+    if (!canMoveItem) {
+      return;
+    }
+
+    setItems((prevItems) => {
+      const newItems = [...prevItems];
+      newItems[inventorySlot] = itemInEquipmentSlot;
+      return newItems;
+    });
+
+    setEquippedItems((prev) => {
+      const newEquippedItems = { ...prev };
+      newEquippedItems[mappedEquipmentSlot] = null;
+      return newEquippedItems;
+    });
+  };
+
+  const moveItem = (sourceIndex: number, destinationIndex: number) => {
+    setItems((prevItems) => {
+      if (sourceIndex === undefined || destinationIndex === undefined) {
+        return prevItems;
+      }
+      console.log(sourceIndex, destinationIndex);
+
+      const newItems = [...prevItems];
+
+      const movingItem = newItems[sourceIndex];
+      const destinationItem = newItems[destinationIndex];
+
+      console.log(movingItem, destinationItem);
+
+      if (!movingItem) {
+        return prevItems;
       }
 
-      setEquippedItems((prev) => {
-        const newEquippedItems = { ...prev };
+      newItems[sourceIndex] = destinationItem || null;
+      newItems[destinationIndex] = movingItem;
 
-        const slotMapping: Record<string, keyof EquippedItems> = {
-          head: "head",
-          chest: "chest",
-          legs: "legs",
-          feet: "feet",
-          left: "leftHand",
-          right: "rightHand",
-        };
+      console.log(newItems);
 
-        const targetSlot = slotMapping[slot];
-
-        if (prev[targetSlot]) {
-          addItem(prev[targetSlot] as Item);
-        }
-
-        newEquippedItems[targetSlot] = item;
-
-        removeItem(item.id);
-
-        return newEquippedItems;
-      });
-
-      return true;
-    },
-    [addItem, removeItem]
-  );
-
-  const unequipItem = useCallback(
-    (slot: ArmorSlot | HandSlot): Item | null => {
-      let unequippedItem: Item | null = null;
-
-      setEquippedItems((prev) => {
-        const newEquippedItems = { ...prev };
-
-        const slotMapping: Record<string, keyof EquippedItems> = {
-          head: "head",
-          chest: "chest",
-          legs: "legs",
-          feet: "feet",
-          left: "leftHand",
-          right: "rightHand",
-        };
-
-        const targetSlot = slotMapping[slot];
-
-        if (!prev[targetSlot]) {
-          return prev;
-        }
-
-        unequippedItem = prev[targetSlot];
-
-        newEquippedItems[targetSlot] = null;
-
-        if (unequippedItem) {
-          addItem(unequippedItem);
-        }
-
-        return newEquippedItems;
-      });
-
-      return unequippedItem;
-    },
-    [addItem]
-  );
-
-  const moveItem = useCallback(
-    (sourceIndex: number, destinationIndex: number) => {
-      setItems((prevItems) => {
-        console.log(sourceIndex, destinationIndex);
-        if (sourceIndex === -1 || destinationIndex === -1) {
-          return prevItems;
-        }
-
-        const newItems = [...prevItems];
-
-        const movingItem = newItems[sourceIndex];
-        const destinationItem = newItems[destinationIndex];
-
-        console.log(movingItem, destinationItem);
-
-        if (!movingItem) {
-          return prevItems;
-        }
-
-        newItems[sourceIndex] = destinationItem || null;
-        newItems[destinationIndex] = movingItem;
-
-        console.log(newItems);
-
-        return newItems;
-      });
-    },
-    []
-  );
+      return newItems;
+    });
+  };
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -359,12 +367,33 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
         return;
       }
 
+      if (over.data.current?.isEquipmentSlot) {
+        console.log("drag to equipment");
+        equipItem(active.data.current?.slotIndex, over.data.current?.slotType);
+        return;
+      }
+      if (
+        active.data.current?.isEquipmentSlot &&
+        over.data.current?.slotIndex !== undefined
+      ) {
+        console.log(
+          "drag from equipment",
+          active.data.current?.item,
+          over.data.current?.slotIndex
+        );
+        unequipItem(
+          active.data.current?.slotType,
+          over.data.current?.slotIndex
+        );
+        return;
+      }
+
       moveItem(active.data.current?.slotIndex, over?.data.current?.slotIndex);
     },
     [moveItem]
   );
 
-  const inventoryIsFull = useCallback((): boolean => {
+  const inventorySlotsFull = useCallback((): boolean => {
     const filledSlots = items.filter((item) => item !== null).length;
     return filledSlots >= maxSlots;
   }, [items, maxSlots]);
@@ -383,24 +412,32 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
         return false;
       }
 
-      if (!item.stackable && inventoryIsFull()) {
+      if (!item.stackable && inventorySlotsFull()) {
         return false;
       }
 
       if (item.stackable) {
-        const existingItem = items.find(
-          (i) =>
-            i?.id === item.id || (i?.name === item.name && i.type === item.type)
-        );
+        const capacity = items.reduce((acc, curr) => {
+          if (curr && curr.name === item.name) {
+            return acc + item.maxStack - curr.quantity;
+          }
+          if (curr === null) {
+            return acc + item.maxStack;
+          }
 
-        if (existingItem && existingItem.maxStack) {
-          return existingItem.quantity < existingItem.maxStack;
+          return acc;
+        }, 0);
+
+        if (capacity >= item.quantity) {
+          return true;
         }
+
+        return false;
       }
 
       return true;
     },
-    [getTotalWeight, inventoryIsFull, items, maxWeight]
+    [getTotalWeight, inventorySlotsFull, items, maxWeight]
   );
 
   const contextValue: InventoryContextType = {
@@ -419,7 +456,7 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
     equipItem,
     unequipItem,
     moveItem,
-    inventoryIsFull,
+    inventoryIsFull: inventorySlotsFull,
     getTotalWeight,
     canAddItem,
   };

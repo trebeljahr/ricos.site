@@ -12,9 +12,9 @@ type GLTFResult = GLTF & {
   };
 };
 
-export function Model(props: JSX.IntrinsicElements["group"]) {
+export function SkeletonCrossbow(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/Crossbow-transformed.glb"
+    "/3d-assets/glb/weapons/Crossbow-transformed.glb"
   ) as GLTFResult;
   return (
     <group {...props} dispose={null}>

@@ -36,8 +36,6 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
     "/3d-assets/glb/modular_dungeon_1/Sword_WallMount.glb"
   ) as unknown as GLTFResult;
 
-  console.log(nodes);
-
   return (
     <group {...props} dispose={null}>
       <primitive object={nodes.Sword_WallMount} />

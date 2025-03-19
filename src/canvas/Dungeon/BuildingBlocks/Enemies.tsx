@@ -16,36 +16,26 @@ import { SkeletonWithoutHead } from "@r3f/AllModels/enemies/Skeleton (1)";
 import { SkeletonUnarmed } from "@r3f/AllModels/enemies/Skeleton (2)";
 import { SkeletonMage } from "@r3f/AllModels/enemies/Skeleton Mage";
 import { SkeletonMinion } from "@r3f/AllModels/enemies/Skeleton Minion";
+import { SkeletonRogue } from "@r3f/AllModels/enemies/Skeleton Rogue";
 import { SkeletonWarrior } from "@r3f/AllModels/enemies/Skeleton Warrior";
 import { Slime } from "@r3f/AllModels/enemies/Slime Enemy";
-import { useControls } from "leva";
-import { CommonActions } from "./CommonEnemy";
-import { SkeletonShield1 } from "@r3f/AllModels/weapons/Skeleton Shield";
-import { SkeletonShield2 } from "@r3f/AllModels/weapons/Skeleton Shield-2";
-import { SkeletonStaff } from "@r3f/AllModels/weapons/Skeleton Staff";
 import { SkeletonArrow } from "@r3f/AllModels/weapons/Skeleton Arrow";
-import { SkeletonRogue } from "@r3f/AllModels/enemies/Skeleton Rogue";
-import { GLTFResult } from "src/@types";
+import { SkeletonShield1 } from "@r3f/AllModels/weapons/Skeleton Shield-1";
+import { SkeletonShield2 } from "@r3f/AllModels/weapons/Skeleton Shield-2";
+import { SkeletonStaff } from "@r3f/AllModels/weapons/Staff (6)";
 import { useGLTF } from "@react-three/drei";
-import { Bone, Group, Mesh, Object3D } from "three";
-import { PropsWithChildren, useEffect, useMemo, useRef } from "react";
-import { SkeletonEnemyProps } from "./SkeletonEnemy";
+import { useControls } from "leva";
+import { useEffect, useMemo, useRef } from "react";
+import { GLTFResult } from "src/@types";
 import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
-
-const useStaff6 = () => {
-  const result = useGLTF(
-    "/3d-assets/glb/weapons/Skeleton Staff-transformed.glb"
-  ) as GLTFResult;
-
-  const { nodes } = result;
-
-  const staffMesh = new Mesh(
-    nodes.Skeleton_Staff.geometry,
-    result.materials.skeleton
-  );
-
-  return staffMesh;
-};
+import { Bone, Group, Mesh, Object3D } from "three";
+import { CommonActions } from "./CommonEnemy";
+import { SkeletonEnemyProps } from "./SkeletonEnemy";
+import { SkeletonCrossbow } from "@r3f/AllModels/weapons/Crossbow";
+import { MagicWand } from "@r3f/AllModels/weapons/Magick wand";
+import { SkeletonAxe } from "@r3f/AllModels/weapons/Axe";
+import { SkeletonBlade } from "@r3f/AllModels/weapons/Blade";
+import { SkeletonQuiver } from "@r3f/AllModels/weapons/Quiver";
 
 const useSword1 = () => {
   const { nodes, materials } = useGLTF(
@@ -103,81 +93,50 @@ const useSword4 = () => {
   return swordMesh;
 };
 
+const useSword5 = () => {
+  const { nodes, materials } = useGLTF(
+    "/3d-assets/glb/weapons/Blade-transformed.glb"
+  ) as GLTFResult;
+
+  const swordMesh = new Mesh(nodes.Skeleton_Blade.geometry, materials.skeleton);
+
+  swordMesh.rotation.set(0, Math.PI, 0);
+  return swordMesh;
+};
+
+const useAxe1 = () => {
+  const { nodes, materials } = useGLTF(
+    "/3d-assets/glb/weapons/Axe-transformed.glb"
+  ) as GLTFResult;
+
+  const axeMesh = new Mesh(nodes.Skeleton_Axe.geometry, materials.skeleton);
+
+  return axeMesh;
+};
+
+const useBow1 = () => {
+  const { nodes, materials } = useGLTF(
+    "/3d-assets/glb/weapons/Crossbow-transformed.glb"
+  ) as GLTFResult;
+
+  const crossbowMesh = new Mesh(
+    nodes.Skeleton_Crossbow.geometry,
+    materials.skeleton
+  );
+
+  crossbowMesh.rotation.set(-Math.PI / 2, 0, Math.PI / 2);
+
+  return crossbowMesh;
+};
+
 const useStaff1 = () => {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/weapons/Staff (1)-transformed.glb"
   ) as GLTFResult;
 
-  console.log("staff", nodes);
-
   const staffMesh = new Mesh(nodes.Cylinder.geometry, materials["Wood.001"]);
 
   return staffMesh;
-};
-
-const useStaff4 = () => {
-  const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/weapons/Staff (4)-transformed.glb"
-  ) as GLTFResult;
-
-  const group = new Group();
-  group.name = "Staff_4";
-
-  const staffMesh = new Mesh(
-    nodes["Staff_04_Circle011-Mesh"].geometry,
-    materials.Dark_blue
-  );
-
-  const staffMesh2 = new Mesh(
-    nodes["Staff_04_Circle011-Mesh_1"].geometry,
-    materials.Iron_staff_04
-  );
-
-  const staffMesh3 = new Mesh(
-    nodes["Staff_04_Circle011-Mesh_2"].geometry,
-    materials.Cyrstal_staff_04
-  );
-
-  group.add(staffMesh);
-  group.add(staffMesh2);
-  group.add(staffMesh3);
-
-  group.scale.set(0.003, 0.003, 0.003);
-  group.position.set(0, 0.005, 0);
-
-  return group;
-};
-
-const useStaff5 = () => {
-  const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/weapons/Staff (5)-transformed.glb"
-  ) as GLTFResult;
-
-  const group = new Group();
-  group.name = "Staff_5";
-
-  const staffMesh = new Mesh(
-    nodes["Staff_05_Circle016-Mesh"].geometry,
-    materials.Brown
-  );
-  const staffMesh2 = new Mesh(
-    nodes["Staff_05_Circle016-Mesh_1"].geometry,
-    materials.Moon
-  );
-
-  const staffMesh3 = new Mesh(
-    nodes["Staff_05_Circle016-Mesh_2"].geometry,
-    materials.Spikes
-  );
-
-  group.add(staffMesh);
-  group.add(staffMesh2);
-  group.add(staffMesh3);
-
-  group.scale.set(0.003, 0.003, 0.003);
-  group.position.set(0, 0.007, 0.001);
-
-  return group;
 };
 
 const useStaff2 = () => {
@@ -252,9 +211,131 @@ const useStaff3 = () => {
   return group;
 };
 
+const useStaff4 = () => {
+  const { nodes, materials } = useGLTF(
+    "/3d-assets/glb/weapons/Staff (4)-transformed.glb"
+  ) as GLTFResult;
+
+  const group = new Group();
+  group.name = "Staff_4";
+
+  const staffMesh = new Mesh(
+    nodes["Staff_04_Circle011-Mesh"].geometry,
+    materials.Dark_blue
+  );
+
+  const staffMesh2 = new Mesh(
+    nodes["Staff_04_Circle011-Mesh_1"].geometry,
+    materials.Iron_staff_04
+  );
+
+  const staffMesh3 = new Mesh(
+    nodes["Staff_04_Circle011-Mesh_2"].geometry,
+    materials.Cyrstal_staff_04
+  );
+
+  group.add(staffMesh);
+  group.add(staffMesh2);
+  group.add(staffMesh3);
+
+  group.scale.set(0.003, 0.003, 0.003);
+  group.position.set(0, 0.005, 0);
+
+  return group;
+};
+
+const useStaff5 = () => {
+  const { nodes, materials } = useGLTF(
+    "/3d-assets/glb/weapons/Staff (5)-transformed.glb"
+  ) as GLTFResult;
+
+  const group = new Group();
+  group.name = "Staff_5";
+
+  const staffMesh = new Mesh(
+    nodes["Staff_05_Circle016-Mesh"].geometry,
+    materials.Brown
+  );
+  const staffMesh2 = new Mesh(
+    nodes["Staff_05_Circle016-Mesh_1"].geometry,
+    materials.Moon
+  );
+
+  const staffMesh3 = new Mesh(
+    nodes["Staff_05_Circle016-Mesh_2"].geometry,
+    materials.Spikes
+  );
+
+  group.add(staffMesh);
+  group.add(staffMesh2);
+  group.add(staffMesh3);
+
+  group.scale.set(0.003, 0.003, 0.003);
+  group.position.set(0, 0.007, 0.001);
+
+  return group;
+};
+
+const useStaff6 = () => {
+  const result = useGLTF(
+    "/3d-assets/glb/weapons/Skeleton Staff-transformed.glb"
+  ) as GLTFResult;
+
+  const { nodes } = result;
+
+  const staffMesh = new Mesh(
+    nodes.Skeleton_Staff.geometry,
+    result.materials.skeleton
+  );
+
+  return staffMesh;
+};
+
+const useStaff7 = () => {
+  const { nodes, materials } = useGLTF(
+    "/3d-assets/glb/weapons/Magick wand-transformed.glb"
+  ) as GLTFResult;
+
+  const group = new Group();
+  group.name = "Staff_7";
+  const staffMesh = new Mesh(nodes["group1762687703"].geometry, materials.mat2);
+  const staffMesh2 = new Mesh(
+    nodes["mesh2096346305"].geometry,
+    materials.mat20
+  );
+  const staffMesh3 = new Mesh(
+    nodes["mesh2096346305_1"].geometry,
+    materials.mat17
+  );
+
+  group.scale.set(0.02, 0.02, 0.02);
+  group.position.set(0, 0.005, 0);
+
+  group.add(staffMesh);
+  group.add(staffMesh2);
+  group.add(staffMesh3);
+
+  return group;
+};
+
+const useShield = () => {
+  const result = useGLTF(
+    "/3d-assets/glb/weapons/Skeleton Shield-1-transformed.glb"
+  ) as GLTFResult;
+
+  const { nodes } = result;
+
+  const shieldMesh = new Mesh(
+    nodes.Skeleton_Shield_Large_A.geometry,
+    result.materials.skeleton
+  );
+
+  return shieldMesh;
+};
+
 const useShield2 = () => {
   const result = useGLTF(
-    "/3d-assets/glb/weapons/Skeleton Shield-vS3QC5AvpV-transformed.glb"
+    "/3d-assets/glb/weapons/Skeleton Shield-2-transformed.glb"
   ) as GLTFResult;
 
   const { nodes } = result;
@@ -267,16 +348,27 @@ const useShield2 = () => {
   return shieldMesh;
 };
 
-const useShield = () => {
-  const result = useGLTF(
-    "/3d-assets/glb/weapons/Skeleton Shield-transformed.glb"
+const useShield3 = () => {
+  const { nodes, materials } = useGLTF(
+    "/3d-assets/glb/weapons/Skeleton Shield-3-transformed.glb"
   ) as GLTFResult;
 
-  const { nodes } = result;
+  const shieldMesh = new Mesh(
+    nodes.Skeleton_Shield_Small_A.geometry,
+    materials.skeleton
+  );
+
+  return shieldMesh;
+};
+
+const useShield4 = () => {
+  const { nodes, materials } = useGLTF(
+    "/3d-assets/glb/weapons/Skeleton Shield-4-transformed.glb"
+  ) as GLTFResult;
 
   const shieldMesh = new Mesh(
-    nodes.Skeleton_Shield_Large_A.geometry,
-    result.materials.skeleton
+    nodes.Skeleton_Shield_Large_B.geometry,
+    materials.skeleton
   );
 
   return shieldMesh;
@@ -303,6 +395,12 @@ const useItem = (itemType: ItemTypes) => {
       return useSword3();
     case SwordTypes.Sword4:
       return useSword4();
+    case SwordTypes.Sword5:
+      return useSword5();
+    case AxeTypes.Axe1:
+      return useAxe1();
+    case BowTypes.Bow1:
+      return useBow1();
     case StaffTypes.Staff1:
       return useStaff1();
     case StaffTypes.Staff2:
@@ -315,10 +413,16 @@ const useItem = (itemType: ItemTypes) => {
       return useStaff5();
     case StaffTypes.Staff6:
       return useStaff6();
+    case StaffTypes.Staff7:
+      return useStaff7();
     case ShieldTypes.Shield1:
       return useShield();
     case ShieldTypes.Shield2:
       return useShield2();
+    case ShieldTypes.Shield3:
+      return useShield3();
+    case ShieldTypes.Shield4:
+      return useShield4();
   }
 };
 
@@ -334,6 +438,7 @@ enum SwordTypes {
   Sword2 = "Sword2",
   Sword3 = "Sword3",
   Sword4 = "Sword4",
+  Sword5 = "Sword5",
 }
 
 enum StaffTypes {
@@ -343,17 +448,30 @@ enum StaffTypes {
   Staff4 = "Staff4",
   Staff5 = "Staff5",
   Staff6 = "Staff6",
+  Staff7 = "Staff7",
+}
+
+enum AxeTypes {
+  Axe1 = "Axe1",
+}
+
+enum BowTypes {
+  Bow1 = "Bow1",
 }
 
 enum ShieldTypes {
   Shield1 = "Shield1",
   Shield2 = "Shield2",
+  Shield3 = "Shield3",
+  Shield4 = "Shield4",
 }
 
 export const ItemTypes = {
   ...SwordTypes,
   ...StaffTypes,
   ...ShieldTypes,
+  ...BowTypes,
+  ...AxeTypes,
 };
 export type ItemTypes = (typeof ItemTypes)[keyof typeof ItemTypes];
 
@@ -442,7 +560,7 @@ export const Enemies = () => {
       <SkeletonWithWeapons
         skeletonType={SkeletonTypes.Mage}
         animationToPlay={currentAction}
-        ItemRight={ItemTypes.Staff2}
+        ItemRight={ItemTypes.Sword5}
         ItemLeft={ItemTypes.Shield1}
       />
     ),
@@ -481,6 +599,11 @@ export const Enemies = () => {
     SkeletonShield2,
     SkeletonStaff,
     SkeletonArrow,
+    SkeletonCrossbow,
+    MagicWand,
+    SkeletonAxe,
+    SkeletonBlade,
+    SkeletonQuiver,
   };
 
   const skeletonTypes = useMemo(
@@ -509,7 +632,8 @@ export const Enemies = () => {
             ItemLeft={itemLeft}
             ItemRight={itemRight}
             animationToPlay={currentAction}
-            position={[index * 5, 0, 0]}
+            position={[-10, 0, 2 + index * 5]}
+            rotation={[0, Math.PI / 2, 0]}
           />
         );
       })}

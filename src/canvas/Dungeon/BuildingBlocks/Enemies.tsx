@@ -45,24 +45,24 @@ export const Enemies = () => {
       <SkeletonWithWeapons
         skeletonType={SkeletonTypes.Warrior}
         animationToPlay={currentAction}
-        ItemRight={WeaponTypes.Sword1}
-        ItemLeft={WeaponTypes.Sword2}
+        ItemRight={WeaponTypes.Sword5}
+        ItemLeft={WeaponTypes.Sword5}
       />
     ),
     SkeletonMage: () => (
       <SkeletonWithWeapons
         skeletonType={SkeletonTypes.Mage}
         animationToPlay={currentAction}
-        ItemRight={WeaponTypes.Sword5}
-        ItemLeft={WeaponTypes.Shield1}
+        ItemRight={WeaponTypes.Bow1}
+        ItemLeft={WeaponTypes.Bow1}
       />
     ),
     SkeletonMinion: () => (
       <SkeletonWithWeapons
         skeletonType={SkeletonTypes.Minion}
         animationToPlay={currentAction}
-        ItemRight={WeaponTypes.Sword3}
-        ItemLeft={WeaponTypes.Shield2}
+        ItemRight={WeaponTypes.Staff5}
+        ItemLeft={WeaponTypes.Staff5}
       />
     ),
     SkeletonRogue: () => (
@@ -88,15 +88,15 @@ export const Enemies = () => {
     RobertDinosaur: () => <RobertDinosaur scale={0.4} position={[0, 3, 0]} />,
     Dragon: () => <Dragon scale={0.02} position={[0, 3, 0]} />,
     Robot,
-    SkeletonShield1,
-    SkeletonShield2,
-    SkeletonStaff,
-    SkeletonArrow,
-    SkeletonCrossbow,
-    MagicWand,
-    SkeletonAxe,
-    SkeletonBlade,
-    SkeletonQuiver,
+    // SkeletonShield1,
+    // SkeletonShield2,
+    // SkeletonStaff,
+    // SkeletonArrow,
+    // SkeletonCrossbow,
+    // MagicWand,
+    // SkeletonAxe,
+    // SkeletonBlade,
+    // SkeletonQuiver,
   };
 
   const skeletonTypes = useMemo(

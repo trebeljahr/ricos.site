@@ -23,6 +23,7 @@ import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { MinecraftCreativeController } from "@r3f/Controllers/MinecraftCreativeController";
 import { BackgroundMusicLoop } from "@r3f/Dungeon/BuildingBlocks/BackgroundMusic";
 import { Enemies } from "@r3f/Dungeon/BuildingBlocks/Enemies";
+import { Wall } from "@r3f/Dungeon/BuildingBlocks/Rooms";
 import { SpikeTrap } from "@r3f/Dungeon/BuildingBlocks/SpikeTrap";
 import { StairCase } from "@r3f/Dungeon/BuildingBlocks/StairCase";
 import { RandomArmorSpawner } from "@r3f/Dungeon/ItemSpawners/ArmorSpawner";
@@ -103,7 +104,7 @@ const CanvasContent = () => {
       <CameraPositionLogger />
 
       <Sky />
-      {perf && <Perf position="bottom-right" />}
+      {/* {perf && <Perf position="bottom-right" />} */}
       <directionalLight
         ref={lightRef}
         args={["#ffffff", 5]}
@@ -111,7 +112,6 @@ const CanvasContent = () => {
       />
       <ambientLight args={["#404040", 1]} />
 
-      <Arch position={[0, 0, 0]} />
       <group position={[0, 0, -1]}>
         <Floor_Modular position-x={-3} />
         <Floor_Modular position-x={-1} />
@@ -133,14 +133,26 @@ const CanvasContent = () => {
         <Floor_Modular position-x={1} position-z={-6} />
         <Floor_Modular position-x={3} position-z={-6} />
       </group>
+
       <StairCase position={[-11, 1, 0]} />
       {/* <StairCase position={[-11, 5, -8]} /> */}
+
+      <Arch position={[0, 0, 0]} />
       <Wall_Modular position={[3, 1, 0]} />
       <Wall_Modular position={[3, 3, 0]} />
-      {/* <Wall_Modular position={[3, 3, 0]} /> */}
       <Wall_Modular position={[-3, 1, 0]} />
       <Wall_Modular position={[-3, 2, 0]} />
       <Wall_Modular position={[-3, 3, 0]} />
+
+      <group position={[0, 0, -8]}>
+        <SpikeTrap interval={1000} />
+        <Arch position={[0, 0, 0]} />
+        <Wall_Modular position={[3, 1, 0]} />
+        <Wall_Modular position={[3, 3, 0]} />
+        <Wall_Modular position={[-3, 1, 0]} />
+        <Wall_Modular position={[-3, 2, 0]} />
+        <Wall_Modular position={[-3, 3, 0]} />
+      </group>
       <group rotation-y={Math.PI / 2} position-x={4}>
         <Wall_Modular position={[1, 1, 0]} />
         <Wall_Modular position={[1, 2, 0]} />
@@ -220,11 +232,11 @@ export default function Page() {
         camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
       >
         <HealthContextProvider>
-          <Physics debug>
+          <Physics>
             <CanvasContent />
             <MinecraftCreativeController
               initialPosition={[0, 25, 0]}
-              speed={20}
+              speed={10}
             >
               <CapsuleCollider args={[0.2, 0.1]} />
             </MinecraftCreativeController>

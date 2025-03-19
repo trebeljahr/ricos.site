@@ -14,7 +14,7 @@ type GLTFResult = GLTF & {
 
 export function SkeletonShield2(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/weapons/Skeleton Shield-vS3QC5AvpV-transformed.glb"
+    "/3d-assets/glb/weapons/Skeleton Shield-2-transformed.glb"
   ) as GLTFResult;
   return (
     <group {...props} dispose={null}>
@@ -27,6 +27,4 @@ export function SkeletonShield2(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload(
-  "/3d-assets/glb/weapons/Skeleton Shield-vS3QC5AvpV-transformed.glb"
-);
+useGLTF.preload("/3d-assets/glb/weapons/Skeleton Shield-2-transformed.glb");

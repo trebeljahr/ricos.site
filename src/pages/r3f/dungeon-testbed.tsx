@@ -65,8 +65,6 @@ const CanvasContent = () => {
     lightRef.current.shadow.camera.top = 200;
     lightRef.current.shadow.camera.bottom = -200;
     lightRef.current.shadow.camera.updateProjectionMatrix();
-
-    console.log("activated shadows", lightRef.current);
   }, [gl, scene]);
 
   useShadowHelper(lightRef);

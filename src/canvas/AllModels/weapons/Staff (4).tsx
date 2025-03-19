@@ -16,7 +16,7 @@ type GLTFResult = GLTF & {
   };
 };
 
-export function Model(props: JSX.IntrinsicElements["group"]) {
+export function Staff4(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/weapons/Staff-4-transformed.glb"
   ) as GLTFResult;

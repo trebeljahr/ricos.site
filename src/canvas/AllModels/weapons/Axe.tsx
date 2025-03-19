@@ -12,7 +12,7 @@ type GLTFResult = GLTF & {
   };
 };
 
-export function Model(props: JSX.IntrinsicElements["group"]) {
+export function SkeletonAxe(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/weapons/Axe-transformed.glb"
   ) as GLTFResult;

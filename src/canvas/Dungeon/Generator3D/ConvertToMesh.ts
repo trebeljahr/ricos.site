@@ -221,7 +221,6 @@ export class DungeonMeshGenerator {
   }
 
   private convertStairDirectionToRotation(direction: Vector3Int) {
-    console.log(direction);
     if (new Vector3Int(0, 0, -1).equals(direction)) {
       return new Vector3(0, 0, 0);
     }

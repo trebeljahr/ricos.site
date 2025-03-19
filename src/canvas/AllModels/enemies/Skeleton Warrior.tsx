@@ -18,7 +18,7 @@ import {
   SkinnedMesh,
 } from "three";
 import { GLTF, SkeletonUtils } from "three-stdlib";
-import { SkeletonStaff } from "../weapons/Skeleton Staff";
+import { SkeletonStaff } from "../weapons/Staff (6)";
 interface GLTFAction extends AnimationClip {
   name: SkeletonActionName;
 }
@@ -55,8 +55,6 @@ export function SkeletonWarrior({
 
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
-
-  console.log(clone, scene, nodes);
 
   const { actions } = useAnimations(animations, group);
 

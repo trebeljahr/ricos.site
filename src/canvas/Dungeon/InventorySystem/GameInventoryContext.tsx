@@ -51,7 +51,7 @@ interface InventoryContextType {
   openInventory: () => void;
   closeInventory: () => void;
   toggleInventory: () => void;
-  addItem: (item: Item) => { amountLeft: number };
+  addItem: (item: Item) => { amountLeft: number; amountAdded: number };
   removeItem: (index: number) => boolean;
   updateItem: (updatedItem: Item) => boolean;
   getItems: () => (Item | null)[];
@@ -114,7 +114,7 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
   const addItem = (
     newItem: Item
   ): { amountLeft: number; amountAdded: number } => {
-    let amountLeft = 0;
+    let amountLeft = newItem.quantity;
 
     setItems((prevItems) => {
       if (newItem.stackable) {

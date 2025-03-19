@@ -32,7 +32,7 @@ import { PropsWithChildren, useEffect, useMemo, useRef } from "react";
 import { SkeletonEnemyProps } from "./SkeletonEnemy";
 import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
 
-const useSkeletonStaff = () => {
+const useStaff6 = () => {
   const result = useGLTF(
     "/3d-assets/glb/weapons/Skeleton Staff-transformed.glb"
   ) as GLTFResult;
@@ -44,7 +44,7 @@ const useSkeletonStaff = () => {
     result.materials.skeleton
   );
 
-  return { staff: staffMesh };
+  return staffMesh;
 };
 
 const useSword1 = () => {
@@ -58,7 +58,7 @@ const useSword1 = () => {
   swordMesh.position.set(0, 0.005, 0);
   swordMesh.scale.set(1.2, 1.2, 1.2);
 
-  return { sword: swordMesh };
+  return swordMesh;
 };
 
 const useSword2 = () => {
@@ -72,7 +72,7 @@ const useSword2 = () => {
   swordMesh.position.set(0, 0.005, 0);
   swordMesh.scale.set(1.2, 1.2, 1.2);
 
-  return { sword: swordMesh };
+  return swordMesh;
 };
 
 const useSword3 = () => {
@@ -86,7 +86,7 @@ const useSword3 = () => {
   swordMesh.position.set(0, 0.005, 0);
   swordMesh.scale.set(1.2, 1.2, 1.2);
 
-  return { sword: swordMesh };
+  return swordMesh;
 };
 
 const useSword4 = () => {
@@ -100,7 +100,7 @@ const useSword4 = () => {
   swordMesh.position.set(0, 0.005, 0);
   swordMesh.scale.set(1.2, 1.2, 1.2);
 
-  return { sword: swordMesh };
+  return swordMesh;
 };
 
 const useStaff1 = () => {
@@ -112,7 +112,7 @@ const useStaff1 = () => {
 
   const staffMesh = new Mesh(nodes.Cylinder.geometry, materials["Wood.001"]);
 
-  return { staff: staffMesh };
+  return staffMesh;
 };
 
 const useStaff4 = () => {
@@ -145,7 +145,7 @@ const useStaff4 = () => {
   group.scale.set(0.003, 0.003, 0.003);
   group.position.set(0, 0.005, 0);
 
-  return { staff: group };
+  return group;
 };
 
 const useStaff5 = () => {
@@ -177,7 +177,7 @@ const useStaff5 = () => {
   group.scale.set(0.003, 0.003, 0.003);
   group.position.set(0, 0.007, 0.001);
 
-  return { staff: group };
+  return group;
 };
 
 const useStaff2 = () => {
@@ -216,7 +216,7 @@ const useStaff2 = () => {
   group.scale.set(0.003, 0.003, 0.003);
   group.position.set(-0.002, 0.008, 0);
 
-  return { staff: group };
+  return group;
 };
 
 const useStaff3 = () => {
@@ -249,7 +249,7 @@ const useStaff3 = () => {
   group.scale.set(0.003, 0.003, 0.003);
   group.position.set(0, 0.008, 0);
 
-  return { staff: group };
+  return group;
 };
 
 const useShield2 = () => {
@@ -264,7 +264,7 @@ const useShield2 = () => {
     result.materials.skeleton
   );
 
-  return { shield2: shieldMesh };
+  return shieldMesh;
 };
 
 const useShield = () => {
@@ -279,7 +279,7 @@ const useShield = () => {
     result.materials.skeleton
   );
 
-  return { shield: shieldMesh };
+  return shieldMesh;
 };
 
 const getRandomItemType = () => {
@@ -296,27 +296,29 @@ const useRandomItem = () => {
 const useItem = (itemType: ItemTypes) => {
   switch (itemType) {
     case SwordTypes.Sword1:
-      return useSword1().sword;
+      return useSword1();
     case SwordTypes.Sword2:
-      return useSword2().sword;
+      return useSword2();
     case SwordTypes.Sword3:
-      return useSword3().sword;
+      return useSword3();
     case SwordTypes.Sword4:
-      return useSword4().sword;
+      return useSword4();
     case StaffTypes.Staff1:
-      return useStaff1().staff;
+      return useStaff1();
     case StaffTypes.Staff2:
-      return useStaff2().staff;
+      return useStaff2();
     case StaffTypes.Staff3:
-      return useStaff3().staff;
+      return useStaff3();
     case StaffTypes.Staff4:
-      return useStaff4().staff;
+      return useStaff4();
     case StaffTypes.Staff5:
-      return useStaff5().staff;
+      return useStaff5();
+    case StaffTypes.Staff6:
+      return useStaff6();
     case ShieldTypes.Shield1:
-      return useShield().shield;
+      return useShield();
     case ShieldTypes.Shield2:
-      return useShield2().shield2;
+      return useShield2();
   }
 };
 
@@ -340,6 +342,7 @@ enum StaffTypes {
   Staff3 = "Staff3",
   Staff4 = "Staff4",
   Staff5 = "Staff5",
+  Staff6 = "Staff6",
 }
 
 enum ShieldTypes {

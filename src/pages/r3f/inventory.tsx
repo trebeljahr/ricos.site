@@ -105,7 +105,7 @@ const GameWorld: React.FC = () => {
       quantity: amount,
     };
 
-    const { amountLeft } = addItem(newItem);
+    const { amountLeft, amountAdded } = addItem(newItem);
 
     console.log({ amountLeft });
 
@@ -116,11 +116,8 @@ const GameWorld: React.FC = () => {
         }!`
       );
     } else {
-      console.info(
-        `Couldn't add ${amountLeft} item to inventory! But added ${
-          newItem.name
-        } (x${newItem.quantity - amountLeft})`
-      );
+      console.warn(`Couldn't add ${amountLeft} ${newItem.name} to inventory!`);
+      amountAdded > 0 && console.warn(`But added ${amountAdded}.`);
     }
   };
 
@@ -134,12 +131,7 @@ const GameWorld: React.FC = () => {
       quantity: randomItem.stackable ? Math.floor(Math.random() * 5) + 1 : 1,
     };
 
-    if (canAddItem(newItem)) {
-      console.warn("Your inventory is full!");
-      return;
-    }
-
-    const { amountLeft } = addItem(newItem);
+    const { amountLeft, amountAdded } = addItem(newItem);
 
     if (amountLeft === 0) {
       console.info(
@@ -148,11 +140,8 @@ const GameWorld: React.FC = () => {
         }!`
       );
     } else {
-      console.info(
-        `Couldn't add ${amountLeft} item to inventory! But added ${
-          newItem.name
-        } (x${newItem.quantity - amountLeft})`
-      );
+      console.warn(`Couldn't add ${amountLeft} ${newItem.name} to inventory!`);
+      amountAdded > 0 && console.warn(`But added ${amountAdded}.`);
     }
   };
 

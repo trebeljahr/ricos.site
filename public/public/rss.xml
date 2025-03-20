@@ -1,0 +1,710 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>ricos.site | RSS Feed</title>
+        <link>https://ricos.site</link>
+        <description>Welcome to my posts and newsletters! Glad to have you here!</description>
+        <lastBuildDate>Sun, 16 Mar 2025 21:52:58 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>awesome</generator>
+        <language>en</language>
+        <copyright>All rights reserved 2025, Rico Trebeljahr</copyright>
+        <atom:link href="https://ricos.site/rss.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[The Answer to AI's 600 Billion Dollar Question]]></title>
+            <link>https://ricos.siteanswer-to-ai-600b-question</link>
+            <guid>https://ricos.siteanswer-to-ai-600b-question</guid>
+            <pubDate>Mon, 28 Oct 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[The talks about AI have intensified greatly in the last few years since ChatGPT was first launched and since then generative AI tools like Midjourney, Udio, and Runway have taken the world by storm.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/money-pile/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Betting Heavy when convinced]]></title>
+            <link>https://ricos.sitebetting-heavy-when-convinced</link>
+            <guid>https://ricos.sitebetting-heavy-when-convinced</guid>
+            <pubDate>Thu, 02 Sep 2021 05:00:00 GMT</pubDate>
+            <description><![CDATA[This article is a consortium of things that I think about how or why to invest money. My opinion on investing is fundamentally split, between thinking of it as a waste of time and a necessary evil, and this post is going to explore investment advice in both directions.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/tall-buildings/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Collision Detection in 2D]]></title>
+            <link>https://ricos.sitecollision-detection</link>
+            <guid>https://ricos.sitecollision-detection</guid>
+            <pubDate>Sun, 06 Nov 2022 05:00:00 GMT</pubDate>
+            <description><![CDATA[If you have ever played any video game in your life, you used algorithms that solve the hard problem of collision detection, without even knowing about it. The solutions are often ingenious and answer the question of "what do we need all this math for" beautifully.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/sat/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Computer Games]]></title>
+            <link>https://ricos.sitecomputer-games</link>
+            <guid>https://ricos.sitecomputer-games</guid>
+            <pubDate>Tue, 17 Mar 2020 05:00:00 GMT</pubDate>
+            <description><![CDATA[Are computer games a valuable way to spend my time? At some level I feel they are, but why do I get a bad feeling when playing too much? Why don't I get such feelings when traveling or listening to music or playing the piano.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/keyboard/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[How to Create an Interactive Shader Editor]]></title>
+            <link>https://ricos.sitecreate-shader-editor-r3f</link>
+            <guid>https://ricos.sitecreate-shader-editor-r3f</guid>
+            <pubDate>Tue, 11 Feb 2025 05:00:00 GMT</pubDate>
+            <description><![CDATA[In this tutorial, we will create a fragment shader editor, similar to ShaderToy with React Three Fiber. We will use the awesome codemirror package and a few other neat tools to help make our lives easier. Along the way.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/puzzle/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Decisions]]></title>
+            <link>https://ricos.sitedecisions</link>
+            <guid>https://ricos.sitedecisions</guid>
+            <pubDate>Fri, 03 Sep 2021 05:00:00 GMT</pubDate>
+            <description><![CDATA[Decisions are the most important thing in life. And yet there is a fundamental problem with decisions. . . You don't make them. . . If you had to sum up your life in the most concise way possible, it would all be about the decisions that you have made. And yet.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/brain/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Diatom Arrangements]]></title>
+            <link>https://ricos.sitediatoms</link>
+            <guid>https://ricos.sitediatoms</guid>
+            <pubDate>Wed, 18 Sep 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[This post is a bit of an odd one: it's a collection of images of diatom arrangements. Diatoms are single-celled algae that have a glass shell. This shell refracts light in beautiful colors if viewed under a microscope.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/diatoms/klaus-kemp-15/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[A sense of Flow]]></title>
+            <link>https://ricos.siteflow</link>
+            <guid>https://ricos.siteflow</guid>
+            <pubDate>Fri, 20 Mar 2020 05:00:00 GMT</pubDate>
+            <description><![CDATA[An idea that shapes my view of the world is the experience of flow. Flow is losing yourself in an activity. It's about doing something that is just on the edge of your abilities. Something that pushes you. Not too little, not too much.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/water/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Fractal Garden Learnings – Part 1]]></title>
+            <link>https://ricos.sitefractal-learnings-1</link>
+            <guid>https://ricos.sitefractal-learnings-1</guid>
+            <pubDate>Wed, 05 Oct 2022 05:00:00 GMT</pubDate>
+            <description><![CDATA[I finished my first 1-month project. During the process I learned a lot about how I approach work and this post is a reflection and documentation on the process. This is part 1 of a series of posts on building the Fractal Garden webpage.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/mandelbrot/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Fractal Garden Learnings – Part 2]]></title>
+            <link>https://ricos.sitefractal-learnings-2</link>
+            <guid>https://ricos.sitefractal-learnings-2</guid>
+            <pubDate>Thu, 06 Oct 2022 05:00:00 GMT</pubDate>
+            <description><![CDATA[This is part 2 of a series of posts on building the Fractal Garden, my first 1 month project. In this post I will dive into the technical learnings and decisions that went into making the Fractal Garden website.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/fractal-garden/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Fundamental Problems]]></title>
+            <link>https://ricos.sitefundamental-problems</link>
+            <guid>https://ricos.sitefundamental-problems</guid>
+            <pubDate>Mon, 16 Mar 2020 05:00:00 GMT</pubDate>
+            <description><![CDATA[When I think about life there are many problems I have, problems that I need to solve, if I want to live a fulfilled and good life. And I think that many people share these problems because they are fundamental problems.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/missing-puzzle-piece/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Morning Meditation]]></title>
+            <link>https://ricos.sitemorning-meditation</link>
+            <guid>https://ricos.sitemorning-meditation</guid>
+            <pubDate>Sun, 18 Sep 2022 05:00:00 GMT</pubDate>
+            <description><![CDATA[It's September now in Berlin, and it starts to get cold. The fields are still green and damp from the cold night. But the sun has retained its energy from the summer. When it comes out it evaporates the dew over the fields and meadows. Clouds are moving over the sky.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/morning/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[My Productivity Systems]]></title>
+            <link>https://ricos.sitemy-productivity-system</link>
+            <guid>https://ricos.sitemy-productivity-system</guid>
+            <pubDate>Tue, 29 Oct 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[People often ask me how I can do so many different things, and be so *productive*. . . some even tell me that I am very disciplined. But yet, when I think about myself I don't consider myself to be very disciplined at all. My willpower to resist things is often zero.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/productivity-systems/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[The beauty of being alive.]]></title>
+            <link>https://ricos.siteon-the-beauty-of-living</link>
+            <guid>https://ricos.siteon-the-beauty-of-living</guid>
+            <pubDate>Tue, 16 Feb 2021 05:00:00 GMT</pubDate>
+            <description><![CDATA[I am sitting alone in my room. It is dark outside and my speakers play some soft and mellow music. FKJ, beautiful piano, with some techno mixed into it. The video is from one of my favorite performances.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/fkj-salar-de-uyuni-cercle/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Open AI's Codex]]></title>
+            <link>https://ricos.siteopen-ai-codex</link>
+            <guid>https://ricos.siteopen-ai-codex</guid>
+            <pubDate>Wed, 06 Oct 2021 05:00:00 GMT</pubDate>
+            <description><![CDATA[A few days ago I watched the OpenAI Codex demo and I am still thinking about what to do because it means that I will lose my job as a software engineer pretty soon. This post explores what I could do to prolong this period for some time. OpenAIs codex is a computer program.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/open-ai-avatar/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Improvement as the Purpose of Life]]></title>
+            <link>https://ricos.sitepurpose</link>
+            <guid>https://ricos.sitepurpose</guid>
+            <pubDate>Fri, 10 Apr 2020 05:00:00 GMT</pubDate>
+            <description><![CDATA[What is life? Life is the continuation and spreading of complex patterns of information throughout time and space. Life is the process that turns matter into more of itself. But what does that have to do with improvement.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/road/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[A Sense of Progress]]></title>
+            <link>https://ricos.sitesense-of-progress</link>
+            <guid>https://ricos.sitesense-of-progress</guid>
+            <pubDate>Thu, 05 Mar 2020 05:00:00 GMT</pubDate>
+            <description><![CDATA[Most people think of progress as a good thing. We want to be better than we were before, we want to push our limits, and we want to invent, create and thrive. We have a sense of progress, and that sense makes us feel good. But why.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/hike/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[The Best Yellow]]></title>
+            <link>https://ricos.sitethe-best-yellow</link>
+            <guid>https://ricos.sitethe-best-yellow</guid>
+            <pubDate>Sun, 06 Oct 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[I want to get back into painting but the one thing that always bothered me with my old acrylic paints is that they never really covered each other well. So I set out to test which is the best yellow I can find on Amazon.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/best-yellow/all-the-yellows/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[The People I have Learned from the Most]]></title>
+            <link>https://ricos.sitethe-people-i-have-learned-from-the-most</link>
+            <guid>https://ricos.sitethe-people-i-have-learned-from-the-most</guid>
+            <pubDate>Sun, 20 Oct 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[When I think about influential internet people in my life, I can assemble a list: a sort of "guide" through the internet, showing the route that I took. A route that links to people who heavily influenced my decision making, my thinking.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/learning-from-other-people-bookshelf/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[The Problem at the Heart of Capitalism]]></title>
+            <link>https://ricos.sitethe-problem-at-the-heart-of-capitalism</link>
+            <guid>https://ricos.sitethe-problem-at-the-heart-of-capitalism</guid>
+            <pubDate>Thu, 25 Aug 2022 05:00:00 GMT</pubDate>
+            <description><![CDATA[I think something is wrong with our world and I have not seen this thought expressed anywhere else in quite that way yet. That's why I sat down to write this blog post. It will be a deep dive, covering lots of different topics, like social media, economics, neuroanatomy.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/cuckoo/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[So many awesome things to do]]></title>
+            <link>https://ricos.sitethings-to-do</link>
+            <guid>https://ricos.sitethings-to-do</guid>
+            <pubDate>Tue, 10 Mar 2020 05:00:00 GMT</pubDate>
+            <description><![CDATA[There are so many things in this highly complex world, that humans can devote their time to, so many new things and skills to be learned, so much to discover, to do, to invent. . . It is insane.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/write-code/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[A practical intro to Vector Mathematics]]></title>
+            <link>https://ricos.sitevectors-101</link>
+            <guid>https://ricos.sitevectors-101</guid>
+            <pubDate>Thu, 20 Oct 2022 05:00:00 GMT</pubDate>
+            <description><![CDATA[This post is an exploration of many different and important vector concepts. After reading it you should walk away with an understanding of how and why these operations work and where they could be useful. Points can be modeled with vectors.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/vector-demo/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Why do I like traveling?]]></title>
+            <link>https://ricos.sitewhy-do-i-like-traveling</link>
+            <guid>https://ricos.sitewhy-do-i-like-traveling</guid>
+            <pubDate>Tue, 23 Jun 2020 05:00:00 GMT</pubDate>
+            <description><![CDATA[Reading through the notes I wrote while I was traveling for the first time I can not help myself but wonder at the feelings surging through me. A sense of wonder fills my chest and my mind drifts away. . . Far far away into the jungles of Sri Lanka and the mountains of Nepal.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/laos-rice-field/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Writing down what I know]]></title>
+            <link>https://ricos.sitewriting-down-what-i-know</link>
+            <guid>https://ricos.sitewriting-down-what-i-know</guid>
+            <pubDate>Tue, 16 Mar 2021 05:00:00 GMT</pubDate>
+            <description><![CDATA[Something that I am playing with as an idea, is to write down all of the things I know and the knowledge I accumulate in the form of blog posts. The idea behind this is to present a synthesis of what I am learning intermingled with thoughts of my own, that come up while learning.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/blog/writing-down-what-i-know/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Sketchplanations, AI and Armageddon]]></title>
+            <link>https://ricos.site1</link>
+            <guid>https://ricos.site1</guid>
+            <pubDate>Sun, 23 Oct 2022 05:00:00 GMT</pubDate>
+            <description><![CDATA[This is my first newsletter, *ever*. The idea of this newsletter is to send 1 photo, 1 book note, 1 post, 1 status update, 1 song and some links to awesome places on the internet. I hope you enjoy this first edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/1/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Zeroth Principle Thinking, Simulators, and Joscha Bach]]></title>
+            <link>https://ricos.site10</link>
+            <guid>https://ricos.site10</guid>
+            <pubDate>Sun, 26 Feb 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with essays on how to shape the future, my favorite talk from Joscha Bach, and an article describing what makes ChatGPT different from an AI security perspective. Enjoy.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/castle-floating-in-space/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Blurry JPGs, the Meaning Crisis, and Spectrograms]]></title>
+            <link>https://ricos.site11</link>
+            <guid>https://ricos.site11</guid>
+            <pubDate>Sun, 12 Mar 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a bit of wisdom from Epicurus, an interesting essay about ChatGPT, a virtual tour of an MIT lab, and a video series about the meaning crisis and how to escape from it. Enjoy.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/modern-architecture-glass-windows-sunset/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[AI video animation, Sidney and Why Coding Won't Exist Anymore]]></title>
+            <link>https://ricos.site12</link>
+            <guid>https://ricos.site12</guid>
+            <pubDate>Sun, 26 Mar 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with articles on how AI is making programmers obsolete, how it can help in creating animated video content, and even make people fall in love with it. All the content from this week has one thing in common: It sent shivers down my spine because it confronted me with the amount of progress that has been made in the last few years. I hope to pass this feeling on to you as well. Enjoy.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/desert-dunes-in-a-sandstorm/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Computational Languages, GPT-4 and Midjourney v5]]></title>
+            <link>https://ricos.site13</link>
+            <guid>https://ricos.site13</guid>
+            <pubDate>Sun, 09 Apr 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a moving speech by John Gardner, HustleGPT – one of the most exciting use cases of GPT-4 I've seen so far and some Life Hacks by Alexey Guzey. Enjoy.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/cyberpunk-spaceship-art-in-the-style-of-van-gogh/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[GPT-plugins, signs of AGI, and an Open Letter]]></title>
+            <link>https://ricos.site14</link>
+            <guid>https://ricos.site14</guid>
+            <pubDate>Sun, 23 Apr 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. With AI development picking up speed, it feels like new things are happening every day. I sometimes think that writing this newsletter only once every two weeks is not enough to catch up with all the awesome stuff that is happening. This edition will focus on AGI and the discussion that has ensued after ChatGPT Plugins and GPT-4 have been shown to the public.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/a-photo-of-a-young-man-coding-at-a-desk-floating-in-space/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Planning for AGI, Code that Fixes Itself and SAM]]></title>
+            <link>https://ricos.site15</link>
+            <guid>https://ricos.site15</guid>
+            <pubDate>Sun, 07 May 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a system named Wolverine that enables code to fix itself, an article describing the implications of a new paradigm called Software 3.0, and OpenAIs take on how they work towards creating AGI, while making sure that it's beneficial for as many people as possible.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/portal-grown-out-of-trees-to-another-dimension-mist/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Software², Superabundant Intelligence, and MiniGPT]]></title>
+            <link>https://ricos.site16</link>
+            <guid>https://ricos.site16</guid>
+            <pubDate>Sun, 21 May 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with an open source alternative to ChatGPT, an article about a paradigm that might lead closer to the realization of AGI, and a list of crazy things that people build on top of tools like AutoGPT and BabyAGI.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/photo-of-a-person-in-a-hazmat-suit-standing-in-a-cave-with-glowing-mushrooms/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[100k Token Contexts, AI Tutors and Google/IO]]></title>
+            <link>https://ricos.site17</link>
+            <guid>https://ricos.site17</guid>
+            <pubDate>Sun, 04 Jun 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time it's one of those editions, where the amount of things that have happened recently is simply incomprehensible.  I cut out so much that I would have liked to include in this edition… And still, this one grew beyond the 4-5 links that I try to set myself as a soft limit.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/majestic-waterfall-cascading-into-a-clear-turquoise-pond/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Mind Reading, Senatorial Hearings and AI Image Editing]]></title>
+            <link>https://ricos.site18</link>
+            <guid>https://ricos.site18</guid>
+            <pubDate>Sun, 18 Jun 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. I already reached the 100+ tabs bookmarked again this week. The speed of things developing is nuts, and I have no idea how to put this into words anymore. I sometimes would like to drop everything else I do and just pursue learning about these developments full-time. And even then it would feel hard to keep up to date. But that's why I write this newsletter…]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/ai/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Nvidia Keynote, MusicLM, and Apple's Vision Pro]]></title>
+            <link>https://ricos.site19</link>
+            <guid>https://ricos.site19</guid>
+            <pubDate>Sun, 02 Jul 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with some mindblowing product demos of Nvidia and Apple, more multi-modal models, and an AI that can learn how to play Minecraft on its own. ]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/a-design-for-a-novel-airplane/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Clippy, Resetting the Loop and Complexity]]></title>
+            <link>https://ricos.site2</link>
+            <guid>https://ricos.site2</guid>
+            <pubDate>Sun, 06 Nov 2022 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to the Awesomeness from the last 2 weeks, bundled together in a newsletter! This time with learnings from building the Fractal Garden website, an explanation of the Krebs Cycle and some Midjourney Generations. As always I hope you enjoy this edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/2/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Joi, ChemCrow and the Economic Potential of Generative AI]]></title>
+            <link>https://ricos.site20</link>
+            <guid>https://ricos.site20</guid>
+            <pubDate>Sun, 16 Jul 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a chatbot that can send erotic voice messages, an LLM that can synthesize chemical compounds, and an assessment of the economic potential of Generative AI. Enjoy.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/a-close-up-of-an-old-wizard-in-a-bar/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[The AI Dilemma, RoboCat and How to do Great Work]]></title>
+            <link>https://ricos.site21</link>
+            <guid>https://ricos.site21</guid>
+            <pubDate>Sun, 30 Jul 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a video explaining how harmful generative AI is going to be, a better way for AI to learn real-world tasks and an excellent article by Paul Graham. Enjoy.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/nanotechnology/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Room Temperature Superconductors, Llama2 and Single Photon Cameras]]></title>
+            <link>https://ricos.site22</link>
+            <guid>https://ricos.site22</guid>
+            <pubDate>Sun, 13 Aug 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time it's a bit different because I've read less AI-related news than usual and instead found some interesting things related to biology and physics I wanted to share. As always, I hope you enjoy.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/cells-as-the-architects-of-life/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Brain2Music, Biosecurity Risks, and FlyWire: A Connectome of a Fruit Fly Brain]]></title>
+            <link>https://ricos.site23</link>
+            <guid>https://ricos.site23</guid>
+            <pubDate>Sun, 27 Aug 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a paper decoding neural stimuli into music, some resources that dive into the risks that AI and other recent advances will bring to the world of biosecurity, a complete connectome of a fruit fly brain, and more. As always, I hope you enjoy this edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/a-photon/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Fury AI Drones, ASML manufacturing, and Seamless Translation]]></title>
+            <link>https://ricos.site24</link>
+            <guid>https://ricos.site24</guid>
+            <pubDate>Sun, 10 Sep 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a deep dive on how ASML has innovated in the chip market, a paper showing that LK-99 is not a superconductor after all,  Metas seamless translation model, and much more.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/a-century/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[DALL·E 3, AlphaMissense and Improvements to Google Bard]]></title>
+            <link>https://ricos.site25</link>
+            <guid>https://ricos.site25</guid>
+            <pubDate>Sun, 24 Sep 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. Lots of amazing stuff has been announced in the last two weeks: Better features for Google Bard, supreme music generation capabilities from Stability AI, and some serious improvements to image generation with DALL·E 3. As always I hope you enjoy this edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/a-young-man-getting-lost-listening-to-music-colorful-swirls-smile-universe/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Metaverse Interviews, GPT Improvements and Meta Connect]]></title>
+            <link>https://ricos.site26</link>
+            <guid>https://ricos.site26</guid>
+            <pubDate>Sun, 08 Oct 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a lot of updates from Meta about the awesome things they have been building, some mindblowing announcements for ChatGPT, and an amazing podcast interview from my favorite, Lex Fridman. As always I hope you enjoy this edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/humanity-entering-the-metaverse/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Adobe Max, The Techno Optimist Manifesto and Nvidia's Eureka]]></title>
+            <link>https://ricos.site27</link>
+            <guid>https://ricos.site27</guid>
+            <pubDate>Sun, 22 Oct 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This one is absolutely packed because a lot has happened in the last 2 weeks. Adobe had its Max Conference, Nvidia is successfully training Robots within a simulation, and the biggest brain cell-type catalog has been released. And this is not even all… As always, I hope you enjoy this Edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/a-solar-punk-skyline/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Talking Robots, Futurehouse and the Role of Computation & AI in Biotech]]></title>
+            <link>https://ricos.site28</link>
+            <guid>https://ricos.site28</guid>
+            <pubDate>Sun, 05 Nov 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a company trying to build semi-autonomous AI researchers, a TED talk by Stephen Wolfram on Computation, AI, and the nature of the Universe, a talking robot tour guide by Boston Dynamics, a dataset designed to help algorithms learn emotional intelligence, and more. As always I hope you enjoy this edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/a-plant-based-computer/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[OpenAI Dev Day, Github Universe and Sam Altman leaving OpenAI]]></title>
+            <link>https://ricos.site29</link>
+            <guid>https://ricos.site29</guid>
+            <pubDate>Sun, 19 Nov 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. The last weeks were an absolute bonanza in terms of things that happened in the world of AI. The Presidential Executive Order, OpenAIs Dev Day, the GitHub Universe conference, the SnapDragon Summit, an AI automatically creating valid legal contracts, Runways Gen-2 update, Lumas text to 3D model, xAi releasing Grok, and OpenAI firing Sam Altman.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/rapid-technological-progress/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Creativity, AlphaTensor and Motivation]]></title>
+            <link>https://ricos.site3</link>
+            <guid>https://ricos.site3</guid>
+            <pubDate>Sun, 20 Nov 2022 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to the Awesomeness from the last 2 weeks, bundled together in a newsletter! This time with booknotes on Creativity Inc. by Ed Cadmull, the AlphaTensor paper by Deepmind, and an article about motivation and why we shouldn't rely on it. As always I hope you enjoy this edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/3/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[AI Video Generation, ChipNeMo, and Real-Time Image Generation]]></title>
+            <link>https://ricos.site30</link>
+            <guid>https://ricos.site30</guid>
+            <pubDate>Sun, 03 Dec 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with several updates on AI Video Generation, a piece on how companies should think about AI adoption, Real-Time Image Generation by StabilityAI, and a summary of the ousting of Sam Altman from OpenAI, and much more… I hope you enjoy.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/a-robot-gardening-a-beautiful-flower-garden/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[GNoME, Quantum Computing, and Google's Gemini]]></title>
+            <link>https://ricos.site31</link>
+            <guid>https://ricos.site31</guid>
+            <pubDate>Sun, 17 Dec 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. Again, the last two weeks have been exploding in terms of announcements and awesome things that I have found. This edition is a wild mix: Robotic arms mimicking those of octopods, an essay about what it means to be human in the age of AI, crazy progress towards automated AI scientists, the interviews of the New York Book Deal Summit, the Gemini announcement and more...]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/a-robotic-arm/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[FunSearch, DeWave, and Music FX]]></title>
+            <link>https://ricos.site32</link>
+            <guid>https://ricos.site32</guid>
+            <pubDate>Sun, 31 Dec 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a new approach to add mathematical reasoning to LLMs, a way of reading people's brain waves with only EEG data, and announcements of multiple models to generate audio and 3D content. As always I hope you enjoy.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/a-photorealist-render-of-a-person-with-a-brain-reading-machine/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Robotics, Rabbit R1, and the Beginning of the Post-Truth Era]]></title>
+            <link>https://ricos.site33</link>
+            <guid>https://ricos.site33</guid>
+            <pubDate>Sun, 14 Jan 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with crazy breakthroughs in the field of robotics, another LK-99-related possible superconductor, and people warning about the beginnings of the post-truth era, where deepfakes generated by AI are so easy to create it's not even funny anymore.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/an-ai-powered-rabbit/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Alpha Geometry, Morpheus 1 and AI Dubs]]></title>
+            <link>https://ricos.site34</link>
+            <guid>https://ricos.site34</guid>
+            <pubDate>Sun, 28 Jan 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time Google has announced that their AI can solve mathematical olympiad problems, Prophetic AI is trying to induce lucid dreaming states with AI, and Javier Milei's speech went wild on the internet, with an AI dubbed version being even better. As always I hope that you enjoy this edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/a-surreal-scene-of-an-ai-dreaming-of-various-symbols-and-images/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Robust Robotics, 3D Manipulation, and the Rise of Spatial Computing]]></title>
+            <link>https://ricos.site35</link>
+            <guid>https://ricos.site35</guid>
+            <pubDate>Sun, 11 Feb 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with reviews of the Apple Vision Pro, Diffusion Models that you can run on your phone, four-legged robots that can automatically avoid obstacles, and more advanced 3D content manipulation tools. As always I hope you enjoy this edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/virtual-reality-clothes/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Open AI's Sora, AI Sound Effects, and Gemini 1.5]]></title>
+            <link>https://ricos.site36</link>
+            <guid>https://ricos.site36</guid>
+            <pubDate>Sun, 25 Feb 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with OpenAI and Elevenlabs changing the world of movie creation, how Google is opening access to some of their LLM models, and their Gemini 1.5 announcement. As always, I hope you enjoy this edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/robot-filming-a-movie/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Google's Genie, LLMs at home, and OS-Copilot]]></title>
+            <link>https://ricos.site37</link>
+            <guid>https://ricos.site37</guid>
+            <pubDate>Sun, 10 Mar 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with foundation models that can generate 2D video games, better humanoid robots, and a chatbot that does the work of 700 call center agents. Plus, a new article by NotBoring and a new framework for LLMs that can interact with and control the operating system of a computer.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/a-technological-genie/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Nvidia GTC, Devin, and Neuralink]]></title>
+            <link>https://ricos.site38</link>
+            <guid>https://ricos.site38</guid>
+            <pubDate>Sun, 24 Mar 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with Nvidia's GTC keynote, an AI-powered software engineer called Devin, and insane Neuralink updates. Plus, a new generalist AI agent by DeepMind and a new video editing AI by Meta. It's been an insane two weeks in the world of technology again and this edition is packed with awesomeness.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/neural-network-buzzing-with-activity/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Stable Audio 2, Terraform Industries and Bigger Chips]]></title>
+            <link>https://ricos.site39</link>
+            <guid>https://ricos.site39</guid>
+            <pubDate>Sun, 07 Apr 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with updates on the release of Stable Audio 2, documentaries on Terraform Industries, more Neuralink Patient 1 updates, and more. As always I hope you enjoy!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/ai-generating-music-soundwaves-flowing-from-the-hardware/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Collision Detection, Synthetic Biology and AI]]></title>
+            <link>https://ricos.site4</link>
+            <guid>https://ricos.site4</guid>
+            <pubDate>Sun, 04 Dec 2022 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to awesome stuff, from the last 2 weeks, bundled together in a newsletter. This time with booknotes on Indistractable by Nir Eyal, the Michael Levin podcast with Lex Fridman and AI for the next era, an article by Sam Altman!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/4/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Starbase Update, Llama 3 and Faster Data Transfers]]></title>
+            <link>https://ricos.site40</link>
+            <guid>https://ricos.site40</guid>
+            <pubDate>Sun, 21 Apr 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with the release of Llama 3, a new way to transfer data over fiber optic cables, Coding Adventures into text rendering, and a Starbase update by SpaceX. As always I hope you enjoy!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/robot-lama-in-the-andes/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Astribot, Simulon, and Reversible Computation]]></title>
+            <link>https://ricos.site41</link>
+            <guid>https://ricos.site41</guid>
+            <pubDate>Sun, 05 May 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a stationary humanoid-like robot, a deep dive into why nothing can grow on Mars, and a startup that is using AI and a custom drilling rig to find valuable mining sites. As always, I hope you enjoy this Edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/chip-reversible-computing/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Google IO, GPT4-o and AlphaFold 3]]></title>
+            <link>https://ricos.site42</link>
+            <guid>https://ricos.site42</guid>
+            <pubDate>Sun, 19 May 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with the GPT4-o announcement from OpenAI, everything that happened at Google I/O, and the release of the AlphaFold 3 model. As always, I hope you enjoy this Edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/protein-shape/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Microsoft Build, AWS Summit and the Mind of LLMs]]></title>
+            <link>https://ricos.site43</link>
+            <guid>https://ricos.site43</guid>
+            <pubDate>Sun, 02 Jun 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with the Microsoft Build Keynote, updates from the AWS Summit, and an Anthropic paper on investigating the internal workings of their Claude Sonnet LLM. As always, I hope you enjoy this Edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/probing-a-computer/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[More Video Models, WWDC and Computex]]></title>
+            <link>https://ricos.site44</link>
+            <guid>https://ricos.site44</guid>
+            <pubDate>Sun, 16 Jun 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with the WWDC keynote, more video models competing with OpenAIs Sora, the Nvidia keynote at Computex, a SpaceX launch, as well as an article by Casey Handmer on the solar industrial revolution. As always, I hope you enjoy this edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/the-solor-industrial-revolution/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[SSI Inc, Situational Awareness, and Runway Gen3]]></title>
+            <link>https://ricos.site45</link>
+            <guid>https://ricos.site45</guid>
+            <pubDate>Sun, 30 Jun 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with the announcement of Safe Superintelligence INC by Ilya Sutskever, an essay series on how AGI is going to happen soon, and what that means for the world, as well as the release of the Gen3 video generation model by RunwayML. As always, I hope you enjoy this Edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/secret-agents-working-on-agi/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Text to 3D, Robot TeleVision, and Neuralink Livestream]]></title>
+            <link>https://ricos.site46</link>
+            <guid>https://ricos.site46</guid>
+            <pubDate>Sun, 14 Jul 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with the release of a text to 3D generation model by Meta, a paper by MIT on how to train robots using the Apple Vision Pro, and the latest Neuralink Update. As always, I hope you enjoy this Edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/synthetic-consciousness/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Llama 3.1, Interactive Avatars and Mathematical AI]]></title>
+            <link>https://ricos.site47</link>
+            <guid>https://ricos.site47</guid>
+            <pubDate>Sun, 28 Jul 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with the release of the Llama 3.1 model by Meta, the announcement of HeyGen Interactive Avatars, and an AI achieving the equivalent of a Silver Medal at the International Math Olympiads. As always, I hope you enjoy this Edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/llama-robot-attacking-google-amazon-logos/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[More advanced Robotics, Neuralink Podcast and SAM 2]]></title>
+            <link>https://ricos.site48</link>
+            <guid>https://ricos.site48</guid>
+            <pubDate>Sun, 11 Aug 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a Fireside Chat at SIGGRAPH, lots of interesting stuff happening in the field of robotics, and the release of the SAM 2 model by Meta. As always, I hope you enjoy this Edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/robot-arm-playing-table-tennis/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[An AI Scientist, Meta's Sapiens, and Grok 2]]></title>
+            <link>https://ricos.site49</link>
+            <guid>https://ricos.site49</guid>
+            <pubDate>Sun, 25 Aug 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a focus on the newly released AI Scientist by Sakana AI, the release of an even better 3D generation model, and the release of Grok 2 by xAI. As always, I hope you enjoy this Edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/49/ai-researcher-at-a-screen/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Richard Feynman; Ambition and How Sound Works]]></title>
+            <link>https://ricos.site5</link>
+            <guid>https://ricos.site5</guid>
+            <pubDate>Sun, 18 Dec 2022 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with booknotes on Sam Harris's book Lying, a timelapse on how Salamanders grow and some travel photos. Enjoy.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/5/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Diffusion Models as Game Engines, 100M Context Windows and AlphaProteo]]></title>
+            <link>https://ricos.site50</link>
+            <guid>https://ricos.site50</guid>
+            <pubDate>Sun, 08 Sep 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a way for distributing training of AI models among many people and machines over the internet, a new model that can predict the binding proteins for specific target sites, and the announcement of gargantuan context windows. As always, I hope you enjoy this Edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/a-robot-ai-holding-a-book/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[OpenAI o1, Carpentopod and Diatom Art]]></title>
+            <link>https://ricos.site51</link>
+            <guid>https://ricos.site51</guid>
+            <pubDate>Sun, 22 Sep 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a focus on o1 - OpenAI's new model with advanced reasoning capabilities, a walking table project, a post on the beautiful but hidden art of diatom arrangements, and more. As always, I hope you enjoy this Edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/51/an-automated-ai-science-lab/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Meta is Winning, AlphaChip, NotebookLM, and More]]></title>
+            <link>https://ricos.site52</link>
+            <guid>https://ricos.site52</guid>
+            <pubDate>Sun, 06 Oct 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This one is absolutely packed with exciting news and announcements from Meta, Google, and OpenAI. We have crazy AR glasses, AIs designing chips, creating videos and podcasts, and a lot more. The last 2 weeks have been crazy, so let's dive in!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/52/robot-podcasters/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Fifth Starship Flight, Machines of Loving Grace and Firefly Video]]></title>
+            <link>https://ricos.site53</link>
+            <guid>https://ricos.site53</guid>
+            <pubDate>Sun, 20 Oct 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with an article by Dario Amodei on the benefits of AI, the fifth Starship flight by SpaceX, and two new video models, one by the University of Tokyo and one by Adobe. As always, I hope you enjoy this Edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/53/astronaut/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Truth Terminal, Claude Computer Use, and GitHub Universe]]></title>
+            <link>https://ricos.site54</link>
+            <guid>https://ricos.site54</guid>
+            <pubDate>Sun, 03 Nov 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. The last few weeks have been absolutely bonkers again regarding things that have happened in the AI world. New tools for music creation, AIs using computers, GitHub Copilot improvements, and more. As always I hope you enjoy this edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/54/ai-bitcoin/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Agentic Frameworks, Robots with Touch and AI Game Engines]]></title>
+            <link>https://ricos.site55</link>
+            <guid>https://ricos.site55</guid>
+            <pubDate>Sun, 17 Nov 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with booknotes on the Web of Meaning, a new agentic framework published by Microsoft, and Robots that can sense touch more similar to what humans can do. As always I hope you enjoy this edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/55/technological-oasis/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Nvidia Edify 3D, Flux Tools and Fugatto]]></title>
+            <link>https://ricos.site56</link>
+            <guid>https://ricos.site56</guid>
+            <pubDate>Sun, 01 Dec 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with booknotes for the book Innate, better AI image editing tools by Black Forest Labs, and an insanely good AI 3D generation model by Nvidia, as well as an article on the limitations of reasoning models like o1. As always I hope you enjoy this Edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/56/foundational-generative-audio-transformer-opus/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Google Is Back, OpenAIs 12 Days of Demos, and the Deal Book Summit]]></title>
+            <link>https://ricos.site57</link>
+            <guid>https://ricos.site57</guid>
+            <pubDate>Sun, 15 Dec 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. These last two weeks have been super packed with announcements. Google has released an insane amount of new things, while OpenAI is doing 12 consecutive days of demos, and the New York Times had its Deal Book Summit. As always, I hope you enjoy this Edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/57/a-ethereal-ai-robot-ghost-half-machine-half-ghost-flying-around-the-stars/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Google's Veo 2, o3 by OpenAI, and AIs Faking Alignment]]></title>
+            <link>https://ricos.site58</link>
+            <guid>https://ricos.site58</guid>
+            <pubDate>Sun, 29 Dec 2024 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time, with the announcement of o3 by OpenAI, new video and image generation model releases from Google, and research by Anthropic showing that today's AI will fake alignment even if not explicitly told to do so.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/58/flower-ai-art-glasses/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Sam Altmans Reflections, Nvidia CES Keynote and AI as a Parasitic Cancer]]></title>
+            <link>https://ricos.site59</link>
+            <guid>https://ricos.site59</guid>
+            <pubDate>Sun, 12 Jan 2025 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with an article by Sam Altman reflecting on where OpenAI is heading, the Nvidia CES Keynote by Jensen Huang, and things we (or Simon Willison in particular) have learned about LLMs in 2024. As always I hope you enjoy this edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/59/generative-ai-as-a-demon/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[ChatGPT, Neuralink, and Advice Against Procrastination]]></title>
+            <link>https://ricos.site6</link>
+            <guid>https://ricos.site6</guid>
+            <pubDate>Sun, 01 Jan 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a list of the best textbooks, an animated video of why everything will be very different in the future, and a new podcast notes section. Enjoy.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/6/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Project Stargate, Deepseek R1, and MatterGen]]></title>
+            <link>https://ricos.site60</link>
+            <guid>https://ricos.site60</guid>
+            <pubDate>Sun, 26 Jan 2025 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a fair bit of politics around AI, a system by Microsoft that can create novel materials with specific properties and constraints, and Deepseek's R1–an open-source LLM from China that rivals OpenAIs o1. As always I hope you enjoy this Edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/60/ai-creating-novel-chemical-compounds/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[New Space, Stable Point Aware 3D and Deep Research]]></title>
+            <link>https://ricos.site61</link>
+            <guid>https://ricos.site61</guid>
+            <pubDate>Sun, 09 Feb 2025 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time, with a documentary on the privatization of space exploration, a Lex Fridman interview with Semianalysis, a much faster 3D from image generation model, and OpenAI's announcement of Deep Research. As always, I hope you enjoy this Edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/61/ai-creating-heaven-and-hell/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Grok3, Quantum Chips, and Google's AI Co-Scientist]]></title>
+            <link>https://ricos.site62</link>
+            <guid>https://ricos.site62</guid>
+            <pubDate>Sun, 23 Feb 2025 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with an announcement of the new Helix AI powering Figures robots, Microsoft's Majorana—a novel quantum computing architecture, the announcement of Grok3 by xAI, and much more. As always I hope you enjoy this Edition of Live and Learn.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/62/ai-helix-scientist/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Neuron Computer, Claude 3.7 and Open AI's Orion]]></title>
+            <link>https://ricos.site63</link>
+            <guid>https://ricos.site63</guid>
+            <pubDate>Sun, 09 Mar 2025 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a computer made out of living neurons by Cortical Labs, the release of Claude 3.7 and the impressive Claude Code by Anthropic, and the arrival of Open AI's GPT 4.5 codenamed Orion. As always, I hope you enjoy this Edition of Live and Learn!]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/63/cortical-computer/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[3D in the Browser, Neurons in a Petri Dish, and the Beauty of Splines]]></title>
+            <link>https://ricos.site7</link>
+            <guid>https://ricos.site7</guid>
+            <pubDate>Sun, 15 Jan 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with a set of rules for life, work, and health, a paper on neurons living in a petri dish, a series of low-level networking tutorials, and more. Enjoy.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/7/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Computational Selves, MinDVis and AI takeoff]]></title>
+            <link>https://ricos.site8</link>
+            <guid>https://ricos.site8</guid>
+            <pubDate>Sun, 29 Jan 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with wisdom from Eric Schmidt, a story of what AI takeoff might look like, and an awesome paper on a theory of computational selves. Enjoy.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/newsletter/8/1080.webp" length="0" type="image/webp"/>
+        </item>
+        <item>
+            <title><![CDATA[Biotechnology, Democratizing AI and Spinoza]]></title>
+            <link>https://ricos.site9</link>
+            <guid>https://ricos.site9</guid>
+            <pubDate>Sun, 12 Feb 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to this edition of Live and Learn. This time with some bits and pieces on things happening at the intersection of biotech and AI, a video on Spinoza's philosophy, and an interview with Emad Mostaque, the founder of Stability AI. Enjoy.]]></description>
+            <enclosure url="https://undefined.cloudfront.net/assets/midjourney/cell-membrane-proteins/1080.webp" length="0" type="image/webp"/>
+        </item>
+    </channel>
+</rss>

@@ -18,6 +18,7 @@ import trashSound from "@sounds/trash.mp3";
 import switchSound from "@sounds/switch.mp3";
 import equipSound from "@sounds/equip.mp3";
 import errorSound from "@sounds/error-short.mp3";
+import { useThree } from "@react-three/fiber";
 
 export type ItemType = "weapon" | "armor" | "consumable" | "material" | "quest";
 export type ArmorSlot = "head" | "chest" | "legs" | "feet";
@@ -55,7 +56,6 @@ interface InventoryContextType {
 
   openInventory: () => void;
   closeInventory: () => void;
-  toggleInventory: () => void;
   addItem: (item: Item) => { amountLeft: number; amountAdded: number };
   removeItem: (index: number) => boolean;
   updateItem: (updatedItem: Item) => boolean;
@@ -110,9 +110,15 @@ export const InventoryProvider: FC<InventoryProviderProps> = ({
     })
   );
 
-  const openInventory = useCallback(() => setIsOpen(true), []);
-  const closeInventory = useCallback(() => setIsOpen(false), []);
-  const toggleInventory = useCallback(() => setIsOpen((prev) => !prev), []);
+  const openInventory = useCallback(() => {
+    setIsOpen(true);
+    document.exitPointerLock();
+  }, []);
+
+  const closeInventory = useCallback(() => {
+    setIsOpen(false);
+    // document.querySelector("canvas")?.requestPointerLock();
+  }, []);
 
   const addItem = (
     newItem: Item
@@ -488,7 +494,6 @@ export const InventoryProvider: FC<InventoryProviderProps> = ({
     maxSlots,
     openInventory,
     closeInventory,
-    toggleInventory,
     addItem,
     removeItem,
     updateItem,

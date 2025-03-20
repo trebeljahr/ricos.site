@@ -20,6 +20,7 @@ import {
   Rarity,
   SpawnerImplementation,
 } from "./ItemSpawner";
+import { useInventory } from "../InventorySystem/GameInventoryContext";
 
 type PotionData = {
   health: number;
@@ -40,6 +41,8 @@ const potionTypes = [
 ];
 
 export const RandomPotionSpawner: SpawnerImplementation = (props) => {
+  const { addItem } = useInventory();
+
   const Potion: Collectible<PotionData> = useMemo(() => {
     return pickRandomFromArray(potionTypes);
   }, []);
@@ -49,6 +52,18 @@ export const RandomPotionSpawner: SpawnerImplementation = (props) => {
   const onCollected = (data: PotionData) => {
     console.log("collected", data);
     heal(0.1);
+    addItem({
+      id: "potion",
+      name: "Potion",
+      type: "consumable",
+      icon: "/icons/potion-blue.png",
+      description: "A potion to heal you.",
+      stackable: true,
+      maxStack: 20,
+      quantity: 1,
+      value: 10,
+      weight: 0.5,
+    });
   };
 
   return (

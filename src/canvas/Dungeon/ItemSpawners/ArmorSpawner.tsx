@@ -6,7 +6,7 @@ import {
   Armor_Metal2,
 } from "@r3f/AllModels/rpg_items_pack";
 import { GroupProps } from "@react-three/fiber";
-import { useMemo } from "react";
+import { use, useMemo } from "react";
 import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
 import {
   Collectible,
@@ -14,6 +14,8 @@ import {
   Rarity,
   SpawnerImplementation,
 } from "./ItemSpawner";
+import { useInventory } from "../InventorySystem/GameInventoryContext";
+import { nanoid } from "nanoid";
 
 enum ArmorTypes {
   Leather = "Leather",
@@ -35,8 +37,24 @@ export const RandomArmorSpawner: SpawnerImplementation = (props) => {
     return pickRandomFromArray(armorTypes);
   }, []);
 
+  const { addItem } = useInventory();
+
   const onCollected = (data: any) => {
     console.log("collected", data);
+    addItem({
+      id: `armor-${data.type}-${nanoid()}`,
+      name: Armor.Component.name,
+      type: "armor",
+      icon: "/icons/chest.png",
+      description: `A ${Armor.Component.name} for your adventures.`,
+      stackable: false,
+      maxStack: 1,
+      quantity: 1,
+      value: Math.floor(Math.random() * 100) + 1,
+      weight: Math.floor(Math.random() * 5) + 1,
+      equipable: true,
+      equipSlot: "chest",
+    });
   };
   return (
     <ItemSpawner

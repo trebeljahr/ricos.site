@@ -1,18 +1,18 @@
-import * as THREE from "three";
-import React from "react";
+import { useRef, useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
+import { Color, Mesh, MeshStandardMaterial } from "three";
 
 type GLTFResult = GLTF & {
   nodes: {
-    ["Staff_04_Circle011-Mesh"]: THREE.Mesh;
-    ["Staff_04_Circle011-Mesh_1"]: THREE.Mesh;
-    ["Staff_04_Circle011-Mesh_2"]: THREE.Mesh;
+    ["Staff_04_Circle011-Mesh"]: Mesh;
+    ["Staff_04_Circle011-Mesh_1"]: Mesh;
+    ["Staff_04_Circle011-Mesh_2"]: Mesh;
   };
   materials: {
-    Dark_blue: THREE.MeshStandardMaterial;
-    Iron_staff_04: THREE.MeshStandardMaterial;
-    Cyrstal_staff_04: THREE.MeshStandardMaterial;
+    Dark_blue: MeshStandardMaterial;
+    Iron_staff_04: MeshStandardMaterial;
+    Cyrstal_staff_04: MeshStandardMaterial;
   };
 };
 

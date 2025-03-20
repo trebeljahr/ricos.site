@@ -1,6 +1,6 @@
 import type { Variants } from "motion/react";
 import * as motion from "motion/react-client";
-import { useEffect, useRef, useState } from "react";
+import { CSSProperties, RefObject, useEffect, useRef, useState } from "react";
 
 export default function Variants() {
   const [isOpen, setIsOpen] = useState(false);
@@ -140,7 +140,7 @@ const MenuToggle = ({ toggle }: { toggle: () => void }) => (
   </button>
 );
 
-const container: React.CSSProperties = {
+const container: CSSProperties = {
   position: "relative",
   display: "flex",
   justifyContent: "flex-start",
@@ -154,11 +154,11 @@ const container: React.CSSProperties = {
   overflow: "hidden",
 };
 
-const nav: React.CSSProperties = {
+const nav: CSSProperties = {
   width: 300,
 };
 
-const background: React.CSSProperties = {
+const background: CSSProperties = {
   backgroundColor: "#f5f5f5",
   position: "absolute",
   top: 0,
@@ -167,7 +167,7 @@ const background: React.CSSProperties = {
   width: 300,
 };
 
-const toggleContainer: React.CSSProperties = {
+const toggleContainer: CSSProperties = {
   outline: "none",
   border: "none",
   WebkitUserSelect: "none",
@@ -182,7 +182,7 @@ const toggleContainer: React.CSSProperties = {
   background: "transparent",
 };
 
-const list: React.CSSProperties = {
+const list: CSSProperties = {
   listStyle: "none",
   padding: 25,
   margin: 0,
@@ -191,7 +191,7 @@ const list: React.CSSProperties = {
   width: 230,
 };
 
-const listItem: React.CSSProperties = {
+const listItem: CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-start",
@@ -202,7 +202,7 @@ const listItem: React.CSSProperties = {
   cursor: "pointer",
 };
 
-const iconPlaceholder: React.CSSProperties = {
+const iconPlaceholder: CSSProperties = {
   width: 40,
   height: 40,
   borderRadius: "50%",
@@ -210,7 +210,7 @@ const iconPlaceholder: React.CSSProperties = {
   marginRight: 20,
 };
 
-const textPlaceholder: React.CSSProperties = {
+const textPlaceholder: CSSProperties = {
   borderRadius: 5,
   width: 200,
   height: 20,
@@ -225,7 +225,7 @@ const textPlaceholder: React.CSSProperties = {
 // a window or resize listener. Also use state/layoutEffect instead of ref/effect
 // if this is important to know on initial client render.
 // It would be safer to  return null for unmeasured states.
-const useDimensions = (ref: React.RefObject<HTMLDivElement | null>) => {
+const useDimensions = (ref: RefObject<HTMLDivElement | null>) => {
   const dimensions = useRef({ width: 0, height: 0 });
 
   useEffect(() => {

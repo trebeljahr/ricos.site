@@ -1,7 +1,13 @@
-import * as THREE from "three";
-import React from "react";
+import { useAnimations, useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
-import { useGLTF, useAnimations } from "@react-three/drei";
+import { useMemo, useRef } from "react";
+import {
+  AnimationClip,
+  Bone,
+  Group,
+  MeshStandardMaterial,
+  SkinnedMesh,
+} from "three";
 import { GLTF, SkeletonUtils } from "three-stdlib";
 
 type ActionName =
@@ -14,29 +20,29 @@ type ActionName =
   | "CharacterArmature|Punch"
   | "CharacterArmature|Yes";
 
-interface GLTFAction extends THREE.AnimationClip {
+interface GLTFAction extends AnimationClip {
   name: ActionName;
 }
 
 type GLTFResult = GLTF & {
   nodes: {
-    Ghost_Skull_1: THREE.SkinnedMesh;
-    Ghost_Skull_2: THREE.SkinnedMesh;
-    Root: THREE.Bone;
+    Ghost_Skull_1: SkinnedMesh;
+    Ghost_Skull_2: SkinnedMesh;
+    Root: Bone;
   };
   materials: {
-    Ghost_Main: THREE.MeshStandardMaterial;
-    Ghost_Secondary: THREE.MeshStandardMaterial;
+    Ghost_Main: MeshStandardMaterial;
+    Ghost_Secondary: MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };
 
 export function GhostSkull(props: JSX.IntrinsicElements["group"]) {
-  const group = React.useRef<THREE.Group>(null!);
+  const group = useRef<Group>(null!);
   const { scene, animations } = useGLTF(
     "/3d-assets/glb/enemies/Ghost Skull-transformed.glb"
   );
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
   return (

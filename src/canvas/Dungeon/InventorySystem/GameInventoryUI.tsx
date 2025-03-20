@@ -1,4 +1,4 @@
-import React from "react";
+import { useRef, useMemo, FC } from "react";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import {
   useInventory,
@@ -14,10 +14,7 @@ interface InventorySlotProps {
   index: number;
 }
 
-export const InventorySlot: React.FC<InventorySlotProps> = ({
-  item,
-  index,
-}) => {
+export const InventorySlot: FC<InventorySlotProps> = ({ item, index }) => {
   const { setNodeRef: setDroppableRef, isOver } = useDroppable({
     id: `slot-${index}`,
     data: { item, slotIndex: index },
@@ -74,10 +71,7 @@ interface EquipmentSlotProps {
   label: string;
 }
 
-export const EquipmentSlot: React.FC<EquipmentSlotProps> = ({
-  type,
-  label,
-}) => {
+export const EquipmentSlot: FC<EquipmentSlotProps> = ({ type, label }) => {
   const { equippedItems, unequipItem } = useInventory();
 
   const getEquippedItem = () => {
@@ -173,7 +167,7 @@ export const EquipmentSlot: React.FC<EquipmentSlotProps> = ({
   );
 };
 
-export const CharacterEquipment: React.FC = () => {
+export const CharacterEquipment: FC = () => {
   return (
     <div className="w-fit flex flex-col items-center bg-gray-900 p-4 rounded-lg border border-gray-700">
       <div className="w-48 h-fit">
@@ -190,15 +184,15 @@ export const CharacterEquipment: React.FC = () => {
   );
 };
 
-export const Inventory: React.FC = () => {
+export const Inventory: FC = () => {
   const { isOpen, closeInventory, items, maxSlots, getTotalWeight } =
     useInventory();
-
-  if (!isOpen) return null;
 
   const { setNodeRef: setDroppableRef } = useDroppable({
     id: "trashcan",
   });
+
+  if (!isOpen) return null;
 
   return (
     <div className="not-prose fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -253,7 +247,7 @@ export const Inventory: React.FC = () => {
   );
 };
 
-export const InventoryToggleButton: React.FC = () => {
+export const InventoryToggleButton: FC = () => {
   const { toggleInventory } = useInventory();
 
   return (

@@ -1,8 +1,15 @@
-import * as THREE from "three";
-import React from "react";
+import { useRef, useMemo } from "react";
 import { useGraph } from "@react-three/fiber";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { GLTF, SkeletonUtils } from "three-stdlib";
+import {
+  AnimationClip,
+  Bone,
+  Group,
+  Mesh,
+  MeshStandardMaterial,
+  SkinnedMesh,
+} from "three";
 
 type ActionName =
   | "BatArmature|Bat_Attack"
@@ -11,31 +18,31 @@ type ActionName =
   | "BatArmature|Bat_Flying"
   | "BatArmature|Bat_Hit";
 
-interface GLTFAction extends THREE.AnimationClip {
+interface GLTFAction extends AnimationClip {
   name: ActionName;
 }
 
 type GLTFResult = GLTF & {
   nodes: {
-    Eyes: THREE.Mesh;
-    Bat_1: THREE.SkinnedMesh;
-    Bat_2: THREE.SkinnedMesh;
-    Bat_3: THREE.SkinnedMesh;
-    Bat_4: THREE.SkinnedMesh;
-    Root: THREE.Bone;
+    Eyes: Mesh;
+    Bat_1: SkinnedMesh;
+    Bat_2: SkinnedMesh;
+    Bat_3: SkinnedMesh;
+    Bat_4: SkinnedMesh;
+    Root: Bone;
   };
   materials: {
-    PaletteMaterial001: THREE.MeshStandardMaterial;
+    PaletteMaterial001: MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };
 
 export function Bat(props: JSX.IntrinsicElements["group"]) {
-  const group = React.useRef<THREE.Group>(null!);
+  const group = useRef<Group>(null!);
   const { scene, animations } = useGLTF(
     "/3d-assets/glb/enemies/Bat-transformed.glb"
   );
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
   return (

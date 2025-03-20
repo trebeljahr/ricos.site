@@ -1,27 +1,27 @@
-import * as THREE from "three";
-import React from "react";
-import { useGraph } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
+import { useGraph } from "@react-three/fiber";
+import { useMemo } from "react";
+import { Bone, MeshStandardMaterial, SkinnedMesh } from "three";
 import { GLTF, SkeletonUtils } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    Cube_1: THREE.SkinnedMesh;
-    Cube_2: THREE.SkinnedMesh;
-    Cube_3: THREE.SkinnedMesh;
-    Body: THREE.Bone;
-    TAIL_1: THREE.Bone;
+    Cube_1: SkinnedMesh;
+    Cube_2: SkinnedMesh;
+    Cube_3: SkinnedMesh;
+    Body: Bone;
+    TAIL_1: Bone;
   };
   materials: {
-    ["Material.002"]: THREE.MeshStandardMaterial;
-    ["Material.001"]: THREE.MeshStandardMaterial;
-    ["Material.003"]: THREE.MeshStandardMaterial;
+    ["Material.002"]: MeshStandardMaterial;
+    ["Material.001"]: MeshStandardMaterial;
+    ["Material.003"]: MeshStandardMaterial;
   };
 };
 
 export function RobertDinosaur(props: JSX.IntrinsicElements["group"]) {
   const { scene } = useGLTF("/3d-assets/glb/enemies/Robert-transformed.glb");
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   return (
     <group {...props} dispose={null}>

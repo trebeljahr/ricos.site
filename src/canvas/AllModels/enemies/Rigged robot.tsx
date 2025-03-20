@@ -1,23 +1,23 @@
-import * as THREE from "three";
-import React from "react";
-import { useGraph } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
+import { useGraph } from "@react-three/fiber";
+import { useMemo } from "react";
+import { Bone, MeshStandardMaterial, SkinnedMesh } from "three";
 import { GLTF, SkeletonUtils } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    v3001_1: THREE.SkinnedMesh;
-    v3001_2: THREE.SkinnedMesh;
-    v3001_3: THREE.SkinnedMesh;
-    v3001_4: THREE.SkinnedMesh;
-    v3001_5: THREE.SkinnedMesh;
-    v3001_6: THREE.SkinnedMesh;
-    spine002: THREE.Bone;
+    v3001_1: SkinnedMesh;
+    v3001_2: SkinnedMesh;
+    v3001_3: SkinnedMesh;
+    v3001_4: SkinnedMesh;
+    v3001_5: SkinnedMesh;
+    v3001_6: SkinnedMesh;
+    spine002: Bone;
   };
   materials: {
-    PaletteMaterial001: THREE.MeshStandardMaterial;
-    PaletteMaterial002: THREE.MeshStandardMaterial;
-    PaletteMaterial003: THREE.MeshStandardMaterial;
+    PaletteMaterial001: MeshStandardMaterial;
+    PaletteMaterial002: MeshStandardMaterial;
+    PaletteMaterial003: MeshStandardMaterial;
   };
 };
 
@@ -25,7 +25,7 @@ export function Robot(props: JSX.IntrinsicElements["group"]) {
   const { scene } = useGLTF(
     "/3d-assets/glb/enemies/Rigged robot-transformed.glb"
   );
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   return (
     <group {...props} dispose={null}>

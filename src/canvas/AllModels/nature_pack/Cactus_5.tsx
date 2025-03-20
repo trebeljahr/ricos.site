@@ -6,7 +6,7 @@ import {
   GenericInstancedSystem,
   MeshMaterialCombos,
 } from "src/canvas/InstancedMeshSystem/GenericInstancingSystem";
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
 import { Mesh, MeshStandardMaterial, Vector3 } from "three";

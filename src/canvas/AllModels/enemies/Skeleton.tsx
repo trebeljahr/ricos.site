@@ -1,7 +1,14 @@
-import * as THREE from "three";
-import React from "react";
+import { useAnimations, useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
-import { useGLTF, useAnimations } from "@react-three/drei";
+import { useMemo, useRef } from "react";
+import {
+  AnimationClip,
+  Bone,
+  Group,
+  Mesh,
+  MeshStandardMaterial,
+  SkinnedMesh,
+} from "three";
 import { GLTF, SkeletonUtils } from "three-stdlib";
 
 type ActionName =
@@ -21,28 +28,28 @@ type ActionName =
   | "CharacterArmature|CharacterArmature|CharacterArmature|Wave|CharacterArmature|Wave"
   | "CharacterArmature|CharacterArmature|CharacterArmature|Yes|CharacterArmature|Yes";
 
-interface GLTFAction extends THREE.AnimationClip {
+interface GLTFAction extends AnimationClip {
   name: ActionName;
 }
 
 type GLTFResult = GLTF & {
   nodes: {
-    Weapon_Dagger: THREE.Mesh;
-    Skeleton: THREE.SkinnedMesh;
-    Root: THREE.Bone;
+    Weapon_Dagger: Mesh;
+    Skeleton: SkinnedMesh;
+    Root: Bone;
   };
   materials: {
-    AtlasMaterial: THREE.MeshStandardMaterial;
+    AtlasMaterial: MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };
 
 export function Skeleton(props: JSX.IntrinsicElements["group"]) {
-  const group = React.useRef<THREE.Group>(null!);
+  const group = useRef<Group>(null!);
   const { scene, animations } = useGLTF(
     "/3d-assets/glb/enemies/Skeleton-transformed.glb"
   );
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
   return (

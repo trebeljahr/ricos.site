@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://ricos.site
+
+# Sitemaps
+Sitemap: https://ricos.site/sitemap.xml

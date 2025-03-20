@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://ricos.site</id>
+    <title>ricos.site | RSS Feed</title>
+    <updated>2025-03-16T21:52:58.346Z</updated>
+    <generator>awesome</generator>
+    <author>
+        <name>Rico Trebeljahr</name>
+        <uri>https://ricos.site</uri>
+    </author>
+    <link rel="alternate" href="https://ricos.site"/>
+    <link rel="self" href="https://ricos.site/atom.xml"/>
+    <subtitle>Welcome to my posts and newsletters! Glad to have you here!</subtitle>
+    <icon>https://ricos.site/favicon/favicon.ico</icon>
+    <rights>All rights reserved 2025, Rico Trebeljahr</rights>
+    <entry>
+        <title type="html"><![CDATA[The Answer to AI's 600 Billion Dollar Question]]></title>
+        <id>https://ricos.siteanswer-to-ai-600b-question</id>
+        <link href="https://ricos.siteanswer-to-ai-600b-question"/>
+        <updated>2024-10-28T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[The talks about AI have intensified greatly in the last few years since ChatGPT was first launched and since then generative AI tools like Midjourney, Udio, and Runway have taken the world by storm.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Betting Heavy when convinced]]></title>
+        <id>https://ricos.sitebetting-heavy-when-convinced</id>
+        <link href="https://ricos.sitebetting-heavy-when-convinced"/>
+        <updated>2021-09-02T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[This article is a consortium of things that I think about how or why to invest money. My opinion on investing is fundamentally split, between thinking of it as a waste of time and a necessary evil, and this post is going to explore investment advice in both directions.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Collision Detection in 2D]]></title>
+        <id>https://ricos.sitecollision-detection</id>
+        <link href="https://ricos.sitecollision-detection"/>
+        <updated>2022-11-06T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[If you have ever played any video game in your life, you used algorithms that solve the hard problem of collision detection, without even knowing about it. The solutions are often ingenious and answer the question of "what do we need all this math for" beautifully.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Computer Games]]></title>
+        <id>https://ricos.sitecomputer-games</id>
+        <link href="https://ricos.sitecomputer-games"/>
+        <updated>2020-03-17T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Are computer games a valuable way to spend my time? At some level I feel they are, but why do I get a bad feeling when playing too much? Why don't I get such feelings when traveling or listening to music or playing the piano.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[How to Create an Interactive Shader Editor]]></title>
+        <id>https://ricos.sitecreate-shader-editor-r3f</id>
+        <link href="https://ricos.sitecreate-shader-editor-r3f"/>
+        <updated>2025-02-11T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[In this tutorial, we will create a fragment shader editor, similar to ShaderToy with React Three Fiber. We will use the awesome codemirror package and a few other neat tools to help make our lives easier. Along the way.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Decisions]]></title>
+        <id>https://ricos.sitedecisions</id>
+        <link href="https://ricos.sitedecisions"/>
+        <updated>2021-09-03T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Decisions are the most important thing in life. And yet there is a fundamental problem with decisions. . . You don't make them. . . If you had to sum up your life in the most concise way possible, it would all be about the decisions that you have made. And yet.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Diatom Arrangements]]></title>
+        <id>https://ricos.sitediatoms</id>
+        <link href="https://ricos.sitediatoms"/>
+        <updated>2024-09-18T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[This post is a bit of an odd one: it's a collection of images of diatom arrangements. Diatoms are single-celled algae that have a glass shell. This shell refracts light in beautiful colors if viewed under a microscope.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[A sense of Flow]]></title>
+        <id>https://ricos.siteflow</id>
+        <link href="https://ricos.siteflow"/>
+        <updated>2020-03-20T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[An idea that shapes my view of the world is the experience of flow. Flow is losing yourself in an activity. It's about doing something that is just on the edge of your abilities. Something that pushes you. Not too little, not too much.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Fractal Garden Learnings – Part 1]]></title>
+        <id>https://ricos.sitefractal-learnings-1</id>
+        <link href="https://ricos.sitefractal-learnings-1"/>
+        <updated>2022-10-05T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[I finished my first 1-month project. During the process I learned a lot about how I approach work and this post is a reflection and documentation on the process. This is part 1 of a series of posts on building the Fractal Garden webpage.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Fractal Garden Learnings – Part 2]]></title>
+        <id>https://ricos.sitefractal-learnings-2</id>
+        <link href="https://ricos.sitefractal-learnings-2"/>
+        <updated>2022-10-06T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[This is part 2 of a series of posts on building the Fractal Garden, my first 1 month project. In this post I will dive into the technical learnings and decisions that went into making the Fractal Garden website.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Fundamental Problems]]></title>
+        <id>https://ricos.sitefundamental-problems</id>
+        <link href="https://ricos.sitefundamental-problems"/>
+        <updated>2020-03-16T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[When I think about life there are many problems I have, problems that I need to solve, if I want to live a fulfilled and good life. And I think that many people share these problems because they are fundamental problems.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Morning Meditation]]></title>
+        <id>https://ricos.sitemorning-meditation</id>
+        <link href="https://ricos.sitemorning-meditation"/>
+        <updated>2022-09-18T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[It's September now in Berlin, and it starts to get cold. The fields are still green and damp from the cold night. But the sun has retained its energy from the summer. When it comes out it evaporates the dew over the fields and meadows. Clouds are moving over the sky.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[My Productivity Systems]]></title>
+        <id>https://ricos.sitemy-productivity-system</id>
+        <link href="https://ricos.sitemy-productivity-system"/>
+        <updated>2024-10-29T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[People often ask me how I can do so many different things, and be so *productive*. . . some even tell me that I am very disciplined. But yet, when I think about myself I don't consider myself to be very disciplined at all. My willpower to resist things is often zero.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[The beauty of being alive.]]></title>
+        <id>https://ricos.siteon-the-beauty-of-living</id>
+        <link href="https://ricos.siteon-the-beauty-of-living"/>
+        <updated>2021-02-16T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[I am sitting alone in my room. It is dark outside and my speakers play some soft and mellow music. FKJ, beautiful piano, with some techno mixed into it. The video is from one of my favorite performances.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Open AI's Codex]]></title>
+        <id>https://ricos.siteopen-ai-codex</id>
+        <link href="https://ricos.siteopen-ai-codex"/>
+        <updated>2021-10-06T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[A few days ago I watched the OpenAI Codex demo and I am still thinking about what to do because it means that I will lose my job as a software engineer pretty soon. This post explores what I could do to prolong this period for some time. OpenAIs codex is a computer program.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Improvement as the Purpose of Life]]></title>
+        <id>https://ricos.sitepurpose</id>
+        <link href="https://ricos.sitepurpose"/>
+        <updated>2020-04-10T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[What is life? Life is the continuation and spreading of complex patterns of information throughout time and space. Life is the process that turns matter into more of itself. But what does that have to do with improvement.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[A Sense of Progress]]></title>
+        <id>https://ricos.sitesense-of-progress</id>
+        <link href="https://ricos.sitesense-of-progress"/>
+        <updated>2020-03-05T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Most people think of progress as a good thing. We want to be better than we were before, we want to push our limits, and we want to invent, create and thrive. We have a sense of progress, and that sense makes us feel good. But why.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[The Best Yellow]]></title>
+        <id>https://ricos.sitethe-best-yellow</id>
+        <link href="https://ricos.sitethe-best-yellow"/>
+        <updated>2024-10-06T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[I want to get back into painting but the one thing that always bothered me with my old acrylic paints is that they never really covered each other well. So I set out to test which is the best yellow I can find on Amazon.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[The People I have Learned from the Most]]></title>
+        <id>https://ricos.sitethe-people-i-have-learned-from-the-most</id>
+        <link href="https://ricos.sitethe-people-i-have-learned-from-the-most"/>
+        <updated>2024-10-20T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[When I think about influential internet people in my life, I can assemble a list: a sort of "guide" through the internet, showing the route that I took. A route that links to people who heavily influenced my decision making, my thinking.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[The Problem at the Heart of Capitalism]]></title>
+        <id>https://ricos.sitethe-problem-at-the-heart-of-capitalism</id>
+        <link href="https://ricos.sitethe-problem-at-the-heart-of-capitalism"/>
+        <updated>2022-08-25T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[I think something is wrong with our world and I have not seen this thought expressed anywhere else in quite that way yet. That's why I sat down to write this blog post. It will be a deep dive, covering lots of different topics, like social media, economics, neuroanatomy.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[So many awesome things to do]]></title>
+        <id>https://ricos.sitethings-to-do</id>
+        <link href="https://ricos.sitethings-to-do"/>
+        <updated>2020-03-10T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[There are so many things in this highly complex world, that humans can devote their time to, so many new things and skills to be learned, so much to discover, to do, to invent. . . It is insane.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[A practical intro to Vector Mathematics]]></title>
+        <id>https://ricos.sitevectors-101</id>
+        <link href="https://ricos.sitevectors-101"/>
+        <updated>2022-10-20T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[This post is an exploration of many different and important vector concepts. After reading it you should walk away with an understanding of how and why these operations work and where they could be useful. Points can be modeled with vectors.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Why do I like traveling?]]></title>
+        <id>https://ricos.sitewhy-do-i-like-traveling</id>
+        <link href="https://ricos.sitewhy-do-i-like-traveling"/>
+        <updated>2020-06-23T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Reading through the notes I wrote while I was traveling for the first time I can not help myself but wonder at the feelings surging through me. A sense of wonder fills my chest and my mind drifts away. . . Far far away into the jungles of Sri Lanka and the mountains of Nepal.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Writing down what I know]]></title>
+        <id>https://ricos.sitewriting-down-what-i-know</id>
+        <link href="https://ricos.sitewriting-down-what-i-know"/>
+        <updated>2021-03-16T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Something that I am playing with as an idea, is to write down all of the things I know and the knowledge I accumulate in the form of blog posts. The idea behind this is to present a synthesis of what I am learning intermingled with thoughts of my own, that come up while learning.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Sketchplanations, AI and Armageddon]]></title>
+        <id>https://ricos.site1</id>
+        <link href="https://ricos.site1"/>
+        <updated>2022-10-23T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[This is my first newsletter, *ever*. The idea of this newsletter is to send 1 photo, 1 book note, 1 post, 1 status update, 1 song and some links to awesome places on the internet. I hope you enjoy this first edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Zeroth Principle Thinking, Simulators, and Joscha Bach]]></title>
+        <id>https://ricos.site10</id>
+        <link href="https://ricos.site10"/>
+        <updated>2023-02-26T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with essays on how to shape the future, my favorite talk from Joscha Bach, and an article describing what makes ChatGPT different from an AI security perspective. Enjoy.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Blurry JPGs, the Meaning Crisis, and Spectrograms]]></title>
+        <id>https://ricos.site11</id>
+        <link href="https://ricos.site11"/>
+        <updated>2023-03-12T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a bit of wisdom from Epicurus, an interesting essay about ChatGPT, a virtual tour of an MIT lab, and a video series about the meaning crisis and how to escape from it. Enjoy.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[AI video animation, Sidney and Why Coding Won't Exist Anymore]]></title>
+        <id>https://ricos.site12</id>
+        <link href="https://ricos.site12"/>
+        <updated>2023-03-26T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with articles on how AI is making programmers obsolete, how it can help in creating animated video content, and even make people fall in love with it. All the content from this week has one thing in common: It sent shivers down my spine because it confronted me with the amount of progress that has been made in the last few years. I hope to pass this feeling on to you as well. Enjoy.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Computational Languages, GPT-4 and Midjourney v5]]></title>
+        <id>https://ricos.site13</id>
+        <link href="https://ricos.site13"/>
+        <updated>2023-04-09T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a moving speech by John Gardner, HustleGPT – one of the most exciting use cases of GPT-4 I've seen so far and some Life Hacks by Alexey Guzey. Enjoy.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[GPT-plugins, signs of AGI, and an Open Letter]]></title>
+        <id>https://ricos.site14</id>
+        <link href="https://ricos.site14"/>
+        <updated>2023-04-23T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. With AI development picking up speed, it feels like new things are happening every day. I sometimes think that writing this newsletter only once every two weeks is not enough to catch up with all the awesome stuff that is happening. This edition will focus on AGI and the discussion that has ensued after ChatGPT Plugins and GPT-4 have been shown to the public.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Planning for AGI, Code that Fixes Itself and SAM]]></title>
+        <id>https://ricos.site15</id>
+        <link href="https://ricos.site15"/>
+        <updated>2023-05-07T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a system named Wolverine that enables code to fix itself, an article describing the implications of a new paradigm called Software 3.0, and OpenAIs take on how they work towards creating AGI, while making sure that it's beneficial for as many people as possible.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Software², Superabundant Intelligence, and MiniGPT]]></title>
+        <id>https://ricos.site16</id>
+        <link href="https://ricos.site16"/>
+        <updated>2023-05-21T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with an open source alternative to ChatGPT, an article about a paradigm that might lead closer to the realization of AGI, and a list of crazy things that people build on top of tools like AutoGPT and BabyAGI.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[100k Token Contexts, AI Tutors and Google/IO]]></title>
+        <id>https://ricos.site17</id>
+        <link href="https://ricos.site17"/>
+        <updated>2023-06-04T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time it's one of those editions, where the amount of things that have happened recently is simply incomprehensible.  I cut out so much that I would have liked to include in this edition… And still, this one grew beyond the 4-5 links that I try to set myself as a soft limit.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Mind Reading, Senatorial Hearings and AI Image Editing]]></title>
+        <id>https://ricos.site18</id>
+        <link href="https://ricos.site18"/>
+        <updated>2023-06-18T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. I already reached the 100+ tabs bookmarked again this week. The speed of things developing is nuts, and I have no idea how to put this into words anymore. I sometimes would like to drop everything else I do and just pursue learning about these developments full-time. And even then it would feel hard to keep up to date. But that's why I write this newsletter…]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Nvidia Keynote, MusicLM, and Apple's Vision Pro]]></title>
+        <id>https://ricos.site19</id>
+        <link href="https://ricos.site19"/>
+        <updated>2023-07-02T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with some mindblowing product demos of Nvidia and Apple, more multi-modal models, and an AI that can learn how to play Minecraft on its own. ]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Clippy, Resetting the Loop and Complexity]]></title>
+        <id>https://ricos.site2</id>
+        <link href="https://ricos.site2"/>
+        <updated>2022-11-06T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to the Awesomeness from the last 2 weeks, bundled together in a newsletter! This time with learnings from building the Fractal Garden website, an explanation of the Krebs Cycle and some Midjourney Generations. As always I hope you enjoy this edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Joi, ChemCrow and the Economic Potential of Generative AI]]></title>
+        <id>https://ricos.site20</id>
+        <link href="https://ricos.site20"/>
+        <updated>2023-07-16T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a chatbot that can send erotic voice messages, an LLM that can synthesize chemical compounds, and an assessment of the economic potential of Generative AI. Enjoy.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[The AI Dilemma, RoboCat and How to do Great Work]]></title>
+        <id>https://ricos.site21</id>
+        <link href="https://ricos.site21"/>
+        <updated>2023-07-30T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a video explaining how harmful generative AI is going to be, a better way for AI to learn real-world tasks and an excellent article by Paul Graham. Enjoy.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Room Temperature Superconductors, Llama2 and Single Photon Cameras]]></title>
+        <id>https://ricos.site22</id>
+        <link href="https://ricos.site22"/>
+        <updated>2023-08-13T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time it's a bit different because I've read less AI-related news than usual and instead found some interesting things related to biology and physics I wanted to share. As always, I hope you enjoy.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Brain2Music, Biosecurity Risks, and FlyWire: A Connectome of a Fruit Fly Brain]]></title>
+        <id>https://ricos.site23</id>
+        <link href="https://ricos.site23"/>
+        <updated>2023-08-27T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a paper decoding neural stimuli into music, some resources that dive into the risks that AI and other recent advances will bring to the world of biosecurity, a complete connectome of a fruit fly brain, and more. As always, I hope you enjoy this edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Fury AI Drones, ASML manufacturing, and Seamless Translation]]></title>
+        <id>https://ricos.site24</id>
+        <link href="https://ricos.site24"/>
+        <updated>2023-09-10T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a deep dive on how ASML has innovated in the chip market, a paper showing that LK-99 is not a superconductor after all,  Metas seamless translation model, and much more.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[DALL·E 3, AlphaMissense and Improvements to Google Bard]]></title>
+        <id>https://ricos.site25</id>
+        <link href="https://ricos.site25"/>
+        <updated>2023-09-24T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. Lots of amazing stuff has been announced in the last two weeks: Better features for Google Bard, supreme music generation capabilities from Stability AI, and some serious improvements to image generation with DALL·E 3. As always I hope you enjoy this edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Metaverse Interviews, GPT Improvements and Meta Connect]]></title>
+        <id>https://ricos.site26</id>
+        <link href="https://ricos.site26"/>
+        <updated>2023-10-08T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a lot of updates from Meta about the awesome things they have been building, some mindblowing announcements for ChatGPT, and an amazing podcast interview from my favorite, Lex Fridman. As always I hope you enjoy this edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Adobe Max, The Techno Optimist Manifesto and Nvidia's Eureka]]></title>
+        <id>https://ricos.site27</id>
+        <link href="https://ricos.site27"/>
+        <updated>2023-10-22T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This one is absolutely packed because a lot has happened in the last 2 weeks. Adobe had its Max Conference, Nvidia is successfully training Robots within a simulation, and the biggest brain cell-type catalog has been released. And this is not even all… As always, I hope you enjoy this Edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Talking Robots, Futurehouse and the Role of Computation & AI in Biotech]]></title>
+        <id>https://ricos.site28</id>
+        <link href="https://ricos.site28"/>
+        <updated>2023-11-05T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a company trying to build semi-autonomous AI researchers, a TED talk by Stephen Wolfram on Computation, AI, and the nature of the Universe, a talking robot tour guide by Boston Dynamics, a dataset designed to help algorithms learn emotional intelligence, and more. As always I hope you enjoy this edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[OpenAI Dev Day, Github Universe and Sam Altman leaving OpenAI]]></title>
+        <id>https://ricos.site29</id>
+        <link href="https://ricos.site29"/>
+        <updated>2023-11-19T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. The last weeks were an absolute bonanza in terms of things that happened in the world of AI. The Presidential Executive Order, OpenAIs Dev Day, the GitHub Universe conference, the SnapDragon Summit, an AI automatically creating valid legal contracts, Runways Gen-2 update, Lumas text to 3D model, xAi releasing Grok, and OpenAI firing Sam Altman.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Creativity, AlphaTensor and Motivation]]></title>
+        <id>https://ricos.site3</id>
+        <link href="https://ricos.site3"/>
+        <updated>2022-11-20T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to the Awesomeness from the last 2 weeks, bundled together in a newsletter! This time with booknotes on Creativity Inc. by Ed Cadmull, the AlphaTensor paper by Deepmind, and an article about motivation and why we shouldn't rely on it. As always I hope you enjoy this edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[AI Video Generation, ChipNeMo, and Real-Time Image Generation]]></title>
+        <id>https://ricos.site30</id>
+        <link href="https://ricos.site30"/>
+        <updated>2023-12-03T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with several updates on AI Video Generation, a piece on how companies should think about AI adoption, Real-Time Image Generation by StabilityAI, and a summary of the ousting of Sam Altman from OpenAI, and much more… I hope you enjoy.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[GNoME, Quantum Computing, and Google's Gemini]]></title>
+        <id>https://ricos.site31</id>
+        <link href="https://ricos.site31"/>
+        <updated>2023-12-17T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. Again, the last two weeks have been exploding in terms of announcements and awesome things that I have found. This edition is a wild mix: Robotic arms mimicking those of octopods, an essay about what it means to be human in the age of AI, crazy progress towards automated AI scientists, the interviews of the New York Book Deal Summit, the Gemini announcement and more...]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[FunSearch, DeWave, and Music FX]]></title>
+        <id>https://ricos.site32</id>
+        <link href="https://ricos.site32"/>
+        <updated>2023-12-31T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a new approach to add mathematical reasoning to LLMs, a way of reading people's brain waves with only EEG data, and announcements of multiple models to generate audio and 3D content. As always I hope you enjoy.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Robotics, Rabbit R1, and the Beginning of the Post-Truth Era]]></title>
+        <id>https://ricos.site33</id>
+        <link href="https://ricos.site33"/>
+        <updated>2024-01-14T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with crazy breakthroughs in the field of robotics, another LK-99-related possible superconductor, and people warning about the beginnings of the post-truth era, where deepfakes generated by AI are so easy to create it's not even funny anymore.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Alpha Geometry, Morpheus 1 and AI Dubs]]></title>
+        <id>https://ricos.site34</id>
+        <link href="https://ricos.site34"/>
+        <updated>2024-01-28T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time Google has announced that their AI can solve mathematical olympiad problems, Prophetic AI is trying to induce lucid dreaming states with AI, and Javier Milei's speech went wild on the internet, with an AI dubbed version being even better. As always I hope that you enjoy this edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Robust Robotics, 3D Manipulation, and the Rise of Spatial Computing]]></title>
+        <id>https://ricos.site35</id>
+        <link href="https://ricos.site35"/>
+        <updated>2024-02-11T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with reviews of the Apple Vision Pro, Diffusion Models that you can run on your phone, four-legged robots that can automatically avoid obstacles, and more advanced 3D content manipulation tools. As always I hope you enjoy this edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Open AI's Sora, AI Sound Effects, and Gemini 1.5]]></title>
+        <id>https://ricos.site36</id>
+        <link href="https://ricos.site36"/>
+        <updated>2024-02-25T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with OpenAI and Elevenlabs changing the world of movie creation, how Google is opening access to some of their LLM models, and their Gemini 1.5 announcement. As always, I hope you enjoy this edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Google's Genie, LLMs at home, and OS-Copilot]]></title>
+        <id>https://ricos.site37</id>
+        <link href="https://ricos.site37"/>
+        <updated>2024-03-10T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with foundation models that can generate 2D video games, better humanoid robots, and a chatbot that does the work of 700 call center agents. Plus, a new article by NotBoring and a new framework for LLMs that can interact with and control the operating system of a computer.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Nvidia GTC, Devin, and Neuralink]]></title>
+        <id>https://ricos.site38</id>
+        <link href="https://ricos.site38"/>
+        <updated>2024-03-24T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with Nvidia's GTC keynote, an AI-powered software engineer called Devin, and insane Neuralink updates. Plus, a new generalist AI agent by DeepMind and a new video editing AI by Meta. It's been an insane two weeks in the world of technology again and this edition is packed with awesomeness.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Stable Audio 2, Terraform Industries and Bigger Chips]]></title>
+        <id>https://ricos.site39</id>
+        <link href="https://ricos.site39"/>
+        <updated>2024-04-07T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with updates on the release of Stable Audio 2, documentaries on Terraform Industries, more Neuralink Patient 1 updates, and more. As always I hope you enjoy!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Collision Detection, Synthetic Biology and AI]]></title>
+        <id>https://ricos.site4</id>
+        <link href="https://ricos.site4"/>
+        <updated>2022-12-04T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to awesome stuff, from the last 2 weeks, bundled together in a newsletter. This time with booknotes on Indistractable by Nir Eyal, the Michael Levin podcast with Lex Fridman and AI for the next era, an article by Sam Altman!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Starbase Update, Llama 3 and Faster Data Transfers]]></title>
+        <id>https://ricos.site40</id>
+        <link href="https://ricos.site40"/>
+        <updated>2024-04-21T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with the release of Llama 3, a new way to transfer data over fiber optic cables, Coding Adventures into text rendering, and a Starbase update by SpaceX. As always I hope you enjoy!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Astribot, Simulon, and Reversible Computation]]></title>
+        <id>https://ricos.site41</id>
+        <link href="https://ricos.site41"/>
+        <updated>2024-05-05T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a stationary humanoid-like robot, a deep dive into why nothing can grow on Mars, and a startup that is using AI and a custom drilling rig to find valuable mining sites. As always, I hope you enjoy this Edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Google IO, GPT4-o and AlphaFold 3]]></title>
+        <id>https://ricos.site42</id>
+        <link href="https://ricos.site42"/>
+        <updated>2024-05-19T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with the GPT4-o announcement from OpenAI, everything that happened at Google I/O, and the release of the AlphaFold 3 model. As always, I hope you enjoy this Edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Microsoft Build, AWS Summit and the Mind of LLMs]]></title>
+        <id>https://ricos.site43</id>
+        <link href="https://ricos.site43"/>
+        <updated>2024-06-02T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with the Microsoft Build Keynote, updates from the AWS Summit, and an Anthropic paper on investigating the internal workings of their Claude Sonnet LLM. As always, I hope you enjoy this Edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[More Video Models, WWDC and Computex]]></title>
+        <id>https://ricos.site44</id>
+        <link href="https://ricos.site44"/>
+        <updated>2024-06-16T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with the WWDC keynote, more video models competing with OpenAIs Sora, the Nvidia keynote at Computex, a SpaceX launch, as well as an article by Casey Handmer on the solar industrial revolution. As always, I hope you enjoy this edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[SSI Inc, Situational Awareness, and Runway Gen3]]></title>
+        <id>https://ricos.site45</id>
+        <link href="https://ricos.site45"/>
+        <updated>2024-06-30T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with the announcement of Safe Superintelligence INC by Ilya Sutskever, an essay series on how AGI is going to happen soon, and what that means for the world, as well as the release of the Gen3 video generation model by RunwayML. As always, I hope you enjoy this Edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Text to 3D, Robot TeleVision, and Neuralink Livestream]]></title>
+        <id>https://ricos.site46</id>
+        <link href="https://ricos.site46"/>
+        <updated>2024-07-14T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with the release of a text to 3D generation model by Meta, a paper by MIT on how to train robots using the Apple Vision Pro, and the latest Neuralink Update. As always, I hope you enjoy this Edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Llama 3.1, Interactive Avatars and Mathematical AI]]></title>
+        <id>https://ricos.site47</id>
+        <link href="https://ricos.site47"/>
+        <updated>2024-07-28T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with the release of the Llama 3.1 model by Meta, the announcement of HeyGen Interactive Avatars, and an AI achieving the equivalent of a Silver Medal at the International Math Olympiads. As always, I hope you enjoy this Edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[More advanced Robotics, Neuralink Podcast and SAM 2]]></title>
+        <id>https://ricos.site48</id>
+        <link href="https://ricos.site48"/>
+        <updated>2024-08-11T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a Fireside Chat at SIGGRAPH, lots of interesting stuff happening in the field of robotics, and the release of the SAM 2 model by Meta. As always, I hope you enjoy this Edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[An AI Scientist, Meta's Sapiens, and Grok 2]]></title>
+        <id>https://ricos.site49</id>
+        <link href="https://ricos.site49"/>
+        <updated>2024-08-25T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a focus on the newly released AI Scientist by Sakana AI, the release of an even better 3D generation model, and the release of Grok 2 by xAI. As always, I hope you enjoy this Edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Richard Feynman; Ambition and How Sound Works]]></title>
+        <id>https://ricos.site5</id>
+        <link href="https://ricos.site5"/>
+        <updated>2022-12-18T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with booknotes on Sam Harris's book Lying, a timelapse on how Salamanders grow and some travel photos. Enjoy.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Diffusion Models as Game Engines, 100M Context Windows and AlphaProteo]]></title>
+        <id>https://ricos.site50</id>
+        <link href="https://ricos.site50"/>
+        <updated>2024-09-08T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a way for distributing training of AI models among many people and machines over the internet, a new model that can predict the binding proteins for specific target sites, and the announcement of gargantuan context windows. As always, I hope you enjoy this Edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[OpenAI o1, Carpentopod and Diatom Art]]></title>
+        <id>https://ricos.site51</id>
+        <link href="https://ricos.site51"/>
+        <updated>2024-09-22T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a focus on o1 - OpenAI's new model with advanced reasoning capabilities, a walking table project, a post on the beautiful but hidden art of diatom arrangements, and more. As always, I hope you enjoy this Edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Meta is Winning, AlphaChip, NotebookLM, and More]]></title>
+        <id>https://ricos.site52</id>
+        <link href="https://ricos.site52"/>
+        <updated>2024-10-06T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This one is absolutely packed with exciting news and announcements from Meta, Google, and OpenAI. We have crazy AR glasses, AIs designing chips, creating videos and podcasts, and a lot more. The last 2 weeks have been crazy, so let's dive in!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Fifth Starship Flight, Machines of Loving Grace and Firefly Video]]></title>
+        <id>https://ricos.site53</id>
+        <link href="https://ricos.site53"/>
+        <updated>2024-10-20T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with an article by Dario Amodei on the benefits of AI, the fifth Starship flight by SpaceX, and two new video models, one by the University of Tokyo and one by Adobe. As always, I hope you enjoy this Edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Truth Terminal, Claude Computer Use, and GitHub Universe]]></title>
+        <id>https://ricos.site54</id>
+        <link href="https://ricos.site54"/>
+        <updated>2024-11-03T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. The last few weeks have been absolutely bonkers again regarding things that have happened in the AI world. New tools for music creation, AIs using computers, GitHub Copilot improvements, and more. As always I hope you enjoy this edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Agentic Frameworks, Robots with Touch and AI Game Engines]]></title>
+        <id>https://ricos.site55</id>
+        <link href="https://ricos.site55"/>
+        <updated>2024-11-17T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with booknotes on the Web of Meaning, a new agentic framework published by Microsoft, and Robots that can sense touch more similar to what humans can do. As always I hope you enjoy this edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Nvidia Edify 3D, Flux Tools and Fugatto]]></title>
+        <id>https://ricos.site56</id>
+        <link href="https://ricos.site56"/>
+        <updated>2024-12-01T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with booknotes for the book Innate, better AI image editing tools by Black Forest Labs, and an insanely good AI 3D generation model by Nvidia, as well as an article on the limitations of reasoning models like o1. As always I hope you enjoy this Edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Google Is Back, OpenAIs 12 Days of Demos, and the Deal Book Summit]]></title>
+        <id>https://ricos.site57</id>
+        <link href="https://ricos.site57"/>
+        <updated>2024-12-15T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. These last two weeks have been super packed with announcements. Google has released an insane amount of new things, while OpenAI is doing 12 consecutive days of demos, and the New York Times had its Deal Book Summit. As always, I hope you enjoy this Edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Google's Veo 2, o3 by OpenAI, and AIs Faking Alignment]]></title>
+        <id>https://ricos.site58</id>
+        <link href="https://ricos.site58"/>
+        <updated>2024-12-29T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time, with the announcement of o3 by OpenAI, new video and image generation model releases from Google, and research by Anthropic showing that today's AI will fake alignment even if not explicitly told to do so.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Sam Altmans Reflections, Nvidia CES Keynote and AI as a Parasitic Cancer]]></title>
+        <id>https://ricos.site59</id>
+        <link href="https://ricos.site59"/>
+        <updated>2025-01-12T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with an article by Sam Altman reflecting on where OpenAI is heading, the Nvidia CES Keynote by Jensen Huang, and things we (or Simon Willison in particular) have learned about LLMs in 2024. As always I hope you enjoy this edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[ChatGPT, Neuralink, and Advice Against Procrastination]]></title>
+        <id>https://ricos.site6</id>
+        <link href="https://ricos.site6"/>
+        <updated>2023-01-01T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a list of the best textbooks, an animated video of why everything will be very different in the future, and a new podcast notes section. Enjoy.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Project Stargate, Deepseek R1, and MatterGen]]></title>
+        <id>https://ricos.site60</id>
+        <link href="https://ricos.site60"/>
+        <updated>2025-01-26T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a fair bit of politics around AI, a system by Microsoft that can create novel materials with specific properties and constraints, and Deepseek's R1–an open-source LLM from China that rivals OpenAIs o1. As always I hope you enjoy this Edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[New Space, Stable Point Aware 3D and Deep Research]]></title>
+        <id>https://ricos.site61</id>
+        <link href="https://ricos.site61"/>
+        <updated>2025-02-09T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time, with a documentary on the privatization of space exploration, a Lex Fridman interview with Semianalysis, a much faster 3D from image generation model, and OpenAI's announcement of Deep Research. As always, I hope you enjoy this Edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Grok3, Quantum Chips, and Google's AI Co-Scientist]]></title>
+        <id>https://ricos.site62</id>
+        <link href="https://ricos.site62"/>
+        <updated>2025-02-23T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with an announcement of the new Helix AI powering Figures robots, Microsoft's Majorana—a novel quantum computing architecture, the announcement of Grok3 by xAI, and much more. As always I hope you enjoy this Edition of Live and Learn.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Neuron Computer, Claude 3.7 and Open AI's Orion]]></title>
+        <id>https://ricos.site63</id>
+        <link href="https://ricos.site63"/>
+        <updated>2025-03-09T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a computer made out of living neurons by Cortical Labs, the release of Claude 3.7 and the impressive Claude Code by Anthropic, and the arrival of Open AI's GPT 4.5 codenamed Orion. As always, I hope you enjoy this Edition of Live and Learn!]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[3D in the Browser, Neurons in a Petri Dish, and the Beauty of Splines]]></title>
+        <id>https://ricos.site7</id>
+        <link href="https://ricos.site7"/>
+        <updated>2023-01-15T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with a set of rules for life, work, and health, a paper on neurons living in a petri dish, a series of low-level networking tutorials, and more. Enjoy.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Computational Selves, MinDVis and AI takeoff]]></title>
+        <id>https://ricos.site8</id>
+        <link href="https://ricos.site8"/>
+        <updated>2023-01-29T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with wisdom from Eric Schmidt, a story of what AI takeoff might look like, and an awesome paper on a theory of computational selves. Enjoy.]]></summary>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Biotechnology, Democratizing AI and Spinoza]]></title>
+        <id>https://ricos.site9</id>
+        <link href="https://ricos.site9"/>
+        <updated>2023-02-12T05:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Welcome to this edition of Live and Learn. This time with some bits and pieces on things happening at the intersection of biotech and AI, a video on Spinoza's philosophy, and an interview with Emad Mostaque, the founder of Stability AI. Enjoy.]]></summary>
+    </entry>
+</feed>

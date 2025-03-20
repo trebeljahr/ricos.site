@@ -1,7 +1,13 @@
-import * as THREE from "three";
-import React from "react";
+import { useAnimations, useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
-import { useGLTF, useAnimations } from "@react-three/drei";
+import { useMemo, useRef } from "react";
+import {
+  AnimationClip,
+  Bone,
+  Group,
+  MeshStandardMaterial,
+  SkinnedMesh,
+} from "three";
 import { GLTF, SkeletonUtils } from "three-stdlib";
 
 type ActionName =
@@ -9,30 +15,30 @@ type ActionName =
   | "SharkArmature|SharkArmature|SharkArmature|Swim_Fast|SharkArmature|Swim_Fast"
   | "SharkArmature|SharkArmature|SharkArmature|Swim|SharkArmature|Swim";
 
-interface GLTFAction extends THREE.AnimationClip {
+interface GLTFAction extends AnimationClip {
   name: ActionName;
 }
 
 type GLTFResult = GLTF & {
   nodes: {
-    Shark: THREE.SkinnedMesh;
-    Shark001: THREE.SkinnedMesh;
-    Abdomen: THREE.Bone;
-    Center: THREE.Bone;
-    Root: THREE.Bone;
+    Shark: SkinnedMesh;
+    Shark001: SkinnedMesh;
+    Abdomen: Bone;
+    Center: Bone;
+    Root: Bone;
   };
   materials: {
-    AtlasMaterial: THREE.MeshStandardMaterial;
+    AtlasMaterial: MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };
 
 export function Shark(props: JSX.IntrinsicElements["group"]) {
-  const group = React.useRef<THREE.Group>(null!);
+  const group = useRef<Group>(null!);
   const { scene, animations } = useGLTF(
     "/3d-assets/glb/enemies/Shark-transformed.glb"
   );
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
   return (

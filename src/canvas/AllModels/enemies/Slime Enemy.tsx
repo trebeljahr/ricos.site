@@ -1,7 +1,13 @@
-import * as THREE from "three";
-import React from "react";
+import { useAnimations, useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
-import { useGLTF, useAnimations } from "@react-three/drei";
+import { useMemo, useRef } from "react";
+import {
+  AnimationClip,
+  Bone,
+  Group,
+  MeshStandardMaterial,
+  SkinnedMesh,
+} from "three";
 import { GLTF, SkeletonUtils } from "three-stdlib";
 
 type ActionName =
@@ -12,109 +18,109 @@ type ActionName =
   | "death"
   | "attack_ranged";
 
-interface GLTFAction extends THREE.AnimationClip {
+interface GLTFAction extends AnimationClip {
   name: ActionName;
 }
 
 type GLTFResult = GLTF & {
   nodes: {
-    enemy2: THREE.SkinnedMesh;
-    bodyfront_1: THREE.Bone;
-    jawall_1: THREE.Bone;
-    jawlow_1: THREE.Bone;
-    jawlow_2: THREE.Bone;
-    jawlow_3: THREE.Bone;
-    liplow_l_1: THREE.Bone;
-    liplow_r_1: THREE.Bone;
-    tooth_lowmid_l_1: THREE.Bone;
-    tooth_lowmid_l_2: THREE.Bone;
-    tooth_lowmid_l_3: THREE.Bone;
-    tooth_lowmid_l_4: THREE.Bone;
-    tooth_lowfront_l_1: THREE.Bone;
-    tooth_lowfront_l_2: THREE.Bone;
-    tooth_lowfront_l_4: THREE.Bone;
-    tooth_lowmid_r_1: THREE.Bone;
-    tooth_lowmid_r_2: THREE.Bone;
-    tooth_lowmid_r_3: THREE.Bone;
-    tooth_lowmid_r_4: THREE.Bone;
-    tooth_lowfront_r_1: THREE.Bone;
-    tooth_lowfront_r_2: THREE.Bone;
-    tooth_lowfront_r_4: THREE.Bone;
-    tooth_lowback_l_1: THREE.Bone;
-    tooth_lowback_l_2: THREE.Bone;
-    tooth_lowback_r_1: THREE.Bone;
-    tooth_lowback_r_2: THREE.Bone;
-    upperhead_1: THREE.Bone;
-    jawhigh_1: THREE.Bone;
-    jawhigh_2: THREE.Bone;
-    jawhigh_3: THREE.Bone;
-    tooth_highfront_r_1: THREE.Bone;
-    tooth_highfront_r_2: THREE.Bone;
-    tooth_highcenter_1: THREE.Bone;
-    tooth_highcenter_2: THREE.Bone;
-    tooth_highcenter_3: THREE.Bone;
-    tooth_highfront_l_1: THREE.Bone;
-    tooth_highfront_l_2: THREE.Bone;
-    tooth_highlong_r_1: THREE.Bone;
-    tooth_highlong_r_2: THREE.Bone;
-    tooth_highlong_r_3: THREE.Bone;
-    tooth_highlong_l_1: THREE.Bone;
-    tooth_highlong_l_2: THREE.Bone;
-    tooth_highlong_l_3: THREE.Bone;
-    tooth_highmid_r_1: THREE.Bone;
-    tooth_highmid_r_2: THREE.Bone;
-    tooth_highmid_r_3: THREE.Bone;
-    tooth_highmid_r_4: THREE.Bone;
-    tooth_highmid_r_5: THREE.Bone;
-    tooth_highmid_l_1: THREE.Bone;
-    tooth_highmid_l_2: THREE.Bone;
-    tooth_highmid_l_3: THREE.Bone;
-    tooth_highmid_l_4: THREE.Bone;
-    tooth_highmid_l_5: THREE.Bone;
-    tooth_highback_r_1: THREE.Bone;
-    tooth_highback_r_2: THREE.Bone;
-    tooth_highback_r_3: THREE.Bone;
-    tooth_highback_l_1: THREE.Bone;
-    tooth_highback_l_2: THREE.Bone;
-    tooth_highback_l_3: THREE.Bone;
-    hair_1: THREE.Bone;
-    hair_2: THREE.Bone;
-    hair_3: THREE.Bone;
-    hair_4: THREE.Bone;
-    hair_5: THREE.Bone;
-    eye_l_1: THREE.Bone;
-    eye_l_2: THREE.Bone;
-    eye_r_1: THREE.Bone;
-    eye_r_2: THREE.Bone;
-    finback_l_1: THREE.Bone;
-    finback_l_2: THREE.Bone;
-    finfront_l_1: THREE.Bone;
-    finfront_l_2: THREE.Bone;
-    finfront_r_1: THREE.Bone;
-    finfront_r_2: THREE.Bone;
-    finback_r_1: THREE.Bone;
-    finback_r_2: THREE.Bone;
-    tail_main_1: THREE.Bone;
-    tail_1: THREE.Bone;
-    tail_2: THREE.Bone;
-    tail_3: THREE.Bone;
-    tail_r_1: THREE.Bone;
-    tail_r_2: THREE.Bone;
-    tail_l_1: THREE.Bone;
-    tail_l_2: THREE.Bone;
+    enemy2: SkinnedMesh;
+    bodyfront_1: Bone;
+    jawall_1: Bone;
+    jawlow_1: Bone;
+    jawlow_2: Bone;
+    jawlow_3: Bone;
+    liplow_l_1: Bone;
+    liplow_r_1: Bone;
+    tooth_lowmid_l_1: Bone;
+    tooth_lowmid_l_2: Bone;
+    tooth_lowmid_l_3: Bone;
+    tooth_lowmid_l_4: Bone;
+    tooth_lowfront_l_1: Bone;
+    tooth_lowfront_l_2: Bone;
+    tooth_lowfront_l_4: Bone;
+    tooth_lowmid_r_1: Bone;
+    tooth_lowmid_r_2: Bone;
+    tooth_lowmid_r_3: Bone;
+    tooth_lowmid_r_4: Bone;
+    tooth_lowfront_r_1: Bone;
+    tooth_lowfront_r_2: Bone;
+    tooth_lowfront_r_4: Bone;
+    tooth_lowback_l_1: Bone;
+    tooth_lowback_l_2: Bone;
+    tooth_lowback_r_1: Bone;
+    tooth_lowback_r_2: Bone;
+    upperhead_1: Bone;
+    jawhigh_1: Bone;
+    jawhigh_2: Bone;
+    jawhigh_3: Bone;
+    tooth_highfront_r_1: Bone;
+    tooth_highfront_r_2: Bone;
+    tooth_highcenter_1: Bone;
+    tooth_highcenter_2: Bone;
+    tooth_highcenter_3: Bone;
+    tooth_highfront_l_1: Bone;
+    tooth_highfront_l_2: Bone;
+    tooth_highlong_r_1: Bone;
+    tooth_highlong_r_2: Bone;
+    tooth_highlong_r_3: Bone;
+    tooth_highlong_l_1: Bone;
+    tooth_highlong_l_2: Bone;
+    tooth_highlong_l_3: Bone;
+    tooth_highmid_r_1: Bone;
+    tooth_highmid_r_2: Bone;
+    tooth_highmid_r_3: Bone;
+    tooth_highmid_r_4: Bone;
+    tooth_highmid_r_5: Bone;
+    tooth_highmid_l_1: Bone;
+    tooth_highmid_l_2: Bone;
+    tooth_highmid_l_3: Bone;
+    tooth_highmid_l_4: Bone;
+    tooth_highmid_l_5: Bone;
+    tooth_highback_r_1: Bone;
+    tooth_highback_r_2: Bone;
+    tooth_highback_r_3: Bone;
+    tooth_highback_l_1: Bone;
+    tooth_highback_l_2: Bone;
+    tooth_highback_l_3: Bone;
+    hair_1: Bone;
+    hair_2: Bone;
+    hair_3: Bone;
+    hair_4: Bone;
+    hair_5: Bone;
+    eye_l_1: Bone;
+    eye_l_2: Bone;
+    eye_r_1: Bone;
+    eye_r_2: Bone;
+    finback_l_1: Bone;
+    finback_l_2: Bone;
+    finfront_l_1: Bone;
+    finfront_l_2: Bone;
+    finfront_r_1: Bone;
+    finfront_r_2: Bone;
+    finback_r_1: Bone;
+    finback_r_2: Bone;
+    tail_main_1: Bone;
+    tail_1: Bone;
+    tail_2: Bone;
+    tail_3: Bone;
+    tail_r_1: Bone;
+    tail_r_2: Bone;
+    tail_l_1: Bone;
+    tail_l_2: Bone;
   };
   materials: {
-    lambert3: THREE.MeshStandardMaterial;
+    lambert3: MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };
 
 export function Slime(props: JSX.IntrinsicElements["group"]) {
-  const group = React.useRef<THREE.Group>(null!);
+  const group = useRef<Group>(null!);
   const { scene, animations } = useGLTF(
     "/3d-assets/glb/enemies/Slime Enemy-transformed.glb"
   );
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
   return (

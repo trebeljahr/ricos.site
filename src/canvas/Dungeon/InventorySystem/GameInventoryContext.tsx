@@ -1,9 +1,10 @@
-import React, {
+import {
   createContext,
   useContext,
   useState,
   ReactNode,
   useCallback,
+  FC,
 } from "react";
 import {
   DndContext,
@@ -16,8 +17,8 @@ import useSound from "use-sound";
 import trashSound from "@sounds/trash.mp3";
 import switchSound from "@sounds/switch.mp3";
 import equipSound from "@sounds/equip.mp3";
+import errorSound from "@sounds/error-short.mp3";
 
-// Define types for our inventory system
 export type ItemType = "weapon" | "armor" | "consumable" | "material" | "quest";
 export type ArmorSlot = "head" | "chest" | "legs" | "feet";
 export type HandSlot = "left" | "right";
@@ -72,12 +73,10 @@ interface InventoryContextType {
   canAddItem: (item: Item) => boolean;
 }
 
-// Create the context with default values
 const InventoryContext = createContext<InventoryContextType | undefined>(
   undefined
 );
 
-// Provider props
 interface InventoryProviderProps {
   children: ReactNode;
   initialItems?: Item[];
@@ -85,7 +84,7 @@ interface InventoryProviderProps {
   maxWeight?: number;
 }
 
-export const InventoryProvider: React.FC<InventoryProviderProps> = ({
+export const InventoryProvider: FC<InventoryProviderProps> = ({
   children,
   maxSlots = 20,
   maxWeight = 100,
@@ -176,7 +175,7 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
     return { amountLeft, amountAdded: newItem.quantity - amountLeft };
   };
 
-  const removeItem = (itemIndex: number): boolean => {
+  const removeItem = useCallback((itemIndex: number): boolean => {
     let removed = false;
     if (itemIndex === undefined) return false;
 
@@ -188,7 +187,7 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
     });
 
     return removed;
-  };
+  }, []);
 
   const updateItem = (updatedItem: Item): boolean => {
     let updated = false;
@@ -226,23 +225,58 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
     [items]
   );
 
-  const equipItem = (fromSlot: number, slot: ArmorSlot | HandSlot): boolean => {
-    const item = items[fromSlot];
-    if (!item) {
-      return false;
-    }
+  const equipItem = useCallback(
+    (fromSlot: number, slot: ArmorSlot | HandSlot): boolean => {
+      const item = items[fromSlot];
+      if (!item) {
+        return false;
+      }
 
-    if (!item.equipable || !item.equipSlot) {
-      return false;
-    }
+      if (!item.equipable || !item.equipSlot) {
+        return false;
+      }
 
-    if (item.equipSlot !== slot) {
-      return false;
-    }
+      if (item.equipSlot !== slot) {
+        return false;
+      }
 
-    setEquippedItems((currentlyEquipped) => {
-      const newEquippedItems = { ...currentlyEquipped };
+      setEquippedItems((currentlyEquipped) => {
+        const newEquippedItems = { ...currentlyEquipped };
 
+        const slotMapping: Record<string, keyof EquippedItems> = {
+          head: "head",
+          chest: "chest",
+          legs: "legs",
+          feet: "feet",
+          left: "leftHand",
+          right: "rightHand",
+        };
+
+        const targetSlot = slotMapping[slot];
+        const itemFromEquipped = currentlyEquipped[targetSlot];
+
+        if (itemFromEquipped) {
+          setItems((prevItems) => {
+            const newItems = [...prevItems];
+            newItems[fromSlot] = itemFromEquipped;
+            return newItems;
+          });
+        } else {
+          removeItem(fromSlot);
+        }
+
+        newEquippedItems[targetSlot] = item;
+
+        return newEquippedItems;
+      });
+
+      return true;
+    },
+    [items, removeItem]
+  );
+
+  const unequipItem = useCallback(
+    (slot: ArmorSlot | HandSlot, indexToUnequipTo?: number) => {
       const slotMapping: Record<string, keyof EquippedItems> = {
         head: "head",
         chest: "chest",
@@ -252,90 +286,59 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
         right: "rightHand",
       };
 
-      const targetSlot = slotMapping[slot];
-      const itemFromEquipped = currentlyEquipped[targetSlot];
+      const mappedEquipmentSlot = slotMapping[slot];
 
-      if (itemFromEquipped) {
-        setItems((prevItems) => {
-          const newItems = [...prevItems];
-          newItems[fromSlot] = itemFromEquipped;
-          return newItems;
-        });
-      } else {
-        removeItem(fromSlot);
+      const itemInEquipmentSlot = equippedItems[mappedEquipmentSlot];
+      const inventorySlot =
+        indexToUnequipTo ?? items.findIndex((item) => item === null);
+      const noItemInInventorySlot = items[inventorySlot] === null;
+      const canMoveItem = itemInEquipmentSlot !== null && noItemInInventorySlot;
+
+      if (!canMoveItem) {
+        return false;
       }
 
-      newEquippedItems[targetSlot] = item;
+      setItems((prevItems) => {
+        const newItems = [...prevItems];
+        newItems[inventorySlot] = itemInEquipmentSlot;
+        return newItems;
+      });
 
-      return newEquippedItems;
-    });
+      setEquippedItems((prev) => {
+        const newEquippedItems = { ...prev };
+        newEquippedItems[mappedEquipmentSlot] = null;
+        return newEquippedItems;
+      });
 
-    playEquipSound({ playbackRate: 1 });
+      return true;
+    },
+    [equippedItems, items]
+  );
 
-    return true;
-  };
+  const moveItem = useCallback(
+    (sourceIndex: number, destinationIndex: number) => {
+      setItems((prevItems) => {
+        if (sourceIndex === undefined || destinationIndex === undefined) {
+          return prevItems;
+        }
 
-  const unequipItem = (
-    slot: ArmorSlot | HandSlot,
-    indexToUnequipTo?: number
-  ) => {
-    const slotMapping: Record<string, keyof EquippedItems> = {
-      head: "head",
-      chest: "chest",
-      legs: "legs",
-      feet: "feet",
-      left: "leftHand",
-      right: "rightHand",
-    };
+        const newItems = [...prevItems];
 
-    const mappedEquipmentSlot = slotMapping[slot];
+        const movingItem = newItems[sourceIndex];
+        const destinationItem = newItems[destinationIndex];
 
-    const itemInEquipmentSlot = equippedItems[mappedEquipmentSlot];
-    const inventorySlot =
-      indexToUnequipTo ?? items.findIndex((item) => item === null);
-    const noItemInInventorySlot = items[inventorySlot] === null;
-    const canMoveItem = itemInEquipmentSlot !== null && noItemInInventorySlot;
+        if (!movingItem) {
+          return prevItems;
+        }
 
-    if (!canMoveItem) {
-      return;
-    }
+        newItems[sourceIndex] = destinationItem || null;
+        newItems[destinationIndex] = movingItem;
 
-    playEquipSound({ playbackRate: 1.5 });
-
-    setItems((prevItems) => {
-      const newItems = [...prevItems];
-      newItems[inventorySlot] = itemInEquipmentSlot;
-      return newItems;
-    });
-
-    setEquippedItems((prev) => {
-      const newEquippedItems = { ...prev };
-      newEquippedItems[mappedEquipmentSlot] = null;
-      return newEquippedItems;
-    });
-  };
-
-  const moveItem = (sourceIndex: number, destinationIndex: number) => {
-    setItems((prevItems) => {
-      if (sourceIndex === undefined || destinationIndex === undefined) {
-        return prevItems;
-      }
-
-      const newItems = [...prevItems];
-
-      const movingItem = newItems[sourceIndex];
-      const destinationItem = newItems[destinationIndex];
-
-      if (!movingItem) {
-        return prevItems;
-      }
-
-      newItems[sourceIndex] = destinationItem || null;
-      newItems[destinationIndex] = movingItem;
-
-      return newItems;
-    });
-  };
+        return newItems;
+      });
+    },
+    []
+  );
 
   const [playTrashSound] = useSound(trashSound, {
     volume: 0.2,
@@ -348,6 +351,9 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
   const [playEquipSound] = useSound(equipSound, {
     volume: 0.8,
     playbackRate: 1.2,
+  });
+  const [playErrorSound] = useSound(errorSound, {
+    volume: 1,
   });
 
   const handleDragEnd = useCallback(
@@ -389,24 +395,42 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
         return;
       }
       if (over.data.current?.isEquipmentSlot) {
-        equipItem(active.data.current?.slotIndex, over.data.current?.slotType);
+        const success = equipItem(
+          active.data.current?.slotIndex,
+          over.data.current?.slotType
+        );
+        if (success) playEquipSound({ playbackRate: 1 });
+        else playErrorSound();
+
         return;
       }
       if (
         active.data.current?.isEquipmentSlot &&
         over.data.current?.slotIndex !== undefined
       ) {
-        unequipItem(
+        const success = unequipItem(
           active.data.current?.slotType,
           over.data.current?.slotIndex
         );
+        if (success) playEquipSound({ playbackRate: 1.5 });
+        else playErrorSound();
+
         return;
       }
 
       playSwitchSound();
       moveItem(active.data.current?.slotIndex, over?.data.current?.slotIndex);
     },
-    [moveItem]
+    [
+      moveItem,
+      removeItem,
+      equipItem,
+      unequipItem,
+      playTrashSound,
+      playSwitchSound,
+      playEquipSound,
+      playErrorSound,
+    ]
   );
 
   const inventorySlotsFull = useCallback((): boolean => {
@@ -486,7 +510,6 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
   );
 };
 
-// Custom hook to use the inventory context
 export const useInventory = (): InventoryContextType => {
   const context = useContext(InventoryContext);
 

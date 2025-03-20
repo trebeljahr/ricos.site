@@ -1,10 +1,17 @@
-import * as THREE from "three";
-import React, { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { GroupProps, useGraph } from "@react-three/fiber";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { GLTF, SkeletonUtils } from "three-stdlib";
 import { useGenericAnimationController } from "@r3f/Controllers/GenericAnimationController";
 import { CommonActions } from "@r3f/Dungeon/BuildingBlocks/CommonEnemy";
+import {
+  AnimationClip,
+  Bone,
+  Group,
+  Mesh,
+  MeshStandardMaterial,
+  SkinnedMesh,
+} from "three";
 
 type ActionName =
   | "CharacterArmature|CharacterArmature|CharacterArmature|Death|CharacterArmature|Dea"
@@ -22,18 +29,18 @@ type ActionName =
   | "CharacterArmature|CharacterArmature|CharacterArmature|Wave|CharacterArmature|Wave"
   | "CharacterArmature|CharacterArmature|CharacterArmature|Yes|CharacterArmature|Yes";
 
-interface GLTFAction extends THREE.AnimationClip {
+interface GLTFAction extends AnimationClip {
   name: ActionName;
 }
 
 type GLTFResult = GLTF & {
   nodes: {
-    Weapon_DoubleAxe: THREE.Mesh;
-    Cube117: THREE.SkinnedMesh;
-    Root: THREE.Bone;
+    Weapon_DoubleAxe: Mesh;
+    Cube117: SkinnedMesh;
+    Root: Bone;
   };
   materials: {
-    AtlasMaterial: THREE.MeshStandardMaterial;
+    AtlasMaterial: MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };
@@ -61,7 +68,7 @@ export const AnimatedAnne = ({
 }: {
   animationToPlay?: CommonActions;
 } & GroupProps) => {
-  const group = useRef<THREE.Group>(null!);
+  const group = useRef<Group>(null!);
 
   const { scene, animations } = useGLTF(
     "/3d-assets/glb/enemies/Anne-transformed.glb"
@@ -97,11 +104,11 @@ export const AnimatedAnne = ({
 };
 
 export function Anne(props: JSX.IntrinsicElements["group"]) {
-  const group = React.useRef<THREE.Group>(null!);
+  const group = useRef<Group>(null!);
   const { scene, animations } = useGLTF(
     "/3d-assets/glb/enemies/Anne-transformed.glb"
   );
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
 

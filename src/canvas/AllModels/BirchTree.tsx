@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import { useLayoutEffect } from "react";
 import { useGLTF } from "@react-three/drei";
 import { DoubleSide, Mesh, MeshStandardMaterial } from "three";
 import { GroupProps, useLoader } from "@react-three/fiber";

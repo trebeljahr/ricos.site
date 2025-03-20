@@ -1,25 +1,24 @@
-import * as THREE from "three";
-import React from "react";
 import { useGLTF } from "@react-three/drei";
+import { AnimationClip, Mesh, MeshStandardMaterial } from "three";
 import { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    cat_body: THREE.Mesh;
-    cat_ear: THREE.Mesh;
-    cat_white: THREE.Mesh;
-    cat_spot: THREE.Mesh;
+    cat_body: Mesh;
+    cat_ear: Mesh;
+    cat_white: Mesh;
+    cat_spot: Mesh;
   };
   materials: {
-    body: THREE.MeshStandardMaterial;
-    ear: THREE.MeshStandardMaterial;
-    white: THREE.MeshStandardMaterial;
-    spot: THREE.MeshStandardMaterial;
+    body: MeshStandardMaterial;
+    ear: MeshStandardMaterial;
+    white: MeshStandardMaterial;
+    spot: MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };
 
-interface GLTFAction extends THREE.AnimationClip {
+interface GLTFAction extends AnimationClip {
   name: string;
 }
 

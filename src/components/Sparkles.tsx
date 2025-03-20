@@ -129,17 +129,21 @@ const Sparkles = ({
 
   const prefersReducedMotion = usePrefersReducedMotion();
 
-  useRandomInterval(
-    () => {
+  const sparkleCallback = useCallback(() => {
+    setSparkles((oldSparkles) => {
       const sparkle = generateSparkle(color);
       const now = Date.now();
-      const nextSparkles = sparkles.filter((sp) => {
+      const nextSparkles = oldSparkles.filter((sp) => {
         const delta = now - sp.createdAt;
         return delta < 2000;
       });
       nextSparkles.push(sparkle);
-      setSparkles(nextSparkles);
-    },
+      return nextSparkles;
+    });
+  }, [color]);
+
+  useRandomInterval(
+    sparkleCallback,
     prefersReducedMotion ? undefined : 30,
     prefersReducedMotion ? undefined : 300
   );

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { FC, useCallback, useEffect, useMemo } from "react";
 import {
   InventoryProvider,
   useInventory,
@@ -44,50 +44,65 @@ export default function Game() {
 }
 
 // Game world component that interacts with inventory
-const GameWorld: React.FC = () => {
+const GameWorld: FC = () => {
   const { addItem, canAddItem, isOpen } = useInventory();
 
   // Sample items that could be found in the game world
-  const sampleItems = [
-    createItem("sword1", "Iron Sword", "weapon", "/icons/sword.png", "right"),
-    createItem(
-      "shield1",
-      "Wooden Shield",
-      "weapon",
-      "/icons/shield.png",
-      "left"
-    ),
-    createItem("helmet1", "Steel Helmet", "armor", "/icons/helmet.png", "head"),
-    createItem(
-      "chestplate1",
-      "Leather Armor",
-      "armor",
-      "/icons/chest.png",
-      "chest"
-    ),
-    createItem(
-      "leggings1",
-      "Chain Leggings",
-      "armor",
-      "/icons/legs.png",
-      "legs"
-    ),
-    createItem("boots1", "Leather Boots", "armor", "/icons/boots.png", "feet"),
-    createItem(
-      "potion1",
-      "Health Potion",
-      "consumable",
-      "/icons/potion-red.png"
-    ),
-    createItem(
-      "potion2",
-      "Mana Potion",
-      "consumable",
-      "/icons/potion-blue.png"
-    ),
-    createItem("material1", "Iron Ore", "material", "/icons/ore.png"),
-    createItem("quest1", "Ancient Scroll", "quest", "/icons/scroll.png"),
-  ];
+  const sampleItems = useMemo(
+    () => [
+      createItem("sword1", "Iron Sword", "weapon", "/icons/sword.png", "right"),
+      createItem(
+        "shield1",
+        "Wooden Shield",
+        "weapon",
+        "/icons/shield.png",
+        "left"
+      ),
+      createItem(
+        "helmet1",
+        "Steel Helmet",
+        "armor",
+        "/icons/helmet.png",
+        "head"
+      ),
+      createItem(
+        "chestplate1",
+        "Leather Armor",
+        "armor",
+        "/icons/chest.png",
+        "chest"
+      ),
+      createItem(
+        "leggings1",
+        "Chain Leggings",
+        "armor",
+        "/icons/legs.png",
+        "legs"
+      ),
+      createItem(
+        "boots1",
+        "Leather Boots",
+        "armor",
+        "/icons/boots.png",
+        "feet"
+      ),
+      createItem(
+        "potion1",
+        "Health Potion",
+        "consumable",
+        "/icons/potion-red.png"
+      ),
+      createItem(
+        "potion2",
+        "Mana Potion",
+        "consumable",
+        "/icons/potion-blue.png"
+      ),
+      createItem("material1", "Iron Ore", "material", "/icons/ore.png"),
+      createItem("quest1", "Ancient Scroll", "quest", "/icons/scroll.png"),
+    ],
+    []
+  );
 
   const addManaPotion = (amount: number) => {
     const manaPotion = sampleItems.find(
@@ -119,7 +134,7 @@ const GameWorld: React.FC = () => {
     }
   };
 
-  const findRandomItem = () => {
+  const findRandomItem = useCallback(() => {
     const randomItem =
       sampleItems[Math.floor(Math.random() * sampleItems.length)];
 
@@ -141,13 +156,13 @@ const GameWorld: React.FC = () => {
       console.warn(`Couldn't add ${amountLeft} ${newItem.name} to inventory!`);
       amountAdded > 0 && console.warn(`But added ${amountAdded}.`);
     }
-  };
+  }, [addItem, sampleItems]);
 
   useEffect(() => {
     for (let i = 0; i < 5; i++) {
       findRandomItem();
     }
-  }, []);
+  }, [findRandomItem]);
 
   return (
     <div className="min-h-screen bg-gray-800 text-white p-6">

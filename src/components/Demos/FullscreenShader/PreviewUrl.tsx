@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { FaChevronDown, FaChevronUp, FaEdit, FaTrash } from "react-icons/fa";
 
 type TextureUploadMenuProps = {
   previewUrls: string[];
-  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onDelete: (index: number) => void;
   onUpdate: (index: number, file: File) => void;
 };
@@ -71,7 +71,7 @@ export function PreviewUrl({
 }: PreviewUrlProps) {
   const handleUpdateFileChange = (
     index: number,
-    event: React.ChangeEvent<HTMLInputElement>
+    event: ChangeEvent<HTMLInputElement>
   ) => {
     const files = event.target.files;
     if (files && files[0]) {

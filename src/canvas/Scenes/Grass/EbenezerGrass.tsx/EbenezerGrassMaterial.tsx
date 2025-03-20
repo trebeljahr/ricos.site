@@ -1,7 +1,17 @@
 import { extend } from "@react-three/fiber";
-import * as THREE from "three";
+import {
+  Color,
+  DoubleSide,
+  Material,
+  Mesh,
+  MeshLambertMaterial,
+  MeshStandardMaterial,
+  Texture,
+} from "three";
+
 import vertexShader from "./grassVertexShader.glsl";
 import fragmentShader from "./grassFragmentShader.glsl";
+import { Vector3 } from "yuka";
 
 interface GrassUniformsInterface {
   uTime?: { value: number };
@@ -9,18 +19,18 @@ interface GrassUniformsInterface {
   uShadowDarkness?: { value: number };
   uGrassLightIntensity?: { value: number };
   uNoiseScale?: { value: number };
-  uPlayerPosition?: { value: THREE.Vector3 };
-  baseColor?: { value: THREE.Color };
-  tipColor1?: { value: THREE.Color };
-  tipColor2?: { value: THREE.Color };
-  noiseTexture?: { value: THREE.Texture };
-  grassAlphaTexture?: { value: THREE.Texture };
-  fogColor2?: { value: THREE.Color };
-  fogColor3?: { value: THREE.Color };
+  uPlayerPosition?: { value: Vector3 };
+  baseColor?: { value: Color };
+  tipColor1?: { value: Color };
+  tipColor2?: { value: Color };
+  noiseTexture?: { value: Texture };
+  grassAlphaTexture?: { value: Texture };
+  fogColor2?: { value: Color };
+  fogColor3?: { value: Color };
 }
 
 export class GrassMaterial {
-  material: THREE.Material;
+  material: Material;
 
   private grassColorProps = {
     baseColor: "#313f1b",
@@ -34,12 +44,12 @@ export class GrassMaterial {
     uShadowDarkness: { value: 0.5 },
     uGrassLightIntensity: { value: 1 },
     uNoiseScale: { value: 1.5 },
-    uPlayerPosition: { value: new THREE.Vector3() },
-    baseColor: { value: new THREE.Color(this.grassColorProps.baseColor) },
-    tipColor1: { value: new THREE.Color(this.grassColorProps.tipColor1) },
-    tipColor2: { value: new THREE.Color(this.grassColorProps.tipColor2) },
-    noiseTexture: { value: new THREE.Texture() },
-    grassAlphaTexture: { value: new THREE.Texture() },
+    uPlayerPosition: { value: new Vector3() },
+    baseColor: { value: new Color(this.grassColorProps.baseColor) },
+    tipColor1: { value: new Color(this.grassColorProps.tipColor1) },
+    tipColor2: { value: new Color(this.grassColorProps.tipColor2) },
+    noiseTexture: { value: new Texture() },
+    grassAlphaTexture: { value: new Texture() },
   };
 
   private mergeUniforms(newUniforms?: GrassUniformsInterface) {
@@ -52,8 +62,8 @@ export class GrassMaterial {
   }
   constructor(grassProps?: GrassUniformsInterface) {
     this.mergeUniforms(grassProps);
-    this.material = new THREE.MeshLambertMaterial({
-      side: THREE.DoubleSide,
+    this.material = new MeshLambertMaterial({
+      side: DoubleSide,
       color: 0x229944,
       transparent: true,
       alphaTest: 0.1,
@@ -75,7 +85,7 @@ export class GrassMaterial {
     this.uniforms.uTime.value = delta;
   }
 
-  private setupGrassMaterial(material: THREE.Material) {
+  private setupGrassMaterial(material: Material) {
     material.onBeforeCompile = (shader) => {
       shader.uniforms = {
         ...shader.uniforms,
@@ -99,7 +109,7 @@ export class GrassMaterial {
     };
   }
 
-  setupTextures(grassAlphaTexture: THREE.Texture, noiseTexture: THREE.Texture) {
+  setupTextures(grassAlphaTexture: Texture, noiseTexture: Texture) {
     this.uniforms.grassAlphaTexture.value = grassAlphaTexture;
     this.uniforms.noiseTexture.value = noiseTexture;
   }

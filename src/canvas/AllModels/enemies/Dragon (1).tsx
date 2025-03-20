@@ -1,7 +1,14 @@
-import * as THREE from "three";
-import React from "react";
+import { useAnimations, useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
-import { useGLTF, useAnimations } from "@react-three/drei";
+import { useMemo, useRef } from "react";
+import {
+  AnimationClip,
+  Bone,
+  Group,
+  Mesh,
+  MeshStandardMaterial,
+  SkinnedMesh,
+} from "three";
 import { GLTF, SkeletonUtils } from "three-stdlib";
 
 type ActionName =
@@ -11,35 +18,35 @@ type ActionName =
   | "DragonArmature|Dragon_Flying"
   | "DragonArmature|Dragon_Hit";
 
-interface GLTFAction extends THREE.AnimationClip {
+interface GLTFAction extends AnimationClip {
   name: ActionName;
 }
 
 type GLTFResult = GLTF & {
   nodes: {
-    Eyes_1: THREE.Mesh;
-    Eyes_2: THREE.Mesh;
-    Dragon_1: THREE.SkinnedMesh;
-    Dragon_2: THREE.SkinnedMesh;
-    Dragon_3: THREE.SkinnedMesh;
-    Dragon_4: THREE.SkinnedMesh;
-    Root: THREE.Bone;
+    Eyes_1: Mesh;
+    Eyes_2: Mesh;
+    Dragon_1: SkinnedMesh;
+    Dragon_2: SkinnedMesh;
+    Dragon_3: SkinnedMesh;
+    Dragon_4: SkinnedMesh;
+    Root: Bone;
   };
   materials: {
-    Eyes: THREE.MeshStandardMaterial;
-    Main: THREE.MeshStandardMaterial;
-    Belly: THREE.MeshStandardMaterial;
-    Claws: THREE.MeshStandardMaterial;
+    Eyes: MeshStandardMaterial;
+    Main: MeshStandardMaterial;
+    Belly: MeshStandardMaterial;
+    Claws: MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };
 
 export function DragonAnimated(props: JSX.IntrinsicElements["group"]) {
-  const group = React.useRef<THREE.Group>(null!);
+  const group = useRef<Group>(null!);
   const { scene, animations } = useGLTF(
     "/3d-assets/glb/enemies/Dragon (1)-transformed.glb"
   );
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
   return (

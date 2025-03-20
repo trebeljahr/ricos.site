@@ -1,14 +1,14 @@
-import * as THREE from "three";
-import React from "react";
+import { useRef, useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
+import { Color, Mesh, MeshStandardMaterial } from "three";
 
 type GLTFResult = GLTF & {
   nodes: {
-    Skeleton_Blade: THREE.Mesh;
+    Skeleton_Blade: Mesh;
   };
   materials: {
-    skeleton: THREE.MeshStandardMaterial;
+    skeleton: MeshStandardMaterial;
   };
 };
 

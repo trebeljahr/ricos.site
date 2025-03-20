@@ -6,7 +6,7 @@ import {
 import { Sky, useHelper } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useControls } from "leva";
-import { useEffect, useRef } from "react";
+import { MutableRefObject, useEffect, useRef } from "react";
 import { FaTemperatureFull } from "react-icons/fa6";
 import {
   CameraHelper,
@@ -83,7 +83,7 @@ export const AnimatedSkyBox = () => {
 
     gl.shadowMap.enabled = true;
     gl.shadowMap.type = PCFSoftShadowMap;
-  }, []);
+  }, [gl]);
 
   useShadowHelper(dirLightRef);
 
@@ -100,7 +100,7 @@ export const AnimatedSkyBox = () => {
 };
 
 export default function useShadowHelper(
-  ref: React.MutableRefObject<Light | undefined>
+  ref: MutableRefObject<Light | undefined>
 ) {
   const helper = useRef<CameraHelper>();
   const scene = useThree((state) => state.scene);
@@ -118,7 +118,7 @@ export default function useShadowHelper(
         scene.remove(helper.current);
       }
     };
-  }, [helper.current?.uuid, ref.current]);
+  }, [helper.current?.uuid, ref, scene]);
 
   useFrame(() => {
     if (!helper.current?.update || !debug) return;

@@ -2,7 +2,11 @@ import { useHealthContext } from "@r3f/Contexts/HealthbarContext";
 import { Trap_empty, Trap_spikes } from "@r3f/AllModels/modular_dungeon_pack_1";
 import { PositionalAudio as PositionalAudioComponent } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { CuboidCollider, RigidBody } from "@react-three/rapier";
+import {
+  CuboidCollider,
+  IntersectionEnterHandler,
+  RigidBody,
+} from "@react-three/rapier";
 import closeSpikeTrapSound from "@sounds/close-spike-trap.mp3";
 import spikeTrapSound from "@sounds/spike-trap.mp3";
 import { useEffect, useRef, useState } from "react";
@@ -51,7 +55,9 @@ export const SpikeTrap = ({ interval = 2000 }: { interval?: number }) => {
     };
   }, [extended, inHitBox]);
 
-  const hitSpikeTrap = () => {
+  const hitSpikeTrap: IntersectionEnterHandler = (event) => {
+    console.log(event);
+
     setInHitBox(true);
   };
 
@@ -65,10 +71,15 @@ export const SpikeTrap = ({ interval = 2000 }: { interval?: number }) => {
         position={[0, 0.6, 0]}
         type="fixed"
         sensor
-        onIntersectionEnter={hitSpikeTrap}
-        onIntersectionExit={leaveSpikeTrap}
+        // activeCollisionTypes={60943}
+        colliders={false}
       >
-        <CuboidCollider args={[1, 0.6, 1]} />
+        <CuboidCollider
+          args={[1, 0.6, 1]}
+          sensor
+          onIntersectionEnter={hitSpikeTrap}
+          onIntersectionExit={leaveSpikeTrap}
+        />
       </RigidBody>
 
       {extended ? <Trap_spikes position={[0, 0, 0]} /> : <Trap_empty />}

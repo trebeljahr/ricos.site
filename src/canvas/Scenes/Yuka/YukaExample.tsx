@@ -5,6 +5,7 @@ import { Velociraptor } from "@r3f/AllModels/dinosaurs_pack";
 import { useFrame, useThree } from "@react-three/fiber";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { poissonDiskSample } from "src/lib/utils/noise";
 import {
   BoxGeometry,
   ColorRepresentation,
@@ -14,7 +15,6 @@ import {
   MeshPhongMaterial,
   Object3D,
   Quaternion,
-  Vector2,
   Vector3,
 } from "three";
 import {
@@ -35,7 +35,6 @@ import {
   treeMinDistance,
 } from "../../ChunkGenerationSystem/config";
 import { BoundingSphereAround } from "../../Helpers/BoundingSphere";
-import { poissonDiskSample } from "src/lib/utils/noise";
 
 const gridSize = tileSize;
 const halfGridSize = gridSize / 2;

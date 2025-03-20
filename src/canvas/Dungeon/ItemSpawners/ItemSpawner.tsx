@@ -75,6 +75,7 @@ export const ItemSpawner: ItemSpawnerType = ({
       <RigidBody
         position={[0, 0.5, 0]}
         type="fixed"
+        sensor
         scale={0.5}
         colliders={false}
       >

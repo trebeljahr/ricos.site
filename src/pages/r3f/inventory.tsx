@@ -156,7 +156,9 @@ const GameWorld: FC = () => {
       console.warn(`Couldn't add ${amountLeft} ${newItem.name} to inventory!`);
       amountAdded > 0 && console.warn(`But added ${amountAdded}.`);
     }
-  }, [addItem, sampleItems]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sampleItems]);
 
   useEffect(() => {
     for (let i = 0; i < 5; i++) {

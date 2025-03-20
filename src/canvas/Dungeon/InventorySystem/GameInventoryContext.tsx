@@ -353,7 +353,8 @@ export const InventoryProvider: FC<InventoryProviderProps> = ({
     playbackRate: 1.2,
   });
   const [playErrorSound] = useSound(errorSound, {
-    volume: 1,
+    volume: 0.5,
+    playbackRate: 1.5,
   });
 
   const handleDragEnd = useCallback(

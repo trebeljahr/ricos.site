@@ -107,8 +107,6 @@ const GameWorld: React.FC = () => {
 
     const { amountLeft, amountAdded } = addItem(newItem);
 
-    console.log({ amountLeft });
-
     if (amountLeft === 0) {
       console.info(
         `You found: ${newItem.name} ${
@@ -157,17 +155,9 @@ const GameWorld: React.FC = () => {
         {/* Game area - only visible when inventory is closed */}
         {!isOpen && (
           <div className="bg-gray-900 rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">
-              Current Location: Dark Forest
-            </h2>
-            <p className="mb-4">
-              You venture through the dense forest, keeping an eye out for
-              valuable items and dangerous creatures.
-            </p>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="bg-gray-800 p-4 rounded-lg">
-                <h3 className="text-lg font-medium mb-2">Explore</h3>
+                <h3 className="text-lg font-medium mb-2">Random Items</h3>
                 <p className="text-sm text-gray-400 mb-3">
                   Search the area for useful items
                 </p>
@@ -180,9 +170,9 @@ const GameWorld: React.FC = () => {
               </div>
 
               <div className="bg-gray-800 p-4 rounded-lg">
-                <h3 className="text-lg font-medium mb-2">Combat</h3>
+                <h3 className="text-lg font-medium mb-2">Mana Potions</h3>
                 <p className="text-sm text-gray-400 mb-3">
-                  Enemies lurk in the shadows
+                  Pickup mana potions
                 </p>
                 <button
                   onClick={() => addManaPotion(50)}

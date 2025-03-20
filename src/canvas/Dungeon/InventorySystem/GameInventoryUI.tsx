@@ -8,6 +8,7 @@ import {
   InventoryProvider,
 } from "./GameInventoryContext";
 import { FaTrash } from "react-icons/fa";
+import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
 
 interface InventorySlotProps {
   item?: Item;
@@ -185,8 +186,17 @@ export const CharacterEquipment: FC = () => {
 };
 
 export const Inventory: FC = () => {
-  const { isOpen, closeInventory, items, maxSlots, getTotalWeight } =
+  const { isOpen, closeInventory, items, openInventory, getTotalWeight } =
     useInventory();
+
+  useSubscribeToKeyPress("e", () => {
+    if (!isOpen) openInventory();
+    else closeInventory();
+  });
+
+  useSubscribeToKeyPress("Escape", () => {
+    if (isOpen) closeInventory();
+  });
 
   const { setNodeRef: setDroppableRef } = useDroppable({
     id: "trashcan",
@@ -195,7 +205,7 @@ export const Inventory: FC = () => {
   if (!isOpen) return null;
 
   return (
-    <div className="not-prose fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="not-prose fixed inset-0 bg-black flex items-center justify-center z-50 w-screen h-screen">
       <div className="bg-gray-900 rounded-lg shadow-2xl max-w-4xl w-full max-h-screen overflow-auto">
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
           <p className="mt-0 font-bold text-white">Inventory</p>
@@ -248,11 +258,11 @@ export const Inventory: FC = () => {
 };
 
 export const InventoryToggleButton: FC = () => {
-  const { toggleInventory } = useInventory();
+  const { openInventory } = useInventory();
 
   return (
     <button
-      onClick={toggleInventory}
+      onClick={openInventory}
       className="fixed bottom-4 right-4 bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition-colors"
     >
       <svg viewBox="0 0 24 24" className="w-6 h-6">

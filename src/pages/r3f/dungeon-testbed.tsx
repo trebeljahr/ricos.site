@@ -26,6 +26,8 @@ import { Enemies } from "@r3f/Dungeon/BuildingBlocks/Enemies";
 import { Wall } from "@r3f/Dungeon/BuildingBlocks/Rooms";
 import { SpikeTrap } from "@r3f/Dungeon/BuildingBlocks/SpikeTrap";
 import { StairCase } from "@r3f/Dungeon/BuildingBlocks/StairCase";
+import { InventoryProvider } from "@r3f/Dungeon/InventorySystem/GameInventoryContext";
+import { Inventory } from "@r3f/Dungeon/InventorySystem/GameInventoryUI";
 import { RandomArmorSpawner } from "@r3f/Dungeon/ItemSpawners/ArmorSpawner";
 import { RandomPotionSpawner } from "@r3f/Dungeon/ItemSpawners/PotionSpawner";
 import { RandomWeaponsSpawner } from "@r3f/Dungeon/ItemSpawners/WeaponSpawner";
@@ -228,21 +230,26 @@ const CanvasContent = () => {
 export default function Page() {
   return (
     <ThreeFiberLayout>
-      <CanvasWithKeyboardInput
-        camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
-      >
-        <HealthContextProvider>
-          <Physics>
-            <CanvasContent />
-            <MinecraftCreativeController
-              initialPosition={[0, 25, 0]}
-              speed={10}
-            >
-              <CapsuleCollider args={[0.2, 0.1]} />
-            </MinecraftCreativeController>
-          </Physics>
-        </HealthContextProvider>
-      </CanvasWithKeyboardInput>
+      <InventoryProvider maxSlots={28} maxWeight={100}>
+        <Inventory />
+
+        <CanvasWithKeyboardInput
+          camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
+        >
+          <HealthContextProvider>
+            <Physics>
+              {perf && <Perf position="bottom-right" />}
+              <CanvasContent />
+              <MinecraftCreativeController
+                initialPosition={[0, 25, 0]}
+                speed={10}
+              >
+                <CapsuleCollider args={[0.2, 0.1]} />
+              </MinecraftCreativeController>
+            </Physics>
+          </HealthContextProvider>
+        </CanvasWithKeyboardInput>
+      </InventoryProvider>
     </ThreeFiberLayout>
   );
 }

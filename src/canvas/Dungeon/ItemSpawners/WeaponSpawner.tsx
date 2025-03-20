@@ -12,7 +12,7 @@ import {
   Sword_big_Golden,
   Sword_Golden,
 } from "@r3f/AllModels/rpg_items_pack";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
 import {
   Collectible,
@@ -20,6 +20,8 @@ import {
   Rarity,
   SpawnerImplementation,
 } from "./ItemSpawner";
+import { useInventory } from "../InventorySystem/GameInventoryContext";
+import { nanoid } from "nanoid";
 
 enum WeaponTypes {
   Sword,
@@ -41,9 +43,29 @@ export const RandomWeaponsSpawner: SpawnerImplementation = (props) => {
     return pickRandomFromArray(weaponTypes);
   }, []);
 
-  const onCollected = (data: WeaponData) => {
-    console.log("collected", data);
-  };
+  const { addItem } = useInventory();
+
+  const onCollected = useCallback(
+    (data: WeaponData) => {
+      console.log("collected", data);
+
+      addItem({
+        id: `weapon-${data.type}-${nanoid()}`,
+        name: Weapon.Component.name,
+        type: "weapon",
+        icon: "/icons/sword.png",
+        description: `A ${Weapon.Component.name} for your adventures.`,
+        stackable: false,
+        maxStack: 1,
+        quantity: 1,
+        value: Math.floor(Math.random() * 100) + 1,
+        weight: Math.floor(Math.random() * 5) + 1,
+        equipable: true,
+        equipSlot: "right",
+      });
+    },
+    [addItem, Weapon]
+  );
 
   return (
     <ItemSpawner

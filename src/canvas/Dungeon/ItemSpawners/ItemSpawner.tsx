@@ -44,7 +44,7 @@ export const ItemSpawner: ItemSpawnerType = ({
     if (intersection) {
       play();
 
-      onCollected(data as any);
+      onCollected(data);
 
       if (!respawnTime) return;
 
@@ -56,7 +56,8 @@ export const ItemSpawner: ItemSpawnerType = ({
     return () => {
       clearTimeout(timeout);
     };
-  }, [intersection, play, respawnTime]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [intersection]);
 
   const ItemRef = useRef<Group>(null!);
 

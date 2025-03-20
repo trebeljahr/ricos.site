@@ -240,7 +240,7 @@ export default function Page() {
         >
           <LevaPanel hidden={!debug} />
           <HealthContextProvider>
-            <Physics debug>
+            <Physics timeStep={"vary"}>
               {perf && <Perf position="bottom-right" />}
               <CanvasContent />
               <FirstPersonControllerWithWeapons />

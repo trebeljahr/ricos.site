@@ -12,6 +12,10 @@ import {
   useSensors,
   PointerSensor,
 } from "@dnd-kit/core";
+import useSound from "use-sound";
+import trashSound from "@sounds/trash.mp3";
+import switchSound from "@sounds/switch.mp3";
+import equipSound from "@sounds/equip.mp3";
 
 // Define types for our inventory system
 export type ItemType = "weapon" | "armor" | "consumable" | "material" | "quest";
@@ -122,8 +126,6 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
         const newItems = prevItems.map((item) => {
           if (item === null) {
             if (stillToAdd > 0) {
-              console.log(newItem.maxStack);
-
               const canAdd = Math.min(newItem.maxStack, stillToAdd);
               stillToAdd -= canAdd;
               return { ...newItem, quantity: canAdd };
@@ -179,22 +181,10 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
     if (itemIndex === undefined) return false;
 
     setItems((prevItems) => {
-      const itemToRemove = prevItems[itemIndex];
-
-      if (itemToRemove?.stackable && itemToRemove.quantity > 1) {
-        const updatedItems = [...prevItems];
-        updatedItems[itemIndex] = {
-          ...itemToRemove,
-          quantity: itemToRemove.quantity - 1,
-        };
-        removed = true;
-        return updatedItems;
-      } else {
-        removed = true;
-        const newItems = [...prevItems];
-        newItems[itemIndex] = null;
-        return newItems;
-      }
+      removed = true;
+      const newItems = [...prevItems];
+      newItems[itemIndex] = null;
+      return newItems;
     });
 
     return removed;
@@ -265,8 +255,6 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
       const targetSlot = slotMapping[slot];
       const itemFromEquipped = currentlyEquipped[targetSlot];
 
-      console.log(itemFromEquipped);
-
       if (itemFromEquipped) {
         setItems((prevItems) => {
           const newItems = [...prevItems];
@@ -281,6 +269,8 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
 
       return newEquippedItems;
     });
+
+    playEquipSound({ playbackRate: 1 });
 
     return true;
   };
@@ -306,17 +296,11 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
     const noItemInInventorySlot = items[inventorySlot] === null;
     const canMoveItem = itemInEquipmentSlot !== null && noItemInInventorySlot;
 
-    console.log({
-      canMoveItem,
-      itemInEquipmentSlot,
-      inventorySlot,
-      equippedItems,
-      items,
-    });
-
     if (!canMoveItem) {
       return;
     }
+
+    playEquipSound({ playbackRate: 1.5 });
 
     setItems((prevItems) => {
       const newItems = [...prevItems];
@@ -336,14 +320,11 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
       if (sourceIndex === undefined || destinationIndex === undefined) {
         return prevItems;
       }
-      console.log(sourceIndex, destinationIndex);
 
       const newItems = [...prevItems];
 
       const movingItem = newItems[sourceIndex];
       const destinationItem = newItems[destinationIndex];
-
-      console.log(movingItem, destinationItem);
 
       if (!movingItem) {
         return prevItems;
@@ -352,23 +333,62 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
       newItems[sourceIndex] = destinationItem || null;
       newItems[destinationIndex] = movingItem;
 
-      console.log(newItems);
-
       return newItems;
     });
   };
 
+  const [playTrashSound] = useSound(trashSound, {
+    volume: 0.2,
+    playbackRate: 1.5,
+  });
+  const [playSwitchSound] = useSound(switchSound, {
+    volume: 0.3,
+    playbackRate: 2,
+  });
+  const [playEquipSound] = useSound(equipSound, {
+    volume: 0.8,
+    playbackRate: 1.2,
+  });
+
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
-      console.log(event);
-
       const { active, over } = event;
       if (!active || !over) {
         return;
       }
+      if (over.id === "trashcan") {
+        const index = active.data.current?.slotIndex;
+        if (index !== undefined) {
+          removeItem(index);
+          playTrashSound();
+        }
 
+        if (active.data.current?.isEquipmentSlot) {
+          setEquippedItems((prev) => {
+            const newEquippedItems = { ...prev };
+
+            const slotType = active.data.current?.slotType as
+              | HandSlot
+              | ArmorSlot;
+            const slotMapping: Record<string, keyof EquippedItems> = {
+              head: "head",
+              chest: "chest",
+              legs: "legs",
+              feet: "feet",
+              left: "leftHand",
+              right: "rightHand",
+            };
+            const slot = slotMapping[slotType];
+            if (slot) {
+              newEquippedItems[slot] = null;
+            }
+            return newEquippedItems;
+          });
+          playTrashSound();
+        }
+        return;
+      }
       if (over.data.current?.isEquipmentSlot) {
-        console.log("drag to equipment");
         equipItem(active.data.current?.slotIndex, over.data.current?.slotType);
         return;
       }
@@ -376,11 +396,6 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
         active.data.current?.isEquipmentSlot &&
         over.data.current?.slotIndex !== undefined
       ) {
-        console.log(
-          "drag from equipment",
-          active.data.current?.item,
-          over.data.current?.slotIndex
-        );
         unequipItem(
           active.data.current?.slotType,
           over.data.current?.slotIndex
@@ -388,6 +403,7 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({
         return;
       }
 
+      playSwitchSound();
       moveItem(active.data.current?.slotIndex, over?.data.current?.slotIndex);
     },
     [moveItem]

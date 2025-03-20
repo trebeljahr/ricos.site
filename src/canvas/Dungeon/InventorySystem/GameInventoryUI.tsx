@@ -7,6 +7,7 @@ import {
   HandSlot,
   InventoryProvider,
 } from "./GameInventoryContext";
+import { FaTrash } from "react-icons/fa";
 
 interface InventorySlotProps {
   item?: Item;
@@ -195,6 +196,10 @@ export const Inventory: React.FC = () => {
 
   if (!isOpen) return null;
 
+  const { setNodeRef: setDroppableRef } = useDroppable({
+    id: "trashcan",
+  });
+
   return (
     <div className="not-prose fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-gray-900 rounded-lg shadow-2xl max-w-4xl w-full max-h-screen overflow-auto">
@@ -219,7 +224,7 @@ export const Inventory: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-4 flex flex-col sm:flex-row gap-6 relative">
+        <div className="p-4 flex flex-col sm:flex-row gap-6 relative overflow-hidden">
           <CharacterEquipment />
 
           <div className="flex-1">
@@ -234,6 +239,13 @@ export const Inventory: React.FC = () => {
                 );
               })}
             </div>
+          </div>
+
+          <div
+            className="w-16 h-16 bg-gray-800 border-2 border-gray-600 rounded-md flex items-center justify-center absolute bottom-2 right-2"
+            ref={setDroppableRef}
+          >
+            <FaTrash />
           </div>
         </div>
       </div>

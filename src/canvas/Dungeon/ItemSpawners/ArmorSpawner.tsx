@@ -36,7 +36,7 @@ export const RandomArmorSpawner: SpawnerImplementation = (props) => {
   }, []);
 
   const onCollected = (data: any) => {
-    console.log(data);
+    console.log("collected", data);
   };
   return (
     <ItemSpawner

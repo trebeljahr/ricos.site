@@ -17,8 +17,9 @@ import {
   WallCover_Modular,
   Woodfire,
 } from "@r3f/AllModels/modular_dungeon_pack_1";
-import { perf } from "@r3f/ChunkGenerationSystem/config";
+import { debug, perf } from "@r3f/ChunkGenerationSystem/config";
 import { HealthContextProvider } from "@r3f/Contexts/HealthbarContext";
+import { FirstPersonControllerWithWeapons } from "@r3f/Controllers/IsaacMasonFirstPersonController";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { MinecraftCreativeController } from "@r3f/Controllers/MinecraftCreativeController";
 import { BackgroundMusicLoop } from "@r3f/Dungeon/BuildingBlocks/BackgroundMusic";
@@ -33,9 +34,10 @@ import { RandomPotionSpawner } from "@r3f/Dungeon/ItemSpawners/PotionSpawner";
 import { RandomWeaponsSpawner } from "@r3f/Dungeon/ItemSpawners/WeaponSpawner";
 import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
 import useShadowHelper from "@r3f/Helpers/OverheadLights";
-import { Plane, Sky } from "@react-three/drei";
+import { Box, Plane, Sky } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
-import { CapsuleCollider, Physics } from "@react-three/rapier";
+import { CapsuleCollider, Physics, RigidBody } from "@react-three/rapier";
+import { LevaPanel } from "leva";
 import { Perf } from "r3f-perf";
 import { useEffect, useRef } from "react";
 import { DirectionalLight, Group, Mesh, PCFSoftShadowMap } from "three";
@@ -113,7 +115,6 @@ const CanvasContent = () => {
         position={[20, 10, 20]}
       />
       <ambientLight args={["#404040", 1]} />
-
       <group position={[0, 0, -1]}>
         <Floor_Modular position-x={-3} />
         <Floor_Modular position-x={-1} />
@@ -139,55 +140,59 @@ const CanvasContent = () => {
       <StairCase position={[-11, 1, 0]} />
       {/* <StairCase position={[-11, 5, -8]} /> */}
 
-      <Arch position={[0, 0, 0]} />
-      <Wall_Modular position={[3, 1, 0]} />
-      <Wall_Modular position={[3, 3, 0]} />
-      <Wall_Modular position={[-3, 1, 0]} />
-      <Wall_Modular position={[-3, 2, 0]} />
-      <Wall_Modular position={[-3, 3, 0]} />
-
-      <group position={[0, 0, -8]}>
-        <SpikeTrap interval={1000} />
-        <Arch position={[0, 0, 0]} />
+      <RigidBody type="fixed">
         <Wall_Modular position={[3, 1, 0]} />
         <Wall_Modular position={[3, 3, 0]} />
         <Wall_Modular position={[-3, 1, 0]} />
         <Wall_Modular position={[-3, 2, 0]} />
         <Wall_Modular position={[-3, 3, 0]} />
+      </RigidBody>
+
+      <RigidBody type="fixed" colliders={"trimesh"}>
+        <Arch />
+      </RigidBody>
+
+      <group position={[0, 0, -8]}>
+        <SpikeTrap interval={1000} />
+        <RigidBody type="fixed" colliders={"trimesh"}>
+          <Arch />
+        </RigidBody>
+        <RigidBody type="fixed">
+          <Wall_Modular position={[3, 1, 0]} />
+          <Wall_Modular position={[3, 3, 0]} />
+          <Wall_Modular position={[-3, 1, 0]} />
+          <Wall_Modular position={[-3, 3, 0]} />
+        </RigidBody>
       </group>
       <group rotation-y={Math.PI / 2} position-x={4}>
-        <Wall_Modular position={[1, 1, 0]} />
-        <Wall_Modular position={[1, 2, 0]} />
-        <Wall_Modular position={[1, 3, 0]} />
+        <RigidBody type="fixed">
+          <Wall_Modular position={[1, 1, 0]} />
+          <Wall_Modular position={[1, 3, 0]} />
 
-        <Wall_Modular position={[3, 1, 0]} />
-        <Wall_Modular position={[3, 2, 0]} />
-        <Wall_Modular position={[3, 3, 0]} />
+          <Wall_Modular position={[3, 1, 0]} />
+          <Wall_Modular position={[3, 3, 0]} />
 
-        <Wall_Modular position={[5, 1, 0]} />
-        <Wall_Modular position={[5, 2, 0]} />
-        <Wall_Modular position={[5, 3, 0]} />
+          <Wall_Modular position={[5, 1, 0]} />
+          <Wall_Modular position={[5, 3, 0]} />
 
-        <Wall_Modular position={[7, 1, 0]} />
-        <Wall_Modular position={[7, 2, 0]} />
-        <Wall_Modular position={[7, 3, 0]} />
+          <Wall_Modular position={[7, 1, 0]} />
+          <Wall_Modular position={[7, 3, 0]} />
+        </RigidBody>
       </group>
       <group rotation-y={Math.PI / 2} position-x={-4}>
-        <Wall_Modular position={[1, 1, 0]} />
-        <Wall_Modular position={[1, 2, 0]} />
-        <Wall_Modular position={[1, 3, 0]} />
+        <RigidBody type="fixed">
+          <Wall_Modular position={[1, 1, 0]} />
+          <Wall_Modular position={[1, 3, 0]} />
 
-        <Wall_Modular position={[3, 1, 0]} />
-        <Wall_Modular position={[3, 2, 0]} />
-        <Wall_Modular position={[3, 3, 0]} />
+          <Wall_Modular position={[3, 1, 0]} />
+          <Wall_Modular position={[3, 3, 0]} />
 
-        <Wall_Modular position={[5, 1, 0]} />
-        <Wall_Modular position={[5, 2, 0]} />
-        <Wall_Modular position={[5, 3, 0]} />
+          <Wall_Modular position={[5, 1, 0]} />
+          <Wall_Modular position={[5, 3, 0]} />
 
-        <Wall_Modular position={[7, 1, 0]} />
-        <Wall_Modular position={[7, 2, 0]} />
-        <Wall_Modular position={[7, 3, 0]} />
+          <Wall_Modular position={[7, 1, 0]} />
+          <Wall_Modular position={[7, 3, 0]} />
+        </RigidBody>
       </group>
       <Column2 position={[4, 0, 0]} />
       <Column2 position={[-4, 0, 0]} />
@@ -211,18 +216,15 @@ const CanvasContent = () => {
         <Trap_spikes position-z={5} position-x={-1} />
       </group>
 
-      <Plane
-        args={[100, 100]}
-        position={[0, -0.1, 0]}
-        rotation-x={-Math.PI / 2}
-        receiveShadow={true}
-      >
-        <meshStandardMaterial
-          color={"#959393"}
-          roughness={0.9}
-          metalness={0.1}
-        />
-      </Plane>
+      <RigidBody position={[0, -1, 0]} colliders={"cuboid"} type={"fixed"}>
+        <Box args={[100, 2, 100]} position={[0, -0.1, 0]} receiveShadow={true}>
+          <meshStandardMaterial
+            color={"#959393"}
+            roughness={0.9}
+            metalness={0.1}
+          />
+        </Box>
+      </RigidBody>
     </>
   );
 };
@@ -236,16 +238,18 @@ export default function Page() {
         <CanvasWithKeyboardInput
           camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
         >
+          <LevaPanel hidden={!debug} />
           <HealthContextProvider>
-            <Physics>
+            <Physics debug>
               {perf && <Perf position="bottom-right" />}
               <CanvasContent />
-              <MinecraftCreativeController
+              <FirstPersonControllerWithWeapons />
+              {/* <MinecraftCreativeController
                 initialPosition={[0, 25, 0]}
                 speed={10}
-              >
-                <CapsuleCollider args={[0.2, 0.1]} />
-              </MinecraftCreativeController>
+              > */}
+              {/* <CapsuleCollider args={[0.2, 0.1]} /> */}
+              {/* </MinecraftCreativeController> */}
             </Physics>
           </HealthContextProvider>
         </CanvasWithKeyboardInput>

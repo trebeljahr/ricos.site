@@ -115,7 +115,7 @@ export const Enemies = () => {
   );
 
   return (
-    <group position={[-30, 0, -50]}>
+    <group position={[-30, 0, -50]} scale={0.9}>
       <GridOfModels assets={enemys} rotation={[0, Math.PI, 0]} />
       {skeletonTypes.map(({ skeletonType, itemLeft, itemRight }, index) => {
         return (

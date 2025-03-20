@@ -12,12 +12,12 @@ type Modes =
 const debug = false;
 const physicsDebug = false;
 const normalsDebug = false;
-const wireframe = true;
+const wireframe = false;
 const flatShading = false;
 const onlyRenderOnce = false;
 const debugCamera = false;
 const recording = false;
-const perf = !recording && true;
+const perf = !recording && false;
 const nav = !recording && true;
 const visualizeHeight = true;
 

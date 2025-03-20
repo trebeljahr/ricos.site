@@ -29,8 +29,8 @@ const rotation = new Vector3();
 const characterLinvel = new Vector3();
 const characterTranslation = new Vector3();
 
-const NORMAL_FOV = 100;
-const SPRINT_FOV = 110;
+const NORMAL_FOV = 75;
+const SPRINT_FOV = 90;
 
 type KinematicCharacterControllerProps = {
   characterRigidBody: RefObject<RapierRigidBody>;
@@ -335,6 +335,12 @@ export const Player = (props: ThreeElements["group"]) => {
       </RigidBody>
 
       <group ref={shieldHandRef}>
+        {/* <RiggedArms
+          scale={0.2}
+          position={[0, -0.5, 0.5]}
+          rotation-y={Math.PI / 2}
+        /> */}
+
         {equippedItems.leftHand ? (
           <SkeletonShield1
             position={[-0.3, -0.4, 0.3]}
@@ -350,7 +356,6 @@ export const Player = (props: ThreeElements["group"]) => {
           />
         )}
       </group>
-      <RiggedArms scale={4} />
 
       <group
         ref={swordHandRef}
@@ -358,15 +363,16 @@ export const Player = (props: ThreeElements["group"]) => {
           const sword = swordHandRef.current;
           if (sword) {
             sword.children[0].rotation.x = -1;
+            sword.children[0].position.z = -0.5;
           }
         }}
       >
-        <group scale={1.4}>
+        <group>
           {equippedItems.rightHand && (
             <Sword_big
               position={[0.5, -0.45, 0.3]}
               rotation-y={-Math.PI / 2}
-              scale={0.3}
+              scale={0.4}
             />
           )}
           <Glove

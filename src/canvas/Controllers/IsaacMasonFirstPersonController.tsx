@@ -1,4 +1,5 @@
 import Rapier, { QueryFilterFlags } from "@dimforge/rapier3d-compat";
+import { HumanHand } from "@r3f/AllModels/Human hand";
 import { RiggedArms } from "@r3f/AllModels/Rigged Fps Arms";
 import { Glove, Sword_big } from "@r3f/AllModels/rpg_items_pack";
 import { SkeletonShield1 } from "@r3f/AllModels/weapons/Skeleton Shield-1";
@@ -29,20 +30,22 @@ const rotation = new Vector3();
 const characterLinvel = new Vector3();
 const characterTranslation = new Vector3();
 
-const NORMAL_FOV = 75;
-const SPRINT_FOV = 90;
+const NORMAL_FOV = 60;
+const SPRINT_FOV = 75;
 
 type KinematicCharacterControllerProps = {
   characterRigidBody: RefObject<RapierRigidBody>;
   characterColliderRef: RefObject<Rapier.Collider>;
   shieldHandRef: RefObject<Group | null>;
   swordHandRef: RefObject<Group | null>;
+  updatingCamera?: boolean;
 };
 
 const useKinematicCharacterController = ({
   characterRigidBody,
   characterColliderRef,
   shieldHandRef,
+  updatingCamera = true,
   swordHandRef,
 }: KinematicCharacterControllerProps) => {
   const rapier = useRapier();
@@ -237,6 +240,8 @@ const useKinematicCharacterController = ({
 
     if (newPosition.y < -4) {
       newPosition.y = 20;
+      newPosition.x = 0;
+      newPosition.z = 0;
     }
 
     const movement = characterController.current.computedMovement();
@@ -247,14 +252,16 @@ const useKinematicCharacterController = ({
     characterRigidBody.current.setNextKinematicTranslation(newPosition);
 
     // update camera
-    camera.position.set(translation.x, translation.y, translation.z);
-    if (camera instanceof PerspectiveCamera) {
-      camera.fov = MathUtils.lerp(
-        camera.fov,
-        sprint && currentSpeed > 0.1 ? SPRINT_FOV : NORMAL_FOV,
-        10 * delta
-      );
-      camera.updateProjectionMatrix();
+    if (updatingCamera) {
+      camera.position.set(translation.x, translation.y, translation.z);
+      if (camera instanceof PerspectiveCamera) {
+        camera.fov = MathUtils.lerp(
+          camera.fov,
+          sprint && currentSpeed > 0.1 ? SPRINT_FOV : NORMAL_FOV,
+          10 * delta
+        );
+        camera.updateProjectionMatrix();
+      }
     }
 
     // update hands
@@ -283,11 +290,13 @@ const useKinematicCharacterController = ({
         );
       }
 
-      group.rotation.copy(camera.rotation);
+      if (updatingCamera) {
+        group.rotation.copy(camera.rotation);
 
-      group.position
-        .copy(camera.position)
-        .add(camera.getWorldDirection(rotation).multiplyScalar(1));
+        group.position
+          .copy(camera.position)
+          .add(camera.getWorldDirection(rotation).multiplyScalar(1));
+      }
 
       const bobScalar = MathUtils.clamp(horizontalSpeed / 10, 0, 1);
 
@@ -318,6 +327,7 @@ export const Player = (props: ThreeElements["group"]) => {
     characterColliderRef,
     shieldHandRef,
     swordHandRef,
+    updatingCamera: true,
   });
 
   return (
@@ -335,26 +345,30 @@ export const Player = (props: ThreeElements["group"]) => {
       </RigidBody>
 
       <group ref={shieldHandRef}>
-        {/* <RiggedArms
-          scale={0.2}
-          position={[0, -0.5, 0.5]}
-          rotation-y={Math.PI / 2}
-        /> */}
-
-        {equippedItems.leftHand ? (
-          <SkeletonShield1
-            position={[-0.3, -0.4, 0.3]}
-            rotation-y={Math.PI}
-            scale={0.7}
-          />
-        ) : (
-          <Glove
+        <group position={[0, 0, -0.5]}>
+          {equippedItems.leftHand && (
+            <SkeletonShield1
+              position={[-0.3, -0.4, 0.3]}
+              rotation-y={Math.PI}
+              scale={0.7}
+            />
+          )}
+          {/* <Glove
             scale={[-0.3, 0.3, 0.3]}
             rotation-y={Math.PI}
             rotation-z={-Math.PI / 3}
             position={[-0.5, -0.4, 0.3]}
-          />
-        )}
+          /> */}
+
+          <group
+            scale={0.1}
+            position={[-0.5, -0.5, 0]}
+            rotation={[-Math.PI / 2, Math.PI / 6, Math.PI / 2]}
+          >
+            <axesHelper args={[1]} position={[0, 0, 0]} />
+            <HumanHand />
+          </group>
+        </group>
       </group>
 
       <group
@@ -367,20 +381,21 @@ export const Player = (props: ThreeElements["group"]) => {
           }
         }}
       >
-        <group>
+        <group
+          scale={[-0.1, 0.1, 0.1]}
+          position={[0.5, -0.5, 0]}
+          rotation={[0, -Math.PI / 4, -Math.PI / 2]}
+        >
           {equippedItems.rightHand && (
             <Sword_big
-              position={[0.5, -0.45, 0.3]}
-              rotation-y={-Math.PI / 2}
-              scale={0.4}
+              // position={[0]}
+              position={[8, 3, 1]}
+              // rotation-x={-Math.PI / 2}
+              scale={6}
             />
           )}
-          <Glove
-            rotation-y={Math.PI}
-            rotation-z={Math.PI / 3}
-            scale={0.3}
-            position={[0.5, -0.4, 0.3]}
-          />
+          <axesHelper args={[1]} position={[0, 0, 0]} />
+          <HumanHand />
         </group>
       </group>
     </group>

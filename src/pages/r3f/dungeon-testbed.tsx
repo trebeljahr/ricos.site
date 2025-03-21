@@ -17,14 +17,15 @@ import {
   WallCover_Modular,
   Woodfire,
 } from "@r3f/AllModels/modular_dungeon_pack_1";
+import CharacterWithAnimations from "@r3f/Characters/ControllableCharacter";
 import { debug, perf } from "@r3f/ChunkGenerationSystem/config";
 import { HealthContextProvider } from "@r3f/Contexts/HealthbarContext";
-import { FirstPersonControllerWithWeapons } from "@r3f/Controllers/IsaacMasonFirstPersonController";
+import { EcctrlControllerCustom } from "@r3f/Controllers/CustomEcctrlController/Controller";
+import { EcctrlController } from "@r3f/Controllers/EcctrlController";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
-import { MinecraftCreativeController } from "@r3f/Controllers/MinecraftCreativeController";
+import { ThirdPersonControllerWawaSensei } from "@r3f/Controllers/ThirdPersonControllerWawaSensei";
 import { BackgroundMusicLoop } from "@r3f/Dungeon/BuildingBlocks/BackgroundMusic";
 import { Enemies } from "@r3f/Dungeon/BuildingBlocks/Enemies";
-import { Wall } from "@r3f/Dungeon/BuildingBlocks/Rooms";
 import { SpikeTrap } from "@r3f/Dungeon/BuildingBlocks/SpikeTrap";
 import { StairCase } from "@r3f/Dungeon/BuildingBlocks/StairCase";
 import { InventoryProvider } from "@r3f/Dungeon/InventorySystem/GameInventoryContext";
@@ -34,9 +35,9 @@ import { RandomPotionSpawner } from "@r3f/Dungeon/ItemSpawners/PotionSpawner";
 import { RandomWeaponsSpawner } from "@r3f/Dungeon/ItemSpawners/WeaponSpawner";
 import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
 import useShadowHelper from "@r3f/Helpers/OverheadLights";
-import { Box, Plane, Sky } from "@react-three/drei";
+import { Box, Sky } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
-import { CapsuleCollider, Physics, RigidBody } from "@react-three/rapier";
+import { Physics, RigidBody } from "@react-three/rapier";
 import { LevaPanel } from "leva";
 import { Perf } from "r3f-perf";
 import { useEffect, useRef } from "react";
@@ -240,16 +241,28 @@ export default function Page() {
         >
           <LevaPanel hidden={!debug} />
           <HealthContextProvider>
-            <Physics timeStep={"vary"}>
+            <Physics timeStep={"vary"} debug>
               {perf && <Perf position="bottom-right" />}
               <CanvasContent />
-              <FirstPersonControllerWithWeapons />
-              {/* <MinecraftCreativeController
+              {/* <FirstPersonControllerWithWeapons />
+              <MinecraftCreativeController
                 initialPosition={[0, 25, 0]}
                 speed={10}
-              > */}
-              {/* <CapsuleCollider args={[0.2, 0.1]} /> */}
-              {/* </MinecraftCreativeController> */}
+              >
+               <CapsuleCollider args={[0.2, 0.1]} />
+              </MinecraftCreativeController> */}
+              {/* <EcctrlController position={[0, 40, 0]} /> */}
+              <EcctrlControllerCustom
+                position={[0, 40, 0]}
+                slopeDownExtraForce={0}
+                camCollision={true}
+                camCollisionOffset={0.5}
+              >
+                <group position={[0, -0.7, 0]} scale={0.7}>
+                  <CharacterWithAnimations characterName="y-bot" />
+                </group>
+              </EcctrlControllerCustom>
+              {/* <ThirdPersonControllerWawaSensei /> */}
             </Physics>
           </HealthContextProvider>
         </CanvasWithKeyboardInput>

@@ -66,7 +66,7 @@ export const useGenericAnimationController = ({
 
     toPlay.weight = 2;
     toPlay.setLoop(LoopOnce, 1);
-    toPlay.reset().play();
+    toPlay.reset().fadeIn(0.2).play();
   };
 
   return { updateAnimation, mixInAnimation };

@@ -11,23 +11,7 @@ import { useGenericAnimationController } from "../GenericAnimationController";
 import { useFrame } from "@react-three/fiber";
 import { EcctrlControllerCustom, userDataType } from "./Controller";
 import { MixamoCharacterNames } from "@r3f/Characters/Character";
-
-export const useMouseClicked = () => {
-  const mouseClicked = useRef(false);
-
-  useEffect(() => {
-    const handleMouseDown = () => {
-      mouseClicked.current = true;
-    };
-
-    document.addEventListener("pointerdown", handleMouseDown);
-    return () => {
-      document.removeEventListener("pointerdown", handleMouseDown);
-    };
-  }, []);
-
-  return mouseClicked;
-};
+import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
 
 export const MixamoEcctrlControllerWithAnimations = () => {
   const characterRef = useRef<CustomEcctrlRigidBody>(null!);
@@ -42,7 +26,28 @@ export const MixamoEcctrlControllerWithAnimations = () => {
     actions,
   });
 
-  const mouseClicked = useMouseClicked();
+  // const mouseClicked = useMouseClicked();
+
+  useEffect(() => {
+    const handleMouseDown = () => {
+      if (!characterRef.current) return;
+      const userData = characterRef.current.userData as userDataType;
+      if (!userData.canJump) return;
+
+      const actions = [
+        SupportedAnimations.SwordR,
+        SupportedAnimations.StabR,
+        SupportedAnimations.SlashR,
+      ];
+
+      mixInAnimation(pickRandomFromArray(actions));
+    };
+
+    document.addEventListener("pointerdown", handleMouseDown);
+    return () => {
+      document.removeEventListener("pointerdown", handleMouseDown);
+    };
+  }, [mixInAnimation]);
 
   useFrame(() => {
     const { forward, backward, leftward, rightward, jump, run } = get();
@@ -83,16 +88,6 @@ export const MixamoEcctrlControllerWithAnimations = () => {
         });
       }
     }
-
-    if (mouseClicked.current) {
-      console.log("mouse was clicked");
-
-      if (prev.current !== SupportedAnimations.Wave) {
-        mixInAnimation(SupportedAnimations.Wave);
-      }
-
-      mouseClicked.current = false;
-    }
   });
 
   return (
@@ -102,7 +97,7 @@ export const MixamoEcctrlControllerWithAnimations = () => {
         slopeDownExtraForce={0}
         camCollision={true}
         camCollisionOffset={0.5}
-        mode="FixedCamera"
+        // mode="FixedCamera"
         ref={characterRef}
       >
         <group position={[0, -0.7, 0]} scale={0.7}>

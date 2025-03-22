@@ -19,7 +19,7 @@ import {
 } from "@r3f/AllModels/modular_dungeon_pack_1";
 import { MixamoCharacterNames } from "@r3f/Characters/Character";
 import {
-  CharacterModel,
+  AnyMixamoCharacter,
   SupportedAnimations,
   useMixamoAnimations,
 } from "@r3f/Characters/CharacterWithAnimations";
@@ -243,7 +243,7 @@ const CanvasContent = () => {
   );
 };
 
-const Controllers = () => {
+const ControllerWithAnimation = () => {
   const characterRef = useRef<CustomEcctrlRigidBody>(null!);
   const prev = useRef<SupportedAnimations>(null!);
 
@@ -287,53 +287,26 @@ const Controllers = () => {
           }
         );
       }
-    } else if (!canJump) {
-      // console.log("set to falling");
-      // setAnimation({
-      //   name: SupportedAnimations.JumpingUp,
-      //   options: {
-      //     looping: false,
-      //     fade: 0.1,
-      //   },
-      // });
     }
-    // On high sky, play falling animation
-    // if (rayHit == null && isFalling) {
-    //   fallAnimation();
-    // }
   });
 
   return (
-    <>
-      {/* <FirstPersonControllerWithWeapons />
-              <MinecraftCreativeController
-                initialPosition={[0, 25, 0]}
-                speed={10}
-              >
-               <CapsuleCollider args={[0.2, 0.1]} />
-              </MinecraftCreativeController> */}
-      {/* <EcctrlController position={[0, 40, 0]} /> */}
-      <EcctrlControllerCustom
-        position={[0, 40, 0]}
-        slopeDownExtraForce={0}
-        camCollision={true}
-        camCollisionOffset={0.5}
-        mode="FixedCamera"
-        ref={characterRef}
-      >
-        <group position={[0, -0.7, 0]} scale={0.7}>
-          {/* <WrapWithAnimations animationToPlay={animation}>
-            <CharacterModel characterName={MixamoCharacterNames.XBot} />
-          </WrapWithAnimations> */}
-          <Suspense fallback={null}>
-            <group ref={group} dispose={null}>
-              <CharacterModel characterName={MixamoCharacterNames.XBot} />
-            </group>
-          </Suspense>
-        </group>
-      </EcctrlControllerCustom>
-      {/* <ThirdPersonControllerWawaSensei /> */}
-    </>
+    <EcctrlControllerCustom
+      position={[0, 40, 0]}
+      slopeDownExtraForce={0}
+      camCollision={true}
+      camCollisionOffset={0.5}
+      mode="FixedCamera"
+      ref={characterRef}
+    >
+      <group position={[0, -0.7, 0]} scale={0.7}>
+        <Suspense fallback={null}>
+          <group ref={group} dispose={null}>
+            <AnyMixamoCharacter characterName={MixamoCharacterNames.XBot} />
+          </group>
+        </Suspense>
+      </group>
+    </EcctrlControllerCustom>
   );
 };
 
@@ -351,7 +324,7 @@ export default function Page() {
             <Physics timeStep={"vary"} debug>
               {perf && <Perf position="bottom-right" />}
               <CanvasContent />
-              <Controllers />
+              <ControllerWithAnimation />
             </Physics>
           </HealthContextProvider>
         </CanvasWithKeyboardInput>

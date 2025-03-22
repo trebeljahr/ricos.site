@@ -12,7 +12,7 @@ import {
   SkinnedMesh,
 } from "three";
 import { GLTF } from "three-stdlib";
-import { WeaponTypes, useItem } from "../Enemies/Weapons";
+import { WeaponTypes, useWeapon } from "../Enemies/Weapons";
 import { CommonActions } from "./CommonEnemy";
 import { useAttachToBone } from "@hooks/useAttachToBone";
 
@@ -165,8 +165,8 @@ export const SkeletonWithWeapons = ({
   ItemLeft: WeaponTypes;
   skeletonType?: SkeletonTypes;
 }) => {
-  const itemRight = useItem(ProvidedItemRight);
-  const itemLeft = useItem(ProvidedItemLeft);
+  const itemRight = useWeapon(ProvidedItemRight);
+  const itemLeft = useWeapon(ProvidedItemLeft);
 
   const groupRef = useRef<Group>(null!);
 

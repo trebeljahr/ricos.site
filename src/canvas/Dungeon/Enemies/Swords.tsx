@@ -68,3 +68,34 @@ export const useSword5 = () => {
   swordMesh.rotation.set(0, Math.PI, 0);
   return swordMesh;
 };
+
+export const useSword6 = () => {
+  const { nodes, materials } = useGLTF(
+    "/3d-assets/glb/rpg_items_pack/Sword_big_Golden.glb"
+  ) as unknown as GLTFResult;
+
+  const group = new Group();
+  const swordMesh = new Mesh(
+    nodes.Sword_big_Golden_1.geometry,
+    materials.DarkWood
+  );
+  const swordMesh2 = new Mesh(
+    nodes.Sword_big_Golden_2.geometry,
+    materials.DarkSteel
+  );
+  const swordMesh3 = new Mesh(
+    nodes.Sword_big_Golden_3.geometry,
+    materials.LightWood
+  );
+  const swordMesh4 = new Mesh(
+    nodes.Sword_big_Golden_4.geometry,
+    materials.Golden
+  );
+  const swordMesh5 = new Mesh(
+    nodes.Sword_big_Golden_5.geometry,
+    materials.LightGold
+  );
+  group.add(swordMesh, swordMesh2, swordMesh3, swordMesh4, swordMesh5);
+
+  return group;
+};

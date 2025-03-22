@@ -9,16 +9,7 @@ export const useAttachToBone = (
   useEffect(() => {
     let object: Object3D<Bone>;
 
-    if (attachPointName.includes("mixamorig")) {
-      console.log("attaching to bone", attachPointName);
-      console.log(groupRef);
-    }
-
     groupRef.current?.traverse((child) => {
-      if (attachPointName.includes("mixamorig")) {
-        console.log(child.name);
-      }
-
       if (child.name === attachPointName) {
         child.add(thingToAttach);
         object = child as Object3D<Bone>;

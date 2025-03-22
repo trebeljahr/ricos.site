@@ -1,5 +1,8 @@
 import { usePrevious } from "@hooks/usePrevious";
+import { SupportedAnimations } from "@r3f/Characters/CharacterWithAnimations";
 import { useKeyboardControls } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import { animations, mix } from "framer-motion";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import {
   AnimationAction,
@@ -17,6 +20,7 @@ export type AnimationOptions = {
   looping?: boolean;
   fade?: number;
   clampWhenFinished?: boolean;
+  force?: boolean;
 };
 
 export type AnimationState = {
@@ -25,66 +29,128 @@ export type AnimationState = {
   isFinished: boolean;
   timeElapsed: number;
   totalDuration: number;
-  progress: number; // 0 to 1
+  progress: number;
+  isMixedIn: boolean;
+  isCrossFading: boolean;
 };
 
 export const useGenericAnimationController = ({
   actions,
-  mixer,
   defaultFadeDuration = 0.5,
+  defaultAnimation = SupportedAnimations.Idle,
+  mixer,
 }: {
   actions: ActionStore;
   mixer: AnimationMixer;
   defaultFadeDuration?: number;
+  defaultAnimation?: string;
 }) => {
-  const previous = useRef("idle");
-  const [currentState, setCurrentState] = useState<AnimationState>({
-    name: "idle",
+  const previous = useRef(defaultAnimation);
+  const previousMixedIn = useRef<string>(null!);
+  const animationState = useRef<AnimationState>({
+    name: defaultAnimation,
     isPlaying: false,
     isFinished: false,
     timeElapsed: 0,
     totalDuration: 0,
     progress: 0,
+    isMixedIn: false,
+    isCrossFading: false,
+  });
+  const mixedInAnimationState = useRef<AnimationState>({
+    name: "",
+    isPlaying: false,
+    isFinished: false,
+    timeElapsed: 0,
+    totalDuration: 0,
+    progress: 0,
+    isMixedIn: true,
+    isCrossFading: false,
   });
 
-  // Track mixed in animations separately
-  const mixedAnimationRef = useRef<{
-    name: string;
-    action: AnimationAction;
-    startTime: number;
-    isPlaying: boolean;
-    isFinished: boolean;
-  } | null>(null);
+  useFrame(() => {
+    const currentAction = actions[previous.current];
 
-  // Setup animation finished callback
+    if (currentAction) {
+      const totalDuration = currentAction.getClip().duration;
+      const timeElapsed = currentAction.time;
+      const progress = timeElapsed / totalDuration;
+      animationState.current = {
+        name: previous.current,
+        isPlaying: currentAction.isRunning(),
+        isFinished: !currentAction.isRunning() && progress >= 0.99,
+        timeElapsed,
+        totalDuration,
+        progress,
+        isMixedIn: animationState.current.isMixedIn,
+        isCrossFading: animationState.current.isCrossFading,
+      };
+    }
 
-  // Update animation state on each frame
-  // useEffect(() => {
-  //   let frameId: number;
-  //   const updateAnimationState = () => {
-  //     const currentAction = actions[previous.current];
+    const currentMixedIn = actions[previousMixedIn.current];
+    if (currentMixedIn) {
+      const totalDuration = currentMixedIn.getClip().duration;
+      const timeElapsed = currentMixedIn.time;
+      const progress = timeElapsed / totalDuration;
+      mixedInAnimationState.current = {
+        name: previousMixedIn.current,
+        isPlaying: currentMixedIn.isRunning(),
+        isFinished: !currentMixedIn.isRunning() && progress >= 0.99,
+        timeElapsed,
+        totalDuration,
+        progress,
+        isMixedIn: true,
+        isCrossFading: mixedInAnimationState.current.isCrossFading,
+      };
 
-  //     if (currentAction) {
-  //       const totalDuration = currentAction.getClip().duration;
-  //       const timeElapsed = currentAction.time;
-  //       const progress = timeElapsed / totalDuration;
+      if (progress >= 0.7 && !mixedInAnimationState.current.isCrossFading) {
+        const animationBefore = actions[previous.current];
 
-  //       setCurrentState({
-  //         name: previous.current,
-  //         isPlaying: currentAction.isRunning(),
-  //         isFinished: !currentAction.isRunning() && progress >= 0.99,
-  //         timeElapsed,
-  //         totalDuration,
-  //         progress,
-  //       });
-  //     }
+        if (animationBefore) {
+          console.log(
+            `fading out mixed in animation ${previousMixedIn.current} back to ${previous.current}`
+          );
+          currentMixedIn.fadeOut(0.2);
+          animationBefore.reset().fadeIn(0.2).play();
+          animationBefore.loop = LoopRepeat;
+          animationBefore.setLoop(LoopRepeat, Infinity);
+          mixedInAnimationState.current.isCrossFading = true;
+        }
+      }
+    }
+  });
 
-  //     frameId = requestAnimationFrame(updateAnimationState);
-  //   };
+  useEffect(() => {
+    type MixerListener = EventListener<Event, "finished", AnimationMixer>;
 
-  //   frameId = requestAnimationFrame(updateAnimationState);
-  //   return () => cancelAnimationFrame(frameId);
-  // }, [actions]);
+    const listener: MixerListener = (e) => {
+      const name = e.action._clip.name;
+      console.log("animation finished", name);
+
+      console.log(previousMixedIn, name);
+
+      if (previousMixedIn.current === name) {
+        console.log("resetting mixed in animation state");
+        previousMixedIn.current = "";
+        mixedInAnimationState.current = {
+          name: "",
+          isPlaying: false,
+          isFinished: false,
+          timeElapsed: 0,
+          totalDuration: 0,
+          progress: 0,
+          isMixedIn: true,
+          isCrossFading: false,
+        };
+      }
+    };
+
+    mixer.addEventListener("finished", listener);
+
+    return () => {
+      mixer.removeEventListener("finished", listener);
+    };
+  }, [actions, mixer]);
 
   const updateAnimation = (
     newAnimation: string,
@@ -92,11 +158,12 @@ export const useGenericAnimationController = ({
       looping = false,
       fade = defaultFadeDuration,
       clampWhenFinished = true,
+      force = false,
     }: AnimationOptions = {}
   ) => {
-    if (newAnimation === previous.current) return;
+    if (newAnimation === previous.current && !force) return;
 
-    // console.log(`Playing animation: ${newAnimation}`);
+    console.log(newAnimation);
 
     const current = actions[previous.current];
     const toPlay = actions[newAnimation];
@@ -111,103 +178,53 @@ export const useGenericAnimationController = ({
     toPlay.setLoop(looping ? LoopRepeat : LoopOnce, looping ? Infinity : 1);
     toPlay.clampWhenFinished = clampWhenFinished;
 
-    // Reset finished state when starting a new animation
-    // setCurrentState((prev) => ({
-    //   ...prev,
-    //   name: newAnimation,
-    //   isPlaying: true,
-    //   isFinished: false,
-    //   timeElapsed: 0,
-    //   totalDuration: toPlay.getClip().duration,
-    //   progress: 0,
-    // }));
+    animationState.current = {
+      name: newAnimation,
+      isPlaying: true,
+      isFinished: false,
+      timeElapsed: 0,
+      totalDuration: toPlay.getClip().duration,
+      progress: 0,
+      isMixedIn: false,
+      isCrossFading: false,
+    };
   };
 
   const mixInAnimation = (animation: string) => {
-    // if (
-    //   mixedAnimationRef.current &&
-    //   mixedAnimationRef.current.isPlaying &&
-    //   !mixedAnimationRef.current.isFinished
-    // ) {
-    //   console.log(
-    //     `Skipping mix-in of ${animation} because ${mixedAnimationRef.current.name} is still playing`
-    //   );
-    //   return false; // Return false to indicate the animation wasn't mixed in
+    // if (mixedInAnimationState.current.isPlaying) {
+    //   console.log("already mixed in");
+    //   return false;
     // }
-
     const current = actions[previous.current];
     const toPlay = actions[animation];
 
-    if (!toPlay || current === toPlay) return false;
+    if (!toPlay) return false;
 
-    // Configure and play the mixed-in animation
-    toPlay.weight = 2;
-    toPlay.setLoop(LoopOnce, 1);
-    toPlay.reset().fadeIn(0.2).play();
-
-    // Update the mixed animation reference
-    mixedAnimationRef.current = {
+    previousMixedIn.current = animation;
+    mixedInAnimationState.current = {
       name: animation,
-      action: toPlay,
-      startTime: Date.now(),
       isPlaying: true,
       isFinished: false,
+      timeElapsed: 0,
+      totalDuration: toPlay.getClip().duration,
+      progress: 0,
+      isMixedIn: true,
+      isCrossFading: false,
     };
 
-    return true; // Return true to indicate the animation was successfully mixed in
+    toPlay.timeScale = 1.4;
+    toPlay.setLoop(LoopOnce, 1);
+
+    current?.fadeOut(0.2);
+    toPlay.reset().fadeIn(0.2).play();
+    return true;
   };
-
-  // Get information about the current mixed animation
-  const getMixedAnimationState = () => {
-    if (!mixedAnimationRef.current) {
-      return null;
-    }
-
-    const { name, action, startTime, isPlaying, isFinished } =
-      mixedAnimationRef.current;
-    const totalDuration = action.getClip().duration;
-    const timeElapsed = action.time;
-    const progress = timeElapsed / totalDuration;
-
-    return {
-      name,
-      isPlaying,
-      isFinished,
-      startTime,
-      timeElapsed,
-      totalDuration,
-      progress,
-      timeSinceStart: Date.now() - startTime,
-    };
-  };
-
-  useEffect(() => {
-    type MixerListener = EventListener<Event, "finished", AnimationMixer>;
-    type MixerListenerStarted = EventListener<Event, "started", AnimationMixer>;
-
-    const listener: MixerListener = (e) => {
-      console.log(e);
-    };
-    const listenerStart: MixerListenerStarted = (e) => {
-      console.log(e);
-    };
-
-    mixer.addEventListener("finished", listener);
-    mixer.addEventListener("started", listenerStart);
-
-    return () => {
-      mixer.removeEventListener("finished", listener);
-      mixer.removeEventListener("started", listenerStart);
-    };
-  }, [actions, mixer]);
 
   return {
     updateAnimation,
     mixInAnimation,
-    currentAnimationState: currentState,
-    getMixedAnimationState,
-    isAnyMixedAnimationPlaying: () =>
-      mixedAnimationRef.current?.isPlaying || false,
+    animationState,
+    mixedInAnimationState,
   };
 };
 

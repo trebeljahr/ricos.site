@@ -415,6 +415,11 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       movingDirection.set(0, 0, 1);
     }
 
+    const player = characterRef.current?.userData as userDataType;
+    if (player.isDoingStationaryAction) {
+      movingDirection.set(0, 0, 0);
+    }
+
     // Apply character quaternion to moving direction
     movingDirection.applyQuaternion(characterModelIndicator.quaternion);
 
@@ -681,8 +686,10 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
 
     // Character current position/velocity
     if (characterRef.current) {
+      const player = characterRef.current?.userData as userDataType;
       currentPos.copy(characterRef.current.translation() as Vector3);
       currentVel.copy(characterRef.current.linvel() as Vector3);
+
       // Assign userDate properties
       (characterRef.current.userData as userDataType).canJump = canJump;
       (characterRef.current.userData as userDataType).slopeAngle = slopeAngle;
@@ -757,7 +764,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     );
 
     // Move character to the moving direction
-    if (
+    const thereIsMovementInput =
       forward ||
       backward ||
       leftward ||
@@ -765,8 +772,9 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       gamepadKeys.forward ||
       gamepadKeys.backward ||
       gamepadKeys.leftward ||
-      gamepadKeys.rightward
-    ) {
+      gamepadKeys.rightward;
+
+    if (thereIsMovementInput) {
       moveCharacter(delta, run, slopeAngle || 0, movingObjectVelocity);
     }
 
@@ -831,19 +839,6 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
 
     if (potentialHit) rayHit = potentialHit;
 
-    /**Test shape ray */
-    // rayHit = world.castShape(
-    //   currentPos,
-    //   { w: 0, x: 0, y: 0, z: 0 },
-    //   {x:0,y:-1,z:0},
-    //   shape,
-    //   rayLength,
-    //   true,
-    //   null,
-    //   null,
-    //   characterRef.current
-    // );
-
     if (rayHit && rayHit.timeOfImpact < floatingDis + rayHitForgiveness) {
       if (slopeRayHit && actualSlopeAngle < slopeMaxAngle) {
         canJump = true;
@@ -899,7 +894,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
           if (velocityDiff.length() > 30)
             movingObjectVelocity.multiplyScalar(1 / velocityDiff.length());
 
-          // Apply opposite drage force to the stading rigid body, body type 0
+          // Apply opposite drage force to the standing rigid body, body type 0
           // Character moving and unmoving should provide different drag force to the platform
           if (rayHitObjectBodyType === 0) {
             if (
@@ -1311,5 +1306,6 @@ export interface userDataType {
   slopeAngle?: number | null;
   characterRotated?: boolean;
   isOnMovingObject?: boolean;
+  isDoingStationaryAction?: boolean;
   excludeEcctrlRay?: boolean;
 }

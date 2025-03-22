@@ -5,6 +5,7 @@ import {
   useSword3,
   useSword4,
   useSword5,
+  useSword6,
 } from "./Swords";
 import { useAxe1 } from "./Axes";
 import { useBow1 } from "./Bows";
@@ -26,11 +27,12 @@ export const getRandomWeaponType = () => {
 };
 
 export const useRandomWeapon = () => {
-  const item = useItem(getRandomWeaponType());
+  const item = useWeapon(getRandomWeaponType());
   return item;
 };
 
-export const useItem = (itemType: WeaponTypes) => {
+/* eslint-disable react-hooks/rules-of-hooks */
+export const useWeapon = (itemType: WeaponTypes) => {
   switch (itemType) {
     case SwordTypes.Sword1:
       return useSword1();
@@ -42,6 +44,8 @@ export const useItem = (itemType: WeaponTypes) => {
       return useSword4();
     case SwordTypes.Sword5:
       return useSword5();
+    case SwordTypes.Sword6:
+      return useSword6();
     case AxeTypes.Axe1:
       return useAxe1();
     case BowTypes.Bow1:
@@ -77,6 +81,7 @@ export enum SwordTypes {
   Sword3 = "Sword3",
   Sword4 = "Sword4",
   Sword5 = "Sword5",
+  Sword6 = "Sword6",
 }
 
 export enum StaffTypes {

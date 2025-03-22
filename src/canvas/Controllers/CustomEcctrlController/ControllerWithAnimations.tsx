@@ -1,23 +1,160 @@
+import { useAttachToBone } from "@hooks/useAttachToBone";
+import { MixamoCharacterNames } from "@r3f/Characters/Character";
 import {
   MixamoCharacter,
   SupportedAnimations,
   useMixamoAnimations,
 } from "@r3f/Characters/CharacterWithAnimations";
-import { useAnimations, useKeyboardControls } from "@react-three/drei";
+import {
+  SwordTypes,
+  useWeapon,
+  WeaponTypes,
+} from "@r3f/Dungeon/Enemies/Weapons";
+import {
+  PointerLockControls,
+  useAnimations,
+  useKeyboardControls,
+  useProgress,
+} from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import { CustomEcctrlRigidBody } from "ecctrl";
 import { MutableRefObject, Suspense, useEffect, useRef } from "react";
 import { Group } from "three";
 import { useGenericAnimationController } from "../GenericAnimationController";
-import { useFrame } from "@react-three/fiber";
 import { EcctrlControllerCustom, userDataType } from "./Controller";
-import { MixamoCharacterNames } from "@r3f/Characters/Character";
-import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
-import { useAttachToBone } from "@hooks/useAttachToBone";
-import { useSword1, useSword2 } from "@r3f/Dungeon/Enemies/Swords";
+import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
+
+const useWeaponForMixamoCharacter = (weaponType: WeaponTypes) => {
+  let weapon = useWeapon(weaponType);
+
+  type Transforms = {
+    position: [number, number, number];
+    rotation: [number, number, number];
+    scale: [number, number, number];
+  };
+
+  const transformsRightHand: Record<WeaponTypes, Transforms> = {
+    Sword1: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+    Sword2: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+    Sword3: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+    Sword4: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+    Sword5: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+    Sword6: {
+      position: [-0.1, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [30, 40, 40],
+    },
+
+    Axe1: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+
+    Bow1: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+
+    Staff1: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+
+    Staff2: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+
+    Staff3: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+
+    Staff4: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+
+    Staff5: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+
+    Staff6: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+
+    Staff7: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+
+    Shield1: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+
+    Shield2: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+
+    Shield3: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+
+    Shield4: {
+      position: [0.5, 0.08, 0.01],
+      rotation: [-Math.PI, Math.PI / 2, -Math.PI / 2],
+      scale: [100, 100, 100],
+    },
+  };
+
+  const { position, rotation, scale } = transformsRightHand[weaponType];
+
+  weapon.scale.set(...scale);
+  weapon.rotation.set(...rotation);
+  weapon.position.set(...position);
+
+  return weapon;
+};
 
 export const MixamoEcctrlControllerWithAnimations = () => {
   const characterRef = useRef<CustomEcctrlRigidBody>(null!);
-  const prev = useRef<SupportedAnimations>(null!);
 
   const [_, get] = useKeyboardControls();
 
@@ -26,116 +163,87 @@ export const MixamoEcctrlControllerWithAnimations = () => {
   const {
     updateAnimation,
     mixInAnimation,
-    currentAnimationState,
-    getMixedAnimationState,
-    isAnyMixedAnimationPlaying,
+    animationState: currentAnimationState,
+    mixedInAnimationState,
   } = useGenericAnimationController({
     actions,
     mixer,
   });
 
-  useEffect(() => {
-    const handleMouseDown = () => {
-      if (!characterRef.current) return;
-      const userData = characterRef.current.userData as userDataType;
-      if (!userData.canJump) return;
+  const lastAttack = useRef<SupportedAnimations | null>(null);
+  const isAttacking = useRef(false);
 
-      // Only mix in a new animation if no mixed animation is currently playing
-      // if (isAnyMixedAnimationPlaying()) {
-      //   console.log(
-      //     "Skipping attack - another attack animation is still playing"
-      //   );
-      //   return;
-      // }
+  useSubscribeToKeyPress("f", () => {
+    if (!characterRef.current) return;
+    const userData = characterRef.current.userData as userDataType;
 
-      const attackActions = [
-        SupportedAnimations.SwordR,
-        SupportedAnimations.StabR,
-        SupportedAnimations.SlashR,
-      ];
+    if (
+      !userData.canJump ||
+      (mixedInAnimationState.current.progress <= 0.8 &&
+        mixedInAnimationState.current.isPlaying)
+    )
+      return;
 
-      const randomAction = pickRandomFromArray(attackActions);
-      const success = mixInAnimation(randomAction);
+    const nextAttack =
+      lastAttack.current === SupportedAnimations.SwordR3
+        ? SupportedAnimations.SwordR
+        : SupportedAnimations.SwordR3;
 
-      // if (success) {
-      //   console.log(`Mixed in attack animation: ${randomAction}`);
-      // }
-    };
+    lastAttack.current = nextAttack;
+    isAttacking.current = true;
 
-    document.addEventListener("pointerdown", handleMouseDown);
-    return () => {
-      document.removeEventListener("pointerdown", handleMouseDown);
-    };
-  }, [mixInAnimation, isAnyMixedAnimationPlaying]);
-
-  // Optional: Debug animation states
-  useFrame(() => {
-    // Uncomment to debug
-    // const mixedState = getMixedAnimationState();
-    // if (mixedState) {
-    //   console.log(`Mixed animation: ${mixedState.name}, progress: ${(mixedState.progress * 100).toFixed(0)}%`);
-    // }
+    mixInAnimation(nextAttack);
   });
 
   useFrame(() => {
     const { forward, backward, leftward, rightward, jump, run } = get();
     const userData = characterRef.current?.userData as userDataType;
 
+    isAttacking.current =
+      mixedInAnimationState.current.isPlaying &&
+      mixedInAnimationState.current.progress < 0.8;
+
     const canJump = userData?.canJump;
-    if (!forward && !backward && !leftward && !rightward && !jump && canJump) {
-      if (prev.current !== SupportedAnimations.Idle) {
-        updateAnimation(SupportedAnimations.Idle, {
-          looping: true,
-        });
-      }
-    } else if (jump && canJump) {
-      if (prev.current !== SupportedAnimations.JumpingUp) {
-        updateAnimation(SupportedAnimations.JumpingUp, {
-          looping: false,
-          fade: 0.01,
-        });
-      }
-    } else if (canJump && (forward || backward || leftward || rightward)) {
-      if (
-        (run && prev.current !== SupportedAnimations.Running) ||
-        (!run && prev.current !== SupportedAnimations.Walking)
-      ) {
-        updateAnimation(
-          run ? SupportedAnimations.Running : SupportedAnimations.Walking,
-          {
-            looping: true,
-            fade: 0.2,
-          }
-        );
-      }
-    } else if (!canJump) {
-      if (prev.current !== SupportedAnimations.JumpingUp) {
-        updateAnimation(SupportedAnimations.JumpingUp, {
-          looping: false,
-          fade: 0.01,
-        });
-      }
+
+    if (userData) {
+      userData.isDoingStationaryAction = isAttacking.current;
     }
 
-    // Update prev reference
-    // prev.current = currentAnimationState.name as SupportedAnimations;
+    if (!forward && !backward && !leftward && !rightward && !jump && canJump) {
+      updateAnimation(SupportedAnimations.Idle, {
+        looping: true,
+      });
+    } else if (jump && canJump && !isAttacking.current) {
+      updateAnimation(SupportedAnimations.JumpingUp, {
+        looping: false,
+        fade: 0.01,
+      });
+    } else if (canJump && (forward || backward || leftward || rightward)) {
+      updateAnimation(
+        run ? SupportedAnimations.Running : SupportedAnimations.Walking,
+        {
+          looping: true,
+          fade: 0.2,
+        }
+      );
+    } else if (!canJump && !isAttacking.current) {
+      updateAnimation(SupportedAnimations.JumpingUp, {
+        looping: false,
+        fade: 0.01,
+      });
+    }
   });
 
-  // const sword = useSword2();
-  const sword2 = useSword2();
+  const weapon = useWeaponForMixamoCharacter(SwordTypes.Sword6);
 
-  // sword.scale.set(100, 100, 100);
-  sword2.scale.set(100, 100, 100);
-  // sword.position.set(-0.5, 0, 0);
-  sword2.position.set(0.5, 0.08, 0.01);
-  // sword.rotation.set(Math.PI, -Math.PI / 2, Math.PI / 2);
-  sword2.rotation.set(-Math.PI, Math.PI / 2, -Math.PI / 2);
+  const { progress } = useProgress();
 
-  // useAttachToBone(group, "mixamorigLeftHand", sword);
+  console.log(progress);
+
   useAttachToBone(
     group as MutableRefObject<Group>,
     "mixamorigRightHand",
-    sword2
+    weapon
   );
 
   return (
@@ -146,12 +254,15 @@ export const MixamoEcctrlControllerWithAnimations = () => {
         camCollision={true}
         camCollisionOffset={0.5}
         // mode="FixedCamera"
+        sprintMult={3}
         ref={characterRef}
       >
-        <group position={[0, -0.7, 0]} scale={1}>
-          <group ref={group as MutableRefObject<Group>} dispose={null}>
-            <MixamoCharacter characterName={MixamoCharacterNames.Eve} />
-          </group>
+        <group position={[0, -1.1, 0]} scale={1.4}>
+          <Suspense>
+            <group ref={group as MutableRefObject<Group>} dispose={null}>
+              <MixamoCharacter characterName={MixamoCharacterNames.Eve} />
+            </group>
+          </Suspense>
         </group>
       </EcctrlControllerCustom>
     </Suspense>

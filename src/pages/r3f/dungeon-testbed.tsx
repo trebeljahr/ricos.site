@@ -1,9 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import {
-  useKeyboardInput,
-  useSubscribeToKeyPress,
-} from "@hooks/useKeyboardInput";
-import {
   Arch,
   Column2,
   Fence_90_Modular,
@@ -23,10 +19,8 @@ import {
 } from "@r3f/AllModels/modular_dungeon_pack_1";
 import { MixamoCharacterNames } from "@r3f/Characters/Character";
 import {
-  CharacterWithAnimationsControlled,
-  WrapWithAnimations,
-  SupportedAnimations,
   CharacterModel,
+  SupportedAnimations,
   useMixamoAnimations,
 } from "@r3f/Characters/CharacterWithAnimations";
 import { debug, perf } from "@r3f/ChunkGenerationSystem/config";
@@ -36,10 +30,7 @@ import {
   EcctrlControllerCustom,
   userDataType,
 } from "@r3f/Controllers/CustomEcctrlController/Controller";
-import {
-  AnimationOptions,
-  useGenericAnimationController,
-} from "@r3f/Controllers/GenericAnimationController";
+import { useGenericAnimationController } from "@r3f/Controllers/GenericAnimationController";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { BackgroundMusicLoop } from "@r3f/Dungeon/BuildingBlocks/BackgroundMusic";
 import { Enemies } from "@r3f/Dungeon/BuildingBlocks/Enemies";
@@ -59,10 +50,10 @@ import {
   useKeyboardControls,
 } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Physics, RapierRigidBody, RigidBody } from "@react-three/rapier";
+import { Physics, RigidBody } from "@react-three/rapier";
 import { LevaPanel } from "leva";
 import { Perf } from "r3f-perf";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { DirectionalLight, Group, Mesh, PCFSoftShadowMap } from "three";
 
 const CanvasContent = () => {
@@ -254,50 +245,7 @@ const CanvasContent = () => {
 
 const Controllers = () => {
   const characterRef = useRef<CustomEcctrlRigidBody>(null!);
-  const [animation, setAnimation] = useState<{
-    name: SupportedAnimations;
-    options: AnimationOptions;
-  }>({
-    name: SupportedAnimations.Idle,
-    options: {
-      looping: true,
-    },
-  });
   const prev = useRef<SupportedAnimations>(null!);
-
-  // useKeyboardInput((keyEvent) => {
-  //   console.log(keyEvent);
-
-  //   switch (keyEvent.key) {
-  //     case "w":
-  //     case "s":
-  //     case "a":
-  //     case "d":
-  //       setAnimation({
-  //         name: SupportedAnimations.Walking,
-  //         options: { looping: true },
-  //       });
-  //       break;
-  //     case " ":
-  //       setAnimation({
-  //         name: SupportedAnimations.JumpingUp,
-  //         options: {
-  //           looping: false,
-  //           fade: 0.1,
-  //         },
-  //       });
-  //       break;
-  //     default:
-  //       setAnimation({
-  //         name: SupportedAnimations.Idle,
-  //         options: { looping: true },
-  //       });
-  //   }
-  // });
-
-  useEffect(() => {
-    // console.log("Animation changed to: ", animation);
-  }, [animation]);
 
   const [_, get] = useKeyboardControls();
 
@@ -311,27 +259,22 @@ const Controllers = () => {
   useFrame(() => {
     const { forward, backward, leftward, rightward, jump, run } = get();
     const userData = characterRef.current?.userData as userDataType;
-    // console.log(userData);
 
     const canJump = userData?.canJump;
     if (!forward && !backward && !leftward && !rightward && !jump && canJump) {
-      // console.log("set to idle");
       if (prev.current !== SupportedAnimations.Idle) {
         updateAnimation(SupportedAnimations.Idle, {
           looping: true,
         });
       }
     } else if (jump && canJump) {
-      // jumpAnimation();
-      // console.log("set to jumping");
       if (prev.current !== SupportedAnimations.JumpingUp) {
         updateAnimation(SupportedAnimations.JumpingUp, {
-          looping: true,
+          looping: false,
           fade: 0.01,
         });
       }
     } else if (canJump && (forward || backward || leftward || rightward)) {
-      // console.log("set to walking");
       if (
         (run && prev.current !== SupportedAnimations.Running) ||
         (!run && prev.current !== SupportedAnimations.Walking)
@@ -340,6 +283,7 @@ const Controllers = () => {
           run ? SupportedAnimations.Running : SupportedAnimations.Walking,
           {
             looping: true,
+            fade: 0.2,
           }
         );
       }
@@ -374,6 +318,7 @@ const Controllers = () => {
         slopeDownExtraForce={0}
         camCollision={true}
         camCollisionOffset={0.5}
+        mode="FixedCamera"
         ref={characterRef}
       >
         <group position={[0, -0.7, 0]} scale={0.7}>

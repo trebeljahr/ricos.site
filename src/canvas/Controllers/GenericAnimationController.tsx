@@ -40,9 +40,9 @@ export const useGenericAnimationController = ({
       clampWhenFinished = true,
     }: AnimationOptions = {}
   ) => {
-    // if (newAnimation === previous.current) return;
+    if (newAnimation === previous.current) return;
 
-    // console.log(`Playing animation: ${newAnimation}`);
+    console.log(`Playing animation: ${newAnimation}`);
 
     const current = actions[previous.current];
     const toPlay = actions[newAnimation];

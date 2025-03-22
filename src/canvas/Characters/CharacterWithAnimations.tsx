@@ -60,48 +60,6 @@ export const CharacterModel = memo(
   }
 );
 
-export const WrapWithAnimations = ({
-  animationToPlay,
-  children,
-}: PropsWithChildren<{
-  animationToPlay: { name: SupportedAnimations; options: AnimationOptions };
-}>) => {
-  const group = useRef<Group>(null!);
-  const { animationsForHook } = useMixamoAnimations();
-  const { actions } = useAnimations(animationsForHook, group);
-
-  const previous = useRef(animationToPlay.name);
-
-  const current = actions[previous.current];
-
-  console.log({ actions });
-  console.log(animationToPlay.name);
-  console.log({ toPlay: actions[animationToPlay.name] });
-
-  previous.current = animationToPlay.name;
-  const fade = animationToPlay.options.fade || 0.5;
-  const looping = animationToPlay.options.looping || false;
-  const clampWhenFinished = animationToPlay.options.clampWhenFinished || true;
-  current?.fadeOut(fade);
-
-  if (actions[animationToPlay.name]) {
-    actions[animationToPlay.name]!.reset().fadeIn(fade).play();
-    actions[animationToPlay.name]!.setLoop(
-      looping ? LoopRepeat : LoopOnce,
-      looping ? Infinity : 1
-    );
-    actions[animationToPlay.name]!.clampWhenFinished = clampWhenFinished;
-  }
-
-  return (
-    <Suspense fallback={null}>
-      <group ref={group} dispose={null}>
-        {children}
-      </group>
-    </Suspense>
-  );
-};
-
 export function CharacterWithAnimationsControlled({
   characterName,
 }: {

@@ -17,20 +17,9 @@ import {
   WallCover_Modular,
   Woodfire,
 } from "@r3f/AllModels/modular_dungeon_pack_1";
-import { MixamoCharacterNames } from "@r3f/Characters/Character";
-import {
-  AnyMixamoCharacter,
-  SupportedAnimations,
-  useMixamoAnimations,
-} from "@r3f/Characters/CharacterWithAnimations";
 import { debug, perf } from "@r3f/ChunkGenerationSystem/config";
 import { HealthContextProvider } from "@r3f/Contexts/HealthbarContext";
-import {
-  CustomEcctrlRigidBody,
-  EcctrlControllerCustom,
-  userDataType,
-} from "@r3f/Controllers/CustomEcctrlController/Controller";
-import { useGenericAnimationController } from "@r3f/Controllers/GenericAnimationController";
+import { MixamoEcctrlControllerWithAnimations } from "@r3f/Controllers/CustomEcctrlController/ControllerWithAnimations";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { BackgroundMusicLoop } from "@r3f/Dungeon/BuildingBlocks/BackgroundMusic";
 import { Enemies } from "@r3f/Dungeon/BuildingBlocks/Enemies";
@@ -43,17 +32,12 @@ import { RandomPotionSpawner } from "@r3f/Dungeon/ItemSpawners/PotionSpawner";
 import { RandomWeaponsSpawner } from "@r3f/Dungeon/ItemSpawners/WeaponSpawner";
 import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
 import useShadowHelper from "@r3f/Helpers/OverheadLights";
-import {
-  Box,
-  Sky,
-  useAnimations,
-  useKeyboardControls,
-} from "@react-three/drei";
-import { useFrame, useThree } from "@react-three/fiber";
+import { Box, Sky } from "@react-three/drei";
+import { useThree } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import { LevaPanel } from "leva";
 import { Perf } from "r3f-perf";
-import { Suspense, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { DirectionalLight, Group, Mesh, PCFSoftShadowMap } from "three";
 
 const CanvasContent = () => {
@@ -243,73 +227,6 @@ const CanvasContent = () => {
   );
 };
 
-const ControllerWithAnimation = () => {
-  const characterRef = useRef<CustomEcctrlRigidBody>(null!);
-  const prev = useRef<SupportedAnimations>(null!);
-
-  const [_, get] = useKeyboardControls();
-
-  const group = useRef<Group>(null!);
-  const { animationsForHook } = useMixamoAnimations();
-  const { actions } = useAnimations(animationsForHook, group);
-  const { updateAnimation } = useGenericAnimationController({
-    actions,
-  });
-
-  useFrame(() => {
-    const { forward, backward, leftward, rightward, jump, run } = get();
-    const userData = characterRef.current?.userData as userDataType;
-
-    const canJump = userData?.canJump;
-    if (!forward && !backward && !leftward && !rightward && !jump && canJump) {
-      if (prev.current !== SupportedAnimations.Idle) {
-        updateAnimation(SupportedAnimations.Idle, {
-          looping: true,
-        });
-      }
-    } else if (jump && canJump) {
-      if (prev.current !== SupportedAnimations.JumpingUp) {
-        updateAnimation(SupportedAnimations.JumpingUp, {
-          looping: false,
-          fade: 0.01,
-        });
-      }
-    } else if (canJump && (forward || backward || leftward || rightward)) {
-      if (
-        (run && prev.current !== SupportedAnimations.Running) ||
-        (!run && prev.current !== SupportedAnimations.Walking)
-      ) {
-        updateAnimation(
-          run ? SupportedAnimations.Running : SupportedAnimations.Walking,
-          {
-            looping: true,
-            fade: 0.2,
-          }
-        );
-      }
-    }
-  });
-
-  return (
-    <EcctrlControllerCustom
-      position={[0, 40, 0]}
-      slopeDownExtraForce={0}
-      camCollision={true}
-      camCollisionOffset={0.5}
-      mode="FixedCamera"
-      ref={characterRef}
-    >
-      <group position={[0, -0.7, 0]} scale={0.7}>
-        <Suspense fallback={null}>
-          <group ref={group} dispose={null}>
-            <AnyMixamoCharacter characterName={MixamoCharacterNames.XBot} />
-          </group>
-        </Suspense>
-      </group>
-    </EcctrlControllerCustom>
-  );
-};
-
 export default function Page() {
   return (
     <ThreeFiberLayout>
@@ -324,7 +241,7 @@ export default function Page() {
             <Physics timeStep={"vary"} debug>
               {perf && <Perf position="bottom-right" />}
               <CanvasContent />
-              <ControllerWithAnimation />
+              <MixamoEcctrlControllerWithAnimations />
             </Physics>
           </HealthContextProvider>
         </CanvasWithKeyboardInput>

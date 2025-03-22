@@ -1198,6 +1198,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
 };
 
 export default forwardRef(Ecctrl);
+
 export const EcctrlControllerCustom = forwardRef(Ecctrl);
 
 export type camListenerTargetType = "document" | "domElement";

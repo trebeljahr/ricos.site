@@ -1,18 +1,7 @@
-import { useAnimations, useGLTF, useKeyboardControls } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
-import { memo, PropsWithChildren, Suspense, useEffect, useRef } from "react";
-import {
-  type AnimationClip,
-  Group,
-  LoopOnce,
-  LoopRepeat,
-  Mesh,
-  Object3D,
-} from "three";
-import {
-  AnimationOptions,
-  useGenericAnimationController,
-} from "../Controllers/GenericAnimationController";
+import { useGLTF } from "@react-three/drei";
+import { memo } from "react";
+import { type AnimationClip } from "three";
+import { useGenericAnimationController } from "../Controllers/GenericAnimationController";
 import { MixamoCharacterNames } from "./Character";
 
 interface GLTFAction extends AnimationClip {
@@ -43,15 +32,12 @@ const useMixamoCharacter = ({
   return characterModel;
 };
 
-export const CharacterModel = memo(
+export const AnyMixamoCharacter = memo(
   ({ characterName }: { characterName: MixamoCharacterNames }) => {
-    console.log("rendering");
-
     const characterModel = useMixamoCharacter({
       characterName,
     });
 
-    console.log("characterModel", characterModel);
     return <primitive object={characterModel.scene} />;
   },
 
@@ -59,60 +45,6 @@ export const CharacterModel = memo(
     return props.characterName === props.characterName;
   }
 );
-
-export function CharacterWithAnimationsControlled({
-  characterName,
-}: {
-  characterName: string;
-}) {
-  const characterModel = useGLTF(
-    `/3d-assets/glb/characters/${characterName}-transformed.glb`
-  );
-
-  const { animationsForHook } = useMixamoAnimations();
-
-  const result = useAnimations(animationsForHook, characterModel.scene);
-
-  const { updateAnimation } = useGenericAnimationController({
-    actions: result.actions,
-  });
-
-  useEffect(() => {
-    updateAnimation("idle", { looping: true });
-  }, [updateAnimation]);
-
-  useEffect(() => {
-    const listener = () => {
-      updateAnimation("idle", { looping: true });
-    };
-
-    result.mixer.addEventListener("finished", listener);
-
-    return () => {
-      result.mixer.removeEventListener("finished", listener);
-    };
-  }, [result.mixer, updateAnimation]);
-
-  const [, get] = useKeyboardControls();
-
-  useFrame(() => {
-    const { forward, backward, leftward, rightward, run } = get();
-
-    if (forward || backward || leftward || rightward) {
-      if (run) {
-        updateAnimation("running", { looping: true });
-      } else {
-        updateAnimation("walking", { looping: true });
-      }
-    } else {
-      updateAnimation("idle", { looping: true });
-    }
-  });
-
-  return <primitive object={characterModel.scene} />;
-}
-
-export default CharacterWithAnimationsControlled;
 
 export function useMixamoAnimations() {
   const running = useGLTF("/3d-assets/glb/animations/running.glb");

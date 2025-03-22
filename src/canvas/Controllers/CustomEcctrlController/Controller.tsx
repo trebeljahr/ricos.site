@@ -15,7 +15,6 @@ import {
   useRapier,
   type RigidBodyProps,
 } from "@react-three/rapier";
-import { useControls } from "leva";
 import {
   forwardRef,
   useEffect,
@@ -27,7 +26,6 @@ import {
   type ReactNode,
 } from "react";
 import {
-  DirectionalLight,
   Euler,
   Group,
   MathUtils,
@@ -166,6 +164,32 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     action4: 0,
   };
 
+  /**
+   * Rotate camera function
+   */
+  const rotateCamera = (x: number, y: number) => {
+    pivot.rotation.y += y;
+    followCam.rotation.x = Math.min(
+      Math.max(followCam.rotation.x + x, camLowLimit),
+      camUpLimit
+    );
+  };
+
+  /**
+   * Rotate character on Y function
+   */
+  const rotateCharacterOnY = (rad: number) => {
+    modelEuler.y += rad;
+  };
+
+  useImperativeHandle(ref, () => {
+    if (characterRef.current) {
+      characterRef.current.rotateCamera = rotateCamera;
+      characterRef.current.rotateCharacterOnY = rotateCharacterOnY;
+    }
+    return characterRef.current!;
+  });
+
   let isModePointToMove: boolean = false;
   let functionKeyDown: boolean = false;
   let isModeFixedCamera: boolean = false;
@@ -199,153 +223,6 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     []
   );
   const camBasedMoveCrossVecOnY: Vector3 = useMemo(() => new Vector3(), []);
-
-  /**
-   * Debug settings
-   */
-  let floatingRayDebug = null;
-  let slopeRayDebug = null;
-  let autoBalanceForceDebug = null;
-
-  // Floating Ray
-  floatingRayDebug = useControls(
-    "Floating Ray",
-    {
-      rayOriginOffest: {
-        x: 0,
-        y: -capsuleHalfHeight,
-        z: 0,
-      },
-      rayHitForgiveness: {
-        value: rayHitForgiveness,
-        min: 0,
-        max: 0.5,
-        step: 0.01,
-      },
-      rayLength: {
-        value: capsuleRadius + 2,
-        min: 0,
-        max: capsuleRadius + 10,
-        step: 0.01,
-      },
-      rayDir: { x: 0, y: -1, z: 0 },
-      floatingDis: {
-        value: capsuleRadius + floatHeight,
-        min: 0,
-        max: capsuleRadius + 2,
-        step: 0.01,
-      },
-      springK: {
-        value: springK,
-        min: 0,
-        max: 5,
-        step: 0.01,
-      },
-      dampingC: {
-        value: dampingC,
-        min: 0,
-        max: 3,
-        step: 0.01,
-      },
-    },
-    { collapsed: true }
-  );
-  // Apply debug values
-  rayOriginOffest = floatingRayDebug.rayOriginOffest;
-  rayHitForgiveness = floatingRayDebug.rayHitForgiveness;
-  rayLength = floatingRayDebug.rayLength;
-  rayDir = floatingRayDebug.rayDir;
-  floatingDis = floatingRayDebug.floatingDis;
-  springK = floatingRayDebug.springK;
-  dampingC = floatingRayDebug.dampingC;
-
-  // Slope Ray
-  slopeRayDebug = useControls(
-    "Slope Ray",
-    {
-      showSlopeRayOrigin: false,
-      slopeMaxAngle: {
-        value: slopeMaxAngle,
-        min: 0,
-        max: 1.57,
-        step: 0.01,
-      },
-      slopeRayOriginOffest: {
-        value: capsuleRadius,
-        min: 0,
-        max: capsuleRadius + 3,
-        step: 0.01,
-      },
-      slopeRayLength: {
-        value: capsuleRadius + 3,
-        min: 0,
-        max: capsuleRadius + 13,
-        step: 0.01,
-      },
-      slopeRayDir: { x: 0, y: -1, z: 0 },
-      slopeUpExtraForce: {
-        value: slopeUpExtraForce,
-        min: 0,
-        max: 5,
-        step: 0.01,
-      },
-      slopeDownExtraForce: {
-        value: slopeDownExtraForce,
-        min: 0,
-        max: 5,
-        step: 0.01,
-      },
-    },
-    { collapsed: true }
-  );
-  // Apply debug values
-  showSlopeRayOrigin = slopeRayDebug.showSlopeRayOrigin;
-  slopeMaxAngle = slopeRayDebug.slopeMaxAngle;
-  slopeRayLength = slopeRayDebug.slopeRayLength;
-  slopeRayDir = slopeRayDebug.slopeRayDir;
-  slopeUpExtraForce = slopeRayDebug.slopeUpExtraForce;
-  slopeDownExtraForce = slopeRayDebug.slopeDownExtraForce;
-
-  // AutoBalance Force
-  autoBalanceForceDebug = useControls(
-    "AutoBalance Force",
-    {
-      autoBalance: {
-        value: true,
-      },
-      autoBalanceSpringK: {
-        value: autoBalanceSpringK,
-        min: 0,
-        max: 5,
-        step: 0.01,
-      },
-      autoBalanceDampingC: {
-        value: autoBalanceDampingC,
-        min: 0,
-        max: 0.1,
-        step: 0.001,
-      },
-      autoBalanceSpringOnY: {
-        value: autoBalanceSpringOnY,
-        min: 0,
-        max: 5,
-        step: 0.01,
-      },
-      autoBalanceDampingOnY: {
-        value: autoBalanceDampingOnY,
-        min: 0,
-        max: 0.1,
-        step: 0.001,
-      },
-    },
-    { collapsed: true }
-  );
-  // Apply debug values
-  autoBalance = autoBalanceForceDebug.autoBalance;
-  autoBalanceSpringK = autoBalanceForceDebug.autoBalanceSpringK;
-  autoBalanceDampingC = autoBalanceForceDebug.autoBalanceDampingC;
-  autoBalanceSpringOnY = autoBalanceForceDebug.autoBalanceSpringOnY;
-  autoBalanceDampingOnY = autoBalanceForceDebug.autoBalanceDampingOnY;
 
   /**
    * Check if inside keyboardcontrols
@@ -767,32 +644,6 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     }
   };
 
-  /**
-   * Rotate camera function
-   */
-  const rotateCamera = (x: number, y: number) => {
-    pivot.rotation.y += y;
-    followCam.rotation.x = Math.min(
-      Math.max(followCam.rotation.x + x, camLowLimit),
-      camUpLimit
-    );
-  };
-
-  /**
-   * Rotate character on Y function
-   */
-  const rotateCharacterOnY = (rad: number) => {
-    modelEuler.y += rad;
-  };
-
-  useImperativeHandle(ref, () => {
-    if (characterRef.current) {
-      characterRef.current.rotateCamera = rotateCamera;
-      characterRef.current.rotateCharacterOnY = rotateCharacterOnY;
-    }
-    return characterRef.current!;
-  });
-
   useEffect(() => {
     // Lock character rotations at Y axis
     characterRef.current.setEnabledRotations(
@@ -899,7 +750,6 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     const { forward, backward, leftward, rightward, jump, run } =
       isInsideKeyboardControls ? getKeys() : presetKeys;
 
-    // console.log({ forward, backward, leftward, rightward, jump, run });
     // Getting moving directions (IIFE)
     modelEuler.y = ((movingDirection) =>
       movingDirection === null ? modelEuler.y : movingDirection)(
@@ -979,8 +829,6 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         !(collider.parent()?.userData as userDataType).excludeEcctrlRay
     );
 
-    console.log(potentialHit);
-
     if (potentialHit) rayHit = potentialHit;
 
     /**Test shape ray */
@@ -997,11 +845,8 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     // );
 
     if (rayHit && rayHit.timeOfImpact < floatingDis + rayHitForgiveness) {
-      console.log({ slopeRayHit, actualSlopeAngle });
-
       if (slopeRayHit && actualSlopeAngle < slopeMaxAngle) {
         canJump = true;
-        console.log("can jump now!");
       }
     } else {
       canJump = false;

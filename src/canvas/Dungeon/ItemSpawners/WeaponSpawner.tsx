@@ -47,8 +47,6 @@ export const RandomWeaponsSpawner: SpawnerImplementation = (props) => {
 
   const onCollected = useCallback(
     (data: WeaponData) => {
-      console.log("collected", data);
-
       addItem({
         id: `weapon-${data.type}-${nanoid()}`,
         name: Weapon.Component.name,

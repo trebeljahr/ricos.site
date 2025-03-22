@@ -1,4 +1,4 @@
-import CharacterWithAnimations from "@r3f/Characters/ControllableCharacter";
+import { CharacterWithAnimationsControlled } from "@r3f/Characters/CharacterWithAnimations";
 import { CameraContextProvider } from "@r3f/Contexts/CameraContext";
 import { FlyCameraContextProvider } from "@r3f/Contexts/FlyCameraContext";
 import {
@@ -26,7 +26,7 @@ const Character = () => {
   return (
     <group ref={playerGroupRef}>
       <group rotation={[0, Math.PI, 0]}>
-        <CharacterWithAnimations characterName="michelle" />
+        <CharacterWithAnimationsControlled characterName="michelle" />
       </group>
     </group>
   );

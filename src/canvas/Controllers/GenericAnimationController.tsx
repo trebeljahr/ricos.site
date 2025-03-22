@@ -17,23 +17,32 @@ function useDebounce(cb: (...args: any) => void, delay: number) {
   };
 }
 
+export type AnimationOptions = {
+  looping?: boolean;
+  fade?: number;
+  clampWhenFinished?: boolean;
+};
+
 export const useGenericAnimationController = ({
   actions,
-  fadeDuration = 0.5,
+  defaultFadeDuration = 0.5,
 }: {
   actions: ActionStore;
-  fadeDuration?: number;
+  defaultFadeDuration?: number;
 }) => {
-  const previous = useRef("t-pose");
+  const previous = useRef("idle");
 
   const updateAnimation = (
     newAnimation: string,
     {
       looping = false,
-      fade = fadeDuration,
-    }: { looping?: boolean; fade?: number } = {}
+      fade = defaultFadeDuration,
+      clampWhenFinished = true,
+    }: AnimationOptions = {}
   ) => {
-    if (newAnimation === previous.current) return;
+    // if (newAnimation === previous.current) return;
+
+    // console.log(`Playing animation: ${newAnimation}`);
 
     const current = actions[previous.current];
     const toPlay = actions[newAnimation];
@@ -45,7 +54,7 @@ export const useGenericAnimationController = ({
 
     toPlay.reset().fadeIn(fade).play();
     toPlay.setLoop(looping ? LoopRepeat : LoopOnce, looping ? Infinity : 1);
-    toPlay.clampWhenFinished = true;
+    toPlay.clampWhenFinished = clampWhenFinished;
   };
 
   return { updateAnimation };

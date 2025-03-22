@@ -10,31 +10,33 @@ interface GLTFAction extends AnimationClip {
   name: string;
 }
 
+export enum MixamoCharacterNames {
+  "Alien" = "alien",
+  "Archer" = "archer",
+  "Arissa" = "arissa",
+  "Ely" = "ely",
+  "Eve" = "eve",
+  "Exo" = "exo",
+  "Ganfaul" = "ganfaul",
+  "Heraklios" = "heraklios",
+  "Kachujin" = "kachujin",
+  "Michelle" = "michelle",
+  "Ninja" = "ninja",
+  "Paladin" = "paladin",
+  "Pirate" = "pirate",
+  "SpecialOps" = "special-ops",
+  "Vanguard" = "vanguard",
+  "Wildling" = "wildling",
+  "XBot" = "x-bot",
+  "YBot" = "y-bot",
+}
+
 export default function Character() {
   const { characterName } = useControls({
     characterName: {
       value: "x-bot",
       label: "Character Name",
-      options: [
-        "alien",
-        "archer",
-        "arissa",
-        "ely",
-        "eve",
-        "exo",
-        "ganfaul",
-        "heraklios",
-        "kachujin",
-        "michelle",
-        "ninja",
-        "paladin",
-        "pirate",
-        "special-ops",
-        "vanguard",
-        "wildling",
-        "x-bot",
-        "y-bot",
-      ],
+      options: MixamoCharacterNames,
     },
   });
 

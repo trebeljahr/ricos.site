@@ -54,7 +54,10 @@ export function SkeletonMage({
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
 
-  const result = useGenericAnimationController({ actions, fadeDuration: 0.5 });
+  const result = useGenericAnimationController({
+    actions,
+    defaultFadeDuration: 0.5,
+  });
   const { updateAnimation } = result;
 
   useEffect(() => {

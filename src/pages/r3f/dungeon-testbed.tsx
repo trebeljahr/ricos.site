@@ -1,5 +1,9 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import {
+  useKeyboardInput,
+  useSubscribeToKeyPress,
+} from "@hooks/useKeyboardInput";
+import {
   Arch,
   Column2,
   Fence_90_Modular,
@@ -17,13 +21,26 @@ import {
   WallCover_Modular,
   Woodfire,
 } from "@r3f/AllModels/modular_dungeon_pack_1";
-import CharacterWithAnimations from "@r3f/Characters/ControllableCharacter";
+import { MixamoCharacterNames } from "@r3f/Characters/Character";
+import {
+  CharacterWithAnimationsControlled,
+  WrapWithAnimations,
+  SupportedAnimations,
+  CharacterModel,
+  useMixamoAnimations,
+} from "@r3f/Characters/CharacterWithAnimations";
 import { debug, perf } from "@r3f/ChunkGenerationSystem/config";
 import { HealthContextProvider } from "@r3f/Contexts/HealthbarContext";
-import { EcctrlControllerCustom } from "@r3f/Controllers/CustomEcctrlController/Controller";
-import { EcctrlController } from "@r3f/Controllers/EcctrlController";
+import {
+  CustomEcctrlRigidBody,
+  EcctrlControllerCustom,
+  userDataType,
+} from "@r3f/Controllers/CustomEcctrlController/Controller";
+import {
+  AnimationOptions,
+  useGenericAnimationController,
+} from "@r3f/Controllers/GenericAnimationController";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
-import { ThirdPersonControllerWawaSensei } from "@r3f/Controllers/ThirdPersonControllerWawaSensei";
 import { BackgroundMusicLoop } from "@r3f/Dungeon/BuildingBlocks/BackgroundMusic";
 import { Enemies } from "@r3f/Dungeon/BuildingBlocks/Enemies";
 import { SpikeTrap } from "@r3f/Dungeon/BuildingBlocks/SpikeTrap";
@@ -35,12 +52,17 @@ import { RandomPotionSpawner } from "@r3f/Dungeon/ItemSpawners/PotionSpawner";
 import { RandomWeaponsSpawner } from "@r3f/Dungeon/ItemSpawners/WeaponSpawner";
 import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
 import useShadowHelper from "@r3f/Helpers/OverheadLights";
-import { Box, Sky } from "@react-three/drei";
-import { useThree } from "@react-three/fiber";
-import { Physics, RigidBody } from "@react-three/rapier";
+import {
+  Box,
+  Sky,
+  useAnimations,
+  useKeyboardControls,
+} from "@react-three/drei";
+import { useFrame, useThree } from "@react-three/fiber";
+import { Physics, RapierRigidBody, RigidBody } from "@react-three/rapier";
 import { LevaPanel } from "leva";
 import { Perf } from "r3f-perf";
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { DirectionalLight, Group, Mesh, PCFSoftShadowMap } from "three";
 
 const CanvasContent = () => {
@@ -230,6 +252,146 @@ const CanvasContent = () => {
   );
 };
 
+const Controllers = () => {
+  const characterRef = useRef<CustomEcctrlRigidBody>(null!);
+  const [animation, setAnimation] = useState<{
+    name: SupportedAnimations;
+    options: AnimationOptions;
+  }>({
+    name: SupportedAnimations.Idle,
+    options: {
+      looping: true,
+    },
+  });
+  const prev = useRef<SupportedAnimations>(null!);
+
+  // useKeyboardInput((keyEvent) => {
+  //   console.log(keyEvent);
+
+  //   switch (keyEvent.key) {
+  //     case "w":
+  //     case "s":
+  //     case "a":
+  //     case "d":
+  //       setAnimation({
+  //         name: SupportedAnimations.Walking,
+  //         options: { looping: true },
+  //       });
+  //       break;
+  //     case " ":
+  //       setAnimation({
+  //         name: SupportedAnimations.JumpingUp,
+  //         options: {
+  //           looping: false,
+  //           fade: 0.1,
+  //         },
+  //       });
+  //       break;
+  //     default:
+  //       setAnimation({
+  //         name: SupportedAnimations.Idle,
+  //         options: { looping: true },
+  //       });
+  //   }
+  // });
+
+  useEffect(() => {
+    // console.log("Animation changed to: ", animation);
+  }, [animation]);
+
+  const [_, get] = useKeyboardControls();
+
+  const group = useRef<Group>(null!);
+  const { animationsForHook } = useMixamoAnimations();
+  const { actions } = useAnimations(animationsForHook, group);
+  const { updateAnimation } = useGenericAnimationController({
+    actions,
+  });
+
+  useFrame(() => {
+    const { forward, backward, leftward, rightward, jump, run } = get();
+    const userData = characterRef.current?.userData as userDataType;
+    // console.log(userData);
+
+    const canJump = userData?.canJump;
+    if (!forward && !backward && !leftward && !rightward && !jump && canJump) {
+      // console.log("set to idle");
+      if (prev.current !== SupportedAnimations.Idle) {
+        updateAnimation(SupportedAnimations.Idle, {
+          looping: true,
+        });
+      }
+    } else if (jump && canJump) {
+      // jumpAnimation();
+      // console.log("set to jumping");
+      if (prev.current !== SupportedAnimations.JumpingUp) {
+        updateAnimation(SupportedAnimations.JumpingUp, {
+          looping: true,
+          fade: 0.01,
+        });
+      }
+    } else if (canJump && (forward || backward || leftward || rightward)) {
+      // console.log("set to walking");
+      if (
+        (run && prev.current !== SupportedAnimations.Running) ||
+        (!run && prev.current !== SupportedAnimations.Walking)
+      ) {
+        updateAnimation(
+          run ? SupportedAnimations.Running : SupportedAnimations.Walking,
+          {
+            looping: true,
+          }
+        );
+      }
+    } else if (!canJump) {
+      // console.log("set to falling");
+      // setAnimation({
+      //   name: SupportedAnimations.JumpingUp,
+      //   options: {
+      //     looping: false,
+      //     fade: 0.1,
+      //   },
+      // });
+    }
+    // On high sky, play falling animation
+    // if (rayHit == null && isFalling) {
+    //   fallAnimation();
+    // }
+  });
+
+  return (
+    <>
+      {/* <FirstPersonControllerWithWeapons />
+              <MinecraftCreativeController
+                initialPosition={[0, 25, 0]}
+                speed={10}
+              >
+               <CapsuleCollider args={[0.2, 0.1]} />
+              </MinecraftCreativeController> */}
+      {/* <EcctrlController position={[0, 40, 0]} /> */}
+      <EcctrlControllerCustom
+        position={[0, 40, 0]}
+        slopeDownExtraForce={0}
+        camCollision={true}
+        camCollisionOffset={0.5}
+        ref={characterRef}
+      >
+        <group position={[0, -0.7, 0]} scale={0.7}>
+          {/* <WrapWithAnimations animationToPlay={animation}>
+            <CharacterModel characterName={MixamoCharacterNames.XBot} />
+          </WrapWithAnimations> */}
+          <Suspense fallback={null}>
+            <group ref={group} dispose={null}>
+              <CharacterModel characterName={MixamoCharacterNames.XBot} />
+            </group>
+          </Suspense>
+        </group>
+      </EcctrlControllerCustom>
+      {/* <ThirdPersonControllerWawaSensei /> */}
+    </>
+  );
+};
+
 export default function Page() {
   return (
     <ThreeFiberLayout>
@@ -244,25 +406,7 @@ export default function Page() {
             <Physics timeStep={"vary"} debug>
               {perf && <Perf position="bottom-right" />}
               <CanvasContent />
-              {/* <FirstPersonControllerWithWeapons />
-              <MinecraftCreativeController
-                initialPosition={[0, 25, 0]}
-                speed={10}
-              >
-               <CapsuleCollider args={[0.2, 0.1]} />
-              </MinecraftCreativeController> */}
-              {/* <EcctrlController position={[0, 40, 0]} /> */}
-              <EcctrlControllerCustom
-                position={[0, 40, 0]}
-                slopeDownExtraForce={0}
-                camCollision={true}
-                camCollisionOffset={0.5}
-              >
-                <group position={[0, -0.7, 0]} scale={0.7}>
-                  <CharacterWithAnimations characterName="y-bot" />
-                </group>
-              </EcctrlControllerCustom>
-              {/* <ThirdPersonControllerWawaSensei /> */}
+              <Controllers />
             </Physics>
           </HealthContextProvider>
         </CanvasWithKeyboardInput>

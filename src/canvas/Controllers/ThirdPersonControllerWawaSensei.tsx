@@ -1,4 +1,4 @@
-import CharacterWithAnimations from "@r3f/Characters/ControllableCharacter";
+import { CharacterWithAnimationsControlled } from "@r3f/Characters/CharacterWithAnimations";
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import {
@@ -162,7 +162,7 @@ export const ThirdPersonControllerWawaSensei = () => {
         <group ref={cameraPosition} position-y={2} position-z={-3} />
         <group ref={character}>
           {/* <Character scale={0.18} position-y={-0.25} animation={animation} /> */}
-          <CharacterWithAnimations characterName="michelle" />
+          <CharacterWithAnimationsControlled characterName="michelle" />
         </group>
       </group>
       <CapsuleCollider args={[0.08, 0.15]} />

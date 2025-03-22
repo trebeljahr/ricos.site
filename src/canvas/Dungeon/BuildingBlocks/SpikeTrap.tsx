@@ -56,8 +56,6 @@ export const SpikeTrap = ({ interval = 2000 }: { interval?: number }) => {
   }, [extended, inHitBox]);
 
   const hitSpikeTrap: IntersectionEnterHandler = (event) => {
-    console.log(event);
-
     setInHitBox(true);
   };
 

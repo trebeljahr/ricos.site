@@ -40,7 +40,6 @@ export const RandomArmorSpawner: SpawnerImplementation = (props) => {
   const { addItem } = useInventory();
 
   const onCollected = (data: any) => {
-    console.log("collected", data);
     addItem({
       id: `armor-${data.type}-${nanoid()}`,
       name: Armor.Component.name,

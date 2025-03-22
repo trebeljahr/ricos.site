@@ -32,7 +32,7 @@ const useMixamoCharacter = ({
   return characterModel;
 };
 
-export const AnyMixamoCharacter = memo(
+export const MixamoCharacter = memo(
   ({ characterName }: { characterName: MixamoCharacterNames }) => {
     const characterModel = useMixamoCharacter({
       characterName,

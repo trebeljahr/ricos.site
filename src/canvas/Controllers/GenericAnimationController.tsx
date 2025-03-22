@@ -53,11 +53,23 @@ export const useGenericAnimationController = ({
     if (!toPlay) return;
 
     toPlay.reset().fadeIn(fade).play();
+    toPlay.weight = 1;
     toPlay.setLoop(looping ? LoopRepeat : LoopOnce, looping ? Infinity : 1);
     toPlay.clampWhenFinished = clampWhenFinished;
   };
 
-  return { updateAnimation };
+  const mixInAnimation = (animation: string) => {
+    const current = actions[previous.current];
+    const toPlay = actions[animation];
+
+    if (!toPlay || current === toPlay) return;
+
+    toPlay.weight = 2;
+    toPlay.setLoop(LoopOnce, 1);
+    toPlay.reset().play();
+  };
+
+  return { updateAnimation, mixInAnimation };
 };
 
 export const GenericAnimationController = ({

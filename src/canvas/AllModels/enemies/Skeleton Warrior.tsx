@@ -56,10 +56,11 @@ export function SkeletonWarrior({
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
 
-  const { actions } = useAnimations(animations, group);
+  const { actions, mixer } = useAnimations(animations, group);
 
   const result = useGenericAnimationController({
     actions,
+    mixer,
     defaultFadeDuration: 0.5,
   });
   const { updateAnimation } = result;

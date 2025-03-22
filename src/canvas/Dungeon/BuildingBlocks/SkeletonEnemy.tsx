@@ -3,18 +3,18 @@ import { SkeletonMinion } from "@r3f/AllModels/enemies/Skeleton Minion";
 import { SkeletonRogue } from "@r3f/AllModels/enemies/Skeleton Rogue";
 import { SkeletonWarrior } from "@r3f/AllModels/enemies/Skeleton Warrior";
 import { GroupProps } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import {
   AnimationClip,
-  Bone,
   Group,
+  Mesh,
   MeshStandardMaterial,
-  Object3D,
   SkinnedMesh,
 } from "three";
 import { GLTF } from "three-stdlib";
-import { CommonActions } from "./CommonEnemy";
 import { WeaponTypes, useItem } from "../Enemies/Weapons";
+import { CommonActions } from "./CommonEnemy";
+import { useAttachToBone } from "@hooks/useAttachToBone";
 
 export type SkeletonEnemyProps = GroupProps & {
   animationToPlay?: CommonActions;
@@ -170,46 +170,16 @@ export const SkeletonWithWeapons = ({
 
   const groupRef = useRef<Group>(null!);
 
-  useEffect(() => {
-    let leftHand: Object3D<Bone>;
-    let rightHand: Object3D<Bone>;
-    groupRef.current.traverse((child) => {
-      if (child.name === "handslotl" && itemLeft) {
-        if (ProvidedItemLeft === WeaponTypes.Bow1) {
-          itemLeft.scale.set(
-            itemLeft.scale.x,
-            -itemLeft.scale.y,
-            itemLeft.scale.z
-          );
-        }
+  if (ProvidedItemLeft === WeaponTypes.Bow1) {
+    itemLeft.scale.set(itemLeft.scale.x, -itemLeft.scale.y, itemLeft.scale.z);
+  }
 
-        if (ProvidedItemLeft === WeaponTypes.Sword5) {
-          itemLeft.scale.set(
-            -itemLeft.scale.x,
-            itemLeft.scale.y,
-            itemLeft.scale.z
-          );
-        }
-        child.add(itemLeft);
+  if (ProvidedItemLeft === WeaponTypes.Sword5) {
+    itemLeft.scale.set(-itemLeft.scale.x, itemLeft.scale.y, itemLeft.scale.z);
+  }
 
-        leftHand = child as Object3D<Bone>;
-      }
-      if (child.name === "handslotr" && itemRight) {
-        child.add(itemRight);
-
-        rightHand = child as Object3D<Bone>;
-      }
-    });
-
-    return () => {
-      if (leftHand && itemLeft) {
-        leftHand.remove(itemLeft);
-      }
-      if (rightHand && itemRight) {
-        rightHand.remove(itemRight);
-      }
-    };
-  }, [itemLeft, itemRight]);
+  useAttachToBone(groupRef, "handslotr", itemRight as Group | Mesh);
+  useAttachToBone(groupRef, "handslotl", itemLeft as Group | Mesh);
 
   const SkeletonOfType = useMemo(() => {
     switch (skeletonType) {

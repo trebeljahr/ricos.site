@@ -1,8 +1,9 @@
-import { useGLTF } from "@react-three/drei";
-import { memo } from "react";
+import { useAnimations, useGLTF, useKeyboardControls } from "@react-three/drei";
+import { memo, useEffect } from "react";
 import { type AnimationClip } from "three";
 import { useGenericAnimationController } from "../Controllers/GenericAnimationController";
 import { MixamoCharacterNames } from "./Character";
+import { useFrame } from "@react-three/fiber";
 
 interface GLTFAction extends AnimationClip {
   name: string;
@@ -43,6 +44,8 @@ export const MixamoCharacter = memo(
     const characterModel = useMixamoCharacter({
       characterName,
     });
+
+    console.log(characterModel);
 
     return <primitive object={characterModel.scene} />;
   },
@@ -88,4 +91,57 @@ export function useMixamoAnimations() {
   ] as GLTFAction[];
 
   return { animationsForHook };
+}
+
+export function CharacterWithAnimationsControlled({
+  characterName,
+}: {
+  characterName: string;
+}) {
+  const characterModel = useGLTF(
+    `/3d-assets/glb/characters/${characterName}-transformed.glb`
+  );
+
+  const { animationsForHook } = useMixamoAnimations();
+
+  const result = useAnimations(animationsForHook, characterModel.scene);
+
+  const { updateAnimation } = useGenericAnimationController({
+    actions: result.actions,
+    mixer: result.mixer,
+  });
+
+  useEffect(() => {
+    updateAnimation("idle", { looping: true });
+  }, [updateAnimation]);
+
+  useEffect(() => {
+    const listener = () => {
+      updateAnimation("idle", { looping: true });
+    };
+
+    result.mixer.addEventListener("finished", listener);
+
+    return () => {
+      result.mixer.removeEventListener("finished", listener);
+    };
+  }, [result.mixer, updateAnimation]);
+
+  const [, get] = useKeyboardControls();
+
+  useFrame(() => {
+    const { forward, backward, leftward, rightward, run } = get();
+
+    if (forward || backward || leftward || rightward) {
+      if (run) {
+        updateAnimation("running", { looping: true });
+      } else {
+        updateAnimation("walking", { looping: true });
+      }
+    } else {
+      updateAnimation("idle", { looping: true });
+    }
+  });
+
+  return <primitive object={characterModel.scene} />;
 }

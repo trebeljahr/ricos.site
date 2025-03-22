@@ -107,6 +107,7 @@ export default function Character() {
 
   const { updateAnimation } = useGenericAnimationController({
     actions: result.actions,
+    mixer: result.mixer,
   });
 
   updateAnimation("idle", { looping: true });

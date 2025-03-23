@@ -10,7 +10,8 @@ import { ToTopButton } from "@components/ToTopButton";
 import { Post, posts } from "@velite";
 import { ReactNode } from "react";
 import { getRandom } from "src/lib/math/getRandom";
-import { byOnlyPublished, extractAndSortMetadata } from "src/lib/utils";
+import { byOnlyPublished } from "src/lib/utils/filters";
+import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
   children: ReactNode;

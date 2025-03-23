@@ -1,7 +1,7 @@
 import { OpenGraph } from "./OpenGraph";
 import { LeftSmallNavbar, TailwindNavbar } from "./Navbar/TailwindNavbar";
 import { ReactNode } from "react";
-import { toTitleCase } from "src/lib/utils";
+import { toTitleCase } from "src/lib/utils/misc";
 import { Meta } from "./Meta";
 import clsx from "clsx";
 

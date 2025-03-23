@@ -1,25 +1,26 @@
-import { MinecraftCreativeControlsPlayer } from "@components/canvas/FlyingPlayer";
-import { OceanSurface } from "@components/canvas/Ocean";
-import { CanvasWithControls } from "@components/canvas/Scene";
 import { ThreeFiberLayout } from "@components/dom/Layout";
-import { PointerLockControls, Sky } from "@react-three/drei";
+import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import dynamic from "next/dynamic";
+import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
+import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
+import { OceanSurface } from "src/canvas/Scenes/OceanDemo/Ocean";
 
-const Ship = dynamic(() => import("@components/canvas/Ship"), { ssr: false });
+const Ship = dynamic(() => import("@r3f/AllModels/Ship"), {
+  ssr: false,
+});
 
 export default function Page() {
   return (
     <ThreeFiberLayout>
-      <CanvasWithControls>
+      <CanvasWithKeyboardInput>
         <Sky azimuth={1} inclination={0.6} distance={1000} />
         <Physics>
-          <MinecraftCreativeControlsPlayer />
+          <MinecraftSpectatorController speed={1} />
         </Physics>
-        <PointerLockControls />
         <Ship />
         <OceanSurface />
-      </CanvasWithControls>
+      </CanvasWithKeyboardInput>
     </ThreeFiberLayout>
   );
 }

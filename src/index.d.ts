@@ -5,7 +5,14 @@ declare module "*.vert" {
   export default content;
 }
 
+declare module "simplenoise";
+
 declare module "*.frag" {
+  const content: string;
+  export default content;
+}
+
+declare module "*.mp3" {
   const content: string;
   export default content;
 }

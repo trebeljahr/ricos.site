@@ -6,6 +6,7 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -23,10 +24,12 @@
       "@components/*": ["src/components/*"],
       "@contexts/*": ["src/contexts/*"],
       "@hooks/*": ["src/hooks/*"],
+      "@r3f/*": ["src/canvas/*"],
+      "@models/*": ["src/canvas/AllModels/*"],
       "@shaders/*": ["src/shaders/*"],
-      "@models/*": ["src/models/*"],
       "@pages/*": ["src/pages/*"],
-      "@r4ai/remark-callout": ["node_modules/@r4ai/remark-callout/dist/index"]
+      "@r4ai/remark-callout": ["node_modules/@r4ai/remark-callout/dist/index"],
+      "@sounds/*": ["src/sounds/*"]
     }
   },
   "exclude": ["node_modules"],
@@ -39,7 +42,6 @@
     "src/scripts/createRedirects.js",
     "src/lib/generateExcerpts.js",
     "src/scripts/sortedNewsletters.js",
-    "next.config.cjss",
-    "src/components/Demos/FullscreenShader/withContext"
+    "next.config.cjss"
   ]
 }

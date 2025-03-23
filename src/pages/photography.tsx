@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ImageProps } from "src/@types";
 import { getFirstImageFromS3, photographyFolder } from "src/lib/aws";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
-import { turnKebabIntoTitleCase } from "src/lib/utils";
+import { turnKebabIntoTitleCase } from "src/lib/utils/misc";
 
 export const trips = [
   {

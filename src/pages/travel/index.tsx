@@ -6,7 +6,8 @@ import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { travelblogs } from "@velite";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
-import { byOnlyPublished, CommonMetadata } from "src/lib/utils";
+import { byOnlyPublished } from "src/lib/utils/filters";
+import { CommonMetadata } from "src/@types";
 
 type MetaInfo = {
   cover: { src: string; alt: string };

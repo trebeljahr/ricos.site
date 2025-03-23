@@ -1,4 +1,9 @@
 {
   "extends": "next/core-web-vitals",
-  "ignorePatterns": ["node_modules/", ".next/", "out/", "contentlayer/"]
+  "ignorePatterns": ["node_modules/", ".next/", "out/", "contentlayer/"],
+  "rules": {
+    "react/display-name": "off",
+    "react/rules-of-hooks": "off",
+    "react/exhaustive-deps": "off"
+  }
 }

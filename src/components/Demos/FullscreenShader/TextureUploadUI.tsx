@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import { ChangeEvent, useCallback, useState } from "react";
 import { FaChevronDown, FaChevronUp, FaImage } from "react-icons/fa";
 import { TextureLoader } from "three";
 import { useEditorContext } from "./EditorContextProvider";
@@ -9,7 +9,7 @@ export const TextureUploadUI = () => {
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   const handleFileChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       const files = event.target.files;
       if (!files) return;
 

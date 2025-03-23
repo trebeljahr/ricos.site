@@ -1,5 +1,5 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
-import { CommonMetadata } from "src/lib/utils";
+import { CommonMetadata } from "src/@types";
 
 type Props = {
   title: string;

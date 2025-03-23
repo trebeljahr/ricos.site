@@ -1,14 +1,15 @@
-import { Fishs } from "@components/canvas/Fish";
-import { CanvasWithControls } from "@components/canvas/Scene";
+import { Fishs } from "@r3f/Scenes/FBOExperiments/Fish";
+import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { Box } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 import { Vector3 } from "three";
+import { perf } from "src/canvas/ChunkGenerationSystem/config";
 
 export default function Page() {
   return (
     <ThreeFiberLayout>
-      <CanvasWithControls
+      <CanvasWithKeyboardInput
         camera={{ position: new Vector3(0, 0, 50), near: 1, far: 3000 }}
       >
         <Fishs />
@@ -17,24 +18,8 @@ export default function Page() {
         </Box>
         <ambientLight />
         <fog color={0xffffff} near={100} far={1000} />
-        <Perf />
-        {/* <OrbitControls /> */}
-        {/* <KeyboardControls
-        map={[
-          { name: 'forward', keys: ['ArrowUp', 'w', 'W'] },
-          { name: 'backward', keys: ['ArrowDown', 's', 'S'] },
-          { name: 'left', keys: ['ArrowLeft', 'a', 'A'] },
-          { name: 'right', keys: ['ArrowRight', 'd', 'D'] },
-          { name: 'jump', keys: ['Space'] },
-          { name: 'descend', keys: ['c', 'C'] },
-          { name: 'sprint', keys: ['Shift'] },
-          { name: 'attack', keys: ['F', 'f'] },
-        ]}>
-        <Physics>
-          <SwimmingPlayerControls />
-        </Physics>
-      </KeyboardControls> */}
-      </CanvasWithControls>
+        {perf && <Perf position="bottom-right" />}
+      </CanvasWithKeyboardInput>
     </ThreeFiberLayout>
   );
 }

@@ -1,4 +1,4 @@
-import Grass from "@components/canvas/Grass";
+import Grass from "@r3f/Scenes/Grass";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { OrbitControls, Sky } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";

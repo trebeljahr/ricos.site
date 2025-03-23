@@ -7,7 +7,8 @@ import { ToTopButton } from "@components/ToTopButton";
 import { podcastnotes as allPodcastnotes } from "@velite";
 import Link from "next/link";
 import { useState } from "react";
-import { CommonMetadata, extractAndSortMetadata } from "src/lib/utils";
+import { CommonMetadata } from "src/@types";
+import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
   podcastnotes: CommonMetadata[];

@@ -8,7 +8,7 @@ import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { newsletters, type Newsletter as NewsletterType } from "@velite";
-import { byOnlyPublished } from "src/lib/utils";
+import { byOnlyPublished } from "src/lib/utils/filters";
 
 type Props = {
   newsletter: NewsletterType;

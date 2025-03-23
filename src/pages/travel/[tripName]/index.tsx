@@ -4,11 +4,9 @@ import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { travelblogs } from "@velite";
 import { nanoid } from "nanoid";
-import {
-  CommonMetadata,
-  extractAndSortMetadata,
-  turnKebabIntoTitleCase,
-} from "src/lib/utils";
+import { turnKebabIntoTitleCase } from "src/lib/utils/misc";
+import { CommonMetadata } from "src/@types";
+import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { travelingStoriesMetaRaw, travelingStoryNames } from "..";
 
 type Props = {

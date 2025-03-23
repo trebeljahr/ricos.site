@@ -4,7 +4,7 @@ import {
   isAlreadySubscribed,
   sendEmail,
 } from "../../lib/mailgun";
-import { getErrorMessage } from "../../lib/utils";
+import { getErrorMessage } from "../../lib/utils/misc";
 import { readFile } from "fs/promises";
 import Handlebars from "handlebars";
 import path from "path";

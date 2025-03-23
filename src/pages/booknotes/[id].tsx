@@ -9,7 +9,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { Booknote, booknotes } from "@velite";
 import { FaInfo } from "react-icons/fa";
-import { byOnlyPublished } from "src/lib/utils";
+import { byOnlyPublished } from "src/lib/utils/filters";
 
 type Props = {
   booknote: Booknote;

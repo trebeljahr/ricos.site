@@ -1,12 +1,15 @@
-import { CanvasWithControls } from "@components/canvas/Scene";
+import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 import { UnderwaterContextProvider } from "@contexts/UnderwaterContext";
 import dynamic from "next/dynamic";
 import tunnel from "tunnel-rat";
 
-const WaterDemo = dynamic(() => import("@components/canvas/WaterDemo"), {
-  ssr: false,
-});
+const WaterDemo = dynamic(
+  () => import("src/canvas/Scenes/OceanDemo/WaterDemo"),
+  {
+    ssr: false,
+  }
+);
 
 export const { In, Out } = tunnel();
 
@@ -14,11 +17,11 @@ export default function Page() {
   return (
     <ThreeFiberLayout>
       <Out />
-      <CanvasWithControls>
+      <CanvasWithKeyboardInput>
         <UnderwaterContextProvider>
           <WaterDemo />
         </UnderwaterContextProvider>
-      </CanvasWithControls>
+      </CanvasWithKeyboardInput>
     </ThreeFiberLayout>
   );
 }

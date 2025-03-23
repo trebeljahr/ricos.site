@@ -40,7 +40,7 @@ export function useShark() {
   return { nodes, materials };
 }
 
-export default function Model(props: JSX.IntrinsicElements["group"]) {
+export default function SharkModel(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<Group>(null!);
   const { nodes, materials, animations } = useGLTF(
     "/3d-assets/glb/fish_pack/Shark.glb"

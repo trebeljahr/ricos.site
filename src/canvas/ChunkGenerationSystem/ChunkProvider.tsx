@@ -1,4 +1,4 @@
-import { TerrainData } from "@r3f/Workers/terrainWorker";
+import { TerrainData } from "@r3f/my-workers/terrainWorker";
 import { useFrame, useThree } from "@react-three/fiber";
 import {
   createContext,
@@ -101,7 +101,7 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     workerRef.current = new Worker(
-      new URL("../workers/terrainWorker.ts", import.meta.url)
+      new URL("../my-workers/terrainWorker.ts", import.meta.url)
     );
 
     workerRef.current.onmessage = (event: MessageEvent<TerrainData>) => {

@@ -24,7 +24,7 @@ export const ChunkPositionUpdater = ({
 
   useEffect(() => {
     workerRef.current = new Worker(
-      new URL("../workers/noiseWorker.ts", import.meta.url)
+      new URL("../my-workers/noiseWorker.ts", import.meta.url)
     );
 
     return () => {

@@ -107,9 +107,6 @@ export const useGenericAnimationController = ({
         const animationBefore = actions[previous.current];
 
         if (animationBefore) {
-          console.log(
-            `fading out mixed in animation ${previousMixedIn.current} back to ${previous.current}`
-          );
           currentMixedIn.fadeOut(0.2);
           animationBefore.reset().fadeIn(0.2).play();
           animationBefore.loop = LoopRepeat;
@@ -125,12 +122,8 @@ export const useGenericAnimationController = ({
 
     const listener: MixerListener = (e) => {
       const name = e.action._clip.name;
-      console.log("animation finished", name);
-
-      console.log(previousMixedIn, name);
 
       if (previousMixedIn.current === name) {
-        console.log("resetting mixed in animation state");
         previousMixedIn.current = "";
         mixedInAnimationState.current = {
           name: "",
@@ -163,8 +156,6 @@ export const useGenericAnimationController = ({
   ) => {
     if (newAnimation === previous.current && !force) return;
 
-    console.log(newAnimation);
-
     const current = actions[previous.current];
     const toPlay = actions[newAnimation];
 
@@ -191,10 +182,6 @@ export const useGenericAnimationController = ({
   };
 
   const mixInAnimation = (animation: string) => {
-    // if (mixedInAnimationState.current.isPlaying) {
-    //   console.log("already mixed in");
-    //   return false;
-    // }
     const current = actions[previous.current];
     const toPlay = actions[animation];
 

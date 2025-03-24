@@ -260,7 +260,7 @@ export const MixamoEcctrlControllerWithAnimations = () => {
         <group position={[0, -1.1, 0]} scale={1.4}>
           <Suspense>
             <group ref={group as MutableRefObject<Group>} dispose={null}>
-              <MixamoCharacter characterName={MixamoCharacterNames.Eve} />
+              <MixamoCharacter characterName={MixamoCharacterNames.Alien} />
             </group>
           </Suspense>
         </group>

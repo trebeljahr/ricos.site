@@ -5,6 +5,7 @@ import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreative
 import { SingleStylizedGrassPlane } from "@r3f/Scenes/Grass/JamesSmythGrass";
 import { OrbitControls, Sky, Stage } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { LightningStrike } from "three-stdlib";
 
 export default function Page() {
   return (
@@ -13,7 +14,7 @@ export default function Page() {
         <color attach="background" args={["#ffcc32"]} />
         <ambientLight intensity={0.5} />
         <Sky />
-        <SingleStylizedGrassPlane planeSize={200} />
+        <SingleStylizedGrassPlane planeSize={200} bladeCount={1000000} />
         <MinecraftSpectatorController speed={1} />
       </CanvasWithKeyboardInput>
     </ThreeFiberLayout>

@@ -23,26 +23,18 @@ extend({ LightningStrikeGeometry: LightningStrike });
 
 const LightningRay = (rayParameters: RayParameters) => {
   const lightningColor = "#70e0ff";
-  //   if (rayParameters) {
-  //     rayParameters.timeScale = 2;
-  //     rayParameters.destOffset = new Vector3(0, 0, 50);
-  //   }
-  const ref = useRef<LightningStrike & typeof LightningStrike>(null!);
-
-  const srcOffset = useRef(new Vector3(0, 0, 0));
-  const destOffset = useRef(new Vector3(0, 0, 50));
+  const ref = useRef<LightningStrike>(null!);
 
   useFrame(({ clock }) => {
     const time = clock.getElapsedTime();
     if (!ref.current) return;
 
-    ref.current.update(time);
-    // console.log(ref.current);
+    const rayParams = (ref.current as any).rayParameters as RayParameters;
 
-    ref.current.copyParameters({
-      sourceOffset: srcOffset.current,
-      destOffset: destOffset.current.setY(Math.sin(time) * 10),
-    });
+    if (!rayParams.destOffset) return;
+    rayParams.destOffset.y = Math.sin(time) * 20;
+
+    ref.current.update(time);
   });
 
   return (
@@ -51,9 +43,7 @@ const LightningRay = (rayParameters: RayParameters) => {
       <meshStandardMaterial
         color={lightningColor}
         emissive={lightningColor}
-        emissiveIntensity={4}
-        transparent
-        opacity={0.5}
+        emissiveIntensity={1.5}
       />
     </mesh>
   );
@@ -62,10 +52,11 @@ const LightningRay = (rayParameters: RayParameters) => {
 export default function Page() {
   const rayParams = {
     sourceOffset: new Vector3(),
-    destOffset: new Vector3(),
-    radius0: 4,
-    radius1: 4,
-    minRadius: 2.5,
+    destOffset: new Vector3(50, 0, 0),
+    radius0: 0.4,
+    radius1: 0.4,
+    minRadius: 1.5,
+    maxRadius: 2,
     maxIterations: 7,
     isEternal: true,
 
@@ -99,38 +90,3 @@ export default function Page() {
     </ThreeFiberLayout>
   );
 }
-
-//   if (rayParameters) {
-// rayParameters.timeScale = 2;
-// rayParameters.isStatic = false;
-// rayParameters.isEternal = false;
-//   }
-
-//     const rayParameters: RayParameters = {
-//      sourceOffset,
-//      destOffset,
-//      timeScale: ,
-//      roughness: ,
-//      straightness: ,
-//      up0: ,
-//      up1: ,
-//      radius0: ,
-//      radius1: ,
-//      radius0Factor: ,
-//      radius1Factor: ,
-//      minRadius: ,
-//      isEternal: ,
-//      birthTime: ,
-//      deathTime: ,
-//      propagationTimeFactor: ,
-//      vanishingTimeFactor: ,
-//      subrayPeriod: ,
-//      subrayDutyCycle: ,
-//      maxIterations: ,
-//      isStatic: ,
-//      ramification: ,
-//      maxSubrayRecursion: ,
-//      recursionProbability: ,
-//      generateUVs: ,
-//   };
-// }

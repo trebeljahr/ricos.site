@@ -238,8 +238,6 @@ export const MixamoEcctrlControllerWithAnimations = () => {
 
   const { progress } = useProgress();
 
-  console.log(progress);
-
   useAttachToBone(
     group as MutableRefObject<Group>,
     "mixamorigRightHand",

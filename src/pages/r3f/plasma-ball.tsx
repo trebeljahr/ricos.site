@@ -1,5 +1,10 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
-import { Box, OrbitControls, Stage } from "@react-three/drei";
+import {
+  Box,
+  OrbitControls,
+  Stage,
+  Sphere as SphereMesh,
+} from "@react-three/drei";
 import {
   Canvas,
   extend,
@@ -21,14 +26,17 @@ import {
   useMemo,
   useRef,
 } from "react";
+import { getRandomInt } from "src/lib/utils/misc";
 import {
   ColorRepresentation,
   DoubleSide,
   Material,
   Mesh,
   MeshLambertMaterial,
+  MeshStandardMaterial,
   Raycaster,
   Sphere,
+  Spherical,
   Vector2,
   Vector3,
 } from "three";
@@ -37,6 +45,7 @@ import {
   MeshSurfaceSampler,
   RayParameters,
 } from "three-stdlib";
+import { lerp } from "three/src/math/MathUtils";
 
 type FixedLightningStrike = LightningStrike & { rayParameters: RayParameters };
 
@@ -83,8 +92,9 @@ const LightningRay = forwardRef(
 );
 
 const PlasmaBall = () => {
-  const sphereHeight = 300;
-  const sphereRadius = 200;
+  const poleHeight = 30;
+  const glassSphereDiameter = 20;
+  const plasmaSphereRadius = glassSphereDiameter * 0.05;
 
   const plasmaColor = "#f200ff";
   const blackPlastic = new MeshLambertMaterial({
@@ -96,13 +106,13 @@ const PlasmaBall = () => {
   const vec1 = new Vector3();
   const vec2 = new Vector3();
 
-  const plasmaOrigin = new Vector3(0, sphereHeight * 0.5, 0);
+  const plasmaOrigin = new Vector3(0, poleHeight * 0.5, 0);
 
   const rayParams: RayParameters = {
     sourceOffset: plasmaOrigin,
-    destOffset: new Vector3(sphereRadius / 2, 0, 0).add(plasmaOrigin),
-    radius0: 0.4,
-    radius1: 0.4,
+    destOffset: new Vector3(glassSphereDiameter / 2, 0, 0).add(plasmaOrigin),
+    radius0: 0.1,
+    radius1: 0.1,
     radius0Factor: 0.82,
     minRadius: 2.5,
     maxIterations: 6,
@@ -161,67 +171,159 @@ const PlasmaBall = () => {
     const point = event.point;
     if (!point) return;
 
-    ref.current.rayParameters.destOffset.copy(
-      point.add(plasmaOrigin).multiplyScalar(100)
-    );
+    ref.current.rayParameters.destOffset.copy(point.add(plasmaOrigin));
   };
 
-  const glassSphere = useRef<Mesh>(null!);
-  const destinations = useMemo(() => {
-    if (!glassSphere.current) return [];
+  const jitterStrength = 0.005;
+  //   const jitterSpeed = 0.5;
 
-    const sampler = new MeshSurfaceSampler(glassSphere.current)
-      .setWeightAttribute("color")
-      .build();
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    const s = new Spherical(glassSphereDiameter / 2);
+    const p = new Vector3();
+    const halfPi = Math.PI / 2;
 
-    const destinations = [] as Vector3[];
-    const position = new Vector3();
-    const numLightningRays = 20;
+    lightningRefs.current.forEach((thisRef, i) => {
+      if (!thisRef.rayParameters.destOffset) return;
+
+      if (!targets[i]) return;
+
+      const directionPhi = contactPoints[i].phi - targets[i].phi;
+      const directionTheta = contactPoints[i].theta - targets[i].theta;
+
+      contactPoints[i].phi += directionPhi * jitterStrength;
+      contactPoints[i].theta += directionTheta * jitterStrength;
+
+      const delta = 0.01;
+
+      const distancePhi = Math.abs(contactPoints[i].phi - targets[i].phi);
+      const distanceTheta = Math.abs(contactPoints[i].theta - targets[i].theta);
+
+      const hasReachedTarget = distancePhi <= delta && distanceTheta <= delta;
+      if (hasReachedTarget) {
+        targets[i].phi = Math.random() * Math.PI * 2;
+        targets[i].theta = Math.random() * Math.PI * 2;
+      }
+
+      s.phi = contactPoints[i].phi;
+      s.theta = contactPoints[i].theta;
+
+      thisRef.rayParameters.destOffset.copy(
+        p.setFromSpherical(s).add(plasmaOrigin)
+      );
+
+      if (contactPointRefs.current[i]) {
+        contactPointRefs.current[i].position.copy(
+          thisRef.rayParameters.destOffset
+        );
+      }
+    });
+  });
+
+  const { contactPoints, targets } = useMemo(() => {
+    const contactPoints = [] as { phi: number; theta: number }[];
+    const targets = [] as { phi: number; theta: number }[];
+    const numLightningRays = 30;
 
     for (let i = 0; i < numLightningRays; i++) {
-      sampler.sample(position);
-      destinations.push(position.divideScalar(10));
+      contactPoints.push({
+        phi: Math.random() * Math.PI * 2,
+        theta: Math.random() * Math.PI * 2,
+      });
+
+      targets.push({
+        phi: Math.random() * Math.PI * 2,
+        theta: Math.random() * Math.PI * 2,
+      });
     }
 
-    return destinations;
-  }, [glassSphere.current]);
+    return { contactPoints, targets };
+  }, []);
+
+  const plasmaMaterial = useMemo(() => {
+    const material = new MeshStandardMaterial({
+      color: plasmaColor,
+      emissive: plasmaColor,
+      emissiveIntensity: 4,
+      side: DoubleSide,
+    });
+
+    return material;
+  }, [plasmaColor]);
+
+  const lightningRefs = useRef<FixedLightningStrike[]>([]);
+  const contactPointRefs = useRef<Mesh[]>([]);
 
   return (
-    <group scale={0.01}>
-      {destinations.map((destination, index) => {
+    <group scale={1}>
+      {contactPoints.map((pos, index) => {
+        const targetPosition = new Vector3()
+          .setFromSphericalCoords(
+            glassSphereDiameter / 2,
+            targets[index].phi,
+            targets[index].theta
+          )
+          .add(plasmaOrigin);
+
+        const currentPosition = new Vector3()
+          .setFromSphericalCoords(glassSphereDiameter / 2, pos.phi, pos.theta)
+          .add(plasmaOrigin);
+
         return (
-          <LightningRay {...rayParams} destOffset={destination} ref={ref}>
-            <meshStandardMaterial
-              color={plasmaColor}
-              emissive={plasmaColor}
-              emissiveIntensity={5}
+          <group key={index}>
+            <SphereMesh
+              args={[glassSphereDiameter * 0.004, 24, 12]}
+              position={currentPosition.clone()}
+              material={plasmaMaterial}
+              ref={(elem) => {
+                if (elem) {
+                  contactPointRefs.current.push(elem);
+                }
+              }}
             />
-          </LightningRay>
+
+            <LightningRay
+              {...rayParams}
+              destOffset={currentPosition.clone()}
+              radius0={0.06}
+              radius1={0.06}
+              material={plasmaMaterial}
+              ref={(elem) => {
+                if (elem) {
+                  lightningRefs.current.push(elem);
+                }
+              }}
+            />
+          </group>
         );
       })}
-      <LightningRay {...rayParams} ref={ref}>
+      {/* <LightningRay {...rayParams} ref={ref}>
         <meshStandardMaterial
           color={plasmaColor}
           emissive={plasmaColor}
-          emissiveIntensity={5}
+          emissiveIntensity={4.5}
         />
-      </LightningRay>
+      </LightningRay> */}
 
       <Box
-        args={[sphereRadius * 0.5, sphereHeight * 0.1, sphereRadius * 0.5]}
-        position={[0, sphereHeight * 0.05 * 0.5, 0]}
+        args={[
+          glassSphereDiameter * 0.5,
+          poleHeight * 0.1,
+          glassSphereDiameter * 0.5,
+        ]}
+        position={[0, poleHeight * 0.05 * 0.5, 0]}
         material={blackPlastic}
       />
 
       <mesh
-        position={[0, sphereRadius / 2 - sphereRadius * 0.06 * 1.2, 0]}
+        position={[0, glassSphereDiameter / 2 - plasmaSphereRadius * 2, 0]}
         material={blackPlastic}
       >
         <cylinderGeometry
           args={[
-            sphereRadius * 0.06,
-            sphereRadius * 0.06,
-            sphereHeight / 2,
+            plasmaSphereRadius - 0.01,
+            plasmaSphereRadius - 0.01,
+            poleHeight / 2 - plasmaSphereRadius * 2,
             6,
             1,
             true,
@@ -229,22 +331,18 @@ const PlasmaBall = () => {
         />
       </mesh>
 
-      <mesh position={[0, sphereHeight * 0.5, 0]}>
-        <sphereGeometry args={[sphereRadius * 0.1, 24, 12]} />
+      <mesh position={[0, poleHeight * 0.5, 0]}>
+        <sphereGeometry args={[glassSphereDiameter * 0.05, 24, 12]} />
         <meshStandardMaterial
           color={plasmaColor}
           emissive={plasmaColor}
           emissiveIntensity={3}
-          side={DoubleSide}
+          //   side={DoubleSide}
         />
       </mesh>
 
-      <mesh
-        position={[0, sphereHeight / 2, 0]}
-        onPointerMove={onPointerOver}
-        ref={glassSphere}
-      >
-        <sphereGeometry args={[sphereRadius / 2, 80, 40]} />
+      <mesh position={[0, poleHeight / 2, 0]} onPointerMove={onPointerOver}>
+        <sphereGeometry args={[glassSphereDiameter / 2, 80, 40]} />
         <meshPhysicalMaterial
           color={"#ffffff"}
           transparent={true}
@@ -260,37 +358,12 @@ const PlasmaBall = () => {
 };
 
 export default function Page() {
-  const rayParams = {
-    sourceOffset: new Vector3(),
-    destOffset: new Vector3(50, 0, 0),
-    radius0: 0.4,
-    radius1: 0.4,
-    minRadius: 1.5,
-    maxRadius: 2,
-    maxIterations: 7,
-    isEternal: true,
-
-    timeScale: 0.7,
-
-    propagationTimeFactor: 0.05,
-    vanishingTimeFactor: 0.95,
-    subrayPeriod: 3.5,
-    subrayDutyCycle: 0.6,
-    maxSubrayRecursion: 3,
-    ramification: 7,
-    recursionProbability: 0.6,
-
-    roughness: 0.85,
-    straightness: 0.6,
-  };
-
   return (
     <ThreeFiberLayout>
       <Canvas>
-        <color attach="background" args={["#7b7a7a"]} />
+        <color attach="background" args={["#121524"]} />
         <ambientLight intensity={1} />
 
-        {/* <LightningRay {...rayParams} /> */}
         <Stage adjustCamera>
           <PlasmaBall />
         </Stage>

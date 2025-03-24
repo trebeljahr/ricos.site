@@ -2,8 +2,8 @@ import { ThreeFiberLayout } from "@components/dom/Layout";
 import {
   Box,
   OrbitControls,
-  Stage,
   Sphere as SphereMesh,
+  Stage,
 } from "@react-three/drei";
 import {
   Canvas,
@@ -11,7 +11,6 @@ import {
   ReactThreeFiber,
   ThreeEvent,
   useFrame,
-  useThree,
 } from "@react-three/fiber";
 import {
   Bloom,
@@ -21,31 +20,20 @@ import {
 import {
   forwardRef,
   PropsWithChildren,
-  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
 } from "react";
-import { getRandomInt } from "src/lib/utils/misc";
 import {
-  ColorRepresentation,
   DoubleSide,
   Material,
   Mesh,
   MeshLambertMaterial,
   MeshStandardMaterial,
-  Raycaster,
-  Sphere,
   Spherical,
-  Vector2,
   Vector3,
 } from "three";
-import {
-  LightningStrike,
-  MeshSurfaceSampler,
-  RayParameters,
-} from "three-stdlib";
-import { lerp } from "three/src/math/MathUtils";
+import { LightningStrike, RayParameters } from "three-stdlib";
 
 type FixedLightningStrike = LightningStrike & { rayParameters: RayParameters };
 
@@ -90,6 +78,16 @@ const LightningRay = forwardRef(
     );
   }
 );
+
+function randomPointOnSphere() {
+  const phi = Math.random() * Math.PI - 0.3;
+  const theta = Math.random() * Math.PI * 2;
+
+  return {
+    phi,
+    theta,
+  };
+}
 
 const PlasmaBall = () => {
   const poleHeight = 30;
@@ -174,35 +172,35 @@ const PlasmaBall = () => {
     ref.current.rayParameters.destOffset.copy(point.add(plasmaOrigin));
   };
 
-  const jitterStrength = 0.005;
-  //   const jitterSpeed = 0.5;
+  const jitterStrength = 0.01;
 
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
+  useFrame(() => {
     const s = new Spherical(glassSphereDiameter / 2);
     const p = new Vector3();
-    const halfPi = Math.PI / 2;
 
     lightningRefs.current.forEach((thisRef, i) => {
       if (!thisRef.rayParameters.destOffset) return;
-
       if (!targets[i]) return;
+      if (!contactPoints[i]) return;
+      if (!contactPointRefs.current[i]) return;
 
-      const directionPhi = contactPoints[i].phi - targets[i].phi;
-      const directionTheta = contactPoints[i].theta - targets[i].theta;
+      const directionPhi = targets[i].phi - contactPoints[i].phi;
+      const directionTheta = targets[i].theta - contactPoints[i].theta;
 
-      contactPoints[i].phi += directionPhi * jitterStrength;
-      contactPoints[i].theta += directionTheta * jitterStrength;
+      contactPoints[i].phi +=
+        (directionPhi / Math.abs(directionPhi)) * jitterStrength;
+      contactPoints[i].theta +=
+        (directionTheta / Math.abs(directionTheta)) * jitterStrength;
 
-      const delta = 0.01;
+      const delta = 0.1;
 
       const distancePhi = Math.abs(contactPoints[i].phi - targets[i].phi);
       const distanceTheta = Math.abs(contactPoints[i].theta - targets[i].theta);
 
       const hasReachedTarget = distancePhi <= delta && distanceTheta <= delta;
       if (hasReachedTarget) {
-        targets[i].phi = Math.random() * Math.PI * 2;
-        targets[i].theta = Math.random() * Math.PI * 2;
+        const newTarget = randomPointOnSphere();
+        targets[i] = newTarget;
       }
 
       s.phi = contactPoints[i].phi;
@@ -212,11 +210,9 @@ const PlasmaBall = () => {
         p.setFromSpherical(s).add(plasmaOrigin)
       );
 
-      if (contactPointRefs.current[i]) {
-        contactPointRefs.current[i].position.copy(
-          thisRef.rayParameters.destOffset
-        );
-      }
+      contactPointRefs.current[i].position.copy(
+        thisRef.rayParameters.destOffset
+      );
     });
   });
 
@@ -226,15 +222,8 @@ const PlasmaBall = () => {
     const numLightningRays = 30;
 
     for (let i = 0; i < numLightningRays; i++) {
-      contactPoints.push({
-        phi: Math.random() * Math.PI * 2,
-        theta: Math.random() * Math.PI * 2,
-      });
-
-      targets.push({
-        phi: Math.random() * Math.PI * 2,
-        theta: Math.random() * Math.PI * 2,
-      });
+      contactPoints.push(randomPointOnSphere());
+      targets.push(randomPointOnSphere());
     }
 
     return { contactPoints, targets };
@@ -257,14 +246,6 @@ const PlasmaBall = () => {
   return (
     <group scale={1}>
       {contactPoints.map((pos, index) => {
-        const targetPosition = new Vector3()
-          .setFromSphericalCoords(
-            glassSphereDiameter / 2,
-            targets[index].phi,
-            targets[index].theta
-          )
-          .add(plasmaOrigin);
-
         const currentPosition = new Vector3()
           .setFromSphericalCoords(glassSphereDiameter / 2, pos.phi, pos.theta)
           .add(plasmaOrigin);
@@ -297,13 +278,6 @@ const PlasmaBall = () => {
           </group>
         );
       })}
-      {/* <LightningRay {...rayParams} ref={ref}>
-        <meshStandardMaterial
-          color={plasmaColor}
-          emissive={plasmaColor}
-          emissiveIntensity={4.5}
-        />
-      </LightningRay> */}
 
       <Box
         args={[
@@ -337,7 +311,6 @@ const PlasmaBall = () => {
           color={plasmaColor}
           emissive={plasmaColor}
           emissiveIntensity={3}
-          //   side={DoubleSide}
         />
       </mesh>
 
@@ -348,6 +321,7 @@ const PlasmaBall = () => {
           transparent={true}
           opacity={0.5}
           transmission={0.96}
+          side={DoubleSide}
           depthWrite={false}
           metalness={0}
           roughness={0}

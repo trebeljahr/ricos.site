@@ -1,4 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
+import { LightningRay } from "@r3f/Helpers/Lightning";
 import { OrbitControls } from "@react-three/drei";
 import { Canvas, extend, ReactThreeFiber, useFrame } from "@react-three/fiber";
 import {
@@ -7,47 +8,8 @@ import {
   ToneMapping,
 } from "@react-three/postprocessing";
 import { useRef } from "react";
-import { Vector3 } from "three";
+import { DoubleSide, Vector3 } from "three";
 import { LightningStrike, RayParameters } from "three-stdlib";
-
-declare module "@react-three/fiber" {
-  interface ThreeElements {
-    lightningStrikeGeometry: ReactThreeFiber.Node<
-      LightningStrike,
-      typeof LightningStrike
-    >;
-  }
-}
-
-extend({ LightningStrikeGeometry: LightningStrike });
-
-const LightningRay = (rayParameters: RayParameters) => {
-  const lightningColor = "#70e0ff";
-  const ref = useRef<LightningStrike>(null!);
-
-  useFrame(({ clock }) => {
-    const time = clock.getElapsedTime();
-    if (!ref.current) return;
-
-    const rayParams = (ref.current as any).rayParameters as RayParameters;
-
-    if (!rayParams.destOffset) return;
-    rayParams.destOffset.y = Math.sin(time) * 20;
-
-    ref.current.update(time);
-  });
-
-  return (
-    <mesh>
-      <lightningStrikeGeometry args={[{ ...rayParameters }]} ref={ref} />
-      <meshStandardMaterial
-        color={lightningColor}
-        emissive={lightningColor}
-        emissiveIntensity={1.5}
-      />
-    </mesh>
-  );
-};
 
 export default function Page() {
   const rayParams = {
@@ -74,13 +36,22 @@ export default function Page() {
     straightness: 0.6,
   };
 
+  const lightningColor = "#70e0ff";
+
   return (
     <ThreeFiberLayout>
       <Canvas>
         <color attach="background" args={["#101010"]} />
         <ambientLight intensity={0.5} />
 
-        <LightningRay {...rayParams} />
+        <LightningRay {...rayParams}>
+          <meshStandardMaterial
+            color={lightningColor}
+            emissive={lightningColor}
+            emissiveIntensity={4}
+            side={DoubleSide}
+          />
+        </LightningRay>
         <EffectComposer>
           <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />
           <ToneMapping />

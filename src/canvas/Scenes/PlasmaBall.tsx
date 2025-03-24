@@ -1,4 +1,4 @@
-import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/Lightning";
+import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
 import { Box, Sphere as SphereMesh } from "@react-three/drei";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
@@ -76,8 +76,8 @@ export const PlasmaBall = () => {
       );
 
       vec1.subVectors(
-        childSubray.pos1,
-        typedLightningStrike.rayParameters.sourceOffset!
+        typedLightningStrike.rayParameters.destOffset!,
+        childSubray.pos1
       );
       vec2.set(0, 0, 0);
 

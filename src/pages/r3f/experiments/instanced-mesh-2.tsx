@@ -13,21 +13,21 @@ import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCr
 import { InstancedTreesWithMultiMaterial } from "src/canvas/InstancedMeshSystem/InstancedRocks";
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "A test of the InstancedMesh2 Library",
+  description:
+    "You can spawn a bunch of trees with this system by pressing the f key. You can also remove trees again by presing the g key.",
+  url: "/r3f/experiments/instanced-mesh-2",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/instanced-mesh-2.png",
+  imageAlt: "a 3D scene with a bunch of trees",
 };
 
 const Page = () => {

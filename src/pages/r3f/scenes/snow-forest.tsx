@@ -45,21 +45,27 @@ const ChunkRenderer = () => {
 };
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "Endless Snow Forest",
+  description:
+    "An endless snow forest scene in React Three Fiber, implemented using a chunk generation system, web workers and the instancedMesh2 library.",
+  url: "/r3f/scenes/snow-forest",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
+    "instancedMesh2",
+    "instancing",
+    "chunk generation",
+    "terrain",
+    "procedural generation",
+    "procedural terrain",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/snow-forest.png",
+  imageAlt: "a snow covered forest scene extending towards the horizon",
 };
 
 const Page = () => {
@@ -82,17 +88,12 @@ const Page = () => {
             <ChunkProvider>
               <ChunkRenderer />
               <SnowyPineTreesForChunks />
-              {/* <RocksForChunks /> */}
             </ChunkProvider>
-
-            {/* <BrunoSimonController /> */}
-
-            {/* <EcctrlController position={[0, 100, 0]} /> */}
 
             <MinecraftSpectatorController
               speed={1}
               initialLookat={[10, 0, 0]}
-              initialPosition={[0, y + 20, 0]}
+              initialPosition={[0, y + 60, 0]}
             />
           </Physics>
         </Canvas>

@@ -9,21 +9,21 @@ import {
 } from "@react-three/postprocessing";
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "Plasma Ball",
+  description:
+    "In this demo I tried using the LightningStrike Geometry from the three-stdlib in order to produce a plasma lamp sort of effect. With Bloom and ToneMapping postprocessing effects this looks very nice.",
+  url: "/r3f/scenes/plasma-ball",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/plasma-ball.png",
+  imageAlt: "a 3D rendered simulation of a plasma ball",
 };
 
 export default function Page() {

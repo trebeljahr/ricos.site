@@ -40,7 +40,7 @@ void main() {
     vec4 diffuseColor = vec4(mix(uBaseColor, tipColor, vUv.y), step(0.1, grassAlpha.r));
     vec3 grassFinalColor = diffuseColor.rgb * uGrassLightIntensity;
 
-        // light calculation derived from <lights_fragment_begin>
+    // light calculation derived from <lights_fragment_begin>
     vec3 geometryPosition = vViewPosition;
     vec3 geometryNormal = vNormal;
     vec3 geometryViewDir = (isOrthographic) ? vec3(0, 0, 1) : normalize(vViewPosition);
@@ -50,12 +50,12 @@ void main() {
     float currentShadow = 0.0;
     float NdotL;
     if(uEnableShadows == 1) {
-            #if ( NUM_DIR_LIGHTS > 0) 
+        #if ( NUM_DIR_LIGHTS > 0) 
         DirectionalLight directionalLight;
-            #if defined( USE_SHADOWMAP ) && NUM_DIR_LIGHT_SHADOWS > 0
+        #if defined( USE_SHADOWMAP ) && NUM_DIR_LIGHT_SHADOWS > 0
         DirectionalLightShadow directionalLightShadow;
-            #endif
-              #pragma unroll_loop_start
+        #endif
+        #pragma unroll_loop_start
         for(int i = 0; i < NUM_DIR_LIGHTS; i++) {
             directionalLight = directionalLights[i];
             getDirectionalLightInfo(directionalLight, directLight);
@@ -66,26 +66,25 @@ void main() {
 
             shadow += mix(currentShadow, 1., weight);
         }
-              #pragma unroll_loop_end
-            #endif
+        #pragma unroll_loop_end
+        #endif
         grassFinalColor = mix(grassFinalColor, grassFinalColor * uShadowDarkness, 1. - shadow);
     } else {
         grassFinalColor = grassFinalColor;
     }
     diffuseColor.rgb = clamp(diffuseColor.rgb * shadow, 0.0, 1.0);
 
-        #include <alphatest_fragment>
+    #include <alphatest_fragment>
     gl_FragColor = vec4(grassFinalColor, 1.0);
 
-        // uncomment to visualize wind
-        // vec3 windColorViz = vec3((vWindColor.x+vWindColor.y)/2.);
-        // gl_FragColor = vec4(windColorViz,1.0);
+    // uncomment to visualize wind
+    // vec3 windColorViz = vec3((vWindColor.x+vWindColor.y)/2.);
+    // gl_FragColor = vec4(windColorViz,1.0);
 
-        #include <tonemapping_fragment>
-        #include <colorspace_fragment>
+    #include <tonemapping_fragment>
+    #include <colorspace_fragment>
 
-        // FOG
-        #include <fog_fragment>
-        // FOG
-
+    // FOG
+    #include <fog_fragment>
+    // FOG
 }

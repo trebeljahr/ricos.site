@@ -4,21 +4,22 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { OrbitControls } from "@react-three/drei";
 
 const seoInfo = {
-  title: "",
-  description: "",
+  title: "A simple FBO particles demo",
+  description:
+    "This is a simple FBO particles demo in R3F, using a compute shader to update the particles to learn and understand how that can done",
   url: "/r3f/",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
+
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/fbo-demo.png",
+  imageAlt: "a set of glowing particles flying around in a 3D scene",
 };
 
 export default function Page() {

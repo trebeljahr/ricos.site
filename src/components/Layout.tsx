@@ -1,9 +1,8 @@
-import { OpenGraph } from "./OpenGraph";
-import { LeftSmallNavbar, TailwindNavbar } from "./Navbar/TailwindNavbar";
 import { ReactNode } from "react";
-import { toTitleCase } from "src/lib/utils/misc";
 import { Meta } from "./Meta";
-import clsx from "clsx";
+import { LeftSmallNavbar, TailwindNavbar } from "./Navbar/TailwindNavbar";
+import { OpenGraph } from "./OpenGraph";
+import { toTitleCase } from "src/lib/utils/toTitleCase";
 
 type Props = {
   children: ReactNode;

@@ -1,8 +1,6 @@
 import { useFrame, useLoader } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { createNoise2D } from "simplex-noise";
-import { HeightfieldCollider } from "@react-three/rapier";
-import "./GrassMaterial";
 import {
   DoubleSide,
   PlaneGeometry,
@@ -11,74 +9,78 @@ import {
   Vector3,
   Vector4,
 } from "three";
+import { GrassMaterial, GrassMaterialType } from "./AllRoGrassMaterial";
+import { blackPlaneMaterial } from "../BlackPlaneMaterial";
 
 const noise2D = createNoise2D();
 
-declare module "@react-three/fiber" {
-  interface ThreeElements {
-    grassMaterial: any;
-  }
-}
-
-export default function Grass({
+export const AllRoGrass = ({
   size = 1,
   width = 32,
-  instances = 100000,
+  instances = 10000,
   ...props
-}) {
-  const bH = 0.02;
-  const bW = bH / 8;
+}) => {
+  const bH = 1;
+  const bW = 0.12;
   const joints = 5;
-  const materialRef = useRef<ShaderMaterial>(null!);
+  const materialRef = useRef<GrassMaterialType>(null!);
   const [texture, alphaMap] = useLoader(TextureLoader, [
     "/3d-assets/grass/blade_diffuse.jpg",
     "/3d-assets/grass/blade_alpha.jpg",
   ]);
+
+  useFrame(({ clock }) => {
+    materialRef.current.map = texture;
+    materialRef.current.alphaMap = alphaMap;
+    materialRef.current.toneMapped = false;
+    materialRef.current.bladeHeight = bH;
+    materialRef.current.bladeWidth = bW;
+    materialRef.current.joints = joints;
+    materialRef.current.time = clock.getElapsedTime() / 4;
+  });
+
   const attributeData = useMemo(
     () => getAttributeData(instances, width),
     [instances, width]
   );
-  const baseGeom = useMemo(
+
+  const bladeGeom = useMemo(
     () => new PlaneGeometry(bW, bH, 1, joints).translate(0, bH / 2, 0),
-    [size]
+    []
   );
 
-  const [groundGeo, heightField] = useMemo(() => {
-    const geo = new PlaneGeometry(width, width, width - 1, width - 1);
+  const planeGeo = useRef<PlaneGeometry>(null!);
 
-    geo.scale(1, -1, 1);
-    geo.rotateX(-Math.PI / 2);
-    geo.rotateY(-Math.PI / 2);
+  useEffect(() => {
+    const geo = planeGeo.current;
+    if (!geo) return;
 
     const positions = geo.attributes.position;
-
-    const heightField = [];
 
     for (let i = 0; i < positions.count; i++) {
       const x = positions.getX(i);
       const z = positions.getZ(i);
-      const y = getYPosition(x, z);
-      positions.setY(i, y);
-      heightField.push(y);
+      // const y = getYPosition(x, z);
+      // positions.setXYZ(i, x, y, z);
     }
 
     geo.computeVertexNormals();
-
-    return [geo, heightField];
-  }, [width]);
-
-  useFrame(
-    (state) =>
-      (materialRef.current.uniforms.time.value = state.clock.elapsedTime / 4)
-  );
+    positions.needsUpdate = true;
+  }, []);
 
   return (
     <group {...props}>
-      <mesh position={[0, 0, 0]} frustumCulled={false}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} material={blackPlaneMaterial}>
+        <planeGeometry
+          args={[width, width, width - 1, width - 1]}
+          ref={planeGeo}
+        />
+      </mesh>
+      <mesh frustumCulled={false}>
         <instancedBufferGeometry
-          index={baseGeom.index}
-          attributes-position={baseGeom.attributes.position}
-          attributes-uv={baseGeom.attributes.uv}
+          index={bladeGeom.index}
+          attributes-position={bladeGeom.attributes.position}
+          attributes-uv={bladeGeom.attributes.uv}
         >
           <instancedBufferAttribute
             attach={"attributes-offset"}
@@ -103,22 +105,13 @@ export default function Grass({
         </instancedBufferGeometry>
         <grassMaterial
           ref={materialRef}
-          map={texture}
-          alphaMap={alphaMap}
-          toneMapped={false}
-          depthTest={true}
-          bladeHeight={bH}
+          side={DoubleSide}
+          key={GrassMaterial.key}
         />
       </mesh>
-      {/* <HeightfieldCollider
-        args={[width - 1, width - 1, heightField, { x: width, y: 1, z: width }]}
-      /> */}
-      {/* <mesh position={[0, 0, 0]} geometry={groundGeo}>
-        <meshStandardMaterial color="#2b4e00" side={DoubleSide} />
-      </mesh> */}
     </group>
   );
-}
+};
 
 function getAttributeData(instances: number, width: number) {
   const offsets = [];
@@ -130,20 +123,15 @@ function getAttributeData(instances: number, width: number) {
   let quaternion_0 = new Vector4();
   let quaternion_1 = new Vector4();
 
-  //The min and max angle for the growth direction (in radians)
   const min = -0.25;
   const max = 0.25;
 
-  //For each instance of the grass blade
   for (let i = 0; i < instances; i++) {
-    //Offset of the roots
     const offsetX = Math.random() * width - width / 2;
     const offsetZ = Math.random() * width - width / 2;
-    const offsetY = getYPosition(offsetX, offsetZ);
-    offsets.push(offsetX, offsetY, offsetZ);
+    // const offsetY = getYPosition(offsetX, offsetZ);
+    offsets.push(offsetX, 0, offsetZ);
 
-    //Define random growth directions
-    //Rotate around Y
     let angle = Math.PI - Math.random() * (2 * Math.PI);
     halfRootAngleSin.push(Math.sin(0.5 * angle));
     halfRootAngleCos.push(Math.cos(0.5 * angle));
@@ -155,7 +143,6 @@ function getAttributeData(instances: number, width: number) {
     let w = Math.cos(angle / 2.0);
     quaternion_0.set(x, y, z, w).normalize();
 
-    //Rotate around X
     angle = Math.random() * (max - min) + min;
     RotationAxis = new Vector3(1, 0, 0);
     x = RotationAxis.x * Math.sin(angle / 2.0);
@@ -164,10 +151,8 @@ function getAttributeData(instances: number, width: number) {
     w = Math.cos(angle / 2.0);
     quaternion_1.set(x, y, z, w).normalize();
 
-    //Combine rotations to a single quaternion
     quaternion_0 = multiplyQuaternions(quaternion_0, quaternion_1);
 
-    //Rotate around Z
     angle = Math.random() * (max - min) + min;
     RotationAxis = new Vector3(0, 0, 1);
     x = RotationAxis.x * Math.sin(angle / 2.0);
@@ -176,7 +161,6 @@ function getAttributeData(instances: number, width: number) {
     w = Math.cos(angle / 2.0);
     quaternion_1.set(x, y, z, w).normalize();
 
-    //Combine rotations to a single quaternion
     quaternion_0 = multiplyQuaternions(quaternion_0, quaternion_1);
 
     orientations.push(
@@ -186,7 +170,6 @@ function getAttributeData(instances: number, width: number) {
       quaternion_0.w
     );
 
-    //Define variety in height
     if (i < instances / 3) {
       stretches.push(Math.random() * 1.8);
     } else {

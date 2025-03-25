@@ -11,8 +11,9 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
 import { BreadCrumbs } from "@components/BreadCrumbs";
-import { byReadingTime, toTitleCase } from "src/lib/utils/misc";
+import { byReadingTime } from "src/lib/utils/misc";
 import { byOnlyPublished } from "src/lib/utils/filters";
+import { toTitleCase } from "src/lib/utils/toTitleCase";
 
 const allDocuments = [
   ...posts,

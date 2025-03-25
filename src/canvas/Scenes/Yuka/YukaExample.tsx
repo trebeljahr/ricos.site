@@ -51,8 +51,6 @@ export function YukaSimulation() {
   const entityManager = useRef(new EntityManager());
   const chaser = useRef(new Vehicle());
   const target = useRef(new Vehicle());
-  const obstacles = useRef<GameEntity[]>([]);
-  const obstacleMeshes = useRef<Mesh[]>([]);
 
   const { camera } = useThree();
 
@@ -62,55 +60,6 @@ export function YukaSimulation() {
     const currentManager = entityManager.current;
     const currentChaser = chaser.current;
     const currentTarget = target.current;
-
-    obstacles.current = [];
-    obstacleMeshes.current = [];
-
-    const createObstacle = ({
-      x,
-      y,
-      z,
-      w,
-      h,
-      d,
-      color,
-    }: {
-      x?: number;
-      y?: number;
-      z?: number;
-      w?: number;
-      h?: number;
-      d?: number;
-      color?: ColorRepresentation;
-    } = {}) => {
-      const geometry = new BoxGeometry(w || 1, h || 1, d || 1);
-      geometry.computeBoundingSphere();
-      if (geometry.boundingSphere?.radius === undefined) {
-        return;
-      }
-
-      const material = new MeshPhongMaterial({ color: color || 0xff0000 });
-
-      const mesh = new Mesh(geometry, material);
-
-      mesh.position.set(
-        x || Math.random() * gridSize - halfGridSize,
-        y || 0,
-        z || Math.random() * gridSize - halfGridSize
-      );
-
-      obstacleMeshes.current.push(mesh);
-
-      const obstacle = new GameEntity();
-      obstacle.position.copy(mesh.position as unknown as YukaVec3);
-      obstacle.boundingRadius = geometry.boundingSphere.radius;
-      currentManager.add(obstacle);
-      obstacles.current.push(obstacle);
-    };
-
-    for (let i = 0; i < 100; i++) {
-      createObstacle({ color: "#56c700" });
-    }
 
     currentChaser.setRenderComponent(chaserMeshRef.current, (entity) => {
       chaserMeshRef.current.position.copy(
@@ -150,27 +99,17 @@ export function YukaSimulation() {
     chaserMeshRef.current.rotateX(Math.PI * 0.5);
 
     const seekBehavior = new SeekBehavior(currentTarget.position);
-    const seekerObstacleAvoidanceBehavior = new ObstacleAvoidanceBehavior(
-      obstacles.current
-    );
-    seekerObstacleAvoidanceBehavior.weight = 10;
     currentChaser.steering.add(seekBehavior);
-    currentChaser.steering.add(seekerObstacleAvoidanceBehavior);
     currentChaser.maxSpeed = seekerSpeed;
 
     const fleeBehavior = new FleeBehavior(currentChaser.position);
     const wanderingBehavior = new WanderBehavior();
-    const obstacleAvoidanceBehavior = new ObstacleAvoidanceBehavior(
-      obstacles.current
-    );
     fleeBehavior.active = false;
     wanderingBehavior.active = true;
     wanderingBehavior.weight = 2;
-    obstacleAvoidanceBehavior.weight = 10;
 
     currentTarget.steering.add(fleeBehavior);
     currentTarget.steering.add(wanderingBehavior);
-    currentTarget.steering.add(obstacleAvoidanceBehavior);
     currentTarget.maxSpeed = fleeSpeed;
 
     camera.position.set(0, 10, 10);
@@ -232,31 +171,10 @@ export function YukaSimulation() {
     }
   });
 
-  const treePositions = useMemo(() => {
-    const positions = poissonDiskSample(
-      tileSize,
-      treeMinDistance,
-      treeMaxDistance
-    );
-    return positions;
-  }, []);
-
   return (
     <group>
       <group ref={chaserMeshRef} matrixAutoUpdate={true} scale={0.1}>
         <Velociraptor animationAction="Armature|Velociraptor_Run" />
-      </group>
-
-      {debug &&
-        obstacleMeshes.current.map((mesh, index) => (
-          <group key={index}>
-            <primitive object={mesh} />
-            <BoundingSphereAround object={mesh} />
-          </group>
-        ))}
-
-      <group position={[-halfGridSize, 0, -halfGridSize]}>
-        <Trees positions={treePositions} />
       </group>
 
       <group ref={targetMeshRef} matrixAutoUpdate={true}>

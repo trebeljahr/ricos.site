@@ -7,21 +7,21 @@ import { Vector3 } from "three";
 import { perf } from "src/canvas/ChunkGenerationSystem/config";
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "A FBO particles demo using custom meshes of Fish",
+  description:
+    "I was trying to simulate a school of fish using FBO particles in R3F and this is one of the first results. The fish are custom meshes and their positions are updated using a compute shader.",
+  url: "/r3f/particles/fishes",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/fishes.png",
+  imageAlt: "a school of fish swimming around in a 3D scene",
 };
 
 export default function Page() {

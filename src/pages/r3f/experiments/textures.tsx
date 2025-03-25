@@ -1,6 +1,6 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
-import { OrbitControls, Plane } from "@react-three/drei";
+import { OrbitControls, Plane, Stage } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { useControls } from "leva";
 import { Suspense, useEffect, useRef } from "react";
@@ -82,7 +82,7 @@ const Scene = () => {
   }, []);
 
   return (
-    <>
+    <Stage adjustCamera>
       <ambientLight intensity={0.5} />
       <directionalLight />
       <Plane ref={mesh} rotation-x={-Math.PI / 2} args={[10, 10, 1024, 1024]}>
@@ -96,26 +96,27 @@ const Scene = () => {
           }}
         />
       </Plane>
-    </>
+    </Stage>
   );
 };
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "Demo of How to Use Textures",
+  description:
+    "In this demo you can control a bunch of textures with Leva sliders being applied to a simple plane.",
+  url: "/r3f/experiments/textures",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
+
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/textures.png",
+  imageAlt: "a simple 3D plane with a rocky texture applied to it",
 };
 
 export default function Page() {
@@ -126,9 +127,6 @@ export default function Page() {
         <Suspense fallback={null}>
           <Scene />
           <OrbitControls />
-          {/* <Physics>
-            <MinecraftCreativeController />
-          </Physics> */}
         </Suspense>
       </CanvasWithKeyboardInput>
     </ThreeFiberLayout>

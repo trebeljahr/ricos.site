@@ -19,7 +19,8 @@ void main() {
   // Add a shadow towards root
   col = mix(vec4(bottomColor, 1.0), col, frc);
   gl_FragColor = col;
+  // gl_FragColor = vec4(0.04, 0.94, 0.08, 1.0);
 
-#include <colorspace_fragment>
-#include <tonemapping_fragment>
+  #include <colorspace_fragment>
+  #include <tonemapping_fragment>
 }

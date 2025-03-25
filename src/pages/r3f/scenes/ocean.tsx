@@ -14,21 +14,21 @@ const WaterDemo = dynamic(
 export const { In, Out } = tunnel();
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "Ocean Demo",
+  description:
+    "An incomplete ocean/underwater game/demo, built with R3F and three.js",
+  url: "/r3f/scenes/ocean",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/ocean.png",
+  imageAlt: "3D render of low poly kelp and a whale swimming around the ocean",
 };
 
 export default function Page() {

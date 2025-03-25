@@ -1,12 +1,7 @@
 import { useUnderwaterContext, waterHeight } from "@contexts/UnderwaterContext";
 import { In } from "@pages/r3f/scenes/ocean";
-import { Html, ScreenSpace } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { MeshBasicMaterial } from "three";
-import CustomShaderMaterial from "three-custom-shader-material";
-import CustomShaderMaterialType from "three-custom-shader-material/vanilla";
-import oxygenFrag from "./oxygen.frag";
+import { useEffect, useRef, useState } from "react";
 
 const defaultOxygenAmount = 60;
 

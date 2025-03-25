@@ -3,24 +3,6 @@ import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasSha
 import { Canvas } from "@react-three/fiber";
 import { getShaderFileNames } from "src/lib/getShaderFileNames";
 
-const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "lightning strike",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
-};
-
 export default function Page({
   fragmentShader,
   shaderName,
@@ -28,6 +10,24 @@ export default function Page({
   shaderName: string;
   fragmentShader: string;
 }) {
+  const seoInfo = {
+    title: shaderName,
+    description: "A simple shader demo for an implementation of " + shaderName,
+    url: "/r3f/shaders/" + shaderName,
+    keywords: [
+      "threejs",
+      "react-three-fiber",
+      "shaders",
+      "r3f",
+      "3D",
+      "programming",
+      "graphics",
+      "webgl",
+    ],
+    image: `/assets/pages/${shaderName}.png`,
+    imageAlt: shaderName,
+  };
+
   return (
     <ThreeFiberLayout {...seoInfo}>
       <Canvas

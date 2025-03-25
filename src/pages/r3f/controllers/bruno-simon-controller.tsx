@@ -9,21 +9,21 @@ import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControl
 import { MeshStandardMaterial } from "three";
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "Bruno Simon's Third Person Controller",
+  description:
+    "This is a demo of Bruno Simon's third person controller, taken from his Infinite World Example but ported to work with R3F.",
+  url: "/r3f/controllers/bruno-simon-controller",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/r3f/bruno-simon-controller.png",
+  imageAlt: "girl standing in a simple 3D terrain",
 };
 
 const Page = () => {

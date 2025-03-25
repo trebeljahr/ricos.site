@@ -6,21 +6,21 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { HealthbarsDemo } from "@r3f/Scenes/HealthbarsDemo";
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "Healthbar Shaders",
+  description:
+    "A Typescript R3F implementation of different healthbar shaders, ported over from a Unity Demo.",
+  url: "/r3f/user-interfaces/healthbars",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/healthbars.png",
+  imageAlt: "an assortment of healthbar shaders",
 };
 
 const HealthBarExample = () => {

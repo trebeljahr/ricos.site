@@ -1,43 +1,41 @@
-import Grass from "@r3f/Scenes/Grass";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { OrbitControls, Sky } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
-import { Suspense } from "react";
+import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
+import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
+import { AllRoGrass } from "@r3f/Scenes/Grass/AllRoGrass/GrassPlane";
+import { Sky } from "@react-three/drei";
+import { Physics } from "@react-three/rapier";
 import { Vector3 } from "three";
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "A single square grass plane",
+  description:
+    "In this scene, I'm testing out a single square grass plane in React Three Fiber based on a codepen from al-ro.",
+  url: "/r3f/scenes/grass",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/grass.png",
+  imageAlt: "a 3D view of a grassy plane",
 };
 
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <Canvas camera={{ position: new Vector3(915, 15, 10) }}>
-        <Sky azimuth={1} inclination={0.6} distance={1000} />
+      <CanvasWithKeyboardInput camera={{ position: new Vector3(0, 3, 0) }}>
+        <Sky />
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
-        <Suspense fallback={null}>
-          <Grass />
-        </Suspense>
-        <OrbitControls
-          minPolarAngle={Math.PI / 2.5}
-          maxPolarAngle={Math.PI / 2.5}
-        />
-      </Canvas>
+        <Physics>
+          <AllRoGrass />
+          <MinecraftSpectatorController speed={1} />
+        </Physics>
+      </CanvasWithKeyboardInput>
     </ThreeFiberLayout>
   );
 }

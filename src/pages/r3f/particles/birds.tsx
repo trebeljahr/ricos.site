@@ -7,21 +7,26 @@ import { Perf } from "r3f-perf";
 import { Vector3 } from "three";
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "Birds Particle System",
+  description:
+    "A birds particle system demo, ported to R3F and Typescript from the ThreeJS Examples for learning. The birds are rendered by a flocking simulation and flee from the mouse cursor.",
+  url: "/r3f/particles/birds",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
+    "particles",
+    "compute shader",
+    "gpgpu",
+    "FBO demo",
+    "Flocking simulation",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/birds.png",
+  imageAlt: "a flock of birds flying around in a 3D scene",
 };
 
 export default function Page() {

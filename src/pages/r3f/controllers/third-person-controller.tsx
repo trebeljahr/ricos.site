@@ -7,21 +7,21 @@ const ThirdPersonDemo = dynamic(() => import("@r3f/Scenes/ThirdPersonDemo"), {
 });
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "A custom third person controller",
+  description:
+    "My first try of writing a custom third person controller in R3F, with a dinosaur model, gone a bit, uhm, wrong ^^",
+  url: "/r3f/controllers/third-person-controller",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/r3f/third-person-controller.png",
+  imageAlt: "a dinosaur Trex model in a 3D scene",
 };
 
 export default function Page() {

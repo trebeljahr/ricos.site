@@ -1,51 +1,12 @@
-import {
-  BufferAttribute,
-  BufferGeometry,
-  DoubleSide,
-  Material,
-  Mesh,
-  Texture,
-  Vector2,
-  Vector3,
-} from "three";
-import grassFragmentShader from "./shaders/grassFragmentShader.glsl";
-import grassVertexShader from "./shaders/grassVertexShader.glsl";
-import { shaderMaterial, useTexture } from "@react-three/drei";
-import { extend, ReactThreeFiber, useFrame } from "@react-three/fiber";
+import { useTexture } from "@react-three/drei";
 import { useEffect, useMemo, useRef } from "react";
-
-// const grassTexture = new TextureLoader().load("/3d-assets/textures/grass/grass.jpg");
-// const cloudTexture = new TextureLoader().load("/3d-assets/textures/grass/cloud.jpg");
-// cloudTexture.wrapS = cloudTexture.wrapT = RepeatWrapping;
-
-const grassUniforms = {
-  textures: [] as Texture[],
-  iTime: 0,
-};
-
-const StylizedGrassMaterial = shaderMaterial(
+import {
   grassUniforms,
-  grassVertexShader,
-  grassFragmentShader,
-
-  (self) => {
-    if (!self) return;
-
-    self.vertexColors = true;
-    self.side = DoubleSide;
-  }
-);
-
-extend({ StylizedGrassMaterial });
-
-declare module "@react-three/fiber" {
-  interface ThreeElements {
-    stylizedGrassMaterial: ReactThreeFiber.Node<
-      typeof StylizedGrassMaterial & Material,
-      typeof StylizedGrassMaterial
-    >;
-  }
-}
+  StylizedGrassMaterial,
+} from "./JamesSmythGrassMaterial";
+import { useFrame } from "@react-three/fiber";
+import { BufferAttribute, BufferGeometry, DoubleSide, Vector3 } from "three";
+import { blackPlaneMaterial } from "../BlackPlaneMaterial";
 
 export const SingleStylizedGrassPlane = ({
   planeSize = 30,
@@ -133,7 +94,6 @@ export const SingleStylizedGrassPlane = ({
       );
       geom.setIndex(indices);
       geom.computeVertexNormals();
-      //   geom.computeFaceNormals();
 
       return geom;
     }
@@ -156,7 +116,6 @@ export const SingleStylizedGrassPlane = ({
         -Math.cos(tipBend)
       );
 
-      // Find the Bottom Left, Bottom Right, Top Left, Top right, Top Center vertex positions
       const bl = new Vector3().addVectors(
         center,
         new Vector3().copy(yawUnitVec).multiplyScalar((bladeWidth / 2) * 1)
@@ -182,7 +141,6 @@ export const SingleStylizedGrassPlane = ({
       tr.y += height / 2;
       tc.y += height;
 
-      // Vertex Colors
       const black = [0, 0, 0];
       const gray = [0.5, 0.5, 0.5];
       const white = [1.0, 1.0, 1.0];
@@ -216,11 +174,19 @@ export const SingleStylizedGrassPlane = ({
   }, []);
 
   return (
-    <mesh geometry={geom}>
-      <stylizedGrassMaterial
-        ref={materialRef as any}
-        key={StylizedGrassMaterial.key}
-      />
-    </mesh>
+    <>
+      <mesh geometry={geom} renderOrder={10} frustumCulled={false}>
+        <stylizedGrassMaterial
+          ref={materialRef as any}
+          key={StylizedGrassMaterial.key}
+          transparent={true}
+          depthTest={true}
+          depthWrite={true}
+        />
+      </mesh>
+      <mesh rotation-x={-Math.PI / 2} material={blackPlaneMaterial}>
+        <planeGeometry args={[planeSize, planeSize]} />
+      </mesh>
+    </>
   );
 };

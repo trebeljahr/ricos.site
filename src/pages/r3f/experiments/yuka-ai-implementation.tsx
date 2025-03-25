@@ -6,21 +6,21 @@ import { Physics } from "@react-three/rapier";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "A simple game AI simulation in R3F using the Yuka library",
+  description:
+    "In this demo I use the Yuka library to simulate a simple game AI in a 3D scene, a deer running away from a velociraptor chasing it.",
+  url: "/r3f/experiments/yuka-ai-implementation",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/yuka.png",
+  imageAlt: "a deer running away from a velociraptor in a 3D scene",
 };
 
 const Page = () => {

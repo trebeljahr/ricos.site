@@ -77,21 +77,31 @@ const geometries = {
   door: new BoxGeometry(1, 1, 1),
 };
 
-const RenderDungeon = ({ seed }: { seed?: number }) => {
-  const [showDebug, setShowDebug] = useState(true);
+const seoInfo = {
+  title: "A 3D Dungeon Generator",
+  description:
+    "A port of vazgriz's procedural 3D dungeon generator from Unity to the browser using Typescript and R3F.",
+  url: "/r3f/dungeon/dungeon-algo-3d",
+  keywords: [
+    "threejs",
+    "react-three-fiber",
+    "r3f",
+    "3D",
+    "programming",
+    "graphics",
+    "webgl",
+  ],
+  image: "/assets/pages/r3f/dungeon-algo-3d.png",
+  imageAlt: "a visualization of a procedurally generated 3D dungeon",
+};
 
+const DungeonRenderer = ({ seed }: { seed: number }) => {
   const roomInstancesRef = useRef<InstancedMesh>(null!);
   const hallwayInstancesRef = useRef<InstancedMesh>(null!);
   const stairsInstancesRef = useRef<InstancedMesh>(null!);
   const doorsInstancesRef = useRef<InstancedMesh>(null!);
 
-  const handleDebug = () => {
-    setShowDebug((prev) => !prev);
-  };
-
-  useSubscribeToKeyPress("f", handleDebug);
-
-  const { generator3D, grid3D, renderPass, counts } = useMemo(() => {
+  const { grid3D, counts } = useMemo(() => {
     const generator3D = new DungeonGenerator3D(
       new Vector3Int(50, 5, 50),
       30,
@@ -126,45 +136,7 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
       { rooms: 0, hallways: 0, stairs: 0, doors: 0 }
     );
 
-    const meshGenerator = new DungeonMeshGenerator(grid3D, seed?.toString());
-    const meshes = meshGenerator.generateMeshes();
-
-    const initEmpty = () =>
-      ({ positions: [], rotations: [] } as {
-        positions: Vector3[];
-        rotations: Vector3[];
-      });
-
-    const renderPass = meshes.reduce(
-      (acc, mesh) => {
-        return {
-          ...acc,
-          [mesh.meshType]: {
-            ...acc[mesh.meshType],
-            positions: [...acc[mesh.meshType].positions, mesh.position],
-            rotations: [...acc[mesh.meshType].rotations, mesh.rotation],
-          },
-        };
-      },
-      {
-        [MeshType.Floor]: initEmpty(),
-        [MeshType.Ceiling]: initEmpty(),
-        [MeshType.Debug]: initEmpty(),
-        [MeshType.Wall]: initEmpty(),
-        [MeshType.Door]: initEmpty(),
-        [MeshType.DoorFrame]: initEmpty(),
-        [MeshType.Stairs]: initEmpty(),
-        [MeshType.StairsRailing]: initEmpty(),
-        [MeshType.StairWall]: initEmpty(),
-        [MeshType.Torch]: initEmpty(),
-      }
-    );
-    // renderPass[MeshType.Torch] = {
-    //   positions: renderPass[MeshType.Wall].positions,
-    //   rotations: renderPass[MeshType.Wall].rotations,
-    // };
-
-    return { generator3D, grid3D, renderPass, counts };
+    return { grid3D, counts };
   }, [seed]);
 
   useEffect(() => {
@@ -173,7 +145,13 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
     const stairsInstances = stairsInstancesRef.current;
     const doorsInstances = doorsInstancesRef.current;
 
-    if (!roomInstances || !hallwayInstances || !stairsInstances) return;
+    if (
+      !roomInstances ||
+      !hallwayInstances ||
+      !stairsInstances ||
+      !doorsInstances
+    )
+      return;
 
     const centerOffset = new Vector3(
       -grid3D.size.x / 2,
@@ -219,7 +197,7 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
     hallwayInstances.instanceMatrix.needsUpdate = true;
     stairsInstances.instanceMatrix.needsUpdate = true;
     doorsInstances.instanceMatrix.needsUpdate = true;
-  });
+  }, [grid3D]);
 
   return (
     <group position={[grid3D.size.x / 2, -0.1, grid3D.size.z / 2]} scale={4}>
@@ -235,80 +213,28 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
 
         <gridHelper args={[grid3D.size.x, grid3D.size.z]} position-y={0.001} />
       </group>
-
-      {showDebug ? (
-        <>
-          <instancedMesh
-            args={[geometries.room, materials.room, counts.rooms]}
-            ref={roomInstancesRef}
-            frustumCulled={false}
-          />
-          <instancedMesh
-            args={[geometries.door, materials.door, counts.doors]}
-            ref={doorsInstancesRef}
-            frustumCulled={false}
-          />
-          <instancedMesh
-            args={[geometries.hallway, materials.hallway, counts.hallways]}
-            ref={hallwayInstancesRef}
-            frustumCulled={false}
-          />
-          <instancedMesh
-            args={[geometries.stairs, materials.stairs, counts.stairs]}
-            ref={stairsInstancesRef}
-            frustumCulled={false}
-          />
-          <Sky />
-          <directionalLight args={["#ffffff", 0.8]} position={[50, 50, 50]} />
-        </>
-      ) : (
-        <group position={[-grid3D.size.x / 2, 1, -grid3D.size.z / 2]}>
-          <Arches {...renderPass[MeshType.DoorFrame]} />
-          <Walls {...renderPass[MeshType.Wall]} />
-          <Coins {...renderPass[MeshType.Debug]} />
-          <Torches {...renderPass[MeshType.Torch]} />
-          <SideWallStairs {...renderPass[MeshType.StairWall]} />
-          <Railings {...renderPass[MeshType.StairsRailing]} />
-          <Floors
-            {...{
-              rotations: [
-                ...renderPass[MeshType.Floor].rotations,
-                ...renderPass[MeshType.Ceiling].rotations,
-              ],
-              positions: [
-                ...renderPass[MeshType.Floor].positions,
-                ...renderPass[MeshType.Ceiling].positions,
-              ],
-            }}
-          />
-          <Stairs {...renderPass[MeshType.Stairs]} />
-
-          <EffectComposer>
-            <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />
-            <ToneMapping />
-          </EffectComposer>
-        </group>
-      )}
+      <instancedMesh
+        args={[geometries.room, materials.room, counts.rooms]}
+        frustumCulled={false}
+        ref={roomInstancesRef}
+      />
+      <instancedMesh
+        args={[geometries.door, materials.door, counts.doors]}
+        frustumCulled={false}
+        ref={doorsInstancesRef}
+      />
+      <instancedMesh
+        args={[geometries.hallway, materials.hallway, counts.hallways]}
+        frustumCulled={false}
+        ref={hallwayInstancesRef}
+      />
+      <instancedMesh
+        args={[geometries.stairs, materials.stairs, counts.stairs]}
+        frustumCulled={false}
+        ref={stairsInstancesRef}
+      />
     </group>
   );
-};
-
-const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "lightning strike",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
 };
 
 export default function Page() {
@@ -323,19 +249,23 @@ export default function Page() {
       <CanvasWithKeyboardInput
         camera={{ far: viewDistance, position: [25, 10, 25] }}
       >
-        {/* <fog attach="fog" args={[backgroundColor, 5, viewDistance]} /> */}
-        {/* <color attach="background" args={[backgroundColor]} /> */}
-
         <ambientLight args={["#404040", 1]} />
         {perf && <Perf position="bottom-right" />}
-        <RenderDungeon seed={seed} />
+
+        <DungeonRenderer seed={seed} />
+        <Sky />
+        <directionalLight args={["#ffffff", 0.8]} position={[50, 50, 50]} />
+
         <CameraPositionLogger />
 
         <MinecraftSpectatorController speed={0.2} />
       </CanvasWithKeyboardInput>
-      {/* <button onClick={handleClick} className="absolute top-0 right-0 z-20">
+      <button
+        onClick={handleClick}
+        className="absolute top-0 right-0 z-20 p-2 bg-slate-500"
+      >
         Click for new dungeon
-      </button> */}
+      </button>
     </ThreeFiberLayout>
   );
 }

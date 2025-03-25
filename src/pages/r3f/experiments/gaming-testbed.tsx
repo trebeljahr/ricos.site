@@ -228,21 +228,22 @@ const CanvasContent = () => {
 };
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "A testbed for gaming features implemented",
+  description:
+    "This testbed is for experimenting with gaming features such as inventory, enemies, and traps in R3F. It has lots of things going on and interact with, so have fun!",
+  url: "/r3f/experiments/gaming-testbed",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/gaming-testbed.png",
+  imageAlt:
+    "an image of a 3D model of a character with a sword attacking a wizard skeleton",
 };
 
 export default function Page() {

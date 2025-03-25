@@ -1,5 +1,5 @@
-import { PriorityQueue } from "../Generator2D/TypeStructure";
 import { Grid3D } from "./Grid3D";
+import { PriorityQueue } from "./PriorityQueue";
 import { Mathf, Vector3Int } from "./Types";
 
 export class GraphNode3D {

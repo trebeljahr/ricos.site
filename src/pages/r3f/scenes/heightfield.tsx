@@ -1,36 +1,31 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import {
-  ChunkProvider,
-  MemoizedChunk,
-  useChunkContext,
-} from "@r3f/ChunkGenerationSystem/ChunkProvider";
+import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
+import { ChunkRenderer } from "@r3f/ChunkGenerationSystem/ChunkRenderer";
 import { physicsDebug } from "@r3f/ChunkGenerationSystem/config";
 import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { EcctrlController } from "@r3f/Controllers/EcctrlController";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
-import { RigidBallSpawner } from "@r3f/Helpers/RigidBall";
-import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
 import { LightsAndFog } from "@r3f/Helpers/LightsAndFog";
+import { RigidBallSpawner } from "@r3f/Helpers/RigidBall";
 import { Physics } from "@react-three/rapier";
-import { Material } from "three";
-import { ChunkRenderer } from "@r3f/ChunkGenerationSystem/ChunkRenderer";
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "Infinite Heightfield Demo with Physics",
+  description:
+    "In this demo I tried building an infinite procedural terrain plane extending beyond the horizon. The terrain is generated using a heightfield algorithm and the terrain should extend while the player moves making it effectively infinite.",
+  url: "/r3f/scenes/heightfield",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/heightfield.png",
+  imageAlt:
+    "a simple heightfield of rolling hills stretching into the distance",
 };
 
 export default function Page() {

@@ -23,7 +23,7 @@ export const ThreeFiberLayout = ({
   keywords,
   imageAlt,
 }: PropsWithChildren<Props>) => {
-  const properTitle = toTitleCase(title);
+  const properTitle = toTitleCase(title) + " | Rico's R3F Playground";
 
   return (
     <>

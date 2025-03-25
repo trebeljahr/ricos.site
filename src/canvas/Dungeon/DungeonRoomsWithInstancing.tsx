@@ -4,10 +4,6 @@ import { Environment, PointMaterial, useGLTF } from "@react-three/drei";
 import { useEffect } from "react";
 import { GLTFResult, XYZ } from "src/@types";
 import { Color, DynamicDrawUsage } from "three";
-import {
-  Component,
-  convertLayoutToPositions,
-} from "./DungeonRoomsLayoutCalculator";
 
 function Particles({
   positions,
@@ -262,22 +258,4 @@ export const Arches = ({
   }, [addPositions, positions, rotations]);
 
   return <InstancedMesh />;
-};
-
-export const DungeonFromLayout = ({
-  components,
-}: {
-  components: Component[];
-}) => {
-  const { arches, walls, floors, torches } =
-    convertLayoutToPositions(components);
-
-  return (
-    <>
-      <Floors positions={floors.positions} rotations={floors.rotations} />
-      <Walls positions={walls.positions} rotations={walls.rotations} />
-      <Arches positions={arches.positions} rotations={arches.rotations} />
-      <Torches positions={torches.positions} rotations={torches.rotations} />
-    </>
-  );
 };

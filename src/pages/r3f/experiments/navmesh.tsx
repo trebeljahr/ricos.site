@@ -66,7 +66,6 @@ const seoInfo = {
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",

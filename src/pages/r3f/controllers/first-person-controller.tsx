@@ -6,21 +6,21 @@ import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "First Person Controller",
+  description:
+    "An implementation of a first person controller in React Three Fiber, using the rapier physics engine.",
+  url: "/r3f/controllers/first-person-controller",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/r3f/first-person-controller.png",
+  imageAlt: "a first person view of a 3D scene with joystick controls",
 };
 
 export default function Page() {

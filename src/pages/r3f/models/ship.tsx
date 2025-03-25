@@ -11,21 +11,21 @@ const Ship = dynamic(() => import("@r3f/AllModels/Ship"), {
 });
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "Ship Demo",
+  description:
+    "A simple ship model swimming in the default Drei ocean shader. One of my first demos built with R3F and three.js",
+  url: "/r3f/models/Ship",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/ship.png",
+  imageAlt: "a 3D model of a ship floating in the ocean",
 };
 
 export default function Page() {

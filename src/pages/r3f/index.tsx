@@ -1,21 +1,21 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "Rico's R3F Playground",
+  description:
+    "Welcome to my R3F Playground! It's where I experiment with all things Three.js and React Three Fibre to learn those technologies, building out little demos, trying to improve my understanding",
+  url: "/r3f",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/r3f.png",
+  imageAlt: "image of a 3D playground",
 };
 
 export default function Page() {

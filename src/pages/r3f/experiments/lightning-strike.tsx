@@ -11,13 +11,13 @@ import { useRef } from "react";
 import { DoubleSide, Vector3 } from "three";
 
 const seoInfo = {
-  title: "Lightning Strike - Three.js + React Three Fiber",
-  description: "Lightning Strike - Three.js + React Three Fiber",
-  url: "/r3f/lightning-strike",
+  title: "Lightning Strike Example",
+  description:
+    "Example of how to use the LightningStrike geometry component from the three-sdtlib in React Three Fiber to create lightning strikes in a 3D scene.",
+  url: "/r3f/experiments/lightning-strike",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
     "r3f",
     "3D",
     "programming",
@@ -25,7 +25,7 @@ const seoInfo = {
     "webgl",
   ],
   image: "/assets/pages/lightning-strike.png",
-  imageAlt: "Image of a lightning strike in a 3D scene",
+  imageAlt: "a blueish lightning bolt in a 3D scene",
 };
 
 const Demo = () => {

@@ -16,23 +16,23 @@ varying vec3 vViewPosition;
 varying vec2 vWindColor;
 
 void main() {
-      #include <color_vertex>
+  #include <color_vertex>
 
-      // FOG
-      #include <begin_vertex>
-      #include <project_vertex>
-      #include <fog_vertex>
-      // FOG
+  // FOG
+  #include <begin_vertex>
+  #include <project_vertex>
+  #include <fog_vertex>
+  // FOG
 
-      // SHADOW
-      #include <beginnormal_vertex>
-      #include <defaultnormal_vertex>
-      #include <worldpos_vertex>
-      #include <shadowmap_vertex>
-      // SHADOW
+  // SHADOW
+  #include <beginnormal_vertex>
+  #include <defaultnormal_vertex>
+  #include <worldpos_vertex>
+  #include <shadowmap_vertex>
+  // SHADOW
 
-      // wind effect
-      vec2 uWindDirection = vec2(1.0, 1.0);
+  // wind effect
+  vec2 uWindDirection = vec2(1.0, 1.0);
   float uWindAmp = 0.1;
   float uWindFreq = 50.;
   float uSpeed = 1.0;
@@ -54,14 +54,14 @@ void main() {
   modelPosition.x += xDisp;
   modelPosition.z += zDisp;
 
-        // use perlinNoise to vary the terrainHeight of the grass
+  // use perlinNoise to vary the terrainHeight of the grass
   modelPosition.y += exp(texture2D(uNoiseTexture, vGlobalUV * uNoiseScale).r) * 0.5 * (1. - uv.y);
 
   vec4 viewPosition = viewMatrix * modelPosition;
   vec4 projectedPosition = projectionMatrix * viewPosition;
   gl_Position = projectedPosition;
 
-        // assign varyings
+  // assign varyings
   vUv = vec2(uv.x, 1. - uv.y);
   vNormal = normalize(normalMatrix * normal);
   vWindColor = vec2(xDisp, zDisp);

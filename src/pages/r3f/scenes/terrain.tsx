@@ -18,21 +18,25 @@ import { RayCaster } from "src/canvas/Helpers/RayCaster";
 import { RigidBallSpawner } from "src/canvas/Helpers/RigidBall";
 
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/",
+  title: "Terrain Demo",
+  description:
+    "A demo of a procedurally generated terrain with biomes assigned based on temperature, height and moisture noise. Biomes are color coded into different categories. Building block for a survival game.",
+  url: "/r3f/scenes/terrain",
   keywords: [
     "threejs",
     "react-three-fiber",
-    "lightning strike",
+    "procedural generation",
+    "procgen",
+    "terrain",
+    "terrain-generator",
     "r3f",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/.png",
-  imageAlt: "",
+  image: "/assets/pages/terrain.png",
+  imageAlt: "rolling hills with different colors based on biome",
 };
 
 const Page = () => {

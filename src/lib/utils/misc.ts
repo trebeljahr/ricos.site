@@ -1,14 +1,6 @@
-import { Travelblog } from "@velite";
 import { nanoid } from "nanoid";
 import { alea } from "seedrandom";
 import { HasDate, ImageProps } from "src/@types";
-
-export const toTitleCase = (str: string) =>
-  str.slice(0, 1).toUpperCase() + str.slice(1);
-
-export function turnKebabIntoTitleCase(kebab: string) {
-  return kebab.split("-").map(toTitleCase).join(" ");
-}
 
 export function getRandomInt(
   min: number,

@@ -1,11 +1,11 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
+import { ChunkRenderer } from "@r3f/ChunkGenerationSystem/ChunkRenderer";
 import { BrunoSimonController } from "@r3f/Controllers/BrunoSimonController";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { physicsDebug } from "src/canvas/ChunkGenerationSystem/config";
 import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
-import { ChunkRenderer } from "./heightfield";
 import { MeshStandardMaterial } from "three";
 
 const seoInfo = {

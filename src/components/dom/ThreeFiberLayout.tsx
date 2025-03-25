@@ -2,8 +2,8 @@ import { PropsWithChildren, ReactNode } from "react";
 import { NavbarR3F } from "./NavbarR3F";
 import { nav } from "@r3f/ChunkGenerationSystem/config";
 import { Meta } from "@components/Meta";
-import { toTitleCase } from "src/lib/utils/misc";
 import { OpenGraph } from "@components/OpenGraph";
+import { toTitleCase } from "src/lib/utils/toTitleCase";
 
 type Props = {
   description: string;

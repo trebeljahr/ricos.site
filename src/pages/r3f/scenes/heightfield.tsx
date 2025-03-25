@@ -13,26 +13,7 @@ import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithColl
 import { LightsAndFog } from "@r3f/Helpers/LightsAndFog";
 import { Physics } from "@react-three/rapier";
 import { Material } from "three";
-
-export const ChunkRenderer = ({ material }: { material?: Material }) => {
-  const chunks = useChunkContext();
-
-  return (
-    <group>
-      {Array.from(chunks).map(([key, chunkData]) => {
-        return (
-          <MemoizedChunk key={key} chunkData={chunkData}>
-            <HeightfieldTileWithCollider
-              geometry={chunkData.data!.geo}
-              heightfield={chunkData.data!.heightfield}
-              material={material}
-            />
-          </MemoizedChunk>
-        );
-      })}
-    </group>
-  );
-};
+import { ChunkRenderer } from "@r3f/ChunkGenerationSystem/ChunkRenderer";
 
 const seoInfo = {
   title: "",

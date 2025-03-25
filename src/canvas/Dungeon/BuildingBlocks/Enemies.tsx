@@ -1,4 +1,4 @@
-import { GridOfModels } from "@pages/r3f/quaternius-models";
+import { GridOfModels } from "@pages/r3f/models/quaternius-models";
 import { AnimatedAnne } from "@r3f/AllModels/enemies/Anne";
 import { Bat } from "@r3f/AllModels/enemies/Bat";
 import { Matt } from "@r3f/AllModels/enemies/Characters Matt";

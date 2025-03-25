@@ -4,7 +4,7 @@ import { Group, Mesh } from "three";
 
 export const useSword1 = () => {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/weapons/Sword (1)-transformed.glb"
+    "/3d-assets/glb/weapons/sword-1-transformed.glb"
   ) as GLTFResult;
 
   const swordMesh = new Mesh(nodes.Sword1.geometry, materials.Material);
@@ -18,7 +18,7 @@ export const useSword1 = () => {
 
 export const useSword2 = () => {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/weapons/Sword (2)-transformed.glb"
+    "/3d-assets/glb/weapons/sword-2-transformed.glb"
   ) as GLTFResult;
 
   const swordMesh = new Mesh(nodes.Sword1002.geometry, materials.Material);
@@ -32,7 +32,7 @@ export const useSword2 = () => {
 
 export const useSword3 = () => {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/weapons/Sword (3)-transformed.glb"
+    "/3d-assets/glb/weapons/sword-3-transformed.glb"
   ) as GLTFResult;
 
   const swordMesh = new Mesh(nodes.Sword1001.geometry, materials.Material);
@@ -46,7 +46,7 @@ export const useSword3 = () => {
 
 export const useSword4 = () => {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/weapons/Sword (4)-transformed.glb"
+    "/3d-assets/glb/weapons/sword-4-transformed.glb"
   ) as GLTFResult;
 
   const swordMesh = new Mesh(nodes.Sword.geometry, materials.Material);

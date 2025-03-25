@@ -15,15 +15,6 @@ import { Skeleton } from "@r3f/AllModels/enemies/Skeleton";
 import { SkeletonWithoutHead } from "@r3f/AllModels/enemies/Skeleton (1)";
 import { SkeletonUnarmed } from "@r3f/AllModels/enemies/Skeleton (2)";
 import { Slime } from "@r3f/AllModels/enemies/Slime Enemy";
-import { SkeletonAxe } from "@r3f/AllModels/weapons/Axe";
-import { SkeletonBlade } from "@r3f/AllModels/weapons/Blade";
-import { SkeletonCrossbow } from "@r3f/AllModels/weapons/Crossbow";
-import { MagicWand } from "@r3f/AllModels/weapons/Magick wand";
-import { SkeletonQuiver } from "@r3f/AllModels/weapons/Quiver";
-import { SkeletonArrow } from "@r3f/AllModels/weapons/Skeleton Arrow";
-import { SkeletonShield1 } from "@r3f/AllModels/weapons/Skeleton Shield-1";
-import { SkeletonShield2 } from "@r3f/AllModels/weapons/Skeleton Shield-2";
-import { SkeletonStaff } from "@r3f/AllModels/weapons/Staff (6)";
 import { useControls } from "leva";
 import { useMemo } from "react";
 import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
@@ -88,15 +79,6 @@ export const Enemies = () => {
     RobertDinosaur: () => <RobertDinosaur scale={0.4} position={[0, 3, 0]} />,
     Dragon: () => <Dragon scale={0.02} position={[0, 3, 0]} />,
     Robot,
-    // SkeletonShield1,
-    // SkeletonShield2,
-    // SkeletonStaff,
-    // SkeletonArrow,
-    // SkeletonCrossbow,
-    // MagicWand,
-    // SkeletonAxe,
-    // SkeletonBlade,
-    // SkeletonQuiver,
   };
 
   const skeletonTypes = useMemo(

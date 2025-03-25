@@ -151,7 +151,7 @@ const seoInfo = {
   imageAlt: "a lightning strike spell hitting an enemy in a 3D scene",
 };
 
-export default function Page() {
+const DemoScene = () => {
   const [singleLightningStrike, setSingleLightningStrike] = useState({
     source: new Vector3(0, 0, 0),
     target: new Vector3(0, 0, 0),
@@ -172,19 +172,25 @@ export default function Page() {
   const sword = useSword4();
 
   return (
+    <group>
+      <group>
+        <SingleLightningStrikHittingMesh
+          source={singleLightningStrike.source}
+          targetMesh={sword}
+        />
+      </group>
+      <primitive object={sword} scale={200} rotation-z={Math.PI / 2} />
+    </group>
+  );
+};
+
+export default function Page() {
+  return (
     <ThreeFiberLayout {...seoInfo}>
       <Canvas>
         <color attach="background" args={["#f2f2f2"]} />
         <ambientLight intensity={0.5} />
-        <group>
-          <group>
-            <SingleLightningStrikHittingMesh
-              source={singleLightningStrike.source}
-              targetMesh={sword}
-            />
-          </group>
-          <primitive object={sword} scale={200} rotation-z={Math.PI / 2} />
-        </group>
+        <DemoScene />
         <EffectComposer>
           <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />
           <ToneMapping />

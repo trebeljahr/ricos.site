@@ -2,10 +2,10 @@ import Rapier, { QueryFilterFlags } from "@dimforge/rapier3d-compat";
 import { HumanHand } from "@r3f/AllModels/Human hand";
 import { RiggedArms } from "@r3f/AllModels/Rigged Fps Arms";
 import { Glove, Sword_big } from "@r3f/AllModels/rpg_items_pack";
-import { SkeletonShield1 } from "@r3f/AllModels/weapons/Skeleton Shield-1";
-import { SkeletonShield2 } from "@r3f/AllModels/weapons/Skeleton Shield-2";
-import { Sword1 } from "@r3f/AllModels/weapons/Sword (1)";
-import { Sword2 } from "@r3f/AllModels/weapons/Sword (2)";
+import { SkeletonShield1 } from "@r3f/AllModels/weapons/Skeleton-Shield-1";
+import { SkeletonShield2 } from "@r3f/AllModels/weapons/Skeleton-Shield-2";
+import { Sword1 } from "@r3f/AllModels/weapons/sword-1";
+import { Sword2 } from "@r3f/AllModels/weapons/sword-2";
 import { useInventory } from "@r3f/Dungeon/InventorySystem/GameInventoryContext";
 import {
   KeyboardControls,

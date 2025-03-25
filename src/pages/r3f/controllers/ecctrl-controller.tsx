@@ -1,11 +1,10 @@
-import { EcctrlController } from "src/canvas/Controllers/EcctrlController";
-import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
-import Grass from "@r3f/Scenes/Grass/AllRoGrass/GrassPlane";
-import { Lights } from "src/canvas/Helpers/Lights";
-import { Obstacles, TreeObstacles } from "@r3f/Helpers/Obstacles";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { Obstacles, TreeObstacles } from "@r3f/Helpers/Obstacles";
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
+import { EcctrlController } from "src/canvas/Controllers/EcctrlController";
+import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
+import { Lights } from "src/canvas/Helpers/Lights";
 
 const seoInfo = {
   title: "R3F Ecctrl Controller",

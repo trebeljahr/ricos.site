@@ -5,21 +5,21 @@ import { Color, Mesh, MeshStandardMaterial } from "three";
 
 type GLTFResult = GLTF & {
   nodes: {
-    Sword: Mesh;
+    Sword1001: Mesh;
   };
   materials: {
     Material: MeshStandardMaterial;
   };
 };
 
-export function Sword4(props: JSX.IntrinsicElements["group"]) {
+export function Sword3(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/weapons/Sword (4)-transformed.glb"
+    "/3d-assets/glb/weapons/sword-3-transformed.glb"
   ) as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <mesh
-        geometry={nodes.Sword.geometry}
+        geometry={nodes.Sword1001.geometry}
         material={materials.Material}
         rotation={[-Math.PI / 2, 0, 0]}
         scale={100}
@@ -28,4 +28,4 @@ export function Sword4(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/3d-assets/glb/weapons/Sword (4)-transformed.glb");
+useGLTF.preload("/3d-assets/glb/weapons/sword-3-transformed.glb");

@@ -18,7 +18,7 @@ import {
   SkinnedMesh,
 } from "three";
 import { GLTF, SkeletonUtils } from "three-stdlib";
-import { SkeletonStaff } from "../weapons/Staff (6)";
+import { SkeletonStaff } from "../weapons/staff-6";
 interface GLTFAction extends AnimationClip {
   name: SkeletonActionName;
 }

@@ -1,3 +1,4 @@
+import { RicosSiteBanner } from "@components/Navbar/TailwindNavbar";
 import { useEffect, useRef, useState } from "react";
 import data from "src/lib/links.preval";
 import { toLinks, toLinksFromNameUrlTuples } from "src/lib/toLinks";
@@ -45,6 +46,8 @@ export const NavbarR3F = () => {
       <div className={`${sideStyle} ${!open && "-translate-x-72"}`}>
         <div className="relative h-fit min-h-screen pb-10" ref={menuRef}>
           <nav className="flex flex-col not-prose px-3">
+            <RicosSiteBanner />
+            <h1 className="text-3xl font-bold mb-3 mt-12">3D Playground</h1>
             {Object.entries(data.links).map(([key, links]) => {
               return (
                 <div key={key} className="flex flex-col">

@@ -21,7 +21,7 @@ const navigation = ["posts", "newsletters", "photography"];
 const resources = ["quotes", "booknotes", "needlestack", "podcastnotes"];
 const about = ["now", "travel", "principles", "1-month-projects"];
 
-const RicosSiteBanner = () => {
+export const RicosSiteBanner = () => {
   return (
     <Link href="/" className="flex flex-shrink-0 items-center not-prose">
       <Image

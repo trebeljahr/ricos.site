@@ -44,11 +44,29 @@ const ChunkRenderer = () => {
   );
 };
 
+const seoInfo = {
+  title: "",
+  description: "",
+  url: "/r3f/",
+  keywords: [
+    "threejs",
+    "react-three-fiber",
+    "lightning strike",
+    "r3f",
+    "3D",
+    "programming",
+    "graphics",
+    "webgl",
+  ],
+  image: "/assets/pages/.png",
+  imageAlt: "",
+};
+
 const Page = () => {
   const { height: y } = getHeight(0, 0);
 
   return (
-    <ThreeFiberLayout>
+    <ThreeFiberLayout {...seoInfo}>
       <KeyboardControlsProvider>
         <Canvas
           camera={{

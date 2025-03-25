@@ -58,9 +58,28 @@ const NavmeshExample = () => {
   );
 };
 
+const seoInfo = {
+  title: "Navmesh Demo",
+  description:
+    "A demo of a Recast navmesh in a 3D scene, powered by the awesome recast-js library.",
+  url: "/r3f/navmesh",
+  keywords: [
+    "threejs",
+    "react-three-fiber",
+    "lightning strike",
+    "r3f",
+    "3D",
+    "programming",
+    "graphics",
+    "webgl",
+  ],
+  image: "/assets/pages/navmesh.png",
+  imageAlt: "a simple navmesh with debug triangles shown in a 3D scene",
+};
+
 export default function Page() {
   return (
-    <ThreeFiberLayout>
+    <ThreeFiberLayout {...seoInfo}>
       <CanvasWithKeyboardInput>
         <color attach="background" args={["#dfd3ae"]} />
 

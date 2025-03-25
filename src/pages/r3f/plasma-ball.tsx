@@ -8,9 +8,27 @@ import {
   ToneMapping,
 } from "@react-three/postprocessing";
 
+const seoInfo = {
+  title: "",
+  description: "",
+  url: "/r3f/",
+  keywords: [
+    "threejs",
+    "react-three-fiber",
+    "lightning strike",
+    "r3f",
+    "3D",
+    "programming",
+    "graphics",
+    "webgl",
+  ],
+  image: "/assets/pages/.png",
+  imageAlt: "",
+};
+
 export default function Page() {
   return (
-    <ThreeFiberLayout>
+    <ThreeFiberLayout {...seoInfo}>
       <Canvas>
         <color attach="background" args={["#121524"]} />
         <ambientLight intensity={1} />

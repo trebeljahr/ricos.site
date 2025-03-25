@@ -8,6 +8,24 @@ import { OrbitControls } from "@react-three/drei";
 import { useState } from "react";
 import { BoxGeometry, Mesh, MeshStandardMaterial, PlaneGeometry } from "three";
 
+const seoInfo = {
+  title: "",
+  description: "",
+  url: "/r3f/",
+  keywords: [
+    "threejs",
+    "react-three-fiber",
+    "lightning strike",
+    "r3f",
+    "3D",
+    "programming",
+    "graphics",
+    "webgl",
+  ],
+  image: "/assets/pages/.png",
+  imageAlt: "",
+};
+
 export default function Page() {
   const [state, setState] = useState(0);
 
@@ -72,7 +90,7 @@ export default function Page() {
   });
 
   return (
-    <ThreeFiberLayout>
+    <ThreeFiberLayout {...seoInfo}>
       <CanvasWithKeyboardInput
         camera-position={[25, 30, 25]}
         camera-lookAt={[25, 0, 25]}

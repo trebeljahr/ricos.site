@@ -99,11 +99,29 @@ export const GridOfModels = ({
   );
 };
 
+const seoInfo = {
+  title: "Quaternius Models Showcase",
+  description:
+    "A showcase of Quaternius models in a simple grid to help me choose which one to use.",
+  url: "/r3f/quaternius-models",
+  keywords: [
+    "threejs",
+    "react-three-fiber",
+    "r3f",
+    "3D",
+    "programming",
+    "graphics",
+    "webgl",
+  ],
+  image: "/assets/pages/quaternius-models.png",
+  imageAlt: "Image of a grid filled with 3D models",
+};
+
 const Page = () => {
   const groundColor = "#84fb34";
 
   return (
-    <ThreeFiberLayout>
+    <ThreeFiberLayout {...seoInfo}>
       <KeyboardControlsProvider>
         <Leva />
         <Canvas camera={{ position: [0, 5, tileSize / 2] }}>

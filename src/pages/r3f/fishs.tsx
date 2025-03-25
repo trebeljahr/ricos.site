@@ -6,9 +6,27 @@ import { Perf } from "r3f-perf";
 import { Vector3 } from "three";
 import { perf } from "src/canvas/ChunkGenerationSystem/config";
 
+const seoInfo = {
+  title: "",
+  description: "",
+  url: "/r3f/",
+  keywords: [
+    "threejs",
+    "react-three-fiber",
+    "lightning strike",
+    "r3f",
+    "3D",
+    "programming",
+    "graphics",
+    "webgl",
+  ],
+  image: "/assets/pages/.png",
+  imageAlt: "",
+};
+
 export default function Page() {
   return (
-    <ThreeFiberLayout>
+    <ThreeFiberLayout {...seoInfo}>
       <CanvasWithKeyboardInput
         camera={{ position: new Vector3(0, 0, 50), near: 1, far: 3000 }}
       >

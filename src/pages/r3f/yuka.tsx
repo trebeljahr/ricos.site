@@ -5,9 +5,27 @@ import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { ThreeFiberLayout } from "@components/dom/Layout";
 
+const seoInfo = {
+  title: "",
+  description: "",
+  url: "/r3f/",
+  keywords: [
+    "threejs",
+    "react-three-fiber",
+    "lightning strike",
+    "r3f",
+    "3D",
+    "programming",
+    "graphics",
+    "webgl",
+  ],
+  image: "/assets/pages/.png",
+  imageAlt: "",
+};
+
 const Page = () => {
   return (
-    <ThreeFiberLayout>
+    <ThreeFiberLayout {...seoInfo}>
       <KeyboardControlsProvider>
         <Canvas>
           <Physics>

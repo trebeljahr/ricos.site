@@ -67,6 +67,7 @@
     "motion": "^11.15.0",
     "nanoid": "^5.0.9",
     "next": "^14.2.15",
+    "next-plugin-preval": "^1.2.8",
     "next-seo": "^4.26.0",
     "next-themes": "^0.2.1",
     "noisejs": "^2.1.0",

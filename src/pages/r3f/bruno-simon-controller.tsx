@@ -8,9 +8,27 @@ import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControl
 import { ChunkRenderer } from "./heightfield";
 import { MeshStandardMaterial } from "three";
 
+const seoInfo = {
+  title: "",
+  description: "",
+  url: "/r3f/",
+  keywords: [
+    "threejs",
+    "react-three-fiber",
+    "lightning strike",
+    "r3f",
+    "3D",
+    "programming",
+    "graphics",
+    "webgl",
+  ],
+  image: "/assets/pages/.png",
+  imageAlt: "",
+};
+
 const Page = () => {
   return (
-    <ThreeFiberLayout>
+    <ThreeFiberLayout {...seoInfo}>
       <KeyboardControlsProvider>
         <Canvas>
           <Physics debug={physicsDebug}>

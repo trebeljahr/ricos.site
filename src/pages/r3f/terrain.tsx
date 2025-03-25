@@ -17,13 +17,31 @@ import { CameraPositionLogger } from "src/canvas/Helpers/CameraPositionLogger";
 import { RayCaster } from "src/canvas/Helpers/RayCaster";
 import { RigidBallSpawner } from "src/canvas/Helpers/RigidBall";
 
+const seoInfo = {
+  title: "",
+  description: "",
+  url: "/r3f/",
+  keywords: [
+    "threejs",
+    "react-three-fiber",
+    "lightning strike",
+    "r3f",
+    "3D",
+    "programming",
+    "graphics",
+    "webgl",
+  ],
+  image: "/assets/pages/.png",
+  imageAlt: "",
+};
+
 const Page = () => {
   const { speed } = useControls({
     speed: { value: 1, min: 0.1, max: 10, step: 0.1 },
   });
 
   return (
-    <ThreeFiberLayout>
+    <ThreeFiberLayout {...seoInfo}>
       <KeyboardControlsProvider>
         <Leva />
         <Canvas>

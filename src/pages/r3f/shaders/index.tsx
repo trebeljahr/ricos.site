@@ -1,27 +1,27 @@
 import { ThreeFiberLayout } from "@components/dom/Layout";
-import { getShaderFileNames } from "src/lib/getShaderFileNames";
-import { toLinks } from "src/lib/toLinks";
 
-export default function Page({ shaderFiles }: { shaderFiles: string[] }) {
-  const extraLinks = (
-    <>
-      <p>Shaders</p>
-      {shaderFiles.map(toLinks)}
-    </>
-  );
+const seoInfo = {
+  title: "",
+  description: "",
+  url: "/r3f/",
+  keywords: [
+    "threejs",
+    "react-three-fiber",
+    "lightning strike",
+    "r3f",
+    "3D",
+    "programming",
+    "graphics",
+    "webgl",
+  ],
+  image: "/assets/pages/.png",
+  imageAlt: "",
+};
 
+export default function Page() {
   return (
-    <ThreeFiberLayout extraLinks={extraLinks}>
+    <ThreeFiberLayout {...seoInfo}>
       <div>Shader Ideas/Snippets/Whatever</div>
     </ThreeFiberLayout>
   );
-}
-
-export async function getStaticProps() {
-  const shaderFiles = await getShaderFileNames();
-  return {
-    props: {
-      shaderFiles,
-    },
-  };
 }

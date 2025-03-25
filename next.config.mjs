@@ -1,4 +1,6 @@
 import { generateRedirects } from "./src/scripts/createRedirects.js";
+import prevalPlugin from "next-plugin-preval/config.js";
+import bundleAnalyzer from "@next/bundle-analyzer";
 
 const isDev = process.argv.indexOf("dev") !== -1;
 const isBuild = process.argv.indexOf("build") !== -1;
@@ -49,13 +51,13 @@ const nextConfig = {
   },
 };
 
-import bundleAnalyzer from "@next/bundle-analyzer";
-
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 
-export default withBundleAnalyzer(nextConfig);
+const withPrevalPlugin = prevalPlugin();
+
+export default withPrevalPlugin(withBundleAnalyzer(nextConfig));
 
 async function customRedirects() {
   const redirects = await generateRedirects();

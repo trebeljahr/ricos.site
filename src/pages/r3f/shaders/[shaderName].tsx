@@ -1,27 +1,35 @@
-import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasShader";
 import { ThreeFiberLayout } from "@components/dom/Layout";
+import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasShader";
 import { Canvas } from "@react-three/fiber";
 import { getShaderFileNames } from "src/lib/getShaderFileNames";
-import { toLinks } from "src/lib/toLinks";
+
+const seoInfo = {
+  title: "",
+  description: "",
+  url: "/r3f/",
+  keywords: [
+    "threejs",
+    "react-three-fiber",
+    "lightning strike",
+    "r3f",
+    "3D",
+    "programming",
+    "graphics",
+    "webgl",
+  ],
+  image: "/assets/pages/.png",
+  imageAlt: "",
+};
 
 export default function Page({
   fragmentShader,
-  shaderFiles,
   shaderName,
 }: {
   shaderName: string;
   fragmentShader: string;
-  shaderFiles: string[] | undefined;
 }) {
-  const extraLinks = (
-    <>
-      <b className="mt-4 text-lg">Shaders</b>
-      {shaderFiles?.map(toLinks)}
-    </>
-  );
-
   return (
-    <ThreeFiberLayout extraLinks={extraLinks}>
+    <ThreeFiberLayout {...seoInfo}>
       <Canvas
         orthographic
         camera={{
@@ -61,12 +69,10 @@ export async function getStaticProps({ params: { shaderName } }: Params) {
     `@shaders/standaloneFragmentShaders/${shaderName}.frag`
   );
 
-  const shaderFiles = await getShaderFileNames();
   return {
     props: {
       shaderName,
       fragmentShader,
-      shaderFiles,
     },
   };
 }

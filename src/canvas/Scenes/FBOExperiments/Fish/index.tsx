@@ -50,7 +50,7 @@ type Uniforms = { [key: string]: IUniform<any> };
 export function Fishs({
   amount = 100,
   fishType = FishType.DoctorFish,
-  position = new Vector3(0, 20, 0),
+  position = new Vector3(0, 0, 0),
   color = "#FF7F50",
   scaleFactor = 0.1,
 }) {

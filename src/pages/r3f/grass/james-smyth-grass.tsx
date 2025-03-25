@@ -8,7 +8,7 @@ const seoInfo = {
   title: "Stylized Grass",
   description:
     "Stylized Grass based on the demo and explainer article by James Smyth, but ported into R3F and Typescript.",
-  url: "/r3f/scenes/stylized-grass",
+  url: "/r3f/grass/james-smyth-grass",
   keywords: [
     "threejs",
     "react-three-fiber",
@@ -18,7 +18,7 @@ const seoInfo = {
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/stylized-grass.png",
+  image: "/assets/pages/james-smyth-grass.png",
   imageAlt: "a plane filled with a stylized grass shader",
 };
 
@@ -29,7 +29,7 @@ export default function Page() {
         <color attach="background" args={["#ffcc32"]} />
         <ambientLight intensity={0.5} />
         <Sky />
-        <SingleStylizedGrassPlane planeSize={200} bladeCount={100000} />
+        <SingleStylizedGrassPlane planeSize={200} bladeCount={500000} />
         <MinecraftSpectatorController speed={1} />
       </CanvasWithKeyboardInput>
     </ThreeFiberLayout>

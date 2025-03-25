@@ -10,7 +10,7 @@ const seoInfo = {
   title: "A single square grass plane",
   description:
     "In this scene, I'm testing out a single square grass plane in React Three Fiber based on a codepen from al-ro.",
-  url: "/r3f/scenes/grass",
+  url: "/r3f/grass/al-ro-grass",
   keywords: [
     "threejs",
     "react-three-fiber",
@@ -20,7 +20,7 @@ const seoInfo = {
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/grass.png",
+  image: "/assets/pages/al-ro-grass.png",
   imageAlt: "a 3D view of a grassy plane",
 };
 

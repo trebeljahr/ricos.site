@@ -2,6 +2,14 @@ import { nanoid } from "nanoid";
 import { alea } from "seedrandom";
 import { HasDate, ImageProps } from "src/@types";
 
+export function getRandomInInterval(
+  min: number,
+  max: number,
+  randFunc: () => number = Math.random
+) {
+  return randFunc() * (max - min) + min;
+}
+
 export function getRandomInt(
   min: number,
   max: number,

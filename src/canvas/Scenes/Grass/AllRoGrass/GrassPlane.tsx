@@ -10,7 +10,7 @@ import {
   Vector4,
 } from "three";
 import { GrassMaterial, GrassMaterialType } from "./AllRoGrassMaterial";
-import { blackPlaneMaterial } from "../BlackPlaneMaterial";
+import { BlackPlaneMaterial } from "../GroundPlaneMaterials";
 
 const noise2D = createNoise2D();
 
@@ -70,7 +70,7 @@ export const AllRoGrass = ({
 
   return (
     <group {...props}>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} material={blackPlaneMaterial}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} material={BlackPlaneMaterial}>
         <planeGeometry
           args={[width, width, width - 1, width - 1]}
           ref={planeGeo}

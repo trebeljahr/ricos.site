@@ -3,8 +3,8 @@ import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { ChunkRenderer } from "@r3f/ChunkGenerationSystem/ChunkRenderer";
 import { physicsDebug } from "@r3f/ChunkGenerationSystem/config";
 import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
-import { EcctrlController } from "@r3f/Controllers/EcctrlController";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
+import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { LightsAndFog } from "@r3f/Helpers/LightsAndFog";
 import { RigidBallSpawner } from "@r3f/Helpers/RigidBall";
 import { Physics } from "@react-three/rapier";
@@ -35,7 +35,7 @@ export default function Page() {
       <CanvasWithKeyboardInput camera={{ position: [0, 100, 0] }}>
         <Physics debug={physicsDebug}>
           <LightsAndFog skyColor={"#c1f2ff"} />
-          <EcctrlController position={[0, y + 10, 0]} />
+          <MinecraftSpectatorController />
 
           <ChunkProvider>
             <ChunkRenderer />

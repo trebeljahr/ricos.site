@@ -62,7 +62,7 @@ const seoInfo = {
   title: "Navmesh Demo",
   description:
     "A demo of a Recast navmesh in a 3D scene, powered by the awesome recast-js library.",
-  url: "/r3f/navmesh",
+  url: "/r3f/experiments/navmesh",
   keywords: [
     "threejs",
     "react-three-fiber",

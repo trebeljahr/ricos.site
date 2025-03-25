@@ -28,12 +28,10 @@ export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
       <CanvasWithKeyboardInput
-        camera={{ position: new Vector3(0, 0, 50), near: 1, far: 3000 }}
+        camera={{ position: new Vector3(0, 0, 2), near: 1, far: 3000 }}
       >
         <Fishs />
-        <Box args={[1, 1, 1]}>
-          <meshPhysicalMaterial color="pink" />
-        </Box>
+
         <ambientLight />
         <fog color={0xffffff} near={100} far={1000} />
         {perf && <Perf position="bottom-right" />}

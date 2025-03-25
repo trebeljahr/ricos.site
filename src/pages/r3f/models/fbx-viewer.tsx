@@ -17,7 +17,13 @@ const FbxViewer = () => {
   const characterMeshRef = useRef<Mesh>(null!);
   const characterModel = useFBX(`/3d-assets/fbx/${characterName}.fbx`);
 
-  return <primitive object={characterModel} ref={characterMeshRef} />;
+  return (
+    <primitive
+      object={characterModel}
+      ref={characterMeshRef}
+      position={[0, 0, 0]}
+    />
+  );
 };
 
 const seoInfo = {
@@ -41,11 +47,15 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <CanvasWithKeyboardInput camera={{ position: [0, 2, 10] }}>
-        <color attach="background" args={["#00bbff"]} />
-        <ambientLight intensity={2} />
-        <Stage>
-          <group scale={0.005} position={[0, 0, 0]}>
+      <CanvasWithKeyboardInput camera={{ position: [1, 1.5, 3] }}>
+        <color attach="background" args={["#f7f9f9"]} />
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[10, 10, 5]} intensity={1} />
+
+        <Stage adjustCamera={false} intensity={0} shadows={true}>
+          {/* <Box args={[1, 1, 1]} position={[0, 0.5, 0]} /> */}
+
+          <group scale={0.01}>
             <FbxViewer />
           </group>
         </Stage>

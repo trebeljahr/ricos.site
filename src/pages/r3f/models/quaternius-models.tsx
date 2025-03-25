@@ -103,7 +103,7 @@ const seoInfo = {
   title: "Quaternius Models Showcase",
   description:
     "A showcase of Quaternius models in a simple grid to help me choose which one to use.",
-  url: "/r3f/quaternius-models",
+  url: "/r3f/models/quaternius-models",
   keywords: [
     "threejs",
     "react-three-fiber",

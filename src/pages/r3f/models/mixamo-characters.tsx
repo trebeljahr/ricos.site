@@ -12,7 +12,7 @@ const seoInfo = {
   title: "Mixamo Character Demos",
   description:
     "Showcasing different Mixamo Characters in a 3D scene with animations",
-  url: "/r3f/mixamo-characters",
+  url: "/r3f/models/mixamo-characters",
   keywords: [
     "threejs",
     "react-three-fiber",

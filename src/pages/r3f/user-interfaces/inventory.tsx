@@ -8,6 +8,7 @@ import {
   Inventory,
   InventoryToggleButton,
 } from "@r3f/Dungeon/InventorySystem/GameInventoryUI";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 // Example item generator
 const createItem = (
@@ -43,7 +44,24 @@ export default function Game() {
   );
 }
 
-// Game world component that interacts with inventory
+const seoInfo = {
+  title: "Inventory Demo",
+  description:
+    "In this demo I set up an inventory system with React and a playground to add and remove as well as equip items.",
+  url: "/r3f/scenes/inventory",
+  keywords: [
+    "threejs",
+    "react-three-fiber",
+    "r3f",
+    "3D",
+    "programming",
+    "graphics",
+    "webgl",
+  ],
+  image: "/assets/pages/inventory.png",
+  imageAlt: "a inventory prototype for a simple game",
+};
+
 const GameWorld: FC = () => {
   const { addItem, canAddItem, isOpen } = useInventory();
 
@@ -167,41 +185,43 @@ const GameWorld: FC = () => {
   }, [findRandomItem]);
 
   return (
-    <div className="min-h-screen bg-gray-800 text-white p-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Game area - only visible when inventory is closed */}
-        {!isOpen && (
-          <div className="bg-gray-900 rounded-lg p-6 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div className="bg-gray-800 p-4 rounded-lg">
-                <h3 className="text-lg font-medium mb-2">Random Items</h3>
-                <p className="text-sm text-gray-400 mb-3">
-                  Search the area for useful items
-                </p>
-                <button
-                  onClick={findRandomItem}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-colors"
-                >
-                  Add Random Item
-                </button>
-              </div>
+    <ThreeFiberLayout {...seoInfo}>
+      <div className="min-h-screen bg-gray-800 text-white p-6">
+        <div className="max-w-4xl mx-auto">
+          {/* Game area - only visible when inventory is closed */}
+          {!isOpen && (
+            <div className="bg-gray-900 rounded-lg p-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-gray-800 p-4 rounded-lg">
+                  <h3 className="text-lg font-medium mb-2">Random Items</h3>
+                  <p className="text-sm text-gray-400 mb-3">
+                    Search the area for useful items
+                  </p>
+                  <button
+                    onClick={findRandomItem}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-colors"
+                  >
+                    Add Random Item
+                  </button>
+                </div>
 
-              <div className="bg-gray-800 p-4 rounded-lg">
-                <h3 className="text-lg font-medium mb-2">Mana Potions</h3>
-                <p className="text-sm text-gray-400 mb-3">
-                  Pickup mana potions
-                </p>
-                <button
-                  onClick={() => addManaPotion(50)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors"
-                >
-                  Add 50 Mana Potions
-                </button>
+                <div className="bg-gray-800 p-4 rounded-lg">
+                  <h3 className="text-lg font-medium mb-2">Mana Potions</h3>
+                  <p className="text-sm text-gray-400 mb-3">
+                    Pickup mana potions
+                  </p>
+                  <button
+                    onClick={() => addManaPotion(50)}
+                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors"
+                  >
+                    Add 50 Mana Potions
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </ThreeFiberLayout>
   );
 };

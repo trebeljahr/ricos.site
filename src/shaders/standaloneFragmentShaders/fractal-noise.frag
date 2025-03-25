@@ -9,7 +9,6 @@ vec2 randomGradient(vec2 p) {
   vec2 gradient = vec2(x, y);
   gradient = sin(gradient);
   gradient = gradient * 43758.5453;
-  // gradient = sin(gradient);
   gradient = sin(gradient + u_time);
   return gradient;
 }
@@ -54,25 +53,19 @@ float perlinNoise(vec2 uv) {
 float fbmPerlinNoise(vec2 uv) {
   float fbmNoise = 0.0;
   float amplitude = 1.0;
-  // const float octaves = 1.0;
-  const float octaves = 2.0;
-  // const float octaves = 3.0;
-  // const float octaves = 4.0;
-  // const float octaves = 5.0;
 
-  for (float i = 0.0; i < octaves; i++) {
+  const float octaves = 2.0;
+
+  for(float i = 0.0; i < octaves; i++) {
     fbmNoise = fbmNoise + perlinNoise(uv) * amplitude;
     amplitude = amplitude * 0.5;
     uv = uv * 2.0;
   }
 
-  // fbmNoise = fbmNoise / 2.0;
-
   return fbmNoise;
 }
 
 float domainWarpFbmPerlinNoise(vec2 uv) {
-  // return fbmPerlinNoise(uv);
 
   float fbm1 = fbmPerlinNoise(uv + vec2(0.0, 0.0));
   float fbm2 = fbmPerlinNoise(uv + vec2(5.2, 1.3));
@@ -104,18 +97,13 @@ void main() {
   float pNoise = perlinNoise(uv);
   color = vec3(pNoise);
 
-  // part 1 - fractional brownian motion
   float fbmNoise = fbmPerlinNoise(uv);
-  // color = vec3(fbmNoise);
 
-  // part 2 - domain warping
   float dwNoise = domainWarpFbmPerlinNoise(uv);
   color = vec3(dwNoise);
 
-  // part 3.1 - central differences method
   vec3 normal = calcNormal(uv);
 
-  // part 3.2 - diffuse lighting
   vec3 white = vec3(1.0);
   vec3 blue = vec3(0.65, 0.85, 1.0);
   vec3 lightColor = white;
@@ -126,7 +114,6 @@ void main() {
   vec3 lighting = diffuse * 0.5;
   color = lighting;
 
-  // part 3.3 - specular lighting
   vec3 cameraSource = vec3(0.0, 0.0, 1.0);
   vec3 viewSource = normalize(cameraSource);
   vec3 reflectSource = normalize(reflect(-lightSource, normal));

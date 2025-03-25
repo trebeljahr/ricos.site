@@ -19,7 +19,7 @@ const seoInfo = {
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/yuka.png",
+  image: "/assets/pages/yuka-ai-implementation.png",
   imageAlt: "a deer running away from a velociraptor in a 3D scene",
 };
 

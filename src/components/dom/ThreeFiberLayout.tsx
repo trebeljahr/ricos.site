@@ -26,7 +26,7 @@ export const ThreeFiberLayout = ({
   const properTitle = toTitleCase(title) + " | Rico's R3F Playground";
 
   return (
-    <>
+    <div className="overscroll-none">
       <Meta
         description={description}
         title={properTitle}
@@ -41,7 +41,7 @@ export const ThreeFiberLayout = ({
         imageAlt={imageAlt}
       />
       {nav && <NavbarR3F />}
-      <div className="w-screen h-screen">{children}</div>
-    </>
+      <div className="w-full h-screen">{children}</div>
+    </div>
   );
 };

@@ -6,7 +6,8 @@ import {
 } from "./JamesSmythGrassMaterial";
 import { useFrame } from "@react-three/fiber";
 import { BufferAttribute, BufferGeometry, DoubleSide, Vector3 } from "three";
-import { blackPlaneMaterial } from "../BlackPlaneMaterial";
+import { LightGreenPlaneMaterial } from "../GroundPlaneMaterials";
+import { getRandomInInterval } from "src/lib/utils/misc";
 
 export const SingleStylizedGrassPlane = ({
   planeSize = 30,
@@ -59,12 +60,9 @@ export const SingleStylizedGrassPlane = ({
         const VERTEX_COUNT = 5;
         const surfaceMin = (planeSize / 2) * -1;
         const surfaceMax = planeSize / 2;
-        const radius = planeSize / 2;
 
-        const r = radius * Math.sqrt(Math.random());
-        const theta = Math.random() * 2 * Math.PI;
-        const x = r * Math.cos(theta);
-        const y = r * Math.sin(theta);
+        const x = getRandomInInterval(surfaceMin, surfaceMax);
+        const y = getRandomInInterval(surfaceMin, surfaceMax);
 
         const pos = new Vector3(x, 0, y);
 
@@ -179,12 +177,9 @@ export const SingleStylizedGrassPlane = ({
         <stylizedGrassMaterial
           ref={materialRef as any}
           key={StylizedGrassMaterial.key}
-          transparent={true}
-          depthTest={true}
-          depthWrite={true}
         />
       </mesh>
-      <mesh rotation-x={-Math.PI / 2} material={blackPlaneMaterial}>
+      <mesh rotation-x={-Math.PI / 2} material={LightGreenPlaneMaterial}>
         <planeGeometry args={[planeSize, planeSize]} />
       </mesh>
     </>

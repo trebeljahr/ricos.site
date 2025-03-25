@@ -42,7 +42,6 @@
     "src/scripts/createRedirects.js",
     "src/lib/generateExcerpts.js",
     "src/scripts/sortedNewsletters.js",
-    "next.config.cjss",
-    "src/canvas/Scenes/Grass/EbenezerGrass"
+    "next.config.cjss"
   ]
 }

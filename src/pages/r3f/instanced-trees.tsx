@@ -3,7 +3,7 @@ import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControl
 import { TreeTile } from "src/canvas/Trees/TreeTile";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { tileSize } from "src/canvas/ChunkGenerationSystem/config";
 
 const seoInfo = {

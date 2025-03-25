@@ -1,4 +1,4 @@
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { SingleStylizedGrassPlane } from "@r3f/Scenes/Grass/JamesSmythGrass";

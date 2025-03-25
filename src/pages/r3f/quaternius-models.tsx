@@ -17,7 +17,7 @@ import { Leva } from "leva";
 import { Plane, Text } from "@react-three/drei";
 import { ComponentType, PropsWithChildren, useRef } from "react";
 import { DoubleSide } from "three";
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 const allNatureAssets = {
   ...simpleNatureAssets,

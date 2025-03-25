@@ -1,4 +1,4 @@
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasShader";
 import { Canvas } from "@react-three/fiber";
 import { getShaderFileNames } from "src/lib/getShaderFileNames";

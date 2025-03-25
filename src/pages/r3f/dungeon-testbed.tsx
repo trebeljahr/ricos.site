@@ -1,4 +1,4 @@
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import {
   Arch,
   Column2,

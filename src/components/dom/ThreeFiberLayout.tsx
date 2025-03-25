@@ -1,5 +1,5 @@
 import { PropsWithChildren, ReactNode } from "react";
-import { Navbar } from "./Navbar";
+import { NavbarR3F } from "./NavbarR3F";
 import { nav } from "@r3f/ChunkGenerationSystem/config";
 import { Meta } from "@components/Meta";
 import { toTitleCase } from "src/lib/utils/misc";
@@ -40,7 +40,7 @@ export const ThreeFiberLayout = ({
         image={image}
         imageAlt={imageAlt}
       />
-      {nav && <Navbar />}
+      {nav && <NavbarR3F />}
       <div className="w-screen h-screen">{children}</div>
     </>
   );

@@ -1,6 +1,6 @@
 import { perf } from "src/canvas/ChunkGenerationSystem/config";
 import { Birds } from "@r3f/Scenes/FBOExperiments/Birds";
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Perf } from "r3f-perf";

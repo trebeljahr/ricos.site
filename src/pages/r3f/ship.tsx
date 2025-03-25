@@ -1,4 +1,4 @@
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import dynamic from "next/dynamic";

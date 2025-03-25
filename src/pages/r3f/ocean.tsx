@@ -1,5 +1,5 @@
 import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { UnderwaterContextProvider } from "@contexts/UnderwaterContext";
 import dynamic from "next/dynamic";
 import tunnel from "tunnel-rat";

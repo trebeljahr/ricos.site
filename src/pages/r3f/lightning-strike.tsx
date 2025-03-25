@@ -1,4 +1,4 @@
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
 import { OrbitControls, Stage } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";

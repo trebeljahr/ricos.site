@@ -1,4 +1,4 @@
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { perf } from "@r3f/ChunkGenerationSystem/config";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";

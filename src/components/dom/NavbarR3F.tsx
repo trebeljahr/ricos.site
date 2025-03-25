@@ -8,7 +8,7 @@ const sideStyle =
 const buttonStyle =
   "z-[1500] absolute w-10 h-10 bg-yellow-400 hover:w-11 hover:h-11 top-0 cursor-pointer transition-all transform duration-700 flex items-center justify-center";
 
-export const Navbar = () => {
+export const NavbarR3F = () => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null!);
 

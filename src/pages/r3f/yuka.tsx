@@ -3,7 +3,7 @@ import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControl
 import { YukaSimulation } from "src/canvas/Scenes/Yuka/YukaExample";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 const seoInfo = {
   title: "",

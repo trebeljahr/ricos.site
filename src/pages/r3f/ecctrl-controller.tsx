@@ -3,7 +3,7 @@ import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls
 import Grass from "@r3f/Scenes/Grass";
 import { Lights } from "src/canvas/Helpers/Lights";
 import { Obstacles, TreeObstacles } from "@r3f/Helpers/Obstacles";
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 

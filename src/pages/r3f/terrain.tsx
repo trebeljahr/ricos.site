@@ -1,4 +1,4 @@
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { Canvas } from "@react-three/fiber";

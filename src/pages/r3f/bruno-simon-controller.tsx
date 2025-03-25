@@ -1,4 +1,4 @@
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { BrunoSimonController } from "@r3f/Controllers/BrunoSimonController";
 import { Canvas } from "@react-three/fiber";

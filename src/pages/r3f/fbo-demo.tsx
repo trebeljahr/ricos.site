@@ -1,6 +1,6 @@
 import { FBOParticles } from "@r3f/Scenes/FBOExperiments/Particles/Particles";
 import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { OrbitControls } from "@react-three/drei";
 
 const seoInfo = {

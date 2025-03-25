@@ -1,4 +1,4 @@
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { Cat } from "@r3f/AllModels/Cat";
 import { useSword4, useSword6 } from "@r3f/Dungeon/Enemies/Swords";
 import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";

@@ -1,4 +1,4 @@
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { PlasmaBall } from "@r3f/Scenes/PlasmaBall";
 import { Environment, OrbitControls, Stage } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";

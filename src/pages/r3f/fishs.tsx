@@ -1,6 +1,6 @@
 import { Fishs } from "@r3f/Scenes/FBOExperiments/Fish";
 import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { Box } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 import { Vector3 } from "three";

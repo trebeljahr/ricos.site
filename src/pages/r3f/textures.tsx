@@ -1,4 +1,4 @@
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { OrbitControls, Plane } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";

@@ -1,5 +1,5 @@
 import { CompleteShaderEditor } from "@components/Demos/FullscreenShader";
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 const seoInfo = {
   title: "",

@@ -1,4 +1,4 @@
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
 import { DungeonGenerator } from "@r3f/Dungeon/Generator2D/Generator";
 import { CellType, Vector2Int } from "@r3f/Dungeon/Generator2D/TypeStructure";

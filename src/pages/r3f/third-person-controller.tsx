@@ -1,5 +1,5 @@
 import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
-import { ThreeFiberLayout } from "@components/dom/Layout";
+import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import dynamic from "next/dynamic";
 
 const ThirdPersonDemo = dynamic(() => import("@r3f/Scenes/ThirdPersonDemo"), {

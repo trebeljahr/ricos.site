@@ -4,7 +4,7 @@ import { getShaderFileNames } from "./getShaderFileNames";
 
 export const addPrefix = (prefix: string) => (url: string) => {
   const newUrl = prefix + url;
-  return newUrl;
+  return { name: url, url: newUrl };
 };
 
 export async function getFileNamesForR3FDemos() {
@@ -25,11 +25,10 @@ export async function getAllLinksForR3FDemos() {
     "R3F Demos": r3fDemoLinks,
   };
 
-  // .map(toLinks);
   return allLinks;
 }
 
-export type NavLinks = Record<string, string[]>;
+export type NavLinks = Record<string, { name: string; url: string }[]>;
 
 async function getData() {
   const links = await getAllLinksForR3FDemos();

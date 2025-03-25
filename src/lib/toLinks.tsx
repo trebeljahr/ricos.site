@@ -6,3 +6,15 @@ export const toLinks = (url: string) => (
     {turnKebabIntoTitleCase(url)}
   </Link>
 );
+
+export const toLinksFromNameUrlTuples = ({
+  url,
+  name,
+}: {
+  url: string;
+  name: string;
+}) => (
+  <Link key={url} href={url}>
+    {turnKebabIntoTitleCase(name)}
+  </Link>
+);

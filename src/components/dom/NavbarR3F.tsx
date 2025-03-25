@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import data from "src/lib/links.preval";
-import { toLinks } from "src/lib/toLinks";
+import { toLinks, toLinksFromNameUrlTuples } from "src/lib/toLinks";
 
 const sideStyle =
   "z-[1500] absolute overflow-x-hidden overflow-y-auto text-sm w-60 bg-leva-dark h-screen  transform transition-all fixed duration-700 text-leva-white p-2";
@@ -43,15 +43,15 @@ export const NavbarR3F = () => {
         {open ? "<" : ">"}
       </button>
       <div className={`${sideStyle} ${!open && "-translate-x-60"}`}>
-        <div className="relative h-full min-h-[750px]" ref={menuRef}>
+        <div className="relative h-fit min-h-screen pb-20" ref={menuRef}>
           <nav className="flex flex-col">
             {Object.entries(data.links).map(([key, links]) => {
               return (
                 <div key={key} className="flex flex-col">
                   <h2 className="text-lg font-bold">{key}</h2>
-                  <ul className="flex flex-col">
-                    {(links as string[]).map(toLinks)}
-                  </ul>
+                  <div className="flex flex-col">
+                    {links.map(toLinksFromNameUrlTuples)}
+                  </div>
                 </div>
               );
             })}

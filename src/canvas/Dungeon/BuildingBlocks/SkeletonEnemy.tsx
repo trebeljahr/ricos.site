@@ -2,19 +2,28 @@ import { SkeletonMage } from "@r3f/AllModels/enemies/Skeleton Mage";
 import { SkeletonMinion } from "@r3f/AllModels/enemies/Skeleton Minion";
 import { SkeletonRogue } from "@r3f/AllModels/enemies/Skeleton Rogue";
 import { SkeletonWarrior } from "@r3f/AllModels/enemies/Skeleton Warrior";
-import { GroupProps } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { GroupProps, useFrame } from "@react-three/fiber";
+import { useMemo, useRef, useState } from "react";
 import {
   AnimationClip,
+  DoubleSide,
   Group,
   Mesh,
   MeshStandardMaterial,
   SkinnedMesh,
+  Vector3,
 } from "three";
-import { GLTF } from "three-stdlib";
-import { WeaponTypes, useWeapon } from "../Enemies/Weapons";
+import { GLTF, RayParameters } from "three-stdlib";
+import {
+  WeaponTypes,
+  getRandomWeaponType,
+  useWeapon,
+} from "../Enemies/Weapons";
 import { CommonActions } from "./CommonEnemy";
 import { useAttachToBone } from "@hooks/useAttachToBone";
+import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
+import { enemyQuery, playerQuery } from "@r3f/AI/ecs";
+import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
 
 export type SkeletonEnemyProps = GroupProps & {
   animationToPlay?: CommonActions;
@@ -153,6 +162,75 @@ export enum SkeletonTypes {
   Mage = "Mage",
   Minion = "Minion",
 }
+
+export const SkeletonWithAnimations = ({
+  skeletonType,
+  ItemLeft,
+  ItemRight,
+  ...props
+}: GroupProps & {
+  ItemRight: WeaponTypes;
+  ItemLeft: WeaponTypes;
+  skeletonType?: SkeletonTypes;
+}) => {
+  const [animationToPlay, setAnimationToPlay] = useState<CommonActions>(
+    CommonActions.Walk
+  );
+  const [rayPositions, setRayPositions] = useState<{
+    sourceOffset: Vector3;
+    destOffset: Vector3;
+  } | null>(null);
+
+  useFrame(() => {
+    const enemy = enemyQuery.first;
+    const player = playerQuery.first;
+    if (!enemy || !player) return;
+
+    if (enemy.hasReachedPlayer) {
+      if (animationToPlay !== CommonActions.Attack) {
+        setAnimationToPlay(CommonActions.Attack);
+        setRayPositions({
+          sourceOffset: enemy.rigidBody.translation(),
+          destOffset: player.rigidBody.translation(),
+        });
+
+        console.log("player", player.rigidBody.translation());
+        console.log("enemy", enemy.rigidBody?.translation());
+      }
+    } else if (animationToPlay !== CommonActions.Walk) {
+      setAnimationToPlay(CommonActions.Walk);
+      setRayPositions(null);
+    }
+  });
+
+  return (
+    <group position={props.position}>
+      <SkeletonWithWeapons
+        skeletonType={skeletonType}
+        animationToPlay={animationToPlay}
+        ItemRight={ItemRight}
+        ItemLeft={ItemLeft}
+        {...props}
+        position={[0, 0, 0]}
+      />
+    </group>
+  );
+};
+
+export const RandomSkeletonWithRandomWeapons = ({ ...props }: GroupProps) => {
+  const skeletonType = pickRandomFromArray(Object.values(SkeletonTypes));
+  const itemLeft = getRandomWeaponType();
+  const itemRight = getRandomWeaponType();
+
+  return (
+    <SkeletonWithAnimations
+      skeletonType={skeletonType}
+      ItemRight={itemRight}
+      ItemLeft={itemLeft}
+      {...props}
+    />
+  );
+};
 
 export const SkeletonWithWeapons = ({
   ItemRight: ProvidedItemRight,

@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { DoubleSide, Mesh, Raycaster, Vector3 } from "three";
 import { RayParameters } from "three-stdlib";
 
-const SingleLightningStrikHittingMesh = ({
+export const SingleLightningStrikeHittingMesh = ({
   source,
   targetMesh,
 }: {
@@ -175,7 +175,7 @@ const DemoScene = () => {
   return (
     <group>
       <group>
-        <SingleLightningStrikHittingMesh
+        <SingleLightningStrikeHittingMesh
           source={singleLightningStrike.source}
           targetMesh={sword}
         />

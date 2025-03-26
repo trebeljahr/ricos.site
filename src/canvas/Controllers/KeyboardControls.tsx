@@ -12,6 +12,17 @@ export const keymap = [
   { name: "attack", keys: ["F", "f"] },
 ];
 
+export type SupportedControllerKeys = {
+  forward: boolean;
+  backward: boolean;
+  leftward: boolean;
+  rightward: boolean;
+  jump: boolean;
+  descend: boolean;
+  run: boolean;
+  attack: boolean;
+};
+
 export const KeyboardControlsProvider = ({ children }: PropsWithChildren) => {
   return <KeyboardControls map={keymap}>{children}</KeyboardControls>;
 };

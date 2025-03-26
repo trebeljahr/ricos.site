@@ -1,4 +1,5 @@
 import { useAttachToBone } from "@hooks/useAttachToBone";
+import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
 import { MixamoCharacterNames } from "@r3f/Characters/Character";
 import {
   MixamoCharacter,
@@ -11,18 +12,16 @@ import {
   WeaponTypes,
 } from "@r3f/Dungeon/Enemies/Weapons";
 import {
-  PointerLockControls,
   useAnimations,
   useKeyboardControls,
   useProgress,
 } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { CustomEcctrlRigidBody } from "ecctrl";
-import { MutableRefObject, Suspense, useEffect, useRef } from "react";
+import { MutableRefObject, Suspense, useRef } from "react";
 import { Group } from "three";
 import { useGenericAnimationController } from "../GenericAnimationController";
 import { EcctrlControllerCustom, userDataType } from "./Controller";
-import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
 
 const useWeaponForMixamoCharacter = (weaponType: WeaponTypes) => {
   let weapon = useWeapon(weaponType);

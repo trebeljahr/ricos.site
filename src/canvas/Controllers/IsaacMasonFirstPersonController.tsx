@@ -416,7 +416,7 @@ export function FirstPersonControllerWithWeapons() {
         ]}
       >
         <Player position={[0, 50, -10]} />
-        <PointerLockControls makeDefault />
+        <PointerLockControls makeDefault selector={"canvas"} />
       </KeyboardControls>
     </>
   );

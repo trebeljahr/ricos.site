@@ -1,24 +1,23 @@
 import {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useCallback,
-  FC,
-} from "react";
-import {
   DndContext,
   DragEndEvent,
+  PointerSensor,
   useSensor,
   useSensors,
-  PointerSensor,
 } from "@dnd-kit/core";
-import useSound from "use-sound";
-import trashSound from "@sounds/trash.mp3";
-import switchSound from "@sounds/switch.mp3";
 import equipSound from "@sounds/equip.mp3";
 import errorSound from "@sounds/error-short.mp3";
-import { useThree } from "@react-three/fiber";
+import switchSound from "@sounds/switch.mp3";
+import trashSound from "@sounds/trash.mp3";
+import {
+  createContext,
+  FC,
+  ReactNode,
+  useCallback,
+  useContext,
+  useState,
+} from "react";
+import useSound from "use-sound";
 
 export type ItemType = "weapon" | "armor" | "consumable" | "material" | "quest";
 export type ArmorSlot = "head" | "chest" | "legs" | "feet";

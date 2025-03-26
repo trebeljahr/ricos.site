@@ -3,7 +3,7 @@ import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import dynamic from "next/dynamic";
-import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { OceanSurface } from "src/canvas/Scenes/OceanDemo/Ocean";
 

@@ -1,6 +1,7 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { useSword4 } from "@r3f/Dungeon/Enemies/Swords";
 import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import {
@@ -187,7 +188,7 @@ const DemoScene = () => {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <Canvas>
+      <SceneWithLoadingState>
         <color attach="background" args={["#f2f2f2"]} />
         <ambientLight intensity={0.5} />
         <DemoScene />
@@ -196,7 +197,7 @@ export default function Page() {
           <ToneMapping />
         </EffectComposer>
         <OrbitControls />
-      </Canvas>
+      </SceneWithLoadingState>
     </ThreeFiberLayout>
   );
 }

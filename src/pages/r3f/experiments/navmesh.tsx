@@ -1,5 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { OrbitControls, Stage, useGLTF } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { DebugDrawer, threeToSoloNavMesh } from "@recast-navigation/three";

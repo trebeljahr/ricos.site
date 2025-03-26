@@ -1,19 +1,13 @@
-import { useThree } from "@react-three/fiber";
-import fragmentShader from "@shaders/sampleDepthBuffer.frag";
-import { Effect, EffectAttribute } from "postprocessing";
-import { useMemo } from "react";
-import {
-  PerspectiveCamera,
-  Uniform,
-  Vector2,
-  Vector3,
-  WebGLRenderer,
-} from "three";
 import {
   farOverwater,
   farUnderwater,
   surfaceLevel,
-} from "../../Controllers/KeyboardControls";
+} from "@contexts/UnderwaterContext";
+import { useThree } from "@react-three/fiber";
+import fragmentShader from "@shaders/sampleDepthBuffer.frag";
+import { Effect, EffectAttribute } from "postprocessing";
+import { useMemo } from "react";
+import { PerspectiveCamera, Uniform, Vector3, WebGLRenderer } from "three";
 
 class UnderwaterFogEffectImpl extends Effect {
   public camera: PerspectiveCamera;
@@ -29,7 +23,7 @@ class UnderwaterFogEffectImpl extends Effect {
     this.camera = camera;
   }
 
-  update(renderer: WebGLRenderer, inputBuffer: WebGLBuffer, deltaTime: number) {
+  update(_: WebGLRenderer, _2: WebGLBuffer, deltaTime: number) {
     if (!this.uniforms) return;
 
     const uTime = this.uniforms.get("uTime");

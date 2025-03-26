@@ -6,7 +6,7 @@ interface LoaderProps {
 }
 
 export const Loader = ({ containerClassName = "" }: LoaderProps) => {
-  const { active, progress, errors, item, loaded, total } = useProgress();
+  const { progress, errors, item, loaded, total } = useProgress();
   const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {

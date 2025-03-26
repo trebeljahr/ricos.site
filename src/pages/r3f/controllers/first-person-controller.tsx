@@ -1,5 +1,5 @@
 import { FirstPersonController } from "src/canvas/Controllers/FirstPersonController";
-import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { Obstacles } from "@r3f/Helpers/Obstacles";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { Sky } from "@react-three/drei";

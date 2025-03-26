@@ -1,4 +1,4 @@
-import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import dynamic from "next/dynamic";
 

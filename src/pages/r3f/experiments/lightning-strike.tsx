@@ -1,5 +1,6 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { OrbitControls, Stage } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
@@ -79,7 +80,7 @@ const Demo = () => {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <Canvas>
+      <SceneWithLoadingState>
         <color attach="background" args={["#0a0a0a"]} />
         <ambientLight intensity={0.5} />
 
@@ -92,7 +93,7 @@ export default function Page() {
           <ToneMapping />
         </EffectComposer>
         <OrbitControls />
-      </Canvas>
+      </SceneWithLoadingState>
     </ThreeFiberLayout>
   );
 }

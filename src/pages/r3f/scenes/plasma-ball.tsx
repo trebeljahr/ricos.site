@@ -1,4 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { PlasmaBall } from "@r3f/Scenes/PlasmaBall";
 import { Environment, OrbitControls, Stage } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
@@ -29,7 +30,7 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <Canvas>
+      <SceneWithLoadingState withKeyboardControls={false}>
         <color attach="background" args={["#121524"]} />
         <ambientLight intensity={1} />
 
@@ -42,7 +43,7 @@ export default function Page() {
           <ToneMapping />
         </EffectComposer>
         <OrbitControls autoRotate />
-      </Canvas>
+      </SceneWithLoadingState>
     </ThreeFiberLayout>
   );
 }

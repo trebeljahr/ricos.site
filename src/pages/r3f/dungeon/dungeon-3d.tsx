@@ -1,6 +1,6 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { perf } from "@r3f/ChunkGenerationSystem/config";
-import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import {
   Arches,

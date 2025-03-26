@@ -1,5 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { AllRoGrass } from "@r3f/Scenes/Grass/AllRoGrass/GrassPlane";
 import { Sky } from "@react-three/drei";

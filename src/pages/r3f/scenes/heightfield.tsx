@@ -3,7 +3,7 @@ import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { ChunkRenderer } from "@r3f/ChunkGenerationSystem/ChunkRenderer";
 import { physicsDebug } from "@r3f/ChunkGenerationSystem/config";
 import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
-import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { LightsAndFog } from "@r3f/Helpers/LightsAndFog";
 import { RigidBallSpawner } from "@r3f/Helpers/RigidBall";

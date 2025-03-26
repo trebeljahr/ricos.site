@@ -1,5 +1,5 @@
 import { FBOParticles } from "@r3f/Scenes/FBOExperiments/Particles/Particles";
-import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { OrbitControls } from "@react-three/drei";
 import {
@@ -30,7 +30,7 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <SceneWithLoadingState>
+      <SceneWithLoadingState withKeyboardControls={false}>
         <FBOParticles />
         <EffectComposer>
           <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />

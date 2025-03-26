@@ -1,4 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { Sky } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
@@ -34,7 +35,7 @@ const Page = () => {
   return (
     <ThreeFiberLayout {...seoInfo}>
       <KeyboardControlsProvider>
-        <Canvas>
+        <SceneWithLoadingState>
           {perf && <Perf position="bottom-right" />}
           <Physics debug={physicsDebug}>
             <hemisphereLight intensity={0.35} />
@@ -49,7 +50,7 @@ const Page = () => {
             <Sky />
             <MinecraftSpectatorController speed={1} />
           </Physics>
-        </Canvas>
+        </SceneWithLoadingState>
       </KeyboardControlsProvider>
     </ThreeFiberLayout>
   );

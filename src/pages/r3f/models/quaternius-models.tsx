@@ -18,6 +18,7 @@ import { Plane, Text } from "@react-three/drei";
 import { ComponentType, PropsWithChildren, useRef } from "react";
 import { DoubleSide } from "three";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 
 const allNatureAssets = {
   ...simpleNatureAssets,
@@ -122,41 +123,39 @@ const Page = () => {
 
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <KeyboardControlsProvider>
-        <Leva />
-        <Canvas camera={{ position: [0, 5, tileSize / 2] }}>
-          <Physics debug={physicsDebug}>
-            <ambientLight intensity={1.0} />
-            <directionalLight position={[10, 10, 5]} intensity={1} />
-            <hemisphereLight
-              color={"#FFFFFF"}
-              position={[0, 50, 0]}
-              groundColor={groundColor}
+      <Leva />
+      <SceneWithLoadingState camera={{ position: [0, 5, tileSize / 2] }}>
+        <Physics debug={physicsDebug}>
+          <ambientLight intensity={1.0} />
+          <directionalLight position={[10, 10, 5]} intensity={1} />
+          <hemisphereLight
+            color={"#FFFFFF"}
+            position={[0, 50, 0]}
+            groundColor={groundColor}
+          />
+
+          <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
+          <color args={["#f0f0f0"]} attach="background" />
+
+          <Plane args={[tileSize, 100]} rotation={[-Math.PI / 2, 0, 0]}>
+            <meshStandardMaterial color={groundColor} side={DoubleSide} />
+          </Plane>
+          <gridHelper args={[tileSize, 100]} position={[0, 0.001, 0]} />
+
+          <group position={[-tileSize / 2, 0.1, -tileSize / 2]}>
+            <axesHelper args={[1]} />
+            <GridOfModels assets={allNatureAssets} />
+            <GridOfModels
+              assets={animalAssets}
+              indexOffset={natureKeysLength}
+              rotation={[0, -Math.PI, 0]}
+              scale={0.2}
             />
+          </group>
 
-            <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
-            <color args={["#f0f0f0"]} attach="background" />
-
-            <Plane args={[tileSize, 100]} rotation={[-Math.PI / 2, 0, 0]}>
-              <meshStandardMaterial color={groundColor} side={DoubleSide} />
-            </Plane>
-            <gridHelper args={[tileSize, 100]} position={[0, 0.001, 0]} />
-
-            <group position={[-tileSize / 2, 0.1, -tileSize / 2]}>
-              <axesHelper args={[1]} />
-              <GridOfModels assets={allNatureAssets} />
-              <GridOfModels
-                assets={animalAssets}
-                indexOffset={natureKeysLength}
-                rotation={[0, -Math.PI, 0]}
-                scale={0.2}
-              />
-            </group>
-
-            <MinecraftSpectatorController speed={1} />
-          </Physics>
-        </Canvas>
-      </KeyboardControlsProvider>
+          <MinecraftSpectatorController speed={1} />
+        </Physics>
+      </SceneWithLoadingState>
     </ThreeFiberLayout>
   );
 };

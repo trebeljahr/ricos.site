@@ -3,7 +3,7 @@ import { Obstacles, TreeObstacles } from "@r3f/Helpers/Obstacles";
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import { EcctrlController } from "src/canvas/Controllers/EcctrlController";
-import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { Lights } from "src/canvas/Helpers/Lights";
 
 const seoInfo = {

@@ -2,13 +2,9 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { ChunkRenderer } from "@r3f/ChunkGenerationSystem/ChunkRenderer";
 import { BrunoSimonController } from "@r3f/Controllers/BrunoSimonController";
-import { Canvas } from "@react-three/fiber";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { Physics } from "@react-three/rapier";
 import { physicsDebug } from "src/canvas/ChunkGenerationSystem/config";
-import {
-  CanvasWithKeyboardInput,
-  KeyboardControlsProvider,
-} from "src/canvas/Controllers/KeyboardControls";
 import { MeshStandardMaterial } from "three";
 
 const seoInfo = {
@@ -32,7 +28,7 @@ const seoInfo = {
 const Page = () => {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <CanvasWithKeyboardInput>
+      <SceneWithLoadingState>
         <Physics debug={physicsDebug}>
           <hemisphereLight intensity={0.35} />
           <ambientLight intensity={1.0} />
@@ -54,7 +50,7 @@ const Page = () => {
           </ChunkProvider>
         </Physics>
         <BrunoSimonController />
-      </CanvasWithKeyboardInput>
+      </SceneWithLoadingState>
     </ThreeFiberLayout>
   );
 };

@@ -53,8 +53,10 @@ export function OxygenBar() {
         </Html> */}
       {/* </ScreenSpace> */}
       <In>
-        <div className="absolute top-0 left-0 z-30">Oxygen: {oxygenAmount}</div>
-        <div ref={depthRef} className="absolute left-0 z-30 top-10">
+        <div className="absolute bottom-0 left-0 z-30">
+          Oxygen: {oxygenAmount}
+        </div>
+        <div ref={depthRef} className="absolute left-0 z-30 bottom-10">
           Depth: {waterHeight - camera.position.y}
         </div>
       </In>

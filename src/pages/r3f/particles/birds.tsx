@@ -5,6 +5,7 @@ import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
 import { Vector3 } from "three";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 
 const seoInfo = {
   title: "Birds Particle System",
@@ -33,13 +34,16 @@ export default function Page() {
   const skyColor = "#FFFFFF";
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <Canvas camera={{ position: new Vector3(0, 0, 350), near: 1, far: 3000 }}>
+      <SceneWithLoadingState
+        withKeyboardControls={false}
+        camera={{ position: new Vector3(0, 0, 350), near: 1, far: 3000 }}
+      >
         <Birds />
         <color attach="background" args={[skyColor]} />
         <fog color={skyColor} near={100} far={1000} />
         {perf && <Perf position="bottom-right" />}
         <OrbitControls />
-      </Canvas>
+      </SceneWithLoadingState>
     </ThreeFiberLayout>
   );
 }

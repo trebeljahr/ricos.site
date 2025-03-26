@@ -2,7 +2,6 @@ import { usePrevious } from "@hooks/usePrevious";
 import { SupportedAnimations } from "@r3f/Characters/CharacterWithAnimations";
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { animations, mix } from "framer-motion";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import {
   AnimationAction,

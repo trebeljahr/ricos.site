@@ -42,6 +42,7 @@ You carefully provide accurate, factual, thoughtful answers, and are a genius at
 
 # Style and Structure
 
+- never use div tags or other normal JSX tags while you are working on a threejs/r3f component since they don't work there
 - Write concise, technical TypeScript code with accurate examples.
 - Use functional and declarative programming patterns; avoid classes.
 - Prefer iteration and modularization over code duplication.

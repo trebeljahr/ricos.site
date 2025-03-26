@@ -1,5 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
+import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { SingleStylizedGrassPlane } from "@r3f/Scenes/Grass/JamesSmythGrass/GrassPlane";
 import { Sky } from "@react-three/drei";
@@ -25,13 +25,13 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <CanvasWithKeyboardInput>
+      <SceneWithLoadingState>
         <color attach="background" args={["#ffcc32"]} />
         <ambientLight intensity={0.5} />
         <Sky />
         <SingleStylizedGrassPlane planeSize={200} bladeCount={500000} />
         <MinecraftSpectatorController speed={1} />
-      </CanvasWithKeyboardInput>
+      </SceneWithLoadingState>
     </ThreeFiberLayout>
   );
 }

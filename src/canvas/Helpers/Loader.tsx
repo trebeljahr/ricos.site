@@ -11,10 +11,9 @@ export const Loader = ({ containerClassName = "" }: LoaderProps) => {
 
   useEffect(() => {
     if (progress === 100) {
-      // Keep loader visible for a short time after loading completes for a smooth transition
       const timeout = setTimeout(() => {
         setShowLoader(false);
-      }, 500);
+      }, 1000);
       return () => clearTimeout(timeout);
     }
   }, [progress]);
@@ -46,9 +45,11 @@ export const Loader = ({ containerClassName = "" }: LoaderProps) => {
 
         <div className="flex justify-between mt-2 text-white text-sm">
           <span>{Math.round(progress)}%</span>
-          <span>
-            {loaded}/{total} assets
-          </span>
+          {total === 0 ? null : (
+            <span>
+              {loaded}/{total} assets
+            </span>
+          )}
         </div>
 
         {errors.length > 0 && (

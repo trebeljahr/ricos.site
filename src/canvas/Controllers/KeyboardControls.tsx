@@ -34,7 +34,7 @@ export const CanvasWithKeyboardInput = ({
     <>
       <Loader />
       <KeyboardControlsProvider>
-        <Canvas {...props} gl={{ logarithmicDepthBuffer: true }}>
+        <Canvas {...props}>
           <Suspense fallback={null}>
             <ambientLight />
             {children}

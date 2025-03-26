@@ -1,5 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
+import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
 import { OrbitControls, Stage, useGLTF } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { DebugDrawer, threeToSoloNavMesh } from "@recast-navigation/three";
@@ -79,11 +79,11 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <CanvasWithKeyboardInput>
+      <SceneWithLoadingState>
         <color attach="background" args={["#dfd3ae"]} />
 
         <NavmeshExample />
-      </CanvasWithKeyboardInput>
+      </SceneWithLoadingState>
     </ThreeFiberLayout>
   );
 }

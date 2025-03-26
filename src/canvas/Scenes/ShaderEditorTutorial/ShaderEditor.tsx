@@ -4,6 +4,7 @@ import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { useCallback, useState } from "react";
 import { FullCanvasShader } from "./FullCanvasShader";
+import { SceneWithLoadingState } from "@r3f/Helpers/SceneLoader";
 
 export function CodeEditor({ code }: { code: string }) {
   const [value, setValue] = useState(code);
@@ -67,7 +68,7 @@ export function SideBySideShaderEditor({
         extensions={[cppLanguage]}
       />
       <div className="w-[40vw] h-[40vw]">
-        <Canvas
+        <SceneWithLoadingState
           orthographic
           camera={{
             left: -1,
@@ -80,7 +81,7 @@ export function SideBySideShaderEditor({
           }}
         >
           <FullCanvasShader key={key} fragmentShader={value} />
-        </Canvas>
+        </SceneWithLoadingState>
       </div>
     </div>
   );

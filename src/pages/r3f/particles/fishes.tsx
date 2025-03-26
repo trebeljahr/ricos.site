@@ -1,5 +1,5 @@
 import { Fishs } from "@r3f/Scenes/FBOExperiments/Fish";
-import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
+import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { Box } from "@react-three/drei";
 import { Perf } from "r3f-perf";
@@ -27,7 +27,7 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <CanvasWithKeyboardInput
+      <SceneWithLoadingState
         camera={{ position: new Vector3(0, 0, 2), near: 1, far: 3000 }}
       >
         <Fishs />
@@ -35,7 +35,7 @@ export default function Page() {
         <ambientLight />
         <fog color={0xffffff} near={100} far={1000} />
         {perf && <Perf position="bottom-right" />}
-      </CanvasWithKeyboardInput>
+      </SceneWithLoadingState>
     </ThreeFiberLayout>
   );
 }

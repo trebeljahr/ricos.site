@@ -4,7 +4,7 @@ import { useControls } from "leva";
 import { useRef, Suspense } from "react";
 import { Mesh } from "three";
 import dynamic from "next/dynamic";
-import { KeyboardControlledScene } from "src/canvas/Helpers/SceneLoader";
+import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
 
 // Dynamically import components
 const FbxViewer = () => {
@@ -49,7 +49,7 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <KeyboardControlledScene camera={{ position: [1, 1.5, 3] }}>
+      <SceneWithLoadingState camera={{ position: [1, 1.5, 3] }}>
         <color attach="background" args={["#f7f9f9"]} />
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
@@ -62,7 +62,7 @@ export default function Page() {
           </group>
         </Stage>
         <OrbitControls />
-      </KeyboardControlledScene>
+      </SceneWithLoadingState>
     </ThreeFiberLayout>
   );
 }

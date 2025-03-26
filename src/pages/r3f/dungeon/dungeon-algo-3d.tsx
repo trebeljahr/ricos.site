@@ -1,7 +1,7 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
 import { perf, wireframe } from "@r3f/ChunkGenerationSystem/config";
-import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
+import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import {
   DungeonMeshGenerator,
@@ -246,7 +246,7 @@ export default function Page() {
 
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <CanvasWithKeyboardInput
+      <SceneWithLoadingState
         camera={{ far: viewDistance, position: [25, 10, 25] }}
       >
         <ambientLight args={["#404040", 1]} />
@@ -259,7 +259,7 @@ export default function Page() {
         <CameraPositionLogger />
 
         <MinecraftSpectatorController speed={0.2} />
-      </CanvasWithKeyboardInput>
+      </SceneWithLoadingState>
       <button
         onClick={handleClick}
         className="absolute top-0 right-0 z-20 p-2 bg-slate-500"

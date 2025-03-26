@@ -42,13 +42,13 @@ export const SceneLoader = ({
   );
 };
 
-// Helper function for loading keyboard-controlled scenes
-export const KeyboardControlledScene = ({
+export const SceneWithLoadingState = ({
   children,
+  withKeyboardControls = true,
   ...props
-}: PropsWithChildren<CanvasProps>) => {
+}: PropsWithChildren<CanvasProps & { withKeyboardControls?: boolean }>) => {
   return (
-    <SceneLoader withKeyboardControls {...props}>
+    <SceneLoader withKeyboardControls={withKeyboardControls} {...props}>
       {children}
     </SceneLoader>
   );

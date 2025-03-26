@@ -20,7 +20,7 @@ import {
 import { debug, perf } from "@r3f/ChunkGenerationSystem/config";
 import { HealthContextProvider } from "@r3f/Contexts/HealthbarContext";
 import { MixamoEcctrlControllerWithAnimations } from "@r3f/Controllers/CustomEcctrlController/ControllerWithAnimations";
-import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
+import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
 import { BackgroundMusicLoop } from "@r3f/Dungeon/BuildingBlocks/BackgroundMusic";
 import { Enemies } from "@r3f/Dungeon/BuildingBlocks/Enemies";
 import { SpikeTrap } from "@r3f/Dungeon/BuildingBlocks/SpikeTrap";
@@ -252,7 +252,7 @@ export default function Page() {
       <InventoryProvider maxSlots={28} maxWeight={100}>
         <Inventory />
 
-        <CanvasWithKeyboardInput
+        <SceneWithLoadingState
           camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
         >
           <LevaPanel hidden={!debug} />
@@ -263,7 +263,7 @@ export default function Page() {
               <MixamoEcctrlControllerWithAnimations />
             </Physics>
           </HealthContextProvider>
-        </CanvasWithKeyboardInput>
+        </SceneWithLoadingState>
       </InventoryProvider>
     </ThreeFiberLayout>
   );

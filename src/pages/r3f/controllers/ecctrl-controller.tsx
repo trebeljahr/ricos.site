@@ -3,7 +3,7 @@ import { Obstacles, TreeObstacles } from "@r3f/Helpers/Obstacles";
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import { EcctrlController } from "src/canvas/Controllers/EcctrlController";
-import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
+import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
 import { Lights } from "src/canvas/Helpers/Lights";
 
 const seoInfo = {
@@ -27,7 +27,7 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <CanvasWithKeyboardInput>
+      <SceneWithLoadingState>
         <Physics debug timeStep="vary">
           <Lights />
           <Sky />
@@ -35,7 +35,7 @@ export default function Page() {
           <Obstacles />
           <TreeObstacles />
         </Physics>
-      </CanvasWithKeyboardInput>
+      </SceneWithLoadingState>
     </ThreeFiberLayout>
   );
 }

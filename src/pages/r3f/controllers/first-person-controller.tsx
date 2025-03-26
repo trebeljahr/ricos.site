@@ -1,5 +1,5 @@
 import { FirstPersonController } from "src/canvas/Controllers/FirstPersonController";
-import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
+import { SceneWithLoadingState } from "src/canvas/Helpers/SceneLoader";
 import { Obstacles } from "@r3f/Helpers/Obstacles";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { Sky } from "@react-three/drei";
@@ -26,14 +26,14 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <CanvasWithKeyboardInput>
+      <SceneWithLoadingState>
         <Sky azimuth={1} inclination={0.6} distance={1000} />
 
         <Physics debug colliders="hull">
           <FirstPersonController />
           <Obstacles />
         </Physics>
-      </CanvasWithKeyboardInput>
+      </SceneWithLoadingState>
     </ThreeFiberLayout>
   );
 }

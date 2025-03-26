@@ -1,7 +1,11 @@
 import { waterHeight } from "@contexts/UnderwaterContext";
 import { KeyboardControls, Preload } from "@react-three/drei";
 import { Canvas, CanvasProps } from "@react-three/fiber";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, Suspense } from "react";
+import dynamic from "next/dynamic";
+
+// Dynamically import the Loader component
+const Loader = dynamic(() => import("../Helpers/Loader"), { ssr: false });
 
 export const surfaceLevel = waterHeight;
 export const farUnderwater = 50;
@@ -27,12 +31,17 @@ export const CanvasWithKeyboardInput = ({
   ...props
 }: PropsWithChildren<CanvasProps>) => {
   return (
-    <KeyboardControlsProvider>
-      <Canvas {...props} gl={{ logarithmicDepthBuffer: true }}>
-        <ambientLight />
-        {children}
-        <Preload all />
-      </Canvas>
-    </KeyboardControlsProvider>
+    <>
+      <Loader />
+      <KeyboardControlsProvider>
+        <Canvas {...props} gl={{ logarithmicDepthBuffer: true }}>
+          <Suspense fallback={null}>
+            <ambientLight />
+            {children}
+            <Preload all />
+          </Suspense>
+        </Canvas>
+      </KeyboardControlsProvider>
+    </>
   );
 };

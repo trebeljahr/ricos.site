@@ -3,7 +3,7 @@ import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { ChunkRenderer } from "@r3f/ChunkGenerationSystem/ChunkRenderer";
 import { physicsDebug } from "@r3f/ChunkGenerationSystem/config";
 import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
-import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
+import { KeyboardControlledScene } from "src/canvas/Helpers/SceneLoader";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { LightsAndFog } from "@r3f/Helpers/LightsAndFog";
 import { RigidBallSpawner } from "@r3f/Helpers/RigidBall";
@@ -32,7 +32,7 @@ export default function Page() {
   const { height: y } = getHeight(0, 0);
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <CanvasWithKeyboardInput camera={{ position: [0, 100, 0] }}>
+      <KeyboardControlledScene camera={{ position: [0, 100, 0] }}>
         <Physics debug={physicsDebug}>
           <LightsAndFog skyColor={"#c1f2ff"} />
           <MinecraftSpectatorController />
@@ -42,7 +42,7 @@ export default function Page() {
           </ChunkProvider>
           <RigidBallSpawner />
         </Physics>
-      </CanvasWithKeyboardInput>
+      </KeyboardControlledScene>
     </ThreeFiberLayout>
   );
 }

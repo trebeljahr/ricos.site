@@ -1,10 +1,12 @@
-import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { Box, OrbitControls, Stage, useFBX } from "@react-three/drei";
 import { useControls } from "leva";
-import { useRef } from "react";
+import { useRef, Suspense } from "react";
 import { Mesh } from "three";
+import dynamic from "next/dynamic";
+import { KeyboardControlledScene } from "src/canvas/Helpers/SceneLoader";
 
+// Dynamically import components
 const FbxViewer = () => {
   const { characterName } = useControls({
     characterName: {
@@ -47,7 +49,7 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <CanvasWithKeyboardInput camera={{ position: [1, 1.5, 3] }}>
+      <KeyboardControlledScene camera={{ position: [1, 1.5, 3] }}>
         <color attach="background" args={["#f7f9f9"]} />
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
@@ -60,7 +62,7 @@ export default function Page() {
           </group>
         </Stage>
         <OrbitControls />
-      </CanvasWithKeyboardInput>
+      </KeyboardControlledScene>
     </ThreeFiberLayout>
   );
 }

@@ -4,6 +4,7 @@ import { UnderwaterContextProvider } from "@contexts/UnderwaterContext";
 import dynamic from "next/dynamic";
 import tunnel from "tunnel-rat";
 
+// Dynamically import the WaterDemo component with Suspense
 const WaterDemo = dynamic(
   () => import("src/canvas/Scenes/OceanDemo/WaterDemo"),
   {

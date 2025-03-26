@@ -59,7 +59,6 @@ export const LightningRay = forwardRef(
       if (!innerRef.current) return;
       innerRef.current.update(time);
 
-      // console.log(innerRef.current.state);
       if (innerRef.current.state === LightningRayState.RAY_EXTINGUISHED) {
         scene.remove(innerRef.current);
         innerRef.current.dispose();

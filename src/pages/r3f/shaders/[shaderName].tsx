@@ -10,8 +10,6 @@ export default function Page({
   shaderName: string;
   fragmentShader: string;
 }) {
-  console.log(shaderName);
-
   const seoInfo = {
     title: shaderName || "",
     description: "A simple shader demo for an implementation of " + shaderName,
@@ -56,7 +54,6 @@ export default function Page({
 export async function getStaticPaths() {
   const shaderFiles = await getShaderFileNames();
 
-  console.log(shaderFiles);
   return {
     paths: shaderFiles.map((shaderName) => ({
       params: { shaderName },

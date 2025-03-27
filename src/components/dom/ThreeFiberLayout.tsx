@@ -50,7 +50,7 @@ export const ThreeFiberLayout = ({
         imageAlt={imageAlt}
       />
       {nav && <NavbarR3F />}
-      <div className="w-full h-screen">
+      <div className="w-full h-screen overscoll-none">
         <SceneWithLoadingState {...sceneWithLoadingStateProps}>
           {children}
         </SceneWithLoadingState>
@@ -73,7 +73,7 @@ export const SceneWithLoadingState = ({
   ...props
 }: SceneLoaderProps) => {
   const CanvasContent = (
-    <Canvas {...props}>
+    <Canvas {...props} className="overscroll-none">
       <Suspense fallback={null}>
         {children}
         <Preload all />

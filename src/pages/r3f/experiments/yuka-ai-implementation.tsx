@@ -4,7 +4,6 @@ import { YukaSimulation } from "src/canvas/Scenes/Yuka/YukaExample";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 
 const seoInfo = {
   title: "A simple game AI simulation in R3F using the Yuka library",
@@ -27,16 +26,14 @@ const seoInfo = {
 const Page = () => {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <SceneWithLoadingState>
-        <Physics>
-          <ambientLight intensity={1.0} />
-          <directionalLight position={[10, 10, 5]} intensity={1} />
-          <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
-          <color args={["#f0f0f0"]} attach="background" />
-          <MinecraftSpectatorController speed={1} />
-          <YukaSimulation />
-        </Physics>
-      </SceneWithLoadingState>
+      <Physics>
+        <ambientLight intensity={1.0} />
+        <directionalLight position={[10, 10, 5]} intensity={1} />
+        <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
+        <color args={["#f0f0f0"]} attach="background" />
+        <MinecraftSpectatorController speed={1} />
+        <YukaSimulation />
+      </Physics>
     </ThreeFiberLayout>
   );
 };

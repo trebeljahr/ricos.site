@@ -4,7 +4,8 @@ import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { useCallback, useState } from "react";
 import { FullCanvasShader } from "./FullCanvasShader";
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
+import { SceneWithLoadingState } from "@components/dom/ThreeFiberLayout";
+import { NavbarR3F } from "@components/dom/NavbarR3F";
 
 export function CodeEditor({ code }: { code: string }) {
   const [value, setValue] = useState(code);
@@ -59,6 +60,7 @@ export function SideBySideShaderEditor({
 
   return (
     <div className="flex h-full mt-10">
+      <NavbarR3F />
       <ReactCodeMirror
         value={value}
         height="100%"

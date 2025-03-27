@@ -20,7 +20,7 @@ import {
 import { debug, perf } from "@r3f/ChunkGenerationSystem/config";
 import { HealthContextProvider } from "@r3f/Contexts/HealthbarContext";
 import { MixamoEcctrlControllerWithAnimations } from "@r3f/Controllers/CustomEcctrlController/ControllerWithAnimations";
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
+
 import { BackgroundMusicLoop } from "@r3f/Dungeon/BuildingBlocks/BackgroundMusic";
 import { Enemies } from "@r3f/Dungeon/BuildingBlocks/Enemies";
 import { SpikeTrap } from "@r3f/Dungeon/BuildingBlocks/SpikeTrap";
@@ -95,7 +95,6 @@ const CanvasContent = () => {
       <CameraPositionLogger />
 
       <Sky />
-      {/* {perf && <Perf position="bottom-right" />} */}
       <directionalLight
         ref={lightRef}
         args={["#ffffff", 5]}
@@ -237,7 +236,6 @@ const Scene = () => {
       <LevaPanel hidden={!debug} />
       <HealthContextProvider>
         <Physics timeStep={"vary"} paused={progress < 100}>
-          {perf && <Perf position="bottom-right" />}
           <CanvasContent />
           <MixamoEcctrlControllerWithAnimations />
         </Physics>
@@ -267,15 +265,13 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
+    <ThreeFiberLayout
+      {...seoInfo}
+      camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
+    >
       <InventoryProvider maxSlots={28} maxWeight={100}>
         <Inventory />
-
-        <SceneWithLoadingState
-          camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
-        >
-          <Scene />
-        </SceneWithLoadingState>
+        <Scene />
       </InventoryProvider>
     </ThreeFiberLayout>
   );

@@ -1,5 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
+
 import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasShader";
 import { Canvas } from "@react-three/fiber";
 import { getShaderFileNames } from "src/lib/getShaderFileNames";
@@ -30,25 +30,24 @@ export default function Page({
   };
 
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <SceneWithLoadingState
-        withKeyboardControls={false}
-        orthographic
-        camera={{
-          left: -1,
-          right: 1,
-          top: 1,
-          bottom: -1,
-          near: 0.1,
-          far: 1000,
-          position: [0, 0, 1],
-        }}
-      >
-        <FullCanvasShader
-          key={shaderName + Math.random()}
-          fragmentShader={fragmentShader}
-        />
-      </SceneWithLoadingState>
+    <ThreeFiberLayout
+      {...seoInfo}
+      withKeyboardControls={false}
+      orthographic
+      camera={{
+        left: -1,
+        right: 1,
+        top: 1,
+        bottom: -1,
+        near: 0.1,
+        far: 1000,
+        position: [0, 0, 1],
+      }}
+    >
+      <FullCanvasShader
+        key={shaderName + Math.random()}
+        fragmentShader={fragmentShader}
+      />
     </ThreeFiberLayout>
   );
 }

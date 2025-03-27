@@ -1,6 +1,6 @@
 import { RapierRigidBody } from "@react-three/rapier";
 import { QueryBuilder, World } from "arancini";
-import { createReactAPI } from "arancini/react";
+import { createReactAPI } from "@arancini/react";
 import { CustomEcctrlRigidBody } from "ecctrl";
 import { NavMesh, NavMeshQuery } from "recast-navigation";
 import { Object3D, Vector3 } from "three";

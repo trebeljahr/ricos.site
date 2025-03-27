@@ -20,7 +20,6 @@ import {
 } from "src/canvas/ChunkGenerationSystem/config";
 import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 
 const ChunkRenderer = () => {
   const chunks = useChunkContext();
@@ -73,30 +72,28 @@ const Page = () => {
   const { height: y } = getHeight(0, 0);
 
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <SceneWithLoadingState
-        camera={{
-          near: 0.1,
-          far: tileSize * (tilesDistance + 2),
-        }}
-      >
-        {perf && <Perf position="bottom-right" />}
-        <AnimatedSkyBox />
-        <ambientLight intensity={1} />
+    <ThreeFiberLayout
+      {...seoInfo}
+      camera={{
+        near: 0.1,
+        far: tileSize * (tilesDistance + 2),
+      }}
+    >
+      <AnimatedSkyBox />
+      <ambientLight intensity={1} />
 
-        <Physics debug={physicsDebug}>
-          <ChunkProvider>
-            <ChunkRenderer />
-            <SnowyPineTreesForChunks />
-          </ChunkProvider>
+      <Physics debug={physicsDebug}>
+        <ChunkProvider>
+          <ChunkRenderer />
+          <SnowyPineTreesForChunks />
+        </ChunkProvider>
 
-          <MinecraftSpectatorController
-            speed={1}
-            initialLookat={[10, 0, 0]}
-            initialPosition={[0, y + 60, 0]}
-          />
-        </Physics>
-      </SceneWithLoadingState>
+        <MinecraftSpectatorController
+          speed={1}
+          initialLookat={[10, 0, 0]}
+          initialPosition={[0, y + 60, 0]}
+        />
+      </Physics>
     </ThreeFiberLayout>
   );
 };

@@ -5,7 +5,7 @@ import { useEditorContext } from "./EditorContextProvider";
 
 import vertexShader from "./shaders/vertexShader.glsl";
 import shadertoyDefinitions from "./shaders/shadertoyDefinitions.glsl";
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
+import { SceneWithLoadingState } from "@components/dom/ThreeFiberLayout";
 
 export function FullCanvasShader() {
   return (

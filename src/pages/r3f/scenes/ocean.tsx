@@ -1,4 +1,3 @@
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { UnderwaterContextProvider } from "@contexts/UnderwaterContext";
 import dynamic from "next/dynamic";
@@ -36,11 +35,10 @@ export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
       <Out />
-      <SceneWithLoadingState>
-        <UnderwaterContextProvider>
-          <WaterDemo />
-        </UnderwaterContextProvider>
-      </SceneWithLoadingState>
+
+      <UnderwaterContextProvider>
+        <WaterDemo />
+      </UnderwaterContextProvider>
     </ThreeFiberLayout>
   );
 }

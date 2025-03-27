@@ -1,4 +1,3 @@
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import dynamic from "next/dynamic";
 
@@ -27,9 +26,7 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <SceneWithLoadingState>
-        <ThirdPersonDemo />
-      </SceneWithLoadingState>
+      <ThirdPersonDemo />
     </ThreeFiberLayout>
   );
 }

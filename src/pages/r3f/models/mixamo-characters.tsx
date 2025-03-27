@@ -1,5 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
+
 import { OrbitControls, Stage } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 
@@ -30,17 +30,16 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <SceneWithLoadingState
-        withKeyboardControls={false}
-        camera={{ position: [0, 1, 2] }}
-      >
-        <color attach="background" args={["skyblue"]} />
-        <Stage adjustCamera={false}>
-          <DynamicCharacter />
-        </Stage>
-        <OrbitControls />
-      </SceneWithLoadingState>
+    <ThreeFiberLayout
+      {...seoInfo}
+      withKeyboardControls={false}
+      camera={{ position: [0, 1, 2] }}
+    >
+      <color attach="background" args={["skyblue"]} />
+      <Stage adjustCamera={false}>
+        <DynamicCharacter />
+      </Stage>
+      <OrbitControls />
     </ThreeFiberLayout>
   );
 }

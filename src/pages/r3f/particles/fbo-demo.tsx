@@ -1,5 +1,5 @@
 import { FBOParticles } from "@r3f/Scenes/FBOExperiments/Particles/Particles";
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
+
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { OrbitControls } from "@react-three/drei";
 import {
@@ -29,16 +29,14 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <SceneWithLoadingState withKeyboardControls={false}>
-        <FBOParticles />
-        <EffectComposer>
-          <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />
-          <ToneMapping />
-        </EffectComposer>
-        <OrbitControls />
-        <color attach="background" args={["#393c4a"]} />
-      </SceneWithLoadingState>
+    <ThreeFiberLayout {...seoInfo} withKeyboardControls={false}>
+      <FBOParticles />
+      <EffectComposer>
+        <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />
+        <ToneMapping />
+      </EffectComposer>
+      <OrbitControls />
+      <color attach="background" args={["#393c4a"]} />
     </ThreeFiberLayout>
   );
 }

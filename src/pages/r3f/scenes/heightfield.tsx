@@ -3,7 +3,7 @@ import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { ChunkRenderer } from "@r3f/ChunkGenerationSystem/ChunkRenderer";
 import { physicsDebug } from "@r3f/ChunkGenerationSystem/config";
 import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
+
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { LightsAndFog } from "@r3f/Helpers/LightsAndFog";
 import { RigidBallSpawner } from "@r3f/Helpers/RigidBall";
@@ -31,18 +31,16 @@ const seoInfo = {
 export default function Page() {
   const { height: y } = getHeight(0, 0);
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <SceneWithLoadingState camera={{ position: [0, 100, 0] }}>
-        <Physics debug={physicsDebug}>
-          <LightsAndFog skyColor={"#c1f2ff"} />
-          <MinecraftSpectatorController />
+    <ThreeFiberLayout {...seoInfo} camera={{ position: [0, 100, 0] }}>
+      <Physics debug={physicsDebug}>
+        <LightsAndFog skyColor={"#c1f2ff"} />
+        <MinecraftSpectatorController />
 
-          <ChunkProvider>
-            <ChunkRenderer />
-          </ChunkProvider>
-          <RigidBallSpawner />
-        </Physics>
-      </SceneWithLoadingState>
+        <ChunkProvider>
+          <ChunkRenderer />
+        </ChunkProvider>
+        <RigidBallSpawner />
+      </Physics>
     </ThreeFiberLayout>
   );
 }

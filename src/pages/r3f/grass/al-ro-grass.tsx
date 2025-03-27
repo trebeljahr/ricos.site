@@ -1,5 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
+
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { AllRoGrass } from "@r3f/Scenes/Grass/AllRoGrass/GrassPlane";
 import { Sky } from "@react-three/drei";
@@ -26,16 +26,14 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <SceneWithLoadingState camera={{ position: new Vector3(0, 3, 0) }}>
-        <Sky />
-        <ambientLight />
-        <pointLight position={[10, 10, 10]} />
-        <Physics>
-          <AllRoGrass />
-          <MinecraftSpectatorController speed={1} />
-        </Physics>
-      </SceneWithLoadingState>
+    <ThreeFiberLayout {...seoInfo} camera={{ position: new Vector3(0, 3, 0) }}>
+      <Sky />
+      <ambientLight />
+      <pointLight position={[10, 10, 10]} />
+      <Physics>
+        <AllRoGrass />
+        <MinecraftSpectatorController speed={1} />
+      </Physics>
     </ThreeFiberLayout>
   );
 }

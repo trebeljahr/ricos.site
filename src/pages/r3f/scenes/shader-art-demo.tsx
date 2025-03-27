@@ -11,7 +11,7 @@ import { FaCheck, FaInfo, FaShareAlt } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
 import { IUniform } from "three";
 import { recording } from "@r3f/ChunkGenerationSystem/config";
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
+import { SceneWithLoadingState } from "@components/dom/ThreeFiberLayout";
 
 function ShareWithOthersButton() {
   const handleClick = async () => {
@@ -278,6 +278,7 @@ export default function ShaderEditorPage() {
             otherUniforms={otherUniforms}
           />
         </SceneWithLoadingState>
+
         {!recording && <ShareWithOthersButton />}
         {!recording && <InfoButton />}
       </div>

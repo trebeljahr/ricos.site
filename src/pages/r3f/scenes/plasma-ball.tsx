@@ -1,5 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
+
 import { PlasmaBall } from "@r3f/Scenes/PlasmaBall";
 import { Environment, OrbitControls, Stage } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
@@ -29,21 +29,19 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <SceneWithLoadingState withKeyboardControls={false}>
-        <color attach="background" args={["#121524"]} />
-        <ambientLight intensity={1} />
+    <ThreeFiberLayout {...seoInfo} withKeyboardControls={false}>
+      <color attach="background" args={["#121524"]} />
+      <ambientLight intensity={1} />
 
-        <Stage adjustCamera>
-          <PlasmaBall />
-        </Stage>
+      <Stage adjustCamera>
+        <PlasmaBall />
+      </Stage>
 
-        <EffectComposer>
-          <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />
-          <ToneMapping />
-        </EffectComposer>
-        <OrbitControls autoRotate />
-      </SceneWithLoadingState>
+      <EffectComposer>
+        <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />
+        <ToneMapping />
+      </EffectComposer>
+      <OrbitControls autoRotate />
     </ThreeFiberLayout>
   );
 }

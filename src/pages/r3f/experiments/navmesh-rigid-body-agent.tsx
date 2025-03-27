@@ -7,7 +7,7 @@ import { RandomSkeletonWithRandomWeapons } from "@r3f/Dungeon/BuildingBlocks/Ske
 import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
 import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
 import { FloorWithPhysics } from "@r3f/Helpers/PhysicsFloor";
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
+
 import { Box, useProgress } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
@@ -18,21 +18,24 @@ import { DoubleSide, MeshStandardMaterial, Vector3 } from "three";
 import { RayParameters } from "three-stdlib";
 
 const seoInfo = {
-  title: "A simple 3D scene with a cat model",
+  title: "Navmesh 1st Person Controller",
   description:
-    "Trying out how to load a 3D model in a React Three Fiber scene using the drei library and presenting them with the Stage component.",
-  url: "/r3f/models/cat",
+    "Experimenting with a 1st person controller and a navmesh agent based on the beautiful arancini/react and recast-navigation libraries.",
+  url: "/r3f/experiments/navmesh-rigid-body-agent",
   keywords: [
     "threejs",
     "react-three-fiber",
     "r3f",
+    "navmesh",
+    "pathfinding",
+    "navigation",
     "3D",
     "programming",
     "graphics",
     "webgl",
   ],
-  image: "/assets/pages/cat.png",
-  imageAlt: "a low poly 3D model of a cat",
+  image: "/assets/pages/navmesh-rigid-body-agent.png",
+  imageAlt: "a skeleton throwing lightning strikes at a player in a 3D scene",
 };
 
 const SingleLightningStrike = ({
@@ -206,10 +209,8 @@ const Scene = () => {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <SceneWithLoadingState>
-        <Scene />
-        <CameraPositionLogger />
-      </SceneWithLoadingState>
+      <Scene />
+      <CameraPositionLogger />
     </ThreeFiberLayout>
   );
 }

@@ -4,7 +4,6 @@ import { OrbitControls } from "@react-three/drei";
 import { GenericHealthBar, Shapes } from "@r3f/Dungeon/Healthbar/Healthbar";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { HealthbarsDemo } from "@r3f/Scenes/HealthbarsDemo";
-import { SceneWithLoadingState } from "@r3f/Helpers/SceneWithLoadingState";
 
 const seoInfo = {
   title: "Healthbar Shaders",
@@ -26,13 +25,11 @@ const seoInfo = {
 
 const HealthBarExample = () => {
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <SceneWithLoadingState withKeyboardControls={false}>
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} />
-        <HealthbarsDemo />
-        <OrbitControls />
-      </SceneWithLoadingState>
+    <ThreeFiberLayout {...seoInfo} withKeyboardControls={false}>
+      <ambientLight intensity={0.5} />
+      <pointLight position={[10, 10, 10]} />
+      <HealthbarsDemo />
+      <OrbitControls />
     </ThreeFiberLayout>
   );
 };

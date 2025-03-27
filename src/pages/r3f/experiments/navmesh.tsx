@@ -32,9 +32,7 @@ const NavmeshExample = () => {
         walkableRadius: Math.round(walkableRadius / ch),
       });
 
-      console.log(navMesh, success);
-
-      if (!navMesh) return;
+      if (!navMesh || !success) return;
 
       const debugDrawer = new DebugDrawer();
 

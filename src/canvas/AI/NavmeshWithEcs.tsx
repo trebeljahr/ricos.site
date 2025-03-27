@@ -48,8 +48,6 @@ export const NavmeshDebug = () => {
 export const NavmeshEcs = () => {
   const navmeshThing = useGLTF("/3d-assets/glb/nav_test.glb");
 
-  console.log(navmeshThing);
-
   const nav = useConst<NavComponent>(() => ({
     navMesh: undefined,
     navMeshQuery: undefined,

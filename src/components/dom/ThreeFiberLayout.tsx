@@ -31,7 +31,6 @@ export const SeoInfo = ({
   keywords,
   imageAlt,
 }: SeoProps) => {
-  console.log(description, title, url, image, keywords, imageAlt);
   const properTitle = toTitleCase(title) + " | Rico's R3F Playground";
 
   return (

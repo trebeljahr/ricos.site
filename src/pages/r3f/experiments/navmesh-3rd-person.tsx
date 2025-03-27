@@ -152,9 +152,6 @@ const LightningAttack = () => {
           sourceOffset: enemy.rigidBody.translation() as Vector3,
           destOffset: player.rigidBody.translation() as Vector3,
         });
-
-        console.log("player", player.rigidBody.translation());
-        console.log("enemy", enemy.rigidBody?.translation());
       }
     } else if (rayPositions !== null) {
       setRayPositions(null);

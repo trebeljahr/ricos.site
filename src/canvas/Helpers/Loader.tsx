@@ -9,10 +9,6 @@ export const Loader = ({ className = "" }: LoaderProps) => {
   const { progress, errors, item, loaded, total } = useProgress();
   const [showLoader, setShowLoader] = useState(true);
 
-  console.log(item);
-  console.log(errors);
-  console.log(total);
-
   useEffect(() => {
     if (progress === 100) {
       const timeout = setTimeout(() => {

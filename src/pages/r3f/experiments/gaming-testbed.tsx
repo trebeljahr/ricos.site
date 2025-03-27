@@ -226,8 +226,6 @@ const Scene = () => {
   const { progress } = useProgress();
 
   if (progress >= 100) {
-    console.log("adding shadows");
-
     scene.traverse((child) => {
       if (child instanceof Mesh) {
         child.castShadow = true;

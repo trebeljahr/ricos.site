@@ -34,6 +34,10 @@ import { useWhale } from "@r3f/AllModels/fish_pack/Whale";
 import { useDolphin } from "@r3f/AllModels/fish_pack/Dolphin";
 import { useShark } from "@r3f/AllModels/fish_pack/Shark";
 import { useMantaRay } from "@r3f/AllModels/fish_pack/Ray";
+import {
+  fillPositionTexture,
+  fillVelocityTexture,
+} from "src/lib/utils/fillDataTexture";
 
 export enum FishType {
   BlueTang,
@@ -299,34 +303,6 @@ export function Fishs({
       </mesh>
     </group>
   );
-}
-
-function fillPositionTexture(texture: DataTexture, bounds: number) {
-  const bounds_half = bounds / 2;
-
-  for (let k = 0, kl = texture.image.data.length; k < kl; k += 4) {
-    const x = Math.random() * bounds - bounds_half;
-    const y = Math.random() * bounds - bounds_half;
-    const z = Math.random() * bounds - bounds_half;
-
-    texture.image.data[k + 0] = x;
-    texture.image.data[k + 1] = y;
-    texture.image.data[k + 2] = z;
-    texture.image.data[k + 3] = 1;
-  }
-}
-
-function fillVelocityTexture(texture: DataTexture) {
-  for (let k = 0, kl = texture.image.data.length; k < kl; k += 4) {
-    const x = Math.random() - 0.5;
-    const y = Math.random() - 0.5;
-    const z = Math.random() - 0.5;
-
-    texture.image.data[k + 0] = x;
-    texture.image.data[k + 1] = y;
-    texture.image.data[k + 2] = z;
-    texture.image.data[k + 3] = 1;
-  }
 }
 
 function useFishGeo(typeOfFish: FishType) {

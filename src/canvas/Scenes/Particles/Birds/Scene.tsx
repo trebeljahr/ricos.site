@@ -20,41 +20,14 @@ import positionShader from "./shaders/position.frag";
 import velocityShader from "./shaders/velocity.frag";
 import birdVertex from "./shaders/birds.vert";
 import birdFragment from "./shaders/birds.frag";
+import {
+  fillPositionTexture,
+  fillVelocityTexture,
+} from "src/lib/utils/fillDataTexture";
 
 const WIDTH = 100;
 const BOUNDS = 800;
-const BOUNDS_HALF = BOUNDS / 2;
 const BIRDS = WIDTH * WIDTH;
-
-function fillPositionTexture(texture: DataTexture) {
-  const theArray = texture.image.data;
-
-  for (let k = 0, kl = theArray.length; k < kl; k += 4) {
-    const x = Math.random() * BOUNDS - BOUNDS_HALF;
-    const y = Math.random() * BOUNDS - BOUNDS_HALF;
-    const z = Math.random() * BOUNDS - BOUNDS_HALF;
-
-    theArray[k + 0] = x;
-    theArray[k + 1] = y;
-    theArray[k + 2] = z;
-    theArray[k + 3] = 1;
-  }
-}
-
-function fillVelocityTexture(texture: DataTexture) {
-  const theArray = texture.image.data;
-
-  for (let k = 0, kl = theArray.length; k < kl; k += 4) {
-    const x = Math.random() - 0.5;
-    const y = Math.random() - 0.5;
-    const z = Math.random() - 0.5;
-
-    theArray[k + 0] = x * 10;
-    theArray[k + 1] = y * 10;
-    theArray[k + 2] = z * 10;
-    theArray[k + 3] = 1;
-  }
-}
 
 type Uniforms = { [uniform: string]: IUniform<any> };
 
@@ -88,7 +61,7 @@ export function Birds() {
     function initComputeRenderer() {
       const dtPosition = gpuCompute.createTexture();
       const dtVelocity = gpuCompute.createTexture();
-      fillPositionTexture(dtPosition);
+      fillPositionTexture(dtPosition, BOUNDS);
       fillVelocityTexture(dtVelocity);
 
       velocityVariable.current = gpuCompute.addVariable(
@@ -263,7 +236,7 @@ class BirdGeometry extends BufferGeometry {
 
     function verts_push(...args: number[]) {
       for (let i = 0; i < args.length; i++) {
-        (vertices.array as number[])[v++] = args[i];
+        vertices.array[v++] = args[i];
       }
     }
 
@@ -282,12 +255,12 @@ class BirdGeometry extends BufferGeometry {
       const y = ~~(birdIndex / WIDTH) / WIDTH;
 
       const c = new Color(0x444444 + (~~(v / 9) / BIRDS) * 0x666666);
-      (birdColors.array as number[])[v * 3 + 0] = c.r;
-      (birdColors.array as number[])[v * 3 + 1] = c.g;
-      (birdColors.array as number[])[v * 3 + 2] = c.b;
-      (references.array as number[])[v * 2] = x;
-      (references.array as number[])[v * 2 + 1] = y;
-      (birdVertex.array as number[])[v] = v % 9;
+      birdColors.array[v * 3 + 0] = c.r;
+      birdColors.array[v * 3 + 1] = c.g;
+      birdColors.array[v * 3 + 2] = c.b;
+      references.array[v * 2] = x;
+      references.array[v * 2 + 1] = y;
+      birdVertex.array[v] = v % 9;
     }
 
     this.scale(0.2, 0.2, 0.2);

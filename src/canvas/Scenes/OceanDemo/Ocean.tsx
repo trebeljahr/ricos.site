@@ -1,13 +1,13 @@
+import { useRef, useMemo } from "react";
 import {
   extend,
-  Object3DNode,
-  useFrame,
-  useLoader,
   useThree,
+  useLoader,
+  useFrame,
+  Object3DNode,
 } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
-import { PlaneGeometry, RepeatWrapping, TextureLoader, Vector3 } from "three";
 import { Water } from "three-stdlib";
+import { PlaneGeometry, RepeatWrapping, TextureLoader, Vector3 } from "three";
 
 extend({ Water });
 

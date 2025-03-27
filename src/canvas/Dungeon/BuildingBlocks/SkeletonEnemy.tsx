@@ -190,8 +190,8 @@ export const SkeletonWithAnimations = ({
       if (animationToPlay !== CommonActions.Attack) {
         setAnimationToPlay(CommonActions.Attack);
         setRayPositions({
-          sourceOffset: enemy.rigidBody.translation(),
-          destOffset: player.rigidBody.translation(),
+          sourceOffset: enemy.rigidBody.translation() as Vector3,
+          destOffset: player.rigidBody.translation() as Vector3,
         });
 
         console.log("player", player.rigidBody.translation());

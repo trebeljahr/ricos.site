@@ -32,32 +32,21 @@ import { RandomPotionSpawner } from "@r3f/Dungeon/ItemSpawners/PotionSpawner";
 import { RandomWeaponsSpawner } from "@r3f/Dungeon/ItemSpawners/WeaponSpawner";
 import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
 import useShadowHelper from "@r3f/Helpers/OverheadLights";
-import { Box, Sky } from "@react-three/drei";
+import { Box, Sky, useProgress } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import { LevaPanel } from "leva";
 import { Perf } from "r3f-perf";
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { DirectionalLight, Group, Mesh, PCFSoftShadowMap } from "three";
 
 const CanvasContent = () => {
   const lightRef = useRef<DirectionalLight>(null!);
-  const { scene, gl } = useThree();
+  const { gl } = useThree();
 
   useEffect(() => {
     gl.shadowMap.enabled = true;
     gl.shadowMap.type = PCFSoftShadowMap;
-
-    scene.children.forEach((child) => {
-      if (child instanceof Group) {
-        child.traverse((innerChild) => {
-          if (innerChild instanceof Mesh) {
-            innerChild.castShadow = true;
-            innerChild.receiveShadow = true;
-          }
-        });
-      }
-    });
 
     lightRef.current.castShadow = true;
     lightRef.current.shadow.mapSize.width = 4096;
@@ -68,7 +57,7 @@ const CanvasContent = () => {
     lightRef.current.shadow.camera.top = 200;
     lightRef.current.shadow.camera.bottom = -200;
     lightRef.current.shadow.camera.updateProjectionMatrix();
-  }, [gl, scene]);
+  }, [gl]);
 
   useShadowHelper(lightRef);
 
@@ -112,7 +101,7 @@ const CanvasContent = () => {
         args={["#ffffff", 5]}
         position={[20, 10, 20]}
       />
-      <ambientLight args={["#404040", 1]} />
+      <ambientLight args={["#404040", 2]} />
       <group position={[0, 0, -1]}>
         <Floor_Modular position-x={-3} />
         <Floor_Modular position-x={-1} />
@@ -227,6 +216,36 @@ const CanvasContent = () => {
   );
 };
 
+const Scene = () => {
+  const { scene } = useThree();
+
+  const { progress } = useProgress();
+
+  if (progress >= 100) {
+    console.log("adding shadows");
+
+    scene.traverse((child) => {
+      if (child instanceof Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+  }
+
+  return (
+    <Suspense>
+      <LevaPanel hidden={!debug} />
+      <HealthContextProvider>
+        <Physics timeStep={"vary"} paused={progress < 100}>
+          {perf && <Perf position="bottom-right" />}
+          <CanvasContent />
+          <MixamoEcctrlControllerWithAnimations />
+        </Physics>
+      </HealthContextProvider>
+    </Suspense>
+  );
+};
+
 const seoInfo = {
   title: "A testbed for gaming features implemented",
   description:
@@ -255,14 +274,7 @@ export default function Page() {
         <SceneWithLoadingState
           camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
         >
-          <LevaPanel hidden={!debug} />
-          <HealthContextProvider>
-            <Physics timeStep={"vary"}>
-              {perf && <Perf position="bottom-right" />}
-              <CanvasContent />
-              <MixamoEcctrlControllerWithAnimations />
-            </Physics>
-          </HealthContextProvider>
+          <Scene />
         </SceneWithLoadingState>
       </InventoryProvider>
     </ThreeFiberLayout>

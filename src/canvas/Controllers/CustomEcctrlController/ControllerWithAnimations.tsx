@@ -175,7 +175,7 @@ export const MixamoEcctrlControllerWithAnimations = () => {
 
   useSubscribeToKeyPress("f", () => {
     const player = playerQuery.first;
-    if (!player.rigidBody) return;
+    if (!player?.rigidBody) return;
     const userData = player?.rigidBody.userData as userDataType;
 
     if (
@@ -239,6 +239,8 @@ export const MixamoEcctrlControllerWithAnimations = () => {
 
   const weapon = useWeaponForMixamoCharacter(SwordTypes.Sword6);
 
+  const { progress } = useProgress();
+
   useAttachToBone(
     group as MutableRefObject<Group>,
     "mixamorigRightHand",
@@ -246,23 +248,21 @@ export const MixamoEcctrlControllerWithAnimations = () => {
   );
 
   return (
-    <Suspense>
-      <EcctrlControllerCustom
-        position={[0, 40, 0]}
-        slopeDownExtraForce={0}
-        camCollision={true}
-        camCollisionOffset={0.5}
-        // mode="FixedCamera"
-        sprintMult={3}
-      >
+    <EcctrlControllerCustom
+      position={[0, 0, 5]}
+      slopeDownExtraForce={0}
+      camCollision={true}
+      camCollisionOffset={0.5}
+      // mode="FixedCamera"
+      sprintMult={3}
+    >
+      <Suspense fallback={null}>
         <group position={[0, -1.1, 0]} scale={1.4}>
-          <Suspense>
-            <group ref={group as MutableRefObject<Group>} dispose={null}>
-              <MixamoCharacter characterName={MixamoCharacterNames.Eve} />
-            </group>
-          </Suspense>
+          <group ref={group as MutableRefObject<Group>} dispose={null}>
+            <MixamoCharacter characterName={MixamoCharacterNames.Eve} />
+          </group>
         </group>
-      </EcctrlControllerCustom>
-    </Suspense>
+      </Suspense>
+    </EcctrlControllerCustom>
   );
 };

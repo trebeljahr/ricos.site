@@ -1,6 +1,6 @@
 import { useAnimations, useGLTF, useKeyboardControls } from "@react-three/drei";
 import { memo, useEffect } from "react";
-import { type AnimationClip } from "three";
+import { Mesh, type AnimationClip } from "three";
 import { useGenericAnimationController } from "../Controllers/GenericAnimationController";
 import { MixamoCharacterNames } from "./Character";
 import { useFrame } from "@react-three/fiber";
@@ -47,6 +47,15 @@ export const MixamoCharacter = memo(
     const characterModel = useMixamoCharacter({
       characterName,
     });
+
+    useEffect(() => {
+      characterModel.scene.traverse((child) => {
+        if (child instanceof Mesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+    }, [characterModel]);
 
     return <primitive object={characterModel.scene} />;
   },

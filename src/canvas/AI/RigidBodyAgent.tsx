@@ -75,7 +75,7 @@ export const Agent = ({
       rigidBody.translation(),
       { halfExtents: queryHalfExtents }
     );
-    const agentPosition = _agentPosition.copy(closestPoint);
+    const agentPosition = _agentPosition.copy(closestPoint as Vector3);
 
     const { point: playerPosition } = navMeshQuery.findClosestPoint(
       player.rigidBody.translation(),
@@ -87,7 +87,7 @@ export const Agent = ({
     const { path } = navMeshQuery.computePath(agentPosition, playerPosition);
     pathIndex.current = 1;
 
-    const newPaths = path.map((p: Vector3) => new Vector3(p.x, p.y, p.z));
+    const newPaths = path.map((p) => new Vector3(p.x, p.y, p.z));
     setPath(newPaths);
   }, 1000 / 10);
 
@@ -163,7 +163,7 @@ export const Agent = ({
       const player = playerQuery.first;
       if (!player) return;
 
-      lookAt.copy(player.rigidBody.translation());
+      lookAt.copy(player.rigidBody.translation() as Vector3);
     } else if (path[pathIndex.current]) {
       lookAt.copy(path[pathIndex.current]);
     }

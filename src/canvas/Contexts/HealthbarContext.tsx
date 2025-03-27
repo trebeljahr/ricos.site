@@ -1,23 +1,13 @@
 import { GenericHealthBar, Shapes } from "@r3f/Dungeon/Healthbar/Healthbar";
-import {
-  Billboard,
-  Box,
-  Hud,
-  OrthographicCamera,
-  PerspectiveCamera,
-  ScreenSpace,
-} from "@react-three/drei";
-import { useFrame, useThree } from "@react-three/fiber";
-import { view } from "framer-motion/dist/client";
+import { Hud, OrthographicCamera } from "@react-three/drei";
+import { useThree } from "@react-three/fiber";
 import {
   createContext,
   MutableRefObject,
   PropsWithChildren,
   useContext,
-  useEffect,
   useRef,
 } from "react";
-import { Group } from "three";
 
 const defaultHealth = 1.0;
 const maxHealth = 1.0;

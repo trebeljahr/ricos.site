@@ -147,7 +147,7 @@ const Ecctrl = ({
   // Other rigibody props from parent
   ...props
 }: EcctrlProps) => {
-  const characterRef = useRef<EntityType>(null!);
+  const characterRef = useRef<EntityType | null>(null);
   const characterModelRef = useRef<Group>(null!);
   const characterModelIndicator: Object3D = useMemo(() => new Object3D(), []);
   const defaultControllerKeys = {
@@ -181,7 +181,7 @@ const Ecctrl = ({
   };
 
   useEffect(() => {
-    if (characterRef.current.rigidBody) {
+    if (characterRef.current?.rigidBody) {
       characterRef.current.rigidBody.rotateCamera = rotateCamera;
       characterRef.current.rigidBody.rotateCharacterOnY = rotateCharacterOnY;
     }
@@ -264,6 +264,7 @@ const Ecctrl = ({
     () => Object.assign({}, defaultControllerKeys, controllerKeys),
     [controllerKeys]
   );
+
   const handleButtons = (buttons: readonly GamepadButton[]) => {
     gamepadKeys.forward = buttons[mergedKeys.forward].pressed;
     gamepadKeys.backward = buttons[mergedKeys.backward].pressed;
@@ -388,7 +389,7 @@ const Ecctrl = ({
     slopeAngle: number,
     movingObjectVelocity: Vector3
   ) => {
-    if (!characterRef.current.rigidBody) return;
+    if (!characterRef.current?.rigidBody) return;
     /**
      * Setup moving direction
      */
@@ -531,7 +532,7 @@ const Ecctrl = ({
    * Character auto balance function
    */
   const autoBalanceCharacter = () => {
-    if (!characterRef.current.rigidBody) return;
+    if (!characterRef.current?.rigidBody) return;
 
     // Match body component to character model rotation on Y
     bodyFacingVec
@@ -602,7 +603,7 @@ const Ecctrl = ({
       characterRef.current.rigidBody.sleep();
     } else {
       setTimeout(() => {
-        characterRef.current.rigidBody?.wakeUp();
+        characterRef.current?.rigidBody?.wakeUp();
       }, wakeUpDelay);
     }
   };
@@ -637,7 +638,7 @@ const Ecctrl = ({
       // Once character close to the target point (distance<0.3),
       // Or character close to the wall (bodySensor intersects)
       // stop moving
-      if (characterRef.current.rigidBody) {
+      if (characterRef.current?.rigidBody) {
         if (pointToPoint.length() > 0.3 && !isBodyHitWall && !functionKeyDown) {
           moveCharacter(delta, false, slopeAngle, movingObjectVelocity);
           isPointMoving = true;
@@ -651,7 +652,7 @@ const Ecctrl = ({
 
   useEffect(() => {
     // Lock character rotations at Y axis
-    characterRef.current.rigidBody?.setEnabledRotations(
+    characterRef.current?.rigidBody?.setEnabledRotations(
       autoBalance ? true : false,
       autoBalance ? true : false,
       autoBalance ? true : false,
@@ -659,14 +660,12 @@ const Ecctrl = ({
     );
 
     const characterModel = characterModelRef.current;
+    const character = characterRef.current;
     // Reset character quaternion
     return () => {
-      if (characterRef.current.rigidBody && characterModelRef.current) {
-        characterModelRef.current.quaternion.set(0, 0, 0, 1);
-        characterRef.current.rigidBody.setRotation(
-          { x: 0, y: 0, z: 0, w: 1 },
-          false
-        );
+      if (character?.rigidBody && characterModel) {
+        characterModel.quaternion.set(0, 0, 0, 1);
+        character.rigidBody.setRotation({ x: 0, y: 0, z: 0, w: 1 }, false);
       }
     };
   }, [autoBalance]);
@@ -687,7 +686,7 @@ const Ecctrl = ({
 
   useFrame((state, delta) => {
     if (delta > 1) delta %= 1;
-    if (!characterRef.current.rigidBody) return;
+    if (!characterRef.current?.rigidBody) return;
 
     // Character current position/velocity
     if (characterRef.current.rigidBody) {
@@ -1159,6 +1158,7 @@ const Ecctrl = ({
       <Component name="rigidBody">
         <RigidBody
           colliders={false}
+          // enabledRotations={[false, true, false]}
           position={props.position || [0, 5, 0]}
           friction={props.friction || -0.5}
           onContactForce={(e) =>
@@ -1214,9 +1214,7 @@ const Ecctrl = ({
   );
 };
 
-export default forwardRef(Ecctrl);
-
-export const EcctrlControllerCustom = forwardRef(Ecctrl);
+export const EcctrlControllerCustom = Ecctrl;
 
 export type camListenerTargetType = "document" | "domElement";
 

@@ -78,7 +78,7 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
+    <ThreeFiberLayout seoInfo={seoInfo}>
       <color attach="background" args={["#dfd3ae"]} />
 
       <NavmeshExample />

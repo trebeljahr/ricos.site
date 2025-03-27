@@ -1,19 +1,18 @@
-import { PropsWithChildren, ReactNode } from "react";
-import { NavbarR3F } from "./NavbarR3F";
-import { nav } from "@r3f/ChunkGenerationSystem/config";
 import { Meta } from "@components/Meta";
 import { OpenGraph } from "@components/OpenGraph";
-import { toTitleCase } from "src/lib/utils/toTitleCase";
+import { nav, perf } from "@r3f/ChunkGenerationSystem/config";
+import { KeyboardControlsProvider } from "@r3f/Controllers/KeyboardControls";
 import { Preload } from "@react-three/drei";
 import { Canvas, CanvasProps } from "@react-three/fiber";
 import dynamic from "next/dynamic";
-import { Suspense } from "react";
-import { perf } from "@r3f/ChunkGenerationSystem/config";
 import { Perf } from "r3f-perf";
-import { KeyboardControlsProvider } from "@r3f/Controllers/KeyboardControls";
-import { s } from "velite";
+import { PropsWithChildren, Suspense } from "react";
+import { toTitleCase } from "src/lib/utils/toTitleCase";
+import tunnel from "tunnel-rat";
+import { NavbarR3F } from "./NavbarR3F";
+import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
 
-type Props = {
+type SeoProps = {
   description: string;
   title: string;
   url: string;
@@ -22,20 +21,21 @@ type Props = {
   imageAlt: string;
 };
 
-export const ThreeFiberLayout = ({
-  children,
+export const { In, Out } = tunnel();
+
+export const SeoInfo = ({
   description,
   title,
   url,
   image,
   keywords,
   imageAlt,
-  ...sceneWithLoadingStateProps
-}: SceneLoaderProps & Props) => {
+}: SeoProps) => {
+  console.log(description, title, url, image, keywords, imageAlt);
   const properTitle = toTitleCase(title) + " | Rico's R3F Playground";
 
   return (
-    <div className="overscroll-none">
+    <>
       <Meta
         description={description}
         title={properTitle}
@@ -49,13 +49,25 @@ export const ThreeFiberLayout = ({
         image={image}
         imageAlt={imageAlt}
       />
+    </>
+  );
+};
+export const ThreeFiberLayout = ({
+  children,
+  seoInfo,
+  ...sceneWithLoadingStateProps
+}: SceneLoaderProps & { seoInfo: SeoProps }) => {
+  return (
+    <>
+      <SeoInfo {...seoInfo} />
       {nav && <NavbarR3F />}
       <div className="w-full h-screen overscoll-none">
+        <Out />
         <SceneWithLoadingState {...sceneWithLoadingStateProps}>
           {children}
         </SceneWithLoadingState>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -73,13 +85,16 @@ export const SceneWithLoadingState = ({
   ...props
 }: SceneLoaderProps) => {
   const CanvasContent = (
-    <Canvas {...props} className="overscroll-none">
-      <Suspense fallback={null}>
-        {children}
-        <Preload all />
-      </Suspense>
+    <>
+      <Canvas {...props} className="overscroll-none">
+        <Suspense fallback={null}>
+          {children}
+          <Preload all />
+          <CameraPositionLogger />
+        </Suspense>
+      </Canvas>
       {perf && <Perf position="bottom-right" />}
-    </Canvas>
+    </>
   );
 
   return (

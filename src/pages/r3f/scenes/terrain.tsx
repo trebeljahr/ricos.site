@@ -1,4 +1,4 @@
-import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 
@@ -46,10 +46,10 @@ const Page = () => {
   });
 
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <Leva />
-
-      <CameraPositionLogger />
+    <ThreeFiberLayout seoInfo={seoInfo} camera={{ position: [-64, 28, 25] }}>
+      <In>
+        <Leva />
+      </In>
 
       <Physics debug={physicsDebug}>
         <hemisphereLight intensity={0.35} />

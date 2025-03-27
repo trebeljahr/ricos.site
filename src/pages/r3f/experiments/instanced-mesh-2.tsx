@@ -33,7 +33,7 @@ const seoInfo = {
 
 const Page = () => {
   return (
-    <ThreeFiberLayout {...seoInfo}>
+    <ThreeFiberLayout seoInfo={seoInfo}>
       <KeyboardControlsProvider>
         <Physics debug={physicsDebug}>
           <hemisphereLight intensity={0.35} />

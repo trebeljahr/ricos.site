@@ -121,12 +121,10 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo} withKeyboardControls={false}>
+    <ThreeFiberLayout seoInfo={seoInfo} withKeyboardControls={false}>
       <color attach="background" args={["#e2f3f9"]} />
-      <Suspense fallback={null}>
-        <Scene />
-        <OrbitControls />
-      </Suspense>
+      <Scene />
+      <OrbitControls />
     </ThreeFiberLayout>
   );
 }

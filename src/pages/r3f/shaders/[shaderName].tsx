@@ -31,7 +31,7 @@ export default function Page({
 
   return (
     <ThreeFiberLayout
-      {...seoInfo}
+      seoInfo={seoInfo}
       withKeyboardControls={false}
       orthographic
       camera={{

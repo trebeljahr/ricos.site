@@ -1,5 +1,5 @@
+import { In } from "@components/dom/ThreeFiberLayout";
 import { useUnderwaterContext, waterHeight } from "@contexts/UnderwaterContext";
-import { In } from "@pages/r3f/scenes/ocean";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 
@@ -46,21 +46,14 @@ export function OxygenBar() {
   });
 
   return (
-    <>
-      {/* <ScreenSpace depth={1}> */}
-      {/* <Html center sprite>
-         
-        </Html> */}
-      {/* </ScreenSpace> */}
-      <In>
-        <div className="absolute bottom-0 left-0 z-30">
-          Oxygen: {oxygenAmount}
-        </div>
-        <div ref={depthRef} className="absolute left-0 z-30 bottom-10">
-          Depth: {waterHeight - camera.position.y}
-        </div>
-      </In>
-    </>
+    <In>
+      <div className="absolute bottom-0 left-0 z-30">
+        Oxygen: {oxygenAmount}
+      </div>
+      <div ref={depthRef} className="absolute left-0 z-30 bottom-10">
+        Depth: {waterHeight - camera.position.y}
+      </div>
+    </In>
   );
   // useEffect(() => {
   //   if (materialRef.current) {

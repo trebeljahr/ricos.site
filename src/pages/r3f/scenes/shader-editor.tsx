@@ -1,5 +1,10 @@
 import { CompleteShaderEditor } from "@components/Demos/FullscreenShader";
-import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { NavbarR3F } from "@components/dom/NavbarR3F";
+import {
+  In,
+  SeoInfo,
+  ThreeFiberLayout,
+} from "@components/dom/ThreeFiberLayout";
 
 const seoInfo = {
   title: "Shader Editor",
@@ -22,8 +27,10 @@ const seoInfo = {
 
 export default function ShaderEditorPage() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
+    <>
+      <SeoInfo {...seoInfo} />
+      <NavbarR3F />
       <CompleteShaderEditor shaderName="shadertoyExample1" />
-    </ThreeFiberLayout>
+    </>
   );
 }

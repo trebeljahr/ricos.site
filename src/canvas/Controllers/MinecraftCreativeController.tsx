@@ -5,31 +5,22 @@ import { RapierRigidBody, RigidBody } from "@react-three/rapier";
 import { PropsWithChildren, useEffect, useLayoutEffect, useRef } from "react";
 import { Group, Vector3 } from "three";
 
-const SPEED = 5;
+const defaultSpeed = 5;
 const direction = new Vector3();
 const frontVector = new Vector3();
 const sideVector = new Vector3();
 
 type Props = {
   speed?: number;
-  initialPosition?: [number, number, number];
-  initialLookat?: [number, number, number];
 };
 
 export function MinecraftCreativeController({
-  speed = SPEED,
-  initialPosition = [0, 0, -1],
-  initialLookat = [0, 0, 0],
+  speed = defaultSpeed,
   children,
 }: PropsWithChildren<Props>) {
   const [, get] = useKeyboardControls();
   const rigidBodyRef = useRef<RapierRigidBody>(null!);
-  const { camera, gl } = useThree();
-
-  useLayoutEffect(() => {
-    camera.lookAt(...initialLookat);
-    camera.position.fromArray(initialPosition);
-  }, [camera, initialLookat, initialPosition]);
+  const { camera } = useThree();
 
   useFrame(() => {
     if (!rigidBodyRef.current) return;
@@ -64,7 +55,7 @@ export function MinecraftCreativeController({
         colliders={false}
         mass={1}
         type="dynamic"
-        position={initialPosition || camera.position}
+        position={camera.position}
         enabledRotations={[false, false, false]}
         gravityScale={0}
       >
@@ -76,9 +67,7 @@ export function MinecraftCreativeController({
 }
 
 export function MinecraftSpectatorController({
-  speed = SPEED,
-  initialPosition = [0, 0, -1],
-  initialLookat = [0, 0, 0],
+  speed = defaultSpeed,
   children,
 }: PropsWithChildren<Props>) {
   const [, get] = useKeyboardControls();

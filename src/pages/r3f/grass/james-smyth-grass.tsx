@@ -24,7 +24,7 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
+    <ThreeFiberLayout seoInfo={seoInfo} camera={{ position: [52, 24, 84] }}>
       <color attach="background" args={["#ffcc32"]} />
       <ambientLight intensity={0.5} />
       <Sky />

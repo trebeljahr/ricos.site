@@ -45,7 +45,7 @@ export const OverheadLights = () => {
 const temp = new Vector3();
 const offset = 3000;
 
-export const AnimatedSkyBox = () => {
+export const MovingSkyLight = () => {
   const { gl } = useThree();
 
   const fogRef = useRef<FogExp2>(null!);
@@ -53,7 +53,7 @@ export const AnimatedSkyBox = () => {
 
   useFrame(({ camera }) => {
     const dirLight = dirLightRef.current;
-    camera.getWorldPosition(temp);
+    camera.clone().getWorldPosition(temp);
 
     dirLight.position.set(temp.x, dirLight.position.y, temp.z + offset);
     dirLight.target.position.set(temp.x, dirLight.target.position.y, temp.z);
@@ -89,11 +89,9 @@ export const AnimatedSkyBox = () => {
 
   return (
     <>
-      {/* <Sky /> */}
       <color attach="background" args={["#f9f1bd"]} />
       <ambientLight intensity={0.2} />
       <fogExp2 ref={fogRef} attach="fog" color="#fbf2b9" density={0.01} />
-
       <directionalLight ref={dirLightRef} color="#fff0bd" />
     </>
   );

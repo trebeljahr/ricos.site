@@ -29,7 +29,7 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo} withKeyboardControls={false}>
+    <ThreeFiberLayout seoInfo={seoInfo} withKeyboardControls={false}>
       <color attach="background" args={["#121524"]} />
       <ambientLight intensity={1} />
 

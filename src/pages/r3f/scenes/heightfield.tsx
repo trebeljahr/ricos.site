@@ -31,7 +31,7 @@ const seoInfo = {
 export default function Page() {
   const { height: y } = getHeight(0, 0);
   return (
-    <ThreeFiberLayout {...seoInfo} camera={{ position: [0, 100, 0] }}>
+    <ThreeFiberLayout seoInfo={seoInfo} camera={{ position: [100, 50, 100] }}>
       <Physics debug={physicsDebug}>
         <LightsAndFog skyColor={"#c1f2ff"} />
         <MinecraftSpectatorController />

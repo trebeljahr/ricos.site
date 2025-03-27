@@ -48,12 +48,14 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout
-      {...seoInfo}
+      seoInfo={seoInfo}
       camera={{ position: [1, 1.5, 3] }}
       withKeyboardControls={false}
     >
       <color attach="background" args={["#f7f9f9"]} />
       <ambientLight intensity={0.5} />
+      <ambientLight />
+
       <directionalLight position={[10, 10, 5]} intensity={1} />
 
       <Stage adjustCamera={false} intensity={0} shadows={true}>

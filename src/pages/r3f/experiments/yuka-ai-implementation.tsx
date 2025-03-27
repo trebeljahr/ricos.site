@@ -25,7 +25,7 @@ const seoInfo = {
 
 const Page = () => {
   return (
-    <ThreeFiberLayout {...seoInfo}>
+    <ThreeFiberLayout seoInfo={seoInfo}>
       <Physics>
         <ambientLight intensity={1.0} />
         <directionalLight position={[10, 10, 5]} intensity={1} />

@@ -1,4 +1,4 @@
-import { FBOParticles } from "@r3f/Scenes/FBOExperiments/Particles/Particles";
+import { FBOParticles } from "@r3f/Scenes/Particles/FboDemo/Particles";
 
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { OrbitControls } from "@react-three/drei";
@@ -29,7 +29,11 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo} withKeyboardControls={false}>
+    <ThreeFiberLayout
+      seoInfo={seoInfo}
+      withKeyboardControls={false}
+      camera={{ position: [0.5, 0.2, 2.5] }}
+    >
       <FBOParticles />
       <EffectComposer>
         <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />

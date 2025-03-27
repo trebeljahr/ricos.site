@@ -18,7 +18,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 const navigation = ["posts", "newsletters", "photography"];
-const resources = ["quotes", "booknotes", "needlestack", "podcastnotes"];
+const resources = ["quotes", "booknotes", "needlestack", "podcastnotes", "r3f"];
 const about = ["now", "travel", "principles", "1-month-projects"];
 
 export const RicosSiteBanner = () => {

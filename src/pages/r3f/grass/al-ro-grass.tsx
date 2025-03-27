@@ -26,7 +26,10 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo} camera={{ position: new Vector3(0, 3, 0) }}>
+    <ThreeFiberLayout
+      seoInfo={seoInfo}
+      camera={{ position: new Vector3(26, 18, 22) }}
+    >
       <Sky />
       <ambientLight />
       <pointLight position={[10, 10, 10]} />

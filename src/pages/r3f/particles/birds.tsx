@@ -1,5 +1,5 @@
 import { perf } from "src/canvas/ChunkGenerationSystem/config";
-import { Birds } from "@r3f/Scenes/FBOExperiments/Birds";
+import { Birds } from "@r3f/Scenes/Particles/Birds/Scene";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
@@ -33,14 +33,15 @@ export default function Page() {
   const skyColor = "#FFFFFF";
   return (
     <ThreeFiberLayout
-      {...seoInfo}
+      seoInfo={seoInfo}
       withKeyboardControls={false}
-      camera={{ position: new Vector3(0, 0, 350), near: 1, far: 3000 }}
+      camera={{ position: new Vector3(132, -15, 450), near: 1, far: 3000 }}
     >
-      <Birds />
       <color attach="background" args={[skyColor]} />
       <fog color={skyColor} near={100} far={1000} />
+      <ambientLight />
 
+      <Birds />
       <OrbitControls />
     </ThreeFiberLayout>
   );

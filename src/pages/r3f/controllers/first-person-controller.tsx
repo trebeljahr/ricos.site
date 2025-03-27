@@ -2,7 +2,7 @@ import { FirstPersonController } from "src/canvas/Controllers/FirstPersonControl
 
 import { Obstacles } from "@r3f/Helpers/Obstacles";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { Sky } from "@react-three/drei";
+import { Sky, useProgress } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 
 const seoInfo = {
@@ -25,10 +25,10 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
+    <ThreeFiberLayout seoInfo={seoInfo}>
       <Sky azimuth={1} inclination={0.6} distance={1000} />
-
-      <Physics debug colliders="hull">
+      <ambientLight />
+      <Physics colliders="hull">
         <FirstPersonController />
         <Obstacles />
       </Physics>

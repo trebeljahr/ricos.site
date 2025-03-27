@@ -9,6 +9,7 @@ export default function ThirdPersonDemo() {
   return (
     <>
       <Sky azimuth={1} inclination={0.6} distance={1000} />
+      <ambientLight intensity={2} />
 
       <Physics colliders="hull">
         <ThirdPersonController Model={Trex} />

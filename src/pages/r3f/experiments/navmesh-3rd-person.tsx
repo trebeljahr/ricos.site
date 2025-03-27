@@ -1,22 +1,20 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { enemyQuery, playerQuery } from "@r3f/AI/ecs";
 import { NavmeshDebug, NavmeshEcs } from "@r3f/AI/NavmeshWithEcs";
-import { Player, PlayerControls } from "@r3f/AI/Player";
 import { Agent } from "@r3f/AI/RigidBodyAgent";
-import { CharacterWithAnimationsControlled } from "@r3f/Characters/CharacterWithAnimations";
 import { MixamoEcctrlControllerWithAnimations } from "@r3f/Controllers/CustomEcctrlController/ControllerWithAnimations";
 import { RandomSkeletonWithRandomWeapons } from "@r3f/Dungeon/BuildingBlocks/SkeletonEnemy";
-import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
+
 import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
 import { FloorWithPhysics } from "@r3f/Helpers/PhysicsFloor";
 
-import { Box, useProgress } from "@react-three/drei";
+import { useProgress } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { useState } from "react";
 import { init as initRecast } from "recast-navigation";
 import { suspend } from "suspend-react";
-import { DoubleSide, MeshStandardMaterial, Vector3 } from "three";
+import { DoubleSide, Vector3 } from "three";
 import { RayParameters } from "three-stdlib";
 
 const seoInfo = {
@@ -154,9 +152,6 @@ const LightningAttack = () => {
           sourceOffset: enemy.rigidBody.translation() as Vector3,
           destOffset: player.rigidBody.translation() as Vector3,
         });
-
-        console.log("player", player.rigidBody.translation());
-        console.log("enemy", enemy.rigidBody?.translation());
       }
     } else if (rayPositions !== null) {
       setRayPositions(null);
@@ -189,28 +184,23 @@ const Scene = () => {
       <directionalLight args={["#ffffff", 2]} position={[0, 30, 0]} />
 
       <Physics paused={loading}>
-        <MixamoEcctrlControllerWithAnimations />
+        <MixamoEcctrlControllerWithAnimations position={[24, 4, 15]} />
 
-        <Agent position={[-19, 30, 27]}>
+        <Agent position={[-19, 4, 27]}>
           <RandomSkeletonWithRandomWeapons position={[0, -1.8, 0]} />
         </Agent>
 
-        {/* <LightningAttack /> */}
-
-        {/* <group position={[0, -30, 0]}> */}
         <NavmeshEcs />
         <NavmeshDebug />
         <FloorWithPhysics />
-        {/* </group> */}
       </Physics>
     </>
   );
 };
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
+    <ThreeFiberLayout seoInfo={seoInfo}>
       <Scene />
-      <CameraPositionLogger />
     </ThreeFiberLayout>
   );
 }

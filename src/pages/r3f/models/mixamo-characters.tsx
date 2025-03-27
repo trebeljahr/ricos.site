@@ -31,11 +31,13 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout
-      {...seoInfo}
+      seoInfo={seoInfo}
       withKeyboardControls={false}
       camera={{ position: [0, 1, 2] }}
     >
       <color attach="background" args={["skyblue"]} />
+      <ambientLight />
+
       <Stage adjustCamera={false}>
         <DynamicCharacter />
       </Stage>

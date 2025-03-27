@@ -187,7 +187,7 @@ const DemoScene = () => {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
+    <ThreeFiberLayout seoInfo={seoInfo}>
       <color attach="background" args={["#f2f2f2"]} />
       <ambientLight intensity={0.5} />
       <DemoScene />

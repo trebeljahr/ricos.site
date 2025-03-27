@@ -185,31 +185,3 @@ export function YukaSimulation() {
     </group>
   );
 }
-
-const temp = new Object3D();
-
-export function Trees({ positions }: { positions: Vector3[] }) {
-  const meshRef = useRef<InstancedMesh>(null!);
-
-  useEffect(() => {
-    if (!meshRef.current) return;
-
-    positions.forEach((pos, i) => {
-      temp.position.set(pos.x, pos.y, pos.z);
-      temp.updateMatrix();
-      meshRef.current.setMatrixAt(i, temp.matrix);
-    });
-
-    meshRef.current.instanceMatrix.needsUpdate = true;
-  }, [positions]);
-
-  return (
-    <instancedMesh
-      ref={meshRef}
-      args={[undefined, undefined, positions.length]}
-    >
-      <sphereGeometry args={[0.5, 32, 32]} />
-      <meshBasicMaterial color="green" />
-    </instancedMesh>
-  );
-}

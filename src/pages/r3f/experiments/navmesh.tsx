@@ -32,9 +32,7 @@ const NavmeshExample = () => {
         walkableRadius: Math.round(walkableRadius / ch),
       });
 
-      console.log(navMesh, success);
-
-      if (!navMesh) return;
+      if (!navMesh || !success) return;
 
       const debugDrawer = new DebugDrawer();
 
@@ -78,7 +76,7 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
+    <ThreeFiberLayout seoInfo={seoInfo}>
       <color attach="background" args={["#dfd3ae"]} />
 
       <NavmeshExample />

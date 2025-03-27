@@ -1,4 +1,10 @@
-import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { NavbarR3F } from "@components/dom/NavbarR3F";
+import {
+  In,
+  SceneWithLoadingState,
+  SeoInfo,
+  ThreeFiberLayout,
+} from "@components/dom/ThreeFiberLayout";
 import {
   Arch,
   Column2,
@@ -30,7 +36,7 @@ import { Inventory } from "@r3f/Dungeon/InventorySystem/GameInventoryUI";
 import { RandomArmorSpawner } from "@r3f/Dungeon/ItemSpawners/ArmorSpawner";
 import { RandomPotionSpawner } from "@r3f/Dungeon/ItemSpawners/PotionSpawner";
 import { RandomWeaponsSpawner } from "@r3f/Dungeon/ItemSpawners/WeaponSpawner";
-import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
+
 import useShadowHelper from "@r3f/Helpers/OverheadLights";
 import { Box, Sky, useProgress } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
@@ -92,7 +98,6 @@ const CanvasContent = () => {
 
       <Enemies />
       <SpikeTrap />
-      <CameraPositionLogger />
 
       <Sky />
       <directionalLight
@@ -221,8 +226,6 @@ const Scene = () => {
   const { progress } = useProgress();
 
   if (progress >= 100) {
-    console.log("adding shadows");
-
     scene.traverse((child) => {
       if (child instanceof Mesh) {
         child.castShadow = true;
@@ -235,7 +238,7 @@ const Scene = () => {
     <Suspense>
       <LevaPanel hidden={!debug} />
       <HealthContextProvider>
-        <Physics timeStep={"vary"} paused={progress < 100}>
+        <Physics paused={progress < 100}>
           <CanvasContent />
           <MixamoEcctrlControllerWithAnimations />
         </Physics>
@@ -265,14 +268,20 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout
-      {...seoInfo}
-      camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
-    >
-      <InventoryProvider maxSlots={28} maxWeight={100}>
-        <Inventory />
-        <Scene />
-      </InventoryProvider>
-    </ThreeFiberLayout>
+    <>
+      <SeoInfo {...seoInfo} />
+      <NavbarR3F />
+      <div className="w-screen h-screen overscroll-none">
+        <InventoryProvider maxSlots={28} maxWeight={100}>
+          <Inventory />
+
+          <SceneWithLoadingState
+            camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
+          >
+            <Scene />
+          </SceneWithLoadingState>
+        </InventoryProvider>
+      </div>
+    </>
   );
 }

@@ -1,10 +1,7 @@
-import { Fishs } from "@r3f/Scenes/FBOExperiments/Fish";
-
+import { Fishs } from "@r3f/Scenes/Particles/Fishes/Scene";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { Box, OrbitControls } from "@react-three/drei";
-import { Perf } from "r3f-perf";
+import { OrbitControls } from "@react-three/drei";
 import { Vector3 } from "three";
-import { perf } from "src/canvas/ChunkGenerationSystem/config";
 
 const seoInfo = {
   title: "A FBO particles demo using custom meshes of Fish",
@@ -27,13 +24,14 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout
-      {...seoInfo}
+      seoInfo={seoInfo}
       withKeyboardControls={false}
-      camera={{ position: new Vector3(0, 0, 2), near: 1, far: 3000 }}
+      camera={{ position: new Vector3(0, 0, 2), near: 0 }}
     >
       <Fishs />
 
       <ambientLight />
+      <directionalLight />
       <fog color={0xffffff} near={100} far={1000} />
 
       <OrbitControls />

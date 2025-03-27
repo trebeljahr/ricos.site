@@ -61,7 +61,7 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
   useFrame(() => {
     if (renderedOnce.current && onlyRenderOnce) return;
 
-    camera.getWorldPosition(tempVec);
+    camera.clone().getWorldPosition(tempVec);
 
     const playerGridX = Math.round(tempVec.x / tileSize); // tempVec.x;
     const playerGridZ = Math.round(tempVec.z / tileSize); // tempVec.z;
@@ -170,7 +170,7 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
 
     for (const chunkId of newChunkKeys) {
       let [chunkX, chunkZ] = chunkId.split(",").map(Number);
-      camera.getWorldPosition(tempVec);
+      camera.clone().getWorldPosition(tempVec);
 
       const playerGridX = Math.round(tempVec.x / tileSize); // tempVec.x;
       const playerGridZ = Math.round(tempVec.z / tileSize); // tempVec.z;

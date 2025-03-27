@@ -24,8 +24,8 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <color attach="background" args={["#ffcc32"]} />
+    <ThreeFiberLayout seoInfo={seoInfo}>
+      <color attach="background" args={["#f8de9c"]} />
 
       <Stage adjustCamera>
         <Cat />

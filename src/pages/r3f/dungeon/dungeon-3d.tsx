@@ -21,7 +21,7 @@ import {
   Vector3,
   Vector3Int,
 } from "@r3f/Dungeon/Generator3D/Types";
-import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
+
 import {
   Bloom,
   EffectComposer,
@@ -159,16 +159,15 @@ export default function Page() {
 
   return (
     <ThreeFiberLayout
-      {...seoInfo}
+      seoInfo={seoInfo}
       camera={{ far: viewDistance, position: [25, 10, 25] }}
     >
       <fog attach="fog" args={[backgroundColor, 5, viewDistance]} />
       <color attach="background" args={[backgroundColor]} />
-
-      <ambientLight args={["#404040", 1]} />
+      <ambientLight color={"#404040"} />
+      <ambientLight intensity={0.5} />
 
       <RenderDungeon seed={Math.random()} />
-      <CameraPositionLogger />
 
       <MinecraftSpectatorController speed={0.2} />
     </ThreeFiberLayout>

@@ -4,7 +4,7 @@ import { NavmeshDebug, NavmeshEcs } from "@r3f/AI/NavmeshWithEcs";
 import { Player, PlayerControls } from "@r3f/AI/Player";
 import { Agent } from "@r3f/AI/RigidBodyAgent";
 import { RandomSkeletonWithRandomWeapons } from "@r3f/Dungeon/BuildingBlocks/SkeletonEnemy";
-import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
+
 import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
 import { FloorWithPhysics } from "@r3f/Helpers/PhysicsFloor";
 
@@ -152,9 +152,6 @@ const LightningAttack = () => {
           sourceOffset: enemy.rigidBody.translation() as Vector3,
           destOffset: player.rigidBody.translation() as Vector3,
         });
-
-        console.log("player", player.rigidBody.translation());
-        console.log("enemy", enemy.rigidBody?.translation());
       }
     } else if (rayPositions !== null) {
       setRayPositions(null);
@@ -188,29 +185,26 @@ const Scene = () => {
 
       <Physics paused={loading}>
         <PlayerControls>
-          <Player position={[5, 30, 5]} />
+          <Player position={[24, 4, 15]} />
         </PlayerControls>
 
-        <Agent position={[-19, 30, 27]}>
+        <Agent position={[-19, 4, 27]}>
           <RandomSkeletonWithRandomWeapons position={[0, -1.8, 0]} />
         </Agent>
 
         <LightningAttack />
 
-        {/* <group position={[0, -30, 0]}> */}
         <NavmeshEcs />
         <NavmeshDebug />
         <FloorWithPhysics />
-        {/* </group> */}
       </Physics>
     </>
   );
 };
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
+    <ThreeFiberLayout seoInfo={seoInfo}>
       <Scene />
-      <CameraPositionLogger />
     </ThreeFiberLayout>
   );
 }

@@ -26,7 +26,7 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
+    <ThreeFiberLayout seoInfo={seoInfo}>
       <Physics debug timeStep="vary">
         <Lights />
         <Sky />

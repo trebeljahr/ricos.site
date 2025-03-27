@@ -8,11 +8,10 @@ import { useEffect, useRef } from "react";
 import { Color, FogExp2, Group, Vector3 } from "three";
 import { Sky as SkyImpl } from "three-stdlib";
 import { SwimmingController } from "../../Controllers/SwimmingController";
-import { FishType, Fishs } from "../FBOExperiments/Fish";
+import { FishType, Fishs } from "../Particles/Fishes/Scene";
 import { OceanSurface } from "./Ocean";
 import { UI } from "./OxygenBar";
 import { Terrain } from "./OceanFloor";
-import { perf } from "../../ChunkGenerationSystem/config";
 
 function MovingInCircle() {
   const whaleRef = useRef<Group>(null!);
@@ -30,12 +29,6 @@ function MovingInCircle() {
     </group>
   );
 }
-// color palette underwater
-// #daf8e3
-// #97ebdb
-// #00c2c7
-// #0086ad
-// #005582
 
 export default function WaterDemo() {
   const { scene } = useThree();
@@ -65,6 +58,8 @@ export default function WaterDemo() {
       <Physics>
         <SwimmingController />
       </Physics>
+      <ambientLight />
+      <directionalLight position={[0, 10, 0]} intensity={1} />
 
       <fogExp2 ref={fogRef} attach="fog" color="#0086ad" density={0.02} />
       <color ref={colorRef} attach="background" args={["#0086ad"]} />
@@ -86,18 +81,6 @@ export default function WaterDemo() {
         position={new Vector3(0, 10, 10)}
         fishType={FishType.DoctorFish}
         color="#1ea8ed"
-      />
-      <Fishs
-        position={new Vector3(15, 10, 10)}
-        fishType={FishType.Whale}
-        color="#6b6b6b"
-        amount={10}
-        scaleFactor={2}
-      />
-      <Fishs
-        position={new Vector3(10, 5, 0)}
-        fishType={FishType.Dolphin}
-        color="#617675"
       />
 
       <MovingInCircle />

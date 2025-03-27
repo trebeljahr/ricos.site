@@ -79,7 +79,7 @@ const Demo = () => {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
+    <ThreeFiberLayout seoInfo={seoInfo}>
       <color attach="background" args={["#0a0a0a"]} />
       <ambientLight intensity={0.5} />
 

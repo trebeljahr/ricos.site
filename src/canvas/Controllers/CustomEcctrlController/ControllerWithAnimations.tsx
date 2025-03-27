@@ -16,7 +16,7 @@ import {
   useKeyboardControls,
   useProgress,
 } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { GroupProps, useFrame } from "@react-three/fiber";
 import { CustomEcctrlRigidBody } from "ecctrl";
 import { MutableRefObject, Suspense, useRef } from "react";
 import { Group } from "three";
@@ -153,7 +153,11 @@ const useWeaponForMixamoCharacter = (weaponType: WeaponTypes) => {
   return weapon;
 };
 
-export const MixamoEcctrlControllerWithAnimations = () => {
+export const MixamoEcctrlControllerWithAnimations = ({
+  position = [0, 0, 5],
+}: {
+  position?: GroupProps["position"];
+}) => {
   // const characterRef = useRef<CustomEcctrlRigidBody>(null!);
 
   const [_, get] = useKeyboardControls();
@@ -249,11 +253,10 @@ export const MixamoEcctrlControllerWithAnimations = () => {
 
   return (
     <EcctrlControllerCustom
-      position={[0, 0, 5]}
+      position={position}
       slopeDownExtraForce={0}
       camCollision={true}
       camCollisionOffset={0.5}
-      // mode="FixedCamera"
       sprintMult={3}
     >
       <Suspense fallback={null}>

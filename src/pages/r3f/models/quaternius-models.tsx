@@ -17,7 +17,7 @@ import { Leva } from "leva";
 import { Plane, Text } from "@react-three/drei";
 import { ComponentType, PropsWithChildren, useRef } from "react";
 import { DoubleSide } from "three";
-import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 const allNatureAssets = {
   ...simpleNatureAssets,
@@ -121,8 +121,13 @@ const Page = () => {
   const groundColor = "#84fb34";
 
   return (
-    <ThreeFiberLayout {...seoInfo} camera={{ position: [0, 5, tileSize / 2] }}>
-      <Leva />
+    <ThreeFiberLayout
+      seoInfo={seoInfo}
+      camera={{ position: [0, 5, tileSize / 2] }}
+    >
+      <In>
+        <Leva />
+      </In>
       <Physics debug={physicsDebug}>
         <ambientLight intensity={1.0} />
         <directionalLight position={[10, 10, 5]} intensity={1} />

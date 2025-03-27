@@ -2,10 +2,10 @@ import { useProgress } from "@react-three/drei";
 import { useEffect, useState } from "react";
 
 interface LoaderProps {
-  containerClassName?: string;
+  className?: string;
 }
 
-export const Loader = ({ containerClassName = "" }: LoaderProps) => {
+export const Loader = ({ className = "" }: LoaderProps) => {
   const { progress, errors, item, loaded, total } = useProgress();
   const [showLoader, setShowLoader] = useState(true);
 
@@ -18,13 +18,13 @@ export const Loader = ({ containerClassName = "" }: LoaderProps) => {
     }
   }, [progress]);
 
-  if (!showLoader) return null;
+  if (!showLoader || total === 0) return null;
 
   return (
     <div
       className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-black transition-opacity duration-500 ${
         progress === 100 ? "opacity-0" : "opacity-100"
-      } ${containerClassName}`}
+      } ${className}`}
     >
       <div className="max-w-md w-full px-4">
         <div className="mb-4 text-center text-white">

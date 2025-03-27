@@ -1,9 +1,9 @@
 import { useKeyboardInput } from "@hooks/useKeyboardInput";
-import { Sphere, useKeyboardControls } from "@react-three/drei";
+import { Sphere, useTexture } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
-import { listeners } from "process";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useState } from "react";
+import { SnowMaterial } from "src/Materials/TextureMaterials";
 import { Vector3 } from "three";
 
 export const RigidBall = memo(({ position }: { position: Vector3 }) => {
@@ -15,8 +15,6 @@ export const RigidBall = memo(({ position }: { position: Vector3 }) => {
 });
 
 export const RigidBallSpawner = () => {
-  const [subscribe] = useKeyboardControls();
-
   const [items, setItems] = useState<JSX.Element[]>([]);
   const { camera } = useThree();
 

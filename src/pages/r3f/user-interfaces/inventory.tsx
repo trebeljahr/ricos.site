@@ -185,7 +185,7 @@ const GameWorld: FC = () => {
   }, [findRandomItem]);
 
   return (
-    <ThreeFiberLayout {...seoInfo}>
+    <ThreeFiberLayout seoInfo={seoInfo}>
       <div className="min-h-screen bg-gray-800 text-white p-6">
         <div className="max-w-4xl mx-auto">
           {/* Game area - only visible when inventory is closed */}

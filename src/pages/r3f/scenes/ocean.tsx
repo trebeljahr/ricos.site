@@ -1,7 +1,6 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { UnderwaterContextProvider } from "@contexts/UnderwaterContext";
 import dynamic from "next/dynamic";
-import tunnel from "tunnel-rat";
 
 // Dynamically import the WaterDemo component with Suspense
 const WaterDemo = dynamic(
@@ -10,8 +9,6 @@ const WaterDemo = dynamic(
     ssr: false,
   }
 );
-
-export const { In, Out } = tunnel();
 
 const seoInfo = {
   title: "Ocean Demo",
@@ -33,9 +30,7 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <Out />
-
+    <ThreeFiberLayout seoInfo={seoInfo}>
       <UnderwaterContextProvider>
         <WaterDemo />
       </UnderwaterContextProvider>

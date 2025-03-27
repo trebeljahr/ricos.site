@@ -1,5 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
+
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import dynamic from "next/dynamic";
@@ -32,7 +32,7 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout
-      {...seoInfo}
+      seoInfo={seoInfo}
       camera={{
         position: [19, 12, 27],
         rotation: [
@@ -41,12 +41,13 @@ export default function Page() {
       }}
     >
       <Sky />
+      <ambientLight />
+
       <Physics>
         <MinecraftSpectatorController speed={1} />
       </Physics>
       <Ship />
       <OceanSurface />
-      <CameraPositionLogger />
     </ThreeFiberLayout>
   );
 }

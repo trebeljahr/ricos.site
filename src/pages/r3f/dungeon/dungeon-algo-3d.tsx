@@ -1,4 +1,4 @@
-import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
 import { perf, wireframe } from "@r3f/ChunkGenerationSystem/config";
 
@@ -23,7 +23,7 @@ import {
   Torches,
   Walls,
 } from "@r3f/Dungeon/DungeonRoomsWithInstancing";
-import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
+
 import { Sky } from "@react-three/drei";
 import {
   Bloom,
@@ -246,25 +246,25 @@ export default function Page() {
 
   return (
     <ThreeFiberLayout
-      {...seoInfo}
+      seoInfo={seoInfo}
       camera={{ far: viewDistance, position: [25, 10, 25] }}
     >
-      <ambientLight args={["#404040", 1]} />
+      <ambientLight args={["#404040", 0.5]} />
+      <ambientLight />
 
       <DungeonRenderer seed={seed} />
       <Sky />
       <directionalLight args={["#ffffff", 0.8]} position={[50, 50, 50]} />
 
-      <CameraPositionLogger />
-
       <MinecraftSpectatorController speed={0.2} />
-
-      <button
-        onClick={handleClick}
-        className="absolute top-0 right-0 z-20 p-2 bg-slate-500"
-      >
-        Click for new dungeon
-      </button>
+      <In>
+        <button
+          onClick={handleClick}
+          className="absolute top-0 right-0 z-20 p-2 bg-slate-500"
+        >
+          Click for new dungeon
+        </button>
+      </In>
     </ThreeFiberLayout>
   );
 }

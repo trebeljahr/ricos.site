@@ -356,7 +356,8 @@ function useFishGeos(typeOfFish: FishType) {
   const fishGeos: BufferGeometry[] = Object.keys(nodes).reduce((agg, key) => {
     if (!(typedNodes[key] instanceof SkinnedMesh)) return agg;
 
-    return [...agg, typedNodes[key].geometry];
+    const node = typedNodes[key];
+    return [...agg, node.geometry as BufferGeometry];
   }, [] as BufferGeometry[]);
 
   return fishGeos;

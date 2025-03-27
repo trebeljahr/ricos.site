@@ -12,13 +12,14 @@ import { PerspectiveCamera, Uniform, Vector3, WebGLRenderer } from "three";
 class UnderwaterFogEffectImpl extends Effect {
   public camera: PerspectiveCamera;
   constructor(camera: PerspectiveCamera) {
+    const uniforms: [string, Uniform][] = [
+      ["cameraPos", new Uniform(new Vector3(0, 0, 0))],
+      ["cameraLookAt", new Uniform(new Vector3(1, 0, 1))],
+      ["uTime", new Uniform(0.0)],
+    ];
     super("UnderwaterFogEffect", fragmentShader, {
       attributes: EffectAttribute.DEPTH,
-      uniforms: new Map([
-        ["cameraPos", new Uniform(new Vector3(0, 0, 0))],
-        ["cameraLookAt", new Uniform(new Vector3(1, 0, 1))],
-        ["uTime", new Uniform(0.0)],
-      ]),
+      uniforms: new Map(uniforms),
     });
     this.camera = camera;
   }

@@ -7,12 +7,12 @@ export const useAttachToBone = (
   thingToAttach: Group | Mesh
 ) => {
   useEffect(() => {
-    let object: Object3D<Bone>;
+    let object: Object3D;
 
     groupRef.current?.traverse((child) => {
       if (child.name === attachPointName) {
         child.add(thingToAttach);
-        object = child as Object3D<Bone>;
+        object = child as Object3D;
       }
     });
 

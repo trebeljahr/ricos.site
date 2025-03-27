@@ -1,6 +1,6 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { perf } from "@r3f/ChunkGenerationSystem/config";
-import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
+
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import {
   Arches,
@@ -158,20 +158,19 @@ export default function Page() {
   const viewDistance = 30;
 
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <CanvasWithKeyboardInput
-        camera={{ far: viewDistance, position: [25, 10, 25] }}
-      >
-        <fog attach="fog" args={[backgroundColor, 5, viewDistance]} />
-        <color attach="background" args={[backgroundColor]} />
+    <ThreeFiberLayout
+      {...seoInfo}
+      camera={{ far: viewDistance, position: [25, 10, 25] }}
+    >
+      <fog attach="fog" args={[backgroundColor, 5, viewDistance]} />
+      <color attach="background" args={[backgroundColor]} />
 
-        <ambientLight args={["#404040", 1]} />
-        {perf && <Perf position="bottom-right" />}
-        <RenderDungeon seed={Math.random()} />
-        <CameraPositionLogger />
+      <ambientLight args={["#404040", 1]} />
 
-        <MinecraftSpectatorController speed={0.2} />
-      </CanvasWithKeyboardInput>
+      <RenderDungeon seed={Math.random()} />
+      <CameraPositionLogger />
+
+      <MinecraftSpectatorController speed={0.2} />
     </ThreeFiberLayout>
   );
 }

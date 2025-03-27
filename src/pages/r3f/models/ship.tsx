@@ -3,7 +3,7 @@ import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import dynamic from "next/dynamic";
-import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
+
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { OceanSurface } from "src/canvas/Scenes/OceanDemo/Ocean";
 
@@ -31,23 +31,22 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <CanvasWithKeyboardInput
-        camera={{
-          position: [19, 12, 27],
-          rotation: [
-            -0.1819164443624924, 0.7349237008688785, 0.12272431719745204,
-          ],
-        }}
-      >
-        <Sky />
-        <Physics>
-          <MinecraftSpectatorController speed={1} />
-        </Physics>
-        <Ship />
-        <OceanSurface />
-        <CameraPositionLogger />
-      </CanvasWithKeyboardInput>
+    <ThreeFiberLayout
+      {...seoInfo}
+      camera={{
+        position: [19, 12, 27],
+        rotation: [
+          -0.1819164443624924, 0.7349237008688785, 0.12272431719745204,
+        ],
+      }}
+    >
+      <Sky />
+      <Physics>
+        <MinecraftSpectatorController speed={1} />
+      </Physics>
+      <Ship />
+      <OceanSurface />
+      <CameraPositionLogger />
     </ThreeFiberLayout>
   );
 }

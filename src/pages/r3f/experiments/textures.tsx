@@ -1,5 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
+
 import { OrbitControls, Plane, Stage } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { useControls } from "leva";
@@ -121,14 +121,12 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <CanvasWithKeyboardInput>
-        <color attach="background" args={["#e2f3f9"]} />
-        <Suspense fallback={null}>
-          <Scene />
-          <OrbitControls />
-        </Suspense>
-      </CanvasWithKeyboardInput>
+    <ThreeFiberLayout {...seoInfo} withKeyboardControls={false}>
+      <color attach="background" args={["#e2f3f9"]} />
+      <Suspense fallback={null}>
+        <Scene />
+        <OrbitControls />
+      </Suspense>
     </ThreeFiberLayout>
   );
 }

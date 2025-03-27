@@ -1,6 +1,7 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
+
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Leva, useControls } from "leva";
@@ -46,28 +47,25 @@ const Page = () => {
 
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <KeyboardControlsProvider>
-        <Leva />
-        <Canvas>
-          <CameraPositionLogger />
-          {perf && <Perf position="bottom-right" />}
-          <Physics debug={physicsDebug}>
-            <hemisphereLight intensity={0.35} />
-            <ambientLight intensity={1.0} />
-            <directionalLight position={[10, 10, 5]} intensity={1} />
-            <fogExp2 attach="fog" args={["#f0f0f0", 0.008]} />
-            <color args={["#f0f0f0"]} attach="background" />
-            <ChunkProvider>
-              <WorldManager />
-            </ChunkProvider>
-            <RayCaster />
-            {debug && <gridHelper args={[tileSize, 100]} />}
+      <Leva />
 
-            <MinecraftSpectatorController speed={speed} />
-            <RigidBallSpawner />
-          </Physics>
-        </Canvas>
-      </KeyboardControlsProvider>
+      <CameraPositionLogger />
+
+      <Physics debug={physicsDebug}>
+        <hemisphereLight intensity={0.35} />
+        <ambientLight intensity={1.0} />
+        <directionalLight position={[10, 10, 5]} intensity={1} />
+        <fogExp2 attach="fog" args={["#f0f0f0", 0.008]} />
+        <color args={["#f0f0f0"]} attach="background" />
+        <ChunkProvider>
+          <WorldManager />
+        </ChunkProvider>
+        <RayCaster />
+        {debug && <gridHelper args={[tileSize, 100]} />}
+
+        <MinecraftSpectatorController speed={speed} />
+        <RigidBallSpawner />
+      </Physics>
     </ThreeFiberLayout>
   );
 };

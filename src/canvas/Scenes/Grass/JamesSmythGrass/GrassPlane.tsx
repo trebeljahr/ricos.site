@@ -22,8 +22,8 @@ export const SingleStylizedGrassPlane = ({
   bladeHeight?: number;
   bladeHeightVariation?: number;
 }) => {
-  const grassTexture = useTexture("/3d-assets/grass/grass.jpg");
-  const cloudTexture = useTexture("/3d-assets/grass/cloud.jpg");
+  const grassTexture = useTexture("/3d-assets/textures/grass/grass.jpg");
+  const cloudTexture = useTexture("/3d-assets/textures/grass/cloud.jpg");
 
   const materialRef = useRef<
     typeof StylizedGrassMaterial & typeof grassUniforms

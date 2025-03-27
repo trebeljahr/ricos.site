@@ -1,7 +1,7 @@
 import { PointerLockControls, useKeyboardControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { RigidBody, RapierRigidBody } from "@react-three/rapier";
-import { PropsWithChildren, RefObject, useEffect, useRef } from "react";
+import { RapierRigidBody, RigidBody } from "@react-three/rapier";
+import { PropsWithChildren, useEffect, useRef } from "react";
 import { Vector3 } from "three";
 import { clamp, lerp } from "three/src/math/MathUtils";
 

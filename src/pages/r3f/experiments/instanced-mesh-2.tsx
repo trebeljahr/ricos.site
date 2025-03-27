@@ -1,4 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+
 import { Sky } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
@@ -34,22 +35,19 @@ const Page = () => {
   return (
     <ThreeFiberLayout {...seoInfo}>
       <KeyboardControlsProvider>
-        <Canvas>
-          {perf && <Perf position="bottom-right" />}
-          <Physics debug={physicsDebug}>
-            <hemisphereLight intensity={0.35} />
-            <ambientLight intensity={1.0} />
-            <directionalLight position={[10, 10, 5]} intensity={1} />
+        <Physics debug={physicsDebug}>
+          <hemisphereLight intensity={0.35} />
+          <ambientLight intensity={1.0} />
+          <directionalLight position={[10, 10, 5]} intensity={1} />
 
-            <group position={[-tileSize / 2, 0, -tileSize / 2]}>
-              <InstancedTreesWithMultiMaterial />
-            </group>
-            <gridHelper args={[tileSize, 100]} />
+          <group position={[-tileSize / 2, 0, -tileSize / 2]}>
+            <InstancedTreesWithMultiMaterial />
+          </group>
+          <gridHelper args={[tileSize, 100]} />
 
-            <Sky />
-            <MinecraftSpectatorController speed={1} />
-          </Physics>
-        </Canvas>
+          <Sky />
+          <MinecraftSpectatorController speed={1} />
+        </Physics>
       </KeyboardControlsProvider>
     </ThreeFiberLayout>
   );

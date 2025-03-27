@@ -1,9 +1,9 @@
-import { CanvasWithKeyboardInput } from "src/canvas/Controllers/KeyboardControls";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { UnderwaterContextProvider } from "@contexts/UnderwaterContext";
 import dynamic from "next/dynamic";
 import tunnel from "tunnel-rat";
 
+// Dynamically import the WaterDemo component with Suspense
 const WaterDemo = dynamic(
   () => import("src/canvas/Scenes/OceanDemo/WaterDemo"),
   {
@@ -35,11 +35,10 @@ export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
       <Out />
-      <CanvasWithKeyboardInput>
-        <UnderwaterContextProvider>
-          <WaterDemo />
-        </UnderwaterContextProvider>
-      </CanvasWithKeyboardInput>
+
+      <UnderwaterContextProvider>
+        <WaterDemo />
+      </UnderwaterContextProvider>
     </ThreeFiberLayout>
   );
 }

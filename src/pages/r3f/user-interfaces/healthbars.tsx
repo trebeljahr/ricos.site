@@ -25,13 +25,11 @@ const seoInfo = {
 
 const HealthBarExample = () => {
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <Canvas>
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} />
-        <HealthbarsDemo />
-        <OrbitControls />
-      </Canvas>
+    <ThreeFiberLayout {...seoInfo} withKeyboardControls={false}>
+      <ambientLight intensity={0.5} />
+      <pointLight position={[10, 10, 10]} />
+      <HealthbarsDemo />
+      <OrbitControls />
     </ThreeFiberLayout>
   );
 };

@@ -1,7 +1,7 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
 import { perf, wireframe } from "@r3f/ChunkGenerationSystem/config";
-import { CanvasWithKeyboardInput } from "@r3f/Controllers/KeyboardControls";
+
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import {
   DungeonMeshGenerator,
@@ -245,21 +245,20 @@ export default function Page() {
   };
 
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <CanvasWithKeyboardInput
-        camera={{ far: viewDistance, position: [25, 10, 25] }}
-      >
-        <ambientLight args={["#404040", 1]} />
-        {perf && <Perf position="bottom-right" />}
+    <ThreeFiberLayout
+      {...seoInfo}
+      camera={{ far: viewDistance, position: [25, 10, 25] }}
+    >
+      <ambientLight args={["#404040", 1]} />
 
-        <DungeonRenderer seed={seed} />
-        <Sky />
-        <directionalLight args={["#ffffff", 0.8]} position={[50, 50, 50]} />
+      <DungeonRenderer seed={seed} />
+      <Sky />
+      <directionalLight args={["#ffffff", 0.8]} position={[50, 50, 50]} />
 
-        <CameraPositionLogger />
+      <CameraPositionLogger />
 
-        <MinecraftSpectatorController speed={0.2} />
-      </CanvasWithKeyboardInput>
+      <MinecraftSpectatorController speed={0.2} />
+
       <button
         onClick={handleClick}
         className="absolute top-0 right-0 z-20 p-2 bg-slate-500"

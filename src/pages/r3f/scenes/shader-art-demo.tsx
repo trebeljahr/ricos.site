@@ -11,6 +11,7 @@ import { FaCheck, FaInfo, FaShareAlt } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
 import { IUniform } from "three";
 import { recording } from "@r3f/ChunkGenerationSystem/config";
+import { SceneWithLoadingState } from "@components/dom/ThreeFiberLayout";
 
 function ShareWithOthersButton() {
   const handleClick = async () => {
@@ -257,7 +258,8 @@ export default function ShaderEditorPage() {
       <Leva hidden={recording} />
 
       <div className="w-screen h-screen relative bg-leva-medium dark:bg-leva-dark">
-        <Canvas
+        <SceneWithLoadingState
+          withKeyboardControls={false}
           orthographic
           camera={{
             left: -1,
@@ -275,7 +277,8 @@ export default function ShaderEditorPage() {
             fragmentShader={controllableShaderArt}
             otherUniforms={otherUniforms}
           />
-        </Canvas>
+        </SceneWithLoadingState>
+
         {!recording && <ShareWithOthersButton />}
         {!recording && <InfoButton />}
       </div>

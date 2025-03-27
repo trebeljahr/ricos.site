@@ -1,4 +1,5 @@
 import { useAttachToBone } from "@hooks/useAttachToBone";
+import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
 import { MixamoCharacterNames } from "@r3f/Characters/Character";
 import {
   MixamoCharacter,
@@ -11,18 +12,17 @@ import {
   WeaponTypes,
 } from "@r3f/Dungeon/Enemies/Weapons";
 import {
-  PointerLockControls,
   useAnimations,
   useKeyboardControls,
   useProgress,
 } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { CustomEcctrlRigidBody } from "ecctrl";
-import { MutableRefObject, Suspense, useEffect, useRef } from "react";
+import { MutableRefObject, Suspense, useRef } from "react";
 import { Group } from "three";
 import { useGenericAnimationController } from "../GenericAnimationController";
 import { EcctrlControllerCustom, userDataType } from "./Controller";
-import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
+import { playerQuery } from "@r3f/AI/ecs";
 
 const useWeaponForMixamoCharacter = (weaponType: WeaponTypes) => {
   let weapon = useWeapon(weaponType);
@@ -154,7 +154,7 @@ const useWeaponForMixamoCharacter = (weaponType: WeaponTypes) => {
 };
 
 export const MixamoEcctrlControllerWithAnimations = () => {
-  const characterRef = useRef<CustomEcctrlRigidBody>(null!);
+  // const characterRef = useRef<CustomEcctrlRigidBody>(null!);
 
   const [_, get] = useKeyboardControls();
 
@@ -174,8 +174,9 @@ export const MixamoEcctrlControllerWithAnimations = () => {
   const isAttacking = useRef(false);
 
   useSubscribeToKeyPress("f", () => {
-    if (!characterRef.current) return;
-    const userData = characterRef.current.userData as userDataType;
+    const player = playerQuery.first;
+    if (!player?.rigidBody) return;
+    const userData = player?.rigidBody.userData as userDataType;
 
     if (
       !userData.canJump ||
@@ -196,8 +197,10 @@ export const MixamoEcctrlControllerWithAnimations = () => {
   });
 
   useFrame(() => {
+    const player = playerQuery.first;
+    if (!player) return;
     const { forward, backward, leftward, rightward, jump, run } = get();
-    const userData = characterRef.current?.userData as userDataType;
+    const userData = player.rigidBody?.userData as userDataType;
 
     isAttacking.current =
       mixedInAnimationState.current.isPlaying &&
@@ -245,24 +248,21 @@ export const MixamoEcctrlControllerWithAnimations = () => {
   );
 
   return (
-    <Suspense>
-      <EcctrlControllerCustom
-        position={[0, 40, 0]}
-        slopeDownExtraForce={0}
-        camCollision={true}
-        camCollisionOffset={0.5}
-        // mode="FixedCamera"
-        sprintMult={3}
-        ref={characterRef}
-      >
+    <EcctrlControllerCustom
+      position={[0, 0, 5]}
+      slopeDownExtraForce={0}
+      camCollision={true}
+      camCollisionOffset={0.5}
+      // mode="FixedCamera"
+      sprintMult={3}
+    >
+      <Suspense fallback={null}>
         <group position={[0, -1.1, 0]} scale={1.4}>
-          <Suspense>
-            <group ref={group as MutableRefObject<Group>} dispose={null}>
-              <MixamoCharacter characterName={MixamoCharacterNames.Eve} />
-            </group>
-          </Suspense>
+          <group ref={group as MutableRefObject<Group>} dispose={null}>
+            <MixamoCharacter characterName={MixamoCharacterNames.Eve} />
+          </group>
         </group>
-      </EcctrlControllerCustom>
-    </Suspense>
+      </Suspense>
+    </EcctrlControllerCustom>
   );
 };

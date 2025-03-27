@@ -65,7 +65,6 @@ export default function WaterDemo() {
       <Physics>
         <SwimmingController />
       </Physics>
-      {perf && <Perf position="bottom-right" />}
 
       <fogExp2 ref={fogRef} attach="fog" color="#0086ad" density={0.02} />
       <color ref={colorRef} attach="background" args={["#0086ad"]} />

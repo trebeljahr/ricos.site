@@ -32,14 +32,16 @@ const seoInfo = {
 export default function Page() {
   const skyColor = "#FFFFFF";
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <Canvas camera={{ position: new Vector3(0, 0, 350), near: 1, far: 3000 }}>
-        <Birds />
-        <color attach="background" args={[skyColor]} />
-        <fog color={skyColor} near={100} far={1000} />
-        {perf && <Perf position="bottom-right" />}
-        <OrbitControls />
-      </Canvas>
+    <ThreeFiberLayout
+      {...seoInfo}
+      withKeyboardControls={false}
+      camera={{ position: new Vector3(0, 0, 350), near: 1, far: 3000 }}
+    >
+      <Birds />
+      <color attach="background" args={[skyColor]} />
+      <fog color={skyColor} near={100} far={1000} />
+
+      <OrbitControls />
     </ThreeFiberLayout>
   );
 }

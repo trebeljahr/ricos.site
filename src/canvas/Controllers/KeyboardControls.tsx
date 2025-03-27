@@ -1,11 +1,5 @@
-import { waterHeight } from "@contexts/UnderwaterContext";
-import { KeyboardControls, Preload } from "@react-three/drei";
-import { Canvas, CanvasProps } from "@react-three/fiber";
+import { KeyboardControls } from "@react-three/drei";
 import { PropsWithChildren } from "react";
-
-export const surfaceLevel = waterHeight;
-export const farUnderwater = 50;
-export const farOverwater = 100;
 
 export const keymap = [
   { name: "forward", keys: ["ArrowUp", "w", "W", "KeyW"] },
@@ -18,21 +12,17 @@ export const keymap = [
   { name: "attack", keys: ["F", "f"] },
 ];
 
-export const KeyboardControlsProvider = ({ children }: PropsWithChildren) => {
-  return <KeyboardControls map={keymap}>{children}</KeyboardControls>;
+export type SupportedControllerKeys = {
+  forward: boolean;
+  backward: boolean;
+  leftward: boolean;
+  rightward: boolean;
+  jump: boolean;
+  descend: boolean;
+  run: boolean;
+  attack: boolean;
 };
 
-export const CanvasWithKeyboardInput = ({
-  children,
-  ...props
-}: PropsWithChildren<CanvasProps>) => {
-  return (
-    <KeyboardControlsProvider>
-      <Canvas {...props} gl={{ logarithmicDepthBuffer: true }}>
-        <ambientLight />
-        {children}
-        <Preload all />
-      </Canvas>
-    </KeyboardControlsProvider>
-  );
+export const KeyboardControlsProvider = ({ children }: PropsWithChildren) => {
+  return <KeyboardControls map={keymap}>{children}</KeyboardControls>;
 };

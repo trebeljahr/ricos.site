@@ -25,8 +25,8 @@ export const AllRoGrass = ({
   const joints = 5;
   const materialRef = useRef<GrassMaterialType>(null!);
   const [texture, alphaMap] = useLoader(TextureLoader, [
-    "/3d-assets/grass/blade_diffuse.jpg",
-    "/3d-assets/grass/blade_alpha.jpg",
+    "/3d-assets/textures/grass/blade_diffuse.jpg",
+    "/3d-assets/textures/grass/blade_alpha.jpg",
   ]);
 
   useFrame(({ clock }) => {

@@ -26,18 +26,14 @@ const seoInfo = {
 const Page = () => {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <KeyboardControlsProvider>
-        <Canvas>
-          <Physics>
-            <ambientLight intensity={1.0} />
-            <directionalLight position={[10, 10, 5]} intensity={1} />
-            <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
-            <color args={["#f0f0f0"]} attach="background" />
-            <MinecraftSpectatorController speed={1} />
-            <YukaSimulation />
-          </Physics>
-        </Canvas>
-      </KeyboardControlsProvider>
+      <Physics>
+        <ambientLight intensity={1.0} />
+        <directionalLight position={[10, 10, 5]} intensity={1} />
+        <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
+        <color args={["#f0f0f0"]} attach="background" />
+        <MinecraftSpectatorController speed={1} />
+        <YukaSimulation />
+      </Physics>
     </ThreeFiberLayout>
   );
 };

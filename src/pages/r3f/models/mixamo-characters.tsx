@@ -1,4 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+
 import { OrbitControls, Stage } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 
@@ -29,14 +30,16 @@ const seoInfo = {
 
 export default function Page() {
   return (
-    <ThreeFiberLayout {...seoInfo}>
-      <Canvas camera={{ position: [0, 1, 2] }}>
-        <color attach="background" args={["skyblue"]} />
-        <Stage adjustCamera={false}>
-          <DynamicCharacter />
-        </Stage>
-        <OrbitControls />
-      </Canvas>
+    <ThreeFiberLayout
+      {...seoInfo}
+      withKeyboardControls={false}
+      camera={{ position: [0, 1, 2] }}
+    >
+      <color attach="background" args={["skyblue"]} />
+      <Stage adjustCamera={false}>
+        <DynamicCharacter />
+      </Stage>
+      <OrbitControls />
     </ThreeFiberLayout>
   );
 }

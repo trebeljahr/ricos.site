@@ -1,5 +1,6 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { Cat } from "@r3f/AllModels/Cat";
+
 import { OrbitControls, Stage } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 
@@ -24,14 +25,12 @@ const seoInfo = {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <Canvas>
-        <color attach="background" args={["#ffcc32"]} />
+      <color attach="background" args={["#ffcc32"]} />
 
-        <Stage adjustCamera>
-          <Cat />
-        </Stage>
-        <OrbitControls autoRotate />
-      </Canvas>
+      <Stage adjustCamera>
+        <Cat />
+      </Stage>
+      <OrbitControls autoRotate />
     </ThreeFiberLayout>
   );
 }

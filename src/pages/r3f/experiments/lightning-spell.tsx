@@ -1,6 +1,7 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { useSword4 } from "@r3f/Dungeon/Enemies/Swords";
 import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
+
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import {
@@ -12,7 +13,7 @@ import { useEffect, useState } from "react";
 import { DoubleSide, Mesh, Raycaster, Vector3 } from "three";
 import { RayParameters } from "three-stdlib";
 
-const SingleLightningStrikHittingMesh = ({
+export const SingleLightningStrikeHittingMesh = ({
   source,
   targetMesh,
 }: {
@@ -174,7 +175,7 @@ const DemoScene = () => {
   return (
     <group>
       <group>
-        <SingleLightningStrikHittingMesh
+        <SingleLightningStrikeHittingMesh
           source={singleLightningStrike.source}
           targetMesh={sword}
         />
@@ -187,16 +188,14 @@ const DemoScene = () => {
 export default function Page() {
   return (
     <ThreeFiberLayout {...seoInfo}>
-      <Canvas>
-        <color attach="background" args={["#f2f2f2"]} />
-        <ambientLight intensity={0.5} />
-        <DemoScene />
-        <EffectComposer>
-          <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />
-          <ToneMapping />
-        </EffectComposer>
-        <OrbitControls />
-      </Canvas>
+      <color attach="background" args={["#f2f2f2"]} />
+      <ambientLight intensity={0.5} />
+      <DemoScene />
+      <EffectComposer>
+        <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />
+        <ToneMapping />
+      </EffectComposer>
+      <OrbitControls />
     </ThreeFiberLayout>
   );
 }

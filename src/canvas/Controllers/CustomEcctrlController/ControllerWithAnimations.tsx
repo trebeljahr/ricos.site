@@ -22,6 +22,7 @@ import { MutableRefObject, Suspense, useRef } from "react";
 import { Group } from "three";
 import { useGenericAnimationController } from "../GenericAnimationController";
 import { EcctrlControllerCustom, userDataType } from "./Controller";
+import { playerQuery } from "@r3f/AI/ecs";
 
 const useWeaponForMixamoCharacter = (weaponType: WeaponTypes) => {
   let weapon = useWeapon(weaponType);
@@ -153,7 +154,7 @@ const useWeaponForMixamoCharacter = (weaponType: WeaponTypes) => {
 };
 
 export const MixamoEcctrlControllerWithAnimations = () => {
-  const characterRef = useRef<CustomEcctrlRigidBody>(null!);
+  // const characterRef = useRef<CustomEcctrlRigidBody>(null!);
 
   const [_, get] = useKeyboardControls();
 
@@ -173,8 +174,9 @@ export const MixamoEcctrlControllerWithAnimations = () => {
   const isAttacking = useRef(false);
 
   useSubscribeToKeyPress("f", () => {
-    if (!characterRef.current) return;
-    const userData = characterRef.current.userData as userDataType;
+    const player = playerQuery.first;
+    if (!player.rigidBody) return;
+    const userData = player?.rigidBody.userData as userDataType;
 
     if (
       !userData.canJump ||
@@ -195,8 +197,10 @@ export const MixamoEcctrlControllerWithAnimations = () => {
   });
 
   useFrame(() => {
+    const player = playerQuery.first;
+    if (!player) return;
     const { forward, backward, leftward, rightward, jump, run } = get();
-    const userData = characterRef.current?.userData as userDataType;
+    const userData = player.rigidBody?.userData as userDataType;
 
     isAttacking.current =
       mixedInAnimationState.current.isPlaying &&
@@ -235,8 +239,6 @@ export const MixamoEcctrlControllerWithAnimations = () => {
 
   const weapon = useWeaponForMixamoCharacter(SwordTypes.Sword6);
 
-  const { progress } = useProgress();
-
   useAttachToBone(
     group as MutableRefObject<Group>,
     "mixamorigRightHand",
@@ -252,7 +254,6 @@ export const MixamoEcctrlControllerWithAnimations = () => {
         camCollisionOffset={0.5}
         // mode="FixedCamera"
         sprintMult={3}
-        ref={characterRef}
       >
         <group position={[0, -1.1, 0]} scale={1.4}>
           <Suspense>

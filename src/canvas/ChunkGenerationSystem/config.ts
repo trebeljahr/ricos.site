@@ -17,7 +17,7 @@ const flatShading = false;
 const onlyRenderOnce = false;
 const debugCamera = false;
 const recording = false;
-const perf = !recording && false;
+const perf = !recording && true;
 const nav = !recording && true;
 const visualizeHeight = true;
 

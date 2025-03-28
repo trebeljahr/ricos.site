@@ -25,7 +25,7 @@ void main() {
   vec2 uv = unpackUV(position, resolution);
 
   vec4 packedCoordinate1 = texture(dataTexture, uv);
-  vec3 localPosition = packedCoordinate1.xyz;
+  vec3 localPosition = packedCoordinate1.xyz; // + sin(time) * 2.0;
 
   vec3 mvPosition = (modelViewMatrix * vec4(localPosition, 1.0)).xyz;
 

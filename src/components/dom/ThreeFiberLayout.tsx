@@ -90,9 +90,9 @@ export const SceneWithLoadingState = ({
           {children}
           <Preload all />
           <CameraPositionLogger />
+          {perf && <Perf position="bottom-right" />}
         </Suspense>
       </Canvas>
-      {perf && <Perf position="bottom-right" />}
     </>
   );
 

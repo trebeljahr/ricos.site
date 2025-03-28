@@ -1,11 +1,10 @@
 import { cppLanguage } from "@codemirror/lang-cpp";
-import { Canvas } from "@react-three/fiber";
+import { NavbarR3F } from "@components/dom/NavbarR3F";
+import { SceneWithLoadingState } from "@components/dom/ThreeFiberLayout";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { useCallback, useState } from "react";
 import { FullCanvasShader } from "./FullCanvasShader";
-import { SceneWithLoadingState } from "@components/dom/ThreeFiberLayout";
-import { NavbarR3F } from "@components/dom/NavbarR3F";
 
 export function CodeEditor({ code }: { code: string }) {
   const [value, setValue] = useState(code);

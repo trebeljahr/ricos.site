@@ -196,7 +196,7 @@ export const FirstPersonController = (
       colliders={false}
       mass={1}
       type="kinematicPosition"
-      position={[0, 0, 0]}
+      position={[5, 5, 5]}
       enabledRotations={[false, false, false]}
     >
       <CapsuleCollider args={[0.5, 0.5]} />

@@ -1,4 +1,4 @@
-import { useProgress } from "@react-three/drei";
+import { useProgress } from "@hooks/useProgress";
 import { useEffect, useState } from "react";
 
 interface LoaderProps {
@@ -12,12 +12,13 @@ export const Loader = ({ className = "" }: LoaderProps) => {
   useEffect(() => {
     if (progress === 100) {
       const timeout = setTimeout(() => {
-        setShowLoader(false);
+        // setShowLoader(false);
       }, 1000);
       return () => clearTimeout(timeout);
     }
   }, [progress]);
 
+  console.log(total);
   if (!showLoader || total === 0) return null;
 
   return (

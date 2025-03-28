@@ -1,8 +1,8 @@
 import { FirstPersonController } from "src/canvas/Controllers/FirstPersonController";
 
-import { Obstacles } from "@r3f/Helpers/Obstacles";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { Sky, useProgress } from "@react-three/drei";
+import { Obstacles } from "@r3f/Helpers/Obstacles";
+import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 
 const seoInfo = {

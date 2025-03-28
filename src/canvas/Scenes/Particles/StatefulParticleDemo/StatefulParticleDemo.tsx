@@ -187,7 +187,7 @@ export const StatefulParticleDemo = ({ numParticles = 1024 }) => {
     };
   }, [gl, numParticles, font, diffuseTexture]);
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock, scene, camera, gl }) => {
     const deltaTime = Math.min(clock.getDelta(), 1.0 / 30.0);
     const timeTotal = clock.getElapsedTime();
 
@@ -207,19 +207,25 @@ export const StatefulParticleDemo = ({ numParticles = 1024 }) => {
       previousBuffer.texture;
     particleUpdateQuad.material.uniforms.timeElapsed.value = deltaTime;
     particleUpdateQuad.material.needsUpdate = true;
+  }, 1);
 
+  useFrame(({ gl, scene, camera }) => {
+    gl.render(scene, camera);
+  }, 2);
+
+  useFrame(({ gl, scene, camera }) => {
     gl.setRenderTarget(particleBuffers[particleBufferIndex.current]);
     gl.render(fullscreenScene, fullscreenCamera);
     gl.setRenderTarget(null);
 
     matDraw.uniforms.dataTexture.value =
       particleBuffers[particleBufferIndex.current].texture;
-  });
+  }, 3);
 
   return (
     <>
       <points geometry={pointGeo} material={matDraw} />
-      <EffectComposer>
+      <EffectComposer renderPriority={4}>
         <Bloom mipmapBlur luminanceThreshold={1} levels={8} intensity={4} />
         <ToneMapping />
       </EffectComposer>

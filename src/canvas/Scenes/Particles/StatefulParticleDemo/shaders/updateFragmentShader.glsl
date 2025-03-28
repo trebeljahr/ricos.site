@@ -42,34 +42,35 @@ void main() {
   vec3 deltaPosition = currentPosition - previousPosition;
 
   // Verlet integration
-  vec3 forces = vec3(0.0);
+  vec3 forces = vec3(0.0, -9.8, 0.0);
   float drag = 0.25;
 
   // Apply forces
 
   // Apply an attractor force
-  AttractorParams attractorParams = AttractorParams(
-      texture(dataTexture, vUvs).xyz, 1.0, 500.0, 1.0);
-  forces += CalculateAttractorForce(currentPosition, attractorParams);
+  // AttractorParams attractorParams = AttractorParams(
+  //     texture(dataTexture, vUvs).xyz, 1.0, 500.0, 1.0);
+  // forces += CalculateAttractorForce(currentPosition, attractorParams);
 
-  // Create repulsor force
-  vec3 repulsor = vec3(sin(time * 0.25) * 8.0, 0.0, 0.0);
-  float distToRepulsor = distance(currentPosition, repulsor);
-  {
-    float repulsorRadius = 3.0;
-    float distOverRadius = distToRepulsor / repulsorRadius;
+  // // Create repulsor force
+  // vec3 repulsor = vec3(sin(time * 0.25) * 8.0, 0.0, 0.0);
+  // float distToRepulsor = distance(currentPosition, repulsor);
+  // {
+  //   float repulsorRadius = 3.0;
+  //   float distOverRadius = distToRepulsor / repulsorRadius;
 
-    // Soft repulsor
-    float decay = 1.0;
-    float repulsorIntensity = 1000.0;
-    float repulsorForce = repulsorIntensity * (
-        exp(-distOverRadius * decay));
-    vec3 dirToRepulsor = -normalize(repulsor - currentPosition);
-    forces += dirToRepulsor * repulsorForce;
-  }
+  //   // Soft repulsor
+  //   float decay = 1.0;
+  //   float repulsorIntensity = 1000.0;
+  //   float repulsorForce = repulsorIntensity * (
+  //       exp(-distOverRadius * decay));
+  //   vec3 dirToRepulsor = -normalize(repulsor - currentPosition);
+  //   forces += dirToRepulsor * repulsorForce;
+  // }
 
   vec3 newPosition = currentPosition + deltaPosition * drag + (
       forces * timeElapsed * timeElapsed);
 
-  out_FragColour = vec4(newPosition, distToRepulsor);
+  // out_FragColour = vec4(newPosition, dirToRepulsor);
+  out_FragColour = vec4(newPosition, 100.0);
 }

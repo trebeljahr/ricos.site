@@ -8,7 +8,6 @@ import { RandomSkeletonWithRandomWeapons } from "@r3f/Dungeon/BuildingBlocks/Ske
 import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
 import { FloorWithPhysics } from "@r3f/Helpers/PhysicsFloor";
 
-import { useProgress } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { useState } from "react";
@@ -174,17 +173,14 @@ const Scene = () => {
     await initRecast();
   }, []);
 
-  const data = useProgress();
-  const loading = data.progress < 100;
-
   return (
     <>
       <color attach="background" args={["#1c1c1c"]} />
       <ambientLight args={["#bdbdbd", 2]} />
       <directionalLight args={["#ffffff", 2]} position={[0, 30, 0]} />
 
-      <Physics paused={loading}>
-        <MixamoEcctrlControllerWithAnimations position={[24, 4, 15]} />
+      <Physics>
+        <MixamoEcctrlControllerWithAnimations position={[24, 10, 15]} />
 
         <Agent position={[-19, 4, 27]}>
           <RandomSkeletonWithRandomWeapons position={[0, -1.8, 0]} />

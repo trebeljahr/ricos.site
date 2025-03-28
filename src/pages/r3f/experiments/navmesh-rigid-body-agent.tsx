@@ -8,13 +8,12 @@ import { RandomSkeletonWithRandomWeapons } from "@r3f/Dungeon/BuildingBlocks/Ske
 import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
 import { FloorWithPhysics } from "@r3f/Helpers/PhysicsFloor";
 
-import { Box, useProgress } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { useState } from "react";
 import { init as initRecast } from "recast-navigation";
 import { suspend } from "suspend-react";
-import { DoubleSide, MeshStandardMaterial, Vector3 } from "three";
+import { DoubleSide, Vector3 } from "three";
 import { RayParameters } from "three-stdlib";
 
 const seoInfo = {
@@ -174,18 +173,15 @@ const Scene = () => {
     await initRecast();
   }, []);
 
-  const data = useProgress();
-  const loading = data.progress < 100;
-
   return (
     <>
       <color attach="background" args={["#1c1c1c"]} />
       <ambientLight args={["#bdbdbd", 2]} />
       <directionalLight args={["#ffffff", 2]} position={[0, 30, 0]} />
 
-      <Physics paused={loading}>
+      <Physics>
         <PlayerControls>
-          <Player position={[24, 4, 15]} />
+          <Player position={[24, 10, 15]} />
         </PlayerControls>
 
         <Agent position={[-19, 4, 27]}>

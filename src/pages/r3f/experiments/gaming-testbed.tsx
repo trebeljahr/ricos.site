@@ -1,9 +1,7 @@
 import { NavbarR3F } from "@components/dom/NavbarR3F";
 import {
-  In,
   SceneWithLoadingState,
   SeoInfo,
-  ThreeFiberLayout,
 } from "@components/dom/ThreeFiberLayout";
 import {
   Arch,
@@ -23,7 +21,7 @@ import {
   WallCover_Modular,
   Woodfire,
 } from "@r3f/AllModels/modular_dungeon_pack_1";
-import { debug, perf } from "@r3f/ChunkGenerationSystem/config";
+import { debug } from "@r3f/ChunkGenerationSystem/config";
 import { HealthContextProvider } from "@r3f/Contexts/HealthbarContext";
 import { MixamoEcctrlControllerWithAnimations } from "@r3f/Controllers/CustomEcctrlController/ControllerWithAnimations";
 
@@ -38,13 +36,12 @@ import { RandomPotionSpawner } from "@r3f/Dungeon/ItemSpawners/PotionSpawner";
 import { RandomWeaponsSpawner } from "@r3f/Dungeon/ItemSpawners/WeaponSpawner";
 
 import useShadowHelper from "@r3f/Helpers/OverheadLights";
-import { Box, Sky, useProgress } from "@react-three/drei";
+import { Box, Sky } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import { LevaPanel } from "leva";
-import { Perf } from "r3f-perf";
 import { Suspense, useEffect, useRef } from "react";
-import { DirectionalLight, Group, Mesh, PCFSoftShadowMap } from "three";
+import { DirectionalLight, Mesh, PCFSoftShadowMap } from "three";
 
 const CanvasContent = () => {
   const lightRef = useRef<DirectionalLight>(null!);
@@ -223,24 +220,22 @@ const CanvasContent = () => {
 const Scene = () => {
   const { scene } = useThree();
 
-  const { progress } = useProgress();
-
-  if (progress >= 100) {
+  useEffect(() => {
     scene.traverse((child) => {
       if (child instanceof Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
       }
     });
-  }
+  }, [scene]);
 
   return (
     <Suspense>
       <LevaPanel hidden={!debug} />
       <HealthContextProvider>
-        <Physics paused={progress < 100}>
+        <Physics>
           <CanvasContent />
-          <MixamoEcctrlControllerWithAnimations />
+          <MixamoEcctrlControllerWithAnimations position={[0, 50, 10]} />
         </Physics>
       </HealthContextProvider>
     </Suspense>

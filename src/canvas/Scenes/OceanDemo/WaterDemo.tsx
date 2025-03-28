@@ -8,7 +8,7 @@ import { useEffect, useRef } from "react";
 import { Color, FogExp2, Group, Vector3 } from "three";
 import { Sky as SkyImpl } from "three-stdlib";
 import { SwimmingController } from "../../Controllers/SwimmingController";
-import { FishType, Fishs } from "../Particles/Fishes/Scene";
+import { FishType, Fishes } from "../Particles/Fishes/Scene";
 import { OceanSurface } from "./Ocean";
 import { UI } from "./OxygenBar";
 import { Terrain } from "./OceanFloor";
@@ -66,18 +66,18 @@ export default function WaterDemo() {
       <OceanSurface position={[0, waterHeight, 0]} />
       <Terrain />
 
-      <Fishs position={new Vector3(-5, 10, 0)} />
-      <Fishs
+      <Fishes position={new Vector3(-5, 10, 0)} />
+      <Fishes
         position={new Vector3(10, 10, 0)}
         fishType={FishType.BlueTang}
         color="#7fe08f"
       />
-      <Fishs
+      <Fishes
         position={new Vector3(5, 10, 5)}
         fishType={FishType.Manta}
         color="#394e4d"
       />
-      <Fishs
+      <Fishes
         position={new Vector3(0, 10, 10)}
         fishType={FishType.DoctorFish}
         color="#1ea8ed"

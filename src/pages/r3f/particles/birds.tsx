@@ -1,10 +1,11 @@
 import { perf } from "src/canvas/ChunkGenerationSystem/config";
 import { Birds } from "@r3f/Scenes/Particles/Birds/Scene";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { OrbitControls } from "@react-three/drei";
+import { Box, OrbitControls, Stage } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
 import { Vector3 } from "three";
+import { Fishes } from "@r3f/Scenes/Particles/Fishes/Scene";
 
 const seoInfo = {
   title: "Birds Particle System",
@@ -30,19 +31,22 @@ const seoInfo = {
 };
 
 export default function Page() {
-  const skyColor = "#FFFFFF";
+  const skyColor = "#002a39";
   return (
     <ThreeFiberLayout
       seoInfo={seoInfo}
       withKeyboardControls={false}
-      camera={{ position: new Vector3(132, -15, 450), near: 1, far: 3000 }}
+      camera={{ position: [-280, -25, 40], near: 0, far: 3000 }}
     >
       <color attach="background" args={[skyColor]} />
-      <fog color={skyColor} near={100} far={1000} />
-      <ambientLight />
+      <ambientLight intensity={0.5} />
+      <directionalLight />
+
+      <Stage></Stage>
 
       <Birds />
-      <OrbitControls />
+      {/* <Fishes /> */}
+      <OrbitControls enablePan={false} enableRotate={false} />
     </ThreeFiberLayout>
   );
 }

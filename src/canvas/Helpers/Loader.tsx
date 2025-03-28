@@ -12,13 +12,12 @@ export const Loader = ({ className = "" }: LoaderProps) => {
   useEffect(() => {
     if (progress === 100) {
       const timeout = setTimeout(() => {
-        // setShowLoader(false);
+        setShowLoader(false);
       }, 1000);
       return () => clearTimeout(timeout);
     }
   }, [progress]);
 
-  console.log(total);
   if (!showLoader || total === 0) return null;
 
   return (

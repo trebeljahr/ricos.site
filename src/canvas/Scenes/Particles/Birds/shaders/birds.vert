@@ -11,7 +11,6 @@ varying vec4 vColor;
 varying float z;
 
 void main() {
-
   vec4 tmpPos = texture2D(texturePosition, reference);
   vec3 pos = tmpPos.xyz;
   vec3 velocity = normalize(texture2D(textureVelocity, reference).xyz);
@@ -36,17 +35,11 @@ void main() {
   float cosrz = x / xyz;
   float sinrz = velocity.y / xyz;
 
-  mat3 maty = mat3(cosry, 0, -sinry, 0, 1, 0, sinry, 0, cosry
-
-  );
-
+  mat3 maty = mat3(cosry, 0, -sinry, 0, 1, 0, sinry, 0, cosry);
   mat3 matz = mat3(cosrz, sinrz, 0, -sinrz, cosrz, 0, 0, 0, 1);
 
   newPosition = maty * matz * newPosition;
   newPosition += pos;
 
-  z = newPosition.z;
-
-  vColor = vec4(birdColor, 1.0);
-  gl_Position = projectionMatrix * viewMatrix * vec4(newPosition, 1.0);
+  csm_Position = newPosition;
 }

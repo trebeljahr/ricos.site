@@ -4,7 +4,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
 import { useState } from "react";
 import { Vector2, Vector3 } from "three";
-import { Fishs } from "../Particles/Fishes/Scene";
+import { Fishes } from "../Particles/Fishes/Scene";
 import { SingleKelpTile } from "./Kelp";
 
 export const Floor = () => {

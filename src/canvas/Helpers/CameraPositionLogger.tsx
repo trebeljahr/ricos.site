@@ -1,6 +1,6 @@
 import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
 import { useThree } from "@react-three/fiber";
-import { Euler, Quaternion, Vector3 } from "three";
+import { Euler, PerspectiveCamera, Quaternion, Vector3 } from "three";
 import { debugCamera } from "../ChunkGenerationSystem/config";
 
 const temp = new Vector3();
@@ -15,11 +15,13 @@ export const CameraPositionLogger = () => {
       "local position",
       camera.position.x,
       camera.position.y,
-      camera.position.y
+      camera.position.z
     );
 
     camera.getWorldPosition(temp);
     console.info("world position", temp.x, temp.y, temp.z);
+    camera instanceof PerspectiveCamera &&
+      console.info("fov", camera.fov, "near", camera.near, "far", camera.far);
   });
 
   useSubscribeToKeyPress("r", () => {
@@ -27,7 +29,7 @@ export const CameraPositionLogger = () => {
       "local rotation",
       camera.rotation.x,
       camera.rotation.y,
-      camera.rotation.y
+      camera.rotation.z
     );
 
     camera.getWorldQuaternion(tempQuaternion);

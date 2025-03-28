@@ -1,7 +1,8 @@
-import { Fishs } from "@r3f/Scenes/Particles/Fishes/Scene";
+import { Fishes } from "@r3f/Scenes/Particles/Fishes/Scene";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { OrbitControls } from "@react-three/drei";
+import { Box, OrbitControls, Stage } from "@react-three/drei";
 import { Vector3 } from "three";
+import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 
 const seoInfo = {
   title: "A FBO particles demo using custom meshes of Fish",
@@ -26,15 +27,17 @@ export default function Page() {
     <ThreeFiberLayout
       seoInfo={seoInfo}
       withKeyboardControls={false}
-      camera={{ position: new Vector3(0, 0, 2), near: 0 }}
+      camera={{ position: new Vector3(0, 0, 5), near: 0, far: 300 }}
     >
-      <Fishs />
+      <Fishes />
 
-      <ambientLight />
+      <Stage></Stage>
+
+      <ambientLight intensity={1} />
+      <hemisphereLight />
       <directionalLight />
-      <fog color={0xffffff} near={100} far={1000} />
 
-      <OrbitControls />
+      <OrbitControls enablePan={false} />
     </ThreeFiberLayout>
   );
 }

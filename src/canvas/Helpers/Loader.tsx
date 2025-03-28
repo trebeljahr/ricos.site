@@ -1,4 +1,4 @@
-import { useProgress } from "@react-three/drei";
+import { useProgress } from "@hooks/useProgress";
 import { useEffect, useState } from "react";
 
 interface LoaderProps {

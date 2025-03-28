@@ -1,39 +1,34 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 // import { useFBO } from '@react-three/drei'
+import { initComputeRenderer, useGpuCompute } from "@hooks/useGpuCompute";
+import { useDolphin } from "@r3f/AllModels/fish_pack/Dolphin";
 import { useFish1 } from "@r3f/AllModels/fish_pack/Fish1";
 import { useFish2 } from "@r3f/AllModels/fish_pack/Fish2";
 import { useFish3 } from "@r3f/AllModels/fish_pack/Fish3";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useMantaRay } from "@r3f/AllModels/fish_pack/Ray";
+import { useShark } from "@r3f/AllModels/fish_pack/Shark";
+import { useWhale } from "@r3f/AllModels/fish_pack/Whale";
+import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import {
   Bone,
   BufferAttribute,
   BufferGeometry,
   Color,
-  DataTexture,
   IUniform,
   Mesh,
   MeshPhysicalMaterial,
-  RepeatWrapping,
   ShaderMaterial,
   SkinnedMesh,
   Vector3,
 } from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import CustomShaderMaterialType from "three-custom-shader-material/vanilla";
-import { mergeBufferGeometries } from "three-stdlib";
-import {
-  GPUComputationRenderer,
-  Variable,
-} from "three/examples/jsm/misc/GPUComputationRenderer";
+import { mergeBufferGeometries, Variable } from "three-stdlib";
 import fishFragment from "./shaders/fishFrag.glsl";
 import fishVertex from "./shaders/fishVert.glsl";
 import positionShader from "./shaders/positionFrag.glsl";
 import velocityShader from "./shaders/velocityFrag.glsl";
-import { useWhale } from "@r3f/AllModels/fish_pack/Whale";
-import { useDolphin } from "@r3f/AllModels/fish_pack/Dolphin";
-import { useShark } from "@r3f/AllModels/fish_pack/Shark";
-import { useMantaRay } from "@r3f/AllModels/fish_pack/Ray";
 
 export enum FishType {
   BlueTang,
@@ -47,32 +42,17 @@ export enum FishType {
 
 type Uniforms = { [key: string]: IUniform<any> };
 
-export function Fishs({
+export function Fishes({
   amount = 100,
   fishType = FishType.DoctorFish,
   position = new Vector3(0, 0, 0),
   color = "#FF7F50",
   scaleFactor = 0.1,
 }) {
-  const { gl } = useThree();
-
   const fishTextureWidth = Math.floor(Math.sqrt(amount));
   const bounds = 10;
 
-  const gpuCompute = useMemo(() => {
-    const gpuCompute = new GPUComputationRenderer(
-      fishTextureWidth,
-      fishTextureWidth,
-      gl
-    );
-    const error = gpuCompute.init();
-
-    if (error !== null) {
-      console.error(error);
-    }
-
-    return gpuCompute;
-  }, [gl]);
+  const gpuCompute = useGpuCompute(fishTextureWidth);
 
   const velocityVariable = useRef<Variable>(null!);
   const positionVariable = useRef<Variable>(null!);
@@ -94,63 +74,19 @@ export function Fishs({
   );
 
   useEffect(() => {
-    function initComputeRenderer() {
-      const dtPosition = gpuCompute.createTexture();
-      const dtVelocity = gpuCompute.createTexture();
-      fillPositionTexture(dtPosition, bounds);
-      fillVelocityTexture(dtVelocity);
-
-      velocityVariable.current = gpuCompute.addVariable(
-        "textureVelocity",
-        velocityShader,
-        dtVelocity
-      );
-      positionVariable.current = gpuCompute.addVariable(
-        "texturePosition",
-        positionShader,
-        dtPosition
-      );
-
-      gpuCompute.setVariableDependencies(velocityVariable.current, [
-        positionVariable.current,
-        velocityVariable.current,
-      ]);
-      gpuCompute.setVariableDependencies(positionVariable.current, [
-        positionVariable.current,
-        velocityVariable.current,
-      ]);
-
-      positionUniforms.current = positionVariable.current.material.uniforms;
-      velocityUniforms.current = velocityVariable.current.material.uniforms;
-
-      positionUniforms.current["time"] = { value: 0.0 };
-      positionUniforms.current["delta"] = { value: 0.0 };
-      velocityUniforms.current["time"] = { value: 1.0 };
-      velocityUniforms.current["delta"] = { value: 0.0 };
-      velocityUniforms.current["testing"] = { value: 1.0 };
-      velocityUniforms.current["separationDistance"] = { value: 1.0 };
-      velocityUniforms.current["alignmentDistance"] = { value: 1.0 };
-      velocityUniforms.current["cohesionDistance"] = { value: 1.0 };
-      velocityUniforms.current["freedomFactor"] = { value: 1.0 };
-      velocityUniforms.current["predator"] = { value: new Vector3(1, 1, 1) };
-
-      velocityVariable.current.material.defines.BOUNDS = bounds.toFixed(2);
-
-      velocityVariable.current.wrapS = RepeatWrapping;
-      velocityVariable.current.wrapT = RepeatWrapping;
-      positionVariable.current.wrapS = RepeatWrapping;
-      positionVariable.current.wrapT = RepeatWrapping;
-
-      const error = gpuCompute.init();
-
-      if (error !== null) {
-        console.error(error);
-      }
-    }
-
-    initComputeRenderer();
+    initComputeRenderer(
+      gpuCompute,
+      bounds,
+      velocityShader,
+      positionShader,
+      positionVariable,
+      velocityVariable,
+      positionUniforms,
+      velocityUniforms
+    );
 
     function initFishs() {
+      console.log("init fishs");
       if (!fishMesh.current) return;
 
       fishMesh.current.rotation.y = Math.PI / 2;
@@ -283,7 +219,7 @@ export function Fishs({
     allFishes.setIndex(indices);
 
     return allFishes;
-  }, [fishGeo]);
+  }, [fishGeo, amount, fishTextureWidth]);
 
   return (
     <group position={position} scale={scaleFactor}>
@@ -299,34 +235,6 @@ export function Fishs({
       </mesh>
     </group>
   );
-}
-
-function fillPositionTexture(texture: DataTexture, bounds: number) {
-  const bounds_half = bounds / 2;
-
-  for (let k = 0, kl = texture.image.data.length; k < kl; k += 4) {
-    const x = Math.random() * bounds - bounds_half;
-    const y = Math.random() * bounds - bounds_half;
-    const z = Math.random() * bounds - bounds_half;
-
-    texture.image.data[k + 0] = x;
-    texture.image.data[k + 1] = y;
-    texture.image.data[k + 2] = z;
-    texture.image.data[k + 3] = 1;
-  }
-}
-
-function fillVelocityTexture(texture: DataTexture) {
-  for (let k = 0, kl = texture.image.data.length; k < kl; k += 4) {
-    const x = Math.random() - 0.5;
-    const y = Math.random() - 0.5;
-    const z = Math.random() - 0.5;
-
-    texture.image.data[k + 0] = x;
-    texture.image.data[k + 1] = y;
-    texture.image.data[k + 2] = z;
-    texture.image.data[k + 3] = 1;
-  }
 }
 
 function useFishGeo(typeOfFish: FishType) {

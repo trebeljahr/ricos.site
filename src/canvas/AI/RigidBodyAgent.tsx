@@ -3,15 +3,14 @@ import { Line } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import {
   CapsuleCollider,
-  RapierRigidBody,
   RigidBody,
   RigidBodyProps,
   useBeforePhysicsStep,
 } from "@react-three/rapier";
 import { useControls } from "leva";
-import { PropsWithChildren, useEffect, useRef, useState } from "react";
-import { Component, Entity, EntityType, navQuery, playerQuery } from "./ecs";
+import { PropsWithChildren, useRef, useState } from "react";
 import { Quaternion, Vector3 } from "three";
+import { Component, Entity, EntityType, navQuery, playerQuery } from "./ecs";
 
 const size = 2;
 const radius = 0.5 * size;
@@ -50,7 +49,7 @@ export const Agent = ({
 
   const enemyRef = useRef<EntityType>(null!);
 
-  const [path, setPath] = useState<THREE.Vector3[]>([]);
+  const [path, setPath] = useState<Vector3[]>([]);
   const pathIndex = useRef(1);
 
   // useEffect(() => {

@@ -118,10 +118,17 @@ export const useGenericAnimationController = ({
   });
 
   useEffect(() => {
-    type MixerListener = EventListener<Event, "finished", AnimationMixer>;
+    type MixerListener = EventListener<
+      {
+        action: AnimationAction;
+        direction: number;
+      },
+      "finished",
+      AnimationMixer
+    >;
 
     const listener: MixerListener = (e) => {
-      const name = e.action._clip.name;
+      const name = (e.action as any)._clip.name;
 
       if (previousMixedIn.current === name) {
         previousMixedIn.current = "";

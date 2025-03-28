@@ -10,6 +10,7 @@ import {
   ShaderMaterial,
   MeshPhysicalMaterial,
   Texture,
+  Vector2,
 } from "three";
 import { BlendFunction, Effect } from "postprocessing";
 import { useRef, useMemo, useEffect } from "react";
@@ -111,29 +112,30 @@ export class LensFlareEffect extends Effect {
     opacity = 1.0,
     starBurst = true,
   }: LensFlareEffectProps = {}) {
+    const settings: [string, Uniform][] = [
+      ["enabled", new Uniform(enabled)],
+      ["glareSize", new Uniform(glareSize)],
+      ["lensPosition", new Uniform(lensPosition)],
+      ["iTime", new Uniform(0)],
+      ["iResolution", new Uniform(iResolution)],
+      ["starPoints", new Uniform(starPoints)],
+      ["flareSize", new Uniform(flareSize)],
+      ["flareSpeed", new Uniform(flareSpeed)],
+      ["flareShape", new Uniform(flareShape)],
+      ["animated", new Uniform(animated)],
+      ["anamorphic", new Uniform(anamorphic)],
+      ["colorGain", new Uniform(colorGain)],
+      ["lensDirtTexture", new Uniform(lensDirtTexture)],
+      ["haloScale", new Uniform(haloScale)],
+      ["secondaryGhosts", new Uniform(secondaryGhosts)],
+      ["aditionalStreaks", new Uniform(aditionalStreaks)],
+      ["ghostScale", new Uniform(ghostScale)],
+      ["starBurst", new Uniform(starBurst)],
+      ["opacity", new Uniform(opacity)],
+    ];
     super("LensFlareEffect", LensFlareShader.fragmentShader, {
       blendFunction,
-      uniforms: new Map([
-        ["enabled", new Uniform(enabled)],
-        ["glareSize", new Uniform(glareSize)],
-        ["lensPosition", new Uniform(lensPosition)],
-        ["iTime", new Uniform(0)],
-        ["iResolution", new Uniform(iResolution)],
-        ["starPoints", new Uniform(starPoints)],
-        ["flareSize", new Uniform(flareSize)],
-        ["flareSpeed", new Uniform(flareSpeed)],
-        ["flareShape", new Uniform(flareShape)],
-        ["animated", new Uniform(animated)],
-        ["anamorphic", new Uniform(anamorphic)],
-        ["colorGain", new Uniform(colorGain)],
-        ["lensDirtTexture", new Uniform(lensDirtTexture)],
-        ["haloScale", new Uniform(haloScale)],
-        ["secondaryGhosts", new Uniform(secondaryGhosts)],
-        ["aditionalStreaks", new Uniform(aditionalStreaks)],
-        ["ghostScale", new Uniform(ghostScale)],
-        ["starBurst", new Uniform(starBurst)],
-        ["opacity", new Uniform(opacity)],
-      ]),
+      uniforms: new Map(settings),
     });
   }
 
@@ -202,7 +204,10 @@ function Effects({
 
         if (flarePosition.z > 1) return;
 
-        raycaster.setFromCamera(projectedPosition, camera);
+        raycaster.setFromCamera(
+          new Vector2(projectedPosition.x, projectedPosition.z),
+          camera
+        );
         const intersects = raycaster.intersectObjects(scene.children, true);
 
         if (intersects[0]) {

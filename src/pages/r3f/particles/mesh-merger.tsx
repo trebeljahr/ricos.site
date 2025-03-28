@@ -31,7 +31,7 @@ export default function Page() {
       <ambientLight intensity={2} />
       <color attach="background" args={["#191616"]} />
       <MeshMerger />
-      <OrbitControls enablePan={false} />
+      <OrbitControls />
     </ThreeFiberLayout>
   );
 }

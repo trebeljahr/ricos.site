@@ -38,9 +38,8 @@ export function OceanSurface({
       waterColor: 0x001e0f,
       distortionScale: 3.7,
       fog: true,
-      format: gl.outputEncoding,
     }),
-    [waterNormals, gl.outputEncoding]
+    [waterNormals]
   );
   useFrame((state, delta) => {
     if (ref.current) {

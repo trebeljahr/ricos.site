@@ -106,7 +106,10 @@ export default function useShadowHelper(
   useEffect(() => {
     if (!ref.current || !debug) return;
 
-    helper.current = new CameraHelper(ref.current?.shadow.camera);
+    const shadowCam = ref.current?.shadow?.camera;
+    if (!shadowCam) return;
+
+    helper.current = new CameraHelper(shadowCam);
     if (helper.current) {
       scene.add(helper.current);
     }

@@ -1,8 +1,7 @@
 import { useThree } from "@react-three/fiber";
-// import { useRapier } from "@react-three/rapier";
 import { useEffect, useMemo, useRef } from "react";
-import * as THREE from "three";
 import type { camListenerTargetType } from "./Controller";
+import { Mesh, Object3D, Raycaster, Vector3 } from "three";
 
 export const useFollowCam = function ({
   disableFollowCam = false,
@@ -29,9 +28,9 @@ export const useFollowCam = function ({
   let previousTouch2: Touch | null;
 
   const originZDis = useRef<number>(camInitDis ?? -5);
-  const pivot = useMemo(() => new THREE.Object3D(), []);
+  const pivot = useMemo(() => new Object3D(), []);
   const followCam = useMemo(() => {
-    const origin = new THREE.Object3D();
+    const origin = new Object3D();
     origin.position.set(
       0,
       originZDis.current * Math.sin(-camInitDir.x),
@@ -44,13 +43,13 @@ export const useFollowCam = function ({
   let smallestDistance = null;
   let cameraDistance = null;
   let intersects = null;
-  // let intersectObjects: THREE.Object3D[] = [];
-  const intersectObjects = useRef<THREE.Object3D[]>([]);
-  const cameraRayDir = useMemo(() => new THREE.Vector3(), []);
-  const cameraRayOrigin = useMemo(() => new THREE.Vector3(), []);
-  const cameraPosition = useMemo(() => new THREE.Vector3(), []);
-  const camLerpingPoint = useMemo(() => new THREE.Vector3(), []);
-  const camRayCast = new THREE.Raycaster(
+  // let intersectObjects: Object3D[] = [];
+  const intersectObjects = useRef<Object3D[]>([]);
+  const cameraRayDir = useMemo(() => new Vector3(), []);
+  const cameraRayOrigin = useMemo(() => new Vector3(), []);
+  const cameraPosition = useMemo(() => new Vector3(), []);
+  const camLerpingPoint = useMemo(() => new Vector3(), []);
+  const camRayCast = new Raycaster(
     cameraRayOrigin,
     cameraRayDir,
     0,
@@ -173,14 +172,14 @@ export const useFollowCam = function ({
    * Custom traverse function
    */
   // Prepare intersect objects for camera collision
-  function customTraverseAdd(object: THREE.Object3D) {
+  function customTraverseAdd(object: Object3D) {
     // Chekc if the object's userData camExcludeCollision is true
     if (object.userData && object.userData.camExcludeCollision === true) {
       return;
     }
 
     // Check if the object is a Mesh, and is visible
-    if ((object as THREE.Mesh).isMesh && (object as THREE.Mesh).visible) {
+    if ((object as Mesh).isMesh && (object as Mesh).visible) {
       intersectObjects.current.push(object);
     }
 
@@ -190,7 +189,7 @@ export const useFollowCam = function ({
     });
   }
   // Remove intersect objects from camera collision array
-  function customTraverseRemove(object: THREE.Object3D) {
+  function customTraverseRemove(object: Object3D) {
     intersectObjects.current = intersectObjects.current.filter(
       (item) => item.uuid !== object.uuid // Keep all items except the one to remove
     );
@@ -329,7 +328,7 @@ export const useFollowCam = function ({
         );
       if (disableFollowCamTarget)
         camera.lookAt(
-          new THREE.Vector3(
+          new Vector3(
             disableFollowCamTarget.x,
             disableFollowCamTarget.y,
             disableFollowCamTarget.z

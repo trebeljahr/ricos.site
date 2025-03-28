@@ -1,126 +1,69 @@
+import { initComputeRenderer, useGpuCompute } from "@hooks/useGpuCompute";
 import { extend, Object3DNode, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
-import {
-  BufferAttribute,
-  BufferGeometry,
-  Color,
-  DataTexture,
-  DoubleSide,
-  IUniform,
-  Mesh,
-  RepeatWrapping,
-  ShaderMaterial,
-  Vector3,
-} from "three";
-import {
-  GPUComputationRenderer,
-  Variable,
-} from "three/examples/jsm/misc/GPUComputationRenderer";
-import positionShader from "./shaders/position.frag";
-import velocityShader from "./shaders/velocity.frag";
-import birdVertex from "./shaders/birds.vert";
-import birdFragment from "./shaders/birds.frag";
 import {
   fillPositionTexture,
   fillVelocityTexture,
 } from "src/lib/utils/fillDataTexture";
-
-const WIDTH = 100;
-const BOUNDS = 800;
-const BIRDS = WIDTH * WIDTH;
+import {
+  BufferAttribute,
+  BufferGeometry,
+  Color,
+  DoubleSide,
+  IUniform,
+  Mesh,
+  MeshPhysicalMaterial,
+  RepeatWrapping,
+  ShaderMaterial,
+  Vector3,
+} from "three";
+import CustomShaderMaterialType from "three-custom-shader-material/vanilla";
+import CustomShaderMaterial from "three-custom-shader-material";
+import birdFragment from "./shaders/birds.frag";
+import birdVertex from "./shaders/birds.vert";
+import positionShader from "./shaders/position.frag";
+import velocityShader from "./shaders/velocity.frag";
+import { Variable } from "three-stdlib";
 
 type Uniforms = { [uniform: string]: IUniform<any> };
 
-export function Birds() {
-  const { gl } = useThree();
+export function Birds({ amount = 1000 }) {
+  const textureWidth = Math.floor(Math.sqrt(amount));
+  const bounds = 800;
 
-  const gpuCompute = useMemo(() => {
-    const gpuCompute = new GPUComputationRenderer(WIDTH, WIDTH, gl);
-    const error = gpuCompute.init();
-
-    if (error !== null) {
-      console.error(error);
-    }
-
-    return gpuCompute;
-  }, [gl]);
+  const gpuCompute = useGpuCompute(textureWidth);
 
   const velocityVariable = useRef<Variable>();
   const positionVariable = useRef<Variable>();
   const positionUniforms = useRef<Uniforms>();
   const velocityUniforms = useRef<Uniforms>();
-  const birdUniforms = useRef<Uniforms>({
-    color: { value: new Color(0xff2200) },
-    texturePosition: { value: null },
-    textureVelocity: { value: null },
-    time: { value: 1.0 },
-    delta: { value: 0.0 },
-  });
+  const birdUniforms = useMemo<Uniforms>(
+    () => ({
+      color: { value: new Color(0xff2200) },
+      texturePosition: { value: null },
+      textureVelocity: { value: null },
+      time: { value: 1.0 },
+      delta: { value: 0.0 },
+    }),
+    []
+  );
 
   useEffect(() => {
-    function initComputeRenderer() {
-      const dtPosition = gpuCompute.createTexture();
-      const dtVelocity = gpuCompute.createTexture();
-      fillPositionTexture(dtPosition, BOUNDS);
-      fillVelocityTexture(dtVelocity);
-
-      velocityVariable.current = gpuCompute.addVariable(
-        "textureVelocity",
-        velocityShader,
-        dtVelocity
-      );
-      positionVariable.current = gpuCompute.addVariable(
-        "texturePosition",
-        positionShader,
-        dtPosition
-      );
-
-      gpuCompute.setVariableDependencies(velocityVariable.current, [
-        positionVariable.current,
-        velocityVariable.current,
-      ]);
-      gpuCompute.setVariableDependencies(positionVariable.current, [
-        positionVariable.current,
-        velocityVariable.current,
-      ]);
-
-      positionUniforms.current = positionVariable.current.material.uniforms;
-      velocityUniforms.current = velocityVariable.current.material.uniforms;
-
-      positionUniforms.current["time"] = { value: 0.0 };
-      positionUniforms.current["delta"] = { value: 0.0 };
-      velocityUniforms.current["time"] = { value: 1.0 };
-      velocityUniforms.current["delta"] = { value: 0.0 };
-      velocityUniforms.current["testing"] = { value: 1.0 };
-      velocityUniforms.current["separationDistance"] = { value: 1.0 };
-      velocityUniforms.current["alignmentDistance"] = { value: 1.0 };
-      velocityUniforms.current["cohesionDistance"] = { value: 1.0 };
-      velocityUniforms.current["freedomFactor"] = { value: 1.0 };
-      velocityUniforms.current["predator"] = { value: new Vector3(1, 1, 1) };
-      velocityVariable.current.material.defines.BOUNDS = BOUNDS.toFixed(2);
-
-      velocityVariable.current.wrapS = RepeatWrapping;
-      velocityVariable.current.wrapT = RepeatWrapping;
-      positionVariable.current.wrapS = RepeatWrapping;
-      positionVariable.current.wrapT = RepeatWrapping;
-
-      const error = gpuCompute.init();
-
-      if (error !== null) {
-        console.error(error);
-      }
-    }
-
-    initComputeRenderer();
+    initComputeRenderer(
+      gpuCompute,
+      bounds,
+      velocityShader,
+      positionShader,
+      positionVariable,
+      velocityVariable,
+      positionUniforms,
+      velocityUniforms
+    );
 
     function initBirds() {
-      birdUniforms.current = {
-        color: { value: new Color(0xff2200) },
-        texturePosition: { value: null },
-        textureVelocity: { value: null },
-        time: { value: 1.0 },
-        delta: { value: 0.0 },
-      };
+      console.log("init birds");
+
+      if (!birdMesh.current) return;
 
       birdMesh.current.rotation.y = Math.PI / 2;
       birdMesh.current.matrixAutoUpdate = false;
@@ -132,8 +75,12 @@ export function Birds() {
     return () => gpuCompute && gpuCompute.dispose();
   }, [gpuCompute]);
 
-  const mouseX = useRef(10000);
-  const mouseY = useRef(10000);
+  const birdGeometry = useMemo(() => {
+    return new BirdGeometry(textureWidth);
+  }, [textureWidth]);
+
+  const mouseX = useRef(Infinity);
+  const mouseY = useRef(Infinity);
 
   const { width, height } = useThree((state) => state.size);
   const windowHalfX = useMemo(() => width / 2, [width]);
@@ -155,6 +102,8 @@ export function Birds() {
   }, [windowHalfX, windowHalfY]);
 
   const last = useRef(performance.now());
+  console.log({ windowHalfX, windowHalfY });
+  console.log({ mouseX: mouseX.current, mouseY: mouseY.current });
 
   useFrame(() => {
     const now = performance.now();
@@ -169,8 +118,8 @@ export function Birds() {
     positionUniforms.current["delta"].value = delta;
     velocityUniforms.current["time"].value = now;
     velocityUniforms.current["delta"].value = delta;
-    birdUniforms.current["time"].value = now;
-    birdUniforms.current["delta"].value = delta;
+    birdMaterial.current.uniforms["time"].value = now;
+    birdMaterial.current.uniforms["delta"].value = delta;
 
     velocityUniforms.current["predator"].value.set(
       (0.5 * mouseX.current) / windowHalfX,
@@ -178,8 +127,8 @@ export function Birds() {
       0
     );
 
-    mouseX.current = 10000;
-    mouseY.current = 10000;
+    mouseX.current = Infinity;
+    mouseY.current = Infinity;
 
     gpuCompute.compute();
 
@@ -190,6 +139,8 @@ export function Birds() {
     )
       return;
 
+    // console.log("updating bird material uniforms");
+
     birdMaterial.current.uniforms["texturePosition"].value =
       gpuCompute.getCurrentRenderTarget(positionVariable.current).texture;
 
@@ -197,29 +148,33 @@ export function Birds() {
       gpuCompute.getCurrentRenderTarget(velocityVariable.current).texture;
   });
 
-  const birdMesh = useRef<Mesh<BirdGeometry, ShaderMaterial>>(null!);
-  const birdMaterial = useRef<ShaderMaterial>(null!);
+  const birdMesh = useRef<Mesh>(null!);
+  const birdMaterial = useRef<CustomShaderMaterialType>(null!);
 
   return (
-    <mesh ref={birdMesh}>
-      <shaderMaterial
+    <mesh ref={birdMesh} frustumCulled={false} geometry={birdGeometry}>
+      <CustomShaderMaterial
         ref={birdMaterial}
-        uniforms={birdUniforms.current}
+        baseMaterial={MeshPhysicalMaterial}
+        uniforms={birdUniforms}
         vertexShader={birdVertex}
         fragmentShader={birdFragment}
         side={DoubleSide}
+        flatShading
       />
-      <birdGeometry />
     </mesh>
   );
 }
 
 class BirdGeometry extends BufferGeometry {
-  constructor() {
+  constructor(dataTextureWidth: number) {
     super();
+    console.log("creating bird geometry");
+
+    const numBirds = dataTextureWidth * dataTextureWidth;
 
     const trianglesPerBird = 3;
-    const triangles = BIRDS * trianglesPerBird;
+    const triangles = numBirds * trianglesPerBird;
     const points = triangles * 3;
 
     const vertices = new BufferAttribute(new Float32Array(points * 3), 3);
@@ -242,7 +197,7 @@ class BirdGeometry extends BufferGeometry {
 
     const wingsSpan = 20;
 
-    for (let f = 0; f < BIRDS; f++) {
+    for (let f = 0; f < numBirds; f++) {
       verts_push(0, -0, -20, 0, 4, -20, 0, 0, 30);
       verts_push(0, 0, -15, -wingsSpan, 0, 0, 0, 0, 15);
       verts_push(0, 0, 15, wingsSpan, 0, 0, 0, 0, -15);
@@ -251,10 +206,10 @@ class BirdGeometry extends BufferGeometry {
     for (let v = 0; v < triangles * 3; v++) {
       const triangleIndex = ~~(v / 3);
       const birdIndex = ~~(triangleIndex / trianglesPerBird);
-      const x = (birdIndex % WIDTH) / WIDTH;
-      const y = ~~(birdIndex / WIDTH) / WIDTH;
+      const x = (birdIndex % dataTextureWidth) / dataTextureWidth;
+      const y = ~~(birdIndex / dataTextureWidth) / dataTextureWidth;
 
-      const c = new Color(0x444444 + (~~(v / 9) / BIRDS) * 0x666666);
+      const c = new Color(0x444444 + (~~(v / 9) / numBirds) * 0x666666);
       birdColors.array[v * 3 + 0] = c.r;
       birdColors.array[v * 3 + 1] = c.g;
       birdColors.array[v * 3 + 2] = c.b;
@@ -264,13 +219,5 @@ class BirdGeometry extends BufferGeometry {
     }
 
     this.scale(0.2, 0.2, 0.2);
-  }
-}
-
-extend({ BirdGeometry });
-
-declare module "@react-three/fiber" {
-  interface ThreeElements {
-    birdGeometry: Object3DNode<BirdGeometry, typeof BirdGeometry>;
   }
 }

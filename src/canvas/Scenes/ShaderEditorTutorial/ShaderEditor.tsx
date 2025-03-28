@@ -6,25 +6,6 @@ import ReactCodeMirror from "@uiw/react-codemirror";
 import { useCallback, useState } from "react";
 import { FullCanvasShader } from "./FullCanvasShader";
 
-export function CodeEditor({ code }: { code: string }) {
-  const [value, setValue] = useState(code);
-  const onChange = useCallback((val: string) => {
-    setValue(val);
-  }, []);
-
-  return (
-    <ReactCodeMirror
-      value={value}
-      height="200px"
-      width="50%"
-      className={"pt-10"}
-      onChange={onChange}
-      theme={vscodeDark}
-      extensions={[cppLanguage]}
-    />
-  );
-}
-
 const defaultShader = `
 #ifdef GL_ES
 precision mediump float;

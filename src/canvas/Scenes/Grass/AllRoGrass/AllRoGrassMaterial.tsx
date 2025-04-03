@@ -1,8 +1,8 @@
 import { shaderMaterial } from "@react-three/drei";
 import { extend, ReactThreeFiber } from "@react-three/fiber";
-import fragShader from "@shaders/grass/frag.glsl";
-import vertShader from "@shaders/grass/vert.glsl";
 import { Color, DoubleSide, Material, ShaderMaterial, Texture } from "three";
+import grassFragmentShader from "./shaders/grassFragmentShader.glsl";
+import grassVertexShader from "./shaders/grassVertexShader.glsl";
 
 const uniforms = {
   map: null as Texture | null,
@@ -31,8 +31,8 @@ declare module "@react-three/fiber" {
 
 export const GrassMaterial = shaderMaterial(
   uniforms,
-  vertShader,
-  fragShader,
+  grassVertexShader,
+  grassFragmentShader,
   (self) => {
     if (!self) return;
 

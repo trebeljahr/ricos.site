@@ -1,7 +1,7 @@
 import { DoubleSide } from "three";
 import { tileSize } from "../ChunkGenerationSystem/config";
 
-export const SimpleGrassGroundPlane = ({
+export const SimpleGreenGroundPlane = ({
   size = tileSize,
 }: {
   size?: number;

@@ -10,7 +10,7 @@ import { useMemo } from "react";
 import { DoubleSide, Vector2 } from "three";
 import { debug, tileSize } from "../ChunkGenerationSystem/config";
 import { poissonDiskSample } from "../../lib/utils/noise";
-import { SimpleGrassGroundPlane } from "../Helpers/SimpleGrassGroundPlane";
+import { SimpleGreenGroundPlane } from "../Helpers/SimpleGrassGroundPlane";
 
 export const TreeTile = ({
   size = 100,
@@ -36,7 +36,7 @@ export const TreeTile = ({
         <Model key={index} positions={groups[index]} />
       ))}
 
-      <SimpleGrassGroundPlane size={size} />
+      <SimpleGreenGroundPlane size={size} />
 
       {debug && (
         <>

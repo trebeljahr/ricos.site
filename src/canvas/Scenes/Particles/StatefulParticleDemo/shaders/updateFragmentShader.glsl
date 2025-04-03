@@ -11,7 +11,6 @@ uniform sampler2D dataTexture;
 uniform float timeDelta;
 uniform float time;
 
-
 struct AttractorParams {
   vec3 position;
   float radius;
@@ -53,7 +52,7 @@ void main() {
   forces += CalculateAttractorForce(currentPosition, attractorParams);
 
   // Create repulsor force
-  vec3 repulsor = vec3(sin(time * 0.25) * 3.0, 0.0, 0.0);
+  vec3 repulsor = vec3(sin(time * 0.25) * 4.0, 0.5, 0.0);
   float distToRepulsor = distance(currentPosition, repulsor);
   {
     float repulsorRadius = 1.0;
@@ -72,5 +71,4 @@ void main() {
       forces * timeDelta * timeDelta);
 
   out_FragColour = vec4(newPosition, distToRepulsor);
-  // out_FragColour = vec4(currentPosition.xy, + sin(time) * 1.0, distToRepulsor);
 }

@@ -9,6 +9,6 @@ in vec4 vColour;
 void main() {
   vec4 diffuseSample = texture(diffuseTexture, gl_PointCoord);
 
-  out_FragColour = diffuseSample * vColour;
+  out_FragColour = diffuseSample * 2.0 * vColour;
   out_FragColour.w *= 0.1;
 }

@@ -77,51 +77,51 @@ const InfoButton = () => {
                 right. This will copy the URL which you can then send around.
               </p>
               <p className="!mb-0">Try some presets!</p>
-              <Link href="/r3f/shader-art-demo?chosenShape=0&chosenPalette=5&repetitions=2.1&speedFactor=0.6&scaleFactor=2.2&space=7.2&depth=4.199999999999999&contrast=1.1&strength=0.0073&rgbStrength=%5B1%2C1%2C1%5D">
+              <Link href="/r3f/scenes/shader-art-demo?chosenShape=0&chosenPalette=5&repetitions=2.1&speedFactor=0.6&scaleFactor=2.2&space=7.2&depth=4.199999999999999&contrast=1.1&strength=0.0073&rgbStrength=%5B1%2C1%2C1%5D">
                 1
               </Link>
               ,{" "}
-              <Link href="/r3f/shader-art-demo?chosenShape=5&chosenPalette=3&repetitions=1.5&speedFactor=0.5&scaleFactor=4&space=8&depth=8&contrast=1&strength=0.003&rgbStrength=%5B1%2C1%2C1%5D">
+              <Link href="/r3f/scenes/shader-art-demo?chosenShape=5&chosenPalette=3&repetitions=1.5&speedFactor=0.5&scaleFactor=4&space=8&depth=8&contrast=1&strength=0.003&rgbStrength=%5B1%2C1%2C1%5D">
                 2
               </Link>
               ,{" "}
-              <Link href="/r3f/shader-art-demo?chosenShape=5&chosenPalette=7&repetitions=1.5&speedFactor=0.5&scaleFactor=0.6999999999999997&space=15.8&depth=3.5&contrast=2.3&strength=0.004200000000000001&rgbStrength=%5B1%2C1%2C1%5D">
+              <Link href="/r3f/scenes/shader-art-demo?chosenShape=5&chosenPalette=7&repetitions=1.5&speedFactor=0.5&scaleFactor=0.6999999999999997&space=15.8&depth=3.5&contrast=2.3&strength=0.004200000000000001&rgbStrength=%5B1%2C1%2C1%5D">
                 3
               </Link>
               ,{" "}
-              <Link href="/r3f/shader-art-demo?chosenShape=5&chosenPalette=1&repetitions=3&speedFactor=1.1&scaleFactor=2.7&space=20&depth=0.1999999999999993&contrast=1.2&strength=0.0076&rgbStrength=%5B1%2C1%2C1%5D">
+              <Link href="/r3f/scenes/shader-art-demo?chosenShape=5&chosenPalette=1&repetitions=3&speedFactor=1.1&scaleFactor=2.7&space=20&depth=0.1999999999999993&contrast=1.2&strength=0.0076&rgbStrength=%5B1%2C1%2C1%5D">
                 4
               </Link>
               ,{" "}
-              <Link href="/r3f/shader-art-demo?chosenShape=0&chosenPalette=0&repetitions=4.4&speedFactor=0.3&scaleFactor=2.7&space=20&depth=1.0999999999999996&contrast=1.2&strength=0.0076&rgbStrength=%5B1%2C1%2C1%5D">
+              <Link href="/r3f/scenes/shader-art-demo?chosenShape=0&chosenPalette=0&repetitions=4.4&speedFactor=0.3&scaleFactor=2.7&space=20&depth=1.0999999999999996&contrast=1.2&strength=0.0076&rgbStrength=%5B1%2C1%2C1%5D">
                 5
               </Link>
               ,{" "}
-              <Link href="/r3f/shader-art-demo?chosenShape=3&chosenPalette=2&repetitions=4.4&speedFactor=0.3&scaleFactor=6.5&space=16.5&depth=1.2999999999999998&contrast=1.1&strength=0.0098&rgbStrength=%5B1%2C1%2C1%5D">
+              <Link href="/r3f/scenes/shader-art-demo?chosenShape=3&chosenPalette=2&repetitions=4.4&speedFactor=0.3&scaleFactor=6.5&space=16.5&depth=1.2999999999999998&contrast=1.1&strength=0.0098&rgbStrength=%5B1%2C1%2C1%5D">
                 6
               </Link>
               ,{" "}
-              <Link href="/r3f/shader-art-demo?chosenShape=2&chosenPalette=2&repetitions=9.4&speedFactor=0.4&scaleFactor=7.4&space=1.5&depth=3.8&contrast=0.8&strength=0.0078000000000000005&rgbStrength=%5B1%2C1%2C1%5D">
+              <Link href="/r3f/scenes/shader-art-demo?chosenShape=2&chosenPalette=2&repetitions=9.4&speedFactor=0.4&scaleFactor=7.4&space=1.5&depth=3.8&contrast=0.8&strength=0.0078000000000000005&rgbStrength=%5B1%2C1%2C1%5D">
                 7
               </Link>
               ,{" "}
-              <Link href="/r3f/shader-art-demo?chosenShape=6&chosenPalette=2&repetitions=1.5&speedFactor=0.5&scaleFactor=0.3999999999999999&space=16.5&depth=2.5999999999999996&contrast=1.2&strength=0.0088&rgbStrength=%5B1%2C1%2C1%5D">
+              <Link href="/r3f/scenes/shader-art-demo?chosenShape=6&chosenPalette=2&repetitions=1.5&speedFactor=0.5&scaleFactor=0.3999999999999999&space=16.5&depth=2.5999999999999996&contrast=1.2&strength=0.0088&rgbStrength=%5B1%2C1%2C1%5D">
                 8
               </Link>
               ,{" "}
-              <Link href="/r3f/shader-art-demo?chosenShape=6&chosenPalette=2&repetitions=1.8&speedFactor=0.5&scaleFactor=0.3999999999999999&space=5.1&depth=10&contrast=1.2&strength=0.0083&rgbStrength=%5B0.5%2C0.5%2C0.5%5D">
+              <Link href="/r3f/scenes/shader-art-demo?chosenShape=6&chosenPalette=2&repetitions=1.8&speedFactor=0.5&scaleFactor=0.3999999999999999&space=5.1&depth=10&contrast=1.2&strength=0.0083&rgbStrength=%5B0.5%2C0.5%2C0.5%5D">
                 9
               </Link>
               ,{" "}
-              <Link href="/r3f/shader-art-demo?chosenShape=6&chosenPalette=5&repetitions=2.1&speedFactor=0.6&scaleFactor=10&space=15.4&depth=4.199999999999999&contrast=1&strength=0.0035&rgbStrength=%5B1%2C1%2C1%5D">
+              <Link href="/r3f/scenes/shader-art-demo?chosenShape=6&chosenPalette=5&repetitions=2.1&speedFactor=0.6&scaleFactor=10&space=15.4&depth=4.199999999999999&contrast=1&strength=0.0035&rgbStrength=%5B1%2C1%2C1%5D">
                 10
               </Link>
               ,{" "}
-              <Link href="/r3f/shader-art-demo?chosenShape=6&chosenPalette=1&repetitions=1.4&speedFactor=0.5&scaleFactor=7.4&space=1.5&depth=8&contrast=0.8&strength=0.001&rgbStrength=%5B1%2C1%2C1%5D">
+              <Link href="/r3f/scenes/shader-art-demo?chosenShape=6&chosenPalette=1&repetitions=1.4&speedFactor=0.5&scaleFactor=7.4&space=1.5&depth=8&contrast=0.8&strength=0.001&rgbStrength=%5B1%2C1%2C1%5D">
                 11
               </Link>
               ,{" "}
-              <Link href="/r3f/shader-art-demo?chosenShape=2&chosenPalette=3&repetitions=4.4&speedFactor=1.8&scaleFactor=2.7&space=7.1&depth=8&contrast=0.8&strength=0.0023&rgbStrength=%5B1%2C1%2C1%5D">
+              <Link href="/r3f/scenes/shader-art-demo?chosenShape=2&chosenPalette=3&repetitions=4.4&speedFactor=1.8&scaleFactor=2.7&space=7.1&depth=8&contrast=0.8&strength=0.0023&rgbStrength=%5B1%2C1%2C1%5D">
                 12
               </Link>
               <p>

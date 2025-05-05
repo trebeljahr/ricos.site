@@ -1,4 +1,4 @@
-import { readdir } from "fs/promises";
+import { readdir, lstat } from "fs/promises";
 import preval from "next-plugin-preval";
 import path from "path";
 import { getShaderFileNames } from "./getShaderFileNames";
@@ -12,12 +12,14 @@ export const addPrefix = (prefix: string) => (url: string) => {
 const r3fDirectory = path.resolve(process.cwd(), "src", "pages", "r3f");
 
 export async function getFileNamesForR3FDemos(subfolder: string) {
-  const directory = path.resolve(r3fDirectory, subfolder);
-  const files = (await readdir(directory)) || [];
+  const directoryPath = path.resolve(r3fDirectory, subfolder);
+
+  const pathIsFile = (await lstat(directoryPath)).isFile();
+  const filesInDirectory = !pathIsFile ? await readdir(directoryPath) : [];
 
   const key = turnKebabIntoTitleCase(subfolder);
 
-  const links = files
+  const links = filesInDirectory
     .map((singleFile) => singleFile.replace(".tsx", ""))
     .map(addPrefix(`/r3f/${subfolder}/`));
 

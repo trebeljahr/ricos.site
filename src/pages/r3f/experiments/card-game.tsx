@@ -1,3 +1,4 @@
+import { usePrevious } from "@hooks/usePrevious";
 import {
   Image as DreiImage,
   OrbitControls,
@@ -6,15 +7,15 @@ import {
 } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { noop } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Group } from "three";
 
 type CardEffect =
   | "DAMAGE_OPPONENT"
   | "HEAL_PLAYER"
   | "DRAW_CARD"
-  | "BUFF_CARDS"
-  | "DEBUFF_OPPONENT_CARDS"
+  | "ALTER_CARDS"
   | "NONE";
 
 interface CardData {
@@ -24,21 +25,26 @@ interface CardData {
   attack: number;
   defense: number;
   sacrificeValue: number;
-  effect: CardEffect;
-  effectValue?: number;
+  effects?: {
+    attack: number;
+    defense: number;
+    life: number;
+    target: number;
+    draw: number;
+    discard: number;
+  };
   effectDescription: string;
 }
 
 interface Player {
-  id: string;
+  id: "player" | "enemy";
   name: string;
   deck: CardData[];
   hand: CardData[];
-  lifeTotal: number;
   boardSlots: (CardData | null)[];
 }
 
-type GamePhase = "DRAW" | "PLAY" | "ATTACK" | "END";
+type GamePhase = "DRAW" | "PLAY" | "ATTACK" | "END" | "SACRIFICE" | "DISCARD";
 
 const initialDeck: CardData[] = [
   {
@@ -47,10 +53,16 @@ const initialDeck: CardData[] = [
     imageUrl: "/card-game/dragon.png",
     attack: 8,
     defense: 6,
-    sacrificeValue: 3,
-    effect: "DAMAGE_OPPONENT",
-    effectValue: 2,
-    effectDescription: "Deal 2 damage to opponent when played",
+    sacrificeValue: 0,
+    effects: {
+      attack: 0,
+      defense: 0,
+      life: 0,
+      target: 0,
+      draw: 0,
+      discard: 0,
+    },
+    effectDescription: "Deals 2 damage to opponent when played",
   },
   {
     id: "2",
@@ -59,8 +71,14 @@ const initialDeck: CardData[] = [
     attack: 2,
     defense: 9,
     sacrificeValue: 0,
-    effect: "BUFF_CARDS",
-    effectValue: 1,
+    effects: {
+      attack: 0,
+      defense: +1,
+      life: 0,
+      target: 0,
+      draw: 0,
+      discard: 0,
+    },
     effectDescription: "Add +1 defense to all your other cards",
   },
   {
@@ -81,7 +99,7 @@ const initialDeck: CardData[] = [
     attack: 6,
     defense: 4,
     sacrificeValue: 0,
-    effect: "DEBUFF_OPPONENT_CARDS",
+    effect: "DEBUFF_OPPONENT_CARDS_ATTACK",
     effectValue: 1,
     effectDescription: "Reduce attack of all opponent cards by 1",
   },
@@ -122,8 +140,8 @@ const initialDeck: CardData[] = [
     imageUrl: "/card-game/knight.png",
     attack: 7,
     defense: 7,
-    sacrificeValue: 3,
-    effect: "BUFF_CARDS",
+    sacrificeValue: 0,
+    effect: "BUFF_CARDS_ATTACK",
     effectValue: 2,
     effectDescription: "Add +2 attack to all your other cards",
   },
@@ -218,7 +236,7 @@ const initialDeck: CardData[] = [
     imageUrl: "/card-game/tree-stump.png",
     attack: 6,
     defense: 5,
-    sacrificeValue: 3,
+    sacrificeValue: 0,
     effect: "DRAW_CARD",
     effectValue: 1,
     effectDescription: "Draw a card when played",
@@ -230,7 +248,7 @@ const initialDeck: CardData[] = [
     attack: 2,
     defense: 7,
     sacrificeValue: 1,
-    effect: "BUFF_CARDS",
+    effect: "BUFF_CARDS_ATTACK",
     effectValue: 1,
     effectDescription: "Add +1 attack to all your other cards",
   },
@@ -251,8 +269,8 @@ const initialDeck: CardData[] = [
     imageUrl: "/card-game/wizard.png",
     attack: 6,
     defense: 6,
-    sacrificeValue: 3,
-    effect: "BUFF_CARDS",
+    sacrificeValue: 0,
+    effect: "BUFF_CARDS_ATTACK_AND_DEFENSE",
     effectValue: 1,
     effectDescription: "Add +1 attack and +1 defense to all your other cards",
   },
@@ -268,6 +286,7 @@ const Card = ({
   rotation = [0, 0, 0],
   scale = 2,
   isHovered = false,
+  sacrificed = false,
   onClick,
 }: {
   card: CardData;
@@ -275,11 +294,11 @@ const Card = ({
   rotation?: [number, number, number];
   scale?: number;
   isHovered?: boolean;
+  sacrificed?: boolean;
   onClick?: () => void;
 }) => {
   const groupRef = useRef<Group>(null!);
   const [hovered, setHovered] = useState(false);
-  const [active, setActive] = useState(false);
 
   useCursor(hovered || isHovered);
 
@@ -287,8 +306,10 @@ const Card = ({
     if (groupRef.current) {
       if (hovered || isHovered) {
         groupRef.current.scale.set(scale * 1.1, scale * 1.1, scale * 1.1);
+        groupRef.current.position.z = 0.2;
       } else {
         groupRef.current.scale.set(scale, scale, scale);
+        groupRef.current.position.z = 0;
       }
     }
   });
@@ -311,7 +332,7 @@ const Card = ({
       {/* Card Background */}
       <mesh>
         <planeGeometry args={[1, 1.4]} />
-        <meshStandardMaterial color={active ? "#5d8aa8" : "#8a8a8a"} />
+        <meshStandardMaterial color={sacrificed ? "#eb4444" : "#ededed"} />
       </mesh>
 
       {/* Card Content */}
@@ -379,12 +400,14 @@ const Card = ({
 const Board = ({
   playerData,
   enemyData,
+  sacrifices,
   selectedCard,
   onCardSelect,
   onPlaceCard,
 }: {
   playerData: Player;
   enemyData: Player;
+  sacrifices: CardData[];
   selectedCard: CardData | null;
   onCardSelect: (
     card: CardData,
@@ -428,6 +451,7 @@ const Board = ({
             {card && (
               <Card
                 card={card}
+                sacrificed={!!sacrifices.find((sac) => sac.id === card.id)}
                 position={[0, 0, 0.1]}
                 scale={0.9}
                 onClick={() => onCardSelect(card, "board", index)}
@@ -555,12 +579,14 @@ const ActionLog = ({ logs }: { logs: string[] }) => {
 };
 
 export default function CardGame() {
+  const [playerLifeTotal, setPlayerLifeTotal] = useState(20);
+  const [enemyLifeTotal, setEnemyLifeTotal] = useState(20);
+
   const [playerData, setPlayerData] = useState<Player>({
     id: "player",
     name: "Player",
     deck: shuffle([...initialDeck]),
     hand: [],
-    lifeTotal: 20,
     boardSlots: [null, null, null, null, null],
   });
 
@@ -569,7 +595,6 @@ export default function CardGame() {
     name: "Enemy",
     deck: shuffle([...initialDeck]),
     hand: [],
-    lifeTotal: 20,
     boardSlots: [null, null, null, null, null],
   });
 
@@ -586,48 +611,81 @@ export default function CardGame() {
   ]);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [winner, setWinner] = useState<string | null>(null);
+  const [sacrifices, setSacrifices] = useState<CardData[]>([]);
 
-  useEffect(() => {
-    drawCards(playerData, 5);
+  const resetGameState = useCallback(() => {
+    setPlayerData({
+      ...playerData,
+      deck: shuffle([...initialDeck]),
+      hand: [],
+      boardSlots: [null, null, null, null, null],
+    });
+    setEnemyData({
+      ...enemyData,
+      deck: shuffle([...initialDeck]),
+      hand: [],
+      boardSlots: [null, null, null, null, null],
+    });
 
-    drawCards(enemyData, 5);
+    setPlayerLifeTotal(20);
+    setEnemyLifeTotal(20);
+
+    drawCards(playerData.id, 5);
+    drawCards(enemyData.id, 5);
+
+    setCurrentPhase("DRAW");
+    setSelectedCard(null);
+    setGameLogs(["Game started. Draw a card to begin."]);
+    setGameOver(false);
+    setWinner(null);
   }, []);
 
   useEffect(() => {
-    if (playerData.lifeTotal <= 0) {
+    resetGameState();
+  }, []);
+
+  useEffect(() => {
+    if (playerLifeTotal <= 0) {
       setGameOver(true);
       setWinner("Enemy");
       addGameLog("Game over! Enemy wins!");
-    } else if (enemyData.lifeTotal <= 0) {
+    } else if (enemyLifeTotal <= 0) {
       setGameOver(true);
       setWinner("Player");
       addGameLog("Game over! You win!");
     }
-  }, [playerData.lifeTotal, enemyData.lifeTotal]);
+  }, [playerLifeTotal, enemyLifeTotal]);
 
-  const drawCards = (player: Player, count: number) => {
-    const newPlayer = { ...player };
-    const newHand = [...newPlayer.hand];
-    const newDeck = [...newPlayer.deck];
+  const drawCards = useCallback(
+    (playerId: "player" | "enemy", count: number) => {
+      const updatePlayerHand = (player: Player) => {
+        const newPlayer = { ...player };
+        const newHand = [...newPlayer.hand];
+        const newDeck = [...newPlayer.deck];
 
-    for (let i = 0; i < count; i++) {
-      if (newDeck.length > 0) {
-        const card = newDeck.pop();
-        if (card) newHand.push(card);
+        for (let i = 0; i < count; i++) {
+          if (newDeck.length > 0) {
+            const card = newDeck.pop();
+            if (card) newHand.push(card);
+          }
+        }
+
+        newPlayer.hand = newHand;
+        newPlayer.deck = newDeck;
+
+        return newPlayer;
+      };
+
+      if (playerId === "player") {
+        setPlayerData(updatePlayerHand);
+        addGameLog(`You drew ${count} card${count > 1 ? "s" : ""}.`);
+      } else {
+        setEnemyData(updatePlayerHand);
+        addGameLog(`Enemy drew ${count} card${count > 1 ? "s" : ""}.`);
       }
-    }
-
-    newPlayer.hand = newHand;
-    newPlayer.deck = newDeck;
-
-    if (player.id === "player") {
-      setPlayerData(newPlayer);
-      addGameLog(`You drew ${count} card${count > 1 ? "s" : ""}.`);
-    } else {
-      setEnemyData(newPlayer);
-      addGameLog(`Enemy drew ${count} card${count > 1 ? "s" : ""}.`);
-    }
-  };
+    },
+    []
+  );
 
   const addGameLog = (message: string) => {
     setGameLogs((prev) => [...prev, message]);
@@ -640,13 +698,36 @@ export default function CardGame() {
   ) => {
     if (gameOver) return;
 
-    if (currentPhase === "PLAY" && source === "hand") {
-      setSelectedCard(card);
-      setSelectedCardSource(source);
-      setSelectedCardIndex(index);
-    } else {
-      addGameLog(`Can't select cards during ${currentPhase} phase.`);
+    if (selectedCard && selectedCard.id === card.id) {
+      unselectCard();
+      return;
     }
+
+    if (card && source === "board" && currentPhase === "SACRIFICE") {
+      setSacrifices((prev) => [...prev, card]);
+      addGameLog(`Added ${card.name} to sacrifices.`);
+      return;
+    }
+
+    setSelectedCard(card);
+    setSelectedCardSource(source);
+    setSelectedCardIndex(index);
+  };
+
+  const sacrificeCards = () => {
+    setPlayerData((prev) => {
+      const newBoardSlots = [...prev.boardSlots];
+      sacrifices.forEach((sacrifice) => {
+        const index = newBoardSlots.findIndex(
+          (slot) => slot && slot.id === sacrifice.id
+        );
+        if (index !== -1) {
+          newBoardSlots[index] = null;
+          addGameLog(`Sacrificed ${sacrifice.name}.`);
+        }
+      });
+      return { ...prev, boardSlots: newBoardSlots };
+    });
   };
 
   const handlePlaceCard = (slotIndex: number) => {
@@ -711,90 +792,111 @@ export default function CardGame() {
       });
     }
 
-    handleCardEffect(selectedCard);
-
     addGameLog(`Played ${selectedCard.name} to slot ${slotIndex + 1}.`);
     setSelectedCard(null);
     setSelectedCardSource(null);
     setSelectedCardIndex(null);
   };
 
-  const handleCardEffect = (card: CardData) => {
-    switch (card.effect) {
-      case "DAMAGE_OPPONENT":
-        if (card.effectValue) {
-          setEnemyData({
-            ...enemyData,
-            lifeTotal: enemyData.lifeTotal - card.effectValue,
-          });
-          addGameLog(
-            `${card.name}'s effect deals ${card.effectValue} damage to enemy.`
-          );
-        }
-        break;
-      case "HEAL_PLAYER":
-        if (card.effectValue) {
-          setPlayerData({
-            ...playerData,
-            lifeTotal: playerData.lifeTotal + card.effectValue,
-          });
-          addGameLog(
-            `${card.name}'s effect heals you for ${card.effectValue} life.`
-          );
-        }
-        break;
-      case "DRAW_CARD":
-        if (card.effectValue) {
-          drawCards(playerData, card.effectValue);
-        }
-        break;
-      case "BUFF_CARDS":
-        if (card.effectValue) {
-          const newBoardSlots = playerData.boardSlots.map((boardCard) => {
-            if (boardCard && boardCard.id !== card.id) {
-              return {
-                ...boardCard,
-                attack: boardCard.attack + (card.effectValue || 0),
-              };
-            }
-            return boardCard;
-          });
+  const previousPlayerData = usePrevious<Player>(playerData);
 
-          setPlayerData({
-            ...playerData,
-            boardSlots: newBoardSlots,
-          });
+  const handleCardEffect = useCallback(
+    (card: CardData) => {
+      switch (card.effect) {
+        case "DAMAGE_OPPONENT":
+          if (card.effectValue) {
+            const damage = card.effectValue;
+            setEnemyLifeTotal((prev) => prev - damage);
+            addGameLog(
+              `${card.name}'s effect deals ${card.effectValue} damage to enemy.`
+            );
+          }
+          break;
+        case "HEAL_PLAYER":
+          if (card.effectValue) {
+            const heal = card.effectValue;
+            setPlayerLifeTotal((prev) => prev + heal);
+            addGameLog(
+              `${card.name}'s effect heals you for ${card.effectValue} life.`
+            );
+          }
+          break;
+        case "DRAW_CARD":
+          if (card.effectValue) {
+            drawCards(playerData.id, card.effectValue);
+          }
+          break;
+        case "BUFF_CARDS_ATTACK":
+          if (card.effectValue) {
+            const newBoardSlots = playerData.boardSlots.map((boardCard) => {
+              if (boardCard && boardCard.id !== card.id) {
+                return {
+                  ...boardCard,
+                  attack: boardCard.attack + (card.effectValue || 0),
+                };
+              }
+              return boardCard;
+            });
 
-          addGameLog(
-            `${card.name}'s effect buffs your other cards' attack by ${card.effectValue}.`
-          );
-        }
-        break;
-      case "DEBUFF_OPPONENT_CARDS":
-        if (card.effectValue) {
-          const newEnemyBoardSlots = enemyData.boardSlots.map((boardCard) => {
-            if (boardCard) {
-              return {
-                ...boardCard,
-                attack: Math.max(0, boardCard.attack - (card.effectValue || 0)),
-              };
-            }
-            return boardCard;
-          });
+            setPlayerData((prev) => ({
+              ...prev,
+              boardSlots: newBoardSlots,
+            }));
 
-          setEnemyData({
-            ...enemyData,
-            boardSlots: newEnemyBoardSlots,
-          });
+            addGameLog(
+              `${card.name}'s effect buffs your other cards' attack by ${card.effectValue}.`
+            );
+          }
+          break;
+        case "DEBUFF_OPPONENT_CARDS":
+          if (card.effectValue) {
+            const newEnemyBoardSlots = enemyData.boardSlots.map((boardCard) => {
+              if (boardCard) {
+                return {
+                  ...boardCard,
+                  attack: Math.max(
+                    0,
+                    boardCard.attack - (card.effectValue || 0)
+                  ),
+                };
+              }
+              return boardCard;
+            });
 
-          addGameLog(
-            `${card.name}'s effect reduces enemy cards' attack by ${card.effectValue}.`
-          );
-        }
-        break;
-      default:
-        break;
+            setEnemyData((prev) => ({
+              ...prev,
+              boardSlots: newEnemyBoardSlots,
+            }));
+
+            addGameLog(
+              `${card.name}'s effect reduces enemy cards' attack by ${card.effectValue}.`
+            );
+          }
+          break;
+        default:
+          break;
+      }
+    },
+    [playerData, enemyData, drawCards]
+  );
+
+  useEffect(() => {
+    const board = playerData.boardSlots;
+    const previousBoard = previousPlayerData?.boardSlots;
+
+    const playedCard = board.find((card, index) => {
+      return card && (!previousBoard || card.id !== previousBoard[index]?.id);
+    });
+
+    if (playedCard) {
+      handleCardEffect(playedCard);
     }
+  }, [playerData, previousPlayerData, handleCardEffect]);
+
+  const unselectCard = () => {
+    setSelectedCard(null);
+    setSelectedCardSource(null);
+    setSelectedCardIndex(null);
   };
 
   const handleNextPhase = () => {
@@ -802,29 +904,42 @@ export default function CardGame() {
 
     switch (currentPhase) {
       case "DRAW":
+        drawCards(playerData.id, 1);
         setCurrentPhase("PLAY");
         addGameLog("Play phase: Play cards from your hand to the board.");
         break;
       case "PLAY":
         setCurrentPhase("ATTACK");
         break;
+      case "SACRIFICE":
+        setCurrentPhase("PLAY");
+        break;
       case "ATTACK":
         processPlayerAttacks();
-        setCurrentPhase("END");
+        setCurrentPhase("DISCARD");
         addGameLog("End phase: Ending your turn.");
+        break;
+      case "DISCARD":
+        setCurrentPhase("END");
         break;
       case "END":
         processEnemyTurn();
         setCurrentPhase("DRAW");
-        drawCards(playerData, 1);
         addGameLog("Draw phase: Start your turn by drawing a card.");
         break;
     }
-
-    setSelectedCard(null);
-    setSelectedCardSource(null);
-    setSelectedCardIndex(null);
+    unselectCard();
   };
+
+  useEffect(() => {
+    if (
+      currentPhase === "PLAY" &&
+      selectedCard &&
+      selectedCardSource === "hand"
+    ) {
+      setCurrentPhase("SACRIFICE");
+    }
+  }, [currentPhase, selectedCard, selectedCardSource]);
 
   const processPlayerAttacks = () => {
     const playerCards = playerData.boardSlots;
@@ -838,10 +953,7 @@ export default function CardGame() {
 
       if (noOpposingCard) {
         const damage = playerCard.attack;
-        setEnemyData({
-          ...enemyData,
-          lifeTotal: enemyData.lifeTotal - damage,
-        });
+        setEnemyLifeTotal((prev) => prev - damage);
         addGameLog(`${playerCard.name} attacks directly for ${damage} damage!`);
       } else {
         const playerDamage = enemyCard.attack;
@@ -891,7 +1003,7 @@ export default function CardGame() {
   const processEnemyTurn = () => {
     addGameLog("Enemy turn begins.");
 
-    drawCards(enemyData, 1);
+    drawCards(enemyData.id, 1);
 
     const newEnemyHand = [...enemyData.hand];
     const newEnemyBoard = [...enemyData.boardSlots];
@@ -934,39 +1046,6 @@ export default function CardGame() {
 
         newEnemyBoard[emptySlotIndex] = cardToPlay;
         addGameLog(`Enemy plays ${cardToPlay.name}.`);
-
-        switch (cardToPlay.effect) {
-          case "DAMAGE_OPPONENT":
-            if (cardToPlay.effectValue) {
-              setPlayerData((prev) => ({
-                ...prev,
-                lifeTotal: prev.lifeTotal - cardToPlay.effectValue!,
-              }));
-              addGameLog(
-                `Enemy's ${cardToPlay.name} deals ${cardToPlay.effectValue} damage to you.`
-              );
-            }
-            break;
-          case "HEAL_PLAYER":
-            if (cardToPlay.effectValue) {
-              setEnemyData((prev) => ({
-                ...prev,
-                lifeTotal: prev.lifeTotal + cardToPlay.effectValue!,
-              }));
-              addGameLog(
-                `Enemy's ${cardToPlay.name} heals for ${cardToPlay.effectValue} life.`
-              );
-            }
-            break;
-          case "DRAW_CARD":
-            if (cardToPlay.effectValue) {
-              drawCards(enemyData, cardToPlay.effectValue);
-            }
-            break;
-
-          default:
-            break;
-        }
       }
     }
 
@@ -975,10 +1054,7 @@ export default function CardGame() {
     newEnemyBoard.forEach((enemyCard, index) => {
       if (enemyCard && !playerCards[index]) {
         const damage = enemyCard.attack;
-        setPlayerData((prev) => ({
-          ...prev,
-          lifeTotal: prev.lifeTotal - damage,
-        }));
+        setPlayerLifeTotal((prev) => prev - damage);
         addGameLog(
           `Enemy's ${enemyCard.name} attacks directly for ${damage} damage!`
         );
@@ -1023,11 +1099,6 @@ export default function CardGame() {
       boardSlots: newEnemyBoard,
     });
 
-    setPlayerData({
-      ...playerData,
-      boardSlots: [...playerCards],
-    });
-
     addGameLog("Enemy turn ends.");
   };
 
@@ -1039,14 +1110,11 @@ export default function CardGame() {
         <h2 className="text-4xl font-bold mb-4">
           {winner === "Player" ? "You Win!" : "You Lose!"}
         </h2>
-        <p className="text-xl mb-6">
-          Final Score: {playerData.lifeTotal} - {enemyData.lifeTotal}
-        </p>
         <button
-          onClick={() => window.location.reload()}
           className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg text-lg"
+          onClick={resetGameState}
         >
-          Play Again
+          Play Game
         </button>
       </div>
     );
@@ -1060,6 +1128,7 @@ export default function CardGame() {
 
         <Board
           playerData={playerData}
+          sacrifices={sacrifices}
           enemyData={enemyData}
           selectedCard={selectedCard}
           onCardSelect={handleCardSelect}
@@ -1083,8 +1152,8 @@ export default function CardGame() {
       </Canvas>
 
       <GameStatus
-        playerLife={playerData.lifeTotal}
-        enemyLife={enemyData.lifeTotal}
+        playerLife={playerLifeTotal}
+        enemyLife={enemyLifeTotal}
         currentPhase={currentPhase}
         onNextPhase={handleNextPhase}
       />

@@ -1,4 +1,5 @@
 import { usePrevious } from "@hooks/usePrevious";
+import { CardEffect } from "@r3f/CardGame/Effects/EffectType";
 import {
   Image as DreiImage,
   OrbitControls,
@@ -6,17 +7,10 @@ import {
   useCursor,
 } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { noop } from "framer-motion";
-import Image from "next/image";
+import { nanoid } from "nanoid";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
 import { Group } from "three";
-
-type CardEffect =
-  | "DAMAGE_OPPONENT"
-  | "HEAL_PLAYER"
-  | "DRAW_CARD"
-  | "ALTER_CARDS"
-  | "NONE";
 
 interface CardData {
   id: string;
@@ -25,15 +19,7 @@ interface CardData {
   attack: number;
   defense: number;
   sacrificeValue: number;
-  effects?: {
-    attack: number;
-    defense: number;
-    life: number;
-    target: number;
-    draw: number;
-    discard: number;
-  };
-  effectDescription: string;
+  effects: CardEffect[];
 }
 
 interface Player {
@@ -46,7 +32,7 @@ interface Player {
 
 type GamePhase = "DRAW" | "PLAY" | "ATTACK" | "END" | "SACRIFICE" | "DISCARD";
 
-const initialDeck: CardData[] = [
+const availableCards: CardData[] = [
   {
     id: "1",
     name: "Dragon",
@@ -54,15 +40,7 @@ const initialDeck: CardData[] = [
     attack: 8,
     defense: 6,
     sacrificeValue: 0,
-    effects: {
-      attack: 0,
-      defense: 0,
-      life: 0,
-      target: 0,
-      draw: 0,
-      discard: 0,
-    },
-    effectDescription: "Deals 2 damage to opponent when played",
+    effects: [],
   },
   {
     id: "2",
@@ -71,15 +49,7 @@ const initialDeck: CardData[] = [
     attack: 2,
     defense: 9,
     sacrificeValue: 0,
-    effects: {
-      attack: 0,
-      defense: +1,
-      life: 0,
-      target: 0,
-      draw: 0,
-      discard: 0,
-    },
-    effectDescription: "Add +1 defense to all your other cards",
+    effects: [],
   },
   {
     id: "3",
@@ -88,9 +58,7 @@ const initialDeck: CardData[] = [
     attack: 4,
     defense: 3,
     sacrificeValue: 1,
-    effect: "DRAW_CARD",
-    effectValue: 1,
-    effectDescription: "Draw a card when played",
+    effects: [],
   },
   {
     id: "4",
@@ -99,9 +67,7 @@ const initialDeck: CardData[] = [
     attack: 6,
     defense: 4,
     sacrificeValue: 0,
-    effect: "DEBUFF_OPPONENT_CARDS_ATTACK",
-    effectValue: 1,
-    effectDescription: "Reduce attack of all opponent cards by 1",
+    effects: [],
   },
   {
     id: "5",
@@ -110,9 +76,7 @@ const initialDeck: CardData[] = [
     attack: 3,
     defense: 5,
     sacrificeValue: 0,
-    effect: "HEAL_PLAYER",
-    effectValue: 3,
-    effectDescription: "Restore 3 life when played",
+    effects: [],
   },
   {
     id: "6",
@@ -121,8 +85,7 @@ const initialDeck: CardData[] = [
     attack: 3,
     defense: 2,
     sacrificeValue: 0,
-    effect: "NONE",
-    effectDescription: "No effect",
+    effects: [],
   },
   {
     id: "7",
@@ -131,8 +94,7 @@ const initialDeck: CardData[] = [
     attack: 5,
     defense: 5,
     sacrificeValue: 1,
-    effect: "NONE",
-    effectDescription: "No effect",
+    effects: [],
   },
   {
     id: "8",
@@ -141,9 +103,7 @@ const initialDeck: CardData[] = [
     attack: 7,
     defense: 7,
     sacrificeValue: 0,
-    effect: "BUFF_CARDS_ATTACK",
-    effectValue: 2,
-    effectDescription: "Add +2 attack to all your other cards",
+    effects: [],
   },
   {
     id: "9",
@@ -152,9 +112,7 @@ const initialDeck: CardData[] = [
     attack: 9,
     defense: 2,
     sacrificeValue: 2,
-    effect: "DAMAGE_OPPONENT",
-    effectValue: 3,
-    effectDescription: "Deal 3 damage to opponent when played",
+    effects: [],
   },
   {
     id: "10",
@@ -163,9 +121,7 @@ const initialDeck: CardData[] = [
     attack: 4,
     defense: 10,
     sacrificeValue: 4,
-    effect: "HEAL_PLAYER",
-    effectValue: 5,
-    effectDescription: "Restore 5 life when played",
+    effects: [],
   },
   {
     id: "11",
@@ -174,9 +130,7 @@ const initialDeck: CardData[] = [
     attack: 6,
     defense: 4,
     sacrificeValue: 2,
-    effect: "DAMAGE_OPPONENT",
-    effectValue: 2,
-    effectDescription: "Deal 2 damage to opponent when played",
+    effects: [],
   },
   {
     id: "12",
@@ -185,9 +139,7 @@ const initialDeck: CardData[] = [
     attack: 5,
     defense: 7,
     sacrificeValue: 2,
-    effect: "HEAL_PLAYER",
-    effectValue: 2,
-    effectDescription: "Restore 2 life when played",
+    effects: [],
   },
   {
     id: "13",
@@ -196,8 +148,7 @@ const initialDeck: CardData[] = [
     attack: 6,
     defense: 4,
     sacrificeValue: 1,
-    effect: "NONE",
-    effectDescription: "No effect",
+    effects: [],
   },
   {
     id: "14",
@@ -206,9 +157,7 @@ const initialDeck: CardData[] = [
     attack: 7,
     defense: 5,
     sacrificeValue: 2,
-    effect: "DAMAGE_OPPONENT",
-    effectValue: 1,
-    effectDescription: "Deal 1 damage to opponent when played",
+    effects: [],
   },
   {
     id: "15",
@@ -217,8 +166,7 @@ const initialDeck: CardData[] = [
     attack: 4,
     defense: 2,
     sacrificeValue: 1,
-    effect: "NONE",
-    effectDescription: "No effect",
+    effects: [],
   },
   {
     id: "16",
@@ -227,8 +175,7 @@ const initialDeck: CardData[] = [
     attack: 3,
     defense: 8,
     sacrificeValue: 2,
-    effect: "NONE",
-    effectDescription: "No effect",
+    effects: [],
   },
   {
     id: "17",
@@ -237,9 +184,8 @@ const initialDeck: CardData[] = [
     attack: 6,
     defense: 5,
     sacrificeValue: 0,
-    effect: "DRAW_CARD",
-    effectValue: 1,
-    effectDescription: "Draw a card when played",
+
+    effects: [],
   },
   {
     id: "18",
@@ -248,9 +194,8 @@ const initialDeck: CardData[] = [
     attack: 2,
     defense: 7,
     sacrificeValue: 1,
-    effect: "BUFF_CARDS_ATTACK",
-    effectValue: 1,
-    effectDescription: "Add +1 attack to all your other cards",
+
+    effects: [],
   },
   {
     id: "19",
@@ -259,9 +204,8 @@ const initialDeck: CardData[] = [
     attack: 7,
     defense: 3,
     sacrificeValue: 0,
-    effect: "DEBUFF_OPPONENT_CARDS",
-    effectValue: 1,
-    effectDescription: "Reduce defense of all opponent cards by 1",
+
+    effects: [],
   },
   {
     id: "20",
@@ -270,11 +214,16 @@ const initialDeck: CardData[] = [
     attack: 6,
     defense: 6,
     sacrificeValue: 0,
-    effect: "BUFF_CARDS_ATTACK_AND_DEFENSE",
-    effectValue: 1,
-    effectDescription: "Add +1 attack and +1 defense to all your other cards",
+    effects: [],
   },
 ];
+
+const initialDeck: CardData[] = pickRandomFromArray(availableCards, 20).map(
+  (card) => ({
+    ...card,
+    id: nanoid(),
+  })
+);
 
 function shuffle<T>(array: T[]): T[] {
   return array.sort(() => Math.random() - 0.5);
@@ -382,7 +331,6 @@ const Card = ({
         </Text>
       </group>
 
-      {/* Effect Text */}
       <Text
         position={[0, -0.65, 0.02]}
         fontSize={0.05}
@@ -391,7 +339,7 @@ const Card = ({
         anchorY="middle"
         maxWidth={0.9}
       >
-        {card.effect !== "NONE" ? card.effectDescription : ""}
+        Placeholder Text
       </Text>
     </group>
   );
@@ -800,85 +748,85 @@ export default function CardGame() {
 
   const previousPlayerData = usePrevious<Player>(playerData);
 
-  const handleCardEffect = useCallback(
-    (card: CardData) => {
-      switch (card.effect) {
-        case "DAMAGE_OPPONENT":
-          if (card.effectValue) {
-            const damage = card.effectValue;
-            setEnemyLifeTotal((prev) => prev - damage);
-            addGameLog(
-              `${card.name}'s effect deals ${card.effectValue} damage to enemy.`
-            );
-          }
-          break;
-        case "HEAL_PLAYER":
-          if (card.effectValue) {
-            const heal = card.effectValue;
-            setPlayerLifeTotal((prev) => prev + heal);
-            addGameLog(
-              `${card.name}'s effect heals you for ${card.effectValue} life.`
-            );
-          }
-          break;
-        case "DRAW_CARD":
-          if (card.effectValue) {
-            drawCards(playerData.id, card.effectValue);
-          }
-          break;
-        case "BUFF_CARDS_ATTACK":
-          if (card.effectValue) {
-            const newBoardSlots = playerData.boardSlots.map((boardCard) => {
-              if (boardCard && boardCard.id !== card.id) {
-                return {
-                  ...boardCard,
-                  attack: boardCard.attack + (card.effectValue || 0),
-                };
-              }
-              return boardCard;
-            });
+  // const handleCardEffect = useCallback(
+  //   (card: CardData) => {
+  //     switch (card.effect) {
+  //       case "DAMAGE_OPPONENT":
+  //         if (card.effectValue) {
+  //           const damage = card.effectValue;
+  //           setEnemyLifeTotal((prev) => prev - damage);
+  //           addGameLog(
+  //             `${card.name}'s effect deals ${card.effectValue} damage to enemy.`
+  //           );
+  //         }
+  //         break;
+  //       case "HEAL_PLAYER":
+  //         if (card.effectValue) {
+  //           const heal = card.effectValue;
+  //           setPlayerLifeTotal((prev) => prev + heal);
+  //           addGameLog(
+  //             `${card.name}'s effect heals you for ${card.effectValue} life.`
+  //           );
+  //         }
+  //         break;
+  //       case "DRAW_CARD":
+  //         if (card.effectValue) {
+  //           drawCards(playerData.id, card.effectValue);
+  //         }
+  //         break;
+  //       case "BUFF_CARDS_ATTACK":
+  //         if (card.effectValue) {
+  //           const newBoardSlots = playerData.boardSlots.map((boardCard) => {
+  //             if (boardCard && boardCard.id !== card.id) {
+  //               return {
+  //                 ...boardCard,
+  //                 attack: boardCard.attack + (card.effectValue || 0),
+  //               };
+  //             }
+  //             return boardCard;
+  //           });
 
-            setPlayerData((prev) => ({
-              ...prev,
-              boardSlots: newBoardSlots,
-            }));
+  //           setPlayerData((prev) => ({
+  //             ...prev,
+  //             boardSlots: newBoardSlots,
+  //           }));
 
-            addGameLog(
-              `${card.name}'s effect buffs your other cards' attack by ${card.effectValue}.`
-            );
-          }
-          break;
-        case "DEBUFF_OPPONENT_CARDS":
-          if (card.effectValue) {
-            const newEnemyBoardSlots = enemyData.boardSlots.map((boardCard) => {
-              if (boardCard) {
-                return {
-                  ...boardCard,
-                  attack: Math.max(
-                    0,
-                    boardCard.attack - (card.effectValue || 0)
-                  ),
-                };
-              }
-              return boardCard;
-            });
+  //           addGameLog(
+  //             `${card.name}'s effect buffs your other cards' attack by ${card.effectValue}.`
+  //           );
+  //         }
+  //         break;
+  //       case "DEBUFF_OPPONENT_CARDS":
+  //         if (card.effectValue) {
+  //           const newEnemyBoardSlots = enemyData.boardSlots.map((boardCard) => {
+  //             if (boardCard) {
+  //               return {
+  //                 ...boardCard,
+  //                 attack: Math.max(
+  //                   0,
+  //                   boardCard.attack - (card.effectValue || 0)
+  //                 ),
+  //               };
+  //             }
+  //             return boardCard;
+  //           });
 
-            setEnemyData((prev) => ({
-              ...prev,
-              boardSlots: newEnemyBoardSlots,
-            }));
+  //           setEnemyData((prev) => ({
+  //             ...prev,
+  //             boardSlots: newEnemyBoardSlots,
+  //           }));
 
-            addGameLog(
-              `${card.name}'s effect reduces enemy cards' attack by ${card.effectValue}.`
-            );
-          }
-          break;
-        default:
-          break;
-      }
-    },
-    [playerData, enemyData, drawCards]
-  );
+  //           addGameLog(
+  //             `${card.name}'s effect reduces enemy cards' attack by ${card.effectValue}.`
+  //           );
+  //         }
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //   },
+  //   [playerData, enemyData, drawCards]
+  // );
 
   useEffect(() => {
     const board = playerData.boardSlots;
@@ -888,10 +836,10 @@ export default function CardGame() {
       return card && (!previousBoard || card.id !== previousBoard[index]?.id);
     });
 
-    if (playedCard) {
-      handleCardEffect(playedCard);
-    }
-  }, [playerData, previousPlayerData, handleCardEffect]);
+    // if (playedCard) {
+    //   handleCardEffect(playedCard);
+    // }
+  }, [playerData, previousPlayerData]);
 
   const unselectCard = () => {
     setSelectedCard(null);
@@ -1168,10 +1116,6 @@ export default function CardGame() {
             <p>
               🗡️: {selectedCard.attack} | 🛡️: {selectedCard.defense}
             </p>
-            <p>Sacrifice: {selectedCard.sacrificeValue}</p>
-            {selectedCard.effect !== "NONE" && (
-              <p className="text-xs mt-1">{selectedCard.effectDescription}</p>
-            )}
           </div>
         )}
       </div>

@@ -10,7 +10,7 @@ type Modes =
   | "none";
 
 const debug = false;
-const physicsDebug = false;
+const physicsDebug = true;
 const normalsDebug = false;
 const wireframe = false;
 const flatShading = false;

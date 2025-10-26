@@ -155,8 +155,16 @@ const useWeaponForMixamoCharacter = (weaponType: WeaponTypes) => {
 
 export const MixamoEcctrlControllerWithAnimations = ({
   position = [0, 0, 5],
+  characterName = MixamoCharacterNames.Eve,
+  shouldUseWeapon = true,
+  characterSpecificYOffset = -1.1,
+  characterSpecificScale = 1.4,
 }: {
   position?: GroupProps["position"];
+  characterName?: MixamoCharacterNames;
+  shouldUseWeapon?: boolean;
+  characterSpecificYOffset?: number;
+  characterSpecificScale?: number;
 }) => {
   // const characterRef = useRef<CustomEcctrlRigidBody>(null!);
 
@@ -241,9 +249,9 @@ export const MixamoEcctrlControllerWithAnimations = ({
     }
   });
 
-  const weapon = useWeaponForMixamoCharacter(SwordTypes.Sword6);
-
   const { progress } = useProgress();
+
+  const weapon = useWeaponForMixamoCharacter(SwordTypes.Sword6);
 
   useAttachToBone(
     group as MutableRefObject<Group>,
@@ -260,9 +268,12 @@ export const MixamoEcctrlControllerWithAnimations = ({
       sprintMult={3}
     >
       <Suspense fallback={null}>
-        <group position={[0, -1.1, 0]} scale={1.4}>
+        <group
+          position={[0, characterSpecificYOffset, 0]}
+          scale={characterSpecificScale}
+        >
           <group ref={group as MutableRefObject<Group>} dispose={null}>
-            <MixamoCharacter characterName={MixamoCharacterNames.Eve} />
+            <MixamoCharacter characterName={characterName} />
           </group>
         </group>
       </Suspense>

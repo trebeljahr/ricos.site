@@ -1,5 +1,6 @@
 import { useAttachToBone } from "@hooks/useAttachToBone";
 import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
+import { playerQuery } from "@r3f/AI/ecs";
 import { MixamoCharacterNames } from "@r3f/Characters/Character";
 import {
   MixamoCharacter,
@@ -17,12 +18,10 @@ import {
   useProgress,
 } from "@react-three/drei";
 import { GroupProps, useFrame } from "@react-three/fiber";
-import { CustomEcctrlRigidBody } from "ecctrl";
 import { MutableRefObject, Suspense, useRef } from "react";
 import { Group } from "three";
 import { useGenericAnimationController } from "../GenericAnimationController";
 import { EcctrlControllerCustom, userDataType } from "./Controller";
-import { playerQuery } from "@r3f/AI/ecs";
 
 const useWeaponForMixamoCharacter = (weaponType: WeaponTypes) => {
   let weapon = useWeapon(weaponType);
@@ -166,8 +165,6 @@ export const MixamoEcctrlControllerWithAnimations = ({
   characterSpecificYOffset?: number;
   characterSpecificScale?: number;
 }) => {
-  // const characterRef = useRef<CustomEcctrlRigidBody>(null!);
-
   const [_, get] = useKeyboardControls();
 
   const { animationsForHook } = useMixamoAnimations();
@@ -210,6 +207,7 @@ export const MixamoEcctrlControllerWithAnimations = ({
 
   useFrame(() => {
     const player = playerQuery.first;
+
     if (!player) return;
     const { forward, backward, leftward, rightward, jump, run } = get();
     const userData = player.rigidBody?.userData as userDataType;

@@ -1,19 +1,13 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { MixamoCharacterNames } from "@r3f/Characters/Character";
-import { SnowyPineTreesForChunks } from "@r3f/ChunkGenerationSystem/ChunkInstancedMeshes";
 import {
-  ChunkProvider,
   MemoizedChunk,
   useChunkContext,
 } from "@r3f/ChunkGenerationSystem/ChunkProvider";
-import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
-import { EcctrlControllerCustom } from "@r3f/Controllers/CustomEcctrlController/Controller";
 import { MixamoEcctrlControllerWithAnimations } from "@r3f/Controllers/CustomEcctrlController/ControllerWithAnimations";
-import { MovingSkyLight } from "@r3f/Helpers/OverheadLights";
-import { FloorWithPhysics } from "@r3f/Helpers/PhysicsFloor";
 import {
-  AllRoGrass,
   CircleGrassPlane,
+  PlayerWithGrassTrail,
 } from "@r3f/Scenes/Grass/AllRoGrass/GrassPlane";
 import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
 import { TreeWithHullPhysics } from "@r3f/Trees/TreesWithPhysics";
@@ -21,12 +15,7 @@ import { Box, Sky } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import { Suspense } from "react";
-import {
-  physicsDebug,
-  tilesDistance,
-  tileSize,
-} from "src/canvas/ChunkGenerationSystem/config";
-import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
+import { physicsDebug } from "src/canvas/ChunkGenerationSystem/config";
 
 const ChunkRenderer = () => {
   const chunks = useChunkContext();
@@ -52,34 +41,18 @@ const ChunkRenderer = () => {
 };
 
 const seoInfo = {
-  title: "Endless Snow Forest",
-  description:
-    "An endless snow forest scene in React Three Fiber, implemented using a chunk generation system, web workers and the instancedMesh2 library.",
+  title: "",
+  description: "",
   url: "/r3f/scenes/snow-forest",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "instancedMesh2",
-    "instancing",
-    "chunk generation",
-    "terrain",
-    "procedural generation",
-    "procedural terrain",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: [],
   image: "/assets/pages/snow-forest.png",
-  imageAlt: "a snow covered forest scene extending towards the horizon",
+  imageAlt: "",
 };
 
 const Page = () => {
   return (
     <ThreeFiberLayout seoInfo={seoInfo}>
       <ambientLight intensity={1} />
-
       <Sky />
       <directionalLight
         intensity={10}
@@ -102,22 +75,21 @@ const Page = () => {
             />
           </Box>
         </RigidBody>
-
         {/* <group scale={0.2}>
           <AllRoGrass />
         </group>
         <group scale={0.2} position={[6.4, 0, 0]}>
           <AllRoGrass />
         </group> */}
-
         <group scale={0.2} position={[6.4, 0, 0]}>
           <CircleGrassPlane />
         </group>
 
+        <PlayerWithGrassTrail />
+
         <group position={[0, 1, 0]}>
           <TreeWithHullPhysics />
         </group>
-
         <MixamoEcctrlControllerWithAnimations
           position={[0, 50, 10]}
           characterName={MixamoCharacterNames.XBot}

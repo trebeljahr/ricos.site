@@ -1,11 +1,15 @@
 import { useFrame, useLoader } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createNoise2D } from "simplex-noise";
 import {
+  BufferGeometry,
+  CatmullRomCurve3,
   CircleGeometry,
   DoubleSide,
+  Float32BufferAttribute,
   Mesh,
   MeshBasicMaterial,
+  Object3D,
   PlaneGeometry,
   ShaderMaterial,
   TextureLoader,
@@ -16,6 +20,7 @@ import {
 import { GrassMaterial, GrassMaterialType } from "./AllRoGrassMaterial";
 import { BlackPlaneMaterial } from "../GroundPlaneMaterials";
 import { MeshSurfaceSampler } from "three-stdlib";
+import { playerQuery } from "@r3f/AI/ecs";
 
 const noise2D = createNoise2D();
 
@@ -364,3 +369,112 @@ function getYPosition(x: number, z: number) {
   y += 0.2 * noise2D(x / 10, z / 10);
   return y;
 }
+
+const createConveyorBeltMesh = (points: Vector3[], beltWidth = 1.0) => {
+  const curve = new CatmullRomCurve3(points);
+  const segments = points.length * 3;
+  const pathPoints = curve.getPoints(segments);
+
+  const vertices = [];
+  const indices = [];
+  const uvs = [];
+
+  for (let i = 0; i < pathPoints.length; i++) {
+    const point = pathPoints[i];
+    const t = i / (pathPoints.length - 1);
+
+    const tangent = curve.getTangent(t);
+
+    const worldUp = new Vector3(0, 1, 0);
+
+    const binormal = new Vector3().crossVectors(worldUp, tangent).normalize();
+
+    if (binormal.length() < 0.01) {
+      binormal.set(1, 0, 0);
+    }
+
+    const halfWidth = beltWidth / 2;
+    const left = point.clone().add(binormal.clone().multiplyScalar(halfWidth));
+    const right = point
+      .clone()
+      .add(binormal.clone().multiplyScalar(-halfWidth));
+
+    vertices.push(left.x, left.y, left.z);
+    vertices.push(right.x, right.y, right.z);
+
+    uvs.push(0, t);
+    uvs.push(1, t);
+
+    if (i < pathPoints.length - 1) {
+      const base = i * 2;
+
+      indices.push(base, base + 1, base + 2);
+      indices.push(base + 1, base + 3, base + 2);
+    }
+  }
+
+  const geometry = new BufferGeometry();
+  geometry.setAttribute("position", new Float32BufferAttribute(vertices, 3));
+  geometry.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+
+  return new Mesh(geometry);
+};
+
+export const PlayerWithGrassTrail = () => {
+  const trailMeshRef = useRef<Mesh>(null!);
+  const [grassKey, setGrassKey] = useState(0);
+
+  const trailPointsRef = useRef<Vector3[]>([]);
+
+  const frameCount = useRef(0);
+
+  useFrame(() => {
+    const player = playerQuery.first;
+    if (!player) return;
+
+    const { x, y, z } = player.rigidBody.translation();
+    if (frameCount.current++ % 5 === 0) {
+      trailPointsRef.current.push(new Vector3(x, y, z));
+
+      if (trailPointsRef.current.length > 100) {
+        trailPointsRef.current.shift();
+      }
+
+      if (trailPointsRef.current.length > 2) {
+        updateTrailMesh();
+        // setGrassKey((prev) => prev + 1);
+      }
+    }
+  });
+
+  const updateTrailMesh = () => {
+    const points = trailPointsRef.current;
+
+    const tubeGeometry = createConveyorBeltMesh(points, 2.0);
+
+    if (trailMeshRef.current) {
+      trailMeshRef.current.geometry.dispose();
+      trailMeshRef.current.geometry = tubeGeometry.geometry;
+      trailMeshRef.current.updateMatrixWorld(true);
+    }
+  };
+
+  return (
+    <>
+      <mesh ref={trailMeshRef}>
+        <tubeGeometry />
+        <meshBasicMaterial visible={false} />
+      </mesh>
+
+      {trailMeshRef.current && (
+        <AllRoGrassForArbitrarySurface
+          key={grassKey}
+          instances={5000}
+          mesh={trailMeshRef.current}
+        />
+      )}
+    </>
+  );
+};

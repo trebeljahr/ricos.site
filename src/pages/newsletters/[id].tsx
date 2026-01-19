@@ -19,6 +19,7 @@ type Props = {
 const Newsletter = ({
   newsletter: {
     excerpt,
+    excludeExcerpt,
     title,
     number,
     slugTitle,
@@ -31,7 +32,8 @@ const Newsletter = ({
   nextPost,
   prevPost,
 }: Props) => {
-  const fullTitle = title + " – Live and Learn #" + number;
+  const newsletterTag = "Live and Learn #" + number;
+  const fullTitle = title;
   const url = `newsletters/${slugTitle}`;
 
   return (
@@ -70,7 +72,7 @@ const Newsletter = ({
           </div>
 
           <div className="mx-auto max-w-prose mt-20">
-            {excerpt && <p>{excerpt}</p>}
+            {excerpt && !excludeExcerpt && <p>{excerpt}</p>}
 
             <PostBodyWithoutExcerpt content={content} />
             <NewsletterForm />

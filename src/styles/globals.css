@@ -26,6 +26,9 @@ body:has(.popup) {
   overflow: hidden !important;
 }
 
+.prose p {
+  white-space: pre-line; /* Preserves line breaks but collapses multiple spaces */
+}
 
 figure[data-rehype-pretty-code-figure] {
   position: relative;

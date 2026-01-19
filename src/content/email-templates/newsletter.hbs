@@ -39,9 +39,10 @@
     <!-- Web Font / @font-face : END -->
 
     <style>
-      :root { color-scheme: light; supported-color-schemes: light; } html, body
+      :root { color-scheme: light; supported-color-schemes: light;  } 
+      html, body
       { margin: 0 auto !important; padding: 0 !important; height: 100%
-      !important; width: 100% !important; }* { -ms-text-size-adjust: 100%;
+      !important; width: 100% !important; white-space: pre-line; }* { -ms-text-size-adjust: 100%;
       -webkit-text-size-adjust: 100%; } div[style*="margin: 16px 0"] { margin: 0
       !important; } #MessageViewBody, #MessageWebViewDiv { width: 100%
       !important; } table, td { mso-table-lspace: 0pt !important;
@@ -176,11 +177,11 @@
                     color: #555555;
                   "
                 >
+                <p>{{tagLine}}. Better <a href="{{webversion}}">on the web</a>.</p>
                 <h1 style="line-height: 1.6;">
                   {{title}}
                 </h1>
-                <p>{{excerpt}}</p>
-                <p>You can also <a href="{{webversion}}">read this on the web</a>.</p>
+                <p style="white-space: pre-line;">{{excerpt}}</p>
                 <img
                   src="{{coverImageSrc}}"
                   width="600"

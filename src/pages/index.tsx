@@ -8,15 +8,12 @@ import {
   booknotes,
   newsletters,
   posts,
-  sectionDescriptions,
   SectionDescription,
+  sectionDescriptions,
   travelblogs,
 } from "@velite";
 import Link from "next/link";
-import { byDate } from "src/lib/utils/misc";
-import { byOnlyPublished } from "src/lib/utils/filters";
 import { type CommonMetadata } from "src/@types";
-import { toOnlyMetadata } from "src/lib/utils/toOnlyMetadata";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 const IndexPage = (props: Props) => {

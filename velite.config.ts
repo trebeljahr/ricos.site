@@ -388,6 +388,7 @@ export default defineConfig({
         .object({
           ...commonFields,
           excerpt: s.string(),
+          excludeExcerpt: s.boolean().default(false),
         })
         .transform((data, { meta }) => ({
           ...data,

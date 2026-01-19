@@ -19,7 +19,7 @@ const sortByNumbers = (arr: CommonMetadata[]) => {
   });
 
   return arr.sort(
-    (a, b) => -collator.compare(a.number as string, b.number as string)
+    (a, b) => -collator.compare(a.number as string, b.number as string),
   );
 };
 
@@ -33,7 +33,7 @@ const toNiceCard = (
     date,
     metadata: { readingTime },
   }: CommonMetadata,
-  index: number
+  index: number,
 ) => {
   const priority = index <= 1;
 
@@ -44,7 +44,7 @@ const toNiceCard = (
       link={link}
       markdownExcerpt={markdownExcerpt}
       priority={priority}
-      title={`${title} | Live and Learn #${number}`}
+      title={title}
       date={date}
       readingTime={readingTime}
     />
@@ -124,7 +124,7 @@ export const getStaticProps = async () => {
       excerpt: newsletter.excerpt
         .replace("Welcome to this edition of Live and Learn. ", "")
         .replace("Enjoy.", ""),
-    })
+    }),
   );
 
   return {

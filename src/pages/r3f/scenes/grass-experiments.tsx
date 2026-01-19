@@ -17,35 +17,12 @@ import { Physics, RigidBody } from "@react-three/rapier";
 import { Suspense } from "react";
 import { physicsDebug } from "src/canvas/ChunkGenerationSystem/config";
 
-const ChunkRenderer = () => {
-  const chunks = useChunkContext();
-
-  const { camera } = useThree();
-  return (
-    <group>
-      {Array.from(chunks).map(([key, chunkData], index) => {
-        if (!chunkData.data) return null;
-        return (
-          <Suspense key={index}>
-            <MemoizedChunk chunkData={chunkData}>
-              <HeightfieldTileWithCollider
-                geometry={chunkData.data!.geo}
-                heightfield={chunkData.data!.heightfield}
-              />
-            </MemoizedChunk>
-          </Suspense>
-        );
-      })}
-    </group>
-  );
-};
-
 const seoInfo = {
-  title: "",
-  description: "",
-  url: "/r3f/scenes/snow-forest",
+  title: "Some experiments with grass shaders",
+  description: "Sampling grass to put it onto arbitrary geometries.",
+  url: "/r3f/scenes/grass-experiments",
   keywords: [],
-  image: "/assets/pages/snow-forest.png",
+  image: "/assets/pages/grass-experiments.png",
   imageAlt: "",
 };
 

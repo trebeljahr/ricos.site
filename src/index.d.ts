@@ -17,10 +17,10 @@ declare module "*.mp3" {
   export default content;
 }
 
-declare module "*.glsl" {
-  const content: string;
-  export default content;
-}
+// declare module "*.glsl" {
+//   const content: string;
+//   export default content;
+// }
 
 // declare module "ecctrl" {
 //   const EcctrlJoystick: ReactNode;

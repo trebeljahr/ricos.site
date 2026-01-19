@@ -39,7 +39,7 @@ async function main() {
 
   const {
     content,
-    data: { cover, title, excerpt },
+    data: { cover, title, excerpt, excludeExcerpt },
   } = matter(mdFileRaw);
 
   function addHost(url: { href: string; path: string }) {
@@ -113,12 +113,14 @@ async function main() {
   const defaultExcerpt =
     "Live and Learn is a Newsletter filled with awesome links...";
 
-  const realTitle = `${title} | Live and Learn #${number}`;
+  const newsletterTagLine = "Live and Learn #" + number;
+  const realTitle = `${title}`;
 
   const htmlEmail = template({
     content: file.value,
+    tagLine: newsletterTagLine,
     title: realTitle,
-    excerpt: excerpt || defaultExcerpt,
+    excerpt: excludeExcerpt ? "" : excerpt || defaultExcerpt,
     coverImageSrc: nextImageUrl(cover.src, 1080),
     coverImageAlt: cover.alt,
     webversion,

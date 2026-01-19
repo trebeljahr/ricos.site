@@ -1,5 +1,6 @@
 import { useAttachToBone } from "@hooks/useAttachToBone";
 import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
+import { playerQuery } from "@r3f/AI/ecs";
 import { MixamoCharacterNames } from "@r3f/Characters/Character";
 import {
   MixamoCharacter,
@@ -17,12 +18,10 @@ import {
   useProgress,
 } from "@react-three/drei";
 import { GroupProps, useFrame } from "@react-three/fiber";
-import { CustomEcctrlRigidBody } from "ecctrl";
 import { MutableRefObject, Suspense, useRef } from "react";
 import { Group } from "three";
 import { useGenericAnimationController } from "../GenericAnimationController";
 import { EcctrlControllerCustom, userDataType } from "./Controller";
-import { playerQuery } from "@r3f/AI/ecs";
 
 const useWeaponForMixamoCharacter = (weaponType: WeaponTypes) => {
   let weapon = useWeapon(weaponType);
@@ -155,11 +154,17 @@ const useWeaponForMixamoCharacter = (weaponType: WeaponTypes) => {
 
 export const MixamoEcctrlControllerWithAnimations = ({
   position = [0, 0, 5],
+  characterName = MixamoCharacterNames.Eve,
+  shouldUseWeapon = true,
+  characterSpecificYOffset = -1.1,
+  characterSpecificScale = 1.4,
 }: {
   position?: GroupProps["position"];
+  characterName?: MixamoCharacterNames;
+  shouldUseWeapon?: boolean;
+  characterSpecificYOffset?: number;
+  characterSpecificScale?: number;
 }) => {
-  // const characterRef = useRef<CustomEcctrlRigidBody>(null!);
-
   const [_, get] = useKeyboardControls();
 
   const { animationsForHook } = useMixamoAnimations();
@@ -202,6 +207,7 @@ export const MixamoEcctrlControllerWithAnimations = ({
 
   useFrame(() => {
     const player = playerQuery.first;
+
     if (!player) return;
     const { forward, backward, leftward, rightward, jump, run } = get();
     const userData = player.rigidBody?.userData as userDataType;
@@ -241,9 +247,9 @@ export const MixamoEcctrlControllerWithAnimations = ({
     }
   });
 
-  const weapon = useWeaponForMixamoCharacter(SwordTypes.Sword6);
-
   const { progress } = useProgress();
+
+  const weapon = useWeaponForMixamoCharacter(SwordTypes.Sword6);
 
   useAttachToBone(
     group as MutableRefObject<Group>,
@@ -260,9 +266,12 @@ export const MixamoEcctrlControllerWithAnimations = ({
       sprintMult={3}
     >
       <Suspense fallback={null}>
-        <group position={[0, -1.1, 0]} scale={1.4}>
+        <group
+          position={[0, characterSpecificYOffset, 0]}
+          scale={characterSpecificScale}
+        >
           <group ref={group as MutableRefObject<Group>} dispose={null}>
-            <MixamoCharacter characterName={MixamoCharacterNames.Eve} />
+            <MixamoCharacter characterName={characterName} />
           </group>
         </group>
       </Suspense>

@@ -35,6 +35,7 @@ export default function Page() {
       <pointLight position={[10, 10, 10]} />
       <Physics>
         <AllRoGrass />
+
         <MinecraftSpectatorController speed={1} />
       </Physics>
     </ThreeFiberLayout>

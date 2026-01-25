@@ -27,14 +27,14 @@ async function main() {
       "src",
       "content",
       "email-templates",
-      "newsletter.hbs"
+      "newsletter.hbs",
     ),
-    "utf-8"
+    "utf-8",
   );
 
   const mdFileRaw = await readFile(
     path.join(newsletterPath, `${number}.md`),
-    "utf-8"
+    "utf-8",
   );
 
   const {
@@ -129,7 +129,7 @@ async function main() {
   const data = {
     from: "Rico Trebeljahr <rico@trebeljahr.com>",
     to: newsletterListMail,
-    subject: `🌱 ${title} | #${number}`,
+    subject: `🌱 ${title}`,
     html: htmlEmail,
     text: `
 🌱 ${realTitle}

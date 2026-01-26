@@ -119,7 +119,7 @@ async function main() {
   const htmlEmail = template({
     content: file.value,
     tagLine: newsletterTagLine,
-    title: realTitle,
+    title: realTitle.trim(),
     excerpt: excludeExcerpt ? "" : excerpt || defaultExcerpt,
     coverImageSrc: nextImageUrl(cover.src, 1080),
     coverImageAlt: cover.alt,
@@ -129,10 +129,11 @@ async function main() {
   const data = {
     from: "Rico Trebeljahr <rico@trebeljahr.com>",
     to: newsletterListMail,
-    subject: `🌱 ${title}`,
+    excerpt: excludeExcerpt ? "" : excerpt || defaultExcerpt,
+    subject: `🌱 ${title.trim()}`,
     html: htmlEmail,
     text: `
-🌱 ${realTitle}
+🌱 ${realTitle.trim()}
 
 
 ${excerpt}
@@ -149,7 +150,7 @@ Thanks for reading plaintext emails. You're cool!
 `,
   };
 
-  console.info(title, ":\n", `Sending newsletter ${number}...`);
+  console.info(title.trim() + ":\n", `Sending newsletter ${number}...`);
   await sendEmail(data);
   console.info("Successfully sent email!");
 }

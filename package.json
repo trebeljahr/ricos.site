@@ -19,6 +19,7 @@
     "createImageMetadataJson": "tsx src/scripts/createImageMetadataJson.ts",
     "sendNewsletter": "tsx src/scripts/sendNewsletter.ts",
     "createRedirects": "tsx src/scripts/createRedirects.ts",
+    "findIncompleteBooknotes": "tsx src/scripts/findIncompleteBooknotes.ts",
     "fixFolderPaths": "tsx src/scripts/aws/fixFileNames.ts",
     "rewriteWikilinks": "tsx src/scripts/rewriteWikilinks.ts",
     "addGraymatterInformation": "tsx src/scripts/addGraymatterInformation.ts",

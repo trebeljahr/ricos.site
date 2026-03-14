@@ -21,7 +21,7 @@ const EmergencyInfoComponent: FC = () => {
       image="/assets/blog/emergency.png"
       imageAlt="man being rescued by a helicopter"
     >
-      <div className="max-w-md mx-auto mt-12 p-8 rounded-lg shadow-md">
+      <div className="max-w-prose mx-auto mt-16 p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-semibold mb-6">
           Access Emergency Information
         </h2>

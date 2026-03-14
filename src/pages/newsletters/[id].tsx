@@ -71,7 +71,7 @@ const Newsletter = ({
             />
           </div>
 
-          <div className="mx-auto max-w-prose mt-20">
+          <div className="mx-auto max-w-prose mt-8">
             {excerpt && !excludeExcerpt && <p>{excerpt}</p>}
 
             <PostBodyWithoutExcerpt content={content} />
@@ -98,7 +98,7 @@ type Params = {
 
 export async function getStaticProps({ params }: Params) {
   const newsletter = newsletters.find(
-    ({ slugTitle }) => slugTitle === params.id
+    ({ slugTitle }) => slugTitle === params.id,
   );
   if (!newsletter) throw Error("Newsletter not found");
 

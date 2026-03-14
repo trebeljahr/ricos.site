@@ -88,7 +88,6 @@ export const SceneWithLoadingState = ({
       <Canvas {...props} className="overscroll-none">
         <Suspense fallback={null}>
           {children}
-          <Preload all />
           <CameraPositionLogger />
         </Suspense>
       </Canvas>

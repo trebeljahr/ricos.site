@@ -46,7 +46,8 @@ const QUERY = "(prefers-reduced-motion: no-preference)";
 const isRenderingOnServer = typeof window === "undefined";
 
 const getInitialState = () => {
-  return isRenderingOnServer ? true : !window.matchMedia(QUERY).matches;
+  if (isRenderingOnServer) return false;
+  return !window.matchMedia(QUERY).matches;
 };
 
 function usePrefersReducedMotion() {
@@ -85,7 +86,7 @@ const range = (start: number, end?: number, step = 1) => {
 const useRandomInterval = (
   callback: () => void,
   minDelay?: number,
-  maxDelay?: number
+  maxDelay?: number,
 ) => {
   const timeoutId = useRef<number>(null!);
   const savedCallback = useRef(callback);
@@ -145,7 +146,7 @@ const Sparkles = ({
   useRandomInterval(
     sparkleCallback,
     prefersReducedMotion ? undefined : 30,
-    prefersReducedMotion ? undefined : 300
+    prefersReducedMotion ? undefined : 300,
   );
 
   return (

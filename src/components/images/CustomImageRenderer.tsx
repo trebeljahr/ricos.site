@@ -15,12 +15,23 @@ export function CustomImageRenderer({
   >(undefined);
 
   useEffect(() => {
-    const w = containerRef.current?.clientWidth;
-    const h = containerRef.current?.clientHeight;
-    if (!w || !h) return;
+    const el = containerRef.current;
+    if (!el) return;
 
-    setDimensions({ width: w, height: h });
-  }, [containerRef.current?.clientWidth]);
+    const observer = new ResizeObserver(() => {
+      const w = el.clientWidth;
+      const h = el.clientHeight;
+      if (!w || !h) return;
+
+      setDimensions((prev) => {
+        if (prev?.width === w && prev?.height === h) return prev; // bail if unchanged
+        return { width: w, height: h };
+      });
+    });
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div

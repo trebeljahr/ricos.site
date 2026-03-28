@@ -1,9 +1,9 @@
-import posts from "../../.velite/posts.json";
-import booknotes from "../../.velite/booknotes.json";
-import pages from "../../.velite/pages.json";
-import newsletters from "../../.velite/newsletters.json";
-import podcastnotes from "../../.velite/podcastnotes.json";
-import travelblogs from "../../.velite/travelblogs.json";
+import posts from "../../.velite/posts.meta.json";
+import booknotes from "../../.velite/booknotes.meta.json";
+import pages from "../../.velite/pages.meta.json";
+import newsletters from "../../.velite/newsletters.meta.json";
+import podcastnotes from "../../.velite/podcastnotes.meta.json";
+import travelblogs from "../../.velite/travelblogs.meta.json";
 import Link from "next/link";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";

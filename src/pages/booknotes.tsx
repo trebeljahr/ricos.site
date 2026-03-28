@@ -7,7 +7,7 @@ import { Search } from "@components/SearchBar";
 // import Search from "@components/SearchBar/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Booknote } from "@velite";
-import allBooknotes from "../../.velite/booknotes.json";
+import allBooknotes from "../../.velite/booknotes.meta.json";
 import { useState } from "react";
 import { SeoInfo } from "src/lib/getSeoInfo";
 import { byOnlyPublished } from "src/lib/utils/filters";

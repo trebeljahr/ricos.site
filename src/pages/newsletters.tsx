@@ -4,7 +4,7 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
-import newsletters from "../../.velite/newsletters.json";
+import newsletters from "../../.velite/newsletters.meta.json";
 import { CommonMetadata } from "src/@types";
 import { SeoInfo } from "src/lib/getSeoInfo";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";

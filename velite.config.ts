@@ -402,8 +402,39 @@ const addLinksAndSlugTransformer = (link: string = "/") => {
   return transformer;
 };
 
+/** Strip heavy fields (content, markdownExcerpt) from collection data for listing pages */
+function stripContentFields(items: Record<string, any>[]) {
+  return items.map(
+    ({ content, markdownExcerpt, ...metadata }) => metadata
+  );
+}
+
 export default defineConfig({
   root: "src/content/Notes/",
+  prepare: async (data) => {
+    const { writeFile, mkdir } = await import("fs/promises");
+    const outputDir = path.join(path.resolve(path.dirname("")), ".velite");
+    await mkdir(outputDir, { recursive: true });
+
+    const collections = [
+      "posts",
+      "newsletters",
+      "booknotes",
+      "pages",
+      "podcastnotes",
+      "travelblogs",
+    ] as const;
+
+    for (const name of collections) {
+      const items = (data as any)[name];
+      if (!items) continue;
+      const stripped = stripContentFields(items);
+      await writeFile(
+        path.join(outputDir, `${name}.meta.json`),
+        JSON.stringify(stripped)
+      );
+    }
+  },
   collections: {
     sectionDescriptions: {
       name: "SectionDescription",

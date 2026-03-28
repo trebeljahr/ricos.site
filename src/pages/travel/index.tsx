@@ -4,7 +4,7 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
-import travelblogs from "../../../.velite/travelblogs.json";
+import travelblogs from "../../../.velite/travelblogs.meta.json";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { CommonMetadata } from "src/@types";

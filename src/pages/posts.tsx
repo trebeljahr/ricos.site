@@ -4,7 +4,7 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
 import { OtherPostsPreview } from "@components/PostPreview";
 import { ToTopButton } from "@components/ToTopButton";
-import allPosts from "../../.velite/posts.json";
+import allPosts from "../../.velite/posts.meta.json";
 import { CommonMetadata } from "src/@types";
 import { SeoInfo } from "src/lib/getSeoInfo";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";

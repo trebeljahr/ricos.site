@@ -51,6 +51,7 @@ export function CustomImageRenderer({
           }
           width={dimensions.width}
           height={dimensions.height}
+          style={{ width: "100%", height: "auto" }}
         />
       )}
     </div>

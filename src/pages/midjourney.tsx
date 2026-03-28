@@ -33,7 +33,7 @@ export default function MidjourneyGallery({
 
 export async function getStaticProps() {
   const { getSeoInfo } = await import("src/lib/getSeoInfo");
-  const { getDataFromMetadata } = require("src/lib/aws");
+  const { getDataFromMetadata } = require("../lib/aws");
   const prefix = "assets/midjourney-gallery/";
   const images = getDataFromMetadata(prefix);
 

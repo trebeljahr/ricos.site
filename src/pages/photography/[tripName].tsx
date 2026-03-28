@@ -74,8 +74,8 @@ type StaticProps = {
 };
 
 export async function getStaticPaths() {
-  const { localMetadata } = require("src/scripts/metadataJsonFileHelpers");
-  const { photographyFolder } = require("src/lib/aws");
+  const { localMetadata } = require("../../scripts/metadataJsonFileHelpers");
+  const { photographyFolder } = require("../../lib/aws");
   const tripNames = [
     ...new Set(
       Object.keys(localMetadata)
@@ -94,7 +94,7 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }: StaticProps) {
-  const { getDataFromMetadata, photographyFolder } = require("src/lib/aws");
+  const { getDataFromMetadata, photographyFolder } = require("../../lib/aws");
   const { tripName } = params;
   const prefix = photographyFolder + tripName + "/";
   const images = getDataFromMetadata(prefix);

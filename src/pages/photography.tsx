@@ -155,7 +155,7 @@ export async function getStaticProps(): Promise<{ props: Props }> {
   const tripsMeta = await Promise.all(
     trips.map(async ({ name, src, alt }) => {
       if (src === "") {
-        const { getFirstImageFromMetadata, photographyFolder } = require("src/lib/aws");
+        const { getFirstImageFromMetadata, photographyFolder } = require("../lib/aws");
         const image = getFirstImageFromMetadata(photographyFolder + name);
         return { image, tripName: name };
       }

@@ -1,4 +1,4 @@
-import { byDate } from "./misc";
+import { byDate } from "./sorting";
 import { byOnlyPublished } from "./filters";
 import { CommonMetadata } from "src/@types";
 import { toOnlyMetadata } from "./toOnlyMetadata";

@@ -10,7 +10,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import slugify from "@sindresorhus/slugify";
 import type { Travelblog } from "@velite";
 import { ReactNode } from "react";
-import { byDate } from "src/lib/utils/misc";
+import { byDate } from "src/lib/utils/sorting";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { replaceUndefinedWithNull } from "src/lib/utils/replaceUndefinedWithNull";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";

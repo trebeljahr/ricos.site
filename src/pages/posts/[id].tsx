@@ -2,6 +2,12 @@ import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
+import dynamic from "next/dynamic";
+
+const MDXContentWithDemos = dynamic(
+  () => import("@components/MDXContentWithDemos").then((m) => m.MDXContentWithDemos),
+  { ssr: true }
+);
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { ReadMore } from "@components/MoreStories";
 import { NewsletterForm } from "@components/NewsletterForm";
@@ -87,7 +93,11 @@ type BlogProps = {
 export default function PostComponent({ post, morePosts }: BlogProps) {
   return (
     <BlogLayout post={post} morePosts={morePosts}>
-      <MDXContent source={post.content} />
+      {post.hasDemos ? (
+        <MDXContentWithDemos source={post.content} />
+      ) : (
+        <MDXContent source={post.content} />
+      )}
     </BlogLayout>
   );
 }

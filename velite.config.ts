@@ -269,6 +269,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     seoKeywords: string[];
     seoOgImage: string;
     seoOgImageAlt: string;
+    hasDemos: boolean;
   }
 > => {
   const remarkPlugins: Pluggable[] = [
@@ -367,6 +368,16 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   const seoOgImage = seoEntry.ogImage || data.cover?.src || "";
   const seoOgImageAlt = seoEntry.ogImageAlt || data.cover?.alt || "";
 
+  // Detect if content uses interactive demo components
+  const demoComponentNames = [
+    "UnitVectorDemo", "ProjectArrowDemo", "ProjectionDemo",
+    "ExampleWith2Polygons", "AxisByAxis", "SAT", "SATWithResponse",
+    "SATWithConcaveShapes", "EarClipping", "PointAndVectorDemo",
+    "MagnitudeDemo", "NormalDemo", "RotationDemo", "DotProductDemo",
+    "Triangulation", "ThreeFiberDemo", "ShaderEditor",
+  ];
+  const hasDemos = demoComponentNames.some((name) => rawContent.includes(`<${name}`));
+
   return {
     ...data,
     content: mdxSource,
@@ -377,6 +388,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     seoKeywords,
     seoOgImage,
     seoOgImageAlt,
+    hasDemos,
   };
 };
 

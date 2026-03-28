@@ -6,6 +6,12 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { BreadCrumbs } from "@components/BreadCrumbs";
+import dynamic from "next/dynamic";
+
+const MDXContentWithDemos = dynamic(
+  () => import("@components/MDXContentWithDemos").then((m) => m.MDXContentWithDemos),
+  { ssr: true }
+);
 type Props = {
   page: PageType;
 };
@@ -32,7 +38,11 @@ export default function Page({ page }: Props) {
           />
           <Header subtitle={subtitle} title={title} />
 
-          <MDXContent source={page.content} />
+          {page.hasDemos ? (
+            <MDXContentWithDemos source={page.content} />
+          ) : (
+            <MDXContent source={page.content} />
+          )}
         </article>
 
         <footer>

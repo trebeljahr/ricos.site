@@ -5,7 +5,8 @@ import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
-import { podcastnotes, type Podcastnote as PodcastnoteType } from "@velite";
+import type { Podcastnote as PodcastnoteType } from "@velite";
+import podcastnotes from "../../../.velite/podcastnotes.json";
 import { byOnlyPublished } from "src/lib/utils/filters";
 
 type Props = {

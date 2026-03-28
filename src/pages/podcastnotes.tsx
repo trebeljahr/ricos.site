@@ -4,7 +4,7 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
 import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
-import { podcastnotes as allPodcastnotes } from "@velite";
+import allPodcastnotes from "../../.velite/podcastnotes.json";
 import Link from "next/link";
 import { useState } from "react";
 import { CommonMetadata } from "src/@types";

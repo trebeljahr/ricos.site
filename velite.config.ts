@@ -262,7 +262,6 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
 ): Promise<
   T & {
     content: MDXResult;
-    rawContent: string;
     excerpt: string;
     markdownExcerpt: MDXResult;
     metaDescription: string;
@@ -371,7 +370,6 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   return {
     ...data,
     content: mdxSource,
-    rawContent,
     excerpt: excerptString,
     markdownExcerpt,
     metaDescription,

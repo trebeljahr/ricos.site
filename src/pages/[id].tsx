@@ -1,5 +1,5 @@
 import type { Page as PageType } from "@velite";
-import { pages } from "@velite";
+import pages from "../../.velite/pages.json";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";

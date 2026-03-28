@@ -7,7 +7,8 @@ import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
-import { Booknote, booknotes } from "@velite";
+import type { Booknote } from "@velite";
+import booknotes from "../../../.velite/booknotes.json";
 import { FaInfo } from "react-icons/fa";
 import { byOnlyPublished } from "src/lib/utils/filters";
 

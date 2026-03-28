@@ -2,7 +2,7 @@ import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
-import { travelblogs } from "@velite";
+import travelblogs from "../../../../.velite/travelblogs.json";
 import { nanoid } from "nanoid";
 import { CommonMetadata } from "src/@types";
 import { SeoInfo } from "src/lib/getSeoInfo";

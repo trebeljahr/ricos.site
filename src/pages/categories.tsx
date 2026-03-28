@@ -1,11 +1,9 @@
-import {
-  posts,
-  booknotes,
-  pages,
-  newsletters,
-  podcastnotes,
-  travelblogs,
-} from "@velite";
+import posts from "../../.velite/posts.json";
+import booknotes from "../../.velite/booknotes.json";
+import pages from "../../.velite/pages.json";
+import newsletters from "../../.velite/newsletters.json";
+import podcastnotes from "../../.velite/podcastnotes.json";
+import travelblogs from "../../.velite/travelblogs.json";
 import Link from "next/link";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";

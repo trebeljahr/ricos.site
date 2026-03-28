@@ -4,14 +4,12 @@ import { HomePageSection } from "@components/HomePageSection";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { WavingHand } from "@components/WavingHand";
-import {
-  booknotes,
-  newsletters,
-  posts,
-  SectionDescription,
-  sectionDescriptions,
-  travelblogs,
-} from "@velite";
+import type { SectionDescription } from "@velite";
+import booknotes from "../../.velite/booknotes.json";
+import newsletters from "../../.velite/newsletters.json";
+import posts from "../../.velite/posts.json";
+import sectionDescriptions from "../../.velite/sectionDescriptions.json";
+import travelblogs from "../../.velite/travelblogs.json";
 import Link from "next/link";
 import { type CommonMetadata } from "src/@types";
 import { SeoInfo } from "src/lib/getSeoInfo";

@@ -1,4 +1,5 @@
-import { newsletters, posts } from "@velite";
+import newsletters from "../../.velite/newsletters.json";
+import posts from "../../.velite/posts.json";
 import { Feed } from "feed";
 import fs from "fs";
 import path from "path";

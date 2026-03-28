@@ -1,4 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { SeoInfo } from "src/lib/getSeoInfo";
 import { perf } from "@r3f/ChunkGenerationSystem/config";
 
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
@@ -135,7 +136,7 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
   );
 };
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Procedurally Generated 3D Dungeon",
   description:
     "A 3D dungeon room generated in the browser, powered by R3F, Typescript, and a port of vazgriz's dungeon generator visualized with free 3D models from Quaternius",
@@ -153,7 +154,17 @@ const seoInfo = {
   imageAlt: "a 3D dungeon room generated in the browser",
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   const backgroundColor = "#191616";
   const viewDistance = 30;
 
@@ -172,4 +183,9 @@ export default function Page() {
       <MinecraftSpectatorController speed={0.2} />
     </ThreeFiberLayout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/dungeon/dungeon-algo-3d") } };
 }

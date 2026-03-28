@@ -3,8 +3,9 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { Box, OrbitControls, Stage } from "@react-three/drei";
 import { Vector3 } from "three";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "A FBO particles demo using custom meshes of Fish",
   description:
     "I was trying to simulate a school of fish using FBO particles in R3F and this is one of the first results. The fish are custom meshes and their positions are updated using a compute shader.",
@@ -22,7 +23,17 @@ const seoInfo = {
   imageAlt: "a school of fish swimming around in a 3D scene",
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout
       seoInfo={seoInfo}
@@ -40,4 +51,9 @@ export default function Page() {
       <OrbitControls enablePan={false} />
     </ThreeFiberLayout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/particles/fishes") } };
 }

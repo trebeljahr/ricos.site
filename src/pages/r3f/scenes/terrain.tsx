@@ -17,8 +17,9 @@ import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControl
 import { CameraPositionLogger } from "src/canvas/Helpers/CameraPositionLogger";
 import { RayCaster } from "src/canvas/Helpers/RayCaster";
 import { RigidBallSpawner } from "src/canvas/Helpers/RigidBall";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Terrain Demo",
   description:
     "A demo of a procedurally generated terrain with biomes assigned based on temperature, height and moisture noise. Biomes are color coded into different categories. Building block for a survival game.",
@@ -40,7 +41,17 @@ const seoInfo = {
   imageAlt: "rolling hills with different colors based on biome",
 };
 
-const Page = () => {
+const Page = ({ seo }: { seo: SeoInfo | null }) => {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   const { speed } = useControls({
     speed: { value: 1, min: 0.1, max: 10, step: 0.1 },
   });
@@ -71,3 +82,8 @@ const Page = () => {
 };
 
 export default Page;
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/scenes/terrain") } };
+}

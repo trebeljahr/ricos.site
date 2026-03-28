@@ -6,42 +6,29 @@ import { OtherPostsPreview } from "@components/PostPreview";
 import { ToTopButton } from "@components/ToTopButton";
 import { posts as allPosts } from "@velite";
 import { CommonMetadata } from "src/@types";
+import { SeoInfo } from "src/lib/getSeoInfo";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
   posts: CommonMetadata[];
+  seo: SeoInfo | null;
 };
 
-const Posts = ({ posts }: Props) => {
+const Posts = ({ posts, seo }: Props) => {
   const url = "posts";
   return (
     <Layout
-      title="Posts"
-      description="An overview page about all the posts that I have written so far on ricos.site, ordered by the date that they were published."
-      image={
-        "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg"
-      }
+      title={seo?.metaTitle || "Posts"}
+      description={seo?.metaDescription || "An overview page about all the posts that I have written so far on ricos.site, ordered by the date that they were published."}
+      image={seo?.ogImage || "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg"}
       url={url}
-      imageAlt={"a hand writing down thoughts on a piece of paper"}
-      keywords={[
+      imageAlt={seo?.ogImageAlt || "a hand writing down thoughts on a piece of paper"}
+      keywords={seo?.keywords || [
         "posts",
         "writings",
         "thoughts",
         "essays",
         "life",
-        "curious",
-        "all posts",
-        "AI",
-        "programming",
-        "machine learning",
-        "neuroscience",
-        "biochemistry",
-        "physics",
-        "evolution",
-        "engineering",
-        "personal development",
-        "growth",
-        "productivity",
       ]}
     >
       <main className="py-20 px-3 max-w-5xl mx-auto">
@@ -67,9 +54,10 @@ const Posts = ({ posts }: Props) => {
 export default Posts;
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
+  const { getSeoInfo } = await import("src/lib/getSeoInfo");
   const posts = extractAndSortMetadata(allPosts);
 
   return {
-    props: { posts },
+    props: { posts, seo: getSeoInfo("/posts") },
   };
 };

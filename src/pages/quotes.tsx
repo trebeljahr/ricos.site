@@ -5,6 +5,7 @@ import Header from "@components/PostHeader";
 import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import { useState } from "react";
+import { SeoInfo } from "src/lib/getSeoInfo";
 import quotesJSON from "../content/Notes/pages/quotes.json";
 
 const quotes: Quote[] = quotesJSON;
@@ -15,36 +16,18 @@ type Quote = {
   tags: string[];
 };
 
-export default function Quotes() {
+export default function Quotes({ seo }: { seo: SeoInfo | null }) {
   const [filtered, setFiltered] = useState<Quote[]>([]);
   const url = "quotes";
 
   return (
     <Layout
-      title="Quotes - a collection of quotes from a curious person"
-      description="Here, on this page, I collect quotes I have found from all kinds of different sources. Books, movies, series, blog posts, whenever I find a phrase I really like, I put it here eventually."
-      image="/assets/midjourney/a-collection-of-notes-of-importance.jpg"
-      imageAlt="a collection of handwritten notes on paper"
+      title={seo?.metaTitle || "Quotes - a collection of quotes from a curious person"}
+      description={seo?.metaDescription || "A curated collection of quotes from books, movies, podcasts, and blog posts."}
+      image={seo?.ogImage || "/assets/midjourney/a-collection-of-notes-of-importance.jpg"}
+      imageAlt={seo?.ogImageAlt || "a collection of handwritten notes on paper"}
       url={url}
-      keywords={[
-        "quotes",
-        "collection",
-        "writing",
-        "snippets",
-        "remember",
-        "memories",
-        "curious",
-        "archive",
-        "books",
-        "quotes from books",
-        "quotes from movies",
-        "quotes from blog posts",
-        "quotes from podcasts",
-        "quote collection",
-        "quote archive",
-        "great writing",
-        "soundbites",
-      ]}
+      keywords={seo?.keywords || ["quotes", "collection", "books", "inspiration"]}
     >
       <main className="py-20 px-3 mx-auto max-w-prose">
         <BreadCrumbs path={url} />
@@ -81,4 +64,9 @@ export default function Quotes() {
       </main>
     </Layout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/quotes") } };
 }

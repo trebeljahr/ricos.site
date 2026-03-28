@@ -4,6 +4,7 @@ import { useControls } from "leva";
 import { useRef, Suspense } from "react";
 import { Mesh } from "three";
 import dynamic from "next/dynamic";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
 // Dynamically import components
 const FbxViewer = () => {
@@ -27,7 +28,7 @@ const FbxViewer = () => {
   );
 };
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "A Viewer for some FBX Models",
   description:
     "In this project I tried to figure out how to load FBX models in R3F. I eventually switched to GLB models, but this is still a good reference.",
@@ -45,7 +46,17 @@ const seoInfo = {
   imageAlt: "a 3D model view of the default x-bot character from Mixamo",
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout
       seoInfo={seoInfo}
@@ -66,4 +77,9 @@ export default function Page() {
       <OrbitControls />
     </ThreeFiberLayout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/models/fbx-viewer") } };
 }

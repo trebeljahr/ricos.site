@@ -8,44 +8,28 @@ import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import { Booknote, booknotes as allBooknotes } from "@velite";
 import { useState } from "react";
+import { SeoInfo } from "src/lib/getSeoInfo";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
   booknotes: Booknote[];
+  seo: SeoInfo | null;
 };
 
-export default function Books({ booknotes }: Props) {
+export default function Books({ booknotes, seo }: Props) {
   const [filtered, setFiltered] = useState<Booknote[]>([]);
 
   const url = "booknotes";
 
   return (
     <Layout
-      title="Booknotes - What I have learned while reading"
-      description={
-        "An overview of what I have read, with a filterable list of books and booknotes"
-      }
-      keywords={[
-        "booknotes",
-        "books",
-        "reading",
-        "notes",
-        "book summaries",
-        "note taking",
-        "reading list",
-        "book list",
-        "bookshelf",
-        "book recommendations",
-        "book reviews",
-        "book notes",
-        "reading notes",
-        "reading summaries",
-        "reading list",
-      ]}
-      image="/assets/blog/a-bookshelf.png"
+      title={seo?.metaTitle || "Booknotes - What I have learned while reading"}
+      description={seo?.metaDescription || "An overview of what I have read, with a filterable list of books and booknotes"}
+      keywords={seo?.keywords || ["booknotes", "books", "reading", "book summaries"]}
+      image={seo?.ogImage || "/assets/blog/a-bookshelf.png"}
       url={url}
-      imageAlt={"a bookshelf filled with lots of books"}
+      imageAlt={seo?.ogImageAlt || "a bookshelf filled with lots of books"}
     >
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
@@ -79,6 +63,7 @@ export default function Books({ booknotes }: Props) {
 }
 
 export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
   const booknotes = extractAndSortMetadata(allBooknotes).filter(
     ({ summary }) => summary
   );
@@ -86,6 +71,7 @@ export function getStaticProps() {
   return {
     props: {
       booknotes,
+      seo: getSeoInfo("/booknotes"),
     },
   };
 }

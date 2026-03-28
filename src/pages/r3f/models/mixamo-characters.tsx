@@ -4,12 +4,13 @@ import { OrbitControls, Stage } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 
 import dynamic from "next/dynamic";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
 const DynamicCharacter = dynamic(() => import("@r3f/Characters/Character"), {
   ssr: false,
 });
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Mixamo Character Demos",
   description:
     "Showcasing different Mixamo Characters in a 3D scene with animations",
@@ -28,7 +29,17 @@ const seoInfo = {
   imageAlt: "Mixamo character dancing in a 3D scene",
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout
       seoInfo={seoInfo}
@@ -44,4 +55,9 @@ export default function Page() {
       <OrbitControls />
     </ThreeFiberLayout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/models/mixamo-characters") } };
 }

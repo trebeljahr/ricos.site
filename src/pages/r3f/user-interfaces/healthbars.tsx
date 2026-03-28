@@ -4,8 +4,9 @@ import { OrbitControls } from "@react-three/drei";
 import { GenericHealthBar, Shapes } from "@r3f/Dungeon/Healthbar/Healthbar";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { HealthbarsDemo } from "@r3f/Scenes/HealthbarsDemo";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Healthbar Shaders",
   description:
     "A Typescript R3F implementation of different healthbar shaders, ported over from a Unity Demo.",
@@ -23,7 +24,17 @@ const seoInfo = {
   imageAlt: "an assortment of healthbar shaders",
 };
 
-const HealthBarExample = () => {
+const HealthBarExample = ({ seo }: { seo: SeoInfo | null }) => {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout seoInfo={seoInfo} withKeyboardControls={false}>
       <ambientLight intensity={0.5} />
@@ -35,3 +46,8 @@ const HealthBarExample = () => {
 };
 
 export default HealthBarExample;
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/user-interfaces/healthbars") } };
+}

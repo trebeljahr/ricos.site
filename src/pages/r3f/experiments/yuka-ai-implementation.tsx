@@ -4,8 +4,9 @@ import { YukaSimulation } from "src/canvas/Scenes/Yuka/YukaExample";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "A simple game AI simulation in R3F using the Yuka library",
   description:
     "In this demo I use the Yuka library to simulate a simple game AI in a 3D scene, a deer running away from a velociraptor chasing it.",
@@ -23,7 +24,17 @@ const seoInfo = {
   imageAlt: "a deer running away from a velociraptor in a 3D scene",
 };
 
-const Page = () => {
+const Page = ({ seo }: { seo: SeoInfo | null }) => {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout seoInfo={seoInfo}>
       <Physics>
@@ -39,3 +50,8 @@ const Page = () => {
 };
 
 export default Page;
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/experiments/yuka-ai-implementation") } };
+}

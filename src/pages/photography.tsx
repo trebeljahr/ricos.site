@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ImageProps } from "src/@types";
 import { getFirstImageFromS3, photographyFolder } from "src/lib/aws";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
+import { SeoInfo } from "src/lib/getSeoInfo";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
 export const trips = [
@@ -100,28 +101,20 @@ export const trips = [
 
 type Props = {
   trips: { image: ImageProps; tripName: string }[];
+  seo: SeoInfo | null;
 };
 
-export default function Photography({ trips }: Props) {
+export default function Photography({ trips, seo }: Props) {
   const url = "photography";
   return (
     <Layout
-      title="Photography"
-      description="A page with all my photography."
+      title={seo?.metaTitle || "Photography"}
+      description={seo?.metaDescription || "A page with all my photography."}
       url={url}
       fullScreen={true}
-      image="/assets/blog/photography.png"
-      imageAlt="a high quality rendering of an old film camera"
-      keywords={[
-        "photography",
-        "gallery",
-        "images",
-        "photos",
-        "art",
-        "pictures",
-        "portfolio",
-        "showcase",
-      ]}
+      image={seo?.ogImage || "/assets/blog/photography.png"}
+      imageAlt={seo?.ogImageAlt || "a high quality rendering of an old film camera"}
+      keywords={seo?.keywords || ["photography", "gallery", "photos", "portfolio"]}
     >
       <main className="mb-20 px-3 max-w-7xl mx-auto">
         <BreadCrumbs path={url} />
@@ -175,5 +168,6 @@ export async function getStaticProps(): Promise<{ props: Props }> {
     })
   );
 
-  return { props: { trips: tripsMeta } };
+  const { getSeoInfo } = await import("src/lib/getSeoInfo");
+  return { props: { trips: tripsMeta, seo: getSeoInfo("/photography") } };
 }

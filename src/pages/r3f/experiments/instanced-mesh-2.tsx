@@ -2,6 +2,7 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 import { Sky } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { SeoInfo } from "src/lib/getSeoInfo";
 import { Physics } from "@react-three/rapier";
 import { Perf } from "r3f-perf";
 import {
@@ -13,7 +14,7 @@ import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControl
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { InstancedTreesWithMultiMaterial } from "src/canvas/InstancedMeshSystem/InstancedRocks";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "A test of the InstancedMesh2 Library",
   description:
     "You can spawn a bunch of trees with this system by pressing the f key. You can also remove trees again by presing the g key.",
@@ -31,7 +32,17 @@ const seoInfo = {
   imageAlt: "a 3D scene with a bunch of trees",
 };
 
-const Page = () => {
+const Page = ({ seo }: { seo: SeoInfo | null }) => {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout seoInfo={seoInfo}>
       <KeyboardControlsProvider>
@@ -54,3 +65,8 @@ const Page = () => {
 };
 
 export default Page;
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/experiments/instanced-mesh-2") } };
+}

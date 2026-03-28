@@ -3,6 +3,7 @@ import {
   SceneWithLoadingState,
   SeoInfo,
 } from "@components/dom/ThreeFiberLayout";
+import { SeoInfo as SeoInfoType } from "src/lib/getSeoInfo";
 import {
   Arch,
   Column2,
@@ -242,7 +243,7 @@ const Scene = () => {
   );
 };
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "A testbed for gaming features implemented",
   description:
     "This testbed is for experimenting with gaming features such as inventory, enemies, and traps in R3F. It has lots of things going on and interact with, so have fun!",
@@ -261,7 +262,17 @@ const seoInfo = {
     "an image of a 3D model of a character with a sword attacking a wizard skeleton",
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfoType | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <>
       <SeoInfo {...seoInfo} />
@@ -279,4 +290,9 @@ export default function Page() {
       </div>
     </>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/experiments/gaming-testbed") } };
 }

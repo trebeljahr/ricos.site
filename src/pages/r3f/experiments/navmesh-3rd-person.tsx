@@ -15,8 +15,9 @@ import { init as initRecast } from "recast-navigation";
 import { suspend } from "suspend-react";
 import { DoubleSide, Vector3 } from "three";
 import { RayParameters } from "three-stdlib";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Navmesh 3rd Person Controller",
   description:
     "Experimenting with the 3rd person controller and a navmesh agent based on the beautiful arancini/react and recast-navigation libraries.",
@@ -193,10 +194,25 @@ const Scene = () => {
     </>
   );
 };
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout seoInfo={seoInfo}>
       <Scene />
     </ThreeFiberLayout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/experiments/navmesh-3rd-person") } };
 }

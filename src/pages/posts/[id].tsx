@@ -30,18 +30,23 @@ export const BlogLayout = ({
     cover,
     tags,
     slug,
+    metaDescription,
+    seoTitle,
+    seoKeywords,
+    seoOgImage,
+    seoOgImageAlt,
     metadata: { readingTime, wordCount },
   },
 }: Props) => {
   const url = `posts/${slug}`;
   return (
     <Layout
-      description={excerpt}
-      title={title + " – " + subtitle}
-      image={cover.src}
+      description={metaDescription}
+      title={seoTitle || title + " – " + subtitle}
+      image={seoOgImage || cover.src}
       url={url}
-      keywords={tags.split(",")}
-      imageAlt={cover.alt}
+      keywords={seoKeywords.length > 0 ? seoKeywords : tags.split(",")}
+      imageAlt={seoOgImageAlt || cover.alt}
       withProgressBar={true}
     >
       <main className="py-20 px-3 max-w-5xl mx-auto">

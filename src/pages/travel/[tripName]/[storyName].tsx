@@ -36,6 +36,11 @@ export const TravelBlogLayout = ({
     metadata: { readingTime },
     tags,
     parentFolder,
+    metaDescription,
+    seoTitle,
+    seoKeywords,
+    seoOgImage,
+    seoOgImageAlt,
   },
   nextSlug,
   previousSlug,
@@ -43,12 +48,12 @@ export const TravelBlogLayout = ({
   const url = `travel/${parentFolder}/${slug}`;
   return (
     <Layout
-      description={excerpt || ""}
-      title={title}
-      image={cover?.src || ""}
-      imageAlt={cover?.alt || ""}
+      description={metaDescription}
+      title={seoTitle || title}
+      image={seoOgImage || cover?.src || ""}
+      imageAlt={seoOgImageAlt || cover?.alt || ""}
       url={url}
-      keywords={["travel", "blog", "adventure", "stories", ...tags]}
+      keywords={seoKeywords.length > 0 ? seoKeywords : ["travel", "blog", "adventure", "stories", ...tags]}
       withProgressBar={true}
     >
       <main className="py-20 px-3  max-w-5xl mx-auto">

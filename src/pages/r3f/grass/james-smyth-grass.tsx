@@ -3,8 +3,9 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { SingleStylizedGrassPlane } from "@r3f/Scenes/Grass/JamesSmythGrass/GrassPlane";
 import { Sky } from "@react-three/drei";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Stylized Grass",
   description:
     "Stylized Grass based on the demo and explainer article by James Smyth, but ported into R3F and Typescript.",
@@ -22,7 +23,17 @@ const seoInfo = {
   imageAlt: "a plane filled with a stylized grass shader",
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout seoInfo={seoInfo} camera={{ position: [52, 24, 84] }}>
       <color attach="background" args={["#ffcc32"]} />
@@ -32,4 +43,9 @@ export default function Page() {
       <MinecraftSpectatorController speed={1} />
     </ThreeFiberLayout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/grass/james-smyth-grass") } };
 }

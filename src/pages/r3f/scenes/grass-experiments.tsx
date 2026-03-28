@@ -16,8 +16,9 @@ import { useThree } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import { Suspense } from "react";
 import { physicsDebug } from "src/canvas/ChunkGenerationSystem/config";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Some experiments with grass shaders",
   description: "Sampling grass to put it onto arbitrary geometries.",
   url: "/r3f/scenes/grass-experiments",
@@ -26,7 +27,17 @@ const seoInfo = {
   imageAlt: "",
 };
 
-const Page = () => {
+const Page = ({ seo }: { seo: SeoInfo | null }) => {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout seoInfo={seoInfo}>
       <ambientLight intensity={1} />
@@ -79,3 +90,8 @@ const Page = () => {
 };
 
 export default Page;
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/scenes/grass-experiments") } };
+}

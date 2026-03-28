@@ -14,32 +14,17 @@ import {
 } from "@velite";
 import Link from "next/link";
 import { type CommonMetadata } from "src/@types";
+import { SeoInfo } from "src/lib/getSeoInfo";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
-const IndexPage = (props: Props) => {
-  const description = `Welcome to a wild collection of all the things Rico Trebeljahr creates: A bi-weekly newsletter, photography, booknotes, blog posts, travel stories and more.`;
-
+const IndexPage = ({ seo, ...props }: Props) => {
   return (
     <Layout
-      title="Home"
-      description={description}
-      image="/assets/midjourney/young-man-looking-absolutely-relaxed-while-reading-a-book-in-the-milkyway.jpg"
-      imageAlt={"a person reading a book, while floating in space"}
-      keywords={[
-        "programming",
-        "traveling",
-        "photography",
-        "writing",
-        "newsletter",
-        "booknotes",
-        "travel stories",
-        "life",
-        "live and learn",
-        "quotes",
-        "ricos.site",
-        "Rico Trebeljahr",
-        "philosophy",
-      ]}
+      title={seo?.metaTitle || "Home"}
+      description={seo?.metaDescription || "A collection of blog posts, booknotes, photography, travel stories and creative coding experiments by Rico Trebeljahr."}
+      image={seo?.ogImage || "/assets/midjourney/young-man-looking-absolutely-relaxed-while-reading-a-book-in-the-milkyway.jpg"}
+      imageAlt={seo?.ogImageAlt || "a person reading a book, while floating in space"}
+      keywords={seo?.keywords || ["programming", "traveling", "photography", "writing", "Rico Trebeljahr"]}
       url="/"
       fullScreen={true}
     >
@@ -181,9 +166,11 @@ type Props = {
     writing?: SectionDescription["content"];
     newsletter?: SectionDescription["content"];
   };
+  seo: SeoInfo | null;
 };
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
+  const { getSeoInfo } = await import("src/lib/getSeoInfo");
   const travelBlogsSelection = extractAndSortMetadata(travelblogs).slice(0, 15);
 
   const postsSelection = extractAndSortMetadata(posts).slice(0, 6);
@@ -196,6 +183,7 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
 
   return {
     props: {
+      seo: getSeoInfo("/"),
       travelBlogsSelection,
       postsSelection,
       newsletterSelection,

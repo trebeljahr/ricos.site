@@ -1,3 +1,4 @@
+import seoMetadata from "./src/content/seo-metadata.json";
 import remarkCallout from "@r4ai/remark-callout";
 import slugify from "@sindresorhus/slugify";
 import { Element, Root } from "hast";
@@ -99,6 +100,23 @@ function generateExcerpt(text: string, length: number): string {
 
   return excerpt.trim().slice(0, -1) + ".";
 }
+
+function generateMetaDescription(text: string): string {
+  return generateExcerpt(text, 155);
+}
+
+type SeoEntry = {
+  metaTitle?: string;
+  metaDescription?: string;
+  ogImage?: string;
+  ogImageAlt?: string;
+  keywords?: string[];
+};
+
+const seoData: Record<string, SeoEntry> = seoMetadata as Record<
+  string,
+  SeoEntry
+>;
 
 const parseGermanDate = (dateString: string) => {
   const [day, month, year] = dateString.split(".").map(Number);
@@ -247,6 +265,11 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     rawContent: string;
     excerpt: string;
     markdownExcerpt: MDXResult;
+    metaDescription: string;
+    seoTitle: string;
+    seoKeywords: string[];
+    seoOgImage: string;
+    seoOgImageAlt: string;
   }
 > => {
   const remarkPlugins: Pluggable[] = [
@@ -326,12 +349,32 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
 
   const markdownExcerpt = await serialize(excerptString, mdxOptions);
 
+  // SEO metadata: JSON override → frontmatter/content fallback → ""
+  const link = data.link || "";
+  const seoEntry = seoData[link] || {};
+  const metaDescription =
+    seoEntry.metaDescription || generateMetaDescription(excerptString) || "";
+  const seoTitle = seoEntry.metaTitle || data.title || "";
+  const tagsString: string = data.tags || "";
+  const seoKeywords =
+    seoEntry.keywords ||
+    (tagsString
+      ? tagsString.split(",").map((t: string) => t.trim())
+      : []);
+  const seoOgImage = seoEntry.ogImage || data.cover?.src || "";
+  const seoOgImageAlt = seoEntry.ogImageAlt || data.cover?.alt || "";
+
   return {
     ...data,
     content: mdxSource,
     rawContent,
     excerpt: excerptString,
     markdownExcerpt,
+    metaDescription,
+    seoTitle,
+    seoKeywords,
+    seoOgImage,
+    seoOgImageAlt,
   };
 };
 

@@ -27,23 +27,28 @@ const Newsletter = ({
     tags,
     cover,
     date,
+    metaDescription,
+    seoTitle,
+    seoKeywords,
+    seoOgImage,
+    seoOgImageAlt,
     metadata: { readingTime },
   },
   nextPost,
   prevPost,
 }: Props) => {
   const newsletterTag = "Live and Learn #" + number;
-  const fullTitle = title;
+  const fullTitle = seoTitle || title;
   const url = `newsletters/${slugTitle}`;
 
   return (
     <Layout
       title={fullTitle}
-      description={excerpt || ""}
+      description={metaDescription}
       url={url}
-      keywords={tags.split(",")}
-      image={cover.src}
-      imageAlt={cover.alt}
+      keywords={seoKeywords.length > 0 ? seoKeywords : tags.split(",")}
+      image={seoOgImage || cover.src}
+      imageAlt={seoOgImageAlt || cover.alt}
       withProgressBar={true}
     >
       <main className="py-20 px-3 max-w-5xl mx-auto">

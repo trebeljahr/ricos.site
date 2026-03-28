@@ -6,10 +6,12 @@ import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { newsletters } from "@velite";
 import { CommonMetadata } from "src/@types";
+import { SeoInfo } from "src/lib/getSeoInfo";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
   newsletterData: CommonMetadata[];
+  seo: SeoInfo | null;
 };
 
 const sortByNumbers = (arr: CommonMetadata[]) => {
@@ -51,39 +53,16 @@ const toNiceCard = (
   );
 };
 
-const Newsletters = ({ newsletterData }: Props) => {
+const Newsletters = ({ newsletterData, seo }: Props) => {
   const url = "newsletters";
   return (
     <Layout
-      title="Live and Learn Newsletter"
-      description="An archive overview page of all the Live and Learn editions I have published in the past."
+      title={seo?.metaTitle || "Live and Learn Newsletter"}
+      description={seo?.metaDescription || "An archive overview page of all the Live and Learn editions I have published in the past."}
       url={url}
-      keywords={[
-        "newsletters",
-        "live and learn",
-        "archive",
-        "past editions",
-        "all newsletters",
-        "AI",
-        "programming",
-        "machine learning",
-        "neuroscience",
-        "biochemistry",
-        "physics",
-        "evolution",
-        "engineering",
-        "personal development",
-        "AI news",
-        "programming news",
-        "machine learning news",
-        "neuroscience news",
-        "biochemistry news",
-        "AI newsletter",
-        "programming newsletter",
-        "machine learning newsletter",
-      ]}
-      image="/assets/midjourney/live-and-learn-cover.png"
-      imageAlt="a young boy absorbed in reading a book with sparks flying out of it"
+      keywords={seo?.keywords || ["newsletters", "live and learn", "archive"]}
+      image={seo?.ogImage || "/assets/midjourney/live-and-learn-cover.png"}
+      imageAlt={seo?.ogImageAlt || "a young boy absorbed in reading a book with sparks flying out of it"}
     >
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
@@ -118,6 +97,7 @@ const Newsletters = ({ newsletterData }: Props) => {
 export default Newsletters;
 
 export const getStaticProps = async () => {
+  const { getSeoInfo } = await import("src/lib/getSeoInfo");
   const newsletterData = extractAndSortMetadata(newsletters).map(
     (newsletter) => ({
       ...newsletter,
@@ -128,6 +108,6 @@ export const getStaticProps = async () => {
   );
 
   return {
-    props: { newsletterData: sortByNumbers(newsletterData) },
+    props: { newsletterData: sortByNumbers(newsletterData), seo: getSeoInfo("/newsletters") },
   };
 };

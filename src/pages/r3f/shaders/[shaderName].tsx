@@ -2,16 +2,19 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasShader";
 import { Canvas } from "@react-three/fiber";
+import { SeoInfo } from "src/lib/getSeoInfo";
 import { getShaderFileNames } from "src/lib/getShaderFileNames";
 
 export default function Page({
   fragmentShader,
   shaderName,
+  seo,
 }: {
   shaderName: string;
   fragmentShader: string;
+  seo: SeoInfo | null;
 }) {
-  const seoInfo = {
+  const defaultSeoInfo = {
     title: shaderName || "",
     description: "A simple shader demo for an implementation of " + shaderName,
     url: "/r3f/shaders/" + shaderName,
@@ -27,6 +30,17 @@ export default function Page({
     ],
     image: `/assets/pages/${shaderName}.png`,
     imageAlt: shaderName,
+  };
+
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
   };
 
   return (
@@ -69,11 +83,13 @@ export async function getStaticProps({ params: { shaderName } }: Params) {
   const { default: fragmentShader } = await import(
     `@shaders/standaloneFragmentShaders/${shaderName}.frag`
   );
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
 
   return {
     props: {
       shaderName,
       fragmentShader,
+      seo: getSeoInfo(`/r3f/shaders/${shaderName}`),
     },
   };
 }

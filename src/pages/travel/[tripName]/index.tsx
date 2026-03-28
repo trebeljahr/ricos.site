@@ -5,6 +5,7 @@ import Header from "@components/PostHeader";
 import { travelblogs } from "@velite";
 import { nanoid } from "nanoid";
 import { CommonMetadata } from "src/@types";
+import { SeoInfo } from "src/lib/getSeoInfo";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { travelingStoriesMetaRaw, travelingStoryNames } from "..";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
@@ -12,28 +13,29 @@ import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 type Props = {
   posts: CommonMetadata[];
   tripName: string;
+  seo: SeoInfo | null;
 };
 
-const Traveling = ({ posts, tripName }: Props) => {
+const Traveling = ({ posts, tripName, seo }: Props) => {
   const url = "/travel/" + tripName;
 
-  const { title, excerpt, cover, subtitle } =
+  const { title, subtitle, cover } =
     travelingStoriesMetaRaw[tripName] || {};
-  const defaultDescription = `An overview page for the stories of ${tripName}.`;
   const defaultCover = {
     src: "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg",
     alt: "a hand writing down thoughts on a piece of paper",
   };
   const defaultSubtitle = "Traveling Stories from Another Place";
+  const defaultDescription = `An overview page for the stories of ${tripName}.`;
 
   return (
     <Layout
-      title={title || tripName}
-      description={excerpt || defaultDescription}
-      image={cover?.src || defaultCover.src}
-      imageAlt={cover?.alt || defaultCover.alt}
+      title={seo?.metaTitle || title || tripName}
+      description={seo?.metaDescription || defaultDescription}
+      image={seo?.ogImage || cover?.src || defaultCover.src}
+      imageAlt={seo?.ogImageAlt || cover?.alt || defaultCover.alt}
       url={url}
-      keywords={[
+      keywords={seo?.keywords || [
         "travel",
         "blog",
         "adventure",
@@ -86,6 +88,7 @@ export const getStaticPaths = async () => {
 export const getStaticProps = async ({
   params,
 }: Params): Promise<{ props: Props }> => {
+  const { getSeoInfo } = await import("src/lib/getSeoInfo");
   const posts = extractAndSortMetadata(travelblogs)
     .filter(
       ({ parentFolder }) => !params.tripName || parentFolder === params.tripName
@@ -93,6 +96,6 @@ export const getStaticProps = async ({
     .reverse();
 
   return {
-    props: { posts, tripName: params.tripName },
+    props: { posts, tripName: params.tripName, seo: getSeoInfo(`/travel/${params.tripName}`) },
   };
 };

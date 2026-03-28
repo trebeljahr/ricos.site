@@ -10,8 +10,9 @@ import {
 } from "@react-three/postprocessing";
 import { useRef } from "react";
 import { DoubleSide, Vector3 } from "three";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Lightning Strike Example",
   description:
     "Example of how to use the LightningStrike geometry component from the three-sdtlib in React Three Fiber to create lightning strikes in a 3D scene.",
@@ -77,7 +78,17 @@ const Demo = () => {
   );
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout seoInfo={seoInfo}>
       <color attach="background" args={["#0a0a0a"]} />
@@ -94,4 +105,9 @@ export default function Page() {
       <OrbitControls />
     </ThreeFiberLayout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/experiments/lightning-strike") } };
 }

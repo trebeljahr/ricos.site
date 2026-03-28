@@ -17,6 +17,7 @@ import {
   tileSize,
 } from "src/canvas/ChunkGenerationSystem/config";
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
 const ChunkRenderer = () => {
   const chunks = useChunkContext();
@@ -41,7 +42,7 @@ const ChunkRenderer = () => {
   );
 };
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Endless Snow Forest",
   description:
     "An endless snow forest scene in React Three Fiber, implemented using a chunk generation system, web workers and the instancedMesh2 library.",
@@ -65,7 +66,17 @@ const seoInfo = {
   imageAlt: "a snow covered forest scene extending towards the horizon",
 };
 
-const Page = () => {
+const Page = ({ seo }: { seo: SeoInfo | null }) => {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout
       seoInfo={seoInfo}
@@ -91,3 +102,8 @@ const Page = () => {
 };
 
 export default Page;
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/scenes/snow-forest") } };
+}

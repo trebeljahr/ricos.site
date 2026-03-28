@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import { DoubleSide, Mesh, Raycaster, Vector3 } from "three";
 import { RayParameters } from "three-stdlib";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
 export const SingleLightningStrikeHittingMesh = ({
   source,
@@ -134,7 +135,7 @@ export const SingleLightningStrikeHittingMesh = ({
   );
 };
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Lightning Spell Example",
   description:
     "A simple example of a lightning spell hitting a 3D object implemented in three.js and react-three-fiber.",
@@ -185,7 +186,17 @@ const DemoScene = () => {
   );
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout seoInfo={seoInfo}>
       <color attach="background" args={["#f2f2f2"]} />
@@ -198,4 +209,9 @@ export default function Page() {
       <OrbitControls />
     </ThreeFiberLayout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/experiments/lightning-spell") } };
 }

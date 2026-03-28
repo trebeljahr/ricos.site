@@ -9,6 +9,7 @@ import {
   InventoryToggleButton,
 } from "@r3f/Dungeon/InventorySystem/GameInventoryUI";
 import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
 // Example item generator
 const createItem = (
@@ -34,17 +35,17 @@ const createItem = (
   };
 };
 
-export default function Game() {
+export default function Game({ seo }: { seo: SeoInfo | null }) {
   return (
     <InventoryProvider maxSlots={28} maxWeight={100}>
-      <GameWorld />
+      <GameWorld seo={seo} />
       <Inventory />
       <InventoryToggleButton />
     </InventoryProvider>
   );
 }
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Inventory Demo",
   description:
     "In this demo I set up an inventory system with React and a playground to add and remove as well as equip items.",
@@ -62,7 +63,17 @@ const seoInfo = {
   imageAlt: "a inventory prototype for a simple game",
 };
 
-const GameWorld: FC = () => {
+const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   const { addItem, canAddItem, isOpen } = useInventory();
 
   // Sample items that could be found in the game world
@@ -227,3 +238,8 @@ const GameWorld: FC = () => {
     </ThreeFiberLayout>
   );
 };
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/scenes/inventory") } };
+}

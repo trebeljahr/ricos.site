@@ -36,8 +36,6 @@ export function SideBySideShaderEditor({
     setValue(val);
   }, []);
 
-  const key = Math.random();
-
   return (
     <div className="flex h-full mt-10">
       <NavbarR3F />
@@ -63,7 +61,7 @@ export function SideBySideShaderEditor({
             position: [0, 0, 1],
           }}
         >
-          <FullCanvasShader key={key} fragmentShader={value} />
+          <FullCanvasShader key={value} fragmentShader={value} />
         </SceneWithLoadingState>
       </div>
     </div>

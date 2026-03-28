@@ -139,7 +139,6 @@ const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
     ) as Item;
 
     if (!manaPotion) {
-      console.warn("Mana Potion not found in sample items!");
       return;
     }
 
@@ -149,18 +148,7 @@ const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
       quantity: amount,
     };
 
-    const { amountLeft, amountAdded } = addItem(newItem);
-
-    if (amountLeft === 0) {
-      console.info(
-        `You found: ${newItem.name} ${
-          newItem.quantity > 1 ? `(x${newItem.quantity})` : ""
-        }!`
-      );
-    } else {
-      console.warn(`Couldn't add ${amountLeft} ${newItem.name} to inventory!`);
-      amountAdded > 0 && console.warn(`But added ${amountAdded}.`);
-    }
+    addItem(newItem);
   };
 
   const findRandomItem = useCallback(() => {
@@ -173,18 +161,7 @@ const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
       quantity: randomItem.stackable ? Math.floor(Math.random() * 5) + 1 : 1,
     };
 
-    const { amountLeft, amountAdded } = addItem(newItem);
-
-    if (amountLeft === 0) {
-      console.info(
-        `You found: ${newItem.name} ${
-          newItem.quantity > 1 ? `(x${newItem.quantity})` : ""
-        }!`
-      );
-    } else {
-      console.warn(`Couldn't add ${amountLeft} ${newItem.name} to inventory!`);
-      amountAdded > 0 && console.warn(`But added ${amountAdded}.`);
-    }
+    addItem(newItem);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sampleItems]);

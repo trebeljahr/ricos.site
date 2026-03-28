@@ -2,7 +2,7 @@ import { useKeyboardInput } from "@hooks/useKeyboardInput";
 import { Sphere, useTexture } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
-import { memo, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { SnowMaterial } from "src/Materials/TextureMaterials";
 import { Vector3 } from "three";
 
@@ -17,12 +17,14 @@ export const RigidBall = memo(({ position }: { position: Vector3 }) => {
 export const RigidBallSpawner = () => {
   const [items, setItems] = useState<JSX.Element[]>([]);
   const { camera } = useThree();
+  const nextId = useRef(0);
 
   const spawnBall = () => {
+    const id = nextId.current++;
     setItems((curr) => [
       ...curr,
       <RigidBall
-        key={Math.random() * Math.random()}
+        key={`ball-${id}`}
         position={camera.position}
       />,
     ]);

@@ -86,7 +86,6 @@ export function Fishes({
     );
 
     function initFishs() {
-      console.log("init fishs");
       if (!fishMesh.current) return;
 
       fishMesh.current.rotation.y = Math.PI / 2;

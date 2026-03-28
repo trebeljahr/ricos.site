@@ -273,7 +273,6 @@ export default function ShaderEditorPage() {
           resize={{ debounce: 0 }}
         >
           <FullCanvasShader
-            key={Math.random()}
             fragmentShader={controllableShaderArt}
             otherUniforms={otherUniforms}
           />

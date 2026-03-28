@@ -33,10 +33,6 @@ export const SpikeTrap = ({ interval = 2000 }: { interval?: number }) => {
   useFrame(() => {
     if (extended && inHitBox) {
       damage(0.01);
-
-      if (health.current <= 0) {
-        console.log("you're dead!");
-      }
     }
   });
 
@@ -55,8 +51,7 @@ export const SpikeTrap = ({ interval = 2000 }: { interval?: number }) => {
     };
   }, [extended, inHitBox]);
 
-  const hitSpikeTrap: IntersectionEnterHandler = (event) => {
-    console.log("hit spike trap", event);
+  const hitSpikeTrap: IntersectionEnterHandler = () => {
     setInHitBox(true);
   };
 

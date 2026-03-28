@@ -59,7 +59,7 @@ export default function Page({
       }}
     >
       <FullCanvasShader
-        key={shaderName + Math.random()}
+        key={shaderName}
         fragmentShader={fragmentShader}
       />
     </ThreeFiberLayout>

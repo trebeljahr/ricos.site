@@ -50,7 +50,7 @@ export async function tweetRandomQuote() {
         .toArray();
 
       if (results.length === 0) {
-        return console.info("No more quotes left!");
+        return;
       }
 
       quote = results[0];
@@ -60,14 +60,9 @@ export async function tweetRandomQuote() {
       );
 
       tweetContent = `"${quote.content}" \n– ${quote.author} \n\n #quotes #dailyquote \n\n Quote Archive at ${baseUrl}/quotes`;
-      console.info(tweetContent.length);
     } while (tweetContent.length > 280);
 
-    console.info("Sending tweet with:", tweetContent);
-
     await twitter.v1.tweet(tweetContent);
-
-    console.info("Tweet sent successfully!");
   } catch (error) {
     console.error("Error sending tweet:", error);
   } finally {

@@ -85,7 +85,7 @@ export function FullCanvasShaderMesh() {
   );
 
   return (
-    <mesh key={Math.random()}>
+    <mesh key={fragmentShader}>
       <planeGeometry args={[2, 2]} />
       <shaderMaterial
         ref={shaderRef}

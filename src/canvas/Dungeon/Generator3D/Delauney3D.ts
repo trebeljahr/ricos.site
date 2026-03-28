@@ -197,7 +197,6 @@ class Delaunay3D {
     delaunay.vertices = [...vertices];
 
     if (vertices.length < 4) {
-      console.warn("Need at least 4 vertices for 3D triangulation");
       return delaunay;
     }
 

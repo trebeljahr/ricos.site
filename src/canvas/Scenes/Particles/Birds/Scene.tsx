@@ -61,8 +61,6 @@ export function Birds({ amount = 1000 }) {
     );
 
     function initBirds() {
-      console.log("init birds");
-
       if (!birdMesh.current) return;
 
       birdMesh.current.rotation.y = Math.PI / 2;
@@ -102,8 +100,6 @@ export function Birds({ amount = 1000 }) {
   }, [windowHalfX, windowHalfY]);
 
   const last = useRef(performance.now());
-  console.log({ windowHalfX, windowHalfY });
-  console.log({ mouseX: mouseX.current, mouseY: mouseY.current });
 
   useFrame(() => {
     const now = performance.now();
@@ -139,8 +135,6 @@ export function Birds({ amount = 1000 }) {
     )
       return;
 
-    // console.log("updating bird material uniforms");
-
     birdMaterial.current.uniforms["texturePosition"].value =
       gpuCompute.getCurrentRenderTarget(positionVariable.current).texture;
 
@@ -169,7 +163,6 @@ export function Birds({ amount = 1000 }) {
 class BirdGeometry extends BufferGeometry {
   constructor(dataTextureWidth: number) {
     super();
-    console.log("creating bird geometry");
 
     const numBirds = dataTextureWidth * dataTextureWidth;
 

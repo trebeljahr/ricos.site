@@ -25,7 +25,7 @@ export function FullCanvasShader({
   });
 
   return (
-    <mesh key={Math.random()}>
+    <mesh>
       <planeGeometry args={[2, 2]} />
       <shaderMaterial
         ref={shaderRef}

@@ -55,7 +55,6 @@ export class DungeonGenerator3D {
     this.placeRooms();
 
     if (this.rooms.length < 2) {
-      console.warn("Not enough rooms to create hallways");
       return this.grid;
     }
 

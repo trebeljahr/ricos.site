@@ -132,8 +132,6 @@ export const CircleGrassPlane = ({}) => {
     });
     const circle = new Mesh(geometry, material);
 
-    console.log("setting position");
-
     circle.position.y = 10;
     circle.rotation.x = Math.PI / 2;
     circle.updateMatrixWorld(true);
@@ -227,8 +225,6 @@ export const AllRoGrassForArbitrarySurface = ({
 };
 
 function makeAlroGrassForSurface(instances: number, surface: Mesh) {
-  console.log("surface from within", surface);
-  console.log("position", surface.position);
   surface.updateMatrixWorld(true);
 
   const sampler = new MeshSurfaceSampler(surface).build();

@@ -67,7 +67,7 @@ export const LightningRay = forwardRef(
     });
 
     return (
-      <mesh material={material} key={Math.random()}>
+      <mesh material={material}>
         <lightningStrikeGeometry args={[{ ...rayParameters }]} ref={innerRef} />
         {children}
       </mesh>

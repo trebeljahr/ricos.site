@@ -1,6 +1,7 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { UnderwaterContextProvider } from "@contexts/UnderwaterContext";
 import dynamic from "next/dynamic";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
 // Dynamically import the WaterDemo component with Suspense
 const WaterDemo = dynamic(
@@ -10,7 +11,7 @@ const WaterDemo = dynamic(
   }
 );
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Ocean Demo",
   description:
     "An incomplete ocean/underwater game/demo, built with R3F and three.js",
@@ -28,7 +29,17 @@ const seoInfo = {
   imageAlt: "3D render of low poly kelp and a whale swimming around the ocean",
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout seoInfo={seoInfo}>
       <UnderwaterContextProvider>
@@ -39,5 +50,6 @@ export default function Page() {
 }
 
 export async function getStaticProps() {
-  return { props: { title: "Ocean Demo" } };
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { title: "Ocean Demo" , seo: getSeoInfo("/r3f/scenes/ocean") } };
 }

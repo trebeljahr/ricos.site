@@ -6,12 +6,13 @@ import dynamic from "next/dynamic";
 
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { OceanSurface } from "src/canvas/Scenes/OceanDemo/Ocean";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
 const Ship = dynamic(() => import("@r3f/AllModels/Ship"), {
   ssr: false,
 });
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Ship Demo",
   description:
     "A simple ship model swimming in the default Drei ocean shader. One of my first demos built with R3F and three.js",
@@ -29,7 +30,17 @@ const seoInfo = {
   imageAlt: "a 3D model of a ship floating in the ocean",
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout
       seoInfo={seoInfo}
@@ -53,5 +64,6 @@ export default function Page() {
 }
 
 export async function getStaticProps() {
-  return { props: { title: "Ship Demo" } };
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { title: "Ship Demo" , seo: getSeoInfo("/r3f/models/Ship") } };
 }

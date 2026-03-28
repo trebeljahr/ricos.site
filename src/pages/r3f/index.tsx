@@ -1,6 +1,7 @@
 import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Rico's R3F Playground",
   description:
     "Welcome to my R3F Playground! It's where I experiment with all things Three.js and React Three Fibre to learn those technologies, building out little demos, trying to improve my understanding",
@@ -18,7 +19,17 @@ const seoInfo = {
   imageAlt: "image of a 3D playground",
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout seoInfo={seoInfo}>
       <In>
@@ -38,5 +49,6 @@ export default function Page() {
 }
 
 export async function getStaticProps() {
-  return { props: { title: "Index" } };
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { title: "Index" , seo: getSeoInfo("/r3f") } };
 }

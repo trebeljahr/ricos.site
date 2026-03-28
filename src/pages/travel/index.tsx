@@ -8,6 +8,7 @@ import { travelblogs } from "@velite";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { CommonMetadata } from "src/@types";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
 type MetaInfo = {
   cover: { src: string; alt: string };
@@ -28,6 +29,7 @@ type CardContent = {
 
 type Props = {
   cardContent: CardContent[];
+  seo: SeoInfo | null;
 };
 
 export const travelingStoriesMetaRaw: Record<string, MetaInfo> = {
@@ -85,33 +87,15 @@ export const travelingStoriesMetaRaw: Record<string, MetaInfo> = {
   },
 };
 
-const TravelBlogs = ({ cardContent }: Props) => {
+const TravelBlogs = ({ cardContent, seo }: Props) => {
   return (
     <Layout
-      title="Traveling Stories"
-      description="An overview page about the traveling stories I have to tell"
-      image={"/assets/blog/traveling-van.png"}
-      imageAlt={
-        "a traveling van sitting in the middle of nowhere in the forest"
-      }
+      title={seo?.metaTitle || "Traveling Stories"}
+      description={seo?.metaDescription || "An overview page about the traveling stories I have to tell"}
+      image={seo?.ogImage || "/assets/blog/traveling-van.png"}
+      imageAlt={seo?.ogImageAlt || "a traveling van sitting in the middle of nowhere in the forest"}
       url="travel"
-      keywords={[
-        "travel",
-        "blog",
-        "adventures",
-        "stories",
-        "traveling",
-        "travel stories",
-        "Guadeloupe",
-        "Martinique",
-        "Portugal",
-        "Atlantic Crossing",
-        "sailing",
-        "hiking",
-        "diving",
-        "Carribean",
-        "adventure",
-      ]}
+      keywords={seo?.keywords || ["travel", "blog", "adventures", "stories"]}
     >
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path="travel" />
@@ -225,9 +209,11 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
       date: cardContent.date.toDateString(),
     }));
 
+  const { getSeoInfo } = await import("src/lib/getSeoInfo");
   return {
     props: {
       cardContent,
+      seo: getSeoInfo("/travel"),
     },
   };
 };

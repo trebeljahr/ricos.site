@@ -5,8 +5,9 @@ import { AllRoGrass } from "@r3f/Scenes/Grass/AllRoGrass/GrassPlane";
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import { Vector3 } from "three";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "A single square grass plane",
   description:
     "In this scene, I'm testing out a single square grass plane in React Three Fiber based on a codepen from al-ro.",
@@ -24,7 +25,17 @@ const seoInfo = {
   imageAlt: "a 3D view of a grassy plane",
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout
       seoInfo={seoInfo}
@@ -40,4 +51,9 @@ export default function Page() {
       </Physics>
     </ThreeFiberLayout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/grass/al-ro-grass") } };
 }

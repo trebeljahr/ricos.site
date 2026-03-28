@@ -5,8 +5,9 @@ import { Physics } from "@react-three/rapier";
 import { EcctrlController } from "src/canvas/Controllers/EcctrlController";
 
 import { Lights } from "src/canvas/Helpers/Lights";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "R3F Ecctrl Controller",
   description:
     "Implementation of the Ecctrl Controller in React Three Fiber. This is a simple 3D demo scene with a mixamo model that can move around the scene with animations.",
@@ -24,7 +25,17 @@ const seoInfo = {
   imageAlt: "an image of a girl standing in front of some trees",
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout seoInfo={seoInfo}>
       <Physics debug timeStep="vary">
@@ -36,4 +47,9 @@ export default function Page() {
       </Physics>
     </ThreeFiberLayout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/controllers/ecctrl-controller") } };
 }

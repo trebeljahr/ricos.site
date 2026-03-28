@@ -14,6 +14,7 @@ import { BreadCrumbs } from "@components/BreadCrumbs";
 import { byReadingTime } from "src/lib/utils/misc";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { toTitleCase } from "src/lib/utils/toTitleCase";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
 const allDocuments = [
   ...posts,
@@ -54,6 +55,7 @@ type TaggedDocumentData = LinksOnTag<
 type Props = {
   tags: TaggedDocumentData[];
   categories: TaggedDocumentData[];
+  seo: SeoInfo | null;
 };
 
 const RenderTags = ({ tags }: { tags: TaggedDocumentData[] }) => {
@@ -104,18 +106,16 @@ const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
   );
 };
 
-const ShowTags = ({ categories }: Props) => {
+const ShowTags = ({ categories, seo }: Props) => {
   const url = "categories";
   return (
     <Layout
-      title="Categories"
-      description={`An experimental overview over all the pages on ricos.site, sortable by different categories, such as ${mainCategories
-        .slice(0, 5)
-        .join(", ")}, and ${mainCategories[6]}.`}
+      title={seo?.metaTitle || "Categories"}
+      description={seo?.metaDescription || `Browse all content on ricos.site by category: ${mainCategories.slice(0, 5).join(", ")}, and more.`}
       url={url}
-      keywords={mainCategories}
-      image="/assets/blog/network.jpg"
-      imageAlt="a network of connected dots"
+      keywords={seo?.keywords || mainCategories}
+      image={seo?.ogImage || "/assets/blog/network.jpg"}
+      imageAlt={seo?.ogImageAlt || "a network of connected dots"}
     >
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
@@ -157,9 +157,11 @@ export async function getStaticProps() {
     };
   });
 
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return {
     props: {
       categories,
+      seo: getSeoInfo("/categories"),
     },
   };
 }

@@ -1,4 +1,5 @@
 import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { SeoInfo } from "src/lib/getSeoInfo";
 import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
 import { perf, wireframe } from "@r3f/ChunkGenerationSystem/config";
 
@@ -77,7 +78,7 @@ const geometries = {
   door: new BoxGeometry(1, 1, 1),
 };
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "A 3D Dungeon Generator",
   description:
     "A port of vazgriz's procedural 3D dungeon generator from Unity to the browser using Typescript and R3F.",
@@ -237,7 +238,17 @@ const DungeonRenderer = ({ seed }: { seed: number }) => {
   );
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   const [seed, setSeed] = useState(0);
 
   const handleClick = () => {
@@ -267,4 +278,9 @@ export default function Page() {
       </In>
     </ThreeFiberLayout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/dungeon/dungeon-algo-3d") } };
 }

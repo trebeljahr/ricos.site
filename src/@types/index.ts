@@ -47,6 +47,12 @@ export type CommonMetadata = {
     readingTime: number;
     wordCount: number;
   };
+  metaDescription: string;
+  seoTitle: string;
+  seoKeywords: string[];
+  seoOgImage: string;
+  seoOgImageAlt: string;
+
   published: boolean;
   number?: string;
   slugTitle?: string;

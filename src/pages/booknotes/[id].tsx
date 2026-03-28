@@ -75,16 +75,15 @@ const BooknotesWithDefault = ({ booknote }: Props) => {
 };
 
 const Book = ({ booknote }: Props) => {
-  const defaultDescription = `These are the book Notes for ${booknote.title} by ${booknote.bookAuthor}`;
   const url = `booknotes/${booknote.slug}`;
   return (
     <Layout
-      title={`Rico's booknotes for ${booknote.title}`}
-      description={booknote.excerpt || defaultDescription}
+      title={booknote.seoTitle || `Rico's booknotes for ${booknote.title}`}
+      description={booknote.metaDescription}
       url={url}
-      keywords={booknote.tags.split(",")}
-      image={booknote.cover.src}
-      imageAlt={booknote.cover.alt}
+      keywords={booknote.seoKeywords.length > 0 ? booknote.seoKeywords : booknote.tags.split(",")}
+      image={booknote.seoOgImage || booknote.cover.src}
+      imageAlt={booknote.seoOgImageAlt || booknote.cover.alt}
       withProgressBar={true}
     >
       <main className="py-20 px-3 max-w-5xl mx-auto">

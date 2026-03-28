@@ -2,8 +2,9 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { MeshMerger } from "@r3f/Scenes/Particles/MeshMerger/Scene";
 import { OrbitControls } from "@react-three/drei";
 import { Vector3 } from "three";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Particles for Merging Meshes",
   description: "",
   url: "/r3f/particles/mesh-merger",
@@ -21,7 +22,17 @@ const seoInfo = {
   imageAlt: "",
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout
       seoInfo={seoInfo}
@@ -34,4 +45,9 @@ export default function Page() {
       <OrbitControls />
     </ThreeFiberLayout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/particles/mesh-merger") } };
 }

@@ -6,8 +6,9 @@ import { Canvas } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
 import { Vector3 } from "three";
 import { Fishes } from "@r3f/Scenes/Particles/Fishes/Scene";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Birds Particle System",
   description:
     "A birds particle system demo, ported to R3F and Typescript from the ThreeJS Examples for learning. The birds are rendered by a flocking simulation and flee from the mouse cursor.",
@@ -30,7 +31,17 @@ const seoInfo = {
   imageAlt: "a flock of birds flying around in a 3D scene",
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   const skyColor = "#002a39";
   return (
     <ThreeFiberLayout
@@ -49,4 +60,9 @@ export default function Page() {
       <OrbitControls enablePan={false} enableRotate={false} />
     </ThreeFiberLayout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/particles/birds") } };
 }

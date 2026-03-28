@@ -5,9 +5,10 @@ import { BrunoSimonController } from "@r3f/Controllers/BrunoSimonController";
 
 import { Physics } from "@react-three/rapier";
 import { physicsDebug } from "src/canvas/ChunkGenerationSystem/config";
+import { SeoInfo } from "src/lib/getSeoInfo";
 import { MeshStandardMaterial } from "three";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Bruno Simon's Third Person Controller",
   description:
     "This is a demo of Bruno Simon's third person controller, taken from his Infinite World Example but ported to work with R3F.",
@@ -25,7 +26,17 @@ const seoInfo = {
   imageAlt: "girl standing in a simple 3D terrain",
 };
 
-const Page = () => {
+const Page = ({ seo }: { seo: SeoInfo | null }) => {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout seoInfo={seoInfo}>
       <Physics debug={physicsDebug}>
@@ -54,3 +65,8 @@ const Page = () => {
 };
 
 export default Page;
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/controllers/bruno-simon-controller") } };
+}

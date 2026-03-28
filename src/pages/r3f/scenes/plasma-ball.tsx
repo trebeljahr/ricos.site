@@ -1,3 +1,4 @@
+import { SeoInfo } from "src/lib/getSeoInfo";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 import { PlasmaBall } from "@r3f/Scenes/PlasmaBall";
@@ -9,7 +10,7 @@ import {
   ToneMapping,
 } from "@react-three/postprocessing";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Plasma Ball",
   description:
     "In this demo I tried using the LightningStrike Geometry from the three-stdlib in order to produce a plasma lamp sort of effect. With Bloom and ToneMapping postprocessing effects this looks very nice.",
@@ -27,7 +28,17 @@ const seoInfo = {
   imageAlt: "a 3D rendered simulation of a plasma ball",
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout seoInfo={seoInfo} withKeyboardControls={false}>
       <color attach="background" args={["#121524"]} />
@@ -44,4 +55,9 @@ export default function Page() {
       <OrbitControls autoRotate />
     </ThreeFiberLayout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/scenes/plasma-ball") } };
 }

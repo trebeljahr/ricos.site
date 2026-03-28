@@ -16,10 +16,10 @@ const PodcastnoteComponent = ({ podcastnote }: Props) => {
   const url = `podcastnotes/${podcastnote.slug}`;
   return (
     <Layout
-      title={`${podcastnote.displayTitle}`}
-      description={`These are my Podcast Notes for ${podcastnote.title}. ${podcastnote.excerpt}`}
+      title={podcastnote.seoTitle || podcastnote.displayTitle}
+      description={podcastnote.metaDescription}
       url={url}
-      keywords={podcastnote.tags.split(",")}
+      keywords={podcastnote.seoKeywords.length > 0 ? podcastnote.seoKeywords : podcastnote.tags.split(",")}
       withProgressBar={true}
       image={podcastnote.cover.src}
       imageAlt={podcastnote.cover.alt}

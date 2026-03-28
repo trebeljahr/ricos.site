@@ -18,6 +18,7 @@ import { Plane, Text } from "@react-three/drei";
 import { ComponentType, PropsWithChildren, useRef } from "react";
 import { DoubleSide } from "three";
 import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { SeoInfo } from "src/lib/getSeoInfo";
 
 const allNatureAssets = {
   ...simpleNatureAssets,
@@ -99,7 +100,7 @@ export const GridOfModels = ({
   );
 };
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "Quaternius Models Showcase",
   description:
     "A showcase of Quaternius models in a simple grid to help me choose which one to use.",
@@ -117,7 +118,17 @@ const seoInfo = {
   imageAlt: "Image of a grid filled with 3D models",
 };
 
-const Page = () => {
+const Page = ({ seo }: { seo: SeoInfo | null }) => {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   const groundColor = "#84fb34";
 
   return (
@@ -163,3 +174,8 @@ const Page = () => {
 };
 
 export default Page;
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/models/quaternius-models") } };
+}

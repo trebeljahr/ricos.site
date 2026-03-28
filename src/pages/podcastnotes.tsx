@@ -8,37 +8,25 @@ import { podcastnotes as allPodcastnotes } from "@velite";
 import Link from "next/link";
 import { useState } from "react";
 import { CommonMetadata } from "src/@types";
+import { SeoInfo } from "src/lib/getSeoInfo";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
   podcastnotes: CommonMetadata[];
+  seo: SeoInfo | null;
 };
 
-export default function Podcastnotes({ podcastnotes }: Props) {
+export default function Podcastnotes({ podcastnotes, seo }: Props) {
   const [filtered, setFiltered] = useState<CommonMetadata[]>([]);
 
   const url = "podcastnotes";
   return (
     <Layout
-      title="Podcastnotes - notes on the things I've read"
-      description={
-        "An overview of what I have read, with a filterable list of books and Podcastnotes"
-      }
-      image="/assets/blog/podcastnotes.jpg"
-      imageAlt="a collection of hand written notes next to a podcast microphone"
-      keywords={[
-        "podcastnotes",
-        "podcasts",
-        "notes",
-        "learnings",
-        "learning",
-        "summary",
-        "podcast",
-        "podcast notes",
-        "podcast learnings",
-        "podcast summary",
-        "podcast learnings",
-      ]}
+      title={seo?.metaTitle || "Podcastnotes - notes on the things I've listened to"}
+      description={seo?.metaDescription || "An overview of podcast episodes I've listened to, with notes and key takeaways"}
+      image={seo?.ogImage || "/assets/blog/podcastnotes.jpg"}
+      imageAlt={seo?.ogImageAlt || "a collection of hand written notes next to a podcast microphone"}
+      keywords={seo?.keywords || ["podcastnotes", "podcasts", "notes", "learnings"]}
       url={url}
     >
       <main className="py-20 px-3 max-w-5xl mx-auto">
@@ -89,11 +77,13 @@ export default function Podcastnotes({ podcastnotes }: Props) {
 }
 
 export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
   const podcastnotes = extractAndSortMetadata(allPodcastnotes);
 
   return {
     props: {
       podcastnotes,
+      seo: getSeoInfo("/podcastnotes"),
     },
   };
 }

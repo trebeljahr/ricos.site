@@ -1,3 +1,4 @@
+import { SeoInfo } from "src/lib/getSeoInfo";
 import { FBOParticles } from "@r3f/Scenes/Particles/FboDemo/Particles";
 
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
@@ -8,7 +9,7 @@ import {
   ToneMapping,
 } from "@react-three/postprocessing";
 
-const seoInfo = {
+const defaultSeoInfo = {
   title: "A simple FBO particles demo",
   description:
     "This is a simple FBO particles demo in R3F, using a compute shader to update the particles to learn and understand how that can done",
@@ -27,7 +28,17 @@ const seoInfo = {
   imageAlt: "a set of glowing particles flying around in a 3D scene",
 };
 
-export default function Page() {
+export default function Page({ seo }: { seo: SeoInfo | null }) {
+  const seoInfo = {
+    ...defaultSeoInfo,
+    ...(seo && {
+      title: seo.metaTitle,
+      description: seo.metaDescription,
+      image: seo.ogImage,
+      imageAlt: seo.ogImageAlt,
+      keywords: seo.keywords,
+    }),
+  };
   return (
     <ThreeFiberLayout
       seoInfo={seoInfo}
@@ -43,4 +54,9 @@ export default function Page() {
       <color attach="background" args={["#393c4a"]} />
     </ThreeFiberLayout>
   );
+}
+
+export function getStaticProps() {
+  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  return { props: { seo: getSeoInfo("/r3f/particles/fbo-demo") } };
 }

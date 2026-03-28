@@ -12,16 +12,16 @@ type Props = {
 };
 
 export default function Page({ page }: Props) {
-  const { subtitle, title, excerpt, cover } = page;
+  const { subtitle, title, cover } = page;
 
   return (
     <Layout
-      title={title + " – " + subtitle}
-      description={excerpt}
-      image={cover.src}
-      imageAlt={cover.alt}
+      title={page.seoTitle || title + " – " + subtitle}
+      description={page.metaDescription}
+      image={page.seoOgImage || cover.src}
+      imageAlt={page.seoOgImageAlt || cover.alt}
       url={page.slug}
-      keywords={page.tags.split(",")}
+      keywords={page.seoKeywords.length > 0 ? page.seoKeywords : page.tags.split(",")}
       withProgressBar={true}
     >
       <main className="py-20 px-3 max-w-5xl mx-auto">

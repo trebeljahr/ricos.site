@@ -3,7 +3,7 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { SingleStylizedGrassPlane } from "@r3f/Scenes/Grass/JamesSmythGrass/GrassPlane";
 import { Sky } from "@react-three/drei";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Stylized Grass",
@@ -46,6 +46,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/grass/james-smyth-grass") } };
 }

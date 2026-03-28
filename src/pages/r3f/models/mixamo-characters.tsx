@@ -4,7 +4,7 @@ import { OrbitControls, Stage } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 
 import dynamic from "next/dynamic";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const DynamicCharacter = dynamic(() => import("@r3f/Characters/Character"), {
   ssr: false,
@@ -58,6 +58,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/models/mixamo-characters") } };
 }

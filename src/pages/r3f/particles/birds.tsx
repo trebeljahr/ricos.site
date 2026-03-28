@@ -6,7 +6,7 @@ import { Canvas } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
 import { Vector3 } from "three";
 import { Fishes } from "@r3f/Scenes/Particles/Fishes/Scene";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Birds Particle System",
@@ -63,6 +63,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/particles/birds") } };
 }

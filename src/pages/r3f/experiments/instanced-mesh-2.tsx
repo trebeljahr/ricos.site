@@ -2,7 +2,7 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 import { Sky } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { Physics } from "@react-three/rapier";
 import { Perf } from "r3f-perf";
 import {
@@ -67,6 +67,5 @@ const Page = ({ seo }: { seo: SeoInfo | null }) => {
 export default Page;
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/experiments/instanced-mesh-2") } };
 }

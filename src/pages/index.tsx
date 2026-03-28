@@ -5,14 +5,9 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { WavingHand } from "@components/WavingHand";
 import type { SectionDescription } from "@velite";
-import booknotes from "../../.velite/booknotes.meta.json";
-import newsletters from "../../.velite/newsletters.meta.json";
-import posts from "../../.velite/posts.meta.json";
-import sectionDescriptions from "../../.velite/sectionDescriptions.json";
-import travelblogs from "../../.velite/travelblogs.meta.json";
 import Link from "next/link";
 import { type CommonMetadata } from "src/@types";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 const IndexPage = ({ seo, ...props }: Props) => {
@@ -168,7 +163,12 @@ type Props = {
 };
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
-  const { getSeoInfo } = await import("src/lib/getSeoInfo");
+  const travelblogs = require("../../.velite/travelblogs.json");
+  const posts = require("../../.velite/posts.json");
+  const newsletters = require("../../.velite/newsletters.json");
+  const booknotes = require("../../.velite/booknotes.json");
+  const sectionDescriptions = require("../../.velite/sectionDescriptions.json");
+
   const travelBlogsSelection = extractAndSortMetadata(travelblogs).slice(0, 15);
 
   const postsSelection = extractAndSortMetadata(posts).slice(0, 6);
@@ -176,7 +176,7 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
   const newsletterSelection = extractAndSortMetadata(newsletters).slice(0, 6);
 
   const booknotesSelection = extractAndSortMetadata(booknotes)
-    .filter(({ summary }) => summary)
+    .filter(({ summary }: any) => summary)
     .slice(0, 30);
 
   return {
@@ -188,15 +188,15 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
       booknotesSelection,
       texts: {
         booknotes: sectionDescriptions.find(
-          ({ title }) => title === "Booknotes"
+          ({ title }: SectionDescription) => title === "Booknotes"
         )?.content,
         traveling: sectionDescriptions.find(
-          ({ title }) => title === "Traveling Stories"
+          ({ title }: SectionDescription) => title === "Traveling Stories"
         )?.content,
-        writing: sectionDescriptions.find(({ title }) => title === "Writing")
+        writing: sectionDescriptions.find(({ title }: SectionDescription) => title === "Writing")
           ?.content,
         newsletter: sectionDescriptions.find(
-          ({ title }) => title === "Newsletter"
+          ({ title }: SectionDescription) => title === "Newsletter"
         )?.content,
       },
     },

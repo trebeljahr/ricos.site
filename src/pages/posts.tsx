@@ -4,9 +4,8 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
 import { OtherPostsPreview } from "@components/PostPreview";
 import { ToTopButton } from "@components/ToTopButton";
-import allPosts from "../../.velite/posts.meta.json";
 import { CommonMetadata } from "src/@types";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
@@ -54,7 +53,7 @@ const Posts = ({ posts, seo }: Props) => {
 export default Posts;
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
-  const { getSeoInfo } = await import("src/lib/getSeoInfo");
+  const allPosts = require("../../.velite/posts.json");
   const posts = extractAndSortMetadata(allPosts);
 
   return {

@@ -1,5 +1,5 @@
 import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Rico's R3F Playground",
@@ -49,6 +49,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export async function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { title: "Index" , seo: getSeoInfo("/r3f") } };
 }

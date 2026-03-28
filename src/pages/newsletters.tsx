@@ -4,9 +4,8 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
-import newsletters from "../../.velite/newsletters.meta.json";
 import { CommonMetadata } from "src/@types";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
@@ -97,9 +96,9 @@ const Newsletters = ({ newsletterData, seo }: Props) => {
 export default Newsletters;
 
 export const getStaticProps = async () => {
-  const { getSeoInfo } = await import("src/lib/getSeoInfo");
+  const newsletters = require("../../.velite/newsletters.json");
   const newsletterData = extractAndSortMetadata(newsletters).map(
-    (newsletter) => ({
+    (newsletter: CommonMetadata) => ({
       ...newsletter,
       excerpt: newsletter.excerpt
         .replace("Welcome to this edition of Live and Learn. ", "")

@@ -4,7 +4,6 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
-import travelblogs from "../../../.velite/travelblogs.meta.json";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { CommonMetadata } from "src/@types";
@@ -133,22 +132,25 @@ const TravelBlogs = ({ cardContent, seo }: Props) => {
 
 export default TravelBlogs;
 
-export const travelingStoryNames = [
-  ...travelblogs.filter(byOnlyPublished).reduce((agg, current) => {
+const _travelblogs = require("../../../.velite/travelblogs.json");
+
+export const travelingStoryNames: string[] = [
+  ..._travelblogs.filter(byOnlyPublished).reduce((agg: Set<string>, current: any) => {
     agg.add(current.parentFolder);
     return agg;
   }, new Set<string>()),
 ];
 
-export const travelingStoryNamesMap = travelblogs.reduce((agg, current) => {
+export const travelingStoryNamesMap: Record<string, any> = _travelblogs.reduce((agg: Record<string, any>, current: any) => {
   agg[current.parentFolder] = current.path.split("/").at(-2);
   return agg;
 }, {} as Record<string, any>);
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
+  const travelblogs: any[] = require("../../../.velite/travelblogs.json");
   const travelingBlogsMeta = travelblogs
     .filter(byOnlyPublished)
-    .map(({ title, excerpt, date, cover, metadata, parentFolder }) => ({
+    .map(({ title, excerpt, date, cover, metadata, parentFolder }: any) => ({
       title,
       cover,
       date,
@@ -181,10 +183,10 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
       };
 
       const currentBlogs = travelingBlogsMeta.filter(
-        (blog) => blog.parentFolder === story
+        (blog: any) => blog.parentFolder === story
       );
       const { date, readingTime, amountOfStories } = currentBlogs.reduce(
-        (agg, current) => {
+        (agg: any, current: any) => {
           const currentDate = new Date(current.date);
           return {
             date: currentDate > agg.date ? currentDate : agg.date,

@@ -5,7 +5,7 @@ import { Physics } from "@react-three/rapier";
 import { EcctrlController } from "src/canvas/Controllers/EcctrlController";
 
 import { Lights } from "src/canvas/Helpers/Lights";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "R3F Ecctrl Controller",
@@ -50,6 +50,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/controllers/ecctrl-controller") } };
 }

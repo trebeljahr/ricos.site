@@ -4,7 +4,7 @@ import { useControls } from "leva";
 import { useRef, Suspense } from "react";
 import { Mesh } from "three";
 import dynamic from "next/dynamic";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 // Dynamically import components
 const FbxViewer = () => {
@@ -80,6 +80,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/models/fbx-viewer") } };
 }

@@ -9,7 +9,7 @@ import {
   InventoryToggleButton,
 } from "@r3f/Dungeon/InventorySystem/GameInventoryUI";
 import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 // Example item generator
 const createItem = (
@@ -240,6 +240,5 @@ const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
 };
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/scenes/inventory") } };
 }

@@ -1,6 +1,6 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import dynamic from "next/dynamic";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const ThirdPersonDemo = dynamic(() => import("@r3f/Scenes/ThirdPersonDemo"), {
   ssr: false,
@@ -43,6 +43,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export async function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { title: "Third Person Camera Demo", seo: getSeoInfo("/r3f/controllers/third-person-controller") } };
 }

@@ -8,7 +8,6 @@ import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Newsletter as NewsletterType } from "@velite";
-import newsletters from "../../../.velite/newsletters.json";
 import { byOnlyPublished } from "src/lib/utils/filters";
 
 type Props = {
@@ -103,6 +102,7 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
+  const newsletters: NewsletterType[] = require("../../../.velite/newsletters.json");
   const newsletter = newsletters.find(
     ({ slugTitle }) => slugTitle === params.id,
   );
@@ -125,6 +125,7 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
+  const newsletters: NewsletterType[] = require("../../../.velite/newsletters.json");
   const newsletterTitles = newsletters
     .filter(byOnlyPublished)
     .map(({ slugTitle }) => {

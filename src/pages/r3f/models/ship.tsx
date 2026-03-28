@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { OceanSurface } from "src/canvas/Scenes/OceanDemo/Ocean";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const Ship = dynamic(() => import("@r3f/AllModels/Ship"), {
   ssr: false,
@@ -64,6 +64,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export async function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { title: "Ship Demo" , seo: getSeoInfo("/r3f/models/Ship") } };
 }

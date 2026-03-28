@@ -9,7 +9,6 @@ import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import slugify from "@sindresorhus/slugify";
 import type { Travelblog } from "@velite";
-import travelblogs from "../../../../.velite/travelblogs.json";
 import { ReactNode } from "react";
 import { byDate } from "src/lib/utils/misc";
 import { byOnlyPublished } from "src/lib/utils/filters";
@@ -109,8 +108,9 @@ export default function PostComponent({
 type Params = { params: { storyName: string; tripName: string } };
 
 export async function getStaticPaths() {
+  const travelblogs = require("../../../../.velite/travelblogs.json");
   const paths: Params[] = extractAndSortMetadata(travelblogs).map(
-    ({ slug, parentFolder }) => ({
+    ({ slug, parentFolder }: any) => ({
       params: {
         tripName: slugify(parentFolder as string),
         storyName: slug,
@@ -127,6 +127,7 @@ export async function getStaticPaths() {
 export async function getStaticProps({
   params: { storyName, tripName },
 }: Params) {
+  const travelblogs: Travelblog[] = require("../../../../.velite/travelblogs.json");
   const stories = travelblogs
     .filter(byOnlyPublished)
     .sort(byDate)

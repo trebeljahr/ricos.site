@@ -18,7 +18,7 @@ import { Plane, Text } from "@react-three/drei";
 import { ComponentType, PropsWithChildren, useRef } from "react";
 import { DoubleSide } from "three";
 import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const allNatureAssets = {
   ...simpleNatureAssets,
@@ -176,6 +176,5 @@ const Page = ({ seo }: { seo: SeoInfo | null }) => {
 export default Page;
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/models/quaternius-models") } };
 }

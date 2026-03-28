@@ -3,7 +3,7 @@ import {
   SceneWithLoadingState,
   SeoInfo,
 } from "@components/dom/ThreeFiberLayout";
-import { SeoInfo as SeoInfoType } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo as SeoInfoType } from "src/lib/getSeoInfo";
 import {
   Arch,
   Column2,
@@ -293,6 +293,5 @@ export default function Page({ seo }: { seo: SeoInfoType | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/experiments/gaming-testbed") } };
 }

@@ -1,5 +1,5 @@
 import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
 import { perf, wireframe } from "@r3f/ChunkGenerationSystem/config";
 
@@ -281,6 +281,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/dungeon/dungeon-algo-3d") } };
 }

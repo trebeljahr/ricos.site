@@ -5,7 +5,7 @@ import Header from "@components/PostHeader";
 import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import { useState } from "react";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import quotesJSON from "../content/Notes/pages/quotes.json";
 
 const quotes: Quote[] = quotesJSON;
@@ -67,6 +67,5 @@ export default function Quotes({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/quotes") } };
 }

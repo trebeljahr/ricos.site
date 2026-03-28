@@ -2,10 +2,9 @@ import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
-import travelblogs from "../../../../.velite/travelblogs.meta.json";
 import { nanoid } from "nanoid";
 import { CommonMetadata } from "src/@types";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { travelingStoriesMetaRaw, travelingStoryNames } from "..";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
@@ -88,10 +87,10 @@ export const getStaticPaths = async () => {
 export const getStaticProps = async ({
   params,
 }: Params): Promise<{ props: Props }> => {
-  const { getSeoInfo } = await import("src/lib/getSeoInfo");
+  const travelblogs = require("../../../../.velite/travelblogs.json");
   const posts = extractAndSortMetadata(travelblogs)
     .filter(
-      ({ parentFolder }) => !params.tripName || parentFolder === params.tripName
+      ({ parentFolder }: any) => !params.tripName || parentFolder === params.tripName
     )
     .reverse();
 

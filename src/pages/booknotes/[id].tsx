@@ -8,7 +8,6 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import type { Booknote } from "@velite";
-import booknotes from "../../../.velite/booknotes.json";
 import { FaInfo } from "react-icons/fa";
 import { byOnlyPublished } from "src/lib/utils/filters";
 
@@ -136,9 +135,10 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
+  const booknotes = require("../../../.velite/booknotes.json");
   const booknote = booknotes
     .filter(byOnlyPublished)
-    .find(({ slug }) => params.id === slug);
+    .find(({ slug }: Booknote) => params.id === slug);
 
   return {
     props: {
@@ -148,7 +148,8 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const paths = booknotes.filter(byOnlyPublished).map((book) => {
+  const booknotes = require("../../../.velite/booknotes.json");
+  const paths = booknotes.filter(byOnlyPublished).map((book: Booknote) => {
     return {
       params: {
         id: book.slug,

@@ -18,7 +18,7 @@ import {
   SnowMaterial,
 } from "src/Materials/TextureMaterials";
 import { BufferAttribute, Mesh, Vector2 } from "three";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const Scene = () => {
   const { camera } = useThree();
@@ -141,6 +141,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/experiments/textures") } };
 }

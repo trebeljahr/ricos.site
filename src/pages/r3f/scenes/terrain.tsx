@@ -17,7 +17,7 @@ import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControl
 import { CameraPositionLogger } from "src/canvas/Helpers/CameraPositionLogger";
 import { RayCaster } from "src/canvas/Helpers/RayCaster";
 import { RigidBallSpawner } from "src/canvas/Helpers/RigidBall";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Terrain Demo",
@@ -84,6 +84,5 @@ const Page = ({ seo }: { seo: SeoInfo | null }) => {
 export default Page;
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/scenes/terrain") } };
 }

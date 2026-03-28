@@ -4,7 +4,7 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { Obstacles } from "@r3f/Helpers/Obstacles";
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "First Person Controller",
@@ -48,6 +48,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/controllers/first-person-controller") } };
 }

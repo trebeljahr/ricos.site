@@ -5,7 +5,7 @@ import { AllRoGrass } from "@r3f/Scenes/Grass/AllRoGrass/GrassPlane";
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import { Vector3 } from "three";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "A single square grass plane",
@@ -54,6 +54,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/grass/al-ro-grass") } };
 }

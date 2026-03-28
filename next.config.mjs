@@ -8,19 +8,6 @@ if (!process.env.VELITE_STARTED && (isDev || isBuild)) {
   process.env.VELITE_STARTED = "1";
   const { build } = await import("velite");
   await build({ watch: isDev, clean: !isDev, logLevel: "error" });
-
-  // Generate lightweight meta files (content stripped) for listing pages
-  const { readFile, writeFile } = await import("fs/promises");
-  const { join, resolve, dirname } = await import("path");
-  const veliteDir = join(resolve(dirname("")), ".velite");
-  const collections = ["posts", "newsletters", "booknotes", "pages", "podcastnotes", "travelblogs"];
-  for (const name of collections) {
-    try {
-      const data = JSON.parse(await readFile(join(veliteDir, `${name}.json`), "utf-8"));
-      const stripped = data.map(({ content, ...meta }) => meta);
-      await writeFile(join(veliteDir, `${name}.meta.json`), JSON.stringify(stripped));
-    } catch {}
-  }
 }
 
 /** @type {import('next').NextConfig} */

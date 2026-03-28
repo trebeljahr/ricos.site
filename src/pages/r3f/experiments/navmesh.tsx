@@ -6,7 +6,7 @@ import { DebugDrawer, threeToSoloNavMesh } from "@recast-navigation/three";
 import { useEffect } from "react";
 import { init } from "recast-navigation";
 import { Mesh } from "three";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const NavmeshExample = () => {
   const { scene } = useThree();
@@ -96,6 +96,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/experiments/navmesh") } };
 }

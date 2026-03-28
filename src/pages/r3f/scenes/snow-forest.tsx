@@ -17,7 +17,7 @@ import {
   tileSize,
 } from "src/canvas/ChunkGenerationSystem/config";
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const ChunkRenderer = () => {
   const chunks = useChunkContext();
@@ -104,6 +104,5 @@ const Page = ({ seo }: { seo: SeoInfo | null }) => {
 export default Page;
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/scenes/snow-forest") } };
 }

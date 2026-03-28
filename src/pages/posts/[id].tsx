@@ -8,11 +8,10 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Post } from "@velite";
-import posts from "../../../.velite/posts.json";
 import { ReactNode } from "react";
-import { getRandom } from "src/lib/math/getRandom";
-import { byOnlyPublished } from "src/lib/utils/filters";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
+import { byOnlyPublished } from "src/lib/utils/filters";
+import { getRandom } from "src/lib/math/getRandom";
 
 type Props = {
   children: ReactNode;
@@ -94,9 +93,10 @@ export default function PostComponent({ post, morePosts }: BlogProps) {
 }
 
 export async function getStaticPaths() {
+  const posts = require("../../../.velite/posts.json");
   const paths = posts
     .filter(byOnlyPublished)
-    .map(({ slug }) => ({ params: { id: slug } }));
+    .map(({ slug }: Post) => ({ params: { id: slug } }));
 
   return {
     paths:
@@ -114,11 +114,11 @@ export async function getStaticPaths() {
 type Params = { params: { id: string } };
 
 export async function getStaticProps({ params }: Params) {
+  const posts = require("../../../.velite/posts.json");
   const post = posts
-    // .filter(byOnlyPublished)
     .find((post: Post) => post.slug === params.id);
   const otherPosts = extractAndSortMetadata(posts).filter(
-    (post) => post.slug !== params.id
+    (post: any) => post.slug !== params.id
   );
 
   const morePosts = getRandom(otherPosts, 3);

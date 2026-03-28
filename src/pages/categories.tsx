@@ -1,9 +1,3 @@
-import posts from "../../.velite/posts.meta.json";
-import booknotes from "../../.velite/booknotes.meta.json";
-import pages from "../../.velite/pages.meta.json";
-import newsletters from "../../.velite/newsletters.meta.json";
-import podcastnotes from "../../.velite/podcastnotes.meta.json";
-import travelblogs from "../../.velite/travelblogs.meta.json";
 import Link from "next/link";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
@@ -12,16 +6,7 @@ import { BreadCrumbs } from "@components/BreadCrumbs";
 import { byReadingTime } from "src/lib/utils/misc";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { toTitleCase } from "src/lib/utils/toTitleCase";
-import { SeoInfo } from "src/lib/getSeoInfo";
-
-const allDocuments = [
-  ...posts,
-  ...booknotes,
-  ...pages,
-  ...newsletters,
-  ...podcastnotes,
-  ...travelblogs,
-];
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const mainCategories = [
   "philosophy",
@@ -43,12 +28,15 @@ const mainCategories = [
 
 type LinksOnTag<T> = { tag: string; links: T[] };
 
-type TaggedDocumentData = LinksOnTag<
-  Pick<
-    (typeof allDocuments)[0],
-    "title" | "link" | "metadata" | "date" | "contentType"
-  >
->;
+type DocumentLink = {
+  title: string;
+  link: string;
+  metadata: { readingTime?: number };
+  date: string;
+  contentType: string;
+};
+
+type TaggedDocumentData = LinksOnTag<DocumentLink>;
 
 type Props = {
   tags: TaggedDocumentData[];
@@ -137,15 +125,31 @@ const ShowTags = ({ categories, seo }: Props) => {
 export default ShowTags;
 
 export async function getStaticProps() {
+  const posts = require("../../.velite/posts.json");
+  const booknotes = require("../../.velite/booknotes.json");
+  const pages = require("../../.velite/pages.json");
+  const newsletters = require("../../.velite/newsletters.json");
+  const podcastnotes = require("../../.velite/podcastnotes.json");
+  const travelblogs = require("../../.velite/travelblogs.json");
+
+  const allDocuments = [
+    ...posts,
+    ...booknotes,
+    ...pages,
+    ...newsletters,
+    ...podcastnotes,
+    ...travelblogs,
+  ];
+
   const categories = mainCategories.map<TaggedDocumentData>((tag) => {
     return {
       tag,
       links: allDocuments
         .filter(byOnlyPublished)
-        .filter(({ tags }) => {
+        .filter(({ tags }: any) => {
           return tags?.includes(tag);
         })
-        .map(({ link, title, metadata, date, contentType }) => ({
+        .map(({ link, title, metadata, date, contentType }: any) => ({
           link,
           title,
           metadata,
@@ -155,7 +159,6 @@ export async function getStaticProps() {
     };
   });
 
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return {
     props: {
       categories,

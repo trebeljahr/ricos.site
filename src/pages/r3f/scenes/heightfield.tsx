@@ -8,7 +8,7 @@ import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreative
 import { LightsAndFog } from "@r3f/Helpers/LightsAndFog";
 import { RigidBallSpawner } from "@r3f/Helpers/RigidBall";
 import { Physics } from "@react-three/rapier";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Infinite Heightfield Demo with Physics",
@@ -57,6 +57,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/scenes/heightfield") } };
 }

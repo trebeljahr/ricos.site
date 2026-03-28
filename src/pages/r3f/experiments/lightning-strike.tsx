@@ -10,7 +10,7 @@ import {
 } from "@react-three/postprocessing";
 import { useRef } from "react";
 import { DoubleSide, Vector3 } from "three";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Lightning Strike Example",
@@ -108,6 +108,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/experiments/lightning-strike") } };
 }

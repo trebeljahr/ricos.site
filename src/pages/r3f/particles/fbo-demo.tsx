@@ -1,4 +1,4 @@
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { FBOParticles } from "@r3f/Scenes/Particles/FboDemo/Particles";
 
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
@@ -57,6 +57,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/particles/fbo-demo") } };
 }

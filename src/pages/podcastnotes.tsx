@@ -4,11 +4,10 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
 import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
-import allPodcastnotes from "../../.velite/podcastnotes.meta.json";
 import Link from "next/link";
 import { useState } from "react";
 import { CommonMetadata } from "src/@types";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
@@ -77,7 +76,7 @@ export default function Podcastnotes({ podcastnotes, seo }: Props) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
+  const allPodcastnotes = require("../../.velite/podcastnotes.json");
   const podcastnotes = extractAndSortMetadata(allPodcastnotes);
 
   return {

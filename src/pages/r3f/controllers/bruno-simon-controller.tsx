@@ -5,7 +5,7 @@ import { BrunoSimonController } from "@r3f/Controllers/BrunoSimonController";
 
 import { Physics } from "@react-three/rapier";
 import { physicsDebug } from "src/canvas/ChunkGenerationSystem/config";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { MeshStandardMaterial } from "three";
 
 const defaultSeoInfo = {
@@ -67,6 +67,5 @@ const Page = ({ seo }: { seo: SeoInfo | null }) => {
 export default Page;
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/controllers/bruno-simon-controller") } };
 }

@@ -2,7 +2,7 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasShader";
 import { Canvas } from "@react-three/fiber";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { getShaderFileNames } from "src/lib/getShaderFileNames";
 
 export default function Page({
@@ -83,7 +83,6 @@ export async function getStaticProps({ params: { shaderName } }: Params) {
   const { default: fragmentShader } = await import(
     `@shaders/standaloneFragmentShaders/${shaderName}.frag`
   );
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
 
   return {
     props: {

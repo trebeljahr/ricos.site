@@ -1,5 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { perf } from "@r3f/ChunkGenerationSystem/config";
 
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
@@ -186,6 +186,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/dungeon/dungeon-algo-3d") } };
 }

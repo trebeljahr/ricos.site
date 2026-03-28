@@ -1,7 +1,7 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { UnderwaterContextProvider } from "@contexts/UnderwaterContext";
 import dynamic from "next/dynamic";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 // Dynamically import the WaterDemo component with Suspense
 const WaterDemo = dynamic(
@@ -50,6 +50,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export async function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { title: "Ocean Demo" , seo: getSeoInfo("/r3f/scenes/ocean") } };
 }

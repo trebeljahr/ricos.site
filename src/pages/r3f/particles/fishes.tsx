@@ -3,7 +3,7 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { Box, OrbitControls, Stage } from "@react-three/drei";
 import { Vector3 } from "three";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "A FBO particles demo using custom meshes of Fish",
@@ -54,6 +54,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  const { getSeoInfo } = require("src/lib/getSeoInfo");
   return { props: { seo: getSeoInfo("/r3f/particles/fishes") } };
 }

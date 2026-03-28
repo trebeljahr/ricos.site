@@ -4,7 +4,6 @@ import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
 import Link from "next/link";
 import { ImageProps } from "src/@types";
-import { getFirstImageFromMetadata, photographyFolder } from "src/lib/aws";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
 import { SeoInfo } from "src/lib/getSeoInfo";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
@@ -156,6 +155,7 @@ export async function getStaticProps(): Promise<{ props: Props }> {
   const tripsMeta = await Promise.all(
     trips.map(async ({ name, src, alt }) => {
       if (src === "") {
+        const { getFirstImageFromMetadata, photographyFolder } = require("src/lib/aws");
         const image = getFirstImageFromMetadata(photographyFolder + name);
         return { image, tripName: name };
       }

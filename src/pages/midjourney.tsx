@@ -2,7 +2,6 @@ import Layout from "@components/Layout";
 import { InfiniteScrollGallery } from "@components/Galleries";
 import { ToTopButton } from "@components/ToTopButton";
 import { ImageProps } from "src/@types";
-import { getDataFromMetadata } from "src/lib/aws";
 import { SeoInfo } from "src/lib/getSeoInfo";
 
 export default function MidjourneyGallery({
@@ -34,6 +33,7 @@ export default function MidjourneyGallery({
 
 export async function getStaticProps() {
   const { getSeoInfo } = await import("src/lib/getSeoInfo");
+  const { getDataFromMetadata } = require("src/lib/aws");
   const prefix = "assets/midjourney-gallery/";
   const images = getDataFromMetadata(prefix);
 

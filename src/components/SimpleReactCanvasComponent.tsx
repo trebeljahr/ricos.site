@@ -33,7 +33,7 @@ export const SimpleReactCanvasComponent = ({
 
     setWidth(canvas.parentElement?.clientWidth);
     setHeight(500);
-  }, [windowWidth]);
+  }, [windowWidth, setCnv]);
 
   useEffect(() => {
     const cnv = canvasRef.current;

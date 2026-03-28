@@ -30,6 +30,7 @@ export function useJoystick({ cb, params }: { cb?: JoystickCallback; params?: Pa
   const parameters = { ...defaultParameters, ...params }
   const joystickDataRef = useRef<JoystickData>(null!)
 
+  /* eslint-disable react-hooks/exhaustive-deps -- Joystick should only be created once on mount; `parameters` is a new object each render and `cb` is captured via ref-like pattern */
   useEffect(() => {
     if (typeof window === 'undefined') return
 
@@ -42,6 +43,7 @@ export function useJoystick({ cb, params }: { cb?: JoystickCallback; params?: Pa
       staticJoystick.destroy()
     }
   }, [])
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const getData = () => joystickDataRef.current
 

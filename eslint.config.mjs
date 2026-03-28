@@ -9,8 +9,8 @@ const eslintConfig = [
     extends: ["next"],
     rules: {
       "react/display-name": "off",
-      "react/rules-of-hooks": "off",
-      "react/exhaustive-deps": "off",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
     },
   }),
 ];

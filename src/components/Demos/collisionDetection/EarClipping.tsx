@@ -27,7 +27,7 @@ export const EarClipping = () => {
     if (!cnv || !poly) return;
 
     poly.centerOnPoint(new Vec2(cnv.clientWidth / 2, cnv.clientHeight / 2));
-  }, [windowWidth, poly]);
+  }, [windowWidth, poly, cnv]);
 
   useEffect(() => {
     if (!cnv) return;

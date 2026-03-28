@@ -32,18 +32,17 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
   );
 
   const loadMore = useCallback(() => {
-    const newPhotos = photos.slice(
-      displayedPhotos.length,
-      displayedPhotos.length + groupSize
-    );
-    setDisplayPhotos([...displayedPhotos, ...newPhotos]);
-  }, [displayedPhotos, photos]);
+    setDisplayPhotos((prev) => {
+      const newPhotos = photos.slice(prev.length, prev.length + groupSize);
+      return newPhotos.length > 0 ? [...prev, ...newPhotos] : prev;
+    });
+  }, [photos]);
 
   useEffect(() => {
     if (currentImageIndex > displayedPhotos.length) {
       loadMore();
     }
-  }, [currentImageIndex, loadMore, displayedPhotos]);
+  }, [currentImageIndex, displayedPhotos.length, loadMore]);
 
   return (
     <div className="not-prose">

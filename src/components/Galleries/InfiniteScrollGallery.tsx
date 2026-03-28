@@ -1,5 +1,5 @@
 import { CustomImageRenderer } from "@components/images/CustomImageRenderer";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { PhotoAlbum } from "react-photo-album";
 import { ImageProps } from "src/@types";
@@ -31,11 +31,21 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
     photos.slice(0, groupSize)
   );
 
+  const loadingRef = useRef(false);
+
   const loadMore = useCallback(() => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
     setDisplayPhotos((prev) => {
       const newPhotos = photos.slice(prev.length, prev.length + groupSize);
-      return newPhotos.length > 0 ? [...prev, ...newPhotos] : prev;
+      if (newPhotos.length === 0) return prev;
+      return [...prev, ...newPhotos];
     });
+    // Allow next load after a short delay so InfiniteScroll
+    // can measure the new content height before firing again
+    setTimeout(() => {
+      loadingRef.current = false;
+    }, 100);
   }, [photos]);
 
   useEffect(() => {
@@ -51,6 +61,8 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
         loadMore={loadMore}
         hasMore={displayedPhotos.length < photos.length}
         loader={<div className="loader" key="0"></div>}
+        initialLoad={false}
+        threshold={500}
       >
         <div>
           {groupImages(displayedPhotos).map((group, i) => (

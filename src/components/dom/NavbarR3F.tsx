@@ -1,7 +1,7 @@
 import { RicosSiteBanner } from "@components/Navbar/TailwindNavbar";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import data from "src/lib/links.preval";
+import data from "../../../.velite/r3f-links.json";
 import { toLinks, toLinksFromNameUrlTuples } from "src/lib/toLinks";
 
 const sideStyle =

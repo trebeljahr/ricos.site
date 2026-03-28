@@ -1,5 +1,4 @@
 import { generateRedirects } from "./src/scripts/createRedirects.js";
-import prevalPlugin from "next-plugin-preval/config.js";
 import bundleAnalyzer from "@next/bundle-analyzer";
 
 const isDev = process.argv.indexOf("dev") !== -1;
@@ -8,6 +7,25 @@ if (!process.env.VELITE_STARTED && (isDev || isBuild)) {
   process.env.VELITE_STARTED = "1";
   const { build } = await import("velite");
   await build({ watch: isDev, clean: !isDev, logLevel: "error" });
+
+  // Generate R3F navigation links JSON (replaces next-plugin-preval)
+  const { readdir, lstat, writeFile } = await import("fs/promises");
+  const { resolve, join } = await import("path");
+  const r3fDir = resolve("src/pages/r3f");
+  const shaderDir = resolve("src/shaders/standaloneFragmentShaders");
+  const toTitleCase = (s) => s.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
+  const links = {};
+  const dirs = (await readdir(r3fDir)).filter((f) => !f.includes(".tsx"));
+  for (const dir of dirs) {
+    if (dir === "shaders") continue;
+    const dirPath = join(r3fDir, dir);
+    if ((await lstat(dirPath)).isFile()) continue;
+    const files = await readdir(dirPath);
+    links[toTitleCase(dir)] = files.map((f) => f.replace(".tsx", "")).map((name) => ({ name, url: `/r3f/${dir}/${name}` }));
+  }
+  const shaders = (await readdir(shaderDir)).filter((f) => f.endsWith(".frag")).map((f) => f.replace(".frag", ""));
+  links["Shader Demos"] = shaders.map((name) => ({ name, url: `/r3f/shaders/${name}` }));
+  await writeFile(resolve(".velite/r3f-links.json"), JSON.stringify({ links }));
 }
 
 /** @type {import('next').NextConfig} */
@@ -68,9 +86,7 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 
-const withPrevalPlugin = prevalPlugin();
-
-export default withPrevalPlugin(withBundleAnalyzer(nextConfig));
+export default withBundleAnalyzer(nextConfig);
 
 async function customRedirects() {
   const redirects = await generateRedirects();

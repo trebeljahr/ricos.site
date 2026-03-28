@@ -102,18 +102,18 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const newsletters: NewsletterType[] = require("../../../.velite/newsletters.json");
+  const newsletters = require("../../../.velite/newsletters.json") as NewsletterType[];
   const newsletter = newsletters.find(
     ({ slugTitle }) => slugTitle === params.id,
   );
   if (!newsletter) throw Error("Newsletter not found");
 
-  const number = parseInt(newsletter.number);
+  const number = parseInt(String(newsletter.number));
   const next = number + 1;
   const prev = number - 1;
 
-  let nextPost = newsletters.find(({ number }) => parseInt(number) === next);
-  let prevPost = newsletters.find(({ number }) => parseInt(number) === prev);
+  let nextPost = newsletters.find((nl) => parseInt(String(nl.number)) === next);
+  let prevPost = newsletters.find((nl) => parseInt(String(nl.number)) === prev);
 
   return {
     props: {

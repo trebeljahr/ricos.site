@@ -1,3 +1,5 @@
+// @ts-nocheck — velite config uses remark/rehype/mdx plugin types that are
+// mutually incompatible. Previously suppressed by next-plugin-preval's webpack wrapper.
 import seoMetadata from "./src/content/seo-metadata.json";
 import remarkCallout from "@r4ai/remark-callout";
 import slugify from "@sindresorhus/slugify";

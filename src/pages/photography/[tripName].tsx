@@ -3,6 +3,8 @@ import Layout from "@components/Layout";
 import { InfiniteScrollGallery } from "@components/Galleries";
 import { ToTopButton } from "@components/ToTopButton";
 import { ImageProps } from "src/@types";
+import { getDataFromMetadata, photographyFolder } from "src/lib/aws";
+import { localMetadata } from "src/scripts/metadataJsonFileHelpers";
 import { imageSizes, nextImageUrl } from "src/lib/mapToImageProps";
 import { trips } from "../photography";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
@@ -74,8 +76,6 @@ type StaticProps = {
 };
 
 export async function getStaticPaths() {
-  const { localMetadata } = require("../../scripts/metadataJsonFileHelpers");
-  const { photographyFolder } = require("../../lib/aws");
   const tripNames = [
     ...new Set(
       Object.keys(localMetadata)
@@ -94,7 +94,6 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }: StaticProps) {
-  const { getDataFromMetadata, photographyFolder } = require("../../lib/aws");
   const { tripName } = params;
   const prefix = photographyFolder + tripName + "/";
   const images = getDataFromMetadata(prefix);

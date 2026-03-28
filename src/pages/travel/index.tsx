@@ -162,16 +162,16 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
     MetaInfo & { cover: CommonMetadata["cover"] }
   >;
 
-  const keys = Object.keys(travelingStoriesMetaRaw);
-  for (const key of keys) {
-    const val = travelingStoriesMetaRaw[key];
-    const { width, height } = await getImgWidthAndHeightDuringBuild(
-      val.cover.src
-    );
-    travelingStoriesMeta[key] = {
-      ...val,
-      cover: { ...val.cover, width, height },
-    };
+  const entries = await Promise.all(
+    Object.entries(travelingStoriesMetaRaw).map(async ([key, val]) => {
+      const { width, height } = await getImgWidthAndHeightDuringBuild(
+        val.cover.src
+      );
+      return [key, { ...val, cover: { ...val.cover, width, height } }] as const;
+    })
+  );
+  for (const [key, val] of entries) {
+    travelingStoriesMeta[key] = val;
   }
   const cardContent = travelingStoryNames
     .map((story) => {

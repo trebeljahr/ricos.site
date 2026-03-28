@@ -8,6 +8,7 @@ import pLimit from "p-limit";
 import {
   getMetadataFromJsonFile,
   ImageMetadata,
+  localMetadata,
 } from "src/scripts/metadataJsonFileHelpers";
 
 export async function getImageMetadataFromS3(
@@ -140,8 +141,44 @@ export type ImageDataFromAWS = {
 
 const limit = pLimit(10);
 
+let _s3Client: S3Client | null = null;
+function getS3Client() {
+  if (!_s3Client) _s3Client = createS3Client();
+  return _s3Client;
+}
+
 interface OptionsForS3 {
   prefix?: string;
+}
+
+/** Get image data from local metadata.json instead of S3. Zero network calls. */
+export function getDataFromMetadata(prefix: string) {
+  const imagePattern = /\.(jpg|jpeg|png|webp|gif|avif)$/i;
+  return Object.entries(localMetadata)
+    .filter(([key, meta]) => key.startsWith(prefix) && meta !== undefined)
+    .filter(([key]) => imagePattern.test(key))
+    .map(([key, meta]) => ({
+      name: key.replace(prefix, ""),
+      src: key,
+      width: meta!.width,
+      height: meta!.height,
+    }));
+}
+
+/** Get first image from local metadata.json for a given prefix. */
+export function getFirstImageFromMetadata(prefix: string) {
+  const imagePattern = /\.(jpg|jpeg|png|webp|gif|avif)$/i;
+  const entry = Object.entries(localMetadata).find(
+    ([key, meta]) => key.startsWith(prefix) && meta !== undefined && imagePattern.test(key)
+  );
+  if (!entry) throw new Error(`No images found for prefix: ${prefix}`);
+  const [key, meta] = entry;
+  return {
+    name: key.replace(prefix, ""),
+    src: key,
+    width: meta!.width,
+    height: meta!.height,
+  };
 }
 
 export const getDataFromS3 = async ({ prefix = "" }: OptionsForS3 = {}) => {

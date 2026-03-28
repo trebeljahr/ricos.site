@@ -3,7 +3,8 @@ import Layout from "@components/Layout";
 import { InfiniteScrollGallery } from "@components/Galleries";
 import { ToTopButton } from "@components/ToTopButton";
 import { ImageProps } from "src/@types";
-import { getDataFromS3, getS3Folders, photographyFolder } from "src/lib/aws";
+import { getDataFromMetadata, photographyFolder } from "src/lib/aws";
+import { localMetadata } from "src/scripts/metadataJsonFileHelpers";
 import { imageSizes, nextImageUrl } from "src/lib/mapToImageProps";
 import { trips } from "../photography";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
@@ -75,7 +76,15 @@ type StaticProps = {
 };
 
 export async function getStaticPaths() {
-  const tripNames = await getS3Folders(photographyFolder);
+  // Derive folder names from metadata.json keys instead of S3 ListObjects
+  const tripNames = [
+    ...new Set(
+      Object.keys(localMetadata)
+        .filter((key) => key.startsWith(photographyFolder))
+        .map((key) => key.replace(photographyFolder, "").split("/")[0])
+        .filter(Boolean)
+    ),
+  ].sort();
 
   return {
     paths: tripNames.map((tripName) => {
@@ -87,14 +96,8 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }: StaticProps) {
   const { tripName } = params;
-  const prefix = photographyFolder + tripName;
-  try {
-    const awsImageData = await getDataFromS3({
-      prefix,
-    });
+  const prefix = photographyFolder + tripName + "/";
+  const images = getDataFromMetadata(prefix);
 
-    return { props: { images: awsImageData, tripName: params.tripName } };
-  } catch (error) {
-    console.error(error);
-  }
+  return { props: { images, tripName: params.tripName } };
 }

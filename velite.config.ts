@@ -347,7 +347,11 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
 
   const excerptString = data.excerpt || generateExcerpt(rawContent, 280);
 
-  const markdownExcerpt = await serialize(excerptString, mdxOptions);
+  const excerptMdxOptions = {
+    mdxOptions: { remarkPlugins: [remarkGfm], rehypePlugins: [] as Pluggable[] },
+    parseFrontmatter: false,
+  };
+  const markdownExcerpt = await serialize(excerptString, excerptMdxOptions);
 
   // SEO metadata: JSON override → frontmatter/content fallback → ""
   const link = data.link || "";

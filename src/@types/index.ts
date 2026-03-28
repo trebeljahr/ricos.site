@@ -34,7 +34,7 @@ export type CommonMetadata = {
 
   date: string;
   excerpt: string;
-  markdownExcerpt?: MDXResult;
+  markdownExcerpt: MDXResult;
   link: string;
   tags: string;
   cover: {

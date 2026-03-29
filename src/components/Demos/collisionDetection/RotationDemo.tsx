@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
 
@@ -8,8 +7,6 @@ import {
   drawCoordinateSystem,
 } from "../../../lib/math/drawHelpers";
 import { Vec2 } from "../../../lib/math/Vector";
-
-const ReactSlider = dynamic(() => import("react-slider"), { ssr: false });
 
 export const RotationDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
@@ -51,13 +48,15 @@ export const RotationDemo = () => {
     <>
       <br />
       <SimpleReactCanvasComponent setCnv={setCnv} />
-      <ReactSlider
-        onChange={(value) => {
-          setSlider(((value as number) / 100) * Math.PI * 2);
+      <input
+        type="range"
+        min={0}
+        max={100}
+        defaultValue={0}
+        className="w-full"
+        onChange={(e) => {
+          setSlider((Number(e.target.value) / 100) * Math.PI * 2);
         }}
-        renderMark={(props) => <div {...props} key={props.key} className="" />}
-        renderTrack={(props) => <div {...props} key={props.key} className="" />}
-        renderThumb={(props) => <div {...props} key={props.key} className="" />}
       />
       <div className="slider-annotation">
         <p>0</p>

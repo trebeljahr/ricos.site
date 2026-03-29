@@ -1,6 +1,5 @@
 import { CustomImageRenderer } from "@components/images/CustomImageRenderer";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import InfiniteScroll from "react-infinite-scroller";
 import { RowsPhotoAlbum } from "react-photo-album";
 import { ImageProps } from "src/@types";
 import { addIdAndIndex } from "src/lib/utils/misc";
@@ -32,6 +31,9 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
   );
 
   const loadingRef = useRef(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  const hasMore = displayedPhotos.length < photos.length;
 
   const loadMore = useCallback(() => {
     if (loadingRef.current) return;
@@ -41,8 +43,6 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
       if (newPhotos.length === 0) return prev;
       return [...prev, ...newPhotos];
     });
-    // Allow next load after a short delay so InfiniteScroll
-    // can measure the new content height before firing again
     setTimeout(() => {
       loadingRef.current = false;
     }, 100);
@@ -54,48 +54,57 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
     }
   }, [currentImageIndex, displayedPhotos.length, loadMore]);
 
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          loadMore();
+        }
+      },
+      { rootMargin: "500px" }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, loadMore]);
+
   return (
     <div className="not-prose">
-      <InfiniteScroll
-        pageStart={0}
-        loadMore={loadMore}
-        hasMore={displayedPhotos.length < photos.length}
-        loader={<div className="loader" key="0"></div>}
-        initialLoad={false}
-        threshold={500}
-      >
-        <div>
-          {groupImages(displayedPhotos).map((group, i) => (
-            <div key={i} className="mb-[5px] xs:mb-[10px] xl:mb-[15px]">
-              <RowsPhotoAlbum
-                photos={group}
-                targetRowHeight={400}
-                onClick={({ photo }: any) => {
-                  openModal({
-                    ...photo,
-                    index: (photo as any).index + i * groupSize,
-                  });
-                }}
-                render={{ image: CustomImageRenderer as any }}
-                defaultContainerWidth={1200}
-                sizes={{
-                  size: "calc(100vw - 24px)",
-                  sizes: [
-                    {
-                      viewport: "(max-width: 520px)",
-                      size: "calc(80vw - 105px)",
-                    },
-                    {
-                      viewport: "(max-width: 1150px)",
-                      size: "calc(80vw - 105px)",
-                    },
-                  ],
-                }}
-              />
-            </div>
-          ))}
-        </div>
-      </InfiniteScroll>
+      <div>
+        {groupImages(displayedPhotos).map((group, i) => (
+          <div key={i} className="mb-[5px] xs:mb-[10px] xl:mb-[15px]">
+            <RowsPhotoAlbum
+              photos={group}
+              targetRowHeight={400}
+              onClick={({ photo }: any) => {
+                openModal({
+                  ...photo,
+                  index: (photo as any).index + i * groupSize,
+                });
+              }}
+              render={{ image: CustomImageRenderer as any }}
+              defaultContainerWidth={1200}
+              sizes={{
+                size: "calc(100vw - 24px)",
+                sizes: [
+                  {
+                    viewport: "(max-width: 520px)",
+                    size: "calc(80vw - 105px)",
+                  },
+                  {
+                    viewport: "(max-width: 1150px)",
+                    size: "calc(80vw - 105px)",
+                  },
+                ],
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      {hasMore && <div ref={sentinelRef} style={{ height: 1 }} />}
 
       <CustomLightBox {...props} photos={photos} />
     </div>

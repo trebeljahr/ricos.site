@@ -5,8 +5,9 @@ import { KeyboardControlsProvider } from "@r3f/Controllers/KeyboardControls";
 import { Preload } from "@react-three/drei";
 import { Canvas, CanvasProps } from "@react-three/fiber";
 import dynamic from "next/dynamic";
-import { Perf } from "r3f-perf";
 import { PropsWithChildren, Suspense } from "react";
+
+const Perf = dynamic(() => import("r3f-perf").then(m => m.Perf), { ssr: false });
 import { toTitleCase } from "src/lib/utils/toTitleCase";
 import tunnel from "tunnel-rat";
 import { NavbarR3F } from "./NavbarR3F";

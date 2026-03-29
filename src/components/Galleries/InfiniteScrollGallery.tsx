@@ -1,7 +1,7 @@
 import { CustomImageRenderer } from "@components/images/CustomImageRenderer";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
-import { PhotoAlbum } from "react-photo-album";
+import { RowsPhotoAlbum } from "react-photo-album";
 import { ImageProps } from "src/@types";
 import { addIdAndIndex } from "src/lib/utils/misc";
 import { CustomLightBox, useCustomLightbox } from "./useCustomLightbox";
@@ -67,17 +67,16 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
         <div>
           {groupImages(displayedPhotos).map((group, i) => (
             <div key={i} className="mb-[5px] xs:mb-[10px] xl:mb-[15px]">
-              <PhotoAlbum
+              <RowsPhotoAlbum
                 photos={group}
                 targetRowHeight={400}
-                layout="rows"
-                onClick={(photo) => {
+                onClick={({ photo }: any) => {
                   openModal({
                     ...photo,
-                    index: photo.index + i * groupSize,
+                    index: (photo as any).index + i * groupSize,
                   });
                 }}
-                renderPhoto={CustomImageRenderer}
+                render={{ image: CustomImageRenderer as any }}
                 defaultContainerWidth={1200}
                 sizes={{
                   size: "calc(100vw - 24px)",

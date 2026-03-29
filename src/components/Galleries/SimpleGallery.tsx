@@ -1,6 +1,6 @@
 import { CustomImageRenderer } from "@components/images/CustomImageRenderer";
 import { useMemo } from "react";
-import { PhotoAlbum } from "react-photo-album";
+import { RowsPhotoAlbum } from "react-photo-album";
 import { ImageProps } from "src/@types";
 import { addIdAndIndex } from "src/lib/utils/misc";
 import { CustomLightBox, useCustomLightbox } from "./useCustomLightbox";
@@ -12,13 +12,12 @@ const SimpleGallery = ({ photos: images }: { photos: ImageProps[] }) => {
 
   return (
     <>
-      <PhotoAlbum
+      <RowsPhotoAlbum
         photos={photos}
         targetRowHeight={400}
-        layout="rows"
-        renderPhoto={CustomImageRenderer}
+        render={{ image: CustomImageRenderer as any }}
         defaultContainerWidth={1200}
-        onClick={(photo) => {
+        onClick={({ photo }: any) => {
           openModal({
             ...photo,
           });

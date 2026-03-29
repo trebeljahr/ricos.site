@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 
 const MDXContentWithDemos = dynamic(
   () => import("@components/MDXContentWithDemos").then((m) => m.MDXContentWithDemos),
-  { ssr: true }
+  { ssr: false }
 );
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { ReadMore } from "@components/MoreStories";

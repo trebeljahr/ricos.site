@@ -23,7 +23,7 @@ type GLTFResult = GLTF & {
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/rpg_items_pack/Potion5_Filled.glb"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
 
   materials.Glass.transparent = true;
   materials.Glass.opacity = 0.5;

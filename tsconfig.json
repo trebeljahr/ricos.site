@@ -2,13 +2,17 @@
   "compilerOptions": {
     "module": "esnext",
     "target": "es2017",
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "noEmit": true,
     "moduleResolution": "node",
@@ -17,22 +21,44 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@velite": [".velite"],
+      "@velite": [
+        ".velite"
+      ],
       "components/collision-detection": [
         "src/components/Demos/collisionDetection"
       ],
-      "@components/*": ["src/components/*"],
-      "@contexts/*": ["src/contexts/*"],
-      "@hooks/*": ["src/hooks/*"],
-      "@r3f/*": ["src/canvas/*"],
-      "@models/*": ["src/canvas/AllModels/*"],
-      "@shaders/*": ["src/shaders/*"],
-      "@pages/*": ["src/pages/*"],
-      "@r4ai/remark-callout": ["node_modules/@r4ai/remark-callout/dist/index"],
-      "@sounds/*": ["src/sounds/*"]
+      "@components/*": [
+        "src/components/*"
+      ],
+      "@contexts/*": [
+        "src/contexts/*"
+      ],
+      "@hooks/*": [
+        "src/hooks/*"
+      ],
+      "@r3f/*": [
+        "src/canvas/*"
+      ],
+      "@models/*": [
+        "src/canvas/AllModels/*"
+      ],
+      "@shaders/*": [
+        "src/shaders/*"
+      ],
+      "@pages/*": [
+        "src/pages/*"
+      ],
+      "@r4ai/remark-callout": [
+        "node_modules/@r4ai/remark-callout/dist/index"
+      ],
+      "@sounds/*": [
+        "src/sounds/*"
+      ]
     }
   },
-  "exclude": ["node_modules"],
+  "exclude": [
+    "node_modules"
+  ],
   "include": [
     "next-env.d.ts",
     "**/*.d.ts",

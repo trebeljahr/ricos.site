@@ -43,7 +43,7 @@ export function InstancedWillowSnow1({ positions }: { positions: Vector3[] }) {
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/nature_pack/Willow_Snow_1.glb"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <group rotation={[-Math.PI / 2, 0, 0]} scale={100}>

@@ -37,7 +37,7 @@ interface GLTFAction extends AnimationClip {
 export function useFish2() {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/fish_pack/Fish2.glb"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
 
   return { nodes, materials };
 }
@@ -46,7 +46,7 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<Group>(null!);
   const { nodes, materials, animations } = useGLTF(
     "/3d-assets/glb/fish_pack/Fish2.glb"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
   const { actions } = useAnimations(animations, group);
   return (
     <group ref={group} {...props} dispose={null}>

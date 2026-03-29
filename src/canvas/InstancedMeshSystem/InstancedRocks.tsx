@@ -18,7 +18,7 @@ type GLTFResult = GLTF & {
 export const InstancedRocks = () => {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/simple_nature_pack/Rock3.glb"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
 
   return (
     <InstancedTileSpawner

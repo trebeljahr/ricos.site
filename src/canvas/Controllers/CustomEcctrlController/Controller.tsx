@@ -182,8 +182,9 @@ const Ecctrl = ({
 
   useEffect(() => {
     if (characterRef.current?.rigidBody) {
-      characterRef.current.rigidBody.rotateCamera = rotateCamera;
-      characterRef.current.rigidBody.rotateCharacterOnY = rotateCharacterOnY;
+      const rb = characterRef.current.rigidBody as any;
+      rb.rotateCamera = rotateCamera;
+      rb.rotateCharacterOnY = rotateCharacterOnY;
     }
   });
 
@@ -414,7 +415,7 @@ const Ecctrl = ({
       movingDirection.set(0, 0, 1);
     }
 
-    const player = characterRef.current.rigidBody?.userData as userDataType;
+    const player = (characterRef.current.rigidBody as any)?.userData as userDataType;
     if (player.isDoingStationaryAction) {
       movingDirection.set(0, 0, 0);
     }
@@ -472,7 +473,7 @@ const Ecctrl = ({
 
     // Wanted to move force function: F = ma
     const moveForceNeeded = moveAccNeeded.multiplyScalar(
-      characterRef.current.rigidBody.mass()
+      (characterRef.current.rigidBody as any).mass()
     );
 
     /**
@@ -517,7 +518,7 @@ const Ecctrl = ({
     }
 
     // Move character at proper direction and impulse
-    characterRef.current.rigidBody.applyImpulseAtPoint(
+    (characterRef.current.rigidBody as any).applyImpulseAtPoint(
       moveImpulse,
       {
         x: currentPos.x,
@@ -533,14 +534,15 @@ const Ecctrl = ({
    */
   const autoBalanceCharacter = () => {
     if (!characterRef.current?.rigidBody) return;
+    const rb = characterRef.current.rigidBody as any;
 
     // Match body component to character model rotation on Y
     bodyFacingVec
       .set(0, 0, 1)
-      .applyQuaternion(quat(characterRef.current.rigidBody.rotation()));
+      .applyQuaternion(quat(rb.rotation()));
     bodyBalanceVec
       .set(0, 1, 0)
-      .applyQuaternion(quat(characterRef.current.rigidBody.rotation()));
+      .applyQuaternion(quat(rb.rotation()));
 
     bodyBalanceVecOnX.set(0, bodyBalanceVec.y, bodyBalanceVec.z);
     bodyFacingVecOnY.set(bodyFacingVec.x, 0, bodyFacingVec.z);
@@ -578,19 +580,19 @@ const Ecctrl = ({
       (crossVecOnX.x < 0 ? 1 : -1) *
         autoBalanceSpringK *
         bodyBalanceVecOnX.angleTo(vectorY) -
-        characterRef.current.rigidBody.angvel().x * autoBalanceDampingC,
+        rb.angvel().x * autoBalanceDampingC,
       (crossVecOnY.y < 0 ? 1 : -1) *
         autoBalanceSpringOnY *
         modelFacingVec.angleTo(bodyFacingVecOnY) -
-        characterRef.current.rigidBody.angvel().y * autoBalanceDampingOnY,
+        rb.angvel().y * autoBalanceDampingOnY,
       (crossVecOnZ.z < 0 ? 1 : -1) *
         autoBalanceSpringK *
         bodyBalanceVecOnZ.angleTo(vectorY) -
-        characterRef.current.rigidBody.angvel().z * autoBalanceDampingC
+        rb.angvel().z * autoBalanceDampingC
     );
 
     // Apply balance torque impulse
-    characterRef.current.rigidBody.applyTorqueImpulse(dragAngForce, true);
+    rb.applyTorqueImpulse(dragAngForce, true);
   };
 
   /**
@@ -600,10 +602,10 @@ const Ecctrl = ({
     if (!characterRef.current?.rigidBody) return;
 
     if (document.visibilityState === "hidden") {
-      characterRef.current.rigidBody.sleep();
+      (characterRef.current.rigidBody as any).sleep();
     } else {
       setTimeout(() => {
-        characterRef.current?.rigidBody?.wakeUp();
+        (characterRef.current?.rigidBody as any)?.wakeUp();
       }, wakeUpDelay);
     }
   };
@@ -652,7 +654,7 @@ const Ecctrl = ({
 
   useEffect(() => {
     // Lock character rotations at Y axis
-    characterRef.current?.rigidBody?.setEnabledRotations(
+    (characterRef.current?.rigidBody as any)?.setEnabledRotations(
       autoBalance ? true : false,
       autoBalance ? true : false,
       autoBalance ? true : false,
@@ -665,7 +667,7 @@ const Ecctrl = ({
     return () => {
       if (character?.rigidBody && characterModel) {
         characterModel.quaternion.set(0, 0, 0, 1);
-        character.rigidBody.setRotation({ x: 0, y: 0, z: 0, w: 1 }, false);
+        (character.rigidBody as any).setRotation({ x: 0, y: 0, z: 0, w: 1 }, false);
       }
     };
   }, [autoBalance]);
@@ -687,23 +689,24 @@ const Ecctrl = ({
   useFrame((state, delta) => {
     if (delta > 1) delta %= 1;
     if (!characterRef.current?.rigidBody) return;
+    const rb = characterRef.current.rigidBody as any;
 
     // Character current position/velocity
-    if (characterRef.current.rigidBody) {
-      const player = characterRef.current.rigidBody?.userData as userDataType;
-      currentPos.copy(characterRef.current.rigidBody.translation() as Vector3);
-      currentVel.copy(characterRef.current.rigidBody.linvel() as Vector3);
+    if (rb) {
+      const player = rb?.userData as userDataType;
+      currentPos.copy(rb.translation() as Vector3);
+      currentVel.copy(rb.linvel() as Vector3);
 
       // Assign userDate properties
-      (characterRef.current.rigidBody.userData as userDataType).canJump =
+      (rb.userData as userDataType).canJump =
         canJump;
-      (characterRef.current.rigidBody.userData as userDataType).slopeAngle =
+      (rb.userData as userDataType).slopeAngle =
         slopeAngle;
       (
-        characterRef.current.rigidBody.userData as userDataType
+        rb.userData as userDataType
       ).characterRotated = characterRotated;
       (
-        characterRef.current.rigidBody.userData as userDataType
+        rb.userData as userDataType
       ).isOnMovingObject = isOnMovingObject;
     }
 
@@ -795,7 +798,7 @@ const Ecctrl = ({
         currentVel.z
       );
       // Apply slope normal to jump direction
-      characterRef.current.rigidBody.setLinvel(
+      rb.setLinvel(
         jumpDirection
           .set(0, (run ? sprintJumpMult * jumpVel : jumpVel) * slopJumpMult, 0)
           .projectOnVector(actualSlopeNormalVec)
@@ -839,7 +842,7 @@ const Ecctrl = ({
       QueryFilterFlags.EXCLUDE_SENSORS,
       undefined,
       undefined,
-      characterRef.current.rigidBody,
+      rb,
       (collider: Collider) =>
         (collider.parent()?.userData as boolean) &&
         !(collider.parent()?.userData as userDataType).excludeEcctrlRay
@@ -870,7 +873,7 @@ const Ecctrl = ({
         const rayHitObjectBodyType = colliderParent.bodyType();
         const rayHitObjectBodyMass = colliderParent.mass() || 1;
         massRatio =
-          characterRef.current.rigidBody.mass() / rayHitObjectBodyMass;
+          rb.mass() / rayHitObjectBodyMass;
         // Body type 0 is rigid body, body type 1 is fixed body, body type 2 is kinematic body
         if (rayHitObjectBodyType === 0 || rayHitObjectBodyType === 2) {
           isOnMovingObject = true;
@@ -964,7 +967,7 @@ const Ecctrl = ({
       QueryFilterFlags.EXCLUDE_SENSORS,
       undefined,
       undefined,
-      characterRef.current.rigidBody,
+      rb,
       (collider: Collider) =>
         (collider.parent()?.userData as boolean) &&
         !(collider.parent()?.userData as userDataType).excludeEcctrlRay
@@ -1012,8 +1015,8 @@ const Ecctrl = ({
       if (canJump && rayHit.collider.parent()) {
         floatingForce =
           springK * (floatingDis - rayHit.timeOfImpact) -
-          characterRef.current.rigidBody.linvel().y * dampingC;
-        characterRef.current.rigidBody.applyImpulse(
+          rb.linvel().y * dampingC;
+        rb.applyImpulse(
           springDirVec.set(0, floatingForce, 0),
           false
         );
@@ -1048,7 +1051,7 @@ const Ecctrl = ({
           0,
           -currentVel.z * dragDampingC
         );
-        characterRef.current.rigidBody.applyImpulse(dragForce, false);
+        rb.applyImpulse(dragForce, false);
       }
       // on a moving object
       else {
@@ -1057,7 +1060,7 @@ const Ecctrl = ({
           0,
           (movingObjectVelocity.z - currentVel.z) * dragDampingC
         );
-        characterRef.current.rigidBody.applyImpulse(dragForce, true);
+        rb.applyImpulse(dragForce, true);
       }
     }
 
@@ -1070,27 +1073,27 @@ const Ecctrl = ({
      * Setup max falling speed && extra falling gravity
      * Remove gravity if falling speed higher than fallingMaxVel (negetive number so use "<")
      */
-    if (characterRef.current.rigidBody) {
+    if (rb) {
       if (currentVel.y < fallingMaxVel) {
-        if (characterRef.current.rigidBody.gravityScale() !== 0) {
-          characterRef.current.rigidBody.setGravityScale(0, true);
+        if (rb.gravityScale() !== 0) {
+          rb.setGravityScale(0, true);
         }
       } else {
         if (
           !isFalling &&
-          characterRef.current.rigidBody.gravityScale() !== initialGravityScale
+          rb.gravityScale() !== initialGravityScale
         ) {
           // Apply initial gravity after landed
-          characterRef.current.rigidBody.setGravityScale(
+          rb.setGravityScale(
             initialGravityScale,
             true
           );
         } else if (
           isFalling &&
-          characterRef.current.rigidBody.gravityScale() !== fallingGravityScale
+          rb.gravityScale() !== fallingGravityScale
         ) {
           // Apply larger gravity when falling (if initialGravityScale === fallingGravityScale, won't trigger this)
-          characterRef.current.rigidBody.setGravityScale(
+          rb.setGravityScale(
             fallingGravityScale,
             true
           );
@@ -1101,7 +1104,7 @@ const Ecctrl = ({
     /**
      * Apply auto balance force to the character
      */
-    if (autoBalance && characterRef.current.rigidBody) autoBalanceCharacter();
+    if (autoBalance && rb) autoBalanceCharacter();
 
     /**
      * Point to move feature

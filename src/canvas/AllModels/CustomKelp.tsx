@@ -20,7 +20,7 @@ export function useKelp() {
     nodes: {
       Cylinder: { geometry },
     },
-  } = useGLTF("/3d-assets/CustomKelp.glb") as unknown as GLTFResult;
+  } = useGLTF("/3d-assets/CustomKelp.glb") as unknown as unknown as unknown as GLTFResult;
 
   return { geometry };
 }
@@ -28,7 +28,7 @@ export function useKelp() {
 export function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/3d-assets/CustomKelp.glb"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <mesh geometry={nodes.Cylinder.geometry} material={materials.Material} />

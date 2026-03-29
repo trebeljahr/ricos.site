@@ -84,7 +84,7 @@ export const Player = (props: RigidBodyProps) => {
   }, []);
 
   useBeforePhysicsStep(() => {
-    const characterRigidBody = playerRef.current.rigidBody;
+    const characterRigidBody = playerRef.current.rigidBody as any;
 
     if (!characterRigidBody) return;
 
@@ -195,7 +195,7 @@ export const Player = (props: RigidBodyProps) => {
   });
 
   useFrame((_, delta) => {
-    const characterRigidBody = playerRef.current.rigidBody;
+    const characterRigidBody = playerRef.current.rigidBody as any;
     if (!characterRigidBody) {
       return;
     }

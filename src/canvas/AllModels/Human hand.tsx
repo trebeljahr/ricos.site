@@ -15,7 +15,7 @@ type GLTFResult = GLTF & {
 export function HumanHand(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/Human hand-transformed.glb"
-  ) as GLTFResult;
+  ) as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <mesh

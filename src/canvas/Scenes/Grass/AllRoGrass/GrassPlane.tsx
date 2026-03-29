@@ -430,7 +430,7 @@ export const PlayerWithGrassTrail = () => {
     const player = playerQuery.first;
     if (!player) return;
 
-    const { x, y, z } = player.rigidBody.translation();
+    const { x, y, z } = (player.rigidBody as any).translation();
     if (frameCount.current++ % 5 === 0) {
       trailPointsRef.current.push(new Vector3(x, y, z));
 

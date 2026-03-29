@@ -48,7 +48,7 @@ export function DragonEvolved(props: JSX.IntrinsicElements["group"]) {
     "/3d-assets/glb/enemies/Dragon Evolved-transformed.glb"
   );
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
-  const { nodes, materials } = useGraph(clone) as GLTFResult;
+  const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;
   const { actions } = useAnimations(animations, group);
   return (
     <group ref={group} {...props} dispose={null}>

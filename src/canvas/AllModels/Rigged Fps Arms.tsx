@@ -22,7 +22,7 @@ type GLTFResult = GLTF & {
 export function RiggedArms(props: GroupProps) {
   const { scene } = useGLTF("/3d-assets/glb/Rigged Fps Arms-transformed.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
-  const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;
+  const { nodes, materials } = useGraph(clone) as unknown as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <primitive object={nodes.UpperArmL} />

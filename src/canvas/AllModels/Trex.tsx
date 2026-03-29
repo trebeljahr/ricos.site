@@ -88,7 +88,7 @@ export function FollowingTrex() {
 }
 
 export const useTrex = () => {
-  return useGLTF("/3d-assets/glb/Trex.glb") as unknown as GLTFResult;
+  return useGLTF("/3d-assets/glb/Trex.glb") as unknown as unknown as unknown as GLTFResult;
 };
 
 interface Props extends GroupProps {
@@ -101,7 +101,7 @@ export const Trex = forwardRef(function TrexModel(
 ) {
   const { nodes, materials, animations } = useGLTF(
     "/3d-assets/glb/Trex.glb"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
   const { withAnimations = false } = props;
   const { actions } = useAnimations(
     animations,

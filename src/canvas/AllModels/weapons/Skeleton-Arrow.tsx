@@ -15,7 +15,7 @@ type GLTFResult = GLTF & {
 export function SkeletonArrow(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/weapons/Skeleton Arrow-transformed.glb"
-  ) as GLTFResult;
+  ) as unknown as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <mesh

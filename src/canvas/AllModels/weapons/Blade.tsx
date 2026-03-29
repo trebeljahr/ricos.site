@@ -15,7 +15,7 @@ type GLTFResult = GLTF & {
 export function SkeletonBlade(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/weapons/Blade-transformed.glb"
-  ) as GLTFResult;
+  ) as unknown as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <mesh

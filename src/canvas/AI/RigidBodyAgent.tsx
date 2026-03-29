@@ -67,7 +67,7 @@ export const Agent = ({
     const player = playerQuery.first;
     if (!player) return;
 
-    const rigidBody = enemyRef.current.rigidBody;
+    const rigidBody = enemyRef.current.rigidBody as any;
     if (!rigidBody) return;
 
     const { point: closestPoint } = navMeshQuery.findClosestPoint(
@@ -77,7 +77,7 @@ export const Agent = ({
     const agentPosition = _agentPosition.copy(closestPoint as Vector3);
 
     const { point: playerPosition } = navMeshQuery.findClosestPoint(
-      player.rigidBody.translation(),
+      (player.rigidBody as any).translation(),
       {
         halfExtents: queryHalfExtents,
       }
@@ -102,7 +102,7 @@ export const Agent = ({
 
     if (!path || path.length < 2) return;
 
-    const rigidBody = enemyRef.current.rigidBody;
+    const rigidBody = enemyRef.current.rigidBody as any;
     if (!rigidBody) return;
 
     // teleport if falling off map
@@ -162,12 +162,12 @@ export const Agent = ({
       const player = playerQuery.first;
       if (!player) return;
 
-      lookAt.copy(player.rigidBody.translation() as Vector3);
+      lookAt.copy((player.rigidBody as any).translation() as Vector3);
     } else if (path[pathIndex.current]) {
       lookAt.copy(path[pathIndex.current]);
     }
 
-    const rigidBody = enemyRef.current.rigidBody;
+    const rigidBody = enemyRef.current.rigidBody as any;
     if (!rigidBody) return;
 
     if (horizontalDistance(lookAt, rigidBody.translation()) < 0.1) {

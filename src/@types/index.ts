@@ -19,13 +19,17 @@ export type MDXResult = MDXRemoteSerializeResult<
   Record<string, unknown>
 >;
 
-export type GLTFResult = GLTF & {
+export type GLTFResult = {
   nodes: {
     [x: string]: Mesh;
   };
   materials: {
     [x: string]: Material;
   };
+  scene: GLTF["scene"];
+  scenes: GLTF["scenes"];
+  animations: GLTF["animations"];
+  [key: string]: any;
 };
 export type CommonMetadata = {
   title: string;

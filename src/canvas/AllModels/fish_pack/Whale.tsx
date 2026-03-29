@@ -42,7 +42,7 @@ interface GLTFAction extends AnimationClip {
 export function useWhale() {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/fish_pack/Whale.glb"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
 
   return { nodes, materials };
 }
@@ -53,7 +53,7 @@ export const InstancedWhale = forwardRef(function Whale(
 ) {
   const { nodes, materials, animations } = useGLTF(
     "/3d-assets/glb/fish_pack/Whale.glb"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
 
   const innerRef = useRef<Group>(null!);
   useImperativeHandle(outerRef, () => innerRef.current!, []);
@@ -82,7 +82,7 @@ export default function Whale(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<Group>(null!);
   const { nodes, materials, animations } = useGLTF(
     "/3d-assets/glb/fish_pack/Whale.glb"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
   const { actions } = useAnimations(animations, group);
 
   useEffect(() => {

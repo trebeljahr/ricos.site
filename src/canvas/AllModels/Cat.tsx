@@ -25,7 +25,7 @@ interface GLTFAction extends AnimationClip {
 export function Cat(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/cat-transformed.glb"
-  ) as GLTFResult;
+  ) as unknown as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <mesh geometry={nodes.cat_body.geometry} material={materials.body} />

@@ -19,7 +19,7 @@ type GLTFResult = GLTF & {
 export function MagicWand(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/weapons/Magick wand-transformed.glb"
-  ) as GLTFResult;
+  ) as unknown as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <mesh

@@ -35,7 +35,7 @@ export function InstancedGrass2({ positions }: { positions: Vector3[] }) {
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/nature_pack/Grass_2.glb"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <mesh

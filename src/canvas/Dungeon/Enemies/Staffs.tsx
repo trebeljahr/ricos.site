@@ -5,7 +5,7 @@ import { Group, Mesh } from "three";
 export const useStaff1 = () => {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/weapons/Staff (1)-transformed.glb"
-  ) as GLTFResult;
+  ) as unknown as unknown as GLTFResult;
 
   const staffMesh = new Mesh(nodes.Cylinder.geometry, materials["Wood.001"]);
   staffMesh.name = "Staff_1";
@@ -16,7 +16,7 @@ export const useStaff1 = () => {
 export const useStaff2 = () => {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/weapons/Staff (2)-transformed.glb"
-  ) as GLTFResult;
+  ) as unknown as unknown as GLTFResult;
 
   const group = new Group();
   group.name = "Staff_2";
@@ -55,7 +55,7 @@ export const useStaff2 = () => {
 export const useStaff3 = () => {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/weapons/Staff (3)-transformed.glb"
-  ) as GLTFResult;
+  ) as unknown as unknown as GLTFResult;
 
   const group = new Group();
   group.name = "Staff_3";
@@ -88,7 +88,7 @@ export const useStaff3 = () => {
 export const useStaff4 = () => {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/weapons/Staff (4)-transformed.glb"
-  ) as GLTFResult;
+  ) as unknown as unknown as GLTFResult;
 
   const group = new Group();
   group.name = "Staff_4";
@@ -121,7 +121,7 @@ export const useStaff4 = () => {
 export const useStaff5 = () => {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/weapons/Staff (5)-transformed.glb"
-  ) as GLTFResult;
+  ) as unknown as unknown as GLTFResult;
 
   const group = new Group();
   group.name = "Staff_5";
@@ -153,7 +153,7 @@ export const useStaff5 = () => {
 export const useStaff6 = () => {
   const result = useGLTF(
     "/3d-assets/glb/weapons/Skeleton Staff-transformed.glb"
-  ) as GLTFResult;
+  ) as unknown as unknown as GLTFResult;
 
   const { nodes } = result;
 
@@ -169,7 +169,7 @@ export const useStaff6 = () => {
 export const useStaff7 = () => {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/weapons/Magick wand-transformed.glb"
-  ) as GLTFResult;
+  ) as unknown as unknown as GLTFResult;
 
   const group = new Group();
   group.name = "Staff_7";

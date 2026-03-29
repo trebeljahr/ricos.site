@@ -70,7 +70,7 @@ export default function Model(props: Props) {
   const group = useRef<Group>(null!);
   const { nodes, materials, animations } = useGLTF(
     "/3d-assets/glb/animals_pack/Alpaca.glb"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
   const { actions } = useAnimations(animations, group);
   return (
     <group ref={group} {...props} dispose={null}>

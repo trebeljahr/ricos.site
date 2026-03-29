@@ -5,7 +5,7 @@ import { Group, Mesh } from "three";
 export const useBow1 = () => {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/weapons/Crossbow-transformed.glb"
-  ) as GLTFResult;
+  ) as unknown as unknown as GLTFResult;
 
   const crossbowMesh = new Mesh(
     nodes.Skeleton_Crossbow.geometry,

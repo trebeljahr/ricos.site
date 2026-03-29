@@ -26,7 +26,7 @@ export function Robot(props: JSX.IntrinsicElements["group"]) {
     "/3d-assets/glb/enemies/Rigged robot-transformed.glb"
   );
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
-  const { nodes, materials } = useGraph(clone) as GLTFResult;
+  const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <primitive object={nodes.spine002} />

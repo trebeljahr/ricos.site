@@ -50,7 +50,7 @@ export function SkeletonMinion({
     "/3d-assets/glb/enemies/Skeleton Minion-transformed.glb"
   );
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
-  const { nodes, materials } = useGraph(clone) as GLTFResult;
+  const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;
   const { actions, mixer } = useAnimations(animations, group);
 
   const result = useGenericAnimationController({

@@ -15,7 +15,7 @@ type GLTFResult = GLTF & {
 export function SkeletonStaff(props: JSX.IntrinsicElements["group"]) {
   const result = useGLTF(
     "/3d-assets/glb/weapons/Skeleton Staff-transformed.glb"
-  ) as GLTFResult;
+  ) as unknown as unknown as GLTFResult;
 
   const { nodes, materials } = result;
 

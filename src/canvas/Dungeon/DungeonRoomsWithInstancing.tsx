@@ -87,7 +87,7 @@ export const Torches = ({
 }) => {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/modular_dungeon_1/Torch.glb"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
 
   const { InstancedMesh: Holders, addPositions: addHolders } =
     useInstancedMesh2({
@@ -207,7 +207,7 @@ export const Floors = ({
 }) => {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/modular_dungeon_1/Floor_Modular.glb"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
 
   const { InstancedMesh, addPositions } = useInstancedMesh2({
     geometry: nodes.Floor_Modular.geometry,

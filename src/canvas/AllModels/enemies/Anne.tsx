@@ -74,7 +74,7 @@ export const AnimatedAnne = ({
     "/3d-assets/glb/enemies/Anne-transformed.glb"
   );
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
-  const { nodes, materials } = useGraph(clone) as GLTFResult;
+  const { nodes, materials } = useGraph(clone) as unknown as unknown as GLTFResult;
   const { actions, mixer } = useAnimations(animations, group);
 
   const result = useGenericAnimationController({
@@ -113,7 +113,7 @@ export function Anne(props: JSX.IntrinsicElements["group"]) {
     "/3d-assets/glb/enemies/Anne-transformed.glb"
   );
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
-  const { nodes, materials } = useGraph(clone) as GLTFResult;
+  const { nodes, materials } = useGraph(clone) as unknown as unknown as GLTFResult;
   const { actions } = useAnimations(animations, group);
 
   return (

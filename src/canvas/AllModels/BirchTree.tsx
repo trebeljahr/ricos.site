@@ -19,7 +19,7 @@ type GLTFResult = GLTF & {
 export function BirchTree(props: GroupProps) {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/BirchTree_5.gltf"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
   const [colorMap, normalMap] = useLoader(TextureLoader, [
     "/3d-assets/textures/BirchTree_Bark.png",
     "/3d-assets/textures/BirchTree_Bark_Normal.png",
@@ -62,7 +62,7 @@ export function BirchTree(props: GroupProps) {
 export function BirchTreeWithColors() {
   const { nodes } = useGLTF(
     "/3d-assets/glb/BirchTree_5.gltf"
-  ) as unknown as GLTFResult;
+  ) as unknown as unknown as unknown as GLTFResult;
   return (
     <group>
       <mesh geometry={(nodes.Cube009 as Mesh).geometry}>

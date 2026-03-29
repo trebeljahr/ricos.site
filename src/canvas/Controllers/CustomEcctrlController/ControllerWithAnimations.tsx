@@ -185,7 +185,7 @@ export const MixamoEcctrlControllerWithAnimations = ({
   useSubscribeToKeyPress("f", () => {
     const player = playerQuery.first;
     if (!player?.rigidBody) return;
-    const userData = player?.rigidBody.userData as userDataType;
+    const userData = (player?.rigidBody as any).userData as userDataType;
 
     if (
       !userData.canJump ||
@@ -210,7 +210,7 @@ export const MixamoEcctrlControllerWithAnimations = ({
 
     if (!player) return;
     const { forward, backward, leftward, rightward, jump, run } = get();
-    const userData = player.rigidBody?.userData as userDataType;
+    const userData = (player.rigidBody as any)?.userData as userDataType;
 
     isAttacking.current =
       mixedInAnimationState.current.isPlaying &&

@@ -22,7 +22,7 @@ type GLTFResult = GLTF & {
 export function RobertDinosaur(props: JSX.IntrinsicElements["group"]) {
   const { scene } = useGLTF("/3d-assets/glb/enemies/Robert-transformed.glb");
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
-  const { nodes, materials } = useGraph(clone) as GLTFResult;
+  const { nodes, materials } = useGraph(clone) as unknown as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <primitive object={nodes.Body} />

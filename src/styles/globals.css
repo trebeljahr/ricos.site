@@ -1,6 +1,31 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
-@config '../../tailwind.config.cjs';
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --breakpoint-xs: 320px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  --breakpoint-3xl: 1920px;
+
+  --color-darkRed: rgb(204, 9, 9);
+  --color-lightRed: rgb(242, 145, 145);
+  --color-lightGreyBlue: rgb(233, 241, 249);
+  --color-ultraLightBlue: rgb(184, 216, 249);
+  --color-lightBlue: rgb(153, 204, 255);
+  --color-myBlue: rgb(68, 160, 255);
+  --color-darkBlue: rgb(15, 76, 229);
+  --color-successGreen: rgb(31, 214, 85);
+  --color-grey: rgb(51, 51, 51);
+  --color-leva-white: #fefefe;
+  --color-leva-dark: #181c20;
+  --color-leva-medium: #535760;
+  --color-leva-light-grey: #8c92a4;
+}
 
 @layer base {
   * {

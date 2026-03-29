@@ -1,13 +1,11 @@
 import { Meta } from "@components/Meta";
 import { OpenGraph } from "@components/OpenGraph";
-import { nav, perf } from "@r3f/ChunkGenerationSystem/config";
+import { nav } from "@r3f/ChunkGenerationSystem/config";
 import { KeyboardControlsProvider } from "@r3f/Controllers/KeyboardControls";
 import { Preload } from "@react-three/drei";
 import { Canvas, CanvasProps } from "@react-three/fiber";
 import dynamic from "next/dynamic";
 import { PropsWithChildren, Suspense } from "react";
-
-const Perf = dynamic(() => import("r3f-perf").then(m => m.Perf), { ssr: false });
 import { toTitleCase } from "src/lib/utils/toTitleCase";
 import tunnel from "tunnel-rat";
 import { NavbarR3F } from "./NavbarR3F";
@@ -92,7 +90,7 @@ export const SceneWithLoadingState = ({
           <CameraPositionLogger />
         </Suspense>
       </Canvas>
-      {perf && <Perf position="bottom-right" />}
+      {/* r3f-perf removed: enable by dynamically importing when perf flag is true */}
     </>
   );
 

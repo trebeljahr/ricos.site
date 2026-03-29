@@ -45,6 +45,7 @@ const nextConfig = {
       "*.fs": { loaders: ["raw-loader"], as: "*.js" },
       "*.vert": { loaders: ["raw-loader"], as: "*.js" },
       "*.frag": { loaders: ["raw-loader"], as: "*.js" },
+      "*.woff.mjs": { loaders: ["url-loader"], as: "*.js" },
     },
   },
   images: {

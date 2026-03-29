@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "generateSitemap": "next-sitemap",
     "generateRSS": "tsx src/scripts/rss.ts",
     "postbuild": "npm run generateSitemap && npm run generateRSS",

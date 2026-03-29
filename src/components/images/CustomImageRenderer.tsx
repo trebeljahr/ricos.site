@@ -1,13 +1,15 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import { useEffect, useRef, useState } from "react";
-import { RenderPhotoProps } from "react-photo-album";
+import { RenderImageProps, RenderImageContext } from "react-photo-album";
 import { ImageProps } from "src/@types";
 
-export function CustomImageRenderer({
-  photo,
-  imageProps,
-  wrapperStyle,
-}: RenderPhotoProps<ImageProps & { id: string; index: number }>) {
+type PhotoWithId = ImageProps & { id: string; index: number };
+
+export function CustomImageRenderer(
+  props: RenderImageProps,
+  context: RenderImageContext<PhotoWithId>
+) {
+  const { photo, width: renderedWidth, height: renderedHeight } = context;
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [dimensions, setDimensions] = useState<
@@ -24,7 +26,7 @@ export function CustomImageRenderer({
       if (!w || !h) return;
 
       setDimensions((prev) => {
-        if (prev?.width === w && prev?.height === h) return prev; // bail if unchanged
+        if (prev?.width === w && prev?.height === h) return prev;
         return { width: w, height: h };
       });
     });
@@ -38,11 +40,11 @@ export function CustomImageRenderer({
       key={photo.id}
       ref={containerRef}
       className="block relative"
-      style={{ ...wrapperStyle }}
+      style={{ width: renderedWidth, height: renderedHeight }}
     >
       {dimensions && (
         <ImageWithLoader
-          onClick={imageProps.onClick}
+          onClick={props.onClick}
           id={photo.id}
           src={photo.src}
           alt={

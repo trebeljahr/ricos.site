@@ -1,8 +1,14 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
-import { MDXRemote } from "next-mdx-remote";
+import { getMDXComponent } from "mdx-bundler/client";
 import Link from "next/link";
-import { CommonMetadata } from "src/@types";
+import { useMemo } from "react";
+import { CommonMetadata, MDXResult } from "src/@types";
 import { MetadataDisplay } from "./MetadataDisplay";
+
+const MDXExcerpt = ({ source }: { source: MDXResult }) => {
+  const Component = useMemo(() => getMDXComponent(source.code), [source.code]);
+  return <Component />;
+};
 
 type Props = {
   book: CommonMetadata;
@@ -63,7 +69,7 @@ export function BookPreview({ book, index }: Props) {
 
         <div>
           {markdownExcerpt ? (
-            <MDXRemote {...markdownExcerpt} />
+            <MDXExcerpt source={markdownExcerpt} />
           ) : excerpt ? (
             <p className="mb-2">{excerpt}</p>
           ) : (

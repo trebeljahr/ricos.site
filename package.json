@@ -3,8 +3,8 @@
   "author": "Rico Trebeljahr",
   "license": "MIT",
   "scripts": {
-    "dev": "next dev --webpack",
-    "build": "next build --webpack",
+    "dev": "next dev",
+    "build": "next build",
     "generateSitemap": "next-sitemap",
     "generateRSS": "tsx src/scripts/rss.ts",
     "postbuild": "npm run generateSitemap && npm run generateRSS",
@@ -42,6 +42,7 @@
     "@recast-navigation/three": "^0.42.1",
     "@replit/codemirror-lang-csharp": "^6.2.0",
     "@spissvinkel/alea": "^1.2.1",
+    "@tailwindcss/postcss": "^4.2.2",
     "@three.ez/instanced-mesh": "^0.3.15",
     "@types/gl-matrix": "^3.2.0",
     "@types/poisson-disk-sampling": "^2.2.4",

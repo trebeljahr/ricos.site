@@ -102,7 +102,8 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const newsletters = require("../../../.velite/newsletters.json") as NewsletterType[];
+  const rawNewsletters = require("../../../.velite/newsletters.json");
+  const newsletters = (rawNewsletters.default || rawNewsletters) as NewsletterType[];
   const newsletter = newsletters.find(
     ({ slugTitle }) => slugTitle === params.id,
   );

@@ -34,7 +34,7 @@ const PodcastnoteComponent = ({ podcastnote }: Props) => {
         <article>
           <section className="Podcastnote-info">
             <div className="Podcastnote-preview-text">
-              <h1 className="!mt-16 !mb-2">
+              <h1 className="mt-16! mb-2!">
                 <p className="text-2xl font-normal">
                   {podcastnote.show} | Episode – {podcastnote.episode}{" "}
                 </p>

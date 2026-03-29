@@ -23,7 +23,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
     >
       <main className="mt-32">
         <section className="px-3 pb-20">
-          <div className="mx-auto max-w-screen-lg">
+          <div className="mx-auto max-w-(--breakpoint-lg)">
             <div className="max-w-prose">
               <h2 className="text-4xl">
                 Hi there <WavingHand />
@@ -112,7 +112,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
         </section>
 
         <section className="dark:bg-gray-950 bg-slate-100 pt-1 pb-20 px-3">
-          <div className="mx-auto max-w-screen-lg">
+          <div className="mx-auto max-w-(--breakpoint-lg)">
             <div className="max-w-prose">
               <h2>Webpages</h2>
               <p>

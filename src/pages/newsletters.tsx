@@ -78,7 +78,7 @@ const Newsletters = ({ newsletterData, seo }: Props) => {
           <div className="my-32">
             <NewsletterForm
               link={<></>}
-              heading={<h2 className="!mt-0">Not subscribed yet? 🙊</h2>}
+              heading={<h2 className="mt-0!">Not subscribed yet? 🙊</h2>}
             />
           </div>
 

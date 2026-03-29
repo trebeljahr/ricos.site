@@ -126,7 +126,7 @@ export default function Photography({ trips, seo }: Props) {
               <Link
                 href={`/photography/${tripName}`}
                 key={tripName}
-                className="relative aspect-square overflow-hidden flex-shrink-0 "
+                className="relative aspect-square overflow-hidden shrink-0 "
               >
                 <ImageWithLoader
                   src={image.src}

@@ -23,7 +23,7 @@ export const HomePageSection = ({
 }: HomePageSectionProps) => {
   return (
     <>
-      <div className="mx-auto max-w-screen-lg">
+      <div className="mx-auto max-w-(--breakpoint-lg)">
         <h2 className="text-5xl">{title}</h2>
 
         {description && (

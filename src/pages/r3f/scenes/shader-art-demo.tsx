@@ -76,7 +76,7 @@ const InfoButton = () => {
                 settings with others by clicking the share button in the bottom
                 right. This will copy the URL which you can then send around.
               </p>
-              <p className="!mb-0">Try some presets!</p>
+              <p className="mb-0!">Try some presets!</p>
               <Link href="/r3f/scenes/shader-art-demo?chosenShape=0&chosenPalette=5&repetitions=2.1&speedFactor=0.6&scaleFactor=2.2&space=7.2&depth=4.199999999999999&contrast=1.1&strength=0.0073&rgbStrength=%5B1%2C1%2C1%5D">
                 1
               </Link>

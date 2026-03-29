@@ -23,7 +23,7 @@ const about = ["now", "travel", "principles", "1-month-projects"];
 
 export const RicosSiteBanner = () => {
   return (
-    <Link href="/" className="flex flex-shrink-0 items-center not-prose">
+    <Link href="/" className="flex shrink-0 items-center not-prose">
       <Image
         className="h-5 w-auto mr-1"
         src="/favicon/apple-touch-icon.png"
@@ -46,7 +46,7 @@ export function TailwindNavbar({
       {({ open, close }) => (
         <header
           id="navbar"
-          className={`fixed top-0 w-screen prose-a:no-underline prose-a:hover:text-inherit prose-a:font-normal font-normal prose-a:text-inherit left-0 z-[999] ${
+          className={`fixed top-0 w-screen prose-a:no-underline prose-a:hover:text-inherit prose-a:font-normal font-normal prose-a:text-inherit left-0 z-999 ${
             open ? "bg-white" : "glassy hover:bg-white dark:bg-gray-900"
           } w-full dark:bg-none dark:bg-gray-900 pt-3 transition-colors duration-300 ${
             withProgressBar ? "" : "pb-2"

@@ -5,10 +5,10 @@ import data from "../../../.velite/r3f-links.json";
 import { toLinks, toLinksFromNameUrlTuples } from "src/lib/toLinks";
 
 const sideStyle =
-  "z-[1500] absolute overflow-x-hidden overflow-y-auto text-sm w-72 bg-leva-dark h-screen  transform transition-all fixed duration-700 text-leva-white p-2 top-0 left-0";
+  "z-1500 absolute overflow-x-hidden overflow-y-auto text-sm w-72 bg-leva-dark h-screen  transform transition-all fixed duration-700 text-leva-white p-2 top-0 left-0";
 
 const buttonStyle =
-  "z-[1500] absolute w-10 h-10 bg-yellow-400 hover:w-11 hover:h-11 top-0 cursor-pointer transition-all transform duration-700 flex items-center justify-center";
+  "z-1500 absolute w-10 h-10 bg-yellow-400 hover:w-11 hover:h-11 top-0 cursor-pointer transition-all transform duration-700 flex items-center justify-center";
 
 export const NavbarR3F = () => {
   const [open, setOpen] = useState(false);

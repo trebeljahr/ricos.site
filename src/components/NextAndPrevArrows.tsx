@@ -20,7 +20,7 @@ export const NextAndPrevArrows = ({
         {prevPost && (
           <Link
             href={`${basePath}/${prevPost}`}
-            className="fixed flex place-items-center w-fit h-fit z-10 bottom-[2vmin] !text-black bg-blue-300 no-underline xl:top-[50%] left-3 xl:left-0 p-1 hover:bg-blue-400"
+            className="fixed flex place-items-center w-fit h-fit z-10 bottom-[2vmin] text-black! bg-blue-300 no-underline xl:top-[50%] left-3 xl:left-0 p-1 hover:bg-blue-400"
             passHref
           >
             <FiArrowLeft className="w-8 h-8" />
@@ -29,7 +29,7 @@ export const NextAndPrevArrows = ({
         {nextPost && (
           <Link
             href={`${basePath}/${nextPost}`}
-            className="fixed flex place-items-center w-fit h-fit z-10 bottom-[2vmin] !text-black bg-blue-300 no-underline xl:top-[50%] max-xl:left-14 xl:right-0 p-1 hover:bg-blue-400"
+            className="fixed flex place-items-center w-fit h-fit z-10 bottom-[2vmin] text-black! bg-blue-300 no-underline xl:top-[50%] max-xl:left-14 xl:right-0 p-1 hover:bg-blue-400"
             passHref
           >
             <FiArrowRight className="w-8 h-8" />

@@ -87,7 +87,7 @@ export const NewsletterForm = ({
   );
 
   const defaultHeading = (
-    <h2 className="!mt-0">Subscribe to Live and Learn 🌱</h2>
+    <h2 className="mt-0!">Subscribe to Live and Learn 🌱</h2>
   );
 
   return (

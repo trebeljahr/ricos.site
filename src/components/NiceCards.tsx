@@ -1,9 +1,15 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
-import { MDXRemote } from "next-mdx-remote";
+import { getMDXComponent } from "mdx-bundler/client";
 import Link from "next/link";
+import { useMemo } from "react";
 import { MDXResult } from "src/@types";
 import { MetadataDisplay } from "./MetadataDisplay";
 import { CommonMetadata } from "src/@types";
+
+const MDXExcerpt = ({ source }: { source: MDXResult }) => {
+  const Component = useMemo(() => getMDXComponent(source.code), [source.code]);
+  return <Component />;
+};
 
 type CardProps = {
   cover: CommonMetadata["cover"];
@@ -53,7 +59,7 @@ export function HorizontalCard({
             {title && <h2 className="pt-0 font-bold leading-snug">{title}</h2>}
             {subtitle && <p className="font-normal text-base">{subtitle}</p>}
             {markdownExcerpt ? (
-              <MDXRemote {...markdownExcerpt} />
+              <MDXExcerpt source={markdownExcerpt} />
             ) : excerpt ? (
               <p>{excerpt}</p>
             ) : null}
@@ -96,11 +102,11 @@ export const VerticalCard = ({
           className="object-cover rounded-t-lg w-full h-full"
         />
       </div>
-      <div className="flex flex-col flex-grow align-self-stretch p-3 min-h-fit prose-p:text-zinc-800 dark:prose-p:text-slate-300 w-full border-r-4 border-l-4 border-b-4 rounded-bl-lg rounded-br-lg border-gray-200 dark:border-gray-700">
-        <h2 className="!my-6 tracking-tight">{title}</h2>
+      <div className="flex flex-col grow align-self-stretch p-3 min-h-fit prose-p:text-zinc-800 dark:prose-p:text-slate-300 w-full border-r-4 border-l-4 border-b-4 rounded-bl-lg rounded-br-lg border-gray-200 dark:border-gray-700">
+        <h2 className="my-6! tracking-tight">{title}</h2>
         {subtitle && <p className="font-normal text-base">{subtitle}</p>}
-        {markdownExcerpt && <MDXRemote {...markdownExcerpt} />}
-        <div className="flex-grow mb-5"></div>
+        {markdownExcerpt && <MDXExcerpt source={markdownExcerpt} />}
+        <div className="grow mb-5"></div>
         <div className="place-self-end">
           <MetadataDisplay
             date={date}

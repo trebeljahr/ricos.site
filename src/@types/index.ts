@@ -1,4 +1,3 @@
-import { MDXRemoteSerializeResult } from "next-mdx-remote";
 import { Material, Mesh } from "three";
 import { GLTF } from "three-stdlib";
 
@@ -14,10 +13,9 @@ export type XYZ = {
   z: number;
 };
 
-export type MDXResult = MDXRemoteSerializeResult<
-  Record<string, unknown>,
-  Record<string, unknown>
->;
+export type MDXResult = {
+  code: string;
+};
 
 export type GLTFResult = {
   nodes: {

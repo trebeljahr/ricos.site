@@ -1,4 +1,5 @@
-import { MDXRemote } from "next-mdx-remote";
+import { getMDXComponent } from "mdx-bundler/client";
+import { useMemo } from "react";
 import { MDXResult } from "src/@types";
 import { MarkdownRenderers } from "./MarkdownRenderers";
 
@@ -7,11 +8,6 @@ interface MDXProps {
 }
 
 export const MDXContent = ({ source }: MDXProps) => {
-  return (
-    <MDXRemote
-      {...source}
-      components={MarkdownRenderers}
-      lazy
-    />
-  );
+  const Component = useMemo(() => getMDXComponent(source.code), [source.code]);
+  return <Component components={MarkdownRenderers} />;
 };

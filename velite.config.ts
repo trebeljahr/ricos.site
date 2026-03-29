@@ -8,7 +8,7 @@ import { interactive } from "hast-util-interactive";
 import { whitespace } from "hast-util-whitespace";
 import { Nodes } from "mdast";
 import { Handler } from "mdast-util-to-hast";
-import { serialize } from "next-mdx-remote/serialize";
+import { bundleMDX } from "mdx-bundler";
 import path from "path";
 import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 import rehypeKatex from "rehype-katex";
@@ -334,26 +334,52 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   const recmaPlugins: Pluggable[] = [];
 
   const rawContent = meta.content || "";
-  const mdxOptions = {
-    mdxOptions: {
-      remarkPlugins,
-      rehypePlugins,
-      recmaPlugins,
-      remarkRehypeOptions: {
+  const { code: mdxCode } = await bundleMDX({
+    source: rawContent,
+    cwd: path.resolve("src/content/Notes"),
+    mdxOptions(options) {
+      options.remarkPlugins = [
+        ...(options.remarkPlugins ?? []),
+        ...remarkPlugins,
+      ];
+      options.rehypePlugins = [
+        ...(options.rehypePlugins ?? []),
+        ...rehypePlugins,
+      ];
+      options.recmaPlugins = [
+        ...(options.recmaPlugins ?? []),
+        ...recmaPlugins,
+      ];
+      options.remarkRehypeOptions = {
         handlers: { SimpleGallery: handleSimpleGalleryNode },
-      },
+      };
+      return options;
     },
-    parseFrontmatter: true,
-  };
-  const mdxSource = await serialize(rawContent, mdxOptions);
+    esbuildOptions(options) {
+      options.platform = "node";
+      return options;
+    },
+  });
+  const mdxSource: MDXResult = { code: mdxCode };
 
   const excerptString = data.excerpt || generateExcerpt(rawContent, 280);
 
-  const excerptMdxOptions = {
-    mdxOptions: { remarkPlugins: [remarkGfm], rehypePlugins: [] as Pluggable[] },
-    parseFrontmatter: false,
-  };
-  const markdownExcerpt = await serialize(excerptString, excerptMdxOptions);
+  const { code: excerptCode } = await bundleMDX({
+    source: excerptString,
+    cwd: path.resolve("src/content/Notes"),
+    mdxOptions(options) {
+      options.remarkPlugins = [
+        ...(options.remarkPlugins ?? []),
+        remarkGfm,
+      ];
+      return options;
+    },
+    esbuildOptions(options) {
+      options.platform = "node";
+      return options;
+    },
+  });
+  const markdownExcerpt: MDXResult = { code: excerptCode };
 
   // SEO metadata: JSON override → frontmatter/content fallback → ""
   const link = data.link || "";

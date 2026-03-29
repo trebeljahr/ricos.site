@@ -1,4 +1,5 @@
-import { MDXRemote } from "next-mdx-remote";
+import { getMDXComponent } from "mdx-bundler/client";
+import { useMemo } from "react";
 import { MDXResult } from "src/@types";
 import { AxisByAxis } from "./Demos/collisionDetection/AxisByAxis";
 import { DotProductDemo } from "./Demos/collisionDetection/DotProductDemo";
@@ -44,11 +45,6 @@ interface MDXProps {
 }
 
 export const MDXContentWithDemos = ({ source }: MDXProps) => {
-  return (
-    <MDXRemote
-      {...source}
-      components={{ ...allComponents, ...MarkdownRenderers }}
-      lazy
-    />
-  );
+  const Component = useMemo(() => getMDXComponent(source.code), [source.code]);
+  return <Component components={{ ...allComponents, ...MarkdownRenderers }} />;
 };

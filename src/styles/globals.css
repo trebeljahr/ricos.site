@@ -31,15 +31,16 @@
   * {
     box-sizing: border-box;
   }
+}
 
-  /* Override prose link colors: inherit text color by default, blue on hover */
-  .prose a {
-    color: inherit;
-    transition: color 0.15s ease;
-  }
-  .prose a:hover {
-    color: var(--color-myBlue);
-  }
+/* Override prose link colors: inherit text color by default, blue on hover.
+   Outside @layer so it beats the typography plugin's specificity. */
+.prose :where(a):not(:where(.not-prose, .not-prose *)) {
+  color: inherit;
+  transition: color 0.15s ease;
+}
+.prose :where(a):not(:where(.not-prose, .not-prose *)):hover {
+  color: var(--color-myBlue);
 }
 
 h1, h2, h3, h4, h5, li {

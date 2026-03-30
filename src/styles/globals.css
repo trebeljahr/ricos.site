@@ -277,7 +277,7 @@ code {
 
 .dark .glassy {
   backdrop-filter: none;
-  background: none;
+  background: rgb(17 24 39); /* gray-900 */
 }
 
 @keyframes comeInOut {

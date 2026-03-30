@@ -48,7 +48,7 @@ export function TailwindNavbar({
           id="navbar"
           className={`fixed top-0 w-screen not-prose left-0 z-999 ${
             open ? "bg-white" : "glassy hover:bg-white dark:bg-gray-900"
-          } w-full dark:bg-none dark:bg-gray-900 pt-3 transition-colors duration-300 ${
+          } w-full dark:bg-gray-900 pt-3 transition-colors duration-300 ${
             withProgressBar ? "" : "pb-2"
           }`}
         >

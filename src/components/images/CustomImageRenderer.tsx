@@ -21,6 +21,7 @@ export function CustomImageRenderer(
       }
       width={renderedWidth}
       height={renderedHeight}
+      sizes={props.sizes}
       style={{ width: "100%", height: "auto" }}
     />
   );

@@ -18,6 +18,13 @@ const SimpleGallery = ({ photos: images }: { photos: ImageProps[] }) => {
         targetRowHeight={400}
         render={{ image: CustomImageRenderer as any }}
         defaultContainerWidth={1200}
+        sizes={{
+          size: "calc(100vw - 24px)",
+          sizes: [
+            { viewport: "(max-width: 768px)", size: "calc(100vw - 24px)" },
+            { viewport: "(max-width: 1200px)", size: "calc(65ch)" },
+          ],
+        }}
         onClick={({ photo }: any) => {
           openModal({
             ...photo,

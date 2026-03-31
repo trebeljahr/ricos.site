@@ -1,13 +1,8 @@
-import dynamic from "next/dynamic";
 import { ReactNode } from "react";
 import { Meta } from "./Meta";
+import { LeftSmallNavbar } from "./Navbar/LeftSmallNavbar";
 import { TailwindNavbar } from "./Navbar/TailwindNavbar";
 import { OpenGraph } from "./OpenGraph";
-
-const LeftSmallNavbar = dynamic(
-  () => import("./Navbar/LeftSmallNavbar").then((m) => m.LeftSmallNavbar),
-  { ssr: false }
-);
 import { toTitleCase } from "src/lib/utils/toTitleCase";
 
 type Props = {

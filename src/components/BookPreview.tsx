@@ -5,9 +5,13 @@ import { useMemo } from "react";
 import { CommonMetadata, MDXResult } from "src/@types";
 import { MetadataDisplay } from "./MetadataDisplay";
 
+const excerptComponents = {
+  a: ({ children }: { children?: React.ReactNode }) => <span>{children}</span>,
+};
+
 const MDXExcerpt = ({ source }: { source: MDXResult }) => {
   const Component = useMemo(() => getMDXComponent(source.code), [source.code]);
-  return <Component />;
+  return <Component components={excerptComponents} />;
 };
 
 type Props = {

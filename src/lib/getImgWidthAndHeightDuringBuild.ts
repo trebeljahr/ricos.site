@@ -1,4 +1,4 @@
-import { localMetadata } from "src/scripts/metadataJsonFileHelpers";
+import { getLocalMetadata } from "src/lib/imageMetadata";
 
 export async function getImgWidthAndHeightDuringBuild(
   imageKey: string
@@ -10,7 +10,7 @@ export async function getImgWidthAndHeightDuringBuild(
     // strip leading slash if present
     let key = imageKey.startsWith("/assets") ? imageKey.substring(1) : imageKey;
 
-    let { width, height } = localMetadata[key] || {};
+    let { width, height } = getLocalMetadata()[key] || {};
     if (!width || !height) throw new Error("Failed to get image dimensions");
 
     return { width, height };

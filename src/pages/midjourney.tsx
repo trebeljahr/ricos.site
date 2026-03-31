@@ -2,7 +2,7 @@ import Layout from "@components/Layout";
 import { InfiniteScrollGallery } from "@components/Galleries";
 import { ToTopButton } from "@components/ToTopButton";
 import { ImageProps } from "src/@types";
-import { getDataFromMetadata } from "src/lib/aws";
+import { getDataFromMetadata } from "src/lib/imageMetadata";
 import { SeoInfo } from "src/lib/getSeoInfo";
 
 export default function MidjourneyGallery({

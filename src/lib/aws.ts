@@ -9,7 +9,7 @@ import {
   getMetadataFromJsonFile,
   ImageMetadata,
   localMetadata,
-} from "src/scripts/metadataJsonFileHelpers";
+} from "src/lib/imageMetadata";
 
 export async function getImageMetadataFromS3(
   Bucket: string,

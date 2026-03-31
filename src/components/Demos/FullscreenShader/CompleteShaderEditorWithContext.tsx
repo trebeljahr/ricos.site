@@ -47,7 +47,7 @@ const Toolbar = () => {
 
 const InProvider = () => {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref);
+  const inView = useInView(ref, { once: true });
   const { expanded } = useEditorContext();
 
   return (

@@ -122,7 +122,7 @@ import shadertoyExample2 from "./shaders/shadertoyExample2.glsl";
 import timeExample from "./shaders/timeExample.glsl";
 import mouseExample from "./shaders/mouseExample.glsl";
 import textureExample from "./shaders/textureExample.glsl";
-import { FaCompressArrowsAlt, FaExpandArrowsAlt } from "react-icons/fa";
+import { FaCompressArrowsAlt, FaExpandArrowsAlt } from "@components/Icons";
 import clsx from "clsx";
 
 const EXAMPLE_SHADERS = {

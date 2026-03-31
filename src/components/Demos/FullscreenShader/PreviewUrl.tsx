@@ -1,5 +1,5 @@
 import { ChangeEvent, useState } from "react";
-import { FaChevronDown, FaChevronUp, FaEdit, FaTrash } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaEdit, FaTrash } from "@components/Icons";
 
 type TextureUploadMenuProps = {
   previewUrls: string[];

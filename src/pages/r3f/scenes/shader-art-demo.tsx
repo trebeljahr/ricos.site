@@ -2,13 +2,12 @@ import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasSha
 import Layout from "@components/Layout";
 import { Canvas } from "@react-three/fiber";
 import controllableShaderArt from "@shaders/controllableShaderArt.glsl";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { Leva, useControls } from "leva";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaCheck, FaInfo, FaShareAlt } from "react-icons/fa";
-import { FiX } from "react-icons/fi";
+import { FaCheck, FaInfo, FaShareAlt, FiX } from "@components/Icons";
 import { IUniform } from "three";
 import { recording } from "@r3f/ChunkGenerationSystem/config";
 import { SceneWithLoadingState } from "@components/dom/ThreeFiberLayout";

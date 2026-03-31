@@ -7,7 +7,6 @@ import { Sky, useHelper } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useControls } from "leva";
 import { MutableRefObject, useEffect, useRef } from "react";
-import { FaTemperatureFull } from "react-icons/fa6";
 import {
   CameraHelper,
   DirectionalLight,

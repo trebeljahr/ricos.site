@@ -8,7 +8,7 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import type { Booknote } from "@velite";
-import { FaInfo } from "react-icons/fa";
+import { FaInfo } from "@components/Icons";
 import { byOnlyPublished } from "src/lib/utils/filters";
 
 type Props = {

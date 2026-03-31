@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ShowAfterScrolling } from "@components/ShowAfterScrolling";
 import { useRouter } from "next/router";
-import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
+import { FiArrowLeft, FiArrowRight } from "@components/Icons";
 
 export const NextAndPrevArrows = ({
   nextPost,

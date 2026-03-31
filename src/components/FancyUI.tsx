@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FaArrowRightLong } from "react-icons/fa6";
+import { FaArrowRightLong } from "@components/Icons";
 
 export const FancyButton = (props: JSX.IntrinsicElements["button"]) => {
   return (

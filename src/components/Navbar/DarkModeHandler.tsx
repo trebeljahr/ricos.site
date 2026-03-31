@@ -1,6 +1,6 @@
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { IoMoon, IoSunny } from "react-icons/io5";
+import { IoMoon, IoSunny } from "@components/Icons";
 
 export const DarkModeHandler = () => {
   const { theme, setTheme, resolvedTheme } = useTheme();

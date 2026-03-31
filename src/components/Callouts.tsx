@@ -13,7 +13,7 @@ import {
   FaQuoteLeft,
   FaSkullCrossbones,
   FaTimesCircle,
-} from "react-icons/fa";
+} from "@components/Icons";
 
 type Callout = {
   label: string;

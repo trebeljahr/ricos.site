@@ -7,7 +7,7 @@ import {
 } from "@headlessui/react";
 import { Fragment } from "react";
 import { SingleMenuItem } from "./SingleMenuItem";
-import { FiChevronDown } from "react-icons/fi";
+import { FiChevronDown } from "@components/Icons";
 import clsx from "clsx";
 
 type DesktopMenuProps = {

@@ -1,4 +1,4 @@
-import { FiArrowUp } from "react-icons/fi";
+import { FiArrowUp } from "@components/Icons";
 import { ShowAfterScrolling } from "./ShowAfterScrolling";
 export function ToTopButton() {
   return (

@@ -9,7 +9,7 @@ import {
   useState,
   WheelEventHandler,
 } from "react";
-import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
+import { FaChevronRight, FaChevronLeft } from "@components/Icons";
 import { VerticalCard } from "./NiceCards";
 import { CommonMetadata } from "src/@types";
 

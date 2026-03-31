@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback, useState } from "react";
-import { FaChevronDown, FaChevronUp, FaImage } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaImage } from "@components/Icons";
 import { TextureLoader } from "three";
 import { useEditorContext } from "./EditorContextProvider";
 import { PreviewUrl } from "./PreviewUrl";

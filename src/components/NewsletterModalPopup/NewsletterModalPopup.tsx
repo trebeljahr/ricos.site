@@ -7,7 +7,7 @@ import {
   TransitionChild,
 } from "@headlessui/react";
 import { Fragment } from "react";
-import { FiX } from "react-icons/fi";
+import { FiX } from "@components/Icons";
 import { useScrollLock } from "src/hooks/useScrollLock";
 import useLocalStorageState from "use-local-storage-state";
 

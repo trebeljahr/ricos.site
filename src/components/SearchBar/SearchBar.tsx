@@ -6,7 +6,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { FiSearch } from "react-icons/fi";
+import { FiSearch } from "@components/Icons";
 
 export type SearchProps<T extends Record<string, any>> = {
   setFiltered: Dispatch<SetStateAction<T[]>>;

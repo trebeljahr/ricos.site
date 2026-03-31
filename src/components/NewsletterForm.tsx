@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ChangeEvent, useRef, useState } from "react";
 import ConfettiExplosion, { ConfettiProps } from "react-confetti-explosion";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle } from "@components/Icons";
 import { ReactElement } from "react-markdown/lib/react-markdown";
 import { FancyButton } from "./FancyUI";
 import { SpinningLoader } from "./SpinningLoader";

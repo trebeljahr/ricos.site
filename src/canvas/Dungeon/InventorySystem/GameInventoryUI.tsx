@@ -7,7 +7,7 @@ import {
   HandSlot,
   InventoryProvider,
 } from "./GameInventoryContext";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash } from "@components/Icons";
 import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
 
 interface InventorySlotProps {

@@ -6,6 +6,7 @@ import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Podcastnote as PodcastnoteType } from "@velite";
+import { loadVeliteData } from "src/lib/loadVeliteData";
 import { byOnlyPublished } from "src/lib/utils/filters";
 
 type Props = {
@@ -80,7 +81,7 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const podcastnotes: PodcastnoteType[] = require("../../../.velite/podcastnotes.json");
+  const podcastnotes: PodcastnoteType[] = loadVeliteData("podcastnotes.json");
   const podcastnote = podcastnotes
     .filter(byOnlyPublished)
     .find(({ slug }) => params.id === slug);
@@ -96,7 +97,7 @@ export async function getStaticPaths(): Promise<{
   paths: Params[];
   fallback: boolean;
 }> {
-  const podcastnotes: PodcastnoteType[] = require("../../../.velite/podcastnotes.json");
+  const podcastnotes: PodcastnoteType[] = loadVeliteData("podcastnotes.json");
   const paths = podcastnotes.filter(byOnlyPublished).map((podcastnote) => {
     return {
       params: {

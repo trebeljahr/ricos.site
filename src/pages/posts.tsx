@@ -6,6 +6,7 @@ import { OtherPostsPreview } from "@components/PostPreview";
 import { ToTopButton } from "@components/ToTopButton";
 import { CommonMetadata } from "src/@types";
 import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { loadVeliteData } from "src/lib/loadVeliteData";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
@@ -53,7 +54,7 @@ const Posts = ({ posts, seo }: Props) => {
 export default Posts;
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
-  const allPosts = require("../../.velite/posts.json");
+  const allPosts = loadVeliteData("posts.json");
   const posts = extractAndSortMetadata(allPosts);
 
   return {

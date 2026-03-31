@@ -8,6 +8,7 @@ import type { SectionDescription } from "@velite";
 import Link from "next/link";
 import { type CommonMetadata } from "src/@types";
 import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { loadVeliteData } from "src/lib/loadVeliteData";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 const IndexPage = ({ seo, ...props }: Props) => {
@@ -163,11 +164,11 @@ type Props = {
 };
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
-  const travelblogs = require("../../.velite/travelblogs.json");
-  const posts = require("../../.velite/posts.json");
-  const newsletters = require("../../.velite/newsletters.json");
-  const booknotes = require("../../.velite/booknotes.json");
-  const sectionDescriptions = require("../../.velite/sectionDescriptions.json");
+  const travelblogs = loadVeliteData("travelblogs.json");
+  const posts = loadVeliteData("posts.json");
+  const newsletters = loadVeliteData("newsletters.json");
+  const booknotes = loadVeliteData("booknotes.json");
+  const sectionDescriptions = loadVeliteData("sectionDescriptions.json");
 
   const travelBlogsSelection = extractAndSortMetadata(travelblogs).slice(0, 15);
 

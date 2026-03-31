@@ -7,6 +7,7 @@ import { byReadingTime } from "src/lib/utils/sorting";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { toTitleCase } from "src/lib/utils/toTitleCase";
 import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { loadVeliteData } from "src/lib/loadVeliteData";
 
 const mainCategories = [
   "philosophy",
@@ -125,12 +126,12 @@ const ShowTags = ({ categories, seo }: Props) => {
 export default ShowTags;
 
 export async function getStaticProps() {
-  const posts = require("../../.velite/posts.json");
-  const booknotes = require("../../.velite/booknotes.json");
-  const pages = require("../../.velite/pages.json");
-  const newsletters = require("../../.velite/newsletters.json");
-  const podcastnotes = require("../../.velite/podcastnotes.json");
-  const travelblogs = require("../../.velite/travelblogs.json");
+  const posts = loadVeliteData("posts.json");
+  const booknotes = loadVeliteData("booknotes.json");
+  const pages = loadVeliteData("pages.json");
+  const newsletters = loadVeliteData("newsletters.json");
+  const podcastnotes = loadVeliteData("podcastnotes.json");
+  const travelblogs = loadVeliteData("travelblogs.json");
 
   const allDocuments = [
     ...posts,

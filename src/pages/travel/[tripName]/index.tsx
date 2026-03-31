@@ -5,6 +5,7 @@ import Header from "@components/PostHeader";
 import { nanoid } from "nanoid";
 import { CommonMetadata } from "src/@types";
 import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { loadVeliteData } from "src/lib/loadVeliteData";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { travelingStoriesMetaRaw, travelingStoryNames } from "..";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
@@ -87,7 +88,7 @@ export const getStaticPaths = async () => {
 export const getStaticProps = async ({
   params,
 }: Params): Promise<{ props: Props }> => {
-  const travelblogs = require("../../../../.velite/travelblogs.json");
+  const travelblogs = loadVeliteData("travelblogs.json");
   const posts = extractAndSortMetadata(travelblogs)
     .filter(
       ({ parentFolder }: any) => !params.tripName || parentFolder === params.tripName

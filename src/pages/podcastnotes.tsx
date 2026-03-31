@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { CommonMetadata } from "src/@types";
 import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { loadVeliteData } from "src/lib/loadVeliteData";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
@@ -76,7 +77,7 @@ export default function Podcastnotes({ podcastnotes, seo }: Props) {
 }
 
 export function getStaticProps() {
-  const allPodcastnotes = require("../../.velite/podcastnotes.json");
+  const allPodcastnotes = loadVeliteData("podcastnotes.json");
   const podcastnotes = extractAndSortMetadata(allPodcastnotes);
 
   return {

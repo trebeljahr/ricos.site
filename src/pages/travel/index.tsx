@@ -5,6 +5,7 @@ import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
+import { loadVeliteData } from "src/lib/loadVeliteData";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { CommonMetadata } from "src/@types";
 import { SeoInfo } from "src/lib/getSeoInfo";
@@ -132,7 +133,7 @@ const TravelBlogs = ({ cardContent, seo }: Props) => {
 
 export default TravelBlogs;
 
-const _travelblogs = require("../../../.velite/travelblogs.json");
+const _travelblogs = loadVeliteData("travelblogs.json");
 
 export const travelingStoryNames: string[] = [
   ..._travelblogs.filter(byOnlyPublished).reduce((agg: Set<string>, current: any) => {
@@ -147,7 +148,7 @@ export const travelingStoryNamesMap: Record<string, any> = _travelblogs.reduce((
 }, {} as Record<string, any>);
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
-  const travelblogs: any[] = require("../../../.velite/travelblogs.json");
+  const travelblogs: any[] = loadVeliteData("travelblogs.json");
   const travelingBlogsMeta = travelblogs
     .filter(byOnlyPublished)
     .map(({ title, excerpt, date, cover, metadata, parentFolder }: any) => ({

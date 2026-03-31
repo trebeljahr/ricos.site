@@ -36,10 +36,12 @@ export function FullCanvasShaderMesh() {
   );
 
   const shaderRef = useRef<ShaderMaterial>(null!);
+  const frameCount = useRef(0);
   const { size } = useThree();
 
-  useFrame(({ clock, pointer }, frameCount) => {
+  useFrame(({ clock, pointer }, delta) => {
     if (!shaderRef.current) return;
+    frameCount.current++;
     if (isShaderToy) {
       shaderRef.current.uniforms.iResolution.value.set(
         size.width,
@@ -47,7 +49,7 @@ export function FullCanvasShaderMesh() {
         window.devicePixelRatio
       );
       shaderRef.current.uniforms.iTime.value = clock.getElapsedTime();
-      shaderRef.current.uniforms.iTimeDelta.value = clock.getDelta();
+      shaderRef.current.uniforms.iTimeDelta.value = delta;
       const now = new Date();
       const year = now.getFullYear();
       const month = now.getMonth() + 1; // getMonth() is zero-based
@@ -60,7 +62,7 @@ export function FullCanvasShaderMesh() {
         day,
         secondsSinceMidnight
       );
-      shaderRef.current.uniforms.iFrame.value = frameCount;
+      shaderRef.current.uniforms.iFrame.value = frameCount.current;
       shaderRef.current.uniforms.iMouse.value.set(pointer.x, pointer.y, 0, 0);
     } else {
       shaderRef.current.uniforms.u_time.value = clock.getElapsedTime();

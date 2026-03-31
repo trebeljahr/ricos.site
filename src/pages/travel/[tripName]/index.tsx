@@ -4,10 +4,8 @@ import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { nanoid } from "nanoid";
 import { CommonMetadata } from "src/@types";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
-import { loadVeliteData } from "src/lib/loadVeliteData";
-import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
-import { travelingStoriesMetaRaw, getTravelingStoryNames } from "..";
+import { SeoInfo } from "src/lib/getSeoInfo";
+import { travelingStoriesMetaRaw } from "..";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
 type Props = {
@@ -77,6 +75,7 @@ type Params = {
 };
 
 export const getStaticPaths = async () => {
+  const { getTravelingStoryNames } = await import("src/lib/travelData");
   return {
     paths: getTravelingStoryNames().map<Params>((post) => ({
       params: { tripName: post },
@@ -88,6 +87,10 @@ export const getStaticPaths = async () => {
 export const getStaticProps = async ({
   params,
 }: Params): Promise<{ props: Props }> => {
+  const { loadVeliteData } = await import("src/lib/loadVeliteData");
+  const { extractAndSortMetadata } = await import("src/lib/utils/extractAndSortMetadata");
+  const { getSeoInfo } = await import("src/lib/getSeoInfo");
+
   const travelblogs = loadVeliteData("travelblogs.json");
   const posts = extractAndSortMetadata(travelblogs)
     .filter(

@@ -4,9 +4,6 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
-import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
-import { loadVeliteData } from "src/lib/loadVeliteData";
-import { byOnlyPublished } from "src/lib/utils/filters";
 import { CommonMetadata } from "src/@types";
 import { SeoInfo } from "src/lib/getSeoInfo";
 
@@ -133,18 +130,12 @@ const TravelBlogs = ({ cardContent, seo }: Props) => {
 
 export default TravelBlogs;
 
-export function getTravelingStoryNames(): string[] {
-  const travelblogs = loadVeliteData("travelblogs.json");
-  return [
-    ...travelblogs.filter(byOnlyPublished).reduce((agg: Set<string>, current: any) => {
-      agg.add(current.parentFolder);
-      return agg;
-    }, new Set<string>()),
-  ];
-}
-
-
 export const getStaticProps = async (): Promise<{ props: Props }> => {
+  const { loadVeliteData } = await import("src/lib/loadVeliteData");
+  const { getImgWidthAndHeightDuringBuild } = await import("src/lib/getImgWidthAndHeightDuringBuild");
+  const { getTravelingStoryNames } = await import("src/lib/travelData");
+  const { byOnlyPublished } = await import("src/lib/utils/filters");
+
   const travelblogs: any[] = loadVeliteData("travelblogs.json");
   const travelingBlogsMeta = travelblogs
     .filter(byOnlyPublished)

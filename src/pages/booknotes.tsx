@@ -9,7 +9,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import type { Booknote } from "@velite";
 import { useState } from "react";
 import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
-import { loadVeliteData } from "src/lib/loadVeliteData";
+
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
@@ -62,7 +62,8 @@ export default function Books({ booknotes, seo }: Props) {
   );
 }
 
-export function getStaticProps() {
+export async function getStaticProps() {
+  const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const allBooknotes = loadVeliteData("booknotes.json");
   const booknotes = extractAndSortMetadata(allBooknotes).filter(
     ({ summary }: any) => summary

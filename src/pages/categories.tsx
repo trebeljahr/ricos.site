@@ -7,7 +7,7 @@ import { byReadingTime } from "src/lib/utils/sorting";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { toTitleCase } from "src/lib/utils/toTitleCase";
 import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
-import { loadVeliteData } from "src/lib/loadVeliteData";
+
 
 const mainCategories = [
   "philosophy",
@@ -126,6 +126,7 @@ const ShowTags = ({ categories, seo }: Props) => {
 export default ShowTags;
 
 export async function getStaticProps() {
+  const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const posts = loadVeliteData("posts.json");
   const booknotes = loadVeliteData("booknotes.json");
   const pages = loadVeliteData("pages.json");

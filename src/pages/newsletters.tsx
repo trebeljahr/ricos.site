@@ -6,7 +6,7 @@ import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { CommonMetadata } from "src/@types";
 import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
-import { loadVeliteData } from "src/lib/loadVeliteData";
+
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type Props = {
@@ -97,6 +97,7 @@ const Newsletters = ({ newsletterData, seo }: Props) => {
 export default Newsletters;
 
 export const getStaticProps = async () => {
+  const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const newsletters = loadVeliteData("newsletters.json");
   const newsletterData = extractAndSortMetadata(newsletters).map(
     (newsletter: CommonMetadata) => ({

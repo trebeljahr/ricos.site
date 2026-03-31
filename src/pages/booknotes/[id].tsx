@@ -9,7 +9,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import type { Booknote } from "@velite";
 import { FaInfo } from "@components/Icons";
-import { loadVeliteData } from "src/lib/loadVeliteData";
+
 import { byOnlyPublished } from "src/lib/utils/filters";
 
 type Props = {
@@ -136,6 +136,7 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
+  const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const booknotes = loadVeliteData("booknotes.json");
   const booknote = booknotes
     .filter(byOnlyPublished)
@@ -149,6 +150,7 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
+  const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const booknotes = loadVeliteData("booknotes.json");
   const paths = booknotes.filter(byOnlyPublished).map((book: Booknote) => {
     return {

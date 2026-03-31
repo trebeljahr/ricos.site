@@ -15,7 +15,7 @@ import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Post } from "@velite";
 import { ReactNode } from "react";
-import { loadVeliteData } from "src/lib/loadVeliteData";
+
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { getRandom } from "src/lib/math/getRandom";
@@ -104,6 +104,7 @@ export default function PostComponent({ post, morePosts }: BlogProps) {
 }
 
 export async function getStaticPaths() {
+  const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const posts = loadVeliteData("posts.json");
   const paths = posts
     .filter(byOnlyPublished)
@@ -125,6 +126,7 @@ export async function getStaticPaths() {
 type Params = { params: { id: string } };
 
 export async function getStaticProps({ params }: Params) {
+  const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const posts = loadVeliteData("posts.json");
   const post = posts
     .find((post: Post) => post.slug === params.id);

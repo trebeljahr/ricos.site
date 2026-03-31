@@ -13,7 +13,7 @@ import { ReactNode } from "react";
 import { byDate } from "src/lib/utils/sorting";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { replaceUndefinedWithNull } from "src/lib/utils/replaceUndefinedWithNull";
-import { loadVeliteData } from "src/lib/loadVeliteData";
+
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type TravelBlogProps = {
@@ -109,6 +109,7 @@ export default function PostComponent({
 type Params = { params: { storyName: string; tripName: string } };
 
 export async function getStaticPaths() {
+  const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const travelblogs = loadVeliteData("travelblogs.json");
   const paths: Params[] = extractAndSortMetadata(travelblogs).map(
     ({ slug, parentFolder }: any) => ({
@@ -128,6 +129,7 @@ export async function getStaticPaths() {
 export async function getStaticProps({
   params: { storyName, tripName },
 }: Params) {
+  const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const travelblogs: Travelblog[] = loadVeliteData("travelblogs.json");
   const stories = travelblogs
     .filter(byOnlyPublished)

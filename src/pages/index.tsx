@@ -8,7 +8,7 @@ import type { SectionDescription } from "@velite";
 import Link from "next/link";
 import { type CommonMetadata } from "src/@types";
 import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
-import { loadVeliteData } from "src/lib/loadVeliteData";
+
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 const IndexPage = ({ seo, ...props }: Props) => {
@@ -164,6 +164,7 @@ type Props = {
 };
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
+  const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const travelblogs = loadVeliteData("travelblogs.json");
   const posts = loadVeliteData("posts.json");
   const newsletters = loadVeliteData("newsletters.json");

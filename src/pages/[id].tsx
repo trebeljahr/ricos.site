@@ -4,7 +4,7 @@ import { ToTopButton } from "@components/ToTopButton";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { MDXContent } from "@components/MDXContent";
-import { loadVeliteData } from "src/lib/loadVeliteData";
+
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import dynamic from "next/dynamic";
@@ -60,6 +60,7 @@ type Params = {
 };
 
 export async function getStaticPaths() {
+  const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const pages: PageType[] = loadVeliteData("pages.json");
   return {
     paths: pages.map<Params>(({ slug }: PageType) => ({
@@ -70,6 +71,7 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }: Params) {
+  const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const pages: PageType[] = loadVeliteData("pages.json");
   const page = pages.find((page: PageType) => page.slug === params.id);
 

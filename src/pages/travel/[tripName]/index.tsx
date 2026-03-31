@@ -7,7 +7,7 @@ import { CommonMetadata } from "src/@types";
 import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { loadVeliteData } from "src/lib/loadVeliteData";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
-import { travelingStoriesMetaRaw, travelingStoryNames } from "..";
+import { travelingStoriesMetaRaw, getTravelingStoryNames } from "..";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
 type Props = {
@@ -78,7 +78,7 @@ type Params = {
 
 export const getStaticPaths = async () => {
   return {
-    paths: travelingStoryNames.map<Params>((post) => ({
+    paths: getTravelingStoryNames().map<Params>((post) => ({
       params: { tripName: post },
     })),
     fallback: false,

@@ -133,19 +133,16 @@ const TravelBlogs = ({ cardContent, seo }: Props) => {
 
 export default TravelBlogs;
 
-const _travelblogs = loadVeliteData("travelblogs.json");
+export function getTravelingStoryNames(): string[] {
+  const travelblogs = loadVeliteData("travelblogs.json");
+  return [
+    ...travelblogs.filter(byOnlyPublished).reduce((agg: Set<string>, current: any) => {
+      agg.add(current.parentFolder);
+      return agg;
+    }, new Set<string>()),
+  ];
+}
 
-export const travelingStoryNames: string[] = [
-  ..._travelblogs.filter(byOnlyPublished).reduce((agg: Set<string>, current: any) => {
-    agg.add(current.parentFolder);
-    return agg;
-  }, new Set<string>()),
-];
-
-export const travelingStoryNamesMap: Record<string, any> = _travelblogs.reduce((agg: Record<string, any>, current: any) => {
-  agg[current.parentFolder] = current.path.split("/").at(-2);
-  return agg;
-}, {} as Record<string, any>);
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
   const travelblogs: any[] = loadVeliteData("travelblogs.json");
@@ -176,7 +173,7 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
   for (const [key, val] of entries) {
     travelingStoriesMeta[key] = val;
   }
-  const cardContent = travelingStoryNames
+  const cardContent = getTravelingStoryNames()
     .map((story) => {
       const meta = travelingStoriesMeta[story] || {
         cover: { src: "", alt: "default cover" },

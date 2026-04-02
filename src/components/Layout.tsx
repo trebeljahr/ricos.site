@@ -16,6 +16,9 @@ type Props = {
   fullScreen?: boolean;
   leftSmallNavbar?: boolean;
   withProgressBar?: boolean;
+  ogType?: "website" | "article";
+  articlePublishedTime?: string;
+  noindex?: boolean;
 };
 
 const Layout = ({
@@ -28,6 +31,9 @@ const Layout = ({
   imageAlt,
   leftSmallNavbar = false,
   withProgressBar = false,
+  ogType = "website",
+  articlePublishedTime,
+  noindex = false,
 }: Props) => {
   const properTitle = toTitleCase(title);
 
@@ -38,6 +44,7 @@ const Layout = ({
         title={properTitle}
         url={url}
         keywords={keywords}
+        noindex={noindex}
       />
       <OpenGraph
         title={properTitle}
@@ -45,6 +52,8 @@ const Layout = ({
         url={url}
         image={image}
         imageAlt={imageAlt}
+        ogType={ogType}
+        articlePublishedTime={articlePublishedTime}
       />
       {leftSmallNavbar ? (
         <LeftSmallNavbar />

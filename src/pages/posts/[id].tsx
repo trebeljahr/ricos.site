@@ -1,12 +1,13 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ImageWithLoader } from "@components/ImageWithLoader";
+import { JsonLd, BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import dynamic from "next/dynamic";
 
 const MDXContentWithDemos = dynamic(
   () => import("@components/MDXContentWithDemos").then((m) => m.MDXContentWithDemos),
-  { ssr: false }
+  { ssr: true }
 );
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { ReadMore } from "@components/MoreStories";
@@ -18,7 +19,7 @@ import { ReactNode } from "react";
 
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { byOnlyPublished } from "src/lib/utils/filters";
-import { getRandom } from "src/lib/math/getRandom";
+import { getRelatedContent } from "src/lib/utils/getRelatedContent";
 
 type Props = {
   children: ReactNode;
@@ -46,16 +47,35 @@ export const BlogLayout = ({
   },
 }: Props) => {
   const url = `posts/${slug}`;
+  const fullTitle = seoTitle || title + " – " + subtitle;
   return (
     <Layout
       description={metaDescription}
-      title={seoTitle || title + " – " + subtitle}
+      title={fullTitle}
       image={seoOgImage || cover.src}
       url={url}
       keywords={seoKeywords.length > 0 ? seoKeywords : tags.split(",")}
       imageAlt={seoOgImageAlt || cover.alt}
       withProgressBar={true}
+      ogType="article"
+      articlePublishedTime={date}
     >
+      <JsonLd
+        title={fullTitle}
+        description={metaDescription}
+        url={url}
+        image={seoOgImage || cover.src}
+        imageAlt={seoOgImageAlt || cover.alt}
+        datePublished={date}
+        type="article"
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Posts", url: "/posts" },
+          { name: title, url: `/${url}` },
+        ]}
+      />
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <section>
           <BreadCrumbs path={url} />
@@ -130,11 +150,8 @@ export async function getStaticProps({ params }: Params) {
   const posts = loadVeliteData("posts.json");
   const post = posts
     .find((post: Post) => post.slug === params.id);
-  const otherPosts = extractAndSortMetadata(posts).filter(
-    (post: any) => post.slug !== params.id
-  );
-
-  const morePosts = getRandom(otherPosts, 3);
+  const publishedPosts = extractAndSortMetadata(posts);
+  const morePosts = getRelatedContent(post, publishedPosts, 3);
 
   return { props: { post, morePosts } };
 }

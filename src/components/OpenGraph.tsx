@@ -10,6 +10,7 @@ interface OpenGraphProps {
   articleSection?: string;
   articlePublishedTime?: string;
   imageAlt?: string;
+  ogType?: "website" | "article";
 }
 
 export const OpenGraph: FC<OpenGraphProps> = ({
@@ -20,6 +21,7 @@ export const OpenGraph: FC<OpenGraphProps> = ({
   articleSection: section,
   articlePublishedTime: publishedTime,
   imageAlt = "",
+  ogType = "website",
 }) => {
   const url = completeUrl(providedLinkUrl);
   const imageUrl = nextImageUrl(providedImageUrl, 1080);
@@ -29,10 +31,16 @@ export const OpenGraph: FC<OpenGraphProps> = ({
       {title && <meta property="og:title" content={title} />}
       {description && <meta property="og:description" content={description} />}
       {url && <meta property="og:url" content={url} />}
-      {imageUrl && <meta property="og:image" content={imageUrl} />}
+      {imageUrl && (
+        <>
+          <meta property="og:image" content={imageUrl} />
+          <meta property="og:image:width" content="1080" />
+          <meta property="og:image:type" content="image/webp" />
+        </>
+      )}
       <meta property="og:locale" content="en_US" />
       <meta property="og:site_name" content={tld} />
-      <meta property="og:type" content="website" />
+      <meta property="og:type" content={ogType} />
       <meta property="article:author" content={"Rico Trebeljahr"} />
 
       {section && <meta property="article:section" content={section} />}

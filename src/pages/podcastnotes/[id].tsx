@@ -1,5 +1,6 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ExternalLink } from "@components/ExternalLink";
+import { JsonLd, BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
@@ -24,7 +25,25 @@ const PodcastnoteComponent = ({ podcastnote }: Props) => {
       withProgressBar={true}
       image={podcastnote.cover.src}
       imageAlt={podcastnote.cover.alt}
+      ogType="article"
+      articlePublishedTime={podcastnote.date}
     >
+      <JsonLd
+        title={podcastnote.seoTitle || podcastnote.displayTitle}
+        description={podcastnote.metaDescription}
+        url={url}
+        image={podcastnote.cover.src}
+        imageAlt={podcastnote.cover.alt}
+        datePublished={podcastnote.date}
+        type="article"
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Podcast Notes", url: "/podcastnotes" },
+          { name: podcastnote.title, url: `/${url}` },
+        ]}
+      />
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
         <MetadataDisplay

@@ -1,7 +1,9 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ImageWithLoader } from "@components/ImageWithLoader";
+import { JsonLd, BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
+import { RelatedContent } from "@components/RelatedContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
@@ -16,10 +18,13 @@ import { replaceUndefinedWithNull } from "src/lib/utils/replaceUndefinedWithNull
 
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
+type RelatedItem = { title: string; link: string; excerpt?: string };
+
 type TravelBlogProps = {
   post: Travelblog;
   nextSlug: string | null;
   previousSlug: string | null;
+  relatedStories: RelatedItem[];
 };
 
 interface LayoutProps extends TravelBlogProps {
@@ -56,7 +61,26 @@ export const TravelBlogLayout = ({
       url={url}
       keywords={seoKeywords.length > 0 ? seoKeywords : ["travel", "blog", "adventure", "stories", ...tags]}
       withProgressBar={true}
+      ogType="article"
+      articlePublishedTime={date}
     >
+      <JsonLd
+        title={seoTitle || title}
+        description={metaDescription}
+        url={url}
+        image={seoOgImage || cover?.src}
+        imageAlt={seoOgImageAlt || cover?.alt}
+        datePublished={date}
+        type="article"
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Travel", url: "/travel" },
+          { name: parentFolder, url: `/travel/${parentFolder}` },
+          { name: title, url: `/${url}` },
+        ]}
+      />
       <main className="py-20 px-3  max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
         <MetadataDisplay date={date} readingTime={readingTime} />
@@ -81,6 +105,7 @@ export const TravelBlogLayout = ({
         <article className="mx-auto max-w-prose">{children}</article>
 
         <footer>
+          <RelatedContent items={relatedStories} heading="More travel stories" />
           <ToTopButton />
           <NewsletterForm />
           <NextAndPrevArrows nextPost={nextSlug} prevPost={previousSlug} />
@@ -94,12 +119,14 @@ export default function PostComponent({
   post,
   previousSlug,
   nextSlug,
+  relatedStories,
 }: TravelBlogProps) {
   return (
     <TravelBlogLayout
       post={post}
       previousSlug={previousSlug}
       nextSlug={nextSlug}
+      relatedStories={relatedStories}
     >
       <MDXContent source={post.content} />
     </TravelBlogLayout>
@@ -130,9 +157,10 @@ export async function getStaticProps({
   params: { storyName, tripName },
 }: Params) {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
+  const { getRelatedContent } = await import("src/lib/utils/getRelatedContent");
   const travelblogs: Travelblog[] = loadVeliteData("travelblogs.json");
-  const stories = travelblogs
-    .filter(byOnlyPublished)
+  const allPublished = travelblogs.filter(byOnlyPublished);
+  const stories = allPublished
     .sort(byDate)
     .reverse()
     .filter(({ parentFolder }) => tripName === parentFolder);
@@ -146,11 +174,26 @@ export async function getStaticProps({
   const previousSlug = prevIndex >= 0 ? stories[prevIndex].slug : null;
   const nextSlug = nextIndex < stories.length ? stories[nextIndex].slug : null;
 
+  // Related stories from OTHER trips (cross-trip discovery)
+  const otherTripStories = allPublished.filter(
+    ({ parentFolder }) => parentFolder !== tripName
+  );
+  const relatedStories = getRelatedContent(
+    travelingStory,
+    otherTripStories,
+    3
+  ).map((s: Travelblog) => ({
+    title: s.title,
+    link: s.link,
+    excerpt: s.excerpt?.slice(0, 120) + "...",
+  }));
+
   return {
     props: {
       post: replaceUndefinedWithNull(travelingStory),
       nextSlug,
       previousSlug,
+      relatedStories,
     },
   };
 }

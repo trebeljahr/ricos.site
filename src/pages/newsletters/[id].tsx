@@ -1,20 +1,25 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ImageWithLoader } from "@components/ImageWithLoader";
+import { JsonLd, BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";
+import { RelatedContent } from "@components/RelatedContent";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Newsletter as NewsletterType } from "@velite";
 
 import { byOnlyPublished } from "src/lib/utils/filters";
 
+type RelatedItem = { title: string; link: string; excerpt?: string };
+
 type Props = {
   newsletter: NewsletterType;
   nextPost: null | number;
   prevPost: null | number;
+  relatedNewsletters: RelatedItem[];
 };
 
 const Newsletter = ({
@@ -37,6 +42,7 @@ const Newsletter = ({
   },
   nextPost,
   prevPost,
+  relatedNewsletters,
 }: Props) => {
   const newsletterTag = "Live and Learn #" + number;
   const fullTitle = seoTitle || title;
@@ -51,7 +57,25 @@ const Newsletter = ({
       image={seoOgImage || cover.src}
       imageAlt={seoOgImageAlt || cover.alt}
       withProgressBar={true}
+      ogType="article"
+      articlePublishedTime={date}
     >
+      <JsonLd
+        title={fullTitle}
+        description={metaDescription}
+        url={url}
+        image={seoOgImage || cover.src}
+        imageAlt={seoOgImageAlt || cover.alt}
+        datePublished={date}
+        type="article"
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Newsletters", url: "/newsletters" },
+          { name: `#${number}`, url: `/${url}` },
+        ]}
+      />
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs
           path={url}
@@ -86,6 +110,7 @@ const Newsletter = ({
         </article>
 
         <footer>
+          <RelatedContent items={relatedNewsletters} heading="More from Live and Learn" />
           <NextAndPrevArrows nextPost={nextPost} prevPost={prevPost} />
           <ToTopButton />
         </footer>
@@ -104,8 +129,10 @@ type Params = {
 
 export async function getStaticProps({ params }: Params) {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
+  const { getRelatedContent } = await import("src/lib/utils/getRelatedContent");
   const rawNewsletters = loadVeliteData("newsletters.json");
   const newsletters = (rawNewsletters.default || rawNewsletters) as NewsletterType[];
+  const published = newsletters.filter(byOnlyPublished);
   const newsletter = newsletters.find(
     ({ slugTitle }) => slugTitle === params.id,
   );
@@ -118,11 +145,20 @@ export async function getStaticProps({ params }: Params) {
   let nextPost = newsletters.find((nl) => parseInt(String(nl.number)) === next);
   let prevPost = newsletters.find((nl) => parseInt(String(nl.number)) === prev);
 
+  const relatedNewsletters = getRelatedContent(newsletter, published, 3).map(
+    (nl: NewsletterType) => ({
+      title: nl.title,
+      link: nl.link,
+      excerpt: nl.excerpt?.slice(0, 120) + "...",
+    })
+  );
+
   return {
     props: {
       newsletter,
       nextPost: nextPost?.slugTitle || null,
       prevPost: prevPost?.slugTitle || null,
+      relatedNewsletters,
     },
   };
 }

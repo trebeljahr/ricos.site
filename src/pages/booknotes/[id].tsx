@@ -1,59 +1,22 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { BookCover } from "@components/CoverImage";
 import { ExternalLink } from "@components/ExternalLink";
+import { JsonLd, BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
+import { RelatedContent } from "@components/RelatedContent";
 import { ToTopButton } from "@components/ToTopButton";
-import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import type { Booknote } from "@velite";
-import { FaInfo } from "@components/Icons";
 
 import { byOnlyPublished } from "src/lib/utils/filters";
 
+type RelatedItem = { title: string; link: string; excerpt?: string };
+
 type Props = {
   booknote: Booknote;
-};
-
-const AmazonLinkDisclaimer = () => {
-  return (
-    <div className="ml-2 group relative inline-block dark:text-white">
-      <button
-        type="button"
-        className="rounded-full p-2 bg-slate-200 dark:bg-gray-800"
-      >
-        <FaInfo className="w-3 h-3" />
-      </button>
-
-      <div className="invisible absolute left-0 -mt-[2px] flex flex-col group-focus-within:visible group-active:visible">
-        <div className="ml-1 -mb-px inline-block overflow-hidden">
-          <div className="h-3 w-3 origin-bottom-left rotate-45 transform  bg-slate-200 dark:bg-gray-800"></div>
-        </div>
-
-        <div className="flex w-44 flex-col rounded-md bg-slate-200 dark:bg-gray-800 p-3">
-          <span className="text-xs">
-            This is an affiliate link. If you buy the book through this link, I
-            will get a small commission. This does not affect the price you pay
-            🤗
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const BuyItOnAmazon = ({ link }: { link: string }) => {
-  if (!link) {
-    return null;
-  }
-
-  return (
-    <div className="flex items-center">
-      <ExternalLink href={link}>Buy it on Amazon</ExternalLink>
-      <AmazonLinkDisclaimer />
-    </div>
-  );
+  relatedBooks: RelatedItem[];
 };
 
 const BooknoteComponent = ({ booknote }: Props) => {
@@ -75,7 +38,7 @@ const BooknotesWithDefault = ({ booknote }: Props) => {
   return <BooknoteComponent booknote={booknote} />;
 };
 
-const Book = ({ booknote }: Props) => {
+const Book = ({ booknote, relatedBooks }: Props) => {
   const url = `booknotes/${booknote.slug}`;
   return (
     <Layout
@@ -86,7 +49,28 @@ const Book = ({ booknote }: Props) => {
       image={booknote.seoOgImage || booknote.cover.src}
       imageAlt={booknote.seoOgImageAlt || booknote.cover.alt}
       withProgressBar={true}
+      ogType="article"
+      articlePublishedTime={booknote.date}
+      noindex={!booknote.summary}
     >
+      <JsonLd
+        title={booknote.seoTitle || booknote.title}
+        description={booknote.metaDescription}
+        url={url}
+        image={booknote.seoOgImage || booknote.cover.src}
+        imageAlt={booknote.seoOgImageAlt || booknote.cover.alt}
+        datePublished={booknote.date}
+        type="book"
+        bookAuthor={booknote.bookAuthor}
+        bookRating={booknote.rating}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Book Notes", url: "/booknotes" },
+          { name: booknote.title, url: `/${url}` },
+        ]}
+      />
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
         <MetadataDisplay
@@ -108,17 +92,21 @@ const Book = ({ booknote }: Props) => {
                 <p className="mt-2! mb-0!">{booknote.subtitle}</p>
                 <p className="mt-0! mb-2!">by {booknote.bookAuthor}</p>
                 <p className="mt-12! mb-2!">🏆 Rated: {booknote.rating}/10</p>
-                <BuyItOnAmazon link={booknote.amazonAffiliateLink} />
+                {booknote.goodreadsLink && (
+                  <ExternalLink href={booknote.goodreadsLink}>
+                    View on Goodreads
+                  </ExternalLink>
+                )}
               </hgroup>
             </header>
           </section>
           <section>
             <BooknotesWithDefault booknote={booknote} />
-            <BuyItOnAmazon link={booknote.amazonAffiliateLink} />
           </section>
         </article>
 
         <footer>
+          <RelatedContent items={relatedBooks} heading="More book notes" />
           <NewsletterForm />
           <ToTopButton />
         </footer>
@@ -137,14 +125,23 @@ type Params = {
 
 export async function getStaticProps({ params }: Params) {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
+  const { getRelatedContent } = await import("src/lib/utils/getRelatedContent");
   const booknotes = loadVeliteData("booknotes.json");
-  const booknote = booknotes
-    .filter(byOnlyPublished)
-    .find(({ slug }: Booknote) => params.id === slug);
+  const published = booknotes.filter(byOnlyPublished);
+  const booknote = published.find(({ slug }: Booknote) => params.id === slug);
+
+  const relatedBooks = getRelatedContent(booknote, published, 4).map(
+    (b: Booknote) => ({
+      title: `${b.title} by ${b.bookAuthor}`,
+      link: b.link,
+      excerpt: b.excerpt?.slice(0, 120) + "...",
+    })
+  );
 
   return {
     props: {
       booknote,
+      relatedBooks,
     },
   };
 }

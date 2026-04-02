@@ -1,6 +1,7 @@
 import type { Page as PageType } from "@velite";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
+import { JsonLd, BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { MDXContent } from "@components/MDXContent";
@@ -29,7 +30,24 @@ export default function Page({ page }: Props) {
       url={page.slug}
       keywords={page.seoKeywords.length > 0 ? page.seoKeywords : page.tags.split(",")}
       withProgressBar={true}
+      ogType="article"
+      articlePublishedTime={page.date}
     >
+      <JsonLd
+        title={page.seoTitle || title}
+        description={page.metaDescription}
+        url={page.slug}
+        image={page.seoOgImage || cover.src}
+        imageAlt={page.seoOgImageAlt || cover.alt}
+        datePublished={page.date}
+        type="article"
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "/" },
+          { name: title, url: `/${page.slug}` },
+        ]}
+      />
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose">
           <BreadCrumbs path={page.slug} />

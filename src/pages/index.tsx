@@ -1,6 +1,7 @@
 import { ExternalLink } from "@components/ExternalLink";
 import { FancyLink } from "@components/FancyUI";
 import { HomePageSection } from "@components/HomePageSection";
+import { WebSiteJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { WavingHand } from "@components/WavingHand";
@@ -22,6 +23,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
       url="/"
       fullScreen={true}
     >
+      <WebSiteJsonLd />
       <main className="mt-32">
         <section className="px-3 pb-20">
           <div className="mx-auto max-w-(--breakpoint-lg)">
@@ -35,6 +37,13 @@ const IndexPage = ({ seo, ...props }: Props) => {
                 where I write, publish my newsletter, collect booknotes, quotes,
                 traveling stories, and photography.
               </span>
+              <p>
+                New here?{" "}
+                <Link href="/start-here">
+                  Start here
+                </Link>{" "}
+                for a guided tour of the best stuff on this site.
+              </p>
               <p>
                 Wanna know what I like on the internet? I have a{" "}
                 <Link as={`/needlestack`} href="/needlestack">

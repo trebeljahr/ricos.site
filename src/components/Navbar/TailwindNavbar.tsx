@@ -1,4 +1,5 @@
 import { ProgressBar } from "@components/ProgressBar";
+import { SiteSearch } from "@components/SiteSearch";
 import {
   Disclosure,
   DisclosureButton,
@@ -51,13 +52,15 @@ export function TailwindNavbar({
         >
           <nav className="mx-auto px-3 xl:px-10 pb-1 flex items-center justify-between">
             <RicosSiteBanner />
-            <div className="flex xl:hidden">
+            <div className="flex xl:hidden items-center gap-1">
+              <SiteSearch />
               <DarkModeHandler />
               <MobileVersion {...{ open, close }} />
             </div>
 
-            <div className="hidden xl:flex">
+            <div className="hidden xl:flex items-center">
               <DesktopVersion />
+              <SiteSearch />
               <DarkModeHandler />
             </div>
           </nav>

@@ -497,6 +497,7 @@ export default defineConfig({
           summary: s.boolean(),
           detailedNotes: s.boolean(),
           amazonAffiliateLink: s.string(),
+          goodreadsLink: s.string(),
         })
         .transform((data) => ({ ...data, contentType: "Booknote" }))
         .transform(addLinksAndSlugTransformer("booknotes"))

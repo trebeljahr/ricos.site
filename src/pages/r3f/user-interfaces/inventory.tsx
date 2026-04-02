@@ -49,7 +49,7 @@ const defaultSeoInfo = {
   title: "Inventory Demo",
   description:
     "In this demo I set up an inventory system with React and a playground to add and remove as well as equip items.",
-  url: "/r3f/scenes/inventory",
+  url: "/r3f/user-interfaces/inventory",
   keywords: [
     "threejs",
     "react-three-fiber",
@@ -217,5 +217,5 @@ const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
 };
 
 export function getStaticProps() {
-  return { props: { seo: getSeoInfo("/r3f/scenes/inventory") } };
+  return { props: { seo: getSeoInfo("/r3f/user-interfaces/inventory") } };
 }

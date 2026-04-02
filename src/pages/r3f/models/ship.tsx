@@ -16,7 +16,7 @@ const defaultSeoInfo = {
   title: "Ship Demo",
   description:
     "A simple ship model swimming in the default Drei ocean shader. One of my first demos built with R3F and three.js",
-  url: "/r3f/models/Ship",
+  url: "/r3f/models/ship",
   keywords: [
     "threejs",
     "react-three-fiber",
@@ -64,5 +64,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export async function getStaticProps() {
-  return { props: { title: "Ship Demo" , seo: getSeoInfo("/r3f/models/Ship") } };
+  return { props: { title: "Ship Demo" , seo: getSeoInfo("/r3f/models/ship") } };
 }

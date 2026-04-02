@@ -125,13 +125,39 @@ async function customRedirects() {
       permanent: true,
     },
     {
-      source: "/diatoms",
-      destination: "/posts/diatoms",
+      source: "/posts/my-productivity-systems",
+      destination: "/posts/my-productivity-system",
+      permanent: true,
+    },
+    // Short links for key pages
+    {
+      source: "/plasmaball",
+      destination: "/r3f/scenes/plasma-ball",
       permanent: true,
     },
     {
-      source: "/posts/my-productivity-systems",
-      destination: "/posts/my-productivity-system",
+      source: "/plasma",
+      destination: "/r3f/scenes/plasma-ball",
+      permanent: true,
+    },
+    {
+      source: "/plasma-ball",
+      destination: "/r3f/scenes/plasma-ball",
+      permanent: true,
+    },
+    {
+      source: "/photos",
+      destination: "/photography",
+      permanent: true,
+    },
+    {
+      source: "/needles",
+      destination: "/needlestack",
+      permanent: true,
+    },
+    {
+      source: "/start",
+      destination: "/start-here",
       permanent: true,
     },
   ];

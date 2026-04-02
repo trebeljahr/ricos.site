@@ -1,6 +1,6 @@
 import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasShader";
-import Layout from "@components/Layout";
-import { Canvas } from "@react-three/fiber";
+import { SeoInfo, SceneWithLoadingState } from "@components/dom/ThreeFiberLayout";
+import { NavbarR3F } from "@components/dom/NavbarR3F";
 import controllableShaderArt from "@shaders/controllableShaderArt.glsl";
 import { AnimatePresence, motion } from "motion/react";
 import { Leva, useControls } from "leva";
@@ -9,8 +9,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaCheck, FaInfo, FaShareAlt, FiX } from "@components/Icons";
 import { IUniform } from "three";
-import { recording } from "@r3f/ChunkGenerationSystem/config";
-import { SceneWithLoadingState } from "@components/dom/ThreeFiberLayout";
+import { nav, recording } from "@r3f/ChunkGenerationSystem/config";
 
 function ShareWithOthersButton() {
   const handleClick = async () => {
@@ -31,15 +30,15 @@ function ShareWithOthersButton() {
     <button
       disabled={disabled}
       onClick={handleClickAndDisable}
-      className="w-fit h-fit absolute p-3 bottom-2 right-2 z-10 flex place-items-center bg-white dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full"
+      className={`w-fit h-fit absolute p-3 bottom-2 right-2 z-10 flex place-items-center bg-gray-900 rounded-full ${disabled ? "cursor-default" : "hover:bg-gray-700"}`}
     >
       {disabled ? (
-        <span className="text-sm flex place-items-center">
+        <span className="text-sm flex place-items-center text-gray-200">
           Copied URL for Sharing{" "}
-          <FaCheck className="ml-5 size-4 text-green-500 dark:text-green-400" />
+          <FaCheck className="ml-5 size-4 text-green-400" />
         </span>
       ) : (
-        <FaShareAlt className="size-4 text-gray-700 dark:text-gray-200" />
+        <FaShareAlt className="size-4 text-gray-200" />
       )}
     </button>
   );
@@ -55,7 +54,7 @@ const InfoButton = () => {
     <>
       <button
         onClick={toggleInfo}
-        className="w-fit h-fit absolute p-3 bottom-2 left-2 z-10 flex place-items-center bg-white dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700  rounded-full"
+        className="w-fit h-fit absolute p-3 bottom-2 left-2 z-10 flex place-items-center bg-gray-900 hover:bg-gray-700  rounded-full"
       >
         <FaInfo className="size-4" />
       </button>
@@ -66,7 +65,7 @@ const InfoButton = () => {
             animate={{ y: 0 }}
             exit={{ y: 472 + 24 }}
             transition={{ duration: 0.4 }}
-            className="absolute bottom-0 left-0 z-10 bg-white dark:bg-gray-900 p-3 px-5 rounded-md"
+            className="absolute bottom-0 left-0 z-10 bg-gray-900 text-gray-200 p-3 px-5 rounded-md"
           >
             <div className="max-w-prose">
               <p className="pr-5">
@@ -149,7 +148,7 @@ const InfoButton = () => {
               </p>
             </div>
             <button
-              className="absolute top-2 right-2 bg-white dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded-full"
+              className="absolute top-2 right-2 bg-gray-900 hover:bg-gray-700 p-2 rounded-full"
               onClick={toggleInfo}
             >
               <FiX className="size-5 " />
@@ -245,15 +244,16 @@ export default function ShaderEditorPage() {
   );
 
   return (
-    <Layout
-      title="Shader Art Demo"
-      description="A shader art demo that allows you to control a beautiful shader with sliders."
-      url="/r3f/shader-art-demo"
-      keywords={[]}
-      image="/assets/blog/shader-art-demo.png"
-      imageAlt="Shader Art Demo"
-      leftSmallNavbar
-    >
+    <>
+      <SeoInfo
+        title="Shader Art Demo"
+        description="A shader art demo that allows you to control a beautiful shader with sliders."
+        url="/r3f/scenes/shader-art-demo"
+        keywords={[]}
+        image="/assets/blog/shader-art-demo.png"
+        imageAlt="Shader Art Demo"
+      />
+      {nav && <NavbarR3F />}
       <Leva hidden={recording} />
 
       <div className="w-screen h-screen relative bg-leva-medium dark:bg-leva-dark">
@@ -280,6 +280,6 @@ export default function ShaderEditorPage() {
         {!recording && <ShareWithOthersButton />}
         {!recording && <InfoButton />}
       </div>
-    </Layout>
+    </>
   );
 }

@@ -24,7 +24,7 @@ export const ImageRenderer = ({
 
   return (
     <>
-      <div className="w-full relative my-5 mx-0">
+      <span className="block w-full relative my-5 mx-0">
         <ImageWithLoader
           src={src}
           alt={realAlt}
@@ -34,11 +34,11 @@ export const ImageRenderer = ({
           sizes="(max-width: 768px) calc(100vw-24px), 65ch"
           className="w-full h-full"
         />
-      </div>
+      </span>
       {hasCaption ? (
-        <div className="caption" aria-label={caption}>
+        <span className="block caption" aria-label={caption}>
           {caption}
-        </div>
+        </span>
       ) : null}
     </>
   );

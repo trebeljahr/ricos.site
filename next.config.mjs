@@ -153,12 +153,22 @@ async function customRedirects() {
     },
     {
       source: "/photos",
-      destination: "/photography",
+      destination: "/photography/best-of",
       permanent: true,
     },
     {
       source: "/needles",
       destination: "/needlestack",
+      permanent: true,
+    },
+    {
+      source: "/shader-art",
+      destination: "/r3f/scenes/shader-art-demo",
+      permanent: true,
+    },
+    {
+      source: "/yellow",
+      destination: "/posts/the-best-yellow",
       permanent: true,
     },
     {

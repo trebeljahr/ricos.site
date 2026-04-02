@@ -50,6 +50,7 @@ export const TravelBlogLayout = ({
   },
   nextSlug,
   previousSlug,
+  relatedStories,
 }: LayoutProps) => {
   const url = `travel/${parentFolder}/${slug}`;
   return (
@@ -104,7 +105,7 @@ export const TravelBlogLayout = ({
 
         <article className="mx-auto max-w-prose">{children}</article>
 
-        <footer>
+        <footer className="mx-auto max-w-prose">
           <RelatedContent items={relatedStories} heading="More travel stories" />
           <ToTopButton />
           <NewsletterForm />

@@ -28,9 +28,9 @@ const IndexPage = ({ seo, ...props }: Props) => {
         <section className="px-3 pb-20">
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <div className="max-w-prose">
-              <h2 className="text-4xl">
+              <h1 className="text-4xl">
                 Hi there <WavingHand />
-              </h2>
+              </h1>
               <span>
                 I am Rico Trebeljahr. A programmer, traveler, photographer,
                 writer and fellow human. This is my personal website. It&apos;s

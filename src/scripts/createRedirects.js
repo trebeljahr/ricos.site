@@ -7,12 +7,14 @@ export async function generateRedirects() {
   const newsletters = JSON.parse(
     await readFile(path.join(veliteDir, "newsletters.json"), "utf-8")
   );
-  const posts = JSON.parse(
-    await readFile(path.join(veliteDir, "posts.json"), "utf-8")
-  );
 
-  // Newsletter number → slug redirects (both /newsletters/N and /newsletter/N)
+  // Newsletter number → slug redirects (/N, /newsletters/N, /newsletter/N)
   const newsletterRedirects = newsletters.flatMap(({ number, slugTitle }) => [
+    {
+      source: `/${number}`,
+      destination: `/newsletters/${slugTitle}`,
+      permanent: true,
+    },
     {
       source: `/newsletters/${number}`,
       destination: `/newsletters/${slugTitle}`,
@@ -25,14 +27,5 @@ export async function generateRedirects() {
     },
   ]);
 
-  // Post short links: /slug → /posts/slug
-  const postShortLinks = posts
-    .filter((p) => p.published)
-    .map(({ slug }) => ({
-      source: `/${slug}`,
-      destination: `/posts/${slug}`,
-      permanent: true,
-    }));
-
-  return [...newsletterRedirects, ...postShortLinks];
+  return newsletterRedirects;
 }

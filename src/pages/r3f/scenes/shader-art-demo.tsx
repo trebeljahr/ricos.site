@@ -56,7 +56,7 @@ const InfoButton = () => {
         onClick={toggleInfo}
         className="w-fit h-fit absolute p-3 bottom-2 left-2 z-10 flex place-items-center bg-gray-900 hover:bg-gray-700  rounded-full"
       >
-        <FaInfo className="size-4" />
+        <FaInfo className="size-4 text-gray-200" />
       </button>
       <AnimatePresence>
         {showInfo && (

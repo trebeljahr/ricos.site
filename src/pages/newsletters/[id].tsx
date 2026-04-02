@@ -109,7 +109,7 @@ const Newsletter = ({
           </div>
         </article>
 
-        <footer>
+        <footer className="mx-auto max-w-prose">
           <RelatedContent items={relatedNewsletters} heading="More from Live and Learn" />
           <NextAndPrevArrows nextPost={nextPost} prevPost={prevPost} />
           <ToTopButton />

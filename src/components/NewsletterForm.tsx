@@ -91,7 +91,7 @@ export const NewsletterForm = ({
   );
 
   return (
-    <div className="w-full mt-32">
+    <div className="w-full mt-16">
       {success ? (
         <div className="rounded-md overflow-hidden p-3 py-3 bg-white dark:bg-gray-800 shadow-lg w-full">
           <div className="newsletter-success-ribbon w-full" />

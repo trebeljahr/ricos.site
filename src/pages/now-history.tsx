@@ -1,19 +1,29 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
-import { MDXContent } from "@components/MDXContent";
+import { MarkdownRenderers } from "@components/MarkdownRenderers";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
-import { useState } from "react";
+import { getMDXComponent } from "mdx-bundler/client";
+import { useMemo, useState } from "react";
 
 type NowEntry = {
   date: string;
   commitHash: string;
-  content: string;
+  content: { code: string; frontmatter: Record<string, unknown> } | null;
+  rawContent: string;
 };
 
 type Props = {
   entries: NowEntry[];
+};
+
+const NowMDX = ({ code, frontmatter }: { code: string; frontmatter: Record<string, unknown> }) => {
+  const Component = useMemo(
+    () => getMDXComponent(code, { ...frontmatter, frontmatter }),
+    [code, frontmatter]
+  );
+  return <Component components={MarkdownRenderers} />;
 };
 
 export default function NowHistory({ entries }: Props) {
@@ -40,7 +50,7 @@ export default function NowHistory({ entries }: Props) {
         <article className="mx-auto max-w-prose">
           <BreadCrumbs path="now-history" />
           <h1 className="text-4xl mt-16!">Now Page History</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
+          <div className="text-gray-600 dark:text-gray-400 mb-8">
             Past editions of my{" "}
             <a href="/now" className="text-myBlue hover:underline">
               /now
@@ -48,11 +58,10 @@ export default function NowHistory({ entries }: Props) {
             page, showing what I was focused on at different points in time.
             {entries.length > 0 &&
               ` ${entries.length} snapshots from ${entries[entries.length - 1]?.date} to ${entries[0]?.date}.`}
-          </p>
+          </div>
 
           {entries.length > 0 && (
             <>
-              {/* Timeline scrubber */}
               <div className="mb-10">
                 <label
                   htmlFor="now-slider"
@@ -75,7 +84,6 @@ export default function NowHistory({ entries }: Props) {
                 </div>
               </div>
 
-              {/* Date pills */}
               <div className="flex flex-wrap gap-2 mb-8">
                 {entries.map((entry, i) => (
                   <button
@@ -92,29 +100,34 @@ export default function NowHistory({ entries }: Props) {
                 ))}
               </div>
 
-              {/* Selected entry */}
               <div className="border-l-4 border-myBlue pl-6 mb-8">
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                   Snapshot from{" "}
                   <span className="font-medium text-gray-700 dark:text-gray-200">
                     {selected.date}
                   </span>
-                </p>
+                </div>
                 <div className="prose dark:prose-invert max-w-none">
-                  <MDXContent source={selected.content} />
+                  {selected.content ? (
+                    <NowMDX code={selected.content.code} frontmatter={selected.content.frontmatter} />
+                  ) : (
+                    <pre className="whitespace-pre-wrap font-sans text-base leading-relaxed">
+                      {selected.rawContent}
+                    </pre>
+                  )}
                 </div>
               </div>
             </>
           )}
 
           {entries.length === 0 && (
-            <p className="text-gray-500">
+            <div className="text-gray-500">
               No history available yet. Check back later!
-            </p>
+            </div>
           )}
         </article>
 
-        <footer>
+        <footer className="mx-auto max-w-prose">
           <NewsletterForm />
           <ToTopButton />
         </footer>
@@ -148,13 +161,8 @@ export async function getStaticProps() {
     return { hash, date: date.trim(), message: messageParts.join("|").trim() };
   });
 
-  type Entry = {
-    date: string;
-    commitHash: string;
-    content: { code: string };
-  };
-
-  const entries: Entry[] = [];
+  const entries: NowEntry[] = [];
+  let prevContent = "";
 
   for (const commit of commits) {
     try {
@@ -163,31 +171,24 @@ export async function getStaticProps() {
         { encoding: "utf-8" }
       );
 
-      // Strip frontmatter
       const stripped = rawContent.replace(/^---[\s\S]*?---\n*/, "").trim();
       if (stripped.length < 50) continue;
+      if (stripped === prevContent) continue;
+      prevContent = stripped;
 
-      // Check for duplicate content
-      if (entries.length > 0) {
-        // Simple dedup by checking if content is identical
-        const prevRaw = execSync(
-          `cd "${NOTES_DIR}" && git show "${commits[commits.indexOf(commit) - 1]?.hash || ""}:${NOW_FILE}" 2>/dev/null`,
-          { encoding: "utf-8" }
-        )
-          .replace(/^---[\s\S]*?---\n*/, "")
-          .trim();
-        if (stripped === prevRaw) continue;
+      let content: { code: string; frontmatter: Record<string, unknown> } | null = null;
+      try {
+        const result = await bundleMDX({ source: rawContent });
+        content = { code: result.code, frontmatter: result.frontmatter };
+      } catch (e) {
+        console.error(`Failed to bundle MDX for ${commit.hash.slice(0, 8)} (${commit.date}):`, (e as Error).message?.slice(0, 200));
       }
-
-      // Bundle MDX
-      const { code } = await bundleMDX({
-        source: stripped,
-      });
 
       entries.push({
         date: commit.date.split(" ")[0],
         commitHash: commit.hash.slice(0, 8),
-        content: { code },
+        content,
+        rawContent: stripped,
       });
     } catch {
       continue;

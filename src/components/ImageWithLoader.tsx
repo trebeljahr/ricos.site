@@ -18,14 +18,14 @@ export const ImageWithLoader = ({
   const style = useMemo(() => ({ ...props.style }), [props.style]);
 
   return (
-    <div className="w-full h-full relative">
+    <span className="block w-full h-full relative">
       <Image id={id} {...props} alt={props.alt} onLoad={onLoad} style={style} />
 
       {isSkeleton && (
-        <div className="absolute inset-0 overflow-hidden bg-gray-400 dark:bg-gray-700 cursor-wait w-full h-full">
+        <span className="block absolute inset-0 overflow-hidden bg-gray-400 dark:bg-gray-700 cursor-wait w-full h-full">
           <Sparkles />
-        </div>
+        </span>
       )}
-    </div>
+    </span>
   );
 };

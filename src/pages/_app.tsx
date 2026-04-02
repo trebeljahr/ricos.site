@@ -46,7 +46,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           content="/favicon/browserconfig.xml"
         />
         <meta name="theme-color" content="#000" />
-        <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
+        <link rel="alternate" type="application/rss+xml" href="/rss.xml" title="ricos.site RSS Feed" />
       </Head>
 
       <ThemeProvider attribute="class" enableSystem={false} defaultTheme="dark">

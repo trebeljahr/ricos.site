@@ -310,3 +310,8 @@ code {
     animation: spin 1000ms linear;
   }
 }
+
+[data-site-search] * {
+  list-style: none !important;
+  margin-block: 0 !important;
+}

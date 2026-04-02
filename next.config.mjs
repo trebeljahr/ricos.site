@@ -26,6 +26,12 @@ if (!process.env.VELITE_STARTED && (isDev || isBuild)) {
   const shaders = (await readdir(shaderDir)).filter((f) => f.endsWith(".frag")).map((f) => f.replace(".frag", ""));
   links["Shader Demos"] = shaders.map((name) => ({ name, url: `/r3f/shaders/${name}` }));
   await writeFile(resolve(".velite/r3f-links.json"), JSON.stringify({ links }));
+
+  // Generate search index from velite data
+  const { execSync } = await import("child_process");
+  try {
+    execSync("npx tsx src/scripts/generateSearchIndex.ts", { stdio: "pipe" });
+  } catch {}
 }
 
 /** @type {import('next').NextConfig} */

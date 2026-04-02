@@ -58,7 +58,7 @@ export function TailwindNavbar({
               <MobileVersion {...{ open, close }} />
             </div>
 
-            <div className="hidden xl:flex items-center">
+            <div className="hidden xl:flex items-center gap-2">
               <DesktopVersion />
               <SiteSearch />
               <DarkModeHandler />

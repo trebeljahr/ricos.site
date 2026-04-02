@@ -61,8 +61,17 @@ async function getFuse(): Promise<Fuse<SearchItem>> {
   return fuseInstance;
 }
 
+const useIsMac = () => {
+  const [isMac, setIsMac] = useState(true);
+  useEffect(() => {
+    setIsMac(/(Mac|iPhone|iPod|iPad)/i.test(navigator.platform));
+  }, []);
+  return isMac;
+};
+
 export const SiteSearch = () => {
   const [open, setOpen] = useState(false);
+  const isMac = useIsMac();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchItem[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -143,7 +152,7 @@ export const SiteSearch = () => {
         <FiSearch className="w-4 h-4" />
         <span className="hidden sm:inline">Search</span>
         <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs bg-gray-200 dark:bg-gray-700 rounded">
-          <span className="text-xs">⌘</span>K
+          {isMac ? "⌘" : "Ctrl+"}K
         </kbd>
       </button>
 
@@ -151,11 +160,12 @@ export const SiteSearch = () => {
         open={open}
         onClose={() => setOpen(false)}
         className="relative z-50"
+        data-site-search=""
       >
         <DialogBackdrop className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
 
-        <div className="fixed inset-0 flex items-start justify-center pt-[20vh]">
-          <DialogPanel className="w-full max-w-lg mx-4 bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden">
+        <div className="fixed inset-0 flex items-start justify-center pt-4 sm:pt-[20vh]">
+          <DialogPanel className="not-prose w-full max-w-lg mx-2 sm:mx-4 bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden">
             <div className="flex items-center px-4 border-b border-gray-200 dark:border-gray-700">
               <FiSearch className="w-5 h-5 text-gray-400" />
               <input
@@ -168,15 +178,18 @@ export const SiteSearch = () => {
                 onKeyDown={handleKeyDown}
                 className="w-full px-3 py-4 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none"
               />
-              <kbd className="px-2 py-1 text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 rounded">
+              <button
+                onClick={() => setOpen(false)}
+                className="px-2 py-1 text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+              >
                 ESC
-              </kbd>
+              </button>
             </div>
 
             {results.length > 0 && (
-              <ul className="max-h-80 overflow-y-auto py-2">
+              <div className="max-h-80 overflow-y-auto py-2" role="listbox">
                 {results.map((item, i) => (
-                  <li key={item.link}>
+                  <div key={item.link} role="option" aria-selected={i === selectedIndex}>
                     <button
                       onClick={() => navigate(item.link)}
                       onMouseEnter={() => setSelectedIndex(i)}
@@ -199,14 +212,14 @@ export const SiteSearch = () => {
                         </span>
                       </div>
                       {item.description && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                          {item.description.slice(0, 100)}
-                        </p>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                          {item.description}
+                        </span>
                       )}
                     </button>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             )}
 
             {query.length >= 2 && results.length === 0 && (

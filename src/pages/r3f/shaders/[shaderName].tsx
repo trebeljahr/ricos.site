@@ -16,7 +16,7 @@ export default function Page({
 }) {
   const defaultSeoInfo = {
     title: shaderName || "",
-    description: "A simple shader demo for an implementation of " + shaderName,
+    description: `Interactive ${shaderName} shader demo — a real-time WebGL fragment shader built with React Three Fiber. Explore the code and visuals live in the browser.`,
     url: "/r3f/shaders/" + shaderName,
     keywords: [
       "threejs",

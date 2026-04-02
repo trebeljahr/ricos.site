@@ -35,10 +35,13 @@ export default function SinglePhotographyShowcasePage({
     alt: "a high quality rendering of an old film camera",
   };
 
+  const readableName = turnKebabIntoTitleCase(tripName);
+  const photoCount = images.length;
+
   return (
     <Layout
-      title={`Photography ${tripName}`}
-      description="A page with all my photography."
+      title={`${readableName} Photography – Rico Trebeljahr`}
+      description={`Browse ${photoCount} photos from ${readableName}. Travel photography by Rico Trebeljahr capturing landscapes, people, and moments from around the world.`}
       url={`/photography/${tripName}`}
       image={tripMeta.src}
       imageAlt={tripMeta.alt}

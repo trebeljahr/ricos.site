@@ -5,6 +5,7 @@ interface Props {
   title: string;
   keywords?: string[];
   url: string;
+  noindex?: boolean;
 }
 
 const defaultKeywords = [
@@ -57,12 +58,14 @@ export const Meta = ({
   title,
   keywords = defaultKeywords,
   url,
+  noindex = false,
 }: Props) => {
   return (
     <>
       <Head>
-        <title>{`${title} | ricos.site`}</title>
+        <title>{title}</title>
 
+        {noindex && <meta name="robots" content="noindex, nofollow" />}
         <link rel="canonical" href={completeUrl(url)} />
 
         <meta name="description" content={description} />

@@ -109,7 +109,7 @@ export default function Photography({ trips, seo }: Props) {
   return (
     <Layout
       title={seo?.metaTitle || "Photography"}
-      description={seo?.metaDescription || "A page with all my photography."}
+      description={seo?.metaDescription || "Travel photography by Rico Trebeljahr — landscapes, people, and moments from journeys across Asia, Europe, the Caribbean, and South America."}
       url={url}
       fullScreen={true}
       image={seo?.ogImage || "/assets/blog/photography.png"}

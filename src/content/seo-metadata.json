@@ -1,7 +1,7 @@
 {
   "/booknotes/12-rules-for-life": {
     "metaTitle": "12 Rules for Life – Key Takeaways & Book Notes",
-    "metaDescription": "Key lessons from Jordan Peterson on finding meaning through responsibility, order, and personal growth.",
+    "metaDescription": "Key lessons and takeaways from Jordan Peterson's 12 Rules for Life on finding meaning through responsibility, order, confronting chaos, and personal growth.",
     "ogImage": "/assets/book-covers/12-rules-for-life.jpg",
     "ogImageAlt": "12 Rules for Life book cover",
     "keywords": [
@@ -69,7 +69,7 @@
   },
   "/booknotes/algorithms-to-live-by": {
     "metaTitle": "Algorithms to Live By – Key Takeaways & Book Notes",
-    "metaDescription": "How computer science algorithms can solve everyday human problems. Notes on the book by Brian Christian.",
+    "metaDescription": "How computer science algorithms like optimal stopping, caching, and sorting can solve everyday human problems. Book notes on Brian Christian and Tom Griffiths.",
     "ogImage": "/assets/book-covers/algorithms-to-live-by.jpg",
     "ogImageAlt": "Algorithms to Live By book cover",
     "keywords": [
@@ -302,7 +302,7 @@
   },
   "/booknotes/bhagavad-gita": {
     "metaTitle": "Bhagavad Gita – Book Notes & Key Takeaways",
-    "metaDescription": "Ancient wisdom on duty, action, and self-realization from one of the most influential spiritual texts.",
+    "metaDescription": "Book notes on the Bhagavad Gita, one of the most influential spiritual texts ever written. Ancient wisdom on duty, selfless action, and the path to self-realization.",
     "ogImage": "/assets/book-covers/bhagavad-gita.jpg",
     "ogImageAlt": "Bhagavad Gita book cover",
     "keywords": [
@@ -462,7 +462,7 @@
     ]
   },
   "/booknotes/complexity": {
-    "metaTitle": "Complexity – Book Notes & Summary",
+    "metaTitle": "Complexity by Mitchell Waldrop – Summary & Book Notes",
     "metaDescription": "Notes on Complexity by Mitchell Waldrop. Discover the science of emergence at the edge of order and chaos, from economics to consciousness.",
     "ogImage": "/assets/book-covers/complexity.jpg",
     "ogImageAlt": "Complexity book cover",
@@ -625,7 +625,7 @@
   },
   "/booknotes/einsteins-dreams": {
     "metaTitle": "Einstein's Dreams – Book Notes & Summary",
-    "metaDescription": "Poetic explorations of time through fictional dream worlds. Notes on Alan Lightman's creative novel.",
+    "metaDescription": "Poetic explorations of time through thirty fictional dream worlds imagined by a young Albert Einstein. Summary and notes on Alan Lightman's creative novel.",
     "ogImage": "/assets/book-covers/einsteins-dreams.jpg",
     "ogImageAlt": "Einstein's Dreams book cover",
     "keywords": [
@@ -945,7 +945,7 @@
   },
   "/booknotes/godel-escher-bach": {
     "metaTitle": "Gödel, Escher, Bach – Book Notes & Summary",
-    "metaDescription": "How patterns in math, art, and music reveal the nature of consciousness. Notes on Hofstadter's classic.",
+    "metaDescription": "How intertwining patterns in mathematics, art, and music reveal deep truths about the nature of consciousness and meaning. Notes on Hofstadter's Pulitzer-winning classic.",
     "ogImage": "/assets/book-covers/goedel-escher-bach.jpg",
     "ogImageAlt": "Gödel, Escher, Bach book cover",
     "keywords": [
@@ -1071,7 +1071,7 @@
   },
   "/booknotes/hell-yeah-or-no": {
     "metaTitle": "Hell Yeah or No – Book Notes & Key Takeaways",
-    "metaDescription": "Derek Sivers on simplifying decisions by only saying yes to things that truly excite you.",
+    "metaDescription": "Derek Sivers on simplifying life decisions by only committing to things that truly excite you. Key takeaways and notes on focus, priorities, and intentional living.",
     "ogImage": "/assets/book-covers/hell-yeah-or-no.jpg",
     "ogImageAlt": "Hell Yeah or No book cover",
     "keywords": [
@@ -1232,7 +1232,7 @@
   },
   "/booknotes/influence": {
     "metaTitle": "Influence by Robert Cialdini – Book Notes & Summary",
-    "metaDescription": "Robert Cialdini's six principles of persuasion and how they shape our decisions. Book notes and takeaways.",
+    "metaDescription": "Robert Cialdini's six principles of persuasion — reciprocity, commitment, social proof, authority, liking, and scarcity — and how they shape our everyday decisions.",
     "ogImage": "/assets/book-covers/influence.jpg",
     "ogImageAlt": "Influence book cover",
     "keywords": [
@@ -1340,7 +1340,7 @@
   },
   "/booknotes/life-the-universe-and-everything": {
     "metaTitle": "Life, the Universe and Everything – Book Notes",
-    "metaDescription": "Douglas Adams's third Hitchhiker's Guide adventure. Book notes on cricket, Krikkit, and cosmic absurdity.",
+    "metaDescription": "Douglas Adams's third Hitchhiker's Guide adventure. Book notes on the game of cricket, the warlike Krikkit civilization, and the cosmic absurdity of the universe.",
     "ogImage": "/assets/book-covers/life-the-universe-and-everything.jpg",
     "ogImageAlt": "Life, the Universe and Everything book cover",
     "keywords": [
@@ -1495,7 +1495,7 @@
   },
   "/booknotes/mind-children": {
     "metaTitle": "Mind Children – Summary & Book Notes",
-    "metaDescription": "Hans Moravec's bold predictions about AI, robotics, and the future of human-machine evolution.",
+    "metaDescription": "Hans Moravec's bold predictions about AI, robotics, and the future of human-machine evolution. A visionary look at our technological destiny. Summary and book notes.",
     "ogImage": "/assets/book-covers/mind-children.jpg",
     "ogImageAlt": "Mind Children book cover",
     "keywords": [
@@ -1651,7 +1651,7 @@
   },
   "/booknotes/outlive": {
     "metaTitle": "Outlive by Peter Attia – Summary & Book Notes",
-    "metaDescription": "Peter Attia's science-backed strategies for extending healthspan and preventing chronic disease.",
+    "metaDescription": "Peter Attia's science-backed strategies for extending healthspan through exercise, nutrition, sleep, and emotional health. Summary and key takeaways from Outlive.",
     "ogImage": "/assets/book-covers/outlive.jpg",
     "ogImageAlt": "Outlive book cover",
     "keywords": [
@@ -1758,8 +1758,8 @@
     ]
   },
   "/booknotes/remote": {
-    "metaTitle": "Remote – Summary & Book Notes",
-    "metaDescription": "Jason Fried and DHH's Remote: a practical guide to making remote work succeed, from the creators of Basecamp.",
+    "metaTitle": "Remote by Jason Fried & DHH – Summary & Book Notes",
+    "metaDescription": "Jason Fried and DHH's guide to making remote work succeed. Practical advice on productivity, communication, and distributed teams from the creators of Basecamp.",
     "ogImage": "/assets/book-covers/remote.jpg",
     "ogImageAlt": "Remote book cover",
     "keywords": [
@@ -1776,7 +1776,7 @@
     ]
   },
   "/booknotes/rework": {
-    "metaTitle": "Rework – Summary & Book Notes",
+    "metaTitle": "Rework by Jason Fried & DHH – Summary & Book Notes",
     "metaDescription": "Rework by DHH and Jason Fried: unconventional business advice on building lean companies without bureaucracy, long meetings, or workaholism.",
     "ogImage": "/assets/book-covers/rework.jpg",
     "ogImageAlt": "Rework book cover",
@@ -1811,7 +1811,7 @@
     ]
   },
   "/booknotes/rocheworld": {
-    "metaTitle": "Rocheworld – Summary & Book Notes",
+    "metaTitle": "Rocheworld by Robert L. Forward – Summary & Book Notes",
     "metaDescription": "Robert L. Forward's Rocheworld: a hard sci-fi tale of interstellar exploration, alien contact, and a double planet system with extraordinary physics.",
     "ogImage": "/assets/book-covers/rocheworld.jpg",
     "ogImageAlt": "Rocheworld book cover",
@@ -1846,7 +1846,7 @@
     ]
   },
   "/booknotes/shantaram": {
-    "metaTitle": "Shantaram – Summary & Book Notes",
+    "metaTitle": "Shantaram by Gregory David Roberts – Book Notes",
     "metaDescription": "Gregory David Roberts's Shantaram: a sweeping tale of adventure, love, and redemption set in the slums and underworld of Mumbai, India.",
     "ogImage": "/assets/book-covers/shantaram.jpg",
     "ogImageAlt": "Shantaram book cover",
@@ -1864,7 +1864,7 @@
     ]
   },
   "/booknotes/significant-digits": {
-    "metaTitle": "Significant Digits – Book Notes",
+    "metaTitle": "Significant Digits – Summary & Book Notes",
     "metaDescription": "Notes on Significant Digits: a fan fiction sequel exploring rationality, power, and the complexities of a magical world.",
     "ogImage": "/assets/book-covers/the-book-thief.jpg",
     "ogImageAlt": "Significant Digits book cover",
@@ -1932,7 +1932,7 @@
     ]
   },
   "/booknotes/snow-crash": {
-    "metaTitle": "Snow Crash – Summary & Book Notes",
+    "metaTitle": "Snow Crash by Neal Stephenson – Summary & Book Notes",
     "metaDescription": "Neal Stephenson's Snow Crash: a cyberpunk classic about hackers, the Metaverse, ancient language viruses, and corporate-controlled dystopia.",
     "ogImage": "/assets/book-covers/snow-crash.jpg",
     "ogImageAlt": "Snow Crash book cover",
@@ -1983,7 +1983,7 @@
     ]
   },
   "/booknotes/starquake": {
-    "metaTitle": "Starquake – Summary & Book Notes",
+    "metaTitle": "Starquake by Robert L. Forward – Summary & Book Notes",
     "metaDescription": "Robert L. Forward's Starquake: the sequel to Dragon's Egg, continuing the story of life on a neutron star evolving at incredible speed.",
     "ogImage": "/assets/book-covers/starquake.jpg",
     "ogImageAlt": "Starquake book cover",
@@ -2018,7 +2018,7 @@
     ]
   },
   "/booknotes/structures-or-why-things-dont-fall-down": {
-    "metaTitle": "Structures – Summary & Book Notes",
+    "metaTitle": "Structures by J.E. Gordon – Summary & Book Notes",
     "metaDescription": "J.E. Gordon's Structures: an engaging exploration of engineering, stress, strain, and the hidden science of why buildings and bridges stay standing.",
     "ogImage": "/assets/book-covers/structures-or-why-things-dont-fall-down.jpg",
     "ogImageAlt": "Structures or Why Things Don't Fall Down book cover",
@@ -2317,7 +2317,7 @@
   },
   "/booknotes/the-dictators-handbook": {
     "metaTitle": "The Dictator's Handbook – Summary & Book Notes",
-    "metaDescription": "How political leaders gain and keep power by rewarding key supporters. Notes on the book by Bueno de Mesquita.",
+    "metaDescription": "How political leaders gain and keep power by rewarding key supporters and controlling resources. Book notes on Bruce Bueno de Mesquita and Alastair Smith.",
     "ogImage": "/assets/book-covers/the-dictators-handbook.jpg",
     "ogImageAlt": "The Dictator's Handbook book cover",
     "keywords": [
@@ -2473,7 +2473,7 @@
     ]
   },
   "/booknotes/the-goal": {
-    "metaTitle": "The Goal – Summary & Book Notes",
+    "metaTitle": "The Goal by Eliyahu Goldratt – Summary & Book Notes",
     "metaDescription": "Goldratt's The Goal: a business novel introducing the Theory of Constraints and how to optimize production through bottleneck management.",
     "ogImage": "/assets/book-covers/the-goal.jpg",
     "ogImageAlt": "The Goal book cover",
@@ -2525,7 +2525,7 @@
     ]
   },
   "/booknotes/the-idea-factory": {
-    "metaTitle": "The Idea Factory – Book Notes",
+    "metaTitle": "The Idea Factory by Jon Gertner – Book Notes",
     "metaDescription": "Jon Gertner's The Idea Factory: the untold story of Bell Labs, the innovations it produced, and the creative culture behind modern technology.",
     "ogImage": "/assets/book-covers/the-idea-factory.jpg",
     "ogImageAlt": "The Idea Factory book cover",
@@ -2592,7 +2592,7 @@
     ]
   },
   "/booknotes/the-lean-startup": {
-    "metaTitle": "The Lean Startup – Book Notes",
+    "metaTitle": "The Lean Startup by Eric Ries – Book Notes",
     "metaDescription": "Eric Ries's The Lean Startup: build-measure-learn methodology for creating successful startups through validated learning and rapid iteration.",
     "ogImage": "/assets/book-covers/the-lean-startup.jpg",
     "ogImageAlt": "The Lean Startup book cover",
@@ -2714,7 +2714,7 @@
     ]
   },
   "/booknotes/the-moral-landscape": {
-    "metaTitle": "The Moral Landscape – Book Notes",
+    "metaTitle": "The Moral Landscape by Sam Harris – Book Notes",
     "metaDescription": "Sam Harris's The Moral Landscape: the argument that science can determine human values and that morality has objective, measurable answers.",
     "ogImage": "/assets/book-covers/the-moral-landscape.jpg",
     "ogImageAlt": "The Moral Landscape book cover",
@@ -2732,7 +2732,7 @@
     ]
   },
   "/booknotes/the-myth-of-sisyphus": {
-    "metaTitle": "The Myth of Sisyphus – Book Notes",
+    "metaTitle": "The Myth of Sisyphus by Albert Camus – Book Notes",
     "metaDescription": "Albert Camus's The Myth of Sisyphus: the foundational text of absurdism asking whether life is worth living in a meaningless universe.",
     "ogImage": "/assets/book-covers/the-myth-of-sisyphus.jpg",
     "ogImageAlt": "The Myth of Sisyphus book cover",
@@ -2749,7 +2749,7 @@
     ]
   },
   "/booknotes/the-naked-sun": {
-    "metaTitle": "The Naked Sun – Book Notes",
+    "metaTitle": "The Naked Sun by Isaac Asimov – Book Notes",
     "metaDescription": "Isaac Asimov's The Naked Sun: a Robot series mystery set on Solaria, where humans live in extreme isolation aided by thousands of robots.",
     "ogImage": "/assets/book-covers/the-naked-sun.jpg",
     "ogImageAlt": "The Naked Sun book cover",
@@ -2803,7 +2803,7 @@
     ]
   },
   "/booknotes/the-phoenix-project": {
-    "metaTitle": "The Phoenix Project – Book Notes",
+    "metaTitle": "The Phoenix Project by Gene Kim – Book Notes",
     "metaDescription": "Gene Kim's The Phoenix Project: a DevOps novel about transforming IT operations through lean principles, flow, and continuous improvement.",
     "ogImage": "/assets/book-covers/the-phoenix-project.jpg",
     "ogImageAlt": "The Phoenix Project book cover",
@@ -2821,7 +2821,7 @@
     ]
   },
   "/booknotes/the-power-of-habit": {
-    "metaTitle": "The Power of Habit – Book Notes",
+    "metaTitle": "The Power of Habit by Charles Duhigg – Book Notes",
     "metaDescription": "Charles Duhigg's The Power of Habit: how habits work through the cue-routine-reward loop, and how to change them for personal and organizational success.",
     "ogImage": "/assets/book-covers/the-power-of-habit.jpg",
     "ogImageAlt": "The Power of Habit book cover",
@@ -2839,7 +2839,7 @@
     ]
   },
   "/booknotes/the-power-of-now": {
-    "metaTitle": "The Power of Now – Book Notes",
+    "metaTitle": "The Power of Now by Eckhart Tolle – Book Notes",
     "metaDescription": "Eckhart Tolle's The Power of Now: a guide to spiritual enlightenment through present-moment awareness and transcending the ego.",
     "ogImage": "/assets/book-covers/the-power-of-now.jpg",
     "ogImageAlt": "The Power of Now book cover",
@@ -2909,7 +2909,7 @@
     ]
   },
   "/booknotes/the-red-queen": {
-    "metaTitle": "The Red Queen – Book Notes",
+    "metaTitle": "The Red Queen by Matt Ridley – Book Notes",
     "metaDescription": "Matt Ridley's The Red Queen: how sexual selection and evolutionary arms races drive the evolution of human nature and behavior.",
     "ogImage": "/assets/book-covers/the-red-queen.jpg",
     "ogImageAlt": "The Red Queen book cover",
@@ -2927,7 +2927,7 @@
     ]
   },
   "/booknotes/the-republic": {
-    "metaTitle": "The Republic by Plato – Book Notes",
+    "metaTitle": "The Republic by Plato – Summary & Book Notes",
     "metaDescription": "Plato's Republic: the foundational philosophical dialogue on justice, the ideal state, and the nature of the good life built from first principles.",
     "ogImage": "/assets/book-covers/the-republic.jpg",
     "ogImageAlt": "The Republic book cover",
@@ -2961,7 +2961,7 @@
     ]
   },
   "/booknotes/the-righteous-mind": {
-    "metaTitle": "The Righteous Mind – Book Notes",
+    "metaTitle": "The Righteous Mind by Jonathan Haidt – Book Notes",
     "metaDescription": "Jonathan Haidt's The Righteous Mind: why good people are divided by politics and religion, and how moral intuitions shape our reasoning.",
     "ogImage": "/assets/book-covers/the-righteous-mind.jpg",
     "ogImageAlt": "The Righteous Mind book cover",
@@ -2979,7 +2979,7 @@
     ]
   },
   "/booknotes/the-robots-of-dawn": {
-    "metaTitle": "The Robots of Dawn – Book Notes",
+    "metaTitle": "The Robots of Dawn by Isaac Asimov – Book Notes",
     "metaDescription": "Isaac Asimov's The Robots of Dawn: detective Elijah Baley investigates a robot's death on Aurora in this pivotal Robot series novel.",
     "ogImage": "/assets/book-covers/the-robots-of-dawn.jpg",
     "ogImageAlt": "The Robots of Dawn book cover",
@@ -2997,7 +2997,7 @@
     ]
   },
   "/booknotes/the-selfish-gene": {
-    "metaTitle": "The Selfish Gene – Book Notes",
+    "metaTitle": "The Selfish Gene by Richard Dawkins – Book Notes",
     "metaDescription": "Richard Dawkins's The Selfish Gene: the gene-centered view of evolution that revolutionized biology and introduced the concept of memes.",
     "ogImage": "/assets/book-covers/the-selfish-gene.jpg",
     "ogImageAlt": "The Selfish Gene book cover",
@@ -3033,7 +3033,7 @@
     ]
   },
   "/booknotes/the-snow-leopard": {
-    "metaTitle": "The Snow Leopard – Book Notes",
+    "metaTitle": "The Snow Leopard by Peter Matthiessen – Book Notes",
     "metaDescription": "Peter Matthiessen's The Snow Leopard: a spiritual memoir of trekking through the Himalayas, seeking a rare snow leopard and inner peace.",
     "ogImage": "/assets/book-covers/the-snow-leopard.jpg",
     "ogImageAlt": "The Snow Leopard book cover",
@@ -3245,7 +3245,7 @@
   },
   "/booknotes/vagabonding": {
     "metaTitle": "Vagabonding by Rolf Potts – Book Notes",
-    "metaDescription": "Rolf Potts's Vagabonding: the art of long-term travel, simplifying life, and discovering the world on your own terms.",
+    "metaDescription": "Rolf Potts's Vagabonding: the art of long-term world travel, simplifying your life, and discovering new cultures on your own terms. Book notes and key takeaways.",
     "ogImage": "/assets/book-covers/vagabonding.jpg",
     "ogImageAlt": "Vagabonding book cover",
     "keywords": [
@@ -3369,7 +3369,7 @@
   },
   "/booknotes/why-zebras-dont-get-ulcers": {
     "metaTitle": "Why Zebras Don't Get Ulcers – Summary & Book Notes",
-    "metaDescription": "Robert Sapolsky's guide to stress: how chronic stress damages health and why zebras handle it better than humans do.",
+    "metaDescription": "Robert Sapolsky explains how chronic stress damages human health and why zebras handle acute stress far better than we do. Book notes, summary, and key takeaways.",
     "ogImage": "/assets/book-covers/why-zebras-dont-get-ulcers.jpg",
     "ogImageAlt": "Why Zebras Don't Get Ulcers book cover",
     "keywords": [
@@ -3440,7 +3440,7 @@
     ]
   },
   "/booknotes/zorba-the-greek": {
-    "metaTitle": "Zorba the Greek – Book Notes",
+    "metaTitle": "Zorba the Greek by Nikos Kazantzakis – Book Notes",
     "metaDescription": "Nikos Kazantzakis's Zorba the Greek: a novel celebrating life's passions, freedom, and the wisdom of living fully in the present moment.",
     "ogImage": "/assets/book-covers/zorba-the-greek.jpg",
     "ogImageAlt": "Zorba the Greek book cover",
@@ -3588,7 +3588,7 @@
   },
   "/newsletters/biotechnology-democratizing-ai-and-spinoza": {
     "metaTitle": "Live and Learn #9 – Biotechnology, AI & Spinoza",
-    "metaDescription": "Biotech and AI intersections, Spinoza's philosophy, and an interview with Emad Mostaque, founder of Stability AI.",
+    "metaDescription": "Biotech and AI intersections, Spinoza's philosophy of mind and nature, and a deep-dive interview with Emad Mostaque on democratizing generative AI models.",
     "ogImage": "/assets/midjourney/cell-membrane-proteins.webp",
     "ogImageAlt": "cell membrane proteins",
     "keywords": [
@@ -3651,7 +3651,7 @@
   },
   "/newsletters/computational-languages-gpt-4-and-midjourney-v5": {
     "metaTitle": "Live and Learn #13 – GPT-4, Midjourney v5 & Languages",
-    "metaDescription": "John Gardner's speech, HustleGPT as a GPT-4 use case, Midjourney v5 updates, and life hacks by Alexey Guzey.",
+    "metaDescription": "John Gardner's speech on craft, HustleGPT as a creative GPT-4 use case, the visual leap of Midjourney v5, and productivity life hacks compiled by Alexey Guzey.",
     "ogImage": "/assets/midjourney/cyberpunk-spaceship-art-in-the-style-of-van-gogh.webp",
     "ogImageAlt": "cyberpunk spaceship art in the style of van gogh",
     "keywords": [
@@ -3682,7 +3682,7 @@
   },
   "/newsletters/planning-for-agi-code-that-fixes-itself-and-sam": {
     "metaTitle": "Live and Learn #15 – Planning for AGI & Self-Fixing Code",
-    "metaDescription": "Wolverine system for self-fixing code, Software 3.0 implications, and OpenAI's approach to creating beneficial AGI.",
+    "metaDescription": "The Wolverine system that enables code to autonomously fix its own bugs, the implications of Software 3.0, and OpenAI's strategy for developing safe and beneficial AGI.",
     "ogImage": "/assets/midjourney/portal-grown-out-of-trees-to-another-dimension-mist.webp",
     "ogImageAlt": "portal grown out of trees to another dimension mist",
     "keywords": [
@@ -3804,7 +3804,7 @@
   },
   "/newsletters/brain2-music-biosecurity-risks-and-fly-wire-a-connectome-of-a-fruit-fly-brain": {
     "metaTitle": "Live and Learn #23 – Brain2Music, Biosecurity & FlyWire",
-    "metaDescription": "Decoding neural stimuli into music, biosecurity risks from AI advances, and a complete connectome of a fruit fly brain.",
+    "metaDescription": "Decoding neural stimuli into music with Brain2Music, biosecurity risks from dual-use AI advances, and a landmark complete connectome mapping of a fruit fly brain.",
     "ogImage": "/assets/midjourney/a-photon.webp",
     "ogImageAlt": "A glowing door into the unknown",
     "keywords": [
@@ -4003,7 +4003,7 @@
   },
   "/newsletters/open-ais-sora-ai-sound-effects-and-gemini-1-5": {
     "metaTitle": "Live and Learn #36 – Sora, AI Sound Effects & Gemini 1.5",
-    "metaDescription": "OpenAI and Elevenlabs transforming movie creation, Google opening LLM access, and the Gemini 1.5 announcement.",
+    "metaDescription": "OpenAI's Sora and Elevenlabs transforming video and sound creation, Google broadening LLM access for developers, and the Gemini 1.5 million-token context window.",
     "ogImage": "/assets/midjourney/robot-filming-a-movie.webp",
     "ogImageAlt": "a robot filming a movie",
     "keywords": [
@@ -4160,7 +4160,7 @@
   },
   "/newsletters/text-to-3-d-robot-tele-vision-and-neuralink-livestream": {
     "metaTitle": "Live and Learn #46 – Text to 3D & Robot TeleVision",
-    "metaDescription": "Meta's text to 3D generation model, training robots with Apple Vision Pro, and the latest Neuralink update livestream.",
+    "metaDescription": "Meta's text-to-3D model for creating assets from prompts, training robots via Apple Vision Pro teleoperation, and highlights from the latest Neuralink livestream.",
     "ogImage": "/assets/midjourney/synthetic-consciousness.png",
     "ogImageAlt": "an artistic depiction of a synthetic consciousness",
     "keywords": [
@@ -4191,7 +4191,7 @@
   },
   "/newsletters/more-advanced-robotics-neuralink-podcast-and-sam-2": {
     "metaTitle": "Live and Learn #48 – Advanced Robotics, Neuralink & SAM 2",
-    "metaDescription": "SIGGRAPH fireside chat, exciting robotics advances, and Meta's release of the SAM 2 model for image segmentation.",
+    "metaDescription": "Highlights from SIGGRAPH's fireside chat on graphics and AI, exciting robotics advances from multiple labs, and Meta's release of SAM 2 for real-time image segmentation.",
     "ogImage": "/assets/midjourney/robot-arm-playing-table-tennis.png",
     "ogImageAlt": "robot arm playing table tennis",
     "keywords": [
@@ -4208,7 +4208,7 @@
   },
   "/newsletters/an-ai-scientist-metas-sapiens-and-grok-2": {
     "metaTitle": "Live and Learn #49 – An AI Scientist, Sapiens & Grok 2",
-    "metaDescription": "Sakana AI's AI Scientist, improved 3D generation models, and xAI's Grok 2 release alongside other AI breakthroughs.",
+    "metaDescription": "Sakana AI's autonomous AI Scientist that writes and reviews research papers, improved 3D generation models, and xAI's Grok 2 release alongside other AI breakthroughs.",
     "ogImage": "/assets/newsletter/49/ai-researcher-at-a-screen.jpeg",
     "ogImageAlt": "AI researcher at a screen",
     "keywords": [
@@ -4369,7 +4369,7 @@
   },
   "/newsletters/sam-altmans-reflections-nvidia-ces-keynote-and-ai-as-a-parasitic-cancer": {
     "metaTitle": "Live and Learn #59 – Sam Altman, Nvidia CES & AI Critique",
-    "metaDescription": "Sam Altman reflecting on OpenAI's direction, Jensen Huang's Nvidia CES keynote, and lessons learned about LLMs in 2024.",
+    "metaDescription": "Sam Altman's reflections on OpenAI's future, Jensen Huang's Nvidia CES 2025 keynote on physical AI, and critical lessons learned about LLMs throughout 2024.",
     "ogImage": "assets/newsletter/59/generative-ai-as-a-demon.png",
     "ogImageAlt": "generative AI as a demon",
     "keywords": [
@@ -4417,7 +4417,7 @@
   },
   "/newsletters/grok3-quantum-chips-and-googles-ai-co-scientist": {
     "metaTitle": "Live and Learn #62 – Grok 3, Quantum Chips & AI Co-Scientist",
-    "metaDescription": "Figure's Helix AI for robots, Microsoft's Majorana quantum architecture, xAI's Grok 3, and Google's AI Co-Scientist.",
+    "metaDescription": "Figure's Helix AI for humanoid robots, Microsoft's Majorana quantum chip architecture, xAI's Grok 3 with chain-of-thought reasoning, and Google's AI Co-Scientist tool.",
     "ogImage": "assets/newsletter/62/ai-helix-scientist.png",
     "ogImageAlt": "AI robot scientist holding a helix",
     "keywords": [
@@ -4481,7 +4481,7 @@
   },
   "/newsletters/nvidia-ttt-google-cloud-next-and-ai-scientist-v2-0": {
     "metaTitle": "Live and Learn #66 – Nvidia TTT & AI Scientist v2.0",
-    "metaDescription": "Things AI will never understand, OpenAI's o4-mini, temporal consistency in AI video, and Sakana's AI Scientist v2.0.",
+    "metaDescription": "What AI may never truly understand, OpenAI's efficient o4-mini model, breakthroughs in temporal consistency for AI video generation, and Sakana's AI Scientist v2.0.",
     "ogImage": "/assets/newsletter/66/ai-exponential-progress.png",
     "ogImageAlt": "a visualization of what AI's potential progress might look like",
     "keywords": [
@@ -4852,7 +4852,7 @@
   },
   "/r3f/models/mixamo-characters": {
     "metaTitle": "Mixamo Characters in 3D - React Three Fiber Demo",
-    "metaDescription": "Showcasing animated Mixamo characters in a React Three Fiber 3D scene with selectable models and dance animations.",
+    "metaDescription": "Interactive showcase of animated Mixamo characters in a React Three Fiber 3D scene with selectable models, real-time dance animations, and smooth transitions.",
     "ogImage": "/assets/pages/mixamo-characters.png",
     "ogImageAlt": "Mixamo character dancing in a 3D scene",
     "keywords": [
@@ -4868,7 +4868,7 @@
   },
   "/r3f/models/quaternius-models": {
     "metaTitle": "Quaternius 3D Models Showcase - R3F Grid Display",
-    "metaDescription": "A grid showcase of free Quaternius low-poly 3D models rendered in React Three Fiber for browsing and selection.",
+    "metaDescription": "A browsable grid showcase of free Quaternius low-poly 3D models rendered in React Three Fiber. Select and preview animals, nature, and fantasy models in real time.",
     "ogImage": "/assets/pages/quaternius-models.png",
     "ogImageAlt": "Image of a grid filled with 3D models",
     "keywords": [
@@ -4917,7 +4917,7 @@
   },
   "/r3f/particles/fbo-demo": {
     "metaTitle": "FBO Particles Demo - Compute Shader in Three.js",
-    "metaDescription": "A simple FBO particles demo using compute shaders to update particle positions in React Three Fiber with bloom effects.",
+    "metaDescription": "A Frame Buffer Object particles demo using GPU compute shaders to update thousands of particle positions in React Three Fiber with bloom post-processing effects.",
     "ogImage": "/assets/pages/fbo-demo.png",
     "ogImageAlt": "a set of glowing particles flying around in a 3D scene",
     "keywords": [
@@ -4950,7 +4950,7 @@
   },
   "/r3f/particles/mesh-merger": {
     "metaTitle": "Mesh Merger Particles - 3D Effect in Three.js",
-    "metaDescription": "A particle system for merging meshes in React Three Fiber, creating visual transitions between 3D shapes with WebGL.",
+    "metaDescription": "A WebGL particle system for visually merging and morphing between 3D meshes in React Three Fiber, creating smooth animated transitions between different 3D shapes.",
     "ogImage": "/assets/pages/mesh-merger.png",
     "ogImageAlt": "particles transitioning between 3D mesh shapes",
     "keywords": [
@@ -4981,7 +4981,7 @@
   },
   "/r3f/controllers/ecctrl-controller": {
     "metaTitle": "Ecctrl Controller Demo - 3D Character in R3F",
-    "metaDescription": "Implementation of the Ecctrl character controller in React Three Fiber with a Mixamo model, animations, and physics.",
+    "metaDescription": "Implementation of the Ecctrl character controller in React Three Fiber with a Mixamo model, smooth animations, physics-based movement, and configurable camera controls.",
     "ogImage": "/assets/pages/r3f/ecctrl-controller.png",
     "ogImageAlt": "an image of a girl standing in front of some trees",
     "keywords": [
@@ -5013,7 +5013,7 @@
   },
   "/r3f/controllers/third-person-controller": {
     "metaTitle": "Custom Third Person Controller - 3D R3F Demo",
-    "metaDescription": "A custom third person controller experiment in React Three Fiber with a dinosaur model and camera follow mechanics.",
+    "metaDescription": "A custom-built third person character controller experiment in React Three Fiber featuring a dinosaur model, camera follow mechanics, and keyboard-driven 3D navigation.",
     "ogImage": "/assets/pages/r3f/third-person-controller.png",
     "ogImageAlt": "a dinosaur Trex model in a 3D scene",
     "keywords": [
@@ -5029,7 +5029,7 @@
   },
   "/r3f/experiments/gaming-testbed": {
     "metaTitle": "3D Gaming Testbed - Inventory & Combat in R3F",
-    "metaDescription": "A testbed for gaming features in React Three Fiber including inventory, enemies, traps, and sword combat mechanics.",
+    "metaDescription": "A testbed for gaming features in React Three Fiber including an inventory system, enemy AI, environmental traps, sword combat mechanics, and interactive 3D exploration.",
     "ogImage": "/assets/pages/gaming-testbed.png",
     "ogImageAlt": "an image of a 3D model of a character with a sword attacking a wizard skeleton",
     "keywords": [
@@ -5046,7 +5046,7 @@
   },
   "/r3f/experiments/instanced-mesh-2": {
     "metaTitle": "InstancedMesh2 Library Test - 3D Trees in R3F",
-    "metaDescription": "Testing the InstancedMesh2 library in React Three Fiber to efficiently spawn and remove large numbers of 3D trees.",
+    "metaDescription": "Testing the InstancedMesh2 library in React Three Fiber to efficiently spawn, manage, and remove large numbers of 3D tree instances with optimized GPU rendering.",
     "ogImage": "/assets/pages/instanced-mesh-2.png",
     "ogImageAlt": "a 3D scene with a bunch of trees",
     "keywords": [
@@ -5094,7 +5094,7 @@
   },
   "/r3f/experiments/navmesh": {
     "metaTitle": "Recast Navmesh Demo - 3D Pathfinding in R3F",
-    "metaDescription": "A demo of Recast navigation mesh pathfinding in a 3D scene, powered by the recast-js library and React Three Fiber.",
+    "metaDescription": "A demo of Recast navigation mesh pathfinding in a 3D environment. Agents navigate obstacles using the recast-js library integrated with React Three Fiber and physics.",
     "ogImage": "/assets/pages/navmesh.png",
     "ogImageAlt": "a simple navmesh with debug triangles shown in a 3D scene",
     "keywords": [
@@ -5160,7 +5160,7 @@
   },
   "/r3f/experiments/yuka-ai-implementation": {
     "metaTitle": "Yuka Game AI - Deer vs Raptor Simulation in R3F",
-    "metaDescription": "A game AI simulation using the Yuka library in React Three Fiber, where a deer flees from a chasing velociraptor.",
+    "metaDescription": "A game AI simulation built with the Yuka library in React Three Fiber, where a deer uses flee behavior to escape a pursuing velociraptor across a 3D landscape.",
     "ogImage": "/assets/pages/yuka-ai-implementation.png",
     "ogImageAlt": "a deer running away from a velociraptor in a 3D scene",
     "keywords": [
@@ -5176,7 +5176,7 @@
   },
   "/r3f/grass/al-ro-grass": {
     "metaTitle": "3D Grass Plane Shader - React Three Fiber Demo",
-    "metaDescription": "A single square grass plane in React Three Fiber based on al-ro's codepen, featuring custom grass blade shaders.",
+    "metaDescription": "A single square grass plane rendered in React Three Fiber, based on al-ro's codepen. Features custom grass blade vertex and fragment shaders with wind animation.",
     "ogImage": "/assets/pages/al-ro-grass.png",
     "ogImageAlt": "a 3D view of a grassy plane",
     "keywords": [
@@ -5192,7 +5192,7 @@
   },
   "/r3f/grass/james-smyth-grass": {
     "metaTitle": "Stylized Grass Shader - Three.js R3F Implementation",
-    "metaDescription": "Stylized grass shader ported into React Three Fiber and TypeScript from James Smyth's demo with 500K blade instances.",
+    "metaDescription": "A stylized procedural grass shader ported into React Three Fiber and TypeScript from James Smyth's original demo, rendering 500K individual grass blade instances.",
     "ogImage": "/assets/pages/james-smyth-grass.png",
     "ogImageAlt": "a plane filled with a stylized grass shader",
     "keywords": [
@@ -5223,7 +5223,7 @@
   },
   "/r3f/user-interfaces/healthbars": {
     "metaTitle": "3D Healthbar Shaders - React Three Fiber UI Demo",
-    "metaDescription": "Different healthbar shader implementations in React Three Fiber, ported from a Unity demo for in-game UI rendering.",
+    "metaDescription": "Multiple healthbar shader implementations in React Three Fiber, ported from a Unity tutorial. Includes gradient, segmented, and animated bar styles for in-game UI.",
     "ogImage": "/assets/pages/healthbars.png",
     "ogImageAlt": "an assortment of healthbar shaders",
     "keywords": [
@@ -5239,7 +5239,7 @@
   },
   "/r3f/scenes/inventory": {
     "metaTitle": "3D Inventory System Demo - React Three Fiber",
-    "metaDescription": "An inventory system prototype built with React and React Three Fiber, featuring item management and equipment slots.",
+    "metaDescription": "An interactive inventory system prototype built with React and React Three Fiber, featuring drag-and-drop item management, equipment slots, and 3D item previews.",
     "ogImage": "/assets/pages/inventory.png",
     "ogImageAlt": "a inventory prototype for a simple game",
     "keywords": [
@@ -5395,7 +5395,7 @@
   },
   "/podcastnotes/lex-guillaume-verdon": {
     "metaTitle": "Lex Fridman x Guillaume Verdon (e/acc) - Notes",
-    "metaDescription": "Notes from Lex Fridman Ep 407 with Guillaume Verdon on e/acc, quantum computing, physics-based AI, and accelerationism.",
+    "metaDescription": "Notes from Lex Fridman Podcast Ep 407 with Guillaume Verdon on effective accelerationism (e/acc), quantum computing, physics-inspired AI architectures, and tech optimism.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -5410,7 +5410,7 @@
   },
   "/podcastnotes/lex-jeff-bezos-amazon-and-blue-origin": {
     "metaTitle": "Lex Fridman x Jeff Bezos: Amazon & Blue Origin",
-    "metaDescription": "Notes from Lex Fridman Ep 405 with Jeff Bezos on Amazon, Blue Origin, resourcefulness, and the space race.",
+    "metaDescription": "Notes from Lex Fridman Ep 405 with Jeff Bezos on building Amazon from a garage, Blue Origin's mission, resourcefulness as a key leadership trait, and the space race.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -5457,7 +5457,7 @@
   },
   "/podcastnotes/lex-marc-andreessen-future-of-the-internet-technology-and-ai": {
     "metaTitle": "Lex Fridman x Marc Andreessen: Internet & AI",
-    "metaDescription": "Notes from Lex Fridman Ep 386 with Marc Andreessen on the future of internet, search, AI, content creation, and LLMs.",
+    "metaDescription": "Notes from Lex Fridman Podcast Ep 386 with Marc Andreessen on the evolving internet, the future of search and AI, new content creation paradigms, and the impact of LLMs.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -6078,7 +6078,7 @@
     ]
   },
   "/posts/purpose": {
-    "metaTitle": "Improvement as the Purpose of Life",
+    "metaTitle": "Why Improvement Is the Ultimate Purpose of Life",
     "metaDescription": "Life evolves through constant improvement. Explore why the drive to get better is wired into biology, ideas, and human nature itself.",
     "ogImage": "/assets/blog/road.jpg",
     "ogImageAlt": "A road stretching forward symbolizing life's path of improvement",
@@ -6331,7 +6331,7 @@
   },
   "/achievements": {
     "metaTitle": "Developer Achievements - Programming Skills Checklist",
-    "metaDescription": "Track personal milestones inspired by the question: what have you achieved that felt impossible a year ago?",
+    "metaDescription": "A personal achievements tracker inspired by the question: what have you achieved that felt impossible a year ago? Milestones across programming, fitness, and travel.",
     "ogImage": "/assets/midjourney/pattern-of-swirling-lights.jpg",
     "ogImageAlt": "Pattern of swirling lights representing developer achievements",
     "keywords": [
@@ -6494,8 +6494,8 @@
     ]
   },
   "/travel/guadeloupe/port-luis": {
-    "metaTitle": "Surfing in Port Luis, Guadeloupe",
-    "metaDescription": "Catching waves at sunset in Port Luis, Guadeloupe. A day of surfing on the Caribbean island's beautiful coast.",
+    "metaTitle": "Surfing in Port Luis | Guadeloupe Travel Story",
+    "metaDescription": "Catching waves at sunset in Port Luis, Guadeloupe. A day of surfing on the Caribbean island's Atlantic coast, warm water, and the laid-back island lifestyle.",
     "ogImage": "/assets/blog/guadeloupe/port-luis-surfers-at-sunset.jpg",
     "ogImageAlt": "surfing in Port Luis at sunset",
     "keywords": [
@@ -6656,7 +6656,7 @@
     ]
   },
   "/travel/dominica/soufriere": {
-    "metaTitle": "Soufrière Village Life | Dominica",
+    "metaTitle": "Soufrière Village Life | Dominica Travel Story",
     "metaDescription": "Days spent in the charming village of Soufrière, Dominica. Fishing boats at sunset, island rhythms, and Caribbean relaxation on the Nature Island.",
     "ogImage": "/assets/blog/dominica/PXL_20240515_221713405~2.jpg",
     "ogImageAlt": "fishing boats at sunset floating in the waves near Soufriere",
@@ -6674,7 +6674,7 @@
   },
   "/travel/dominica/wavine-cyrique-waterfall": {
     "metaTitle": "Wavine Cyrique Waterfall | Dominica",
-    "metaDescription": "Trekking to the remote Wavine Cyrique waterfall in Dominica, where a cascade plunges directly onto a black sand beach.",
+    "metaDescription": "Trekking to the remote Wavine Cyrique waterfall in Dominica, where a powerful cascade plunges off a cliff onto a secluded black sand beach on the wild coast.",
     "ogImage": "/assets/blog/dominica/PXL_20240522_163131183~2.jpg",
     "ogImageAlt": "the Wavine Cyrique waterfall as seen from the distance",
     "keywords": [
@@ -6833,8 +6833,8 @@
     ]
   },
   "/travel/portugal-2024/the-garden": {
-    "metaTitle": "The Garden | Portugal Travel Story",
-    "metaDescription": "A story about The Garden in Portugal. Slow days, nature, and the simple beauty of life in the Portuguese countryside.",
+    "metaTitle": "The Garden | Portugal 2024 Travel Story",
+    "metaDescription": "A story about The Garden in Portugal. Slow unhurried days surrounded by nature, and the simple beauty of life in the quiet Portuguese countryside during a long stay.",
     "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
@@ -6928,7 +6928,7 @@
   },
   "/travel/thinking-of-dave/4-tod-lanzarote-to-gran-canaria": {
     "metaTitle": "Lanzarote to Gran Canaria | Thinking of Dave",
-    "metaDescription": "Sailing between the Canary Islands, from Lanzarote to Gran Canaria on the Thinking of Dave. Island hopping under sail.",
+    "metaDescription": "Sailing between the Canary Islands from Lanzarote to Gran Canaria aboard the Thinking of Dave. Island hopping under sail with ocean swells and volcanic island views.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -6989,7 +6989,7 @@
     ]
   },
   "/travel/transat/day-2-out-at-sea": {
-    "metaTitle": "Transatlantic Day 2 - Out at Sea",
+    "metaTitle": "Transatlantic Day 2 – Open Ocean Sailing",
     "metaDescription": "The second day of the transatlantic crossing. Nothing but open ocean, fishing lines in the water, and finding rhythm with the sea.",
     "ogImage": "/assets/blog/transat/fishing-line-bait.jpg",
     "ogImageAlt": "fishing line bait",
@@ -7110,7 +7110,7 @@
     ]
   },
   "/travel/transat/day-10-dolphins": {
-    "metaTitle": "Transatlantic Day 10 - Dolphins!",
+    "metaTitle": "Transatlantic Day 10 – Dolphins in the Atlantic",
     "metaDescription": "Dolphins join the boat in the middle of the Atlantic Ocean. A joyful encounter during the transatlantic crossing that lifts everyone's spirits.",
     "ogImage": "/assets/blog/transat/rebecca-happily-pointing-to-the-dolphins.jpg",
     "ogImageAlt": "rebecca happily pointing to the dolphins",
@@ -7458,7 +7458,7 @@
   },
   "/travel/colombia-2024/day-3-girardot-to-ibague": {
     "metaTitle": "Cycling Girardot to Ibagué | Colombia",
-    "metaDescription": "Riding from Girardot to Ibagué along the main highway. Mangos, pavement, and the Colombian heat on a long cycling day.",
+    "metaDescription": "Cycling from Girardot to Ibagué along Colombia's main highway. Mangos from roadside vendors, hot pavement under the tropical sun, and a long day of riding in the heat.",
     "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
@@ -7759,7 +7759,7 @@
     ]
   },
   "/travel/crete/day-3-agios-nikolaos": {
-    "metaTitle": "Day 3 - Agios Nikolaos | Crete",
+    "metaTitle": "Day 3 – Agios Nikolaos | Crete Travel Story",
     "metaDescription": "Arriving in the picturesque town of Agios Nikolaos on Crete's eastern coast. Lake Voulismeni, harbors, and Greek island charm.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -7865,7 +7865,7 @@
     ]
   },
   "/travel/crete/day-10-mirtos-and-mithi": {
-    "metaTitle": "Day 10 - Mirtos and Mithi | Crete",
+    "metaTitle": "Day 10 – Mirtos and Mithi Villages | Crete",
     "metaDescription": "Discovering the charming villages of Mirtos and Mithi on Crete's southern coast. Quiet Greek village life away from the crowds.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -7929,7 +7929,7 @@
   },
   "/travel/crete/day-14-kalamaki": {
     "metaTitle": "Day 14 - Kalamaki | Crete Travel Story",
-    "metaDescription": "A day in Kalamaki on Crete's southern coast. Beach vibes and local Greek charm in a relaxed Mediterranean setting.",
+    "metaDescription": "A relaxed day in Kalamaki on Crete's southern coast. Quiet beach vibes, local Greek tavernas, and the laid-back Mediterranean charm of this small seaside village.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -7943,7 +7943,7 @@
     ]
   },
   "/travel/crete/day-15-visiting-matala": {
-    "metaTitle": "Day 15 - Visiting Matala | Crete",
+    "metaTitle": "Day 15 – Visiting Matala Beach | Crete",
     "metaDescription": "Exploring Matala, Crete's legendary hippie beach with its famous caves. A place where the spirit of the 1960s still lingers.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8007,7 +8007,7 @@
     ]
   },
   "/travel/crete/day-19-mountain-villages": {
-    "metaTitle": "Day 19 - Cretan Mountain Villages",
+    "metaTitle": "Day 19 – Mountain Villages of Central Crete",
     "metaDescription": "Wandering through traditional mountain villages in central Crete. Stone houses, olive groves, and the authentic heart of the island.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8037,7 +8037,7 @@
     ]
   },
   "/travel/crete/day-21-another-day-in-hora-sfakion": {
-    "metaTitle": "Day 21 - Hora Sfakion | Crete",
+    "metaTitle": "Day 21 – Hora Sfakion | Crete Travel Story",
     "metaDescription": "Spending time in Hora Sfakion on Crete's rugged southern coast. A small harbor town surrounded by dramatic cliffs and the Libyan Sea.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8053,7 +8053,7 @@
   },
   "/travel/crete/day-22-hora-sfakion": {
     "metaTitle": "Day 22 - More Days in Hora Sfakion | Crete",
-    "metaDescription": "Another day in the remote coastal village of Hora Sfakion. The slow rhythm of life on Crete's wild southern shore.",
+    "metaDescription": "Another day in the remote coastal village of Hora Sfakion on Crete's wild southern shore. Enjoying the slow rhythm of life between dramatic cliffs and the Libyan Sea.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -8067,7 +8067,7 @@
     ]
   },
   "/travel/crete/day-23-spending-a-day-in-ana-rodakino": {
-    "metaTitle": "Day 23 - Ana Rodakino | Crete",
+    "metaTitle": "Day 23 – Ana Rodakino Village | Crete",
     "metaDescription": "A peaceful day in the hilltop village of Ana Rodakino overlooking the Libyan Sea. Olive trees, quietude, and rural Cretan beauty.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8187,7 +8187,7 @@
     ]
   },
   "/travel/india-2020/4-kaladay-i": {
-    "metaTitle": "Kalady Day 1 | Kerala, India 2020",
+    "metaTitle": "Kalady Day 1 – Arriving in Kerala | India 2020",
     "metaDescription": "Arriving in Kalady, Kerala. A peaceful town in southern India far removed from the chaos of Mumbai. Village life and temple visits.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8202,7 +8202,7 @@
     ]
   },
   "/travel/india-2020/5-kalady-ii": {
-    "metaTitle": "Kalady Day 2 | Kerala, India 2020",
+    "metaTitle": "Kalady Day 2 – Village Life in Kerala | India 2020",
     "metaDescription": "A second day in Kalady, Kerala. Deeper into the rhythms of south Indian village life, temples, and the lush green landscape.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8217,7 +8217,7 @@
     ]
   },
   "/travel/india-2020/6-kalady-iii": {
-    "metaTitle": "Kalady Day 3 | Kerala, India 2020",
+    "metaTitle": "Kalady Day 3 – South Indian Life | India 2020",
     "metaDescription": "Day three in Kalady, Kerala. Settling into the slow pace of life in the birthplace of Adi Shankaracharya in southern India.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8232,7 +8232,7 @@
     ]
   },
   "/travel/india-2020/7-kalady-iv": {
-    "metaTitle": "Kalady Day 4 | Kerala, India 2020",
+    "metaTitle": "Kalady Day 4 – Last Day in Kerala | India 2020",
     "metaDescription": "The last day in Kalady before heading to the mountains. Final walks through the village and preparing for the journey to Munnar.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8277,7 +8277,7 @@
     ]
   },
   "/travel/india-2020/10-munnar-iii": {
-    "metaTitle": "Munnar Day 3 | Kerala, India 2020",
+    "metaTitle": "Munnar Day 3 – Tea Plantations | India 2020",
     "metaDescription": "The last day in Munnar before heading to Bangalore. Saying goodbye to the tea plantations and misty mountains of Kerala.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8308,7 +8308,7 @@
   },
   "/travel/india-2020/12-bangalore-ii": {
     "metaTitle": "Bangalore Day 2 | India 2020 Travel Story",
-    "metaDescription": "A second day exploring Bangalore. Parks, markets, and the vibrant culture of India's Silicon Valley.",
+    "metaDescription": "A second day exploring Bangalore, India's Silicon Valley. Parks, busy markets, street food, and the vibrant modern culture of Karnataka's garden capital.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -8323,7 +8323,7 @@
   },
   "/travel/india-2020/13-bangalore-iii": {
     "metaTitle": "Bangalore Day 3 | India 2020 Travel Story",
-    "metaDescription": "The final day in Bangalore wrapping up the India 2020 journey. Last impressions of the garden city before heading home.",
+    "metaDescription": "The final day in Bangalore wrapping up the India 2020 journey. Last impressions of the garden city, farewell chai, and reflecting on weeks of travel before heading home.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -8337,7 +8337,7 @@
     ]
   },
   "/travel/india-2022/1-kolkata": {
-    "metaTitle": "Kolkata | India 2022 Travel Story",
+    "metaTitle": "Kolkata – The City of Joy | India 2022",
     "metaDescription": "Starting an India journey in Kolkata. The City of Joy with its colonial architecture, street food, and unmatchable energy.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8382,7 +8382,7 @@
     ]
   },
   "/travel/india-2022/4-darjeeling-ii": {
-    "metaTitle": "Darjeeling Part 2 | India 2022",
+    "metaTitle": "Darjeeling Part 2 – Tea Estates | India 2022",
     "metaDescription": "More time in Darjeeling exploring tea estates, monasteries, and the stunning views of Kanchenjunga from the hill station.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8413,8 +8413,8 @@
     ]
   },
   "/travel/india-2022/6-shillong": {
-    "metaTitle": "Shillong | Meghalaya, India 2022",
-    "metaDescription": "Visiting Shillong, the Scotland of the East. Music, rain, and the unique Khasi culture of Meghalaya in northeast India.",
+    "metaTitle": "Shillong – Scotland of the East | India 2022",
+    "metaDescription": "Visiting Shillong, known as the Scotland of the East. Live music, monsoon rain, and the unique Khasi matrilineal culture of Meghalaya in India's lush northeast region.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -8478,7 +8478,7 @@
   },
   "/travel/india-2022/10-nohkalikai-falls": {
     "metaTitle": "Nohkalikai Falls | Meghalaya, India 2022",
-    "metaDescription": "Witnessing Nohkalikai Falls, India's tallest plunge waterfall. A dramatic 340m cascade in the misty hills of Meghalaya.",
+    "metaDescription": "Witnessing Nohkalikai Falls, India's tallest plunge waterfall at 340 meters. A dramatic cascade dropping into a turquoise pool in the misty Khasi Hills of Meghalaya.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -8538,7 +8538,7 @@
     ]
   },
   "/travel/india-2022/14-hiking": {
-    "metaTitle": "Himalayan Hiking | India 2022 Trek",
+    "metaTitle": "Himalayan Hiking in Himachal Pradesh | India 2022",
     "metaDescription": "A day of pure hiking through the Himalayan landscape of Himachal Pradesh. High passes, vast valleys, and the immensity of the mountains.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8570,7 +8570,7 @@
     ]
   },
   "/travel/india-2022/16-losar": {
-    "metaTitle": "Losar | Spiti Valley, India 2022",
+    "metaTitle": "Losar – Gateway to Spiti Valley | India 2022",
     "metaDescription": "Arriving in Losar at the gateway to the Spiti Valley. One of the most remote inhabited places in India, a cold desert in the Himalayas.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8586,7 +8586,7 @@
     ]
   },
   "/travel/india-2022/17-kaza": {
-    "metaTitle": "Kaza | Spiti Valley, India 2022",
+    "metaTitle": "Kaza – Heart of Spiti Valley | India 2022",
     "metaDescription": "Days in Kaza, the main town of the Spiti Valley. Buddhist monasteries, barren mountains, and life at the edge of the world.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8617,7 +8617,7 @@
     ]
   },
   "/travel/india-2023/1-jaipur-and-amits-home": {
-    "metaTitle": "Jaipur & Amit's Home | India 2023",
+    "metaTitle": "Jaipur & Amit's Home | India 2023 Travel Story",
     "metaDescription": "Starting the India 2023 journey in Jaipur, the Pink City. Staying with Amit and experiencing authentic Rajasthani hospitality.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8633,7 +8633,7 @@
     ]
   },
   "/travel/india-2023/2-in-the-bus-with-amit": {
-    "metaTitle": "In the Bus with Amit | India 2023",
+    "metaTitle": "Bus Journey with Amit Across India | India 2023",
     "metaDescription": "A long bus journey across India with Amit. Road stories, conversations, and the unique experience of Indian long-distance travel.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8648,7 +8648,7 @@
     ]
   },
   "/travel/india-2023/3-jammu-and-the-circle": {
-    "metaTitle": "Jammu & the Circle | India 2023",
+    "metaTitle": "Jammu & the Road to Ladakh | India 2023",
     "metaDescription": "Passing through Jammu on the way to Ladakh. Military presence, winding roads, and the dramatic transition into India's far north.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8679,7 +8679,7 @@
     ]
   },
   "/travel/india-2023/5-nubra-valley": {
-    "metaTitle": "Nubra Valley | Ladakh, India 2023",
+    "metaTitle": "Nubra Valley – Sand Dunes of Ladakh | India 2023",
     "metaDescription": "Crossing the Khardung La pass into the Nubra Valley. Sand dunes, Bactrian camels, and a surreal high-altitude desert in Ladakh.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8727,8 +8727,8 @@
     ]
   },
   "/travel/india-2023/8-ahmedabad": {
-    "metaTitle": "Ahmedabad | Gujarat, India 2023",
-    "metaDescription": "Exploring Ahmedabad, Gujarat's largest city. Step wells, the old town, and the cultural richness of western India.",
+    "metaTitle": "Ahmedabad – Step Wells & Old Town | India 2023",
+    "metaDescription": "Exploring Ahmedabad, Gujarat's vibrant largest city. Ornate step wells, winding old town streets, the Sabarmati Ashram, and the rich cultural heritage of western India.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -8759,7 +8759,7 @@
     ]
   },
   "/travel/india-2023/10-mumbai": {
-    "metaTitle": "Mumbai | India 2023 Travel Story",
+    "metaTitle": "Mumbai – City of Contrasts | India 2023",
     "metaDescription": "Back in Mumbai on the India 2023 journey. The city's relentless energy, street food, and the contrast of wealth and poverty.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8774,7 +8774,7 @@
     ]
   },
   "/travel/india-2023/11-goa": {
-    "metaTitle": "Goa | India 2023 Travel Story",
+    "metaTitle": "Goa – Beaches & Portuguese Heritage | India 2023",
     "metaDescription": "Days in Goa, India's beach paradise. Palm-lined shores, Portuguese heritage, and the laid-back vibe of India's smallest state.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8789,7 +8789,7 @@
     ]
   },
   "/travel/india-2023/12-kerala": {
-    "metaTitle": "Kerala | India 2023 Travel Story",
+    "metaTitle": "Kerala – God's Own Country | India 2023",
     "metaDescription": "Exploring God's Own Country, Kerala. Backwaters, spice gardens, and the lush green beauty of India's southernmost coast.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -8881,7 +8881,7 @@
   },
   "/travel/spain-2024/6-madrid-couchsurfing-with-alvaro": {
     "metaTitle": "Madrid Part 3 - Last Days | Spain 2024",
-    "metaDescription": "Final days in Madrid with Alvaro. A last round of bar crawls and exploring before leaving the Spanish capital behind.",
+    "metaDescription": "Final days in Madrid couchsurfing with Alvaro. One last round of tapas bars, late-night conversations, and exploring hidden corners before leaving the capital.",
     "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
@@ -9008,7 +9008,7 @@
   },
   "/travel/india-2018": {
     "metaTitle": "India 2018 - Varanasi | Travel Stories",
-    "metaDescription": "Travel stories from India in 2018. A transformative journey to Varanasi, the holy city on the banks of the Ganges.",
+    "metaDescription": "Travel stories from India in 2018. A transformative first journey to Varanasi, the ancient holy city on the banks of the Ganges, with its burning ghats and rituals.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -9055,7 +9055,7 @@
   },
   "/travel/india-2023": {
     "metaTitle": "India 2023 - Ladakh, Gujarat & South | Travel",
-    "metaDescription": "From Jaipur to Ladakh's Markha Valley, the Rann of Kutch salt desert, and down to Kerala. A grand India tour in 2023.",
+    "metaDescription": "From Jaipur's Pink City to Ladakh's Markha Valley trek, the vast Rann of Kutch salt desert, and down through Mumbai and Goa to Kerala. A grand India tour in 2023.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -9103,7 +9103,7 @@
   },
   "/travel/bolivia-2025": {
     "metaTitle": "Bolivia 2025 - Altiplano Adventures | Travel",
-    "metaDescription": "Travel stories from Bolivia in 2025. La Paz, Sajama National Park, the Salar de Uyuni, and Torotoro's dinosaur canyons.",
+    "metaDescription": "Travel stories from Bolivia in 2025. La Paz's markets, climbing near Sajama, crossing the Salar de Uyuni salt flats, and hiking Torotoro's dinosaur track canyons.",
     "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [

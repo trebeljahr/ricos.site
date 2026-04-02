@@ -30,7 +30,7 @@ export const SeoInfo = ({
   keywords,
   imageAlt,
 }: SeoProps) => {
-  const properTitle = toTitleCase(title) + " | Rico's R3F Playground";
+  const properTitle = toTitleCase(title);
 
   return (
     <>

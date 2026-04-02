@@ -8,27 +8,6 @@ import { byOnlyPublished } from "src/lib/utils/filters";
 import { toTitleCase } from "src/lib/utils/toTitleCase";
 import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
-
-const mainCategories = [
-  "philosophy",
-  "psychology",
-  "neuroscience",
-  "biochemistry",
-  "physics",
-  "evolution",
-  "engineering",
-  "personal development",
-  "AI",
-  "programming",
-  "finances",
-  "mathematics",
-  "traveling",
-  "design",
-  "beauty",
-];
-
-type LinksOnTag<T> = { tag: string; links: T[] };
-
 type DocumentLink = {
   title: string;
   link: string;
@@ -37,24 +16,28 @@ type DocumentLink = {
   contentType: string;
 };
 
-type TaggedDocumentData = LinksOnTag<DocumentLink>;
+type TaggedDocumentData = { tag: string; links: DocumentLink[] };
 
 type Props = {
-  tags: TaggedDocumentData[];
   categories: TaggedDocumentData[];
   seo: SeoInfo | null;
 };
 
 const RenderTags = ({ tags }: { tags: TaggedDocumentData[] }) => {
   return (
-    <div className="flex flex-wrap items-center">
-      {tags.map(({ tag, links }) => {
-        return (
-          <Link key={tag} href={"#" + tag} as={"#" + tag} className="mr-4">
-            {tag} ({links.length})
-          </Link>
-        );
-      })}
+    <div className="flex flex-wrap gap-2 mb-10">
+      {tags.map(({ tag, links }) => (
+        <Link
+          key={tag}
+          href={"#" + tag}
+          className="inline-block px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 no-underline"
+        >
+          {toTitleCase(tag)}{" "}
+          <span className="text-gray-500 dark:text-gray-400">
+            ({links.length})
+          </span>
+        </Link>
+      ))}
     </div>
   );
 };
@@ -62,45 +45,43 @@ const RenderTags = ({ tags }: { tags: TaggedDocumentData[] }) => {
 const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
   return (
     <>
-      {tags.map(({ tag, links }) => {
-        return (
-          <div key={tag}>
-            <h2 id={tag}>{toTitleCase(tag)}</h2>
-            <ul>
-              {links
-                .sort(byReadingTime)
-                .map(
-                  ({
-                    link,
-                    title,
-                    contentType,
-                    metadata: { readingTime } = {},
-                  }) => {
-                    return (
-                      <li key={title}>
-                        <Link href={link || ""} as={link}>
-                          {title} - {contentType} - {readingTime || 0} min
-                        </Link>
-                      </li>
-                    );
-                  }
-                )}
-            </ul>
-          </div>
-        );
-      })}
+      {tags.map(({ tag, links }) => (
+        <div key={tag}>
+          <h2 id={tag}>
+            {toTitleCase(tag)}{" "}
+            <span className="text-gray-500 text-base font-normal">
+              ({links.length})
+            </span>
+          </h2>
+          <ul>
+            {links.sort(byReadingTime).map(({ link, title, contentType, metadata: { readingTime } = {} }) => (
+              <li key={link}>
+                <Link href={link || ""}>
+                  {title}
+                </Link>
+                <span className="text-gray-500 dark:text-gray-400 text-sm ml-2">
+                  {contentType} · {readingTime || 0} min
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </>
   );
 };
 
-const ShowTags = ({ categories, seo }: Props) => {
+export default function CategoriesPage({ categories, seo }: Props) {
   const url = "categories";
   return (
     <Layout
-      title={seo?.metaTitle || "Categories"}
-      description={seo?.metaDescription || `Browse all content on ricos.site by category: ${mainCategories.slice(0, 5).join(", ")}, and more.`}
+      title={seo?.metaTitle || "Categories – Browse All Content by Topic"}
+      description={
+        seo?.metaDescription ||
+        `Browse all content on ricos.site by category. ${categories.length} topics spanning philosophy, science, programming, travel, and more.`
+      }
       url={url}
-      keywords={seo?.keywords || mainCategories}
+      keywords={seo?.keywords || categories.map((c) => c.tag)}
       image={seo?.ogImage || "/assets/blog/network.jpg"}
       imageAlt={seo?.ogImageAlt || "a network of connected dots"}
     >
@@ -108,9 +89,13 @@ const ShowTags = ({ categories, seo }: Props) => {
         <BreadCrumbs path={url} />
 
         <section>
-          <h2>Categories:</h2>
+          <h1 className="mt-16!">Categories</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            {categories.length} topics across{" "}
+            {categories.reduce((sum, c) => sum + c.links.length, 0)} pieces of
+            content.
+          </p>
           <RenderTags tags={categories} />
-          <h2>Links:</h2>
           <RenderAnchors tags={categories} />
         </section>
 
@@ -121,9 +106,7 @@ const ShowTags = ({ categories, seo }: Props) => {
       </main>
     </Layout>
   );
-};
-
-export default ShowTags;
+}
 
 export async function getStaticProps() {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
@@ -141,25 +124,33 @@ export async function getStaticProps() {
     ...newsletters,
     ...podcastnotes,
     ...travelblogs,
-  ];
+  ].filter(byOnlyPublished);
 
-  const categories = mainCategories.map<TaggedDocumentData>((tag) => {
-    return {
-      tag,
-      links: allDocuments
-        .filter(byOnlyPublished)
-        .filter(({ tags }: any) => {
-          return tags?.includes(tag);
-        })
-        .map(({ link, title, metadata, date, contentType }: any) => ({
-          link,
-          title,
-          metadata,
-          date,
-          contentType,
-        })),
-    };
-  });
+  // Auto-discover all tags from content
+  const tagMap = new Map<string, DocumentLink[]>();
+
+  for (const doc of allDocuments) {
+    const tags = (doc.tags || "")
+      .split(",")
+      .map((t: string) => t.trim().toLowerCase())
+      .filter(Boolean);
+
+    for (const tag of tags) {
+      if (!tagMap.has(tag)) tagMap.set(tag, []);
+      tagMap.get(tag)!.push({
+        link: doc.link,
+        title: doc.title,
+        metadata: doc.metadata,
+        date: doc.date,
+        contentType: doc.contentType,
+      });
+    }
+  }
+
+  // Sort categories by number of links (most content first)
+  const categories = Array.from(tagMap.entries())
+    .map(([tag, links]) => ({ tag, links }))
+    .sort((a, b) => b.links.length - a.links.length);
 
   return {
     props: {

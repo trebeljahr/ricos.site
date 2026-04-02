@@ -93,22 +93,25 @@ export const NewsletterForm = ({
   return (
     <div className="w-full mt-32">
       {success ? (
-        <div className="rounded-md overflow-hidden p-3 py-3 bg-white shadow-lg w-full">
+        <div className="rounded-md overflow-hidden p-3 py-3 bg-white dark:bg-gray-800 shadow-lg w-full">
           <div className="newsletter-success-ribbon w-full" />
           <div className="ml-2 md:ml-5">
             <div className="flex w-full justify-center">
               <ConfettiExplosion {...mediumConfettiProps} />
             </div>
-            <h2 className="pt-0 mt-0 mb-3 flex items-center">
-              Success
+            <h2 className="pt-0 mt-0 mb-3 flex items-center text-gray-900 dark:text-white">
+              Almost there!
               <FaCheckCircle className="text-green-500 ml-2" />
             </h2>
-            <p>{success}</p>
+            <p className="text-lg font-medium text-gray-800 dark:text-gray-100 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-md p-4">
+              Check your inbox and click the confirmation link to complete
+              your signup. If you don&apos;t see it, check your spam folder.
+            </p>
 
             {!link && defaultLink}
 
             <button
-              className="mt-5 text-left"
+              className="mt-5 text-left text-gray-600 dark:text-gray-400"
               onClick={() => setSuccess(null)}
               aria-label="Sign up with another email address"
             >

@@ -42,29 +42,25 @@ export default function EmailSignupSuccess() {
 
       <Layout
         title="Email Signup Success"
-        description="This page is displayed when a user has successfully completed signup for the Live and Learn newsletter"
+        description="You have successfully signed up for the Live and Learn newsletter by Rico Trebeljahr."
         url="email-signup-success"
         keywords={["newsletter", "email", "signup", "success"]}
         image="/assets/blog/success.png"
         imageAlt="a green success checkmark on a black background"
       >
-        <article className="mt-16 mx-auto max-w-prose">
-          <h1>Success</h1>
-          <p>
-            Welcome to my newsletter, emails go out Sunday every two weeks. Cant
-            wait? You can still read all of the older newsletters that you
-            missed so far at{" "}
-            <Link as={`/newsletters`} href="/newsletters">
-              /newsletters
-            </Link>
-            .
+        <article className="py-20 px-3 mx-auto max-w-prose">
+          <h1 className="mt-16!">Welcome aboard!</h1>
+          <p className="text-lg">
+            You have successfully confirmed your subscription to Live and
+            Learn. Emails go out every two weeks on Sunday.
           </p>
           <p>
-            Or alternatively check out some of my other writing at{" "}
-            <Link as={`/posts`} href="/posts">
-              /posts
-            </Link>
-            .
+            Can&apos;t wait? You can read all of the older newsletters at{" "}
+            <Link href="/newsletters">/newsletters</Link>.
+          </p>
+          <p>
+            Or check out some of my other writing at{" "}
+            <Link href="/posts">/posts</Link>.
           </p>
         </article>
       </Layout>

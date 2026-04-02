@@ -33,10 +33,12 @@ export const SingleStylizedGrassPlane = ({
     materialRef.current.textures = [grassTexture, cloudTexture];
   }, []);
 
-  useFrame(({ clock }) => {
-    const elapsedTime = clock.getElapsedTime();
+  const timeRef = useRef(0);
 
-    materialRef.current.iTime = elapsedTime * 1000;
+  useFrame((state, delta) => {
+    timeRef.current += delta;
+
+    materialRef.current.iTime = timeRef.current * 1000;
   });
 
   const geom = useMemo(() => {

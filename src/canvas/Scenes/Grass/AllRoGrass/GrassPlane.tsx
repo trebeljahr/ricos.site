@@ -34,19 +34,21 @@ export const AllRoGrass = ({
   const bW = 0.12;
   const joints = 5;
   const materialRef = useRef<GrassMaterialType>(null!);
+  const timeRef = useRef(0);
   const [texture, alphaMap] = useLoader(TextureLoader, [
     "/3d-assets/textures/grass/blade_diffuse.jpg",
     "/3d-assets/textures/grass/blade_alpha.jpg",
   ]);
 
-  useFrame(({ clock }) => {
+  useFrame((state, delta) => {
+    timeRef.current += delta;
     materialRef.current.map = texture;
     materialRef.current.alphaMap = alphaMap;
     materialRef.current.toneMapped = false;
     materialRef.current.bladeHeight = bH;
     materialRef.current.bladeWidth = bW;
     materialRef.current.joints = joints;
-    materialRef.current.time = clock.getElapsedTime() / 4;
+    materialRef.current.time = timeRef.current / 4;
   });
 
   const attributeData = useMemo(
@@ -160,19 +162,21 @@ export const AllRoGrassForArbitrarySurface = ({
   const bW = 0.12;
   const joints = 5;
   const materialRef = useRef<GrassMaterialType>(null!);
+  const timeRef = useRef(0);
   const [texture, alphaMap] = useLoader(TextureLoader, [
     "/3d-assets/textures/grass/blade_diffuse.jpg",
     "/3d-assets/textures/grass/blade_alpha.jpg",
   ]);
 
-  useFrame(({ clock }) => {
+  useFrame((state, delta) => {
+    timeRef.current += delta;
     materialRef.current.map = texture;
     materialRef.current.alphaMap = alphaMap;
     materialRef.current.toneMapped = false;
     materialRef.current.bladeHeight = bH;
     materialRef.current.bladeWidth = bW;
     materialRef.current.joints = joints;
-    materialRef.current.time = clock.getElapsedTime() / 4;
+    materialRef.current.time = timeRef.current / 4;
   });
 
   const attributeData = useMemo(

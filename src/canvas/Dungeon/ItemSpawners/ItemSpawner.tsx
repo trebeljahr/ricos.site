@@ -60,12 +60,14 @@ export const ItemSpawner: ItemSpawnerType = ({
   }, [intersection]);
 
   const ItemRef = useRef<Group>(null!);
+  const timeRef = useRef(0);
 
-  useFrame(({ clock }) => {
+  useFrame((state, delta) => {
     if (!ItemRef.current) return;
+    timeRef.current += delta;
 
     ItemRef.current.rotation.y += 0.01;
-    ItemRef.current.position.y = Math.sin(clock.getElapsedTime()) * 0.1 - 0.6;
+    ItemRef.current.position.y = Math.sin(timeRef.current) * 0.1 - 0.6;
   });
 
   if (intersection) return null;

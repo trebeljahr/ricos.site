@@ -37,84 +37,86 @@ export function FullCanvasShaderMesh() {
 
   const shaderRef = useRef<ShaderMaterial>(null!);
   const frameCount = useRef(0);
-  const { size } = useThree();
-
-  useFrame(({ clock, pointer }, delta) => {
-    if (!shaderRef.current) return;
-    frameCount.current++;
-    if (isShaderToy) {
-      shaderRef.current.uniforms.iResolution.value.set(
-        size.width,
-        size.height,
-        window.devicePixelRatio
-      );
-      shaderRef.current.uniforms.iTime.value = clock.getElapsedTime();
-      shaderRef.current.uniforms.iTimeDelta.value = delta;
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth() + 1; // getMonth() is zero-based
-      const day = now.getDate();
-      const secondsSinceMidnight =
-        now.getSeconds() + 60 * (now.getMinutes() + 60 * now.getHours());
-      shaderRef.current.uniforms.iDate.value.set(
-        year,
-        month,
-        day,
-        secondsSinceMidnight
-      );
-      shaderRef.current.uniforms.iFrame.value = frameCount.current;
-      shaderRef.current.uniforms.iMouse.value.set(pointer.x, pointer.y, 0, 0);
-    } else {
-      shaderRef.current.uniforms.u_time.value = clock.getElapsedTime();
-      shaderRef.current.uniforms.u_mouse.value.copy(pointer);
-      shaderRef.current.uniforms.u_resolution.value.set(
-        size.width,
-        size.height
-      );
-      shaderRef.current.uniforms.u_pixelRatio.value = window.devicePixelRatio;
-    }
-  });
+  const timeRef = useRef(0);
 
   const textureUniforms = useMemo(
     () =>
       textures.reduce((acc, texture, index) => {
         acc[`u_tex${index}`] = { value: texture };
         acc[`iChannel${index}`] = { value: texture };
-
         return acc;
       }, {} as { [key: string]: { value: Texture } }),
     [textures]
   );
+
+  const uniforms = useMemo(
+    () => ({
+      u_time: { value: 0 },
+      u_resolution: { value: new Vector2(1, 1) },
+      u_pixelRatio: {
+        value: typeof window !== "undefined" ? window.devicePixelRatio : 1,
+      },
+      u_mouse: { value: new Vector2(0, 0) },
+      iResolution: { value: new Vector3(1, 1, 1) },
+      iTime: { value: 0 },
+      iTimeDelta: { value: 0 },
+      iDate: { value: new Vector4() },
+      iFrame: { value: 0 },
+      iMouse: { value: new Vector4(0, 0, 0, 0) },
+      iChannelTime: { value: [0, 0, 0, 0] },
+      iSampleRate: { value: 44100 },
+      iChannelResolution: {
+        value: [new Vector3(), new Vector3(), new Vector3(), new Vector3()],
+      },
+      ...textureUniforms,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [fragmentShader]
+  );
+
+  useFrame(({ size, pointer }, delta) => {
+    if (!shaderRef.current) return;
+
+    timeRef.current += delta;
+    frameCount.current++;
+
+    const mat = shaderRef.current;
+    const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
+
+    if (isShaderToy) {
+      mat.uniforms.iResolution.value.set(size.width, size.height, dpr);
+      mat.uniforms.iTime.value = timeRef.current;
+      mat.uniforms.iTimeDelta.value = delta;
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+      const day = now.getDate();
+      const secondsSinceMidnight =
+        now.getSeconds() + 60 * (now.getMinutes() + 60 * now.getHours());
+      mat.uniforms.iDate.value.set(year, month, day, secondsSinceMidnight);
+      mat.uniforms.iFrame.value = frameCount.current;
+      mat.uniforms.iMouse.value.set(pointer.x, pointer.y, 0, 0);
+    } else {
+      mat.uniforms.u_time.value = timeRef.current;
+      mat.uniforms.u_mouse.value.copy(pointer);
+      mat.uniforms.u_resolution.value.set(size.width, size.height);
+      mat.uniforms.u_pixelRatio.value = dpr;
+    }
+
+    // Sync texture uniforms
+    for (const key in textureUniforms) {
+      if (mat.uniforms[key]) {
+        mat.uniforms[key].value = textureUniforms[key].value;
+      }
+    }
+  });
 
   return (
     <mesh key={fragmentShader}>
       <planeGeometry args={[2, 2]} />
       <shaderMaterial
         ref={shaderRef}
-        uniforms={{
-          u_time: { value: 0 },
-          u_resolution: { value: new Vector2(size.width, size.height) },
-          u_pixelRatio: { value: window.devicePixelRatio },
-          u_mouse: { value: new Vector2(0, 0) },
-          iResolution: {
-            value: new Vector3(
-              size.width,
-              size.height,
-              window.devicePixelRatio
-            ),
-          },
-          iTime: { value: 0 },
-          iTimeDelta: { value: 0 },
-          iDate: { value: new Vector4() },
-          iFrame: { value: 0 },
-          iMouse: { value: new Vector4(0, 0, 0, 0) },
-          iChannelTime: { value: [0, 0, 0, 0] },
-          iSampleRate: { value: 44100 },
-          iChannelResolution: {
-            value: [new Vector3(), new Vector3(), new Vector3(), new Vector3()],
-          },
-          ...textureUniforms,
-        }}
+        uniforms={uniforms}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
       />

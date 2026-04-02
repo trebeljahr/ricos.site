@@ -4,9 +4,11 @@ import { useRef } from "react";
 
 export const HealthbarsDemo = () => {
   const health = useRef(0.75);
+  const timeRef = useRef(0);
 
-  useFrame((state) => {
-    health.current = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.5 + 0.5;
+  useFrame((state, delta) => {
+    timeRef.current += delta;
+    health.current = Math.sin(timeRef.current * 0.5) * 0.5 + 0.5;
   });
 
   return (

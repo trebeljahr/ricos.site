@@ -150,8 +150,11 @@ export const MeshMerger = ({
     return { pointGeo, pointMat, samplers };
   }, [diffuseTexture, numParticles, sword, axe]);
 
-  useFrame(({ clock }) => {
-    const totalTime = clock.getElapsedTime();
+  const timeRef = useRef(0);
+
+  useFrame((state, delta) => {
+    timeRef.current += delta;
+    const totalTime = timeRef.current;
     const timeElapsed = totalTime / samplers.length;
     const blendIndex = timeElapsed % samplers.length;
     pointMat.uniforms.time.value = totalTime;

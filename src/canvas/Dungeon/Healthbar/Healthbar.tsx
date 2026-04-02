@@ -107,13 +107,15 @@ export const GenericHealthBar = ({
 }) => {
   const meshRef = useRef<Mesh>(null!);
   const materialRef = useRef<typeof HealthBarMaterial & typeof uniforms>(null!);
+  const timeRef = useRef(0);
 
   const sizeVec = useMemo(() => new Vector2(scale[0], scale[2]), [scale]);
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     if (!materialRef.current || health.current === null) return;
+    timeRef.current += delta;
 
-    materialRef.current.time = state.clock.getElapsedTime();
+    materialRef.current.time = timeRef.current;
     materialRef.current.health = health.current;
 
     materialRef.current.size = sizeVec;

@@ -58,10 +58,12 @@ const Demo = () => {
   const lightningColor = "#70e0ff";
 
   const ref = useRef<FixedLightningStrike>(null);
+  const timeRef = useRef(0);
 
-  useFrame(({ clock }) => {
+  useFrame((state, delta) => {
     if (!ref.current) return;
-    const t = clock.getElapsedTime();
+    timeRef.current += delta;
+    const t = timeRef.current;
     ref.current.rayParameters.sourceOffset!.y = Math.sin(t) * 10;
     ref.current.rayParameters.destOffset!.y = Math.cos(t) * 10;
   });

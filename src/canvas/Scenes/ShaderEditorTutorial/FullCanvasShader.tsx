@@ -1,5 +1,5 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { IUniform, ShaderMaterial, Vector2 } from "three";
 
 type Props = {
@@ -12,29 +12,42 @@ export function FullCanvasShader({
   fragmentShader,
 }: Props) {
   const shaderRef = useRef<ShaderMaterial>(null!);
-  const { size } = useThree();
+  const timeRef = useRef(0);
 
-  useFrame(({ clock }) => {
-    if (shaderRef.current) {
-      shaderRef.current.uniforms.u_time.value = clock.getElapsedTime();
-      shaderRef.current.uniforms.u_resolution.value.set(
-        size.width,
-        size.height
-      );
+  const uniforms = useMemo(
+    () => ({
+      ...otherUniforms,
+      u_time: { value: 0 },
+      u_resolution: { value: new Vector2(1, 1) },
+      u_pixelRatio: {
+        value:
+          typeof window !== "undefined" ? window.devicePixelRatio : 1,
+      },
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [fragmentShader]
+  );
+
+  useFrame(({ size }, delta) => {
+    const mat = shaderRef.current;
+    if (!mat) return;
+
+    timeRef.current += delta;
+    mat.uniforms.u_time.value = timeRef.current;
+    mat.uniforms.u_resolution.value.set(size.width, size.height);
+
+    // Sync otherUniforms values every frame (from Leva controls)
+    for (const key in otherUniforms) {
+      if (mat.uniforms[key]) {
+        mat.uniforms[key].value = otherUniforms[key].value;
+      }
     }
   });
 
   return (
     <mesh>
       <planeGeometry args={[2, 2]} />
-      <shaderMaterial
-        ref={shaderRef}
-        uniforms={{
-          ...otherUniforms,
-          u_time: { value: 0 },
-          u_resolution: { value: new Vector2(size.width, size.height) },
-          u_pixelRatio: { value: window.devicePixelRatio },
-        }}
+      <shaderMaterial ref={shaderRef} uniforms={uniforms}
         vertexShader={`
           varying vec2 vUv;
           void main() {

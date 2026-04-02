@@ -53,20 +53,26 @@ const usePlayer = () => {
 
     const { inputSpeed, inputBoostSpeed, position } = player;
     if (forward || backward || strafeLeft || strafeRight) {
-      player.rotation = thirdPersonCamera.theta;
+      let targetRotation = thirdPersonCamera.theta;
 
       if (forward) {
-        if (strafeLeft) player.rotation += Math.PI * 0.25;
-        else if (strafeRight) player.rotation -= Math.PI * 0.25;
+        if (strafeLeft) targetRotation += Math.PI * 0.25;
+        else if (strafeRight) targetRotation -= Math.PI * 0.25;
       } else if (backward) {
-        if (strafeLeft) player.rotation += Math.PI * 0.75;
-        else if (strafeRight) player.rotation -= Math.PI * 0.75;
-        else player.rotation -= Math.PI;
+        if (strafeLeft) targetRotation += Math.PI * 0.75;
+        else if (strafeRight) targetRotation -= Math.PI * 0.75;
+        else targetRotation -= Math.PI;
       } else if (strafeLeft) {
-        player.rotation += Math.PI * 0.5;
+        targetRotation += Math.PI * 0.5;
       } else if (strafeRight) {
-        player.rotation -= Math.PI * 0.5;
+        targetRotation -= Math.PI * 0.5;
       }
+
+      // Smoothly interpolate rotation
+      let diff = targetRotation - player.rotation;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      while (diff < -Math.PI) diff += Math.PI * 2;
+      player.rotation += diff * Math.min(1, 15 * delta);
 
       const speed = boost ? inputBoostSpeed : inputSpeed;
 
@@ -77,20 +83,18 @@ const usePlayer = () => {
       position.current[2] -= z;
     }
 
+    // Update elevation BEFORE computing delta so Y is consistent
+    const { height } = getHeight(
+      position.current[0],
+      position.current[2]
+    );
+    position.current[1] = height;
+
     vec3.sub(position.delta, position.current, position.previous);
     vec3.copy(position.previous, position.current);
 
     player.speed = vec3.len(position.delta);
-
-    // Update elevation
-    const { height: elevation } = getHeight(
-      position.current[0],
-      position.current[2]
-    );
-
-    if (elevation) position.current[1] = elevation;
-    else position.current[1] = 0;
-  });
+  }, -10); // Run early, before character rendering
 
   return playerRef.current;
 };

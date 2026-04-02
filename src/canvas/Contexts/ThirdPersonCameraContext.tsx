@@ -92,7 +92,7 @@ const useThirdPersonCameraState = () => {
 
     if (elevation && cam.position[1] < elevation + 1)
       cam.position[1] = elevation + 1;
-  });
+  }, -5); // After player (-10)
 
   return thirdPersonCamera.current;
 };

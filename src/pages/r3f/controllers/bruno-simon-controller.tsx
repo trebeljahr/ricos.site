@@ -3,8 +3,6 @@ import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { ChunkRenderer } from "@r3f/ChunkGenerationSystem/ChunkRenderer";
 import { BrunoSimonController } from "@r3f/Controllers/BrunoSimonController";
 
-import { Physics } from "@react-three/rapier";
-import { physicsDebug } from "src/canvas/ChunkGenerationSystem/config";
 import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { MeshStandardMaterial } from "three";
 
@@ -39,26 +37,25 @@ const Page = ({ seo }: { seo: SeoInfo | null }) => {
   };
   return (
     <ThreeFiberLayout seoInfo={seoInfo}>
-      <Physics debug={physicsDebug}>
-        <hemisphereLight intensity={0.35} />
-        <ambientLight intensity={1.0} />
-        <directionalLight position={[10, 10, 5]} intensity={1} />
-        <fogExp2 attach="fog" args={["#f0f0f0", 0.008]} />
-        <color args={["#f0f0f0"]} attach="background" />
+      <hemisphereLight intensity={0.35} />
+      <ambientLight intensity={1.0} />
+      <directionalLight position={[10, 10, 5]} intensity={1} />
+      <fogExp2 attach="fog" args={["#f0f0f0", 0.008]} />
+      <color args={["#f0f0f0"]} attach="background" />
 
-        <ChunkProvider>
-          <ChunkRenderer
-            material={
-              new MeshStandardMaterial({
-                color: "#8bcd5c",
-                roughness: 0.7,
-                metalness: 0.2,
-                wireframe: false,
-              })
-            }
-          />
-        </ChunkProvider>
-      </Physics>
+      <ChunkProvider>
+        <ChunkRenderer
+          withCollider={false}
+          material={
+            new MeshStandardMaterial({
+              color: "#8bcd5c",
+              roughness: 0.7,
+              metalness: 0.2,
+              wireframe: false,
+            })
+          }
+        />
+      </ChunkProvider>
       <BrunoSimonController />
     </ThreeFiberLayout>
   );

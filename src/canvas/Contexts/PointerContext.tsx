@@ -63,7 +63,7 @@ export const usePointerState = () => {
 
   useFrame(() => {
     pointer.current.update();
-  });
+  }, -30); // Run first: before camera and player
 
   return pointer.current;
 };

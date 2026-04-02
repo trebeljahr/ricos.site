@@ -2,11 +2,12 @@ import {
   flatShading,
   mode,
   normalsDebug,
+  tileSize,
   wireframe,
 } from "@r3f/ChunkGenerationSystem/config";
 import { useHelper } from "@react-three/drei";
-import { RigidBody } from "@react-three/rapier";
-import { ReactNode, useEffect, useRef } from "react";
+import { HeightfieldCollider, RigidBody } from "@react-three/rapier";
+import { ReactNode, useRef } from "react";
 import { BufferGeometry, DoubleSide, Material, Mesh } from "three";
 import { VertexNormalsHelper } from "three-stdlib";
 
@@ -23,10 +24,12 @@ export const HeightfieldTileWithCollider = ({
   geometry,
   heightfield,
   material = defaultMaterial,
+  withCollider = true,
 }: {
   geometry: BufferGeometry;
   heightfield: number[];
   material?: ((...args: any) => ReactNode) | Material;
+  withCollider?: boolean;
 }) => {
   const meshRef = useRef<Mesh>(null!);
 
@@ -35,32 +38,34 @@ export const HeightfieldTileWithCollider = ({
     !(material instanceof Material) &&
     (material as (...args: any) => ReactNode);
 
+  const resolution = Math.round(Math.sqrt(heightfield.length));
+  const divisions = resolution - 1;
+
   return (
     <>
-      <RigidBody type="fixed" colliders="trimesh">
-        <mesh
-          ref={meshRef}
-          geometry={geometry}
-          material={material instanceof Material ? material : undefined}
-          // castShadow={true}
-          receiveShadow={true}
-          visible={mode !== "none"}
-        >
-          {MaterialComponent && <MaterialComponent displacementScale={0} />}
-        </mesh>
-      </RigidBody>
-      {/* <RigidBody colliders={false}>
-        <group rotation={[0, -Math.PI / 2, 0]}>
-          <HeightfieldCollider
-            args={[
-              divisions - 1,
-              divisions - 1,
-              heightfield,
-              { x: tileSize, y: 1, z: tileSize },
-            ]}
-          />
-        </group>
-      </RigidBody> */}
+      <mesh
+        ref={meshRef}
+        geometry={geometry}
+        material={material instanceof Material ? material : undefined}
+        receiveShadow={true}
+        visible={mode !== "none"}
+      >
+        {MaterialComponent && <MaterialComponent displacementScale={0} />}
+      </mesh>
+      {withCollider && (
+        <RigidBody type="fixed" colliders={false}>
+          <group rotation={[0, -Math.PI / 2, 0]}>
+            <HeightfieldCollider
+              args={[
+                divisions,
+                divisions,
+                heightfield,
+                { x: tileSize, y: 1, z: tileSize },
+              ]}
+            />
+          </group>
+        </RigidBody>
+      )}
     </>
   );
 };

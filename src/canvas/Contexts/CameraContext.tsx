@@ -58,7 +58,7 @@ export const useCameraState = () => {
 
     sceneCamera.position.fromArray(camera.current.position);
     sceneCamera.quaternion.fromArray(camera.current.quaternion);
-  });
+  }, -3); // After third person camera (-5), before render (0)
 
   return camera.current;
 };

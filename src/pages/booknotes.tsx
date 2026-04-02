@@ -4,7 +4,6 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
 import { Search } from "@components/SearchBar";
-// import Search from "@components/SearchBar/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Booknote } from "@velite";
 import { useState } from "react";
@@ -18,8 +17,9 @@ type Props = {
 };
 
 export default function Books({ booknotes, seo }: Props) {
-  const [filtered, setFiltered] = useState<Booknote[]>([]);
+  const [filtered, setFiltered] = useState<Booknote[] | null>(null);
 
+  const displayedBooks = filtered ?? booknotes;
   const url = "booknotes";
 
   return (
@@ -45,10 +45,10 @@ export default function Books({ booknotes, seo }: Props) {
             searchByTitle="Search by author, title, or tags..."
             searchKeys={["bookAuthor", "title", "tags"]}
           />
-          <p>Amount: {filtered.length}</p>
+          <p>Amount: {displayedBooks.length}</p>
         </div>
         <div className="prose-a:no-underline">
-          {filtered.map((book, index) => {
+          {displayedBooks.map((book, index) => {
             return <BookPreview key={book.link} book={book} index={index} />;
           })}
         </div>

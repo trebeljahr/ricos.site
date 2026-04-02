@@ -17,8 +17,9 @@ type Props = {
 };
 
 export default function Podcastnotes({ podcastnotes, seo }: Props) {
-  const [filtered, setFiltered] = useState<CommonMetadata[]>([]);
+  const [filtered, setFiltered] = useState<CommonMetadata[] | null>(null);
 
+  const displayedNotes = filtered ?? podcastnotes;
   const url = "podcastnotes";
   return (
     <Layout
@@ -43,9 +44,9 @@ export default function Podcastnotes({ podcastnotes, seo }: Props) {
             searchByTitle="Search by title, show name or tags..."
             searchKeys={["title", "show", "tags"]}
           />
-          <p>Amount: {filtered.length}</p>
+          <p>Amount: {displayedNotes.length}</p>
 
-          {filtered.map(
+          {displayedNotes.map(
             ({ link, slug, title, show, episode, rating, excerpt }) => {
               return (
                 <div key={slug}>

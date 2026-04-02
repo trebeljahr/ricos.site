@@ -17,7 +17,8 @@ type Quote = {
 };
 
 export default function Quotes({ seo }: { seo: SeoInfo | null }) {
-  const [filtered, setFiltered] = useState<Quote[]>([]);
+  const [filtered, setFiltered] = useState<Quote[] | null>(null);
+  const displayedQuotes = filtered ?? quotes;
   const url = "quotes";
 
   return (
@@ -44,8 +45,8 @@ export default function Quotes({ seo }: { seo: SeoInfo | null }) {
             searchKeys={["author"]}
             searchByTitle="Search by author..."
           />
-          <p>Amount: {filtered.length}</p>
-          {filtered.map(({ author, content }, index) => {
+          <p>Amount: {displayedQuotes.length}</p>
+          {displayedQuotes.map(({ author, content }, index) => {
             return (
               <div key={author + index} className="quote">
                 <blockquote>

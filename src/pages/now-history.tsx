@@ -19,11 +19,18 @@ type Props = {
 };
 
 const NowMDX = ({ code, frontmatter }: { code: string; frontmatter: Record<string, unknown> }) => {
-  const Component = useMemo(
-    () => getMDXComponent(code, { ...frontmatter, frontmatter }),
-    [code, frontmatter]
-  );
-  return <Component components={MarkdownRenderers} />;
+  const result = useMemo(() => {
+    try {
+      return { Component: getMDXComponent(code, { ...frontmatter, frontmatter }), error: null };
+    } catch {
+      return { Component: null, error: "Failed to render this snapshot" };
+    }
+  }, [code, frontmatter]);
+
+  if (result.error || !result.Component) {
+    return <p className="text-gray-500 italic">{result.error}</p>;
+  }
+  return <result.Component components={MarkdownRenderers} />;
 };
 
 export default function NowHistory({ entries }: Props) {
@@ -179,6 +186,9 @@ export async function getStaticProps() {
       let content: { code: string; frontmatter: Record<string, unknown> } | null = null;
       try {
         const result = await bundleMDX({ source: rawContent });
+        // Validate that the bundled code can actually be evaluated —
+        // some historical commits produce code that fails at runtime
+        new Function(result.code);
         content = { code: result.code, frontmatter: result.frontmatter };
       } catch (e) {
         console.error(`Failed to bundle MDX for ${commit.hash.slice(0, 8)} (${commit.date}):`, (e as Error).message?.slice(0, 200));

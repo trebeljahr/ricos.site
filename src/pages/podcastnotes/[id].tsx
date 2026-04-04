@@ -5,16 +5,20 @@ import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
+import { Backlinks } from "@components/Backlinks";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Podcastnote as PodcastnoteType } from "@velite";
 
 import { byOnlyPublished } from "src/lib/utils/filters";
 
+type BacklinkItem = { title: string; link: string; type: string };
+
 type Props = {
   podcastnote: PodcastnoteType;
+  backlinks: BacklinkItem[];
 };
 
-const PodcastnoteComponent = ({ podcastnote }: Props) => {
+const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
   const url = `podcastnotes/${podcastnote.slug}`;
   return (
     <Layout
@@ -83,6 +87,7 @@ const PodcastnoteComponent = ({ podcastnote }: Props) => {
         </article>
 
         <footer>
+          <Backlinks items={backlinks} />
           <ToTopButton />
           <NewsletterForm />
         </footer>
@@ -106,9 +111,13 @@ export async function getStaticProps({ params }: Params) {
     .filter(byOnlyPublished)
     .find(({ slug }) => params.id === slug);
 
+  const { getBacklinks } = await import("src/lib/utils/getBacklinks");
+  const backlinks = getBacklinks(podcastnote.link);
+
   return {
     props: {
       podcastnote,
+      backlinks,
     },
   };
 }

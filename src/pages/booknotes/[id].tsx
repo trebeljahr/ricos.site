@@ -6,6 +6,7 @@ import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
+import { Backlinks } from "@components/Backlinks";
 import { RelatedContent } from "@components/RelatedContent";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Booknote } from "@velite";
@@ -13,10 +14,12 @@ import type { Booknote } from "@velite";
 import { byOnlyPublished } from "src/lib/utils/filters";
 
 type RelatedItem = { title: string; link: string; excerpt?: string };
+type BacklinkItem = { title: string; link: string; type: string };
 
 type Props = {
   booknote: Booknote;
   relatedBooks: RelatedItem[];
+  backlinks: BacklinkItem[];
 };
 
 const BooknoteComponent = ({ booknote }: Props) => {
@@ -38,7 +41,7 @@ const BooknotesWithDefault = ({ booknote }: Props) => {
   return <BooknoteComponent booknote={booknote} />;
 };
 
-const Book = ({ booknote, relatedBooks }: Props) => {
+const Book = ({ booknote, relatedBooks, backlinks }: Props) => {
   const url = `booknotes/${booknote.slug}`;
   return (
     <Layout
@@ -106,6 +109,7 @@ const Book = ({ booknote, relatedBooks }: Props) => {
         </article>
 
         <footer>
+          <Backlinks items={backlinks} />
           <RelatedContent items={relatedBooks} heading="More book notes" />
           <NewsletterForm />
           <ToTopButton />
@@ -138,10 +142,14 @@ export async function getStaticProps({ params }: Params) {
     })
   );
 
+  const { getBacklinks } = await import("src/lib/utils/getBacklinks");
+  const backlinks = getBacklinks(booknote.link);
+
   return {
     props: {
       booknote,
       relatedBooks,
+      backlinks,
     },
   };
 }

@@ -7,6 +7,7 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { MDXContent } from "@components/MDXContent";
 
 import { MetadataDisplay } from "@components/MetadataDisplay";
+import { Backlinks } from "@components/Backlinks";
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import dynamic from "next/dynamic";
 
@@ -14,11 +15,14 @@ const MDXContentWithDemos = dynamic(
   () => import("@components/MDXContentWithDemos").then((m) => m.MDXContentWithDemos),
   { ssr: true }
 );
+type BacklinkItem = { title: string; link: string; type: string };
+
 type Props = {
   page: PageType;
+  backlinks: BacklinkItem[];
 };
 
-export default function Page({ page }: Props) {
+export default function Page({ page, backlinks }: Props) {
   const { subtitle, title, cover } = page;
 
   return (
@@ -65,6 +69,7 @@ export default function Page({ page }: Props) {
         </article>
 
         <footer>
+          <Backlinks items={backlinks} />
           <NewsletterForm />
           <ToTopButton />
         </footer>
@@ -93,5 +98,8 @@ export async function getStaticProps({ params }: Params) {
   const pages: PageType[] = loadVeliteData("pages.json");
   const page = pages.find((page: PageType) => page.slug === params.id);
 
-  return { props: { page } };
+  const { getBacklinks } = await import("src/lib/utils/getBacklinks");
+  const backlinks = getBacklinks(page.link);
+
+  return { props: { page, backlinks } };
 }

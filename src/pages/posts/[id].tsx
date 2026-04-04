@@ -13,6 +13,7 @@ import { MetadataDisplay } from "@components/MetadataDisplay";
 import { ReadMore } from "@components/MoreStories";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
+import { Backlinks } from "@components/Backlinks";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Post } from "@velite";
 import { ReactNode } from "react";
@@ -21,15 +22,19 @@ import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { getRelatedContent } from "src/lib/utils/getRelatedContent";
 
+type BacklinkItem = { title: string; link: string; type: string };
+
 type Props = {
   children: ReactNode;
   morePosts: Post[];
   post: Post;
+  backlinks: BacklinkItem[];
 };
 
 export const BlogLayout = ({
   children,
   morePosts,
+  backlinks,
   post: {
     excerpt,
     title,
@@ -97,7 +102,8 @@ export const BlogLayout = ({
           <div className="mx-auto max-w-prose mt-20">{children}</div>
         </section>
 
-        <footer>
+        <footer className="mx-auto max-w-prose">
+          <Backlinks items={backlinks} />
           <NewsletterForm />
           {morePosts && <ReadMore posts={morePosts} />}
           <ToTopButton />
@@ -109,11 +115,12 @@ export const BlogLayout = ({
 type BlogProps = {
   post: Post;
   morePosts: Post[];
+  backlinks: BacklinkItem[];
 };
 
-export default function PostComponent({ post, morePosts }: BlogProps) {
+export default function PostComponent({ post, morePosts, backlinks }: BlogProps) {
   return (
-    <BlogLayout post={post} morePosts={morePosts}>
+    <BlogLayout post={post} morePosts={morePosts} backlinks={backlinks}>
       {post.hasDemos ? (
         <MDXContentWithDemos source={post.content} />
       ) : (
@@ -147,11 +154,13 @@ type Params = { params: { id: string } };
 
 export async function getStaticProps({ params }: Params) {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
+  const { getBacklinks } = await import("src/lib/utils/getBacklinks");
   const posts = loadVeliteData("posts.json");
   const post = posts
     .find((post: Post) => post.slug === params.id);
   const publishedPosts = extractAndSortMetadata(posts);
   const morePosts = getRelatedContent(post, publishedPosts, 3);
+  const backlinks = getBacklinks(post.link);
 
-  return { props: { post, morePosts } };
+  return { props: { post, morePosts, backlinks } };
 }

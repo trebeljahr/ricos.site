@@ -3,6 +3,7 @@ import { ImageWithLoader } from "@components/ImageWithLoader";
 import { JsonLd, BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
+import { Backlinks } from "@components/Backlinks";
 import { RelatedContent } from "@components/RelatedContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
@@ -20,11 +21,14 @@ import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type RelatedItem = { title: string; link: string; excerpt?: string };
 
+type BacklinkItem = { title: string; link: string; type: string };
+
 type TravelBlogProps = {
   post: Travelblog;
   nextSlug: string | null;
   previousSlug: string | null;
   relatedStories: RelatedItem[];
+  backlinks: BacklinkItem[];
 };
 
 interface LayoutProps extends TravelBlogProps {
@@ -51,6 +55,7 @@ export const TravelBlogLayout = ({
   nextSlug,
   previousSlug,
   relatedStories,
+  backlinks,
 }: LayoutProps) => {
   const url = `travel/${parentFolder}/${slug}`;
   return (
@@ -106,6 +111,7 @@ export const TravelBlogLayout = ({
         <article className="mx-auto max-w-prose">{children}</article>
 
         <footer className="mx-auto max-w-prose">
+          <Backlinks items={backlinks} />
           <RelatedContent items={relatedStories} heading="More travel stories" />
           <ToTopButton />
           <NewsletterForm />
@@ -121,6 +127,7 @@ export default function PostComponent({
   previousSlug,
   nextSlug,
   relatedStories,
+  backlinks,
 }: TravelBlogProps) {
   return (
     <TravelBlogLayout
@@ -128,6 +135,7 @@ export default function PostComponent({
       previousSlug={previousSlug}
       nextSlug={nextSlug}
       relatedStories={relatedStories}
+      backlinks={backlinks}
     >
       <MDXContent source={post.content} />
     </TravelBlogLayout>
@@ -189,12 +197,16 @@ export async function getStaticProps({
     excerpt: s.excerpt?.slice(0, 120) + "...",
   }));
 
+  const { getBacklinks } = await import("src/lib/utils/getBacklinks");
+  const backlinks = getBacklinks(travelingStory.link);
+
   return {
     props: {
       post: replaceUndefinedWithNull(travelingStory),
       nextSlug,
       previousSlug,
       relatedStories,
+      backlinks,
     },
   };
 }

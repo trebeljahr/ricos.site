@@ -27,10 +27,13 @@ if (!process.env.VELITE_STARTED && (isDev || isBuild)) {
   links["Shader Demos"] = shaders.map((name) => ({ name, url: `/r3f/shaders/${name}` }));
   await writeFile(resolve(".velite/r3f-links.json"), JSON.stringify({ links }));
 
-  // Generate search index from velite data
+  // Generate search index and backlinks from velite data
   const { execSync } = await import("child_process");
   try {
     execSync("npx tsx src/scripts/generateSearchIndex.ts", { stdio: "pipe" });
+  } catch {}
+  try {
+    execSync("npx tsx src/scripts/generateBacklinks.ts", { stdio: "pipe" });
   } catch {}
 }
 

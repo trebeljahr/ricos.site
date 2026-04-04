@@ -7,6 +7,7 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";
+import { Backlinks } from "@components/Backlinks";
 import { RelatedContent } from "@components/RelatedContent";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Newsletter as NewsletterType } from "@velite";
@@ -15,11 +16,14 @@ import { byOnlyPublished } from "src/lib/utils/filters";
 
 type RelatedItem = { title: string; link: string; excerpt?: string };
 
+type BacklinkItem = { title: string; link: string; type: string };
+
 type Props = {
   newsletter: NewsletterType;
   nextPost: null | number;
   prevPost: null | number;
   relatedNewsletters: RelatedItem[];
+  backlinks: BacklinkItem[];
 };
 
 const Newsletter = ({
@@ -43,6 +47,7 @@ const Newsletter = ({
   nextPost,
   prevPost,
   relatedNewsletters,
+  backlinks,
 }: Props) => {
   const newsletterTag = "Live and Learn #" + number;
   const fullTitle = seoTitle || title;
@@ -110,6 +115,7 @@ const Newsletter = ({
         </article>
 
         <footer className="mx-auto max-w-prose">
+          <Backlinks items={backlinks} />
           <RelatedContent items={relatedNewsletters} heading="More from Live and Learn" />
           <NextAndPrevArrows nextPost={nextPost} prevPost={prevPost} />
           <ToTopButton />
@@ -153,12 +159,16 @@ export async function getStaticProps({ params }: Params) {
     })
   );
 
+  const { getBacklinks } = await import("src/lib/utils/getBacklinks");
+  const backlinks = getBacklinks(newsletter.link);
+
   return {
     props: {
       newsletter,
       nextPost: nextPost?.slugTitle || null,
       prevPost: prevPost?.slugTitle || null,
       relatedNewsletters,
+      backlinks,
     },
   };
 }

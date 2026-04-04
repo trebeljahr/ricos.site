@@ -80,8 +80,8 @@ export const NewsletterForm = ({
     <>
       <p className="mb-4">
         Join the Live and Learn Newsletter to receive digital postcards filled
-        with beauty, travel stories and links to nice things I have found, every
-        odd week or so.
+        with beauty, travel stories and links to nice things I have found, once
+        or twice a month. No spam, ever. You can unsubscribe at any time.
       </p>
     </>
   );
@@ -104,8 +104,8 @@ export const NewsletterForm = ({
               <FaCheckCircle className="text-green-500 ml-2" />
             </h2>
             <p className="text-lg font-medium text-gray-800 dark:text-gray-100 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-md p-4">
-              Check your inbox and click the confirmation link to complete
-              your signup. If you don&apos;t see it, check your spam folder.
+              Check your inbox and click the confirmation link to complete your
+              signup. If you don&apos;t see it, check your spam folder.
             </p>
 
             {!link && defaultLink}

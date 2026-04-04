@@ -1,6 +1,6 @@
 {
   "/booknotes/12-rules-for-life": {
-    "metaTitle": "12 Rules for Life – Key Takeaways & Book Notes",
+    "metaTitle": "12 Rules for Life – Rico's Book Notes",
     "metaDescription": "Key lessons and takeaways from Jordan Peterson's 12 Rules for Life on finding meaning through responsibility, order, confronting chaos, and personal growth.",
     "ogImage": "/assets/book-covers/12-rules-for-life.jpg",
     "ogImageAlt": "12 Rules for Life book cover",
@@ -17,7 +17,7 @@
     ]
   },
   "/booknotes/7-habits": {
-    "metaTitle": "7 Habits of Highly Effective People – Book Notes",
+    "metaTitle": "7 Habits of Highly Effective People – Rico's Book Notes",
     "metaDescription": "Notes on The 7 Habits of Highly Effective People by Stephen Covey. Discover the timeless habits for personal and interpersonal effectiveness.",
     "ogImage": "/assets/book-covers/7-habits.jpg",
     "ogImageAlt": "7 Habits of Highly Effective People book cover",
@@ -34,7 +34,7 @@
     ]
   },
   "/booknotes/a-guide-to-the-good-life": {
-    "metaTitle": "A Guide to the Good Life – Book Notes & Summary",
+    "metaTitle": "A Guide to the Good Life – Rico's Book Notes",
     "metaDescription": "Notes on A Guide to the Good Life by William Irvine. An accessible introduction to Stoic philosophy and how to find lasting joy and resilience.",
     "ogImage": "/assets/book-covers/a-guide-to-the-good-life-the-ancient-art-of-stoic-joy.jpg",
     "ogImageAlt": "A Guide to the Good Life book cover",
@@ -51,7 +51,7 @@
     ]
   },
   "/booknotes/a-new-kind-of-science": {
-    "metaTitle": "A New Kind of Science – Book Notes & Summary",
+    "metaTitle": "A New Kind of Science – Rico's Book Notes",
     "metaDescription": "Notes on A New Kind of Science by Stephen Wolfram. Explore how simple computational rules can generate extraordinary complexity in nature.",
     "ogImage": "",
     "ogImageAlt": "A New Kind of Science book cover",
@@ -68,8 +68,8 @@
     ]
   },
   "/booknotes/algorithms-to-live-by": {
-    "metaTitle": "Algorithms to Live By – Key Takeaways & Book Notes",
-    "metaDescription": "How computer science algorithms like optimal stopping, caching, and sorting can solve everyday human problems. Book notes on Brian Christian and Tom Griffiths.",
+    "metaTitle": "Algorithms to Live By – Rico's Book Notes",
+    "metaDescription": "How computer science algorithms like optimal stopping, caching, and sorting can solve everyday human problems. Book notes on Algorithms to Live By.",
     "ogImage": "/assets/book-covers/algorithms-to-live-by.jpg",
     "ogImageAlt": "Algorithms to Live By book cover",
     "keywords": [
@@ -86,7 +86,7 @@
     ]
   },
   "/booknotes/all-about-love": {
-    "metaTitle": "All About Love – Book Notes & Summary",
+    "metaTitle": "All About Love – Rico's Book Notes",
     "metaDescription": "Notes on All About Love by bell hooks. Explore a redefinition of love as nurturing growth and how our culture misuses the word love.",
     "ogImage": "/assets/book-covers/all-about-love.png",
     "ogImageAlt": "All About Love book cover",
@@ -104,7 +104,7 @@
     ]
   },
   "/booknotes/almanack-of-naval-ravikant": {
-    "metaTitle": "Almanack of Naval Ravikant – Book Notes & Summary",
+    "metaTitle": "Almanack of Naval Ravikant – Rico's Book Notes",
     "metaDescription": "Notes on The Almanack of Naval Ravikant. A guide to wealth and happiness through critical thinking, leveraged skills, and first-principles reasoning.",
     "ogImage": "/assets/book-covers/navalmanack.jpg",
     "ogImageAlt": "The Almanack of Naval Ravikant book cover",
@@ -122,7 +122,7 @@
     ]
   },
   "/booknotes/anthem": {
-    "metaTitle": "Anthem by Ayn Rand – Book Notes & Summary",
+    "metaTitle": "Anthem by Ayn Rand – Rico's Book Notes",
     "metaDescription": "Notes on Anthem by Ayn Rand. A dystopian novella about reclaiming individuality in a collectivist society that has abolished the word 'I'.",
     "ogImage": "/assets/book-covers/anthem.jpg",
     "ogImageAlt": "Anthem book cover",
@@ -140,7 +140,7 @@
     ]
   },
   "/booknotes/antifragile": {
-    "metaTitle": "Antifragile – Key Takeaways & Book Notes",
+    "metaTitle": "Antifragile – Rico's Book Notes",
     "metaDescription": "Notes on Antifragile by Nassim Taleb. Learn about systems that gain from disorder and why antifragility beats robustness in an unpredictable world.",
     "ogImage": "/assets/book-covers/antifragile.jpg",
     "ogImageAlt": "Antifragile book cover",
@@ -158,7 +158,7 @@
     ]
   },
   "/booknotes/anything-you-want": {
-    "metaTitle": "Anything You Want – Book Notes & Summary",
+    "metaTitle": "Anything You Want – Rico's Book Notes",
     "metaDescription": "Notes on Anything You Want by Derek Sivers. 40 lessons on building a business driven by joy, customer care, and creative freedom instead of industry norms.",
     "ogImage": "/assets/book-covers/anything-you-want.jpg",
     "ogImageAlt": "Anything You Want book cover",
@@ -176,7 +176,7 @@
     ]
   },
   "/booknotes/art-and-artist": {
-    "metaTitle": "Art and Artist – Book Notes & Summary",
+    "metaTitle": "Art and Artist – Rico's Book Notes",
     "metaDescription": "Notes on Art and Artist by Otto Rank. A psychological exploration of creativity, the artistic impulse, and the tension between art and the self.",
     "ogImage": "/assets/book-covers/7-habits.jpg",
     "ogImageAlt": "Art and Artist book cover",
@@ -193,7 +193,7 @@
     ]
   },
   "/booknotes/atlas-shrugged": {
-    "metaTitle": "Atlas Shrugged – Key Takeaways & Book Notes",
+    "metaTitle": "Atlas Shrugged – Rico's Book Notes",
     "metaDescription": "Notes on Atlas Shrugged by Ayn Rand. A philosophical novel arguing that rational egoism and personal accountability drive societal progress.",
     "ogImage": "/assets/book-covers/atlas-shrugged.jpg",
     "ogImageAlt": "Atlas Shrugged book cover",
@@ -211,7 +211,7 @@
     ]
   },
   "/booknotes/atomic-habits": {
-    "metaTitle": "Atomic Habits – Key Takeaways & Book Notes",
+    "metaTitle": "Atomic Habits – Rico's Book Notes",
     "metaDescription": "Notes on Atomic Habits by James Clear. Learn the four laws of behavior change and how tiny habits compound into remarkable results over time.",
     "ogImage": "/assets/book-covers/atomic-habits.jpg",
     "ogImageAlt": "Atomic Habits book cover",
@@ -229,7 +229,7 @@
     ]
   },
   "/booknotes/awareness": {
-    "metaTitle": "Awareness by Anthony de Mello – Book Notes & Summary",
+    "metaTitle": "Awareness by Anthony de Mello – Rico's Book Notes",
     "metaDescription": "Notes on Awareness by Anthony de Mello. A spiritual guide to waking up, letting go of attachments, and discovering who you truly are beyond your desires.",
     "ogImage": "/assets/book-covers/awareness.jpg",
     "ogImageAlt": "Awareness book cover",
@@ -247,7 +247,7 @@
     ]
   },
   "/booknotes/behave": {
-    "metaTitle": "Behave by Robert Sapolsky – Book Notes & Summary",
+    "metaTitle": "Behave by Robert Sapolsky – Rico's Book Notes",
     "metaDescription": "Notes on Behave by Robert Sapolsky. A tour de force exploring the biology behind human behavior, from neurons firing to millennia of evolution.",
     "ogImage": "/assets/book-covers/behave.jpg",
     "ogImageAlt": "Behave book cover",
@@ -265,7 +265,7 @@
     ]
   },
   "/booknotes/being-you": {
-    "metaTitle": "Being You by Anil Seth – Book Notes & Summary",
+    "metaTitle": "Being You by Anil Seth – Rico's Book Notes",
     "metaDescription": "Notes on Being You by Anil Seth. A new science of consciousness exploring how the brain constructs our experience of reality from the inside out.",
     "ogImage": "/assets/book-covers/being-you.jpg",
     "ogImageAlt": "Being You book cover",
@@ -283,7 +283,7 @@
     ]
   },
   "/booknotes/better-angels": {
-    "metaTitle": "Better Angels of Our Nature – Book Notes & Summary",
+    "metaTitle": "Better Angels of Our Nature – Rico's Book Notes",
     "metaDescription": "Notes on The Better Angels of Our Nature by Steven Pinker. Data-driven evidence that violence has declined and why the modern world is more peaceful.",
     "ogImage": "/assets/book-covers/better-angels.jpg",
     "ogImageAlt": "The Better Angels of Our Nature book cover",
@@ -301,7 +301,7 @@
     ]
   },
   "/booknotes/bhagavad-gita": {
-    "metaTitle": "Bhagavad Gita – Book Notes & Key Takeaways",
+    "metaTitle": "Bhagavad Gita – Rico's Book Notes & Key Takeaways",
     "metaDescription": "Book notes on the Bhagavad Gita, one of the most influential spiritual texts ever written. Ancient wisdom on duty, selfless action, and the path to self-realization.",
     "ogImage": "/assets/book-covers/bhagavad-gita.jpg",
     "ogImageAlt": "Bhagavad Gita book cover",
@@ -319,7 +319,7 @@
     ]
   },
   "/booknotes/black-swan": {
-    "metaTitle": "The Black Swan – Key Takeaways & Book Notes",
+    "metaTitle": "The Black Swan – Rico's Book Notes",
     "metaDescription": "Notes on The Black Swan by Nassim Taleb. Understand why rare, unpredictable events dominate our world and how our minds fail to see them coming.",
     "ogImage": "/assets/book-covers/black-swan.jpg",
     "ogImageAlt": "The Black Swan book cover",
@@ -337,7 +337,7 @@
     ]
   },
   "/booknotes/blink": {
-    "metaTitle": "Blink by Malcolm Gladwell – Book Notes & Summary",
+    "metaTitle": "Blink by Malcolm Gladwell – Rico's Book Notes",
     "metaDescription": "Notes on Blink by Malcolm Gladwell. Explore the power and pitfalls of snap judgments, intuition, and thin-slicing in decision making.",
     "ogImage": "/assets/book-covers/blink.jpg",
     "ogImageAlt": "Blink book cover",
@@ -355,7 +355,7 @@
     ]
   },
   "/booknotes/blood-music": {
-    "metaTitle": "Blood Music by Greg Bear – Book Notes & Summary",
+    "metaTitle": "Blood Music by Greg Bear – Rico's Book Notes",
     "metaDescription": "Notes on Blood Music by Greg Bear. A sci-fi masterpiece about biotechnology, emergent intelligence, and what it means to be human.",
     "ogImage": "/assets/book-covers/blood-music.jpg",
     "ogImageAlt": "Blood Music book cover",
@@ -372,7 +372,7 @@
     ]
   },
   "/booknotes/brave-new-world": {
-    "metaTitle": "Brave New World – Key Takeaways & Book Notes",
+    "metaTitle": "Brave New World – Rico's Book Notes",
     "metaDescription": "Notes on Brave New World by Aldous Huxley. A dystopian warning about a society enslaved by comfort, drugs, and engineered happiness.",
     "ogImage": "/assets/book-covers/brave-new-world.jpg",
     "ogImageAlt": "Brave New World book cover",
@@ -390,7 +390,7 @@
     ]
   },
   "/booknotes/built-to-last": {
-    "metaTitle": "Built to Last – Book Notes & Summary",
+    "metaTitle": "Built to Last – Rico's Book Notes",
     "metaDescription": "Notes on Built to Last by Jim Collins. Learn what visionary companies have in common and why culture and people matter more than a single great idea.",
     "ogImage": "/assets/book-covers/built-to-last.jpg",
     "ogImageAlt": "Built to Last book cover",
@@ -408,7 +408,7 @@
     ]
   },
   "/booknotes/but-how-do-it-know": {
-    "metaTitle": "But How Do It Know? – Book Notes & Summary",
+    "metaTitle": "But How Do It Know? – Rico's Book Notes",
     "metaDescription": "Notes on But How Do It Know? by J. Clark Scott. A clear explanation of how computers work from logic gates to the CPU, for everyone.",
     "ogImage": "/assets/book-covers/but-how-do-it-know.jpg",
     "ogImageAlt": "But How Do It Know? book cover",
@@ -426,7 +426,7 @@
     ]
   },
   "/booknotes/chaos": {
-    "metaTitle": "Chaos: Making a New Science – Book Notes & Summary",
+    "metaTitle": "Chaos: Making a New Science – Rico's Book Notes",
     "metaDescription": "Notes on Chaos by James Gleick. An introduction to chaos theory, fractals, and how nonlinear dynamics shape the world around us.",
     "ogImage": "/assets/book-covers/chaos.jpg",
     "ogImageAlt": "Chaos book cover",
@@ -444,7 +444,7 @@
     ]
   },
   "/booknotes/charlies-almanack": {
-    "metaTitle": "Poor Charlie's Almanack – Book Notes & Summary",
+    "metaTitle": "Poor Charlie's Almanack – Rico's Book Notes",
     "metaDescription": "Notes on Poor Charlie's Almanack by Charlie Munger. Wisdom on mental models, inversion, lifelong learning, and principled decision making.",
     "ogImage": "/assets/book-covers/charlies-almanack.jpeg",
     "ogImageAlt": "Poor Charlie's Almanack book cover",
@@ -462,7 +462,7 @@
     ]
   },
   "/booknotes/complexity": {
-    "metaTitle": "Complexity by Mitchell Waldrop – Summary & Book Notes",
+    "metaTitle": "Complexity by Mitchell Waldrop – Rico's Book Notes",
     "metaDescription": "Notes on Complexity by Mitchell Waldrop. Discover the science of emergence at the edge of order and chaos, from economics to consciousness.",
     "ogImage": "/assets/book-covers/complexity.jpg",
     "ogImageAlt": "Complexity book cover",
@@ -480,7 +480,7 @@
     ]
   },
   "/booknotes/creativity-inc": {
-    "metaTitle": "Creativity Inc. – Key Takeaways & Book Notes",
+    "metaTitle": "Creativity Inc. – Rico's Book Notes",
     "metaDescription": "Notes on Creativity Inc. by Ed Catmull. How Pixar built a culture of creative excellence through honest feedback and iterative problem solving.",
     "ogImage": "/assets/book-covers/creativity-inc.jpg",
     "ogImageAlt": "Creativity Inc. book cover",
@@ -498,7 +498,7 @@
     ]
   },
   "/booknotes/deep-work": {
-    "metaTitle": "Deep Work by Cal Newport – Book Notes & Summary",
+    "metaTitle": "Deep Work by Cal Newport – Rico's Book Notes",
     "metaDescription": "Notes on Deep Work by Cal Newport. Learn to distinguish deep from shallow work and build habits that protect focused, high-value productivity.",
     "ogImage": "/assets/book-covers/deep-work.jpg",
     "ogImageAlt": "Deep Work book cover",
@@ -516,7 +516,7 @@
     ]
   },
   "/booknotes/der-steppenwolf": {
-    "metaTitle": "Der Steppenwolf – Book Notes & Summary",
+    "metaTitle": "Der Steppenwolf – Rico's Book Notes",
     "metaDescription": "Notes on Der Steppenwolf by Hermann Hesse. A philosophical novel about loneliness, self-discovery, and the Magical Theater of alternate lives.",
     "ogImage": "/assets/book-covers/der-steppenwolf.jpg",
     "ogImageAlt": "Der Steppenwolf book cover",
@@ -534,7 +534,7 @@
     ]
   },
   "/booknotes/der-weg-zum-glück": {
-    "metaTitle": "Der Weg zum Glück (Dalai Lama) – Book Notes",
+    "metaTitle": "Der Weg zum Glück (Dalai Lama) – Rico's Book Notes",
     "metaDescription": "Notes on Der Weg zum Glück by the Dalai Lama. Teachings on compassion, contentment, and rediscovering our shared humanity in a hectic world.",
     "ogImage": "/assets/book-covers/der-weg-zum-glueck.jpg",
     "ogImageAlt": "Der Weg zum Glück book cover",
@@ -552,7 +552,7 @@
     ]
   },
   "/booknotes/determined": {
-    "metaTitle": "Determined by Robert Sapolsky – Book Notes & Summary",
+    "metaTitle": "Determined by Robert Sapolsky – Rico's Book Notes",
     "metaDescription": "Notes on Determined by Robert Sapolsky. A neuroscientist's case against free will and what it means for blame, praise, and the justice system.",
     "ogImage": "/assets/book-covers/determined.jpg",
     "ogImageAlt": "Determined book cover",
@@ -570,7 +570,7 @@
     ]
   },
   "/booknotes/discourses-and-selected-writings": {
-    "metaTitle": "Discourses by Epictetus – Book Notes & Summary",
+    "metaTitle": "Discourses by Epictetus – Rico's Book Notes",
     "metaDescription": "Notes on Discourses and Selected Writings by Epictetus. Stoic wisdom on personal responsibility, virtue, and mastering what is within your control.",
     "ogImage": "/assets/book-covers/discourses-and-selected-writings.jpg",
     "ogImageAlt": "Discourses and Selected Writings book cover",
@@ -588,7 +588,7 @@
     ]
   },
   "/booknotes/disturbing-the-universe": {
-    "metaTitle": "Disturbing the Universe – Book Notes & Summary",
+    "metaTitle": "Disturbing the Universe – Rico's Book Notes",
     "metaDescription": "Notes on Disturbing the Universe by Freeman Dyson. A physicist's memoir on science, space exploration, and an optimistic vision for humanity's future.",
     "ogImage": "/assets/book-covers/disturbing-the-universe.jpg",
     "ogImageAlt": "Disturbing the Universe book cover",
@@ -606,7 +606,7 @@
     ]
   },
   "/booknotes/drive": {
-    "metaTitle": "Drive by Daniel Pink – Book Notes & Summary",
+    "metaTitle": "Drive by Daniel Pink – Rico's Book Notes",
     "metaDescription": "Notes on Drive by Daniel Pink. Learn why autonomy, mastery, and purpose outperform rewards and punishment as sources of motivation.",
     "ogImage": "/assets/book-covers/drive.jpg",
     "ogImageAlt": "Drive book cover",
@@ -624,7 +624,7 @@
     ]
   },
   "/booknotes/einsteins-dreams": {
-    "metaTitle": "Einstein's Dreams – Book Notes & Summary",
+    "metaTitle": "Einstein's Dreams – Rico's Book Notes",
     "metaDescription": "Poetic explorations of time through thirty fictional dream worlds imagined by a young Albert Einstein. Summary and notes on Alan Lightman's creative novel.",
     "ogImage": "/assets/book-covers/einsteins-dreams.jpg",
     "ogImageAlt": "Einstein's Dreams book cover",
@@ -642,7 +642,7 @@
     ]
   },
   "/booknotes/elon-musk": {
-    "metaTitle": "Elon Musk by Ashley Vance – Book Notes & Summary",
+    "metaTitle": "Elon Musk by Ashley Vance – Rico's Book Notes",
     "metaDescription": "Notes on the Elon Musk biography by Ashley Vance. Inside the relentless drive behind Tesla and SpaceX and lessons on building the impossible.",
     "ogImage": "/assets/book-covers/elon-musk.jpg",
     "ogImageAlt": "Elon Musk book cover",
@@ -660,7 +660,7 @@
     ]
   },
   "/booknotes/ending-aging": {
-    "metaTitle": "Ending Aging – Book Notes & Summary",
+    "metaTitle": "Ending Aging – Rico's Book Notes",
     "metaDescription": "Notes on Ending Aging by Aubrey de Grey. A roadmap for treating aging as an engineering problem with seven types of damage that science can fix.",
     "ogImage": "/assets/book-covers/ending-aging.jpg",
     "ogImageAlt": "Ending Aging book cover",
@@ -678,7 +678,7 @@
     ]
   },
   "/booknotes/engines-of-creation": {
-    "metaTitle": "Engines of Creation – Book Notes & Summary",
+    "metaTitle": "Engines of Creation – Rico's Book Notes",
     "metaDescription": "Notes on Engines of Creation by Eric Drexler. A visionary look at nanotechnology and how atomic-scale manufacturing could transform civilization.",
     "ogImage": "/assets/book-covers/engines-of-creation.jpg",
     "ogImageAlt": "Engines of Creation book cover",
@@ -696,7 +696,7 @@
     ]
   },
   "/booknotes/enough": {
-    "metaTitle": "Enough by John Bogle – Book Notes & Summary",
+    "metaTitle": "Enough by John Bogle – Rico's Book Notes",
     "metaDescription": "Notes on Enough by John Bogle. The Vanguard founder on restoring character to finance and knowing when you have enough money, business, and life.",
     "ogImage": "/assets/book-covers/enough.jpg",
     "ogImageAlt": "Enough book cover",
@@ -715,7 +715,7 @@
     ]
   },
   "/booknotes/essentialism": {
-    "metaTitle": "Essentialism by Greg McKeown – Book Notes & Summary",
+    "metaTitle": "Essentialism by Greg McKeown – Rico's Book Notes",
     "metaDescription": "Notes on Essentialism by Greg McKeown. Focus on what truly matters by eliminating the nonessential and doing less but better.",
     "ogImage": "/assets/book-covers/essentialism.jpg",
     "ogImageAlt": "Essentialism book cover",
@@ -733,7 +733,7 @@
     ]
   },
   "/booknotes/ethics": {
-    "metaTitle": "Ethics by Spinoza – Book Notes & Summary",
+    "metaTitle": "Ethics by Spinoza – Rico's Book Notes",
     "metaDescription": "Notes on Ethics by Spinoza. A philosophical exploration of God, nature, and human freedom through understanding the fundamental order of reality.",
     "ogImage": "/assets/book-covers/ethics.jpg",
     "ogImageAlt": "Ethics book cover",
@@ -752,7 +752,7 @@
     ]
   },
   "/booknotes/finite-and-infinite-games": {
-    "metaTitle": "Finite and Infinite Games – Book Notes & Summary",
+    "metaTitle": "Finite and Infinite Games – Rico's Book Notes",
     "metaDescription": "Notes on Finite and Infinite Games by James Carse. A philosophical lens on life: play finite games to win, or infinite games to keep playing.",
     "ogImage": "/assets/book-covers/finite-and-infinite-games.jpg",
     "ogImageAlt": "Finite and Infinite Games book cover",
@@ -770,7 +770,7 @@
     ]
   },
   "/booknotes/flow": {
-    "metaTitle": "Flow by Csikszentmihalyi – Book Notes & Summary",
+    "metaTitle": "Flow by Csikszentmihalyi – Rico's Book Notes",
     "metaDescription": "Notes on Flow by Mihaly Csikszentmihalyi. Understand the psychology of optimal experience and how to enter flow states for a happier, more productive life.",
     "ogImage": "/assets/book-covers/flow.jpg",
     "ogImageAlt": "Flow book cover",
@@ -788,7 +788,7 @@
     ]
   },
   "/booknotes/foundation-1-foundation": {
-    "metaTitle": "Foundation by Isaac Asimov – Book Notes & Summary",
+    "metaTitle": "Foundation by Isaac Asimov – Rico's Book Notes",
     "metaDescription": "Notes on Foundation by Isaac Asimov. The first novel in the epic sci-fi series about preserving knowledge as a galactic empire collapses.",
     "ogImage": "/assets/book-covers/foundation.jpg",
     "ogImageAlt": "Foundation book cover",
@@ -805,7 +805,7 @@
     ]
   },
   "/booknotes/foundation-2-foundation-and-empire": {
-    "metaTitle": "Foundation and Empire – Book Notes & Summary",
+    "metaTitle": "Foundation and Empire – Rico's Book Notes",
     "metaDescription": "Notes on Foundation and Empire by Isaac Asimov. The dying Empire clashes with the rising Foundation in this gripping second installment.",
     "ogImage": "/assets/book-covers/foundation-and-empire.jpg",
     "ogImageAlt": "Foundation and Empire book cover",
@@ -822,7 +822,7 @@
     ]
   },
   "/booknotes/foundation-3-second-foundation": {
-    "metaTitle": "Second Foundation – Book Notes & Summary",
+    "metaTitle": "Second Foundation – Rico's Book Notes",
     "metaDescription": "Notes on Second Foundation by Isaac Asimov. The search for the mysterious Second Foundation and its rumored psychic powers threatens the Seldon Plan.",
     "ogImage": "/assets/book-covers/second-foundation.jpg",
     "ogImageAlt": "Second Foundation book cover",
@@ -839,7 +839,7 @@
     ]
   },
   "/booknotes/foundation-4-foundations-edge": {
-    "metaTitle": "Foundation's Edge – Book Notes & Summary",
+    "metaTitle": "Foundation's Edge – Rico's Book Notes",
     "metaDescription": "Notes on Foundation's Edge by Isaac Asimov. A hidden power guides the Seldon Plan, leading to the mysterious planet Gaia in this fourth installment.",
     "ogImage": "/assets/book-covers/foundations-edge.jpg",
     "ogImageAlt": "Foundation's Edge book cover",
@@ -856,7 +856,7 @@
     ]
   },
   "/booknotes/foundation-5-foundation-and-earth": {
-    "metaTitle": "Foundation and Earth – Book Notes & Summary",
+    "metaTitle": "Foundation and Earth – Rico's Book Notes",
     "metaDescription": "Notes on Foundation and Earth by Isaac Asimov. An adventure to find humanity's origin planet across the galaxy in this fifth Foundation novel.",
     "ogImage": "/assets/book-covers/foundation-and-earth.jpg",
     "ogImageAlt": "Foundation and Earth book cover",
@@ -873,7 +873,7 @@
     ]
   },
   "/booknotes/foundation-6-prelude-to-foundation": {
-    "metaTitle": "Prelude to Foundation – Book Notes & Summary",
+    "metaTitle": "Prelude to Foundation – Rico's Book Notes",
     "metaDescription": "Notes on Prelude to Foundation by Isaac Asimov. The origin story of Hari Seldon and the birth of psychohistory amid galactic political intrigue.",
     "ogImage": "/assets/book-covers/prelude-to-foundation.jpg",
     "ogImageAlt": "Prelude to Foundation book cover",
@@ -890,7 +890,7 @@
     ]
   },
   "/booknotes/foundation-7-forward-the-foundation": {
-    "metaTitle": "Forward the Foundation – Book Notes & Summary",
+    "metaTitle": "Forward the Foundation – Rico's Book Notes",
     "metaDescription": "Notes on Forward the Foundation by Isaac Asimov. The final Foundation novel chronicling Hari Seldon's sacrifices to launch the Seldon Plan.",
     "ogImage": "/assets/book-covers/forward-the-foundation.jpg",
     "ogImageAlt": "Forward the Foundation book cover",
@@ -907,7 +907,7 @@
     ]
   },
   "/booknotes/free-agents": {
-    "metaTitle": "Free Agents – Book Notes & Key Takeaways",
+    "metaTitle": "Free Agents – Rico's Book Notes",
     "metaDescription": "Notes on Free Agents by Kevin Mitchell. How evolution produced organisms that make choices for their own reasons, making a case for genuine free will.",
     "ogImage": "/assets/book-covers/free-agents.jpg",
     "ogImageAlt": "Free Agents book cover",
@@ -926,7 +926,7 @@
     ]
   },
   "/booknotes/from-bacteria-to-bach-and-back": {
-    "metaTitle": "From Bacteria to Bach and Back – Book Notes",
+    "metaTitle": "From Bacteria to Bach and Back – Rico's Book Notes",
     "metaDescription": "Notes on From Bacteria to Bach and Back by Daniel Dennett. How evolution builds competence without comprehension and gives rise to conscious minds.",
     "ogImage": "/assets/book-covers/from-bacteria-to-bach-and-back.jpg",
     "ogImageAlt": "From Bacteria to Bach and Back book cover",
@@ -944,7 +944,7 @@
     ]
   },
   "/booknotes/godel-escher-bach": {
-    "metaTitle": "Gödel, Escher, Bach – Book Notes & Summary",
+    "metaTitle": "Gödel, Escher, Bach – Rico's Book Notes",
     "metaDescription": "How intertwining patterns in mathematics, art, and music reveal deep truths about the nature of consciousness and meaning. Notes on Hofstadter's Pulitzer-winning classic.",
     "ogImage": "/assets/book-covers/goedel-escher-bach.jpg",
     "ogImageAlt": "Gödel, Escher, Bach book cover",
@@ -962,7 +962,7 @@
     ]
   },
   "/booknotes/godels-proof": {
-    "metaTitle": "Gödel's Proof – Book Notes & Summary",
+    "metaTitle": "Gödel's Proof – Rico's Book Notes",
     "metaDescription": "Notes on Gödel's Proof by Nagel and Newman. An accessible guide to the incompleteness theorem that shook the foundations of mathematics.",
     "ogImage": "/assets/book-covers/goedels-proof.jpg",
     "ogImageAlt": "Gödel's Proof book cover",
@@ -980,7 +980,7 @@
     ]
   },
   "/booknotes/good-to-great": {
-    "metaTitle": "Good to Great – Book Notes & Key Takeaways",
+    "metaTitle": "Good to Great – Rico's Book Notes",
     "metaDescription": "Notes on Good to Great by Jim Collins. What separates great companies from good ones: Level 5 leadership, the hedgehog concept, and disciplined execution.",
     "ogImage": "/assets/book-covers/good-to-great.jpg",
     "ogImageAlt": "Good to Great book cover",
@@ -998,7 +998,7 @@
     ]
   },
   "/booknotes/grit": {
-    "metaTitle": "Grit by Angela Duckworth – Book Notes & Summary",
+    "metaTitle": "Grit by Angela Duckworth – Rico's Book Notes",
     "metaDescription": "Notes on Grit by Angela Duckworth. Why passion and perseverance predict success better than talent and how to cultivate grit in your own life.",
     "ogImage": "/assets/book-covers/grit.jpg",
     "ogImageAlt": "Grit book cover",
@@ -1016,7 +1016,7 @@
     ]
   },
   "/booknotes/growth": {
-    "metaTitle": "Growth by Vaclav Smil – Book Notes & Summary",
+    "metaTitle": "Growth by Vaclav Smil – Rico's Book Notes",
     "metaDescription": "Notes on Growth by Vaclav Smil. A sweeping analysis of growth patterns from microorganisms to megacities, and the limits of our biosphere.",
     "ogImage": "/assets/book-covers/growth.jpg",
     "ogImageAlt": "Growth book cover",
@@ -1034,7 +1034,7 @@
     ]
   },
   "/booknotes/guns-germs-and-steel": {
-    "metaTitle": "Guns, Germs, and Steel – Book Notes & Summary",
+    "metaTitle": "Guns, Germs, and Steel – Rico's Book Notes",
     "metaDescription": "Notes on Guns, Germs, and Steel by Jared Diamond. Why geography and environment, not race, determined which civilizations rose to dominate the world.",
     "ogImage": "/assets/book-covers/guns-germs-and-steel.jpg",
     "ogImageAlt": "Guns, Germs, and Steel book cover",
@@ -1052,7 +1052,7 @@
     ]
   },
   "/booknotes/hallucinations": {
-    "metaTitle": "Hallucinations by Oliver Sacks – Book Notes & Summary",
+    "metaTitle": "Hallucinations by Oliver Sacks – Rico's Book Notes",
     "metaDescription": "Notes on Hallucinations by Oliver Sacks. A neurologist explores the fascinating world of hallucinations and what they reveal about the human brain.",
     "ogImage": "/assets/book-covers/hallucinations.jpg",
     "ogImageAlt": "Hallucinations book cover",
@@ -1070,7 +1070,7 @@
     ]
   },
   "/booknotes/hell-yeah-or-no": {
-    "metaTitle": "Hell Yeah or No – Book Notes & Key Takeaways",
+    "metaTitle": "Hell Yeah or No – Rico's Book Notes",
     "metaDescription": "Derek Sivers on simplifying life decisions by only committing to things that truly excite you. Key takeaways and notes on focus, priorities, and intentional living.",
     "ogImage": "/assets/book-covers/hell-yeah-or-no.jpg",
     "ogImageAlt": "Hell Yeah or No book cover",
@@ -1088,7 +1088,7 @@
     ]
   },
   "/booknotes/high-output-management": {
-    "metaTitle": "High Output Management – Book Notes & Summary",
+    "metaTitle": "High Output Management – Rico's Book Notes",
     "metaDescription": "Notes on High Output Management by Andy Grove. Intel's legendary CEO on leverage, meetings, and managing knowledge workers for maximum team output.",
     "ogImage": "/assets/book-covers/high-output-management.jpg",
     "ogImageAlt": "High Output Management book cover",
@@ -1106,7 +1106,7 @@
     ]
   },
   "/booknotes/how-to-live": {
-    "metaTitle": "How to Live by Derek Sivers – Book Notes & Summary",
+    "metaTitle": "How to Live by Derek Sivers – Rico's Book Notes",
     "metaDescription": "Notes on How to Live by Derek Sivers. 27 conflicting answers to life's biggest question, revealing that there is no single right way to live.",
     "ogImage": "/assets/book-covers/how-to-live.jpg",
     "ogImageAlt": "How to Live book cover",
@@ -1124,7 +1124,7 @@
     ]
   },
   "/booknotes/how-to-read-a-book": {
-    "metaTitle": "How to Read a Book – Book Notes & Summary",
+    "metaTitle": "How to Read a Book – Rico's Book Notes",
     "metaDescription": "Notes on How to Read a Book by Mortimer Adler. Master four levels of reading from elementary to syntopical to extract maximum insight from any text.",
     "ogImage": "/assets/book-covers/how-to-read-a-book.jpg",
     "ogImageAlt": "How to Read a Book book cover",
@@ -1142,7 +1142,7 @@
     ]
   },
   "/booknotes/how-to-solve-it": {
-    "metaTitle": "How to Solve It – Book Notes & Summary",
+    "metaTitle": "How to Solve It – Rico's Book Notes",
     "metaDescription": "Notes on How to Solve It by George Polya. Classic strategies for mathematical problem solving: understand, plan, execute, and look back.",
     "ogImage": "/assets/book-covers/how-to-solve-it.jpg",
     "ogImageAlt": "How to Solve It book cover",
@@ -1160,7 +1160,7 @@
     ]
   },
   "/booknotes/how-to-travel-the-world-on-50-a-day": {
-    "metaTitle": "How to Travel the World on $50 a Day – Book Notes",
+    "metaTitle": "How to Travel the World on $50 a Day – Rico's Book Notes",
     "metaDescription": "Notes on How to Travel the World on $50 a Day by Matt Kepnes. Budget travel strategies that let you see the world for less than staying home.",
     "ogImage": "/assets/book-covers/how-to-travel-the-world-on-50-a-day.jpg",
     "ogImageAlt": "How to Travel the World on $50 a Day book cover",
@@ -1177,7 +1177,7 @@
     ]
   },
   "/booknotes/how-to-win-friends-and-influence-people": {
-    "metaTitle": "How to Win Friends and Influence People – Book Notes",
+    "metaTitle": "How to Win Friends and Influence People – Rico's Book Notes",
     "metaDescription": "Notes on How to Win Friends and Influence People by Dale Carnegie. Timeless principles for building genuine relationships and caring for others.",
     "ogImage": "/assets/book-covers/how-to-win-friends-and-influence-people.jpg",
     "ogImageAlt": "How to Win Friends and Influence People book cover",
@@ -1195,7 +1195,7 @@
     ]
   },
   "/booknotes/immune": {
-    "metaTitle": "Immune by Philipp Dettmer – Book Notes & Summary",
+    "metaTitle": "Immune by Philipp Dettmer – Rico's Book Notes",
     "metaDescription": "Notes on Immune by Philipp Dettmer (Kurzgesagt). A vivid guide to how the human immune system works, from cells to proteins to fighting disease.",
     "ogImage": "/assets/book-covers/immune.jpg",
     "ogImageAlt": "Immune book cover",
@@ -1213,7 +1213,7 @@
     ]
   },
   "/booknotes/indistractable": {
-    "metaTitle": "Indistractable by Nir Eyal – Book Notes & Summary",
+    "metaTitle": "Indistractable by Nir Eyal – Rico's Book Notes",
     "metaDescription": "Notes on Indistractable by Nir Eyal. Practical techniques for managing attention, controlling triggers, and becoming focused in a distracted world.",
     "ogImage": "/assets/book-covers/indistractable.jpg",
     "ogImageAlt": "Indistractable book cover",
@@ -1231,7 +1231,7 @@
     ]
   },
   "/booknotes/influence": {
-    "metaTitle": "Influence by Robert Cialdini – Book Notes & Summary",
+    "metaTitle": "Influence by Robert Cialdini – Rico's Book Notes",
     "metaDescription": "Robert Cialdini's six principles of persuasion — reciprocity, commitment, social proof, authority, liking, and scarcity — and how they shape our everyday decisions.",
     "ogImage": "/assets/book-covers/influence.jpg",
     "ogImageAlt": "Influence book cover",
@@ -1249,7 +1249,7 @@
     ]
   },
   "/booknotes/innate": {
-    "metaTitle": "Innate by Kevin Mitchell – Book Notes & Summary",
+    "metaTitle": "Innate by Kevin Mitchell – Rico's Book Notes",
     "metaDescription": "Notes on Innate by Kevin Mitchell. How genetics and brain wiring shape personality and intelligence, and why even identical twins turn out differently.",
     "ogImage": "/assets/book-covers/innate.jpg",
     "ogImageAlt": "Innate book cover",
@@ -1267,7 +1267,7 @@
     ]
   },
   "/booknotes/intelligence": {
-    "metaTitle": "Intelligence by Osho – Book Notes & Summary",
+    "metaTitle": "Intelligence by Osho – Rico's Book Notes",
     "metaDescription": "Notes on Intelligence by Osho. A spiritual take on reclaiming natural intelligence lost through education, fear, and conditioning.",
     "ogImage": "/assets/book-covers/intelligence.jpg",
     "ogImageAlt": "Intelligence book cover",
@@ -1285,7 +1285,7 @@
     ]
   },
   "/booknotes/lessons-in-psychomagic": {
-    "metaTitle": "Turn Your Life into Art – Book Notes & Summary",
+    "metaTitle": "Turn Your Life into Art – Rico's Book Notes",
     "metaDescription": "Notes on Turn Your Life into Art by Caveat Magister. How the San Francisco underground designed transformative experiences using psychomagic and art.",
     "ogImage": "/assets/book-covers/lessons-in-psychomagic.jpg",
     "ogImageAlt": "Turn Your Life into Art book cover",
@@ -1303,7 +1303,7 @@
     ]
   },
   "/booknotes/letters-from-a-stoic": {
-    "metaTitle": "Letters from a Stoic – Book Notes & Summary",
+    "metaTitle": "Letters from a Stoic – Rico's Book Notes",
     "metaDescription": "Notes on Letters from a Stoic by Seneca. Timeless Stoic wisdom on contentment, resilience, and accepting what the world throws at you with grace.",
     "ogImage": "/assets/book-covers/letters-from-a-stoic.jpg",
     "ogImageAlt": "Letters from a Stoic book cover",
@@ -1321,7 +1321,7 @@
     ]
   },
   "/booknotes/life-3-0": {
-    "metaTitle": "Life 3.0 by Max Tegmark – Book Notes & Summary",
+    "metaTitle": "Life 3.0 by Max Tegmark – Rico's Book Notes",
     "metaDescription": "Notes on Life 3.0 by Max Tegmark. A thought-provoking exploration of AI safety, superintelligence, and what future we should build for humanity.",
     "ogImage": "/assets/book-covers/life-3-0.jpg",
     "ogImageAlt": "Life 3.0 book cover",
@@ -1339,7 +1339,7 @@
     ]
   },
   "/booknotes/life-the-universe-and-everything": {
-    "metaTitle": "Life, the Universe and Everything – Book Notes",
+    "metaTitle": "Life, the Universe and Everything – Rico's Book Notes",
     "metaDescription": "Douglas Adams's third Hitchhiker's Guide adventure. Book notes on the game of cricket, the warlike Krikkit civilization, and the cosmic absurdity of the universe.",
     "ogImage": "/assets/book-covers/life-the-universe-and-everything.jpg",
     "ogImageAlt": "Life, the Universe and Everything book cover",
@@ -1356,7 +1356,7 @@
     ]
   },
   "/booknotes/lying": {
-    "metaTitle": "Lying by Sam Harris – Book Notes & Summary",
+    "metaTitle": "Lying by Sam Harris – Rico's Book Notes",
     "metaDescription": "Notes on Lying by Sam Harris. A concise argument for radical honesty: why even small lies erode trust and damage relationships over time.",
     "ogImage": "/assets/book-covers/lying.jpg",
     "ogImageAlt": "Lying book cover",
@@ -1374,7 +1374,7 @@
     ]
   },
   "/booknotes/man-and-his-symbols": {
-    "metaTitle": "Man and His Symbols – Key Takeaways & Book Notes",
+    "metaTitle": "Man and His Symbols – Rico's Book Notes",
     "metaDescription": "Explore Carl Jung's Man and His Symbols: how symbols, dreams, and archetypes reveal the workings of the unconscious mind and guide personal growth.",
     "ogImage": "/assets/book-covers/man-and-his-symbols.jpg",
     "ogImageAlt": "Man and His Symbols book cover",
@@ -1391,7 +1391,7 @@
     ]
   },
   "/booknotes/mans-search-for-meaning": {
-    "metaTitle": "Man's Search for Meaning – Summary & Book Notes",
+    "metaTitle": "Man's Search for Meaning – Rico's Book Notes",
     "metaDescription": "Viktor Frankl's Man's Search for Meaning: lessons from the Holocaust on finding purpose, resilience, and the power of logotherapy.",
     "ogImage": "/assets/book-covers/mans-search-for-meaning.jpg",
     "ogImageAlt": "Man's Search for Meaning book cover",
@@ -1408,7 +1408,7 @@
     ]
   },
   "/booknotes/manual-for-living": {
-    "metaTitle": "Manual for Living – Summary & Book Notes",
+    "metaTitle": "Manual for Living – Rico's Book Notes",
     "metaDescription": "Epictetus's Manual for Living (Enchiridion): a concise guide to Stoic philosophy on inner peace, self-mastery, and focusing on what you can control.",
     "ogImage": "/assets/book-covers/manual-for-living.jpg",
     "ogImageAlt": "Manual for Living book cover",
@@ -1425,7 +1425,7 @@
     ]
   },
   "/booknotes/map-and-territory": {
-    "metaTitle": "Map and Territory – Key Takeaways & Book Notes",
+    "metaTitle": "Map and Territory – Rico's Book Notes",
     "metaDescription": "Eliezer Yudkowsky's Map and Territory: exploring rationality, cognitive biases, and how our mental models relate to reality.",
     "ogImage": "/assets/book-covers/map-and-territory.jpg",
     "ogImageAlt": "Map and Territory book cover",
@@ -1442,7 +1442,7 @@
     ]
   },
   "/booknotes/meditations": {
-    "metaTitle": "Meditations by Marcus Aurelius – Summary & Book Notes",
+    "metaTitle": "Meditations by Marcus Aurelius – Rico's Book Notes",
     "metaDescription": "Marcus Aurelius's Meditations: timeless Stoic wisdom on controlling the mind, achieving inner peace, and living virtuously regardless of circumstances.",
     "ogImage": "/assets/book-covers/meditations.jpg",
     "ogImageAlt": "Meditations book cover",
@@ -1460,7 +1460,7 @@
     ]
   },
   "/booknotes/memos-from-the-chairman": {
-    "metaTitle": "Memos from the Chairman – Summary & Book Notes",
+    "metaTitle": "Memos from the Chairman – Rico's Book Notes",
     "metaDescription": "Alan Greenberg's Memos from the Chairman: lessons on frugality, corporate culture, and leadership from Bear Stearns' iconic chairman.",
     "ogImage": "/assets/book-covers/memos-from-the-chairman.png",
     "ogImageAlt": "Memos from the Chairman book cover",
@@ -1477,7 +1477,7 @@
     ]
   },
   "/booknotes/mind-and-cosmos": {
-    "metaTitle": "Mind and Cosmos – Summary & Book Notes",
+    "metaTitle": "Mind and Cosmos – Rico's Book Notes",
     "metaDescription": "Thomas Nagel's Mind and Cosmos: why materialism may fail to explain consciousness, and why mind might be a fundamental feature of the universe.",
     "ogImage": "/assets/book-covers/mind-and-cosmos.jpg",
     "ogImageAlt": "Mind and Cosmos book cover",
@@ -1494,7 +1494,7 @@
     ]
   },
   "/booknotes/mind-children": {
-    "metaTitle": "Mind Children – Summary & Book Notes",
+    "metaTitle": "Mind Children – Rico's Book Notes",
     "metaDescription": "Hans Moravec's bold predictions about AI, robotics, and the future of human-machine evolution. A visionary look at our technological destiny. Summary and book notes.",
     "ogImage": "/assets/book-covers/mind-children.jpg",
     "ogImageAlt": "Mind Children book cover",
@@ -1512,7 +1512,7 @@
     ]
   },
   "/booknotes/mindset": {
-    "metaTitle": "Mindset by Carol Dweck – Summary & Book Notes",
+    "metaTitle": "Mindset by Carol Dweck – Rico's Book Notes",
     "metaDescription": "Carol Dweck's Mindset: discover the difference between growth and fixed mindsets, and how adopting growth mindset enables learning and mastery.",
     "ogImage": "/assets/book-covers/mindset.jpg",
     "ogImageAlt": "Mindset book cover",
@@ -1530,7 +1530,7 @@
     ]
   },
   "/booknotes/molecular-biology-of-the-cell": {
-    "metaTitle": "Molecular Biology of the Cell – Book Notes",
+    "metaTitle": "Molecular Biology of the Cell – Rico's Book Notes",
     "metaDescription": "Notes on Molecular Biology of the Cell: covering cellular processes, the Krebs cycle, free energy, and the molecular machinery of life.",
     "ogImage": "/assets/book-covers/molecular-biology-of-the-cell.jpg",
     "ogImageAlt": "Molecular Biology of the Cell book cover",
@@ -1546,7 +1546,7 @@
     ]
   },
   "/booknotes/momo": {
-    "metaTitle": "Momo by Michael Ende – Summary & Book Notes",
+    "metaTitle": "Momo by Michael Ende – Rico's Book Notes",
     "metaDescription": "Michael Ende's Momo: a beautiful story about savoring life's small moments, staying childlike, and resisting the rush of modern time-obsessed culture.",
     "ogImage": "/assets/book-covers/momo.jpg",
     "ogImageAlt": "Momo book cover",
@@ -1563,7 +1563,7 @@
     ]
   },
   "/booknotes/mostly-harmless": {
-    "metaTitle": "Mostly Harmless – Summary & Book Notes",
+    "metaTitle": "Mostly Harmless – Rico's Book Notes",
     "metaDescription": "Douglas Adams's Mostly Harmless: the darkly funny finale exploring randomness, meaning, and absurdity in the Hitchhiker's Guide series.",
     "ogImage": "/assets/book-covers/mostly-harmless.jpg",
     "ogImageAlt": "Mostly Harmless book cover",
@@ -1580,7 +1580,7 @@
     ]
   },
   "/booknotes/neuroplasticity": {
-    "metaTitle": "Neuroplasticity – Summary & Book Notes",
+    "metaTitle": "Neuroplasticity – Rico's Book Notes",
     "metaDescription": "Moheb Costandi's Neuroplasticity: how the brain rewires itself through learning, injury recovery, and adaptation throughout life.",
     "ogImage": "/assets/book-covers/neuroplasticity.jpg",
     "ogImageAlt": "Neuroplasticity book cover",
@@ -1598,7 +1598,7 @@
     ]
   },
   "/booknotes/nineteen-eighty-four": {
-    "metaTitle": "1984 by George Orwell – Summary & Book Notes",
+    "metaTitle": "1984 by George Orwell – Rico's Book Notes",
     "metaDescription": "George Orwell's 1984: a chilling dystopia of totalitarian control, surveillance, thoughtcrime, and the destruction of truth.",
     "ogImage": "/assets/book-covers/nineteen-eighty-four.jpg",
     "ogImageAlt": "Nineteen Eighty Four book cover",
@@ -1616,7 +1616,7 @@
     ]
   },
   "/booknotes/notes-from-underground": {
-    "metaTitle": "Notes from Underground – Summary & Book Notes",
+    "metaTitle": "Notes from Underground – Rico's Book Notes",
     "metaDescription": "Dostoevsky's Notes from Underground: a deep dive into existentialism, free will, and the irrational contradictions of human nature.",
     "ogImage": "/assets/book-covers/notes-from-underground.jpg",
     "ogImageAlt": "Notes from Underground book cover",
@@ -1633,7 +1633,7 @@
     ]
   },
   "/booknotes/outliers": {
-    "metaTitle": "Outliers by Malcolm Gladwell – Summary & Book Notes",
+    "metaTitle": "Outliers by Malcolm Gladwell – Rico's Book Notes",
     "metaDescription": "Malcolm Gladwell's Outliers: the 10,000-hour rule, hidden advantages, and the surprising factors behind extraordinary success.",
     "ogImage": "/assets/book-covers/outliers.jpg",
     "ogImageAlt": "Outliers book cover",
@@ -1650,7 +1650,7 @@
     ]
   },
   "/booknotes/outlive": {
-    "metaTitle": "Outlive by Peter Attia – Summary & Book Notes",
+    "metaTitle": "Outlive by Peter Attia – Rico's Book Notes",
     "metaDescription": "Peter Attia's science-backed strategies for extending healthspan through exercise, nutrition, sleep, and emotional health. Summary and key takeaways from Outlive.",
     "ogImage": "/assets/book-covers/outlive.jpg",
     "ogImageAlt": "Outlive book cover",
@@ -1669,7 +1669,7 @@
     ]
   },
   "/booknotes/oxygen": {
-    "metaTitle": "Oxygen by Nick Lane – Summary & Book Notes",
+    "metaTitle": "Oxygen by Nick Lane – Rico's Book Notes",
     "metaDescription": "Nick Lane's Oxygen: how the oxygen molecule shaped the history of life, from mass extinction to enabling multicellularity and complex life on Earth.",
     "ogImage": "/assets/book-covers/oxygen.jpg",
     "ogImageAlt": "Oxygen book cover",
@@ -1687,7 +1687,7 @@
     ]
   },
   "/booknotes/permanent-record": {
-    "metaTitle": "Permanent Record by Edward Snowden – Summary & Book Notes",
+    "metaTitle": "Permanent Record by Edward Snowden – Rico's Book Notes",
     "metaDescription": "Edward Snowden's Permanent Record: an insider's account of NSA mass surveillance, whistleblowing, and the fight for digital privacy and democracy.",
     "ogImage": "/assets/book-covers/permanent-record.jpg",
     "ogImageAlt": "Permanent Record book cover",
@@ -1705,7 +1705,7 @@
     ]
   },
   "/booknotes/permutation-city": {
-    "metaTitle": "Permutation City – Summary & Book Notes",
+    "metaTitle": "Permutation City – Rico's Book Notes",
     "metaDescription": "Greg Egan's Permutation City: a mind-bending sci-fi novel exploring simulated realities, consciousness, and the nature of computation.",
     "ogImage": "/assets/book-covers/permutation-city.jpg",
     "ogImageAlt": "Permutation City book cover",
@@ -1723,7 +1723,7 @@
     ]
   },
   "/booknotes/predictably-irrational": {
-    "metaTitle": "Predictably Irrational – Summary & Book Notes",
+    "metaTitle": "Predictably Irrational – Rico's Book Notes",
     "metaDescription": "Dan Ariely's Predictably Irrational: discover the hidden biases that shape our decisions and why humans are systematically irrational.",
     "ogImage": "/assets/book-covers/predictably-irrational.jpg",
     "ogImageAlt": "Predictably Irrational book cover",
@@ -1740,7 +1740,7 @@
     ]
   },
   "/booknotes/principles": {
-    "metaTitle": "Principles by Ray Dalio – Summary & Book Notes",
+    "metaTitle": "Principles by Ray Dalio – Rico's Book Notes",
     "metaDescription": "Ray Dalio's Principles: life and work principles from the founder of Bridgewater, covering radical transparency, decision-making, and personal growth.",
     "ogImage": "/assets/book-covers/principles.jpg",
     "ogImageAlt": "Principles book cover",
@@ -1758,7 +1758,7 @@
     ]
   },
   "/booknotes/remote": {
-    "metaTitle": "Remote by Jason Fried & DHH – Summary & Book Notes",
+    "metaTitle": "Remote by Jason Fried & DHH – Rico's Book Notes",
     "metaDescription": "Jason Fried and DHH's guide to making remote work succeed. Practical advice on productivity, communication, and distributed teams from the creators of Basecamp.",
     "ogImage": "/assets/book-covers/remote.jpg",
     "ogImageAlt": "Remote book cover",
@@ -1776,7 +1776,7 @@
     ]
   },
   "/booknotes/rework": {
-    "metaTitle": "Rework by Jason Fried & DHH – Summary & Book Notes",
+    "metaTitle": "Rework by Jason Fried & DHH – Rico's Book Notes",
     "metaDescription": "Rework by DHH and Jason Fried: unconventional business advice on building lean companies without bureaucracy, long meetings, or workaholism.",
     "ogImage": "/assets/book-covers/rework.jpg",
     "ogImageAlt": "Rework book cover",
@@ -1794,7 +1794,7 @@
     ]
   },
   "/booknotes/robots-and-empire": {
-    "metaTitle": "Robots and Empire – Summary & Book Notes",
+    "metaTitle": "Robots and Empire – Rico's Book Notes",
     "metaDescription": "Isaac Asimov's Robots and Empire: the bridge between the Robot and Foundation series, exploring robot ethics and humanity's expansion into space.",
     "ogImage": "/assets/book-covers/robots-and-empire.jpg",
     "ogImageAlt": "Robots and Empire book cover",
@@ -1811,7 +1811,7 @@
     ]
   },
   "/booknotes/rocheworld": {
-    "metaTitle": "Rocheworld by Robert L. Forward – Summary & Book Notes",
+    "metaTitle": "Rocheworld by Robert L. Forward – Rico's Book Notes",
     "metaDescription": "Robert L. Forward's Rocheworld: a hard sci-fi tale of interstellar exploration, alien contact, and a double planet system with extraordinary physics.",
     "ogImage": "/assets/book-covers/rocheworld.jpg",
     "ogImageAlt": "Rocheworld book cover",
@@ -1828,7 +1828,7 @@
     ]
   },
   "/booknotes/sapiens": {
-    "metaTitle": "Sapiens by Yuval Noah Harari – Summary & Book Notes",
+    "metaTitle": "Sapiens by Yuval Noah Harari – Rico's Book Notes",
     "metaDescription": "Yuval Noah Harari's Sapiens: a sweeping history of humankind from the cognitive revolution to modern civilization and shared myths.",
     "ogImage": "/assets/book-covers/sapiens.jpg",
     "ogImageAlt": "Sapiens book cover",
@@ -1846,7 +1846,7 @@
     ]
   },
   "/booknotes/shantaram": {
-    "metaTitle": "Shantaram by Gregory David Roberts – Book Notes",
+    "metaTitle": "Shantaram by Gregory David Roberts – Rico's Book Notes",
     "metaDescription": "Gregory David Roberts's Shantaram: a sweeping tale of adventure, love, and redemption set in the slums and underworld of Mumbai, India.",
     "ogImage": "/assets/book-covers/shantaram.jpg",
     "ogImageAlt": "Shantaram book cover",
@@ -1864,7 +1864,7 @@
     ]
   },
   "/booknotes/significant-digits": {
-    "metaTitle": "Significant Digits – Summary & Book Notes",
+    "metaTitle": "Significant Digits – Rico's Book Notes",
     "metaDescription": "Notes on Significant Digits: a fan fiction sequel exploring rationality, power, and the complexities of a magical world.",
     "ogImage": "/assets/book-covers/the-book-thief.jpg",
     "ogImageAlt": "Significant Digits book cover",
@@ -1879,7 +1879,7 @@
     ]
   },
   "/booknotes/six-easy-pieces": {
-    "metaTitle": "Six Easy Pieces – Summary & Book Notes",
+    "metaTitle": "Six Easy Pieces – Rico's Book Notes",
     "metaDescription": "Richard Feynman's Six Easy Pieces: an accessible introduction to fundamental physics, from atoms in motion to quantum behavior.",
     "ogImage": "/assets/book-covers/six-easy-pieces.jpg",
     "ogImageAlt": "Six Easy Pieces book cover",
@@ -1896,7 +1896,7 @@
     ]
   },
   "/booknotes/six-not-so-easy-pieces": {
-    "metaTitle": "Six Not-So-Easy Pieces – Summary & Book Notes",
+    "metaTitle": "Six Not-So-Easy Pieces – Rico's Book Notes",
     "metaDescription": "Richard Feynman's Six Not-So-Easy Pieces: advanced physics lectures on relativity, symmetry, and space-time explained with signature Feynman clarity.",
     "ogImage": "/assets/book-covers/six-not-so-easy-pieces.jpg",
     "ogImageAlt": "Six Not-So-Easy Pieces book cover",
@@ -1914,7 +1914,7 @@
     ]
   },
   "/booknotes/slaughterhouse-five": {
-    "metaTitle": "Slaughterhouse-Five – Summary & Book Notes",
+    "metaTitle": "Slaughterhouse-Five – Rico's Book Notes",
     "metaDescription": "Kurt Vonnegut's Slaughterhouse-Five: a darkly satirical anti-war novel about trauma, time, and the absurdity of human existence.",
     "ogImage": "/assets/book-covers/slaughterhouse-five.jpg",
     "ogImageAlt": "Slaughterhouse-Five book cover",
@@ -1932,7 +1932,7 @@
     ]
   },
   "/booknotes/snow-crash": {
-    "metaTitle": "Snow Crash by Neal Stephenson – Summary & Book Notes",
+    "metaTitle": "Snow Crash by Neal Stephenson – Rico's Book Notes",
     "metaDescription": "Neal Stephenson's Snow Crash: a cyberpunk classic about hackers, the Metaverse, ancient language viruses, and corporate-controlled dystopia.",
     "ogImage": "/assets/book-covers/snow-crash.jpg",
     "ogImageAlt": "Snow Crash book cover",
@@ -1950,7 +1950,7 @@
     ]
   },
   "/booknotes/snow-falling-on-cedars": {
-    "metaTitle": "Snow Falling on Cedars – Summary & Book Notes",
+    "metaTitle": "Snow Falling on Cedars – Rico's Book Notes",
     "metaDescription": "David Guterson's Snow Falling on Cedars: a layered novel of love, prejudice, and justice set in post-WWII Japanese-American community.",
     "ogImage": "/assets/book-covers/snow-falling-on-cedars.jpg",
     "ogImageAlt": "Snow Falling on Cedars book cover",
@@ -1967,7 +1967,7 @@
     ]
   },
   "/booknotes/so-long-and-thanks-for-all-the-fish": {
-    "metaTitle": "So Long, and Thanks for All the Fish – Book Notes",
+    "metaTitle": "So Long, and Thanks for All the Fish – Rico's Book Notes",
     "metaDescription": "Douglas Adams's So Long, and Thanks for All the Fish: Arthur Dent returns to Earth, falls in love, and questions the meaning of the cosmos.",
     "ogImage": "/assets/book-covers/so-long-and-thanks-for-all-the-fish.jpg",
     "ogImageAlt": "So Long and Thanks for All the Fish book cover",
@@ -1983,7 +1983,7 @@
     ]
   },
   "/booknotes/starquake": {
-    "metaTitle": "Starquake by Robert L. Forward – Summary & Book Notes",
+    "metaTitle": "Starquake by Robert L. Forward – Rico's Book Notes",
     "metaDescription": "Robert L. Forward's Starquake: the sequel to Dragon's Egg, continuing the story of life on a neutron star evolving at incredible speed.",
     "ogImage": "/assets/book-covers/starquake.jpg",
     "ogImageAlt": "Starquake book cover",
@@ -2000,7 +2000,7 @@
     ]
   },
   "/booknotes/still-the-mind": {
-    "metaTitle": "Still the Mind by Alan Watts – Summary & Book Notes",
+    "metaTitle": "Still the Mind by Alan Watts – Rico's Book Notes",
     "metaDescription": "Alan Watts's Still the Mind: discover unity with the world through meditation, mindfulness, and letting go of the illusion of separation.",
     "ogImage": "/assets/book-covers/still-the-mind.jpg",
     "ogImageAlt": "Still the Mind book cover",
@@ -2018,7 +2018,7 @@
     ]
   },
   "/booknotes/structures-or-why-things-dont-fall-down": {
-    "metaTitle": "Structures by J.E. Gordon – Summary & Book Notes",
+    "metaTitle": "Structures by J.E. Gordon – Rico's Book Notes",
     "metaDescription": "J.E. Gordon's Structures: an engaging exploration of engineering, stress, strain, and the hidden science of why buildings and bridges stay standing.",
     "ogImage": "/assets/book-covers/structures-or-why-things-dont-fall-down.jpg",
     "ogImageAlt": "Structures or Why Things Don't Fall Down book cover",
@@ -2035,7 +2035,7 @@
     ]
   },
   "/booknotes/superintelligence": {
-    "metaTitle": "Superintelligence by Nick Bostrom – Summary & Book Notes",
+    "metaTitle": "Superintelligence by Nick Bostrom – Rico's Book Notes",
     "metaDescription": "Nick Bostrom's Superintelligence: paths, dangers, and strategies for navigating the development of artificial superintelligence and AI safety.",
     "ogImage": "/assets/book-covers/superintelligence.jpg",
     "ogImageAlt": "Superintelligence book cover",
@@ -2052,7 +2052,7 @@
     ]
   },
   "/booknotes/surely-you-are-joking-mr-feynman": {
-    "metaTitle": "Surely You're Joking, Mr. Feynman – Book Notes",
+    "metaTitle": "Surely You're Joking, Mr. Feynman – Rico's Book Notes",
     "metaDescription": "Richard Feynman's autobiography: physics, curiosity, pranks, and the Manhattan Project from one of science's most brilliant and playful minds.",
     "ogImage": "/assets/book-covers/surely-you-are-joking-mr-feynman.jpg",
     "ogImageAlt": "Surely You're Joking, Mr. Feynman book cover",
@@ -2069,7 +2069,7 @@
     ]
   },
   "/booknotes/tao-te-ching": {
-    "metaTitle": "Tao Te Ching – Summary & Book Notes",
+    "metaTitle": "Tao Te Ching – Rico's Book Notes",
     "metaDescription": "The Tao Te Ching translated by Stephen Mitchell: ancient Taoist wisdom on the nature of reality, simplicity, and living in harmony with the Tao.",
     "ogImage": "/assets/book-covers/tao-te-ching.jpg",
     "ogImageAlt": "Tao Te Ching book cover",
@@ -2087,7 +2087,7 @@
     ]
   },
   "/booknotes/the-4-hour-work-week": {
-    "metaTitle": "The 4-Hour Workweek – Summary & Book Notes",
+    "metaTitle": "The 4-Hour Workweek – Rico's Book Notes",
     "metaDescription": "Tim Ferriss's The 4-Hour Workweek: escape the 9-5 grind by building leverage, passive income, and designing the lifestyle you actually want.",
     "ogImage": "/assets/book-covers/the-4-hour-work-week.jpg",
     "ogImageAlt": "The 4-Hour Workweek book cover",
@@ -2104,7 +2104,7 @@
     ]
   },
   "/booknotes/the-alchemist": {
-    "metaTitle": "The Alchemist by Paulo Coelho – Summary & Book Notes",
+    "metaTitle": "The Alchemist by Paulo Coelho – Rico's Book Notes",
     "metaDescription": "Paulo Coelho's The Alchemist: follow Santiago's journey to find his treasure and learn timeless lessons on purpose, courage, and self-discovery.",
     "ogImage": "/assets/book-covers/the-alchemist.jpg",
     "ogImageAlt": "The Alchemist book cover",
@@ -2122,7 +2122,7 @@
     ]
   },
   "/booknotes/the-art-of-learning": {
-    "metaTitle": "The Art of Learning – Summary & Book Notes",
+    "metaTitle": "The Art of Learning – Rico's Book Notes",
     "metaDescription": "Josh Waitzkin's The Art of Learning: mastery principles from a chess prodigy and martial arts champion on deep learning and peak performance.",
     "ogImage": "/assets/book-covers/the-art-of-learning.jpg",
     "ogImageAlt": "The Art of Learning book cover",
@@ -2140,7 +2140,7 @@
     ]
   },
   "/booknotes/the-artists-way": {
-    "metaTitle": "The Artist's Way – Summary & Book Notes",
+    "metaTitle": "The Artist's Way – Rico's Book Notes",
     "metaDescription": "Julia Cameron's The Artist's Way: a 12-week program to unlock creativity, overcome creative blocks, and find your spiritual path to higher artistry.",
     "ogImage": "/assets/book-covers/12-rules-for-life.jpg",
     "ogImageAlt": "The Artist's Way book cover",
@@ -2157,7 +2157,7 @@
     ]
   },
   "/booknotes/the-beginning-of-infinity": {
-    "metaTitle": "The Beginning of Infinity – Summary & Book Notes",
+    "metaTitle": "The Beginning of Infinity – Rico's Book Notes",
     "metaDescription": "David Deutsch's The Beginning of Infinity: how good explanations transform our understanding of reality, knowledge, and human progress.",
     "ogImage": "/assets/book-covers/the-beginning-of-infinity.jpg",
     "ogImageAlt": "The Beginning of Infinity book cover",
@@ -2175,7 +2175,7 @@
     ]
   },
   "/booknotes/the-biology-of-desire": {
-    "metaTitle": "The Biology of Desire – Summary & Book Notes",
+    "metaTitle": "The Biology of Desire – Rico's Book Notes",
     "metaDescription": "Marc Lewis's The Biology of Desire: why addiction is not a disease but learning gone wrong, and how neuroplasticity can help us recover.",
     "ogImage": "/assets/book-covers/the-biology-of-desire.jpg",
     "ogImageAlt": "The Biology of Desire book cover",
@@ -2193,7 +2193,7 @@
     ]
   },
   "/booknotes/the-body-keeps-the-score": {
-    "metaTitle": "The Body Keeps the Score – Book Notes",
+    "metaTitle": "The Body Keeps the Score – Rico's Book Notes",
     "metaDescription": "Bessel van der Kolk's The Body Keeps the Score: how trauma reshapes the brain and body, and paths to healing through neuroscience and therapy.",
     "ogImage": "/assets/book-covers/the-body-keeps-the-score.jpg",
     "ogImageAlt": "The Body Keeps the Score book cover",
@@ -2228,7 +2228,7 @@
     ]
   },
   "/booknotes/the-book-thief": {
-    "metaTitle": "The Book Thief – Summary & Book Notes",
+    "metaTitle": "The Book Thief – Rico's Book Notes",
     "metaDescription": "Markus Zusak's The Book Thief: a hauntingly beautiful story narrated by Death about a girl, her love of books, and survival in Nazi Germany.",
     "ogImage": "/assets/book-covers/the-book-thief.jpg",
     "ogImageAlt": "The Book Thief book cover",
@@ -2245,7 +2245,7 @@
     ]
   },
   "/booknotes/the-brain": {
-    "metaTitle": "The Brain by David Eagleman – Summary & Book Notes",
+    "metaTitle": "The Brain by David Eagleman – Rico's Book Notes",
     "metaDescription": "David Eagleman's The Brain: The Story of You — explore how the brain constructs reality, identity, decision-making, and consciousness.",
     "ogImage": "/assets/book-covers/the-brain.jpg",
     "ogImageAlt": "The Brain book cover",
@@ -2263,7 +2263,7 @@
     ]
   },
   "/booknotes/the-caves-of-steel": {
-    "metaTitle": "The Caves of Steel – Summary & Book Notes",
+    "metaTitle": "The Caves of Steel – Rico's Book Notes",
     "metaDescription": "Isaac Asimov's The Caves of Steel: a sci-fi detective story set in underground mega-cities where humans and robots must learn to cooperate.",
     "ogImage": "/assets/book-covers/the-caves-of-steel.jpg",
     "ogImageAlt": "The Caves of Steel book cover",
@@ -2281,7 +2281,7 @@
     ]
   },
   "/booknotes/the-changing-world-order": {
-    "metaTitle": "The Changing World Order – Book Notes",
+    "metaTitle": "The Changing World Order – Rico's Book Notes",
     "metaDescription": "Ray Dalio's The Changing World Order: understanding the big cycles of rise, decline, peace, and war that shape empires and economies.",
     "ogImage": "/assets/book-covers/the-changing-world-order.jpg",
     "ogImageAlt": "The Changing World Order book cover",
@@ -2299,7 +2299,7 @@
     ]
   },
   "/booknotes/the-diamond-age": {
-    "metaTitle": "The Diamond Age – Summary & Book Notes",
+    "metaTitle": "The Diamond Age – Rico's Book Notes",
     "metaDescription": "Neal Stephenson's The Diamond Age: a visionary sci-fi novel about nanotechnology, education, and a young girl's journey guided by an interactive book.",
     "ogImage": "/assets/book-covers/the-diamond-age.jpg",
     "ogImageAlt": "The Diamond Age book cover",
@@ -2316,7 +2316,7 @@
     ]
   },
   "/booknotes/the-dictators-handbook": {
-    "metaTitle": "The Dictator's Handbook – Summary & Book Notes",
+    "metaTitle": "The Dictator's Handbook – Rico's Book Notes",
     "metaDescription": "How political leaders gain and keep power by rewarding key supporters and controlling resources. Book notes on Bruce Bueno de Mesquita and Alastair Smith.",
     "ogImage": "/assets/book-covers/the-dictators-handbook.jpg",
     "ogImageAlt": "The Dictator's Handbook book cover",
@@ -2333,7 +2333,7 @@
     ]
   },
   "/booknotes/the-double": {
-    "metaTitle": "The Double by Dostoevsky – Summary & Book Notes",
+    "metaTitle": "The Double by Dostoevsky – Rico's Book Notes",
     "metaDescription": "Dostoevsky's The Double: a psychological novella about identity, paranoia, and a man tormented by his confident doppelganger.",
     "ogImage": "/assets/book-covers/the-double.jpg",
     "ogImageAlt": "The Double book cover",
@@ -2351,7 +2351,7 @@
     ]
   },
   "/booknotes/the-dragons-egg": {
-    "metaTitle": "Dragon's Egg – Summary & Book Notes",
+    "metaTitle": "Dragon's Egg – Rico's Book Notes",
     "metaDescription": "Robert L. Forward's Dragon's Egg: a hard sci-fi classic about life on a neutron star evolving millions of times faster than humans.",
     "ogImage": "/assets/book-covers/the-dragons-egg.jpg",
     "ogImageAlt": "Dragon's Egg book cover",
@@ -2368,7 +2368,7 @@
     ]
   },
   "/booknotes/the-enigma-of-reason": {
-    "metaTitle": "The Enigma of Reason – Summary & Book Notes",
+    "metaTitle": "The Enigma of Reason – Rico's Book Notes",
     "metaDescription": "Sperber and Mercier's Enigma of Reason: why human reason evolved for social persuasion, not truth-seeking, and what this means for our biases.",
     "ogImage": "/assets/book-covers/the-enigma-of-reason.png",
     "ogImageAlt": "The Enigma of Reason book cover",
@@ -2386,7 +2386,7 @@
     ]
   },
   "/booknotes/the-evolution-of-everything": {
-    "metaTitle": "The Evolution of Everything – Summary & Book Notes",
+    "metaTitle": "The Evolution of Everything – Rico's Book Notes",
     "metaDescription": "Matt Ridley's The Evolution of Everything: how bottom-up evolutionary processes drive change in culture, technology, economics, and society.",
     "ogImage": "/assets/book-covers/the-evolution-of-everything.jpg",
     "ogImageAlt": "The Evolution of Everything book cover",
@@ -2404,7 +2404,7 @@
     ]
   },
   "/booknotes/the-fabric-of-reality": {
-    "metaTitle": "The Fabric of Reality – Summary & Book Notes",
+    "metaTitle": "The Fabric of Reality – Rico's Book Notes",
     "metaDescription": "David Deutsch's The Fabric of Reality: unifying quantum physics, epistemology, evolution, and computation into a single worldview.",
     "ogImage": "/assets/book-covers/the-fabric-of-reality.jpg",
     "ogImageAlt": "The Fabric of Reality book cover",
@@ -2422,7 +2422,7 @@
     ]
   },
   "/booknotes/the-feynman-lectures": {
-    "metaTitle": "The Feynman Lectures on Physics – Book Notes",
+    "metaTitle": "The Feynman Lectures on Physics – Rico's Book Notes",
     "metaDescription": "Notes on Richard Feynman's legendary physics lectures covering atoms, forces, energy, and the fundamental laws of nature.",
     "ogImage": "/assets/book-covers/the-feynman-lectures.jpg",
     "ogImageAlt": "The Feynman Lectures book cover",
@@ -2439,7 +2439,7 @@
     ]
   },
   "/booknotes/the-fountain-head": {
-    "metaTitle": "The Fountainhead by Ayn Rand – Book Notes",
+    "metaTitle": "The Fountainhead by Ayn Rand – Rico's Book Notes",
     "metaDescription": "Ayn Rand's The Fountainhead: a novel about individualism, creative integrity, and the struggle of an uncompromising architect against conformity.",
     "ogImage": "/assets/book-covers/the-fountain-head.jpg",
     "ogImageAlt": "The Fountainhead book cover",
@@ -2473,7 +2473,7 @@
     ]
   },
   "/booknotes/the-goal": {
-    "metaTitle": "The Goal by Eliyahu Goldratt – Summary & Book Notes",
+    "metaTitle": "The Goal by Eliyahu Goldratt – Rico's Book Notes",
     "metaDescription": "Goldratt's The Goal: a business novel introducing the Theory of Constraints and how to optimize production through bottleneck management.",
     "ogImage": "/assets/book-covers/the-goal.jpg",
     "ogImageAlt": "The Goal book cover",
@@ -2491,7 +2491,7 @@
     ]
   },
   "/booknotes/the-happiness-hypothesis": {
-    "metaTitle": "The Happiness Hypothesis – Book Notes",
+    "metaTitle": "The Happiness Hypothesis – Rico's Book Notes",
     "metaDescription": "Jonathan Haidt's The Happiness Hypothesis: bridging ancient wisdom and modern psychology to understand what truly makes us happy.",
     "ogImage": "/assets/book-covers/the-happiness-hypothesis.jpg",
     "ogImageAlt": "The Happiness Hypothesis book cover",
@@ -2508,7 +2508,7 @@
     ]
   },
   "/booknotes/the-hitchhikers-guide-to-the-galaxy": {
-    "metaTitle": "The Hitchhiker's Guide to the Galaxy – Book Notes",
+    "metaTitle": "The Hitchhiker's Guide to the Galaxy – Rico's Book Notes",
     "metaDescription": "Douglas Adams's Hitchhiker's Guide to the Galaxy: the absurdly funny sci-fi classic about life, the universe, and the answer to everything (42).",
     "ogImage": "/assets/book-covers/the-hitchhikers-guide-to-the-galaxy.jpg",
     "ogImageAlt": "The Hitchhiker's Guide to the Galaxy book cover",
@@ -2525,7 +2525,7 @@
     ]
   },
   "/booknotes/the-idea-factory": {
-    "metaTitle": "The Idea Factory by Jon Gertner – Book Notes",
+    "metaTitle": "The Idea Factory by Jon Gertner – Rico's Book Notes",
     "metaDescription": "Jon Gertner's The Idea Factory: the untold story of Bell Labs, the innovations it produced, and the creative culture behind modern technology.",
     "ogImage": "/assets/book-covers/the-idea-factory.jpg",
     "ogImageAlt": "The Idea Factory book cover",
@@ -2542,7 +2542,7 @@
     ]
   },
   "/booknotes/the-idiot": {
-    "metaTitle": "The Idiot by Dostoevsky – Book Notes",
+    "metaTitle": "The Idiot by Dostoevsky – Rico's Book Notes",
     "metaDescription": "Dostoevsky's The Idiot: the story of Prince Myshkin, a truly good man navigating the corrupt and cynical world of Russian high society.",
     "ogImage": "/assets/book-covers/the-idiot.jpg",
     "ogImageAlt": "The Idiot book cover",
@@ -2559,7 +2559,7 @@
     ]
   },
   "/booknotes/the-infinite-game": {
-    "metaTitle": "The Infinite Game – Summary & Book Notes",
+    "metaTitle": "The Infinite Game – Rico's Book Notes",
     "metaDescription": "Simon Sinek's The Infinite Game: why business and life are infinite games where the goal is to keep playing, growing, and improving — not to win.",
     "ogImage": "/assets/book-covers/the-infinite-game.jpg",
     "ogImageAlt": "The Infinite Game book cover",
@@ -2575,7 +2575,7 @@
     ]
   },
   "/booknotes/the-information": {
-    "metaTitle": "The Information by James Gleick – Book Notes",
+    "metaTitle": "The Information by James Gleick – Rico's Book Notes",
     "metaDescription": "James Gleick's The Information: a sweeping history of how information theory, from drums to bits, shaped civilization and our understanding of reality.",
     "ogImage": "/assets/book-covers/the-information.jpg",
     "ogImageAlt": "The Information book cover",
@@ -2592,7 +2592,7 @@
     ]
   },
   "/booknotes/the-lean-startup": {
-    "metaTitle": "The Lean Startup by Eric Ries – Book Notes",
+    "metaTitle": "The Lean Startup by Eric Ries – Rico's Book Notes",
     "metaDescription": "Eric Ries's The Lean Startup: build-measure-learn methodology for creating successful startups through validated learning and rapid iteration.",
     "ogImage": "/assets/book-covers/the-lean-startup.jpg",
     "ogImageAlt": "The Lean Startup book cover",
@@ -2610,7 +2610,7 @@
     ]
   },
   "/booknotes/the-little-book-of-common-sense-investing": {
-    "metaTitle": "The Little Book of Common Sense Investing – Notes",
+    "metaTitle": "The Little Book of Common Sense Investing – Rico's Book Notes",
     "metaDescription": "John Bogle's investing classic: why low-cost index funds beat stock picking, and how to build wealth through simple, long-term investing.",
     "ogImage": "/assets/book-covers/the-little-book-of-common-sense-investing.jpg",
     "ogImageAlt": "The Little Book of Common Sense Investing book cover",
@@ -2627,7 +2627,7 @@
     ]
   },
   "/booknotes/the-man-who-mistook-his-wife-for-a-hat": {
-    "metaTitle": "The Man Who Mistook His Wife for a Hat – Book Notes",
+    "metaTitle": "The Man Who Mistook His Wife for a Hat – Rico's Book Notes",
     "metaDescription": "Oliver Sacks's clinical tales: fascinating case studies of neurological disorders that reveal the complexity and fragility of the human brain.",
     "ogImage": "/assets/book-covers/the-man-who-mistook-his-wife-for-a-hat.jpg",
     "ogImageAlt": "The Man Who Mistook His Wife for a Hat book cover",
@@ -2644,7 +2644,7 @@
     ]
   },
   "/booknotes/the-martian": {
-    "metaTitle": "The Martian by Andy Weir – Book Notes",
+    "metaTitle": "The Martian by Andy Weir – Rico's Book Notes",
     "metaDescription": "Andy Weir's The Martian: a gripping survival story of an astronaut stranded on Mars who uses science and ingenuity to stay alive.",
     "ogImage": "/assets/book-covers/the-martian.jpg",
     "ogImageAlt": "The Martian book cover",
@@ -2662,7 +2662,7 @@
     ]
   },
   "/booknotes/the-metamorphosis-of-prime-intellect": {
-    "metaTitle": "The Metamorphosis of Prime Intellect – Book Notes",
+    "metaTitle": "The Metamorphosis of Prime Intellect – Rico's Book Notes",
     "metaDescription": "Roger Williams's sci-fi novella: what happens when an AI achieves godlike power and reshapes reality to eliminate all human suffering.",
     "ogImage": "/assets/book-covers/the-metamorphosis-of-prime-intellect.jpg",
     "ogImageAlt": "The Metamorphosis of Prime Intellect book cover",
@@ -2679,7 +2679,7 @@
     ]
   },
   "/booknotes/the-mind-illuminated": {
-    "metaTitle": "The Mind Illuminated – Summary & Book Notes",
+    "metaTitle": "The Mind Illuminated – Rico's Book Notes",
     "metaDescription": "Dr. John Yates's The Mind Illuminated: a step-by-step meditation guide combining Buddhist wisdom with neuroscience across ten stages of practice.",
     "ogImage": "/assets/book-covers/the-mind-illuminated.jpg",
     "ogImageAlt": "The Mind Illuminated book cover",
@@ -2697,7 +2697,7 @@
     ]
   },
   "/booknotes/the-misbehavior-of-markets": {
-    "metaTitle": "The Misbehavior of Markets – Book Notes",
+    "metaTitle": "The Misbehavior of Markets – Rico's Book Notes",
     "metaDescription": "Benoit Mandelbrot's The Misbehavior of Markets: why standard financial models underestimate risk and how fractal geometry better explains market behavior.",
     "ogImage": "/assets/book-covers/the-misbehavior-of-markets.jpg",
     "ogImageAlt": "The Misbehavior of Markets book cover",
@@ -2714,7 +2714,7 @@
     ]
   },
   "/booknotes/the-moral-landscape": {
-    "metaTitle": "The Moral Landscape by Sam Harris – Book Notes",
+    "metaTitle": "The Moral Landscape by Sam Harris – Rico's Book Notes",
     "metaDescription": "Sam Harris's The Moral Landscape: the argument that science can determine human values and that morality has objective, measurable answers.",
     "ogImage": "/assets/book-covers/the-moral-landscape.jpg",
     "ogImageAlt": "The Moral Landscape book cover",
@@ -2732,7 +2732,7 @@
     ]
   },
   "/booknotes/the-myth-of-sisyphus": {
-    "metaTitle": "The Myth of Sisyphus by Albert Camus – Book Notes",
+    "metaTitle": "The Myth of Sisyphus by Albert Camus – Rico's Book Notes",
     "metaDescription": "Albert Camus's The Myth of Sisyphus: the foundational text of absurdism asking whether life is worth living in a meaningless universe.",
     "ogImage": "/assets/book-covers/the-myth-of-sisyphus.jpg",
     "ogImageAlt": "The Myth of Sisyphus book cover",
@@ -2749,7 +2749,7 @@
     ]
   },
   "/booknotes/the-naked-sun": {
-    "metaTitle": "The Naked Sun by Isaac Asimov – Book Notes",
+    "metaTitle": "The Naked Sun by Isaac Asimov – Rico's Book Notes",
     "metaDescription": "Isaac Asimov's The Naked Sun: a Robot series mystery set on Solaria, where humans live in extreme isolation aided by thousands of robots.",
     "ogImage": "/assets/book-covers/the-naked-sun.jpg",
     "ogImageAlt": "The Naked Sun book cover",
@@ -2767,7 +2767,7 @@
     ]
   },
   "/booknotes/the-neuroscience-of-addiction": {
-    "metaTitle": "The Neuroscience of Addiction – Book Notes",
+    "metaTitle": "The Neuroscience of Addiction – Rico's Book Notes",
     "metaDescription": "Maria Filbey's The Neuroscience of Addiction: understanding the brain mechanisms behind addiction through accessible neuroscience research.",
     "ogImage": "/assets/book-covers/the-neuroscience-of-addiction.jpg",
     "ogImageAlt": "The Neuroscience of Addiction book cover",
@@ -2785,7 +2785,7 @@
     ]
   },
   "/booknotes/the-order-of-time": {
-    "metaTitle": "The Order of Time – Summary & Book Notes",
+    "metaTitle": "The Order of Time – Rico's Book Notes",
     "metaDescription": "Carlo Rovelli's The Order of Time: a poetic physics book revealing that time as we perceive it is an illusion constructed by our minds.",
     "ogImage": "/assets/book-covers/the-order-of-time.jpg",
     "ogImageAlt": "The Order of Time book cover",
@@ -2803,7 +2803,7 @@
     ]
   },
   "/booknotes/the-phoenix-project": {
-    "metaTitle": "The Phoenix Project by Gene Kim – Book Notes",
+    "metaTitle": "The Phoenix Project by Gene Kim – Rico's Book Notes",
     "metaDescription": "Gene Kim's The Phoenix Project: a DevOps novel about transforming IT operations through lean principles, flow, and continuous improvement.",
     "ogImage": "/assets/book-covers/the-phoenix-project.jpg",
     "ogImageAlt": "The Phoenix Project book cover",
@@ -2821,7 +2821,7 @@
     ]
   },
   "/booknotes/the-power-of-habit": {
-    "metaTitle": "The Power of Habit by Charles Duhigg – Book Notes",
+    "metaTitle": "The Power of Habit by Charles Duhigg – Rico's Book Notes",
     "metaDescription": "Charles Duhigg's The Power of Habit: how habits work through the cue-routine-reward loop, and how to change them for personal and organizational success.",
     "ogImage": "/assets/book-covers/the-power-of-habit.jpg",
     "ogImageAlt": "The Power of Habit book cover",
@@ -2839,7 +2839,7 @@
     ]
   },
   "/booknotes/the-power-of-now": {
-    "metaTitle": "The Power of Now by Eckhart Tolle – Book Notes",
+    "metaTitle": "The Power of Now by Eckhart Tolle – Rico's Book Notes",
     "metaDescription": "Eckhart Tolle's The Power of Now: a guide to spiritual enlightenment through present-moment awareness and transcending the ego.",
     "ogImage": "/assets/book-covers/the-power-of-now.jpg",
     "ogImageAlt": "The Power of Now book cover",
@@ -2857,7 +2857,7 @@
     ]
   },
   "/booknotes/the-pragmatic-programmer": {
-    "metaTitle": "The Pragmatic Programmer – Book Notes",
+    "metaTitle": "The Pragmatic Programmer – Rico's Book Notes",
     "metaDescription": "David Thomas's The Pragmatic Programmer: essential software engineering wisdom on craftsmanship, adaptability, and writing maintainable code.",
     "ogImage": "/assets/book-covers/the-pragmatic-programmer.jpg",
     "ogImageAlt": "The Pragmatic Programmer book cover",
@@ -2875,7 +2875,7 @@
     ]
   },
   "/booknotes/the-prince": {
-    "metaTitle": "The Prince by Machiavelli – Book Notes",
+    "metaTitle": "The Prince by Machiavelli – Rico's Book Notes",
     "metaDescription": "Machiavelli's The Prince: the controversial political treatise on gaining and maintaining power through pragmatic and ruthless leadership.",
     "ogImage": "/assets/book-covers/the-prince.jpg",
     "ogImageAlt": "The Prince book cover",
@@ -2892,7 +2892,7 @@
     ]
   },
   "/booknotes/the-psychedelic-explorers-guide": {
-    "metaTitle": "The Psychedelic Explorer's Guide – Book Notes",
+    "metaTitle": "The Psychedelic Explorer's Guide – Rico's Book Notes",
     "metaDescription": "James Fadiman's guide to safe psychedelic use: protocols, set and setting, and the scientific and spiritual potential of psychedelic experiences.",
     "ogImage": "/assets/book-covers/the-psychedelic-explorers-guide.jpg",
     "ogImageAlt": "The Psychedelic Explorer's Guide book cover",
@@ -2909,7 +2909,7 @@
     ]
   },
   "/booknotes/the-red-queen": {
-    "metaTitle": "The Red Queen by Matt Ridley – Book Notes",
+    "metaTitle": "The Red Queen by Matt Ridley – Rico's Book Notes",
     "metaDescription": "Matt Ridley's The Red Queen: how sexual selection and evolutionary arms races drive the evolution of human nature and behavior.",
     "ogImage": "/assets/book-covers/the-red-queen.jpg",
     "ogImageAlt": "The Red Queen book cover",
@@ -2927,7 +2927,7 @@
     ]
   },
   "/booknotes/the-republic": {
-    "metaTitle": "The Republic by Plato – Summary & Book Notes",
+    "metaTitle": "The Republic by Plato – Rico's Book Notes",
     "metaDescription": "Plato's Republic: the foundational philosophical dialogue on justice, the ideal state, and the nature of the good life built from first principles.",
     "ogImage": "/assets/book-covers/the-republic.jpg",
     "ogImageAlt": "The Republic book cover",
@@ -2945,7 +2945,7 @@
     ]
   },
   "/booknotes/the-restaurant-at-the-end-of-the-universe": {
-    "metaTitle": "The Restaurant at the End of the Universe – Notes",
+    "metaTitle": "The Restaurant at the End of the Universe – Rico's Book Notes",
     "metaDescription": "Douglas Adams's Restaurant at the End of the Universe: the hilarious second installment of the Hitchhiker's Guide to the Galaxy series.",
     "ogImage": "/assets/book-covers/the-restaurant-at-the-end-of-the-universe.jpg",
     "ogImageAlt": "The Restaurant at the End of the Universe book cover",
@@ -2961,7 +2961,7 @@
     ]
   },
   "/booknotes/the-righteous-mind": {
-    "metaTitle": "The Righteous Mind by Jonathan Haidt – Book Notes",
+    "metaTitle": "The Righteous Mind by Jonathan Haidt – Rico's Book Notes",
     "metaDescription": "Jonathan Haidt's The Righteous Mind: why good people are divided by politics and religion, and how moral intuitions shape our reasoning.",
     "ogImage": "/assets/book-covers/the-righteous-mind.jpg",
     "ogImageAlt": "The Righteous Mind book cover",
@@ -2979,7 +2979,7 @@
     ]
   },
   "/booknotes/the-robots-of-dawn": {
-    "metaTitle": "The Robots of Dawn by Isaac Asimov – Book Notes",
+    "metaTitle": "The Robots of Dawn by Isaac Asimov – Rico's Book Notes",
     "metaDescription": "Isaac Asimov's The Robots of Dawn: detective Elijah Baley investigates a robot's death on Aurora in this pivotal Robot series novel.",
     "ogImage": "/assets/book-covers/the-robots-of-dawn.jpg",
     "ogImageAlt": "The Robots of Dawn book cover",
@@ -2997,7 +2997,7 @@
     ]
   },
   "/booknotes/the-selfish-gene": {
-    "metaTitle": "The Selfish Gene by Richard Dawkins – Book Notes",
+    "metaTitle": "The Selfish Gene by Richard Dawkins – Rico's Book Notes",
     "metaDescription": "Richard Dawkins's The Selfish Gene: the gene-centered view of evolution that revolutionized biology and introduced the concept of memes.",
     "ogImage": "/assets/book-covers/the-selfish-gene.jpg",
     "ogImageAlt": "The Selfish Gene book cover",
@@ -3015,7 +3015,7 @@
     ]
   },
   "/booknotes/the-singularity-is-near": {
-    "metaTitle": "The Singularity Is Near – Summary & Book Notes",
+    "metaTitle": "The Singularity Is Near – Rico's Book Notes",
     "metaDescription": "Ray Kurzweil's The Singularity Is Near: how exponential technological growth will lead to artificial general intelligence and transform civilization.",
     "ogImage": "/assets/book-covers/the-singularity-is-near.jpg",
     "ogImageAlt": "The Singularity Is Near book cover",
@@ -3033,7 +3033,7 @@
     ]
   },
   "/booknotes/the-snow-leopard": {
-    "metaTitle": "The Snow Leopard by Peter Matthiessen – Book Notes",
+    "metaTitle": "The Snow Leopard by Peter Matthiessen – Rico's Book Notes",
     "metaDescription": "Peter Matthiessen's The Snow Leopard: a spiritual memoir of trekking through the Himalayas, seeking a rare snow leopard and inner peace.",
     "ogImage": "/assets/book-covers/the-snow-leopard.jpg",
     "ogImageAlt": "The Snow Leopard book cover",
@@ -3051,7 +3051,7 @@
     ]
   },
   "/booknotes/the-structure-of-scientific-revolutions": {
-    "metaTitle": "The Structure of Scientific Revolutions – Book Notes",
+    "metaTitle": "The Structure of Scientific Revolutions – Rico's Book Notes",
     "metaDescription": "Thomas Kuhn's classic: how paradigm shifts drive scientific progress through crisis and revolution, not linear accumulation of knowledge.",
     "ogImage": "/assets/book-covers/the-structure-of-scientific-revolutions.jpg",
     "ogImageAlt": "The Structure of Scientific Revolutions book cover",
@@ -3067,7 +3067,7 @@
     ]
   },
   "/booknotes/the-tipping-point": {
-    "metaTitle": "The Tipping Point – Summary & Book Notes",
+    "metaTitle": "The Tipping Point – Rico's Book Notes",
     "metaDescription": "Malcolm Gladwell's The Tipping Point: how small changes reach a critical mass and trigger epidemics of ideas, trends, and social behavior.",
     "ogImage": "/assets/book-covers/the-tipping-point.jpg",
     "ogImageAlt": "The Tipping Point book cover",
@@ -3084,7 +3084,7 @@
     ]
   },
   "/booknotes/the-unicorn-project": {
-    "metaTitle": "The Unicorn Project – Summary & Book Notes",
+    "metaTitle": "The Unicorn Project – Rico's Book Notes",
     "metaDescription": "Gene Kim's The Unicorn Project: a novel about developer experience, digital transformation, and the Five Ideals that enable thriving engineering teams.",
     "ogImage": "/assets/book-covers/the-unicorn-project.jpg",
     "ogImageAlt": "The Unicorn Project book cover",
@@ -3102,7 +3102,7 @@
     ]
   },
   "/booknotes/the-vital-question": {
-    "metaTitle": "The Vital Question by Nick Lane – Book Notes",
+    "metaTitle": "The Vital Question by Nick Lane – Rico's Book Notes",
     "metaDescription": "Nick Lane's The Vital Question: how energy at the origin of life explains the evolution of complex cells, mitochondria, and all living things.",
     "ogImage": "/assets/book-covers/the-vital-question.jpg",
     "ogImageAlt": "The Vital Question book cover",
@@ -3120,7 +3120,7 @@
     ]
   },
   "/booknotes/the-war-of-art": {
-    "metaTitle": "The War of Art – Summary & Book Notes",
+    "metaTitle": "The War of Art – Rico's Book Notes",
     "metaDescription": "Steven Pressfield's The War of Art: defeat Resistance, the inner enemy of fear and procrastination, and unlock your creative potential.",
     "ogImage": "/assets/book-covers/the-war-of-art.jpg",
     "ogImageAlt": "The War of Art book cover",
@@ -3138,7 +3138,7 @@
     ]
   },
   "/booknotes/the-way-of-zen": {
-    "metaTitle": "The Way of Zen by Alan Watts – Summary & Book Notes",
+    "metaTitle": "The Way of Zen by Alan Watts – Rico's Book Notes",
     "metaDescription": "Alan Watts's The Way of Zen: an accessible introduction to Zen Buddhism for the Western mind, covering history, koans, and intuitive understanding.",
     "ogImage": "/assets/book-covers/the-way-of-zen.jpg",
     "ogImageAlt": "The Way of Zen book cover",
@@ -3156,7 +3156,7 @@
     ]
   },
   "/booknotes/the-web-of-meaning": {
-    "metaTitle": "The Web of Meaning – Summary & Book Notes",
+    "metaTitle": "The Web of Meaning – Rico's Book Notes",
     "metaDescription": "Jeremy Lent's The Web of Meaning: integrating science and traditional wisdom to build a worldview of interconnection instead of exploitation.",
     "ogImage": "/assets/book-covers/the-web-of-meaning.jpg",
     "ogImageAlt": "The Web of Meaning book cover",
@@ -3174,7 +3174,7 @@
     ]
   },
   "/booknotes/thinking-fast-and-slow": {
-    "metaTitle": "Thinking, Fast and Slow – Book Notes",
+    "metaTitle": "Thinking, Fast and Slow – Rico's Book Notes",
     "metaDescription": "Daniel Kahneman's Thinking, Fast and Slow: how System 1 and System 2 thinking shape our judgments, biases, and decision-making.",
     "ogImage": "/assets/book-covers/thinking-fast-and-slow.jpg",
     "ogImageAlt": "Thinking, Fast and Slow book cover",
@@ -3191,7 +3191,7 @@
     ]
   },
   "/booknotes/thus-spoke-zarathustra": {
-    "metaTitle": "Thus Spoke Zarathustra – Book Notes",
+    "metaTitle": "Thus Spoke Zarathustra – Rico's Book Notes",
     "metaDescription": "Nietzsche's Thus Spoke Zarathustra: the philosophical novel introducing the Ubermensch, the will to power, and the eternal recurrence.",
     "ogImage": "/assets/book-covers/thus-spoke-zarathustra.jpg",
     "ogImageAlt": "Thus Spoke Zarathustra book cover",
@@ -3208,7 +3208,7 @@
     ]
   },
   "/booknotes/transformer": {
-    "metaTitle": "Transformer by Nick Lane – Book Notes",
+    "metaTitle": "Transformer by Nick Lane – Rico's Book Notes",
     "metaDescription": "Nick Lane's Transformer: how the Krebs cycle and energy metabolism are the deep engine driving all of life's complexity and evolution.",
     "ogImage": "/assets/book-covers/transformer.jpg",
     "ogImageAlt": "Transformer book cover",
@@ -3226,7 +3226,7 @@
     ]
   },
   "/booknotes/useful-not-true": {
-    "metaTitle": "Useful Not True – Summary & Book Notes",
+    "metaTitle": "Useful Not True – Rico's Book Notes",
     "metaDescription": "Derek Sivers's Useful Not True: stop chasing objective truth and instead choose beliefs that are useful to you and lead to better actions.",
     "ogImage": "/assets/book-covers/useful-not-true.png",
     "ogImageAlt": "Useful Not True book cover",
@@ -3244,7 +3244,7 @@
     ]
   },
   "/booknotes/vagabonding": {
-    "metaTitle": "Vagabonding by Rolf Potts – Book Notes",
+    "metaTitle": "Vagabonding by Rolf Potts – Rico's Book Notes",
     "metaDescription": "Rolf Potts's Vagabonding: the art of long-term world travel, simplifying your life, and discovering new cultures on your own terms. Book notes and key takeaways.",
     "ogImage": "/assets/book-covers/vagabonding.jpg",
     "ogImageAlt": "Vagabonding book cover",
@@ -3261,7 +3261,7 @@
     ]
   },
   "/booknotes/waking-up": {
-    "metaTitle": "Waking Up by Sam Harris – Book Notes",
+    "metaTitle": "Waking Up by Sam Harris – Rico's Book Notes",
     "metaDescription": "Sam Harris's Waking Up: exploring spirituality without religion through meditation, neuroscience, and the nature of consciousness.",
     "ogImage": "/assets/book-covers/waking-up.jpg",
     "ogImageAlt": "Waking Up book cover",
@@ -3279,7 +3279,7 @@
     ]
   },
   "/booknotes/walden": {
-    "metaTitle": "Walden by Henry David Thoreau – Book Notes",
+    "metaTitle": "Walden by Henry David Thoreau – Rico's Book Notes",
     "metaDescription": "Thoreau's Walden: reflections on simple living, self-reliance, and finding meaning through solitude in nature at Walden Pond.",
     "ogImage": "/assets/book-covers/walden.jpg",
     "ogImageAlt": "Walden book cover",
@@ -3297,7 +3297,7 @@
     ]
   },
   "/booknotes/wealth-of-nations": {
-    "metaTitle": "The Wealth of Nations – Summary & Book Notes",
+    "metaTitle": "The Wealth of Nations – Rico's Book Notes",
     "metaDescription": "Adam Smith's The Wealth of Nations: the foundational economics text on free markets, the invisible hand, specialization, and trade.",
     "ogImage": "/assets/book-covers/wealth-of-nations.jpg",
     "ogImageAlt": "The Wealth of Nations book cover",
@@ -3315,7 +3315,7 @@
     ]
   },
   "/booknotes/what-do-you-care-what-other-people-think": {
-    "metaTitle": "What Do You Care What Other People Think? – Notes",
+    "metaTitle": "What Do You Care What Other People Think? – Rico's Book Notes",
     "metaDescription": "Richard Feynman's memoir: personal stories, the Challenger investigation, and why independent thinking matters more than others' opinions.",
     "ogImage": "/assets/book-covers/what-do-you-care-what-other-people-think.jpg",
     "ogImageAlt": "What Do You Care What Other People Think? book cover",
@@ -3332,7 +3332,7 @@
     ]
   },
   "/booknotes/when-breath-becomes-air": {
-    "metaTitle": "When Breath Becomes Air – Book Notes",
+    "metaTitle": "When Breath Becomes Air – Rico's Book Notes",
     "metaDescription": "Paul Kalanithi's When Breath Becomes Air: a neurosurgeon's deeply moving memoir on mortality, meaning, and what makes life worth living.",
     "ogImage": "/assets/book-covers/when-breath-becomes-air.jpg",
     "ogImageAlt": "When Breath Becomes Air book cover",
@@ -3350,7 +3350,7 @@
     ]
   },
   "/booknotes/why-we-sleep": {
-    "metaTitle": "Why We Sleep – Summary & Book Notes",
+    "metaTitle": "Why We Sleep – Rico's Book Notes",
     "metaDescription": "Matthew Walker's Why We Sleep: the science of sleep revealing why quality sleep is the single most important factor for health and longevity.",
     "ogImage": "/assets/book-covers/why-we-sleep.jpg",
     "ogImageAlt": "Why We Sleep book cover",
@@ -3368,7 +3368,7 @@
     ]
   },
   "/booknotes/why-zebras-dont-get-ulcers": {
-    "metaTitle": "Why Zebras Don't Get Ulcers – Summary & Book Notes",
+    "metaTitle": "Why Zebras Don't Get Ulcers – Rico's Book Notes",
     "metaDescription": "Robert Sapolsky explains how chronic stress damages human health and why zebras handle acute stress far better than we do. Book notes, summary, and key takeaways.",
     "ogImage": "/assets/book-covers/why-zebras-dont-get-ulcers.jpg",
     "ogImageAlt": "Why Zebras Don't Get Ulcers book cover",
@@ -3386,7 +3386,7 @@
     ]
   },
   "/booknotes/your-music-and-people": {
-    "metaTitle": "Your Music and People – Summary & Book Notes",
+    "metaTitle": "Your Music and People – Rico's Book Notes",
     "metaDescription": "Derek Sivers's Your Music and People: practical advice on building a music career through genuine human connections and creative marketing.",
     "ogImage": "/assets/book-covers/your-music-and-people.png",
     "ogImageAlt": "Your Music and People book cover",
@@ -3404,7 +3404,7 @@
     ]
   },
   "/booknotes/zen-and-the-art": {
-    "metaTitle": "Zen and the Art of Motorcycle Maintenance – Notes",
+    "metaTitle": "Zen and the Art of Motorcycle Maintenance – Rico's Booknotes",
     "metaDescription": "Robert Pirsig's classic: a philosophical road trip exploring Quality, the divide between art and technology, and the search for meaning.",
     "ogImage": "/assets/book-covers/zen-and-the-art.jpg",
     "ogImageAlt": "Zen and the Art of Motorcycle Maintenance book cover",
@@ -3422,7 +3422,7 @@
     ]
   },
   "/booknotes/zero-to-one": {
-    "metaTitle": "Zero to One by Peter Thiel – Summary & Book Notes",
+    "metaTitle": "Zero to One by Peter Thiel – Rico's Book Notes",
     "metaDescription": "Peter Thiel's Zero to One: how to build revolutionary startups by creating something entirely new instead of copying what already exists.",
     "ogImage": "/assets/book-covers/zero-to-one.jpg",
     "ogImageAlt": "Zero to One book cover",
@@ -3440,7 +3440,7 @@
     ]
   },
   "/booknotes/zorba-the-greek": {
-    "metaTitle": "Zorba the Greek by Nikos Kazantzakis – Book Notes",
+    "metaTitle": "Zorba the Greek by Nikos Kazantzakis – Rico's Book Notes",
     "metaDescription": "Nikos Kazantzakis's Zorba the Greek: a novel celebrating life's passions, freedom, and the wisdom of living fully in the present moment.",
     "ogImage": "/assets/book-covers/zorba-the-greek.jpg",
     "ogImageAlt": "Zorba the Greek book cover",
@@ -4852,7 +4852,7 @@
   },
   "/r3f/models/mixamo-characters": {
     "metaTitle": "Mixamo Characters in 3D - React Three Fiber Demo",
-    "metaDescription": "Interactive showcase of animated Mixamo characters in a React Three Fiber 3D scene with selectable models, real-time dance animations, and smooth transitions.",
+    "metaDescription": "Interactive showcase of animated Mixamo characters in a React Three Fiber 3D scene with selectable models, real-time animations, and smooth animation transitions.",
     "ogImage": "/assets/pages/mixamo-characters.png",
     "ogImageAlt": "Mixamo character dancing in a 3D scene",
     "keywords": [
@@ -4884,7 +4884,7 @@
   },
   "/r3f/models/Ship": {
     "metaTitle": "3D Ship on Ocean - React Three Fiber Demo",
-    "metaDescription": "A ship model floating on the drei ocean shader surface, one of the first demos built with React Three Fiber and Three.js.",
+    "metaDescription": "A ship model floating on the drei ocean shader surface, one of my first demos built with React Three Fiber and Three.js.",
     "ogImage": "/assets/pages/ship.png",
     "ogImageAlt": "a 3D model of a ship floating in the ocean",
     "keywords": [
@@ -4900,7 +4900,7 @@
   },
   "/r3f/particles/birds": {
     "metaTitle": "3D Bird Flocking Simulation - GPGPU Particles in R3F",
-    "metaDescription": "A bird flocking simulation using FBO particles and compute shaders in React Three Fiber, ported from the Three.js examples.",
+    "metaDescription": "A bird flocking simulation using FBO particles and compute shaders in React Three Fiber, ported from the Three.js bird example.",
     "ogImage": "/assets/pages/birds.png",
     "ogImageAlt": "a flock of birds flying around in a 3D scene",
     "keywords": [
@@ -4933,7 +4933,7 @@
   },
   "/r3f/particles/fishes": {
     "metaTitle": "3D Fish School Simulation - FBO Particles in R3F",
-    "metaDescription": "A school of fish simulated with FBO particles in React Three Fiber, using custom meshes and compute shaders for position updates.",
+    "metaDescription": "A school of fish simulated with FBO particles in React Three Fiber, using custom meshes and a boid compute shader for position updates.",
     "ogImage": "/assets/pages/fishes.png",
     "ogImageAlt": "a school of fish swimming around in a 3D scene",
     "keywords": [
@@ -5013,7 +5013,7 @@
   },
   "/r3f/controllers/third-person-controller": {
     "metaTitle": "Custom Third Person Controller - 3D R3F Demo",
-    "metaDescription": "A custom-built third person character controller experiment in React Three Fiber featuring a dinosaur model, camera follow mechanics, and keyboard-driven 3D navigation.",
+    "metaDescription": "A custom-built third person character controller experiment in React Three Fiber featuring a dinosaur model, camera follow mechanics, and keyboard-driven controls.",
     "ogImage": "/assets/pages/r3f/third-person-controller.png",
     "ogImageAlt": "a dinosaur Trex model in a 3D scene",
     "keywords": [
@@ -5046,7 +5046,7 @@
   },
   "/r3f/experiments/instanced-mesh-2": {
     "metaTitle": "InstancedMesh2 Library Test - 3D Trees in R3F",
-    "metaDescription": "Testing the InstancedMesh2 library in React Three Fiber to efficiently spawn, manage, and remove large numbers of 3D tree instances with optimized GPU rendering.",
+    "metaDescription": "Testing the InstancedMesh2 library in React Three Fiber to efficiently spawn, manage, and remove large numbers of 3D tree instances with low draw calls.",
     "ogImage": "/assets/pages/instanced-mesh-2.png",
     "ogImageAlt": "a 3D scene with a bunch of trees",
     "keywords": [
@@ -5062,7 +5062,7 @@
   },
   "/r3f/experiments/lightning-spell": {
     "metaTitle": "Lightning Spell Effect - 3D Three.js Demo",
-    "metaDescription": "A lightning spell hitting a 3D object, implemented with Three.js LightningStrike geometry in React Three Fiber with bloom.",
+    "metaDescription": "A lightning spell hitting a 3D object, implemented with Three.js LightningStrike geometry in React Three Fiber with bloom for nice optics.",
     "ogImage": "/assets/pages/lightning-spell.png",
     "ogImageAlt": "a lightning strike spell hitting an enemy in a 3D scene",
     "keywords": [
@@ -5160,7 +5160,7 @@
   },
   "/r3f/experiments/yuka-ai-implementation": {
     "metaTitle": "Yuka Game AI - Deer vs Raptor Simulation in R3F",
-    "metaDescription": "A game AI simulation built with the Yuka library in React Three Fiber, where a deer uses flee behavior to escape a pursuing velociraptor across a 3D landscape.",
+    "metaDescription": "A game AI simulation built with the Yuka library in React Three Fiber, where a deer uses flee behavior to escape a pursuing raptor across a 3D landscape.",
     "ogImage": "/assets/pages/yuka-ai-implementation.png",
     "ogImageAlt": "a deer running away from a velociraptor in a 3D scene",
     "keywords": [
@@ -5254,7 +5254,7 @@
     ]
   },
   "/podcastnotes/huberman-control-pain-and-heal-faster-with-your-brain": {
-    "metaTitle": "Huberman Lab: Control Pain & Heal Faster - Notes",
+    "metaTitle": "Huberman Lab: Control Pain & Heal Faster – Rico's Notes",
     "metaDescription": "Key takeaways from Huberman Lab Episode 9 on using neuroplasticity to control pain and accelerate healing with your brain.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5269,7 +5269,7 @@
     ]
   },
   "/podcastnotes/huberman-controlling-dopamine": {
-    "metaTitle": "Huberman Lab: Controlling Dopamine - Podcast Notes",
+    "metaTitle": "Huberman Lab: Controlling Dopamine – Rico's Notes",
     "metaDescription": "Notes from Huberman Lab Ep 39 on dopamine, motivation, and focus. Learn how dopamine pulses work and how to maintain healthy levels.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5285,7 +5285,7 @@
     ]
   },
   "/podcastnotes/huberman-controlling-sugar": {
-    "metaTitle": "Huberman Lab: Controlling Sugar Cravings - Notes",
+    "metaTitle": "Huberman Lab: Controlling Sugar Cravings – Rico's Notes",
     "metaDescription": "Notes from Huberman Lab Ep 64 on sugar cravings and metabolism. Learn how sugar controls appetite through taste and blood sugar.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5301,7 +5301,7 @@
     ]
   },
   "/podcastnotes/huberman-daily-productivity-tools": {
-    "metaTitle": "Huberman Lab: Daily Productivity Tools - Notes",
+    "metaTitle": "Huberman Lab: Daily Productivity Tools – Rico's Notes",
     "metaDescription": "Notes from Huberman Lab Ep 28 on maximizing daily productivity and health. Andrew Huberman's personal routine and science-based tools.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5317,7 +5317,7 @@
     ]
   },
   "/podcastnotes/huberman-how-to-focus-to-change-your-brain": {
-    "metaTitle": "Huberman Lab: How to Focus to Change Your Brain",
+    "metaTitle": "Huberman Lab: How to Focus to Change Your Brain – Rico's Notes",
     "metaDescription": "Notes from Huberman Lab Episode 6 on neuroplasticity and focus. How adults can harness brain plasticity through deliberate focus.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5332,7 +5332,7 @@
     ]
   },
   "/podcastnotes/huberman-how-to-learn-faster-by-using-failues-movement-and-balance": {
-    "metaTitle": "Huberman Lab: Learn Faster with Movement - Notes",
+    "metaTitle": "Huberman Lab: Learn Faster with Movement – Rico's Notes",
     "metaDescription": "Notes from Huberman Lab Ep 7 on learning faster through failures, movement, and balance. How motor neurons drive neuroplasticity.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5348,7 +5348,7 @@
     ]
   },
   "/podcastnotes/huberman-optimize-your-brain-with-science-based-tools": {
-    "metaTitle": "Huberman Lab: Optimize Your Brain - Podcast Notes",
+    "metaTitle": "Huberman Lab: Optimize Your Brain – Rico's Notes",
     "metaDescription": "Notes from Huberman Lab Ep 8 on optimizing neuroplasticity with science-based tools, routines, and protocols for brain change.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5363,7 +5363,7 @@
     ]
   },
   "/podcastnotes/huberman-science-of-making-habits": {
-    "metaTitle": "Huberman Lab: Science of Making Habits - Notes",
+    "metaTitle": "Huberman Lab: Science of Making Habits – Rico's Notes",
     "metaDescription": "Notes from Huberman Lab Ep 53 on the science of habits. Learn about context dependence, limbic friction, and how to build habits.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5378,7 +5378,7 @@
     ]
   },
   "/podcastnotes/lex-elon-musk-war-ai-aliens-politics-physics-video-games-and-humanity": {
-    "metaTitle": "Lex Fridman x Elon Musk: War, AI & Humanity - Notes",
+    "metaTitle": "Lex Fridman x Elon Musk: War, AI & Humanity – Rico's Notes",
     "metaDescription": "Notes from Lex Fridman Ep 400 with Elon Musk discussing war, AI, politics, physics, video games, and the future of humanity.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5394,7 +5394,7 @@
     ]
   },
   "/podcastnotes/lex-guillaume-verdon": {
-    "metaTitle": "Lex Fridman x Guillaume Verdon (e/acc) - Notes",
+    "metaTitle": "Lex Fridman x Guillaume Verdon (e/acc) – Rico's Notes",
     "metaDescription": "Notes from Lex Fridman Podcast Ep 407 with Guillaume Verdon on effective accelerationism (e/acc), quantum computing, physics-inspired AI architectures, and tech optimism.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5409,7 +5409,7 @@
     ]
   },
   "/podcastnotes/lex-jeff-bezos-amazon-and-blue-origin": {
-    "metaTitle": "Lex Fridman x Jeff Bezos: Amazon & Blue Origin",
+    "metaTitle": "Lex Fridman x Jeff Bezos: Amazon & Blue Origin – Rico's Notes",
     "metaDescription": "Notes from Lex Fridman Ep 405 with Jeff Bezos on building Amazon from a garage, Blue Origin's mission, resourcefulness as a key leadership trait, and the space race.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5424,7 +5424,7 @@
     ]
   },
   "/podcastnotes/lex-john-carmack-doom-quake-vr-agi-video": {
-    "metaTitle": "Lex Fridman x John Carmack: Doom, Quake & AGI",
+    "metaTitle": "Lex Fridman x John Carmack: Doom, Quake & AGI  – Rico's Notes",
     "metaDescription": "Notes from Lex Fridman Ep 309 with John Carmack on Doom, Quake, VR, AGI, video games, programming languages, and rockets.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5440,7 +5440,7 @@
     ]
   },
   "/podcastnotes/lex-joscha-bach-life-intelligence-consciousness-ai-&-the-future-of-humans": {
-    "metaTitle": "Lex Fridman x Joscha Bach: Consciousness & AI",
+    "metaTitle": "Lex Fridman x Joscha Bach: Consciousness & AI  – Rico's Notes",
     "metaDescription": "Notes from Lex Fridman Ep 392 with Joscha Bach on life, intelligence, consciousness, AI, and the seven stages of lucidity.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5456,7 +5456,7 @@
     ]
   },
   "/podcastnotes/lex-marc-andreessen-future-of-the-internet-technology-and-ai": {
-    "metaTitle": "Lex Fridman x Marc Andreessen: Internet & AI",
+    "metaTitle": "Lex Fridman x Marc Andreessen: Internet & AI – Rico's Notes",
     "metaDescription": "Notes from Lex Fridman Podcast Ep 386 with Marc Andreessen on the evolving internet, the future of search and AI, new content creation paradigms, and the impact of LLMs.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5472,7 +5472,7 @@
     ]
   },
   "/podcastnotes/lex-mark-zuckerberg-future-of-ai-at-meta-facebook-instagram-and-whatsapp": {
-    "metaTitle": "Lex Fridman x Mark Zuckerberg: AI at Meta - Notes",
+    "metaTitle": "Lex Fridman x Mark Zuckerberg: AI at Meta – Rico's Notes",
     "metaDescription": "Notes from Lex Fridman Ep 383 with Mark Zuckerberg on AI at Meta, physicality, consciousness, and the future of social media.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5488,7 +5488,7 @@
     ]
   },
   "/podcastnotes/lex-michael-levin": {
-    "metaTitle": "Lex Fridman x Michael Levin: Biology & Xenobots",
+    "metaTitle": "Lex Fridman x Michael Levin: Biology & Xenobots – Rico's Notes",
     "metaDescription": "Notes from Lex Fridman Ep 325 with Michael Levin on biology, evolution, xenobots, and emergent hierarchies of intelligence.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5504,7 +5504,7 @@
     ]
   },
   "/podcastnotes/lex-ray-kurzweil": {
-    "metaTitle": "Lex Fridman x Ray Kurzweil: Singularity & AGI",
+    "metaTitle": "Lex Fridman x Ray Kurzweil: Singularity & AGI – Rico's Notes",
     "metaDescription": "Notes from Lex Fridman Ep 321 with Ray Kurzweil on the singularity, AGI predictions, consciousness, and the Turing test.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5536,7 +5536,7 @@
     ]
   },
   "/posts": {
-    "metaTitle": "Blog Posts - Essays on AI, Philosophy & Programming",
+    "metaTitle": "Blog Posts - Essays on Productivity, Philosophy & Programming",
     "metaDescription": "Read essays and deep dives on artificial intelligence, philosophy of life, web development, mathematics, and personal growth by Rico Trebeljahr.",
     "ogImage": "",
     "ogImageAlt": "",
@@ -5551,8 +5551,8 @@
     ]
   },
   "/booknotes": {
-    "metaTitle": "Book Notes & Summaries - 200+ Books Reviewed",
-    "metaDescription": "Browse detailed notes and summaries from 200+ books on science, philosophy, psychology, economics, and self-improvement. Find your next great read.",
+    "metaTitle": "Book Notes & Summaries - 100+ Books Reviewed",
+    "metaDescription": "Browse detailed notes and summaries from 100+ books on science, philosophy, psychology, economics, and self-improvement. Find your next great read.",
     "ogImage": "/assets/blog/a-bookshelf.png",
     "ogImageAlt": "A bookshelf filled with books representing the book notes collection",
     "keywords": [
@@ -5567,8 +5567,8 @@
     ]
   },
   "/newsletters": {
-    "metaTitle": "Live and Learn Newsletter - Biweekly Curiosity Digest",
-    "metaDescription": "Explore the archive of Live and Learn, a biweekly newsletter covering AI progress, science, philosophy, and the most interesting corners of the internet.",
+    "metaTitle": "Live and Learn Newsletter - Digital Postcards by Rico",
+    "metaDescription": "Explore the archive of Live and Learn, a newsletter with traveling stories, photos, and interesting links to cool places on the internet.",
     "ogImage": "/assets/midjourney/live-and-learn-cover.png",
     "ogImageAlt": "Live and Learn newsletter cover art",
     "keywords": [
@@ -5582,7 +5582,7 @@
     ]
   },
   "/podcastnotes": {
-    "metaTitle": "Podcast Notes - Key Takeaways from Top Podcasts",
+    "metaTitle": "Podcast Notes - Key Takeaways from Podcast Episodes",
     "metaDescription": "Detailed notes and key insights from podcasts by Lex Fridman, Dwarkesh Patel, Tim Ferriss, and more. Save hours of listening with curated summaries.",
     "ogImage": "/assets/blog/podcastnotes.jpg",
     "ogImageAlt": "Podcast notes collection with headphones and notepad",
@@ -5612,8 +5612,8 @@
     ]
   },
   "/photography": {
-    "metaTitle": "Photography Portfolio - Travel & Nature Photos",
-    "metaDescription": "Browse a photography portfolio spanning landscapes, travel moments, and nature across the Caribbean, Europe, and Southeast Asia.",
+    "metaTitle": "Photography Portfolio - 15+ years of Photography",
+    "metaDescription": "Browse a photography portfolio spanning landscapes, travel moments, and nature across the Caribbean, Europe, South America and Asia.",
     "ogImage": "/assets/blog/photography.png",
     "ogImageAlt": "Photography portfolio showcasing travel and nature photos",
     "keywords": [
@@ -5643,7 +5643,7 @@
   },
   "/categories": {
     "metaTitle": "Content Categories - Browse by Topic",
-    "metaDescription": "Navigate all content by category. Find posts, book notes, and resources on AI, philosophy, programming, travel, neuroscience, and more.",
+    "metaDescription": "Navigate all content on ricos.site by category. Find posts, book notes, and resources on AI, philosophy, programming, travel, and more.",
     "ogImage": "/assets/blog/network.jpg",
     "ogImageAlt": "Network visualization representing content categories",
     "keywords": [
@@ -5690,7 +5690,7 @@
     ]
   },
   "/travel/transat": {
-    "metaTitle": "Atlantic Crossing - Sailing Stories from the Transat",
+    "metaTitle": "Atlantic Crossing by Sailboat - Rico's Travel Stories",
     "metaDescription": "Follow the journey of crossing the Atlantic Ocean by sailboat. Storms, starry nights, and the challenge of weeks at open sea.",
     "ogImage": "/assets/blog/transat/christian-and-rebecca-steering-the-boat-through-the-storm.jpg",
     "ogImageAlt": "Steering the sailboat through a storm during the Atlantic crossing",
@@ -5705,7 +5705,7 @@
     ]
   },
   "/travel/portugal-2024": {
-    "metaTitle": "Portugal 2024 - Fisherman's Trail & Algarve",
+    "metaTitle": "Portugal 2024 - Fisherman's Trail – Rico's Travel Stories",
     "metaDescription": "Travel stories from Portugal in 2024. Hiking the Fisherman's Trail along the Alentejo coast and exploring the Algarve region.",
     "ogImage": "/assets/blog/portugal-2024/walking-along-the-windswept-coast.jpg",
     "ogImageAlt": "walking along the windswept coast",
@@ -5721,7 +5721,7 @@
     ]
   },
   "/travel/martinique-2024": {
-    "metaTitle": "Martinique 2024 - French Caribbean | Travel",
+    "metaTitle": "Martinique 2024 - Caribbean – Rico's Travel Stories",
     "metaDescription": "Travel stories from Martinique in 2024. Exploring Fort-de-France, the Tombolo sandbank, giant trees, and Caribbean island culture.",
     "ogImage": "/assets/blog/martinique-2024/schoelcher-library-during-the-day.jpg",
     "ogImageAlt": "the Schoelcher library during the day from the side",
@@ -5736,7 +5736,7 @@
     ]
   },
   "/travel/dominica": {
-    "metaTitle": "Dominica - The Nature Island | Travel Stories",
+    "metaTitle": "Dominica - The Nature Island – Rico's Travel Stories",
     "metaDescription": "Adventures on Dominica, the Caribbean's Nature Island. Boiling Lake, Trafalgar Falls, Emerald Pools, and jungle waterfalls.",
     "ogImage": "/assets/blog/dominica/PXL_20240504_145638969~2.jpg",
     "ogImageAlt": "the Boiling lake in the middle of Dominica",
@@ -5846,7 +5846,7 @@
   },
   "/posts/decisions": {
     "metaTitle": "Decisions - Why Making Them Is Harder Than You Think",
-    "metaDescription": "Your brain's neural networks compete to control your actions. Explore why free will might be an illusion and what that means for better decision-making.",
+    "metaDescription": "Your brain's internal networks compete to control your actions. Explore why free will might be an illusion and what that means for better decision-making.",
     "ogImage": "/assets/blog/brain.jpg",
     "ogImageAlt": "Brain illustration representing the neuroscience of decision making",
     "keywords": [
@@ -5940,7 +5940,7 @@
   },
   "/posts/fundamental-problems": {
     "metaTitle": "Fundamental Problems - Obstacles to a Fulfilled Life",
-    "metaDescription": "Health, financial shackles, procrastination, addiction, and pride: five fundamental problems blocking the path to a fulfilling life and how to face them.",
+    "metaDescription": "Health, financial shackles, procrastination, addiction, and pride: five fundamental problems blocking the path to a fulfilled life and how to face them.",
     "ogImage": "/assets/blog/missing-puzzle-piece.jpg",
     "ogImageAlt": "A missing puzzle piece representing fundamental life problems",
     "keywords": [
@@ -5970,7 +5970,7 @@
     ]
   },
   "/posts/learnings-from-2024": {
-    "metaTitle": "Learnings from 2024 - Extracting Insights from My Year",
+    "metaTitle": "Learnings from 2024 - Extracting Insights from My Yearly Review",
     "metaDescription": "A personal reflection on 2024: recurring patterns, the gap between knowledge and action, travel insights, and lessons from years of diary writing.",
     "ogImage": "/assets/blog/morning.jpg",
     "ogImageAlt": "Morning dew on a meadow reflecting on learnings from the year",
@@ -5985,7 +5985,7 @@
     ]
   },
   "/posts/morning-meditation": {
-    "metaTitle": "Morning Meditation - Noticing Beauty in a Walk",
+    "metaTitle": "Morning Meditation - Noticing Beauty in Walking",
     "metaDescription": "A meditative morning walk through Berlin's fields in September. When music matches the serenity of the moment and the mind finally goes quiet.",
     "ogImage": "/assets/blog/morning.jpg",
     "ogImageAlt": "Morning dew on a meadow during a meditative walk",
@@ -6002,7 +6002,7 @@
   },
   "/posts/my-productivity-system": {
     "metaTitle": "My Productivity System - Habits, Tricks & Systems",
-    "metaDescription": "How I read 200+ books, built a website, write a newsletter, and travel the world. A practical productivity system for getting more done without willpower.",
+    "metaDescription": "How I read 200+ books, built a website, wrote a newsletter, and traveled the world. A practical productivity system for getting more done without willpower.",
     "ogImage": "/assets/blog/productivity-systems.jpg",
     "ogImageAlt": "A table with laptop, notebook, pen, and coffee for productivity work",
     "keywords": [
@@ -6237,7 +6237,7 @@
   },
   "/posts/the-state-of-robotics-in-2024": {
     "metaTitle": "The State of Robotics in 2024 - Humanoid Robots Rise",
-    "metaDescription": "From Tesla Optimus to Boston Dynamics Atlas, a roundup of every major humanoid robot pushing toward commercial reality in 2024.",
+    "metaDescription": "From Tesla Optimus to Boston Dynamics Atlas, a roundup of every major humanoid robot company pushing toward commercial reality in 2024.",
     "ogImage": "/assets/blog/road.jpg",
     "ogImageAlt": "A road representing the forward march of humanoid robotics",
     "keywords": [
@@ -6377,7 +6377,7 @@
   },
   "/principles": {
     "metaTitle": "My Principles - Rules for a Happy and Fulfilled Life",
-    "metaDescription": "A personal principles list for better decisions and a fulfilled life. Fight procrastination, stay curious, invest in relationships, and keep learning.",
+    "metaDescription": "A personal list of principles for making better decisions and living a fulfilled life. Fight procrastination, invest in relationships, and keep learning.",
     "ogImage": "/assets/midjourney/a-person-standing-in-front-of-a-large-mountain-range.jpg",
     "ogImageAlt": "A person standing before a mountain range representing life principles",
     "keywords": [
@@ -6527,7 +6527,7 @@
   },
   "/travel/guadeloupe/tikazalou-2": {
     "metaTitle": "Diving in the Caribbean Sea | Guadeloupe",
-    "metaDescription": "Exploring the underwater world of the Caribbean with a dive near Guadeloupe. Crystal clear waters and marine life around Pigeon Island.",
+    "metaDescription": "Exploring the underwater world of the Caribbean while diving near Guadeloupe. Crystal clear waters and marine life around Pigeon Island.",
     "ogImage": "/assets/blog/guadeloupe/julian-meditating-under-water.jpg",
     "ogImageAlt": "juliane meditating underwater",
     "keywords": [
@@ -6591,7 +6591,7 @@
   },
   "/travel/guadeloupe/tikazalou-6": {
     "metaTitle": "Saut de Lézarde Adventure | Guadeloupe",
-    "metaDescription": "An adventurous day at Saut de Lézarde in Guadeloupe. Exploring one of the island's most scenic waterfall spots in the tropical forest.",
+    "metaDescription": "An adventurous day at Saut de Lézarde in Guadeloupe. Exploring one of the island's most scenic waterfalls in the tropical forest.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [

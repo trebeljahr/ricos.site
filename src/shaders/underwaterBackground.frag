@@ -65,7 +65,6 @@ vec3 worldPosFromDepth(vec2 uv, float depth) {
 }
 
 // ─── Beer-Lambert ──────────────────────────────────────────
-
 vec3 depthFog(vec3 sceneColor, vec3 scatterColor, float dist, vec3 density) {
   return mix(sceneColor, scatterColor, clamp(1.0 - exp(-density * dist), 0.0, 1.0));
 }
@@ -79,7 +78,6 @@ vec3 scatterColour(vec3 rd, float camDepth) {
 
 // ─── Caustics ──────────────────────────────────────────────
 // Uses actual world XZ position — no approximations needed now.
-
 float causticWaves(vec2 p, float time) {
   float v = 0.0;
   v += sin(p.x * 2.1 + time * 0.7 + sin(p.y * 1.2 + time * 0.3) * 1.5);

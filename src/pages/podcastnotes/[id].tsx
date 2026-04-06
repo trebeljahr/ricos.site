@@ -87,9 +87,9 @@ const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
         </article>
 
         <footer>
+          <NewsletterForm />
           <Backlinks items={backlinks} />
           <ToTopButton />
-          <NewsletterForm />
         </footer>
       </main>
     </Layout>

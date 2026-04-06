@@ -38,7 +38,7 @@ export const Backlinks = ({ items }: { items: BacklinkItem[] }) => {
 
   return (
     <div className="mt-10">
-      <h2>Linked from</h2>
+      <h2>Links to this page</h2>
       <div className="space-y-4">
         {sortedTypes.map((type) => {
           const typeItems = grouped.get(type)!;

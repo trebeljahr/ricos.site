@@ -179,13 +179,33 @@ function generateBacklinks() {
     if (info) sourceMap.set(f, info);
   }
 
+  // Build newsletter number → canonical link map for resolving /newsletters/76 style links
+  const newsletterNumberToLink = new Map<string, string>();
+  for (const f of allFiles) {
+    const rel = f.slice(CONTENT_ROOT.length + 1);
+    if (rel.startsWith("newsletters/")) {
+      const stem = parse(f).name; // e.g. "76"
+      const info = sourceMap.get(f);
+      if (info) {
+        newsletterNumberToLink.set(stem, info.link);
+      }
+    }
+  }
+
   // Build forward links: source.link → [target links]
   const forwardLinks = new Map<string, string[]>();
   for (const f of allFiles) {
     const source = sourceMap.get(f);
     if (!source) continue;
     const content = readFileSync(f, "utf-8");
-    const targets = extractInternalLinks(content);
+    const targets = extractInternalLinks(content).map((link) => {
+      // Resolve /newsletters/<number> to canonical slugTitle-based path
+      const nlMatch = link.match(/^\/newsletters\/(\d+)$/);
+      if (nlMatch) {
+        return newsletterNumberToLink.get(nlMatch[1]) || link;
+      }
+      return link;
+    });
     if (targets.length > 0) {
       forwardLinks.set(source.link, targets);
     }

@@ -8,13 +8,12 @@ import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";
 import { Backlinks } from "@components/Backlinks";
-import { RelatedContent } from "@components/RelatedContent";
+import { HorizontalCard } from "@components/NiceCards";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Newsletter as NewsletterType } from "@velite";
+import { CommonMetadata } from "src/@types";
 
 import { byOnlyPublished } from "src/lib/utils/filters";
-
-type RelatedItem = { title: string; link: string; excerpt?: string };
 
 type BacklinkItem = { title: string; link: string; type: string };
 
@@ -22,7 +21,7 @@ type Props = {
   newsletter: NewsletterType;
   nextPost: null | number;
   prevPost: null | number;
-  relatedNewsletters: RelatedItem[];
+  relatedNewsletters: CommonMetadata[];
   backlinks: BacklinkItem[];
 };
 
@@ -110,14 +109,29 @@ const Newsletter = ({
             {excerpt && !excludeExcerpt && <p>{excerpt}</p>}
 
             <PostBodyWithoutExcerpt content={content} />
-            <NewsletterForm />
           </div>
         </article>
 
         <footer className="mx-auto max-w-prose">
-          <Backlinks items={backlinks} />
-          <RelatedContent items={relatedNewsletters} heading="More from Live and Learn" />
+          <NewsletterForm />
+          {relatedNewsletters.length > 0 && (
+            <div className="mt-10">
+              <h2>More from Live and Learn</h2>
+              {relatedNewsletters.map((nl) => (
+                <HorizontalCard
+                  key={nl.slug}
+                  cover={nl.cover}
+                  link={nl.link}
+                  title={nl.title}
+                  excerpt={nl.excerpt}
+                  date={nl.date}
+                  readingTime={nl.metadata?.readingTime}
+                />
+              ))}
+            </div>
+          )}
           <NextAndPrevArrows nextPost={nextPost} prevPost={prevPost} />
+          <Backlinks items={backlinks} />
           <ToTopButton />
         </footer>
       </main>
@@ -151,12 +165,9 @@ export async function getStaticProps({ params }: Params) {
   let nextPost = newsletters.find((nl) => parseInt(String(nl.number)) === next);
   let prevPost = newsletters.find((nl) => parseInt(String(nl.number)) === prev);
 
+  const { toOnlyMetadata } = await import("src/lib/utils/toOnlyMetadata");
   const relatedNewsletters = getRelatedContent(newsletter, published, 3).map(
-    (nl: NewsletterType) => ({
-      title: nl.title,
-      link: nl.link,
-      excerpt: nl.excerpt?.slice(0, 120) + "...",
-    })
+    (nl: NewsletterType) => toOnlyMetadata(nl)
   );
 
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");

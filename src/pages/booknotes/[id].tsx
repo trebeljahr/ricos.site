@@ -7,18 +7,18 @@ import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { Backlinks } from "@components/Backlinks";
-import { RelatedContent } from "@components/RelatedContent";
+import { HorizontalCard } from "@components/NiceCards";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Booknote } from "@velite";
+import { CommonMetadata } from "src/@types";
 
 import { byOnlyPublished } from "src/lib/utils/filters";
 
-type RelatedItem = { title: string; link: string; excerpt?: string };
 type BacklinkItem = { title: string; link: string; type: string };
 
 type Props = {
   booknote: Booknote;
-  relatedBooks: RelatedItem[];
+  relatedBooks: CommonMetadata[];
   backlinks: BacklinkItem[];
 };
 
@@ -109,9 +109,25 @@ const Book = ({ booknote, relatedBooks, backlinks }: Props) => {
         </article>
 
         <footer>
-          <Backlinks items={backlinks} />
-          <RelatedContent items={relatedBooks} heading="More book notes" />
           <NewsletterForm />
+          {relatedBooks.length > 0 && (
+            <div className="mt-10">
+              <h2>More book notes</h2>
+              {relatedBooks.map((book) => (
+                <HorizontalCard
+                  key={book.slug}
+                  cover={book.cover}
+                  link={book.link}
+                  title={book.title}
+                  subtitle={book.subtitle}
+                  excerpt={book.excerpt}
+                  date={book.date}
+                  readingTime={book.metadata?.readingTime}
+                />
+              ))}
+            </div>
+          )}
+          <Backlinks items={backlinks} />
           <ToTopButton />
         </footer>
       </main>
@@ -134,12 +150,10 @@ export async function getStaticProps({ params }: Params) {
   const published = booknotes.filter(byOnlyPublished);
   const booknote = published.find(({ slug }: Booknote) => params.id === slug);
 
-  const relatedBooks = getRelatedContent(booknote, published, 4).map(
-    (b: Booknote) => ({
-      title: `${b.title} by ${b.bookAuthor}`,
-      link: b.link,
-      excerpt: b.excerpt?.slice(0, 120) + "...",
-    })
+  const { toOnlyMetadata } = await import("src/lib/utils/toOnlyMetadata");
+  const withContent = published.filter((b: Booknote) => b.summary);
+  const relatedBooks = getRelatedContent(booknote, withContent, 4).map(
+    (b: Booknote) => toOnlyMetadata(b)
   );
 
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");

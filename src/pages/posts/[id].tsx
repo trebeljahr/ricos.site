@@ -103,9 +103,9 @@ export const BlogLayout = ({
         </section>
 
         <footer className="mx-auto max-w-prose">
-          <Backlinks items={backlinks} />
           <NewsletterForm />
           {morePosts && <ReadMore posts={morePosts} />}
+          <Backlinks items={backlinks} />
           <ToTopButton />
         </footer>
       </main>

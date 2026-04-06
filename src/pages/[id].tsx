@@ -69,8 +69,8 @@ export default function Page({ page, backlinks }: Props) {
         </article>
 
         <footer>
-          <Backlinks items={backlinks} />
           <NewsletterForm />
+          <Backlinks items={backlinks} />
           <ToTopButton />
         </footer>
       </main>

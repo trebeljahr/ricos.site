@@ -4,7 +4,7 @@ import { JsonLd, BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import { Backlinks } from "@components/Backlinks";
-import { RelatedContent } from "@components/RelatedContent";
+import { HorizontalCard } from "@components/NiceCards";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
@@ -18,8 +18,7 @@ import { byOnlyPublished } from "src/lib/utils/filters";
 import { replaceUndefinedWithNull } from "src/lib/utils/replaceUndefinedWithNull";
 
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
-
-type RelatedItem = { title: string; link: string; excerpt?: string };
+import { CommonMetadata } from "src/@types";
 
 type BacklinkItem = { title: string; link: string; type: string };
 
@@ -27,7 +26,7 @@ type TravelBlogProps = {
   post: Travelblog;
   nextSlug: string | null;
   previousSlug: string | null;
-  relatedStories: RelatedItem[];
+  relatedStories: CommonMetadata[];
   backlinks: BacklinkItem[];
 };
 
@@ -111,11 +110,26 @@ export const TravelBlogLayout = ({
         <article className="mx-auto max-w-prose">{children}</article>
 
         <footer className="mx-auto max-w-prose">
-          <Backlinks items={backlinks} />
-          <RelatedContent items={relatedStories} heading="More travel stories" />
-          <ToTopButton />
           <NewsletterForm />
+          {relatedStories.length > 0 && (
+            <div className="mt-10">
+              <h2>More travel stories</h2>
+              {relatedStories.map((story) => (
+                <HorizontalCard
+                  key={story.slug}
+                  cover={story.cover}
+                  link={story.link}
+                  title={story.title}
+                  excerpt={story.excerpt}
+                  date={story.date}
+                  readingTime={story.metadata?.readingTime}
+                />
+              ))}
+            </div>
+          )}
           <NextAndPrevArrows nextPost={nextSlug} prevPost={previousSlug} />
+          <Backlinks items={backlinks} />
+          <ToTopButton />
         </footer>
       </main>
     </Layout>
@@ -187,15 +201,12 @@ export async function getStaticProps({
   const otherTripStories = allPublished.filter(
     ({ parentFolder }) => parentFolder !== tripName
   );
+  const { toOnlyMetadata } = await import("src/lib/utils/toOnlyMetadata");
   const relatedStories = getRelatedContent(
     travelingStory,
     otherTripStories,
     3
-  ).map((s: Travelblog) => ({
-    title: s.title,
-    link: s.link,
-    excerpt: s.excerpt?.slice(0, 120) + "...",
-  }));
+  ).map((s: Travelblog) => toOnlyMetadata(s));
 
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");
   const backlinks = getBacklinks(travelingStory.link);

@@ -1,4 +1,4 @@
-import { SectionDescription } from "@velite";
+import type { SectionDescription } from "@velite";
 import { MDXContent } from "./MDXContent";
 import {
   CardGallery,

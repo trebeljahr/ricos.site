@@ -7,11 +7,15 @@ import { ToTopButton } from "@components/ToTopButton";
 import { getMDXComponent } from "mdx-bundler/client";
 import { useMemo, useState } from "react";
 
+type DiffLine = {
+  type: "added" | "removed" | "unchanged";
+  value: string;
+};
+
 type NowEntry = {
   date: string;
-  commitHash: string;
-  content: { code: string; frontmatter: Record<string, unknown> } | null;
-  rawContent: string;
+  content: { code: string; frontmatter: Record<string, unknown> };
+  diff: DiffLine[] | null; // null for the oldest entry
 };
 
 type Props = {
@@ -19,22 +23,40 @@ type Props = {
 };
 
 const NowMDX = ({ code, frontmatter }: { code: string; frontmatter: Record<string, unknown> }) => {
-  const result = useMemo(() => {
-    try {
-      return { Component: getMDXComponent(code, { ...frontmatter, frontmatter }), error: null };
-    } catch {
-      return { Component: null, error: "Failed to render this snapshot" };
-    }
-  }, [code, frontmatter]);
+  const Component = useMemo(
+    () => getMDXComponent(code, { ...frontmatter, frontmatter }),
+    [code, frontmatter]
+  );
+  return <Component components={MarkdownRenderers} />;
+};
 
-  if (result.error || !result.Component) {
-    return <p className="text-gray-500 italic">{result.error}</p>;
-  }
-  return <result.Component components={MarkdownRenderers} />;
+const DiffView = ({ diff }: { diff: DiffLine[] }) => {
+  return (
+    <div className="font-mono text-sm leading-relaxed border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+      {diff.map((line, i) => (
+        <div
+          key={i}
+          className={
+            line.type === "added"
+              ? "bg-green-50 dark:bg-green-950/40 text-green-800 dark:text-green-300"
+              : line.type === "removed"
+              ? "bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-300"
+              : "text-gray-600 dark:text-gray-400"
+          }
+        >
+          <span className="inline-block w-6 text-center select-none opacity-50">
+            {line.type === "added" ? "+" : line.type === "removed" ? "−" : " "}
+          </span>
+          <span className="whitespace-pre-wrap">{line.value || "\u00A0"}</span>
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export default function NowHistory({ entries }: Props) {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [showDiff, setShowDiff] = useState(false);
   const selected = entries[selectedIndex];
 
   return (
@@ -94,9 +116,9 @@ export default function NowHistory({ entries }: Props) {
               <div className="flex flex-wrap gap-2 mb-8">
                 {entries.map((entry, i) => (
                   <button
-                    key={entry.commitHash}
+                    key={entry.date}
                     onClick={() => setSelectedIndex(i)}
-                    className={`text-xs px-3 py-1 rounded-full transition-colors ${
+                    className={`text-xs px-3 py-1 rounded-full transition-colors cursor-pointer ${
                       i === selectedIndex
                         ? "bg-myBlue text-white"
                         : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
@@ -108,21 +130,37 @@ export default function NowHistory({ entries }: Props) {
               </div>
 
               <div className="border-l-4 border-myBlue pl-6 mb-8">
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                  Snapshot from{" "}
-                  <span className="font-medium text-gray-700 dark:text-gray-200">
-                    {selected.date}
-                  </span>
-                </div>
-                <div className="prose dark:prose-invert max-w-none">
-                  {selected.content ? (
-                    <NowMDX code={selected.content.code} frontmatter={selected.content.frontmatter} />
-                  ) : (
-                    <pre className="whitespace-pre-wrap font-sans text-base leading-relaxed">
-                      {selected.rawContent}
-                    </pre>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Snapshot from{" "}
+                    <span className="font-medium text-gray-700 dark:text-gray-200">
+                      {selected.date}
+                    </span>
+                  </div>
+                  {selected.diff && (
+                    <button
+                      onClick={() => setShowDiff(!showDiff)}
+                      className={`text-xs px-3 py-1 rounded-full transition-colors cursor-pointer ${
+                        showDiff
+                          ? "bg-myBlue text-white"
+                          : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+                      }`}
+                    >
+                      {showDiff ? "Show content" : "Show changes"}
+                    </button>
                   )}
                 </div>
+
+                {showDiff && selected.diff ? (
+                  <DiffView diff={selected.diff} />
+                ) : (
+                  <div className="prose dark:prose-invert max-w-none">
+                    <NowMDX
+                      code={selected.content.code}
+                      frontmatter={selected.content.frontmatter}
+                    />
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -144,65 +182,68 @@ export default function NowHistory({ entries }: Props) {
 }
 
 export async function getStaticProps() {
-  const { execSync } = await import("child_process");
+  const { readdirSync, readFileSync } = await import("fs");
   const { resolve } = await import("path");
   const { bundleMDX } = await import("mdx-bundler");
+  const { diffLines } = await import("diff");
 
-  const NOTES_DIR = resolve("src/content/Notes");
-  const NOW_FILE = "pages/now.md";
+  const HISTORY_DIR = resolve("src/content/now-history");
 
-  let logOutput = "";
-  try {
-    logOutput = execSync(
-      `cd "${NOTES_DIR}" && git log --format="%H|%ai|%s" --follow "${NOW_FILE}" 2>/dev/null`,
-      { encoding: "utf-8" }
-    ).trim();
-  } catch {
-    return { props: { entries: [] } };
-  }
-
-  if (!logOutput) return { props: { entries: [] } };
-
-  const commits = logOutput.split("\n").map((line) => {
-    const [hash, date, ...messageParts] = line.split("|");
-    return { hash, date: date.trim(), message: messageParts.join("|").trim() };
-  });
+  const files = readdirSync(HISTORY_DIR)
+    .filter((f: string) => f.endsWith(".md"))
+    .sort()
+    .reverse(); // newest first
 
   const entries: NowEntry[] = [];
-  let prevContent = "";
 
-  for (const commit of commits) {
+  for (const file of files) {
+    const rawContent = readFileSync(resolve(HISTORY_DIR, file), "utf-8");
+    const date = file.replace(".md", "");
+
     try {
-      const rawContent = execSync(
-        `cd "${NOTES_DIR}" && git show "${commit.hash}:${NOW_FILE}" 2>/dev/null`,
-        { encoding: "utf-8" }
-      );
-
-      const stripped = rawContent.replace(/^---[\s\S]*?---\n*/, "").trim();
-      if (stripped.length < 50) continue;
-      if (stripped === prevContent) continue;
-      prevContent = stripped;
-
-      let content: { code: string; frontmatter: Record<string, unknown> } | null = null;
-      try {
-        const result = await bundleMDX({ source: rawContent });
-        // Validate that the bundled code can actually be evaluated —
-        // some historical commits produce code that fails at runtime
-        new Function(result.code);
-        content = { code: result.code, frontmatter: result.frontmatter };
-      } catch (e) {
-        console.error(`Failed to bundle MDX for ${commit.hash.slice(0, 8)} (${commit.date}):`, (e as Error).message?.slice(0, 200));
-      }
-
+      const result = await bundleMDX({ source: rawContent });
+      new Function(result.code); // validate
       entries.push({
-        date: commit.date.split(" ")[0],
-        commitHash: commit.hash.slice(0, 8),
-        content,
-        rawContent: stripped,
+        date,
+        content: { code: result.code, frontmatter: result.frontmatter },
+        diff: null, // computed below
       });
-    } catch {
-      continue;
+    } catch (e) {
+      console.error(`Failed to bundle ${file}:`, (e as Error).message?.slice(0, 200));
     }
+  }
+
+  // Compute diffs between consecutive versions (newest to oldest)
+  for (let i = 0; i < entries.length - 1; i++) {
+    const currentRaw = readFileSync(
+      resolve(HISTORY_DIR, `${entries[i].date}.md`),
+      "utf-8"
+    );
+    const previousRaw = readFileSync(
+      resolve(HISTORY_DIR, `${entries[i + 1].date}.md`),
+      "utf-8"
+    );
+
+    const changes = diffLines(previousRaw, currentRaw);
+    const diffResult: DiffLine[] = [];
+
+    for (const change of changes) {
+      const lines = change.value.split("\n");
+      // diffLines includes a trailing empty string from the final newline
+      if (lines[lines.length - 1] === "") lines.pop();
+
+      for (const line of lines) {
+        if (change.added) {
+          diffResult.push({ type: "added", value: line });
+        } else if (change.removed) {
+          diffResult.push({ type: "removed", value: line });
+        } else {
+          diffResult.push({ type: "unchanged", value: line });
+        }
+      }
+    }
+
+    entries[i].diff = diffResult;
   }
 
   return { props: { entries } };

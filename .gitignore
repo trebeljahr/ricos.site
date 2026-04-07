@@ -44,3 +44,7 @@ public/sitemap*.xml
 public/rss.xml
 public/atom.xml
 public/feed.json
+
+# claude code
+.claude/settings.local.json
+.claude/worktrees/

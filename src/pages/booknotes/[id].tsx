@@ -171,6 +171,11 @@ export async function getStaticProps({ params }: Params) {
 export async function getStaticPaths() {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const booknotes = loadVeliteData("booknotes.json");
+  if (!Array.isArray(booknotes) || booknotes.length === 0) {
+    throw new Error(
+      "booknotes.json is empty in getStaticPaths — velite likely did not run or the content submodule is missing. Refusing to build with zero booknote pages."
+    );
+  }
   const paths = booknotes.filter(byOnlyPublished).map((book: Booknote) => {
     return {
       params: {
@@ -178,6 +183,11 @@ export async function getStaticPaths() {
       },
     };
   });
+  if (paths.length === 0) {
+    throw new Error(
+      `No published booknotes found for getStaticPaths (loaded ${booknotes.length} raw entries). Refusing to build with zero booknote pages.`
+    );
+  }
 
   return {
     paths,

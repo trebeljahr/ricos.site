@@ -3,8 +3,12 @@ import bundleAnalyzer from "@next/bundle-analyzer";
 
 const isDev = process.argv.indexOf("dev") !== -1;
 const isBuild = process.argv.indexOf("build") !== -1;
-if (!process.env.VELITE_STARTED && (isDev || isBuild)) {
-  process.env.VELITE_STARTED = "1";
+// VELITE_STARTED guard only applies to dev (HMR may re-import next.config).
+// Production builds always rebuild velite to avoid serving a stale/empty
+// .velite cache from an earlier Vercel build.
+const shouldRunVelite = isBuild || (isDev && !process.env.VELITE_STARTED);
+if (shouldRunVelite) {
+  if (isDev) process.env.VELITE_STARTED = "1";
   const { build } = await import("velite");
   await build({ watch: isDev, clean: !isDev, logLevel: "error" });
 

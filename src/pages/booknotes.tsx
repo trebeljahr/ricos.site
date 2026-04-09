@@ -65,9 +65,19 @@ export default function Books({ booknotes, seo }: Props) {
 export async function getStaticProps() {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const allBooknotes = loadVeliteData("booknotes.json");
+  if (!Array.isArray(allBooknotes) || allBooknotes.length === 0) {
+    throw new Error(
+      "booknotes.json is empty — velite likely did not run or the content submodule is missing. Refusing to build an empty /booknotes page."
+    );
+  }
   const booknotes = extractAndSortMetadata(allBooknotes).filter(
     ({ summary }: any) => summary
   );
+  if (booknotes.length === 0) {
+    throw new Error(
+      `No published booknotes with summary:true found (loaded ${allBooknotes.length} raw entries). Refusing to build an empty /booknotes page.`
+    );
+  }
 
   return {
     props: {

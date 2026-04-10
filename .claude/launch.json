@@ -3,9 +3,9 @@
   "configurations": [
     {
       "name": "dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000,
+      "runtimeExecutable": "./.claude/dev-wrapper.sh",
+      "runtimeArgs": [],
+      "port": 3456,
       "autoPort": true
     }
   ]

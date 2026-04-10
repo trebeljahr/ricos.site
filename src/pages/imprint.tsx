@@ -7,21 +7,21 @@ import { ToTopButton } from "@components/ToTopButton";
 export default function ImprintPage() {
   return (
     <Layout
-      title="Legal Notice – ricos.site"
-      description="Legal notice and contact information for ricos.site, the personal website of Rico Trebeljahr."
+      title="Imprint – ricos.site"
+      description="Imprint and contact information for ricos.site, the personal website of Rico Trebeljahr."
       url="imprint"
-      keywords={["imprint", "legal notice", "impressum", "contact", "Rico Trebeljahr"]}
+      keywords={["imprint", "impressum", "legal notice", "contact", "Rico Trebeljahr"]}
     >
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },
-          { name: "Legal Notice", url: "/imprint" },
+          { name: "Imprint", url: "/imprint" },
         ]}
       />
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose prose dark:prose-invert">
           <BreadCrumbs path="imprint" />
-          <h1 className="text-4xl mt-16!">Legal Notice</h1>
+          <h1 className="text-4xl mt-16!">Imprint</h1>
 
           <p>
             Information pursuant to § 5 DDG (German Digital Services Act) and

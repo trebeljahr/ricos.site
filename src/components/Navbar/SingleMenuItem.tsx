@@ -8,14 +8,7 @@ type SingleMenuItemProps = {
   left?: boolean;
 };
 
-// Override the display label for specific URL slugs so navigation text can
-// differ from the URL itself (e.g. show "legal notice" but link to /impressum).
-const LINK_LABELS: Record<string, string> = {
-  imprint: "legal notice",
-};
-
 export function SingleMenuItem({ link, closeNav, left }: SingleMenuItemProps) {
-  const label = LINK_LABELS[link] ?? link;
   return (
     <MenuItem>
       {({ close }) => (
@@ -30,7 +23,7 @@ export function SingleMenuItem({ link, closeNav, left }: SingleMenuItemProps) {
             close();
           }}
         >
-          {label}
+          {link}
         </Link>
       )}
     </MenuItem>

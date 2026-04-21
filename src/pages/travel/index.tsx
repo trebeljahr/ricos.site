@@ -32,7 +32,7 @@ type Props = {
 export const travelingStoriesMetaRaw: Record<string, MetaInfo> = {
   guadeloupe: {
     cover: {
-      src: "/assets/blog/guadeloupe/meditating-in-front-of-the-third-carbet-fall.jpg",
+      src: "/assets/photography/guadeloupe/meditating-in-front-of-the-third-carbet-fall.jpg",
       alt: "meditating in front of the third carbet fall",
     },
     title: "Guadeloupe",
@@ -42,7 +42,7 @@ export const travelingStoriesMetaRaw: Record<string, MetaInfo> = {
   },
   transat: {
     cover: {
-      src: "/assets/blog/transat/christian-and-rebecca-steering-the-boat-through-the-storm.jpg",
+      src: "/assets/photography/transat/christian-and-rebecca-steering-the-boat-through-the-storm.jpg",
       alt: "Christian and Rebecca steering the boat through the storm",
     },
     title: "Crossing the Atlantic",
@@ -63,7 +63,7 @@ export const travelingStoriesMetaRaw: Record<string, MetaInfo> = {
 
   "martinique-2024": {
     cover: {
-      src: "/assets/blog/martinique-2024/anse-du-sinai-panorama.jpg",
+      src: "/assets/photography/best-of/anse-du-sinai-panorama.jpg",
       alt: "panorama shot of the Anse du Sinai beach in Martinique",
     },
     title: "Martinique",
@@ -73,7 +73,7 @@ export const travelingStoriesMetaRaw: Record<string, MetaInfo> = {
   },
   dominica: {
     cover: {
-      src: "/assets/blog/dominica/PXL_20240506_203704114.LONG_EXPOSURE-01.COVER~2.jpg",
+      src: "/assets/photography/dominica/PXL_20240506_203704114.LONG_EXPOSURE-01.COVER~2.jpg",
       alt: "long exposure of one of the two Trafalgar Falls called Mama falls",
     },
     title: "Dominica",

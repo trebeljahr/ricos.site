@@ -5,7 +5,24 @@ export const imageSizes = [
   3840,
 ];
 
-export const cloudFrontUrl = `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net`;
+// In local-dev mode, images are served from the in-process /api/img route
+// (which reads from local MinIO, transforms via sharp, caches to the local
+// resized bucket). In prod/cloud mode, they come from CloudFront.
+//
+// Both end up producing URLs of the same shape:
+//   <base>/<key-without-ext>/<width>.webp
+// so no consumer of this module needs to care.
+const IS_LOCAL_BACKEND =
+  process.env.NEXT_PUBLIC_IMAGE_BACKEND === "local";
+
+export const cloudFrontUrl = IS_LOCAL_BACKEND
+  ? ""
+  : `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net`;
+
+/** Prefix that `nextImageUrl` prepends to logical image paths. */
+export const imageBaseUrl = IS_LOCAL_BACKEND
+  ? "/api/img"
+  : cloudFrontUrl;
 
 export const getImgWidthAndHeight = (src: string) => {
   const img = new Image();
@@ -39,7 +56,7 @@ export const nextImageUrl = (src: string, width: number) => {
   const noExt = path.join(parsedPath.dir, parsedPath.name);
   const fixedSource = noExt.startsWith("/") ? noExt : `/${noExt}`;
 
-  if (src.startsWith(cloudFrontUrl)) {
+  if (cloudFrontUrl && src.startsWith(cloudFrontUrl)) {
     return `${noExt}/${width}.webp`;
   }
 
@@ -47,5 +64,5 @@ export const nextImageUrl = (src: string, width: number) => {
     return src;
   }
 
-  return `${cloudFrontUrl}${fixedSource}/${width}.webp`;
+  return `${imageBaseUrl}${fixedSource}/${width}.webp`;
 };

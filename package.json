@@ -3,7 +3,13 @@
   "author": "Rico Trebeljahr",
   "license": "MIT",
   "scripts": {
-    "dev": "next dev",
+    "dev": "NEXT_PUBLIC_IMAGE_BACKEND=local concurrently -n s3,next,watch -c cyan,magenta,yellow --kill-others-on-fail \"npm run s3:start\" \"npm run dev:next\" \"npm run watch:assets\"",
+    "dev:cloud": "next dev",
+    "dev:next": "wait-on tcp:${S3_API_PORT:-9200} && NEXT_PUBLIC_IMAGE_BACKEND=local S3_ENDPOINT=http://localhost:${S3_API_PORT:-9200} next dev",
+    "s3:start": "tsx src/scripts/dev/rclone-start.ts",
+    "watch:assets": "tsx src/scripts/dev/watchAssets.ts",
+    "drift:check": "tsx src/scripts/drift/check.ts",
+    "drift:fix": "tsx src/scripts/drift/reconcile.ts",
     "build": "next build",
     "generateSitemap": "next-sitemap",
     "generateRSS": "tsx src/scripts/rss.ts",
@@ -130,6 +136,7 @@
     "axios": "^1.14.0",
     "case": "^1.6.3",
     "cheerio": "^1.2.0",
+    "chokidar": "^5.0.0",
     "cli-progress": "^3.12.0",
     "concurrently": "^9.2.1",
     "dotenv": "^17.3.1",
@@ -189,6 +196,7 @@
     "url-loader": "^4.1.1",
     "velite": "^0.3.1",
     "vercel-submodules": "^1.1.0",
+    "wait-on": "^9.0.5",
     "yargs": "^18.0.0"
   },
   "overrides": {

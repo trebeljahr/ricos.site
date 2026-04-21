@@ -8,7 +8,6 @@ import pLimit from "p-limit";
 import {
   getMetadataFromJsonFile,
   ImageMetadata,
-  localMetadata,
 } from "src/lib/imageMetadata";
 
 export async function getImageMetadataFromS3(
@@ -88,17 +87,38 @@ export async function getAllStorageObjectKeys(
 export const photographyFolder = "assets/photography/";
 
 export function createS3Client() {
-  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-  const awsRegion = process.env.AWS_REGION;
+  // Dual-mode: cloud (real AWS) or local (MinIO). Presence of S3_ENDPOINT
+  // flips to local mode. We keep credentials namespaces separate:
+  //   AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY  → real AWS (.env)
+  //   S3_ACCESS_KEY_ID  / S3_SECRET_ACCESS_KEY   → MinIO (local dev)
+  // This avoids sending real AWS keys to MinIO (which rejects them) and
+  // vice-versa.
+  const endpoint = process.env.S3_ENDPOINT;
+  const isLocal = Boolean(endpoint);
+
+  const accessKeyId = isLocal
+    ? process.env.S3_ACCESS_KEY_ID ?? "minioadmin"
+    : process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = isLocal
+    ? process.env.S3_SECRET_ACCESS_KEY ?? "minioadmin"
+    : process.env.AWS_SECRET_ACCESS_KEY;
+  const awsRegion =
+    process.env.AWS_REGION ?? (isLocal ? "eu-west-2" : undefined);
 
   if (!accessKeyId || !secretAccessKey || !awsRegion) {
-    throw new Error("No AWS credentials provided");
+    throw new Error(
+      isLocal
+        ? "S3_ACCESS_KEY_ID / S3_SECRET_ACCESS_KEY / AWS_REGION not set"
+        : "No AWS credentials provided"
+    );
   }
 
   return new S3Client({
     region: awsRegion,
     credentials: { accessKeyId, secretAccessKey },
+    ...(endpoint
+      ? { endpoint, forcePathStyle: true }
+      : {}),
   });
 }
 
@@ -149,36 +169,6 @@ function getS3Client() {
 
 interface OptionsForS3 {
   prefix?: string;
-}
-
-/** Get image data from local metadata.json instead of S3. Zero network calls. */
-export function getDataFromMetadata(prefix: string) {
-  const imagePattern = /\.(jpg|jpeg|png|webp|gif|avif)$/i;
-  return Object.entries(localMetadata)
-    .filter(([key, meta]) => key.startsWith(prefix) && meta !== undefined)
-    .filter(([key]) => imagePattern.test(key))
-    .map(([key, meta]) => ({
-      name: key.replace(prefix, ""),
-      src: key,
-      width: meta!.width,
-      height: meta!.height,
-    }));
-}
-
-/** Get first image from local metadata.json for a given prefix. */
-export function getFirstImageFromMetadata(prefix: string) {
-  const imagePattern = /\.(jpg|jpeg|png|webp|gif|avif)$/i;
-  const entry = Object.entries(localMetadata).find(
-    ([key, meta]) => key.startsWith(prefix) && meta !== undefined && imagePattern.test(key)
-  );
-  if (!entry) throw new Error(`No images found for prefix: ${prefix}`);
-  const [key, meta] = entry;
-  return {
-    name: key.replace(prefix, ""),
-    src: key,
-    width: meta!.width,
-    height: meta!.height,
-  };
 }
 
 export const getDataFromS3 = async ({ prefix = "" }: OptionsForS3 = {}) => {

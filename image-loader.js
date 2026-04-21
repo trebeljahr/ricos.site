@@ -1,6 +1,12 @@
 import path from "path";
 
-export default function myLoader({ src, width, quality }) {
+// In local-dev mode, images go through the in-process /api/img route (which
+// reads from MinIO, transforms via sharp, caches to the local resized bucket).
+// In prod/cloud mode, they come from CloudFront. Shape of both URLs is:
+//   <base>/<key-without-ext>/<width>.webp
+const IS_LOCAL_BACKEND = process.env.NEXT_PUBLIC_IMAGE_BACKEND === "local";
+
+export default function myLoader({ src, width }) {
   if (src.startsWith("http")) {
     return src;
   }
@@ -10,7 +16,9 @@ export default function myLoader({ src, width, quality }) {
   const fixedSlash = noExt.startsWith("/") ? noExt : `/${noExt}`;
   const fixedSource = fixedSlash.replace(" ", "%20");
 
-  const result = `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net${fixedSource}/${width}.webp`;
+  if (IS_LOCAL_BACKEND) {
+    return `/api/img${fixedSource}/${width}.webp`;
+  }
 
-  return result;
+  return `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net${fixedSource}/${width}.webp`;
 }

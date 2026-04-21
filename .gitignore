@@ -28,7 +28,7 @@
 /**/**/.vercel
 .velite
 .vercel
-.tsconfig.tsbuildinfo
+tsconfig.tsbuildinfo
 
 .terraform*
 terraform*
@@ -44,7 +44,13 @@ public/sitemap*.xml
 public/rss.xml
 public/atom.xml
 public/feed.json
+public/search-index.json
+
+# dev-server route manifest dump
+logfile
 
 # claude code
 .claude/settings.local.json
 .claude/worktrees/
+# Local rclone S3 server data dir (symlinked source bucket + cached variants)
+.rclone-data/

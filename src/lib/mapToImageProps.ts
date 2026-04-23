@@ -52,6 +52,19 @@ export const nextImageUrl = (src: string, width: number) => {
     throw new Error(`Invalid width for image ${src}: ${width}`);
   }
 
+  // Empty/missing src: return empty so callers can short-circuit (e.g. OpenGraph
+  // uses `{imageUrl && <meta…>}`). Without this, path.join("","") returns "."
+  // and we'd generate bogus "/api/img/./<width>.webp" URLs that 400 in dev.
+  if (!src) return "";
+
+  // Pass-through paths that aren't under /assets/. These are static files
+  // served directly from /public (e.g. /favicon/*), not pipeline-transformed
+  // images. Routing them through /api/img would 404 because rclone only
+  // exposes the Obsidian assets tree.
+  if (!src.startsWith("http") && !/^\/?assets\//.test(src)) {
+    return src;
+  }
+
   const parsedPath = path.parse(src);
   const noExt = path.join(parsedPath.dir, parsedPath.name);
   const fixedSource = noExt.startsWith("/") ? noExt : `/${noExt}`;

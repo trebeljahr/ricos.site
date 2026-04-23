@@ -7,7 +7,15 @@ import path from "path";
 const IS_LOCAL_BACKEND = process.env.NEXT_PUBLIC_IMAGE_BACKEND === "local";
 
 export default function myLoader({ src, width }) {
+  if (!src) return src;
   if (src.startsWith("http")) {
+    return src;
+  }
+
+  // Static files that aren't under /assets/ (favicons, og placeholders, etc.)
+  // are served directly from /public — don't route them through the image
+  // pipeline.
+  if (!/^\/?assets\//.test(src)) {
     return src;
   }
 

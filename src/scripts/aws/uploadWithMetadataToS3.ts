@@ -65,7 +65,7 @@ async function uploadDir(directoryPath: string) {
     files.map(async (filePath) => {
       const key = path.relative(
         directoryPath.split("/").slice(0, -1).join("/"),
-        filePath
+        filePath,
       );
 
       const fileMetadata = localMetadata[key];
@@ -84,6 +84,10 @@ async function uploadDir(directoryPath: string) {
         return filePath;
       }
 
+      if (!fileHasRightEnding) {
+        return;
+      }
+
       const { width, height } = await getWidthAndHeightFromFileSystem(filePath);
 
       await updateMetadataFile(assetsMetadataFilePath, {
@@ -93,7 +97,7 @@ async function uploadDir(directoryPath: string) {
         aspectRatio: width / height,
         existsInS3: true,
       });
-    })
+    }),
   );
 
   const filesToUpload = filesToUploadPromises.filter(Boolean) as string[];
@@ -107,14 +111,14 @@ async function uploadDir(directoryPath: string) {
     const data = await getWidthAndHeightFromFileSystem(filePath);
     const key = path.relative(
       directoryPath.split("/").slice(0, -1).join("/"),
-      filePath
+      filePath,
     );
     await limit(() =>
       uploadWithMetadata(filePath, key, {
         width: String(data?.width),
         height: String(data?.height),
         aspectRatio: String(data?.width / data?.height),
-      })
+      }),
     );
     progress.update(counter++);
   });

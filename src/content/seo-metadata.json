@@ -5584,7 +5584,7 @@
   "/podcastnotes": {
     "metaTitle": "Podcast Notes - Key Takeaways from Podcast Episodes",
     "metaDescription": "Detailed notes and key insights from podcasts by Lex Fridman, Dwarkesh Patel, Tim Ferriss, and more. Save hours of listening with curated summaries.",
-    "ogImage": "/assets/blog/podcastnotes.jpg",
+    "ogImage": "/assets/blog/podcastnotes.png",
     "ogImageAlt": "Podcast notes collection with headphones and notepad",
     "keywords": [
       "podcast notes",
@@ -5675,7 +5675,7 @@
   "/travel/guadeloupe": {
     "metaTitle": "Guadeloupe - Hiking, Diving & Island Life",
     "metaDescription": "Travel stories from Guadeloupe. Hiking the GR-G1 trail, diving in the Caribbean, exploring waterfalls, and hostel life on the French Antilles.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Guadeloupe",
@@ -5692,7 +5692,7 @@
   "/travel/transat": {
     "metaTitle": "Atlantic Crossing by Sailboat - Rico's Travel Stories",
     "metaDescription": "Follow the journey of crossing the Atlantic Ocean by sailboat. Storms, starry nights, and the challenge of weeks at open sea.",
-    "ogImage": "/assets/blog/transat/christian-and-rebecca-steering-the-boat-through-the-storm.jpg",
+    "ogImage": "/assets/photography/transat/christian-and-rebecca-steering-the-boat-through-the-storm.jpg",
     "ogImageAlt": "Steering the sailboat through a storm during the Atlantic crossing",
     "keywords": [
       "Atlantic crossing",
@@ -5707,7 +5707,7 @@
   "/travel/portugal-2024": {
     "metaTitle": "Portugal 2024 - Fisherman's Trail – Rico's Travel Stories",
     "metaDescription": "Travel stories from Portugal in 2024. Hiking the Fisherman's Trail along the Alentejo coast and exploring the Algarve region.",
-    "ogImage": "/assets/blog/portugal-2024/walking-along-the-windswept-coast.jpg",
+    "ogImage": "/assets/photography/portugal-2024/walking-along-the-windswept-coast.jpg",
     "ogImageAlt": "walking along the windswept coast",
     "keywords": [
       "Portugal",
@@ -5723,7 +5723,7 @@
   "/travel/martinique-2024": {
     "metaTitle": "Martinique 2024 - Caribbean – Rico's Travel Stories",
     "metaDescription": "Travel stories from Martinique in 2024. Exploring Fort-de-France, the Tombolo sandbank, giant trees, and Caribbean island culture.",
-    "ogImage": "/assets/blog/martinique-2024/schoelcher-library-during-the-day.jpg",
+    "ogImage": "/assets/photography/best-of/schoelcher-library-during-the-day.jpg",
     "ogImageAlt": "the Schoelcher library during the day from the side",
     "keywords": [
       "Martinique",
@@ -6394,7 +6394,7 @@
   "/travel/guadeloupe/gr-g1-day-1": {
     "metaTitle": "GR-G1 Day 1 - Beginning the Trace des Alicés | Guadeloupe",
     "metaDescription": "Hiking the GR-G1 trail through Guadeloupe's lush jungle. Leaving the sailboat behind for a multi-day trek from north to south through Basse Terre.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Guadeloupe",
@@ -6411,7 +6411,7 @@
   "/travel/guadeloupe/gr-g1-day-2": {
     "metaTitle": "GR-G1 Day 2 - A Crazy Hike Through Guadeloupe",
     "metaDescription": "An intense second day on the GR-G1 trail in Guadeloupe. Steep muddy slopes, dense jungle, and the raw beauty of Basse Terre's interior.",
-    "ogImage": "/assets/blog/guadeloupe/rebecca-going-down-a-steep-muddy-slope.jpg",
+    "ogImage": "/assets/photography/guadeloupe/rebecca-going-down-a-steep-muddy-slope.jpg",
     "ogImageAlt": "rebecca going down a steep muddy slope",
     "keywords": [
       "Guadeloupe",
@@ -6428,7 +6428,7 @@
   "/travel/guadeloupe/gr-g1-day-3": {
     "metaTitle": "GR-G1 Day 3 - Reaching the Beach | Guadeloupe",
     "metaDescription": "Day three on Guadeloupe's GR-G1 trail brings a reward: reaching the beach after days of dense jungle hiking through Basse Terre.",
-    "ogImage": "/assets/blog/guadeloupe/me-looking-out-through-a-window-in-the-jungle.jpg",
+    "ogImage": "/assets/photography/guadeloupe/me-looking-out-through-a-window-in-the-jungle.jpg",
     "ogImageAlt": "me looking out through a window in the jungle",
     "keywords": [
       "Guadeloupe",
@@ -6445,7 +6445,7 @@
   "/travel/guadeloupe/gr-g1-day-4": {
     "metaTitle": "GR-G1 Day 4 - A Rest Day in Guadeloupe",
     "metaDescription": "Taking a well-deserved rest day during the GR-G1 hike in Guadeloupe. Orange clouds over the sea, palm trees, and recovering for the next stretch.",
-    "ogImage": "/assets/blog/guadeloupe/orange-clouds-moving-over-the-sea-and-palm-trees.jpg",
+    "ogImage": "/assets/photography/guadeloupe/orange-clouds-moving-over-the-sea-and-palm-trees.jpg",
     "ogImageAlt": "orange clouds moving over the sea and palm trees",
     "keywords": [
       "Guadeloupe",
@@ -6461,7 +6461,7 @@
   "/travel/guadeloupe/gr-g1-day-5": {
     "metaTitle": "GR-G1 Day 5 - The Carbet Falls | Guadeloupe",
     "metaDescription": "Visiting the stunning Carbet Falls on day five of the GR-G1 trail in Guadeloupe. Waterfalls emerging through clouds in the heart of Basse Terre.",
-    "ogImage": "/assets/blog/guadeloupe/the-first-carbet-fall-showing-itself-through-the-clouds.jpg",
+    "ogImage": "/assets/photography/guadeloupe/the-first-carbet-fall-showing-itself-through-the-clouds.jpg",
     "ogImageAlt": "the first carbet fall showing itself through the clouds",
     "keywords": [
       "Guadeloupe",
@@ -6478,7 +6478,7 @@
   "/travel/guadeloupe/gr-g1-day-6": {
     "metaTitle": "GR-G1 Day 6 - La Soufrière Volcano | Guadeloupe",
     "metaDescription": "Summiting La Soufrière, Guadeloupe's highest peak and active volcano. The grand finale of the GR-G1 trail through Basse Terre.",
-    "ogImage": "/assets/blog/guadeloupe/mountain-summit-selfie-la-decouverte.jpg",
+    "ogImage": "/assets/photography/guadeloupe/mountain-summit-selfie-la-decouverte.jpg",
     "ogImageAlt": "mountain summit selfie la decouverte",
     "keywords": [
       "Guadeloupe",
@@ -6496,7 +6496,7 @@
   "/travel/guadeloupe/port-luis": {
     "metaTitle": "Surfing in Port Luis | Guadeloupe Travel Story",
     "metaDescription": "Catching waves at sunset in Port Luis, Guadeloupe. A day of surfing on the Caribbean island's Atlantic coast, warm water, and the laid-back island lifestyle.",
-    "ogImage": "/assets/blog/guadeloupe/port-luis-surfers-at-sunset.jpg",
+    "ogImage": "/assets/photography/guadeloupe/port-luis-surfers-at-sunset.jpg",
     "ogImageAlt": "surfing in Port Luis at sunset",
     "keywords": [
       "Guadeloupe",
@@ -6512,7 +6512,7 @@
   "/travel/guadeloupe/tikazalou-1": {
     "metaTitle": "Arriving at Tikazalou Hostel | Guadeloupe",
     "metaDescription": "Settling into Tikazalou hostel after completing the GR-G1 hike. Views over Pigeon Island and the start of a new chapter in Guadeloupe.",
-    "ogImage": "/assets/blog/guadeloupe/view-from-nathalies-home-over-pigeon-island.jpg",
+    "ogImage": "/assets/photography/guadeloupe/view-from-nathalies-home-over-pigeon-island.jpg",
     "ogImageAlt": "view from Nathalies home over pigeon island",
     "keywords": [
       "Guadeloupe",
@@ -6528,7 +6528,7 @@
   "/travel/guadeloupe/tikazalou-2": {
     "metaTitle": "Diving in the Caribbean Sea | Guadeloupe",
     "metaDescription": "Exploring the underwater world of the Caribbean while diving near Guadeloupe. Crystal clear waters and marine life around Pigeon Island.",
-    "ogImage": "/assets/blog/guadeloupe/julian-meditating-under-water.jpg",
+    "ogImage": "/assets/photography/guadeloupe/julian-meditating-under-water.jpg",
     "ogImageAlt": "juliane meditating underwater",
     "keywords": [
       "Guadeloupe",
@@ -6544,7 +6544,7 @@
   "/travel/guadeloupe/tikazalou-3": {
     "metaTitle": "Saut d'Acomat, Slacklines & Piano | Guadeloupe",
     "metaDescription": "Adventures at Saut d'Acomat waterfall, slacklining, and playing piano at Tikazalou hostel in Guadeloupe. Caribbean island life at its best.",
-    "ogImage": "/assets/blog/guadeloupe/the-cat.jpg",
+    "ogImage": "/assets/photography/guadeloupe/the-cat.jpg",
     "ogImageAlt": "Baboo the cat of Tikazalou",
     "keywords": [
       "Guadeloupe",
@@ -6560,7 +6560,7 @@
   "/travel/guadeloupe/tikazalou-4": {
     "metaTitle": "Plage du Bosco & Hidden Gems | Guadeloupe",
     "metaDescription": "Discovering Plage du Bosco and other hidden beaches in Guadeloupe. Waves crashing on secluded shores away from the tourist crowds.",
-    "ogImage": "/assets/blog/guadeloupe/waves-long-exposure.jpg",
+    "ogImage": "/assets/photography/guadeloupe/waves-long-exposure.jpg",
     "ogImageAlt": "long exposrue of waves washing on the beach of Plage du Bosco",
     "keywords": [
       "Guadeloupe",
@@ -6575,7 +6575,7 @@
   "/travel/guadeloupe/tikazalou-5": {
     "metaTitle": "Exploring Waterfalls Near Tikazalou | Guadeloupe",
     "metaDescription": "Chasing waterfalls through the dense jungle near Tikazalou in Guadeloupe. Majestic cascades hidden deep in the tropical rainforest.",
-    "ogImage": "/assets/blog/guadeloupe/majestic-waterfall.jpg",
+    "ogImage": "/assets/photography/guadeloupe/majestic-waterfall.jpg",
     "ogImageAlt": "majestic waterfall in the middle of the jungle",
     "keywords": [
       "Guadeloupe",
@@ -6691,7 +6691,7 @@
   "/travel/martinique-2024/anse-de-couleuvre-and-habitacion-ceron": {
     "metaTitle": "Anse de Couleuvre & Habitacion Cerón | Martinique",
     "metaDescription": "Exploring Anse de Couleuvre beach and the giant Zamana tree at Habitacion Cerón in northern Martinique. History meets tropical beauty.",
-    "ogImage": "/assets/blog/martinique-2024/me-standing-in-front-of-the-giant-zamana-tree.jpg",
+    "ogImage": "/assets/photography/best-of/me-standing-in-front-of-the-giant-zamana-tree.jpg",
     "ogImageAlt": "Rico standing in front of the giant Zamana tree in Habitacion Cerón",
     "keywords": [
       "Martinique",
@@ -6707,7 +6707,7 @@
   "/travel/martinique-2024/fort-da-france-and-la-trinite": {
     "metaTitle": "Fort-de-France & La Trinité | Martinique",
     "metaDescription": "Discovering Fort-de-France and La Trinité in Martinique. The Schoelcher library, Caribbean architecture, and the vibrant culture of the French Antilles.",
-    "ogImage": "/assets/blog/martinique-2024/schoelcher-library-during-the-day.jpg",
+    "ogImage": "/assets/photography/best-of/schoelcher-library-during-the-day.jpg",
     "ogImageAlt": "the Schoelcher library during the day from the side",
     "keywords": [
       "Martinique",
@@ -6723,7 +6723,7 @@
   "/travel/martinique-2024/tombolo-and-anse-du-sinai": {
     "metaTitle": "Tombolo of Sainte Marie & Anse du Sinai | Martinique",
     "metaDescription": "Walking across the Tombolo sandbank at Sainte Marie, visiting Anse du Sinai, and exploring a rum distillery in Martinique.",
-    "ogImage": "/assets/blog/martinique-2024/people-walking-over-the-tombolo-sandbank.jpg",
+    "ogImage": "/assets/photography/best-of/people-walking-over-the-tombolo-sandbank.jpg",
     "ogImageAlt": "two people walking over the tombolo sandbank",
     "keywords": [
       "Martinique",
@@ -6740,7 +6740,7 @@
   "/travel/portugal-2024/fishermans-trail-day-1": {
     "metaTitle": "Fisherman's Trail Day 1 - Arriving in Sines",
     "metaDescription": "Starting the Fisherman's Trail in Sines, Portugal. Night arrival, coastal town vibes, and the anticipation of days of walking along the Alentejo coast.",
-    "ogImage": "/assets/blog/portugal-2024/night-time-street-portugal.jpg",
+    "ogImage": "/assets/photography/portugal-2024/night-time-street-portugal.jpg",
     "ogImageAlt": "a nighttime street in Sines Portugal",
     "keywords": [
       "Portugal",
@@ -6756,7 +6756,7 @@
   "/travel/portugal-2024/fishermans-trail-day-2": {
     "metaTitle": "Fisherman's Trail Day 2 - Walking to Porto Covo",
     "metaDescription": "Hiking from Sines to Porto Covo along the windswept Portuguese coast. Dramatic cliffs, crashing waves, and the rugged Alentejo shoreline.",
-    "ogImage": "/assets/blog/portugal-2024/walking-along-the-windswept-coast.jpg",
+    "ogImage": "/assets/photography/portugal-2024/walking-along-the-windswept-coast.jpg",
     "ogImageAlt": "walking along the windswept coast",
     "keywords": [
       "Portugal",
@@ -6772,7 +6772,7 @@
   "/travel/portugal-2024/fishermans-trail-day-3": {
     "metaTitle": "Fisherman's Trail Day 3 - Resting & Recovery",
     "metaDescription": "A rest day on the Fisherman's Trail in Portugal. Lighthouse sunsets and recovering sore legs before continuing along the Alentejo coast.",
-    "ogImage": "/assets/blog/portugal-2024/sunset-lighthouse.jpg",
+    "ogImage": "/assets/photography/portugal-2024/sunset-lighthouse.jpg",
     "ogImageAlt": "sunset lighthouse",
     "keywords": [
       "Portugal",
@@ -6788,7 +6788,7 @@
   "/travel/portugal-2024/fishermans-trail-day-4": {
     "metaTitle": "Fisherman's Trail Day 4 - Camping in the Dunes",
     "metaDescription": "A long day of walking the Fisherman's Trail and wild camping in the Portuguese dunes. Fishermen on cliffs and endless coastline views.",
-    "ogImage": "/assets/blog/portugal-2024/fisherman-sitting-quiet-on-a-cliff.jpg",
+    "ogImage": "/assets/photography/portugal-2024/fisherman-sitting-quiet-on-a-cliff.jpg",
     "ogImageAlt": "fisherman sitting quietly on a cliff",
     "keywords": [
       "Portugal",
@@ -6804,7 +6804,7 @@
   "/travel/portugal-2024/fishermans-trail-day-5": {
     "metaTitle": "Fisherman's Trail Day 5 - A Beautiful Last Day",
     "metaDescription": "The final day of the Fisherman's Trail in Portugal. Rocks, waves, and a bittersweet goodbye to the stunning Alentejo coastline.",
-    "ogImage": "/assets/blog/portugal-2024/rocks-and-waves-long-exposure.jpg",
+    "ogImage": "/assets/photography/portugal-2024/rocks-and-waves-long-exposure.jpg",
     "ogImageAlt": "stairway with a man standing there looking towards the rocks and waves, long exposure",
     "keywords": [
       "Portugal",
@@ -6820,7 +6820,7 @@
   "/travel/portugal-2024/lagos-cuddle-house": {
     "metaTitle": "Lagos Cuddle House | Portugal Travel Story",
     "metaDescription": "Time spent in Lagos, Portugal. A cozy stay in the Algarve with its stunning coastline, golden cliffs, and laid-back Atlantic atmosphere.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Portugal",
@@ -6835,7 +6835,7 @@
   "/travel/portugal-2024/the-garden": {
     "metaTitle": "The Garden | Portugal 2024 Travel Story",
     "metaDescription": "A story about The Garden in Portugal. Slow unhurried days surrounded by nature, and the simple beauty of life in the quiet Portuguese countryside during a long stay.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Portugal",
@@ -6959,7 +6959,7 @@
   "/travel/transat/day-0-preparing-to-leave": {
     "metaTitle": "Transatlantic Day 0 - Preparing to Leave Mindelo",
     "metaDescription": "The final preparations before sailing across the Atlantic Ocean. Stocking supplies in Mindelo, Cape Verde for an 18-day ocean crossing.",
-    "ogImage": "/assets/blog/transat/christian-grinning-on-boat-with-supplies.jpg",
+    "ogImage": "/assets/photography/transat/christian-grinning-on-boat-with-supplies.jpg",
     "ogImageAlt": "christian grinning on boat with supplies",
     "keywords": [
       "transatlantic",
@@ -6975,7 +6975,7 @@
   "/travel/transat/day-1-leaving-mindelo": {
     "metaTitle": "Transatlantic Day 1 - Leaving Mindelo",
     "metaDescription": "Setting sail from Mindelo, Cape Verde across the Atlantic Ocean. The crew assembles and the transatlantic crossing officially begins.",
-    "ogImage": "/assets/blog/transat/the-motley-fleet-crew-of-the-transatlantic-journey.jpg",
+    "ogImage": "/assets/photography/transat/the-motley-fleet-crew-of-the-transatlantic-journey.jpg",
     "ogImageAlt": "the motley fleet crew of the transatlantic journey",
     "keywords": [
       "transatlantic",
@@ -6991,7 +6991,7 @@
   "/travel/transat/day-2-out-at-sea": {
     "metaTitle": "Transatlantic Day 2 – Open Ocean Sailing",
     "metaDescription": "The second day of the transatlantic crossing. Nothing but open ocean, fishing lines in the water, and finding rhythm with the sea.",
-    "ogImage": "/assets/blog/transat/fishing-line-bait.jpg",
+    "ogImage": "/assets/photography/transat/fishing-line-bait.jpg",
     "ogImageAlt": "fishing line bait",
     "keywords": [
       "transatlantic",
@@ -7006,7 +7006,7 @@
   "/travel/transat/day-3-fish-or-no-fish": {
     "metaTitle": "Transatlantic Day 3 - Fish or No Fish",
     "metaDescription": "Day three on the Atlantic. A makeshift fishing alarm from a beer can and the eternal question of ocean sailing: will we catch a fish?",
-    "ogImage": "/assets/blog/transat/the-makeshift-fishing-alarm-beer-can-contraption.jpg",
+    "ogImage": "/assets/photography/transat/the-makeshift-fishing-alarm-beer-can-contraption.jpg",
     "ogImageAlt": "the makeshift fishing alarm beer can contraption",
     "keywords": [
       "transatlantic",
@@ -7021,7 +7021,7 @@
   "/travel/transat/day-4-fish-for-real": {
     "metaTitle": "Transatlantic Day 4 - We Caught a Fish!",
     "metaDescription": "Finally catching the first fish of the transatlantic crossing. Fresh ocean-to-plate dining in the middle of the Atlantic.",
-    "ogImage": "/assets/blog/transat/christian-happily-showing-the-first-fish-we-caught.jpg",
+    "ogImage": "/assets/photography/transat/christian-happily-showing-the-first-fish-we-caught.jpg",
     "ogImageAlt": "christian happily showing the first fish we caught",
     "keywords": [
       "transatlantic",
@@ -7051,7 +7051,7 @@
   "/travel/transat/day-6-seagrass-fishing": {
     "metaTitle": "Transatlantic Day 6 - Seagrass Fishing",
     "metaDescription": "When your fishing line keeps catching seagrass instead of fish in the middle of the Atlantic. The daily comedy of ocean sailing.",
-    "ogImage": "/assets/blog/transat/our-most-common-catch-seagrass.jpg",
+    "ogImage": "/assets/photography/transat/our-most-common-catch-seagrass.jpg",
     "ogImageAlt": "our most common catch seagrass",
     "keywords": [
       "transatlantic",
@@ -7067,7 +7067,7 @@
   "/travel/transat/day-7-crazy-hats": {
     "metaTitle": "Transatlantic Day 7 - Crazy Hats at Sea",
     "metaDescription": "What happens when there is nothing to do on a sailboat in the middle of the Atlantic? Crazy hat day and finding entertainment at sea.",
-    "ogImage": "/assets/blog/transat/things-you-do-on-a-boat-when-there-is-nothing-else-to-do.jpg",
+    "ogImage": "/assets/photography/transat/things-you-do-on-a-boat-when-there-is-nothing-else-to-do.jpg",
     "ogImageAlt": "things you do on a boat when there is nothing else to do",
     "keywords": [
       "transatlantic",
@@ -7082,7 +7082,7 @@
   "/travel/transat/day-8-sunrise-magic": {
     "metaTitle": "Transatlantic Day 8 - Sunrise Magic",
     "metaDescription": "A magical sunrise in the middle of the Atlantic Ocean. One of those moments that makes the hardships of a transatlantic crossing worth it.",
-    "ogImage": "/assets/blog/transat/sunrise-magic.jpg",
+    "ogImage": "/assets/photography/transat/sunrise-magic.jpg",
     "ogImageAlt": "sunrise magic",
     "keywords": [
       "transatlantic",
@@ -7097,7 +7097,7 @@
   "/travel/transat/day-9-sailing-maneuvers": {
     "metaTitle": "Transatlantic Day 9 - Sailing Maneuvers",
     "metaDescription": "Learning and practicing sailing maneuvers halfway across the Atlantic. Tracking progress on the map as the Caribbean draws closer.",
-    "ogImage": "/assets/blog/transat/how-far-we-have-come-marked-on-a-map.png",
+    "ogImage": "/assets/photography/transat/how-far-we-have-come-marked-on-a-map.png",
     "ogImageAlt": "how far we have come marked on a map",
     "keywords": [
       "transatlantic",
@@ -7112,7 +7112,7 @@
   "/travel/transat/day-10-dolphins": {
     "metaTitle": "Transatlantic Day 10 – Dolphins in the Atlantic",
     "metaDescription": "Dolphins join the boat in the middle of the Atlantic Ocean. A joyful encounter during the transatlantic crossing that lifts everyone's spirits.",
-    "ogImage": "/assets/blog/transat/rebecca-happily-pointing-to-the-dolphins.jpg",
+    "ogImage": "/assets/photography/transat/rebecca-happily-pointing-to-the-dolphins.jpg",
     "ogImageAlt": "rebecca happily pointing to the dolphins",
     "keywords": [
       "transatlantic",
@@ -7127,7 +7127,7 @@
   "/travel/transat/day-11-christians-ciabatta-bread": {
     "metaTitle": "Transatlantic Day 11 - Baking Bread at Sea",
     "metaDescription": "Christian bakes ciabatta bread on a sailboat in the middle of the Atlantic. The small pleasures that keep spirits high during an ocean crossing.",
-    "ogImage": "/assets/blog/transat/christian-holding-his-baked-bread.jpg",
+    "ogImage": "/assets/photography/transat/christian-holding-his-baked-bread.jpg",
     "ogImageAlt": "Christian holding his baked bread",
     "keywords": [
       "transatlantic",
@@ -7143,7 +7143,7 @@
   "/travel/transat/day-12-surfing-the-waves": {
     "metaTitle": "Transatlantic Day 12 - Surfing the Waves",
     "metaDescription": "Surfing ocean waves on day twelve of the transatlantic crossing. Steering the sailboat through swells with a big grin on the face.",
-    "ogImage": "/assets/blog/transat/me-steering-the-boat-smiling-happily.jpg",
+    "ogImage": "/assets/photography/transat/me-steering-the-boat-smiling-happily.jpg",
     "ogImageAlt": "me steering the boat smiling happily",
     "keywords": [
       "transatlantic",
@@ -7158,7 +7158,7 @@
   "/travel/transat/day-13-a-day-of-reading": {
     "metaTitle": "Transatlantic Day 13 - A Day of Reading",
     "metaDescription": "A quiet day of reading on the Kindle in the middle of the Atlantic. The meditative rhythm of long days at sea during a transatlantic crossing.",
-    "ogImage": "/assets/blog/transat/my-kindle-the-primary-source-of-entertainment.jpg",
+    "ogImage": "/assets/photography/transat/my-kindle-the-primary-source-of-entertainment.jpg",
     "ogImageAlt": "my kindle the primary source of entertainment",
     "keywords": [
       "transatlantic",
@@ -7173,7 +7173,7 @@
   "/travel/transat/day-14-double-rainbows": {
     "metaTitle": "Transatlantic Day 14 - Double Rainbows",
     "metaDescription": "Double rainbows appear over the Atlantic Ocean on day fourteen. Nature puts on a show as the transatlantic crossing nears the Caribbean.",
-    "ogImage": "/assets/blog/transat/double-rainbow.jpg",
+    "ogImage": "/assets/photography/transat/double-rainbow.jpg",
     "ogImageAlt": "double rainbow",
     "keywords": [
       "transatlantic",
@@ -7188,7 +7188,7 @@
   "/travel/transat/day-15-chasing-the-storm-clouds": {
     "metaTitle": "Transatlantic Day 15 - Chasing Storm Clouds",
     "metaDescription": "Storms roll in over the Atlantic as the transatlantic crossing enters its final stretch. Steering through squalls and heavy weather at sea.",
-    "ogImage": "/assets/blog/transat/christian-and-rebecca-steering-the-boat-through-the-storm.jpg",
+    "ogImage": "/assets/photography/transat/christian-and-rebecca-steering-the-boat-through-the-storm.jpg",
     "ogImageAlt": "Christian and Rebecca steering the boat through the storm",
     "keywords": [
       "transatlantic",
@@ -7204,7 +7204,7 @@
   "/travel/transat/day-16-more-stormy-weather": {
     "metaTitle": "Transatlantic Day 16 - More Stormy Weather",
     "metaDescription": "More storms on the Atlantic. Rain lashing the windows as the sailboat pushes through challenging weather on the final days of the crossing.",
-    "ogImage": "/assets/blog/transat/rain-on-the-windows.jpg",
+    "ogImage": "/assets/photography/transat/rain-on-the-windows.jpg",
     "ogImageAlt": "rain on the windows",
     "keywords": [
       "transatlantic",
@@ -7220,7 +7220,7 @@
   "/travel/transat/day-17-swimming-in-the-deep-end": {
     "metaTitle": "Transatlantic Day 17 - Swimming in the Deep End",
     "metaDescription": "Swimming in the open Atlantic Ocean with thousands of meters of water below. A surreal sunrise and one of the crossing's most memorable moments.",
-    "ogImage": "/assets/blog/transat/the-window-to-heaven-sunrise.jpg",
+    "ogImage": "/assets/photography/transat/the-window-to-heaven-sunrise.jpg",
     "ogImageAlt": "the window to heaven sunrise",
     "keywords": [
       "transatlantic",
@@ -7252,7 +7252,7 @@
   "/travel/colombia-2024/1-bogota-arrival-and-first-arepas": {
     "metaTitle": "Arriving in Bogota - First Arepas & Cumbia",
     "metaDescription": "Landing in Bogota, Colombia for the first time. Couchsurfing, first arepas, and dancing to incredible cumbia music in the capital.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Colombia",
@@ -7268,7 +7268,7 @@
   "/travel/colombia-2024/2-bogota-museo-del-oro-good-food-chess": {
     "metaTitle": "Bogota - Museo del Oro, Food & Chess",
     "metaDescription": "Exploring Bogota's famous Museo del Oro, discovering incredible Colombian food, and playing chess in the streets of the capital.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Colombia",
@@ -7284,7 +7284,7 @@
   "/travel/colombia-2024/3-bogota-ciclovia-call-marc": {
     "metaTitle": "Bogota - Ciclovía & Amazing Street Food",
     "metaDescription": "Experiencing Bogota's famous Ciclovía, where the city closes streets for cyclists every Sunday. Amazing food and catching up with friends.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Colombia",
@@ -7300,7 +7300,7 @@
   "/travel/colombia-2024/4-bicycle-hunting": {
     "metaTitle": "Bicycle Hunting in Bogota | Colombia",
     "metaDescription": "Searching for the right bicycle in Bogota's shops and Decathlon. Preparing for a cycling adventure through the Colombian Andes.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7316,7 +7316,7 @@
   "/travel/colombia-2024/5-bicycle-gear-research-and-tribu-bikes": {
     "metaTitle": "Tribu Bikes & Bicycle Research | Bogota",
     "metaDescription": "Visiting Tribu Bikes and researching bicycle touring gear in Bogota. Finding the right setup for cycling through Colombia's mountains.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7332,7 +7332,7 @@
   "/travel/colombia-2024/6-bogota-found-a-bicycle-and-montserrati": {
     "metaTitle": "Monserrate & Finding a Bicycle | Bogota",
     "metaDescription": "Visiting Monserrate hill in Bogota and finally finding the right bicycle for a Colombian cycling adventure. A triumphant day in the capital.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7348,7 +7348,7 @@
   "/travel/colombia-2024/7-fusagasuga": {
     "metaTitle": "Fusagasugá - Saddlebags & Meeting the Family",
     "metaDescription": "Traveling to Fusagasugá to buy saddlebags and meeting a Colombian family. Preparing for the cycling journey through the Andes.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7364,7 +7364,7 @@
   "/travel/colombia-2024/8-returning-from-fusa": {
     "metaTitle": "Returning from Fusagasugá with Saddlebags",
     "metaDescription": "Heading back to Bogota from Fusagasugá with new saddlebags. The final gear is ready for the cycling adventure through Colombia.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7379,7 +7379,7 @@
   "/travel/colombia-2024/9-buying-the-bicycle": {
     "metaTitle": "Buying the Bicycle & Partying Hard | Bogota",
     "metaDescription": "The big day: buying the touring bicycle in Bogota. Celebrating with beautiful food, friends, and a wild night out in the Colombian capital.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7395,7 +7395,7 @@
   "/travel/colombia-2024/10-resting-day-and-last-purchases": {
     "metaTitle": "Last Rest Day & Purchases Before Cycling",
     "metaDescription": "A final rest day in Bogota before the cycling adventure begins. Nice breakfast, Decathlon visits, and last-minute gear shopping.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7411,7 +7411,7 @@
   "/travel/colombia-2024/day-1-bogota-to-fusa": {
     "metaTitle": "The Cycling Adventure Begins | Colombia",
     "metaDescription": "Day one of cycling through Colombia. Leaving Bogota and riding towards Fusagasugá through the Andes. The adventure finally starts.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7427,7 +7427,7 @@
   "/travel/colombia-2024/day-1-plus-another-3-weeks-resting-at-tanias-near-fusa": {
     "metaTitle": "Resting at a Finca Near Fusagasugá | Colombia",
     "metaDescription": "Three weeks at a beautiful finca near Fusagasugá. Rivers, drone flights, coworking, cooking, and amazing Colombian coffee.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7443,7 +7443,7 @@
   "/travel/colombia-2024/day-2-fusa-to-girardot": {
     "metaTitle": "Cycling Fusagasugá to Girardot | Colombia",
     "metaDescription": "Cycling from Fusagasugá to Girardot. Surprise waterfalls, highway riding, and the challenge of internet troubles on the Colombian roads.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7459,7 +7459,7 @@
   "/travel/colombia-2024/day-3-girardot-to-ibague": {
     "metaTitle": "Cycling Girardot to Ibagué | Colombia",
     "metaDescription": "Cycling from Girardot to Ibagué along Colombia's main highway. Mangos from roadside vendors, hot pavement under the tropical sun, and a long day of riding in the heat.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7475,7 +7475,7 @@
   "/travel/colombia-2024/day-4-ibague-to-toche": {
     "metaTitle": "Cycling Ibagué to Toché - Rain & Hot Springs",
     "metaDescription": "From Ibagué to Toché through rainclouds and tunnels. Muddy climbs rewarded by natural hot springs in the Colombian mountains.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7491,7 +7491,7 @@
   "/travel/colombia-2024/day-5-toche-to-salento": {
     "metaTitle": "Cycling Toché to Salento - Palm Forests",
     "metaDescription": "Steep climbs through wax palm forests from Toché to Salento. 18km of pure cycling fun through Colombia's stunning coffee region.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7507,7 +7507,7 @@
   "/travel/colombia-2024/day-6-salento-to-cocora-and-circasia": {
     "metaTitle": "Salento, Cocora Valley & Circasia | Colombia",
     "metaDescription": "Cycling from Salento through the touristy Cocora Valley to Circasia. Wax palms, friendly locals, and the reality behind the tourist spots.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7523,7 +7523,7 @@
   "/travel/colombia-2024/day-7-circasia-to-filandia-and-near-pereira": {
     "metaTitle": "Circasia to Filandia - Rolling Hills | Colombia",
     "metaDescription": "Beautiful rolling hills from Circasia to Filandia and towards Pereira. Meeting a French cyclist friend on the Colombian roads.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7539,7 +7539,7 @@
   "/travel/colombia-2024/day-8-resting-at-jaques-place": {
     "metaTitle": "Rest Day Near Pereira | Colombia Cycling",
     "metaDescription": "A well-deserved rest day near Pereira. Cooking nice meals, calling friends, and recharging before more Colombian mountain cycling.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7554,7 +7554,7 @@
   "/travel/colombia-2024/day-9-up-towards-the-nevados": {
     "metaTitle": "Towards Los Nevados - Pereira & Rain | Colombia",
     "metaDescription": "Cycling up from Pereira towards Los Nevados National Park. Navigating city chaos and relentless rain on the Colombian mountains.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7570,7 +7570,7 @@
   "/travel/colombia-2024/day-10-into-the-national-park": {
     "metaTitle": "Los Nevados National Park & Laguna Otún",
     "metaDescription": "Cycling into Los Nevados National Park to Laguna Otún. Stunning high-altitude landscapes and dealing with strict park rules in Colombia.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7586,7 +7586,7 @@
   "/travel/colombia-2024/day-11-descending-to-manizales": {
     "metaTitle": "Descending to Manizales - Flat Tire Drama",
     "metaDescription": "A thrilling 40km descent to Manizales with a flat tire in puma territory. Adventure and mechanical trouble in the Colombian Andes.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7603,7 +7603,7 @@
   "/travel/colombia-2024/day-12-14-resting-days-in-manizales": {
     "metaTitle": "Resting Days in Manizales | Colombia Cycling",
     "metaDescription": "Taking a few well-earned rest days in Manizales, Colombia. Recovering from the mountains before the next cycling stretch.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7618,7 +7618,7 @@
   "/travel/colombia-2024/day-15-up-to-the-gruta-ruiz-hotsprings": {
     "metaTitle": "Back Towards the Nevados | Colombia Cycling",
     "metaDescription": "Saying goodbye and cycling back up towards Los Nevados from Manizales. Heading for the Gruta del Ruiz hot springs in the Colombian mountains.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7634,7 +7634,7 @@
   "/travel/colombia-2024/day-16-los-nevados-national-park-paramo-and-laguna-negra": {
     "metaTitle": "Nevado del Ruiz & the Páramo | Colombia",
     "metaDescription": "Cycling up to the Nevado del Ruiz through Colombia's otherworldly páramo landscape. High-altitude beauty in Los Nevados National Park.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7650,7 +7650,7 @@
   "/travel/colombia-2024/day-17-murillo-to-cambao": {
     "metaTitle": "40km Mountain Descent to Cambao | Colombia",
     "metaDescription": "Waking up in a tent and descending 40km of mountainside towards Cambao. An exhilarating downhill cycling day in the Colombian Andes.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7666,7 +7666,7 @@
   "/travel/colombia-2024/day-18-cambao-to-jerusalen-tire-problems": {
     "metaTitle": "Cambao to Jerusalén - Tire Troubles | Colombia",
     "metaDescription": "Cycling from Cambao to Jerusalén with persistent tire problems. Meeting a kind Colombian family who helps along the way.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7682,7 +7682,7 @@
   "/travel/colombia-2024/day-18-19-cambao-to-jerusalen-tire-problems": {
     "metaTitle": "Cambao to Jerusalén & Tire Problems | Colombia",
     "metaDescription": "Two days of cycling challenges between Cambao and Jerusalén. Flat tires, Colombian hospitality, and the kindness of strangers on the road.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7698,7 +7698,7 @@
   "/travel/colombia-2024/day-19-jerusalen-getting-spare-tires-another-resting-day": {
     "metaTitle": "Fixing Tires in Jerusalén | Colombia Cycling",
     "metaDescription": "A rest day in Jerusalén fixing tire problems. Painting, reading, and recovering before the final stretch of the Colombian cycling journey.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -7714,7 +7714,7 @@
   "/travel/colombia-2024/day-20-cycling-back-to-fusa": {
     "metaTitle": "100km in One Day Back to Fusa | Colombia",
     "metaDescription": "An epic 100km cycling day to return to Fusagasugá. Pushing limits on the Colombian roads to make it back home for a well-earned rest.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -8806,7 +8806,7 @@
   "/travel/spain-2024/1-barcelona-beautiful-sunsets-and-new-friends": {
     "metaTitle": "Barcelona - Sunsets & New Friends | Spain 2024",
     "metaDescription": "Exploring Barcelona with its stunning architecture, beautiful sunsets, and meeting new friends along the way. A first taste of Spain.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Spain",
@@ -8822,7 +8822,7 @@
   "/travel/spain-2024/2-barcelona-beautiful-sunsets-and-new-friends": {
     "metaTitle": "Barcelona Part 2 - More Sunsets | Spain 2024",
     "metaDescription": "More days in Barcelona discovering hidden corners, incredible architecture, and sharing beautiful sunsets with new travel friends.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Spain",
@@ -8837,7 +8837,7 @@
   "/travel/spain-2024/3-barcelona-beautiful-sunsets-and-new-friends": {
     "metaTitle": "Barcelona Part 3 - Final Days | Spain 2024",
     "metaDescription": "Last days in Barcelona before heading to Madrid. Soaking in the Mediterranean atmosphere and saying goodbye to new friends.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Spain",
@@ -8851,7 +8851,7 @@
   "/travel/spain-2024/4-madrid-couchsurfing-with-alvaro": {
     "metaTitle": "Madrid - Couchsurfing with Alvaro | Spain 2024",
     "metaDescription": "Couchsurfing in Madrid with Alvaro. Bar crawls, beautiful skyscrapers, and experiencing the Spanish capital through a local's eyes.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Spain",
@@ -8867,7 +8867,7 @@
   "/travel/spain-2024/5-madrid-couchsurfing-with-alvaro": {
     "metaTitle": "Madrid Part 2 - More with Alvaro | Spain 2024",
     "metaDescription": "More adventures couchsurfing in Madrid with Alvaro. Discovering the city's neighborhoods, tapas bars, and vibrant culture.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Spain",
@@ -8882,7 +8882,7 @@
   "/travel/spain-2024/6-madrid-couchsurfing-with-alvaro": {
     "metaTitle": "Madrid Part 3 - Last Days | Spain 2024",
     "metaDescription": "Final days in Madrid couchsurfing with Alvaro. One last round of tapas bars, late-night conversations, and exploring hidden corners before leaving the capital.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Spain",
@@ -8897,7 +8897,7 @@
   "/travel/bolivia-2025/la-paz": {
     "metaTitle": "La Paz - Valle de Las Animas | Bolivia 2025",
     "metaDescription": "Acclimatizing in La Paz, exploring the Valle de Las Animas rock formations and the Devil's Tooth. Bolivia's high-altitude capital at 3,640m.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Bolivia",
@@ -8912,7 +8912,7 @@
   "/travel/bolivia-2025/sajama-national-park": {
     "metaTitle": "Sajama National Park | Bolivia 2025",
     "metaDescription": "Exploring Sajama National Park in Bolivia. Snow-capped volcanoes, hot springs, and the stark beauty of the Andean altiplano.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Bolivia",
@@ -8928,7 +8928,7 @@
   "/travel/bolivia-2025/salar-de-uyuni": {
     "metaTitle": "Salar de Uyuni | Bolivia 2025 Travel Story",
     "metaDescription": "Visiting the world's largest salt flat, Salar de Uyuni in Bolivia. An endless white expanse that blurs the line between earth and sky.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Bolivia",
@@ -8943,7 +8943,7 @@
   "/travel/bolivia-2025/toro-toro-national-park": {
     "metaTitle": "Torotoro National Park | Bolivia 2025",
     "metaDescription": "Adventures in Torotoro National Park, Bolivia. Dinosaur footprints, deep canyons, caves, and some of Bolivia's most dramatic landscapes.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Bolivia",
@@ -8976,7 +8976,7 @@
   "/travel/colombia-2024": {
     "metaTitle": "Colombia 2024 - Cycling the Andes | Travel",
     "metaDescription": "A bicycle touring adventure through Colombia in 2024. From Bogota through the coffee region to Los Nevados, cycling the Andes.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
       "Colombia",
@@ -9072,7 +9072,7 @@
   "/travel/spain-2024": {
     "metaTitle": "Spain 2024 - Barcelona & Madrid | Travel",
     "metaDescription": "Travel stories from Spain in 2024. Beautiful sunsets in Barcelona, couchsurfing in Madrid, and exploring the best of Spanish culture.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Spain",
@@ -9104,7 +9104,7 @@
   "/travel/bolivia-2025": {
     "metaTitle": "Bolivia 2025 - Altiplano Adventures | Travel",
     "metaDescription": "Travel stories from Bolivia in 2025. La Paz's markets, climbing near Sajama, crossing the Salar de Uyuni salt flats, and hiking Torotoro's dinosaur track canyons.",
-    "ogImage": "/assets/blog/guadeloupe/more-sea-of-green.jpg",
+    "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
       "Bolivia",

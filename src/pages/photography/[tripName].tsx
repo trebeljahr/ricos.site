@@ -31,7 +31,7 @@ export default function SinglePhotographyShowcasePage({
   });
 
   const tripMeta = trips.find(({ name }) => name === tripName) || {
-    src: "/assets/blog/photography.jpg",
+    src: "/assets/blog/photography.png",
     alt: "a high quality rendering of an old film camera",
   };
 

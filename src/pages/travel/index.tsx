@@ -52,7 +52,7 @@ export const travelingStoriesMetaRaw: Record<string, MetaInfo> = {
   },
   "portugal-2024": {
     cover: {
-      src: "/assets/blog/portugal-2024/starry-night.jpg",
+      src: "/assets/photography/portugal-2024/starry-night.jpg",
       alt: "starry night in portugal",
     },
     title: "Portugal - The Fisherman's Trail",
@@ -88,9 +88,15 @@ const TravelBlogs = ({ cardContent, seo }: Props) => {
   return (
     <Layout
       title={seo?.metaTitle || "Traveling Stories"}
-      description={seo?.metaDescription || "An overview page about the traveling stories I have to tell"}
+      description={
+        seo?.metaDescription ||
+        "An overview page about the traveling stories I have to tell"
+      }
       image={seo?.ogImage || "/assets/blog/traveling-van.png"}
-      imageAlt={seo?.ogImageAlt || "a traveling van sitting in the middle of nowhere in the forest"}
+      imageAlt={
+        seo?.ogImageAlt ||
+        "a traveling van sitting in the middle of nowhere in the forest"
+      }
       url="travel"
       keywords={seo?.keywords || ["travel", "blog", "adventures", "stories"]}
     >
@@ -132,7 +138,8 @@ export default TravelBlogs;
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
-  const { getImgWidthAndHeightDuringBuild } = await import("src/lib/getImgWidthAndHeightDuringBuild");
+  const { getImgWidthAndHeightDuringBuild } =
+    await import("src/lib/getImgWidthAndHeightDuringBuild");
   const { getTravelingStoryNames } = await import("src/lib/travelData");
   const { byOnlyPublished } = await import("src/lib/utils/filters");
 
@@ -156,10 +163,10 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
   const entries = await Promise.all(
     Object.entries(travelingStoriesMetaRaw).map(async ([key, val]) => {
       const { width, height } = await getImgWidthAndHeightDuringBuild(
-        val.cover.src
+        val.cover.src,
       );
       return [key, { ...val, cover: { ...val.cover, width, height } }] as const;
-    })
+    }),
   );
   for (const [key, val] of entries) {
     travelingStoriesMeta[key] = val;
@@ -172,7 +179,7 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
       };
 
       const currentBlogs = travelingBlogsMeta.filter(
-        (blog: any) => blog.parentFolder === story
+        (blog: any) => blog.parentFolder === story,
       );
       const { date, readingTime, amountOfStories } = currentBlogs.reduce(
         (agg: any, current: any) => {
@@ -183,7 +190,7 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
             amountOfStories: agg.amountOfStories + 1,
           };
         },
-        { date: new Date(0), readingTime: 0, amountOfStories: 0 }
+        { date: new Date(0), readingTime: 0, amountOfStories: 0 },
       );
 
       return {

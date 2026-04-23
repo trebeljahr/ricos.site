@@ -25,7 +25,7 @@ export default function Podcastnotes({ podcastnotes, seo }: Props) {
     <Layout
       title={seo?.metaTitle || "Podcastnotes - notes on the things I've listened to"}
       description={seo?.metaDescription || "An overview of podcast episodes I've listened to, with notes and key takeaways"}
-      image={seo?.ogImage || "/assets/blog/podcastnotes.jpg"}
+      image={seo?.ogImage || "/assets/blog/podcastnotes.png"}
       imageAlt={seo?.ogImageAlt || "a collection of hand written notes next to a podcast microphone"}
       keywords={seo?.keywords || ["podcastnotes", "podcasts", "notes", "learnings"]}
       url={url}

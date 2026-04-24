@@ -1,6 +1,6 @@
 import { Grid3D } from "./Grid3D";
 import { PriorityQueue } from "./PriorityQueue";
-import { Mathf, Vector3Int } from "./Types";
+import { mathf, Vector3Int } from "./Types";
 
 export class GraphNode3D {
   position: Vector3Int;
@@ -119,8 +119,8 @@ class DungeonPathfinder3D {
 
         if (pathCost.isStairs) {
           const delta = offset;
-          const xDir = Mathf.clamp(delta.x, -1, 1);
-          const zDir = Mathf.clamp(delta.z, -1, 1);
+          const xDir = mathf.clamp(delta.x, -1, 1);
+          const zDir = mathf.clamp(delta.z, -1, 1);
           const verticalOffset = new Vector3Int(0, delta.y, 0);
           const horizontalOffset = new Vector3Int(xDir, 0, zDir);
 
@@ -161,8 +161,8 @@ class DungeonPathfinder3D {
 
           if (pathCost.isStairs) {
             const delta = offset;
-            const xDir = Mathf.clamp(delta.x, -1, 1);
-            const zDir = Mathf.clamp(delta.z, -1, 1);
+            const xDir = mathf.clamp(delta.x, -1, 1);
+            const zDir = mathf.clamp(delta.z, -1, 1);
             const verticalOffset = new Vector3Int(0, delta.y, 0);
             const horizontalOffset = new Vector3Int(xDir, 0, zDir);
 

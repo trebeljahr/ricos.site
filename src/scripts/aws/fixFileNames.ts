@@ -12,7 +12,7 @@ const bucketName = "images.trebeljahr.com";
 async function fixFileNames() {
   try {
     let isTruncated = true;
-    let nextContinuationToken;
+    let nextContinuationToken: string | undefined;
 
     while (isTruncated) {
       const objects: ListObjectsV2CommandOutput = await s3.send(

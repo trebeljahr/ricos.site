@@ -14,7 +14,7 @@
  *   npm run drift:fix -- --yes
  */
 import "dotenv/config";
-import { statSync } from "node:fs";
+import { type Dirent, statSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { mkdir, rm } from "node:fs/promises";
 import { dirname, extname, join } from "node:path";
@@ -277,7 +277,7 @@ async function handleContentDupes(
   let filesTouched = 0;
   async function* walk(dir: string): AsyncGenerator<string> {
     const { readdir } = await import("node:fs/promises");
-    let entries;
+    let entries: Dirent[];
     try {
       entries = await readdir(dir, { withFileTypes: true });
     } catch {

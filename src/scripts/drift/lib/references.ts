@@ -1,3 +1,4 @@
+import type { Dirent } from "node:fs";
 import { readFile, readdir, stat } from "node:fs/promises";
 import { extname, join } from "node:path";
 import { stripImageExt } from "./hashing";
@@ -18,7 +19,7 @@ export const DYNAMIC_PREFIXES = ["assets/photography/", "assets/midjourney-galle
 const REF_RE = /(\/?)(assets\/[^)"'<>\s]+?)(\/\d+\.webp|\.(?:jpg|jpeg|png|webp|gif|avif))/gi;
 
 async function* walk(dir: string): AsyncGenerator<string> {
-  let entries;
+  let entries: Dirent[];
   try {
     entries = await readdir(dir, { withFileTypes: true });
   } catch {

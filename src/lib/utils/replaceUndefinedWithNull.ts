@@ -3,7 +3,7 @@ export function replaceUndefinedWithNull(obj: any): any {
   if (obj === null || typeof obj !== "object") return obj;
 
   for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
+    if (Object.hasOwn(obj, key)) {
       obj[key] = replaceUndefinedWithNull(obj[key]);
     }
   }

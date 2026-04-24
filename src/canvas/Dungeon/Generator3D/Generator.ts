@@ -3,8 +3,8 @@ import { Delaunay3D } from "./Delauney3D";
 import { DungeonPathfinder3D, type GraphNode3D } from "./DungeonPathFinder3D";
 import { type Edge, type Vertex, VertexWithData } from "./GraphStructures";
 import { Grid3D } from "./Grid3D";
-import { PrimMST } from "./MinimumSpanningTree";
-import { CellType3D, Mathf, Room3D, Vector3Int } from "./Types";
+import { addRandomConnections, minimumSpanningTree } from "./MinimumSpanningTree";
+import { CellType3D, mathf, Room3D, Vector3Int } from "./Types";
 
 type StairCase = {
   cells: [Vector3Int, Vector3Int, Vector3Int, Vector3Int];
@@ -61,9 +61,9 @@ export class DungeonGenerator3D {
 
     const delaunay = Delaunay3D.triangulate(vertices);
 
-    const mstEdges = PrimMST.minimumSpanningTree(delaunay.edges, vertices[0]);
+    const mstEdges = minimumSpanningTree(delaunay.edges, vertices[0]);
 
-    const finalEdges = PrimMST.addRandomConnections(delaunay.edges, mstEdges, 0.125, this.random);
+    const finalEdges = addRandomConnections(delaunay.edges, mstEdges, 0.125, this.random);
 
     this.pathfindHallways(finalEdges);
 
@@ -198,8 +198,8 @@ export class DungeonGenerator3D {
 
           result.cost = 100 + Vector3Int.distance(b.position, endPos);
 
-          const xDir = Mathf.clamp(delta.x, -1, 1);
-          const zDir = Mathf.clamp(delta.z, -1, 1);
+          const xDir = mathf.clamp(delta.x, -1, 1);
+          const zDir = mathf.clamp(delta.z, -1, 1);
           const verticalOffset = new Vector3Int(0, delta.y, 0);
           const horizontalOffset = new Vector3Int(xDir, 0, zDir);
 
@@ -244,8 +244,8 @@ export class DungeonGenerator3D {
             const delta = current.subtract(prev);
 
             if (delta.y !== 0) {
-              const xDir = Mathf.clamp(delta.x, -1, 1);
-              const zDir = Mathf.clamp(delta.z, -1, 1);
+              const xDir = mathf.clamp(delta.x, -1, 1);
+              const zDir = mathf.clamp(delta.z, -1, 1);
               const verticalOffset = new Vector3Int(0, delta.y, 0);
               const horizontalOffset = new Vector3Int(xDir, 0, zDir);
 

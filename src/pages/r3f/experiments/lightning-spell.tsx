@@ -34,7 +34,7 @@ export const SingleLightningStrikeHittingMesh = ({
 
   const intersects = raycaster.intersectObject(targetMesh, true);
 
-  let destPoint;
+  let destPoint: Vector3;
   if (intersects.length > 0) {
     destPoint = intersects[0].point;
   } else {

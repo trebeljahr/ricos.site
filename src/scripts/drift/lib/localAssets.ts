@@ -1,3 +1,4 @@
+import type { Dirent } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { extname, join } from "node:path";
 import { md5File } from "./hashing";
@@ -14,7 +15,7 @@ export interface LocalFile {
 }
 
 async function* walkImages(dir: string): AsyncGenerator<string> {
-  let entries;
+  let entries: Dirent[];
   try {
     entries = await readdir(dir, { withFileTypes: true });
   } catch {

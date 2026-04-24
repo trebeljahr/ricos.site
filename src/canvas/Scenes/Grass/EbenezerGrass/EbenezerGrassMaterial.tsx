@@ -47,7 +47,7 @@ export class GrassMaterial {
   private mergeUniforms(newUniforms?: GrassUniformsInterface) {
     if (!newUniforms) return;
     for (const [key, value] of Object.entries(newUniforms)) {
-      if (value && this.uniforms.hasOwnProperty(key)) {
+      if (value && Object.hasOwn(this.uniforms, key)) {
         this.uniforms[key].value = value;
       }
     }

@@ -106,6 +106,7 @@ export const JsonLd = ({
     <Head>
       <script
         type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: SEO JSON-LD, no user input
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
     </Head>
@@ -133,6 +134,7 @@ export const BreadcrumbJsonLd = ({ items }: { items: BreadcrumbItem[] }) => {
     <Head>
       <script
         type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: SEO JSON-LD, no user input
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
     </Head>
@@ -158,6 +160,7 @@ export const WebSiteJsonLd = () => {
     <Head>
       <script
         type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: SEO JSON-LD, no user input
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
     </Head>

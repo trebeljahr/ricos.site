@@ -169,7 +169,7 @@ export const getDataFromS3 = async ({ prefix = "" }: OptionsForS3 = {}) => {
   });
 
   let isTruncated = true;
-  let continuationToken;
+  let continuationToken: string | undefined;
   const output = [];
 
   while (isTruncated) {

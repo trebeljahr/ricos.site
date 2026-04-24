@@ -196,20 +196,17 @@ export class BoundsInt3D {
   }
 }
 
-export class Mathf {
-  static clamp(value: number, min: number, max: number): number {
+export const mathf = {
+  clamp(value: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, value));
-  }
-
-  static max(...values: number[]): number {
+  },
+  max(...values: number[]): number {
     return Math.max(...values);
-  }
-
-  static min(...values: number[]): number {
+  },
+  min(...values: number[]): number {
     return Math.min(...values);
-  }
-
-  static abs(value: number): number {
+  },
+  abs(value: number): number {
     return Math.abs(value);
-  }
-}
+  },
+};

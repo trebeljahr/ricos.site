@@ -6,6 +6,7 @@ import { SimpleGallery } from "./Galleries";
 import { CodeWithCopyButton } from "./CodeCopyButton";
 import clsx from "clsx";
 import { CalloutBody, CalloutRoot, CalloutTitle } from "./Callouts";
+import { resolveAlt } from "src/lib/imageAlt";
 
 export const ImageRenderer = ({
   src,
@@ -13,7 +14,11 @@ export const ImageRenderer = ({
 }: ImgHTMLAttributes<HTMLImageElement>) => {
   if (!src) return null;
 
-  const realAlt = alt ? alt?.replace(/ *\/[^)]*\/ */g, "") : src;
+  // Strip embedded `/width: X /height: Y /` metadata but keep the rest as
+  // an explicit alt if the author wrote one. Fall back to sidecar then
+  // filename if they didn't.
+  const strippedAlt = alt ? alt.replace(/ *\/[^)]*\/ */g, "").trim() : "";
+  const realAlt = resolveAlt(src, strippedAlt);
 
   const width = alt?.match(/\/width: (.*?)\//)?.pop() || "1";
   const height = alt?.match(/\/height: (.*?)\//)?.pop() || "1";
@@ -32,7 +37,7 @@ export const ImageRenderer = ({
           width={parseFloat(width)}
           height={parseFloat(height)}
           sizes="(max-width: 768px) calc(100vw-24px), 65ch"
-          className="w-full h-full"
+          style={{ width: "100%", height: "auto" }}
         />
       </span>
       {hasCaption ? (

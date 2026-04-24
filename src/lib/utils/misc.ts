@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid";
 import { alea } from "seedrandom";
 import { HasDate, ImageProps } from "src/@types";
 
@@ -30,10 +29,14 @@ export function makeUneven(value: number): number {
   return value % 2 === 0 ? value + 1 : value;
 }
 
+// Stable per-image DOM id derived from src. nanoid() regenerated a new id
+// on every render, which invalidated the lightbox's DOM lookups and made
+// state from a previous page's gallery point at wrong elements.
 export const addIdAndIndex = (image: ImageProps, index: number) => {
+  const base = (image.src ?? "").replace(/[^a-zA-Z0-9_-]/g, "_");
   return {
     ...image,
-    id: nanoid(),
+    id: `img-${base}-${index}`,
     index,
   };
 };

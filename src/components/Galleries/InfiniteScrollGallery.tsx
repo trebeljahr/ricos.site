@@ -21,6 +21,15 @@ function groupImages<T extends ImageProps>(displayedImages: T[]): T[][] {
 const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
   const photos = useMemo(() => images.map(addIdAndIndex), [images]);
 
+  // id → global index lookup. Using id (stable per src) instead of arithmetic
+  // on group-local react-photo-album indices — the old `index + i*groupSize`
+  // could desync when displayedPhotos grew mid-render.
+  const idToGlobalIndex = useMemo(() => {
+    const m = new Map<string, number>();
+    photos.forEach((p, i) => m.set(p.id, i));
+    return m;
+  }, [photos]);
+
   const props = useCustomLightbox({
     photos,
   });
@@ -30,6 +39,13 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
   const [displayedPhotos, setDisplayPhotos] = useState(
     photos.slice(0, groupSize)
   );
+
+  // If the images prop changes (navigating to a different trip), reset the
+  // displayedPhotos window so the new gallery doesn't inherit the previous
+  // gallery's scrolled-to-bottom state.
+  useEffect(() => {
+    setDisplayPhotos(photos.slice(0, groupSize));
+  }, [photos]);
 
   const loadingRef = useRef(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -81,9 +97,10 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
               photos={group}
               targetRowHeight={400}
               onClick={({ photo }: any) => {
+                const globalIndex = idToGlobalIndex.get(photo.id) ?? 0;
                 openModal({
                   ...photo,
-                  index: (photo as any).index + i * groupSize,
+                  index: globalIndex,
                 });
               }}
               render={{ image: CustomImageRenderer as any }}

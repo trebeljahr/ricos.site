@@ -8,6 +8,15 @@ export const toLinks = (url: string) => (
   </Link>
 );
 
+// Preview PNGs live flat under /assets/pages/ for most categories, but
+// controllers + dungeon scenes were organized under /assets/pages/r3f/.
+// Pick the folder based on the route so nav previews don't 404.
+const NESTED_PREFIXES = ["/r3f/controllers/", "/r3f/dungeon/"];
+const previewSrc = (name: string, url: string) =>
+  NESTED_PREFIXES.some((p) => url.startsWith(p))
+    ? `/assets/pages/r3f/${name}.png`
+    : `/assets/pages/${name}.png`;
+
 export const toLinksFromNameUrlTuples = ({
   url,
   name,
@@ -18,7 +27,7 @@ export const toLinksFromNameUrlTuples = ({
   <Link key={url} href={url}>
     <div className="mb-5 cursor-pointer duration-200 hover:transform hover:scale-105">
       <ImageWithLoader
-        src={`/assets/pages/${name}.png`}
+        src={previewSrc(name, url)}
         alt={name}
         width={200}
         height={100}

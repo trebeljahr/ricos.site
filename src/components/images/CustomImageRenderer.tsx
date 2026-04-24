@@ -1,8 +1,9 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import { RenderImageProps, RenderImageContext } from "react-photo-album";
 import { ImageProps } from "src/@types";
+import { resolveAlt } from "src/lib/imageAlt";
 
-type PhotoWithId = ImageProps & { id: string; index: number };
+type PhotoWithId = ImageProps & { id: string; index: number; alt?: string };
 
 export function CustomImageRenderer(
   props: RenderImageProps,
@@ -15,10 +16,7 @@ export function CustomImageRenderer(
       onClick={props.onClick}
       id={photo.id}
       src={photo.src}
-      alt={
-        photo.src.split("/").pop()?.replace("-", " ") ||
-        "sorry but this photo doesn't have an alt text"
-      }
+      alt={resolveAlt(photo.src, photo.alt)}
       width={renderedWidth}
       height={renderedHeight}
       sizes={props.sizes}

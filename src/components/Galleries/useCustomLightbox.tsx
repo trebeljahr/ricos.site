@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ClickHandler, Photo } from "react-photo-album";
 import { ImageProps } from "src/@types";
 import Lightbox from "yet-another-react-lightbox";
@@ -62,6 +62,19 @@ export const useCustomLightbox = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(Infinity);
+
+  // When the photos array identity changes (e.g. navigating to a different
+  // gallery page), reset the lightbox. Otherwise the previous page's open
+  // state + index leak into the new gallery.
+  const firstIdRef = useRef<string | null>(photos[0]?.id ?? null);
+  useEffect(() => {
+    const first = photos[0]?.id ?? null;
+    if (firstIdRef.current !== first) {
+      firstIdRef.current = first;
+      setIsModalOpen(false);
+      setCurrentImageIndex(Infinity);
+    }
+  }, [photos]);
 
   const handleClose = async () => {
     setIsModalOpen(false);

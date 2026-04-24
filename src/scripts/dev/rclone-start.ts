@@ -60,7 +60,10 @@ function ensureLayout() {
   if (!existsSync(resolvedTarget)) {
     console.error(
       `error: ${resolvedTarget} doesn't exist.\n` +
-        "Create src/content/Notes/assets (or initialize the Notes submodule) first."
+        "Initialize the Notes submodule first:\n" +
+        "  git submodule update --init --recursive\n" +
+        "Or run in remote-image mode (no rclone, no disk):\n" +
+        "  npm run dev:remote"
     );
     process.exit(1);
   }

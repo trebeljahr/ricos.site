@@ -7,8 +7,8 @@ import path from "path";
 import rehypePresetMinify from "rehype-preset-minify";
 import rehypeRewrite from "rehype-rewrite";
 import rehypeStringify from "rehype-stringify";
-import rehypeUrls from "rehype-urls";
 import remarkParse from "remark-parse";
+import { visit } from "unist-util-visit";
 import remarkRehype from "remark-rehype";
 import { newsletterListMail, sendEmail } from "src/lib/mailgun.js";
 import { nextImageUrl } from "src/lib/mapToImageProps.js";
@@ -42,21 +42,35 @@ async function main() {
     data: { cover, title, excerpt, excludeExcerpt },
   } = matter(mdFileRaw);
 
-  function addHost(url: { href: string; path: string }) {
+  function addHost(href: string): string | undefined {
     if (
-      url.href.startsWith("/") &&
-      (url.href.endsWith(".webp") ||
-        url.href.endsWith(".jpg") ||
-        url.href.endsWith(".png") ||
-        url.href.endsWith(".jpeg") ||
-        url.href.endsWith(".gif") ||
-        url.href.endsWith(".svg"))
+      href.startsWith("/") &&
+      (href.endsWith(".webp") ||
+        href.endsWith(".jpg") ||
+        href.endsWith(".png") ||
+        href.endsWith(".jpeg") ||
+        href.endsWith(".gif") ||
+        href.endsWith(".svg"))
     ) {
-      const smallImageUrl = nextImageUrl(url.href, 1080);
-      return smallImageUrl;
-    } else if (url.href.startsWith("/")) {
-      return HOST + url.path;
+      return nextImageUrl(href, 1080);
+    } else if (href.startsWith("/")) {
+      return HOST + href;
     }
+    return undefined;
+  }
+
+  function rewriteUrls() {
+    return (tree: any) => {
+      visit(tree, "element", (node: any) => {
+        for (const prop of ["href", "src"]) {
+          const value = node?.properties?.[prop];
+          if (typeof value === "string") {
+            const rewritten = addHost(value);
+            if (rewritten !== undefined) node.properties[prop] = rewritten;
+          }
+        }
+      });
+    };
   }
 
   function rewrite(node: any) {
@@ -100,7 +114,7 @@ async function main() {
   const file = await unified()
     .use(remarkParse as any)
     .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeUrls, addHost)
+    .use(rewriteUrls)
     .use(rehypeRewrite as any, { rewrite })
     .use(rehypePresetMinify as any)
     .use(rehypeStringify as any)

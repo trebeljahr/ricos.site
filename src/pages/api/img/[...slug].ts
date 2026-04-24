@@ -40,6 +40,13 @@ const ENDPOINT =
   process.env.S3_ENDPOINT ??
   `http://localhost:${process.env.S3_API_PORT ?? "9200"}`;
 
+// Hybrid fallback: if the source image isn't on disk locally, fall back to
+// the deployed CloudFront URL. Lets dev keep working when only some images
+// are synced locally (common when switching branches / sparse Notes).
+const CLOUDFRONT_ID = process.env.NEXT_PUBLIC_CLOUDFRONT_ID;
+const ALLOW_CLOUDFRONT_FALLBACK =
+  process.env.IMAGE_FALLBACK_CLOUDFRONT !== "false" && Boolean(CLOUDFRONT_ID);
+
 // One shared client per process. When S3_ENDPOINT is set we're in local-dev
 // mode — use MinIO credentials (from S3_ACCESS_KEY_ID / S3_SECRET_ACCESS_KEY,
 // defaulting to minioadmin/minioadmin). DO NOT fall through to AWS_* in local
@@ -163,6 +170,26 @@ export default async function handler(
     // 2. Cache miss: read source + transform
     const source = await readSource(logicalKey);
     if (!source) {
+      // Hybrid fallback: proxy the deployed CloudFront variant. Logs once
+      // per miss so you know which images still need to be uploaded.
+      if (ALLOW_CLOUDFRONT_FALLBACK) {
+        const cfUrl = `https://${CLOUDFRONT_ID}.cloudfront.net/${variantKey}`;
+        const upstream = await fetch(cfUrl);
+        if (upstream.ok) {
+          const buf = Buffer.from(await upstream.arrayBuffer());
+          res.setHeader("Content-Type", "image/webp");
+          res.setHeader("X-Image-Cache", "CLOUDFRONT-FALLBACK");
+          res.setHeader("Cache-Control", "public, max-age=3600");
+          console.warn(
+            `[/api/img] local miss, served from CloudFront: ${logicalKey}`,
+          );
+          res.status(200).send(buf);
+          return;
+        }
+        console.warn(
+          `[/api/img] local miss AND CloudFront ${upstream.status}: ${logicalKey}`,
+        );
+      }
       res.status(404).send(`source not found for ${logicalKey}`);
       return;
     }

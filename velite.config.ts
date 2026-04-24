@@ -23,7 +23,10 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkToc from "remark-toc";
 import { MDXResult } from "src/@types";
-import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
+import {
+  getImgWidthAndHeightDuringBuild,
+  getImgMetaDuringBuild,
+} from "src/lib/getImgWidthAndHeightDuringBuild";
 import { Node, Pluggable } from "unified/lib";
 import { SKIP, visit } from "unist-util-visit";
 import { defineConfig, s, ZodMeta } from "velite";
@@ -238,20 +241,26 @@ const remarkGroupImages: Pluggable = () => {
               await Promise.all(
                 groupedImages.map(async ({ node }) => {
                   const src = (node as any).url as string;
+                  const explicitAlt = ((node as any).alt as string) || "";
                   try {
-                    const { width, height } =
-                      await getImgWidthAndHeightDuringBuild(src);
-
-                    return { width, height, src };
+                    const { width, height, alt } =
+                      await getImgMetaDuringBuild(src);
+                    // Explicit markdown alt wins over the sidecar alt.
+                    return {
+                      width,
+                      height,
+                      src,
+                      alt: explicitAlt.trim() || alt,
+                    };
                   } catch (err) {
                     console.error(
-                      "Error getting image dimensions for src:",
+                      "Error getting image metadata for src:",
                       src,
                       err
                     );
 
                     return {
-                      alt: "",
+                      alt: explicitAlt,
                       title: "",
                       key: src,
                       name: src,

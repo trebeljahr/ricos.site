@@ -91,6 +91,7 @@
     "motion": "^12.38.0",
     "nanoid": "^5.1.7",
     "next": "^16.2.1",
+    "next-plausible": "^4.0.0",
     "next-themes": "^0.4.6",
     "poisson-disk-sampling": "^2.3.1",
     "postprocessing": "^6.39.0",
@@ -119,6 +120,7 @@
   },
   "devDependencies": {
     "@aws-sdk/client-lambda": "^3.1019.0",
+    "@biomejs/biome": "^1.9.4",
     "@r4ai/remark-callout": "^0.6.2",
     "@rehype-pretty/transformers": "^0.13.2",
     "@shikijs/transformers": "^4.0.2",
@@ -159,8 +161,10 @@
     "glslify-loader": "^2.0.0",
     "gray-matter": "4.0.3",
     "htmlparser2": "^12.0.0",
+    "husky": "^9.1.7",
     "inquirer": "^13.3.2",
     "jsdom": "^29.0.1",
+    "lint-staged": "^16.4.0",
     "mime": "^4.1.0",
     "mongodb": "^7.1.1",
     "next-sitemap": "^4.2.3",
@@ -205,10 +209,7 @@
     "velite": "^0.3.1",
     "vercel-submodules": "^1.1.0",
     "wait-on": "^9.0.5",
-    "yargs": "^18.0.0",
-    "@biomejs/biome": "^1.9.4",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.4.0"
+    "yargs": "^18.0.0"
   },
   "overrides": {
     "@opentelemetry/api": "1.4.1",

@@ -1,4 +1,5 @@
 import "katex/dist/katex.min.css";
+import PlausibleProvider from "next-plausible";
 import { ThemeProvider } from "next-themes";
 import type { AppProps } from "next/app";
 import Head from "next/head";
@@ -33,9 +34,21 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         />
       </Head>
 
-      <ThemeProvider attribute="class" enableSystem={false} defaultTheme="dark">
-        <Component {...pageProps} className={clsx(pageProps.className, inter.className)} />
-      </ThemeProvider>
+      <PlausibleProvider
+        domain="ricos.site"
+        customDomain="https://plausible.trebeljahr.com"
+        selfHosted
+        trackFileDownloads
+        trackOutboundLinks
+        hash
+        taggedEvents
+        revenue
+        enabled={process.env.NODE_ENV === "production"}
+      >
+        <ThemeProvider attribute="class" enableSystem={false} defaultTheme="dark">
+          <Component {...pageProps} className={clsx(pageProps.className, inter.className)} />
+        </ThemeProvider>
+      </PlausibleProvider>
     </>
   );
 }

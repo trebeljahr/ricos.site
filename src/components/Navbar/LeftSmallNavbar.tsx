@@ -8,7 +8,7 @@ import { RicosSiteBanner } from "./TailwindNavbar";
 
 const navigation = ["posts", "newsletters", "photography"];
 const resources = ["quotes", "booknotes", "needlestack", "podcastnotes", "r3f"];
-const about = ["now", "travel", "principles", "1-month-projects", "support", "imprint"];
+const about = ["now", "travel", "principles", "1-month-projects", "support", "imprint", "privacy"];
 
 export const LeftSmallNavbar = () => {
   const [open, setOpen] = useState(false);

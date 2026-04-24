@@ -3,6 +3,7 @@ import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
+import Link from "next/link";
 
 export default function ImprintPage() {
   return (
@@ -25,7 +26,11 @@ export default function ImprintPage() {
 
           <p>
             Information pursuant to § 5 DDG (German Digital Services Act) and § 18 (2) MStV
-            (Interstate Media Treaty).
+            (Interstate Media Treaty). See also the{" "}
+            <Link href="/privacy" className="text-myBlue hover:underline">
+              Privacy Policy
+            </Link>
+            .
           </p>
 
           <h2>Service Provider</h2>

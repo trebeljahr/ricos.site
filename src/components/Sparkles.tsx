@@ -162,6 +162,7 @@ const Sparkle = ({
   return (
     <span className="absolute block animate-comeInOut" style={style}>
       <svg
+        aria-hidden="true"
         className="block animate-spin"
         width={size}
         height={size}

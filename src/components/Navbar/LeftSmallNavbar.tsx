@@ -19,6 +19,7 @@ export const LeftSmallNavbar = () => {
     <>
       <div className="prose-a:no-underline prose-a:hover:text-inherit prose-a:font-normal font-normal prose-a:text-inherit">
         <button
+          type="button"
           className={`fixed top-2 z-50 bg-white dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center rounded-full p-3 transition-[left] duration-300 ${
             open ? "left-[175px]" : "left-2"
           }`}

@@ -58,7 +58,7 @@ export const SATWithResponse = ({
     <div>
       <SimpleReactCanvasComponent setCnv={setCnv} />
       {responseToggle && (
-        <button onClick={toggleResponse} aria-label="Toggle Collision Response">
+        <button type="button" onClick={toggleResponse} aria-label="Toggle Collision Response">
           Response: {response ? "ON" : "OFF"}
         </button>
       )}

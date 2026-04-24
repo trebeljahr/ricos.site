@@ -69,7 +69,7 @@ export const TextureUploadUI = () => {
 
   return (
     <div className="bg-inherit overflow-y-auto w-fit">
-      <button onClick={handleToggleMenu} className="flex place-items-center p-2">
+      <button type="button" onClick={handleToggleMenu} className="flex place-items-center p-2">
         <FaImage />
       </button>
       {menuOpen && (

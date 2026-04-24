@@ -24,7 +24,7 @@ export function TextureUploadMenu({
     <div className="absolute top-2 right-2 bg-white bg-opacity-90 p-4 rounded shadow-lg max-h-[90vh] overflow-y-auto">
       <div className="flex items-center justify-between mb-4">
         <span className="font-bold">Uploaded Textures</span>
-        <button onClick={handleToggleMenu} className="focus:outline-none">
+        <button type="button" onClick={handleToggleMenu} className="focus:outline-none">
           {menuOpen ? <FaChevronUp /> : <FaChevronDown />}
         </button>
       </div>
@@ -92,6 +92,7 @@ export function PreviewUrl({ url, onDelete, onUpdate, index }: PreviewUrlProps) 
           className="hidden"
         />
         <button
+          type="button"
           onClick={() => onDelete(index)}
           className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
           title="Delete texture"

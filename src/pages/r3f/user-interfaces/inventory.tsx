@@ -131,6 +131,7 @@ const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
                     <h3 className="text-lg font-medium mb-2">Random Items</h3>
                     <p className="text-sm text-gray-400 mb-3">Search the area for useful items</p>
                     <button
+                      type="button"
                       onClick={findRandomItem}
                       className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-colors"
                     >
@@ -142,6 +143,7 @@ const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
                     <h3 className="text-lg font-medium mb-2">Mana Potions</h3>
                     <p className="text-sm text-gray-400 mb-3">Pickup mana potions</p>
                     <button
+                      type="button"
                       onClick={() => addManaPotion(50)}
                       className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors"
                     >

@@ -74,7 +74,7 @@ export const EarClipping = () => {
   return (
     <div>
       <SimpleReactCanvasComponent setCnv={setCnv} id="ear-clipping" />
-      <button onClick={toggleVisualization} aria-label="Toggle Visualization">
+      <button type="button" onClick={toggleVisualization} aria-label="Toggle Visualization">
         Visualizing: {visualizing ? "ON" : "OFF"}
       </button>
     </div>

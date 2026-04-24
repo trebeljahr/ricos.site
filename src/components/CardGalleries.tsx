@@ -161,6 +161,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
         ))}
       </div>
       <button
+        type="button"
         className={`absolute left-0 top-full xl:left-[-70px] xl:top-1/2 z-20 h-fit xl:mx-2 rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
           showButtons.left ? "opacity-1" : "opacity-0"
         }`}
@@ -171,6 +172,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
         <FaChevronLeft className="h-4 w-4" />
       </button>
       <button
+        type="button"
         className={`absolute right-6 top-full xl:right-[-50px] xl:top-1/2 z-20 h-fit xl:mx-2 rounded-full bg-gray-200 dark:bg-gray-900 p-1 ${
           showButtons.right ? "opacity-1" : "opacity-0"
         }`}

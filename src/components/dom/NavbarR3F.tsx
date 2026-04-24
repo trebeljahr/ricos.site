@@ -38,6 +38,7 @@ export const NavbarR3F = () => {
   return (
     <>
       <button
+        type="button"
         id="close-btn"
         className={`${buttonStyle} ${open && "translate-x-72"} text-leva-dark`}
         onClick={toggleOpen}

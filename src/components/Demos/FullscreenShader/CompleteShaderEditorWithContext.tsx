@@ -27,7 +27,7 @@ const ExpandButton = () => {
   };
 
   return (
-    <button onClick={toggleExpand} className="p-2">
+    <button type="button" onClick={toggleExpand} className="p-2">
       {expanded ? <FaCompressArrowsAlt /> : <FaExpandArrowsAlt />}
     </button>
   );

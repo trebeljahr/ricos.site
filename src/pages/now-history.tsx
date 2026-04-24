@@ -117,6 +117,7 @@ export default function NowHistory({ entries }: Props) {
               <div className="flex flex-wrap gap-2 mb-8">
                 {entries.map((entry, i) => (
                   <button
+                    type="button"
                     key={entry.date}
                     onClick={() => setSelectedIndex(i)}
                     className={`text-xs px-3 py-1 rounded-full transition-colors cursor-pointer ${
@@ -140,6 +141,7 @@ export default function NowHistory({ entries }: Props) {
                   </div>
                   {selected.diff && (
                     <button
+                      type="button"
                       onClick={() => setShowDiff(!showDiff)}
                       className={`text-xs px-3 py-1 rounded-full transition-colors cursor-pointer ${
                         showDiff

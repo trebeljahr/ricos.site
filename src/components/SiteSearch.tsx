@@ -126,6 +126,7 @@ export const SiteSearch = () => {
   return (
     <>
       <button
+        type="button"
         onClick={() => setOpen(true)}
         className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
         aria-label="Search the site"
@@ -159,6 +160,7 @@ export const SiteSearch = () => {
                 className="w-full px-3 py-4 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none"
               />
               <button
+                type="button"
                 onClick={() => setOpen(false)}
                 className="px-2 py-1 text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
               >
@@ -167,10 +169,13 @@ export const SiteSearch = () => {
             </div>
 
             {results.length > 0 && (
+              // biome-ignore lint/a11y/useFocusableInteractive: container with click handler, not interactive control
               <div className="max-h-80 overflow-y-auto py-2" role="listbox">
                 {results.map((item, i) => (
+                  // biome-ignore lint/a11y/useFocusableInteractive: container with click handler, not interactive control
                   <div key={item.link} role="option" aria-selected={i === selectedIndex}>
                     <button
+                      type="button"
                       onClick={() => navigate(item.link)}
                       onMouseEnter={() => setSelectedIndex(i)}
                       className={`w-full text-left px-4 py-3 flex flex-col gap-1 transition-colors ${

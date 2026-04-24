@@ -109,6 +109,7 @@ export const NewsletterForm = ({
             {!link && defaultLink}
 
             <button
+              type="button"
               className="mt-5 text-left text-sm text-gray-400 dark:text-gray-500 underline decoration-gray-300 dark:decoration-gray-600 hover:text-gray-600 dark:hover:text-gray-400 cursor-pointer transition-colors"
               onClick={() => setSuccess(null)}
               aria-label="Sign up with another email address"

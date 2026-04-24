@@ -68,6 +68,7 @@ export const CopyButton = ({ handleClick }: CopyButtonProps) => {
 
   return (
     <button
+      type="button"
       disabled={disabled}
       onClick={handleClickAndDisable}
       className="w-fit h-fit absolute bottom-2 right-2 z-10 flex place-items-center bg-inherit rounded-full"

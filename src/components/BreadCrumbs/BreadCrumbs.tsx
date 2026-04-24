@@ -29,6 +29,7 @@ export default function _Component({
             className="inline-flex items-center text-sm font-medium  hover:text-myBlue "
           >
             <svg
+              aria-hidden="true"
               className="w-3 h-3 mr-2.5"
               xmlns="http://www.w3.org/2000/svg"
               fill="currentColor"
@@ -46,6 +47,7 @@ export default function _Component({
             <div key={part}>
               <div className="flex items-center">
                 <svg
+                  aria-hidden="true"
                   className="w-3 h-3 mx-1"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"

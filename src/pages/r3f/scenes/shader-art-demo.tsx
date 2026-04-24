@@ -28,6 +28,7 @@ function ShareWithOthersButton() {
 
   return (
     <button
+      type="button"
       disabled={disabled}
       onClick={handleClickAndDisable}
       className={`w-fit h-fit absolute p-3 bottom-2 right-2 z-10 flex place-items-center bg-gray-900 rounded-full ${disabled ? "cursor-default" : "hover:bg-gray-700"}`}
@@ -52,6 +53,7 @@ const InfoButton = () => {
   return (
     <>
       <button
+        type="button"
         onClick={toggleInfo}
         className="w-fit h-fit absolute p-3 bottom-2 left-2 z-10 flex place-items-center bg-gray-900 hover:bg-gray-700  rounded-full"
       >
@@ -144,6 +146,7 @@ const InfoButton = () => {
               </p>
             </div>
             <button
+              type="button"
               className="absolute top-2 right-2 bg-gray-900 hover:bg-gray-700 p-2 rounded-full"
               onClick={toggleInfo}
             >

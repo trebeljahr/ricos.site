@@ -13,6 +13,7 @@ const defaultSize = { width: "1em", height: "1em" } as const;
 export function FaBug(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
       fill="currentColor"
@@ -27,6 +28,7 @@ export function FaBug(props: IconProps) {
 export function FaCheck(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
       fill="currentColor"
@@ -41,6 +43,7 @@ export function FaCheck(props: IconProps) {
 export function FaCheckCircle(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
       fill="currentColor"
@@ -55,6 +58,7 @@ export function FaCheckCircle(props: IconProps) {
 export function FaChevronDown(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 448 512"
       fill="currentColor"
@@ -69,6 +73,7 @@ export function FaChevronDown(props: IconProps) {
 export function FaChevronLeft(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 320 512"
       fill="currentColor"
@@ -83,6 +88,7 @@ export function FaChevronLeft(props: IconProps) {
 export function FaChevronRight(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 320 512"
       fill="currentColor"
@@ -97,6 +103,7 @@ export function FaChevronRight(props: IconProps) {
 export function FaChevronUp(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 448 512"
       fill="currentColor"
@@ -111,6 +118,7 @@ export function FaChevronUp(props: IconProps) {
 export function FaClipboard(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 384 512"
       fill="currentColor"
@@ -125,6 +133,7 @@ export function FaClipboard(props: IconProps) {
 export function FaClipboardList(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 384 512"
       fill="currentColor"
@@ -139,6 +148,7 @@ export function FaClipboardList(props: IconProps) {
 export function FaCode(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 640 512"
       fill="currentColor"
@@ -153,6 +163,7 @@ export function FaCode(props: IconProps) {
 export function FaCompressArrowsAlt(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
       fill="currentColor"
@@ -167,6 +178,7 @@ export function FaCompressArrowsAlt(props: IconProps) {
 export function FaEdit(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 576 512"
       fill="currentColor"
@@ -181,6 +193,7 @@ export function FaEdit(props: IconProps) {
 export function FaExclamationTriangle(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 576 512"
       fill="currentColor"
@@ -195,6 +208,7 @@ export function FaExclamationTriangle(props: IconProps) {
 export function FaExpandArrowsAlt(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 448 512"
       fill="currentColor"
@@ -209,6 +223,7 @@ export function FaExpandArrowsAlt(props: IconProps) {
 export function FaImage(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
       fill="currentColor"
@@ -223,6 +238,7 @@ export function FaImage(props: IconProps) {
 export function FaInfo(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 192 512"
       fill="currentColor"
@@ -237,6 +253,7 @@ export function FaInfo(props: IconProps) {
 export function FaInfoCircle(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
       fill="currentColor"
@@ -251,6 +268,7 @@ export function FaInfoCircle(props: IconProps) {
 export function FaLightbulb(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 352 512"
       fill="currentColor"
@@ -265,6 +283,7 @@ export function FaLightbulb(props: IconProps) {
 export function FaQuestion(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 384 512"
       fill="currentColor"
@@ -279,6 +298,7 @@ export function FaQuestion(props: IconProps) {
 export function FaQuoteLeft(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
       fill="currentColor"
@@ -293,6 +313,7 @@ export function FaQuoteLeft(props: IconProps) {
 export function FaShareAlt(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 448 512"
       fill="currentColor"
@@ -307,6 +328,7 @@ export function FaShareAlt(props: IconProps) {
 export function FaSkullCrossbones(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 448 512"
       fill="currentColor"
@@ -321,6 +343,7 @@ export function FaSkullCrossbones(props: IconProps) {
 export function FaTimesCircle(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
       fill="currentColor"
@@ -335,6 +358,7 @@ export function FaTimesCircle(props: IconProps) {
 export function FaTrash(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 448 512"
       fill="currentColor"
@@ -353,6 +377,7 @@ export function FaTrash(props: IconProps) {
 export function FaArrowRightLong(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
       fill="currentColor"
@@ -367,6 +392,7 @@ export function FaArrowRightLong(props: IconProps) {
 export function FaTemperatureFull(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 320 512"
       fill="currentColor"
@@ -394,7 +420,7 @@ const featherDefaults = {
 
 export function FiArrowLeft(props: IconProps) {
   return (
-    <svg {...featherDefaults} {...defaultSize} {...props}>
+    <svg aria-hidden="true" {...featherDefaults} {...defaultSize} {...props}>
       <line x1="19" y1="12" x2="5" y2="12" />
       <polyline points="12 19 5 12 12 5" />
     </svg>
@@ -403,7 +429,7 @@ export function FiArrowLeft(props: IconProps) {
 
 export function FiArrowRight(props: IconProps) {
   return (
-    <svg {...featherDefaults} {...defaultSize} {...props}>
+    <svg aria-hidden="true" {...featherDefaults} {...defaultSize} {...props}>
       <line x1="5" y1="12" x2="19" y2="12" />
       <polyline points="12 5 19 12 12 19" />
     </svg>
@@ -412,7 +438,7 @@ export function FiArrowRight(props: IconProps) {
 
 export function FiArrowUp(props: IconProps) {
   return (
-    <svg {...featherDefaults} {...defaultSize} {...props}>
+    <svg aria-hidden="true" {...featherDefaults} {...defaultSize} {...props}>
       <line x1="12" y1="19" x2="12" y2="5" />
       <polyline points="5 12 12 5 19 12" />
     </svg>
@@ -421,7 +447,7 @@ export function FiArrowUp(props: IconProps) {
 
 export function FiChevronDown(props: IconProps) {
   return (
-    <svg {...featherDefaults} {...defaultSize} {...props}>
+    <svg aria-hidden="true" {...featherDefaults} {...defaultSize} {...props}>
       <polyline points="6 9 12 15 18 9" />
     </svg>
   );
@@ -429,7 +455,7 @@ export function FiChevronDown(props: IconProps) {
 
 export function FiMenu(props: IconProps) {
   return (
-    <svg {...featherDefaults} {...defaultSize} {...props}>
+    <svg aria-hidden="true" {...featherDefaults} {...defaultSize} {...props}>
       <line x1="3" y1="12" x2="21" y2="12" />
       <line x1="3" y1="6" x2="21" y2="6" />
       <line x1="3" y1="18" x2="21" y2="18" />
@@ -439,7 +465,7 @@ export function FiMenu(props: IconProps) {
 
 export function FiSearch(props: IconProps) {
   return (
-    <svg {...featherDefaults} {...defaultSize} {...props}>
+    <svg aria-hidden="true" {...featherDefaults} {...defaultSize} {...props}>
       <circle cx="11" cy="11" r="8" />
       <line x1="21" y1="21" x2="16.65" y2="16.65" />
     </svg>
@@ -448,7 +474,7 @@ export function FiSearch(props: IconProps) {
 
 export function FiX(props: IconProps) {
   return (
-    <svg {...featherDefaults} {...defaultSize} {...props}>
+    <svg aria-hidden="true" {...featherDefaults} {...defaultSize} {...props}>
       <line x1="18" y1="6" x2="6" y2="18" />
       <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
@@ -462,6 +488,7 @@ export function FiX(props: IconProps) {
 export function IoMoon(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
       fill="currentColor"
@@ -476,6 +503,7 @@ export function IoMoon(props: IconProps) {
 export function IoSunny(props: IconProps) {
   return (
     <svg
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
       fill="currentColor"

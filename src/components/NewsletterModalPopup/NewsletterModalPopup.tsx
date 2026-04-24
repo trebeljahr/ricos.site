@@ -74,6 +74,7 @@ const NewsletterModalPopup = ({ howFarDown = 50 }: { howFarDown?: number }) => {
                   link={<></>}
                 />
                 <button
+                  type="button"
                   onClick={closeModalForGood}
                   className="fixed top-3 right-3 hover:bg-gray-200 dark:hover:bg-gray-700 p-1 rounded-full"
                   aria-label="Close newsletter popup"

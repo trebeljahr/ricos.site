@@ -66,6 +66,7 @@ const EmergencyInfoComponent: FC = () => {
               </li>
             </ul>
             <button
+              type="button"
               onClick={() => {
                 reset();
                 setPassword("");

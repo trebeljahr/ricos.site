@@ -195,8 +195,8 @@ export const Inventory: FC = () => {
 
           <div className="flex items-center">
             <div className="text-gray-300 text-sm">Weight: {getTotalWeight().toFixed(1)} / 100</div>
-            <button onClick={closeInventory} className="text-gray-400 hover:text-white">
-              <svg viewBox="0 0 24 24" className="w-6 h-6">
+            <button type="button" onClick={closeInventory} className="text-gray-400 hover:text-white">
+              <svg aria-hidden="true" viewBox="0 0 24 24" className="w-6 h-6">
                 <path
                   fill="currentColor"
                   d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
@@ -241,10 +241,11 @@ export const InventoryToggleButton: FC = () => {
 
   return (
     <button
+      type="button"
       onClick={openInventory}
       className="fixed bottom-4 right-4 bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition-colors"
     >
-      <svg viewBox="0 0 24 24" className="w-6 h-6">
+      <svg aria-hidden="true" viewBox="0 0 24 24" className="w-6 h-6">
         <path
           fill="currentColor"
           d="M19,4H5C3.89,4 3,4.9 3,6V18A2,2 0 0,0 5,20H19A2,2 0 0,0 21,18V6A2,2 0 0,0 19,4M19,18H5V8H19V18Z"

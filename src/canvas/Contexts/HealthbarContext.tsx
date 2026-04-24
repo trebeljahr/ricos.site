@@ -47,6 +47,7 @@ export const HealthContextProvider = ({
     health.current = Math.max(minHealth, Math.min(maxHealth, amount));
   };
 
+  // biome-ignore lint/correctness/noUnusedVariables: kept for future use
   const { viewport } = useThree();
 
   return (

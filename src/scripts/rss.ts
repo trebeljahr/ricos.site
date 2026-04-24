@@ -47,10 +47,12 @@ async function generateRssFeed() {
   const allContent = [
     ...posts.filter(byOnlyPublished),
     ...newsletters.filter(byOnlyPublished),
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     ...booknotes.filter((b: any) => byOnlyPublished(b) && b.summary && b.summary === true),
     ...travelblogs.filter(byOnlyPublished),
   ];
 
+  // biome-ignore lint/complexity/noForEach: callback uses early return / vendored script
   allContent
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .forEach((item) => {

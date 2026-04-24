@@ -89,6 +89,7 @@ export const getStaticProps = async ({ params }: Params): Promise<{ props: Props
 
   const travelblogs = loadVeliteData("travelblogs.json");
   const posts = extractAndSortMetadata(travelblogs)
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     .filter(({ parentFolder }: any) => !params.tripName || parentFolder === params.tripName)
     .reverse();
 

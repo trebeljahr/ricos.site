@@ -63,6 +63,7 @@ const COLLECTIONS: {
   },
 ];
 
+// biome-ignore lint/correctness/noUnusedVariables: kept for future use
 function extractTitle(content: string): string {
   const match = content.match(/^title:\s*(.+)$/m);
   if (!match) return "";

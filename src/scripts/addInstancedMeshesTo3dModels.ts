@@ -19,6 +19,7 @@ fs.readdir(folderPath, (err, files) => {
     console.error("Error reading folder:", err);
     return;
   }
+  // biome-ignore lint/complexity/noForEach: callback uses early return / vendored script
   files.forEach((file) => {
     // You may want to process only .tsx or .ts files
     if (!file.endsWith(".tsx") && !file.endsWith(".ts")) return;

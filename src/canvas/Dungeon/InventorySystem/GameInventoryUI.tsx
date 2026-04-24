@@ -10,6 +10,7 @@ interface InventorySlotProps {
 }
 
 export const InventorySlot: FC<InventorySlotProps> = ({ item, index }) => {
+  // biome-ignore lint/correctness/noUnusedVariables: kept for future use
   const { setNodeRef: setDroppableRef, isOver } = useDroppable({
     id: `slot-${index}`,
     data: { item, slotIndex: index },

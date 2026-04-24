@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import type { PositionalAudio } from "three";
 
 export const SpikeTrap = ({ interval = 2000 }: { interval?: number }) => {
+  // biome-ignore lint/correctness/noUnusedVariables: kept for future use
   const { health, damage } = useHealthContext();
   const [extended, setExtended] = useState(false);
   const [inHitBox, setInHitBox] = useState(false);

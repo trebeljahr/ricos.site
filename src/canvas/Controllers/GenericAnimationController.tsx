@@ -127,6 +127,7 @@ export const useGenericAnimationController = ({
     >;
 
     const listener: MixerListener = (e) => {
+      // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
       const name = (e.action as any)._clip.name;
 
       if (previousMixedIn.current === name) {

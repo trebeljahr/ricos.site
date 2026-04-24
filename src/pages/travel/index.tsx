@@ -140,9 +140,11 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
   const { getTravelingStoryNames } = await import("src/lib/travelData");
   const { byOnlyPublished } = await import("src/lib/utils/filters");
 
+  // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
   const travelblogs: any[] = loadVeliteData("travelblogs.json");
   const travelingBlogsMeta = travelblogs
     .filter(byOnlyPublished)
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     .map(({ title, excerpt, date, cover, metadata, parentFolder }: any) => ({
       title,
       cover,
@@ -170,8 +172,10 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
         title: story,
       };
 
+      // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
       const currentBlogs = travelingBlogsMeta.filter((blog: any) => blog.parentFolder === story);
       const { date, readingTime, amountOfStories } = currentBlogs.reduce(
+        // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
         (agg: any, current: any) => {
           const currentDate = new Date(current.date);
           return {

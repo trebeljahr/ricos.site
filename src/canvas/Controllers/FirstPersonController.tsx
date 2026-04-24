@@ -78,6 +78,7 @@ export const FirstPersonController = (props: JSX.IntrinsicElements["group"]) => 
   useFrame((state, delta) => {
     if (!characterRigidBody.current || !characterController.current || !joystick) return;
 
+    // biome-ignore lint/correctness/noUnusedVariables: kept for future use
     const { forward, backward, leftward, rightward, jump, sprint } = get();
     const speed = 15 * delta * (sprint ? 1.5 : 1);
 

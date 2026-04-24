@@ -18,6 +18,7 @@ export const useFollowCam = ({
   camCollisionOffset = 0.7, // percentage
   camCollisionSpeedMult = 4,
   camListenerTarget = "domElement",
+  // biome-ignore lint/correctness/noUnusedVariables: kept for future use
   ...props
 }: UseFollowCamProps = {}) => {
   const { scene, camera, gl } = useThree();
@@ -240,6 +241,7 @@ export const useFollowCam = ({
     followCam.rotation.x = camInitDir.x;
 
     // Prepare for camera ray intersect objects
+    // biome-ignore lint/complexity/noForEach: callback uses early return / vendored script
     scene.children.forEach((child) => customTraverseAdd(child));
 
     // Prepare for followCam and pivot point
@@ -322,7 +324,9 @@ export const useFollowCam = ({
   // Handle scene add/remove objects events
   // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually — auto-suppressed during biome migration
   useEffect(() => {
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     const onObjectAdded = (e: any) => customTraverseAdd(e.child);
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     const onObjectRemoved = (e: any) => customTraverseRemove(e.child);
     scene.addEventListener("childadded", onObjectAdded);
     scene.addEventListener("childremoved", onObjectRemoved);

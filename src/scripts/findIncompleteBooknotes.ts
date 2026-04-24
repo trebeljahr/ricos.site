@@ -75,12 +75,14 @@ if (noFrontmatter.length === 0 && notPublished.length === 0) {
 } else {
   if (noFrontmatter.length > 0) {
     console.log(`🚫 No frontmatter at all (${noFrontmatter.length}):`);
+    // biome-ignore lint/complexity/noForEach: callback uses early return / vendored script
     noFrontmatter.forEach((f) => console.log(`   - ${f}`));
     console.log();
   }
 
   if (notPublished.length > 0) {
     console.log(`📝 Not published (${notPublished.length}):`);
+    // biome-ignore lint/complexity/noForEach: callback uses early return / vendored script
     notPublished.forEach(({ file, reason }) => console.log(`   - ${file}  (${reason})`));
     console.log();
   }

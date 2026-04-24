@@ -147,6 +147,7 @@ const useWeaponForMixamoCharacter = (weaponType: WeaponTypes) => {
 export const MixamoEcctrlControllerWithAnimations = ({
   position = [0, 0, 5],
   characterName = MixamoCharacterNames.Eve,
+  // biome-ignore lint/correctness/noUnusedVariables: kept for future use
   shouldUseWeapon = true,
   characterSpecificYOffset = -1.1,
   characterSpecificScale = 1.4,
@@ -164,6 +165,7 @@ export const MixamoEcctrlControllerWithAnimations = ({
   const {
     updateAnimation,
     mixInAnimation,
+    // biome-ignore lint/correctness/noUnusedVariables: kept for future use
     animationState: currentAnimationState,
     mixedInAnimationState,
   } = useGenericAnimationController({
@@ -177,6 +179,7 @@ export const MixamoEcctrlControllerWithAnimations = ({
   useSubscribeToKeyPress("f", () => {
     const player = playerQuery.first;
     if (!player?.rigidBody) return;
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     const userData = (player?.rigidBody as any).userData as userDataType;
 
     if (
@@ -201,6 +204,7 @@ export const MixamoEcctrlControllerWithAnimations = ({
 
     if (!player) return;
     const { forward, backward, leftward, rightward, jump, run } = get();
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     const userData = (player.rigidBody as any)?.userData as userDataType;
 
     isAttacking.current =
@@ -234,6 +238,7 @@ export const MixamoEcctrlControllerWithAnimations = ({
     }
   });
 
+  // biome-ignore lint/correctness/noUnusedVariables: kept for future use
   const { progress } = useProgress();
 
   const weapon = useWeaponForMixamoCharacter(SwordTypes.Sword6);

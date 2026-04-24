@@ -27,6 +27,7 @@ export type GLTFResult = {
   scene: GLTF["scene"];
   scenes: GLTF["scenes"];
   animations: GLTF["animations"];
+  // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
   [key: string]: any;
 };
 export type CommonMetadata = {

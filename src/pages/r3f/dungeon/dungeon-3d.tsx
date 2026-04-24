@@ -66,6 +66,7 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
     const renderPass = meshes.reduce(
       (acc, mesh) => {
         return {
+          // biome-ignore lint/performance/noAccumulatingSpread: intentional spread in reduce
           ...acc,
           [mesh.meshType]: {
             ...acc[mesh.meshType],

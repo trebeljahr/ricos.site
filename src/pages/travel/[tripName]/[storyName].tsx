@@ -164,6 +164,7 @@ export async function getStaticPaths() {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const travelblogs = loadVeliteData("travelblogs.json");
   const paths: Params[] = extractAndSortMetadata(travelblogs).map(
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     ({ slug, parentFolder }: any) => ({
       params: {
         tripName: slugify(parentFolder as string),

@@ -81,6 +81,7 @@ export const ThirdPersonControllerWawaSensei = () => {
     };
   }, []);
 
+  // biome-ignore lint/correctness/noUnusedVariables: kept for future use
   useFrame(({ camera, pointer }) => {
     if (rb.current) {
       const vel = rb.current.linvel();

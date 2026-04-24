@@ -41,6 +41,7 @@ const wikiLinkRegex = /!\[\[([^\]]+)\]\]/g;
 function processDirectory(directoryPath: string) {
   const files = fs.readdirSync(directoryPath);
 
+  // biome-ignore lint/complexity/noForEach: callback uses early return / vendored script
   files.forEach((fileName) => {
     const filePath = path.join(directoryPath, fileName);
     const stats = fs.statSync(filePath);

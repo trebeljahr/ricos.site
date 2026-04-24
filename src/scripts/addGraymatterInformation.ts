@@ -74,6 +74,7 @@ for (const filePath of mdFiles) {
     bookAuthor,
     date: frontmatter.date || formatDate(parsedCreationDate),
     ...frontmatter,
+  // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
   } as { [key: string]: any };
 
   delete newFrontmatter.draft;

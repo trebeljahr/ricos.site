@@ -64,6 +64,7 @@ export const Agent = ({ children, ...props }: PropsWithChildren<RigidBodyProps>)
     const player = playerQuery.first;
     if (!player) return;
 
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     const rigidBody = enemyRef.current.rigidBody as any;
     if (!rigidBody) return;
 
@@ -73,6 +74,7 @@ export const Agent = ({ children, ...props }: PropsWithChildren<RigidBodyProps>)
     const agentPosition = _agentPosition.copy(closestPoint as Vector3);
 
     const { point: playerPosition } = navMeshQuery.findClosestPoint(
+      // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
       (player.rigidBody as any).translation(),
       {
         halfExtents: queryHalfExtents,
@@ -98,6 +100,7 @@ export const Agent = ({ children, ...props }: PropsWithChildren<RigidBodyProps>)
 
     if (!path || path.length < 2) return;
 
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     const rigidBody = enemyRef.current.rigidBody as any;
     if (!rigidBody) return;
 
@@ -152,11 +155,13 @@ export const Agent = ({ children, ...props }: PropsWithChildren<RigidBodyProps>)
       const player = playerQuery.first;
       if (!player) return;
 
+      // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
       lookAt.copy((player.rigidBody as any).translation() as Vector3);
     } else if (path[pathIndex.current]) {
       lookAt.copy(path[pathIndex.current]);
     }
 
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     const rigidBody = enemyRef.current.rigidBody as any;
     if (!rigidBody) return;
 

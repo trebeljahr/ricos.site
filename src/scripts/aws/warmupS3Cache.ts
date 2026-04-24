@@ -18,6 +18,7 @@ const progress = new SingleBar({ format }, Presets.shades_classic);
 progress.start(imageKeys.length, counter);
 
 for (const imageKey of imageKeys) {
+  // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
   const promises: Promise<any>[] = [];
 
   for (const size of imageSizes) {
@@ -31,6 +32,7 @@ for (const imageKey of imageKeys) {
 
 progress.stop();
 
+// biome-ignore lint/correctness/noUnusedVariables: kept for future use
 async function invokeCorrectLambda(path: string) {
   await invokeLambda("ImgTransformationStack-imageoptimization4C49F079-Ml7Uw9RAhwgP", path);
 }

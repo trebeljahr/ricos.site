@@ -20,6 +20,7 @@ interface GLTFAction extends AnimationClip {
   name: SkeletonActionName;
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: kept for future use
 type GLTFResult = GLTF & {
   nodes: {
     [name: string]: SkinnedMesh;

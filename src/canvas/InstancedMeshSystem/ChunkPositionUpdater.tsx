@@ -56,6 +56,7 @@ export const ChunkPositionUpdater = ({
 
     prevChunksRef.current = currentChunkKeys;
 
+    // biome-ignore lint/complexity/noForEach: callback uses early return / vendored script
     removedChunks.forEach((key) => {
       if (!indicesPerChunk.current[key]) return;
 
@@ -63,6 +64,7 @@ export const ChunkPositionUpdater = ({
       delete indicesPerChunk.current[key];
     });
 
+    // biome-ignore lint/complexity/noForEach: callback uses early return / vendored script
     newChunkKeys.forEach((chunkId) => {
       const chunk = chunks.get(chunkId)!;
 

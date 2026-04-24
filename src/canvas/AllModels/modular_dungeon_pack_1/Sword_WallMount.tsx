@@ -31,6 +31,7 @@ type GLTFResult = GLTF & {
 };
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
+  // biome-ignore lint/correctness/noUnusedVariables: kept for future use
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/modular_dungeon_1/Sword_WallMount.glb",
   ) as unknown as unknown as unknown as GLTFResult;

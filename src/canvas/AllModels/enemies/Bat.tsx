@@ -35,6 +35,7 @@ export function Bat(props: JSX.IntrinsicElements["group"]) {
   const { scene, animations } = useGLTF("/3d-assets/glb/enemies/Bat-transformed.glb");
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as unknown as unknown as GLTFResult;
+  // biome-ignore lint/correctness/noUnusedVariables: kept for future use
   const { actions } = useAnimations(animations, group);
   return (
     <group ref={group} {...props} dispose={null}>

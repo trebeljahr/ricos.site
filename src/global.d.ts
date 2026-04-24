@@ -4,6 +4,7 @@
 import type { JSX } from "react";
 export type { JSX };
 declare global {
+  // biome-ignore lint/suspicious/noRedeclare: global type augmentation
   namespace JSX {
     interface IntrinsicElements extends React.JSX.IntrinsicElements {}
   }

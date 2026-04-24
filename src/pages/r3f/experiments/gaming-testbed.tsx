@@ -76,6 +76,7 @@ const CanvasContent = () => {
       ))}
 
       {items.map((_, i) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
         <RandomArmorSpawner key={i} position={[i * 5, 0, -30]} respawnTime={2000} />
       ))}
 

@@ -16,6 +16,7 @@ export async function listAllObjects(bucket: string, prefix = ""): Promise<S3Obj
   const out: S3Object[] = [];
   let token: string | undefined = undefined;
   do {
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     const resp: any = await client.send(
       new ListObjectsV2Command({
         Bucket: bucket,

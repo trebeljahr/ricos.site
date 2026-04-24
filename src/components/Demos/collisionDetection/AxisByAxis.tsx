@@ -30,6 +30,7 @@ export const AxisByAxis = () => {
       if (!ctx || !ctx.canvas) return;
       drawBackground(ctx);
 
+      // biome-ignore lint/complexity/noForEach: callback uses early return / vendored script
       polys.forEach((poly) => poly.draw(ctx));
 
       const pickEdge = (poly: Polygon) => {

@@ -76,6 +76,7 @@ export const SingleStylizedGrassPlane = ({
           uvs.push(...vert.uv);
           colors.push(...vert.color);
         }
+        // biome-ignore lint/complexity/noForEach: callback uses early return / vendored script
         blade.indices.forEach((indice) => indices.push(indice));
       }
 

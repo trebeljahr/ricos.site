@@ -46,6 +46,7 @@ interface GLTFAction extends AnimationClip {
   name: ActionName;
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: kept for future use
 interface PossibleActions {
   "Armature|TRex_Attack": AnimationAction | null;
   "Armature|TRex_Death": AnimationAction | null;

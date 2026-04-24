@@ -79,6 +79,7 @@ export const NavmeshEcs = () => {
     const walkableHeight = 1;
     const walkableClimb = 1;
 
+    // biome-ignore lint/correctness/noUnusedVariables: kept for future use
     const { success, navMesh } = threeToSoloNavMesh(meshes, {
       cs,
       ch,

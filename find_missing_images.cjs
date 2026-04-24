@@ -5,6 +5,7 @@ function walk(dir) {
   let results = [];
   if (!fs.existsSync(dir)) return results;
   const list = fs.readdirSync(dir);
+  // biome-ignore lint/complexity/noForEach: callback uses early return / vendored script
   list.forEach((file) => {
     if (file === "node_modules" || file === ".git" || file === ".next") return;
     // biome-ignore lint/style/noParameterAssign: intentional local mutation in 3D math/controller code
@@ -45,9 +46,11 @@ for (const file of files) {
   }
 
   let match;
+  // biome-ignore lint/suspicious/noAssignInExpressions: intentional
   while ((match = mdImageRegex.exec(content)) !== null) {
     allRefs.push({ file, src: match[1], type: "markdown" });
   }
+  // biome-ignore lint/suspicious/noAssignInExpressions: intentional
   while ((match = imgTagRegex.exec(content)) !== null) {
     allRefs.push({ file, src: match[1], type: "html" });
   }
@@ -55,6 +58,7 @@ for (const file of files) {
 
 const report = {};
 
+// biome-ignore lint/complexity/noForEach: callback uses early return / vendored script
 allRefs.forEach((ref) => {
   let src = ref.src.trim();
   if (src.startsWith("http") || src === "") return;

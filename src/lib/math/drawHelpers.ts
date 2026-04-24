@@ -280,6 +280,7 @@ export type State = {
 };
 
 function handleRotations(polys: Polygon[], amount: number) {
+  // biome-ignore lint/complexity/noForEach: callback uses early return / vendored script
   polys.forEach((poly) => {
     if (poly.selected) {
       poly.rotate(amount);
@@ -502,6 +503,7 @@ type Projection = {
 export function drawAllProjections(ctx: CanvasRenderingContext2D, poly1: Polygon, poly2: Polygon) {
   const normals = [...poly1.edgeNormals(), ...poly2.edgeNormals()];
 
+  // biome-ignore lint/complexity/noForEach: callback uses early return / vendored script
   normals.forEach((e) => {
     const p1 = new Vec2(e.x, e.y);
     const p2 = p1.multScalar(-1);

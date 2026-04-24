@@ -39,6 +39,7 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials, animations } = useGLTF(
     "/3d-assets/glb/fish_pack/Manta_ray.glb",
   ) as unknown as unknown as unknown as GLTFResult;
+  // biome-ignore lint/correctness/noUnusedVariables: kept for future use
   const { actions } = useAnimations(animations, group);
   return (
     <group ref={group} {...props} dispose={null}>

@@ -192,6 +192,7 @@ export function useCharacterController(
         characterController.computeColliderMovement(collider2, desiredTranslation);
 
         const correctedMovement = characterController.computedMovement();
+        // biome-ignore lint/correctness/noUnusedVariables: kept for future use
         const { x, y, z } = correctedMovement;
         rigidBody.setNextKinematicTranslation({ x, y: 0, z });
       }

@@ -7,6 +7,7 @@ useGLTF.preload(michelleGlbUrl);
 
 export const MichelleCharacter = (props: JSX.IntrinsicElements["group"]) => {
   const group = useRef<Group>(null!);
+  // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
   const { nodes, materials } = useGLTF(michelleGlbUrl) as any;
 
   return (

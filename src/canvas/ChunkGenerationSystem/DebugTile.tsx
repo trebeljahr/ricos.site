@@ -5,6 +5,7 @@ import type { Vector3 } from "three";
 import { tileSize } from "./config";
 
 export const DebugTile = ({ position }: { position: Vector3 }) => {
+  // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
   const textRef = useRef<any>(null!);
 
   useFrame(({ camera }) => {

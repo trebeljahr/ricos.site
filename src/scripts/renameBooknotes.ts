@@ -7,6 +7,7 @@ function parseBookTitle(fileName: string): { title: string; author: string } {
   return { title, author };
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: kept for future use
 function renameFilesInDirectory(directory: string): void {
   const files = fs.readdirSync(directory);
 

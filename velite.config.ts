@@ -229,7 +229,9 @@ const remarkGroupImages: Pluggable = () => {
             images: JSON.stringify(
               await Promise.all(
                 groupedImages.map(async ({ node }) => {
+                  // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
                   const src = (node as any).url as string;
+                  // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
                   const explicitAlt = ((node as any).alt as string) || "";
                   try {
                     const { width, height, alt } = await getImgMetaDuringBuild(src);
@@ -283,6 +285,7 @@ const handleSimpleGalleryNode: Handler = (state, node) => {
   };
 };
 
+// biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
 const addBundledMDXContent = async <T extends Record<string, any>>(
   data: T,
   { meta }: { meta: ZodMeta },
@@ -303,6 +306,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     [
       remarkCallout,
       {
+        // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
         root: (callout: any) => {
           return {
             tagName: "callout-root",
@@ -313,6 +317,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
             },
           };
         },
+        // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
         title: (callout: any) => ({
           tagName: "callout-title",
           properties: {
@@ -320,6 +325,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
             isFoldable: callout.isFoldable.toString(),
           },
         }),
+        // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
         body: (_callout: any) => ({
           tagName: "callout-body",
           properties: {},
@@ -455,6 +461,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
 };
 
 const addLinksAndSlugTransformer = (link = "/") => {
+  // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
   const transformer = async <T extends Record<string, any>>(
     data: T,
     { meta }: { meta: ZodMeta },

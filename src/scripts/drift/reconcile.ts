@@ -370,6 +370,7 @@ async function handleResizedOrphans(source: { Key: string }[], resized: { Key: s
 }
 
 async function main() {
+  // biome-ignore lint/correctness/noUnusedVariables: kept for future use
   const { source, resized, localFiles } = await loadState();
   const sourceKeys = new Set(source.map((o) => o.Key));
   const localKeys = new Set(localFiles.map((f) => f.key));

@@ -315,6 +315,7 @@ function sleep(amount: number) {
 
 function getPolyFromIndexList(poly: Polygon, indexList: number[]) {
   const verts = indexList.reduce((agg, i) => {
+    // biome-ignore lint/performance/noAccumulatingSpread: intentional spread in reduce
     return [...agg, poly.vertices[i]];
   }, [] as Vec2[]);
   return new Polygon(verts, poly.color);
@@ -403,6 +404,7 @@ export async function triangulateVisualization(
 
   await sleep(1000);
 
+  // biome-ignore lint/complexity/noForEach: callback uses early return / vendored script
   foundTriangles.forEach((tri) => tri.draw(ctx));
   await sleep(1000);
 }

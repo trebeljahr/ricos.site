@@ -78,6 +78,7 @@ export const Player = (props: RigidBodyProps) => {
   }, []);
 
   useBeforePhysicsStep(() => {
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     const characterRigidBody = playerRef.current.rigidBody as any;
 
     if (!characterRigidBody) return;
@@ -168,6 +169,7 @@ export const Player = (props: RigidBodyProps) => {
   });
 
   useFrame((_, delta) => {
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     const characterRigidBody = playerRef.current.rigidBody as any;
     if (!characterRigidBody) {
       return;

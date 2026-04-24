@@ -104,6 +104,7 @@ export const AllRoGrass = ({ size = 1, width = 32, instances = 10000, ...props }
   );
 };
 
+// biome-ignore lint/correctness/noEmptyPattern: intentional empty destructure
 export const CircleGrassPlane = ({}) => {
   const circle = useMemo(() => {
     const geometry = new CircleGeometry(20, 32);

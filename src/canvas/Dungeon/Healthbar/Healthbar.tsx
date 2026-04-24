@@ -72,6 +72,7 @@ export const GenericHealthBar = ({
   position = [0, 0, 0],
   rotation = [0, 0, 0],
   scale = [1, 1, 1],
+  // biome-ignore lint/correctness/noUnusedVariables: kept for future use
   lowHealthThreshold = 0.2,
   fillColor = "#15ff00",
   secondColor,

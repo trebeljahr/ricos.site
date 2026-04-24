@@ -52,7 +52,9 @@ async function main() {
   }
 
   function rewriteUrls() {
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     return (tree: any) => {
+      // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
       visit(tree, "element", (node: any) => {
         for (const prop of ["href", "src"]) {
           const value = node?.properties?.[prop];
@@ -65,6 +67,7 @@ async function main() {
     };
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
   function rewrite(node: any) {
     if (node.type === "element" && node.tagName === "img") {
       node.properties = {
@@ -104,11 +107,15 @@ async function main() {
   }
 
   const file = await unified()
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     .use(remarkParse as any)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rewriteUrls)
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     .use(rehypeRewrite as any, { rewrite })
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     .use(rehypePresetMinify as any)
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     .use(rehypeStringify as any)
     .process(content);
 

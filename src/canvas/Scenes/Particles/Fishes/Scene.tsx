@@ -246,6 +246,7 @@ function useFishGeos(typeOfFish: FishType) {
   const fishGeos: BufferGeometry[] = Object.keys(nodes).reduce((agg, key) => {
     if (!(typedNodes[key] instanceof SkinnedMesh)) return agg;
 
+    // biome-ignore lint/performance/noAccumulatingSpread: intentional spread in reduce
     return [...agg, typedNodes[key].geometry];
   }, [] as BufferGeometry[]);
 

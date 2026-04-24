@@ -2,22 +2,21 @@
 // React Three Fiber Ultimate LensFlare
 // To be used Effect together with react-three/postprocessing
 
-import {
-  Uniform,
-  Color,
-  Vector3,
-  Mesh,
-  ShaderMaterial,
-  MeshPhysicalMaterial,
-  Texture,
-  Vector2,
-} from "three";
-import { BlendFunction, Effect } from "postprocessing";
-import { useRef, useMemo, useEffect } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
-import { easing } from "maath";
+import { useFrame, useThree } from "@react-three/fiber";
 import { wrapEffect } from "@react-three/postprocessing";
+import { easing } from "maath";
+import { BlendFunction, Effect } from "postprocessing";
+import { useEffect, useMemo, useRef } from "react";
+import {
+  Color,
+  type Mesh,
+  type ShaderMaterial,
+  type Texture,
+  Uniform,
+  Vector2,
+  Vector3,
+} from "three";
 
 const LensFlareShader = {
   fragmentShader: /* glsl */ `
@@ -173,7 +172,7 @@ function Effects({
   const lensRef = useRef<any>(null!);
 
   const screenPosition = new Vector3(position.x, position.y, position.z);
-  let flarePosition = new Vector3();
+  const flarePosition = new Vector3();
 
   const { viewport, raycaster } = useThree();
   const lensDirtTexture = useTexture(dirtTextureFile);
@@ -185,89 +184,42 @@ function Effects({
       if (followMouse) {
         lensRef.current.uniforms.get("lensPosition").value.x = pointer.x;
         lensRef.current.uniforms.get("lensPosition").value.y = pointer.y;
-        easing.damp(
-          lensRef.current.uniforms.get("opacity"),
-          "value",
-          0.0,
-          0.07,
-          delta
-        );
+        easing.damp(lensRef.current.uniforms.get("opacity"), "value", 0.0, 0.07, delta);
       } else {
         projectedPosition = screenPosition.clone().add(camera.position);
         projectedPosition.project(camera);
 
-        flarePosition.set(
-          projectedPosition.x,
-          projectedPosition.y,
-          projectedPosition.z
-        );
+        flarePosition.set(projectedPosition.x, projectedPosition.y, projectedPosition.z);
 
         if (flarePosition.z > 1) return;
 
-        raycaster.setFromCamera(
-          new Vector2(projectedPosition.x, projectedPosition.z),
-          camera
-        );
+        raycaster.setFromCamera(new Vector2(projectedPosition.x, projectedPosition.z), camera);
         const intersects = raycaster.intersectObjects(scene.children, true);
 
         if (intersects[0]) {
-          const material = (intersects[0].object as Mesh)
-            .material as ShaderMaterial;
+          const material = (intersects[0].object as Mesh).material as ShaderMaterial;
           const materialUniforms = material.uniforms;
           if (
             intersects[0].object.userData &&
             intersects[0].object.userData.lensflare === "no-occlusion"
           ) {
-            easing.damp(
-              lensRef.current.uniforms.get("opacity"),
-              "value",
-              0.0,
-              0.07,
-              delta
-            );
+            easing.damp(lensRef.current.uniforms.get("opacity"), "value", 0.0, 0.07, delta);
           } else {
             if (materialUniforms) {
               if (materialUniforms._transmission) {
                 if (materialUniforms._transmission.value > 0.2) {
-                  easing.damp(
-                    lensRef.current.uniforms.get("opacity"),
-                    "value",
-                    0.2,
-                    0.07,
-                    delta
-                  );
+                  easing.damp(lensRef.current.uniforms.get("opacity"), "value", 0.2, 0.07, delta);
                 }
               }
             } else {
-              easing.damp(
-                lensRef.current.uniforms.get("opacity"),
-                "value",
-                1.0,
-                0.07,
-                delta
-              );
+              easing.damp(lensRef.current.uniforms.get("opacity"), "value", 1.0, 0.07, delta);
             }
 
             //Check for MeshPhysicalMaterial with transmission setting
-            if (
-              (material as any)._transmission &&
-              (material as any)._transmission > 0.2
-            ) {
-              easing.damp(
-                lensRef.current.uniforms.get("opacity"),
-                "value",
-                0.2,
-                0.07,
-                delta
-              );
+            if ((material as any)._transmission && (material as any)._transmission > 0.2) {
+              easing.damp(lensRef.current.uniforms.get("opacity"), "value", 0.2, 0.07, delta);
             } else {
-              easing.damp(
-                lensRef.current.uniforms.get("opacity"),
-                "value",
-                1.0,
-                0.07,
-                delta
-              );
+              easing.damp(lensRef.current.uniforms.get("opacity"), "value", 1.0, 0.07, delta);
             }
 
             //Check for OtherMaterials with transparent parameter
@@ -277,26 +229,14 @@ function Effects({
                 "value",
                 material.opacity,
                 0.07,
-                delta
+                delta,
               );
             } else {
-              easing.damp(
-                lensRef.current.uniforms.get("opacity"),
-                "value",
-                1.0,
-                0.07,
-                delta
-              );
+              easing.damp(lensRef.current.uniforms.get("opacity"), "value", 1.0, 0.07, delta);
             }
           }
         } else {
-          easing.damp(
-            lensRef.current.uniforms.get("opacity"),
-            "value",
-            0.0,
-            0.07,
-            delta
-          );
+          easing.damp(lensRef.current.uniforms.get("opacity"), "value", 0.0, 0.07, delta);
         }
 
         lensRef.current.uniforms.get("lensPosition").value.x = flarePosition.x;
@@ -352,7 +292,7 @@ function Effects({
       starBurst,
       enabled,
       opacity,
-    ]
+    ],
   );
 }
 

@@ -1,3 +1,4 @@
+import { playerQuery } from "@r3f/AI/ecs";
 import { useFrame, useLoader } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createNoise2D } from "simplex-noise";
@@ -9,27 +10,18 @@ import {
   Float32BufferAttribute,
   Mesh,
   MeshBasicMaterial,
-  Object3D,
   PlaneGeometry,
-  ShaderMaterial,
   TextureLoader,
-  Triangle,
   Vector3,
   Vector4,
 } from "three";
-import { GrassMaterial, GrassMaterialType } from "./AllRoGrassMaterial";
-import { BlackPlaneMaterial } from "../GroundPlaneMaterials";
 import { MeshSurfaceSampler } from "three-stdlib";
-import { playerQuery } from "@r3f/AI/ecs";
+import { BlackPlaneMaterial } from "../GroundPlaneMaterials";
+import { GrassMaterial, type GrassMaterialType } from "./AllRoGrassMaterial";
 
 const noise2D = createNoise2D();
 
-export const AllRoGrass = ({
-  size = 1,
-  width = 32,
-  instances = 10000,
-  ...props
-}) => {
+export const AllRoGrass = ({ size = 1, width = 32, instances = 10000, ...props }) => {
   const bH = 1;
   const bW = 0.12;
   const joints = 5;
@@ -51,15 +43,9 @@ export const AllRoGrass = ({
     materialRef.current.time = timeRef.current / 4;
   });
 
-  const attributeData = useMemo(
-    () => getAttributeData(instances, width),
-    [instances, width]
-  );
+  const attributeData = useMemo(() => getAttributeData(instances, width), [instances, width]);
 
-  const bladeGeom = useMemo(
-    () => new PlaneGeometry(bW, bH, 1, joints).translate(0, bH / 2, 0),
-    []
-  );
+  const bladeGeom = useMemo(() => new PlaneGeometry(bW, bH, 1, joints).translate(0, bH / 2, 0), []);
 
   const planeGeo = useRef<PlaneGeometry>(null!);
 
@@ -83,10 +69,7 @@ export const AllRoGrass = ({
   return (
     <group {...props}>
       <mesh rotation={[-Math.PI / 2, 0, 0]} material={BlackPlaneMaterial}>
-        <planeGeometry
-          args={[width, width, width - 1, width - 1]}
-          ref={planeGeo}
-        />
+        <planeGeometry args={[width, width, width - 1, width - 1]} ref={planeGeo} />
       </mesh>
       <mesh frustumCulled={false}>
         <instancedBufferGeometry
@@ -115,11 +98,7 @@ export const AllRoGrass = ({
             args={[new Float32Array(attributeData.halfRootAngleCos), 1]}
           />
         </instancedBufferGeometry>
-        <grassMaterial
-          ref={materialRef}
-          side={DoubleSide}
-          key={GrassMaterial.key}
-        />
+        <grassMaterial ref={materialRef} side={DoubleSide} key={GrassMaterial.key} />
       </mesh>
     </group>
   );
@@ -179,15 +158,9 @@ export const AllRoGrassForArbitrarySurface = ({
     materialRef.current.time = timeRef.current / 4;
   });
 
-  const attributeData = useMemo(
-    () => makeAlroGrassForSurface(instances, mesh),
-    [instances, mesh]
-  );
+  const attributeData = useMemo(() => makeAlroGrassForSurface(instances, mesh), [instances, mesh]);
 
-  const bladeGeom = useMemo(
-    () => new PlaneGeometry(bW, bH, 1, joints).translate(0, bH / 2, 0),
-    []
-  );
+  const bladeGeom = useMemo(() => new PlaneGeometry(bW, bH, 1, joints).translate(0, bH / 2, 0), []);
 
   return (
     <group {...props}>
@@ -218,11 +191,7 @@ export const AllRoGrassForArbitrarySurface = ({
             args={[new Float32Array(attributeData.halfRootAngleCos), 1]}
           />
         </instancedBufferGeometry>
-        <grassMaterial
-          ref={materialRef}
-          side={DoubleSide}
-          key={GrassMaterial.key}
-        />
+        <grassMaterial ref={materialRef} side={DoubleSide} key={GrassMaterial.key} />
       </mesh>
     </group>
   );
@@ -245,17 +214,11 @@ function makeAlroGrassForSurface(instances: number, surface: Mesh) {
     sampler.sample(_position, _normal);
     const stretch = i < instances / 3 ? Math.random() * 1.8 : Math.random();
 
-    const { quaternion_0, randomAngleSin, randomAngleCos } =
-      constructRandomGlassBladeData();
+    const { quaternion_0, randomAngleSin, randomAngleCos } = constructRandomGlassBladeData();
 
     halfRootAngleSin.push(randomAngleSin);
     halfRootAngleCos.push(randomAngleCos);
-    orientations.push(
-      quaternion_0.x,
-      quaternion_0.y,
-      quaternion_0.z,
-      quaternion_0.w
-    );
+    orientations.push(quaternion_0.x, quaternion_0.y, quaternion_0.z, quaternion_0.w);
 
     _position.applyMatrix4(surface.matrixWorld);
 
@@ -286,15 +249,9 @@ function getAttributeData(instances: number, width: number) {
     offsets.push(offsetX, 0, offsetZ);
     const stretch = i < instances / 3 ? Math.random() * 1.8 : Math.random();
 
-    const { quaternion_0, randomAngleSin, randomAngleCos } =
-      constructRandomGlassBladeData();
+    const { quaternion_0, randomAngleSin, randomAngleCos } = constructRandomGlassBladeData();
 
-    orientations.push(
-      quaternion_0.x,
-      quaternion_0.y,
-      quaternion_0.z,
-      quaternion_0.w
-    );
+    orientations.push(quaternion_0.x, quaternion_0.y, quaternion_0.z, quaternion_0.w);
     halfRootAngleSin.push(randomAngleSin);
     halfRootAngleCos.push(randomAngleCos);
     stretches.push(stretch);
@@ -310,7 +267,7 @@ function getAttributeData(instances: number, width: number) {
 }
 
 let quaternion_0 = new Vector4();
-let quaternion_1 = new Vector4();
+const quaternion_1 = new Vector4();
 
 const min = -0.25;
 const max = 0.25;
@@ -395,9 +352,7 @@ const createConveyorBeltMesh = (points: Vector3[], beltWidth = 1.0) => {
 
     const halfWidth = beltWidth / 2;
     const left = point.clone().add(binormal.clone().multiplyScalar(halfWidth));
-    const right = point
-      .clone()
-      .add(binormal.clone().multiplyScalar(-halfWidth));
+    const right = point.clone().add(binormal.clone().multiplyScalar(-halfWidth));
 
     vertices.push(left.x, left.y, left.z);
     vertices.push(right.x, right.y, right.z);

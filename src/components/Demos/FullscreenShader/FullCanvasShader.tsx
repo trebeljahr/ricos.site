@@ -1,11 +1,11 @@
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
-import { ShaderMaterial, Texture, Vector2, Vector3, Vector4 } from "three";
+import { type ShaderMaterial, type Texture, Vector2, Vector3, Vector4 } from "three";
 import { useEditorContext } from "./EditorContextProvider";
 
-import vertexShader from "./shaders/vertexShader.glsl";
-import shadertoyDefinitions from "./shaders/shadertoyDefinitions.glsl";
 import { SceneWithLoadingState } from "@components/dom/ThreeFiberLayout";
+import shadertoyDefinitions from "./shaders/shadertoyDefinitions.glsl";
+import vertexShader from "./shaders/vertexShader.glsl";
 
 export function FullCanvasShader() {
   return (
@@ -32,7 +32,7 @@ export function FullCanvasShaderMesh() {
 
   const fragmentShader = useMemo(
     () => (isShaderToy ? shadertoyDefinitions + "\n" + code : code),
-    [code, isShaderToy]
+    [code, isShaderToy],
   );
 
   const shaderRef = useRef<ShaderMaterial>(null!);
@@ -41,12 +41,15 @@ export function FullCanvasShaderMesh() {
 
   const textureUniforms = useMemo(
     () =>
-      textures.reduce((acc, texture, index) => {
-        acc[`u_tex${index}`] = { value: texture };
-        acc[`iChannel${index}`] = { value: texture };
-        return acc;
-      }, {} as { [key: string]: { value: Texture } }),
-    [textures]
+      textures.reduce(
+        (acc, texture, index) => {
+          acc[`u_tex${index}`] = { value: texture };
+          acc[`iChannel${index}`] = { value: texture };
+          return acc;
+        },
+        {} as { [key: string]: { value: Texture } },
+      ),
+    [textures],
   );
 
   const uniforms = useMemo(
@@ -71,7 +74,7 @@ export function FullCanvasShaderMesh() {
       ...textureUniforms,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [fragmentShader]
+    [fragmentShader],
   );
 
   useFrame(({ size, pointer }, delta) => {
@@ -91,8 +94,7 @@ export function FullCanvasShaderMesh() {
       const year = now.getFullYear();
       const month = now.getMonth() + 1;
       const day = now.getDate();
-      const secondsSinceMidnight =
-        now.getSeconds() + 60 * (now.getMinutes() + 60 * now.getHours());
+      const secondsSinceMidnight = now.getSeconds() + 60 * (now.getMinutes() + 60 * now.getHours());
       mat.uniforms.iDate.value.set(year, month, day, secondsSinceMidnight);
       mat.uniforms.iFrame.value = frameCount.current;
       mat.uniforms.iMouse.value.set(pointer.x, pointer.y, 0, 0);

@@ -1,6 +1,6 @@
+import { ImageWithLoader } from "@components/ImageWithLoader";
 import Link from "next/link";
 import { turnKebabIntoTitleCase } from "./utils/turnKebapIntoTitleCase";
-import { ImageWithLoader } from "@components/ImageWithLoader";
 
 export const toLinks = (url: string) => (
   <Link key={url} href={url}>

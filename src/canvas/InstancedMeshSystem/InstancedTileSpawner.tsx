@@ -3,15 +3,14 @@ import { useRef } from "react";
 import { Vector3 } from "three";
 import { pickRandomFromArray } from "../../lib/utils/randomFromArray";
 import { tileSize } from "../ChunkGenerationSystem/config";
-import { SingleHookProps, useInstancedMesh2 } from "./useInstancedMesh2";
+import { type SingleHookProps, useInstancedMesh2 } from "./useInstancedMesh2";
 import { useInstancedMeshMultiMaterial } from "./useInstancedMesh2multiMaterial";
 
-export const InstancedTileSpawner = ({
-  geometry,
-  material,
-}: SingleHookProps) => {
-  const { InstancedMesh, addPositions, removePositions, ref } =
-    useInstancedMesh2({ geometry, material });
+export const InstancedTileSpawner = ({ geometry, material }: SingleHookProps) => {
+  const { InstancedMesh, addPositions, removePositions, ref } = useInstancedMesh2({
+    geometry,
+    material,
+  });
 
   const indicesRef = useRef<number[]>([]);
 
@@ -20,9 +19,7 @@ export const InstancedTileSpawner = ({
     const pressedG = key === "g";
 
     if (pressedF) {
-      const newPositions = [
-        new Vector3(Math.random() * tileSize, 0, Math.random() * tileSize),
-      ];
+      const newPositions = [new Vector3(Math.random() * tileSize, 0, Math.random() * tileSize)];
       const indices = addPositions(newPositions);
       indicesRef.current = indices;
     }
@@ -42,10 +39,9 @@ export const InstancedMeshSpawnerMultiMaterial = ({
 }: {
   modelPath: string;
 }) => {
-  const { InstancedMesh, addPositions, removePositions } =
-    useInstancedMeshMultiMaterial({
-      modelPath,
-    });
+  const { InstancedMesh, addPositions, removePositions } = useInstancedMeshMultiMaterial({
+    modelPath,
+  });
   const indexRef = useRef<number[]>([]);
 
   useKeyboardInput(({ key }) => {
@@ -53,9 +49,7 @@ export const InstancedMeshSpawnerMultiMaterial = ({
     const pressedG = key === "g";
 
     if (pressedF) {
-      const newPositions = [
-        new Vector3(Math.random() * tileSize, 0, Math.random() * tileSize),
-      ];
+      const newPositions = [new Vector3(Math.random() * tileSize, 0, Math.random() * tileSize)];
       const indexes = addPositions(newPositions);
       indexRef.current.push(...indexes);
     }

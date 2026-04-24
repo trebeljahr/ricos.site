@@ -14,8 +14,7 @@ function renameFilesInDirectory(directory: string): void {
     const filePath = path.join(directory, file);
     if (fs.lstatSync(filePath).isFile()) {
       const { title } = parseBookTitle(file);
-      const newFileName =
-        title.toLowerCase().replace(/ /g, "-") + path.extname(file);
+      const newFileName = title.toLowerCase().replace(/ /g, "-") + path.extname(file);
       const newFilePath = path.join(directory, newFileName);
       fs.renameSync(filePath, newFilePath);
       console.info(`Renamed: ${file} -> ${newFileName}`);
@@ -33,10 +32,7 @@ const updateBookCoverField = (filePath: string, fileName: string) => {
 
   if (!isValidBookCover(parsedContent.data.bookCover)) {
     parsedContent.data.bookCover = `/assets/book-covers/${fileName}.jpg`;
-    const updatedContent = matter.stringify(
-      parsedContent.content,
-      parsedContent.data
-    );
+    const updatedContent = matter.stringify(parsedContent.content, parsedContent.data);
     fs.writeFileSync(filePath, updatedContent, "utf8");
     console.info(`Updated bookCover for file: ${fileName}`);
   }

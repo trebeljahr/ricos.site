@@ -1,15 +1,16 @@
-import { TerrainData } from "@r3f/my-workers/terrainWorker";
+import type { TerrainData } from "@r3f/my-workers/terrainWorker";
 import { useFrame, useThree } from "@react-three/fiber";
 import {
+  type PropsWithChildren,
   createContext,
   memo,
-  PropsWithChildren,
   useContext,
   useEffect,
   useRef,
   useState,
 } from "react";
 import { BufferGeometry, Float32BufferAttribute, Vector3 } from "three";
+import { DebugTile } from "./DebugTile";
 import {
   debug,
   firstLodLevelDistance,
@@ -17,10 +18,9 @@ import {
   onlyRenderOnce,
   secondLodLevelDistance,
   thirdLodLevelDistance,
-  tilesDistance,
   tileSize,
+  tilesDistance,
 } from "./config";
-import { DebugTile } from "./DebugTile";
 
 const tempVec = new Vector3();
 
@@ -54,7 +54,7 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
 
   const [chunks, setChunks] = useState(new Map<string, Chunk>());
   const [chunkIds, setChunkIds] = useState<Set<string>>(initialChunkIds);
-  const oldCameraGridPosition = useRef(new Vector3(-Infinity, 0, 0));
+  const oldCameraGridPosition = useRef(new Vector3(Number.NEGATIVE_INFINITY, 0, 0));
 
   const renderedOnce = useRef(false);
 
@@ -100,13 +100,10 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
   const prevChunksRef = useRef(new Set<string>());
 
   useEffect(() => {
-    workerRef.current = new Worker(
-      new URL("../my-workers/terrainWorker.ts", import.meta.url)
-    );
+    workerRef.current = new Worker(new URL("../my-workers/terrainWorker.ts", import.meta.url));
 
     workerRef.current.onmessage = (event: MessageEvent<TerrainData>) => {
-      const { normals, uvs, vertices, colors, indices, heightfield, chunkId } =
-        event.data;
+      const { normals, uvs, vertices, colors, indices, heightfield, chunkId } = event.data;
 
       const geo = new BufferGeometry();
 
@@ -125,7 +122,7 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
         const newChunks = new Map(prevChunks);
         const [worldX, worldZ] = chunkId.split(",").map(Number);
         const position = new Vector3(worldX, 0, worldZ);
-        let lodLevel = maxLodLevel;
+        const lodLevel = maxLodLevel;
 
         const resolution = 32;
         newChunks.set(chunkId, {
@@ -152,13 +149,9 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
     const currentChunkKeys = chunkIds;
     const prevChunkKeys = prevChunksRef.current;
 
-    const newChunkKeys = Array.from(currentChunkKeys).filter(
-      (key) => !prevChunkKeys.has(key)
-    );
+    const newChunkKeys = Array.from(currentChunkKeys).filter((key) => !prevChunkKeys.has(key));
 
-    const deletedChunkKeys = Array.from(prevChunkKeys).filter(
-      (key) => !currentChunkKeys.has(key)
-    );
+    const deletedChunkKeys = Array.from(prevChunkKeys).filter((key) => !currentChunkKeys.has(key));
 
     for (const chunkId of deletedChunkKeys) {
       setChunks((prevChunks) => {
@@ -169,7 +162,7 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
     }
 
     for (const chunkId of newChunkKeys) {
-      let [chunkX, chunkZ] = chunkId.split(",").map(Number);
+      const [chunkX, chunkZ] = chunkId.split(",").map(Number);
       camera.clone().getWorldPosition(tempVec);
 
       const playerGridX = Math.round(tempVec.x / tileSize); // tempVec.x;
@@ -203,16 +196,11 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
     prevChunksRef.current = currentChunkKeys;
   }, [chunkIds]);
 
-  return (
-    <ChunkContext.Provider value={chunks}>{children}</ChunkContext.Provider>
-  );
+  return <ChunkContext.Provider value={chunks}>{children}</ChunkContext.Provider>;
 };
 
 export const MemoizedChunk = memo(
-  function MemoChunk({
-    chunkData,
-    children,
-  }: PropsWithChildren<{ chunkData: Chunk }>) {
+  function MemoChunk({ chunkData, children }: PropsWithChildren<{ chunkData: Chunk }>) {
     if (!chunkData.data) return null;
 
     return (
@@ -228,5 +216,5 @@ export const MemoizedChunk = memo(
       prevProps.chunkData.chunkId === nextProps.chunkData.chunkId &&
       prevProps.chunkData.resolution === nextProps.chunkData.resolution
     );
-  }
+  },
 );

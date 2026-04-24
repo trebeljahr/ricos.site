@@ -1,6 +1,6 @@
-import { readdir, lstat } from "fs/promises";
-import preval from "next-plugin-preval";
 import path from "path";
+import { lstat, readdir } from "fs/promises";
+import preval from "next-plugin-preval";
 import { getShaderFileNames } from "./getShaderFileNames";
 import { turnKebabIntoTitleCase } from "./utils/turnKebapIntoTitleCase";
 
@@ -39,9 +39,7 @@ type FoldersWithLinks = Record<string, { name: string; url: string }[]>;
 export async function getAllLinksForR3FDemos(): Promise<FoldersWithLinks> {
   const shaderFiles = await getShaderFileNames();
   const directories = await getDirectoriesForR3FDemos();
-  const filteredDirectories = directories.filter(
-    (directory) => directory !== "shaders"
-  );
+  const filteredDirectories = directories.filter((directory) => directory !== "shaders");
 
   const allLinks = {} as FoldersWithLinks;
 

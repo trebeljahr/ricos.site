@@ -6,7 +6,7 @@ export class GraphNode3D {
   position: Vector3Int;
   previous: GraphNode3D | null = null;
   previousSet: Set<string> = new Set<string>();
-  cost: number = Infinity;
+  cost: number = Number.POSITIVE_INFINITY;
 
   constructor(position: Vector3Int) {
     this.position = position;
@@ -72,7 +72,7 @@ class DungeonPathfinder3D {
           const position = new Vector3Int(x, y, z);
           const node = this.grid.getValue(position);
           node.previous = null;
-          node.cost = Infinity;
+          node.cost = Number.POSITIVE_INFINITY;
           node.previousSet.clear();
         }
       }
@@ -82,7 +82,7 @@ class DungeonPathfinder3D {
   findPath(
     start: Vector3Int,
     end: Vector3Int,
-    costFunction: (a: GraphNode3D, b: GraphNode3D) => PathCost
+    costFunction: (a: GraphNode3D, b: GraphNode3D) => PathCost,
   ): Vector3Int[] | null {
     this.resetNodes();
     this.queue.clear();
@@ -109,9 +109,7 @@ class DungeonPathfinder3D {
 
         if (this.closed.has(neighbor)) continue;
 
-        if (
-          node.previousSet.has(GraphNode3D.positionToString(neighbor.position))
-        ) {
+        if (node.previousSet.has(GraphNode3D.positionToString(neighbor.position))) {
           continue;
         }
 
@@ -129,9 +127,7 @@ class DungeonPathfinder3D {
           const pos1 = node.position.add(horizontalOffset);
           const pos2 = node.position.add(horizontalOffset.multiply(2));
           const pos3 = node.position.add(verticalOffset).add(horizontalOffset);
-          const pos4 = node.position
-            .add(verticalOffset)
-            .add(horizontalOffset.multiply(2));
+          const pos4 = node.position.add(verticalOffset).add(horizontalOffset.multiply(2));
 
           if (
             node.previousSet.has(GraphNode3D.positionToString(pos1)) ||
@@ -171,24 +167,18 @@ class DungeonPathfinder3D {
             const horizontalOffset = new Vector3Int(xDir, 0, zDir);
 
             neighbor.previousSet.add(
-              GraphNode3D.positionToString(node.position.add(horizontalOffset))
+              GraphNode3D.positionToString(node.position.add(horizontalOffset)),
+            );
+            neighbor.previousSet.add(
+              GraphNode3D.positionToString(node.position.add(horizontalOffset.multiply(2))),
+            );
+            neighbor.previousSet.add(
+              GraphNode3D.positionToString(node.position.add(verticalOffset).add(horizontalOffset)),
             );
             neighbor.previousSet.add(
               GraphNode3D.positionToString(
-                node.position.add(horizontalOffset.multiply(2))
-              )
-            );
-            neighbor.previousSet.add(
-              GraphNode3D.positionToString(
-                node.position.add(verticalOffset).add(horizontalOffset)
-              )
-            );
-            neighbor.previousSet.add(
-              GraphNode3D.positionToString(
-                node.position
-                  .add(verticalOffset)
-                  .add(horizontalOffset.multiply(2))
-              )
+                node.position.add(verticalOffset).add(horizontalOffset.multiply(2)),
+              ),
             );
           }
         }

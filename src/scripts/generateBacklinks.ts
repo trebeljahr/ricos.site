@@ -1,5 +1,5 @@
-import { readFileSync, writeFileSync, readdirSync, statSync } from "fs";
-import { resolve, join, extname, parse } from "path";
+import { readFileSync, readdirSync, statSync, writeFileSync } from "fs";
+import { extname, join, parse, resolve } from "path";
 import slugify from "@sindresorhus/slugify";
 
 type BacklinkEntry = {
@@ -69,9 +69,7 @@ function extractTitle(content: string): string {
   return match[1].trim().replace(/^['"]|['"]$/g, "");
 }
 
-function extractFrontmatter(
-  content: string
-): Record<string, string> {
+function extractFrontmatter(content: string): Record<string, string> {
   const fmMatch = content.match(/^---\n([\s\S]*?)\n---/);
   if (!fmMatch) return {};
   const result: Record<string, string> = {};
@@ -79,7 +77,10 @@ function extractFrontmatter(
     const colonIdx = line.indexOf(":");
     if (colonIdx > 0) {
       const key = line.slice(0, colonIdx).trim();
-      const val = line.slice(colonIdx + 1).trim().replace(/^['"]|['"]$/g, "");
+      const val = line
+        .slice(colonIdx + 1)
+        .trim()
+        .replace(/^['"]|['"]$/g, "");
       result[key] = val;
     }
   }
@@ -87,7 +88,8 @@ function extractFrontmatter(
 }
 
 // Match markdown links: [text](/path) — only internal links starting with /
-const INTERNAL_LINK_REGEX = /\[(?:[^\]]*)\]\((\/?(?:posts|booknotes|newsletters|podcastnotes|travel|pages)\/[^)\s#]+)(?:#[^)]*)?\)/g;
+const INTERNAL_LINK_REGEX =
+  /\[(?:[^\]]*)\]\((\/?(?:posts|booknotes|newsletters|podcastnotes|travel|pages)\/[^)\s#]+)(?:#[^)]*)?\)/g;
 // Also match root-level page links like [text](/principles)
 const ROOT_PAGE_LINK_REGEX = /\[(?:[^\]]*)\]\(\/([a-z][a-z0-9-]+)\)/g;
 
@@ -97,8 +99,7 @@ function collectMdFiles(dir: string): string[] {
     for (const entry of readdirSync(d)) {
       const full = join(d, entry);
       if (statSync(full).isDirectory()) {
-        if (entry === ".obsidian" || entry === "assets" || entry === "_data")
-          continue;
+        if (entry === ".obsidian" || entry === "assets" || entry === "_data") continue;
         walk(full);
       } else if (extname(entry) === ".md") {
         files.push(full);
@@ -109,9 +110,7 @@ function collectMdFiles(dir: string): string[] {
   return files;
 }
 
-function getSourceInfo(
-  filePath: string
-): { link: string; title: string; type: string } | null {
+function getSourceInfo(filePath: string): { link: string; title: string; type: string } | null {
   const rel = filePath.slice(CONTENT_ROOT.length + 1); // e.g. "posts/my-post.md"
   const content = readFileSync(filePath, "utf-8");
   const fm = extractFrontmatter(content);
@@ -235,19 +234,11 @@ function generateBacklinks() {
     backlinks[key].sort((a, b) => a.title.localeCompare(b.title));
   }
 
-  writeFileSync(
-    resolve(".velite", "backlinks.json"),
-    JSON.stringify(backlinks, null, 2)
-  );
+  writeFileSync(resolve(".velite", "backlinks.json"), JSON.stringify(backlinks, null, 2));
 
-  const totalBacklinks = Object.values(backlinks).reduce(
-    (sum, arr) => sum + arr.length,
-    0
-  );
+  const totalBacklinks = Object.values(backlinks).reduce((sum, arr) => sum + arr.length, 0);
   const pagesWithBacklinks = Object.keys(backlinks).length;
-  console.log(
-    `Backlinks generated: ${totalBacklinks} links across ${pagesWithBacklinks} pages`
-  );
+  console.log(`Backlinks generated: ${totalBacklinks} links across ${pagesWithBacklinks} pages`);
 }
 
 generateBacklinks();

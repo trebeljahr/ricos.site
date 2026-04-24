@@ -1,18 +1,10 @@
+import { extname, join } from "path";
 import { readdir } from "fs/promises";
-import { join, extname } from "path";
 import { md5File } from "./hashing";
 
-const IMG_EXTS = new Set([
-  ".jpg",
-  ".jpeg",
-  ".png",
-  ".webp",
-  ".gif",
-  ".avif",
-]);
+const IMG_EXTS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"]);
 
-export const LOCAL_ASSETS_ROOT =
-  "src/content/Notes/assets";
+export const LOCAL_ASSETS_ROOT = "src/content/Notes/assets";
 
 export interface LocalFile {
   /** S3-style key relative to Notes/ (e.g. "assets/blog/foo.jpg"). */
@@ -39,9 +31,7 @@ async function* walkImages(dir: string): AsyncGenerator<string> {
  * Enumerate every image under src/content/Notes/assets, returning S3-style
  * keys (prefixed with "assets/") so they compare 1:1 with bucket keys.
  */
-export async function listLocalImages(
-  repoRoot: string
-): Promise<LocalFile[]> {
+export async function listLocalImages(repoRoot: string): Promise<LocalFile[]> {
   const base = join(repoRoot, LOCAL_ASSETS_ROOT);
   const out: LocalFile[] = [];
   for await (const abs of walkImages(base)) {
@@ -57,7 +47,7 @@ export async function listLocalImages(
  */
 export async function hashLocalImages(
   files: LocalFile[],
-  onProgress?: (done: number, total: number) => void
+  onProgress?: (done: number, total: number) => void,
 ): Promise<Map<string, string>> {
   const out = new Map<string, string>();
   for (let i = 0; i < files.length; i++) {

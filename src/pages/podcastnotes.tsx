@@ -6,8 +6,8 @@ import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import Link from "next/link";
 import { useState } from "react";
-import { CommonMetadata } from "src/@types";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import type { CommonMetadata } from "src/@types";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
@@ -24,9 +24,14 @@ export default function Podcastnotes({ podcastnotes, seo }: Props) {
   return (
     <Layout
       title={seo?.metaTitle || "Podcastnotes - notes on the things I've listened to"}
-      description={seo?.metaDescription || "An overview of podcast episodes I've listened to, with notes and key takeaways"}
+      description={
+        seo?.metaDescription ||
+        "An overview of podcast episodes I've listened to, with notes and key takeaways"
+      }
       image={seo?.ogImage || "/assets/blog/podcastnotes.png"}
-      imageAlt={seo?.ogImageAlt || "a collection of hand written notes next to a podcast microphone"}
+      imageAlt={
+        seo?.ogImageAlt || "a collection of hand written notes next to a podcast microphone"
+      }
       keywords={seo?.keywords || ["podcastnotes", "podcasts", "notes", "learnings"]}
       url={url}
     >
@@ -34,10 +39,7 @@ export default function Podcastnotes({ podcastnotes, seo }: Props) {
         <BreadCrumbs path={url} />
 
         <section>
-          <Header
-            title="Podcastnotes"
-            subtitle="What I have learned while listening"
-          />
+          <Header title="Podcastnotes" subtitle="What I have learned while listening" />
           <Search
             all={podcastnotes}
             setFiltered={setFiltered}
@@ -46,26 +48,24 @@ export default function Podcastnotes({ podcastnotes, seo }: Props) {
           />
           <p>Amount: {displayedNotes.length}</p>
 
-          {displayedNotes.map(
-            ({ link, slug, title, show, episode, rating, excerpt }) => {
-              return (
-                <div key={slug}>
-                  <Link
-                    href={link}
-                    className="no-underline prose-h2:text-inherit p-5 my-10 block prose-p:text-zinc-800 dark:prose-p:text-slate-300 transform transition duration-300 hover:scale-[1.02]"
-                  >
-                    <h2 className="m-0 p-0">{title}</h2>
-                    <h3 className="mt-1">
-                      {show} – Episode {episode} | Rating: {rating}/10
-                    </h3>
+          {displayedNotes.map(({ link, slug, title, show, episode, rating, excerpt }) => {
+            return (
+              <div key={slug}>
+                <Link
+                  href={link}
+                  className="no-underline prose-h2:text-inherit p-5 my-10 block prose-p:text-zinc-800 dark:prose-p:text-slate-300 transform transition duration-300 hover:scale-[1.02]"
+                >
+                  <h2 className="m-0 p-0">{title}</h2>
+                  <h3 className="mt-1">
+                    {show} – Episode {episode} | Rating: {rating}/10
+                  </h3>
 
-                    <p className="mb-1">{excerpt}</p>
-                  </Link>
-                  <div className="h-px bg-slate-500" />
-                </div>
-              );
-            }
-          )}
+                  <p className="mb-1">{excerpt}</p>
+                </Link>
+                <div className="h-px bg-slate-500" />
+              </div>
+            );
+          })}
         </section>
 
         <footer>

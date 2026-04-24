@@ -1,10 +1,9 @@
-import { DataTexture } from "three";
+import type { DataTexture } from "three";
 
 export function fillPositionTexture(texture: DataTexture, bounds: number) {
   const bounds_half = bounds / 2;
   const data =
-    texture.image.data instanceof Uint8Array ||
-    texture.image.data instanceof Float32Array
+    texture.image.data instanceof Uint8Array || texture.image.data instanceof Float32Array
       ? texture.image.data
       : new Float32Array(texture.source.data.buffer);
 
@@ -24,8 +23,7 @@ export function fillPositionTexture(texture: DataTexture, bounds: number) {
 
 export function fillVelocityTexture(texture: DataTexture) {
   const data =
-    texture.image.data instanceof Uint8Array ||
-    texture.image.data instanceof Float32Array
+    texture.image.data instanceof Uint8Array || texture.image.data instanceof Float32Array
       ? texture.image.data
       : new Float32Array(texture.source.data.buffer);
 

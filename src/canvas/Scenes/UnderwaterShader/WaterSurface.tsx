@@ -1,13 +1,8 @@
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
-import {
-  FrontSide,
-  MeshStandardMaterial,
-  PlaneGeometry,
-  Vector3,
-} from "three";
+import { FrontSide, MeshStandardMaterial, PlaneGeometry, Vector3 } from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
-import CustomShaderMaterialType from "three-custom-shader-material/vanilla";
+import type CustomShaderMaterialType from "three-custom-shader-material/vanilla";
 
 const waterVertexShader = /* glsl */ `
   uniform float uTime;
@@ -104,10 +99,7 @@ const waterFragmentShader = /* glsl */ `
   }
 `;
 
-export function WaterSurface({
-  position = [0, 0, 0] as [number, number, number],
-  size = 500,
-}) {
+export function WaterSurface({ position = [0, 0, 0] as [number, number, number], size = 500 }) {
   const materialRef = useRef<CustomShaderMaterialType>();
 
   const uniforms = useMemo(
@@ -115,7 +107,7 @@ export function WaterSurface({
       uTime: { value: 0 },
       uSunDir: { value: new Vector3(0.5, 0.7, 0.3).normalize() },
     }),
-    []
+    [],
   );
 
   const geometry = useMemo(() => {

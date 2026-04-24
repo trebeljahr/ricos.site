@@ -3,7 +3,7 @@ import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { ChunkRenderer } from "@r3f/ChunkGenerationSystem/ChunkRenderer";
 import { BrunoSimonController } from "@r3f/Controllers/BrunoSimonController";
 
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 import { MeshStandardMaterial } from "three";
 
 const defaultSeoInfo = {
@@ -11,15 +11,7 @@ const defaultSeoInfo = {
   description:
     "This is a demo of Bruno Simon's third person controller, taken from his Infinite World Example but ported to work with R3F.",
   url: "/r3f/controllers/bruno-simon-controller",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/r3f/bruno-simon-controller.png",
   imageAlt: "girl standing in a simple 3D terrain",
 };

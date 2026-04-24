@@ -1,5 +1,5 @@
-import { ChangeEvent, useState } from "react";
 import { FaChevronDown, FaChevronUp, FaEdit, FaTrash } from "@components/Icons";
+import { type ChangeEvent, useState } from "react";
 
 type TextureUploadMenuProps = {
   previewUrls: string[];
@@ -63,16 +63,8 @@ type PreviewUrlProps = {
   index: number;
 };
 
-export function PreviewUrl({
-  url,
-  onDelete,
-  onUpdate,
-  index,
-}: PreviewUrlProps) {
-  const handleUpdateFileChange = (
-    index: number,
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
+export function PreviewUrl({ url, onDelete, onUpdate, index }: PreviewUrlProps) {
+  const handleUpdateFileChange = (index: number, event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files[0]) {
       onUpdate(index, files[0]);
@@ -81,11 +73,7 @@ export function PreviewUrl({
   return (
     <div className="flex items-center">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={url}
-        alt={`Texture ${index}`}
-        className="w-12 h-12 object-cover rounded"
-      />
+      <img src={url} alt={`Texture ${index}`} className="w-12 h-12 object-cover rounded" />
       <span className="ml-2">{`u_tex${index}`}</span>
       <div className="flex space-x-2 ml-auto">
         <label

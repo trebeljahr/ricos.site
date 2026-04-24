@@ -1,22 +1,22 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ImageWithLoader } from "@components/ImageWithLoader";
-import { JsonLd, BreadcrumbJsonLd } from "@components/JsonLd";
+import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import dynamic from "next/dynamic";
 
 const MDXContentWithDemos = dynamic(
   () => import("@components/MDXContentWithDemos").then((m) => m.MDXContentWithDemos),
-  { ssr: true }
+  { ssr: true },
 );
+import { Backlinks } from "@components/Backlinks";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { ReadMore } from "@components/MoreStories";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
-import { Backlinks } from "@components/Backlinks";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Post } from "@velite";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { byOnlyPublished } from "src/lib/utils/filters";
@@ -133,18 +133,12 @@ export default function PostComponent({ post, morePosts, backlinks }: BlogProps)
 export async function getStaticPaths() {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const posts = loadVeliteData("posts.json");
-  const paths = posts
-    .filter(byOnlyPublished)
-    .map(({ slug }: Post) => ({ params: { id: slug } }));
+  const paths = posts.filter(byOnlyPublished).map(({ slug }: Post) => ({ params: { id: slug } }));
 
   return {
     paths:
       process.env.NODE_ENV === "development"
-        ? [
-            ...paths,
-            { params: { id: "site-demo-post" } },
-            { params: { id: "test" } },
-          ]
+        ? [...paths, { params: { id: "site-demo-post" } }, { params: { id: "test" } }]
         : paths,
     fallback: false,
   };
@@ -156,8 +150,7 @@ export async function getStaticProps({ params }: Params) {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");
   const posts = loadVeliteData("posts.json");
-  const post = posts
-    .find((post: Post) => post.slug === params.id);
+  const post = posts.find((post: Post) => post.slug === params.id);
   const publishedPosts = extractAndSortMetadata(posts);
   const morePosts = getRelatedContent(post, publishedPosts, 3);
   const backlinks = getBacklinks(post.link);

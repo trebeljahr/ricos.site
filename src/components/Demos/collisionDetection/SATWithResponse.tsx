@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+import { useEffect, useState } from "react";
 
+import { Polygon } from "../../../lib/math/Poly";
 import {
+  checkCollision,
+  drawAllProjections,
+  drawBackground,
   initPolygons,
   instrument,
   niceGreen,
   starPoints,
-  checkCollision,
-  drawAllProjections,
-  drawBackground,
   visualizeCollision,
 } from "../../../lib/math/drawHelpers";
-import { Polygon } from "../../../lib/math/Poly";
 export const SATWithResponse = ({
   drawProjections = true,
   changeColorOnCollision = true,
@@ -35,7 +35,7 @@ export const SATWithResponse = ({
 
     const [poly1, poly2] = initPolygons(
       ctx,
-      withStar ? new Polygon(starPoints(), niceGreen) : undefined
+      withStar ? new Polygon(starPoints(), niceGreen) : undefined,
     );
     const drawFn = () => {
       drawBackground(ctx);

@@ -8,25 +8,16 @@ import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreative
 import { LightsAndFog } from "@r3f/Helpers/LightsAndFog";
 import { RigidBallSpawner } from "@r3f/Helpers/RigidBall";
 import { Physics } from "@react-three/rapier";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Infinite Heightfield Demo with Physics",
   description:
     "In this demo I tried building an infinite procedural terrain plane extending beyond the horizon. The terrain is generated using a heightfield algorithm and the terrain should extend while the player moves making it effectively infinite.",
   url: "/r3f/scenes/heightfield",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/heightfield.png",
-  imageAlt:
-    "a simple heightfield of rolling hills stretching into the distance",
+  imageAlt: "a simple heightfield of rolling hills stretching into the distance",
 };
 
 export default function Page({ seo }: { seo: SeoInfo | null }) {

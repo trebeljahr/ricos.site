@@ -1,8 +1,7 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasShader";
-import { Canvas } from "@react-three/fiber";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 import { getShaderFileNames } from "src/lib/getShaderFileNames";
 
 export default function Page({
@@ -58,10 +57,7 @@ export default function Page({
         position: [0, 0, 1],
       }}
     >
-      <FullCanvasShader
-        key={shaderName}
-        fragmentShader={fragmentShader}
-      />
+      <FullCanvasShader key={shaderName} fragmentShader={fragmentShader} />
     </ThreeFiberLayout>
   );
 }

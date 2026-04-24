@@ -2,12 +2,11 @@ import { usePrevious } from "@hooks/usePrevious";
 import { SupportedAnimations } from "@r3f/Characters/CharacterWithAnimations";
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { PropsWithChildren, useEffect, useRef, useState } from "react";
+import { type PropsWithChildren, useEffect, useRef, useState } from "react";
 import {
-  AnimationAction,
-  AnimationMixer,
-  Event,
-  EventListener,
+  type AnimationAction,
+  type AnimationMixer,
+  type EventListener,
   LoopOnce,
   LoopRepeat,
 } from "three";
@@ -109,7 +108,7 @@ export const useGenericAnimationController = ({
           currentMixedIn.fadeOut(0.2);
           animationBefore.reset().fadeIn(0.2).play();
           animationBefore.loop = LoopRepeat;
-          animationBefore.setLoop(LoopRepeat, Infinity);
+          animationBefore.setLoop(LoopRepeat, Number.POSITIVE_INFINITY);
           mixedInAnimationState.current.isCrossFading = true;
         }
       }
@@ -158,7 +157,7 @@ export const useGenericAnimationController = ({
       fade = defaultFadeDuration,
       clampWhenFinished = true,
       force = false,
-    }: AnimationOptions = {}
+    }: AnimationOptions = {},
   ) => {
     if (newAnimation === previous.current && !force) return;
 
@@ -172,7 +171,7 @@ export const useGenericAnimationController = ({
 
     toPlay.reset().fadeIn(fade).play();
     toPlay.weight = 1;
-    toPlay.setLoop(looping ? LoopRepeat : LoopOnce, looping ? Infinity : 1);
+    toPlay.setLoop(looping ? LoopRepeat : LoopOnce, looping ? Number.POSITIVE_INFINITY : 1);
     toPlay.clampWhenFinished = clampWhenFinished;
 
     animationState.current = {

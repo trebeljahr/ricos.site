@@ -1,18 +1,13 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { useSword4 } from "@r3f/Dungeon/Enemies/Swords";
-import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
+import { type FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
 
 import { OrbitControls } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
-import {
-  Bloom,
-  EffectComposer,
-  ToneMapping,
-} from "@react-three/postprocessing";
+import { Bloom, EffectComposer, ToneMapping } from "@react-three/postprocessing";
 import { useEffect, useState } from "react";
-import { DoubleSide, Mesh, Raycaster, Vector3 } from "three";
-import { RayParameters } from "three-stdlib";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { DoubleSide, type Mesh, Raycaster, Vector3 } from "three";
+import type { RayParameters } from "three-stdlib";
 
 export const SingleLightningStrikeHittingMesh = ({
   source,
@@ -31,7 +26,7 @@ export const SingleLightningStrikeHittingMesh = ({
   const randomTarget = new Vector3(
     Math.random() * (targetBox.max.x - targetBox.min.x) + targetBox.min.x,
     Math.random() * (targetBox.max.y - targetBox.min.y) + targetBox.min.y,
-    Math.random() * (targetBox.max.z - targetBox.min.z) + targetBox.min.z
+    Math.random() * (targetBox.max.z - targetBox.min.z) + targetBox.min.z,
   );
 
   direction.subVectors(randomTarget, source).normalize();
@@ -70,12 +65,7 @@ export const SingleLightningStrikeHittingMesh = ({
 
     roughness: 0.5,
     straightness: 0.7,
-    onSubrayCreation: function (
-      segment,
-      parentSubray,
-      childSubray,
-      lightningStrike
-    ) {
+    onSubrayCreation: (segment, parentSubray, childSubray, lightningStrike) => {
       const typedLightningStrike = lightningStrike as FixedLightningStrike;
       const randomFn = typedLightningStrike.randomGenerator.random;
 
@@ -90,8 +80,7 @@ export const SingleLightningStrikeHittingMesh = ({
       vec2Forward.copy(vec1Pos).normalize();
 
       const segmentFraction =
-        segment.fraction0 +
-        (1 - segment.fraction0) * ((2 * randomFn() - 1) * 0.5);
+        segment.fraction0 + (1 - segment.fraction0) * ((2 * randomFn() - 1) * 0.5);
       vec1Pos.multiplyScalar(segmentFraction);
       const length = vec1Pos.length();
 
@@ -107,9 +96,7 @@ export const SingleLightningStrikeHittingMesh = ({
         .add(vec2Forward.clone().multiplyScalar(length))
         .add(segment.pos0);
 
-      const subRayDirection = new Vector3()
-        .subVectors(potentialEnd, childSubray.pos0)
-        .normalize();
+      const subRayDirection = new Vector3().subVectors(potentialEnd, childSubray.pos0).normalize();
       raycaster.set(childSubray.pos0, subRayDirection);
       const subIntersects = raycaster.intersectObject(targetMesh, true);
 
@@ -140,15 +127,7 @@ const defaultSeoInfo = {
   description:
     "A simple example of a lightning spell hitting a 3D object implemented in three.js and react-three-fiber.",
   url: "/r3f/experiments/lightning-spell",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/lightning-spell.png",
   imageAlt: "a lightning strike spell hitting an enemy in a 3D scene",
 };

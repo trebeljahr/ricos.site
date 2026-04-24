@@ -1,8 +1,8 @@
 import { useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
 import { useMemo } from "react";
-import { Bone, MeshStandardMaterial, SkinnedMesh } from "three";
-import { GLTF, SkeletonUtils } from "three-stdlib";
+import type { Bone, MeshStandardMaterial, SkinnedMesh } from "three";
+import { type GLTF, SkeletonUtils } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {

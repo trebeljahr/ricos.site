@@ -1,5 +1,5 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
-import { CommonMetadata } from "src/@types";
+import type { CommonMetadata } from "src/@types";
 
 type Props = {
   title: string;
@@ -13,9 +13,7 @@ export const PostCoverImage = ({ cover, title, priority = false }: Props) => {
       src={cover.src}
       alt={cover.alt}
       priority={priority}
-      sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
-        priority ? 768 : 357
-      }`}
+      sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${priority ? 768 : 357}`}
       style={{
         objectFit: "cover",
       }}

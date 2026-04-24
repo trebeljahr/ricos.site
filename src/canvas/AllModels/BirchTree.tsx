@@ -1,9 +1,9 @@
-import { useLayoutEffect } from "react";
 import { useGLTF } from "@react-three/drei";
-import { DoubleSide, Mesh, MeshStandardMaterial } from "three";
-import { GroupProps, useLoader } from "@react-three/fiber";
+import { type GroupProps, useLoader } from "@react-three/fiber";
+import { useLayoutEffect } from "react";
+import { DoubleSide, type Mesh, type MeshStandardMaterial } from "three";
+import type { GLTF } from "three-stdlib";
 import { TextureLoader } from "three/src/loaders/TextureLoader";
-import { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -18,16 +18,14 @@ type GLTFResult = GLTF & {
 
 export function BirchTree(props: GroupProps) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/BirchTree_5.gltf"
+    "/3d-assets/glb/BirchTree_5.gltf",
   ) as unknown as unknown as unknown as GLTFResult;
   const [colorMap, normalMap] = useLoader(TextureLoader, [
     "/3d-assets/textures/BirchTree_Bark.png",
     "/3d-assets/textures/BirchTree_Bark_Normal.png",
   ]);
 
-  const [leavesColorMap] = useLoader(TextureLoader, [
-    "/3d-assets/textures/BirchTree_Leaves.png",
-  ]);
+  const [leavesColorMap] = useLoader(TextureLoader, ["/3d-assets/textures/BirchTree_Leaves.png"]);
 
   useLayoutEffect(() => {
     Object.assign(materials.BirchTree_Bark, {
@@ -47,21 +45,15 @@ export function BirchTree(props: GroupProps) {
 
   return (
     <group {...props} dispose={null}>
-      <mesh
-        geometry={(nodes.Cube009 as Mesh).geometry}
-        material={materials.BirchTree_Bark}
-      />
-      <mesh
-        geometry={(nodes.Cube009_1 as Mesh).geometry}
-        material={materials.BirchTree_Leaves}
-      />
+      <mesh geometry={(nodes.Cube009 as Mesh).geometry} material={materials.BirchTree_Bark} />
+      <mesh geometry={(nodes.Cube009_1 as Mesh).geometry} material={materials.BirchTree_Leaves} />
     </group>
   );
 }
 
 export function BirchTreeWithColors() {
   const { nodes } = useGLTF(
-    "/3d-assets/glb/BirchTree_5.gltf"
+    "/3d-assets/glb/BirchTree_5.gltf",
   ) as unknown as unknown as unknown as GLTFResult;
   return (
     <group>

@@ -18,7 +18,7 @@ export const useGame = create(
         };
       },
     };
-  })
+  }),
 );
 
 type State = {

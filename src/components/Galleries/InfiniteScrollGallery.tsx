@@ -2,7 +2,7 @@ import { CustomImageRenderer } from "@components/images/CustomImageRenderer";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { RowsPhotoAlbum } from "react-photo-album";
 import "react-photo-album/rows.css";
-import { ImageProps } from "src/@types";
+import type { ImageProps } from "src/@types";
 import { addIdAndIndex } from "src/lib/utils/misc";
 import { CustomLightBox, useCustomLightbox } from "./useCustomLightbox";
 
@@ -36,9 +36,7 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
 
   const { openModal, currentImageIndex } = props;
 
-  const [displayedPhotos, setDisplayPhotos] = useState(
-    photos.slice(0, groupSize)
-  );
+  const [displayedPhotos, setDisplayPhotos] = useState(photos.slice(0, groupSize));
 
   // If the images prop changes (navigating to a different trip), reset the
   // displayedPhotos window so the new gallery doesn't inherit the previous
@@ -81,7 +79,7 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
           loadMore();
         }
       },
-      { rootMargin: "500px" }
+      { rootMargin: "500px" },
     );
 
     observer.observe(sentinel);

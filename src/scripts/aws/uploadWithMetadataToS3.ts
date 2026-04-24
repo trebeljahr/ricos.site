@@ -1,9 +1,9 @@
 import { Presets, SingleBar } from "cli-progress";
 import "dotenv/config";
 import { lstatSync } from "fs";
+import path from "path";
 import inquirer from "inquirer";
 import pLimit from "p-limit";
-import path from "path";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import {
@@ -63,10 +63,7 @@ async function uploadDir(directoryPath: string) {
 
   const filesToUploadPromises = await Promise.all(
     files.map(async (filePath) => {
-      const key = path.relative(
-        directoryPath.split("/").slice(0, -1).join("/"),
-        filePath,
-      );
+      const key = path.relative(directoryPath.split("/").slice(0, -1).join("/"), filePath);
 
       const fileMetadata = localMetadata[key];
 
@@ -109,10 +106,7 @@ async function uploadDir(directoryPath: string) {
 
   const uploadsPromises = filesToUpload.map(async (filePath) => {
     const data = await getWidthAndHeightFromFileSystem(filePath);
-    const key = path.relative(
-      directoryPath.split("/").slice(0, -1).join("/"),
-      filePath,
-    );
+    const key = path.relative(directoryPath.split("/").slice(0, -1).join("/"), filePath);
     await limit(() =>
       uploadWithMetadata(filePath, key, {
         width: String(data?.width),

@@ -1,12 +1,7 @@
-import { perf } from "src/canvas/ChunkGenerationSystem/config";
-import { Birds } from "@r3f/Scenes/Particles/Birds/Scene";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { Box, OrbitControls, Stage } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
-import { Perf } from "r3f-perf";
-import { Vector3 } from "three";
-import { Fishes } from "@r3f/Scenes/Particles/Fishes/Scene";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { Birds } from "@r3f/Scenes/Particles/Birds/Scene";
+import { OrbitControls, Stage } from "@react-three/drei";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Birds Particle System",

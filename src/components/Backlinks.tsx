@@ -15,14 +15,7 @@ const TYPE_LABELS: Record<string, string> = {
   Page: "Pages",
 };
 
-const TYPE_ORDER = [
-  "Post",
-  "Booknote",
-  "Newsletter",
-  "Podcastnote",
-  "Travelblog",
-  "Page",
-];
+const TYPE_ORDER = ["Post", "Booknote", "Newsletter", "Podcastnote", "Travelblog", "Page"];
 
 export const Backlinks = ({ items }: { items: BacklinkItem[] }) => {
   if (items.length === 0) return null;
@@ -51,10 +44,7 @@ export const Backlinks = ({ items }: { items: BacklinkItem[] }) => {
               <ul className="space-y-1 list-none pl-0! mt-0!">
                 {typeItems.map((item) => (
                   <li key={item.link} className="pl-0!">
-                    <Link
-                      href={item.link}
-                      className="text-myBlue hover:underline"
-                    >
+                    <Link href={item.link} className="text-myBlue hover:underline">
                       {item.title}
                     </Link>
                   </li>

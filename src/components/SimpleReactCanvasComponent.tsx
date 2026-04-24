@@ -1,9 +1,9 @@
 import { useWindowWidth } from "@react-hook/window-size";
 import clsx from "clsx";
 import {
-  Dispatch,
-  HTMLAttributes,
-  SetStateAction,
+  type Dispatch,
+  type HTMLAttributes,
+  type SetStateAction,
   useEffect,
   useRef,
   useState,
@@ -15,10 +15,7 @@ type CanvasProps = {
   setCnv: Dispatch<SetStateAction<HTMLCanvasElement | null>>;
 } & HTMLAttributes<HTMLCanvasElement>;
 
-export const SimpleReactCanvasComponent = ({
-  setCnv,
-  ...props
-}: CanvasProps) => {
+export const SimpleReactCanvasComponent = ({ setCnv, ...props }: CanvasProps) => {
   const windowWidth = useWindowWidth();
 
   const [width, setWidth] = useState<number>();

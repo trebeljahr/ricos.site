@@ -27,14 +27,7 @@
  */
 import "dotenv/config";
 import { spawn } from "child_process";
-import {
-  existsSync,
-  mkdirSync,
-  readlinkSync,
-  symlinkSync,
-  unlinkSync,
-  lstatSync,
-} from "fs";
+import { existsSync, lstatSync, mkdirSync, readlinkSync, symlinkSync, unlinkSync } from "fs";
 import { join, resolve } from "path";
 import { cwd } from "process";
 import { ensureRclone } from "./lib/rclone-binary";
@@ -45,10 +38,7 @@ const SECRET_KEY = process.env.S3_SECRET_ACCESS_KEY ?? "minioadmin";
 
 const DATA_DIR = resolve(cwd(), ".rclone-data");
 const SOURCE_BUCKET_DIR = join(DATA_DIR, "images.trebeljahr.com");
-const RESIZED_BUCKET_DIR = join(
-  DATA_DIR,
-  "images.trebeljahr.com.resized"
-);
+const RESIZED_BUCKET_DIR = join(DATA_DIR, "images.trebeljahr.com.resized");
 const ASSETS_SYMLINK = join(SOURCE_BUCKET_DIR, "assets");
 const ASSETS_TARGET_RELATIVE = "../../src/content/Notes/assets";
 
@@ -63,7 +53,7 @@ function ensureLayout() {
         "Initialize the Notes submodule first:\n" +
         "  git submodule update --init --recursive\n" +
         "Or run in remote-image mode (no rclone, no disk):\n" +
-        "  npm run dev:remote"
+        "  npm run dev:remote",
     );
     process.exit(1);
   }
@@ -114,7 +104,7 @@ async function run() {
     {
       stdio: "inherit",
       env: process.env,
-    }
+    },
   );
   proc.on("error", (err) => {
     console.error("rclone failed to start:", err);

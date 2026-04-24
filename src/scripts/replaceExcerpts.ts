@@ -1,11 +1,8 @@
-import fs from "fs-extra";
 import path from "path";
+import fs from "fs-extra";
 import matter from "gray-matter";
 
-const markdownDirectory = path.join(
-  process.cwd(),
-  "src/content/Notes/booknotes"
-);
+const markdownDirectory = path.join(process.cwd(), "src/content/Notes/booknotes");
 
 async function processMarkdownFiles(directory: string) {
   const files = await fs.readdir(directory);
@@ -30,10 +27,7 @@ async function processMarkdownFiles(directory: string) {
         const updatedMarkdown = matter.stringify(content, data);
 
         // Replace <p>{frontmatter.excerpt}</p> with the extracted excerpt content
-        const newContent = updatedMarkdown.replace(
-          "<p>{frontmatter.excerpt}</p>",
-          excerptContent
-        );
+        const newContent = updatedMarkdown.replace("<p>{frontmatter.excerpt}</p>", excerptContent);
 
         // Write the updated content back to the file
         await fs.writeFile(filePath, newContent, "utf-8");

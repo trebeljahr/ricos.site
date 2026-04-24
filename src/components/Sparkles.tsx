@@ -1,10 +1,4 @@
-import {
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { type PropsWithChildren, useCallback, useEffect, useRef, useState } from "react";
 
 const DEFAULT_COLOR = "#FFC700";
 
@@ -51,8 +45,7 @@ const getInitialState = () => {
 };
 
 function usePrefersReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] =
-    useState(getInitialState);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(getInitialState);
 
   useEffect(() => {
     const mediaQueryList = window.matchMedia(QUERY);
@@ -72,7 +65,7 @@ function usePrefersReducedMotion() {
 }
 
 const range = (start: number, end?: number, step = 1) => {
-  let output = [];
+  const output = [];
   if (typeof end === "undefined") {
     end = start;
     start = 0;
@@ -83,11 +76,7 @@ const range = (start: number, end?: number, step = 1) => {
   return output;
 };
 
-const useRandomInterval = (
-  callback: () => void,
-  minDelay?: number,
-  maxDelay?: number,
-) => {
+const useRandomInterval = (callback: () => void, minDelay?: number, maxDelay?: number) => {
   const timeoutId = useRef<number>(null!);
   const savedCallback = useRef(callback);
 
@@ -112,7 +101,7 @@ const useRandomInterval = (
     return () => window.clearTimeout(timeoutId.current);
   }, [minDelay, maxDelay]);
 
-  const cancel = useCallback(function () {
+  const cancel = useCallback(() => {
     window.clearTimeout(timeoutId.current);
   }, []);
 
@@ -152,12 +141,7 @@ const Sparkles = ({
   return (
     <span className="relative inline-block w-full h-full" {...delegated}>
       {sparkles.map((sparkle) => (
-        <Sparkle
-          key={sparkle.id}
-          color={sparkle.color}
-          size={sparkle.size}
-          style={sparkle.style}
-        />
+        <Sparkle key={sparkle.id} color={sparkle.color} size={sparkle.size} style={sparkle.style} />
       ))}
       <span className="relative ">{children}</span>
     </span>

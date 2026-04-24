@@ -1,8 +1,8 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { MeshMerger } from "@r3f/Scenes/Particles/MeshMerger/Scene";
 import { OrbitControls } from "@react-three/drei";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 import { Vector3 } from "three";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Particles for Merging Meshes",

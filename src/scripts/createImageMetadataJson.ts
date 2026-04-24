@@ -3,16 +3,12 @@ import { lstatSync } from "fs";
 import inquirer from "inquirer";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import {
-  assetsMetadataFilePath,
-  createMetadataFile,
-} from "./metadataJsonFileHelpers";
+import { assetsMetadataFilePath, createMetadataFile } from "./metadataJsonFileHelpers";
 
 const argv = await yargs(hideBin(process.argv))
   .option("dirPath", {
     alias: "d",
-    description:
-      "Path to assets directory for which metadata should be created",
+    description: "Path to assets directory for which metadata should be created",
     type: "string",
   })
   .help()

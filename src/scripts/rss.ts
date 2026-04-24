@@ -1,12 +1,12 @@
+import fs from "fs";
+import path from "path";
+import { Feed } from "feed";
+import { baseUrl } from "src/lib/urlUtils";
+import { byOnlyPublished } from "src/lib/utils/filters";
 import booknotes from "../../.velite/booknotes.json";
 import newsletters from "../../.velite/newsletters.json";
 import posts from "../../.velite/posts.json";
 import travelblogs from "../../.velite/travelblogs.json";
-import { Feed } from "feed";
-import fs from "fs";
-import path from "path";
-import { baseUrl } from "src/lib/urlUtils";
-import { byOnlyPublished } from "src/lib/utils/filters";
 
 function buildImageUrl(coverSrc: string): string | undefined {
   const cloudfrontId = process.env.NEXT_PUBLIC_CLOUDFRONT_ID;
@@ -20,15 +20,12 @@ function buildImageUrl(coverSrc: string): string | undefined {
 
 async function generateRssFeed() {
   if (!process.env.NEXT_PUBLIC_CLOUDFRONT_ID) {
-    console.warn(
-      "Warning: NEXT_PUBLIC_CLOUDFRONT_ID not set — RSS feed images will be omitted"
-    );
+    console.warn("Warning: NEXT_PUBLIC_CLOUDFRONT_ID not set — RSS feed images will be omitted");
   }
 
   const feed = new Feed({
     title: "ricos.site | RSS Feed",
-    description:
-      "Posts, newsletters, book notes, and travel stories by Rico Trebeljahr",
+    description: "Posts, newsletters, book notes, and travel stories by Rico Trebeljahr",
     id: baseUrl,
     link: baseUrl,
     updated: new Date(),
@@ -50,9 +47,7 @@ async function generateRssFeed() {
   const allContent = [
     ...posts.filter(byOnlyPublished),
     ...newsletters.filter(byOnlyPublished),
-    ...booknotes.filter(
-      (b: any) => byOnlyPublished(b) && b.summary && b.summary === true
-    ),
+    ...booknotes.filter((b: any) => byOnlyPublished(b) && b.summary && b.summary === true),
     ...travelblogs.filter(byOnlyPublished),
   ];
 

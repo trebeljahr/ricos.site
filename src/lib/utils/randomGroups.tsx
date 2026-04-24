@@ -4,10 +4,7 @@
  * @param groupSize - The size of each group.
  * @returns An array of groups (arrays) containing randomly ordered elements.
  */
-export function splitIntoRandomGroupsOfSize<T>(
-  arr: T[],
-  groupSize: number
-): T[][] {
+export function splitIntoRandomGroupsOfSize<T>(arr: T[], groupSize: number): T[][] {
   if (arr.length % groupSize !== 0) {
     throw new Error("Array length must be divisible by the group size.");
   }

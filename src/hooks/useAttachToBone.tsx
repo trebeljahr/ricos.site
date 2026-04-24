@@ -1,10 +1,10 @@
-import { MutableRefObject, useEffect } from "react";
-import { Bone, Group, Mesh, Object3D } from "three";
+import { type MutableRefObject, useEffect } from "react";
+import type { Group, Mesh, Object3D } from "three";
 
 export const useAttachToBone = (
   groupRef: MutableRefObject<Object3D>,
   attachPointName: string,
-  thingToAttach: Group | Mesh
+  thingToAttach: Group | Mesh,
 ) => {
   useEffect(() => {
     let object: Object3D;

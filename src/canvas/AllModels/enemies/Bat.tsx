@@ -1,15 +1,8 @@
-import { useRef, useMemo } from "react";
+import { useAnimations, useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
-import { useGLTF, useAnimations } from "@react-three/drei";
-import { GLTF, SkeletonUtils } from "three-stdlib";
-import {
-  AnimationClip,
-  Bone,
-  Group,
-  Mesh,
-  MeshStandardMaterial,
-  SkinnedMesh,
-} from "three";
+import { useMemo, useRef } from "react";
+import type { AnimationClip, Bone, Group, Mesh, MeshStandardMaterial, SkinnedMesh } from "three";
+import { type GLTF, SkeletonUtils } from "three-stdlib";
 
 type ActionName =
   | "BatArmature|Bat_Attack"
@@ -39,9 +32,7 @@ type GLTFResult = GLTF & {
 
 export function Bat(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<Group>(null!);
-  const { scene, animations } = useGLTF(
-    "/3d-assets/glb/enemies/Bat-transformed.glb"
-  );
+  const { scene, animations } = useGLTF("/3d-assets/glb/enemies/Bat-transformed.glb");
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as unknown as unknown as GLTFResult;
   const { actions } = useAnimations(animations, group);
@@ -49,12 +40,7 @@ export function Bat(props: JSX.IntrinsicElements["group"]) {
     <group ref={group} {...props} dispose={null}>
       <group name="Root_Scene">
         <primitive object={nodes.Root} />
-        <group
-          name="Bat"
-          position={[0, 2.44, 0.13]}
-          rotation={[-Math.PI / 2, 0, 0]}
-          scale={100}
-        >
+        <group name="Bat" position={[0, 2.44, 0.13]} rotation={[-Math.PI / 2, 0, 0]} scale={100}>
           <skinnedMesh
             name="Bat_1"
             geometry={nodes.Bat_1.geometry}

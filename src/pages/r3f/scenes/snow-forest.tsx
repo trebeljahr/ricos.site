@@ -5,19 +5,14 @@ import {
   MemoizedChunk,
   useChunkContext,
 } from "@r3f/ChunkGenerationSystem/ChunkProvider";
-import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { MovingSkyLight } from "@r3f/Helpers/OverheadLights";
 import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
 import { useThree } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Suspense } from "react";
-import {
-  physicsDebug,
-  tilesDistance,
-  tileSize,
-} from "src/canvas/ChunkGenerationSystem/config";
+import { physicsDebug, tileSize, tilesDistance } from "src/canvas/ChunkGenerationSystem/config";
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 const ChunkRenderer = () => {
   const chunks = useChunkContext();

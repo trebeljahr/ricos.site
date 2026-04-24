@@ -4,8 +4,8 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
-import { CommonMetadata } from "src/@types";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import type { CommonMetadata } from "src/@types";
+import type { SeoInfo } from "src/lib/getSeoInfo";
 
 type MetaInfo = {
   cover: { src: string; alt: string };
@@ -89,14 +89,10 @@ const TravelBlogs = ({ cardContent, seo }: Props) => {
     <Layout
       title={seo?.metaTitle || "Traveling Stories"}
       description={
-        seo?.metaDescription ||
-        "An overview page about the traveling stories I have to tell"
+        seo?.metaDescription || "An overview page about the traveling stories I have to tell"
       }
       image={seo?.ogImage || "/assets/blog/traveling-van.png"}
-      imageAlt={
-        seo?.ogImageAlt ||
-        "a traveling van sitting in the middle of nowhere in the forest"
-      }
+      imageAlt={seo?.ogImageAlt || "a traveling van sitting in the middle of nowhere in the forest"}
       url="travel"
       keywords={seo?.keywords || ["travel", "blog", "adventures", "stories"]}
     >
@@ -138,8 +134,9 @@ export default TravelBlogs;
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
-  const { getImgWidthAndHeightDuringBuild } =
-    await import("src/lib/getImgWidthAndHeightDuringBuild");
+  const { getImgWidthAndHeightDuringBuild } = await import(
+    "src/lib/getImgWidthAndHeightDuringBuild"
+  );
   const { getTravelingStoryNames } = await import("src/lib/travelData");
   const { byOnlyPublished } = await import("src/lib/utils/filters");
 
@@ -155,16 +152,11 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
       parentFolder,
     }));
 
-  const travelingStoriesMeta = {} as Record<
-    string,
-    MetaInfo & { cover: CommonMetadata["cover"] }
-  >;
+  const travelingStoriesMeta = {} as Record<string, MetaInfo & { cover: CommonMetadata["cover"] }>;
 
   const entries = await Promise.all(
     Object.entries(travelingStoriesMetaRaw).map(async ([key, val]) => {
-      const { width, height } = await getImgWidthAndHeightDuringBuild(
-        val.cover.src,
-      );
+      const { width, height } = await getImgWidthAndHeightDuringBuild(val.cover.src);
       return [key, { ...val, cover: { ...val.cover, width, height } }] as const;
     }),
   );
@@ -178,9 +170,7 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
         title: story,
       };
 
-      const currentBlogs = travelingBlogsMeta.filter(
-        (blog: any) => blog.parentFolder === story,
-      );
+      const currentBlogs = travelingBlogsMeta.filter((blog: any) => blog.parentFolder === story);
       const { date, readingTime, amountOfStories } = currentBlogs.reduce(
         (agg: any, current: any) => {
           const currentDate = new Date(current.date);

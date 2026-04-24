@@ -1,6 +1,6 @@
 import Head from "next/head";
-import { baseUrl, completeUrl } from "src/lib/urlUtils";
 import { nextImageUrl } from "src/lib/mapToImageProps";
+import { baseUrl, completeUrl } from "src/lib/urlUtils";
 
 type ArticleJsonLdProps = {
   title: string;

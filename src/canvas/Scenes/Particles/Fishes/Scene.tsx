@@ -11,33 +11,33 @@ import { useWhale } from "@r3f/AllModels/fish_pack/Whale";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import {
-  Bone,
+  type Bone,
   BufferAttribute,
   BufferGeometry,
   Color,
-  IUniform,
-  Mesh,
+  type IUniform,
+  type Mesh,
   MeshPhysicalMaterial,
-  ShaderMaterial,
+  type ShaderMaterial,
   SkinnedMesh,
   Vector3,
 } from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
-import CustomShaderMaterialType from "three-custom-shader-material/vanilla";
-import { mergeBufferGeometries, Variable } from "three-stdlib";
+import type CustomShaderMaterialType from "three-custom-shader-material/vanilla";
+import { type Variable, mergeBufferGeometries } from "three-stdlib";
 import fishFragment from "./shaders/fishFrag.glsl";
 import fishVertex from "./shaders/fishVert.glsl";
 import positionShader from "./shaders/positionFrag.glsl";
 import velocityShader from "./shaders/velocityFrag.glsl";
 
 export enum FishType {
-  BlueTang,
-  DoctorFish,
-  ClownFish,
-  Dolphin,
-  Whale,
-  Shark,
-  Manta,
+  BlueTang = 0,
+  DoctorFish = 1,
+  ClownFish = 2,
+  Dolphin = 3,
+  Whale = 4,
+  Shark = 5,
+  Manta = 6,
 }
 
 type Uniforms = { [key: string]: IUniform<any> };
@@ -70,7 +70,7 @@ export function Fishes({
       minX: { value: 0.0 },
       maxX: { value: 0.0 },
     }),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export function Fishes({
       positionVariable,
       velocityVariable,
       positionUniforms,
-      velocityUniforms
+      velocityUniforms,
     );
 
     function initFishs() {
@@ -109,12 +109,7 @@ export function Fishes({
     if (delta > 1) delta = 1;
     last.current = now;
 
-    if (
-      !fishMaterial.current ||
-      !positionUniforms.current ||
-      !velocityUniforms.current
-    )
-      return;
+    if (!fishMaterial.current || !positionUniforms.current || !velocityUniforms.current) return;
 
     positionUniforms.current["time"].value = now;
     positionUniforms.current["delta"].value = delta;
@@ -129,14 +124,10 @@ export function Fishes({
 
     gpuCompute.compute();
 
-    const posValue = gpuCompute.getCurrentRenderTarget(
-      positionVariable.current
-    ).texture;
+    const posValue = gpuCompute.getCurrentRenderTarget(positionVariable.current).texture;
     fishMaterial.current.uniforms["texturePosition"].value = posValue;
 
-    const velValue = gpuCompute.getCurrentRenderTarget(
-      velocityVariable.current
-    ).texture;
+    const velValue = gpuCompute.getCurrentRenderTarget(velocityVariable.current).texture;
     fishMaterial.current.uniforms["textureVelocity"].value = velValue;
   });
 
@@ -153,8 +144,8 @@ export function Fishes({
     fishGeo.scale(scale, scale, scale);
 
     fishGeo.rotateX(-Math.PI / 2);
-    let currentMin = Infinity;
-    let currentMax = -Infinity;
+    let currentMin = Number.POSITIVE_INFINITY;
+    let currentMax = Number.NEGATIVE_INFINITY;
     for (let i = 0; i < fishGeo.attributes.position.array.length; i += 3) {
       const x = fishGeo.attributes.position.array[i + 2];
       currentMin = Math.min(currentMin, x);
@@ -197,23 +188,13 @@ export function Fishes({
     if (length === undefined || !fishGeoArray) return allFishes;
 
     for (let i = 0; i < length * amount; i++) {
-      const offset =
-        Math.floor(i / length) * fishGeo.getAttribute("position").count;
+      const offset = Math.floor(i / length) * fishGeo.getAttribute("position").count;
       indices.push(fishGeoArray[i % length] + offset);
     }
 
-    allFishes.setAttribute(
-      "position",
-      new BufferAttribute(new Float32Array(vertices), 3)
-    );
-    allFishes.setAttribute(
-      "normal",
-      new BufferAttribute(new Float32Array(normals), 3)
-    );
-    allFishes.setAttribute(
-      "reference",
-      new BufferAttribute(new Float32Array(reference), 2)
-    );
+    allFishes.setAttribute("position", new BufferAttribute(new Float32Array(vertices), 3));
+    allFishes.setAttribute("normal", new BufferAttribute(new Float32Array(normals), 3));
+    allFishes.setAttribute("reference", new BufferAttribute(new Float32Array(reference), 2));
 
     allFishes.setIndex(indices);
 

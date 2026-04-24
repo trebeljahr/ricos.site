@@ -1,10 +1,7 @@
 import { useEffect, useRef } from "react";
+import type { XYZ } from "src/@types";
 import { useChunkContext } from "../ChunkGenerationSystem/ChunkProvider";
-import {
-  addPositions,
-  removePositions,
-} from "./useInstancedMesh2multiMaterial";
-import { XYZ } from "src/@types";
+import type { addPositions, removePositions } from "./useInstancedMesh2multiMaterial";
 
 export type PositionsUpdateHookProps = {
   addPositions: addPositions;
@@ -23,9 +20,7 @@ export const ChunkPositionUpdater = ({
   const workerRef = useRef<Worker>();
 
   useEffect(() => {
-    workerRef.current = new Worker(
-      new URL("../my-workers/noiseWorker.ts", import.meta.url)
-    );
+    workerRef.current = new Worker(new URL("../my-workers/noiseWorker.ts", import.meta.url));
 
     return () => {
       workerRef.current?.terminate();
@@ -41,7 +36,7 @@ export const ChunkPositionUpdater = ({
         scales: number[];
         rotations: XYZ[];
         chunkId: string;
-      }>
+      }>,
     ) => {
       const { positions, scales, rotations, chunkId } = event.data;
 
@@ -54,13 +49,9 @@ export const ChunkPositionUpdater = ({
     const currentChunkKeys = new Set(chunks.keys());
     const prevChunkKeys = prevChunksRef.current;
 
-    const newChunkKeys = Array.from(currentChunkKeys).filter(
-      (key) => !prevChunkKeys.has(key)
-    );
+    const newChunkKeys = Array.from(currentChunkKeys).filter((key) => !prevChunkKeys.has(key));
 
-    const removedChunks = Array.from(prevChunkKeys).filter(
-      (key) => !currentChunkKeys.has(key)
-    );
+    const removedChunks = Array.from(prevChunkKeys).filter((key) => !currentChunkKeys.has(key));
 
     prevChunksRef.current = currentChunkKeys;
 

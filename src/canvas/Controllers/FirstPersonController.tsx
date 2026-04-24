@@ -1,12 +1,7 @@
 import { useJoystick } from "@hooks/useJoystick";
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import {
-  CapsuleCollider,
-  RapierRigidBody,
-  RigidBody,
-  useRapier,
-} from "@react-three/rapier";
+import { CapsuleCollider, type RapierRigidBody, RigidBody, useRapier } from "@react-three/rapier";
 import { useEffect, useRef } from "react";
 import { Euler, MathUtils, Vector3 } from "three";
 
@@ -32,9 +27,7 @@ const _PI_2 = Math.PI / 2;
 const maxPolarAngle = Math.PI;
 const minPolarAngle = 0;
 
-export const FirstPersonController = (
-  props: JSX.IntrinsicElements["group"]
-) => {
+export const FirstPersonController = (props: JSX.IntrinsicElements["group"]) => {
   const [, get] = useKeyboardControls();
   const camera = useThree((state) => state.camera);
 
@@ -46,10 +39,7 @@ export const FirstPersonController = (
       _euler.y -= leveledX * rotationSpeed;
       _euler.x += leveledY * rotationSpeed;
 
-      _euler.x = Math.max(
-        _PI_2 - maxPolarAngle,
-        Math.min(_PI_2 - minPolarAngle, _euler.x)
-      );
+      _euler.x = Math.max(_PI_2 - maxPolarAngle, Math.min(_PI_2 - minPolarAngle, _euler.x));
 
       camera.quaternion.setFromEuler(_euler);
     },
@@ -61,9 +51,9 @@ export const FirstPersonController = (
 
   const characterRigidBody = useRef<RapierRigidBody>(null!);
 
-  const characterController = useRef<
-    ReturnType<typeof rapier.world.createCharacterController>
-  >(null!);
+  const characterController = useRef<ReturnType<typeof rapier.world.createCharacterController>>(
+    null!,
+  );
 
   const velocity = useRef({ x: 0, z: 0 });
 
@@ -86,12 +76,7 @@ export const FirstPersonController = (
   }, [rapier.world]);
 
   useFrame((state, delta) => {
-    if (
-      !characterRigidBody.current ||
-      !characterController.current ||
-      !joystick
-    )
-      return;
+    if (!characterRigidBody.current || !characterController.current || !joystick) return;
 
     const { forward, backward, leftward, rightward, jump, sprint } = get();
     const speed = 15 * delta * (sprint ? 1.5 : 1);
@@ -123,7 +108,7 @@ export const FirstPersonController = (
       z: MathUtils.lerp(velocity.current.z, targetVelocity.z, factor),
     };
 
-    let movementDirection = {
+    const movementDirection = {
       x: velocity.current.x,
       y: jumpVelocity.current * factor,
       z: velocity.current.z,
@@ -162,10 +147,7 @@ export const FirstPersonController = (
 
     const characterCollider = characterRigidBody.current.collider(0);
 
-    characterController.current.computeColliderMovement(
-      characterCollider,
-      movementDirection
-    );
+    characterController.current.computeColliderMovement(characterCollider, movementDirection);
 
     const movement = characterController.current.computedMovement();
     const newPos = characterRigidBody.current.translation();
@@ -177,15 +159,9 @@ export const FirstPersonController = (
 
     const rigidBodyTranslation = characterRigidBody.current.translation();
     if (characterRigidBody.current.translation().y <= -30) {
-      characterRigidBody.current.setNextKinematicTranslation(
-        new Vector3(0, 0, 0)
-      );
+      characterRigidBody.current.setNextKinematicTranslation(new Vector3(0, 0, 0));
     }
-    idealCameraPosition.set(
-      rigidBodyTranslation.x,
-      rigidBodyTranslation.y,
-      rigidBodyTranslation.z
-    );
+    idealCameraPosition.set(rigidBodyTranslation.x, rigidBodyTranslation.y, rigidBodyTranslation.z);
     camera.position.lerp(idealCameraPosition, 100 * delta);
   });
 

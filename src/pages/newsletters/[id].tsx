@@ -1,17 +1,17 @@
+import { Backlinks } from "@components/Backlinks";
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ImageWithLoader } from "@components/ImageWithLoader";
-import { JsonLd, BreadcrumbJsonLd } from "@components/JsonLd";
+import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
+import { HorizontalCard } from "@components/NiceCards";
 import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";
-import { Backlinks } from "@components/Backlinks";
-import { HorizontalCard } from "@components/NiceCards";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Newsletter as NewsletterType } from "@velite";
-import { CommonMetadata } from "src/@types";
+import type { CommonMetadata } from "src/@types";
 
 import { byOnlyPublished } from "src/lib/utils/filters";
 
@@ -81,10 +81,7 @@ const Newsletter = ({
         ]}
       />
       <main className="py-20 px-3 max-w-5xl mx-auto">
-        <BreadCrumbs
-          path={url}
-          overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]}
-        />
+        <BreadCrumbs path={url} overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]} />
         <MetadataDisplay date={date} readingTime={readingTime} />
 
         <article>
@@ -153,21 +150,19 @@ export async function getStaticProps({ params }: Params) {
   const rawNewsletters = loadVeliteData("newsletters.json");
   const newsletters = (rawNewsletters.default || rawNewsletters) as NewsletterType[];
   const published = newsletters.filter(byOnlyPublished);
-  const newsletter = newsletters.find(
-    ({ slugTitle }) => slugTitle === params.id,
-  );
+  const newsletter = newsletters.find(({ slugTitle }) => slugTitle === params.id);
   if (!newsletter) throw Error("Newsletter not found");
 
-  const number = parseInt(String(newsletter.number));
+  const number = Number.parseInt(String(newsletter.number));
   const next = number + 1;
   const prev = number - 1;
 
-  let nextPost = newsletters.find((nl) => parseInt(String(nl.number)) === next);
-  let prevPost = newsletters.find((nl) => parseInt(String(nl.number)) === prev);
+  const nextPost = newsletters.find((nl) => Number.parseInt(String(nl.number)) === next);
+  const prevPost = newsletters.find((nl) => Number.parseInt(String(nl.number)) === prev);
 
   const { toOnlyMetadata } = await import("src/lib/utils/toOnlyMetadata");
-  const relatedNewsletters = getRelatedContent(newsletter, published, 3).map(
-    (nl: NewsletterType) => toOnlyMetadata(nl)
+  const relatedNewsletters = getRelatedContent(newsletter, published, 3).map((nl: NewsletterType) =>
+    toOnlyMetadata(nl),
   );
 
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");
@@ -187,15 +182,13 @@ export async function getStaticProps({ params }: Params) {
 export async function getStaticPaths() {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const newsletters: NewsletterType[] = loadVeliteData("newsletters.json");
-  const newsletterTitles = newsletters
-    .filter(byOnlyPublished)
-    .map(({ slugTitle }) => {
-      return {
-        params: {
-          id: slugTitle,
-        },
-      };
-    });
+  const newsletterTitles = newsletters.filter(byOnlyPublished).map(({ slugTitle }) => {
+    return {
+      params: {
+        id: slugTitle,
+      },
+    };
+  });
 
   return {
     paths: newsletterTitles,

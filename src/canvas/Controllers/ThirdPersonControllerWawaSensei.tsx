@@ -1,14 +1,10 @@
 import { CharacterWithAnimationsControlled } from "@r3f/Characters/CharacterWithAnimations";
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import {
-  CapsuleCollider,
-  RapierRigidBody,
-  RigidBody,
-} from "@react-three/rapier";
+import { CapsuleCollider, type RapierRigidBody, RigidBody } from "@react-three/rapier";
 import { useControls } from "leva";
 import { useEffect, useRef, useState } from "react";
-import { Group, MathUtils, Object3D, Vector3 } from "three";
+import { type Group, MathUtils, Vector3 } from "three";
 import { degToRad } from "three/src/math/MathUtils.js";
 
 const normalizeAngle = (angle: number) => {
@@ -33,19 +29,16 @@ const lerpAngle = (start: number, end: number, t: number) => {
 };
 
 export const ThirdPersonControllerWawaSensei = () => {
-  const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED } = useControls(
-    "Character Control",
-    {
-      WALK_SPEED: { value: 3, min: 0.1, max: 4, step: 0.1 },
-      RUN_SPEED: { value: 6, min: 0.2, max: 12, step: 0.1 },
-      ROTATION_SPEED: {
-        value: degToRad(0.5),
-        min: degToRad(0.1),
-        max: degToRad(5),
-        step: degToRad(0.1),
-      },
-    }
-  );
+  const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED } = useControls("Character Control", {
+    WALK_SPEED: { value: 3, min: 0.1, max: 4, step: 0.1 },
+    RUN_SPEED: { value: 6, min: 0.2, max: 12, step: 0.1 },
+    ROTATION_SPEED: {
+      value: degToRad(0.5),
+      min: degToRad(0.1),
+      max: degToRad(5),
+      step: degToRad(0.1),
+    },
+  });
   const rb = useRef<RapierRigidBody>(null!);
   const container = useRef<Group>(null!);
   const character = useRef<Group>(null!);
@@ -106,7 +99,7 @@ export const ThirdPersonControllerWawaSensei = () => {
         movement.x = -1;
       }
 
-      let speed = get().run ? RUN_SPEED : WALK_SPEED;
+      const speed = get().run ? RUN_SPEED : WALK_SPEED;
 
       if (movement.x !== 0) {
         rotationTarget.current += ROTATION_SPEED * movement.x;
@@ -114,12 +107,8 @@ export const ThirdPersonControllerWawaSensei = () => {
 
       if (movement.x !== 0 || movement.z !== 0) {
         characterRotationTarget.current = Math.atan2(movement.x, movement.z);
-        vel.x =
-          Math.sin(rotationTarget.current + characterRotationTarget.current) *
-          speed;
-        vel.z =
-          Math.cos(rotationTarget.current + characterRotationTarget.current) *
-          speed;
+        vel.x = Math.sin(rotationTarget.current + characterRotationTarget.current) * speed;
+        vel.z = Math.cos(rotationTarget.current + characterRotationTarget.current) * speed;
         if (speed === RUN_SPEED) {
           setAnimation("run");
         } else {
@@ -131,7 +120,7 @@ export const ThirdPersonControllerWawaSensei = () => {
       character.current.rotation.y = lerpAngle(
         character.current.rotation.y,
         characterRotationTarget.current,
-        0.1
+        0.1,
       );
 
       rb.current.setLinvel(vel, true);
@@ -141,7 +130,7 @@ export const ThirdPersonControllerWawaSensei = () => {
     container.current.rotation.y = MathUtils.lerp(
       container.current.rotation.y,
       rotationTarget.current,
-      0.1
+      0.1,
     );
 
     cameraPosition.current.getWorldPosition(cameraWorldPosition.current);

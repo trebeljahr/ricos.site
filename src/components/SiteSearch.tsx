@@ -1,20 +1,8 @@
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-} from "@headlessui/react";
-import Fuse from "fuse.js";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import {
-  ChangeEvent,
-  Fragment,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
 import { FiSearch } from "@components/Icons";
+import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
+import Fuse from "fuse.js";
+import { useRouter } from "next/router";
+import { type ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 
 type SearchItem = {
   title: string;
@@ -26,14 +14,10 @@ type SearchItem = {
 
 const typeColors: Record<string, string> = {
   Post: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  Newsletter:
-    "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  "Book Notes":
-    "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
-  Travel:
-    "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  Podcast:
-    "bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200",
+  Newsletter: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  "Book Notes": "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
+  Travel: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+  Podcast: "bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200",
   Page: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
 };
 
@@ -104,30 +88,27 @@ export const SiteSearch = () => {
     }
   }, [open]);
 
-  const handleSearch = useCallback(
-    async (e: ChangeEvent<HTMLInputElement>) => {
-      const q = e.target.value;
-      setQuery(q);
-      setSelectedIndex(0);
+  const handleSearch = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
+    const q = e.target.value;
+    setQuery(q);
+    setSelectedIndex(0);
 
-      if (q.trim().length < 2) {
-        setResults([]);
-        return;
-      }
+    if (q.trim().length < 2) {
+      setResults([]);
+      return;
+    }
 
-      const fuse = await getFuse();
-      const fuseResults = fuse.search(q, { limit: 10 });
-      setResults(fuseResults.map((r) => r.item));
-    },
-    []
-  );
+    const fuse = await getFuse();
+    const fuseResults = fuse.search(q, { limit: 10 });
+    setResults(fuseResults.map((r) => r.item));
+  }, []);
 
   const navigate = useCallback(
     (link: string) => {
       setOpen(false);
       router.push(link);
     },
-    [router]
+    [router],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -194,9 +175,7 @@ export const SiteSearch = () => {
                       onClick={() => navigate(item.link)}
                       onMouseEnter={() => setSelectedIndex(i)}
                       className={`w-full text-left px-4 py-3 flex flex-col gap-1 transition-colors ${
-                        i === selectedIndex
-                          ? "bg-gray-100 dark:bg-gray-800"
-                          : ""
+                        i === selectedIndex ? "bg-gray-100 dark:bg-gray-800" : ""
                       }`}
                     >
                       <div className="flex items-center gap-2">

@@ -7,7 +7,7 @@ import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Booknote } from "@velite";
 import { useState } from "react";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
@@ -25,7 +25,10 @@ export default function Books({ booknotes, seo }: Props) {
   return (
     <Layout
       title={seo?.metaTitle || "Booknotes - What I have learned while reading"}
-      description={seo?.metaDescription || "An overview of what I have read, with a filterable list of books and booknotes"}
+      description={
+        seo?.metaDescription ||
+        "An overview of what I have read, with a filterable list of books and booknotes"
+      }
       keywords={seo?.keywords || ["booknotes", "books", "reading", "book summaries"]}
       image={seo?.ogImage || "/assets/blog/a-bookshelf.png"}
       url={url}
@@ -34,10 +37,7 @@ export default function Books({ booknotes, seo }: Props) {
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
 
-        <Header
-          title="Booknotes"
-          subtitle="What I have learned while reading"
-        />
+        <Header title="Booknotes" subtitle="What I have learned while reading" />
         <div>
           <Search
             all={booknotes}
@@ -67,15 +67,13 @@ export async function getStaticProps() {
   const allBooknotes = loadVeliteData("booknotes.json");
   if (!Array.isArray(allBooknotes) || allBooknotes.length === 0) {
     throw new Error(
-      "booknotes.json is empty — velite likely did not run or the content submodule is missing. Refusing to build an empty /booknotes page."
+      "booknotes.json is empty — velite likely did not run or the content submodule is missing. Refusing to build an empty /booknotes page.",
     );
   }
-  const booknotes = extractAndSortMetadata(allBooknotes).filter(
-    ({ summary }: any) => summary
-  );
+  const booknotes = extractAndSortMetadata(allBooknotes).filter(({ summary }: any) => summary);
   if (booknotes.length === 0) {
     throw new Error(
-      `No published booknotes with summary:true found (loaded ${allBooknotes.length} raw entries). Refusing to build an empty /booknotes page.`
+      `No published booknotes with summary:true found (loaded ${allBooknotes.length} raw entries). Refusing to build an empty /booknotes page.`,
     );
   }
 

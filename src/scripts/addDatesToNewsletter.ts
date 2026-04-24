@@ -1,22 +1,14 @@
 import fs from "fs";
 import path from "path";
-import matter from "gray-matter";
 import { format, subWeeks } from "date-fns";
+import matter from "gray-matter";
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-const newslettersDir = path.join(
-  __dirname,
-  "..",
-  "content",
-  "Notes",
-  "newsletters"
-);
-const files = fs
-  .readdirSync(newslettersDir)
-  .filter((file: string) => file.match(/^\d+\.md$/));
+const newslettersDir = path.join(__dirname, "..", "content", "Notes", "newsletters");
+const files = fs.readdirSync(newslettersDir).filter((file: string) => file.match(/^\d+\.md$/));
 
-files.sort((a: string, b: string) => parseInt(a) - parseInt(b));
+files.sort((a: string, b: string) => Number.parseInt(a) - Number.parseInt(b));
 
 const latestEditionNumber = 46;
 const today = new Date();
@@ -30,7 +22,7 @@ files.forEach((file: string) => {
 
   const publicationDate = subWeeks(
     latestEditionDate,
-    (latestEditionNumber - parseInt(file, 10)) * 2
+    (latestEditionNumber - Number.parseInt(file, 10)) * 2,
   );
   const formattedDate = format(publicationDate, "yyyy-MM-dd");
 

@@ -11,7 +11,7 @@ export function OxygenBar() {
   const { underwater } = useUnderwaterContext();
 
   const { camera } = useThree();
-  let intervalId = useRef<NodeJS.Timeout>(null!);
+  const intervalId = useRef<NodeJS.Timeout>(null!);
 
   useEffect(() => {
     if (!underwater) {
@@ -40,16 +40,12 @@ export function OxygenBar() {
   useFrame(() => {
     if (!depthRef.current) return;
 
-    depthRef.current.innerText = `Depth: ${(
-      waterHeight - camera.position.y
-    ).toFixed(0)}`;
+    depthRef.current.innerText = `Depth: ${(waterHeight - camera.position.y).toFixed(0)}`;
   });
 
   return (
     <In>
-      <div className="absolute bottom-0 left-0 z-30">
-        Oxygen: {oxygenAmount}
-      </div>
+      <div className="absolute bottom-0 left-0 z-30">Oxygen: {oxygenAmount}</div>
       <div ref={depthRef} className="absolute left-0 z-30 bottom-10">
         Depth: {waterHeight - camera.position.y}
       </div>

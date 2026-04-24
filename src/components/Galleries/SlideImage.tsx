@@ -1,19 +1,15 @@
 import Image from "next/image";
 import {
-  ContainerRect,
+  type ContainerRect,
+  type Slide,
   isImageFitCover,
   isImageSlide,
-  Slide,
   useLightboxProps,
   useLightboxState,
 } from "yet-another-react-lightbox";
 
 function isNextJsImage(slide: Slide) {
-  return (
-    isImageSlide(slide) &&
-    typeof slide.width === "number" &&
-    typeof slide.height === "number"
-  );
+  return isImageSlide(slide) && typeof slide.width === "number" && typeof slide.height === "number";
 }
 
 export default function NextJsSlideImage({
@@ -37,15 +33,11 @@ export default function NextJsSlideImage({
   if (!isNextJsImage(slide) || !slide.height || !slide.width) return undefined;
 
   const width = !cover
-    ? Math.round(
-        Math.min(rect.width, (rect.height / slide.height) * slide.width)
-      )
+    ? Math.round(Math.min(rect.width, (rect.height / slide.height) * slide.width))
     : rect.width;
 
   const height = !cover
-    ? Math.round(
-        Math.min(rect.height, (rect.width / slide.width) * slide.height)
-      )
+    ? Math.round(Math.min(rect.height, (rect.width / slide.width) * slide.height))
     : rect.height;
 
   return (
@@ -61,9 +53,7 @@ export default function NextJsSlideImage({
           cursor: click ? "pointer" : undefined,
         }}
         sizes={`${Math.ceil((width / window.innerWidth) * 100)}vw`}
-        onClick={
-          offset === 0 ? () => click?.({ index: currentIndex }) : undefined
-        }
+        onClick={offset === 0 ? () => click?.({ index: currentIndex }) : undefined}
       />
     </div>
   );

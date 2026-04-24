@@ -4823,16 +4823,7 @@
     "metaDescription": "A simple 3D scene showcasing a low-poly cat model loaded with the drei library and Stage component in React Three Fiber.",
     "ogImage": "/assets/pages/cat.png",
     "ogImageAlt": "a low poly 3D model of a cat",
-    "keywords": [
-      "react three fiber",
-      "three.js",
-      "3D",
-      "webgl",
-      "3D model",
-      "cat",
-      "gltf",
-      "drei"
-    ]
+    "keywords": ["react three fiber", "three.js", "3D", "webgl", "3D model", "cat", "gltf", "drei"]
   },
   "/r3f/models/fbx-viewer": {
     "metaTitle": "FBX Model Viewer - Loading FBX in React Three Fiber",
@@ -8164,27 +8155,14 @@
     "metaDescription": "Exploring deeper into Mumbai's streets, markets, and neighborhoods. A second day of discovery in India's financial capital.",
     "ogImage": "",
     "ogImageAlt": "",
-    "keywords": [
-      "India",
-      "Mumbai",
-      "travel blog",
-      "travel stories",
-      "exploring",
-      "South Asia"
-    ]
+    "keywords": ["India", "Mumbai", "travel blog", "travel stories", "exploring", "South Asia"]
   },
   "/travel/india-2020/3-mumbai-iii": {
     "metaTitle": "Mumbai Day 3 | India 2020 Travel Story",
     "metaDescription": "The third and final day in Mumbai before heading south. Last impressions of the city that never sleeps on India's western coast.",
     "ogImage": "",
     "ogImageAlt": "",
-    "keywords": [
-      "India",
-      "Mumbai",
-      "travel blog",
-      "travel stories",
-      "South Asia"
-    ]
+    "keywords": ["India", "Mumbai", "travel blog", "travel stories", "South Asia"]
   },
   "/travel/india-2020/4-kaladay-i": {
     "metaTitle": "Kalady Day 1 – Arriving in Kerala | India 2020",
@@ -8839,14 +8817,7 @@
     "metaDescription": "Last days in Barcelona before heading to Madrid. Soaking in the Mediterranean atmosphere and saying goodbye to new friends.",
     "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
-    "keywords": [
-      "Spain",
-      "Barcelona",
-      "Mediterranean",
-      "travel blog",
-      "travel stories",
-      "farewell"
-    ]
+    "keywords": ["Spain", "Barcelona", "Mediterranean", "travel blog", "travel stories", "farewell"]
   },
   "/travel/spain-2024/4-madrid-couchsurfing-with-alvaro": {
     "metaTitle": "Madrid - Couchsurfing with Alvaro | Spain 2024",

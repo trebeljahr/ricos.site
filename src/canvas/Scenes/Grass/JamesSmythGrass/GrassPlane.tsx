@@ -1,13 +1,10 @@
 import { useTexture } from "@react-three/drei";
-import { useEffect, useMemo, useRef } from "react";
-import {
-  grassUniforms,
-  StylizedGrassMaterial,
-} from "./JamesSmythGrassMaterial";
 import { useFrame } from "@react-three/fiber";
-import { BufferAttribute, BufferGeometry, DoubleSide, Vector3 } from "three";
-import { LightGreenPlaneMaterial } from "../GroundPlaneMaterials";
+import { useEffect, useMemo, useRef } from "react";
 import { getRandomInInterval } from "src/lib/utils/misc";
+import { BufferAttribute, BufferGeometry, Vector3 } from "three";
+import { LightGreenPlaneMaterial } from "../GroundPlaneMaterials";
+import { StylizedGrassMaterial, type grassUniforms } from "./JamesSmythGrassMaterial";
 
 export const SingleStylizedGrassPlane = ({
   planeSize = 30,
@@ -25,9 +22,7 @@ export const SingleStylizedGrassPlane = ({
   const grassTexture = useTexture("/3d-assets/textures/grass/grass.jpg");
   const cloudTexture = useTexture("/3d-assets/textures/grass/cloud.jpg");
 
-  const materialRef = useRef<
-    typeof StylizedGrassMaterial & typeof grassUniforms
-  >(null!);
+  const materialRef = useRef<typeof StylizedGrassMaterial & typeof grassUniforms>(null!);
 
   useEffect(() => {
     materialRef.current.textures = [grassTexture, cloudTexture];
@@ -47,7 +42,7 @@ export const SingleStylizedGrassPlane = ({
       oldMin: number,
       oldMax: number,
       newMin: number,
-      newMax: number
+      newMax: number,
     ) {
       return ((val - oldMin) * (newMax - newMin)) / (oldMax - oldMin) + newMin;
     }
@@ -83,26 +78,16 @@ export const SingleStylizedGrassPlane = ({
       }
 
       const geom = new BufferGeometry();
-      geom.setAttribute(
-        "position",
-        new BufferAttribute(new Float32Array(positions), 3)
-      );
+      geom.setAttribute("position", new BufferAttribute(new Float32Array(positions), 3));
       geom.setAttribute("uv", new BufferAttribute(new Float32Array(uvs), 2));
-      geom.setAttribute(
-        "color",
-        new BufferAttribute(new Float32Array(colors), 3)
-      );
+      geom.setAttribute("color", new BufferAttribute(new Float32Array(colors), 3));
       geom.setIndex(indices);
       geom.computeVertexNormals();
 
       return geom;
     }
 
-    function generateBlade(
-      center: Vector3,
-      vArrOffset: number,
-      uv: [number, number]
-    ) {
+    function generateBlade(center: Vector3, vArrOffset: number, uv: [number, number]) {
       const MID_WIDTH = bladeWidth * 0.5;
       const TIP_OFFSET = 0.1;
       const height = bladeHeight + Math.random() * bladeHeightVariation;
@@ -110,31 +95,27 @@ export const SingleStylizedGrassPlane = ({
       const yaw = Math.random() * Math.PI * 2;
       const yawUnitVec = new Vector3(Math.sin(yaw), 0, -Math.cos(yaw));
       const tipBend = Math.random() * Math.PI * 2;
-      const tipBendUnitVec = new Vector3(
-        Math.sin(tipBend),
-        0,
-        -Math.cos(tipBend)
-      );
+      const tipBendUnitVec = new Vector3(Math.sin(tipBend), 0, -Math.cos(tipBend));
 
       const bl = new Vector3().addVectors(
         center,
-        new Vector3().copy(yawUnitVec).multiplyScalar((bladeWidth / 2) * 1)
+        new Vector3().copy(yawUnitVec).multiplyScalar((bladeWidth / 2) * 1),
       );
       const br = new Vector3().addVectors(
         center,
-        new Vector3().copy(yawUnitVec).multiplyScalar((bladeWidth / 2) * -1)
+        new Vector3().copy(yawUnitVec).multiplyScalar((bladeWidth / 2) * -1),
       );
       const tl = new Vector3().addVectors(
         center,
-        new Vector3().copy(yawUnitVec).multiplyScalar((MID_WIDTH / 2) * 1)
+        new Vector3().copy(yawUnitVec).multiplyScalar((MID_WIDTH / 2) * 1),
       );
       const tr = new Vector3().addVectors(
         center,
-        new Vector3().copy(yawUnitVec).multiplyScalar((MID_WIDTH / 2) * -1)
+        new Vector3().copy(yawUnitVec).multiplyScalar((MID_WIDTH / 2) * -1),
       );
       const tc = new Vector3().addVectors(
         center,
-        new Vector3().copy(tipBendUnitVec).multiplyScalar(TIP_OFFSET)
+        new Vector3().copy(tipBendUnitVec).multiplyScalar(TIP_OFFSET),
       );
 
       tl.y += height / 2;
@@ -176,10 +157,7 @@ export const SingleStylizedGrassPlane = ({
   return (
     <>
       <mesh geometry={geom} renderOrder={10} frustumCulled={false}>
-        <stylizedGrassMaterial
-          ref={materialRef as any}
-          key={StylizedGrassMaterial.key}
-        />
+        <stylizedGrassMaterial ref={materialRef as any} key={StylizedGrassMaterial.key} />
       </mesh>
       <mesh rotation-x={-Math.PI / 2} material={LightGreenPlaneMaterial}>
         <planeGeometry args={[planeSize, planeSize]} />

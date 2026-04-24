@@ -1,29 +1,22 @@
 import { initComputeRenderer, useGpuCompute } from "@hooks/useGpuCompute";
-import { extend, Object3DNode, useFrame, useThree } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
-import {
-  fillPositionTexture,
-  fillVelocityTexture,
-} from "src/lib/utils/fillDataTexture";
 import {
   BufferAttribute,
   BufferGeometry,
   Color,
   DoubleSide,
-  IUniform,
-  Mesh,
+  type IUniform,
+  type Mesh,
   MeshPhysicalMaterial,
-  RepeatWrapping,
-  ShaderMaterial,
-  Vector3,
 } from "three";
-import CustomShaderMaterialType from "three-custom-shader-material/vanilla";
 import CustomShaderMaterial from "three-custom-shader-material";
+import type CustomShaderMaterialType from "three-custom-shader-material/vanilla";
+import type { Variable } from "three-stdlib";
 import birdFragment from "./shaders/birds.frag";
 import birdVertex from "./shaders/birds.vert";
 import positionShader from "./shaders/position.frag";
 import velocityShader from "./shaders/velocity.frag";
-import { Variable } from "three-stdlib";
 
 type Uniforms = { [uniform: string]: IUniform<any> };
 
@@ -45,7 +38,7 @@ export function Birds({ amount = 1000 }) {
       time: { value: 1.0 },
       delta: { value: 0.0 },
     }),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -57,7 +50,7 @@ export function Birds({ amount = 1000 }) {
       positionVariable,
       velocityVariable,
       positionUniforms,
-      velocityUniforms
+      velocityUniforms,
     );
 
     function initBirds() {
@@ -77,8 +70,8 @@ export function Birds({ amount = 1000 }) {
     return new BirdGeometry(textureWidth);
   }, [textureWidth]);
 
-  const mouseX = useRef(Infinity);
-  const mouseY = useRef(Infinity);
+  const mouseX = useRef(Number.POSITIVE_INFINITY);
+  const mouseY = useRef(Number.POSITIVE_INFINITY);
 
   const { width, height } = useThree((state) => state.size);
   const windowHalfX = useMemo(() => width / 2, [width]);
@@ -120,26 +113,23 @@ export function Birds({ amount = 1000 }) {
     velocityUniforms.current["predator"].value.set(
       (0.5 * mouseX.current) / windowHalfX,
       (-0.5 * mouseY.current) / windowHalfY,
-      0
+      0,
     );
 
-    mouseX.current = Infinity;
-    mouseY.current = Infinity;
+    mouseX.current = Number.POSITIVE_INFINITY;
+    mouseY.current = Number.POSITIVE_INFINITY;
 
     gpuCompute.compute();
 
-    if (
-      !birdMaterial.current ||
-      !positionVariable.current ||
-      !velocityVariable.current
-    )
-      return;
+    if (!birdMaterial.current || !positionVariable.current || !velocityVariable.current) return;
 
-    birdMaterial.current.uniforms["texturePosition"].value =
-      gpuCompute.getCurrentRenderTarget(positionVariable.current).texture;
+    birdMaterial.current.uniforms["texturePosition"].value = gpuCompute.getCurrentRenderTarget(
+      positionVariable.current,
+    ).texture;
 
-    birdMaterial.current.uniforms["textureVelocity"].value =
-      gpuCompute.getCurrentRenderTarget(velocityVariable.current).texture;
+    birdMaterial.current.uniforms["textureVelocity"].value = gpuCompute.getCurrentRenderTarget(
+      velocityVariable.current,
+    ).texture;
   });
 
   const birdMesh = useRef<Mesh>(null!);

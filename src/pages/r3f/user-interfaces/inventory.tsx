@@ -1,15 +1,12 @@
-import { FC, useCallback, useEffect, useMemo } from "react";
+import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import {
   InventoryProvider,
+  type Item,
   useInventory,
-  Item,
 } from "@r3f/Dungeon/InventorySystem/GameInventoryContext";
-import {
-  Inventory,
-  InventoryToggleButton,
-} from "@r3f/Dungeon/InventorySystem/GameInventoryUI";
-import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { Inventory, InventoryToggleButton } from "@r3f/Dungeon/InventorySystem/GameInventoryUI";
+import { type FC, useCallback, useEffect, useMemo } from "react";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 // Example item generator
 const createItem = (
@@ -17,7 +14,7 @@ const createItem = (
   name: string,
   type: "weapon" | "armor" | "consumable" | "material" | "quest",
   icon: string,
-  equipSlot?: "head" | "chest" | "legs" | "feet" | "left" | "right"
+  equipSlot?: "head" | "chest" | "legs" | "feet" | "left" | "right",
 ): Item => {
   return {
     id,
@@ -50,15 +47,7 @@ const defaultSeoInfo = {
   description:
     "In this demo I set up an inventory system with React and a playground to add and remove as well as equip items.",
   url: "/r3f/user-interfaces/inventory",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/inventory.png",
   imageAlt: "a inventory prototype for a simple game",
 };
@@ -80,63 +69,21 @@ const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
   const sampleItems = useMemo(
     () => [
       createItem("sword1", "Iron Sword", "weapon", "/icons/sword.png", "right"),
-      createItem(
-        "shield1",
-        "Wooden Shield",
-        "weapon",
-        "/icons/shield.png",
-        "left"
-      ),
-      createItem(
-        "helmet1",
-        "Steel Helmet",
-        "armor",
-        "/icons/helmet.png",
-        "head"
-      ),
-      createItem(
-        "chestplate1",
-        "Leather Armor",
-        "armor",
-        "/icons/chest.png",
-        "chest"
-      ),
-      createItem(
-        "leggings1",
-        "Chain Leggings",
-        "armor",
-        "/icons/legs.png",
-        "legs"
-      ),
-      createItem(
-        "boots1",
-        "Leather Boots",
-        "armor",
-        "/icons/boots.png",
-        "feet"
-      ),
-      createItem(
-        "potion1",
-        "Health Potion",
-        "consumable",
-        "/icons/potion-red.png"
-      ),
-      createItem(
-        "potion2",
-        "Mana Potion",
-        "consumable",
-        "/icons/potion-blue.png"
-      ),
+      createItem("shield1", "Wooden Shield", "weapon", "/icons/shield.png", "left"),
+      createItem("helmet1", "Steel Helmet", "armor", "/icons/helmet.png", "head"),
+      createItem("chestplate1", "Leather Armor", "armor", "/icons/chest.png", "chest"),
+      createItem("leggings1", "Chain Leggings", "armor", "/icons/legs.png", "legs"),
+      createItem("boots1", "Leather Boots", "armor", "/icons/boots.png", "feet"),
+      createItem("potion1", "Health Potion", "consumable", "/icons/potion-red.png"),
+      createItem("potion2", "Mana Potion", "consumable", "/icons/potion-blue.png"),
       createItem("material1", "Iron Ore", "material", "/icons/ore.png"),
       createItem("quest1", "Ancient Scroll", "quest", "/icons/scroll.png"),
     ],
-    []
+    [],
   );
 
   const addManaPotion = (amount: number) => {
-    const manaPotion = sampleItems.find(
-      (item) => item.id === "potion2"
-    ) as Item;
+    const manaPotion = sampleItems.find((item) => item.id === "potion2") as Item;
 
     if (!manaPotion) {
       return;
@@ -152,8 +99,7 @@ const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
   };
 
   const findRandomItem = useCallback(() => {
-    const randomItem =
-      sampleItems[Math.floor(Math.random() * sampleItems.length)];
+    const randomItem = sampleItems[Math.floor(Math.random() * sampleItems.length)];
 
     const newItem = {
       ...randomItem,
@@ -183,9 +129,7 @@ const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="bg-gray-800 p-4 rounded-lg">
                     <h3 className="text-lg font-medium mb-2">Random Items</h3>
-                    <p className="text-sm text-gray-400 mb-3">
-                      Search the area for useful items
-                    </p>
+                    <p className="text-sm text-gray-400 mb-3">Search the area for useful items</p>
                     <button
                       onClick={findRandomItem}
                       className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-colors"
@@ -196,9 +140,7 @@ const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
 
                   <div className="bg-gray-800 p-4 rounded-lg">
                     <h3 className="text-lg font-medium mb-2">Mana Potions</h3>
-                    <p className="text-sm text-gray-400 mb-3">
-                      Pickup mana potions
-                    </p>
+                    <p className="text-sm text-gray-400 mb-3">Pickup mana potions</p>
                     <button
                       onClick={() => addManaPotion(50)}
                       className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors"

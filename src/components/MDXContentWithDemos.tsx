@@ -1,6 +1,8 @@
 import { getMDXComponent } from "mdx-bundler/client";
 import { useMemo } from "react";
-import { MDXResult } from "src/@types";
+import type { MDXResult } from "src/@types";
+import { CompleteShaderEditor } from "./Demos/FullscreenShader";
+import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
 import { AxisByAxis } from "./Demos/collisionDetection/AxisByAxis";
 import { DotProductDemo } from "./Demos/collisionDetection/DotProductDemo";
 import { EarClipping } from "./Demos/collisionDetection/EarClipping";
@@ -16,8 +18,6 @@ import { SATWithConcaveShapes } from "./Demos/collisionDetection/SATWithConcaveS
 import { SATWithResponse } from "./Demos/collisionDetection/SATWithResponse";
 import { Triangulation } from "./Demos/collisionDetection/Triangulation";
 import { UnitVectorDemo } from "./Demos/collisionDetection/UnitVectorDemo";
-import { CompleteShaderEditor } from "./Demos/FullscreenShader";
-import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
 import { MarkdownRenderers } from "./MarkdownRenderers";
 
 const allComponents = {

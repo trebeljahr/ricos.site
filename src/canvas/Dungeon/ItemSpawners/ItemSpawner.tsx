@@ -1,13 +1,13 @@
-import { GroupProps, useFrame } from "@react-three/fiber";
+import { type GroupProps, useFrame } from "@react-three/fiber";
 import { CapsuleCollider, RigidBody } from "@react-three/rapier";
 import achievementSound from "@sounds/positive-pickup-sound.mp3";
-import { ComponentType, useEffect, useRef, useState } from "react";
-import { Group } from "three";
+import { type ComponentType, useEffect, useRef, useState } from "react";
+import type { Group } from "three";
 import useSound from "use-sound";
 
 export enum Rarity {
-  Medium,
-  Rare,
+  Medium = 0,
+  Rare = 1,
 }
 
 export type Collectible<T> = {
@@ -26,7 +26,7 @@ type ItemSpawnerType = <T>(
   props: SpawnerProps<T> & {
     Item: ComponentType<GroupProps>;
     data: T;
-  }
+  },
 ) => JSX.Element | null;
 
 export const ItemSpawner: ItemSpawnerType = ({
@@ -74,13 +74,7 @@ export const ItemSpawner: ItemSpawnerType = ({
 
   return (
     <group {...props}>
-      <RigidBody
-        position={[0, 0.5, 0]}
-        type="fixed"
-        sensor
-        scale={0.5}
-        colliders={false}
-      >
+      <RigidBody position={[0, 0.5, 0]} type="fixed" sensor scale={0.5} colliders={false}>
         <CapsuleCollider
           position={[0, 0.7, 0]}
           args={[0.8, 0.5]}

@@ -1,8 +1,5 @@
-import {
-  Wall_Modular,
-  WallCover_Modular,
-} from "@r3f/AllModels/modular_dungeon_pack_1";
-import { GroupProps } from "@react-three/fiber";
+import { WallCover_Modular, Wall_Modular } from "@r3f/AllModels/modular_dungeon_pack_1";
+import type { GroupProps } from "@react-three/fiber";
 
 export const DungeonBox = ({
   depth,
@@ -13,11 +10,7 @@ export const DungeonBox = ({
     <group {...props}>
       <Wall length={width} position={[1, 1, 1]} />
       <Wall length={depth} position={[0, 1, 0]} rotation-y={Math.PI / 2} />
-      <Wall
-        length={depth}
-        position={[width * 2, 1, 0]}
-        rotation-y={Math.PI / 2}
-      />
+      <Wall length={depth} position={[width * 2, 1, 0]} rotation-y={Math.PI / 2} />
       <Wall length={width} position={[1, 1, -depth * 2 + 1]} />
     </group>
   );

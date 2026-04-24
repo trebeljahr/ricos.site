@@ -1,8 +1,8 @@
-import React from "react";
-import { GroupProps, useGraph } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
-import { GLTF, SkeletonUtils } from "three-stdlib";
-import { Mesh, MeshStandardMaterial, SkinnedMesh } from "three";
+import { type GroupProps, useGraph } from "@react-three/fiber";
+import React from "react";
+import type { Mesh, MeshStandardMaterial, SkinnedMesh } from "three";
+import { type GLTF, SkeletonUtils } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -27,11 +27,7 @@ export function RiggedArms(props: GroupProps) {
     <group {...props} dispose={null}>
       <primitive object={nodes.UpperArmL} />
       <primitive object={nodes.UpperArmR001} />
-      <group
-        position={[2.987, 0, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        scale={56}
-      >
+      <group position={[2.987, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={56}>
         <skinnedMesh
           geometry={nodes.ArmModel_1.geometry}
           material={materials.Shirt}

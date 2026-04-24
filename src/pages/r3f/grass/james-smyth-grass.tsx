@@ -3,22 +3,14 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { SingleStylizedGrassPlane } from "@r3f/Scenes/Grass/JamesSmythGrass/GrassPlane";
 import { Sky } from "@react-three/drei";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Stylized Grass",
   description:
     "Stylized Grass based on the demo and explainer article by James Smyth, but ported into R3F and Typescript.",
   url: "/r3f/grass/james-smyth-grass",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/james-smyth-grass.png",
   imageAlt: "a plane filled with a stylized grass shader",
 };

@@ -1,13 +1,13 @@
 import { Vec2 } from "./Vector";
-import { Matrix } from "./matrix";
 import {
   circle,
+  drawBackground,
   getRotationMatrix,
   getScalingMatrix,
   getTranslationMatrix,
   toRadians,
-  drawBackground,
 } from "./drawHelpers";
+import type { Matrix } from "./matrix";
 
 const randomBetween = (min: number, max: number) => {
   return min + Math.floor(Math.random() * (max - min + 1));
@@ -30,9 +30,9 @@ function isHex(hex: string) {
 function convertHexToRgb(hex: string) {
   if (!isHex) throw Error("Not a Hex Color!");
   return `rgb(
-    ${parseInt(hex.substring(1, 3), 16)},
-    ${parseInt(hex.substring(3, 5), 16)},
-    ${parseInt(hex.substring(5, 7), 16)})`;
+    ${Number.parseInt(hex.substring(1, 3), 16)},
+    ${Number.parseInt(hex.substring(3, 5), 16)},
+    ${Number.parseInt(hex.substring(5, 7), 16)})`;
 }
 
 export function makeBrighter(color: string) {
@@ -40,7 +40,7 @@ export function makeBrighter(color: string) {
 
   const rgbs = color
     .match(/(\d{1,})/g)
-    ?.map(parseFloat)
+    ?.map(Number.parseFloat)
     .map((a) => Math.min(255, a + 50));
   if (!rgbs) return color;
   const brighterColor = `rgb(${rgbs[0]},${rgbs[1]},${rgbs[2]})`;
@@ -63,9 +63,7 @@ export class Polygon {
 
   constructor(points: [number, number][] | Vec2[], color?: string) {
     this.vertices =
-      points[0] instanceof Vec2
-        ? (points as Vec2[])
-        : points.map(([x, y]) => new Vec2(x, y));
+      points[0] instanceof Vec2 ? (points as Vec2[]) : points.map(([x, y]) => new Vec2(x, y));
     this.color = color || randomColor();
     this.selected = false;
     this.hover = false;
@@ -89,21 +87,21 @@ export class Polygon {
 
   edgeNormals() {
     return this.vertices.map((_, i) => {
-      let p1 = this.vertices[i];
-      let p2 = this.vertices[i + 1] || this.vertices[0];
+      const p1 = this.vertices[i];
+      const p2 = this.vertices[i + 1] || this.vertices[0];
 
-      let edge = new Vec2(p2.x - p1.x, p2.y - p1.y);
-      let normal = edge.getNormal();
+      const edge = new Vec2(p2.x - p1.x, p2.y - p1.y);
+      const normal = edge.getNormal();
       return normal;
     });
   }
 
   edgeMidpoints() {
     return this.vertices.map((_, i) => {
-      let p1 = this.vertices[i];
-      let p2 = this.vertices[i + 1] || this.vertices[0];
+      const p1 = this.vertices[i];
+      const p2 = this.vertices[i + 1] || this.vertices[0];
 
-      let midpoint = p1.add(p2.sub(p1).multScalar(0.5));
+      const midpoint = p1.add(p2.sub(p1).multScalar(0.5));
       return midpoint;
     });
   }
@@ -124,16 +122,13 @@ export class Polygon {
     this.transform(getRotationMatrix(toRadians(angle), this.centroid()));
   }
 
-  draw(
-    ctx: CanvasRenderingContext2D,
-    { collision }: { collision?: boolean } = {}
-  ) {
+  draw(ctx: CanvasRenderingContext2D, { collision }: { collision?: boolean } = {}) {
     ctx.save();
     ctx.strokeStyle = "black";
     ctx.beginPath();
     const [first, ...rest] = this.vertices;
     ctx.moveTo(first.x, first.y);
-    for (let vertex of rest) {
+    for (const vertex of rest) {
       ctx.lineTo(vertex.x, vertex.y);
     }
     ctx.lineTo(first.x, first.y);
@@ -147,7 +142,7 @@ export class Polygon {
     const centroid = this.centroid();
     circle(ctx, centroid, 1);
 
-    for (let vertex of this.vertices) {
+    for (const vertex of this.vertices) {
       ctx.fillStyle = this.hoveredVertex?.equals(vertex) ? "red" : "black";
       circle(ctx, vertex, this.hoveredVertex?.equals(vertex) ? 8 : 2);
     }
@@ -161,16 +156,16 @@ export class Polygon {
       if (polygon.length < 3) {
         return false;
       }
-      let { x: old_x, y: old_y } = polygon[polygon.length - 2];
+      const { x: old_x, y: old_y } = polygon[polygon.length - 2];
       let { x: new_x, y: new_y } = polygon[polygon.length - 1];
       let new_direction = Math.atan2(new_y - old_y, new_x - old_x);
       let angle_sum = 0.0;
       let orientation = 0;
       for (let i = 0; i < polygon.length; i++) {
         const newpoint = polygon[i];
-        let old_x = new_x;
-        let old_y = new_y;
-        let old_direction = new_direction;
+        const old_x = new_x;
+        const old_y = new_y;
+        const old_direction = new_direction;
         new_x = newpoint.x;
         new_y = newpoint.y;
         new_direction = Math.atan2(new_y - old_y, new_x - old_x);
@@ -213,7 +208,7 @@ export class Polygon {
     const n = this.vertices.length - 1;
     if (n < 3) return [];
 
-    let indexList: number[] = [];
+    const indexList: number[] = [];
     for (let i = 0; i < this.vertices.length; i++) {
       indexList.push(i);
     }
@@ -226,16 +221,16 @@ export class Polygon {
         break;
       }
       for (let i = 0; i < indexList.length; i++) {
-        let a = indexList[i];
-        let b = getItem(indexList, i - 1);
-        let c = getItem(indexList, i + 1);
+        const a = indexList[i];
+        const b = getItem(indexList, i - 1);
+        const c = getItem(indexList, i + 1);
 
-        let va = this.vertices[a];
-        let vb = this.vertices[b];
-        let vc = this.vertices[c];
+        const va = this.vertices[a];
+        const vb = this.vertices[b];
+        const vc = this.vertices[c];
 
-        let va_to_vb = vb.sub(va);
-        let va_to_vc = vc.sub(va);
+        const va_to_vb = vb.sub(va);
+        const va_to_vc = vc.sub(va);
 
         if (va_to_vb.perpDot(va_to_vc) < 0) {
           continue;
@@ -262,7 +257,7 @@ export class Polygon {
         if (isEar) {
           this.triangles[triangleIndexCount++] = new Polygon(
             [va, vb, vc],
-            makeBrighter(this.color)
+            makeBrighter(this.color),
           );
           indexList.splice(i, 1);
           break;
@@ -271,12 +266,8 @@ export class Polygon {
     }
 
     this.triangles[triangleIndexCount++] = new Polygon(
-      [
-        this.vertices[indexList[0]],
-        this.vertices[indexList[1]],
-        this.vertices[indexList[2]],
-      ],
-      makeBrighter(this.color)
+      [this.vertices[indexList[0]], this.vertices[indexList[1]], this.vertices[indexList[2]]],
+      makeBrighter(this.color),
     );
   }
 }
@@ -330,7 +321,7 @@ function getPolyFromIndexList(poly: Polygon, indexList: number[]) {
 export async function triangulateVisualization(
   ctx: CanvasRenderingContext2D,
   poly: Polygon,
-  indexList: number[]
+  indexList: number[],
 ) {
   const vertices = poly.vertices;
   let j = 0;
@@ -390,9 +381,7 @@ export async function triangulateVisualization(
       }
 
       if (isEar) {
-        foundTriangles.push(
-          new Polygon([va, vb, vc], makeBrighter(poly.color))
-        );
+        foundTriangles.push(new Polygon([va, vb, vc], makeBrighter(poly.color)));
         indexList.splice(i, 1);
         break;
       }
@@ -402,9 +391,9 @@ export async function triangulateVisualization(
   drawBackground(ctx);
   getPolyFromIndexList(poly, indexList).draw(ctx);
 
-  let va = poly.vertices[indexList[0]];
-  let vb = poly.vertices[indexList[1]];
-  let vc = poly.vertices[indexList[2]];
+  const va = poly.vertices[indexList[0]];
+  const vb = poly.vertices[indexList[1]];
+  const vc = poly.vertices[indexList[2]];
 
   const checkingTri = new Polygon([va, vb, vc], "rgba(50, 50, 250, 0.5)");
   checkingTri.draw(ctx);

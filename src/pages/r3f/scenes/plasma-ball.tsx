@@ -1,29 +1,16 @@
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 import { PlasmaBall } from "@r3f/Scenes/PlasmaBall";
-import { Environment, OrbitControls, Stage } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
-import {
-  Bloom,
-  EffectComposer,
-  ToneMapping,
-} from "@react-three/postprocessing";
+import { OrbitControls, Stage } from "@react-three/drei";
+import { Bloom, EffectComposer, ToneMapping } from "@react-three/postprocessing";
 
 const defaultSeoInfo = {
   title: "Plasma Ball",
   description:
     "In this demo I tried using the LightningStrike Geometry from the three-stdlib in order to produce a plasma lamp sort of effect. With Bloom and ToneMapping postprocessing effects this looks very nice.",
   url: "/r3f/scenes/plasma-ball",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/plasma-ball.png",
   imageAlt: "a 3D rendered simulation of a plasma ball",
 };

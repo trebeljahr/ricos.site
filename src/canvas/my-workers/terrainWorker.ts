@@ -1,4 +1,4 @@
-import { BiomeType, getBiome } from "@r3f/ChunkGenerationSystem/Biomes";
+import { type BiomeType, getBiome } from "@r3f/ChunkGenerationSystem/Biomes";
 import { mode, tileSize } from "@r3f/ChunkGenerationSystem/config";
 import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { moistureNoise, temperatureNoise } from "src/lib/utils/noise";
@@ -9,7 +9,7 @@ export type TerrainData = ReturnType<typeof generateTerrainData>;
 function generateTerrainData(
   worldOffset: { x: number; z: number },
   chunkId: string,
-  resolution: number
+  resolution: number,
 ) {
   const size = tileSize;
   const halfSize = size / 2;
@@ -97,11 +97,7 @@ function generateTerrainData(
       uvs.push((localX / resolution) * 5, (localZ / resolution) * 5);
       normals.push(normal.x, normal.y, normal.z);
 
-      const biome = getBiome(
-        temperatureMap[hz][hx],
-        moistureMap[hz][hx],
-        heightNoiseMap[hz][hx]
-      );
+      const biome = getBiome(temperatureMap[hz][hx], moistureMap[hz][hx], heightNoiseMap[hz][hx]);
 
       const moisture = moistureMap[hz][hx];
       const temperature = temperatureMap[hz][hx];
@@ -136,11 +132,7 @@ function generateTerrainData(
 
         indices.push(vertexIndex, vertexIndex + 1, vertexIndex + resolution);
 
-        indices.push(
-          vertexIndex + 1,
-          vertexIndex + resolution + 1,
-          vertexIndex + resolution
-        );
+        indices.push(vertexIndex + 1, vertexIndex + resolution + 1, vertexIndex + resolution);
       }
     }
   }
@@ -173,14 +165,14 @@ addEventListener(
       worldOffset: { x: number; z: number };
       divisions: number;
       chunkId: string;
-    }>
+    }>,
   ) => {
     const data = generateTerrainData(
       event.data.worldOffset,
       event.data.chunkId,
-      event.data.divisions
+      event.data.divisions,
     );
 
     postMessage(data);
-  }
+  },
 );

@@ -1,9 +1,8 @@
-import { RapierRigidBody } from "@react-three/rapier";
-import { QueryBuilder, World } from "arancini";
 import { createReactAPI } from "@arancini/react";
-import { CustomEcctrlRigidBody } from "ecctrl";
-import { NavMesh, NavMeshQuery } from "recast-navigation";
-import { Object3D, Vector3 } from "three";
+import { type QueryBuilder, World } from "arancini";
+import type { CustomEcctrlRigidBody } from "ecctrl";
+import type { NavMesh, NavMeshQuery } from "recast-navigation";
+import type { Object3D, Vector3 } from "three";
 
 export type NavComponent = {
   navMesh?: NavMesh;
@@ -28,17 +27,13 @@ export type EntityType = {
 export const world = new World<EntityType>();
 
 export const enemyQuery = world.query((e: QueryBuilder<EntityType>) =>
-  e.has("isEnemy", "rigidBody")
+  e.has("isEnemy", "rigidBody"),
 );
-export const navQuery = world.query((e: QueryBuilder<EntityType>) =>
-  e.is("nav")
-);
+export const navQuery = world.query((e: QueryBuilder<EntityType>) => e.is("nav"));
 export const playerQuery = world.query((e: QueryBuilder<EntityType>) =>
-  e.has("isPlayer", "rigidBody")
+  e.has("isPlayer", "rigidBody"),
 );
-export const traversableQuery = world.query((e: QueryBuilder<EntityType>) =>
-  e.has("traversable")
-);
+export const traversableQuery = world.query((e: QueryBuilder<EntityType>) => e.has("traversable"));
 
 const { Entity, Component } = createReactAPI(world);
 

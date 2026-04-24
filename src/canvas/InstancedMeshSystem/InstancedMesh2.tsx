@@ -1,15 +1,11 @@
-import { usePrevious } from "@hooks/usePrevious";
-import { extend, type Node, Object3DNode, useThree } from "@react-three/fiber";
+import { type Object3DNode, extend, useThree } from "@react-three/fiber";
 import { InstancedMesh2 } from "@three.ez/instanced-mesh";
 import { useEffect, useRef } from "react";
-import { BufferGeometry, Material, Object3D, Vector3 } from "three";
+import { type BufferGeometry, type Material, Object3D, type Vector3 } from "three";
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
-    instancedMesh2: Object3DNode<
-      InstancedMesh2 & Object3D,
-      typeof InstancedMesh2
-    >;
+    instancedMesh2: Object3DNode<InstancedMesh2 & Object3D, typeof InstancedMesh2>;
   }
 }
 
@@ -23,11 +19,7 @@ extend({ InstancedMesh2 });
 
 const temp = new Object3D();
 
-export function InstancedMesh2Component({
-  geometry,
-  material,
-  positions,
-}: Props) {
+export function InstancedMesh2Component({ geometry, material, positions }: Props) {
   const ref = useRef<InstancedMesh2 & Object3D>(null!);
   const { gl } = useThree();
 
@@ -46,7 +38,5 @@ export function InstancedMesh2Component({
     ref.current.frustumCulled = false;
   }, [positions]);
 
-  return (
-    <instancedMesh2 args={[geometry, material, { renderer: gl }]} ref={ref} />
-  );
+  return <instancedMesh2 args={[geometry, material, { renderer: gl }]} ref={ref} />;
 }

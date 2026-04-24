@@ -1,6 +1,5 @@
-import { type Post, type Travelblog } from "@velite";
+import type { CommonMetadata } from "src/@types";
 import { HorizontalCard } from "./NiceCards";
-import { CommonMetadata } from "src/@types";
 
 type Props = {
   post: CommonMetadata;
@@ -37,18 +36,7 @@ export const OtherPostsPreview = ({ posts }: { posts: CommonMetadata[] }) => {
   return (
     <div>
       {posts.map(
-        (
-          {
-            slug,
-            link,
-            title,
-            markdownExcerpt,
-            cover,
-            date,
-            metadata: { readingTime },
-          },
-          index
-        ) => {
+        ({ slug, link, title, markdownExcerpt, cover, date, metadata: { readingTime } }, index) => {
           const priority = index <= 1;
 
           return (
@@ -63,7 +51,7 @@ export const OtherPostsPreview = ({ posts }: { posts: CommonMetadata[] }) => {
               readingTime={readingTime}
             />
           );
-        }
+        },
       )}
     </div>
   );

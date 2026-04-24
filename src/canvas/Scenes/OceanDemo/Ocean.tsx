@@ -1,13 +1,7 @@
-import { useRef, useMemo } from "react";
-import {
-  extend,
-  useThree,
-  useLoader,
-  useFrame,
-  Object3DNode,
-} from "@react-three/fiber";
-import { Water } from "three-stdlib";
+import { type Object3DNode, extend, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { useMemo, useRef } from "react";
 import { PlaneGeometry, RepeatWrapping, TextureLoader, Vector3 } from "three";
+import { Water } from "three-stdlib";
 
 extend({ Water });
 
@@ -17,15 +11,10 @@ declare module "@react-three/fiber" {
   }
 }
 
-export function OceanSurface({
-  position = [0, 0, 0] as [number, number, number],
-}) {
+export function OceanSurface({ position = [0, 0, 0] as [number, number, number] }) {
   const ref = useRef<Water>(null!);
   const gl = useThree((state) => state.gl);
-  const waterNormals = useLoader(
-    TextureLoader,
-    "/3d-assets/textures/waternormals.jpeg"
-  );
+  const waterNormals = useLoader(TextureLoader, "/3d-assets/textures/waternormals.jpeg");
   waterNormals.wrapS = waterNormals.wrapT = RepeatWrapping;
   const geom = useMemo(() => new PlaneGeometry(10000, 10000), []);
   const config = useMemo(
@@ -39,7 +28,7 @@ export function OceanSurface({
       distortionScale: 3.7,
       fog: true,
     }),
-    [waterNormals]
+    [waterNormals],
   );
   useFrame((state, delta) => {
     if (ref.current) {
@@ -47,12 +36,5 @@ export function OceanSurface({
     }
   });
 
-  return (
-    <water
-      ref={ref}
-      args={[geom, config]}
-      rotation-x={-Math.PI / 2}
-      position={position}
-    />
-  );
+  return <water ref={ref} args={[geom, config]} rotation-x={-Math.PI / 2} position={position} />;
 }

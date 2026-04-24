@@ -1,8 +1,8 @@
 import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
-import { Chunk, MemoizedChunk, useChunkContext } from "./ChunkProvider";
-import { debug, flatShading, wireframe } from "./config";
-import { DebugTile } from "./DebugTile";
 import { DoubleSide, MeshStandardMaterial } from "three";
+import { type Chunk, MemoizedChunk, useChunkContext } from "./ChunkProvider";
+import { DebugTile } from "./DebugTile";
+import { debug, flatShading, wireframe } from "./config";
 
 export const WorldManager = () => {
   const chunks = useChunkContext();

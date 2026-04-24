@@ -1,6 +1,6 @@
 import { useGLTF } from "@react-three/drei";
-import { AnimationClip, Mesh, MeshStandardMaterial } from "three";
-import { GLTF } from "three-stdlib";
+import type { AnimationClip, Mesh, MeshStandardMaterial } from "three";
+import type { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -24,7 +24,7 @@ interface GLTFAction extends AnimationClip {
 
 export function Cat(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/cat-transformed.glb"
+    "/3d-assets/glb/cat-transformed.glb",
   ) as unknown as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>

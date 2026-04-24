@@ -1,16 +1,13 @@
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
-import { IUniform, ShaderMaterial, Vector2 } from "three";
+import { type IUniform, type ShaderMaterial, Vector2 } from "three";
 
 type Props = {
   otherUniforms?: { [uniform: string]: IUniform<any> };
   fragmentShader: string;
 };
 
-export function FullCanvasShader({
-  otherUniforms = {},
-  fragmentShader,
-}: Props) {
+export function FullCanvasShader({ otherUniforms = {}, fragmentShader }: Props) {
   const shaderRef = useRef<ShaderMaterial>(null!);
   const timeRef = useRef(0);
 
@@ -20,12 +17,11 @@ export function FullCanvasShader({
       u_time: { value: 0 },
       u_resolution: { value: new Vector2(1, 1) },
       u_pixelRatio: {
-        value:
-          typeof window !== "undefined" ? window.devicePixelRatio : 1,
+        value: typeof window !== "undefined" ? window.devicePixelRatio : 1,
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [fragmentShader]
+    [fragmentShader],
   );
 
   useFrame(({ size }, delta) => {
@@ -47,7 +43,9 @@ export function FullCanvasShader({
   return (
     <mesh>
       <planeGeometry args={[2, 2]} />
-      <shaderMaterial ref={shaderRef} uniforms={uniforms}
+      <shaderMaterial
+        ref={shaderRef}
+        uniforms={uniforms}
         vertexShader={`
           varying vec2 vUv;
           void main() {

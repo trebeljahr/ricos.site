@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+import { useEffect, useState } from "react";
 
+import { Vec2 } from "../../../lib/math/Vector";
 import {
-  instrument,
-  niceBlue,
-  niceGreen,
   drawArrow,
   drawBackground,
   drawCoordinateSystem,
+  instrument,
   line,
+  niceBlue,
+  niceGreen,
 } from "../../../lib/math/drawHelpers";
-import { Vec2 } from "../../../lib/math/Vector";
 
 export const MagnitudeDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
@@ -54,11 +54,9 @@ export const MagnitudeDemo = () => {
       ctx.fillStyle = "black";
       const mag2 = realX * realX + realY * realY;
       ctx.fillText(
-        `∥v∥² = ${realX.toFixed(1)}² + ${realY.toFixed(1)}² = ${mag2.toFixed(
-          1
-        )}`,
+        `∥v∥² = ${realX.toFixed(1)}² + ${realY.toFixed(1)}² = ${mag2.toFixed(1)}`,
         10,
-        150
+        150,
       );
       const mag = Math.sqrt(mag2);
       ctx.fillText(`∥v∥ = ${mag.toFixed(1)}`, 10, 200);

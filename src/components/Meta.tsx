@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { baseUrl, completeUrl } from "src/lib/urlUtils";
+import { completeUrl } from "src/lib/urlUtils";
 interface Props {
   description: string;
   title: string;
@@ -72,10 +72,7 @@ export const Meta = ({
         <meta name="application-name" content="ricos.site" />
 
         {/* Pinterest Domain Verification */}
-        <meta
-          name="p:domain_verify"
-          content="d355ee7955ac253c916874514a8ee100"
-        />
+        <meta name="p:domain_verify" content="d355ee7955ac253c916874514a8ee100" />
 
         <meta name="generator" content="Next.js" />
         <meta
@@ -88,10 +85,7 @@ export const Meta = ({
         <meta name="author" content="Rico Trebeljahr" />
         <meta name="creator" content="Rico Trebeljahr" />
         <meta name="publisher" content="Rico Trebeljahr" />
-        <meta
-          name="format-detection"
-          content="telephone=no, address=no, email=no"
-        />
+        <meta name="format-detection" content="telephone=no, address=no, email=no" />
       </Head>
     </>
   );

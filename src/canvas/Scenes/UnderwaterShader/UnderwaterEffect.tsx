@@ -2,13 +2,7 @@ import { useThree } from "@react-three/fiber";
 import fragmentShader from "@shaders/underwaterBackground.frag";
 import { Effect, EffectAttribute } from "postprocessing";
 import { useMemo } from "react";
-import {
-  Matrix4,
-  PerspectiveCamera,
-  Uniform,
-  Vector3,
-  WebGLRenderer,
-} from "three";
+import { type PerspectiveCamera, Uniform, Vector3, type WebGLRenderer } from "three";
 
 const WATER_LEVEL = 45;
 const FAR_OVERWATER = 500;
@@ -17,7 +11,7 @@ const SUBMERSION_BAND = 6.0;
 
 class UnderwaterEffectImpl extends Effect {
   public camera: PerspectiveCamera;
-  private elapsed: number = 0;
+  private elapsed = 0;
   private currentFar: number = FAR_OVERWATER;
 
   constructor(camera: PerspectiveCamera) {
@@ -45,11 +39,7 @@ class UnderwaterEffectImpl extends Effect {
     this.currentFar = camera.far;
   }
 
-  update(
-    _renderer: WebGLRenderer,
-    _inputBuffer: WebGLBuffer,
-    deltaTime: number
-  ) {
+  update(_renderer: WebGLRenderer, _inputBuffer: WebGLBuffer, deltaTime: number) {
     if (!this.uniforms) return;
 
     this.elapsed += deltaTime;
@@ -64,9 +54,16 @@ class UnderwaterEffectImpl extends Effect {
     const uInvView = this.uniforms.get("uInvView");
 
     if (
-      !uTime || !cameraPosU || !cameraLookAtU || !uSubmersion ||
-      !uCameraNear || !uCameraFar || !uInvProjection || !uInvView
-    ) return;
+      !uTime ||
+      !cameraPosU ||
+      !cameraLookAtU ||
+      !uSubmersion ||
+      !uCameraNear ||
+      !uCameraFar ||
+      !uInvProjection ||
+      !uInvView
+    )
+      return;
 
     uTime.value = this.elapsed;
     cameraPosU.value.copy(this.camera.position);
@@ -77,17 +74,12 @@ class UnderwaterEffectImpl extends Effect {
 
     // Smooth submersion
     const dist = WATER_LEVEL - this.camera.position.y;
-    const submersion = Math.max(
-      0,
-      Math.min(1, (dist + SUBMERSION_BAND * 0.5) / SUBMERSION_BAND)
-    );
+    const submersion = Math.max(0, Math.min(1, (dist + SUBMERSION_BAND * 0.5) / SUBMERSION_BAND));
     uSubmersion.value = submersion;
 
     // Lerp camera far plane
-    const targetFar =
-      FAR_OVERWATER + (FAR_UNDERWATER - FAR_OVERWATER) * submersion;
-    this.currentFar +=
-      (targetFar - this.currentFar) * Math.min(1, deltaTime * 3);
+    const targetFar = FAR_OVERWATER + (FAR_UNDERWATER - FAR_OVERWATER) * submersion;
+    this.currentFar += (targetFar - this.currentFar) * Math.min(1, deltaTime * 3);
 
     if (Math.abs(this.camera.far - this.currentFar) > 0.5) {
       this.camera.far = this.currentFar;
@@ -106,9 +98,6 @@ class UnderwaterEffectImpl extends Effect {
 
 export const UnderwaterEffect = () => {
   const { camera } = useThree();
-  const effect = useMemo(
-    () => new UnderwaterEffectImpl(camera as PerspectiveCamera),
-    [camera]
-  );
+  const effect = useMemo(() => new UnderwaterEffectImpl(camera as PerspectiveCamera), [camera]);
   return <primitive object={effect} />;
 };

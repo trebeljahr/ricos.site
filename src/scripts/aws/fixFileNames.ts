@@ -1,9 +1,7 @@
 import {
   CopyObjectCommand,
-  DeleteObjectCommand,
-  ListObjectsCommandOutput,
   ListObjectsV2Command,
-  ListObjectsV2CommandOutput,
+  type ListObjectsV2CommandOutput,
 } from "@aws-sdk/client-s3";
 import { createS3Client } from "src/lib/aws";
 
@@ -22,7 +20,7 @@ async function fixFileNames() {
           Bucket: bucketName,
           Prefix: "photography/",
           ContinuationToken: nextContinuationToken,
-        })
+        }),
       );
 
       if (objects.Contents === undefined) break;
@@ -31,20 +29,17 @@ async function fixFileNames() {
         objects.Contents.map(async (obj) => {
           const key = obj.Key!;
           const parts = key.split("/");
-          if (
-            parts.length > 3 &&
-            parts[parts.length - 2] === parts[parts.length - 1]
-          ) {
+          if (parts.length > 3 && parts[parts.length - 2] === parts[parts.length - 1]) {
             const newKey = "photography-v2/" + parts.slice(0, -1).join("/");
             await s3.send(
               new CopyObjectCommand({
                 Bucket: bucketName,
                 CopySource: `${bucketName}/${key}`,
                 Key: newKey,
-              })
+              }),
             );
           }
-        })
+        }),
       );
 
       isTruncated = objects.IsTruncated || false;

@@ -1,51 +1,54 @@
-import JoystickController from 'joystick-controller'
-import { useEffect, useRef } from 'react'
+import JoystickController from "joystick-controller";
+import { useEffect, useRef } from "react";
 
 export interface JoystickData {
-  angle: string
-  distance: string
-  leveledX: number
-  leveledY: number
-  x: number
-  y: number
+  angle: string;
+  distance: string;
+  leveledX: number;
+  leveledY: number;
+  x: number;
+  y: number;
 }
 
-export type JoystickCallback = (data: JoystickData) => void
+export type JoystickCallback = (data: JoystickData) => void;
 
 const defaultParameters = {
-  x: '15%',
-  y: '15%',
+  x: "15%",
+  y: "15%",
   opacity: 0.5,
   maxRange: 80,
   radius: 70,
   joystickRadius: 40,
-  joystickClass: 'joystick',
-  containerClass: 'joystick-container',
+  joystickClass: "joystick",
+  containerClass: "joystick-container",
   distortion: false,
-  mouseClickButton: 'ALL',
+  mouseClickButton: "ALL",
   hideContextMenu: true,
-}
+};
 
-export function useJoystick({ cb, params }: { cb?: JoystickCallback; params?: Partial<typeof defaultParameters> }) {
-  const parameters = { ...defaultParameters, ...params }
-  const joystickDataRef = useRef<JoystickData>(null!)
+export function useJoystick({
+  cb,
+  params,
+}: { cb?: JoystickCallback; params?: Partial<typeof defaultParameters> }) {
+  const parameters = { ...defaultParameters, ...params };
+  const joystickDataRef = useRef<JoystickData>(null!);
 
   /* eslint-disable react-hooks/exhaustive-deps -- Joystick should only be created once on mount; `parameters` is a new object each render and `cb` is captured via ref-like pattern */
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (typeof window === "undefined") return;
 
     const staticJoystick = new JoystickController(parameters, (data: JoystickData) => {
-      joystickDataRef.current = data
-      cb?.(data)
-    })
+      joystickDataRef.current = data;
+      cb?.(data);
+    });
 
     return () => {
-      staticJoystick.destroy()
-    }
-  }, [])
+      staticJoystick.destroy();
+    };
+  }, []);
   /* eslint-enable react-hooks/exhaustive-deps */
 
-  const getData = () => joystickDataRef.current
+  const getData = () => joystickDataRef.current;
 
-  return { getData }
+  return { getData };
 }

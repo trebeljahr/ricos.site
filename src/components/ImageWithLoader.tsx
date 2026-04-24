@@ -1,14 +1,10 @@
-import clsx from "clsx";
 import dynamic from "next/dynamic";
-import Image, { ImageProps } from "next/image";
-import { useMemo, useCallback, useState } from "react";
+import Image, { type ImageProps } from "next/image";
+import { useCallback, useMemo, useState } from "react";
 
 const Sparkles = dynamic(import("./Sparkles"), { ssr: false });
 
-export const ImageWithLoader = ({
-  id,
-  ...props
-}: Omit<ImageProps, "onLoadingComplete">) => {
+export const ImageWithLoader = ({ id, ...props }: Omit<ImageProps, "onLoadingComplete">) => {
   const [isSkeleton, setIsSkeleton] = useState(true);
 
   const onLoad = useCallback(() => {
@@ -22,14 +18,7 @@ export const ImageWithLoader = ({
 
   return (
     <span className="block w-full h-full relative">
-      <Image
-        id={id}
-        {...props}
-        alt={props.alt}
-        onLoad={onLoad}
-        onError={onError}
-        style={style}
-      />
+      <Image id={id} {...props} alt={props.alt} onLoad={onLoad} onError={onError} style={style} />
 
       {isSkeleton && (
         <span className="block absolute inset-0 overflow-hidden bg-gray-400 dark:bg-gray-700 cursor-wait w-full h-full">

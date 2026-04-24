@@ -7,8 +7,8 @@ import {
 } from "@r3f/ChunkGenerationSystem/config";
 import { useHelper } from "@react-three/drei";
 import { HeightfieldCollider, RigidBody } from "@react-three/rapier";
-import { ReactNode, useRef } from "react";
-import { BufferGeometry, DoubleSide, Material, Mesh } from "three";
+import { type ReactNode, useRef } from "react";
+import { type BufferGeometry, DoubleSide, Material, type Mesh } from "three";
 import { VertexNormalsHelper } from "three-stdlib";
 
 const defaultMaterial = () => (
@@ -35,8 +35,7 @@ export const HeightfieldTileWithCollider = ({
 
   useHelper(normalsDebug && meshRef, VertexNormalsHelper, 1, 0xff0000);
   const MaterialComponent =
-    !(material instanceof Material) &&
-    (material as (...args: any) => ReactNode);
+    !(material instanceof Material) && (material as (...args: any) => ReactNode);
 
   const resolution = Math.round(Math.sqrt(heightfield.length));
   const divisions = resolution - 1;
@@ -56,12 +55,7 @@ export const HeightfieldTileWithCollider = ({
         <RigidBody type="fixed" colliders={false}>
           <group rotation={[0, -Math.PI / 2, 0]}>
             <HeightfieldCollider
-              args={[
-                divisions,
-                divisions,
-                heightfield,
-                { x: tileSize, y: 1, z: tileSize },
-              ]}
+              args={[divisions, divisions, heightfield, { x: tileSize, y: 1, z: tileSize }]}
             />
           </group>
         </RigidBody>

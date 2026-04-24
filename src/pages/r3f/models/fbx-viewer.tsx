@@ -1,10 +1,9 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { Box, OrbitControls, Stage, useFBX } from "@react-three/drei";
+import { OrbitControls, Stage, useFBX } from "@react-three/drei";
 import { useControls } from "leva";
-import { useRef, Suspense } from "react";
-import { Mesh } from "three";
-import dynamic from "next/dynamic";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { useRef } from "react";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import type { Mesh } from "three";
 
 // Dynamically import components
 const FbxViewer = () => {
@@ -19,13 +18,7 @@ const FbxViewer = () => {
   const characterMeshRef = useRef<Mesh>(null!);
   const characterModel = useFBX(`/3d-assets/fbx/${characterName}.fbx`);
 
-  return (
-    <primitive
-      object={characterModel}
-      ref={characterMeshRef}
-      position={[0, 0, 0]}
-    />
-  );
+  return <primitive object={characterModel} ref={characterMeshRef} position={[0, 0, 0]} />;
 };
 
 const defaultSeoInfo = {
@@ -33,15 +26,7 @@ const defaultSeoInfo = {
   description:
     "In this project I tried to figure out how to load FBX models in R3F. I eventually switched to GLB models, but this is still a good reference.",
   url: "/r3f/models/fbx-viewer",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/fbx-viewer.png",
   imageAlt: "a 3D model view of the default x-bot character from Mixamo",
 };

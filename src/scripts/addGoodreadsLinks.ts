@@ -1,23 +1,17 @@
-import { readFile, writeFile, readdir } from "fs/promises";
 import path from "path";
+import { readFile, readdir, writeFile } from "fs/promises";
 
 // Resolve to main repo's content submodule (not worktree)
-const BOOKNOTES_DIR =
-  process.env.BOOKNOTES_DIR ||
-  path.resolve("src/content/Notes/booknotes");
+const BOOKNOTES_DIR = process.env.BOOKNOTES_DIR || path.resolve("src/content/Notes/booknotes");
 
-async function searchGoodreads(
-  title: string,
-  author: string
-): Promise<string | null> {
+async function searchGoodreads(title: string, author: string): Promise<string | null> {
   const query = encodeURIComponent(`${title} ${author}`);
   const url = `https://www.goodreads.com/search?q=${query}`;
 
   try {
     const res = await fetch(url, {
       headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
       },
     });
     const html = await res.text();
@@ -76,15 +70,9 @@ async function main() {
       // Insert goodreadsLink after amazonAffiliateLink or after detailedNotes
       let updated: string;
       if (content.includes("amazonAffiliateLink:")) {
-        updated = content.replace(
-          /(amazonAffiliateLink:.*\n)/,
-          `$1goodreadsLink: ${link}\n`
-        );
+        updated = content.replace(/(amazonAffiliateLink:.*\n)/, `$1goodreadsLink: ${link}\n`);
       } else if (content.includes("detailedNotes:")) {
-        updated = content.replace(
-          /(detailedNotes:.*\n)/,
-          `$1goodreadsLink: ${link}\n`
-        );
+        updated = content.replace(/(detailedNotes:.*\n)/, `$1goodreadsLink: ${link}\n`);
       } else {
         // Insert before the closing ---
         updated = content.replace(/^---\n/m, `---\ngoodreadsLink: ${link}\n`);
@@ -102,9 +90,7 @@ async function main() {
     await sleep(1500);
   }
 
-  console.log(
-    `\nDone! Added: ${added}, Skipped: ${skipped}, Not found: ${failed}`
-  );
+  console.log(`\nDone! Added: ${added}, Skipped: ${skipped}, Not found: ${failed}`);
 }
 
 main();

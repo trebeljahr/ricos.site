@@ -1,4 +1,4 @@
-import { Menu, MenuItem } from "@headlessui/react";
+import { MenuItem } from "@headlessui/react";
 import clsx from "clsx";
 import Link from "next/link";
 
@@ -16,7 +16,7 @@ export function SingleMenuItem({ link, closeNav, left }: SingleMenuItemProps) {
           href={`/${link}`}
           className={clsx(
             "block px-4 py-2 break-keep whitespace-nowrap hover:bg-gray-200 dark:hover:bg-gray-700",
-            left ? "text-left" : "text-right"
+            left ? "text-left" : "text-right",
           )}
           onClick={() => {
             closeNav && closeNav();

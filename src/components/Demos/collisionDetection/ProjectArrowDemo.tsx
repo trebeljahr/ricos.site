@@ -1,18 +1,18 @@
-import { useEffect, useState } from "react";
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+import { useEffect, useState } from "react";
 
+import { Vec2 } from "../../../lib/math/Vector";
 import {
   circle,
-  drawInfiniteLine,
-  line,
   drawArrow,
   drawBackground,
-  instrument,
   drawCoordinateSystem,
+  drawInfiniteLine,
+  instrument,
+  line,
   niceBlue,
   niceGreen,
 } from "../../../lib/math/drawHelpers";
-import { Vec2 } from "../../../lib/math/Vector";
 export const ProjectArrowDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
 
@@ -27,9 +27,9 @@ export const ProjectArrowDemo = () => {
 
     if (!width || !height) return;
 
-    let p1 = new Vec2(width / 3, width / 3);
-    let p2 = new Vec2(width / 2, width / 10);
-    let p3 = new Vec2(width / 2.5, width / 2.5);
+    const p1 = new Vec2(width / 3, width / 3);
+    const p2 = new Vec2(width / 2, width / 10);
+    const p3 = new Vec2(width / 2.5, width / 2.5);
 
     const scaleFactor = Math.floor(Math.max(width, height) / 30);
     const drawFn = () => {

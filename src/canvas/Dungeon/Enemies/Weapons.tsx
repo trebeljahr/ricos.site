@@ -1,12 +1,4 @@
 import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
-import {
-  useSword1,
-  useSword2,
-  useSword3,
-  useSword4,
-  useSword5,
-  useSword6,
-} from "./Swords";
 import { useAxe1 } from "./Axes";
 import { useBow1 } from "./Bows";
 import { useShield, useShield2, useShield3, useShield4 } from "./Shields";
@@ -19,6 +11,7 @@ import {
   useStaff6,
   useStaff7,
 } from "./Staffs";
+import { useSword1, useSword2, useSword3, useSword4, useSword5, useSword6 } from "./Swords";
 
 export const getRandomWeaponType = () => {
   const itemTypes = Object.values(WeaponTypes);

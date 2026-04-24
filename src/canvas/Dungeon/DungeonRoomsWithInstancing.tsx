@@ -2,7 +2,7 @@ import { useInstancedMesh2 } from "@r3f/InstancedMeshSystem/useInstancedMesh2";
 import { useInstancedMeshMultiMaterial } from "@r3f/InstancedMeshSystem/useInstancedMesh2multiMaterial";
 import { Environment, PointMaterial, useGLTF } from "@react-three/drei";
 import { useEffect } from "react";
-import { GLTFResult, XYZ } from "src/@types";
+import type { GLTFResult, XYZ } from "src/@types";
 import { Color, DynamicDrawUsage } from "three";
 
 function Particles({
@@ -20,11 +20,7 @@ function Particles({
           attach="attributes-position"
           args={[positions, 3]}
         />
-        <bufferAttribute
-          usage={DynamicDrawUsage}
-          attach="attributes-color"
-          args={[colors, 3]}
-        />
+        <bufferAttribute usage={DynamicDrawUsage} attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
       <PointMaterial
         emissive={new Color(colors[0], colors[1], colors[2])}
@@ -86,15 +82,14 @@ export const Torches = ({
   rotations: XYZ[];
 }) => {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/modular_dungeon_1/Torch.glb"
+    "/3d-assets/glb/modular_dungeon_1/Torch.glb",
   ) as unknown as unknown as unknown as GLTFResult;
 
-  const { InstancedMesh: Holders, addPositions: addHolders } =
-    useInstancedMesh2({
-      geometry: nodes.Torch_1.geometry,
-      material: materials.DarkMetal,
-      defaultScale: 0.25,
-    });
+  const { InstancedMesh: Holders, addPositions: addHolders } = useInstancedMesh2({
+    geometry: nodes.Torch_1.geometry,
+    material: materials.DarkMetal,
+    defaultScale: 0.25,
+  });
   const color = "#00f7ff";
 
   const { InstancedMesh: Fires, addPositions: addFires } = useInstancedMesh2({
@@ -118,12 +113,10 @@ export const Torches = ({
 
   // const lights = positions.slice(0, 5);
 
-  const pos = new Float32Array(
-    positions.map(({ x, y, z }) => [x, y + 0.6, z]).flat()
-  );
+  const pos = new Float32Array(positions.flatMap(({ x, y, z }) => [x, y + 0.6, z]));
 
   const colorArray = Array.from({ length: positions.length }, () =>
-    new Color(color).toArray()
+    new Color(color).toArray(),
   ).flat();
   const colors = new Float32Array(colorArray);
 
@@ -149,7 +142,7 @@ export const Torches = ({
       })} */}
       {/* <Particles positions={pos} colors={colors} /> */}
 
-      <Environment resolution={256} frames={Infinity}>
+      <Environment resolution={256} frames={Number.POSITIVE_INFINITY}>
         <Particles positions={pos} colors={colors} />
       </Environment>
 
@@ -206,7 +199,7 @@ export const Floors = ({
   rotations: XYZ[];
 }) => {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/modular_dungeon_1/Floor_Modular.glb"
+    "/3d-assets/glb/modular_dungeon_1/Floor_Modular.glb",
   ) as unknown as unknown as unknown as GLTFResult;
 
   const { InstancedMesh, addPositions } = useInstancedMesh2({

@@ -1,21 +1,16 @@
 import { useFBO } from "@react-three/drei";
-import {
-  createPortal,
-  extend,
-  Object3DNode,
-  useFrame,
-} from "@react-three/fiber";
+import { type Object3DNode, createPortal, extend, useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import {
   AdditiveBlending,
-  BufferGeometry,
+  type BufferGeometry,
   FloatType,
   NearestFilter,
   OrthographicCamera,
-  Points,
+  type Points,
   RGBAFormat,
   Scene,
-  ShaderMaterial,
+  type ShaderMaterial,
 } from "three";
 
 import fragmentShader from "./shaders/shader.frag";
@@ -30,10 +25,7 @@ extend({ SimulationMaterial: SimulationMaterial });
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
-    simulationMaterial: Object3DNode<
-      SimulationMaterial,
-      typeof SimulationMaterial
-    >;
+    simulationMaterial: Object3DNode<SimulationMaterial, typeof SimulationMaterial>;
   }
 }
 
@@ -44,9 +36,7 @@ export const FBOParticles = () => {
 
   const scene = new Scene();
   const camera = new OrthographicCamera(-1, 1, 1, -1, 1 / Math.pow(2, 53), 1);
-  const positions = new Float32Array([
-    -1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0,
-  ]);
+  const positions = new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]);
   const uvs = new Float32Array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0]);
 
   const renderTarget = useFBO(size, size, {
@@ -61,7 +51,7 @@ export const FBOParticles = () => {
     const length = size * size;
     const particles = new Float32Array(length * 3);
     for (let i = 0; i < length; i++) {
-      let i3 = i * 3;
+      const i3 = i * 3;
       particles[i3 + 0] = (i % size) / size;
       particles[i3 + 1] = i / size / size;
     }
@@ -74,7 +64,7 @@ export const FBOParticles = () => {
         value: null,
       },
     }),
-    []
+    [],
   );
 
   useFrame((state) => {
@@ -115,7 +105,7 @@ export const FBOParticles = () => {
             />
           </bufferGeometry>
         </mesh>,
-        scene
+        scene,
       )}
       <points ref={points}>
         <bufferGeometry>

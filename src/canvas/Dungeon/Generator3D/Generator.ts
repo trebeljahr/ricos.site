@@ -1,11 +1,10 @@
-import { alea } from "seedrandom";
+import { createRandomFunction, getRandomIntUneven } from "src/lib/utils/misc";
 import { Delaunay3D } from "./Delauney3D";
-import { DungeonPathfinder3D, GraphNode3D } from "./DungeonPathFinder3D";
-import { Edge, Vertex, VertexWithData } from "./GraphStructures";
+import { DungeonPathfinder3D, type GraphNode3D } from "./DungeonPathFinder3D";
+import { type Edge, type Vertex, VertexWithData } from "./GraphStructures";
 import { Grid3D } from "./Grid3D";
 import { PrimMST } from "./MinimumSpanningTree";
 import { CellType3D, Mathf, Room3D, Vector3Int } from "./Types";
-import { createRandomFunction, getRandomIntUneven } from "src/lib/utils/misc";
 
 type StairCase = {
   cells: [Vector3Int, Vector3Int, Vector3Int, Vector3Int];
@@ -25,7 +24,7 @@ export class DungeonGenerator3D {
     private roomCount: number,
     private roomMaxSize: Vector3Int,
     private roomMinSize: Vector3Int,
-    seed?: string
+    seed?: string,
   ) {
     this.seed = seed !== undefined ? seed : Math.random().toString();
 
@@ -64,12 +63,7 @@ export class DungeonGenerator3D {
 
     const mstEdges = PrimMST.minimumSpanningTree(delaunay.edges, vertices[0]);
 
-    const finalEdges = PrimMST.addRandomConnections(
-      delaunay.edges,
-      mstEdges,
-      0.125,
-      this.random
-    );
+    const finalEdges = PrimMST.addRandomConnections(delaunay.edges, mstEdges, 0.125, this.random);
 
     this.pathfindHallways(finalEdges);
 
@@ -87,13 +81,13 @@ export class DungeonGenerator3D {
       const location = new Vector3Int(
         Math.floor(this.random() * this.size.x),
         Math.floor(this.random() * this.size.y),
-        Math.floor(this.random() * this.size.z)
+        Math.floor(this.random() * this.size.z),
       );
 
       const roomSize = new Vector3Int(
         getRandomIntUneven(this.roomMinSize.x, this.roomMaxSize.x, this.random),
         getRandomIntUneven(this.roomMinSize.y, this.roomMaxSize.y, this.random),
-        getRandomIntUneven(this.roomMinSize.z, this.roomMaxSize.z, this.random)
+        getRandomIntUneven(this.roomMinSize.z, this.roomMaxSize.z, this.random),
       );
 
       let canPlace = true;
@@ -101,7 +95,7 @@ export class DungeonGenerator3D {
 
       const buffer = new Room3D(
         new Vector3Int(location.x - 1, location.y, location.z - 1),
-        new Vector3Int(roomSize.x + 2, roomSize.y, roomSize.z + 2)
+        new Vector3Int(roomSize.x + 2, roomSize.y, roomSize.z + 2),
       );
 
       for (const room of this.rooms) {
@@ -164,7 +158,7 @@ export class DungeonGenerator3D {
 
       const costFunction = (
         a: GraphNode3D,
-        b: GraphNode3D
+        b: GraphNode3D,
       ): {
         traversable: boolean;
         cost: number;
@@ -212,24 +206,18 @@ export class DungeonGenerator3D {
           if (
             !this.grid.inBounds(a.position.add(verticalOffset)) ||
             !this.grid.inBounds(a.position.add(horizontalOffset)) ||
-            !this.grid.inBounds(
-              a.position.add(verticalOffset).add(horizontalOffset)
-            )
+            !this.grid.inBounds(a.position.add(verticalOffset).add(horizontalOffset))
           ) {
             return result;
           }
 
           if (
-            this.grid.getValue(a.position.add(horizontalOffset)) !==
+            this.grid.getValue(a.position.add(horizontalOffset)) !== CellType3D.None ||
+            this.grid.getValue(a.position.add(horizontalOffset.multiply(2))) !== CellType3D.None ||
+            this.grid.getValue(a.position.add(verticalOffset).add(horizontalOffset)) !==
               CellType3D.None ||
-            this.grid.getValue(a.position.add(horizontalOffset.multiply(2))) !==
-              CellType3D.None ||
-            this.grid.getValue(
-              a.position.add(verticalOffset).add(horizontalOffset)
-            ) !== CellType3D.None ||
-            this.grid.getValue(
-              a.position.add(verticalOffset).add(horizontalOffset.multiply(2))
-            ) !== CellType3D.None
+            this.grid.getValue(a.position.add(verticalOffset).add(horizontalOffset.multiply(2))) !==
+              CellType3D.None
           ) {
             return result;
           }
@@ -264,9 +252,7 @@ export class DungeonGenerator3D {
               const stairPos1 = prev.add(horizontalOffset);
               const stairPos2 = prev.add(horizontalOffset.multiply(2));
               const stairPos3 = prev.add(verticalOffset).add(horizontalOffset);
-              const stairPos4 = prev
-                .add(verticalOffset)
-                .add(horizontalOffset.multiply(2));
+              const stairPos4 = prev.add(verticalOffset).add(horizontalOffset.multiply(2));
 
               this.grid.setValue(stairPos1, CellType3D.Stairs);
               this.grid.setValue(stairPos2, CellType3D.Stairs);

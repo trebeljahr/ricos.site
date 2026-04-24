@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from "react";
+import { type FC, useEffect, useRef } from "react";
 
 export const ProgressBar: FC = () => {
   const progressBarRef = useRef<HTMLDivElement>(null);
@@ -9,12 +9,11 @@ export const ProgressBar: FC = () => {
 
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
-      const scrollPercent =
-        (window.scrollY / (documentHeight - windowHeight)) * 100;
+      const scrollPercent = (window.scrollY / (documentHeight - windowHeight)) * 100;
 
       progressBarRef.current.style.setProperty(
         "--scroll-percent",
-        `${isNaN(scrollPercent) ? 0 : scrollPercent}%`
+        `${isNaN(scrollPercent) ? 0 : scrollPercent}%`,
       );
     };
 

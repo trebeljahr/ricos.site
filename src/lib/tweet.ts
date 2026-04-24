@@ -1,5 +1,5 @@
+import { MongoClient, type WithId } from "mongodb";
 import { TwitterApi } from "twitter-api-v2";
-import { MongoClient, WithId } from "mongodb";
 import { baseUrl } from "./urlUtils";
 
 const options = {
@@ -43,21 +43,14 @@ export async function tweetRandomQuote() {
     const randomIndex = Math.floor(Math.random() * totalCount);
 
     do {
-      const results = await quotesCollection
-        .find(filter)
-        .skip(randomIndex)
-        .limit(1)
-        .toArray();
+      const results = await quotesCollection.find(filter).skip(randomIndex).limit(1).toArray();
 
       if (results.length === 0) {
         return;
       }
 
       quote = results[0];
-      await quotesCollection.updateOne(
-        { _id: quote._id },
-        { $set: { picked: true } }
-      );
+      await quotesCollection.updateOne({ _id: quote._id }, { $set: { picked: true } });
 
       tweetContent = `"${quote.content}" \n– ${quote.author} \n\n #quotes #dailyquote \n\n Quote Archive at ${baseUrl}/quotes`;
     } while (tweetContent.length > 280);

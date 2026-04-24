@@ -1,20 +1,20 @@
 import slugify from "@sindresorhus/slugify";
 import "dotenv/config";
+import path from "path";
 import { readFile } from "fs/promises";
 import matter from "gray-matter";
 import Handlebars from "handlebars";
-import path from "path";
 import rehypePresetMinify from "rehype-preset-minify";
 import rehypeRewrite from "rehype-rewrite";
 import rehypeStringify from "rehype-stringify";
 import remarkParse from "remark-parse";
-import { visit } from "unist-util-visit";
 import remarkRehype from "remark-rehype";
 import { newsletterListMail, sendEmail } from "src/lib/mailgun.js";
 import { nextImageUrl } from "src/lib/mapToImageProps.js";
-import { unified } from "unified";
-import { newsletterPath, sortedNewsletterNames } from "./sortedNewsletters.js";
 import { baseUrl } from "src/lib/urlUtils.js";
+import { unified } from "unified";
+import { visit } from "unist-util-visit";
+import { newsletterPath, sortedNewsletterNames } from "./sortedNewsletters.js";
 
 const number = sortedNewsletterNames[0].replace(".md", "");
 
@@ -22,20 +22,11 @@ const HOST = baseUrl;
 
 async function main() {
   const emailHandlebarsFile = await readFile(
-    path.join(
-      process.cwd(),
-      "src",
-      "content",
-      "email-templates",
-      "newsletter.hbs",
-    ),
+    path.join(process.cwd(), "src", "content", "email-templates", "newsletter.hbs"),
     "utf-8",
   );
 
-  const mdFileRaw = await readFile(
-    path.join(newsletterPath, `${number}.md`),
-    "utf-8",
-  );
+  const mdFileRaw = await readFile(path.join(newsletterPath, `${number}.md`), "utf-8");
 
   const {
     content,
@@ -124,8 +115,7 @@ async function main() {
 
   const webversion = `${HOST}/newsletters/${slugify(title)}`;
 
-  const defaultExcerpt =
-    "Live and Learn is a Newsletter filled with awesome links...";
+  const defaultExcerpt = "Live and Learn is a Newsletter filled with awesome links...";
 
   const newsletterTagLine = "Live and Learn #" + number;
   const realTitle = `${title}`;

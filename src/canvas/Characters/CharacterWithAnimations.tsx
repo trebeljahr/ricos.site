@@ -1,9 +1,9 @@
 import { useAnimations, useGLTF, useKeyboardControls } from "@react-three/drei";
-import { memo, useEffect } from "react";
-import { Mesh, type AnimationClip } from "three";
-import { useGenericAnimationController } from "../Controllers/GenericAnimationController";
-import { MixamoCharacterNames } from "./Character";
 import { useFrame } from "@react-three/fiber";
+import { memo, useEffect } from "react";
+import { type AnimationClip, Mesh } from "three";
+import { useGenericAnimationController } from "../Controllers/GenericAnimationController";
+import type { MixamoCharacterNames } from "./Character";
 
 interface GLTFAction extends AnimationClip {
   name: string;
@@ -35,9 +35,7 @@ const useMixamoCharacter = ({
 }: {
   characterName: MixamoCharacterNames;
 }) => {
-  const characterModel = useGLTF(
-    `/3d-assets/glb/characters/${characterName}-transformed.glb`
-  );
+  const characterModel = useGLTF(`/3d-assets/glb/characters/${characterName}-transformed.glb`);
   useGenericAnimationController;
   return characterModel;
 };
@@ -62,7 +60,7 @@ export const MixamoCharacter = memo(
 
   (props) => {
     return props.characterName === props.characterName;
-  }
+  },
 );
 
 export function useMixamoAnimations() {
@@ -79,18 +77,10 @@ export function useMixamoAnimations() {
   const stabR = useGLTF("/3d-assets/glb/animations/stab-right.glb");
   const swordR = useGLTF("/3d-assets/glb/animations/slash-right.glb");
   const swordL = useGLTF("/3d-assets/glb/animations/slash-left.glb");
-  const swordL2 = useGLTF(
-    "/3d-assets/glb/animations/inward-slash-left-transformed.glb"
-  );
-  const swordR2 = useGLTF(
-    "/3d-assets/glb/animations/inward-slash-right-transformed.glb"
-  );
-  const swordR3 = useGLTF(
-    "/3d-assets/glb/animations/outward-slash-right-transformed.glb"
-  );
-  const swordL3 = useGLTF(
-    "/3d-assets/glb/animations/outward-slash-left-transformed.glb"
-  );
+  const swordL2 = useGLTF("/3d-assets/glb/animations/inward-slash-left-transformed.glb");
+  const swordR2 = useGLTF("/3d-assets/glb/animations/inward-slash-right-transformed.glb");
+  const swordR3 = useGLTF("/3d-assets/glb/animations/outward-slash-right-transformed.glb");
+  const swordL3 = useGLTF("/3d-assets/glb/animations/outward-slash-left-transformed.glb");
 
   const animationsForHook = [
     { ...idle.animations[0], name: SupportedAnimations.Idle },
@@ -120,9 +110,7 @@ export function CharacterWithAnimationsControlled({
 }: {
   characterName: string;
 }) {
-  const characterModel = useGLTF(
-    `/3d-assets/glb/characters/${characterName}-transformed.glb`
-  );
+  const characterModel = useGLTF(`/3d-assets/glb/characters/${characterName}-transformed.glb`);
 
   const { animationsForHook } = useMixamoAnimations();
 

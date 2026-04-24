@@ -1,23 +1,13 @@
 import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
-
-import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Leva, useControls } from "leva";
-import { Perf } from "r3f-perf";
-import {
-  debug,
-  perf,
-  physicsDebug,
-  tileSize,
-} from "src/canvas/ChunkGenerationSystem/config";
 import { WorldManager } from "src/canvas/ChunkGenerationSystem/WorldManager";
-import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
-import { CameraPositionLogger } from "src/canvas/Helpers/CameraPositionLogger";
+import { debug, physicsDebug, tileSize } from "src/canvas/ChunkGenerationSystem/config";
 import { RayCaster } from "src/canvas/Helpers/RayCaster";
 import { RigidBallSpawner } from "src/canvas/Helpers/RigidBall";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Terrain Demo",

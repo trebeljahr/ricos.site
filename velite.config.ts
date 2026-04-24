@@ -1,35 +1,31 @@
-// @ts-nocheck — velite config uses remark/rehype/mdx plugin types that are
-// mutually incompatible. Previously suppressed by next-plugin-preval's webpack wrapper.
-import seoMetadata from "./src/content/seo-metadata.json";
+import path from "path";
 import remarkCallout from "@r4ai/remark-callout";
+import { transformerNotationDiff, transformerNotationHighlight } from "@shikijs/transformers";
 import slugify from "@sindresorhus/slugify";
-import { Element, Root } from "hast";
+import type { Element, Root } from "hast";
 import { interactive } from "hast-util-interactive";
 import { whitespace } from "hast-util-whitespace";
-import { Nodes } from "mdast";
-import { Handler } from "mdast-util-to-hast";
+import type { Handler } from "mdast-util-to-hast";
 import { bundleMDX } from "mdx-bundler";
-import path from "path";
 import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
+import rehypeCodeTitles from "rehype-code-titles";
 import rehypeKatex from "rehype-katex";
 import rehypePrettyCode from "rehype-pretty-code";
-import {
-  transformerNotationDiff,
-  transformerNotationHighlight,
-} from "@shikijs/transformers";
-import rehypeCodeTitles from "rehype-code-titles";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkToc from "remark-toc";
-import { MDXResult } from "src/@types";
+import type { MDXResult } from "src/@types";
 import {
-  getImgWidthAndHeightDuringBuild,
   getImgMetaDuringBuild,
+  getImgWidthAndHeightDuringBuild,
 } from "src/lib/getImgWidthAndHeightDuringBuild";
-import { Node, Pluggable } from "unified/lib";
+import type { Node, Pluggable } from "unified/lib";
 import { SKIP, visit } from "unist-util-visit";
-import { defineConfig, s, ZodMeta } from "velite";
+import { type ZodMeta, defineConfig, s } from "velite";
+// @ts-nocheck — velite config uses remark/rehype/mdx plugin types that are
+// mutually incompatible. Previously suppressed by next-plugin-preval's webpack wrapper.
+import seoMetadata from "./src/content/seo-metadata.json";
 
 declare module "mdast" {
   interface RootContentMap {
@@ -42,8 +38,8 @@ const containsImage = 2;
 const containsOther = 3;
 
 const rehypeUnwrapGalleries = () => {
-  return function (tree: Root) {
-    visit(tree, "element", function (node, index, parent) {
+  return (tree: Root) => {
+    visit(tree, "element", (node, index, parent) => {
       if (
         node.tagName === "p" &&
         parent &&
@@ -89,26 +85,24 @@ function applicable(node: Element, inLink: boolean): 1 | 2 | 3 {
 
 function stripMarkdown(text: string): string {
   return text
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")        // images ![alt](url)
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")      // links [text](url) → text
-    .replace(/\*\*([^*]+)\*\*/g, "$1")            // bold **text** → text
-    .replace(/\*([^*]+)\*/g, "$1")                // italic *text* → text
-    .replace(/\$[^$]+\$/g, "")                    // LaTeX $...$
-    .replace(/^>\s*/gm, "")                       // blockquotes > text → text
-    .replace(/^[-*]\s+/gm, "")                    // bullet points - text → text
-    .replace(/^\d+\.\s+/gm, "");                  // numbered lists 1. text → text
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "") // images ![alt](url)
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1") // links [text](url) → text
+    .replace(/\*\*([^*]+)\*\*/g, "$1") // bold **text** → text
+    .replace(/\*([^*]+)\*/g, "$1") // italic *text* → text
+    .replace(/\$[^$]+\$/g, "") // LaTeX $...$
+    .replace(/^>\s*/gm, "") // blockquotes > text → text
+    .replace(/^[-*]\s+/gm, "") // bullet points - text → text
+    .replace(/^\d+\.\s+/gm, ""); // numbered lists 1. text → text
 }
 
 function generateExcerpt(text: string, length: number): string {
-  const lines = text
-    .split("\n")
-    .filter((line) => {
-      const trimmed = line.trim();
-      if (/^#/.test(trimmed)) return false;       // headings
-      if (/^!\[/.test(trimmed)) return false;     // image-only lines
-      if (!trimmed) return false;                 // empty lines
-      return true;
-    });
+  const lines = text.split("\n").filter((line) => {
+    const trimmed = line.trim();
+    if (/^#/.test(trimmed)) return false; // headings
+    if (/^!\[/.test(trimmed)) return false; // image-only lines
+    if (!trimmed) return false; // empty lines
+    return true;
+  });
   const joined = stripMarkdown(lines.join(" ")).replace(/\s+/g, " ").trim();
 
   if (!joined) return "";
@@ -149,10 +143,7 @@ type SeoEntry = {
   keywords?: string[];
 };
 
-const seoData: Record<string, SeoEntry> = seoMetadata as Record<
-  string,
-  SeoEntry
->;
+const seoData: Record<string, SeoEntry> = seoMetadata as Record<string, SeoEntry>;
 
 const parseGermanDate = (dateString: string) => {
   const [day, month, year] = dateString.split(".").map(Number);
@@ -177,7 +168,7 @@ const commonFields = {
     .transform(async (cover) => {
       const defaultCover = "assets/midjourney/the-door-to-the-ocean.jpg";
       const { width, height } = await getImgWidthAndHeightDuringBuild(
-        cover.src === "" ? defaultCover : cover.src
+        cover.src === "" ? defaultCover : cover.src,
       );
       return {
         ...cover,
@@ -189,9 +180,7 @@ const commonFields = {
   published: s.boolean(),
   excerpt: s.string().optional(),
 
-  tags: s
-    .array(s.string())
-    .transform((arr) => arr.map((tag) => tag.toLowerCase()).join(",")),
+  tags: s.array(s.string()).transform((arr) => arr.map((tag) => tag.toLowerCase()).join(",")),
 };
 
 type NodeInfo = {
@@ -243,8 +232,7 @@ const remarkGroupImages: Pluggable = () => {
                   const src = (node as any).url as string;
                   const explicitAlt = ((node as any).alt as string) || "";
                   try {
-                    const { width, height, alt } =
-                      await getImgMetaDuringBuild(src);
+                    const { width, height, alt } = await getImgMetaDuringBuild(src);
                     // Explicit markdown alt wins over the sidecar alt.
                     return {
                       width,
@@ -253,11 +241,7 @@ const remarkGroupImages: Pluggable = () => {
                       alt: explicitAlt.trim() || alt,
                     };
                   } catch (err) {
-                    console.error(
-                      "Error getting image metadata for src:",
-                      src,
-                      err
-                    );
+                    console.error("Error getting image metadata for src:", src, err);
 
                     return {
                       alt: explicitAlt,
@@ -270,8 +254,8 @@ const remarkGroupImages: Pluggable = () => {
                       height: 1,
                     };
                   }
-                })
-              )
+                }),
+              ),
             ),
           },
           children: [],
@@ -284,7 +268,7 @@ const remarkGroupImages: Pluggable = () => {
         const numberToDelete = lastIndex - firstIndex + 1;
 
         firstImage.parent.children.splice(firstIndex, numberToDelete, newNode);
-      })
+      }),
     );
   };
 };
@@ -301,7 +285,7 @@ const handleSimpleGalleryNode: Handler = (state, node) => {
 
 const addBundledMDXContent = async <T extends Record<string, any>>(
   data: T,
-  { meta }: { meta: ZodMeta }
+  { meta }: { meta: ZodMeta },
 ): Promise<
   T & {
     content: MDXResult;
@@ -379,18 +363,9 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     source: rawContent,
     cwd: path.resolve("src/content/Notes"),
     mdxOptions(options) {
-      options.remarkPlugins = [
-        ...(options.remarkPlugins ?? []),
-        ...remarkPlugins,
-      ];
-      options.rehypePlugins = [
-        ...(options.rehypePlugins ?? []),
-        ...rehypePlugins,
-      ];
-      options.recmaPlugins = [
-        ...(options.recmaPlugins ?? []),
-        ...recmaPlugins,
-      ];
+      options.remarkPlugins = [...(options.remarkPlugins ?? []), ...remarkPlugins];
+      options.rehypePlugins = [...(options.rehypePlugins ?? []), ...rehypePlugins];
+      options.recmaPlugins = [...(options.recmaPlugins ?? []), ...recmaPlugins];
       options.remarkRehypeOptions = {
         handlers: { SimpleGallery: handleSimpleGalleryNode },
       };
@@ -424,10 +399,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     source: excerptString,
     cwd: path.resolve("src/content/Notes"),
     mdxOptions(options) {
-      options.remarkPlugins = [
-        ...(options.remarkPlugins ?? []),
-        remarkGfm,
-      ];
+      options.remarkPlugins = [...(options.remarkPlugins ?? []), remarkGfm];
       return options;
     },
     esbuildOptions(options) {
@@ -438,25 +410,33 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   const markdownExcerpt: MDXResult = { code: excerptCode };
 
   // SEO metadata: JSON override → frontmatter/content fallback → ""
-  const metaDescription =
-    seoEntry.metaDescription || generateMetaDescription(excerptString) || "";
+  const metaDescription = seoEntry.metaDescription || generateMetaDescription(excerptString) || "";
   const seoTitle = seoEntry.metaTitle || data.title || "";
   const tagsString: string = data.tags || "";
   const seoKeywords =
-    seoEntry.keywords ||
-    (tagsString
-      ? tagsString.split(",").map((t: string) => t.trim())
-      : []);
+    seoEntry.keywords || (tagsString ? tagsString.split(",").map((t: string) => t.trim()) : []);
   const seoOgImage = seoEntry.ogImage || data.cover?.src || "";
   const seoOgImageAlt = seoEntry.ogImageAlt || data.cover?.alt || "";
 
   // Detect if content uses interactive demo components
   const demoComponentNames = [
-    "UnitVectorDemo", "ProjectArrowDemo", "ProjectionDemo",
-    "ExampleWith2Polygons", "AxisByAxis", "SAT", "SATWithResponse",
-    "SATWithConcaveShapes", "EarClipping", "PointAndVectorDemo",
-    "MagnitudeDemo", "NormalDemo", "RotationDemo", "DotProductDemo",
-    "Triangulation", "ThreeFiberDemo", "ShaderEditor",
+    "UnitVectorDemo",
+    "ProjectArrowDemo",
+    "ProjectionDemo",
+    "ExampleWith2Polygons",
+    "AxisByAxis",
+    "SAT",
+    "SATWithResponse",
+    "SATWithConcaveShapes",
+    "EarClipping",
+    "PointAndVectorDemo",
+    "MagnitudeDemo",
+    "NormalDemo",
+    "RotationDemo",
+    "DotProductDemo",
+    "Triangulation",
+    "ThreeFiberDemo",
+    "ShaderEditor",
   ];
   const hasDemos = demoComponentNames.some((name) => rawContent.includes(`<${name}`));
 
@@ -474,10 +454,10 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   };
 };
 
-const addLinksAndSlugTransformer = (link: string = "/") => {
+const addLinksAndSlugTransformer = (link = "/") => {
   const transformer = async <T extends Record<string, any>>(
     data: T,
-    { meta }: { meta: ZodMeta }
+    { meta }: { meta: ZodMeta },
   ): Promise<T & { slug: string; link: string }> => {
     if (!meta.stem) {
       console.error("No stem found for " + meta.path);
@@ -602,8 +582,7 @@ export default defineConfig({
         .transform((data, { meta }) => {
           const name = meta.path.replace(".md", "").split("/").at(-2);
 
-          if (!name || !meta.stem)
-            throw Error("No name found for " + meta.path);
+          if (!name || !meta.stem) throw Error("No name found for " + meta.path);
 
           const parentFolder = slugify(name);
           const slug = slugify(meta.stem);

@@ -1,16 +1,16 @@
+import { Backlinks } from "@components/Backlinks";
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { BookCover } from "@components/CoverImage";
 import { ExternalLink } from "@components/ExternalLink";
-import { JsonLd, BreadcrumbJsonLd } from "@components/JsonLd";
+import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
-import { Backlinks } from "@components/Backlinks";
 import { HorizontalCard } from "@components/NiceCards";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Booknote } from "@velite";
-import { CommonMetadata } from "src/@types";
+import type { CommonMetadata } from "src/@types";
 
 import { byOnlyPublished } from "src/lib/utils/filters";
 
@@ -31,8 +31,8 @@ const BooknotesWithDefault = ({ booknote }: Props) => {
     return (
       <div>
         <p className="placeholder-text">
-          I have read this book, but did not write booknotes or a summary for it
-          yet. For now, this is all there is.
+          I have read this book, but did not write booknotes or a summary for it yet. For now, this
+          is all there is.
         </p>
       </div>
     );
@@ -76,18 +76,11 @@ const Book = ({ booknote, relatedBooks, backlinks }: Props) => {
       />
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
-        <MetadataDisplay
-          readingTime={booknote.metadata.readingTime}
-          date={booknote.date}
-        />
+        <MetadataDisplay readingTime={booknote.metadata.readingTime} date={booknote.date} />
         <article>
           <section className="flex mt-16!">
             <div className="not-prose block relative mr-2 mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
-              <BookCover
-                title={booknote.title}
-                cover={booknote.cover}
-                priority={true}
-              />
+              <BookCover title={booknote.title} cover={booknote.cover} priority={true} />
             </div>
             <header className="h-fit w-full ml-5">
               <hgroup>
@@ -96,9 +89,7 @@ const Book = ({ booknote, relatedBooks, backlinks }: Props) => {
                 <p className="mt-0! mb-2!">by {booknote.bookAuthor}</p>
                 <p className="mt-12! mb-2!">🏆 Rated: {booknote.rating}/10</p>
                 {booknote.goodreadsLink && (
-                  <ExternalLink href={booknote.goodreadsLink}>
-                    View on Goodreads
-                  </ExternalLink>
+                  <ExternalLink href={booknote.goodreadsLink}>View on Goodreads</ExternalLink>
                 )}
               </hgroup>
             </header>
@@ -152,8 +143,8 @@ export async function getStaticProps({ params }: Params) {
 
   const { toOnlyMetadata } = await import("src/lib/utils/toOnlyMetadata");
   const withContent = published.filter((b: Booknote) => b.summary);
-  const relatedBooks = getRelatedContent(booknote, withContent, 4).map(
-    (b: Booknote) => toOnlyMetadata(b)
+  const relatedBooks = getRelatedContent(booknote, withContent, 4).map((b: Booknote) =>
+    toOnlyMetadata(b),
   );
 
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");
@@ -173,7 +164,7 @@ export async function getStaticPaths() {
   const booknotes = loadVeliteData("booknotes.json");
   if (!Array.isArray(booknotes) || booknotes.length === 0) {
     throw new Error(
-      "booknotes.json is empty in getStaticPaths — velite likely did not run or the content submodule is missing. Refusing to build with zero booknote pages."
+      "booknotes.json is empty in getStaticPaths — velite likely did not run or the content submodule is missing. Refusing to build with zero booknote pages.",
     );
   }
   const paths = booknotes.filter(byOnlyPublished).map((book: Booknote) => {
@@ -185,7 +176,7 @@ export async function getStaticPaths() {
   });
   if (paths.length === 0) {
     throw new Error(
-      `No published booknotes found for getStaticPaths (loaded ${booknotes.length} raw entries). Refusing to build with zero booknote pages.`
+      `No published booknotes found for getStaticPaths (loaded ${booknotes.length} raw entries). Refusing to build with zero booknote pages.`,
     );
   }
 

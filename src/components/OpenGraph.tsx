@@ -1,7 +1,7 @@
 import Head from "next/head";
-import { FC } from "react";
+import type { FC } from "react";
 import { nextImageUrl } from "src/lib/mapToImageProps";
-import { baseUrl, completeUrl, tld } from "src/lib/urlUtils";
+import { completeUrl, tld } from "src/lib/urlUtils";
 interface OpenGraphProps {
   title: string;
   description: string;
@@ -44,9 +44,7 @@ export const OpenGraph: FC<OpenGraphProps> = ({
       <meta property="article:author" content={"Rico Trebeljahr"} />
 
       {section && <meta property="article:section" content={section} />}
-      {publishedTime && (
-        <meta property="article:published_time" content={publishedTime} />
-      )}
+      {publishedTime && <meta property="article:published_time" content={publishedTime} />}
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:site" content="@ricotrebeljahr" />

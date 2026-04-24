@@ -1,12 +1,12 @@
-import Link from "next/link";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
-import { BreadCrumbs } from "@components/BreadCrumbs";
-import { byReadingTime } from "src/lib/utils/sorting";
+import Link from "next/link";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 import { byOnlyPublished } from "src/lib/utils/filters";
+import { byReadingTime } from "src/lib/utils/sorting";
 import { toTitleCase } from "src/lib/utils/toTitleCase";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 type DocumentLink = {
   title: string;
@@ -33,9 +33,7 @@ const RenderTags = ({ tags }: { tags: TaggedDocumentData[] }) => {
           className="inline-block px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 no-underline"
         >
           {toTitleCase(tag)}{" "}
-          <span className="text-gray-500 dark:text-gray-400">
-            ({links.length})
-          </span>
+          <span className="text-gray-500 dark:text-gray-400">({links.length})</span>
         </Link>
       ))}
     </div>
@@ -49,21 +47,19 @@ const RenderAnchors = ({ tags }: { tags: TaggedDocumentData[] }) => {
         <div key={tag}>
           <h2 id={tag}>
             {toTitleCase(tag)}{" "}
-            <span className="text-gray-500 text-base font-normal">
-              ({links.length})
-            </span>
+            <span className="text-gray-500 text-base font-normal">({links.length})</span>
           </h2>
           <ul>
-            {links.sort(byReadingTime).map(({ link, title, contentType, metadata: { readingTime } = {} }) => (
-              <li key={link}>
-                <Link href={link || ""}>
-                  {title}
-                </Link>
-                <span className="text-gray-500 dark:text-gray-400 text-sm ml-2">
-                  {contentType} · {readingTime || 0} min
-                </span>
-              </li>
-            ))}
+            {links
+              .sort(byReadingTime)
+              .map(({ link, title, contentType, metadata: { readingTime } = {} }) => (
+                <li key={link}>
+                  <Link href={link || ""}>{title}</Link>
+                  <span className="text-gray-500 dark:text-gray-400 text-sm ml-2">
+                    {contentType} · {readingTime || 0} min
+                  </span>
+                </li>
+              ))}
           </ul>
         </div>
       ))}
@@ -92,8 +88,7 @@ export default function CategoriesPage({ categories, seo }: Props) {
           <h1 className="mt-16!">Categories</h1>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             {categories.length} topics across{" "}
-            {categories.reduce((sum, c) => sum + c.links.length, 0)} pieces of
-            content.
+            {categories.reduce((sum, c) => sum + c.links.length, 0)} pieces of content.
           </p>
           <RenderTags tags={categories} />
           <RenderAnchors tags={categories} />

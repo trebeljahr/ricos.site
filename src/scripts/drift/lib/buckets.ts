@@ -1,8 +1,4 @@
-import {
-  DeleteObjectsCommand,
-  ListObjectsV2Command,
-  S3Client,
-} from "@aws-sdk/client-s3";
+import { DeleteObjectsCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { createS3Client } from "src/lib/aws";
 
 export interface S3Object {
@@ -15,10 +11,7 @@ export interface S3Object {
  * List every object in a bucket (paginated, full scan).
  * Returns Key, ETag (MD5 for single-part uploads), and Size.
  */
-export async function listAllObjects(
-  bucket: string,
-  prefix = ""
-): Promise<S3Object[]> {
+export async function listAllObjects(bucket: string, prefix = ""): Promise<S3Object[]> {
   const client = createS3Client();
   const out: S3Object[] = [];
   let token: string | undefined = undefined;
@@ -29,7 +22,7 @@ export async function listAllObjects(
         Prefix: prefix,
         ContinuationToken: token,
         MaxKeys: 1000,
-      })
+      }),
     );
     for (const obj of resp.Contents ?? []) {
       if (!obj.Key) continue;
@@ -51,7 +44,7 @@ export async function listAllObjects(
 export async function deleteObjects(
   bucket: string,
   keys: string[],
-  onProgress?: (done: number, total: number) => void
+  onProgress?: (done: number, total: number) => void,
 ): Promise<{ deleted: number; errors: { Key: string; Message?: string }[] }> {
   const client = createS3Client();
   const errors: { Key: string; Message?: string }[] = [];
@@ -65,7 +58,7 @@ export async function deleteObjects(
           Objects: batch.map((Key) => ({ Key })),
           Quiet: true,
         },
-      })
+      }),
     );
     for (const e of resp.Errors ?? []) {
       if (e.Key) errors.push({ Key: e.Key, Message: e.Message });
@@ -79,22 +72,16 @@ export async function deleteObjects(
 /**
  * Server-side rename: copy old → new, delete old.
  */
-export async function renameObject(
-  bucket: string,
-  oldKey: string,
-  newKey: string
-): Promise<void> {
+export async function renameObject(bucket: string, oldKey: string, newKey: string): Promise<void> {
   const client = createS3Client();
-  const { CopyObjectCommand, DeleteObjectCommand } = await import(
-    "@aws-sdk/client-s3"
-  );
+  const { CopyObjectCommand, DeleteObjectCommand } = await import("@aws-sdk/client-s3");
   await client.send(
     new CopyObjectCommand({
       Bucket: bucket,
       CopySource: `${bucket}/${encodeURIComponent(oldKey)}`,
       Key: newKey,
       MetadataDirective: "COPY",
-    })
+    }),
   );
   await client.send(new DeleteObjectCommand({ Bucket: bucket, Key: oldKey }));
 }

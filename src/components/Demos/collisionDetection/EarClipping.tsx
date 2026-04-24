@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+import { useEffect, useState } from "react";
 
+import { useWindowWidth } from "@react-hook/window-size";
+import { Polygon, triangulateVisualization } from "../../../lib/math/Poly";
+import { Vec2 } from "../../../lib/math/Vector";
 import {
+  drawBackground,
   initPolygons,
   instrument,
   niceGreen,
   starPoints,
-  drawBackground,
 } from "../../../lib/math/drawHelpers";
-import { Polygon, triangulateVisualization } from "../../../lib/math/Poly";
-import { Vec2 } from "../../../lib/math/Vector";
-import { useWindowWidth } from "@react-hook/window-size";
 export const EarClipping = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   //
@@ -58,7 +58,7 @@ export const EarClipping = () => {
       if (isRunning) return;
       setIsRunning(true);
 
-      let indexList: number[] = [];
+      const indexList: number[] = [];
       for (let i = 0; i < poly.vertices.length; i++) {
         indexList.push(i);
       }

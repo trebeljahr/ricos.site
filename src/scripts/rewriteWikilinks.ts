@@ -55,10 +55,7 @@ function processDirectory(directoryPath: string) {
       const basePath = path.join(process.cwd(), "src/content/Notes");
 
       fileContents = fileContents.replace(wikiLinkRegex, (_, p1) => {
-        const linkText = capitalizeWords(
-          wordsToCapitalize,
-          path.parse(p1.replace(/-/g, " ")).name
-        );
+        const linkText = capitalizeWords(wordsToCapitalize, path.parse(p1.replace(/-/g, " ")).name);
         const parentFolder = path.basename(directoryPath);
 
         console.info({ p1 });
@@ -66,16 +63,8 @@ function processDirectory(directoryPath: string) {
         const currentLinkPath = path.resolve("/assets", p1);
         const absoluteCurrentLinkPath = path.join(basePath, currentLinkPath);
 
-        const linkDestinationPath = path.join(
-          "/assets",
-          parentFolder,
-          sourceName,
-          p1
-        );
-        const absoluteLinkDestinationPath = path.join(
-          basePath,
-          linkDestinationPath
-        );
+        const linkDestinationPath = path.join("/assets", parentFolder, sourceName, p1);
+        const absoluteLinkDestinationPath = path.join(basePath, linkDestinationPath);
         const replacementText = `![${linkText}](${linkDestinationPath})`;
 
         try {

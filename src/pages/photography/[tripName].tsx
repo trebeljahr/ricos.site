@@ -1,13 +1,13 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
-import Layout from "@components/Layout";
 import { InfiniteScrollGallery } from "@components/Galleries";
+import Layout from "@components/Layout";
 import { ToTopButton } from "@components/ToTopButton";
-import { ImageProps } from "src/@types";
+import type { ImageProps } from "src/@types";
 import { getDataFromMetadata, photographyFolder } from "src/lib/imageMetadata";
 import { getLocalMetadata } from "src/lib/imageMetadata";
 import { imageSizes, nextImageUrl } from "src/lib/mapToImageProps";
-import { trips } from "../photography";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
+import { trips } from "../photography";
 
 export default function SinglePhotographyShowcasePage({
   images,
@@ -63,9 +63,7 @@ export default function SinglePhotographyShowcasePage({
         <BreadCrumbs path={`photography/${tripName}`} />
 
         <section>
-          <h1 className="text-4xl mt-16!">
-            {turnKebabIntoTitleCase(tripName)}
-          </h1>
+          <h1 className="text-4xl mt-16!">{turnKebabIntoTitleCase(tripName)}</h1>
           <InfiniteScrollGallery images={imagesWithSrcSet} />
           <ToTopButton />
         </section>
@@ -84,7 +82,7 @@ export async function getStaticPaths() {
       Object.keys(getLocalMetadata())
         .filter((key: string) => key.startsWith(photographyFolder))
         .map((key: string) => key.replace(photographyFolder, "").split("/")[0])
-        .filter(Boolean)
+        .filter(Boolean),
     ),
   ].sort();
 

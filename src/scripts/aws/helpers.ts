@@ -1,17 +1,11 @@
-import { HeadObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { readFileSync } from "fs";
-import mime from "mime";
 import path from "path";
+import { HeadObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import mime from "mime";
 import { createS3Client } from "src/lib/aws";
-import {
-  getAllStorageObjectKeys,
-  getImageMetadataFromFileSystemOrAWS,
-} from "src/lib/aws";
+import { getAllStorageObjectKeys, getImageMetadataFromFileSystemOrAWS } from "src/lib/aws";
 import { getWidthAndHeightFromFileSystem } from "src/scripts/aws/getWidthAndHeight";
-import {
-  assetsMetadataFilePath,
-  updateMetadataFile,
-} from "../metadataJsonFileHelpers";
+import { assetsMetadataFilePath, updateMetadataFile } from "../metadataJsonFileHelpers";
 
 const Bucket = "images.trebeljahr.com";
 
@@ -42,7 +36,7 @@ export async function doesFileExistInS3(filePath: string): Promise<boolean> {
 export async function uploadWithMetadata(
   filepath: string,
   Key: string,
-  Metadata: Record<string, string>
+  Metadata: Record<string, string>,
 ) {
   const client = createS3Client();
   const Body = readFileSync(filepath);
@@ -60,9 +54,9 @@ export async function uploadWithMetadata(
 
     await updateMetadataFile(assetsMetadataFilePath, {
       key: Key,
-      width: parseInt(Metadata.width),
-      height: parseInt(Metadata.height),
-      aspectRatio: parseFloat(Metadata.aspectRatio),
+      width: Number.parseInt(Metadata.width),
+      height: Number.parseInt(Metadata.height),
+      aspectRatio: Number.parseFloat(Metadata.aspectRatio),
       existsInS3: true,
     });
 
@@ -80,7 +74,7 @@ export async function readS3MetadataForAllStorageObjects(prefix: string) {
   const metadata = await Promise.all(
     allKeys.map((key) => {
       return getImageMetadataFromFileSystemOrAWS(bucketName, key);
-    })
+    }),
   );
 
   return metadata;

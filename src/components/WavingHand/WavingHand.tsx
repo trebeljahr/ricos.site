@@ -25,10 +25,7 @@ const WavingHand = () => {
   }, [controls]);
 
   return (
-    <motion.span
-      className="inline-block origin-bottom-right"
-      animate={controls}
-    >
+    <motion.span className="inline-block origin-bottom-right" animate={controls}>
       <HandEmoji />
     </motion.span>
   );

@@ -13,9 +13,7 @@ interface EmergencyInfo {
 }
 
 export const useEmergencyInfo = () => {
-  const [emergencyInfo, setEmergencyInfo] = useState<EmergencyInfo | null>(
-    null
-  );
+  const [emergencyInfo, setEmergencyInfo] = useState<EmergencyInfo | null>(null);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 

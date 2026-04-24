@@ -1,24 +1,24 @@
+import { Backlinks } from "@components/Backlinks";
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ImageWithLoader } from "@components/ImageWithLoader";
-import { JsonLd, BreadcrumbJsonLd } from "@components/JsonLd";
+import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
-import { Backlinks } from "@components/Backlinks";
-import { HorizontalCard } from "@components/NiceCards";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
+import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import slugify from "@sindresorhus/slugify";
 import type { Travelblog } from "@velite";
-import { ReactNode } from "react";
-import { byDate } from "src/lib/utils/sorting";
+import type { ReactNode } from "react";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { replaceUndefinedWithNull } from "src/lib/utils/replaceUndefinedWithNull";
+import { byDate } from "src/lib/utils/sorting";
 
+import type { CommonMetadata } from "src/@types";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
-import { CommonMetadata } from "src/@types";
 
 type BacklinkItem = { title: string; link: string; type: string };
 
@@ -64,7 +64,9 @@ export const TravelBlogLayout = ({
       image={seoOgImage || cover?.src || ""}
       imageAlt={seoOgImageAlt || cover?.alt || ""}
       url={url}
-      keywords={seoKeywords.length > 0 ? seoKeywords : ["travel", "blog", "adventure", "stories", ...tags]}
+      keywords={
+        seoKeywords.length > 0 ? seoKeywords : ["travel", "blog", "adventure", "stories", ...tags]
+      }
       withProgressBar={true}
       ogType="article"
       articlePublishedTime={date}
@@ -167,7 +169,7 @@ export async function getStaticPaths() {
         tripName: slugify(parentFolder as string),
         storyName: slug,
       },
-    })
+    }),
   );
 
   return {
@@ -176,9 +178,7 @@ export async function getStaticPaths() {
   };
 }
 
-export async function getStaticProps({
-  params: { storyName, tripName },
-}: Params) {
+export async function getStaticProps({ params: { storyName, tripName } }: Params) {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const { getRelatedContent } = await import("src/lib/utils/getRelatedContent");
   const travelblogs: Travelblog[] = loadVeliteData("travelblogs.json");
@@ -198,15 +198,11 @@ export async function getStaticProps({
   const nextSlug = nextIndex < stories.length ? stories[nextIndex].slug : null;
 
   // Related stories from OTHER trips (cross-trip discovery)
-  const otherTripStories = allPublished.filter(
-    ({ parentFolder }) => parentFolder !== tripName
-  );
+  const otherTripStories = allPublished.filter(({ parentFolder }) => parentFolder !== tripName);
   const { toOnlyMetadata } = await import("src/lib/utils/toOnlyMetadata");
-  const relatedStories = getRelatedContent(
-    travelingStory,
-    otherTripStories,
-    3
-  ).map((s: Travelblog) => toOnlyMetadata(s));
+  const relatedStories = getRelatedContent(travelingStory, otherTripStories, 3).map(
+    (s: Travelblog) => toOnlyMetadata(s),
+  );
 
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");
   const backlinks = getBacklinks(travelingStory.link);

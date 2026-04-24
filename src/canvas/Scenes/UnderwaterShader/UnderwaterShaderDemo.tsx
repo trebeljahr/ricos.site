@@ -1,15 +1,10 @@
 import { useUnderwaterContext, waterHeight } from "@contexts/UnderwaterContext";
-import {
-  Environment,
-  PointerLockControls,
-  Sky,
-  useKeyboardControls,
-} from "@react-three/drei";
+import { Environment, PointerLockControls, Sky, useKeyboardControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { EffectComposer } from "@react-three/postprocessing";
-import { Physics, RapierRigidBody, RigidBody } from "@react-three/rapier";
-import { PropsWithChildren, useEffect, useRef } from "react";
-import { Color, FogExp2, Mesh, Vector3 } from "three";
+import { Physics, type RapierRigidBody, RigidBody } from "@react-three/rapier";
+import { type PropsWithChildren, useEffect, useRef } from "react";
+import { Color, type FogExp2, type Mesh, Vector3 } from "three";
 import { clamp, lerp } from "three/src/math/MathUtils";
 import { UnderwaterEffect } from "./UnderwaterEffect";
 import { WaterSurface } from "./WaterSurface";
@@ -40,8 +35,7 @@ function PlayerController({ children }: PropsWithChildren) {
   useFrame((_, delta) => {
     if (!rigidBodyRef.current) return;
 
-    const { forward, backward, leftward, rightward, jump, descend, sprint } =
-      get();
+    const { forward, backward, leftward, rightward, jump, descend, sprint } = get();
 
     const { x, y, z } = rigidBodyRef.current.translation();
     camera.position.set(x, y, z);
@@ -55,7 +49,7 @@ function PlayerController({ children }: PropsWithChildren) {
     speedFactor.current = lerp(
       speedFactor.current,
       desiredSpeed,
-      clamp(0, 1, lerpConstant.current)
+      clamp(0, 1, lerpConstant.current),
     );
 
     direction
@@ -65,10 +59,7 @@ function PlayerController({ children }: PropsWithChildren) {
       .normalize()
       .multiplyScalar(SPEED * speedFactor.current);
 
-    rigidBodyRef.current.setLinvel(
-      { x: direction.x, y: direction.y, z: direction.z },
-      true
-    );
+    rigidBodyRef.current.setLinvel({ x: direction.x, y: direction.y, z: direction.z }, true);
   });
 
   return (
@@ -158,7 +149,7 @@ function AnimatedBubbles() {
       speed: 0.4 + Math.random() * 0.6,
       size: 0.08 + Math.random() * 0.2,
       wobble: Math.random() * Math.PI * 2,
-    }))
+    })),
   );
 
   useFrame((_, delta) => {
@@ -175,7 +166,7 @@ function AnimatedBubbles() {
         mesh.position.set(
           b.x + Math.sin(b.wobble) * 0.4,
           b.y,
-          b.z + Math.cos(b.wobble * 0.7) * 0.4
+          b.z + Math.cos(b.wobble * 0.7) * 0.4,
         );
       }
     });

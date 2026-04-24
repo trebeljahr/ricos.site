@@ -1,9 +1,6 @@
 import { useThree } from "@react-three/fiber";
 import { useMemo } from "react";
-import {
-  fillPositionTexture,
-  fillVelocityTexture,
-} from "src/lib/utils/fillDataTexture";
+import { fillPositionTexture, fillVelocityTexture } from "src/lib/utils/fillDataTexture";
 import { RepeatWrapping, Vector3 } from "three";
 import { GPUComputationRenderer } from "three-stdlib";
 
@@ -11,11 +8,7 @@ export const useGpuCompute = (textureWidth: number) => {
   const { gl } = useThree();
 
   const gpuCompute = useMemo(() => {
-    const gpuCompute = new GPUComputationRenderer(
-      textureWidth,
-      textureWidth,
-      gl
-    );
+    const gpuCompute = new GPUComputationRenderer(textureWidth, textureWidth, gl);
     const error = gpuCompute.init();
 
     if (error !== null) {
@@ -36,23 +29,15 @@ export function initComputeRenderer(
   positionVariable: React.MutableRefObject<any>,
   velocityVariable: React.MutableRefObject<any>,
   positionUniforms: React.MutableRefObject<any>,
-  velocityUniforms: React.MutableRefObject<any>
+  velocityUniforms: React.MutableRefObject<any>,
 ) {
   const dtPosition = gpuCompute.createTexture();
   const dtVelocity = gpuCompute.createTexture();
   fillPositionTexture(dtPosition, bounds);
   fillVelocityTexture(dtVelocity);
 
-  velocityVariable.current = gpuCompute.addVariable(
-    "textureVelocity",
-    velocityShader,
-    dtVelocity
-  );
-  positionVariable.current = gpuCompute.addVariable(
-    "texturePosition",
-    positionShader,
-    dtPosition
-  );
+  velocityVariable.current = gpuCompute.addVariable("textureVelocity", velocityShader, dtVelocity);
+  positionVariable.current = gpuCompute.addVariable("texturePosition", positionShader, dtPosition);
 
   gpuCompute.setVariableDependencies(velocityVariable.current, [
     positionVariable.current,

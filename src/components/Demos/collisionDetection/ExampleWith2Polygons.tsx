@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+import { useEffect, useState } from "react";
 
+import { Vec2 } from "../../../lib/math/Vector";
 import {
-  drawProjection,
-  initPolygons,
   colorEdge,
   drawBackground,
+  drawProjection,
+  initPolygons,
   instrument,
 } from "../../../lib/math/drawHelpers";
-import { Vec2 } from "../../../lib/math/Vector";
 export const ExampleWith2Polygons = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
 
@@ -29,12 +29,7 @@ export const ExampleWith2Polygons = () => {
       poly2.draw(ctx);
       const [p1, p2] = [poly1.vertices[0], poly1.vertices[1]];
       colorEdge(ctx, p1, p2);
-      drawProjection(
-        ctx,
-        [poly1, poly2],
-        new Vec2(p1.y, -p1.x),
-        new Vec2(p2.y, -p2.x)
-      );
+      drawProjection(ctx, [poly1, poly2], new Vec2(p1.y, -p1.x), new Vec2(p2.y, -p2.x));
     };
 
     const { cleanup } = instrument(ctx, [poly1, poly2], drawFn);

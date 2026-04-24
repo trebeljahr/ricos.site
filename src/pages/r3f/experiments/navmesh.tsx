@@ -5,8 +5,8 @@ import { useThree } from "@react-three/fiber";
 import { DebugDrawer, threeToSoloNavMesh } from "@recast-navigation/three";
 import { useEffect } from "react";
 import { init } from "recast-navigation";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 import { Mesh } from "three";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const NavmeshExample = () => {
   const { scene } = useThree();
@@ -62,15 +62,7 @@ const defaultSeoInfo = {
   description:
     "A demo of a Recast navmesh in a 3D scene, powered by the awesome recast-js library.",
   url: "/r3f/experiments/navmesh",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/navmesh.png",
   imageAlt: "a simple navmesh with debug triangles shown in a 3D scene",
 };

@@ -1,33 +1,19 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 import { Sky } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { Physics } from "@react-three/rapier";
-import { Perf } from "r3f-perf";
-import {
-  perf,
-  physicsDebug,
-  tileSize,
-} from "src/canvas/ChunkGenerationSystem/config";
+import { physicsDebug, tileSize } from "src/canvas/ChunkGenerationSystem/config";
 import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { InstancedTreesWithMultiMaterial } from "src/canvas/InstancedMeshSystem/InstancedRocks";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "A test of the InstancedMesh2 Library",
   description:
     "You can spawn a bunch of trees with this system by pressing the f key. You can also remove trees again by presing the g key.",
   url: "/r3f/experiments/instanced-mesh-2",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/instanced-mesh-2.png",
   imageAlt: "a 3D scene with a bunch of trees",
 };

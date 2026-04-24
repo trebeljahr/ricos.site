@@ -1,5 +1,5 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { createContext, PropsWithChildren, useContext, useState } from "react";
+import { type PropsWithChildren, createContext, useContext, useState } from "react";
 
 export const waterHeight = 45;
 
@@ -33,9 +33,5 @@ export const UnderwaterContextProvider = ({ children }: PropsWithChildren) => {
     }
   });
 
-  return (
-    <UnderwaterContext.Provider value={{ underwater }}>
-      {children}
-    </UnderwaterContext.Provider>
-  );
+  return <UnderwaterContext.Provider value={{ underwater }}>{children}</UnderwaterContext.Provider>;
 };

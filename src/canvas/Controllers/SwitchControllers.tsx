@@ -1,11 +1,11 @@
-import { OrbitControls, useKeyboardControls } from "@react-three/drei";
-import { useMemo, useState } from "react";
-import { SwimmingController } from "./SwimmingController";
-import { MinecraftSpectatorController } from "./MinecraftCreativeController";
-import { FirstPersonController } from "./FirstPersonController";
-import { ThirdPersonController } from "./ThirdPersonController";
 import { useKeyboardInput } from "@hooks/useKeyboardInput";
-import { ModelType } from "./EcctrlController";
+import { OrbitControls } from "@react-three/drei";
+import { useMemo, useState } from "react";
+import type { ModelType } from "./EcctrlController";
+import { FirstPersonController } from "./FirstPersonController";
+import { MinecraftSpectatorController } from "./MinecraftCreativeController";
+import { SwimmingController } from "./SwimmingController";
+import { ThirdPersonController } from "./ThirdPersonController";
 
 type PossibleControllers =
   | "FirstPersonController"
@@ -15,9 +15,7 @@ type PossibleControllers =
   | "FirstPersonController";
 
 export const SwitchController = ({ Model }: { Model: ModelType }) => {
-  const [controller, setController] = useState<PossibleControllers>(
-    "MinecraftCreativeController"
-  );
+  const [controller, setController] = useState<PossibleControllers>("MinecraftCreativeController");
 
   useKeyboardInput(({ key }) => {
     switch (key) {

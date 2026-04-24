@@ -1,49 +1,28 @@
-import type {
-  Collider,
-  RayColliderHit,
-  Vector,
-} from "@dimforge/rapier3d-compat";
+import type { Collider, RayColliderHit, Vector } from "@dimforge/rapier3d-compat";
 import { QueryFilterFlags } from "@dimforge/rapier3d-compat";
+import { Component, Entity, type EntityType } from "@r3f/AI/ecs";
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import {
   CapsuleCollider,
   CylinderCollider,
-  quat,
-  RapierRigidBody,
+  type RapierRigidBody,
   RigidBody,
-  useRapier,
   type RigidBodyProps,
+  quat,
+  useRapier,
 } from "@react-three/rapier";
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-  type ForwardRefRenderFunction,
-  type ReactNode,
-} from "react";
-import {
-  Euler,
-  Group,
-  MathUtils,
-  Mesh,
-  Object3D,
-  Quaternion,
-  Vector3,
-} from "three";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { Euler, type Group, MathUtils, type Mesh, Object3D, Quaternion, Vector3 } from "three";
 import { useFollowCam } from "./useFollowCam";
 import { useGame } from "./useGame";
-import { Component, Entity, EntityType } from "@r3f/AI/ecs";
 
 const getMovingDirection = (
   forward: boolean,
   backward: boolean,
   leftward: boolean,
   rightward: boolean,
-  pivot: Object3D
+  pivot: Object3D,
 ): number | null => {
   if (!forward && !backward && !leftward && !rightward) return null;
   if (forward && leftward) return pivot.rotation.y + Math.PI / 4;
@@ -167,10 +146,7 @@ const Ecctrl = ({
    */
   const rotateCamera = (x: number, y: number) => {
     pivot.rotation.y += y;
-    followCam.rotation.x = Math.min(
-      Math.max(followCam.rotation.x + x, camLowLimit),
-      camUpLimit
-    );
+    followCam.rotation.x = Math.min(Math.max(followCam.rotation.x + x, camLowLimit), camUpLimit);
   };
 
   /**
@@ -188,13 +164,12 @@ const Ecctrl = ({
     }
   });
 
-  let isModePointToMove: boolean = false;
-  let functionKeyDown: boolean = false;
-  let isModeFixedCamera: boolean = false;
-  let isModeCameraBased: boolean = false;
+  let isModePointToMove = false;
+  let functionKeyDown = false;
+  let isModeFixedCamera = false;
+  let isModeCameraBased = false;
   const setMoveToPoint = useGame((state) => state.setMoveToPoint);
-  const findMode = (mode: string, modes: string) =>
-    modes.split(" ").some((m) => m === mode);
+  const findMode = (mode: string, modes: string) => modes.split(" ").some((m) => m === mode);
   if (mode) {
     if (findMode("PointToMove", mode)) isModePointToMove = true;
     if (findMode("FixedCamera", mode)) isModeFixedCamera = true;
@@ -216,10 +191,7 @@ const Ecctrl = ({
   const crossVecOnY: Vector3 = useMemo(() => new Vector3(), []);
   const crossVecOnZ: Vector3 = useMemo(() => new Vector3(), []);
   const bodyContactForce: Vector3 = useMemo(() => new Vector3(), []);
-  const slopeRayOriginUpdatePosition: Vector3 = useMemo(
-    () => new Vector3(),
-    []
-  );
+  const slopeRayOriginUpdatePosition: Vector3 = useMemo(() => new Vector3(), []);
   const camBasedMoveCrossVecOnY: Vector3 = useMemo(() => new Vector3(), []);
 
   /**
@@ -253,8 +225,8 @@ const Ecctrl = ({
     leftward: false,
     rightward: false,
   };
-  let gamepadJoystickDis: number = 0;
-  let gamepadJoystickAng: number = 0;
+  const gamepadJoystickDis = 0;
+  const gamepadJoystickAng = 0;
   const gamepadConnect = (e: any) => {
     setControllerIndex(e.gamepad.index);
   };
@@ -263,7 +235,7 @@ const Ecctrl = ({
   };
   const mergedKeys = useMemo(
     () => Object.assign({}, defaultControllerKeys, controllerKeys),
-    [controllerKeys]
+    [controllerKeys],
   );
 
   const handleButtons = (buttons: readonly GamepadButton[]) => {
@@ -273,27 +245,18 @@ const Ecctrl = ({
     gamepadKeys.rightward = buttons[mergedKeys.rightward].pressed;
   };
   // can jump setup
-  let canJump: boolean = false;
-  let isFalling: boolean = false;
-  const initialGravityScale: number = useMemo(
-    () => props.gravityScale ?? 1,
-    []
-  );
+  let canJump = false;
+  let isFalling = false;
+  const initialGravityScale: number = useMemo(() => props.gravityScale ?? 1, []);
 
   // on moving object state
-  let massRatio: number = 1;
-  let isOnMovingObject: boolean = false;
+  let massRatio = 1;
+  let isOnMovingObject = false;
   const standingForcePoint: Vector3 = useMemo(() => new Vector3(), []);
   const movingObjectDragForce: Vector3 = useMemo(() => new Vector3(), []);
   const movingObjectVelocity: Vector3 = useMemo(() => new Vector3(), []);
-  const movingObjectVelocityInCharacterDir: Vector3 = useMemo(
-    () => new Vector3(),
-    []
-  );
-  const distanceFromCharacterToObject: Vector3 = useMemo(
-    () => new Vector3(),
-    []
-  );
+  const movingObjectVelocityInCharacterDir: Vector3 = useMemo(() => new Vector3(), []);
+  const distanceFromCharacterToObject: Vector3 = useMemo(() => new Vector3(), []);
   const objectAngvelToLinvel: Vector3 = useMemo(() => new Vector3(), []);
   const velocityDiff: Vector3 = useMemo(() => new Vector3(), []);
 
@@ -320,8 +283,7 @@ const Ecctrl = ({
   /**
    * Load camera pivot and character move preset
    */
-  const { pivot, followCam, cameraCollisionDetect } =
-    useFollowCam(cameraSetups);
+  const { pivot, followCam, cameraCollisionDetect } = useFollowCam(cameraSetups);
   const pivotPosition: Vector3 = useMemo(() => new Vector3(), []);
   const pivotXAxis: Vector3 = useMemo(() => new Vector3(1, 0, 0), []);
   const pivotYAxis: Vector3 = useMemo(() => new Vector3(0, 1, 0), []);
@@ -383,12 +345,12 @@ const Ecctrl = ({
   /**
    * Character moving function
    */
-  let characterRotated: boolean = true;
+  let characterRotated = true;
   const moveCharacter = (
     _: number,
     run: boolean,
     slopeAngle: number,
-    movingObjectVelocity: Vector3
+    movingObjectVelocity: Vector3,
   ) => {
     if (!characterRef.current?.rigidBody) return;
     /**
@@ -409,7 +371,7 @@ const Ecctrl = ({
       movingDirection.set(
         0,
         Math.sin(slopeAngle) > 0 ? 0 : Math.sin(slopeAngle),
-        Math.sin(slopeAngle) > 0 ? 0.1 : 1
+        Math.sin(slopeAngle) > 0 ? 0.1 : 1,
       );
     } else {
       movingDirection.set(0, 0, 1);
@@ -432,18 +394,13 @@ const Ecctrl = ({
       .projectOnVector(movingDirection)
       .multiply(movingDirection);
     // Calculate angle between moving object velocity direction and character moving direction
-    const angleBetweenCharacterDirAndObjectDir =
-      movingObjectVelocity.angleTo(movingDirection);
+    const angleBetweenCharacterDirAndObjectDir = movingObjectVelocity.angleTo(movingDirection);
 
     /**
      * Setup rejection velocity, (currently only work on ground)
      */
     const wantToMoveMeg = currentVel.dot(movingDirection);
-    wantToMoveVel.set(
-      movingDirection.x * wantToMoveMeg,
-      0,
-      movingDirection.z * wantToMoveMeg
-    );
+    wantToMoveVel.set(movingDirection.x * wantToMoveMeg, 0, movingDirection.z * wantToMoveMeg);
     rejectVel.copy(currentVel).sub(wantToMoveVel);
 
     /**
@@ -453,42 +410,35 @@ const Ecctrl = ({
      */
     moveAccNeeded.set(
       (movingDirection.x *
-        (maxVelLimit * (run ? sprintMult : 1) +
-          movingObjectVelocityInCharacterDir.x) -
+        (maxVelLimit * (run ? sprintMult : 1) + movingObjectVelocityInCharacterDir.x) -
         (currentVel.x -
-          movingObjectVelocity.x *
-            Math.sin(angleBetweenCharacterDirAndObjectDir) +
+          movingObjectVelocity.x * Math.sin(angleBetweenCharacterDirAndObjectDir) +
           rejectVel.x * (isOnMovingObject ? 0 : rejectVelMult))) /
         accDeltaTime,
       0,
       (movingDirection.z *
-        (maxVelLimit * (run ? sprintMult : 1) +
-          movingObjectVelocityInCharacterDir.z) -
+        (maxVelLimit * (run ? sprintMult : 1) + movingObjectVelocityInCharacterDir.z) -
         (currentVel.z -
-          movingObjectVelocity.z *
-            Math.sin(angleBetweenCharacterDirAndObjectDir) +
+          movingObjectVelocity.z * Math.sin(angleBetweenCharacterDirAndObjectDir) +
           rejectVel.z * (isOnMovingObject ? 0 : rejectVelMult))) /
-        accDeltaTime
+        accDeltaTime,
     );
 
     // Wanted to move force function: F = ma
     const moveForceNeeded = moveAccNeeded.multiplyScalar(
-      (characterRef.current.rigidBody as any).mass()
+      (characterRef.current.rigidBody as any).mass(),
     );
 
     /**
      * Check if character complete turned to the wanted direction
      */
     characterRotated =
-      Math.sin(characterModelIndicator.rotation.y).toFixed(3) ==
-      Math.sin(modelEuler.y).toFixed(3);
+      Math.sin(characterModelIndicator.rotation.y).toFixed(3) == Math.sin(modelEuler.y).toFixed(3);
 
     // If character hasn't complete turning, change the impulse quaternion follow characterModelIndicator quaternion
     if (!characterRotated) {
       moveImpulse.set(
-        moveForceNeeded.x *
-          turnVelMultiplier *
-          (canJump ? 1 : airDragMultiplier), // if it's in the air, give it less control
+        moveForceNeeded.x * turnVelMultiplier * (canJump ? 1 : airDragMultiplier), // if it's in the air, give it less control
         slopeAngle === null || slopeAngle == 0 // if it's on a slope, apply extra up/down force to the body
           ? 0
           : movingDirection.y *
@@ -497,9 +447,7 @@ const Ecctrl = ({
                 ? slopeUpExtraForce
                 : slopeDownExtraForce) *
               (run ? sprintMult : 1),
-        moveForceNeeded.z *
-          turnVelMultiplier *
-          (canJump ? 1 : airDragMultiplier) // if it's in the air, give it less control
+        moveForceNeeded.z * turnVelMultiplier * (canJump ? 1 : airDragMultiplier), // if it's in the air, give it less control
       );
     }
     // If character complete turning, change the impulse quaternion default
@@ -513,7 +461,7 @@ const Ecctrl = ({
                 ? slopeUpExtraForce
                 : slopeDownExtraForce) *
               (run ? sprintMult : 1),
-        moveForceNeeded.z * (canJump ? 1 : airDragMultiplier)
+        moveForceNeeded.z * (canJump ? 1 : airDragMultiplier),
       );
     }
 
@@ -525,7 +473,7 @@ const Ecctrl = ({
         y: currentPos.y + moveImpulsePointY,
         z: currentPos.z,
       },
-      true
+      true,
     );
   };
 
@@ -537,12 +485,8 @@ const Ecctrl = ({
     const rb = characterRef.current.rigidBody as any;
 
     // Match body component to character model rotation on Y
-    bodyFacingVec
-      .set(0, 0, 1)
-      .applyQuaternion(quat(rb.rotation()));
-    bodyBalanceVec
-      .set(0, 1, 0)
-      .applyQuaternion(quat(rb.rotation()));
+    bodyFacingVec.set(0, 0, 1).applyQuaternion(quat(rb.rotation()));
+    bodyBalanceVec.set(0, 1, 0).applyQuaternion(quat(rb.rotation()));
 
     bodyBalanceVecOnX.set(0, bodyBalanceVec.y, bodyBalanceVec.z);
     bodyFacingVecOnY.set(bodyFacingVec.x, 0, bodyFacingVec.z);
@@ -554,20 +498,18 @@ const Ecctrl = ({
       pivot.getWorldDirection(modelFacingVec);
       // Update slopeRayOrigin to new positon
       slopeRayOriginUpdatePosition.set(movingDirection.x, 0, movingDirection.z);
-      camBasedMoveCrossVecOnY
-        .copy(slopeRayOriginUpdatePosition)
-        .cross(modelFacingVec);
+      camBasedMoveCrossVecOnY.copy(slopeRayOriginUpdatePosition).cross(modelFacingVec);
       slopeRayOriginRef.current.position.x =
         slopeRayOriginOffest *
         Math.sin(
           slopeRayOriginUpdatePosition.angleTo(modelFacingVec) *
-            (camBasedMoveCrossVecOnY.y < 0 ? 1 : -1)
+            (camBasedMoveCrossVecOnY.y < 0 ? 1 : -1),
         );
       slopeRayOriginRef.current.position.z =
         slopeRayOriginOffest *
         Math.cos(
           slopeRayOriginUpdatePosition.angleTo(modelFacingVec) *
-            (camBasedMoveCrossVecOnY.y < 0 ? 1 : -1)
+            (camBasedMoveCrossVecOnY.y < 0 ? 1 : -1),
         );
     } else {
       characterModelIndicator.getWorldDirection(modelFacingVec);
@@ -577,18 +519,14 @@ const Ecctrl = ({
     crossVecOnZ.copy(vectorY).cross(bodyBalanceVecOnZ);
 
     dragAngForce.set(
-      (crossVecOnX.x < 0 ? 1 : -1) *
-        autoBalanceSpringK *
-        bodyBalanceVecOnX.angleTo(vectorY) -
+      (crossVecOnX.x < 0 ? 1 : -1) * autoBalanceSpringK * bodyBalanceVecOnX.angleTo(vectorY) -
         rb.angvel().x * autoBalanceDampingC,
       (crossVecOnY.y < 0 ? 1 : -1) *
         autoBalanceSpringOnY *
         modelFacingVec.angleTo(bodyFacingVecOnY) -
         rb.angvel().y * autoBalanceDampingOnY,
-      (crossVecOnZ.z < 0 ? 1 : -1) *
-        autoBalanceSpringK *
-        bodyBalanceVecOnZ.angleTo(vectorY) -
-        rb.angvel().z * autoBalanceDampingC
+      (crossVecOnZ.z < 0 ? 1 : -1) * autoBalanceSpringK * bodyBalanceVecOnZ.angleTo(vectorY) -
+        rb.angvel().z * autoBalanceDampingC,
     );
 
     // Apply balance torque impulse
@@ -617,25 +555,20 @@ const Ecctrl = ({
     delta: number,
     slopeAngle: number,
     movingObjectVelocity: Vector3,
-    functionKeyDown: boolean
+    functionKeyDown: boolean,
   ) => {
     const moveToPoint = getMoveToPoint().moveToPoint;
     if (moveToPoint) {
-      pointToPoint.set(
-        moveToPoint.x - currentPos.x,
-        0,
-        moveToPoint.z - currentPos.z
-      );
+      pointToPoint.set(moveToPoint.x - currentPos.x, 0, moveToPoint.z - currentPos.z);
       crossVector.crossVectors(pointToPoint, vectorZ);
       // Rotate character to moving direction
-      modelEuler.y =
-        (crossVector.y > 0 ? -1 : 1) * pointToPoint.angleTo(vectorZ);
+      modelEuler.y = (crossVector.y > 0 ? -1 : 1) * pointToPoint.angleTo(vectorZ);
       // If mode is also set to fixed camera. keep the camera on the back of character
       if (isModeFixedCamera)
         pivot.rotation.y = MathUtils.lerp(
           pivot.rotation.y,
           modelEuler.y,
-          fixedCamRotMult * delta * 3
+          fixedCamRotMult * delta * 3,
         );
       // Once character close to the target point (distance<0.3),
       // Or character close to the wall (bodySensor intersects)
@@ -658,7 +591,7 @@ const Ecctrl = ({
       autoBalance ? true : false,
       autoBalance ? true : false,
       autoBalance ? true : false,
-      false
+      false,
     );
 
     const characterModel = characterModelRef.current;
@@ -698,16 +631,10 @@ const Ecctrl = ({
       currentVel.copy(rb.linvel() as Vector3);
 
       // Assign userDate properties
-      (rb.userData as userDataType).canJump =
-        canJump;
-      (rb.userData as userDataType).slopeAngle =
-        slopeAngle;
-      (
-        rb.userData as userDataType
-      ).characterRotated = characterRotated;
-      (
-        rb.userData as userDataType
-      ).isOnMovingObject = isOnMovingObject;
+      (rb.userData as userDataType).canJump = canJump;
+      (rb.userData as userDataType).slopeAngle = slopeAngle;
+      (rb.userData as userDataType).characterRotated = characterRotated;
+      (rb.userData as userDataType).isOnMovingObject = isOnMovingObject;
     }
 
     /**
@@ -720,19 +647,13 @@ const Ecctrl = ({
     pivotPosition
       .copy(currentPos)
       .addScaledVector(pivotXAxis, camTargetPos.x)
-      .addScaledVector(
-        pivotYAxis,
-        camTargetPos.y + (capsuleHalfHeight + capsuleRadius / 2)
-      )
+      .addScaledVector(pivotYAxis, camTargetPos.y + (capsuleHalfHeight + capsuleRadius / 2))
       .addScaledVector(pivotZAxis, camTargetPos.z);
     pivot.position.lerp(pivotPosition, 1 - Math.exp(-camFollowMult * delta));
 
     if (!disableFollowCam) {
       followCam.getWorldPosition(followCamPosition);
-      state.camera.position.lerp(
-        followCamPosition,
-        1 - Math.exp(-camLerpMult * delta)
-      );
+      state.camera.position.lerp(followCamPosition, 1 - Math.exp(-camLerpMult * delta));
       state.camera.lookAt(pivot.position);
     }
 
@@ -760,18 +681,19 @@ const Ecctrl = ({
           gamepadKeys.backward,
           gamepadKeys.leftward,
           gamepadKeys.rightward,
-          pivot
-        )
+          pivot,
+        ),
       );
     }
 
-    const { forward, backward, leftward, rightward, jump, run } =
-      isInsideKeyboardControls ? getKeys() : presetKeys;
+    const { forward, backward, leftward, rightward, jump, run } = isInsideKeyboardControls
+      ? getKeys()
+      : presetKeys;
 
     // Getting moving directions (IIFE)
     modelEuler.y = ((movingDirection) =>
       movingDirection === null ? modelEuler.y : movingDirection)(
-      getMovingDirection(forward, backward, leftward, rightward, pivot)
+      getMovingDirection(forward, backward, leftward, rightward, pivot),
     );
 
     // Move character to the moving direction
@@ -792,42 +714,31 @@ const Ecctrl = ({
     // Jump impulse
     if (jump && canJump) {
       // characterRef.current.rigidBody.applyImpulse(jumpDirection.set(0, 0.5, 0), true);
-      jumpVelocityVec.set(
-        currentVel.x,
-        run ? sprintJumpMult * jumpVel : jumpVel,
-        currentVel.z
-      );
+      jumpVelocityVec.set(currentVel.x, run ? sprintJumpMult * jumpVel : jumpVel, currentVel.z);
       // Apply slope normal to jump direction
       rb.setLinvel(
         jumpDirection
           .set(0, (run ? sprintJumpMult * jumpVel : jumpVel) * slopJumpMult, 0)
           .projectOnVector(actualSlopeNormalVec)
           .add(jumpVelocityVec),
-        true
+        true,
       );
       // Apply jump force downward to the standing platform
       characterMassForce.y *= jumpForceToGroundMult;
       rayHit &&
-        rayHit.collider
-          .parent()
-          ?.applyImpulseAtPoint(characterMassForce, standingForcePoint, true);
+        rayHit.collider.parent()?.applyImpulseAtPoint(characterMassForce, standingForcePoint, true);
     }
 
     // Rotate character Indicator
     modelQuat.setFromEuler(modelEuler);
-    characterModelIndicator.quaternion.rotateTowards(
-      modelQuat,
-      delta * turnSpeed
-    );
+    characterModelIndicator.quaternion.rotateTowards(modelQuat, delta * turnSpeed);
 
     // If autobalance is off, rotate character model itself
     if (!autoBalance && characterModelRef.current) {
       if (isModeCameraBased) {
         characterModelRef.current.quaternion.copy(pivot.quaternion);
       } else {
-        characterModelRef.current.quaternion.copy(
-          characterModelIndicator.quaternion
-        );
+        characterModelRef.current.quaternion.copy(characterModelIndicator.quaternion);
       }
     }
 
@@ -845,7 +756,7 @@ const Ecctrl = ({
       rb,
       (collider: Collider) =>
         (collider.parent()?.userData as boolean) &&
-        !(collider.parent()?.userData as userDataType).excludeEcctrlRay
+        !(collider.parent()?.userData as userDataType).excludeEcctrlRay,
     );
 
     if (potentialHit) rayHit = potentialHit;
@@ -865,15 +776,10 @@ const Ecctrl = ({
       const colliderParent = rayHit.collider.parent();
       if (colliderParent) {
         // Getting the standing force apply point
-        standingForcePoint.set(
-          rayOrigin.x,
-          rayOrigin.y - rayHit.timeOfImpact,
-          rayOrigin.z
-        );
+        standingForcePoint.set(rayOrigin.x, rayOrigin.y - rayHit.timeOfImpact, rayOrigin.z);
         const rayHitObjectBodyType = colliderParent.bodyType();
         const rayHitObjectBodyMass = colliderParent.mass() || 1;
-        massRatio =
-          rb.mass() / rayHitObjectBodyMass;
+        massRatio = rb.mass() / rayHitObjectBodyMass;
         // Body type 0 is rigid body, body type 1 is fixed body, body type 2 is kinematic body
         if (rayHitObjectBodyType === 0 || rayHitObjectBodyType === 2) {
           isOnMovingObject = true;
@@ -889,16 +795,12 @@ const Ecctrl = ({
           movingObjectVelocity
             .set(
               movingObjectLinvel.x +
-                objectAngvelToLinvel.crossVectors(
-                  movingObjectAngvel,
-                  distanceFromCharacterToObject
-                ).x,
+                objectAngvelToLinvel.crossVectors(movingObjectAngvel, distanceFromCharacterToObject)
+                  .x,
               movingObjectLinvel.y,
               movingObjectLinvel.z +
-                objectAngvelToLinvel.crossVectors(
-                  movingObjectAngvel,
-                  distanceFromCharacterToObject
-                ).z
+                objectAngvelToLinvel.crossVectors(movingObjectAngvel, distanceFromCharacterToObject)
+                  .z,
             )
             .multiplyScalar(Math.min(1, 1 / massRatio));
           // If the velocity diff is too high (> 30), ignore movingObjectVelocity
@@ -933,11 +835,7 @@ const Ecctrl = ({
                 .multiplyScalar(Math.min(1, 1 / massRatio))
                 .negate();
             }
-            colliderParent.applyImpulseAtPoint(
-              movingObjectDragForce,
-              standingForcePoint,
-              true
-            );
+            colliderParent.applyImpulseAtPoint(movingObjectDragForce, standingForcePoint, true);
           }
         } else {
           // on fixed body
@@ -970,7 +868,7 @@ const Ecctrl = ({
       rb,
       (collider: Collider) =>
         (collider.parent()?.userData as boolean) &&
-        !(collider.parent()?.userData as userDataType).excludeEcctrlRay
+        !(collider.parent()?.userData as userDataType).excludeEcctrlRay,
     );
 
     if (potentialSlopeRayHit) slopeRayHit = potentialSlopeRayHit;
@@ -980,14 +878,10 @@ const Ecctrl = ({
       actualSlopeNormal = slopeRayHit.collider.castRayAndGetNormal(
         slopeRayCast,
         slopeRayLength,
-        false
+        false,
       )?.normal;
       if (actualSlopeNormal) {
-        actualSlopeNormalVec?.set(
-          actualSlopeNormal.x,
-          actualSlopeNormal.y,
-          actualSlopeNormal.z
-        );
+        actualSlopeNormalVec?.set(actualSlopeNormal.x, actualSlopeNormal.y, actualSlopeNormal.z);
         actualSlopeAngle = actualSlopeNormalVec?.angleTo(floorNormal);
       }
     }
@@ -997,9 +891,8 @@ const Ecctrl = ({
         // Round the slope angle to 2 decimal places
         slopeAngle = Number(
           Math.atan(
-            (rayHit.timeOfImpact - slopeRayHit.timeOfImpact) /
-              slopeRayOriginOffest
-          ).toFixed(2)
+            (rayHit.timeOfImpact - slopeRayHit.timeOfImpact) / slopeRayOriginOffest,
+          ).toFixed(2),
         );
       } else {
         slopeAngle = null;
@@ -1013,19 +906,12 @@ const Ecctrl = ({
      */
     if (rayHit != null) {
       if (canJump && rayHit.collider.parent()) {
-        floatingForce =
-          springK * (floatingDis - rayHit.timeOfImpact) -
-          rb.linvel().y * dampingC;
-        rb.applyImpulse(
-          springDirVec.set(0, floatingForce, 0),
-          false
-        );
+        floatingForce = springK * (floatingDis - rayHit.timeOfImpact) - rb.linvel().y * dampingC;
+        rb.applyImpulse(springDirVec.set(0, floatingForce, 0), false);
 
         // Apply opposite force to standing object (gravity g in rapier is 0.11 ?_?)
         characterMassForce.set(0, floatingForce > 0 ? -floatingForce : 0, 0);
-        rayHit.collider
-          .parent()
-          ?.applyImpulseAtPoint(characterMassForce, standingForcePoint, true);
+        rayHit.collider.parent()?.applyImpulseAtPoint(characterMassForce, standingForcePoint, true);
       }
     }
 
@@ -1046,11 +932,7 @@ const Ecctrl = ({
     ) {
       // not on a moving object
       if (!isOnMovingObject) {
-        dragForce.set(
-          -currentVel.x * dragDampingC,
-          0,
-          -currentVel.z * dragDampingC
-        );
+        dragForce.set(-currentVel.x * dragDampingC, 0, -currentVel.z * dragDampingC);
         rb.applyImpulse(dragForce, false);
       }
       // on a moving object
@@ -1058,7 +940,7 @@ const Ecctrl = ({
         dragForce.set(
           (movingObjectVelocity.x - currentVel.x) * dragDampingC,
           0,
-          (movingObjectVelocity.z - currentVel.z) * dragDampingC
+          (movingObjectVelocity.z - currentVel.z) * dragDampingC,
         );
         rb.applyImpulse(dragForce, true);
       }
@@ -1079,24 +961,12 @@ const Ecctrl = ({
           rb.setGravityScale(0, true);
         }
       } else {
-        if (
-          !isFalling &&
-          rb.gravityScale() !== initialGravityScale
-        ) {
+        if (!isFalling && rb.gravityScale() !== initialGravityScale) {
           // Apply initial gravity after landed
-          rb.setGravityScale(
-            initialGravityScale,
-            true
-          );
-        } else if (
-          isFalling &&
-          rb.gravityScale() !== fallingGravityScale
-        ) {
+          rb.setGravityScale(initialGravityScale, true);
+        } else if (isFalling && rb.gravityScale() !== fallingGravityScale) {
           // Apply larger gravity when falling (if initialGravityScale === fallingGravityScale, won't trigger this)
-          rb.setGravityScale(
-            fallingGravityScale,
-            true
-          );
+          rb.setGravityScale(fallingGravityScale, true);
         }
       }
     }
@@ -1121,12 +991,7 @@ const Ecctrl = ({
         gamepadKeys.rightward ||
         jump;
 
-      pointToMove(
-        delta,
-        slopeAngle || 0,
-        movingObjectVelocity,
-        functionKeyDown
-      );
+      pointToMove(delta, slopeAngle || 0, movingObjectVelocity, functionKeyDown);
     }
 
     /**
@@ -1140,18 +1005,14 @@ const Ecctrl = ({
           gamepadJoystickAng > (2 * Math.PI) / 3 &&
           gamepadJoystickAng < (4 * Math.PI) / 3)
       ) {
-        pivot.rotation.y += run
-          ? delta * sprintMult * fixedCamRotMult
-          : delta * fixedCamRotMult;
+        pivot.rotation.y += run ? delta * sprintMult * fixedCamRotMult : delta * fixedCamRotMult;
       } else if (
         rightward ||
         gamepadKeys.rightward ||
         (gamepadJoystickDis > 0 && gamepadJoystickAng < Math.PI / 3) ||
         gamepadJoystickAng > (5 * Math.PI) / 3
       ) {
-        pivot.rotation.y -= run
-          ? delta * sprintMult * fixedCamRotMult
-          : delta * fixedCamRotMult;
+        pivot.rotation.y -= run ? delta * sprintMult * fixedCamRotMult : delta * fixedCamRotMult;
       }
     }
   });
@@ -1182,19 +1043,12 @@ const Ecctrl = ({
               sensor
               mass={0}
               args={[bodySensorSize[0], bodySensorSize[1]]}
-              position={[
-                bodySensorPosition.x,
-                bodySensorPosition.y,
-                bodySensorPosition.z,
-              ]}
+              position={[bodySensorPosition.x, bodySensorPosition.y, bodySensorPosition.z]}
               onIntersectionEnter={handleOnIntersectionEnter}
               onIntersectionExit={handleOnIntersectionExit}
             />
           )}
-          <group
-            ref={characterModelRef}
-            userData={{ camExcludeCollision: true }}
-          >
+          <group ref={characterModelRef} userData={{ camExcludeCollision: true }}>
             {/* This mesh is used for positioning the slope ray origin */}
             <mesh
               position={[

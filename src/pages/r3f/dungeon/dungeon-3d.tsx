@@ -1,6 +1,5 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
-import { perf } from "@r3f/ChunkGenerationSystem/config";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import {
@@ -12,25 +11,12 @@ import {
   Torches,
   Walls,
 } from "@r3f/Dungeon/DungeonRoomsWithInstancing";
-import {
-  DungeonMeshGenerator,
-  MeshType,
-} from "@r3f/Dungeon/Generator3D/ConvertToMesh";
+import { DungeonMeshGenerator, MeshType } from "@r3f/Dungeon/Generator3D/ConvertToMesh";
 import { DungeonGenerator3D } from "@r3f/Dungeon/Generator3D/Generator";
-import {
-  CellType3D,
-  Vector3,
-  Vector3Int,
-} from "@r3f/Dungeon/Generator3D/Types";
+import { CellType3D, type Vector3, Vector3Int } from "@r3f/Dungeon/Generator3D/Types";
 
-import {
-  Bloom,
-  EffectComposer,
-  ToneMapping,
-} from "@react-three/postprocessing";
-import { Perf } from "r3f-perf";
-import { useEffect, useMemo, useRef } from "react";
-import { InstancedMesh, Matrix4, Vector3 as Vector3FromThreeJS } from "three";
+import { Bloom, EffectComposer, ToneMapping } from "@react-three/postprocessing";
+import { useMemo } from "react";
 
 const RenderDungeon = ({ seed }: { seed?: number }) => {
   const { grid3D, renderPass } = useMemo(() => {
@@ -39,7 +25,7 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
       30,
       new Vector3Int(6, 1, 6),
       new Vector3Int(3, 1, 3),
-      seed?.toString() || (Math.random() * 1000).toString()
+      seed?.toString() || (Math.random() * 1000).toString(),
     );
 
     const grid3D = generator3D.generate();
@@ -65,17 +51,17 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
 
         return acc;
       },
-      { rooms: 0, hallways: 0, stairs: 0, doors: 0 }
+      { rooms: 0, hallways: 0, stairs: 0, doors: 0 },
     );
 
     const meshGenerator = new DungeonMeshGenerator(grid3D, seed?.toString());
     const meshes = meshGenerator.generateMeshes();
 
     const initEmpty = () =>
-      ({ positions: [], rotations: [] } as {
+      ({ positions: [], rotations: [] }) as {
         positions: Vector3[];
         rotations: Vector3[];
-      });
+      };
 
     const renderPass = meshes.reduce(
       (acc, mesh) => {
@@ -99,7 +85,7 @@ const RenderDungeon = ({ seed }: { seed?: number }) => {
         [MeshType.StairsRailing]: initEmpty(),
         [MeshType.StairWall]: initEmpty(),
         [MeshType.Torch]: initEmpty(),
-      }
+      },
     );
 
     return { generator3D, grid3D, renderPass, counts };
@@ -141,15 +127,7 @@ const defaultSeoInfo = {
   description:
     "A 3D dungeon room generated in the browser, powered by R3F, Typescript, and a port of vazgriz's dungeon generator visualized with free 3D models from Quaternius",
   url: "/r3f/dungeon/dungeon-algo-3d",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/r3f/dungeon-3d.png",
   imageAlt: "a 3D dungeon room generated in the browser",
 };
@@ -169,10 +147,7 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
   const viewDistance = 30;
 
   return (
-    <ThreeFiberLayout
-      seoInfo={seoInfo}
-      camera={{ far: viewDistance, position: [25, 10, 25] }}
-    >
+    <ThreeFiberLayout seoInfo={seoInfo} camera={{ far: viewDistance, position: [25, 10, 25] }}>
       <fog attach="fog" args={[backgroundColor, 5, viewDistance]} />
       <color attach="background" args={[backgroundColor]} />
       <ambientLight color={"#404040"} />

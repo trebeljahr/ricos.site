@@ -2,7 +2,7 @@ import { ImageWithLoader } from "@components/ImageWithLoader";
 import { getMDXComponent } from "mdx-bundler/client";
 import Link from "next/link";
 import { useMemo } from "react";
-import { CommonMetadata, MDXResult } from "src/@types";
+import type { CommonMetadata, MDXResult } from "src/@types";
 import { MetadataDisplay } from "./MetadataDisplay";
 
 const excerptComponents = {
@@ -20,16 +20,7 @@ type Props = {
 };
 
 export function BookPreview({ book, index }: Props) {
-  const {
-    link,
-    title,
-    cover,
-    excerpt,
-    subtitle,
-    bookAuthor,
-    markdownExcerpt,
-    rating,
-  } = book;
+  const { link, title, cover, excerpt, subtitle, bookAuthor, markdownExcerpt, rating } = book;
 
   const defaultExcerpt = "";
   const priority = index < 3;
@@ -43,9 +34,7 @@ export function BookPreview({ book, index }: Props) {
         <ImageWithLoader
           src={cover.src}
           alt={cover.alt}
-          sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${
-            priority ? 768 : 357
-          }`}
+          sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${priority ? 768 : 357}`}
           width={cover.width}
           height={cover.height}
           priority={priority}

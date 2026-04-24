@@ -1,35 +1,21 @@
-import { readdir, readFile, stat } from "fs/promises";
-import { join, extname } from "path";
+import { extname, join } from "path";
+import { readFile, readdir, stat } from "fs/promises";
 import { stripImageExt } from "./hashing";
 
-const SCAN_EXTS = new Set([
-  ".md",
-  ".mdx",
-  ".ts",
-  ".tsx",
-  ".js",
-  ".jsx",
-  ".html",
-  ".json",
-]);
+const SCAN_EXTS = new Set([".md", ".mdx", ".ts", ".tsx", ".js", ".jsx", ".html", ".json"]);
 
 /**
  * Paths that are treated as dynamic (listed at runtime via S3 list, never
  * referenced by filename in MD/MDX/code). These should be excluded from
  * "unreferenced" analyses or they'll all look dead.
  */
-export const DYNAMIC_PREFIXES = [
-  "assets/photography/",
-  "assets/midjourney-gallery/",
-  "favicon/",
-];
+export const DYNAMIC_PREFIXES = ["assets/photography/", "assets/midjourney-gallery/", "favicon/"];
 
 /**
  * Matches `assets/...ext` and `/assets/...ext` as well as the extensionless
  * CloudFront form `/assets/.../<width>.webp`.
  */
-const REF_RE =
-  /(\/?)(assets\/[^)"'<>\s]+?)(\/\d+\.webp|\.(?:jpg|jpeg|png|webp|gif|avif))/gi;
+const REF_RE = /(\/?)(assets\/[^)"'<>\s]+?)(\/\d+\.webp|\.(?:jpg|jpeg|png|webp|gif|avif))/gi;
 
 async function* walk(dir: string): AsyncGenerator<string> {
   let entries;
@@ -94,7 +80,7 @@ export async function scanReferences(roots: string[]): Promise<{
  */
 export function isReferenced(
   key: string,
-  refs: { fullRefs: Set<string>; logicalRefs: Set<string> }
+  refs: { fullRefs: Set<string>; logicalRefs: Set<string> },
 ): boolean {
   if (refs.fullRefs.has(key)) return true;
   return refs.logicalRefs.has(stripImageExt(key));

@@ -1,16 +1,16 @@
-import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
+import { type FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
 import { Box, Sphere as SphereMesh } from "@react-three/drei";
-import { ThreeEvent, useFrame } from "@react-three/fiber";
+import { type ThreeEvent, useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import {
   DoubleSide,
-  Mesh,
+  type Mesh,
   MeshLambertMaterial,
   MeshStandardMaterial,
   Spherical,
   Vector3,
 } from "three";
-import { LightningStrike, RayParameters } from "three-stdlib";
+import type { LightningStrike, RayParameters } from "three-stdlib";
 
 function randomPointOnSphere() {
   const phi = Math.random() * Math.PI - 0.3;
@@ -33,7 +33,7 @@ export const PlasmaBall = () => {
   });
 
   const rayDirection = new Vector3();
-  let rayLength = 0;
+  const rayLength = 0;
   const vec1 = new Vector3();
   const vec2 = new Vector3();
 
@@ -66,19 +66,9 @@ export const PlasmaBall = () => {
         randomGenerator: any;
       };
 
-      typedLightningStrike.subrayConePosition(
-        segment,
-        parentSubray,
-        childSubray,
-        0.6,
-        0.9,
-        0.7
-      );
+      typedLightningStrike.subrayConePosition(segment, parentSubray, childSubray, 0.6, 0.9, 0.7);
 
-      vec1.subVectors(
-        typedLightningStrike.rayParameters.destOffset!,
-        childSubray.pos1
-      );
+      vec1.subVectors(typedLightningStrike.rayParameters.destOffset!, childSubray.pos1);
       vec2.set(0, 0, 0);
 
       if (typedLightningStrike.randomGenerator.random() < 0.7) {
@@ -86,10 +76,7 @@ export const PlasmaBall = () => {
       }
 
       vec1.add(vec2).setLength(rayLength);
-      childSubray.pos1.addVectors(
-        vec1,
-        typedLightningStrike.rayParameters.sourceOffset!
-      );
+      childSubray.pos1.addVectors(vec1, typedLightningStrike.rayParameters.sourceOffset!);
     },
   };
 
@@ -120,10 +107,8 @@ export const PlasmaBall = () => {
       const directionPhi = targets[i].phi - contactPoints[i].phi;
       const directionTheta = targets[i].theta - contactPoints[i].theta;
 
-      contactPoints[i].phi +=
-        (directionPhi / Math.abs(directionPhi)) * jitterStrength;
-      contactPoints[i].theta +=
-        (directionTheta / Math.abs(directionTheta)) * jitterStrength;
+      contactPoints[i].phi += (directionPhi / Math.abs(directionPhi)) * jitterStrength;
+      contactPoints[i].theta += (directionTheta / Math.abs(directionTheta)) * jitterStrength;
 
       const delta = 0.1;
 
@@ -139,13 +124,9 @@ export const PlasmaBall = () => {
       s.phi = contactPoints[i].phi;
       s.theta = contactPoints[i].theta;
 
-      thisRef.rayParameters.destOffset.copy(
-        p.setFromSpherical(s).add(plasmaOrigin)
-      );
+      thisRef.rayParameters.destOffset.copy(p.setFromSpherical(s).add(plasmaOrigin));
 
-      contactPointRefs.current[i].position.copy(
-        thisRef.rayParameters.destOffset
-      );
+      contactPointRefs.current[i].position.copy(thisRef.rayParameters.destOffset);
     });
   });
 
@@ -213,11 +194,7 @@ export const PlasmaBall = () => {
       })}
 
       <Box
-        args={[
-          glassSphereDiameter * 0.5,
-          poleHeight * 0.1,
-          glassSphereDiameter * 0.5,
-        ]}
+        args={[glassSphereDiameter * 0.5, poleHeight * 0.1, glassSphereDiameter * 0.5]}
         position={[0, poleHeight * 0.05 * 0.5, 0]}
         material={blackPlastic}
       />
@@ -240,11 +217,7 @@ export const PlasmaBall = () => {
 
       <mesh position={[0, poleHeight * 0.5, 0]}>
         <sphereGeometry args={[glassSphereDiameter * 0.05, 24, 12]} />
-        <meshStandardMaterial
-          color={plasmaColor}
-          emissive={plasmaColor}
-          emissiveIntensity={3}
-        />
+        <meshStandardMaterial color={plasmaColor} emissive={plasmaColor} emissiveIntensity={3} />
       </mesh>
 
       <mesh position={[0, poleHeight / 2, 0]} onPointerMove={onPointerOver}>

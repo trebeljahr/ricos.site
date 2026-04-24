@@ -2,11 +2,7 @@ import { useAxe1 } from "@r3f/Dungeon/Enemies/Axes";
 import { useSword1 } from "@r3f/Dungeon/Enemies/Swords";
 import { useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import {
-  Bloom,
-  EffectComposer,
-  ToneMapping,
-} from "@react-three/postprocessing";
+import { Bloom, EffectComposer, ToneMapping } from "@react-three/postprocessing";
 import { useMemo, useRef } from "react";
 import {
   AdditiveBlending,
@@ -18,8 +14,8 @@ import {
   GLSL3,
   Mesh,
   MeshStandardMaterial,
-  RawShaderMaterial,
   RGBAFormat,
+  RawShaderMaterial,
   Sphere,
   SphereGeometry,
   TorusGeometry,
@@ -86,9 +82,7 @@ export const MeshMerger = ({
       samplerTorus,
       samplerTorusKnot,
     ];
-    const data = new Float32Array(
-      samplers.length * 4 * numParticles * numParticles
-    );
+    const data = new Float32Array(samplers.length * 4 * numParticles * numParticles);
 
     for (let i = 0; i < samplers.length; ++i) {
       const curData = new Float32Array(4 * numParticles * numParticles);
@@ -106,12 +100,7 @@ export const MeshMerger = ({
       data.set(curData, offset);
     }
 
-    const dataTexture = new DataArrayTexture(
-      data,
-      numParticles,
-      numParticles,
-      samplers.length
-    );
+    const dataTexture = new DataArrayTexture(data, numParticles, numParticles, samplers.length);
     dataTexture.format = RGBAFormat;
     dataTexture.type = FloatType;
     dataTexture.needsUpdate = true;

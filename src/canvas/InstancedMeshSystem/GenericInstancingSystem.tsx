@@ -1,8 +1,8 @@
 import { useGLTF } from "@react-three/drei";
 import { nanoid } from "nanoid";
 import { useEffect, useMemo, useRef } from "react";
-import { InstancedMesh, Material, Mesh, Object3D, Vector3 } from "three";
-import { GLTF } from "three-stdlib";
+import { type InstancedMesh, type Material, type Mesh, Object3D, type Vector3 } from "three";
+import type { GLTF } from "three-stdlib";
 import { Single } from "./useInstancedMesh2";
 
 const temp = new Object3D();
@@ -19,7 +19,7 @@ export type GenericInstancingProps = {
 
 export type GenericGltfResult<
   MeshNames extends string = string,
-  MaterialNames extends string = string
+  MaterialNames extends string = string,
 > = GLTF & {
   nodes: Record<MeshNames, Mesh>;
   materials: Record<MaterialNames, Material>;
@@ -31,11 +31,7 @@ export type SingleInstanceProps = {
   material: Material;
 };
 
-const SingleInstancedMesh = ({
-  positions,
-  geo,
-  material,
-}: SingleInstanceProps) => {
+const SingleInstancedMesh = ({ positions, geo, material }: SingleInstanceProps) => {
   const singleInstanceRef = useRef<InstancedMesh>(null!);
 
   useEffect(() => {
@@ -55,12 +51,7 @@ const SingleInstancedMesh = ({
     singleInstanceRef.current.instanceMatrix.needsUpdate = true;
   }, [positions]);
 
-  return (
-    <instancedMesh
-      ref={singleInstanceRef}
-      args={[geo, material, positions.length]}
-    />
-  );
+  return <instancedMesh ref={singleInstanceRef} args={[geo, material, positions.length]} />;
 };
 
 export const GenericInstancedSystem = ({
@@ -68,13 +59,11 @@ export const GenericInstancedSystem = ({
   modelPath,
   positions,
 }: GenericInstancingProps) => {
-  const { nodes, materials } = useGLTF(
-    modelPath
-  ) as unknown as GenericGltfResult;
+  const { nodes, materials } = useGLTF(modelPath) as unknown as GenericGltfResult;
 
   const meshMaterialCombosWithIds: [string, string, string][] = useMemo(
     () => meshMaterialCombos.map((combo) => [...combo, nanoid()]),
-    [meshMaterialCombos]
+    [meshMaterialCombos],
   );
 
   return (

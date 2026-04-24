@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+import { useEffect, useState } from "react";
 
+import type { Polygon } from "../../../lib/math/Poly";
+import { Vec2 } from "../../../lib/math/Vector";
 import {
+  colorEdge,
+  drawBackground,
   drawProjection,
   initPolygons,
   instrument,
-  colorEdge,
-  drawBackground,
 } from "../../../lib/math/drawHelpers";
-import { Polygon } from "../../../lib/math/Poly";
-import { Vec2 } from "../../../lib/math/Vector";
 
 export const AxisByAxis = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

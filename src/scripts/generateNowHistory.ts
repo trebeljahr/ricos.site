@@ -1,5 +1,5 @@
 import { execSync } from "child_process";
-import { writeFileSync, mkdirSync } from "fs";
+import { mkdirSync, writeFileSync } from "fs";
 import { resolve } from "path";
 
 const NOTES_DIR = resolve("src/content/Notes");
@@ -17,7 +17,7 @@ function main() {
   // Get all commits that touched the now.md file
   const logOutput = execSync(
     `cd "${NOTES_DIR}" && git log --format="%H|%ai|%s" --follow "${NOW_FILE}" 2>/dev/null`,
-    { encoding: "utf-8" }
+    { encoding: "utf-8" },
   ).trim();
 
   if (!logOutput) {
@@ -38,7 +38,7 @@ function main() {
       // Get the file content at that commit
       const content = execSync(
         `cd "${NOTES_DIR}" && git show "${commit.hash}:${NOW_FILE}" 2>/dev/null`,
-        { encoding: "utf-8" }
+        { encoding: "utf-8" },
       );
 
       // Strip frontmatter
@@ -46,11 +46,7 @@ function main() {
 
       // Skip if content is too short or identical to previous
       if (stripped.length < 50) continue;
-      if (
-        entries.length > 0 &&
-        entries[entries.length - 1].content === stripped
-      )
-        continue;
+      if (entries.length > 0 && entries[entries.length - 1].content === stripped) continue;
 
       entries.push({
         date: commit.date.split(" ")[0], // Just the date part

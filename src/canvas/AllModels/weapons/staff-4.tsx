@@ -1,7 +1,6 @@
-import { useRef, useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
-import { GLTF } from "three-stdlib";
-import { Color, Mesh, MeshStandardMaterial } from "three";
+import type { Mesh, MeshStandardMaterial } from "three";
+import type { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -18,14 +17,11 @@ type GLTFResult = GLTF & {
 
 export function Staff4(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/weapons/Staff-4-transformed.glb"
+    "/3d-assets/glb/weapons/Staff-4-transformed.glb",
   ) as unknown as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
-      <mesh
-        geometry={nodes["Staff_04_Circle011-Mesh"].geometry}
-        material={materials.Dark_blue}
-      />
+      <mesh geometry={nodes["Staff_04_Circle011-Mesh"].geometry} material={materials.Dark_blue} />
       <mesh
         geometry={nodes["Staff_04_Circle011-Mesh_1"].geometry}
         material={materials.Iron_staff_04}

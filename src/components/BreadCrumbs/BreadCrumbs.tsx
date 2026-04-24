@@ -40,9 +40,7 @@ export default function _Component({
           </Link>
         </div>
         {pathParts.map((part, index) => {
-          const overwrite = overwrites?.find(
-            ({ matchingPath }) => matchingPath === part
-          );
+          const overwrite = overwrites?.find(({ matchingPath }) => matchingPath === part);
 
           return (
             <div key={part}>

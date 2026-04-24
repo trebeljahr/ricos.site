@@ -31,9 +31,9 @@ import {
 } from "@r3f/AllModels/nature_pack";
 import { Tree1, Tree2, Tree4 } from "@r3f/AllModels/simple_nature_pack";
 import { memo } from "react";
-import { Vector3 } from "three";
-import { BirchTree } from "../AllModels/BirchTree";
+import type { Vector3 } from "three";
 import { pickRandomFromArray } from "../../lib/utils/randomFromArray";
+import { BirchTree } from "../AllModels/BirchTree";
 import { TreeType } from "./TreeSystem";
 
 type Props = JSX.IntrinsicElements["group"];
@@ -116,8 +116,6 @@ export const RandomTreeOfType = memo(function Tree({
     case TreeType.JUNGLE:
       return pickRandomFromArray(WillowTrees)({ position, scale, rotation });
     default:
-      return (
-        <BirchTree position={position} scale={scale} rotation={rotation} />
-      );
+      return <BirchTree position={position} scale={scale} rotation={rotation} />;
   }
 });

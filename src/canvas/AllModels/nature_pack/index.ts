@@ -15,26 +15,11 @@ export const BirchTree_4 = dynamic(() => import("./BirchTree_4"), {
 export const BirchTree_5 = dynamic(() => import("./BirchTree_5"), {
   ssr: false,
 });
-export const BirchTree_Autumn_1 = dynamic(
-  () => import("./BirchTree_Autumn_1"),
-  { ssr: false }
-);
-export const BirchTree_Autumn_2 = dynamic(
-  () => import("./BirchTree_Autumn_2"),
-  { ssr: false }
-);
-export const BirchTree_Autumn_3 = dynamic(
-  () => import("./BirchTree_Autumn_3"),
-  { ssr: false }
-);
-export const BirchTree_Autumn_4 = dynamic(
-  () => import("./BirchTree_Autumn_4"),
-  { ssr: false }
-);
-export const BirchTree_Autumn_5 = dynamic(
-  () => import("./BirchTree_Autumn_5"),
-  { ssr: false }
-);
+export const BirchTree_Autumn_1 = dynamic(() => import("./BirchTree_Autumn_1"), { ssr: false });
+export const BirchTree_Autumn_2 = dynamic(() => import("./BirchTree_Autumn_2"), { ssr: false });
+export const BirchTree_Autumn_3 = dynamic(() => import("./BirchTree_Autumn_3"), { ssr: false });
+export const BirchTree_Autumn_4 = dynamic(() => import("./BirchTree_Autumn_4"), { ssr: false });
+export const BirchTree_Autumn_5 = dynamic(() => import("./BirchTree_Autumn_5"), { ssr: false });
 export const BirchTree_Dead_1 = dynamic(() => import("./BirchTree_Dead_1"), {
   ssr: false,
 });
@@ -50,26 +35,21 @@ export const BirchTree_Dead_4 = dynamic(() => import("./BirchTree_Dead_4"), {
 export const BirchTree_Dead_5 = dynamic(() => import("./BirchTree_Dead_5"), {
   ssr: false,
 });
-export const BirchTree_Dead_Snow_1 = dynamic(
-  () => import("./BirchTree_Dead_Snow_1"),
-  { ssr: false }
-);
-export const BirchTree_Dead_Snow_2 = dynamic(
-  () => import("./BirchTree_Dead_Snow_2"),
-  { ssr: false }
-);
-export const BirchTree_Dead_Snow_3 = dynamic(
-  () => import("./BirchTree_Dead_Snow_3"),
-  { ssr: false }
-);
-export const BirchTree_Dead_Snow_4 = dynamic(
-  () => import("./BirchTree_Dead_Snow_4"),
-  { ssr: false }
-);
-export const BirchTree_Dead_Snow_5 = dynamic(
-  () => import("./BirchTree_Dead_Snow_5"),
-  { ssr: false }
-);
+export const BirchTree_Dead_Snow_1 = dynamic(() => import("./BirchTree_Dead_Snow_1"), {
+  ssr: false,
+});
+export const BirchTree_Dead_Snow_2 = dynamic(() => import("./BirchTree_Dead_Snow_2"), {
+  ssr: false,
+});
+export const BirchTree_Dead_Snow_3 = dynamic(() => import("./BirchTree_Dead_Snow_3"), {
+  ssr: false,
+});
+export const BirchTree_Dead_Snow_4 = dynamic(() => import("./BirchTree_Dead_Snow_4"), {
+  ssr: false,
+});
+export const BirchTree_Dead_Snow_5 = dynamic(() => import("./BirchTree_Dead_Snow_5"), {
+  ssr: false,
+});
 export const BirchTree_Snow_1 = dynamic(() => import("./BirchTree_Snow_1"), {
   ssr: false,
 });
@@ -134,26 +114,11 @@ export const CommonTree_4 = dynamic(() => import("./CommonTree_4"), {
 export const CommonTree_5 = dynamic(() => import("./CommonTree_5"), {
   ssr: false,
 });
-export const CommonTree_Autumn_1 = dynamic(
-  () => import("./CommonTree_Autumn_1"),
-  { ssr: false }
-);
-export const CommonTree_Autumn_2 = dynamic(
-  () => import("./CommonTree_Autumn_2"),
-  { ssr: false }
-);
-export const CommonTree_Autumn_3 = dynamic(
-  () => import("./CommonTree_Autumn_3"),
-  { ssr: false }
-);
-export const CommonTree_Autumn_4 = dynamic(
-  () => import("./CommonTree_Autumn_4"),
-  { ssr: false }
-);
-export const CommonTree_Autumn_5 = dynamic(
-  () => import("./CommonTree_Autumn_5"),
-  { ssr: false }
-);
+export const CommonTree_Autumn_1 = dynamic(() => import("./CommonTree_Autumn_1"), { ssr: false });
+export const CommonTree_Autumn_2 = dynamic(() => import("./CommonTree_Autumn_2"), { ssr: false });
+export const CommonTree_Autumn_3 = dynamic(() => import("./CommonTree_Autumn_3"), { ssr: false });
+export const CommonTree_Autumn_4 = dynamic(() => import("./CommonTree_Autumn_4"), { ssr: false });
+export const CommonTree_Autumn_5 = dynamic(() => import("./CommonTree_Autumn_5"), { ssr: false });
 export const CommonTree_Dead_1 = dynamic(() => import("./CommonTree_Dead_1"), {
   ssr: false,
 });
@@ -169,26 +134,21 @@ export const CommonTree_Dead_4 = dynamic(() => import("./CommonTree_Dead_4"), {
 export const CommonTree_Dead_5 = dynamic(() => import("./CommonTree_Dead_5"), {
   ssr: false,
 });
-export const CommonTree_Dead_Snow_1 = dynamic(
-  () => import("./CommonTree_Dead_Snow_1"),
-  { ssr: false }
-);
-export const CommonTree_Dead_Snow_2 = dynamic(
-  () => import("./CommonTree_Dead_Snow_2"),
-  { ssr: false }
-);
-export const CommonTree_Dead_Snow_3 = dynamic(
-  () => import("./CommonTree_Dead_Snow_3"),
-  { ssr: false }
-);
-export const CommonTree_Dead_Snow_4 = dynamic(
-  () => import("./CommonTree_Dead_Snow_4"),
-  { ssr: false }
-);
-export const CommonTree_Dead_Snow_5 = dynamic(
-  () => import("./CommonTree_Dead_Snow_5"),
-  { ssr: false }
-);
+export const CommonTree_Dead_Snow_1 = dynamic(() => import("./CommonTree_Dead_Snow_1"), {
+  ssr: false,
+});
+export const CommonTree_Dead_Snow_2 = dynamic(() => import("./CommonTree_Dead_Snow_2"), {
+  ssr: false,
+});
+export const CommonTree_Dead_Snow_3 = dynamic(() => import("./CommonTree_Dead_Snow_3"), {
+  ssr: false,
+});
+export const CommonTree_Dead_Snow_4 = dynamic(() => import("./CommonTree_Dead_Snow_4"), {
+  ssr: false,
+});
+export const CommonTree_Dead_Snow_5 = dynamic(() => import("./CommonTree_Dead_Snow_5"), {
+  ssr: false,
+});
 export const CommonTree_Snow_1 = dynamic(() => import("./CommonTree_Snow_1"), {
   ssr: false,
 });
@@ -349,26 +309,11 @@ export const Willow_Dead_4 = dynamic(() => import("./Willow_Dead_4"), {
 export const Willow_Dead_5 = dynamic(() => import("./Willow_Dead_5"), {
   ssr: false,
 });
-export const Willow_Dead_Snow_1 = dynamic(
-  () => import("./Willow_Dead_Snow_1"),
-  { ssr: false }
-);
-export const Willow_Dead_Snow_2 = dynamic(
-  () => import("./Willow_Dead_Snow_2"),
-  { ssr: false }
-);
-export const Willow_Dead_Snow_3 = dynamic(
-  () => import("./Willow_Dead_Snow_3"),
-  { ssr: false }
-);
-export const Willow_Dead_Snow_4 = dynamic(
-  () => import("./Willow_Dead_Snow_4"),
-  { ssr: false }
-);
-export const Willow_Dead_Snow_5 = dynamic(
-  () => import("./Willow_Dead_Snow_5"),
-  { ssr: false }
-);
+export const Willow_Dead_Snow_1 = dynamic(() => import("./Willow_Dead_Snow_1"), { ssr: false });
+export const Willow_Dead_Snow_2 = dynamic(() => import("./Willow_Dead_Snow_2"), { ssr: false });
+export const Willow_Dead_Snow_3 = dynamic(() => import("./Willow_Dead_Snow_3"), { ssr: false });
+export const Willow_Dead_Snow_4 = dynamic(() => import("./Willow_Dead_Snow_4"), { ssr: false });
+export const Willow_Dead_Snow_5 = dynamic(() => import("./Willow_Dead_Snow_5"), { ssr: false });
 export const Willow_Snow_1 = dynamic(() => import("./Willow_Snow_1"), {
   ssr: false,
 });

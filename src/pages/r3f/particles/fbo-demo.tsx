@@ -1,13 +1,9 @@
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 import { FBOParticles } from "@r3f/Scenes/Particles/FboDemo/Particles";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { OrbitControls } from "@react-three/drei";
-import {
-  Bloom,
-  EffectComposer,
-  ToneMapping,
-} from "@react-three/postprocessing";
+import { Bloom, EffectComposer, ToneMapping } from "@react-three/postprocessing";
 
 const defaultSeoInfo = {
   title: "A simple FBO particles demo",

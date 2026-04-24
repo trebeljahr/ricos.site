@@ -1,10 +1,6 @@
 import type { SectionDescription } from "@velite";
+import { CardGallery, type CardGalleryProps, ScrollableCardGallery } from "./CardGalleries";
 import { MDXContent } from "./MDXContent";
-import {
-  CardGallery,
-  CardGalleryProps,
-  ScrollableCardGallery,
-} from "./CardGalleries";
 
 type HomePageSectionProps = {
   title: string;

@@ -1,5 +1,5 @@
-import { Flags, MeshoptSimplifier } from "meshoptimizer";
-import { BufferGeometry } from "three";
+import { type Flags, MeshoptSimplifier } from "meshoptimizer";
+import type { BufferGeometry } from "three";
 
 export interface SimplifyParams {
   ratio: number;
@@ -12,7 +12,7 @@ export interface SimplifyParams {
 
 export async function createSimplifiedGeometry(
   geometry: BufferGeometry,
-  params: SimplifyParams
+  params: SimplifyParams,
 ): Promise<BufferGeometry> {
   await MeshoptSimplifier.ready;
 
@@ -22,8 +22,7 @@ export async function createSimplifiedGeometry(
   }
 
   const srcIndexArray = dstGeometry.index.array as Uint32Array;
-  const srcPositionArray = dstGeometry.attributes.position
-    .array as Float32Array;
+  const srcPositionArray = dstGeometry.attributes.position.array as Float32Array;
   const targetCount = 3 * Math.floor((params.ratio * srcIndexArray.length) / 3);
 
   const flags: Flags[] = [];
@@ -41,7 +40,7 @@ export async function createSimplifiedGeometry(
     3,
     targetCount,
     params.error,
-    flags
+    flags,
   );
 
   (dstGeometry.index.array as any).set(dstIndexArray);

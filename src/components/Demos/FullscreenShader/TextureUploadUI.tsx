@@ -1,5 +1,5 @@
-import { ChangeEvent, useCallback, useState } from "react";
-import { FaChevronDown, FaChevronUp, FaImage } from "@components/Icons";
+import { FaImage } from "@components/Icons";
+import { type ChangeEvent, useCallback, useState } from "react";
 import { TextureLoader } from "three";
 import { useEditorContext } from "./EditorContextProvider";
 import { PreviewUrl } from "./PreviewUrl";
@@ -24,7 +24,7 @@ export const TextureUploadUI = () => {
         });
       });
     },
-    [setTextures]
+    [setTextures],
   );
 
   // Delete texture at index.
@@ -36,7 +36,7 @@ export const TextureUploadUI = () => {
         return prev.filter((_, i) => i !== index);
       });
     },
-    [setTextures]
+    [setTextures],
   );
 
   // Update (change) an existing texture.
@@ -58,7 +58,7 @@ export const TextureUploadUI = () => {
         });
       });
     },
-    [setTextures]
+    [setTextures],
   );
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -69,10 +69,7 @@ export const TextureUploadUI = () => {
 
   return (
     <div className="bg-inherit overflow-y-auto w-fit">
-      <button
-        onClick={handleToggleMenu}
-        className="flex place-items-center p-2"
-      >
+      <button onClick={handleToggleMenu} className="flex place-items-center p-2">
         <FaImage />
       </button>
       {menuOpen && (

@@ -8,8 +8,8 @@ title: Water plant
 
 import { useGLTF } from "@react-three/drei";
 import { useRef } from "react";
-import { Bone, Group, MeshStandardMaterial, SkinnedMesh } from "three";
-import { GLTF } from "three-stdlib";
+import type { Bone, Group, MeshStandardMaterial, SkinnedMesh } from "three";
+import type { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -33,16 +33,13 @@ export function useKelp() {
 export function Kelp4(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<Group>(null!);
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/kelp4.glb"
+    "/3d-assets/glb/kelp4.glb",
   ) as unknown as unknown as unknown as GLTFResult;
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Sketchfab_Scene">
         <group name="Sketchfab_model" rotation={[-Math.PI / 2, 0, 0]}>
-          <group
-            name="937408ce40ee488c894ed9e13b34a375fbx"
-            rotation={[Math.PI / 2, 0, 0]}
-          >
+          <group name="937408ce40ee488c894ed9e13b34a375fbx" rotation={[Math.PI / 2, 0, 0]}>
             <group name="Object_2">
               <group name="RootNode">
                 <group name="Object_4">

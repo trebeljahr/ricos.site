@@ -3,14 +3,8 @@ import { resolve } from "path";
 
 function loadStubBooknotes() {
   try {
-    const data = JSON.parse(
-      readFileSync(resolve(".velite", "booknotes.json"), "utf-8")
-    );
-    return new Set(
-      data
-        .filter((b) => !b.summary)
-        .map((b) => b.link)
-    );
+    const data = JSON.parse(readFileSync(resolve(".velite", "booknotes.json"), "utf-8"));
+    return new Set(data.filter((b) => !b.summary).map((b) => b.link));
   } catch {
     return new Set();
   }
@@ -28,13 +22,10 @@ function loadContentDates() {
 
   for (const { file } of collections) {
     try {
-      const data = JSON.parse(
-        readFileSync(resolve(".velite", file), "utf-8")
-      );
+      const data = JSON.parse(readFileSync(resolve(".velite", file), "utf-8"));
       for (const item of data) {
         if (item.link) {
-          dateMap[item.link] =
-            item["date-last-updated"] || item.date || null;
+          dateMap[item.link] = item["date-last-updated"] || item.date || null;
         }
       }
     } catch {
@@ -73,9 +64,7 @@ const nextSitemapConfig = {
     if (stubBooknotes.has(url)) return null;
 
     const contentDate = contentDates[url];
-    const lastmod = contentDate
-      ? new Date(contentDate).toISOString()
-      : new Date().toISOString();
+    const lastmod = contentDate ? new Date(contentDate).toISOString() : new Date().toISOString();
 
     // Homepage
     if (url === "/") {

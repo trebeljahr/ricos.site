@@ -1,9 +1,8 @@
-import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { PointerLockControls, useKeyboardControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { RapierRigidBody, RigidBody } from "@react-three/rapier";
-import { PropsWithChildren, useEffect, useLayoutEffect, useRef } from "react";
-import { Group, Vector3 } from "three";
+import { type RapierRigidBody, RigidBody } from "@react-three/rapier";
+import { type PropsWithChildren, useRef } from "react";
+import { type Group, Vector3 } from "three";
 
 const defaultSpeed = 5;
 const direction = new Vector3();
@@ -25,8 +24,7 @@ export function MinecraftCreativeController({
   useFrame(() => {
     if (!rigidBodyRef.current) return;
 
-    const { forward, backward, leftward, rightward, jump, descend, run } =
-      get();
+    const { forward, backward, leftward, rightward, jump, descend, run } = get();
 
     const { x, y, z } = rigidBodyRef.current.translation();
     camera.position.set(x, y, z);
@@ -42,10 +40,7 @@ export function MinecraftCreativeController({
       .applyEuler(camera.rotation)
       .setY((+jump - +descend) * speed);
 
-    rigidBodyRef.current.setLinvel(
-      { x: direction.x, y: direction.y, z: direction.z },
-      true
-    );
+    rigidBodyRef.current.setLinvel({ x: direction.x, y: direction.y, z: direction.z }, true);
   });
 
   return (
@@ -75,8 +70,7 @@ export function MinecraftSpectatorController({
   const { camera } = useThree();
 
   useFrame(() => {
-    const { forward, backward, leftward, rightward, jump, descend, run } =
-      get();
+    const { forward, backward, leftward, rightward, jump, descend, run } = get();
 
     frontVector.set(0, 0, +backward - +forward);
     sideVector.set(+leftward - +rightward, 0, 0);

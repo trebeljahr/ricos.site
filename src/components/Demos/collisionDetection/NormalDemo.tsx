@@ -1,16 +1,15 @@
-import { useEffect, useState } from "react";
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+import { useEffect, useState } from "react";
 
+import { Polygon } from "../../../lib/math/Poly";
 import {
+  drawArrow,
+  drawBackground,
   initPolygons,
   instrument,
   niceGreen,
   starPoints,
-  checkCollision,
-  drawArrow,
-  drawBackground,
 } from "../../../lib/math/drawHelpers";
-import { Polygon } from "../../../lib/math/Poly";
 export const NormalDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
 
@@ -21,10 +20,7 @@ export const NormalDemo = () => {
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
 
-    const [poly1, poly2] = initPolygons(
-      ctx,
-      new Polygon(starPoints(), niceGreen)
-    );
+    const [poly1, poly2] = initPolygons(ctx, new Polygon(starPoints(), niceGreen));
 
     const drawNormals = (poly: Polygon) => {
       poly.draw(ctx);

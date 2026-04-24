@@ -1,12 +1,12 @@
 import { useFrame } from "@react-three/fiber";
 import { quat2, vec3 } from "gl-matrix";
-import { createContext, PropsWithChildren, useContext, useRef } from "react";
-import { useThirdPersonCameraContext } from "./ThirdPersonCameraContext";
+import { type PropsWithChildren, createContext, useContext, useRef } from "react";
 import { useFlyCameraContext } from "./FlyCameraContext";
+import { useThirdPersonCameraContext } from "./ThirdPersonCameraContext";
 
 export enum CameraModes {
-  ThirdPerson,
-  Fly,
+  ThirdPerson = 0,
+  Fly = 1,
 }
 
 const defaultCameraState = {
@@ -24,9 +24,7 @@ export const useCameraContext = () => {
 export const CameraContextProvider = ({ children }: PropsWithChildren) => {
   const value = useCameraState();
 
-  return (
-    <CameraContext.Provider value={value}>{children}</CameraContext.Provider>
-  );
+  return <CameraContext.Provider value={value}>{children}</CameraContext.Provider>;
 };
 
 export const useCameraState = () => {

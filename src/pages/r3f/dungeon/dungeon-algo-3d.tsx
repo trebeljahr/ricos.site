@@ -1,41 +1,16 @@
 import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
-import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
-import { perf, wireframe } from "@r3f/ChunkGenerationSystem/config";
+import { wireframe } from "@r3f/ChunkGenerationSystem/config";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
-import {
-  DungeonMeshGenerator,
-  MeshType,
-} from "@r3f/Dungeon/Generator3D/ConvertToMesh";
 import { DungeonGenerator3D } from "@r3f/Dungeon/Generator3D/Generator";
-import {
-  CellType3D,
-  Vector3,
-  Vector3Int,
-} from "@r3f/Dungeon/Generator3D/Types";
-import {
-  Arches,
-  Coins,
-  Floors,
-  Railings,
-  SideWallStairs,
-  Stairs,
-  Torches,
-  Walls,
-} from "@r3f/Dungeon/DungeonRoomsWithInstancing";
+import { CellType3D, Vector3, Vector3Int } from "@r3f/Dungeon/Generator3D/Types";
 
 import { Sky } from "@react-three/drei";
-import {
-  Bloom,
-  EffectComposer,
-  ToneMapping,
-} from "@react-three/postprocessing";
-import { Perf } from "r3f-perf";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BoxGeometry,
-  InstancedMesh,
+  type InstancedMesh,
   Matrix4,
   MeshStandardMaterial,
   Vector3 as Vector3FromThreeJS,
@@ -83,15 +58,7 @@ const defaultSeoInfo = {
   description:
     "A port of vazgriz's procedural 3D dungeon generator from Unity to the browser using Typescript and R3F.",
   url: "/r3f/dungeon/dungeon-algo-3d",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/r3f/dungeon-algo-3d.png",
   imageAlt: "a visualization of a procedurally generated 3D dungeon",
 };
@@ -108,7 +75,7 @@ const DungeonRenderer = ({ seed }: { seed: number }) => {
       30,
       new Vector3Int(6, 1, 6),
       new Vector3Int(3, 1, 3),
-      seed?.toString() || (Math.random() * 1000).toString()
+      seed?.toString() || (Math.random() * 1000).toString(),
     );
 
     const grid3D = generator3D.generate();
@@ -134,7 +101,7 @@ const DungeonRenderer = ({ seed }: { seed: number }) => {
 
         return acc;
       },
-      { rooms: 0, hallways: 0, stairs: 0, doors: 0 }
+      { rooms: 0, hallways: 0, stairs: 0, doors: 0 },
     );
 
     return { grid3D, counts };
@@ -146,19 +113,9 @@ const DungeonRenderer = ({ seed }: { seed: number }) => {
     const stairsInstances = stairsInstancesRef.current;
     const doorsInstances = doorsInstancesRef.current;
 
-    if (
-      !roomInstances ||
-      !hallwayInstances ||
-      !stairsInstances ||
-      !doorsInstances
-    )
-      return;
+    if (!roomInstances || !hallwayInstances || !stairsInstances || !doorsInstances) return;
 
-    const centerOffset = new Vector3(
-      -grid3D.size.x / 2,
-      -grid3D.size.y / 2,
-      -grid3D.size.z / 2
-    );
+    const centerOffset = new Vector3(-grid3D.size.x / 2, -grid3D.size.y / 2, -grid3D.size.z / 2);
 
     const matrix = new Matrix4();
 
@@ -173,7 +130,7 @@ const DungeonRenderer = ({ seed }: { seed: number }) => {
       const worldPos = new Vector3FromThreeJS(
         pos.x + centerOffset.x,
         pos.y + 1,
-        pos.z + centerOffset.z
+        pos.z + centerOffset.z,
       );
 
       matrix.setPosition(worldPos);
@@ -205,11 +162,7 @@ const DungeonRenderer = ({ seed }: { seed: number }) => {
       <group position={[-0.5, 0, -0.5]}>
         <mesh rotation-x={-Math.PI / 2}>
           <planeGeometry args={[grid3D.size.x, grid3D.size.z]} />
-          <meshStandardMaterial
-            color={"#333333"}
-            roughness={0.9}
-            metalness={0.1}
-          />
+          <meshStandardMaterial color={"#333333"} roughness={0.9} metalness={0.1} />
         </mesh>
 
         <gridHelper args={[grid3D.size.x, grid3D.size.z]} position-y={0.001} />
@@ -256,10 +209,7 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
   };
 
   return (
-    <ThreeFiberLayout
-      seoInfo={seoInfo}
-      camera={{ far: viewDistance, position: [25, 10, 25] }}
-    >
+    <ThreeFiberLayout seoInfo={seoInfo} camera={{ far: viewDistance, position: [25, 10, 25] }}>
       <ambientLight args={["#404040", 0.5]} />
       <ambientLight />
 
@@ -269,10 +219,7 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 
       <MinecraftSpectatorController speed={0.2} />
       <In>
-        <button
-          onClick={handleClick}
-          className="absolute top-0 right-0 z-20 p-2 bg-slate-500"
-        >
+        <button onClick={handleClick} className="absolute top-0 right-0 z-20 p-2 bg-slate-500">
           Click for new dungeon
         </button>
       </In>

@@ -5,17 +5,12 @@ import {
   Armor_Metal,
   Armor_Metal2,
 } from "@r3f/AllModels/rpg_items_pack";
-import { GroupProps } from "@react-three/fiber";
-import { use, useMemo } from "react";
-import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
-import {
-  Collectible,
-  ItemSpawner,
-  Rarity,
-  SpawnerImplementation,
-} from "./ItemSpawner";
-import { useInventory } from "../InventorySystem/GameInventoryContext";
+import type { GroupProps } from "@react-three/fiber";
 import { nanoid } from "nanoid";
+import { useMemo } from "react";
+import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
+import { useInventory } from "../InventorySystem/GameInventoryContext";
+import { type Collectible, ItemSpawner, Rarity, type SpawnerImplementation } from "./ItemSpawner";
 
 enum ArmorTypes {
   Leather = "Leather",
@@ -56,20 +51,13 @@ export const RandomArmorSpawner: SpawnerImplementation = (props) => {
     });
   };
   return (
-    <ItemSpawner
-      Item={Armor.Component}
-      {...props}
-      onCollected={onCollected}
-      data={Armor.data}
-    />
+    <ItemSpawner Item={Armor.Component} {...props} onCollected={onCollected} data={Armor.data} />
   );
 };
 
 const armorTypes = [
   {
-    Component: (props: GroupProps) => (
-      <Armor_Black position={[0, 0.5, 0]} {...props} />
-    ),
+    Component: (props: GroupProps) => <Armor_Black position={[0, 0.5, 0]} {...props} />,
     data: {
       defense: 10,
       durability: 10,
@@ -78,9 +66,7 @@ const armorTypes = [
     },
   },
   {
-    Component: (props: GroupProps) => (
-      <Armor_Golden position={[0, 0.5, 0]} {...props} />
-    ),
+    Component: (props: GroupProps) => <Armor_Golden position={[0, 0.5, 0]} {...props} />,
     data: {
       defense: 10,
       durability: 10,
@@ -89,9 +75,7 @@ const armorTypes = [
     },
   },
   {
-    Component: (props: GroupProps) => (
-      <Armor_Leather position={[0, 0.5, 0]} {...props} />
-    ),
+    Component: (props: GroupProps) => <Armor_Leather position={[0, 0.5, 0]} {...props} />,
     data: {
       defense: 10,
       durability: 10,
@@ -100,9 +84,7 @@ const armorTypes = [
     },
   },
   {
-    Component: (props: GroupProps) => (
-      <Armor_Metal position={[0, 0.5, 0]} {...props} />
-    ),
+    Component: (props: GroupProps) => <Armor_Metal position={[0, 0.5, 0]} {...props} />,
     data: {
       defense: 10,
       durability: 10,
@@ -111,9 +93,7 @@ const armorTypes = [
     },
   },
   {
-    Component: (props: GroupProps) => (
-      <Armor_Metal2 position={[0, 0.5, 0]} {...props} />
-    ),
+    Component: (props: GroupProps) => <Armor_Metal2 position={[0, 0.5, 0]} {...props} />,
     data: {
       defense: 10,
       durability: 10,

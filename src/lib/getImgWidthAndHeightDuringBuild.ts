@@ -1,12 +1,12 @@
-import { getLocalMetadata } from "src/lib/imageMetadata";
 import { altFromFilename } from "src/lib/imageAlt";
+import { getLocalMetadata } from "src/lib/imageMetadata";
 
 function normalizeKey(imageKey: string): string {
   return imageKey.startsWith("/assets") ? imageKey.substring(1) : imageKey;
 }
 
 export async function getImgWidthAndHeightDuringBuild(
-  imageKey: string
+  imageKey: string,
 ): Promise<{ width: number; height: number }> {
   try {
     const key = normalizeKey(imageKey);
@@ -25,7 +25,7 @@ export async function getImgWidthAndHeightDuringBuild(
  * needed.
  */
 export async function getImgMetaDuringBuild(
-  imageKey: string
+  imageKey: string,
 ): Promise<{ width: number; height: number; alt: string }> {
   const key = normalizeKey(imageKey);
   const entry = getLocalMetadata()[key];

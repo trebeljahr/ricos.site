@@ -1,31 +1,19 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
+import { type FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
 
 import { OrbitControls, Stage } from "@react-three/drei";
-import { Canvas, useFrame } from "@react-three/fiber";
-import {
-  Bloom,
-  EffectComposer,
-  ToneMapping,
-} from "@react-three/postprocessing";
+import { useFrame } from "@react-three/fiber";
+import { Bloom, EffectComposer, ToneMapping } from "@react-three/postprocessing";
 import { useRef } from "react";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 import { DoubleSide, Vector3 } from "three";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Lightning Strike Example",
   description:
     "Example of how to use the LightningStrike geometry component from the three-sdtlib in React Three Fiber to create lightning strikes in a 3D scene.",
   url: "/r3f/experiments/lightning-strike",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/lightning-strike.png",
   imageAlt: "a blueish lightning bolt in a 3D scene",
 };

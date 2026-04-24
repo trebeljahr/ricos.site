@@ -1,19 +1,9 @@
-import {
-  HeadObjectCommand,
-  ListObjectsV2Command,
-  S3Client,
-} from "@aws-sdk/client-s3";
+import { HeadObjectCommand, ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
 import "dotenv/config";
 import pLimit from "p-limit";
-import {
-  getMetadataFromJsonFile,
-  ImageMetadata,
-} from "src/lib/imageMetadata";
+import { type ImageMetadata, getMetadataFromJsonFile } from "src/lib/imageMetadata";
 
-export async function getImageMetadataFromS3(
-  Bucket: string,
-  Key: string
-): Promise<ImageMetadata> {
+export async function getImageMetadataFromS3(Bucket: string, Key: string): Promise<ImageMetadata> {
   const client = createS3Client();
   const command = new HeadObjectCommand({ Bucket, Key });
   const response = await client.send(command);
@@ -29,16 +19,16 @@ export async function getImageMetadataFromS3(
 
   return {
     key: Key,
-    width: parseInt(response.Metadata.width),
-    height: parseInt(response.Metadata.height),
-    aspectRatio: parseFloat(response.Metadata.aspectRatio),
+    width: Number.parseInt(response.Metadata.width),
+    height: Number.parseInt(response.Metadata.height),
+    aspectRatio: Number.parseFloat(response.Metadata.aspectRatio),
     existsInS3: true,
   };
 }
 
 export async function getImageMetadataFromFileSystemOrAWS(
   Bucket: string,
-  Key: string
+  Key: string,
 ): Promise<ImageMetadata> {
   const localMetadata = await getMetadataFromJsonFile(Key);
 
@@ -49,10 +39,7 @@ export async function getImageMetadataFromFileSystemOrAWS(
   return await getImageMetadataFromS3(Bucket, Key);
 }
 
-export async function getAllStorageObjectKeys(
-  Bucket: string,
-  Prefix: string = ""
-) {
+export async function getAllStorageObjectKeys(Bucket: string, Prefix = "") {
   const client = createS3Client();
 
   const command = new ListObjectsV2Command({
@@ -66,8 +53,7 @@ export async function getAllStorageObjectKeys(
     let keys: string[] = [];
 
     while (isTruncated) {
-      const { Contents, IsTruncated, NextContinuationToken } =
-        await client.send(command);
+      const { Contents, IsTruncated, NextContinuationToken } = await client.send(command);
 
       if (Contents === undefined || IsTruncated === undefined) {
         throw new Error("Something went wrong on the S3 request!");
@@ -97,28 +83,25 @@ export function createS3Client() {
   const isLocal = Boolean(endpoint);
 
   const accessKeyId = isLocal
-    ? process.env.S3_ACCESS_KEY_ID ?? "minioadmin"
+    ? (process.env.S3_ACCESS_KEY_ID ?? "minioadmin")
     : process.env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = isLocal
-    ? process.env.S3_SECRET_ACCESS_KEY ?? "minioadmin"
+    ? (process.env.S3_SECRET_ACCESS_KEY ?? "minioadmin")
     : process.env.AWS_SECRET_ACCESS_KEY;
-  const awsRegion =
-    process.env.AWS_REGION ?? (isLocal ? "eu-west-2" : undefined);
+  const awsRegion = process.env.AWS_REGION ?? (isLocal ? "eu-west-2" : undefined);
 
   if (!accessKeyId || !secretAccessKey || !awsRegion) {
     throw new Error(
       isLocal
         ? "S3_ACCESS_KEY_ID / S3_SECRET_ACCESS_KEY / AWS_REGION not set"
-        : "No AWS credentials provided"
+        : "No AWS credentials provided",
     );
   }
 
   return new S3Client({
     region: awsRegion,
     credentials: { accessKeyId, secretAccessKey },
-    ...(endpoint
-      ? { endpoint, forcePathStyle: true }
-      : {}),
+    ...(endpoint ? { endpoint, forcePathStyle: true } : {}),
   });
 }
 
@@ -144,11 +127,10 @@ export async function getS3Folders(prefix: string): Promise<string[]> {
       Bucket: bucketName,
       Delimiter: "/",
       Prefix: prefix,
-    })
+    }),
   );
 
-  const folders =
-    data.CommonPrefixes?.map((data) => data.Prefix?.split("/")[2] || "") || [];
+  const folders = data.CommonPrefixes?.map((data) => data.Prefix?.split("/")[2] || "") || [];
 
   return folders.sort();
 }
@@ -197,7 +179,7 @@ export const getDataFromS3 = async ({ prefix = "" }: OptionsForS3 = {}) => {
         Prefix: prefix,
         MaxKeys: 1000, // Max 1000 per request
         ContinuationToken: continuationToken, // Handle pagination
-      })
+      }),
     );
 
     if (!data.Contents) throw new Error("No contents found");
@@ -210,7 +192,7 @@ export const getDataFromS3 = async ({ prefix = "" }: OptionsForS3 = {}) => {
       limit(async () => {
         const { width, height } = await getImageMetadataFromFileSystemOrAWS(
           bucketName,
-          file.Key || ""
+          file.Key || "",
         );
         return {
           name: (file.Key as string).replace(`${prefix}`, ""),
@@ -218,7 +200,7 @@ export const getDataFromS3 = async ({ prefix = "" }: OptionsForS3 = {}) => {
           width,
           height,
         };
-      })
+      }),
     );
 
     const batchResults = await Promise.all(imagePromises);
@@ -232,9 +214,7 @@ export const getDataFromS3 = async ({ prefix = "" }: OptionsForS3 = {}) => {
   return output;
 };
 
-export const getFirstImageFromS3 = async ({
-  prefix = "",
-}: OptionsForS3 = {}) => {
+export const getFirstImageFromS3 = async ({ prefix = "" }: OptionsForS3 = {}) => {
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
   const awsRegion = process.env.AWS_REGION;
@@ -254,7 +234,7 @@ export const getFirstImageFromS3 = async ({
       Bucket: bucketName,
       Prefix: prefix,
       MaxKeys: 1,
-    })
+    }),
   );
 
   if (!data.Contents || data.Contents.length === 0) {
@@ -266,10 +246,7 @@ export const getFirstImageFromS3 = async ({
     throw new Error("No valid image key found");
   }
 
-  const { width, height } = await getImageMetadataFromFileSystemOrAWS(
-    bucketName,
-    firstFile.Key
-  );
+  const { width, height } = await getImageMetadataFromFileSystemOrAWS(bucketName, firstFile.Key);
 
   return {
     name: firstFile.Key.replace(`${prefix}`, ""),

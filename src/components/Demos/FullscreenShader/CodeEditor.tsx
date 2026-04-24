@@ -10,7 +10,7 @@ export const CodeEditor = () => {
     (val: string) => {
       setCode(val);
     },
-    [setCode]
+    [setCode],
   );
 
   return (

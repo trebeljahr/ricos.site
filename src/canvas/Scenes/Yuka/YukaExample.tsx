@@ -1,40 +1,13 @@
 import { usePrevious } from "@hooks/usePrevious";
 import { Stag } from "@r3f/AllModels/animals_pack";
-import { ActionName } from "@r3f/AllModels/animals_pack/Stag";
+import type { ActionName } from "@r3f/AllModels/animals_pack/Stag";
 import { Velociraptor } from "@r3f/AllModels/dinosaurs_pack";
 import { useFrame, useThree } from "@react-three/fiber";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { poissonDiskSample } from "src/lib/utils/noise";
-import {
-  BoxGeometry,
-  ColorRepresentation,
-  Group,
-  InstancedMesh,
-  Mesh,
-  MeshPhongMaterial,
-  Object3D,
-  Quaternion,
-  Vector3,
-} from "three";
-import {
-  EntityManager,
-  FleeBehavior,
-  GameEntity,
-  Matrix4,
-  ObstacleAvoidanceBehavior,
-  SeekBehavior,
-  Vehicle,
-  WanderBehavior,
-  Vector3 as YukaVec3,
-} from "yuka";
-import {
-  debug,
-  tileSize,
-  treeMaxDistance,
-  treeMinDistance,
-} from "../../ChunkGenerationSystem/config";
-import { BoundingSphereAround } from "../../Helpers/BoundingSphere";
+import { useEffect, useRef, useState } from "react";
+import { type Group, Quaternion, Vector3 } from "three";
+import { EntityManager, FleeBehavior, Matrix4, SeekBehavior, Vehicle, WanderBehavior } from "yuka";
+import { tileSize } from "../../ChunkGenerationSystem/config";
 
 const gridSize = tileSize;
 const halfGridSize = gridSize / 2;
@@ -63,29 +36,19 @@ export function YukaSimulation() {
 
     currentChaser.setRenderComponent(chaserMeshRef.current, (entity) => {
       chaserMeshRef.current.position.copy(
-        new Vector3(entity.position.x, entity.position.y, entity.position.z)
+        new Vector3(entity.position.x, entity.position.y, entity.position.z),
       );
       chaserMeshRef.current.quaternion.copy(
-        new Quaternion(
-          entity.rotation.x,
-          entity.rotation.y,
-          entity.rotation.z,
-          entity.rotation.w
-        )
+        new Quaternion(entity.rotation.x, entity.rotation.y, entity.rotation.z, entity.rotation.w),
       );
     });
 
     currentTarget.setRenderComponent(targetMeshRef.current, (entity) => {
       targetMeshRef.current.position.copy(
-        new Vector3(entity.position.x, entity.position.y, entity.position.z)
+        new Vector3(entity.position.x, entity.position.y, entity.position.z),
       );
       targetMeshRef.current.quaternion.copy(
-        new Quaternion(
-          entity.rotation.x,
-          entity.rotation.y,
-          entity.rotation.z,
-          entity.rotation.w
-        )
+        new Quaternion(entity.rotation.x, entity.rotation.y, entity.rotation.z, entity.rotation.w),
       );
     });
 
@@ -113,9 +76,7 @@ export function YukaSimulation() {
     currentTarget.maxSpeed = fleeSpeed;
 
     camera.position.set(0, 10, 10);
-    camera.lookAt(
-      new Vector3(currentTarget.position.x, 0, currentTarget.position.y)
-    );
+    camera.lookAt(new Vector3(currentTarget.position.x, 0, currentTarget.position.y));
 
     currentManager.add(currentChaser);
     currentManager.add(currentTarget);

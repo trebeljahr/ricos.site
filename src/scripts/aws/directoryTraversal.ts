@@ -1,11 +1,11 @@
-import { readdir } from "fs/promises";
 import path from "path";
+import { readdir } from "fs/promises";
 
 type Options = { ignoreDirectories?: string[]; filePattern?: RegExp };
 
 export async function collectFilesInPath(
   pathToSearch: string,
-  { ignoreDirectories = [], filePattern }: Options = {}
+  { ignoreDirectories = [], filePattern }: Options = {},
 ): Promise<string[]> {
   const files = await readdir(pathToSearch, { withFileTypes: true });
   const filtered = files.filter((file) => {
@@ -25,7 +25,7 @@ export async function collectFilesInPath(
         await collectFilesInPath(filePath, {
           filePattern,
           ignoreDirectories,
-        })
+        }),
       );
     } else if (!filePattern || filePattern.test(filePath)) {
       results.push(filePath);

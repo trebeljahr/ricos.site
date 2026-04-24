@@ -13,11 +13,7 @@ function hash(s: string): number {
   return h >>> 0;
 }
 
-function pickStable<T extends ContentWithTags>(
-  currentSlug: string,
-  pool: T[],
-  count: number,
-): T[] {
+function pickStable<T extends ContentWithTags>(currentSlug: string, pool: T[], count: number): T[] {
   return pool
     .map((item) => ({ item, score: hash(currentSlug + "|" + item.slug) }))
     .sort((a, b) => a.score - b.score)
@@ -28,13 +24,13 @@ function pickStable<T extends ContentWithTags>(
 export function getRelatedContent<T extends ContentWithTags>(
   currentItem: T,
   allItems: T[],
-  count: number = 3
+  count = 3,
 ): T[] {
   const currentTags = new Set(
     currentItem.tags
       .split(",")
       .map((t) => t.trim().toLowerCase())
-      .filter(Boolean)
+      .filter(Boolean),
   );
 
   if (currentTags.size === 0) {
@@ -52,7 +48,7 @@ export function getRelatedContent<T extends ContentWithTags>(
         item.tags
           .split(",")
           .map((t) => t.trim().toLowerCase())
-          .filter(Boolean)
+          .filter(Boolean),
       );
       let overlap = 0;
       for (const tag of currentTags) {
@@ -66,8 +62,7 @@ export function getRelatedContent<T extends ContentWithTags>(
     .sort(
       (a, b) =>
         b.overlap - a.overlap ||
-        hash(currentItem.slug + "|" + a.item.slug) -
-          hash(currentItem.slug + "|" + b.item.slug),
+        hash(currentItem.slug + "|" + a.item.slug) - hash(currentItem.slug + "|" + b.item.slug),
     );
 
   if (scored.length >= count) {

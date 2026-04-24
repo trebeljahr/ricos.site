@@ -32,10 +32,7 @@ for (const imageKey of imageKeys) {
 progress.stop();
 
 async function invokeCorrectLambda(path: string) {
-  await invokeLambda(
-    "ImgTransformationStack-imageoptimization4C49F079-Ml7Uw9RAhwgP",
-    path
-  );
+  await invokeLambda("ImgTransformationStack-imageoptimization4C49F079-Ml7Uw9RAhwgP", path);
 }
 
 async function invokeLambda(funcName: string, path: string) {

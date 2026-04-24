@@ -7,24 +7,16 @@ import {
   SupportedAnimations,
   useMixamoAnimations,
 } from "@r3f/Characters/CharacterWithAnimations";
-import {
-  SwordTypes,
-  useWeapon,
-  WeaponTypes,
-} from "@r3f/Dungeon/Enemies/Weapons";
-import {
-  useAnimations,
-  useKeyboardControls,
-  useProgress,
-} from "@react-three/drei";
-import { GroupProps, useFrame } from "@react-three/fiber";
-import { MutableRefObject, Suspense, useRef } from "react";
-import { Group } from "three";
+import { SwordTypes, type WeaponTypes, useWeapon } from "@r3f/Dungeon/Enemies/Weapons";
+import { useAnimations, useKeyboardControls, useProgress } from "@react-three/drei";
+import { type GroupProps, useFrame } from "@react-three/fiber";
+import { type MutableRefObject, Suspense, useRef } from "react";
+import type { Group } from "three";
 import { useGenericAnimationController } from "../GenericAnimationController";
-import { EcctrlControllerCustom, userDataType } from "./Controller";
+import { EcctrlControllerCustom, type userDataType } from "./Controller";
 
 const useWeaponForMixamoCharacter = (weaponType: WeaponTypes) => {
-  let weapon = useWeapon(weaponType);
+  const weapon = useWeapon(weaponType);
 
   type Transforms = {
     position: [number, number, number];
@@ -189,8 +181,7 @@ export const MixamoEcctrlControllerWithAnimations = ({
 
     if (
       !userData.canJump ||
-      (mixedInAnimationState.current.progress <= 0.8 &&
-        mixedInAnimationState.current.isPlaying)
+      (mixedInAnimationState.current.progress <= 0.8 && mixedInAnimationState.current.isPlaying)
     )
       return;
 
@@ -213,8 +204,7 @@ export const MixamoEcctrlControllerWithAnimations = ({
     const userData = (player.rigidBody as any)?.userData as userDataType;
 
     isAttacking.current =
-      mixedInAnimationState.current.isPlaying &&
-      mixedInAnimationState.current.progress < 0.8;
+      mixedInAnimationState.current.isPlaying && mixedInAnimationState.current.progress < 0.8;
 
     const canJump = userData?.canJump;
 
@@ -232,13 +222,10 @@ export const MixamoEcctrlControllerWithAnimations = ({
         fade: 0.01,
       });
     } else if (canJump && (forward || backward || leftward || rightward)) {
-      updateAnimation(
-        run ? SupportedAnimations.Running : SupportedAnimations.Walking,
-        {
-          looping: true,
-          fade: 0.2,
-        }
-      );
+      updateAnimation(run ? SupportedAnimations.Running : SupportedAnimations.Walking, {
+        looping: true,
+        fade: 0.2,
+      });
     } else if (!canJump && !isAttacking.current) {
       updateAnimation(SupportedAnimations.JumpingUp, {
         looping: false,
@@ -251,11 +238,7 @@ export const MixamoEcctrlControllerWithAnimations = ({
 
   const weapon = useWeaponForMixamoCharacter(SwordTypes.Sword6);
 
-  useAttachToBone(
-    group as MutableRefObject<Group>,
-    "mixamorigRightHand",
-    weapon
-  );
+  useAttachToBone(group as MutableRefObject<Group>, "mixamorigRightHand", weapon);
 
   return (
     <EcctrlControllerCustom
@@ -266,10 +249,7 @@ export const MixamoEcctrlControllerWithAnimations = ({
       sprintMult={3}
     >
       <Suspense fallback={null}>
-        <group
-          position={[0, characterSpecificYOffset, 0]}
-          scale={characterSpecificScale}
-        >
+        <group position={[0, characterSpecificYOffset, 0]} scale={characterSpecificScale}>
           <group ref={group as MutableRefObject<Group>} dispose={null}>
             <MixamoCharacter characterName={characterName} />
           </group>

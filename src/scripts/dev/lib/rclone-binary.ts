@@ -10,7 +10,7 @@
  * (and optionally add a SHA256 check below) when upgrading.
  */
 import { spawn } from "child_process";
-import { existsSync, chmodSync, mkdirSync, writeFileSync } from "fs";
+import { chmodSync, existsSync, mkdirSync, writeFileSync } from "fs";
 import { arch, platform } from "os";
 import { join, resolve } from "path";
 import { cwd } from "process";
@@ -61,9 +61,7 @@ export async function ensureRclone(): Promise<string> {
   await runCmd("unzip", ["-q", "-o", zipPath, "-d", CACHE_DIR]);
 
   if (!existsSync(binPath)) {
-    throw new Error(
-      `rclone binary not found at expected path after extract: ${binPath}`
-    );
+    throw new Error(`rclone binary not found at expected path after extract: ${binPath}`);
   }
   chmodSync(binPath, 0o755);
   console.log(`[rclone] installed at ${binPath}`);
@@ -87,9 +85,7 @@ async function runCmd(cmd: string, args: string[]): Promise<void> {
       stderr += c.toString();
     });
     p.on("exit", (code) =>
-      code === 0
-        ? resolveP()
-        : rejectP(new Error(`${cmd} exited ${code}: ${stderr.trim()}`))
+      code === 0 ? resolveP() : rejectP(new Error(`${cmd} exited ${code}: ${stderr.trim()}`)),
     );
     p.on("error", rejectP);
   });

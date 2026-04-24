@@ -1,12 +1,12 @@
 import { Presets, SingleBar } from "cli-progress";
 import "dotenv/config";
 import { promises as fs } from "fs";
-import pLimit from "p-limit";
 import path from "path";
+import { readFile } from "fs/promises";
+import pLimit from "p-limit";
 import { collectFilesInPath } from "./aws/directoryTraversal";
 import { getWidthAndHeightFromFileSystem } from "./aws/getWidthAndHeight";
 import { doesFileExistInS3 } from "./aws/helpers";
-import { readFile } from "fs/promises";
 
 const __dirname = path.resolve(path.dirname(""));
 
@@ -16,11 +16,12 @@ export const assetsMetadataFilePath = path.join(
   "content",
   "Notes",
   "_data",
-  "metadata.json"
+  "metadata.json",
 );
 
-export const localMetadata: Record<string, ImageMetadata | undefined> =
-  JSON.parse(await readFile(assetsMetadataFilePath, "utf-8"));
+export const localMetadata: Record<string, ImageMetadata | undefined> = JSON.parse(
+  await readFile(assetsMetadataFilePath, "utf-8"),
+);
 
 export async function getMetadataFromJsonFile(key: string) {
   try {
@@ -36,10 +37,7 @@ export async function getMetadataFromJsonFile(key: string) {
   }
 }
 
-export async function updateMetadataFileBulk(
-  filePath: string,
-  newMetadata: ImageMetadata[]
-) {
+export async function updateMetadataFileBulk(filePath: string, newMetadata: ImageMetadata[]) {
   try {
     newMetadata.forEach((metadata) => {
       localMetadata[metadata.key] = metadata;
@@ -55,7 +53,7 @@ export async function updateMetadataFileBulk(
 
 export async function updateMetadataFile(
   filePath: string,
-  newMetadata: ImageMetadata
+  newMetadata: ImageMetadata,
 ): Promise<void> {
   try {
     localMetadata[newMetadata.key] = newMetadata;
@@ -92,7 +90,7 @@ export async function createMetadataFile(dirPath: string, outputPath: string) {
     {
       format: `Metadata creation | {bar} | {percentage}% | {value}/{total} | {eta}s`,
     },
-    Presets.shades_classic
+    Presets.shades_classic,
   );
 
   progress.start(imageFiles.length, 0);
@@ -103,8 +101,7 @@ export async function createMetadataFile(dirPath: string, outputPath: string) {
 
     try {
       const key = path.join("assets", path.relative(dirPath, imagePath));
-      const { width, height } =
-        (await getWidthAndHeightFromFileSystem(imagePath)) || {};
+      const { width, height } = (await getWidthAndHeightFromFileSystem(imagePath)) || {};
 
       if (!width || !height) return;
 

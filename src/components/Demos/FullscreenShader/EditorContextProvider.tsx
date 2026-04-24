@@ -1,12 +1,12 @@
 import {
+  type Dispatch,
+  type PropsWithChildren,
+  type SetStateAction,
   createContext,
-  Dispatch,
-  PropsWithChildren,
-  SetStateAction,
   useContext,
   useState,
 } from "react";
-import { Texture } from "three";
+import type { Texture } from "three";
 
 type EditorContextType = {
   code: string;
@@ -31,9 +31,7 @@ export const EditorContextProvider = ({
   const [textures, setTextures] = useState<Texture[]>([]);
   const [expanded, setExpanded] = useState(false);
   return (
-    <EditorContext.Provider
-      value={{ code, textures, expanded, setExpanded, setCode, setTextures }}
-    >
+    <EditorContext.Provider value={{ code, textures, expanded, setExpanded, setCode, setTextures }}>
       {children}
     </EditorContext.Provider>
   );

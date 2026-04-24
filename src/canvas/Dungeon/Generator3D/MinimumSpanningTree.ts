@@ -1,4 +1,4 @@
-import { Edge, Vertex } from "./GraphStructures";
+import type { Edge, Vertex } from "./GraphStructures";
 
 class PrimMST {
   static minimumSpanningTree(edges: Edge[], start: Vertex): Edge[] {
@@ -18,7 +18,7 @@ class PrimMST {
     while (openSet.size > 0) {
       let chosen = false;
       let chosenEdge: Edge | null = null;
-      let minWeight = Infinity;
+      let minWeight = Number.POSITIVE_INFINITY;
 
       for (const edge of edges) {
         const uInClosed = closedSet.has(edge.u);
@@ -55,7 +55,7 @@ class PrimMST {
     allEdges: Edge[],
     mstEdges: Edge[],
     randomRatio: number,
-    random: () => number
+    random: () => number,
   ): Edge[] {
     const mstEdgeHashes = new Set<string>();
     for (const edge of mstEdges) {

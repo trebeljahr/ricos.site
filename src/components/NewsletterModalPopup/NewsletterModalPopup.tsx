@@ -1,23 +1,15 @@
+import { FiX } from "@components/Icons";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { useScrollVisibility } from "@components/ShowAfterScrolling";
-import {
-  Dialog,
-  DialogPanel,
-  Transition,
-  TransitionChild,
-} from "@headlessui/react";
+import { Dialog, DialogPanel, Transition, TransitionChild } from "@headlessui/react";
 import { Fragment } from "react";
-import { FiX } from "@components/Icons";
 import { useScrollLock } from "src/hooks/useScrollLock";
 import useLocalStorageState from "use-local-storage-state";
 
 const NewsletterModalPopup = ({ howFarDown = 50 }: { howFarDown?: number }) => {
-  const [dismissed, setDismissed] = useLocalStorageState(
-    "newsletter-popup-dismissed",
-    {
-      defaultValue: false,
-    }
-  );
+  const [dismissed, setDismissed] = useLocalStorageState("newsletter-popup-dismissed", {
+    defaultValue: false,
+  });
 
   function closeModal() {
     setVisible(false);
@@ -67,9 +59,8 @@ const NewsletterModalPopup = ({ howFarDown = 50 }: { howFarDown?: number }) => {
                   text={
                     <>
                       <p className="mb-4">
-                        Live and Learn is a digital postcard I send out every
-                        couple of weeks — part travel diary, part essay, plus
-                        a handful of links to things worth sharing.
+                        Live and Learn is a digital postcard I send out every couple of weeks — part
+                        travel diary, part essay, plus a handful of links to things worth sharing.
                       </p>
                       <ul className="list-disc mb-4 pl-3">
                         <li>🌌 Travel stories from wherever I am</li>

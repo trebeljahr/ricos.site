@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+import { useEffect, useState } from "react";
 
+import { Vec2 } from "../../../lib/math/Vector";
 import {
   drawArrow,
   drawBackground,
@@ -10,7 +11,6 @@ import {
   niceBlue,
   niceGreen,
 } from "../../../lib/math/drawHelpers";
-import { Vec2 } from "../../../lib/math/Vector";
 function drawCross(ctx: CanvasRenderingContext2D, c: Vec2) {
   line(ctx, new Vec2(c.x - 10, c.y - 10), new Vec2(c.x + 10, c.y + 10));
   line(ctx, new Vec2(c.x - 10, c.y + 10), new Vec2(c.x + 10, c.y - 10));
@@ -32,9 +32,9 @@ export const PointAndVectorDemo = () => {
 
     const scalingFactor = Math.min(width, height) / 10;
     const origin = new Vec2(width / 2, height / 2);
-    let a = new Vec2(3, -2).scale(scalingFactor).add(origin);
+    const a = new Vec2(3, -2).scale(scalingFactor).add(origin);
 
-    let c = new Vec2(-2, 4).scale(scalingFactor).add(origin);
+    const c = new Vec2(-2, 4).scale(scalingFactor).add(origin);
 
     const drawFn = () => {
       drawBackground(ctx);

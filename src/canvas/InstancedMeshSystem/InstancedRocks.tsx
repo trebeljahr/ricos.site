@@ -1,10 +1,7 @@
 import { useGLTF } from "@react-three/drei";
-import { Mesh, MeshStandardMaterial } from "three";
-import { GLTF } from "three-stdlib";
-import {
-  InstancedMeshSpawnerMultiMaterial,
-  InstancedTileSpawner,
-} from "./InstancedTileSpawner";
+import type { Mesh, MeshStandardMaterial } from "three";
+import type { GLTF } from "three-stdlib";
+import { InstancedMeshSpawnerMultiMaterial, InstancedTileSpawner } from "./InstancedTileSpawner";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -17,15 +14,10 @@ type GLTFResult = GLTF & {
 
 export const InstancedRocks = () => {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/simple_nature_pack/Rock3.glb"
+    "/3d-assets/glb/simple_nature_pack/Rock3.glb",
   ) as unknown as unknown as unknown as GLTFResult;
 
-  return (
-    <InstancedTileSpawner
-      material={materials.Rock}
-      geometry={nodes.Rock3.geometry}
-    />
-  );
+  return <InstancedTileSpawner material={materials.Rock} geometry={nodes.Rock3.geometry} />;
 };
 
 export const InstancedTreesWithMultiMaterial = () => {

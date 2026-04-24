@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { DirectionalLight } from "three";
+import type { DirectionalLight } from "three";
 
 export function Lights() {
   const directionalLightRef = useRef<DirectionalLight>(null!);

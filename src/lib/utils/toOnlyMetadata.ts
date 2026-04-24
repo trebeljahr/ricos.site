@@ -1,4 +1,4 @@
-import { CommonMetadata } from "src/@types";
+import type { CommonMetadata } from "src/@types";
 import { deleteUndefinedValues } from "./deleteUndefinedValues";
 
 export const toOnlyMetadata = (obj: CommonMetadata): CommonMetadata => {

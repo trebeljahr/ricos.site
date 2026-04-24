@@ -1,3 +1,4 @@
+import { useConst } from "@hooks/useConst";
 import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
@@ -5,8 +6,7 @@ import { NavMeshHelper, threeToSoloNavMesh } from "@recast-navigation/three";
 import { useEffect, useRef, useState } from "react";
 import { NavMeshQuery } from "recast-navigation";
 import { Mesh, MeshStandardMaterial } from "three";
-import { Entity, NavComponent, navQuery } from "./ecs";
-import { useConst } from "@hooks/useConst";
+import { Entity, type NavComponent, navQuery } from "./ecs";
 
 export const NavmeshDebug = () => {
   const [helper, setHelper] = useState<NavMeshHelper>();

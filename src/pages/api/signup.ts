@@ -1,20 +1,13 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import {
-  addNewMemberToEmailList,
-  isAlreadySubscribed,
-  sendEmail,
-} from "../../lib/mailgun";
-import { getErrorMessage } from "../../lib/utils/misc";
+import path from "path";
 import { readFile } from "fs/promises";
 import Handlebars from "handlebars";
-import path from "path";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { getHash } from "src/lib/emailUtils";
 import { baseUrl } from "src/lib/urlUtils";
+import { addNewMemberToEmailList, isAlreadySubscribed, sendEmail } from "../../lib/mailgun";
+import { getErrorMessage } from "../../lib/utils/misc";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const newMember = {
       email: req.body.email,
@@ -30,22 +23,13 @@ export default async function handler(
 
     await addNewMemberToEmailList(newMember);
 
-    const HOST =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:3000"
-        : baseUrl;
+    const HOST = process.env.NODE_ENV === "development" ? "http://localhost:3000" : baseUrl;
 
     const confirmLink = `${HOST}/api/confirm-email?hash=${newMember.vars.hash}&email=${newMember.email}`;
 
     const emailHandlebarsFile = await readFile(
-      path.join(
-        process.cwd(),
-        "src",
-        "content",
-        "email-templates",
-        "confirmSubscription.hbs"
-      ),
-      "utf-8"
+      path.join(process.cwd(), "src", "content", "email-templates", "confirmSubscription.hbs"),
+      "utf-8",
     );
     const template = Handlebars.compile(emailHandlebarsFile);
 

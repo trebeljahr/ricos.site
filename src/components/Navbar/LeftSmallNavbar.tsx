@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { FiMenu, FiX } from "@components/Icons";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
-import { FiMenu, FiX } from "@components/Icons";
+import { useState } from "react";
 import { CollapsibleMenuMobile } from "./CollapsibleMenus";
 import { DarkModeHandler } from "./DarkModeHandler";
 import { RicosSiteBanner } from "./TailwindNavbar";
@@ -53,18 +53,8 @@ export const LeftSmallNavbar = () => {
                     </Link>
                   ))}
 
-                  <CollapsibleMenuMobile
-                    links={resources}
-                    text="resources"
-                    closeNav={close}
-                    left
-                  />
-                  <CollapsibleMenuMobile
-                    links={about}
-                    text="about"
-                    closeNav={close}
-                    left
-                  />
+                  <CollapsibleMenuMobile links={resources} text="resources" closeNav={close} left />
+                  <CollapsibleMenuMobile links={about} text="about" closeNav={close} left />
                 </div>
               </div>
             </motion.div>

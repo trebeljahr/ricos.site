@@ -1,14 +1,14 @@
 import { shaderMaterial } from "@react-three/drei";
-import { ReactThreeFiber, useFrame } from "@react-three/fiber";
+import { type ReactThreeFiber, useFrame } from "@react-three/fiber";
 import fragmentShader from "@shaders/healthbar/healthbarFragShader.glsl";
 import vertexShader from "@shaders/healthbar/healthbarVertShader.glsl";
-import { RefObject, useEffect, useMemo, useRef } from "react";
+import { type RefObject, useMemo, useRef } from "react";
 import {
   Color,
-  ColorRepresentation,
+  type ColorRepresentation,
   DoubleSide,
-  Material,
-  Mesh,
+  type Material,
+  type Mesh,
   Vector2,
   Vector4,
 } from "three";
@@ -20,8 +20,7 @@ export const Shapes = {
   RHOMBUS: 2,
 };
 
-const convertToVec4 = (color: Color) =>
-  new Vector4(color.r, color.g, color.b, 1.0);
+const convertToVec4 = (color: Color) => new Vector4(color.r, color.g, color.b, 1.0);
 
 import { extend } from "@react-three/fiber";
 
@@ -63,7 +62,7 @@ const HealthBarMaterial = shaderMaterial(
 
     self.transparent = true;
     self.side = DoubleSide;
-  }
+  },
 );
 
 extend({ HealthBarMaterial });
@@ -132,10 +131,7 @@ export const GenericHealthBar = ({
     materialRef.current.borderColor = convertToVec4(new Color(borderColor));
 
     if (secondColor) {
-      const blendColor = new Color(fillColor).lerp(
-        new Color(secondColor),
-        health.current
-      );
+      const blendColor = new Color(fillColor).lerp(new Color(secondColor), health.current);
 
       materialRef.current.fillColor = convertToVec4(blendColor);
     }

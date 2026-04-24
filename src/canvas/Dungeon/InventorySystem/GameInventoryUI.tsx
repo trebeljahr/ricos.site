@@ -1,14 +1,8 @@
-import { useRef, useMemo, FC } from "react";
-import { useDraggable, useDroppable } from "@dnd-kit/core";
-import {
-  useInventory,
-  Item,
-  ArmorSlot,
-  HandSlot,
-  InventoryProvider,
-} from "./GameInventoryContext";
 import { FaTrash } from "@components/Icons";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
+import type { FC } from "react";
+import { type ArmorSlot, type HandSlot, type Item, useInventory } from "./GameInventoryContext";
 
 interface InventorySlotProps {
   item?: Item;
@@ -55,9 +49,7 @@ export const InventorySlot: FC<InventorySlotProps> = ({ item, index }) => {
             style={{ backgroundImage: `url(${item.icon})` }}
           />
           {item.stackable && item.quantity > 1 && (
-            <span className="text-white text-xs absolute bottom-1 right-1">
-              {item.quantity}
-            </span>
+            <span className="text-white text-xs absolute bottom-1 right-1">{item.quantity}</span>
           )}
         </div>
       ) : (
@@ -146,18 +138,10 @@ export const EquipmentSlot: FC<EquipmentSlotProps> = ({ type, label }) => {
           </div>
         ) : (
           <div className="w-8 h-8 opacity-20">
-            {type === "head" && (
-              <div className="w-full h-full bg-gray-400 rounded-full" />
-            )}
-            {type === "chest" && (
-              <div className="w-full h-full bg-gray-400 rounded-md" />
-            )}
-            {type === "legs" && (
-              <div className="w-full h-full bg-gray-400 rounded-b-md" />
-            )}
-            {type === "feet" && (
-              <div className="w-full h-full bg-gray-400 rounded-md" />
-            )}
+            {type === "head" && <div className="w-full h-full bg-gray-400 rounded-full" />}
+            {type === "chest" && <div className="w-full h-full bg-gray-400 rounded-md" />}
+            {type === "legs" && <div className="w-full h-full bg-gray-400 rounded-b-md" />}
+            {type === "feet" && <div className="w-full h-full bg-gray-400 rounded-md" />}
             {(type === "left" || type === "right") && (
               <div className="w-full h-full bg-gray-400 transform -rotate-45" />
             )}
@@ -186,8 +170,7 @@ export const CharacterEquipment: FC = () => {
 };
 
 export const Inventory: FC = () => {
-  const { isOpen, closeInventory, items, openInventory, getTotalWeight } =
-    useInventory();
+  const { isOpen, closeInventory, items, openInventory, getTotalWeight } = useInventory();
 
   useSubscribeToKeyPress("e", () => {
     if (!isOpen) openInventory();
@@ -211,13 +194,8 @@ export const Inventory: FC = () => {
           <p className="mt-0 font-bold text-white">Inventory</p>
 
           <div className="flex items-center">
-            <div className="text-gray-300 text-sm">
-              Weight: {getTotalWeight().toFixed(1)} / 100
-            </div>
-            <button
-              onClick={closeInventory}
-              className="text-gray-400 hover:text-white"
-            >
+            <div className="text-gray-300 text-sm">Weight: {getTotalWeight().toFixed(1)} / 100</div>
+            <button onClick={closeInventory} className="text-gray-400 hover:text-white">
               <svg viewBox="0 0 24 24" className="w-6 h-6">
                 <path
                   fill="currentColor"

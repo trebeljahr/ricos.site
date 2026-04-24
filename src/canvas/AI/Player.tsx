@@ -1,4 +1,5 @@
-import Rapier from "@dimforge/rapier3d-compat";
+import type Rapier from "@dimforge/rapier3d-compat";
+import type { SupportedControllerKeys } from "@r3f/Controllers/KeyboardControls";
 import {
   PerspectiveCamera as PerspectiveCameraComponent,
   PointerLockControls,
@@ -8,14 +9,13 @@ import { useFrame, useThree } from "@react-three/fiber";
 import {
   CapsuleCollider,
   RigidBody,
-  RigidBodyProps,
+  type RigidBodyProps,
   useBeforePhysicsStep,
   useRapier,
 } from "@react-three/rapier";
 import { useEffect, useRef } from "react";
 import { MathUtils, PerspectiveCamera, Vector3 } from "three";
-import { Component, Entity, EntityType } from "./ecs";
-import { SupportedControllerKeys } from "@r3f/Controllers/KeyboardControls";
+import { Component, Entity, type EntityType } from "./ecs";
 
 const _direction = new Vector3();
 const _frontVector = new Vector3();
@@ -51,9 +51,7 @@ export const Player = (props: RigidBodyProps) => {
   const camera = useThree((state) => state.camera);
   const clock = useThree((state) => state.clock);
 
-  const characterController = useRef<Rapier.KinematicCharacterController>(
-    null!
-  );
+  const characterController = useRef<Rapier.KinematicCharacterController>(null!);
 
   const [, getKeyboardControls] = useKeyboardControls();
 
@@ -66,13 +64,8 @@ export const Player = (props: RigidBodyProps) => {
   useEffect(() => {
     const { world } = rapier;
 
-    characterController.current =
-      world.createCharacterController(characterShapeOffset);
-    characterController.current.enableAutostep(
-      autoStepMaxHeight,
-      autoStepMinWidth,
-      true
-    );
+    characterController.current = world.createCharacterController(characterShapeOffset);
+    characterController.current.enableAutostep(autoStepMaxHeight, autoStepMinWidth, true);
     characterController.current.setSlideEnabled(true);
     characterController.current.enableSnapToGround(0.1);
     characterController.current.setApplyImpulsesToDynamicBodies(true);
@@ -107,36 +100,18 @@ export const Player = (props: RigidBodyProps) => {
     _frontVector.set(0, 0, Number(backward) - Number(forward));
     _sideVector.set(Number(leftward) - Number(rightward), 0, 0);
 
-    const cameraWorldDirection = camera.getWorldDirection(
-      _cameraWorldDirection
-    );
-    const cameraYaw = Math.atan2(
-      cameraWorldDirection.x,
-      cameraWorldDirection.z
-    );
+    const cameraWorldDirection = camera.getWorldDirection(_cameraWorldDirection);
+    const cameraYaw = Math.atan2(cameraWorldDirection.x, cameraWorldDirection.z);
 
-    _direction
-      .subVectors(_frontVector, _sideVector)
-      .normalize()
-      .multiplyScalar(speed);
+    _direction.subVectors(_frontVector, _sideVector).normalize().multiplyScalar(speed);
     _direction.applyAxisAngle(up, cameraYaw).multiplyScalar(-1);
 
     const horizontalVelocitySmoothing =
-      velocityXZSmoothing *
-      (grounded ? accelerationTimeGrounded : accelerationTimeAirborne);
-    const horizontalVelocityLerpFactor =
-      1 - Math.pow(horizontalVelocitySmoothing, 0.116);
+      velocityXZSmoothing * (grounded ? accelerationTimeGrounded : accelerationTimeAirborne);
+    const horizontalVelocityLerpFactor = 1 - Math.pow(horizontalVelocitySmoothing, 0.116);
     horizontalVelocity.current = {
-      x: MathUtils.lerp(
-        horizontalVelocity.current.x,
-        _direction.x,
-        horizontalVelocityLerpFactor
-      ),
-      z: MathUtils.lerp(
-        horizontalVelocity.current.z,
-        _direction.z,
-        horizontalVelocityLerpFactor
-      ),
+      x: MathUtils.lerp(horizontalVelocity.current.x, _direction.x, horizontalVelocityLerpFactor),
+      z: MathUtils.lerp(horizontalVelocity.current.z, _direction.z, horizontalVelocityLerpFactor),
     };
 
     if (Math.abs(horizontalVelocity.current.x) < velocityXZMin) {
@@ -180,10 +155,7 @@ export const Player = (props: RigidBodyProps) => {
     };
 
     // compute collider movement and update rigid body
-    characterController.current.computeColliderMovement(
-      characterCollider,
-      movementDirection
-    );
+    characterController.current.computeColliderMovement(characterCollider, movementDirection);
 
     const translation = characterRigidBody.translation();
     const newPosition = _characterTranslation.copy(translation as Vector3);
@@ -206,18 +178,14 @@ export const Player = (props: RigidBodyProps) => {
     const { run } = getKeyboardControls() as SupportedControllerKeys;
 
     const translation = characterRigidBody.translation();
-    const cameraPosition = _cameraPosition.set(
-      translation.x,
-      translation.y + 1,
-      translation.z
-    );
+    const cameraPosition = _cameraPosition.set(translation.x, translation.y + 1, translation.z);
     camera.position.lerp(cameraPosition, delta * 30);
     if (camera instanceof PerspectiveCamera) {
       const perspectiveCam = camera as PerspectiveCamera;
       perspectiveCam.fov = MathUtils.lerp(
         perspectiveCam.fov,
         run && currentSpeed > 0.1 ? sprintFov : normalFov,
-        10 * delta
+        10 * delta,
       );
       perspectiveCam.updateProjectionMatrix();
     }

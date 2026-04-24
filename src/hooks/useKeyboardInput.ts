@@ -14,10 +14,7 @@ export function useKeyboardInput(newListener: (event: KeyboardEvent) => void) {
   }, [newListener]);
 }
 
-export function useSubscribeToKeyPress(
-  desiredKey: Chars,
-  callback: () => void
-) {
+export function useSubscribeToKeyPress(desiredKey: Chars, callback: () => void) {
   useKeyboardInput((event) => {
     if (event.key.toLowerCase() === desiredKey.toLowerCase()) {
       callback();

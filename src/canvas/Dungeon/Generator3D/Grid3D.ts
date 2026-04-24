@@ -1,9 +1,12 @@
-import { Vector3Int, BoundsInt3D } from "./Types";
+import { BoundsInt3D, Vector3Int } from "./Types";
 
 class Grid3D<T> {
   data: T[];
 
-  constructor(public size: Vector3Int, public offset: Vector3Int) {
+  constructor(
+    public size: Vector3Int,
+    public offset: Vector3Int,
+  ) {
     this.data = new Array<T>(size.x * size.y * size.z);
   }
 

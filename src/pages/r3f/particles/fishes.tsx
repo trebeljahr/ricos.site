@@ -1,24 +1,15 @@
-import { Fishes } from "@r3f/Scenes/Particles/Fishes/Scene";
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { Box, OrbitControls, Stage } from "@react-three/drei";
+import { Fishes } from "@r3f/Scenes/Particles/Fishes/Scene";
+import { OrbitControls, Stage } from "@react-three/drei";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 import { Vector3 } from "three";
-import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "A FBO particles demo using custom meshes of Fish",
   description:
     "I was trying to simulate a school of fish using FBO particles in R3F and this is one of the first results. The fish are custom meshes and their positions are updated using a compute shader.",
   url: "/r3f/particles/fishes",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/fishes.png",
   imageAlt: "a school of fish swimming around in a 3D scene",
 };

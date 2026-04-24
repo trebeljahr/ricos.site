@@ -1,15 +1,8 @@
-import { useRef, useMemo } from "react";
+import { useAnimations, useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
-import { useGLTF, useAnimations } from "@react-three/drei";
-import { GLTF, SkeletonUtils } from "three-stdlib";
-import {
-  AnimationClip,
-  Bone,
-  Group,
-  Mesh,
-  MeshStandardMaterial,
-  SkinnedMesh,
-} from "three";
+import { useMemo, useRef } from "react";
+import type { AnimationClip, Bone, Group, Mesh, MeshStandardMaterial, SkinnedMesh } from "three";
+import { type GLTF, SkeletonUtils } from "three-stdlib";
 
 type ActionName =
   | "CharacterArmature|Death"
@@ -51,9 +44,7 @@ type GLTFResult = GLTF & {
 
 export function Matt(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<Group>(null!);
-  const { scene, animations } = useGLTF(
-    "/3d-assets/glb/enemies/Characters Matt-transformed.glb"
-  );
+  const { scene, animations } = useGLTF("/3d-assets/glb/enemies/Characters Matt-transformed.glb");
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;
   const { actions } = useAnimations(animations, group);

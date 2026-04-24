@@ -1,4 +1,3 @@
-import { splitIntoRandomGroups } from "src/lib/utils/randomGroups";
 import { InstancedBirchTree1 } from "@r3f/AllModels/nature_pack/BirchTree_1";
 import { InstancedBush1 } from "@r3f/AllModels/nature_pack/Bush_1";
 import { InstancedCommonTree5 } from "@r3f/AllModels/nature_pack/CommonTree_5";
@@ -7,19 +6,17 @@ import { InstancedWillow1 } from "@r3f/AllModels/nature_pack/Willow_1";
 import { Sphere } from "@react-three/drei";
 import { nanoid } from "nanoid";
 import { useMemo } from "react";
-import { DoubleSide, Vector2 } from "three";
-import { debug, tileSize } from "../ChunkGenerationSystem/config";
+import { splitIntoRandomGroups } from "src/lib/utils/randomGroups";
+import { Vector2 } from "three";
 import { poissonDiskSample } from "../../lib/utils/noise";
+import { debug } from "../ChunkGenerationSystem/config";
 import { SimpleGrassGroundPlane } from "../Helpers/SimpleGrassGroundPlane";
 
 export const TreeTile = ({
   size = 100,
   offset = new Vector2(0, 0),
 }: { size?: number; offset?: Vector2 } = {}) => {
-  const positions = useMemo(
-    () => poissonDiskSample(size, 3, 20, { offset }),
-    [size, offset]
-  );
+  const positions = useMemo(() => poissonDiskSample(size, 3, 20, { offset }), [size, offset]);
 
   const groups = splitIntoRandomGroups(positions, 5);
   const models = [

@@ -1,5 +1,5 @@
-import { DetailedHTMLProps, HTMLAttributes, useRef, useState } from "react";
 import { FaCheck, FaClipboard } from "@components/Icons";
+import { type DetailedHTMLProps, type HTMLAttributes, useRef, useState } from "react";
 
 export function CodeWithCopyButton({
   children,

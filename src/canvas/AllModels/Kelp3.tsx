@@ -7,8 +7,8 @@ title: SEAWEED For my Game
 */
 
 import { useGLTF } from "@react-three/drei";
-import { Mesh, MeshStandardMaterial } from "three";
-import { GLTF } from "three-stdlib";
+import type { Mesh, MeshStandardMaterial } from "three";
+import type { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -21,7 +21,7 @@ type GLTFResult = GLTF & {
 
 export function useKelp() {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/kelp3.glb"
+    "/3d-assets/kelp3.glb",
   ) as unknown as unknown as unknown as GLTFResult;
 
   return { nodes, materials };
@@ -29,20 +29,14 @@ export function useKelp() {
 
 export function Kelp3(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/kelp3.glb"
+    "/3d-assets/kelp3.glb",
   ) as unknown as unknown as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <group rotation={[-Math.PI / 2, 0, 0]}>
         <group position={[1.48, -6.99, 10.53]} rotation={[0.62, 0.21, 0.19]} />
-        <group
-          rotation={[Math.PI / 2, -Math.PI / 2, 0]}
-          scale={[-0.15, 1, 0.36]}
-        >
-          <mesh
-            geometry={nodes.Cube_0.geometry}
-            material={materials.Material}
-          />
+        <group rotation={[Math.PI / 2, -Math.PI / 2, 0]} scale={[-0.15, 1, 0.36]}>
+          <mesh geometry={nodes.Cube_0.geometry} material={materials.Material} />
         </group>
         <group position={[1.74, 6.27, 10.53]} rotation={[-0.9, 0.24, 0.19]} />
       </group>

@@ -4,18 +4,12 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
 import { useState } from "react";
 import { Vector2, Vector3 } from "three";
-import { Fishes } from "../Particles/Fishes/Scene";
 import { SingleKelpTile } from "./Kelp";
 
 export const Floor = () => {
   return (
     <RigidBody type="fixed" colliders="cuboid">
-      <Box
-        position={[0, -5, 0]}
-        scale={[200, 10, 200]}
-        rotation={[0, 0, 0]}
-        receiveShadow
-      >
+      <Box position={[0, -5, 0]} scale={[200, 10, 200]} rotation={[0, 0, 0]} receiveShadow>
         <meshBasicMaterial color="#7EC850" />
       </Box>
     </RigidBody>
@@ -26,10 +20,7 @@ export const viewDistance: number = 3;
 export const scale: number = 60;
 
 function computeChunkCoordinates(pos: Vector3) {
-  return new Vector2(
-    Math.floor(pos.x / scale) * scale,
-    Math.floor(pos.z / scale) * scale
-  );
+  return new Vector2(Math.floor(pos.x / scale) * scale, Math.floor(pos.z / scale) * scale);
 }
 
 const maxDistance = scale * (viewDistance !== 0 ? viewDistance : 1);
@@ -60,10 +51,7 @@ export function Terrain() {
     const chunksNeeded = [] as Vector2[];
     for (let x = -viewDistance; x <= viewDistance; x++) {
       for (let y = -viewDistance; y <= viewDistance; y++) {
-        const chunkPos = new Vector2(
-          x * scale + camPos.x,
-          y * scale + camPos.y
-        );
+        const chunkPos = new Vector2(x * scale + camPos.x, y * scale + camPos.y);
         const exists = chunks.find(({ offset }) => {
           return offset.x === chunkPos.x && offset.y === chunkPos.y;
         });
@@ -97,10 +85,7 @@ export function Terrain() {
 
       {Object.values(chunks).map((chunk) => {
         return (
-          <group
-            position={new Vector3(chunk.offset.x, 0, chunk.offset.y)}
-            key={chunk.id}
-          >
+          <group position={new Vector3(chunk.offset.x, 0, chunk.offset.y)} key={chunk.id}>
             <SingleKelpTile />
             <Plane />
           </group>

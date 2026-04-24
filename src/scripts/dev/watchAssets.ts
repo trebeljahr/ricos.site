@@ -18,26 +18,21 @@
  * NEVER deletes S3 objects. Deletions go through `npm run drift:fix`.
  */
 import "dotenv/config";
-import chokidar from "chokidar";
-import { readFile, writeFile, mkdir } from "fs/promises";
 import { dirname, relative, resolve } from "path";
-import { cwd } from "process";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
-import sharp from "sharp";
+import chokidar from "chokidar";
+import { mkdir, readFile, writeFile } from "fs/promises";
 import mime from "mime";
+import { cwd } from "process";
+import sharp from "sharp";
 import { createS3Client } from "src/lib/aws";
 
 const ASSETS_ROOT = resolve(cwd(), "src/content/Notes/assets");
-const METADATA_PATH = resolve(
-  cwd(),
-  "src/content/Notes/_data/metadata.json"
-);
+const METADATA_PATH = resolve(cwd(), "src/content/Notes/_data/metadata.json");
 const BUCKET = "images.trebeljahr.com";
 const IMAGE_RE = /\.(jpg|jpeg|png|webp|gif|avif)$/i;
 
-const IS_LOCAL =
-  (process.env.NEXT_PUBLIC_IMAGE_BACKEND ?? process.env.IMAGE_BACKEND) ===
-  "local";
+const IS_LOCAL = (process.env.NEXT_PUBLIC_IMAGE_BACKEND ?? process.env.IMAGE_BACKEND) === "local";
 const DEBOUNCE_MS = 800;
 
 type Metadata = Record<
@@ -69,9 +64,7 @@ function keyFor(absPath: string): string {
   return "assets/" + relative(ASSETS_ROOT, absPath);
 }
 
-async function getDimensions(
-  absPath: string
-): Promise<{ width: number; height: number } | null> {
+async function getDimensions(absPath: string): Promise<{ width: number; height: number } | null> {
   try {
     const m = await sharp(absPath).metadata();
     if (m.width && m.height) return { width: m.width, height: m.height };
@@ -84,7 +77,7 @@ async function getDimensions(
 async function uploadToS3(
   absPath: string,
   key: string,
-  dims: { width: number; height: number }
+  dims: { width: number; height: number },
 ): Promise<boolean> {
   try {
     const Body = await readFile(absPath);
@@ -99,7 +92,7 @@ async function uploadToS3(
           height: String(dims.height),
           aspectRatio: String(dims.width / dims.height),
         },
-      })
+      }),
     );
     return true;
   } catch (e) {
@@ -123,7 +116,7 @@ function schedule(absPath: string, handler: () => Promise<void>) {
       } catch (e) {
         console.error(`  [watch] handler error for ${absPath}:`, e);
       }
-    }, DEBOUNCE_MS)
+    }, DEBOUNCE_MS),
   );
 }
 
@@ -133,9 +126,7 @@ function queueMetaSave() {
   if (metaSaveTimer) clearTimeout(metaSaveTimer);
   metaSaveTimer = setTimeout(() => {
     metaSaveTimer = null;
-    saveMetadata(metadata).catch((e) =>
-      console.error("  [watch] metadata save failed:", e)
-    );
+    saveMetadata(metadata).catch((e) => console.error("  [watch] metadata save failed:", e));
   }, 200);
 }
 
@@ -146,8 +137,7 @@ async function handleUpsert(absPath: string) {
   if (!dims) return;
 
   const existing = metadata[key];
-  const sameDims =
-    existing && existing.width === dims.width && existing.height === dims.height;
+  const sameDims = existing && existing.width === dims.width && existing.height === dims.height;
 
   if (IS_LOCAL) {
     // No S3 upload in local mode — MinIO reads directly from the FS.

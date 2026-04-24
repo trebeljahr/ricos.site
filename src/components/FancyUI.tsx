@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { FaArrowRightLong } from "@components/Icons";
+import Link from "next/link";
 
 export const FancyButton = (props: JSX.IntrinsicElements["button"]) => {
   return (

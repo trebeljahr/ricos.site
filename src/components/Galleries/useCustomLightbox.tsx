@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { ClickHandler, Photo } from "react-photo-album";
-import { ImageProps } from "src/@types";
+import type { ClickHandler, Photo } from "react-photo-album";
+import type { ImageProps } from "src/@types";
 import Lightbox from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
@@ -61,7 +61,7 @@ export const useCustomLightbox = ({
   photos: (ImageProps & { id: string })[];
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState<number>(Infinity);
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(Number.POSITIVE_INFINITY);
 
   // When the photos array identity changes (e.g. navigating to a different
   // gallery page), reset the lightbox. Otherwise the previous page's open
@@ -72,7 +72,7 @@ export const useCustomLightbox = ({
     if (firstIdRef.current !== first) {
       firstIdRef.current = first;
       setIsModalOpen(false);
-      setCurrentImageIndex(Infinity);
+      setCurrentImageIndex(Number.POSITIVE_INFINITY);
     }
   }, [photos]);
 

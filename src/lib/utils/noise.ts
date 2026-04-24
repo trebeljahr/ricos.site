@@ -1,4 +1,4 @@
-import { createNoise2D, NoiseFunction2D } from "simplex-noise";
+import { type NoiseFunction2D, createNoise2D } from "simplex-noise";
 import {
   detailLevels,
   heightNoiseScale,
@@ -8,9 +8,9 @@ import {
 } from "src/canvas/ChunkGenerationSystem/config";
 
 import PoissonDiskSampling from "poisson-disk-sampling";
-import { Vector3 } from "three";
 // import { mkAlea } from "@spissvinkel/alea";
 import { alea } from "seedrandom";
+import { Vector3 } from "three";
 
 const SEED_VALUE = "1234567890";
 // const { random } = mkAlea(SEED_VALUE);
@@ -29,12 +29,9 @@ const scaleNoise = (func: NoiseFunction2D, scale: number) => {
 const heightNoise = createNoise2D(random);
 export const temperatureNoise = scaleNoise(
   normalizeNoise(createNoise2D(random)),
-  temperatureNoiseScale
+  temperatureNoiseScale,
 );
-export const moistureNoise = scaleNoise(
-  normalizeNoise(createNoise2D(random)),
-  moistureNoiseScale
-);
+export const moistureNoise = scaleNoise(normalizeNoise(createNoise2D(random)), moistureNoiseScale);
 
 export const sampleNoise = createNoise2D();
 
@@ -65,9 +62,9 @@ export function poissonDiskSample(
   {
     tries = 10,
     offset = { x: 0, y: 0 },
-  }: { tries?: number; offset?: { x: number; y: number } } = {}
+  }: { tries?: number; offset?: { x: number; y: number } } = {},
 ) {
-  let p = new PoissonDiskSampling({
+  const p = new PoissonDiskSampling({
     shape: [width, width],
     minDistance: min,
     maxDistance: max,
@@ -77,11 +74,8 @@ export function poissonDiskSample(
   const noiseScale = 0.005;
   const threshold = -0.2;
 
-  let points = p.fill().filter(([x, z]) => {
-    const noiseValue = sampleNoise(
-      (x + offset.x) * noiseScale,
-      (z + offset.y) * noiseScale
-    );
+  const points = p.fill().filter(([x, z]) => {
+    const noiseValue = sampleNoise((x + offset.x) * noiseScale, (z + offset.y) * noiseScale);
 
     if (noiseValue > threshold) {
       return true;

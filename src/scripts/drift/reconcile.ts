@@ -14,29 +14,18 @@
  *   npm run drift:fix -- --yes
  */
 import "dotenv/config";
+import { statSync } from "fs";
+import { dirname, extname, join } from "path";
+import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { readFile, writeFile } from "fs/promises";
+import { mkdir, rm } from "fs/promises";
 import inquirer from "inquirer";
 import { cwd } from "process";
-import { readFile, writeFile } from "fs/promises";
-import { join, extname, dirname } from "path";
-import { mkdir, rm } from "fs/promises";
-import { statSync, readdirSync } from "fs";
-import {
-  GetObjectCommand,
-  PutObjectCommand,
-} from "@aws-sdk/client-s3";
 import { createS3Client } from "src/lib/aws";
-import {
-  deleteObjects,
-  listAllObjects,
-  renameObject,
-} from "./lib/buckets";
-import {
-  hashLocalImages,
-  listLocalImages,
-  LOCAL_ASSETS_ROOT,
-} from "./lib/localAssets";
+import { deleteObjects, listAllObjects, renameObject } from "./lib/buckets";
 import { isUglyName, stripImageExt } from "./lib/hashing";
-import { DYNAMIC_PREFIXES, scanReferences } from "./lib/references";
+import { hashLocalImages, listLocalImages } from "./lib/localAssets";
+import { DYNAMIC_PREFIXES } from "./lib/references";
 
 const SOURCE_BUCKET = "images.trebeljahr.com";
 const RESIZED_BUCKET = "images.trebeljahr.com.resized";
@@ -65,9 +54,7 @@ async function loadState() {
 
 async function downloadKey(key: string, absDest: string) {
   const client = createS3Client();
-  const r = await client.send(
-    new GetObjectCommand({ Bucket: SOURCE_BUCKET, Key: key })
-  );
+  const r = await client.send(new GetObjectCommand({ Bucket: SOURCE_BUCKET, Key: key }));
   const buf = Buffer.from(await r.Body!.transformToByteArray());
   await mkdir(dirname(absDest), { recursive: true });
   await writeFile(absDest, buf);
@@ -99,14 +86,14 @@ async function uploadKey(absSrc: string, key: string) {
       Body,
       ContentType: mime.default.getType(absSrc) ?? undefined,
       Metadata: metadata,
-    })
+    }),
   );
 }
 
 // ---------- Step 1: local-only → upload ----------
 async function handleLocalOnly(
   localFiles: { key: string; abs: string }[],
-  sourceKeys: Set<string>
+  sourceKeys: Set<string>,
 ) {
   const localOnly = localFiles.filter((f) => !sourceKeys.has(f.key));
   if (!localOnly.length) {
@@ -132,17 +119,14 @@ async function handleLocalOnly(
 }
 
 // ---------- Step 2: source-only → download ----------
-async function handleSourceOnly(
-  source: { Key: string }[],
-  localKeys: Set<string>
-) {
+async function handleSourceOnly(source: { Key: string }[], localKeys: Set<string>) {
   const srcOnly = source
     .map((o) => o.Key)
     .filter(
       (k) =>
         !localKeys.has(k) &&
         !DYNAMIC_PREFIXES.some((p) => k.startsWith(p)) &&
-        !k.startsWith("favicon/")
+        !k.startsWith("favicon/"),
     );
   if (!srcOnly.length) {
     console.log("\n[2/4] source-only: none");
@@ -176,21 +160,21 @@ interface DupePlan {
   renameFrom?: string;
 }
 
-function pickCanonical(blogKey: string, photoMatches: string[]): {
+function pickCanonical(
+  blogKey: string,
+  photoMatches: string[],
+): {
   chosen: string;
   rename?: string;
 } {
   const topic = blogKey.split("/")[2];
   const base = blogKey.split("/").pop()!;
-  const inTopic = photoMatches.filter((p) =>
-    p.startsWith(`assets/photography/${topic}/`)
-  );
+  const inTopic = photoMatches.filter((p) => p.startsWith(`assets/photography/${topic}/`));
   const pool = inTopic.length ? inTopic : photoMatches;
   const sameBase = pool.find((p) => p.split("/").pop() === base);
   if (sameBase) return { chosen: sameBase };
   const nice = pool.filter((p) => !isUglyName(p));
-  if (nice.length)
-    return { chosen: nice.sort((a, b) => a.length - b.length)[0] };
+  if (nice.length) return { chosen: nice.sort((a, b) => a.length - b.length)[0] };
   // All matches ugly — rename one to the blog basename
   const ugly = pool.sort((a, b) => a.length - b.length)[0];
   const renameTarget = `assets/photography/${topic}/${base}`;
@@ -199,7 +183,7 @@ function pickCanonical(blogKey: string, photoMatches: string[]): {
 
 async function handleContentDupes(
   source: { Key: string; ETag: string }[],
-  localFiles: { key: string; abs: string }[]
+  localFiles: { key: string; abs: string }[],
 ) {
   console.log(`\n[3/4] content-dupe scan (blog ↔ photography)…`);
   const byHash = new Map<string, string[]>();
@@ -215,7 +199,7 @@ async function handleContentDupes(
     if (!f.key.startsWith("assets/blog/")) continue;
     const h = localHashes.get(f.key)!;
     const matches = (byHash.get(h) ?? []).filter(
-      (k) => k !== f.key && k.startsWith("assets/photography/")
+      (k) => k !== f.key && k.startsWith("assets/photography/"),
     );
     if (!matches.length) continue;
     const { chosen, rename } = pickCanonical(f.key, matches);
@@ -229,7 +213,7 @@ async function handleContentDupes(
     if (!o.Key.startsWith("assets/blog/")) continue;
     if (localKeys.has(o.Key)) continue;
     const matches = (byHash.get(o.ETag) ?? []).filter(
-      (k) => k !== o.Key && k.startsWith("assets/photography/")
+      (k) => k !== o.Key && k.startsWith("assets/photography/"),
     );
     if (!matches.length) continue;
     const { chosen, rename } = pickCanonical(o.Key, matches);
@@ -302,11 +286,7 @@ async function handleContentDupes(
     for (const e of entries) {
       const p = join(dir, e.name);
       if (e.isDirectory()) yield* walk(p);
-      else if (
-        [".md", ".mdx", ".ts", ".tsx", ".js", ".jsx", ".json"].includes(
-          extname(e.name)
-        )
-      )
+      else if ([".md", ".mdx", ".ts", ".tsx", ".js", ".jsx", ".json"].includes(extname(e.name)))
         yield p;
     }
   }
@@ -364,10 +344,7 @@ async function handleContentDupes(
       // already handled by rename (which deletes old)
     }
   }
-  const { deleted, errors } = await deleteObjects(
-    SOURCE_BUCKET,
-    toDeleteSource
-  );
+  const { deleted, errors } = await deleteObjects(SOURCE_BUCKET, toDeleteSource);
   if (errors.length) console.error("  delete errors:", errors.slice(0, 3));
   console.log(`  source bucket blog keys deleted: ${deleted}/${toDeleteSource.length}`);
 
@@ -375,10 +352,7 @@ async function handleContentDupes(
 }
 
 // ---------- Step 4: resized-bucket orphan cleanup ----------
-async function handleResizedOrphans(
-  source: { Key: string }[],
-  resized: { Key: string }[]
-) {
+async function handleResizedOrphans(source: { Key: string }[], resized: { Key: string }[]) {
   const sourceLogical = new Set(source.map((o) => stripImageExt(o.Key)));
   const orphans = resized
     .map((o) => o.Key)

@@ -1,21 +1,14 @@
-import {
-  debug,
-  tilesDistance,
-  tileSize,
-} from "@r3f/ChunkGenerationSystem/config";
-import { Sky, useHelper } from "@react-three/drei";
+import { debug, tileSize } from "@r3f/ChunkGenerationSystem/config";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useControls } from "leva";
-import { MutableRefObject, useEffect, useRef } from "react";
+import { type MutableRefObject, useEffect, useRef } from "react";
 import {
   CameraHelper,
-  DirectionalLight,
-  FogExp2,
-  Light,
+  type DirectionalLight,
+  type FogExp2,
+  type Light,
   PCFSoftShadowMap,
   Vector3,
 } from "three";
-import { Sky as SkyImpl } from "three-stdlib";
 
 export const OverheadLights = () => {
   const intensity = 10;
@@ -96,9 +89,7 @@ export const MovingSkyLight = () => {
   );
 };
 
-export default function useShadowHelper(
-  ref: MutableRefObject<Light | undefined>
-) {
+export default function useShadowHelper(ref: MutableRefObject<Light | undefined>) {
   const helper = useRef<CameraHelper>();
   const scene = useThree((state) => state.scene);
 

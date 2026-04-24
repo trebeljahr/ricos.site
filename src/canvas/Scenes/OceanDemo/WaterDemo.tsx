@@ -3,15 +3,14 @@ import Whale from "@r3f/AllModels/fish_pack/Whale";
 import { Sky } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
-import { Perf } from "r3f-perf";
 import { useEffect, useRef } from "react";
-import { Color, FogExp2, Group, Vector3 } from "three";
-import { Sky as SkyImpl } from "three-stdlib";
+import { Color, type FogExp2, type Group, Vector3 } from "three";
+import type { Sky as SkyImpl } from "three-stdlib";
 import { SwimmingController } from "../../Controllers/SwimmingController";
 import { FishType, Fishes } from "../Particles/Fishes/Scene";
 import { OceanSurface } from "./Ocean";
-import { UI } from "./OxygenBar";
 import { Terrain } from "./OceanFloor";
+import { UI } from "./OxygenBar";
 
 function MovingInCircle() {
   const whaleRef = useRef<Group>(null!);
@@ -67,27 +66,13 @@ export default function WaterDemo() {
       <Terrain />
 
       <Fishes position={new Vector3(-5, 10, 0)} />
-      <Fishes
-        position={new Vector3(10, 10, 0)}
-        fishType={FishType.BlueTang}
-        color="#7fe08f"
-      />
-      <Fishes
-        position={new Vector3(5, 10, 5)}
-        fishType={FishType.Manta}
-        color="#394e4d"
-      />
-      <Fishes
-        position={new Vector3(0, 10, 10)}
-        fishType={FishType.DoctorFish}
-        color="#1ea8ed"
-      />
+      <Fishes position={new Vector3(10, 10, 0)} fishType={FishType.BlueTang} color="#7fe08f" />
+      <Fishes position={new Vector3(5, 10, 5)} fishType={FishType.Manta} color="#394e4d" />
+      <Fishes position={new Vector3(0, 10, 10)} fishType={FishType.DoctorFish} color="#1ea8ed" />
 
       <MovingInCircle />
 
-      {!underwater && (
-        <Sky ref={skyRef} azimuth={1} inclination={0.6} distance={2000} />
-      )}
+      {!underwater && <Sky ref={skyRef} azimuth={1} inclination={0.6} distance={2000} />}
     </>
   );
 }

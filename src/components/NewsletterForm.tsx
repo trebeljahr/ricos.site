@@ -1,15 +1,15 @@
-import Link from "next/link";
-import { ChangeEvent, useRef, useState } from "react";
-import ConfettiExplosion, { ConfettiProps } from "react-confetti-explosion";
 import { FaCheckCircle } from "@components/Icons";
-import { ReactElement } from "react-markdown/lib/react-markdown";
+import Link from "next/link";
+import { type ChangeEvent, useRef, useState } from "react";
+import ConfettiExplosion, { type ConfettiProps } from "react-confetti-explosion";
+import type { ReactElement } from "react-markdown/lib/react-markdown";
 import { FancyButton } from "./FancyUI";
 import { SpinningLoader } from "./SpinningLoader";
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
   const response = await fetch(input, init);
   if (!response.ok || response.status !== 200) {
-    let err = new Error("HTTP status code: " + response.status + response);
+    const err = new Error("HTTP status code: " + response.status + response);
     throw err;
   }
   return await response.json();
@@ -79,16 +79,14 @@ export const NewsletterForm = ({
   const defaultText = (
     <>
       <p className="mb-4">
-        Join the Live and Learn Newsletter to receive digital postcards filled
-        with beauty, travel stories and links to nice things I have found, once
-        or twice a month. No spam, ever. You can unsubscribe at any time.
+        Join the Live and Learn Newsletter to receive digital postcards filled with beauty, travel
+        stories and links to nice things I have found, once or twice a month. No spam, ever. You can
+        unsubscribe at any time.
       </p>
     </>
   );
 
-  const defaultHeading = (
-    <h2 className="mt-0!">Subscribe to Live and Learn 🌱</h2>
-  );
+  const defaultHeading = <h2 className="mt-0!">Subscribe to Live and Learn 🌱</h2>;
 
   return (
     <div className="w-full mt-16">
@@ -104,8 +102,8 @@ export const NewsletterForm = ({
               <FaCheckCircle className="text-green-500 ml-2" />
             </h2>
             <p className="text-lg font-medium text-gray-800 dark:text-gray-100 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-md p-4">
-              Check your inbox and click the confirmation link to complete your
-              signup. If you don&apos;t see it, check your spam folder.
+              Check your inbox and click the confirmation link to complete your signup. If you
+              don&apos;t see it, check your spam folder.
             </p>
 
             {!link && defaultLink}
@@ -136,9 +134,7 @@ export const NewsletterForm = ({
                 required
                 autoComplete="email"
                 className={`pl-2 focus:outline-none w-1/2 bg-slate-100 dark:bg-gray-900  dark:text-white py-2.5 bg-inherit ${
-                  error
-                    ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                    : ""
+                  error ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
                 }`}
                 value={email}
                 placeholder="Type your email..."

@@ -1,6 +1,6 @@
 import { shaderMaterial } from "@react-three/drei";
-import { extend, ReactThreeFiber } from "@react-three/fiber";
-import { DoubleSide, Material, Texture } from "three";
+import { type ReactThreeFiber, extend } from "@react-three/fiber";
+import { DoubleSide, type Material, type Texture } from "three";
 import grassFragmentShader from "./shaders/grassFragmentShader.glsl";
 import grassVertexShader from "./shaders/grassVertexShader.glsl";
 
@@ -23,7 +23,7 @@ export const StylizedGrassMaterial = shaderMaterial(
 
     self.transparent = false;
     self.side = DoubleSide;
-  }
+  },
 );
 
 extend({ StylizedGrassMaterial });

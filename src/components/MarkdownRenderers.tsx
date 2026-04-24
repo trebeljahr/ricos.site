@@ -1,17 +1,14 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
+import clsx from "clsx";
 import Link from "next/link";
-import { AnchorHTMLAttributes, HTMLAttributes, ImgHTMLAttributes } from "react";
+import type { AnchorHTMLAttributes, ImgHTMLAttributes } from "react";
+import { resolveAlt } from "src/lib/imageAlt";
+import { CalloutBody, CalloutRoot, CalloutTitle } from "./Callouts";
+import { CodeWithCopyButton } from "./CodeCopyButton";
 import { ExternalLink } from "./ExternalLink";
 import { SimpleGallery } from "./Galleries";
-import { CodeWithCopyButton } from "./CodeCopyButton";
-import clsx from "clsx";
-import { CalloutBody, CalloutRoot, CalloutTitle } from "./Callouts";
-import { resolveAlt } from "src/lib/imageAlt";
 
-export const ImageRenderer = ({
-  src,
-  alt,
-}: ImgHTMLAttributes<HTMLImageElement>) => {
+export const ImageRenderer = ({ src, alt }: ImgHTMLAttributes<HTMLImageElement>) => {
   if (!src) return null;
 
   // Strip embedded `/width: X /height: Y /` metadata but keep the rest as
@@ -34,8 +31,8 @@ export const ImageRenderer = ({
           src={src}
           alt={realAlt}
           priority={!!isPriority}
-          width={parseFloat(width)}
-          height={parseFloat(height)}
+          width={Number.parseFloat(width)}
+          height={Number.parseFloat(height)}
           sizes="(max-width: 768px) calc(100vw-24px), 65ch"
           style={{ width: "100%", height: "auto" }}
         />

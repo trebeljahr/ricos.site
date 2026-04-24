@@ -1,14 +1,14 @@
-import { splitIntoRandomGroups } from "src/lib/utils/randomGroups";
 import { InstancedBirchTree1 } from "@r3f/AllModels/nature_pack/BirchTree_1";
 import { InstancedBush2 } from "@r3f/AllModels/nature_pack/Bush_2";
 import { InstancedCommonTree5 } from "@r3f/AllModels/nature_pack/CommonTree_5";
 import { InstancedPineTree1 } from "@r3f/AllModels/nature_pack/PineTree_1";
 import { InstancedWillow1 } from "@r3f/AllModels/nature_pack/Willow_1";
 import { useMemo, useRef } from "react";
+import { splitIntoRandomGroups } from "src/lib/utils/randomGroups";
 import { Vector2, Vector3 } from "three";
-import { ChunkMap } from "../ChunkGenerationSystem/ChunkProvider";
-import { tileSize } from "../ChunkGenerationSystem/config";
 import { poissonDiskSample } from "../../lib/utils/noise";
+import type { ChunkMap } from "../ChunkGenerationSystem/ChunkProvider";
+import { tileSize } from "../ChunkGenerationSystem/config";
 
 export const Forest = ({ chunks }: { chunks: ChunkMap }) => {
   const positionsRef = useRef<Record<string, Vector3[][]>>({});
@@ -27,13 +27,9 @@ export const Forest = ({ chunks }: { chunks: ChunkMap }) => {
     const currentChunkKeys = new Set(chunks.keys());
     const prevChunkKeys = prevChunksRef.current;
 
-    const newChunkKeys = Array.from(currentChunkKeys).filter(
-      (key) => !prevChunkKeys.has(key)
-    );
+    const newChunkKeys = Array.from(currentChunkKeys).filter((key) => !prevChunkKeys.has(key));
 
-    const removedChunks = Array.from(prevChunkKeys).filter(
-      (key) => !currentChunkKeys.has(key)
-    );
+    const removedChunks = Array.from(prevChunkKeys).filter((key) => !currentChunkKeys.has(key));
 
     prevChunksRef.current = currentChunkKeys;
 
@@ -50,19 +46,15 @@ export const Forest = ({ chunks }: { chunks: ChunkMap }) => {
 
       const groups = splitIntoRandomGroups(
         newPositions.map(
-          (pos) =>
-            new Vector3(pos.x + chunk.position.x, 0, pos.z + chunk.position.z)
+          (pos) => new Vector3(pos.x + chunk.position.x, 0, pos.z + chunk.position.z),
         ),
-        5
+        5,
       );
 
       positionsRef.current[chunkId] = groups;
     });
 
-    const mergedGroups: Vector3[][] = Array.from(
-      { length: models.length },
-      () => []
-    );
+    const mergedGroups: Vector3[][] = Array.from({ length: models.length }, () => []);
 
     Object.values(positionsRef.current).forEach((chunkGroups) => {
       chunkGroups.forEach((group, groupIndex) => {

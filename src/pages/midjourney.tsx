@@ -1,9 +1,9 @@
-import Layout from "@components/Layout";
 import { InfiniteScrollGallery } from "@components/Galleries";
+import Layout from "@components/Layout";
 import { ToTopButton } from "@components/ToTopButton";
-import { ImageProps } from "src/@types";
+import type { ImageProps } from "src/@types";
+import type { SeoInfo } from "src/lib/getSeoInfo";
 import { getDataFromMetadata } from "src/lib/imageMetadata";
-import { SeoInfo } from "src/lib/getSeoInfo";
 
 export default function MidjourneyGallery({
   images,

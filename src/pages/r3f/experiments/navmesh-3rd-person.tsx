@@ -1,21 +1,21 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { enemyQuery, playerQuery } from "@r3f/AI/ecs";
 import { NavmeshDebug, NavmeshEcs } from "@r3f/AI/NavmeshWithEcs";
 import { Agent } from "@r3f/AI/RigidBodyAgent";
+import { enemyQuery, playerQuery } from "@r3f/AI/ecs";
 import { MixamoEcctrlControllerWithAnimations } from "@r3f/Controllers/CustomEcctrlController/ControllerWithAnimations";
 import { RandomSkeletonWithRandomWeapons } from "@r3f/Dungeon/BuildingBlocks/SkeletonEnemy";
 
-import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
+import { type FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
 import { FloorWithPhysics } from "@r3f/Helpers/PhysicsFloor";
 
 import { useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { useState } from "react";
 import { init as initRecast } from "recast-navigation";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 import { suspend } from "suspend-react";
 import { DoubleSide, Vector3 } from "three";
-import { RayParameters } from "three-stdlib";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import type { RayParameters } from "three-stdlib";
 
 const defaultSeoInfo = {
   title: "Navmesh 3rd Person Controller",
@@ -88,8 +88,7 @@ const SingleLightningStrike = ({
       vec2Forward.copy(vec1Pos).normalize();
 
       vec1Pos.multiplyScalar(
-        segment.fraction0 +
-          (1 - segment.fraction0) * ((2 * randomFn() - 1) * heightFactor)
+        segment.fraction0 + (1 - segment.fraction0) * ((2 * randomFn() - 1) * heightFactor),
       );
       const length = vec1Pos.length();
 
@@ -110,9 +109,7 @@ const SingleLightningStrike = ({
         .copy(vec3Side)
         .add(vec4Up)
         .multiplyScalar(
-          length *
-            sideWidthFactor *
-            (minSideWidthFactor + randomFn() * (1 - minSideWidthFactor))
+          length * sideWidthFactor * (minSideWidthFactor + randomFn() * (1 - minSideWidthFactor)),
         )
         .add(blendedDirection.multiplyScalar(length))
         .add(segment.pos0);

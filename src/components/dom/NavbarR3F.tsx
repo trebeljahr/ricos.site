@@ -1,8 +1,8 @@
 import { RicosSiteBanner } from "@components/Navbar/TailwindNavbar";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { toLinksFromNameUrlTuples } from "src/lib/toLinks";
 import data from "../../../.velite/r3f-links.json";
-import { toLinks, toLinksFromNameUrlTuples } from "src/lib/toLinks";
 
 const sideStyle =
   "z-1500 absolute overflow-x-hidden overflow-y-auto text-sm w-72 bg-leva-dark h-screen  transform transition-all fixed duration-700 text-leva-white p-2 top-0 left-0";

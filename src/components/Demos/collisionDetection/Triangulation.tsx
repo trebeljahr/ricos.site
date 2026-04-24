@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+import { useEffect, useState } from "react";
 
+import { Polygon } from "../../../lib/math/Poly";
+import { Vec2 } from "../../../lib/math/Vector";
 import {
+  checkCollision,
+  drawBackground,
+  getResponseForCollision,
   initPolygons,
   instrument,
   niceGreen,
   starPoints,
-  checkCollision,
-  drawBackground,
-  getResponseForCollision,
 } from "../../../lib/math/drawHelpers";
-import { Polygon } from "../../../lib/math/Poly";
-import { Vec2 } from "../../../lib/math/Vector";
 export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
 
@@ -27,10 +27,7 @@ export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
     const ctx = cnv.getContext("2d");
     if (!ctx) return;
 
-    const [poly1, poly2] = initPolygons(
-      ctx,
-      new Polygon(starPoints(), niceGreen)
-    );
+    const [poly1, poly2] = initPolygons(ctx, new Polygon(starPoints(), niceGreen));
 
     poly1.centerOnPoint(new Vec2(cnv.clientWidth / 2, cnv.clientHeight / 2));
     poly2.centerOnPoint(new Vec2(cnv.clientWidth / 2, cnv.clientHeight / 2));

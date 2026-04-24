@@ -25,7 +25,7 @@ type Props = {
 const NowMDX = ({ code, frontmatter }: { code: string; frontmatter: Record<string, unknown> }) => {
   const Component = useMemo(
     () => getMDXComponent(code, { ...frontmatter, frontmatter }),
-    [code, frontmatter]
+    [code, frontmatter],
   );
   return <Component components={MarkdownRenderers} />;
 };
@@ -40,8 +40,8 @@ const DiffView = ({ diff }: { diff: DiffLine[] }) => {
             line.type === "added"
               ? "bg-green-50 dark:bg-green-950/40 text-green-800 dark:text-green-300"
               : line.type === "removed"
-              ? "bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-300"
-              : "text-gray-600 dark:text-gray-400"
+                ? "bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-300"
+                : "text-gray-600 dark:text-gray-400"
           }
         >
           <span className="inline-block w-6 text-center select-none opacity-50">
@@ -166,9 +166,7 @@ export default function NowHistory({ entries }: Props) {
           )}
 
           {entries.length === 0 && (
-            <div className="text-gray-500">
-              No history available yet. Check back later!
-            </div>
+            <div className="text-gray-500">No history available yet. Check back later!</div>
           )}
         </article>
 
@@ -215,14 +213,8 @@ export async function getStaticProps() {
 
   // Compute diffs between consecutive versions (newest to oldest)
   for (let i = 0; i < entries.length - 1; i++) {
-    const currentRaw = readFileSync(
-      resolve(HISTORY_DIR, `${entries[i].date}.md`),
-      "utf-8"
-    );
-    const previousRaw = readFileSync(
-      resolve(HISTORY_DIR, `${entries[i + 1].date}.md`),
-      "utf-8"
-    );
+    const currentRaw = readFileSync(resolve(HISTORY_DIR, `${entries[i].date}.md`), "utf-8");
+    const previousRaw = readFileSync(resolve(HISTORY_DIR, `${entries[i + 1].date}.md`), "utf-8");
 
     const changes = diffLines(previousRaw, currentRaw);
     const diffResult: DiffLine[] = [];

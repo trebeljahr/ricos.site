@@ -1,3 +1,9 @@
+import {
+  GetObjectCommand,
+  HeadObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 /**
  * Local image resize + cache — the dev-time replacement for the
  * CloudFront → ImgTransformationStack Lambda pipeline.
@@ -24,21 +30,13 @@
  * Only runs when NEXT_PUBLIC_IMAGE_BACKEND=local. In prod it's dead code.
  */
 import type { NextApiRequest, NextApiResponse } from "next";
-import {
-  GetObjectCommand,
-  HeadObjectCommand,
-  PutObjectCommand,
-  S3Client,
-} from "@aws-sdk/client-s3";
 import sharp from "sharp";
 import { imageSizes } from "src/lib/mapToImageProps";
 
 const SOURCE_BUCKET = "images.trebeljahr.com";
 const RESIZED_BUCKET = "images.trebeljahr.com.resized";
 
-const ENDPOINT =
-  process.env.S3_ENDPOINT ??
-  `http://localhost:${process.env.S3_API_PORT ?? "9200"}`;
+const ENDPOINT = process.env.S3_ENDPOINT ?? `http://localhost:${process.env.S3_API_PORT ?? "9200"}`;
 
 // Hybrid fallback: if the source image isn't on disk locally, fall back to
 // the deployed CloudFront URL. Lets dev keep working when only some images
@@ -90,15 +88,11 @@ async function bucketHas(bucket: string, key: string): Promise<boolean> {
  * return the raw bytes. Matches how the prod Lambda resolves ext-less
  * CloudFront URLs back to stored objects.
  */
-async function readSource(
-  logicalKey: string
-): Promise<Buffer | null> {
+async function readSource(logicalKey: string): Promise<Buffer | null> {
   for (const ext of SOURCE_EXTS) {
     const candidate = `${logicalKey}.${ext}`;
     try {
-      const r = await client.send(
-        new GetObjectCommand({ Bucket: SOURCE_BUCKET, Key: candidate })
-      );
+      const r = await client.send(new GetObjectCommand({ Bucket: SOURCE_BUCKET, Key: candidate }));
       if (!r.Body) continue;
       return await streamToBuffer(r.Body as any);
     } catch (e: any) {
@@ -111,9 +105,7 @@ async function readSource(
 }
 
 async function readResized(key: string): Promise<Buffer> {
-  const r = await client.send(
-    new GetObjectCommand({ Bucket: RESIZED_BUCKET, Key: key })
-  );
+  const r = await client.send(new GetObjectCommand({ Bucket: RESIZED_BUCKET, Key: key }));
   if (!r.Body) throw new Error("empty body");
   return streamToBuffer(r.Body as any);
 }
@@ -125,7 +117,7 @@ async function writeResized(key: string, body: Buffer): Promise<void> {
       Key: key,
       Body: body,
       ContentType: "image/webp",
-    })
+    }),
   );
 }
 
@@ -138,17 +130,14 @@ function parseSlug(slug: string[] | undefined): {
   const last = slug[slug.length - 1];
   const match = last.match(/^(\d+)\.webp$/);
   if (!match) return null;
-  const width = parseInt(match[1], 10);
+  const width = Number.parseInt(match[1], 10);
   if (!imageSizes.includes(width)) return null;
   const logicalKey = slug.slice(0, -1).join("/");
   const variantKey = `${logicalKey}/${last}`;
   return { variantKey, logicalKey, width };
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const parsed = parseSlug(req.query.slug as string[]);
   if (!parsed) {
     res.status(400).send("bad image url");
@@ -180,15 +169,11 @@ export default async function handler(
           res.setHeader("Content-Type", "image/webp");
           res.setHeader("X-Image-Cache", "CLOUDFRONT-FALLBACK");
           res.setHeader("Cache-Control", "public, max-age=3600");
-          console.warn(
-            `[/api/img] local miss, served from CloudFront: ${logicalKey}`,
-          );
+          console.warn(`[/api/img] local miss, served from CloudFront: ${logicalKey}`);
           res.status(200).send(buf);
           return;
         }
-        console.warn(
-          `[/api/img] local miss AND CloudFront ${upstream.status}: ${logicalKey}`,
-        );
+        console.warn(`[/api/img] local miss AND CloudFront ${upstream.status}: ${logicalKey}`);
       }
       res.status(404).send(`source not found for ${logicalKey}`);
       return;

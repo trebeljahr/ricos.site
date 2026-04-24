@@ -29,11 +29,7 @@ export const Loader = ({ className = "" }: LoaderProps) => {
       <div className="max-w-md w-full px-4">
         <div className="mb-4 text-center text-white">
           <h2 className="text-2xl font-bold">Loading 3D Scene</h2>
-          {item && (
-            <p className="text-sm text-gray-400 mt-1 truncate max-w-xs mx-auto">
-              {item}
-            </p>
-          )}
+          {item && <p className="text-sm text-gray-400 mt-1 truncate max-w-xs mx-auto">{item}</p>}
         </div>
 
         <div className="w-full bg-gray-700 rounded-full h-2.5">

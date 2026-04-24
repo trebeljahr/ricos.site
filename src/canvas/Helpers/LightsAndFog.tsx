@@ -1,6 +1,5 @@
-import { tilesDistance, tileSize } from "@r3f/ChunkGenerationSystem/config";
-import { ColorProps } from "@react-three/fiber";
-import { ColorRepresentation } from "three";
+import { tileSize, tilesDistance } from "@r3f/ChunkGenerationSystem/config";
+import type { ColorRepresentation } from "three";
 import { OverheadLights } from "./OverheadLights";
 
 export const LightsAndFog = ({

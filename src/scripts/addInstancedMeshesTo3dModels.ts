@@ -78,7 +78,7 @@ fs.readdir(folderPath, (err, files) => {
     // We assume a 1-to-1 mapping by order – adjust if needed.
     if (nodeKeys.length !== materialKeys.length) {
       console.warn(
-        `The number of node keys and material keys do not match in ${file}. Skipping file.`
+        `The number of node keys and material keys do not match in ${file}. Skipping file.`,
       );
       return;
     }

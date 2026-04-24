@@ -1,7 +1,7 @@
 import { PointerLockControls, useKeyboardControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { RapierRigidBody, RigidBody } from "@react-three/rapier";
-import { PropsWithChildren, useEffect, useRef } from "react";
+import { type RapierRigidBody, RigidBody } from "@react-three/rapier";
+import { type PropsWithChildren, useEffect, useRef } from "react";
 import { Vector3 } from "three";
 import { clamp, lerp } from "three/src/math/MathUtils";
 
@@ -31,8 +31,7 @@ export function SwimmingController({ children }: PropsWithChildren) {
   useFrame((_, delta) => {
     if (!rigidBodyRef.current) return;
 
-    const { forward, backward, leftward, rightward, jump, descend, sprint } =
-      get();
+    const { forward, backward, leftward, rightward, jump, descend, sprint } = get();
 
     const { x, y, z } = rigidBodyRef.current.translation();
     camera.position.set(x, y, z);
@@ -46,7 +45,7 @@ export function SwimmingController({ children }: PropsWithChildren) {
     speedFactor.current = lerp(
       speedFactor.current,
       desiredSpeed,
-      clamp(0, 1, lerpConstant.current)
+      clamp(0, 1, lerpConstant.current),
     );
 
     direction
@@ -56,10 +55,7 @@ export function SwimmingController({ children }: PropsWithChildren) {
       .normalize()
       .multiplyScalar(SPEED * speedFactor.current);
 
-    rigidBodyRef.current.setLinvel(
-      { x: direction.x, y: direction.y, z: direction.z },
-      true
-    );
+    rigidBodyRef.current.setLinvel({ x: direction.x, y: direction.y, z: direction.z }, true);
   });
 
   return (

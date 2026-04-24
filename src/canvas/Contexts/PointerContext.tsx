@@ -1,11 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import {
-  createContext,
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useRef,
-} from "react";
+import { type PropsWithChildren, createContext, useContext, useEffect, useRef } from "react";
 
 const defaultPointerState = {
   deltaTemp: { x: 0, y: 0 },
@@ -26,11 +20,7 @@ export const usePointerContext = () => {
 export const PointerContextProvider = ({ children }: PropsWithChildren) => {
   const pointer = usePointerState();
 
-  return (
-    <PointerContext.Provider value={pointer}>
-      {children}
-    </PointerContext.Provider>
-  );
+  return <PointerContext.Provider value={pointer}>{children}</PointerContext.Provider>;
 };
 
 export const usePointerState = () => {

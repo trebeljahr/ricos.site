@@ -1,7 +1,6 @@
-import { useRef, useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
-import { GLTF } from "three-stdlib";
-import { Color, Mesh, MeshStandardMaterial } from "three";
+import type { Mesh, MeshStandardMaterial } from "three";
+import type { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -18,22 +17,13 @@ type GLTFResult = GLTF & {
 
 export function MagicWand(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/weapons/Magick wand-transformed.glb"
+    "/3d-assets/glb/weapons/Magick wand-transformed.glb",
   ) as unknown as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
-      <mesh
-        geometry={nodes.group1762687703.geometry}
-        material={materials.mat2}
-      />
-      <mesh
-        geometry={nodes.mesh2096346305.geometry}
-        material={materials.mat20}
-      />
-      <mesh
-        geometry={nodes.mesh2096346305_1.geometry}
-        material={materials.mat17}
-      />
+      <mesh geometry={nodes.group1762687703.geometry} material={materials.mat2} />
+      <mesh geometry={nodes.mesh2096346305.geometry} material={materials.mat20} />
+      <mesh geometry={nodes.mesh2096346305_1.geometry} material={materials.mat17} />
     </group>
   );
 }

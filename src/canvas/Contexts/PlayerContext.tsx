@@ -2,7 +2,7 @@ import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { vec3 } from "gl-matrix";
-import { createContext, PropsWithChildren, useContext, useRef } from "react";
+import { type PropsWithChildren, createContext, useContext, useRef } from "react";
 import { useThirdPersonCameraContext } from "./ThirdPersonCameraContext";
 
 const initial = vec3.fromValues(10, 0, 1);
@@ -28,9 +28,7 @@ export const usePlayerContext = () => {
 export const PlayerContextProvider = ({ children }: PropsWithChildren) => {
   const pointer = usePlayer();
 
-  return (
-    <PlayerContext.Provider value={pointer}>{children}</PlayerContext.Provider>
-  );
+  return <PlayerContext.Provider value={pointer}>{children}</PlayerContext.Provider>;
 };
 
 const usePlayer = () => {
@@ -41,13 +39,7 @@ const usePlayer = () => {
   const thirdPersonCamera = useThirdPersonCameraContext();
 
   useFrame((_, delta) => {
-    const {
-      forward,
-      backward,
-      leftward: strafeLeft,
-      rightward: strafeRight,
-      run: boost,
-    } = get();
+    const { forward, backward, leftward: strafeLeft, rightward: strafeRight, run: boost } = get();
 
     const player = playerRef.current;
 
@@ -84,10 +76,7 @@ const usePlayer = () => {
     }
 
     // Update elevation BEFORE computing delta so Y is consistent
-    const { height } = getHeight(
-      position.current[0],
-      position.current[2]
-    );
+    const { height } = getHeight(position.current[0], position.current[2]);
     position.current[1] = height;
 
     vec3.sub(position.delta, position.current, position.previous);

@@ -7,17 +7,14 @@
  * were added to the Notes submodule but metadata.json wasn't refreshed.
  */
 import "dotenv/config";
-import { readFile, writeFile } from "fs/promises";
 import { resolve } from "path";
-import { cwd } from "process";
-import chokidar from "chokidar";
-import sharp from "sharp";
 import { relative } from "path";
+import chokidar from "chokidar";
+import { readFile, writeFile } from "fs/promises";
+import { cwd } from "process";
+import sharp from "sharp";
 
-const METADATA_PATH = resolve(
-  cwd(),
-  "src/content/Notes/_data/metadata.json",
-);
+const METADATA_PATH = resolve(cwd(), "src/content/Notes/_data/metadata.json");
 const ASSETS_ROOT = resolve(cwd(), "src/content/Notes/assets");
 const IMAGE_RE = /\.(jpg|jpeg|png|webp|gif|avif)$/i;
 

@@ -1,9 +1,5 @@
 import { NavbarR3F } from "@components/dom/NavbarR3F";
-import {
-  SceneWithLoadingState,
-  SeoInfo,
-} from "@components/dom/ThreeFiberLayout";
-import { getSeoInfo, SeoInfo as SeoInfoType } from "src/lib/getSeoInfo";
+import { SceneWithLoadingState, SeoInfo } from "@components/dom/ThreeFiberLayout";
 import {
   Arch,
   Column2,
@@ -18,13 +14,14 @@ import {
   Sword_WallMount,
   Trap_empty,
   Trap_spikes,
-  Wall_Modular,
   WallCover_Modular,
+  Wall_Modular,
   Woodfire,
 } from "@r3f/AllModels/modular_dungeon_pack_1";
 import { debug } from "@r3f/ChunkGenerationSystem/config";
 import { HealthContextProvider } from "@r3f/Contexts/HealthbarContext";
 import { MixamoEcctrlControllerWithAnimations } from "@r3f/Controllers/CustomEcctrlController/ControllerWithAnimations";
+import { type SeoInfo as SeoInfoType, getSeoInfo } from "src/lib/getSeoInfo";
 
 import { BackgroundMusicLoop } from "@r3f/Dungeon/BuildingBlocks/BackgroundMusic";
 import { Enemies } from "@r3f/Dungeon/BuildingBlocks/Enemies";
@@ -42,7 +39,7 @@ import { useThree } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import { LevaPanel } from "leva";
 import { Suspense, useEffect, useRef } from "react";
-import { DirectionalLight, Mesh, PCFSoftShadowMap } from "three";
+import { type DirectionalLight, Mesh, PCFSoftShadowMap } from "three";
 
 const CanvasContent = () => {
   const lightRef = useRef<DirectionalLight>(null!);
@@ -69,27 +66,15 @@ const CanvasContent = () => {
   return (
     <>
       {items.map((_, i) => (
-        <RandomWeaponsSpawner
-          key={i}
-          position={[i * 5, 0, -20]}
-          respawnTime={2000}
-        />
+        <RandomWeaponsSpawner key={i} position={[i * 5, 0, -20]} respawnTime={2000} />
       ))}
 
       {items.map((_, i) => (
-        <RandomPotionSpawner
-          key={i}
-          position={[i * 5, 0, -25]}
-          respawnTime={2000}
-        />
+        <RandomPotionSpawner key={i} position={[i * 5, 0, -25]} respawnTime={2000} />
       ))}
 
       {items.map((_, i) => (
-        <RandomArmorSpawner
-          key={i}
-          position={[i * 5, 0, -30]}
-          respawnTime={2000}
-        />
+        <RandomArmorSpawner key={i} position={[i * 5, 0, -30]} respawnTime={2000} />
       ))}
 
       <BackgroundMusicLoop />
@@ -98,11 +83,7 @@ const CanvasContent = () => {
       <SpikeTrap />
 
       <Sky />
-      <directionalLight
-        ref={lightRef}
-        args={["#ffffff", 5]}
-        position={[20, 10, 20]}
-      />
+      <directionalLight ref={lightRef} args={["#ffffff", 5]} position={[20, 10, 20]} />
       <ambientLight args={["#404040", 2]} />
       <group position={[0, 0, -1]}>
         <Floor_Modular position-x={-3} />
@@ -207,11 +188,7 @@ const CanvasContent = () => {
 
       <RigidBody position={[0, -1, 0]} colliders={"cuboid"} type={"fixed"}>
         <Box args={[100, 2, 100]} position={[0, -0.1, 0]} receiveShadow={true}>
-          <meshStandardMaterial
-            color={"#959393"}
-            roughness={0.9}
-            metalness={0.1}
-          />
+          <meshStandardMaterial color={"#959393"} roughness={0.9} metalness={0.1} />
         </Box>
       </RigidBody>
     </>
@@ -248,18 +225,9 @@ const defaultSeoInfo = {
   description:
     "This testbed is for experimenting with gaming features such as inventory, enemies, and traps in R3F. It has lots of things going on and interact with, so have fun!",
   url: "/r3f/experiments/gaming-testbed",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/gaming-testbed.png",
-  imageAlt:
-    "an image of a 3D model of a character with a sword attacking a wizard skeleton",
+  imageAlt: "an image of a 3D model of a character with a sword attacking a wizard skeleton",
 };
 
 export default function Page({ seo }: { seo: SeoInfoType | null }) {
@@ -281,9 +249,7 @@ export default function Page({ seo }: { seo: SeoInfoType | null }) {
         <InventoryProvider maxSlots={28} maxWeight={100}>
           <Inventory />
 
-          <SceneWithLoadingState
-            camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}
-          >
+          <SceneWithLoadingState camera={{ position: [0, 10, 0], near: 0.1, far: 1000 }}>
             <Scene />
           </SceneWithLoadingState>
         </InventoryProvider>

@@ -2,17 +2,13 @@ import { ChunkPositionUpdater } from "@r3f/InstancedMeshSystem/ChunkPositionUpda
 import { useInstancedMeshMultiMaterial } from "@r3f/InstancedMeshSystem/useInstancedMesh2multiMaterial";
 
 const InstancedMeshForChunks = ({ modelPath }: { modelPath: string }) => {
-  const { InstancedMesh, addPositions, removePositions } =
-    useInstancedMeshMultiMaterial({
-      modelPath,
-    });
+  const { InstancedMesh, addPositions, removePositions } = useInstancedMeshMultiMaterial({
+    modelPath,
+  });
 
   return (
     <>
-      <ChunkPositionUpdater
-        addPositions={addPositions}
-        removePositions={removePositions}
-      />
+      <ChunkPositionUpdater addPositions={addPositions} removePositions={removePositions} />
       <InstancedMesh />
     </>
   );

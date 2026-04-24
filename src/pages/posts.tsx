@@ -4,8 +4,8 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
 import { OtherPostsPreview } from "@components/PostPreview";
 import { ToTopButton } from "@components/ToTopButton";
-import { CommonMetadata } from "src/@types";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import type { CommonMetadata } from "src/@types";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
@@ -19,26 +19,22 @@ const Posts = ({ posts, seo }: Props) => {
   return (
     <Layout
       title={seo?.metaTitle || "Posts"}
-      description={seo?.metaDescription || "An overview page about all the posts that I have written so far on ricos.site, ordered by the date that they were published."}
-      image={seo?.ogImage || "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg"}
+      description={
+        seo?.metaDescription ||
+        "An overview page about all the posts that I have written so far on ricos.site, ordered by the date that they were published."
+      }
+      image={
+        seo?.ogImage || "/assets/midjourney/a-hand-writing-down-thoughts-on-a-piece-of-paper.jpg"
+      }
       url={url}
       imageAlt={seo?.ogImageAlt || "a hand writing down thoughts on a piece of paper"}
-      keywords={seo?.keywords || [
-        "posts",
-        "writings",
-        "thoughts",
-        "essays",
-        "life",
-      ]}
+      keywords={seo?.keywords || ["posts", "writings", "thoughts", "essays", "life"]}
     >
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
 
         <section>
-          <Header
-            title="Posts"
-            subtitle="Longer Form Essays about Tech and Self-Improvement"
-          />
+          <Header title="Posts" subtitle="Longer Form Essays about Tech and Self-Improvement" />
           <OtherPostsPreview posts={posts} />
         </section>
 

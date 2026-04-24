@@ -1,24 +1,15 @@
 import { useGenericAnimationController } from "@r3f/Controllers/GenericAnimationController";
 import { CommonActions } from "@r3f/Dungeon/BuildingBlocks/CommonEnemy";
 import {
+  type SkeletonActionName,
+  type SkeletonEnemyProps,
   mapCommonActionToSkeletonAction,
-  SkeletonActionName,
-  SkeletonEnemyProps,
 } from "@r3f/Dungeon/BuildingBlocks/SkeletonEnemy";
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
-import {
-  AnimationClip,
-  Bone,
-  Group,
-  Mesh,
-  MeshStandardMaterial,
-  Object3D,
-  SkinnedMesh,
-} from "three";
-import { GLTF, SkeletonUtils } from "three-stdlib";
-import { SkeletonStaff } from "../weapons/staff-6";
+import type { AnimationClip, Bone, Group, Mesh, MeshStandardMaterial, SkinnedMesh } from "three";
+import { type GLTF, SkeletonUtils } from "three-stdlib";
 interface GLTFAction extends AnimationClip {
   name: SkeletonActionName;
 }
@@ -49,9 +40,7 @@ export function SkeletonWarrior({
   ...props
 }: SkeletonEnemyProps) {
   const group = useRef<Group>(null!);
-  const { scene, animations } = useGLTF(
-    "/3d-assets/glb/enemies/Skeleton Warrior-transformed.glb"
-  );
+  const { scene, animations } = useGLTF("/3d-assets/glb/enemies/Skeleton Warrior-transformed.glb");
 
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;

@@ -1,6 +1,6 @@
 import { useSubscribeToKeyPress } from "@hooks/useKeyboardInput";
 import { useThree } from "@react-three/fiber";
-import { Euler, PerspectiveCamera, Quaternion, Vector3 } from "three";
+import { Euler, Quaternion, Vector3 } from "three";
 
 const temp = new Vector3();
 const tempQuaternion = new Quaternion();

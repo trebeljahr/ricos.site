@@ -1,9 +1,9 @@
 import { useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
+import { type Mesh, Object3D, Raycaster, Vector3 } from "three";
 import type { camListenerTargetType } from "./Controller";
-import { Mesh, Object3D, Raycaster, Vector3 } from "three";
 
-export const useFollowCam = function ({
+export const useFollowCam = ({
   disableFollowCam = false,
   disableFollowCamPos = undefined,
   disableFollowCamTarget = undefined,
@@ -19,7 +19,7 @@ export const useFollowCam = function ({
   camCollisionSpeedMult = 4,
   camListenerTarget = "domElement",
   ...props
-}: UseFollowCamProps = {}) {
+}: UseFollowCamProps = {}) => {
   const { scene, camera, gl } = useThree();
   // const { rapier, world } = useRapier();
 
@@ -34,7 +34,7 @@ export const useFollowCam = function ({
     origin.position.set(
       0,
       originZDis.current * Math.sin(-camInitDir.x),
-      originZDis.current * Math.cos(-camInitDir.x)
+      originZDis.current * Math.cos(-camInitDir.x),
     );
     return origin;
   }, []);
@@ -49,12 +49,7 @@ export const useFollowCam = function ({
   const cameraRayOrigin = useMemo(() => new Vector3(), []);
   const cameraPosition = useMemo(() => new Vector3(), []);
   const camLerpingPoint = useMemo(() => new Vector3(), []);
-  const camRayCast = new Raycaster(
-    cameraRayOrigin,
-    cameraRayDir,
-    0,
-    -camMaxDis
-  );
+  const camRayCast = new Raycaster(cameraRayOrigin, cameraRayDir, 0, -camMaxDis);
   // Rapier ray setup (optional)
   // const rayCast = new rapier.Ray(cameraRayOrigin, cameraRayDir);
   // let rayLength = null;
@@ -79,8 +74,7 @@ export const useFollowCam = function ({
 
   // Mouse scroll event
   const onDocumentMouseWheel = (e: Event) => {
-    const vz =
-      originZDis.current - (e as WheelEvent).deltaY * 0.002 * camZoomSpeed;
+    const vz = originZDis.current - (e as WheelEvent).deltaY * 0.002 * camZoomSpeed;
     const vy = followCam.rotation.x;
 
     if (vz >= camMaxDis && vz <= camMinDis) {
@@ -130,15 +124,14 @@ export const useFollowCam = function ({
     if (previousTouch2 && previousTouch1) {
       const prePinchDis = Math.hypot(
         previousTouch1.pageX - previousTouch2.pageX,
-        previousTouch1.pageY - previousTouch2.pageY
+        previousTouch1.pageY - previousTouch2.pageY,
       );
       const pinchDis = Math.hypot(
         e.touches[0].pageX - e.touches[1].pageX,
-        e.touches[0].pageY - e.touches[1].pageY
+        e.touches[0].pageY - e.touches[1].pageY,
       );
 
-      const vz =
-        originZDis.current - (prePinchDis - pinchDis) * 0.01 * camZoomSpeed;
+      const vz = originZDis.current - (prePinchDis - pinchDis) * 0.01 * camZoomSpeed;
       const vy = followCam.rotation.x;
 
       if (vz >= camMaxDis && vz <= camMinDis) {
@@ -191,7 +184,7 @@ export const useFollowCam = function ({
   // Remove intersect objects from camera collision array
   function customTraverseRemove(object: Object3D) {
     intersectObjects.current = intersectObjects.current.filter(
-      (item) => item.uuid !== object.uuid // Keep all items except the one to remove
+      (item) => item.uuid !== object.uuid, // Keep all items except the one to remove
     );
 
     // Recursively traverse child objects
@@ -216,10 +209,7 @@ export const useFollowCam = function ({
     // otherwise the smallestDistance is same as camera original position (originZDis)
     intersects = camRayCast.intersectObjects(intersectObjects.current);
     if (intersects.length && intersects[0].distance <= -originZDis.current) {
-      smallestDistance = Math.min(
-        -intersects[0].distance * camCollisionOffset,
-        camMinDis
-      );
+      smallestDistance = Math.min(-intersects[0].distance * camCollisionOffset, camMinDis);
     } else {
       smallestDistance = originZDis.current;
     }
@@ -236,13 +226,10 @@ export const useFollowCam = function ({
     camLerpingPoint.set(
       followCam.position.x,
       smallestDistance * Math.sin(-followCam.rotation.x),
-      smallestDistance * Math.cos(-followCam.rotation.x)
+      smallestDistance * Math.cos(-followCam.rotation.x),
     );
 
-    followCam.position.lerp(
-      camLerpingPoint,
-      1 - Math.exp(-camCollisionSpeedMult * delta)
-    ); // delta * 2 for rapier ray setup
+    followCam.position.lerp(camLerpingPoint, 1 - Math.exp(-camCollisionSpeedMult * delta)); // delta * 2 for rapier ray setup
   };
 
   useEffect(() => {
@@ -321,18 +308,10 @@ export const useFollowCam = function ({
   useEffect(() => {
     if (disableFollowCam) {
       if (disableFollowCamPos)
-        camera.position.set(
-          disableFollowCamPos.x,
-          disableFollowCamPos.y,
-          disableFollowCamPos.z
-        );
+        camera.position.set(disableFollowCamPos.x, disableFollowCamPos.y, disableFollowCamPos.z);
       if (disableFollowCamTarget)
         camera.lookAt(
-          new Vector3(
-            disableFollowCamTarget.x,
-            disableFollowCamTarget.y,
-            disableFollowCamTarget.z
-          )
+          new Vector3(disableFollowCamTarget.x, disableFollowCamTarget.y, disableFollowCamTarget.z),
         );
     }
   }, [disableFollowCam]);

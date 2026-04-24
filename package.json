@@ -38,7 +38,11 @@
     "rewriteWikilinks": "tsx src/scripts/rewriteWikilinks.ts",
     "addGraymatterInformation": "tsx src/scripts/addGraymatterInformation.ts",
     "vercel-install": "./vercel-submodule-workaround.sh && npm install --production=false",
-    "replaceExcerpts": "tsx src/scripts/replaceExcerpts.ts"
+    "replaceExcerpts": "tsx src/scripts/replaceExcerpts.ts",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "check": "biome check --write .",
+    "prepare": "husky"
   },
   "type": "module",
   "dependencies": {
@@ -201,7 +205,10 @@
     "velite": "^0.3.1",
     "vercel-submodules": "^1.1.0",
     "wait-on": "^9.0.5",
-    "yargs": "^18.0.0"
+    "yargs": "^18.0.0",
+    "@biomejs/biome": "^1.9.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0"
   },
   "overrides": {
     "@opentelemetry/api": "1.4.1",
@@ -211,5 +218,8 @@
     "@opentelemetry/sdk-trace-base": "1.13.0",
     "@opentelemetry/sdk-trace-node": "1.13.0",
     "@opentelemetry/semantic-conventions": "1.13.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,jsonc,css}": ["biome check --write --no-errors-on-unmatched"]
   }
 }

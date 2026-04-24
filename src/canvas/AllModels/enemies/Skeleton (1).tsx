@@ -1,15 +1,8 @@
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
-import {
-  AnimationClip,
-  Bone,
-  Group,
-  Mesh,
-  MeshStandardMaterial,
-  SkinnedMesh,
-} from "three";
-import { GLTF, SkeletonUtils } from "three-stdlib";
+import type { AnimationClip, Bone, Group, Mesh, MeshStandardMaterial, SkinnedMesh } from "three";
+import { type GLTF, SkeletonUtils } from "three-stdlib";
 
 type ActionName =
   | "CharacterArmature|CharacterArmature|CharacterArmature|Death|CharacterArmature|Dea"
@@ -46,9 +39,7 @@ type GLTFResult = GLTF & {
 
 export function SkeletonWithoutHead(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<Group>(null!);
-  const { scene, animations } = useGLTF(
-    "/3d-assets/glb/enemies/Skeleton (1)-transformed.glb"
-  );
+  const { scene, animations } = useGLTF("/3d-assets/glb/enemies/Skeleton (1)-transformed.glb");
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;
   const { actions } = useAnimations(animations, group);

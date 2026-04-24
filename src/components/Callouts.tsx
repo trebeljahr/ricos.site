@@ -1,5 +1,3 @@
-import clsx from "clsx";
-import type { FC, ReactNode } from "react";
 import {
   FaBug,
   FaCheck,
@@ -14,6 +12,8 @@ import {
   FaSkullCrossbones,
   FaTimesCircle,
 } from "@components/Icons";
+import clsx from "clsx";
+import type { FC, ReactNode } from "react";
 
 type Callout = {
   label: string;
@@ -152,11 +152,10 @@ export const callouts = Object.entries(canonicalCallouts).reduce(
     });
     return acc;
   },
-  {} as Record<string, Callout>
+  {} as Record<string, Callout>,
 );
 
-const getCallout = (type: keyof typeof callouts) =>
-  callouts[type] ?? callouts.info;
+const getCallout = (type: keyof typeof callouts) => callouts[type] ?? callouts.info;
 
 export type CalloutProps = {
   type: keyof typeof callouts;
@@ -167,19 +166,10 @@ export type CalloutProps = {
   children: ReactNode;
 };
 
-export const Callout: FC<CalloutProps> = ({
-  type,
-  isFoldable,
-  defaultFolded,
-  title,
-  children,
-}) => {
+export const Callout: FC<CalloutProps> = ({ type, isFoldable, defaultFolded, title, children }) => {
   const callout = getCallout(type);
   const isFoldableString = isFoldable.toString() as "true" | "false";
-  const defaultFoldedString = defaultFolded?.toString() as
-    | "true"
-    | "false"
-    | undefined;
+  const defaultFoldedString = defaultFolded?.toString() as "true" | "false" | undefined;
 
   return (
     <CalloutRoot
@@ -188,11 +178,7 @@ export const Callout: FC<CalloutProps> = ({
       isFoldable={isFoldableString}
       defaultFolded={defaultFoldedString}
     >
-      <CalloutTitle
-        className={callout.className.title}
-        type={type}
-        isFoldable={isFoldableString}
-      >
+      <CalloutTitle className={callout.className.title} type={type} isFoldable={isFoldableString}>
         {title}
       </CalloutTitle>
       <CalloutBody>{children}</CalloutBody>
@@ -207,12 +193,7 @@ type DetailsProps = {
   className?: string;
 };
 
-const Details: FC<DetailsProps> = ({
-  isFoldable,
-  defaultFolded,
-  children,
-  ...props
-}) => {
+const Details: FC<DetailsProps> = ({ isFoldable, defaultFolded, children, ...props }) => {
   return isFoldable ? (
     <details open={!defaultFolded} {...props}>
       {children}
@@ -264,7 +245,7 @@ export const CalloutRoot: FC<CalloutRootProps> = ({
       className={clsx(
         "group/root my-6 space-y-2 rounded-lg border bg-card p-2",
         callout.className.root,
-        className
+        className,
       )}
     >
       {children}
@@ -290,10 +271,7 @@ export const CalloutTitle: FC<CalloutTitleProps> = ({
   return (
     <Summary
       isFoldable={isFoldable}
-      className={clsx(
-        "flex flex-row items-center gap-2",
-        callout.className.title
-      )}
+      className={clsx("flex flex-row items-center gap-2", callout.className.title)}
     >
       {callout.icon}
       <span>{children ?? callout.label}</span>

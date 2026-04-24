@@ -3,7 +3,7 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { OrbitControls, Plane, Stage } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { useControls } from "leva";
-import { Suspense, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   BrownBarkMaterial,
   ForestFloorMaterial1,
@@ -17,8 +17,8 @@ import {
   RocksGroundMaterial2,
   SnowMaterial,
 } from "src/Materials/TextureMaterials";
-import { BufferAttribute, Mesh, Vector2 } from "three";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { BufferAttribute, type Mesh, Vector2 } from "three";
 
 const Scene = () => {
   const { camera } = useThree();
@@ -27,58 +27,52 @@ const Scene = () => {
     camera.position.set(0, 0, 20);
   }, [camera]);
 
-  const {
-    SelectedMaterial,
-    displacementScale,
-    aoMapIntensity,
-    roughness,
-    metalness,
-    normalScale,
-  } = useControls({
-    displacementScale: {
-      value: 0.5,
-      min: 0,
-      max: 1,
-    },
-    aoMapIntensity: {
-      value: 1,
-      min: 0,
-      max: 1,
-    },
-    roughness: {
-      value: 1,
-      min: 0,
-      max: 1,
-    },
-    metalness: {
-      value: 0,
-      min: 0,
-      max: 1,
-    },
-    normalScale: [1, 1],
-    SelectedMaterial: {
-      options: {
-        RocksGroundMaterial1: RocksGroundMaterial1,
-        RocksGroundMaterial2: RocksGroundMaterial2,
-        GrassRockMaterial: GrassRockMaterial,
-        ForestLeavesMaterial1: ForestLeavesMaterial1,
-        ForestLeavesMaterial2: ForestLeavesMaterial2,
-        ForestFloorMaterial1: ForestFloorMaterial1,
-        ForestFloorMaterial2: ForestFloorMaterial2,
-        ForestFloorMaterial3: ForestFloorMaterial3,
-        SnowMaterial: SnowMaterial,
-        BrownBarkMaterial: BrownBarkMaterial,
-        PineBarkMaterial: PineBarkMaterial,
+  const { SelectedMaterial, displacementScale, aoMapIntensity, roughness, metalness, normalScale } =
+    useControls({
+      displacementScale: {
+        value: 0.5,
+        min: 0,
+        max: 1,
       },
-    },
-  });
+      aoMapIntensity: {
+        value: 1,
+        min: 0,
+        max: 1,
+      },
+      roughness: {
+        value: 1,
+        min: 0,
+        max: 1,
+      },
+      metalness: {
+        value: 0,
+        min: 0,
+        max: 1,
+      },
+      normalScale: [1, 1],
+      SelectedMaterial: {
+        options: {
+          RocksGroundMaterial1: RocksGroundMaterial1,
+          RocksGroundMaterial2: RocksGroundMaterial2,
+          GrassRockMaterial: GrassRockMaterial,
+          ForestLeavesMaterial1: ForestLeavesMaterial1,
+          ForestLeavesMaterial2: ForestLeavesMaterial2,
+          ForestFloorMaterial1: ForestFloorMaterial1,
+          ForestFloorMaterial2: ForestFloorMaterial2,
+          ForestFloorMaterial3: ForestFloorMaterial3,
+          SnowMaterial: SnowMaterial,
+          BrownBarkMaterial: BrownBarkMaterial,
+          PineBarkMaterial: PineBarkMaterial,
+        },
+      },
+    });
 
   const mesh = useRef<Mesh>(null!);
 
   useEffect(() => {
     mesh.current?.geometry.setAttribute(
       "uv2",
-      new BufferAttribute(mesh.current.geometry.attributes.uv.array, 2)
+      new BufferAttribute(mesh.current.geometry.attributes.uv.array, 2),
     );
   }, []);
 

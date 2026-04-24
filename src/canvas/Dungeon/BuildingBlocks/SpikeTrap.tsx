@@ -1,16 +1,12 @@
-import { useHealthContext } from "@r3f/Contexts/HealthbarContext";
 import { Trap_empty, Trap_spikes } from "@r3f/AllModels/modular_dungeon_pack_1";
+import { useHealthContext } from "@r3f/Contexts/HealthbarContext";
 import { PositionalAudio as PositionalAudioComponent } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import {
-  CuboidCollider,
-  IntersectionEnterHandler,
-  RigidBody,
-} from "@react-three/rapier";
+import { CuboidCollider, type IntersectionEnterHandler, RigidBody } from "@react-three/rapier";
 import closeSpikeTrapSound from "@sounds/close-spike-trap.mp3";
 import spikeTrapSound from "@sounds/spike-trap.mp3";
 import { useEffect, useRef, useState } from "react";
-import { PositionalAudio } from "three";
+import type { PositionalAudio } from "three";
 
 export const SpikeTrap = ({ interval = 2000 }: { interval?: number }) => {
   const { health, damage } = useHealthContext();
@@ -77,12 +73,7 @@ export const SpikeTrap = ({ interval = 2000 }: { interval?: number }) => {
       </RigidBody>
 
       {extended ? <Trap_spikes position={[0, 0, 0]} /> : <Trap_empty />}
-      <PositionalAudioComponent
-        ref={openAudioRef}
-        url={spikeTrapSound}
-        distance={1}
-        loop={false}
-      />
+      <PositionalAudioComponent ref={openAudioRef} url={spikeTrapSound} distance={1} loop={false} />
       <PositionalAudioComponent
         ref={closeAudioRef}
         url={closeSpikeTrapSound}

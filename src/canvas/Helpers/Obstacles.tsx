@@ -30,12 +30,7 @@ export const Obstacles = () => {
         </Box>
       </RigidBody>
       <RigidBody colliders="cuboid" position={[10, floorLevel, 0]} type="fixed">
-        <Box
-          args={[40, 1, 40]}
-          rotation={[0, 0, Math.PI / 5]}
-          castShadow
-          receiveShadow
-        >
+        <Box args={[40, 1, 40]} rotation={[0, 0, Math.PI / 5]} castShadow receiveShadow>
           <meshPhysicalMaterial />
         </Box>
       </RigidBody>

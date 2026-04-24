@@ -12,12 +12,8 @@
 import "dotenv/config";
 import { cwd } from "process";
 import { listAllObjects } from "./lib/buckets";
-import {
-  hashLocalImages,
-  listLocalImages,
-  LOCAL_ASSETS_ROOT,
-} from "./lib/localAssets";
 import { stripImageExt } from "./lib/hashing";
+import { LOCAL_ASSETS_ROOT, hashLocalImages, listLocalImages } from "./lib/localAssets";
 import { DYNAMIC_PREFIXES, scanReferences } from "./lib/references";
 
 const SOURCE_BUCKET = "images.trebeljahr.com";
@@ -80,17 +76,11 @@ async function main() {
   }
   const sourceSize = source.reduce((s, o) => s + o.Size, 0);
   const resizedKeys = new Set(resized.map((o) => o.Key));
-  const resizedLogical = new Set(
-    [...resizedKeys].map((k) => k.replace(/\/\d+\.webp$/, ""))
-  );
+  const resizedLogical = new Set([...resizedKeys].map((k) => k.replace(/\/\d+\.webp$/, "")));
   const sourceLogical = new Set([...sourceKeys].map(stripImageExt));
   const localKeys = new Set(localFiles.map((f) => f.key));
 
-  console.log(
-    `  source:   ${fmt(sourceKeys.size)} objects, ${(sourceSize / 1e9).toFixed(
-      2
-    )} GB`
-  );
+  console.log(`  source:   ${fmt(sourceKeys.size)} objects, ${(sourceSize / 1e9).toFixed(2)} GB`);
   console.log(`  resized:  ${fmt(resizedKeys.size)} objects`);
   console.log(`  local:    ${fmt(localKeys.size)} files`);
 
@@ -121,23 +111,17 @@ async function main() {
   for (const prefix of ["assets/photography/", "assets/midjourney-gallery/"]) {
     const sCount = [...sourceKeys].filter((k) => k.startsWith(prefix)).length;
     const lCount = [...localKeys].filter((k) => k.startsWith(prefix)).length;
-    const sByte = source
-      .filter((o) => o.Key.startsWith(prefix))
-      .reduce((s, o) => s + o.Size, 0);
+    const sByte = source.filter((o) => o.Key.startsWith(prefix)).reduce((s, o) => s + o.Size, 0);
     console.log(
       `  ${prefix.padEnd(28)} source=${fmt(sCount)}  local=${fmt(
-        lCount
-      )}  size=${(sByte / 1e9).toFixed(2)} GB`
+        lCount,
+      )}  size=${(sByte / 1e9).toFixed(2)} GB`,
     );
   }
 
   // Resized-bucket drift
-  const resizedOrphans = [...resizedLogical].filter(
-    (k) => !sourceLogical.has(k)
-  );
-  const sourceNoVariants = [...sourceLogical].filter(
-    (k) => !resizedLogical.has(k)
-  );
+  const resizedOrphans = [...resizedLogical].filter((k) => !sourceLogical.has(k));
+  const sourceNoVariants = [...sourceLogical].filter((k) => !resizedLogical.has(k));
   console.log("\n=== RESIZED bucket drift ===");
   console.log(`  resized logical keys:              ${fmt(resizedLogical.size)}`);
   console.log(`  orphaned (no source behind):       ${fmt(resizedOrphans.length)}`);
@@ -166,11 +150,7 @@ async function main() {
     .filter((o) => unreferenced.includes(o.Key))
     .reduce((s, o) => s + o.Size, 0);
   console.log("\n=== UNREFERENCED in source bucket ===");
-  console.log(
-    `  total:    ${fmt(unreferenced.length)} files, ${(unrefSize / 1e6).toFixed(
-      1
-    )} MB`
-  );
+  console.log(`  total:    ${fmt(unreferenced.length)} files, ${(unrefSize / 1e6).toFixed(1)} MB`);
   if (unreferenced.length) {
     for (const [k, v] of tally(unreferenced, topFolder).slice(0, 10))
       console.log(`    ${String(v).padStart(4)}  ${k}`);
@@ -187,7 +167,7 @@ async function main() {
   for (const f of localFiles) {
     const h = localHashes.get(f.key)!;
     const matches = (sourceByHash.get(h) ?? []).filter(
-      (k) => k !== f.key && k.startsWith("assets/photography/")
+      (k) => k !== f.key && k.startsWith("assets/photography/"),
     );
     if (matches.length && !f.key.startsWith("assets/photography/")) {
       dupCount++;
@@ -195,17 +175,13 @@ async function main() {
       dupSize += size;
     }
   }
-  console.log(
-    `  local notes-asset files duplicated in photography/: ${fmt(dupCount)}`
-  );
+  console.log(`  local notes-asset files duplicated in photography/: ${fmt(dupCount)}`);
   console.log(`  redundant size (local + matching source): ~${(dupSize / 1e6).toFixed(1)} MB`);
   if (dupCount > 0) {
     console.log("  → run `npm run drift:fix` to consolidate onto photography/");
   }
 
-  console.log(
-    `\nDone. Local assets scanned under ${LOCAL_ASSETS_ROOT}. No mutations performed.`
-  );
+  console.log(`\nDone. Local assets scanned under ${LOCAL_ASSETS_ROOT}. No mutations performed.`);
 }
 
 main().catch((e) => {

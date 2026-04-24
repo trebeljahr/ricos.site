@@ -16,19 +16,15 @@
  *     (manual wins).
  */
 import "dotenv/config";
-import { readFile, writeFile, readdir } from "fs/promises";
-import { resolve, join } from "path";
-import { cwd, argv } from "process";
+import { join, resolve } from "path";
+import { readFile, readdir, writeFile } from "fs/promises";
+import { argv, cwd } from "process";
 
-const METADATA_PATH = resolve(
-  cwd(),
-  "src/content/Notes/_data/metadata.json",
-);
+const METADATA_PATH = resolve(cwd(), "src/content/Notes/_data/metadata.json");
 
 const INCLUDE_PHOTOGRAPHY = argv.includes("--include-photography");
 const STAGING_FLAG_INDEX = argv.indexOf("--from-staging");
-const STAGING_DIR =
-  STAGING_FLAG_INDEX >= 0 ? argv[STAGING_FLAG_INDEX + 1] : null;
+const STAGING_DIR = STAGING_FLAG_INDEX >= 0 ? argv[STAGING_FLAG_INDEX + 1] : null;
 
 type AltSource = "manual" | "generated" | "ai";
 type MetadataEntry = {
@@ -51,9 +47,7 @@ function altFromKey(key: string): string {
 }
 
 async function loadStagingMaps(dir: string): Promise<Record<string, string>> {
-  const files = (await readdir(dir)).filter(
-    (f) => f.startsWith("out-") && f.endsWith(".json"),
-  );
+  const files = (await readdir(dir)).filter((f) => f.startsWith("out-") && f.endsWith(".json"));
   const merged: Record<string, string> = {};
   for (const f of files) {
     const raw = await readFile(join(dir, f), "utf8");

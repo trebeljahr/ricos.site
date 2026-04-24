@@ -1,17 +1,9 @@
 import { extend } from "@react-three/fiber";
-import {
-  Color,
-  DoubleSide,
-  Material,
-  Mesh,
-  MeshLambertMaterial,
-  MeshStandardMaterial,
-  Texture,
-} from "three";
+import { Color, DoubleSide, type Material, MeshLambertMaterial, Texture } from "three";
 
-import vertexShader from "./grassVertexShader.glsl";
-import fragmentShader from "./grassFragmentShader.glsl";
 import { Vector3 } from "yuka";
+import fragmentShader from "./grassFragmentShader.glsl";
+import vertexShader from "./grassVertexShader.glsl";
 
 interface GrassUniformsInterface {
   uTime?: { value: number };
@@ -73,7 +65,7 @@ export class GrassMaterial {
     this.setupGrassMaterial(this.material);
   }
 
-  public updateGrassGraphicsChange(high: boolean = true) {
+  public updateGrassGraphicsChange(high = true) {
     if (!high) {
       this.uniforms.uEnableShadows.value = false;
     } else {

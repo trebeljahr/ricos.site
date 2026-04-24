@@ -1,19 +1,12 @@
+import { FiMenu, FiX } from "@components/Icons";
 import { ProgressBar } from "@components/ProgressBar";
 import { SiteSearch } from "@components/SiteSearch";
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-} from "@headlessui/react";
+import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react";
 import Image from "next/image";
 import Link from "next/link";
-import { FiMenu, FiX } from "@components/Icons";
-import {
-  CollapsibleMenuDesktop,
-  CollapsibleMenuMobile,
-} from "./CollapsibleMenus";
-import { DarkModeHandler } from "./DarkModeHandler";
 import { useScrollLock } from "src/hooks/useScrollLock";
+import { CollapsibleMenuDesktop, CollapsibleMenuMobile } from "./CollapsibleMenus";
+import { DarkModeHandler } from "./DarkModeHandler";
 
 const navigation = ["posts", "newsletters", "photography"];
 const resources = ["quotes", "booknotes", "needlestack", "podcastnotes", "r3f"];
@@ -99,11 +92,7 @@ function MobileVersion({ open, close }: NavbarProps) {
             </Link>
           ))}
 
-          <CollapsibleMenuMobile
-            links={resources}
-            text="resources"
-            closeNav={close}
-          />
+          <CollapsibleMenuMobile links={resources} text="resources" closeNav={close} />
           <CollapsibleMenuMobile links={about} text="about" closeNav={close} />
         </div>
       </DisclosurePanel>
@@ -132,4 +121,3 @@ function DesktopVersion() {
     </div>
   );
 }
-

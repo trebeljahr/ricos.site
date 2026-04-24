@@ -1,10 +1,10 @@
 import { useGLTF } from "@react-three/drei";
-import { GLTFResult } from "src/@types";
-import { Group, Mesh } from "three";
+import type { GLTFResult } from "src/@types";
+import { Mesh } from "three";
 
 export const useAxe1 = () => {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/weapons/Axe-transformed.glb"
+    "/3d-assets/glb/weapons/Axe-transformed.glb",
   ) as unknown as unknown as GLTFResult;
 
   const axeMesh = new Mesh(nodes.Skeleton_Axe.geometry, materials.skeleton);

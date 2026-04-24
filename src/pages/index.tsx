@@ -7,8 +7,8 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { WavingHand } from "@components/WavingHand";
 import type { SectionDescription } from "@velite";
 import Link from "next/link";
-import { type CommonMetadata } from "src/@types";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import type { CommonMetadata } from "src/@types";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
@@ -16,10 +16,18 @@ const IndexPage = ({ seo, ...props }: Props) => {
   return (
     <Layout
       title={seo?.metaTitle || "Home"}
-      description={seo?.metaDescription || "A collection of blog posts, booknotes, photography, travel stories and creative coding experiments by Rico Trebeljahr."}
-      image={seo?.ogImage || "/assets/midjourney/young-man-looking-absolutely-relaxed-while-reading-a-book-in-the-milkyway.jpg"}
+      description={
+        seo?.metaDescription ||
+        "A collection of blog posts, booknotes, photography, travel stories and creative coding experiments by Rico Trebeljahr."
+      }
+      image={
+        seo?.ogImage ||
+        "/assets/midjourney/young-man-looking-absolutely-relaxed-while-reading-a-book-in-the-milkyway.jpg"
+      }
       imageAlt={seo?.ogImageAlt || "a person reading a book, while floating in space"}
-      keywords={seo?.keywords || ["programming", "traveling", "photography", "writing", "Rico Trebeljahr"]}
+      keywords={
+        seo?.keywords || ["programming", "traveling", "photography", "writing", "Rico Trebeljahr"]
+      }
       url="/"
       fullScreen={true}
     >
@@ -32,17 +40,13 @@ const IndexPage = ({ seo, ...props }: Props) => {
                 Hi there <WavingHand />
               </h1>
               <span>
-                I am Rico Trebeljahr. A programmer, traveler, photographer,
-                writer and fellow human. This is my personal website. It&apos;s
-                where I write, publish my newsletter, collect booknotes, quotes,
-                traveling stories, and photography.
+                I am Rico Trebeljahr. A programmer, traveler, photographer, writer and fellow human.
+                This is my personal website. It&apos;s where I write, publish my newsletter, collect
+                booknotes, quotes, traveling stories, and photography.
               </span>
               <p>
-                New here?{" "}
-                <Link href="/start-here">
-                  Start here
-                </Link>{" "}
-                for a guided tour of the best stuff on this site.
+                New here? <Link href="/start-here">Start here</Link> for a guided tour of the best
+                stuff on this site.
               </p>
               <p>
                 Wanna know what I like on the internet? I have a{" "}
@@ -90,9 +94,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
             title="Traveling Stories 🌍"
             description={props.texts.traveling}
             carousel={true}
-            linkElem={
-              <FancyLink href="/travel" text="Explore More Travel Stories" />
-            }
+            linkElem={<FancyLink href="/travel" text="Explore More Travel Stories" />}
           />
         </section>
 
@@ -115,9 +117,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
             title="Booknotes 📚"
             description={props.texts.booknotes}
             carousel={true}
-            linkElem={
-              <FancyLink href="/booknotes" text="Search All Booknotes" />
-            }
+            linkElem={<FancyLink href="/booknotes" text="Search All Booknotes" />}
           />
         </section>
 
@@ -130,22 +130,10 @@ const IndexPage = ({ seo, ...props }: Props) => {
                 <ExternalLink href="https://www.instagram.com/ricotrebeljahr/">
                   Instagram
                 </ExternalLink>
-                ,{" "}
-                <ExternalLink href="https://github.com/trebeljahr">
-                  Github
-                </ExternalLink>
-                ,{" "}
-                <ExternalLink href="https://www.linkedin.com/in/trebeljahr">
-                  LinkedIn
-                </ExternalLink>
-                ,{" "}
-                <ExternalLink href="https://twitter.com/ricotrebeljahr">
-                  Twitter
-                </ExternalLink>
-                , or at my{" "}
-                <ExternalLink href="https://portfolio.trebeljahr.com">
-                  Portfolio
-                </ExternalLink>
+                , <ExternalLink href="https://github.com/trebeljahr">Github</ExternalLink>,{" "}
+                <ExternalLink href="https://www.linkedin.com/in/trebeljahr">LinkedIn</ExternalLink>,{" "}
+                <ExternalLink href="https://twitter.com/ricotrebeljahr">Twitter</ExternalLink>, or
+                at my <ExternalLink href="https://portfolio.trebeljahr.com">Portfolio</ExternalLink>
                 .
               </p>
             </div>
@@ -199,15 +187,15 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
       booknotesSelection,
       texts: {
         booknotes: sectionDescriptions.find(
-          ({ title }: SectionDescription) => title === "Booknotes"
+          ({ title }: SectionDescription) => title === "Booknotes",
         )?.content,
         traveling: sectionDescriptions.find(
-          ({ title }: SectionDescription) => title === "Traveling Stories"
+          ({ title }: SectionDescription) => title === "Traveling Stories",
         )?.content,
         writing: sectionDescriptions.find(({ title }: SectionDescription) => title === "Writing")
           ?.content,
         newsletter: sectionDescriptions.find(
-          ({ title }: SectionDescription) => title === "Newsletter"
+          ({ title }: SectionDescription) => title === "Newsletter",
         )?.content,
       },
     },

@@ -1,27 +1,15 @@
-import Rapier, { QueryFilterFlags } from "@dimforge/rapier3d-compat";
+import type Rapier from "@dimforge/rapier3d-compat";
+import { QueryFilterFlags } from "@dimforge/rapier3d-compat";
 import { HumanHand } from "@r3f/AllModels/Human hand";
-import { RiggedArms } from "@r3f/AllModels/Rigged Fps Arms";
-import { Glove, Sword_big } from "@r3f/AllModels/rpg_items_pack";
+import { Sword_big } from "@r3f/AllModels/rpg_items_pack";
 import { SkeletonShield1 } from "@r3f/AllModels/weapons/Skeleton-Shield-1";
-import { SkeletonShield2 } from "@r3f/AllModels/weapons/Skeleton-Shield-2";
-import { Sword1 } from "@r3f/AllModels/weapons/sword-1";
-import { Sword2 } from "@r3f/AllModels/weapons/sword-2";
 import { useInventory } from "@r3f/Dungeon/InventorySystem/GameInventoryContext";
-import {
-  KeyboardControls,
-  PointerLockControls,
-  useKeyboardControls,
-} from "@react-three/drei";
-import { ThreeElements, useFrame, useThree } from "@react-three/fiber";
-import {
-  CapsuleCollider,
-  RapierRigidBody,
-  RigidBody,
-  useRapier,
-} from "@react-three/rapier";
+import { KeyboardControls, PointerLockControls, useKeyboardControls } from "@react-three/drei";
+import { type ThreeElements, useFrame, useThree } from "@react-three/fiber";
+import { CapsuleCollider, type RapierRigidBody, RigidBody, useRapier } from "@react-three/rapier";
 import { useControls as useLevaControls } from "leva";
-import { RefObject, useEffect, useMemo, useRef } from "react";
-import { Group, MathUtils, PerspectiveCamera, Vector3 } from "three";
+import { type RefObject, useEffect, useMemo, useRef } from "react";
+import { type Group, MathUtils, PerspectiveCamera, Vector3 } from "three";
 
 const direction = new Vector3();
 const frontVector = new Vector3();
@@ -52,9 +40,7 @@ const useKinematicCharacterController = ({
 
   const camera = useThree((state) => state.camera);
 
-  const characterController = useRef<Rapier.KinematicCharacterController>(
-    null!
-  );
+  const characterController = useRef<Rapier.KinematicCharacterController>(null!);
 
   const [, getKeyboardControls] = useKeyboardControls();
 
@@ -90,17 +76,17 @@ const useKinematicCharacterController = ({
 
   const jumpGravity = useMemo(
     () => -(2 * maxJumpHeight) / Math.pow(timeToJumpApex, 2),
-    [maxJumpHeight, timeToJumpApex]
+    [maxJumpHeight, timeToJumpApex],
   );
 
   const maxJumpVelocity = useMemo(
     () => Math.abs(jumpGravity) * timeToJumpApex,
-    [jumpGravity, timeToJumpApex]
+    [jumpGravity, timeToJumpApex],
   );
 
   const minJumpVelocity = useMemo(
     () => Math.sqrt(2 * Math.abs(jumpGravity) * minJumpHeight),
-    [jumpGravity, minJumpHeight]
+    [jumpGravity, minJumpHeight],
   );
 
   const horizontalVelocity = useRef({ x: 0, z: 0 });
@@ -112,17 +98,14 @@ const useKinematicCharacterController = ({
   useEffect(() => {
     const { world } = rapier;
 
-    characterController.current =
-      world.createCharacterController(characterShapeOffset);
+    characterController.current = world.createCharacterController(characterShapeOffset);
     characterController.current.enableAutostep(
       autoStepMaxHeight,
       autoStepMinWidth,
-      autoStepIncludeDynamicBodies
+      autoStepIncludeDynamicBodies,
     );
     characterController.current.enableSnapToGround(snapToGroundDistance);
-    characterController.current.setApplyImpulsesToDynamicBodies(
-      applyImpulsesToDynamicBodies
-    );
+    characterController.current.setApplyImpulsesToDynamicBodies(applyImpulsesToDynamicBodies);
 
     return () => {
       world.removeCharacterController(characterController.current);
@@ -147,8 +130,7 @@ const useKinematicCharacterController = ({
       return;
     }
 
-    const { forward, backward, left, right, jump, sprint } =
-      getKeyboardControls();
+    const { forward, backward, left, right, jump, sprint } = getKeyboardControls();
 
     const characterCollider = characterColliderRef.current;
 
@@ -159,14 +141,12 @@ const useKinematicCharacterController = ({
     const movingHorizontally =
       Math.abs(characterLinvel.x) > 0.1 || Math.abs(characterLinvel.z) > 0.1;
     const horizontalSpeed = Math.sqrt(
-      characterLinvel.x * characterLinvel.x +
-        characterLinvel.z * characterLinvel.z
+      characterLinvel.x * characterLinvel.x + characterLinvel.z * characterLinvel.z,
     );
     const grounded = characterController.current.computedGrounded();
 
     const smoothing =
-      velocityXZSmoothing *
-      (grounded ? accelerationTimeGrounded : accelerationTimeAirborne);
+      velocityXZSmoothing * (grounded ? accelerationTimeGrounded : accelerationTimeAirborne);
 
     const factor = 1 - Math.pow(smoothing, delta);
 
@@ -231,7 +211,7 @@ const useKinematicCharacterController = ({
     characterController.current.computeColliderMovement(
       characterCollider,
       movementDirection,
-      QueryFilterFlags.EXCLUDE_SENSORS
+      QueryFilterFlags.EXCLUDE_SENSORS,
     );
 
     const translation = characterRigidBody.current.translation();
@@ -258,7 +238,7 @@ const useKinematicCharacterController = ({
         camera.fov = MathUtils.lerp(
           camera.fov,
           sprint && currentSpeed > 0.1 ? SPRINT_FOV : NORMAL_FOV,
-          10 * delta
+          10 * delta,
         );
         camera.updateProjectionMatrix();
       }
@@ -275,18 +255,14 @@ const useKinematicCharacterController = ({
       const rotationScalar = MathUtils.clamp(currentSpeed / 10, 0, 1);
 
       const yRot =
-        Math.sin(
-          (currentSpeed > 0.1 ? 1 : 0) *
-            state.clock.elapsedTime *
-            handRotationSpeed
-        ) / 6;
+        Math.sin((currentSpeed > 0.1 ? 1 : 0) * state.clock.elapsedTime * handRotationSpeed) / 6;
 
       const item = group.children[0];
       if (item) {
         item.rotation.x = MathUtils.lerp(
           item.rotation.x,
           yRot * rotationScalar * (side === "left" ? -1 : 1),
-          0.1
+          0.1,
         );
       }
 
@@ -301,10 +277,7 @@ const useKinematicCharacterController = ({
       const bobScalar = MathUtils.clamp(horizontalSpeed / 10, 0, 1);
 
       const yPos =
-        (Math.sin(
-          (movingHorizontally ? 1 : 0) * state.clock.elapsedTime * handBobSpeed
-        ) /
-          6) *
+        (Math.sin((movingHorizontally ? 1 : 0) * state.clock.elapsedTime * handBobSpeed) / 6) *
         handBobHeight;
 
       group.position.y += yPos * (side === "left" ? -1 : 1) * bobScalar;
@@ -347,11 +320,7 @@ export const Player = (props: ThreeElements["group"]) => {
       <group ref={shieldHandRef}>
         <group position={[0, 0, -0.5]}>
           {equippedItems.leftHand && (
-            <SkeletonShield1
-              position={[-0.3, -0.4, 0.3]}
-              rotation-y={Math.PI}
-              scale={0.7}
-            />
+            <SkeletonShield1 position={[-0.3, -0.4, 0.3]} rotation-y={Math.PI} scale={0.7} />
           )}
           {/* <Glove
             scale={[-0.3, 0.3, 0.3]}

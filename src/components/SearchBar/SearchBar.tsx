@@ -1,12 +1,6 @@
-import fuzzysort from "fuzzysort";
-import {
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
 import { FiSearch } from "@components/Icons";
+import fuzzysort from "fuzzysort";
+import { type ChangeEvent, type Dispatch, type SetStateAction, useEffect, useState } from "react";
 
 export type SearchProps<T extends Record<string, any>> = {
   setFiltered: Dispatch<SetStateAction<T[]>>;

@@ -5,7 +5,7 @@ import Header from "@components/PostHeader";
 import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import { useState } from "react";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 import quotesJSON from "../content/Notes/pages/quotes.json";
 
 const quotes: Quote[] = quotesJSON;
@@ -24,7 +24,10 @@ export default function Quotes({ seo }: { seo: SeoInfo | null }) {
   return (
     <Layout
       title={seo?.metaTitle || "Quotes - a collection of quotes from a curious person"}
-      description={seo?.metaDescription || "A curated collection of quotes from books, movies, podcasts, and blog posts."}
+      description={
+        seo?.metaDescription ||
+        "A curated collection of quotes from books, movies, podcasts, and blog posts."
+      }
       image={seo?.ogImage || "/assets/midjourney/a-collection-of-notes-of-importance.jpg"}
       imageAlt={seo?.ogImageAlt || "a collection of handwritten notes on paper"}
       url={url}
@@ -34,10 +37,7 @@ export default function Quotes({ seo }: { seo: SeoInfo | null }) {
         <BreadCrumbs path={url} />
 
         <section>
-          <Header
-            title="Quotes"
-            subtitle="Snippets of writing that I want to remember"
-          />
+          <Header title="Quotes" subtitle="Snippets of writing that I want to remember" />
 
           <Search
             all={quotes}

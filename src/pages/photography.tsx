@@ -3,10 +3,10 @@ import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
 import Link from "next/link";
-import { ImageProps } from "src/@types";
-import { getFirstImageFromMetadata, photographyFolder } from "src/lib/imageMetadata";
+import type { ImageProps } from "src/@types";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
-import { SeoInfo } from "src/lib/getSeoInfo";
+import type { SeoInfo } from "src/lib/getSeoInfo";
+import { getFirstImageFromMetadata, photographyFolder } from "src/lib/imageMetadata";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
 export const trips = [
@@ -109,7 +109,10 @@ export default function Photography({ trips, seo }: Props) {
   return (
     <Layout
       title={seo?.metaTitle || "Photography"}
-      description={seo?.metaDescription || "Travel photography by Rico Trebeljahr — landscapes, people, and moments from journeys across Asia, Europe, the Caribbean, and South America."}
+      description={
+        seo?.metaDescription ||
+        "Travel photography by Rico Trebeljahr — landscapes, people, and moments from journeys across Asia, Europe, the Caribbean, and South America."
+      }
       url={url}
       fullScreen={true}
       image={seo?.ogImage || "/assets/blog/photography.png"}
@@ -163,7 +166,7 @@ export async function getStaticProps(): Promise<{ props: Props }> {
       const { width, height } = await getImgWidthAndHeightDuringBuild(src);
 
       return { image: { width, height, src, alt }, tripName: name };
-    })
+    }),
   );
 
   const { getSeoInfo } = await import("src/lib/getSeoInfo");

@@ -1,12 +1,8 @@
-import { useEffect, useState } from "react";
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+import { useEffect, useState } from "react";
 
-import {
-  drawArrow,
-  drawBackground,
-  drawCoordinateSystem,
-} from "../../../lib/math/drawHelpers";
 import { Vec2 } from "../../../lib/math/Vector";
+import { drawArrow, drawBackground, drawCoordinateSystem } from "../../../lib/math/drawHelpers";
 
 export const RotationDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
@@ -26,7 +22,7 @@ export const RotationDemo = () => {
 
     const scalingFactor = Math.min(width, height) / 10;
     const origin = new Vec2(width / 2, height / 2);
-    let a = new Vec2(4, 0).scale(scalingFactor).add(origin);
+    const a = new Vec2(4, 0).scale(scalingFactor).add(origin);
     drawBackground(ctx);
     drawCoordinateSystem(ctx, scalingFactor);
 

@@ -1,5 +1,5 @@
 import { useTexture } from "@react-three/drei";
-import { MeshStandardMaterialProps } from "@react-three/fiber";
+import type { MeshStandardMaterialProps } from "@react-three/fiber";
 import { RepeatWrapping } from "three";
 
 export const SnowMaterial = (passedInProps: MeshStandardMaterialProps) => {
@@ -14,17 +14,10 @@ export const SnowMaterial = (passedInProps: MeshStandardMaterialProps) => {
   Object.values(textures).forEach((texture) => {
     texture.wrapS = texture.wrapT = RepeatWrapping;
   });
-  return (
-    <meshStandardMaterial
-      {...{ ...textures, ...passedInProps }}
-      attach="material"
-    />
-  );
+  return <meshStandardMaterial {...{ ...textures, ...passedInProps }} attach="material" />;
 };
 
-export const ForestFloorMaterial1 = (
-  passedInProps: MeshStandardMaterialProps
-) => {
+export const ForestFloorMaterial1 = (passedInProps: MeshStandardMaterialProps) => {
   const textures = useTexture({
     map: "/3d-assets/textures/forest_ground_01_diff_1k.jpg",
     displacementMap: "/3d-assets/textures/forest_ground_01_disp_1k.jpg",
@@ -40,9 +33,7 @@ export const ForestFloorMaterial1 = (
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };
 
-export const ForestFloorMaterial2 = (
-  passedInProps: MeshStandardMaterialProps
-) => {
+export const ForestFloorMaterial2 = (passedInProps: MeshStandardMaterialProps) => {
   const textures = useTexture({
     map: "/3d-assets/textures/forest_ground_04_diff_1k.jpg",
     displacementMap: "/3d-assets/textures/forest_ground_04_disp_1k.jpg",
@@ -58,9 +49,7 @@ export const ForestFloorMaterial2 = (
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };
 
-export const ForestFloorMaterial3 = (
-  passedInProps: MeshStandardMaterialProps
-) => {
+export const ForestFloorMaterial3 = (passedInProps: MeshStandardMaterialProps) => {
   const textures = useTexture({
     map: "/3d-assets/textures/forest_floor_diff_1k.jpg",
     displacementMap: "/3d-assets/textures/forest_floor_disp_1k.jpg",
@@ -108,9 +97,7 @@ export const PineBarkMaterial = (passedInProps: MeshStandardMaterialProps) => {
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };
 
-export const ForestLeavesMaterial1 = (
-  passedInProps: MeshStandardMaterialProps
-) => {
+export const ForestLeavesMaterial1 = (passedInProps: MeshStandardMaterialProps) => {
   const textures = useTexture({
     map: "/3d-assets/textures/forest_leaves_02_diff_1k.jpg",
     displacementMap: "/3d-assets/textures/forest_leaves_02_disp_1k.jpg",
@@ -126,9 +113,7 @@ export const ForestLeavesMaterial1 = (
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };
 
-export const ForestLeavesMaterial2 = (
-  passedInProps: MeshStandardMaterialProps
-) => {
+export const ForestLeavesMaterial2 = (passedInProps: MeshStandardMaterialProps) => {
   const textures = useTexture({
     map: "/3d-assets/textures/forest_leaves_03_diff_1k.jpg",
     displacementMap: "/3d-assets/textures/forest_leaves_03_disp_1k.jpg",
@@ -160,9 +145,7 @@ export const GrassRockMaterial = (passedInProps: MeshStandardMaterialProps) => {
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };
 
-export const RocksGroundMaterial1 = (
-  passedInProps: MeshStandardMaterialProps
-) => {
+export const RocksGroundMaterial1 = (passedInProps: MeshStandardMaterialProps) => {
   const textures = useTexture({
     map: "/3d-assets/textures/rocks_ground_01_diff_1k.jpg",
     displacementMap: "/3d-assets/textures/rocks_ground_01_disp_1k.jpg",
@@ -178,9 +161,7 @@ export const RocksGroundMaterial1 = (
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };
 
-export const RocksGroundMaterial2 = (
-  passedInProps: MeshStandardMaterialProps
-) => {
+export const RocksGroundMaterial2 = (passedInProps: MeshStandardMaterialProps) => {
   const textures = useTexture({
     map: "/3d-assets/textures/rocks_ground_02_diff_1k.jpg",
     displacementMap: "/3d-assets/textures/rocks_ground_02_disp_1k.jpg",

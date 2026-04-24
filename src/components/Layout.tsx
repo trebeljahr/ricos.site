@@ -1,9 +1,9 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
+import { toTitleCase } from "src/lib/utils/toTitleCase";
 import { Meta } from "./Meta";
 import { LeftSmallNavbar } from "./Navbar/LeftSmallNavbar";
 import { TailwindNavbar } from "./Navbar/TailwindNavbar";
 import { OpenGraph } from "./OpenGraph";
-import { toTitleCase } from "src/lib/utils/toTitleCase";
 
 type Props = {
   children: ReactNode;
@@ -55,11 +55,7 @@ const Layout = ({
         ogType={ogType}
         articlePublishedTime={articlePublishedTime}
       />
-      {leftSmallNavbar ? (
-        <LeftSmallNavbar />
-      ) : (
-        <TailwindNavbar withProgressBar={withProgressBar} />
-      )}
+      {leftSmallNavbar ? <LeftSmallNavbar /> : <TailwindNavbar withProgressBar={withProgressBar} />}
 
       {children}
     </div>

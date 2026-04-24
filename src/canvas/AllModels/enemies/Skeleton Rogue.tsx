@@ -1,22 +1,15 @@
-import { useEffect, useMemo, useRef } from "react";
-import { useGraph } from "@react-three/fiber";
-import { useGLTF, useAnimations } from "@react-three/drei";
-import { GLTF, SkeletonUtils } from "three-stdlib";
 import { useGenericAnimationController } from "@r3f/Controllers/GenericAnimationController";
-import {
-  mapCommonActionToSkeletonAction,
-  SkeletonActionName,
-  SkeletonEnemyProps,
-} from "@r3f/Dungeon/BuildingBlocks/SkeletonEnemy";
-import {
-  AnimationClip,
-  Bone,
-  Group,
-  Mesh,
-  MeshStandardMaterial,
-  SkinnedMesh,
-} from "three";
 import { CommonActions } from "@r3f/Dungeon/BuildingBlocks/CommonEnemy";
+import {
+  type SkeletonActionName,
+  type SkeletonEnemyProps,
+  mapCommonActionToSkeletonAction,
+} from "@r3f/Dungeon/BuildingBlocks/SkeletonEnemy";
+import { useAnimations, useGLTF } from "@react-three/drei";
+import { useGraph } from "@react-three/fiber";
+import { useEffect, useMemo, useRef } from "react";
+import type { AnimationClip, Bone, Group, Mesh, MeshStandardMaterial, SkinnedMesh } from "three";
+import { type GLTF, SkeletonUtils } from "three-stdlib";
 
 interface GLTFAction extends AnimationClip {
   name: SkeletonActionName;
@@ -48,9 +41,7 @@ export function SkeletonRogue({
   ...props
 }: SkeletonEnemyProps) {
   const group = useRef<Group>(null!);
-  const { scene, animations } = useGLTF(
-    "/3d-assets/glb/enemies/Skeleton Rogue-transformed.glb"
-  );
+  const { scene, animations } = useGLTF("/3d-assets/glb/enemies/Skeleton Rogue-transformed.glb");
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;
   const { actions, mixer } = useAnimations(animations, group);

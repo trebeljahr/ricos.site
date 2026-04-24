@@ -2,14 +2,13 @@ import { Meta } from "@components/Meta";
 import { OpenGraph } from "@components/OpenGraph";
 import { nav } from "@r3f/ChunkGenerationSystem/config";
 import { KeyboardControlsProvider } from "@r3f/Controllers/KeyboardControls";
-import { Preload } from "@react-three/drei";
-import { Canvas, CanvasProps } from "@react-three/fiber";
+import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
+import { Canvas, type CanvasProps } from "@react-three/fiber";
 import dynamic from "next/dynamic";
-import { PropsWithChildren, Suspense } from "react";
+import { type PropsWithChildren, Suspense } from "react";
 import { toTitleCase } from "src/lib/utils/toTitleCase";
 import tunnel from "tunnel-rat";
 import { NavbarR3F } from "./NavbarR3F";
-import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
 
 type SeoProps = {
   description: string;
@@ -22,24 +21,12 @@ type SeoProps = {
 
 export const { In, Out } = tunnel();
 
-export const SeoInfo = ({
-  description,
-  title,
-  url,
-  image,
-  keywords,
-  imageAlt,
-}: SeoProps) => {
+export const SeoInfo = ({ description, title, url, image, keywords, imageAlt }: SeoProps) => {
   const properTitle = toTitleCase(title);
 
   return (
     <>
-      <Meta
-        description={description}
-        title={properTitle}
-        url={url}
-        keywords={keywords}
-      />
+      <Meta description={description} title={properTitle} url={url} keywords={keywords} />
       <OpenGraph
         title={properTitle}
         description={description}
@@ -61,9 +48,7 @@ export const ThreeFiberLayout = ({
       {nav && <NavbarR3F />}
       <div className="w-full h-screen overscoll-none">
         <Out />
-        <SceneWithLoadingState {...sceneWithLoadingStateProps}>
-          {children}
-        </SceneWithLoadingState>
+        <SceneWithLoadingState {...sceneWithLoadingStateProps}>{children}</SceneWithLoadingState>
       </div>
     </>
   );

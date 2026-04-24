@@ -1,8 +1,8 @@
 import { useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
 import { useMemo } from "react";
-import { Bone, MeshStandardMaterial, SkinnedMesh } from "three";
-import { GLTF, SkeletonUtils } from "three-stdlib";
+import type { Bone, MeshStandardMaterial, SkinnedMesh } from "three";
+import { type GLTF, SkeletonUtils } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -22,9 +22,7 @@ type GLTFResult = GLTF & {
 };
 
 export function Robot(props: JSX.IntrinsicElements["group"]) {
-  const { scene } = useGLTF(
-    "/3d-assets/glb/enemies/Rigged robot-transformed.glb"
-  );
+  const { scene } = useGLTF("/3d-assets/glb/enemies/Rigged robot-transformed.glb");
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;
   return (

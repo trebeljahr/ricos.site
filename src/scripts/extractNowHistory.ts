@@ -42,7 +42,7 @@ function main() {
   try {
     logOutput = execSync(
       `cd "${NOTES_DIR}" && git log --format="%H|%ai|%s" --follow "${NOW_FILE}" 2>/dev/null`,
-      { encoding: "utf-8" }
+      { encoding: "utf-8" },
     ).trim();
   } catch {
     console.error("Failed to read git history");
@@ -64,14 +64,14 @@ function main() {
     try {
       rawContent = execSync(
         `cd "${NOTES_DIR}" && git show "${commit.hash}:${NOW_FILE}" 2>/dev/null`,
-        { encoding: "utf-8" }
+        { encoding: "utf-8" },
       );
     } catch {
       // Try .mdx extension for older commits
       try {
         rawContent = execSync(
           `cd "${NOTES_DIR}" && git show "${commit.hash}:pages/now.mdx" 2>/dev/null`,
-          { encoding: "utf-8" }
+          { encoding: "utf-8" },
         );
       } catch {
         continue;

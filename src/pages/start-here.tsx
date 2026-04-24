@@ -72,15 +72,10 @@ export default function StartHerePage() {
           <div className="space-y-6">
             {highlights.map((item) => (
               <div key={item.href}>
-                <Link
-                  href={item.href}
-                  className="text-xl text-myBlue hover:underline font-medium"
-                >
+                <Link href={item.href} className="text-xl text-myBlue hover:underline font-medium">
                   {item.label}
                 </Link>
-                <p className="text-gray-500 dark:text-gray-400 mt-0! mb-0!">
-                  {item.note}
-                </p>
+                <p className="text-gray-500 dark:text-gray-400 mt-0! mb-0!">{item.note}</p>
               </div>
             ))}
           </div>
@@ -88,8 +83,8 @@ export default function StartHerePage() {
           <section className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800">
             <h2 className="text-2xl mb-4">Stay in Touch</h2>
             <p className="mb-4">
-              The best way to follow along is through my newsletter, Live and
-              Learn. It comes out every two weeks.
+              The best way to follow along is through my newsletter, Live and Learn. It comes out
+              every two weeks.
             </p>
             <NewsletterForm />
           </section>

@@ -1,16 +1,8 @@
-import {
-  MichelleCharacter,
-  michelleGlbUrl,
-} from "@r3f/AllModels/MichelleCharacter";
+import { MichelleCharacter, michelleGlbUrl } from "@r3f/AllModels/MichelleCharacter";
+import type { GroupProps, Object3DProps } from "@react-three/fiber";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
-import { GroupProps, Object3DProps } from "@react-three/fiber";
-import {
-  ForwardRefExoticComponent,
-  PropsWithChildren,
-  PropsWithRef,
-  RefAttributes,
-} from "react";
-import { Group } from "three";
+import type { ForwardRefExoticComponent, RefAttributes } from "react";
+import type { Group } from "three";
 
 const animationSet = {
   idle: "Idle",
@@ -21,9 +13,7 @@ const animationSet = {
   jumpLand: "Jump_Land",
 };
 
-export type SimpleModelType = (
-  props: JSX.IntrinsicElements["group"]
-) => JSX.Element;
+export type SimpleModelType = (props: JSX.IntrinsicElements["group"]) => JSX.Element;
 
 export type ForwardedRefModelType = ForwardRefExoticComponent<
   Omit<GroupProps, "ref"> & RefAttributes<Group>
@@ -47,10 +37,7 @@ export const EcctrlController = ({
       camCollisionOffset={0.5}
       // mode="FixedCamera"
     >
-      <EcctrlAnimation
-        characterURL={michelleGlbUrl}
-        animationSet={animationSet}
-      >
+      <EcctrlAnimation characterURL={michelleGlbUrl} animationSet={animationSet}>
         <Model />
       </EcctrlAnimation>
     </Ecctrl>

@@ -1,5 +1,5 @@
 import { KeyboardControls } from "@react-three/drei";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
 export const keymap = [
   { name: "forward", keys: ["ArrowUp", "w", "W", "KeyW"] },

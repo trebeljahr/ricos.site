@@ -1,9 +1,9 @@
-import { OxygenBar } from './OxygenBar'
+import { OxygenBar } from "./OxygenBar";
 
 export function UI() {
   return (
     <>
       <OxygenBar />
     </>
-  )
+  );
 }

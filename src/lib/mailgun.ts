@@ -1,7 +1,7 @@
 import "dotenv/config";
 import formData from "form-data";
 import Mailgun from "mailgun.js";
-import { CreateUpdateMailListMembers } from "mailgun.js/interfaces/mailListMembers";
+import type { CreateUpdateMailListMembers } from "mailgun.js/interfaces/mailListMembers";
 
 // @ts-ignore:next-line
 const mailgun = new Mailgun(formData);
@@ -31,7 +31,7 @@ type EmailData = {
 export async function deleteDomain() {
   const mg = createMgClient();
   const destroyedDomain = await mg.domains.destroy(
-    "sandboxf09111c8e9aa47da869eb96201663b74.mailgun.org"
+    "sandboxf09111c8e9aa47da869eb96201663b74.mailgun.org",
   );
 }
 
@@ -47,7 +47,6 @@ export async function createNewMailingList() {
     description: "Default Newsletter List for newsletter.trebeljahr.com",
     access_level: "everyone",
   });
-
 }
 
 export type Member = {
@@ -61,10 +60,7 @@ export type Member = {
 export async function isAlreadySubscribed(email: string) {
   const mg = createMgClient();
   try {
-    const existingMember = await mg.lists.members.getMember(
-      newsletterListMail,
-      email
-    );
+    const existingMember = await mg.lists.members.getMember(newsletterListMail, email);
     return existingMember.subscribed;
   } catch (err) {
     return false;
@@ -81,20 +77,14 @@ export async function addNewMemberToEmailList(newMember: Member) {
     subscribed: "no",
     upsert: "yes",
   });
-
 }
 
 export async function activateEmailListMember(email: string) {
   const mg = createMgClient();
 
-  const newMember = await mg.lists.members.updateMember(
-    newsletterListMail,
-    email,
-    {
-      subscribed: "yes",
-    } as unknown as CreateUpdateMailListMembers
-  );
-
+  const newMember = await mg.lists.members.updateMember(newsletterListMail, email, {
+    subscribed: "yes",
+  } as unknown as CreateUpdateMailListMembers);
 }
 
 export async function sendEmail(data: EmailData) {

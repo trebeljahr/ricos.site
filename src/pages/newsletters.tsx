@@ -4,8 +4,8 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
-import { CommonMetadata } from "src/@types";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import type { CommonMetadata } from "src/@types";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
@@ -20,21 +20,11 @@ const sortByNumbers = (arr: CommonMetadata[]) => {
     sensitivity: "base",
   });
 
-  return arr.sort(
-    (a, b) => -collator.compare(a.number as string, b.number as string),
-  );
+  return arr.sort((a, b) => -collator.compare(a.number as string, b.number as string));
 };
 
 const toNiceCard = (
-  {
-    link,
-    number,
-    title,
-    markdownExcerpt,
-    cover,
-    date,
-    metadata: { readingTime },
-  }: CommonMetadata,
+  { link, number, title, markdownExcerpt, cover, date, metadata: { readingTime } }: CommonMetadata,
   index: number,
 ) => {
   const priority = index <= 1;
@@ -58,11 +48,16 @@ const Newsletters = ({ newsletterData, seo }: Props) => {
   return (
     <Layout
       title={seo?.metaTitle || "Live and Learn Newsletter"}
-      description={seo?.metaDescription || "An archive overview page of all the Live and Learn editions I have published in the past."}
+      description={
+        seo?.metaDescription ||
+        "An archive overview page of all the Live and Learn editions I have published in the past."
+      }
       url={url}
       keywords={seo?.keywords || ["newsletters", "live and learn", "archive"]}
       image={seo?.ogImage || "/assets/midjourney/live-and-learn-cover.png"}
-      imageAlt={seo?.ogImageAlt || "a young boy absorbed in reading a book with sparks flying out of it"}
+      imageAlt={
+        seo?.ogImageAlt || "a young boy absorbed in reading a book with sparks flying out of it"
+      }
     >
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
@@ -72,9 +67,7 @@ const Newsletters = ({ newsletterData, seo }: Props) => {
             subtitle={"All the newsletters I have published so far since 2022."}
             title={"Live and Learn Newsletters 💌"}
           />
-          <div className="mt-20">
-            {newsletterData.slice(0, 2).map(toNiceCard)}
-          </div>
+          <div className="mt-20">{newsletterData.slice(0, 2).map(toNiceCard)}</div>
 
           <div className="my-32">
             <NewsletterForm
@@ -99,14 +92,12 @@ export default Newsletters;
 export const getStaticProps = async () => {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const newsletters = loadVeliteData("newsletters.json");
-  const newsletterData = extractAndSortMetadata(newsletters).map(
-    (newsletter: CommonMetadata) => ({
-      ...newsletter,
-      excerpt: newsletter.excerpt
-        .replace("Welcome to this edition of Live and Learn. ", "")
-        .replace("Enjoy.", ""),
-    }),
-  );
+  const newsletterData = extractAndSortMetadata(newsletters).map((newsletter: CommonMetadata) => ({
+    ...newsletter,
+    excerpt: newsletter.excerpt
+      .replace("Welcome to this edition of Live and Learn. ", "")
+      .replace("Enjoy.", ""),
+  }));
 
   return {
     props: { newsletterData: sortByNumbers(newsletterData), seo: getSeoInfo("/newsletters") },

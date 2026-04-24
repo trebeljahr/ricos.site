@@ -1,22 +1,10 @@
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
-import {
-  AnimationClip,
-  Bone,
-  Group,
-  MeshStandardMaterial,
-  SkinnedMesh,
-} from "three";
-import { GLTF, SkeletonUtils } from "three-stdlib";
+import type { AnimationClip, Bone, Group, MeshStandardMaterial, SkinnedMesh } from "three";
+import { type GLTF, SkeletonUtils } from "three-stdlib";
 
-type ActionName =
-  | "moving"
-  | "hit"
-  | "idle"
-  | "attack"
-  | "death"
-  | "attack_ranged";
+type ActionName = "moving" | "hit" | "idle" | "attack" | "death" | "attack_ranged";
 
 interface GLTFAction extends AnimationClip {
   name: ActionName;
@@ -117,9 +105,7 @@ type GLTFResult = GLTF & {
 
 export function Slime(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<Group>(null!);
-  const { scene, animations } = useGLTF(
-    "/3d-assets/glb/enemies/Slime Enemy-transformed.glb"
-  );
+  const { scene, animations } = useGLTF("/3d-assets/glb/enemies/Slime Enemy-transformed.glb");
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;
   const { actions } = useAnimations(animations, group);

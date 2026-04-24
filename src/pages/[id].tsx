@@ -1,19 +1,19 @@
-import type { Page as PageType } from "@velite";
+import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
+import Layout from "@components/Layout";
+import { MDXContent } from "@components/MDXContent";
+import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
-import { JsonLd, BreadcrumbJsonLd } from "@components/JsonLd";
-import Layout from "@components/Layout";
-import { NewsletterForm } from "@components/NewsletterForm";
-import { MDXContent } from "@components/MDXContent";
+import type { Page as PageType } from "@velite";
 
-import { MetadataDisplay } from "@components/MetadataDisplay";
 import { Backlinks } from "@components/Backlinks";
 import { BreadCrumbs } from "@components/BreadCrumbs";
+import { MetadataDisplay } from "@components/MetadataDisplay";
 import dynamic from "next/dynamic";
 
 const MDXContentWithDemos = dynamic(
   () => import("@components/MDXContentWithDemos").then((m) => m.MDXContentWithDemos),
-  { ssr: true }
+  { ssr: true },
 );
 type BacklinkItem = { title: string; link: string; type: string };
 
@@ -55,10 +55,7 @@ export default function Page({ page, backlinks }: Props) {
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose">
           <BreadCrumbs path={page.slug} />
-          <MetadataDisplay
-            date={page.date}
-            readingTime={page.metadata.readingTime}
-          />
+          <MetadataDisplay date={page.date} readingTime={page.metadata.readingTime} />
           <Header subtitle={subtitle} title={title} />
 
           {page.hasDemos ? (

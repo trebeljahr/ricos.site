@@ -1,14 +1,11 @@
+import { useInView } from "motion/react";
 import { useRef } from "react";
+import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from "react-resizable-panels";
 import { CodeEditor } from "./CodeEditor";
-import {
-  EditorContextProvider,
-  useEditorContext,
-} from "./EditorContextProvider";
+import { EditorContextProvider, useEditorContext } from "./EditorContextProvider";
 import { FullCanvasShader } from "./FullCanvasShader";
 import { TextureUploadUI } from "./TextureUploadUI";
 import defaultShader from "./shaders/fragmentShader.glsl";
-import { useInView } from "motion/react";
-import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from "react-resizable-panels";
 
 type Props = {
   initialShader: string;
@@ -55,9 +52,7 @@ const InProvider = () => {
       ref={ref}
       className={clsx(
         "h-full bg-[#0a0a0a] large-bleed",
-        expanded
-          ? "h-full overscroll-contain popup"
-          : "border-4 border-[#0a0a0a]"
+        expanded ? "h-full overscroll-contain popup" : "border-4 border-[#0a0a0a]",
       )}
       style={
         expanded
@@ -84,10 +79,7 @@ const InProvider = () => {
             <PanelResizeHandle className="w-1 bg-[#0a0a0a]" />
             <Panel>
               <div
-                className={clsx(
-                  expanded ? "h-[calc(100vh-34px)]" : "h-[512px]",
-                  "bg-[#0a0a0a]"
-                )}
+                className={clsx(expanded ? "h-[calc(100vh-34px)]" : "h-[512px]", "bg-[#0a0a0a]")}
               >
                 <FullCanvasShader />
               </div>
@@ -117,13 +109,13 @@ const _CompleteShaderEditor = ({ shaderName }: CompleteShaderEditorProps) => {
   return <ShaderEditor initialShader={initialShader} />;
 };
 
-import shadertoyExample1 from "./shaders/shadertoyExample1.glsl";
-import shadertoyExample2 from "./shaders/shadertoyExample2.glsl";
-import timeExample from "./shaders/timeExample.glsl";
-import mouseExample from "./shaders/mouseExample.glsl";
-import textureExample from "./shaders/textureExample.glsl";
 import { FaCompressArrowsAlt, FaExpandArrowsAlt } from "@components/Icons";
 import clsx from "clsx";
+import mouseExample from "./shaders/mouseExample.glsl";
+import shadertoyExample1 from "./shaders/shadertoyExample1.glsl";
+import shadertoyExample2 from "./shaders/shadertoyExample2.glsl";
+import textureExample from "./shaders/textureExample.glsl";
+import timeExample from "./shaders/timeExample.glsl";
 
 const EXAMPLE_SHADERS = {
   shadertoyExample1,

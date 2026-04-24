@@ -1,24 +1,18 @@
-import {
-  debug,
-  physicsDebug,
-  tileSize,
-} from "src/canvas/ChunkGenerationSystem/config";
-import { RigidBallSpawner } from "src/canvas/Helpers/RigidBall";
-import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
-import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
 import * as animals from "@r3f/AllModels/animals_pack";
 import * as dinosaurs from "@r3f/AllModels/dinosaurs_pack";
 import * as natureAssets from "@r3f/AllModels/nature_pack";
 import * as simpleNatureAssets from "@r3f/AllModels/simple_nature_pack";
-import { Canvas, GroupProps, Props, useFrame } from "@react-three/fiber";
+import { type GroupProps, useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Leva } from "leva";
+import { debug, physicsDebug, tileSize } from "src/canvas/ChunkGenerationSystem/config";
+import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 
-import { Plane, Text } from "@react-three/drei";
-import { ComponentType, PropsWithChildren, useRef } from "react";
-import { DoubleSide } from "three";
 import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { Plane, Text } from "@react-three/drei";
+import { type ComponentType, type PropsWithChildren, useRef } from "react";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { DoubleSide } from "three";
 
 const allNatureAssets = {
   ...simpleNatureAssets,
@@ -32,8 +26,7 @@ const animalAssets = {
 
 const natureKeysLength = Object.keys(allNatureAssets).length;
 
-const length = [...Object.keys(allNatureAssets), ...Object.keys(animalAssets)]
-  .length;
+const length = [...Object.keys(allNatureAssets), ...Object.keys(animalAssets)].length;
 
 const amountPerColumn = 10;
 const rowSize = tileSize / amountPerColumn;
@@ -54,10 +47,7 @@ export const AssetWithText = ({
   });
 
   return (
-    <group
-      key={index}
-      position={[(x + 0.5) * columnSize, 0, (z + 0.5) * rowSize]}
-    >
+    <group key={index} position={[(x + 0.5) * columnSize, 0, (z + 0.5) * rowSize]}>
       <Text
         ref={textRef}
         position={[0, 0.3, 1.5]}
@@ -105,15 +95,7 @@ const defaultSeoInfo = {
   description:
     "A showcase of Quaternius models in a simple grid to help me choose which one to use.",
   url: "/r3f/models/quaternius-models",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/quaternius-models.png",
   imageAlt: "Image of a grid filled with 3D models",
 };
@@ -132,21 +114,14 @@ const Page = ({ seo }: { seo: SeoInfo | null }) => {
   const groundColor = "#84fb34";
 
   return (
-    <ThreeFiberLayout
-      seoInfo={seoInfo}
-      camera={{ position: [0, 5, tileSize / 2] }}
-    >
+    <ThreeFiberLayout seoInfo={seoInfo} camera={{ position: [0, 5, tileSize / 2] }}>
       <In>
         <Leva />
       </In>
       <Physics debug={physicsDebug}>
         <ambientLight intensity={1.0} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
-        <hemisphereLight
-          color={"#FFFFFF"}
-          position={[0, 50, 0]}
-          groundColor={groundColor}
-        />
+        <hemisphereLight color={"#FFFFFF"} position={[0, 50, 0]} groundColor={groundColor} />
 
         <fogExp2 attach="fog" args={["#f0f0f0", 0.002]} />
         <color args={["#f0f0f0"]} attach="background" />

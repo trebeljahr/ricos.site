@@ -1,12 +1,11 @@
 import { Ray } from "@dimforge/rapier3d-compat";
 import { OrbitControls, useKeyboardControls } from "@react-three/drei";
-import { Object3DNode, useFrame, useThree } from "@react-three/fiber";
-import { RapierRigidBody, RigidBody, useRapier } from "@react-three/rapier";
-import { MutableRefObject, useEffect, useRef } from "react";
-import { Group, Object3D, Quaternion, Vector3 } from "three";
-import { OrbitControls as OrbitControlsImpl } from "three-stdlib";
-import { Trex } from "../AllModels/Trex";
-import { ModelType } from "./EcctrlController";
+import { useFrame, useThree } from "@react-three/fiber";
+import { type RapierRigidBody, RigidBody, useRapier } from "@react-three/rapier";
+import { type MutableRefObject, useEffect, useRef } from "react";
+import { type Group, Quaternion, Vector3 } from "three";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import type { ModelType } from "./EcctrlController";
 
 const velocity = 20;
 
@@ -44,7 +43,7 @@ export function ThirdPersonController({ Model }: { Model: ModelType }) {
 
 export function useCharacterController(
   rigidBodyRef: MutableRefObject<RapierRigidBody>,
-  orbitControlsRef: MutableRefObject<OrbitControlsImpl>
+  orbitControlsRef: MutableRefObject<OrbitControlsImpl>,
 ) {
   const walkDirectionRef = useRef(new Vector3());
   const rotateAngleRef = useRef(new Vector3(0, 1, 0));
@@ -53,9 +52,9 @@ export function useCharacterController(
   const storedFallRef = useRef(0);
   const rapier = useRapier();
 
-  const characterControllerRef = useRef<
-    ReturnType<typeof rapier.world.createCharacterController>
-  >(null!);
+  const characterControllerRef = useRef<ReturnType<typeof rapier.world.createCharacterController>>(
+    null!,
+  );
 
   const { camera } = useThree();
   useEffect(() => {
@@ -143,7 +142,7 @@ export function useCharacterController(
       const position = rigidBody.translation();
       const angleYCameraDirection = Math.atan2(
         camera.position.x - position.x,
-        camera.position.z - position.z
+        camera.position.z - position.z,
       );
 
       camera.getWorldDirection(walkDirection);
@@ -160,7 +159,7 @@ export function useCharacterController(
         });
       } else {
         const cameraPositionOffset = camera.position.sub(
-          new Vector3(position.x, position.y, position.z)
+          new Vector3(position.x, position.y, position.z),
         );
         updateCameraTarget(cameraPositionOffset);
 
@@ -169,10 +168,9 @@ export function useCharacterController(
         walkDirection.y += lerp(storedFallRef.current, -9.81 * delta, 0.1);
         storedFallRef.current = walkDirection.y;
         const ray = new Ray(translation, { x: 0, y: -1, z: 0 });
-        let hit = world.castRay(ray, 0.5, false, 1);
+        const hit = world.castRay(ray, 0.5, false, 1);
         if (hit) {
-          const grounded =
-            hit && hit.collider && Math.abs(hit.timeOfImpact) <= 1.75;
+          const grounded = hit && hit.collider && Math.abs(hit.timeOfImpact) <= 1.75;
           if (grounded) {
             storedFallRef.current = 0;
             walkDirection.y = lerp(0, Math.abs(hit.timeOfImpact), 0.5);
@@ -191,12 +189,9 @@ export function useCharacterController(
           y: translation.y + walkDirection.y,
           z: translation.z + walkDirection.z,
         };
-        characterController.computeColliderMovement(
-          collider2,
-          desiredTranslation
-        );
+        characterController.computeColliderMovement(collider2, desiredTranslation);
 
-        let correctedMovement = characterController.computedMovement();
+        const correctedMovement = characterController.computedMovement();
         const { x, y, z } = correctedMovement;
         rigidBody.setNextKinematicTranslation({ x, y: 0, z });
       }

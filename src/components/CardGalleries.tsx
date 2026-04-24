@@ -1,17 +1,8 @@
+import { FaChevronLeft, FaChevronRight } from "@components/Icons";
 import { useWindowWidth } from "@react-hook/window-size";
-import {
-  createRef,
-  FC,
-  UIEvent,
-  UIEventHandler,
-  useEffect,
-  useMemo,
-  useState,
-  WheelEventHandler,
-} from "react";
-import { FaChevronRight, FaChevronLeft } from "@components/Icons";
+import { type FC, type WheelEventHandler, createRef, useEffect, useMemo, useState } from "react";
+import type { CommonMetadata } from "src/@types";
 import { VerticalCard } from "./NiceCards";
-import { CommonMetadata } from "src/@types";
 
 export type CardGalleryProps = {
   content: CommonMetadata[];
@@ -31,9 +22,7 @@ export const CardGallery = ({
           key={singlePiece.slug}
           readingTime={singlePiece.metadata.readingTime}
           {...singlePiece}
-          markdownExcerpt={
-            withExcerpt ? singlePiece.markdownExcerpt : undefined
-          }
+          markdownExcerpt={withExcerpt ? singlePiece.markdownExcerpt : undefined}
           subtitle={withSubtitle ? singlePiece.subtitle : undefined}
         />
       ))}
@@ -68,11 +57,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
     const elementWidth = scrollRef.current?.children[0].clientWidth;
     if (!scrollRef.current || !elementWidth) return;
 
-    if (
-      Math.abs(event.deltaY) === 0 &&
-      Math.abs(event.deltaX) > 2 &&
-      !scrolled
-    ) {
+    if (Math.abs(event.deltaY) === 0 && Math.abs(event.deltaX) > 2 && !scrolled) {
       return setScrolled(true);
     }
   };
@@ -83,9 +68,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
 
     setShowButtons({
       left: scrollRef.current.scrollLeft >= elementWidth,
-      right:
-        scrollRef.current.scrollLeft <=
-        elementWidth * (content.length - itemsPerPage - 1),
+      right: scrollRef.current.scrollLeft <= elementWidth * (content.length - itemsPerPage - 1),
     });
   };
 
@@ -102,17 +85,14 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
         behavior: "smooth",
       });
     },
-    [itemsScrolledPerClick, scrollRef]
+    [itemsScrolledPerClick, scrollRef],
   );
 
   const handlePrevious = () => {
     handleScrolling("left");
   };
 
-  const handleNext = useMemo(
-    () => () => handleScrolling("right"),
-    [handleScrolling]
-  );
+  const handleNext = useMemo(() => () => handleScrolling("right"), [handleScrolling]);
 
   useEffect(() => {
     if (scrolled || hovering) return;
@@ -130,10 +110,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
 
             attrib === null && setTimeout(handleNext, 1000);
 
-            entry.target.setAttribute(
-              "data-interval-id",
-              intervalId.toString()
-            );
+            entry.target.setAttribute("data-interval-id", intervalId.toString());
           } else {
             const intervalId = entry.target.getAttribute("data-interval-id");
             if (intervalId) {
@@ -143,7 +120,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
           }
         });
       },
-      { threshold: 0.5 }
+      { threshold: 0.5 },
     );
 
     if (scrollRefElem) {
@@ -176,9 +153,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
           >
             <VerticalCard
               {...singlePiece}
-              markdownExcerpt={
-                withExcerpt ? singlePiece.markdownExcerpt : undefined
-              }
+              markdownExcerpt={withExcerpt ? singlePiece.markdownExcerpt : undefined}
               subtitle={withDescription ? singlePiece.subtitle : undefined}
               readingTime={singlePiece.metadata.readingTime}
             />

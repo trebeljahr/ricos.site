@@ -13,10 +13,7 @@ let _localMetadata: Record<string, ImageMetadata | undefined> | null = null;
 
 export function getLocalMetadata(): Record<string, ImageMetadata | undefined> {
   if (_localMetadata) return _localMetadata;
-  const filePath = resolve(
-    process.cwd(),
-    "src", "content", "Notes", "_data", "metadata.json"
-  );
+  const filePath = resolve(process.cwd(), "src", "content", "Notes", "_data", "metadata.json");
   _localMetadata = JSON.parse(readFileSync(filePath, "utf-8"));
   return _localMetadata!;
 }
@@ -52,8 +49,7 @@ export function getDataFromMetadata(prefix: string) {
 export function getFirstImageFromMetadata(prefix: string) {
   const imagePattern = /\.(jpg|jpeg|png|webp|gif|avif)$/i;
   const entry = Object.entries(getLocalMetadata()).find(
-    ([key, meta]) =>
-      key.startsWith(prefix) && meta !== undefined && imagePattern.test(key)
+    ([key, meta]) => key.startsWith(prefix) && meta !== undefined && imagePattern.test(key),
   );
   if (!entry) throw new Error(`No images found for prefix: ${prefix}`);
   const [key, meta] = entry;

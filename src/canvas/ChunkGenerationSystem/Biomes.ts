@@ -106,11 +106,7 @@ const Biomes: Record<BiomeName, BiomeType> = {
   },
 };
 
-export function getBiome(
-  nTemp: number,
-  nMoist: number,
-  nHeight: number
-): BiomeType {
+export function getBiome(nTemp: number, nMoist: number, nHeight: number): BiomeType {
   if (nHeight > 0.7) {
     return Biomes.Snow;
   }

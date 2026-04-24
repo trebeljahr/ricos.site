@@ -2,9 +2,9 @@ import { GenericHealthBar, Shapes } from "@r3f/Dungeon/Healthbar/Healthbar";
 import { Hud, OrthographicCamera } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import {
+  type MutableRefObject,
+  type PropsWithChildren,
   createContext,
-  MutableRefObject,
-  PropsWithChildren,
   useContext,
   useRef,
 } from "react";

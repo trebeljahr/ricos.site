@@ -1,5 +1,5 @@
-import { cos, getRotationMatrix, getScalingMatrix, sin } from "./drawHelpers";
-import { Matrix } from "./matrix";
+import { cos, getScalingMatrix, sin } from "./drawHelpers";
+import type { Matrix } from "./matrix";
 
 const precision = 0.000001;
 export class Vec2 {
@@ -93,10 +93,7 @@ export class Vec2 {
   }
 
   equals(other: Vec2) {
-    return (
-      Math.abs(other.x - this.x) < precision &&
-      Math.abs(other.y - this.y) < precision
-    );
+    return Math.abs(other.x - this.x) < precision && Math.abs(other.y - this.y) < precision;
   }
 
   perpDot(other: Vec2) {

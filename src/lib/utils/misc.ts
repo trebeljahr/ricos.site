@@ -1,10 +1,10 @@
 import { alea } from "seedrandom";
-import { HasDate, ImageProps } from "src/@types";
+import type { HasDate, ImageProps } from "src/@types";
 
 export function getRandomInInterval(
   min: number,
   max: number,
-  randFunc: () => number = Math.random
+  randFunc: () => number = Math.random,
 ) {
   return randFunc() * (max - min) + min;
 }
@@ -12,16 +12,12 @@ export function getRandomInInterval(
 export function getRandomInt(
   min: number,
   max: number,
-  randFunc: () => number = Math.random
+  randFunc: () => number = Math.random,
 ): number {
   return Math.floor(randFunc() * (max - min + 1)) + min;
 }
 
-export function getRandomIntUneven(
-  min: number,
-  max: number,
-  randFunc?: () => number
-): number {
+export function getRandomIntUneven(min: number, max: number, randFunc?: () => number): number {
   return makeUneven(getRandomInt(min, max - 1, randFunc));
 }
 
@@ -41,8 +37,7 @@ export const addIdAndIndex = (image: ImageProps, index: number) => {
   };
 };
 
-export const byDate = (a: HasDate, b: HasDate) =>
-  new Date(a.date) > new Date(b.date) ? -1 : 1;
+export const byDate = (a: HasDate, b: HasDate) => (new Date(a.date) > new Date(b.date) ? -1 : 1);
 
 export function getErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
@@ -50,7 +45,7 @@ export function getErrorMessage(error: unknown) {
 }
 export const byReadingTime = (
   a: { metadata?: { readingTime?: number } },
-  b: { metadata?: { readingTime?: number } }
+  b: { metadata?: { readingTime?: number } },
 ) => {
   const aTime = a.metadata?.readingTime || 0;
   const bTime = b.metadata?.readingTime || 0;
@@ -68,10 +63,5 @@ export const lerp = (a: number, b: number, t: number) => a + t * (b - a);
 
 export const inLerp = (a: number, b: number, v: number) => (v - a) / (b - a);
 
-export const remap = (
-  v: number,
-  oMin: number,
-  oMax: number,
-  rMin: number,
-  rMax: number
-) => lerp(rMin, rMax, inLerp(oMin, oMax, v));
+export const remap = (v: number, oMin: number, oMax: number, rMin: number, rMax: number) =>
+  lerp(rMin, rMax, inLerp(oMin, oMax, v));

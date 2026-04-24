@@ -1,6 +1,6 @@
-import { Matrix } from "./matrix";
 import { Polygon } from "./Poly";
 import { Vec2 } from "./Vector";
+import { Matrix } from "./matrix";
 
 export const toDegrees = (radians: number) => (radians * 180) / Math.PI;
 export const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
@@ -16,10 +16,10 @@ export function getProjectionMatrix(v: Vec2) {
 }
 
 export function getSupportPoint(vertices: Vec2[], d: Vec2) {
-  let highest = -Infinity;
+  let highest = Number.NEGATIVE_INFINITY;
   let support = new Vec2(0, 0);
 
-  for (let vertex of vertices) {
+  for (const vertex of vertices) {
     const dot = vertex.dot(d);
 
     if (dot > highest) {
@@ -48,8 +48,7 @@ export function insidePoly({ x, y }: Vec2, vertices: Vec2[]) {
     const xj = vertices[j].x,
       yj = vertices[j].y;
 
-    const intersect =
-      yi > y != yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+    const intersect = yi > y != yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
     if (intersect) inside = !inside;
   }
 
@@ -80,7 +79,7 @@ function doIntersect(a1: Vec2, a2: Vec2, b1: Vec2, b2: Vec2) {
 export function drawProjectionOnLine(
   ctx: CanvasRenderingContext2D,
   color: string,
-  [projectedS1, projectedS2]: [Vec2, Vec2]
+  [projectedS1, projectedS2]: [Vec2, Vec2],
 ) {
   ctx.save();
   ctx.fillStyle = color;
@@ -96,14 +95,14 @@ export function drawInfiniteLine(
   ctx: CanvasRenderingContext2D,
   p1: Vec2,
   p2: Vec2,
-  color?: string
+  color?: string,
 ) {
   ctx.save();
   const d = p1.sub(p2);
 
   const len = Math.max(
-    parseFloat(ctx.canvas.style.width),
-    parseFloat(ctx.canvas.style.height)
+    Number.parseFloat(ctx.canvas.style.width),
+    Number.parseFloat(ctx.canvas.style.height),
   );
   const l1 = p1.add(d.multScalar(len));
   const l2 = p1.add(d.multScalar(-len));
@@ -119,11 +118,11 @@ export function drawProjection(
   ctx: CanvasRenderingContext2D,
   polys: Polygon | [Polygon, Polygon],
   p1: Vec2,
-  p2: Vec2
+  p2: Vec2,
 ) {
   const origin = new Vec2(
-    parseFloat(ctx.canvas.style.width) / 2,
-    parseFloat(ctx.canvas.style.height) / 2
+    Number.parseFloat(ctx.canvas.style.width) / 2,
+    Number.parseFloat(ctx.canvas.style.height) / 2,
   );
   const toOrigin = getTranslationMatrix(origin.x, origin.y);
 
@@ -131,8 +130,8 @@ export function drawProjection(
   const d1 = p1.sub(p2);
 
   const len = Math.max(
-    parseFloat(ctx.canvas.style.width),
-    parseFloat(ctx.canvas.style.height)
+    Number.parseFloat(ctx.canvas.style.width),
+    Number.parseFloat(ctx.canvas.style.height),
   );
   const l1 = d2.unit().multScalar(len).transform(toOrigin);
   const l2 = d2.unit().multScalar(-len).transform(toOrigin);
@@ -218,10 +217,10 @@ export const niceGreen = "#63ad47";
 function regularPolygonVerts(n: number) {
   const verts = [];
   for (let i = 0; i < n; i++) {
-    verts.push([
-      Math.cos((2 * Math.PI * i) / n),
-      Math.sin((2 * Math.PI * i) / n),
-    ] as [number, number]);
+    verts.push([Math.cos((2 * Math.PI * i) / n), Math.sin((2 * Math.PI * i) / n)] as [
+      number,
+      number,
+    ]);
   }
 
   return verts;
@@ -234,9 +233,9 @@ export function starPoints() {
   let n = 0;
 
   for (let a = -Math.PI / 2; a < (3 * Math.PI) / 2; a += step) {
-    let r = n % 2 == 0 ? 2 : 1;
-    let x = r * Math.cos(a);
-    let y = r * Math.sin(a);
+    const r = n % 2 == 0 ? 2 : 1;
+    const x = r * Math.cos(a);
+    const y = r * Math.sin(a);
     pts.push(new Vec2(x, y));
     n++;
   }
@@ -244,10 +243,7 @@ export function starPoints() {
   return pts;
 }
 
-export function initPolygons(
-  ctx: CanvasRenderingContext2D,
-  providedPoly?: Polygon
-) {
+export function initPolygons(ctx: CanvasRenderingContext2D, providedPoly?: Polygon) {
   const poly1 = providedPoly || new Polygon(regularPolygonVerts(10), niceGreen);
 
   const poly2 = new Polygon(
@@ -258,7 +254,7 @@ export function initPolygons(
       [-4, 1],
       [-3, 0],
     ],
-    niceBlue
+    niceBlue,
   );
 
   const [w, h] = getWidthAndHeightFromCtx(ctx);
@@ -295,12 +291,12 @@ export function instrument(
   ctx: CanvasRenderingContext2D,
   polys: Polygon[],
   drawFn: () => void,
-  { convexityCheck = true, points = [] as Vec2[] } = {}
+  { convexityCheck = true, points = [] as Vec2[] } = {},
 ) {
   ctx.canvas.style.touchAction = "none";
 
   const rotationSpeed = 3;
-  let state: State = {
+  const state: State = {
     draggedPoly: undefined,
     draggedPoint: undefined,
     rotationChange: 0,
@@ -312,7 +308,7 @@ export function instrument(
     if (state.hoveredPoint) {
       state.draggedPoint = { point: state.hoveredPoint };
     }
-    for (let poly of polys) {
+    for (const poly of polys) {
       if (poly.hoveredVertex) {
         state.draggedPoint = { poly: poly, point: poly.hoveredVertex };
         return;
@@ -333,16 +329,13 @@ export function instrument(
 
     const mousePos = new Vec2(event.offsetX, event.offsetY);
 
-    for (let poly of polys) {
+    for (const poly of polys) {
       poly.hoveredVertex = poly.vertices.find((pos) => {
-        return (
-          mousePos.sub(pos).mag() <= 7 ||
-          state?.draggedPoint?.point?.equals(pos)
-        );
+        return mousePos.sub(pos).mag() <= 7 || state?.draggedPoint?.point?.equals(pos);
       });
     }
 
-    for (let point of points) {
+    for (const point of points) {
       if (mousePos.sub(point).mag() <= 7) {
         state.hoveredPoint = point;
       } else if (state.hoveredPoint?.equals(point)) {
@@ -351,20 +344,16 @@ export function instrument(
     }
 
     if (state.draggedPoly) {
-      state.draggedPoly.transform(
-        getTranslationMatrix(event.movementX, event.movementY)
-      );
+      state.draggedPoly.transform(getTranslationMatrix(event.movementX, event.movementY));
       return;
     }
 
     if (state.draggedPoint) {
-      state.draggedPoint.point.transform(
-        getTranslationMatrix(event.movementX, event.movementY)
-      );
+      state.draggedPoint.point.transform(getTranslationMatrix(event.movementX, event.movementY));
       if (!state.draggedPoint.poly?.isConvex()) {
         if (convexityCheck) {
           state.draggedPoint.point.transform(
-            getTranslationMatrix(-event.movementX, -event.movementY)
+            getTranslationMatrix(-event.movementX, -event.movementY),
           );
         } else {
           state.draggedPoint.poly?.triangulate();
@@ -453,7 +442,7 @@ export function drawArrow(
   ctx: CanvasRenderingContext2D,
   from: Vec2,
   to: Vec2,
-  arrowHeadLength = 20
+  arrowHeadLength = 20,
 ) {
   const dir = from.sub(to).perp().unit().multScalar(arrowHeadLength);
 
@@ -480,7 +469,7 @@ export function drawArrow(
 function flattenPointsOn(points: Vec2[], axis: Vec2): Projection {
   let min = Number.MAX_VALUE;
   let max = -Number.MAX_VALUE;
-  for (let point of points) {
+  for (const point of points) {
     const dot = point.dot(axis);
     if (dot < min) min = dot;
     if (dot > max) max = dot;
@@ -506,31 +495,21 @@ type Projection = {
   min: number;
 };
 
-export function drawAllProjections(
-  ctx: CanvasRenderingContext2D,
-  poly1: Polygon,
-  poly2: Polygon
-) {
-  let normals = [...poly1.edgeNormals(), ...poly2.edgeNormals()];
+export function drawAllProjections(ctx: CanvasRenderingContext2D, poly1: Polygon, poly2: Polygon) {
+  const normals = [...poly1.edgeNormals(), ...poly2.edgeNormals()];
 
   normals.forEach((e) => {
-    let p1 = new Vec2(e.x, e.y);
-    let p2 = p1.multScalar(-1);
+    const p1 = new Vec2(e.x, e.y);
+    const p2 = p1.multScalar(-1);
 
     drawProjection(ctx, [poly1, poly2], p1, p2);
   });
 }
 
 export function getWidthAndHeightFromCtx(ctx: CanvasRenderingContext2D) {
-  return [
-    parseFloat(ctx.canvas.style.width),
-    parseFloat(ctx.canvas.style.height),
-  ];
+  return [Number.parseFloat(ctx.canvas.style.width), Number.parseFloat(ctx.canvas.style.height)];
 }
-export function drawCoordinateSystem(
-  ctx: CanvasRenderingContext2D,
-  scaleFactor: number
-) {
+export function drawCoordinateSystem(ctx: CanvasRenderingContext2D, scaleFactor: number) {
   const [w, h] = getWidthAndHeightFromCtx(ctx);
 
   ctx.strokeStyle = "black";
@@ -540,26 +519,10 @@ export function drawCoordinateSystem(
   for (let i = 1; i < iterations; i++) {
     ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
 
-    line(
-      ctx,
-      new Vec2(0, h / 2 + i * scaleFactor),
-      new Vec2(w, h / 2 + i * scaleFactor)
-    );
-    line(
-      ctx,
-      new Vec2(w / 2 + i * scaleFactor, 0),
-      new Vec2(w / 2 + i * scaleFactor, h)
-    );
-    line(
-      ctx,
-      new Vec2(0, h / 2 - i * scaleFactor),
-      new Vec2(w, h / 2 - i * scaleFactor)
-    );
-    line(
-      ctx,
-      new Vec2(w / 2 - i * scaleFactor, 0),
-      new Vec2(w / 2 - i * scaleFactor, h)
-    );
+    line(ctx, new Vec2(0, h / 2 + i * scaleFactor), new Vec2(w, h / 2 + i * scaleFactor));
+    line(ctx, new Vec2(w / 2 + i * scaleFactor, 0), new Vec2(w / 2 + i * scaleFactor, h));
+    line(ctx, new Vec2(0, h / 2 - i * scaleFactor), new Vec2(w, h / 2 - i * scaleFactor));
+    line(ctx, new Vec2(w / 2 - i * scaleFactor, 0), new Vec2(w / 2 - i * scaleFactor, h));
   }
 }
 
@@ -593,7 +556,7 @@ export function visualizeCollision(
   ctx: CanvasRenderingContext2D,
   poly1: Polygon,
   poly2: Polygon,
-  response = true
+  response = true,
 ) {
   const responseVector = getResponseForCollision(poly1, poly2);
   const half = responseVector.multScalar(0.51);
@@ -603,25 +566,15 @@ export function visualizeCollision(
     poly2.translate(half);
   } else {
     ctx.strokeStyle = "black";
-    drawArrow(
-      ctx,
-      poly1.centroid(),
-      poly1.centroid().add(halfNeg),
-      half.mag() / 2
-    );
-    drawArrow(
-      ctx,
-      poly2.centroid(),
-      poly2.centroid().add(half),
-      half.mag() / 2
-    );
+    drawArrow(ctx, poly1.centroid(), poly1.centroid().add(halfNeg), half.mag() / 2);
+    drawArrow(ctx, poly2.centroid(), poly2.centroid().add(half), half.mag() / 2);
   }
 }
 
 export function getResponseForCollision(poly1: Polygon, poly2: Polygon) {
-  let smallestOverlap = Infinity;
+  let smallestOverlap = Number.POSITIVE_INFINITY;
   let axis = new Vec2(0, 0);
-  for (let normal of [...poly1.edgeNormals(), ...poly2.edgeNormals()]) {
+  for (const normal of [...poly1.edgeNormals(), ...poly2.edgeNormals()]) {
     const overlap = getShadowOverlap(normal, poly1.vertices, poly2.vertices);
     const absOverlap = Math.abs(overlap);
     if (absOverlap < Math.abs(smallestOverlap)) {
@@ -637,13 +590,13 @@ export function getResponseForCollision(poly1: Polygon, poly2: Polygon) {
 }
 
 export function checkCollision(poly1: Polygon, poly2: Polygon) {
-  for (let normal of poly1.edgeNormals()) {
+  for (const normal of poly1.edgeNormals()) {
     if (isSeparatingAxis(normal, poly1.vertices, poly2.vertices)) {
       return false;
     }
   }
 
-  for (let normal of poly2.edgeNormals()) {
+  for (const normal of poly2.edgeNormals()) {
     if (isSeparatingAxis(normal, poly1.vertices, poly2.vertices)) {
       return false;
     }
@@ -654,8 +607,8 @@ export function checkCollision(poly1: Polygon, poly2: Polygon) {
 
 export function drawBackground(ctx: CanvasRenderingContext2D) {
   const [w, h] = [
-    parseFloat(ctx.canvas.style.width),
-    parseFloat(ctx.canvas.style.height),
+    Number.parseFloat(ctx.canvas.style.width),
+    Number.parseFloat(ctx.canvas.style.height),
   ];
 
   ctx.fillStyle = "rgb(240, 240, 240)";

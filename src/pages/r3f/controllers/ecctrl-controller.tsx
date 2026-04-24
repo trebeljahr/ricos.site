@@ -5,22 +5,14 @@ import { Physics } from "@react-three/rapier";
 import { EcctrlController } from "src/canvas/Controllers/EcctrlController";
 
 import { Lights } from "src/canvas/Helpers/Lights";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "R3F Ecctrl Controller",
   description:
     "Implementation of the Ecctrl Controller in React Three Fiber. This is a simple 3D demo scene with a mixamo model that can move around the scene with animations.",
   url: "/r3f/controllers/ecctrl-controller",
-  keywords: [
-    "threejs",
-    "react-three-fiber",
-    "r3f",
-    "3D",
-    "programming",
-    "graphics",
-    "webgl",
-  ],
+  keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/r3f/ecctrl-controller.png",
   imageAlt: "an image of a girl standing in front of some trees",
 };

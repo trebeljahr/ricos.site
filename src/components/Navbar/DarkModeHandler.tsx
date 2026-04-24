@@ -1,6 +1,6 @@
+import { IoMoon, IoSunny } from "@components/Icons";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { IoMoon, IoSunny } from "@components/Icons";
 
 export const DarkModeHandler = () => {
   const { theme, setTheme, resolvedTheme } = useTheme();
@@ -14,11 +14,7 @@ export const DarkModeHandler = () => {
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       aria-label="Toggle dark mode"
     >
-      {mounted ? (
-        resolvedTheme === "dark" ? <IoMoon /> : <IoSunny />
-      ) : (
-        <span className="w-4 h-4" />
-      )}
+      {mounted ? resolvedTheme === "dark" ? <IoMoon /> : <IoSunny /> : <span className="w-4 h-4" />}
     </button>
   );
 };

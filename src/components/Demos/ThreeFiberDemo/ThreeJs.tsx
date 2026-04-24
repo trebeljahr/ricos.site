@@ -1,6 +1,6 @@
-import { Canvas, ThreeElements, useFrame } from "@react-three/fiber";
+import { Canvas, type ThreeElements, useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
-import { type Mesh } from "three";
+import type { Mesh } from "three";
 
 function Box(props: ThreeElements["mesh"]) {
   const ref = useRef<Mesh>(null!);

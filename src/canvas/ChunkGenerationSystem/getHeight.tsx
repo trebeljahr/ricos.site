@@ -1,5 +1,5 @@
-import { heightScale } from "./config";
 import { getFractalNoise } from "src/lib/utils/noise";
+import { heightScale } from "./config";
 
 export const getHeight = (x: number, z: number) => {
   const original = getFractalNoise(x, z);

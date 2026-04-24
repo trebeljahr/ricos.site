@@ -1,5 +1,5 @@
-import { generateRedirects } from "./src/scripts/createRedirects.js";
 import bundleAnalyzer from "@next/bundle-analyzer";
+import { generateRedirects } from "./src/scripts/createRedirects.js";
 
 const isDev = process.argv.indexOf("dev") !== -1;
 const isBuild = process.argv.indexOf("build") !== -1;
@@ -17,7 +17,11 @@ if (shouldRunVelite) {
   const { resolve, join } = await import("path");
   const r3fDir = resolve("src/pages/r3f");
   const shaderDir = resolve("src/shaders/standaloneFragmentShaders");
-  const toTitleCase = (s) => s.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
+  const toTitleCase = (s) =>
+    s
+      .split("-")
+      .map((w) => w[0].toUpperCase() + w.slice(1))
+      .join(" ");
   const links = {};
   const dirs = (await readdir(r3fDir)).filter((f) => !f.includes(".tsx"));
   for (const dir of dirs) {
@@ -25,9 +29,13 @@ if (shouldRunVelite) {
     const dirPath = join(r3fDir, dir);
     if ((await lstat(dirPath)).isFile()) continue;
     const files = await readdir(dirPath);
-    links[toTitleCase(dir)] = files.map((f) => f.replace(".tsx", "")).map((name) => ({ name, url: `/r3f/${dir}/${name}` }));
+    links[toTitleCase(dir)] = files
+      .map((f) => f.replace(".tsx", ""))
+      .map((name) => ({ name, url: `/r3f/${dir}/${name}` }));
   }
-  const shaders = (await readdir(shaderDir)).filter((f) => f.endsWith(".frag")).map((f) => f.replace(".frag", ""));
+  const shaders = (await readdir(shaderDir))
+    .filter((f) => f.endsWith(".frag"))
+    .map((f) => f.replace(".frag", ""));
   links["Shader Demos"] = shaders.map((name) => ({ name, url: `/r3f/shaders/${name}` }));
   await writeFile(resolve(".velite/r3f-links.json"), JSON.stringify({ links }));
 

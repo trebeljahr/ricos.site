@@ -1,11 +1,11 @@
+import { Backlinks } from "@components/Backlinks";
 import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ExternalLink } from "@components/ExternalLink";
-import { JsonLd, BreadcrumbJsonLd } from "@components/JsonLd";
+import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
-import { Backlinks } from "@components/Backlinks";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Podcastnote as PodcastnoteType } from "@velite";
 
@@ -25,7 +25,9 @@ const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
       title={podcastnote.seoTitle || podcastnote.displayTitle}
       description={podcastnote.metaDescription}
       url={url}
-      keywords={podcastnote.seoKeywords.length > 0 ? podcastnote.seoKeywords : podcastnote.tags.split(",")}
+      keywords={
+        podcastnote.seoKeywords.length > 0 ? podcastnote.seoKeywords : podcastnote.tags.split(",")
+      }
       withProgressBar={true}
       image={podcastnote.cover.src}
       imageAlt={podcastnote.cover.alt}
@@ -50,10 +52,7 @@ const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
       />
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
-        <MetadataDisplay
-          date={podcastnote.date}
-          readingTime={podcastnote.metadata.readingTime}
-        />
+        <MetadataDisplay date={podcastnote.date} readingTime={podcastnote.metadata.readingTime} />
 
         <article>
           <section className="Podcastnote-info">
@@ -69,15 +68,9 @@ const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
                 <b>Rating: {podcastnote.rating}/10</b>
               </p>
               <span className="mt-2">
-                Listen on:{" "}
-                <ExternalLink href={podcastnote.links.youtube}>
-                  Youtube
-                </ExternalLink>{" "}
-                |{" "}
-                <ExternalLink href={podcastnote.links.spotify}>
-                  Spotify
-                </ExternalLink>{" "}
-                | <ExternalLink href={podcastnote.links.web}>Web</ExternalLink>
+                Listen on: <ExternalLink href={podcastnote.links.youtube}>Youtube</ExternalLink> |{" "}
+                <ExternalLink href={podcastnote.links.spotify}>Spotify</ExternalLink> |{" "}
+                <ExternalLink href={podcastnote.links.web}>Web</ExternalLink>
               </span>
             </div>
           </section>
@@ -107,9 +100,7 @@ type Params = {
 export async function getStaticProps({ params }: Params) {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const podcastnotes: PodcastnoteType[] = loadVeliteData("podcastnotes.json");
-  const podcastnote = podcastnotes
-    .filter(byOnlyPublished)
-    .find(({ slug }) => params.id === slug);
+  const podcastnote = podcastnotes.filter(byOnlyPublished).find(({ slug }) => params.id === slug);
 
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");
   const backlinks = getBacklinks(podcastnote.link);

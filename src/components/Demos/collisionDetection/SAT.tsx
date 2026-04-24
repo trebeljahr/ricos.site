@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+import { useEffect, useState } from "react";
 
 import {
-  initPolygons,
-  instrument,
   checkCollision,
   drawAllProjections,
   drawBackground,
+  initPolygons,
+  instrument,
 } from "../../../lib/math/drawHelpers";
 export const SAT = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

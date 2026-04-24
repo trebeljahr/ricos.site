@@ -1,13 +1,13 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
-import { RenderImageProps, RenderImageContext } from "react-photo-album";
-import { ImageProps } from "src/@types";
+import type { RenderImageContext, RenderImageProps } from "react-photo-album";
+import type { ImageProps } from "src/@types";
 import { resolveAlt } from "src/lib/imageAlt";
 
 type PhotoWithId = ImageProps & { id: string; index: number; alt?: string };
 
 export function CustomImageRenderer(
   props: RenderImageProps,
-  context: RenderImageContext<PhotoWithId>
+  context: RenderImageContext<PhotoWithId>,
 ) {
   const { photo, width: renderedWidth, height: renderedHeight } = context;
 

@@ -1,29 +1,16 @@
+import { useAttachToBone } from "@hooks/useAttachToBone";
+import { enemyQuery, playerQuery } from "@r3f/AI/ecs";
 import { SkeletonMage } from "@r3f/AllModels/enemies/Skeleton Mage";
 import { SkeletonMinion } from "@r3f/AllModels/enemies/Skeleton Minion";
 import { SkeletonRogue } from "@r3f/AllModels/enemies/Skeleton Rogue";
 import { SkeletonWarrior } from "@r3f/AllModels/enemies/Skeleton Warrior";
-import { GroupProps, useFrame } from "@react-three/fiber";
+import { type GroupProps, useFrame } from "@react-three/fiber";
 import { useMemo, useRef, useState } from "react";
-import {
-  AnimationClip,
-  DoubleSide,
-  Group,
-  Mesh,
-  MeshStandardMaterial,
-  SkinnedMesh,
-  Vector3,
-} from "three";
-import { GLTF, RayParameters } from "three-stdlib";
-import {
-  WeaponTypes,
-  getRandomWeaponType,
-  useWeapon,
-} from "../Enemies/Weapons";
-import { CommonActions } from "./CommonEnemy";
-import { useAttachToBone } from "@hooks/useAttachToBone";
 import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
-import { enemyQuery, playerQuery } from "@r3f/AI/ecs";
-import { FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
+import type { AnimationClip, Group, Mesh, MeshStandardMaterial, SkinnedMesh, Vector3 } from "three";
+import type { GLTF } from "three-stdlib";
+import { WeaponTypes, getRandomWeaponType, useWeapon } from "../Enemies/Weapons";
+import { CommonActions } from "./CommonEnemy";
 
 export type SkeletonEnemyProps = GroupProps & {
   animationToPlay?: CommonActions;
@@ -64,89 +51,86 @@ export enum SkeletonActions {
   "2H_Ranged_Reload" = "2H_Ranged_Reload",
   "2H_Ranged_Shoot" = "2H_Ranged_Shoot",
   "2H_Ranged_Shooting" = "2H_Ranged_Shooting",
-  "Block" = "Block",
-  "Block_Attack" = "Block_Attack",
-  "Block_Hit" = "Block_Hit",
-  "Blocking" = "Blocking",
-  "Cheer" = "Cheer",
-  "Death_A" = "Death_A",
-  "Death_A_Pose" = "Death_A_Pose",
-  "Death_B" = "Death_B",
-  "Death_B_Pose" = "Death_B_Pose",
-  "Death_C_Pose" = "Death_C_Pose",
-  "Death_C_Skeletons" = "Death_C_Skeletons",
-  "Death_C_Skeletons_Resurrect" = "Death_C_Skeletons_Resurrect",
-  "Dodge_Backward" = "Dodge_Backward",
-  "Dodge_Forward" = "Dodge_Forward",
-  "Dodge_Left" = "Dodge_Left",
-  "Dodge_Right" = "Dodge_Right",
-  "Dualwield_Melee_Attack_Chop" = "Dualwield_Melee_Attack_Chop",
-  "Dualwield_Melee_Attack_Slice" = "Dualwield_Melee_Attack_Slice",
-  "Dualwield_Melee_Attack_Stab" = "Dualwield_Melee_Attack_Stab",
-  "Hit_A" = "Hit_A",
-  "Hit_B" = "Hit_B",
-  "Idle" = "Idle",
-  "Idle_Combat" = "Idle_Combat",
-  "Interact" = "Interact",
-  "Jump_Full_Long" = "Jump_Full_Long",
-  "Jump_Full_Short" = "Jump_Full_Short",
-  "Jump_Idle" = "Jump_Idle",
-  "Jump_Start" = "Jump_Start",
-  "Jump_Land" = "Jump_Land",
-  "Lie_Down" = "Lie_Down",
-  "Lie_Idle" = "Lie_Idle",
-  "Lie_Pose" = "Lie_Pose",
-  "Lie_StandUp" = "Lie_StandUp",
-  "PickUp" = "PickUp",
-  "Running_A" = "Running_A",
-  "Running_B" = "Running_B",
-  "Running_C" = "Running_C",
-  "Running_Strafe_Left" = "Running_Strafe_Left",
-  "Running_Strafe_Right" = "Running_Strafe_Right",
-  "Sit_Chair_Down" = "Sit_Chair_Down",
-  "Sit_Chair_Idle" = "Sit_Chair_Idle",
-  "Sit_Chair_Pose" = "Sit_Chair_Pose",
-  "Sit_Floor_Down" = "Sit_Floor_Down",
-  "Sit_Floor_Idle" = "Sit_Floor_Idle",
-  "Sit_Floor_Pose" = "Sit_Floor_Pose",
-  "Sit_Chair_StandUp" = "Sit_Chair_StandUp",
-  "Sit_Floor_StandUp" = "Sit_Floor_StandUp",
-  "Skeleton_Inactive_Standing_Pose" = "Skeleton_Inactive_Standing_Pose",
-  "Skeletons_Awaken_Floor" = "Skeletons_Awaken_Floor",
-  "Skeletons_Awaken_Floor_Long" = "Skeletons_Awaken_Floor_Long",
-  "Skeletons_Inactive_Floor_Pose" = "Skeletons_Inactive_Floor_Pose",
-  "Skeletons_Awaken_Standing" = "Skeletons_Awaken_Standing",
-  "Spawn_Air" = "Spawn_Air",
-  "Spawn_Ground" = "Spawn_Ground",
-  "Spawn_Ground_Skeletons" = "Spawn_Ground_Skeletons",
-  "Spellcast_Long" = "Spellcast_Long",
-  "Spellcast_Raise" = "Spellcast_Raise",
-  "Spellcast_Shoot" = "Spellcast_Shoot",
-  "Spellcast_Summon" = "Spellcast_Summon",
-  "Spellcasting" = "Spellcasting",
-  "Taunt" = "Taunt",
-  "Taunt_Longer" = "Taunt_Longer",
-  "Throw" = "Throw",
-  "Unarmed_Idle" = "Unarmed_Idle",
-  "Unarmed_Melee_Attack_Kick" = "Unarmed_Melee_Attack_Kick",
-  "Unarmed_Melee_Attack_Punch_A" = "Unarmed_Melee_Attack_Punch_A",
-  "Unarmed_Melee_Attack_Punch_B" = "Unarmed_Melee_Attack_Punch_B",
-  "Unarmed_Pose" = "Unarmed_Pose",
-  "Use_Item" = "Use_Item",
-  "Walking_A" = "Walking_A",
-  "Walking_B" = "Walking_B",
-  "Walking_Backwards" = "Walking_Backwards",
-  "Walking_C" = "Walking_C",
-  "Walking_D_Skeletons" = "Walking_D_Skeletons",
-  "Idle_B" = "Idle_B",
+  Block = "Block",
+  Block_Attack = "Block_Attack",
+  Block_Hit = "Block_Hit",
+  Blocking = "Blocking",
+  Cheer = "Cheer",
+  Death_A = "Death_A",
+  Death_A_Pose = "Death_A_Pose",
+  Death_B = "Death_B",
+  Death_B_Pose = "Death_B_Pose",
+  Death_C_Pose = "Death_C_Pose",
+  Death_C_Skeletons = "Death_C_Skeletons",
+  Death_C_Skeletons_Resurrect = "Death_C_Skeletons_Resurrect",
+  Dodge_Backward = "Dodge_Backward",
+  Dodge_Forward = "Dodge_Forward",
+  Dodge_Left = "Dodge_Left",
+  Dodge_Right = "Dodge_Right",
+  Dualwield_Melee_Attack_Chop = "Dualwield_Melee_Attack_Chop",
+  Dualwield_Melee_Attack_Slice = "Dualwield_Melee_Attack_Slice",
+  Dualwield_Melee_Attack_Stab = "Dualwield_Melee_Attack_Stab",
+  Hit_A = "Hit_A",
+  Hit_B = "Hit_B",
+  Idle = "Idle",
+  Idle_Combat = "Idle_Combat",
+  Interact = "Interact",
+  Jump_Full_Long = "Jump_Full_Long",
+  Jump_Full_Short = "Jump_Full_Short",
+  Jump_Idle = "Jump_Idle",
+  Jump_Start = "Jump_Start",
+  Jump_Land = "Jump_Land",
+  Lie_Down = "Lie_Down",
+  Lie_Idle = "Lie_Idle",
+  Lie_Pose = "Lie_Pose",
+  Lie_StandUp = "Lie_StandUp",
+  PickUp = "PickUp",
+  Running_A = "Running_A",
+  Running_B = "Running_B",
+  Running_C = "Running_C",
+  Running_Strafe_Left = "Running_Strafe_Left",
+  Running_Strafe_Right = "Running_Strafe_Right",
+  Sit_Chair_Down = "Sit_Chair_Down",
+  Sit_Chair_Idle = "Sit_Chair_Idle",
+  Sit_Chair_Pose = "Sit_Chair_Pose",
+  Sit_Floor_Down = "Sit_Floor_Down",
+  Sit_Floor_Idle = "Sit_Floor_Idle",
+  Sit_Floor_Pose = "Sit_Floor_Pose",
+  Sit_Chair_StandUp = "Sit_Chair_StandUp",
+  Sit_Floor_StandUp = "Sit_Floor_StandUp",
+  Skeleton_Inactive_Standing_Pose = "Skeleton_Inactive_Standing_Pose",
+  Skeletons_Awaken_Floor = "Skeletons_Awaken_Floor",
+  Skeletons_Awaken_Floor_Long = "Skeletons_Awaken_Floor_Long",
+  Skeletons_Inactive_Floor_Pose = "Skeletons_Inactive_Floor_Pose",
+  Skeletons_Awaken_Standing = "Skeletons_Awaken_Standing",
+  Spawn_Air = "Spawn_Air",
+  Spawn_Ground = "Spawn_Ground",
+  Spawn_Ground_Skeletons = "Spawn_Ground_Skeletons",
+  Spellcast_Long = "Spellcast_Long",
+  Spellcast_Raise = "Spellcast_Raise",
+  Spellcast_Shoot = "Spellcast_Shoot",
+  Spellcast_Summon = "Spellcast_Summon",
+  Spellcasting = "Spellcasting",
+  Taunt = "Taunt",
+  Taunt_Longer = "Taunt_Longer",
+  Throw = "Throw",
+  Unarmed_Idle = "Unarmed_Idle",
+  Unarmed_Melee_Attack_Kick = "Unarmed_Melee_Attack_Kick",
+  Unarmed_Melee_Attack_Punch_A = "Unarmed_Melee_Attack_Punch_A",
+  Unarmed_Melee_Attack_Punch_B = "Unarmed_Melee_Attack_Punch_B",
+  Unarmed_Pose = "Unarmed_Pose",
+  Use_Item = "Use_Item",
+  Walking_A = "Walking_A",
+  Walking_B = "Walking_B",
+  Walking_Backwards = "Walking_Backwards",
+  Walking_C = "Walking_C",
+  Walking_D_Skeletons = "Walking_D_Skeletons",
+  Idle_B = "Idle_B",
 }
 
 export type SkeletonActionName = keyof typeof SkeletonActions;
 
-export const mapCommonActionToSkeletonAction: Record<
-  CommonActions,
-  SkeletonActionName
-> = {
+export const mapCommonActionToSkeletonAction: Record<CommonActions, SkeletonActionName> = {
   [CommonActions.Idle]: "Idle",
   [CommonActions.Walk]: "Walking_A",
   [CommonActions.Run]: "Running_A",
@@ -173,9 +157,7 @@ export const SkeletonWithAnimations = ({
   ItemLeft: WeaponTypes;
   skeletonType?: SkeletonTypes;
 }) => {
-  const [animationToPlay, setAnimationToPlay] = useState<CommonActions>(
-    CommonActions.Walk
-  );
+  const [animationToPlay, setAnimationToPlay] = useState<CommonActions>(CommonActions.Walk);
   const [rayPositions, setRayPositions] = useState<{
     sourceOffset: Vector3;
     destOffset: Vector3;

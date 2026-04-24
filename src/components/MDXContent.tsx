@@ -1,6 +1,6 @@
 import { getMDXComponent } from "mdx-bundler/client";
 import { useMemo } from "react";
-import { MDXResult } from "src/@types";
+import type { MDXResult } from "src/@types";
 import { MarkdownRenderers } from "./MarkdownRenderers";
 
 interface MDXProps {

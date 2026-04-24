@@ -1,8 +1,8 @@
 import { execSync } from "child_process";
 import fs from "fs";
+import path from "path";
 import * as glob from "glob";
 import matter from "gray-matter";
-import path from "path";
 
 const directory = "src/content/Notes/booknotes";
 
@@ -66,8 +66,7 @@ mdFiles.forEach((filePath: string) => {
   const fileName = path.basename(filePath, ".md");
   const { data: frontmatter, content } = matter(fileContent);
 
-  const parsedCreationDate =
-    parseDateFromTitle(fileName) || getCreationDate(filePath);
+  const parsedCreationDate = parseDateFromTitle(fileName) || getCreationDate(filePath);
 
   const { title, bookAuthor } = parseBookTitle(fileName);
   const newFrontmatter = {

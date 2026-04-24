@@ -1,5 +1,5 @@
 import { Vector3 } from "three";
-import { BiomeType } from "../ChunkGenerationSystem/Biomes";
+import type { BiomeType } from "../ChunkGenerationSystem/Biomes";
 import { baseResolution } from "../ChunkGenerationSystem/config";
 
 export enum TreeType {
@@ -72,7 +72,7 @@ interface TreePlacementInfo {
 }
 
 export function seededRandom(seed: number): () => number {
-  return function () {
+  return () => {
     const x = Math.sin(seed++) * 10000;
     return x - Math.floor(x);
   };
@@ -84,7 +84,7 @@ export function genTreesPositionsForBiomes(
   tileSize: number,
   biomeMap: BiomeType[][],
   heightMap: number[][],
-  slopeMap: number[][]
+  slopeMap: number[][],
 ): TreePlacementInfo[] {
   const trees: TreePlacementInfo[] = [];
   const seed = chunkPosition.x * 10000 + chunkPosition.z;
@@ -109,25 +109,18 @@ export function genTreesPositionsForBiomes(
       continue;
     }
 
-    const localX =
-      gridX * segmentSize - halfSize + (random() - 0.5) * segmentSize;
-    const localZ =
-      gridZ * segmentSize - halfSize + (random() - 0.5) * segmentSize;
+    const localX = gridX * segmentSize - halfSize + (random() - 0.5) * segmentSize;
+    const localZ = gridZ * segmentSize - halfSize + (random() - 0.5) * segmentSize;
 
     const height = heightMap[gridZ][gridX];
 
-    const compatibleTrees = biome.treeTypes.map(
-      (tree) => TREE_PROPERTIES[tree]
-    );
+    const compatibleTrees = biome.treeTypes.map((tree) => TREE_PROPERTIES[tree]);
 
     if (compatibleTrees.length === 0) {
       continue;
     }
 
-    const totalWeight = compatibleTrees.reduce(
-      (sum, tree) => sum + tree.densityFactor,
-      0
-    );
+    const totalWeight = compatibleTrees.reduce((sum, tree) => sum + tree.densityFactor, 0);
     let randomWeight = random() * totalWeight;
     let selectedTree = compatibleTrees[0];
 
@@ -141,11 +134,7 @@ export function genTreesPositionsForBiomes(
 
     trees.push({
       type: selectedTree.type,
-      position: new Vector3(
-        localX,
-        height + selectedTree.heightOffset - 1,
-        localZ
-      ),
+      position: new Vector3(localX, height + selectedTree.heightOffset - 1, localZ),
       scale: selectedTree.scale,
       rotation: [0, random() * Math.PI * 2, 0],
     });
@@ -154,10 +143,7 @@ export function genTreesPositionsForBiomes(
   return trees;
 }
 
-export function avoidTreeOverlap(
-  trees: TreePlacementInfo[],
-  minDistance: number = 5
-): TreePlacementInfo[] {
+export function avoidTreeOverlap(trees: TreePlacementInfo[], minDistance = 5): TreePlacementInfo[] {
   const result: TreePlacementInfo[] = [];
 
   for (const tree of trees) {
@@ -182,9 +168,7 @@ export function avoidTreeOverlap(
   return result;
 }
 
-export function addTreeVariation(
-  trees: TreePlacementInfo[]
-): TreePlacementInfo[] {
+export function addTreeVariation(trees: TreePlacementInfo[]): TreePlacementInfo[] {
   const random = seededRandom(12345);
 
   return trees.map((tree) => {
@@ -202,11 +186,7 @@ export function addTreeVariation(
 
     return {
       ...tree,
-      position: new Vector3(
-        tree.position.x + offsetX,
-        tree.position.y,
-        tree.position.z + offsetZ
-      ),
+      position: new Vector3(tree.position.x + offsetX, tree.position.y, tree.position.z + offsetZ),
       scale: newScale,
     };
   });

@@ -93,10 +93,7 @@ function generateSearchIndex() {
     });
   }
 
-  writeFileSync(
-    resolve("public", "search-index.json"),
-    JSON.stringify(items)
-  );
+  writeFileSync(resolve("public", "search-index.json"), JSON.stringify(items));
 
   console.log(`Search index generated with ${items.length} items`);
 }

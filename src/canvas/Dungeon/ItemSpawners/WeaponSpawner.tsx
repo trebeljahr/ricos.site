@@ -8,28 +8,23 @@ import {
   Dagger,
   Dagger_Golden,
   Sword,
+  Sword_Golden,
   Sword_big,
   Sword_big_Golden,
-  Sword_Golden,
 } from "@r3f/AllModels/rpg_items_pack";
+import { nanoid } from "nanoid";
 import { useCallback, useMemo } from "react";
 import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
-import {
-  Collectible,
-  ItemSpawner,
-  Rarity,
-  SpawnerImplementation,
-} from "./ItemSpawner";
 import { useInventory } from "../InventorySystem/GameInventoryContext";
-import { nanoid } from "nanoid";
+import { type Collectible, ItemSpawner, Rarity, type SpawnerImplementation } from "./ItemSpawner";
 
 enum WeaponTypes {
-  Sword,
-  Sword_Big,
-  Axe,
-  DoubleAxe,
-  Bow,
-  Dagger,
+  Sword = 0,
+  Sword_Big = 1,
+  Axe = 2,
+  DoubleAxe = 3,
+  Bow = 4,
+  Dagger = 5,
 }
 
 type WeaponData = {
@@ -62,16 +57,11 @@ export const RandomWeaponsSpawner: SpawnerImplementation = (props) => {
         equipSlot: "right",
       });
     },
-    [addItem, Weapon]
+    [addItem, Weapon],
   );
 
   return (
-    <ItemSpawner
-      Item={Weapon.Component}
-      {...props}
-      onCollected={onCollected}
-      data={Weapon.data}
-    />
+    <ItemSpawner Item={Weapon.Component} {...props} onCollected={onCollected} data={Weapon.data} />
   );
 };
 

@@ -1,6 +1,6 @@
-import { Material } from "three";
-import { MemoizedChunk, useChunkContext } from "./ChunkProvider";
 import { HeightfieldTileWithCollider } from "@r3f/Scenes/HeightfieldTileWithCollider";
+import type { Material } from "three";
+import { MemoizedChunk, useChunkContext } from "./ChunkProvider";
 
 export const ChunkRenderer = ({
   material,

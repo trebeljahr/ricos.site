@@ -1,13 +1,9 @@
 import { BirchTree_1 } from "@r3f/AllModels/nature_pack";
 import { useTree1 } from "@r3f/AllModels/nature_pack/CommonTree_1";
 import { Tree1 } from "@r3f/AllModels/simple_nature_pack";
-import {
-  CylinderCollider,
-  InstancedRigidBodies,
-  RigidBody,
-} from "@react-three/rapier";
+import { CylinderCollider, InstancedRigidBodies, RigidBody } from "@react-three/rapier";
 import { useRef } from "react";
-import { Vector3, Vector3Tuple } from "three";
+import { Vector3, type Vector3Tuple } from "three";
 import { randFloat } from "three/src/math/MathUtils";
 import { floorLevel } from "../Helpers/Obstacles";
 
@@ -22,11 +18,7 @@ export const InstancedTreesWithPhysics = () => {
     randFloat(-10, 10),
   ]);
   const scaleFactor = 20;
-  const rotations: Vector3Tuple[] = Array.from({ length: COUNT }, () => [
-    0,
-    0,
-    Math.PI / 2,
-  ]);
+  const rotations: Vector3Tuple[] = Array.from({ length: COUNT }, () => [0, 0, Math.PI / 2]);
   return (
     <group>
       <InstancedRigidBodies
@@ -88,11 +80,7 @@ export const TreeWithCuboidPhysics = () => {
 
 export const TreeWithHullPhysics = () => {
   return (
-    <RigidBody
-      position={new Vector3(0, floorLevel, 12)}
-      type="fixed"
-      colliders="hull"
-    >
+    <RigidBody position={new Vector3(0, floorLevel, 12)} type="fixed" colliders="hull">
       <Tree1 />
     </RigidBody>
   );
@@ -100,11 +88,7 @@ export const TreeWithHullPhysics = () => {
 
 export const TreeWithTrimeshPhysics = () => {
   return (
-    <RigidBody
-      type="fixed"
-      colliders="trimesh"
-      position={new Vector3(0, floorLevel, 8)}
-    >
+    <RigidBody type="fixed" colliders="trimesh" position={new Vector3(0, floorLevel, 8)}>
       <Tree1 />
     </RigidBody>
   );
@@ -117,13 +101,7 @@ export function Trees() {
   return (
     <>
       {positions.map((pos, index) => {
-        return (
-          <BirchTree_1
-            key={index}
-            position={pos}
-            scale={new Vector3(5, 5, 5)}
-          />
-        );
+        return <BirchTree_1 key={index} position={pos} scale={new Vector3(5, 5, 5)} />;
       })}
     </>
   );

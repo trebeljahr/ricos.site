@@ -1,9 +1,8 @@
 import { useKeyboardInput } from "@hooks/useKeyboardInput";
-import { useAnimations, useFBX, useGLTF } from "@react-three/drei";
-import { useThree } from "@react-three/fiber";
+import { useAnimations, useGLTF } from "@react-three/drei";
 import { useControls } from "leva";
 import { useEffect, useRef } from "react";
-import { type AnimationClip, Mesh } from "three";
+import type { AnimationClip, Mesh } from "three";
 import { useGenericAnimationController } from "../Controllers/GenericAnimationController";
 
 interface GLTFAction extends AnimationClip {
@@ -11,24 +10,24 @@ interface GLTFAction extends AnimationClip {
 }
 
 export enum MixamoCharacterNames {
-  "Alien" = "alien",
-  "Archer" = "archer",
-  "Arissa" = "arissa",
-  "Ely" = "ely",
-  "Eve" = "eve",
-  "Exo" = "exo",
-  "Ganfaul" = "ganfaul",
-  "Heraklios" = "heraklios",
-  "Kachujin" = "kachujin",
-  "Michelle" = "michelle",
-  "Ninja" = "ninja",
-  "Paladin" = "paladin",
-  "Pirate" = "pirate",
-  "SpecialOps" = "special-ops",
-  "Vanguard" = "vanguard",
-  "Wildling" = "wildling",
-  "XBot" = "x-bot",
-  "YBot" = "y-bot",
+  Alien = "alien",
+  Archer = "archer",
+  Arissa = "arissa",
+  Ely = "ely",
+  Eve = "eve",
+  Exo = "exo",
+  Ganfaul = "ganfaul",
+  Heraklios = "heraklios",
+  Kachujin = "kachujin",
+  Michelle = "michelle",
+  Ninja = "ninja",
+  Paladin = "paladin",
+  Pirate = "pirate",
+  SpecialOps = "special-ops",
+  Vanguard = "vanguard",
+  Wildling = "wildling",
+  XBot = "x-bot",
+  YBot = "y-bot",
 }
 
 export default function Character() {
@@ -41,9 +40,7 @@ export default function Character() {
   });
 
   const characterMeshRef = useRef<Mesh>(null!);
-  const characterModel = useGLTF(
-    `/3d-assets/glb/characters/${characterName}-transformed.glb`
-  );
+  const characterModel = useGLTF(`/3d-assets/glb/characters/${characterName}-transformed.glb`);
 
   const running = useGLTF("/3d-assets/glb/animations/running.glb");
   const idle = useGLTF("/3d-assets/glb/animations/idle.glb");
@@ -136,7 +133,7 @@ export default function Character() {
     },
     {
       collapsed: true,
-    }
+    },
   );
 
   useKeyboardInput(({ key }) => {

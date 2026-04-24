@@ -1,15 +1,15 @@
-import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasShader";
-import { SeoInfo, SceneWithLoadingState } from "@components/dom/ThreeFiberLayout";
+import { FaCheck, FaInfo, FaShareAlt, FiX } from "@components/Icons";
 import { NavbarR3F } from "@components/dom/NavbarR3F";
+import { SceneWithLoadingState, SeoInfo } from "@components/dom/ThreeFiberLayout";
+import { nav, recording } from "@r3f/ChunkGenerationSystem/config";
+import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasShader";
 import controllableShaderArt from "@shaders/controllableShaderArt.glsl";
-import { AnimatePresence, motion } from "motion/react";
 import { Leva, useControls } from "leva";
+import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaCheck, FaInfo, FaShareAlt, FiX } from "@components/Icons";
-import { IUniform } from "three";
-import { nav, recording } from "@r3f/ChunkGenerationSystem/config";
+import type { IUniform } from "three";
 
 function ShareWithOthersButton() {
   const handleClick = async () => {
@@ -34,8 +34,7 @@ function ShareWithOthersButton() {
     >
       {disabled ? (
         <span className="text-sm flex place-items-center text-gray-200">
-          Copied URL for Sharing{" "}
-          <FaCheck className="ml-5 size-4 text-green-400" />
+          Copied URL for Sharing <FaCheck className="ml-5 size-4 text-green-400" />
         </span>
       ) : (
         <FaShareAlt className="size-4 text-gray-200" />
@@ -69,10 +68,10 @@ const InfoButton = () => {
           >
             <div className="max-w-prose">
               <p className="pr-5">
-                This shader art demo allows you to control a fractal shader with
-                sliders. Go create something cool! You can share your current
-                settings with others by clicking the share button in the bottom
-                right. This will copy the URL which you can then send around.
+                This shader art demo allows you to control a fractal shader with sliders. Go create
+                something cool! You can share your current settings with others by clicking the
+                share button in the bottom right. This will copy the URL which you can then send
+                around.
               </p>
               <p className="mb-0!">Try some presets!</p>
               <Link href="/r3f/scenes/shader-art-demo?chosenShape=0&chosenPalette=5&repetitions=2.1&speedFactor=0.6&scaleFactor=2.2&space=7.2&depth=4.199999999999999&contrast=1.1&strength=0.0073&rgbStrength=%5B1%2C1%2C1%5D">
@@ -124,8 +123,7 @@ const InfoButton = () => {
               </Link>
               <p>
                 This project is largely inspired by the work of{" "}
-                <a href="https://www.kishimisu.art/">kishimisu</a>, specifically
-                his{" "}
+                <a href="https://www.kishimisu.art/">kishimisu</a>, specifically his{" "}
                 <a href="https://www.youtube.com/watch?v=f4s1h2YETNY">
                   intro to creative shader art video
                 </a>
@@ -134,17 +132,15 @@ const InfoButton = () => {
                   2D SDF functions by Inigo Quilez
                 </a>{" "}
                 as well as{" "}
-                <a href="https://iquilezles.org/articles/palettes/">
-                  his palette approach
-                </a>{" "}
-                for coloring!
+                <a href="https://iquilezles.org/articles/palettes/">his palette approach</a> for
+                coloring!
               </p>
               <p>
                 Also, this project would not be possible without the use of{" "}
                 <a href="https://github.com/pmndrs/react-three-fiber">r3f</a>,{" "}
                 <a href="https://github.com/pmndrs/leva">leva</a>, and the whole{" "}
-                <a href="https://pmnd.rs/">pmndrs</a> ecosystem. Thanks for
-                building all these crazy tools! 😊
+                <a href="https://pmnd.rs/">pmndrs</a> ecosystem. Thanks for building all these crazy
+                tools! 😊
               </p>
             </div>
             <button
@@ -240,7 +236,7 @@ export default function ShaderEditorPage() {
       acc[key] = { value };
       return acc;
     },
-    {} as { [uniform: string]: IUniform<any> }
+    {} as { [uniform: string]: IUniform<any> },
   );
 
   return (

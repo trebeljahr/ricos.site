@@ -1,7 +1,4 @@
-import { useHealthContext } from "@r3f/Contexts/HealthbarContext";
 import {
-  Potion10_Filled,
-  Potion11_Filled,
   Potion1_Filled,
   Potion2_Filled,
   Potion3_Filled,
@@ -11,16 +8,14 @@ import {
   Potion7_Filled,
   Potion8_Filled,
   Potion9_Filled,
+  Potion10_Filled,
+  Potion11_Filled,
 } from "@r3f/AllModels/rpg_items_pack";
+import { useHealthContext } from "@r3f/Contexts/HealthbarContext";
 import { useMemo } from "react";
 import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
-import {
-  Collectible,
-  ItemSpawner,
-  Rarity,
-  SpawnerImplementation,
-} from "./ItemSpawner";
 import { useInventory } from "../InventorySystem/GameInventoryContext";
+import { type Collectible, ItemSpawner, type SpawnerImplementation } from "./ItemSpawner";
 
 type PotionData = {
   health: number;
@@ -66,11 +61,6 @@ export const RandomPotionSpawner: SpawnerImplementation = (props) => {
   };
 
   return (
-    <ItemSpawner
-      Item={Potion.Component}
-      {...props}
-      onCollected={onCollected}
-      data={Potion.data}
-    />
+    <ItemSpawner Item={Potion.Component} {...props} onCollected={onCollected} data={Potion.data} />
   );
 };

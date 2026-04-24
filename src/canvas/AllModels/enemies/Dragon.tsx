@@ -1,6 +1,6 @@
 import { useGLTF } from "@react-three/drei";
-import { Mesh, MeshStandardMaterial } from "three";
-import { GLTF } from "three-stdlib";
+import type { Mesh, MeshStandardMaterial } from "three";
+import type { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -13,14 +13,11 @@ type GLTFResult = GLTF & {
 
 export function Dragon(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/enemies/Dragon-transformed.glb"
+    "/3d-assets/glb/enemies/Dragon-transformed.glb",
   ) as unknown as unknown as GLTFResult;
   return (
     <group {...props} dispose={null}>
-      <mesh
-        geometry={nodes.Geo_Dragon.geometry}
-        material={materials.lambert2SG}
-      />
+      <mesh geometry={nodes.Geo_Dragon.geometry} material={materials.lambert2SG} />
     </group>
   );
 }

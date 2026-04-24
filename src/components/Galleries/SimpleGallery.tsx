@@ -2,7 +2,7 @@ import { CustomImageRenderer } from "@components/images/CustomImageRenderer";
 import { useMemo } from "react";
 import { RowsPhotoAlbum } from "react-photo-album";
 import "react-photo-album/rows.css";
-import { ImageProps } from "src/@types";
+import type { ImageProps } from "src/@types";
 import { addIdAndIndex } from "src/lib/utils/misc";
 import { CustomLightBox, useCustomLightbox } from "./useCustomLightbox";
 

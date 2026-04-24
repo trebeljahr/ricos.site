@@ -4,13 +4,13 @@ import { useFrame } from "@react-three/fiber";
 import {
   CapsuleCollider,
   RigidBody,
-  RigidBodyProps,
+  type RigidBodyProps,
   useBeforePhysicsStep,
 } from "@react-three/rapier";
 import { useControls } from "leva";
-import { PropsWithChildren, useRef, useState } from "react";
+import { type PropsWithChildren, useRef, useState } from "react";
 import { Quaternion, Vector3 } from "three";
-import { Component, Entity, EntityType, navQuery, playerQuery } from "./ecs";
+import { Component, Entity, type EntityType, navQuery, playerQuery } from "./ecs";
 
 const size = 2;
 const radius = 0.5 * size;
@@ -39,10 +39,7 @@ const horizontalDistance = (a: Vector3Like, b: Vector3Like) => {
 const distanceThreshold = 10;
 const speed = 3.5;
 
-export const Agent = ({
-  children,
-  ...props
-}: PropsWithChildren<RigidBodyProps>) => {
+export const Agent = ({ children, ...props }: PropsWithChildren<RigidBodyProps>) => {
   const { pathDebugLine } = useControls("agent", {
     pathDebugLine: false,
   });
@@ -70,17 +67,16 @@ export const Agent = ({
     const rigidBody = enemyRef.current.rigidBody as any;
     if (!rigidBody) return;
 
-    const { point: closestPoint } = navMeshQuery.findClosestPoint(
-      rigidBody.translation(),
-      { halfExtents: queryHalfExtents }
-    );
+    const { point: closestPoint } = navMeshQuery.findClosestPoint(rigidBody.translation(), {
+      halfExtents: queryHalfExtents,
+    });
     const agentPosition = _agentPosition.copy(closestPoint as Vector3);
 
     const { point: playerPosition } = navMeshQuery.findClosestPoint(
       (player.rigidBody as any).translation(),
       {
         halfExtents: queryHalfExtents,
-      }
+      },
     );
 
     const { path } = navMeshQuery.computePath(agentPosition, playerPosition);
@@ -115,8 +111,7 @@ export const Agent = ({
     // very naive approach, won't work for complex paths
     while (
       pathIndex.current < path.length - 1 &&
-      horizontalDistance(path[pathIndex.current], rigidBody.translation()) <
-        0.05 &&
+      horizontalDistance(path[pathIndex.current], rigidBody.translation()) < 0.05 &&
       path[pathIndex.current + 1]
     ) {
       pathIndex.current++;
@@ -125,10 +120,7 @@ export const Agent = ({
     const next = path[pathIndex.current];
     if (!next) return;
 
-    enemyRef.current.distanceToPlayer = horizontalDistance(
-      next,
-      rigidBody.translation()
-    );
+    enemyRef.current.distanceToPlayer = horizontalDistance(next, rigidBody.translation());
 
     // early exit if close enough to the final point
     if (pathIndex.current === path.length - 1) {
@@ -140,9 +132,7 @@ export const Agent = ({
 
     enemyRef.current.hasReachedPlayer = false;
 
-    const direction = _direction
-      .copy(next)
-      .sub(rigidBody.translation() as Vector3);
+    const direction = _direction.copy(next).sub(rigidBody.translation() as Vector3);
     direction.y = 0;
     direction.normalize();
 
@@ -174,9 +164,7 @@ export const Agent = ({
       return;
     }
 
-    const direction = _direction
-      .copy(rigidBody.translation() as Vector3)
-      .sub(lookAt);
+    const direction = _direction.copy(rigidBody.translation() as Vector3).sub(lookAt);
     direction.y = 0;
     direction.normalize();
 

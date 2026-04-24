@@ -1,5 +1,5 @@
-import { Material, Mesh } from "three";
-import { GLTF } from "three-stdlib";
+import type { Material, Mesh } from "three";
+import type { GLTF } from "three-stdlib";
 
 export type ImageProps = {
   width: number;

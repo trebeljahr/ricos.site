@@ -1,12 +1,10 @@
-import { readFile } from "fs/promises";
 import path from "path";
+import { readFile } from "fs/promises";
 
 export async function generateRedirects() {
   const veliteDir = path.resolve(path.dirname(""), ".velite");
 
-  const newsletters = JSON.parse(
-    await readFile(path.join(veliteDir, "newsletters.json"), "utf-8")
-  );
+  const newsletters = JSON.parse(await readFile(path.join(veliteDir, "newsletters.json"), "utf-8"));
 
   // Newsletter number → slug redirects (/N, /newsletters/N, /newsletter/N)
   const newsletterRedirects = newsletters.flatMap(({ number, slugTitle }) => [

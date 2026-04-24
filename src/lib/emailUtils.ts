@@ -1,7 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { promisify } from "util";
-import { activateEmailListMember } from "./mailgun";
 import { scrypt as scryptCallback } from "crypto";
+import { promisify } from "util";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { activateEmailListMember } from "./mailgun";
 
 const scrypt = promisify(scryptCallback);
 

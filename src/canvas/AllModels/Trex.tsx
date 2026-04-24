@@ -1,29 +1,19 @@
-import { usePrevious } from "@hooks/usePrevious";
-import { useAnimations, useGLTF, useKeyboardControls } from "@react-three/drei";
-import { GroupProps, useFrame, useThree } from "@react-three/fiber";
-import {
-  ForwardedRef,
-  forwardRef,
-  MutableRefObject,
-  Ref,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useAnimations, useGLTF } from "@react-three/drei";
+import { type GroupProps, useFrame, useThree } from "@react-three/fiber";
+import { type ForwardedRef, type MutableRefObject, forwardRef, useRef } from "react";
 
+import { TrexAnimationController } from "src/canvas/Controllers/GenericAnimationController";
 import {
-  AnimationAction,
-  AnimationClip,
-  Bone,
-  Group,
-  LoopOnce,
-  MeshStandardMaterial,
-  Object3D,
-  SkinnedMesh,
+  type AnimationAction,
+  type AnimationClip,
+  type Bone,
+  type Group,
+  type MeshStandardMaterial,
+  type Object3D,
+  type SkinnedMesh,
   Vector3,
 } from "three";
-import { GLTF } from "three-stdlib";
-import { TrexAnimationController } from "src/canvas/Controllers/GenericAnimationController";
+import type { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -95,18 +85,12 @@ interface Props extends GroupProps {
   withAnimations?: boolean;
 }
 
-export const Trex = forwardRef(function TrexModel(
-  props: Props,
-  ref: ForwardedRef<Group>
-) {
+export const Trex = forwardRef(function TrexModel(props: Props, ref: ForwardedRef<Group>) {
   const { nodes, materials, animations } = useGLTF(
-    "/3d-assets/glb/Trex.glb"
+    "/3d-assets/glb/Trex.glb",
   ) as unknown as unknown as unknown as GLTFResult;
   const { withAnimations = false } = props;
-  const { actions } = useAnimations(
-    animations,
-    ref as MutableRefObject<Object3D>
-  );
+  const { actions } = useAnimations(animations, ref as MutableRefObject<Object3D>);
 
   return (
     <group {...props} ref={ref} dispose={null}>

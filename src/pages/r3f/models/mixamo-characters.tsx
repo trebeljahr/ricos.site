@@ -1,10 +1,9 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 import { OrbitControls, Stage } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
 
 import dynamic from "next/dynamic";
-import { getSeoInfo, SeoInfo } from "src/lib/getSeoInfo";
+import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 
 const DynamicCharacter = dynamic(() => import("@r3f/Characters/Character"), {
   ssr: false,
@@ -12,8 +11,7 @@ const DynamicCharacter = dynamic(() => import("@r3f/Characters/Character"), {
 
 const defaultSeoInfo = {
   title: "Mixamo Character Demos",
-  description:
-    "Showcasing different Mixamo Characters in a 3D scene with animations",
+  description: "Showcasing different Mixamo Characters in a 3D scene with animations",
   url: "/r3f/models/mixamo-characters",
   keywords: [
     "threejs",

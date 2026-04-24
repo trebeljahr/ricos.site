@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
+import { useEffect, useState } from "react";
 
+import { Vec2 } from "../../../lib/math/Vector";
 import {
+  drawArrow,
+  drawBackground,
+  drawCoordinateSystem,
   instrument,
   niceBlue,
   niceGreen,
   toDegrees,
-  drawArrow,
-  drawBackground,
-  drawCoordinateSystem,
 } from "../../../lib/math/drawHelpers";
-import { Vec2 } from "../../../lib/math/Vector";
 
 export const DotProductDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
@@ -29,7 +29,7 @@ export const DotProductDemo = () => {
     const scalingFactor = Math.min(width, height) / 3;
     const origin = new Vec2(width / 2, height / 2);
     const points = [new Vec2(-1, -1), new Vec2(1, -1)].map((point) =>
-      point.scale(scalingFactor).add(origin)
+      point.scale(scalingFactor).add(origin),
     );
 
     const arrows = points.map((point) => [origin, point]);

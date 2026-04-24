@@ -61,10 +61,7 @@ for (const file of files) {
   if (published === undefined || published === false) {
     notPublished.push({
       file: rel,
-      reason:
-        published === undefined
-          ? "missing 'published' key"
-          : "published: false",
+      reason: published === undefined ? "missing 'published' key" : "published: false",
     });
   }
 }
@@ -84,9 +81,7 @@ if (noFrontmatter.length === 0 && notPublished.length === 0) {
 
   if (notPublished.length > 0) {
     console.log(`📝 Not published (${notPublished.length}):`);
-    notPublished.forEach(({ file, reason }) =>
-      console.log(`   - ${file}  (${reason})`),
-    );
+    notPublished.forEach(({ file, reason }) => console.log(`   - ${file}  (${reason})`));
     console.log();
   }
 }

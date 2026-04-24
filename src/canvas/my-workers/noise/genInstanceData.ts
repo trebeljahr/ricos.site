@@ -1,5 +1,5 @@
 import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
-import { XYZ } from "src/@types";
+import type { XYZ } from "src/@types";
 import {
   tileSize,
   treeMaxDistance,
@@ -17,7 +17,7 @@ export const generateInstanceData = (chunkOffset: XYZ) => {
     treeMaxDistance,
     {
       offset: new Vector2(chunkOffset.x, chunkOffset.z),
-    }
+    },
   ).reduce(
     (agg, pos) => {
       const worldPosition = pos
@@ -38,7 +38,7 @@ export const generateInstanceData = (chunkOffset: XYZ) => {
       positions: [] as XYZ[],
       scales: [] as number[],
       rotations: [] as XYZ[],
-    }
+    },
   );
 
   return { positions, scales, rotations };

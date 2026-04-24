@@ -2,9 +2,8 @@ import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { usePointerContext } from "@r3f/Contexts/PointerContext";
 import { useFrame } from "@react-three/fiber";
 import { mat4, quat2, vec3 } from "gl-matrix";
-import { createContext, PropsWithChildren, useContext, useRef } from "react";
+import { type PropsWithChildren, createContext, useContext, useRef } from "react";
 import { usePlayerContext } from "./PlayerContext";
-import { tileSize } from "@r3f/ChunkGenerationSystem/config";
 
 const defaultThirdPersonCameraState = {
   gameUp: vec3.fromValues(0, 1, 0),
@@ -30,15 +29,11 @@ export const useThirdPersonCameraContext = () => {
   return useContext(ThirdPersonCameraContext);
 };
 
-export const ThirdPersonCameraContextProvider = ({
-  children,
-}: PropsWithChildren) => {
+export const ThirdPersonCameraContextProvider = ({ children }: PropsWithChildren) => {
   const value = useThirdPersonCameraState();
 
   return (
-    <ThirdPersonCameraContext.Provider value={value}>
-      {children}
-    </ThirdPersonCameraContext.Provider>
+    <ThirdPersonCameraContext.Provider value={value}>{children}</ThirdPersonCameraContext.Provider>
   );
 };
 
@@ -71,7 +66,7 @@ const useThirdPersonCameraState = () => {
     const sphericalPosition = vec3.fromValues(
       sinPhiRadius * Math.sin(cam.theta),
       Math.cos(cam.phi) * cam.distance,
-      sinPhiRadius * Math.cos(cam.theta)
+      sinPhiRadius * Math.cos(cam.theta),
     );
     vec3.add(cam.position, player.position.current, sphericalPosition);
 
@@ -79,7 +74,7 @@ const useThirdPersonCameraState = () => {
     const target = vec3.fromValues(
       player.position.current[0],
       player.position.current[1] + cam.aboveOffset,
-      player.position.current[2]
+      player.position.current[2],
     );
 
     // Quaternion
@@ -90,8 +85,7 @@ const useThirdPersonCameraState = () => {
     // Clamp to ground
     const { height: elevation } = getHeight(cam.position[0], cam.position[2]);
 
-    if (elevation && cam.position[1] < elevation + 1)
-      cam.position[1] = elevation + 1;
+    if (elevation && cam.position[1] < elevation + 1) cam.position[1] = elevation + 1;
   }, -5); // After player (-10)
 
   return thirdPersonCamera.current;

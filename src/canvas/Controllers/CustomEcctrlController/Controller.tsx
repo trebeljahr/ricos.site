@@ -620,6 +620,7 @@ const Ecctrl = ({
   }, []);
 
   useFrame((state, delta) => {
+    // biome-ignore lint/style/noParameterAssign: intentional local mutation in 3D math/controller code
     if (delta > 1) delta %= 1;
     if (!characterRef.current?.rigidBody) return;
     const rb = characterRef.current.rigidBody as any;

@@ -104,6 +104,7 @@ function SceneryObjects() {
         { pos: [-5, 5, -15] as const, scale: [6, 3, 6] as const, color: "#9a8a6a" },
         { pos: [20, 12, -8] as const, scale: [2, 8, 2] as const, color: "#8a7a6a" },
       ].map(({ pos, scale, color }, i) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
         <mesh key={i} position={pos} castShadow receiveShadow>
           <boxGeometry args={scale} />
           <meshStandardMaterial color={color} roughness={0.85} />
@@ -118,6 +119,7 @@ function SceneryObjects() {
         { pos: [3, 50, -5] as const, r: 1.5, color: "#d49292" },
         { pos: [-15, 10, 10] as const, r: 3, color: "#c8b8a0" },
       ].map(({ pos, r, color }, i) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
         <mesh key={`s-${i}`} position={pos} castShadow receiveShadow>
           <sphereGeometry args={[r, 32, 32]} />
           <meshStandardMaterial color={color} roughness={0.35} metalness={0.05} />
@@ -176,6 +178,7 @@ function AnimatedBubbles() {
     <group>
       {bubbleData.current.map((b, i) => (
         <mesh
+          // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
           key={i}
           ref={(el) => {
             if (el) bubblesRef.current[i] = el;

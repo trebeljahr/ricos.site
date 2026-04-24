@@ -41,7 +41,7 @@ export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
         poly1.draw(ctx, { collision });
       } else {
         poly1.draw(ctx);
-        poly1.triangles.forEach((tri) => {
+        for (const tri of poly1.triangles) {
           const collision = checkCollision(tri, poly2);
           drawTris && tri.draw(ctx, { collision });
           if (collision && response) {
@@ -53,7 +53,7 @@ export const Triangulation = ({ responseToggle = true, drawTris = true }) => {
               poly2.translate(half);
             }
           }
-        });
+        }
       }
 
       poly2.draw(ctx, { collision });

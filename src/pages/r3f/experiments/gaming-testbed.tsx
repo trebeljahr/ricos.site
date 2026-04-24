@@ -66,10 +66,12 @@ const CanvasContent = () => {
   return (
     <>
       {items.map((_, i) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
         <RandomWeaponsSpawner key={i} position={[i * 5, 0, -20]} respawnTime={2000} />
       ))}
 
       {items.map((_, i) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
         <RandomPotionSpawner key={i} position={[i * 5, 0, -25]} respawnTime={2000} />
       ))}
 

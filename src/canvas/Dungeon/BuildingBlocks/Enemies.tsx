@@ -102,6 +102,7 @@ export const Enemies = () => {
       {skeletonTypes.map(({ skeletonType, itemLeft, itemRight }, index) => {
         return (
           <SkeletonWithWeapons
+            // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
             key={index}
             skeletonType={skeletonType}
             ItemLeft={itemLeft}

@@ -23,6 +23,7 @@ const ChunkRenderer = () => {
       {Array.from(chunks).map(([_key, chunkData], index) => {
         if (!chunkData.data) return null;
         return (
+          // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
           <Suspense key={index}>
             <MemoizedChunk chunkData={chunkData}>
               <HeightfieldTileWithCollider

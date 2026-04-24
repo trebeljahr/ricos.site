@@ -60,7 +60,7 @@ function formatDate(date: string): string {
   });
 }
 
-mdFiles.forEach((filePath: string) => {
+for (const filePath of mdFiles) {
   const fileContent = fs.readFileSync(filePath, "utf8");
   const fileName = path.basename(filePath, ".md");
   const { data: frontmatter, content } = matter(fileContent);
@@ -80,4 +80,4 @@ mdFiles.forEach((filePath: string) => {
 
   const newContent = matter.stringify(content, newFrontmatter);
   fs.writeFileSync(filePath, newContent, "utf8");
-});
+}

@@ -90,6 +90,7 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
     <div className="not-prose">
       <div>
         {groupImages(displayedPhotos).map((group, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
           <div key={i} className="mb-[5px] xs:mb-[10px] xl:mb-[15px]">
             <RowsPhotoAlbum
               photos={group}

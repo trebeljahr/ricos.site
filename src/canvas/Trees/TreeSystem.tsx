@@ -73,6 +73,7 @@ interface TreePlacementInfo {
 
 export function seededRandom(seed: number): () => number {
   return () => {
+    // biome-ignore lint/style/noParameterAssign: intentional local mutation in 3D math/controller code
     const x = Math.sin(seed++) * 10000;
     return x - Math.floor(x);
   };

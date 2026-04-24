@@ -9,7 +9,7 @@ const metadataKeys = new Set(Object.keys(metadata));
 
 function walk(dir, filelist = []) {
   const files = fs.readdirSync(dir);
-  files.forEach((file) => {
+  for (const file of files) {
     const filepath = path.join(dir, file);
     if (fs.statSync(filepath).isDirectory()) {
       walk(filepath, filelist);
@@ -18,19 +18,19 @@ function walk(dir, filelist = []) {
         filelist.push(filepath);
       }
     }
-  });
+  }
   return filelist;
 }
 
 const diskFiles = walk(assetsRoot);
 const missingInMetadata = [];
 
-diskFiles.forEach((file) => {
+for (const file of diskFiles) {
   const key = "assets/" + path.relative(assetsRoot, file);
   if (!metadataKeys.has(key)) {
     missingInMetadata.push(key);
   }
-});
+}
 
 console.log(`Total images on disk: ${diskFiles.length}`);
 console.log(`Missing in metadata: ${missingInMetadata.length}`);
@@ -40,14 +40,14 @@ if (missingInMetadata.length > 0) {
 }
 
 const metadataOnly = [];
-metadataKeys.forEach((key) => {
+for (const key of metadataKeys) {
   if (key.startsWith("assets/")) {
     const diskPath = path.join(assetsRoot, key.replace("assets/", ""));
     if (!fs.existsSync(diskPath)) {
       metadataOnly.push(key);
     }
   }
-});
+}
 
 console.log(`\nMetadata keys with no file on disk: ${metadataOnly.length}`);
 if (metadataOnly.length > 0) {

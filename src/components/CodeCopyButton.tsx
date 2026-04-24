@@ -14,9 +14,9 @@ export function CodeWithCopyButton({
     const clonedElement = codeElem.cloneNode(true) as HTMLElement;
 
     const nodesToRemove = clonedElement.querySelectorAll(".diff.remove");
-    nodesToRemove.forEach((node: Element) => {
+    for (const node of nodesToRemove) {
       node.remove();
-    });
+    }
 
     const code = clonedElement.textContent;
 

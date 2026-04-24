@@ -97,19 +97,19 @@ export function YukaSimulation() {
 
     if (isPanicked) {
       currentTarget.maxSpeed = fleeSpeed;
-      currentTarget.steering.behaviors.forEach((behavior) => {
+      for (const behavior of currentTarget.steering.behaviors) {
         if (behavior instanceof FleeBehavior) {
           behavior.active = true;
         }
-      });
+      }
       setAnimation("AnimalArmature|Gallop");
     } else {
       currentTarget.maxSpeed = wanderSpeed;
-      currentTarget.steering.behaviors.forEach((behavior) => {
+      for (const behavior of currentTarget.steering.behaviors) {
         if (behavior instanceof FleeBehavior) {
           behavior.active = false;
         }
-      });
+      }
       setAnimation("AnimalArmature|Walk");
     }
   }, [isPanicked]);

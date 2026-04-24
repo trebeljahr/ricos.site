@@ -13,6 +13,7 @@ export const Obstacles = () => {
     <>
       {Array.from({ length: 10 }).map((_, i) => (
         <RigidBody
+          // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
           key={i}
           colliders="cuboid"
           position={[Math.random() * -5, i, 0]}

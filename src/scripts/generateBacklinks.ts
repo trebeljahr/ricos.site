@@ -156,6 +156,7 @@ function extractInternalLinks(content: string): string[] {
   let match: RegExpExecArray | null;
 
   INTERNAL_LINK_REGEX.lastIndex = 0;
+  // biome-ignore lint/suspicious/noAssignInExpressions: idiomatic regex iteration
   while ((match = INTERNAL_LINK_REGEX.exec(body)) !== null) {
     let href = match[1];
     // Normalize: ensure leading slash

@@ -67,7 +67,9 @@ function usePrefersReducedMotion() {
 const range = (start: number, end?: number, step = 1) => {
   const output = [];
   if (typeof end === "undefined") {
+    // biome-ignore lint/style/noParameterAssign: intentional local mutation in 3D math/controller code
     end = start;
+    // biome-ignore lint/style/noParameterAssign: intentional local mutation in 3D math/controller code
     start = 0;
   }
   for (let i = start; i < end; i += step) {

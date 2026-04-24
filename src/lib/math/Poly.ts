@@ -36,6 +36,7 @@ function convertHexToRgb(hex: string) {
 }
 
 export function makeBrighter(color: string) {
+  // biome-ignore lint/style/noParameterAssign: intentional local mutation in 3D math/controller code
   if (isHex(color)) color = convertHexToRgb(color);
 
   const rgbs = color

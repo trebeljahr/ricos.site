@@ -214,6 +214,7 @@ export const Inventory: FC = () => {
               {items.map((item, i) => {
                 return (
                   <InventorySlot
+                    // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
                     key={(item?.id || "empty") + "-" + i}
                     item={item === null ? undefined : item}
                     index={i}

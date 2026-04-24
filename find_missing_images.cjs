@@ -7,6 +7,7 @@ function walk(dir) {
   const list = fs.readdirSync(dir);
   list.forEach((file) => {
     if (file === "node_modules" || file === ".git" || file === ".next") return;
+    // biome-ignore lint/style/noParameterAssign: intentional local mutation in 3D math/controller code
     file = path.join(dir, file);
     const stat = fs.statSync(file);
     if (stat?.isDirectory()) {
@@ -29,7 +30,7 @@ const allRefs = [];
 const mdImageRegex = /!\[.*?\]\((.+?)\)/g;
 const imgTagRegex = /<img.*?src="(.*?)"/g;
 
-files.forEach((file) => {
+for (const file of files) {
   const content = fs.readFileSync(file, "utf8");
 
   if (content.startsWith("---")) {
@@ -50,7 +51,7 @@ files.forEach((file) => {
   while ((match = imgTagRegex.exec(content)) !== null) {
     allRefs.push({ file, src: match[1], type: "html" });
   }
-});
+}
 
 const report = {};
 

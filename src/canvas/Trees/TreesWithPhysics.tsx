@@ -101,6 +101,7 @@ export function Trees() {
   return (
     <>
       {positions.map((pos, index) => {
+        // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
         return <BirchTree_1 key={index} position={pos} scale={new Vector3(5, 5, 5)} />;
       })}
     </>

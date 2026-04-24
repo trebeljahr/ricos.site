@@ -30,6 +30,7 @@ export const TreeTile = ({
   return (
     <group>
       {models.map((Model, index) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
         <Model key={index} positions={groups[index]} />
       ))}
 
@@ -38,6 +39,7 @@ export const TreeTile = ({
       {debug &&
         positions.map((position, index) => {
           return (
+            // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
             <group key={nanoid() + index} position={position}>
               <Sphere args={[0.5, 16, 16]}>
                 <meshBasicMaterial color={"#005105"} />

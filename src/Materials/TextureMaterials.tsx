@@ -11,9 +11,9 @@ export const SnowMaterial = (passedInProps: MeshStandardMaterialProps) => {
     aoMap: "/3d-assets/textures/Snow_001_OCC.jpg",
   });
 
-  Object.values(textures).forEach((texture) => {
+  for (const texture of Object.values(textures)) {
     texture.wrapS = texture.wrapT = RepeatWrapping;
-  });
+  }
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} attach="material" />;
 };
 
@@ -27,9 +27,9 @@ export const ForestFloorMaterial1 = (passedInProps: MeshStandardMaterialProps) =
     metalnessMap: "/3d-assets/textures/forest_ground_01_arm_1k.jpg",
   });
 
-  Object.values(textures).forEach((texture) => {
+  for (const texture of Object.values(textures)) {
     texture.wrapS = texture.wrapT = RepeatWrapping;
-  });
+  }
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };
 
@@ -43,9 +43,9 @@ export const ForestFloorMaterial2 = (passedInProps: MeshStandardMaterialProps) =
     metalnessMap: "/3d-assets/textures/forest_ground_04_arm_1k.jpg",
   });
 
-  Object.values(textures).forEach((texture) => {
+  for (const texture of Object.values(textures)) {
     texture.wrapS = texture.wrapT = RepeatWrapping;
-  });
+  }
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };
 
@@ -59,9 +59,9 @@ export const ForestFloorMaterial3 = (passedInProps: MeshStandardMaterialProps) =
     metalnessMap: "/3d-assets/textures/forest_floor_arm_1k.jpg",
   });
 
-  Object.values(textures).forEach((texture) => {
+  for (const texture of Object.values(textures)) {
     texture.wrapS = texture.wrapT = RepeatWrapping;
-  });
+  }
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };
 
@@ -75,9 +75,9 @@ export const BrownBarkMaterial = (passedInProps: MeshStandardMaterialProps) => {
     metalnessMap: "/3d-assets/textures/bark_brown_01_arm_1k.jpg",
   });
 
-  Object.values(textures).forEach((texture) => {
+  for (const texture of Object.values(textures)) {
     texture.wrapS = texture.wrapT = RepeatWrapping;
-  });
+  }
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };
 
@@ -91,9 +91,9 @@ export const PineBarkMaterial = (passedInProps: MeshStandardMaterialProps) => {
     metalnessMap: "/3d-assets/textures/pine_bark_arm_1k.jpg",
   });
 
-  Object.values(textures).forEach((texture) => {
+  for (const texture of Object.values(textures)) {
     texture.wrapS = texture.wrapT = RepeatWrapping;
-  });
+  }
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };
 
@@ -107,9 +107,9 @@ export const ForestLeavesMaterial1 = (passedInProps: MeshStandardMaterialProps) 
     metalnessMap: "/3d-assets/textures/forest_leaves_02_arm_1k.jpg",
   });
 
-  Object.values(textures).forEach((texture) => {
+  for (const texture of Object.values(textures)) {
     texture.wrapS = texture.wrapT = RepeatWrapping;
-  });
+  }
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };
 
@@ -123,9 +123,9 @@ export const ForestLeavesMaterial2 = (passedInProps: MeshStandardMaterialProps) 
     metalnessMap: "/3d-assets/textures/forest_leaves_03_arm_1k.jpg",
   });
 
-  Object.values(textures).forEach((texture) => {
+  for (const texture of Object.values(textures)) {
     texture.wrapS = texture.wrapT = RepeatWrapping;
-  });
+  }
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };
 
@@ -139,9 +139,9 @@ export const GrassRockMaterial = (passedInProps: MeshStandardMaterialProps) => {
     metalnessMap: "/3d-assets/textures/aerial_grass_rock_arm_1k.jpg",
   });
 
-  Object.values(textures).forEach((texture) => {
+  for (const texture of Object.values(textures)) {
     texture.wrapS = texture.wrapT = RepeatWrapping;
-  });
+  }
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };
 
@@ -155,9 +155,9 @@ export const RocksGroundMaterial1 = (passedInProps: MeshStandardMaterialProps) =
     metalnessMap: "/3d-assets/textures/rocks_ground_01_arm_1k.jpg",
   });
 
-  Object.values(textures).forEach((texture) => {
+  for (const texture of Object.values(textures)) {
     texture.wrapS = texture.wrapT = RepeatWrapping;
-  });
+  }
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };
 
@@ -171,8 +171,8 @@ export const RocksGroundMaterial2 = (passedInProps: MeshStandardMaterialProps) =
     metalnessMap: "/3d-assets/textures/rocks_ground_02_arm_1k.jpg",
   });
 
-  Object.values(textures).forEach((texture) => {
+  for (const texture of Object.values(textures)) {
     texture.wrapS = texture.wrapT = RepeatWrapping;
-  });
+  }
   return <meshStandardMaterial {...{ ...textures, ...passedInProps }} />;
 };

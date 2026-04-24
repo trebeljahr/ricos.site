@@ -3,6 +3,7 @@ export function getRandom<T>(arr: T[], n: number): T[] {
   let len = arr.length;
   const taken = new Array(len);
   if (n > len) throw new RangeError("getRandom: more elements taken than available");
+  // biome-ignore lint/style/noParameterAssign: intentional local mutation in 3D math/controller code
   while (n--) {
     const x = Math.floor(Math.random() * len);
     result[n] = arr[x in taken ? taken[x] : x];

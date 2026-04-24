@@ -315,13 +315,17 @@ export function instrument(
       }
       if (insidePoly(mousePos, poly.vertices)) {
         state.draggedPoly = poly;
-        polys.forEach((poly) => (poly.selected = false));
+        for (const poly of polys) {
+      poly.selected = false;
+    }
 
         poly.selected = true;
         return;
       }
     }
-    polys.forEach((poly) => (poly.selected = false));
+    for (const poly of polys) {
+      poly.selected = false;
+    }
   };
 
   const updateMousePos = (event: PointerEvent) => {

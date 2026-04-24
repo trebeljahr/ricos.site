@@ -15,7 +15,7 @@ const today = new Date();
 const lastSunday = today.getDate() - today.getDay();
 const latestEditionDate = new Date(today.setDate(lastSunday));
 
-files.forEach((file: string) => {
+for (const file of files) {
   const filePath = path.join(newslettersDir, file);
   const fileContent = fs.readFileSync(filePath, "utf8");
   const { data, content } = matter(fileContent);
@@ -31,4 +31,4 @@ files.forEach((file: string) => {
 
   fs.writeFileSync(filePath, newContent);
   console.info(`Updated ${file} with date ${formattedDate}`);
-});
+}

@@ -35,6 +35,7 @@ const DiffView = ({ diff }: { diff: DiffLine[] }) => {
     <div className="font-mono text-sm leading-relaxed border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
       {diff.map((line, i) => (
         <div
+          // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
           key={i}
           className={
             line.type === "added"

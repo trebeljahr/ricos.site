@@ -28,11 +28,11 @@ export const usePointerState = () => {
 
   useEffect(() => {
     const handlePointerDown = (event: PointerEvent) => {
-      event.button === 0 && (pointer.current.down = true);
+      if (event.button === 0) pointer.current.down = true;
     };
 
     const handlePointerUp = (event: PointerEvent) => {
-      event.button === 0 && (pointer.current.down = false);
+      if (event.button === 0) pointer.current.down = false;
     };
 
     const handlePointerMove = (event: PointerEvent) => {

@@ -33,11 +33,11 @@ export const Forest = ({ chunks }: { chunks: ChunkMap }) => {
 
     prevChunksRef.current = currentChunkKeys;
 
-    removedChunks.forEach((key) => {
+    for (const key of removedChunks) {
       delete positionsRef.current[key];
-    });
+    }
 
-    newChunkKeys.forEach((chunkId) => {
+    for (const chunkId of newChunkKeys) {
       const chunk = chunks.get(chunkId)!;
 
       const newPositions = poissonDiskSample(tileSize, 3, 20, {
@@ -52,11 +52,11 @@ export const Forest = ({ chunks }: { chunks: ChunkMap }) => {
       );
 
       positionsRef.current[chunkId] = groups;
-    });
+    }
 
     const mergedGroups: Vector3[][] = Array.from({ length: models.length }, () => []);
 
-    Object.values(positionsRef.current).forEach((chunkGroups) => {
+    for (const chunkGroups of Object.values(positionsRef.current)) {
       chunkGroups.forEach((group, groupIndex) => {
         if (!mergedGroups[groupIndex]) {
           mergedGroups[groupIndex] = [];
@@ -64,7 +64,7 @@ export const Forest = ({ chunks }: { chunks: ChunkMap }) => {
 
         mergedGroups[groupIndex].push(...group);
       });
-    });
+    }
 
     const groups = mergedGroups;
 
@@ -74,6 +74,7 @@ export const Forest = ({ chunks }: { chunks: ChunkMap }) => {
   return (
     <group>
       {models.map((Model, index) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
         <Model key={index} positions={groups[index]} />
       ))}
     </group>

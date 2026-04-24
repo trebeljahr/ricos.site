@@ -147,9 +147,9 @@ const canonicalCallouts = {
 export const callouts = Object.entries(canonicalCallouts).reduce(
   (acc, [key, config]) => {
     acc[key] = config;
-    config.aliases.forEach((alias) => {
+    for (const alias of config.aliases) {
       acc[alias] = config;
-    });
+    }
     return acc;
   },
   {} as Record<string, Callout>,

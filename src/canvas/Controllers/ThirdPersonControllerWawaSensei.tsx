@@ -8,19 +8,25 @@ import { type Group, MathUtils, Vector3 } from "three";
 import { degToRad } from "three/src/math/MathUtils.js";
 
 const normalizeAngle = (angle: number) => {
+  // biome-ignore lint/style/noParameterAssign: intentional local mutation in 3D math/controller code
   while (angle > Math.PI) angle -= 2 * Math.PI;
+  // biome-ignore lint/style/noParameterAssign: intentional local mutation in 3D math/controller code
   while (angle < -Math.PI) angle += 2 * Math.PI;
   return angle;
 };
 
 const lerpAngle = (start: number, end: number, t: number) => {
+  // biome-ignore lint/style/noParameterAssign: intentional local mutation in 3D math/controller code
   start = normalizeAngle(start);
+  // biome-ignore lint/style/noParameterAssign: intentional local mutation in 3D math/controller code
   end = normalizeAngle(end);
 
   if (Math.abs(end - start) > Math.PI) {
     if (end > start) {
+      // biome-ignore lint/style/noParameterAssign: intentional local mutation in 3D math/controller code
       start += 2 * Math.PI;
     } else {
+      // biome-ignore lint/style/noParameterAssign: intentional local mutation in 3D math/controller code
       end += 2 * Math.PI;
     }
   }

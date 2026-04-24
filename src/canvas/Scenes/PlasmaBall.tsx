@@ -165,6 +165,7 @@ export const PlasmaBall = () => {
           .add(plasmaOrigin);
 
         return (
+          // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
           <group key={index}>
             <SphereMesh
               args={[glassSphereDiameter * 0.004, 24, 12]}

@@ -10,7 +10,7 @@ function parseBookTitle(fileName: string): { title: string; author: string } {
 function renameFilesInDirectory(directory: string): void {
   const files = fs.readdirSync(directory);
 
-  files.forEach((file) => {
+  for (const file of files) {
     const filePath = path.join(directory, file);
     if (fs.lstatSync(filePath).isFile()) {
       const { title } = parseBookTitle(file);
@@ -19,7 +19,7 @@ function renameFilesInDirectory(directory: string): void {
       fs.renameSync(filePath, newFilePath);
       console.info(`Renamed: ${file} -> ${newFileName}`);
     }
-  });
+  }
 }
 
 const isValidBookCover = (bookCover: string): boolean => {
@@ -45,7 +45,7 @@ fs.readdir(directoryPath, (err, files) => {
     return console.error("Unable to scan directory: " + err);
   }
 
-  files.forEach((file) => {
+  for (const file of files) {
     const filePath = path.join(directoryPath, file);
     const fileExtension = path.extname(file);
 
@@ -53,5 +53,5 @@ fs.readdir(directoryPath, (err, files) => {
       const fileName = path.basename(file, fileExtension);
       updateBookCoverField(filePath, fileName);
     }
-  });
+  }
 });

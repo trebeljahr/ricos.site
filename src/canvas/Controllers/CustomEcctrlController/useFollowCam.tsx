@@ -177,9 +177,9 @@ export const useFollowCam = ({
     }
 
     // Recursively traverse child objects
-    object.children.forEach((child) => {
+    for (const child of object.children) {
       customTraverseAdd(child); // Continue the traversal for all child objects
-    });
+    }
   }
   // Remove intersect objects from camera collision array
   function customTraverseRemove(object: Object3D) {
@@ -188,9 +188,9 @@ export const useFollowCam = ({
     );
 
     // Recursively traverse child objects
-    object.children.forEach((child) => {
+    for (const child of object.children) {
       customTraverseRemove(child); // Continue the traversal for all child objects
-    });
+    }
   }
 
   /**

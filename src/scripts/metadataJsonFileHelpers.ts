@@ -39,9 +39,9 @@ export async function getMetadataFromJsonFile(key: string) {
 
 export async function updateMetadataFileBulk(filePath: string, newMetadata: ImageMetadata[]) {
   try {
-    newMetadata.forEach((metadata) => {
+    for (const metadata of newMetadata) {
       localMetadata[metadata.key] = metadata;
-    });
+    }
 
     const jsonString = JSON.stringify(localMetadata, null, 2);
     await fs.writeFile(filePath, jsonString, "utf-8");

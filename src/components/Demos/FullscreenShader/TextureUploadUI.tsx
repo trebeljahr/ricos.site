@@ -16,13 +16,13 @@ export const TextureUploadUI = () => {
       const loader = new TextureLoader();
       const fileArray = Array.from(files);
 
-      fileArray.forEach((file) => {
+      for (const file of fileArray) {
         const url = URL.createObjectURL(file);
         loader.load(url, (texture) => {
           setTextures((prev) => [...prev, texture]);
           setPreviewUrls((prev) => [...prev, url]);
         });
-      });
+      }
     },
     [setTextures],
   );
@@ -85,6 +85,7 @@ export const TextureUploadUI = () => {
             <div className="mt-4">
               {previewUrls.map((url, index) => (
                 <PreviewUrl
+                  // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
                   key={index}
                   url={url}
                   onDelete={handleDelete}

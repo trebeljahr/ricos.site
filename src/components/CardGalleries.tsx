@@ -100,7 +100,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
     const scrollRefElem = scrollRef.current;
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
+        for (const entry of entries) {
           const attrib = entry.target.getAttribute("data-interval-id");
 
           if (entry.isIntersecting) {
@@ -118,7 +118,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
               entry.target.removeAttribute("data-interval-id");
             }
           }
-        });
+        }
       },
       { threshold: 0.5 },
     );

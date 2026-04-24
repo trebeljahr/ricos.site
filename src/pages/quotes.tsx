@@ -48,6 +48,7 @@ export default function Quotes({ seo }: { seo: SeoInfo | null }) {
           <p>Amount: {displayedQuotes.length}</p>
           {displayedQuotes.map(({ author, content }, index) => {
             return (
+              // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
               <div key={author + index} className="quote">
                 <blockquote>
                   <p>{content}</p>

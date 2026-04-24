@@ -41,6 +41,7 @@ export function TextureUploadMenu({
             <ul className="space-y-2">
               {previewUrls.map((url, index) => (
                 <PreviewUrl
+                  // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
                   key={index}
                   url={url}
                   onDelete={onDelete}

@@ -69,11 +69,11 @@ export const SingleStylizedGrassPlane = ({
         ];
 
         const blade = generateBlade(pos, i * VERTEX_COUNT, uv);
-        blade.verts.forEach((vert) => {
+        for (const vert of blade.verts) {
           positions.push(...vert.pos);
           uvs.push(...vert.uv);
           colors.push(...vert.color);
-        });
+        }
         blade.indices.forEach((indice) => indices.push(indice));
       }
 

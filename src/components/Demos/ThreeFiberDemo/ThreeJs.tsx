@@ -6,7 +6,9 @@ function Box(props: ThreeElements["mesh"]) {
   const ref = useRef<Mesh>(null!);
   const [hovered, hover] = useState(false);
   const [clicked, click] = useState(false);
-  useFrame(() => (ref.current.rotation.x += 0.01));
+  useFrame(() => {
+    ref.current.rotation.x += 0.01;
+  });
 
   return (
     <mesh

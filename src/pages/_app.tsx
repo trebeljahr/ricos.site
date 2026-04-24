@@ -35,14 +35,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       </Head>
 
       <PlausibleProvider
-        domain="ricos.site"
-        customDomain="https://plausible.trebeljahr.com"
-        selfHosted
-        trackFileDownloads
-        trackOutboundLinks
-        hash
-        taggedEvents
-        revenue
+        src="https://plausible.trebeljahr.com/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js"
+        scriptProps={
+          { "data-domain": "ricos.site" } as React.ScriptHTMLAttributes<HTMLScriptElement>
+        }
         enabled={process.env.NODE_ENV === "production"}
       >
         <ThemeProvider attribute="class" enableSystem={false} defaultTheme="dark">

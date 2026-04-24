@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     await addNewMemberToEmailList(newMember);
 
-    const HOST = process.env.NODE_ENV === "development" ? "http://localhost:3000" : baseUrl;
+    const HOST = process.env.NODE_ENV === "development" ? "http://localhost:3713" : baseUrl;
 
     const confirmLink = `${HOST}/api/confirm-email?hash=${newMember.vars.hash}&email=${newMember.email}`;
 

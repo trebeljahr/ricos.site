@@ -4,10 +4,10 @@
   "license": "MIT",
   "scripts": {
     "dev": "NEXT_PUBLIC_IMAGE_BACKEND=local concurrently -n s3,next,watch -c cyan,magenta,yellow --kill-others-on-fail \"npm run s3:start\" \"npm run dev:next\" \"npm run watch:assets\"",
-    "dev:cloud": "next dev",
-    "dev:remote": "next dev",
+    "dev:cloud": "next dev -p 3713",
+    "dev:remote": "next dev -p 3713",
     "dev:local-only": "IMAGE_FALLBACK_CLOUDFRONT=false npm run dev",
-    "dev:next": "wait-on tcp:${S3_API_PORT:-9200} && NEXT_PUBLIC_IMAGE_BACKEND=local S3_ENDPOINT=http://localhost:${S3_API_PORT:-9200} next dev",
+    "dev:next": "wait-on tcp:${S3_API_PORT:-9200} && NEXT_PUBLIC_IMAGE_BACKEND=local S3_ENDPOINT=http://localhost:${S3_API_PORT:-9200} next dev -p 3713",
     "s3:start": "tsx src/scripts/dev/rclone-start.ts",
     "watch:assets": "tsx src/scripts/dev/watchAssets.ts",
     "drift:check": "tsx src/scripts/drift/check.ts",

@@ -6,7 +6,18 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignore": ["dist", "build", "node_modules", ".next", "out", "coverage"]
+    "ignore": [
+      "dist",
+      "build",
+      "node_modules",
+      ".next",
+      "out",
+      "coverage",
+      "*.min.js",
+      "*.min.css",
+      "**/.obsidian",
+      "src/content/Notes/.obsidian"
+    ]
   },
   "formatter": {
     "enabled": true,

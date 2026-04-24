@@ -7,7 +7,7 @@ type GLTFResult = GLTF & {
     Cylinder: Mesh;
   };
   materials: {
-    ["Wood.001"]: MeshStandardMaterial;
+    "Wood.001": MeshStandardMaterial;
   };
 };
 

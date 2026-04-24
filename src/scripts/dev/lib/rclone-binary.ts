@@ -9,11 +9,11 @@
  * Pinned to a specific version for reproducibility. Bump RCLONE_VERSION
  * (and optionally add a SHA256 check below) when upgrading.
  */
-import { spawn } from "child_process";
-import { chmodSync, existsSync, mkdirSync, writeFileSync } from "fs";
-import { arch, platform } from "os";
-import { join, resolve } from "path";
-import { cwd } from "process";
+import { spawn } from "node:child_process";
+import { chmodSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { arch, platform } from "node:os";
+import { join, resolve } from "node:path";
+import { cwd } from "node:process";
 
 const RCLONE_VERSION = "v1.73.5";
 

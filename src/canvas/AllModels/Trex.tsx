@@ -66,7 +66,7 @@ export function FollowingTrex() {
     const cameraPosInPlane = camera.position.clone().normalize().setY(0);
     group.current.lookAt(cameraPosInPlane);
 
-    const direction = cameraPosInPlane.sub(group.current.position);
+    const _direction = cameraPosInPlane.sub(group.current.position);
     // const distance = direction.length()
   });
 

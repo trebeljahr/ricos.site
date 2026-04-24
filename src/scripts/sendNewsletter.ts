@@ -1,7 +1,7 @@
 import slugify from "@sindresorhus/slugify";
 import "dotenv/config";
-import path from "path";
-import { readFile } from "fs/promises";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import matter from "gray-matter";
 import Handlebars from "handlebars";
 import rehypePresetMinify from "rehype-preset-minify";
@@ -44,7 +44,8 @@ async function main() {
         href.endsWith(".svg"))
     ) {
       return nextImageUrl(href, 1080);
-    } else if (href.startsWith("/")) {
+    }
+    if (href.startsWith("/")) {
       return HOST + href;
     }
     return undefined;

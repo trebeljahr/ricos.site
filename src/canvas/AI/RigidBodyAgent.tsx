@@ -144,7 +144,7 @@ export const Agent = ({ children, ...props }: PropsWithChildren<RigidBodyProps>)
 
   /* rotation */
   useFrame((_, delta) => {
-    const t = 1 - Math.pow(0.001, delta);
+    const t = 1 - 0.001 ** delta;
 
     const lookAt = _agentLookAt;
 

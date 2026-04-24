@@ -1,5 +1,5 @@
-import { readFileSync, readdirSync, statSync, writeFileSync } from "fs";
-import { extname, join, parse, resolve } from "path";
+import { readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { extname, join, parse, resolve } from "node:path";
 import slugify from "@sindresorhus/slugify";
 
 type BacklinkEntry = {
@@ -91,7 +91,7 @@ function extractFrontmatter(content: string): Record<string, string> {
 const INTERNAL_LINK_REGEX =
   /\[(?:[^\]]*)\]\((\/?(?:posts|booknotes|newsletters|podcastnotes|travel|pages)\/[^)\s#]+)(?:#[^)]*)?\)/g;
 // Also match root-level page links like [text](/principles)
-const ROOT_PAGE_LINK_REGEX = /\[(?:[^\]]*)\]\(\/([a-z][a-z0-9-]+)\)/g;
+const _ROOT_PAGE_LINK_REGEX = /\[(?:[^\]]*)\]\(\/([a-z][a-z0-9-]+)\)/g;
 
 function collectMdFiles(dir: string): string[] {
   const files: string[] = [];

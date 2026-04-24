@@ -25,7 +25,7 @@ export const SinAndCosineDemo = () => {
 
     const scalingFactor = Math.min(width, height) / 10;
     const origin = new Vec2(width / 2, height / 2);
-    const a = new Vec2(4, 0).scale(scalingFactor).add(origin);
+    const _a = new Vec2(4, 0).scale(scalingFactor).add(origin);
 
     drawBackground(ctx);
     drawCoordinateSystem(ctx, scalingFactor);

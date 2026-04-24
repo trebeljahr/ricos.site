@@ -1,5 +1,5 @@
-import { extname, join } from "path";
-import { readFile, readdir, stat } from "fs/promises";
+import { readFile, readdir, stat } from "node:fs/promises";
+import { extname, join } from "node:path";
 import { stripImageExt } from "./hashing";
 
 const SCAN_EXTS = new Set([".md", ".mdx", ".ts", ".tsx", ".js", ".jsx", ".html", ".json"]);

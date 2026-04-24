@@ -38,7 +38,7 @@ const maxJumpHeight = 0.4;
 const minJumpHeight = 0.1;
 const velocityXZSmoothing = 0.1;
 const velocityXZMin = 0.0001;
-const jumpGravity = -(2 * maxJumpHeight) / Math.pow(timeToJumpApex, 2);
+const jumpGravity = -(2 * maxJumpHeight) / timeToJumpApex ** 2;
 const maxJumpVelocity = Math.abs(jumpGravity) * timeToJumpApex;
 const minJumpVelocity = Math.sqrt(2 * Math.abs(jumpGravity) * minJumpHeight);
 
@@ -108,7 +108,7 @@ export const Player = (props: RigidBodyProps) => {
 
     const horizontalVelocitySmoothing =
       velocityXZSmoothing * (grounded ? accelerationTimeGrounded : accelerationTimeAirborne);
-    const horizontalVelocityLerpFactor = 1 - Math.pow(horizontalVelocitySmoothing, 0.116);
+    const horizontalVelocityLerpFactor = 1 - horizontalVelocitySmoothing ** 0.116;
     horizontalVelocity.current = {
       x: MathUtils.lerp(horizontalVelocity.current.x, _direction.x, horizontalVelocityLerpFactor),
       z: MathUtils.lerp(horizontalVelocity.current.z, _direction.z, horizontalVelocityLerpFactor),

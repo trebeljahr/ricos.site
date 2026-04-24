@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { lstatSync } from "fs";
+import { lstatSync } from "node:fs";
 import inquirer from "inquirer";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";

@@ -13,9 +13,9 @@ type GLTFResult = GLTF & {
     TAIL_1: Bone;
   };
   materials: {
-    ["Material.002"]: MeshStandardMaterial;
-    ["Material.001"]: MeshStandardMaterial;
-    ["Material.003"]: MeshStandardMaterial;
+    "Material.002": MeshStandardMaterial;
+    "Material.001": MeshStandardMaterial;
+    "Material.003": MeshStandardMaterial;
   };
 };
 

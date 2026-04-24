@@ -33,7 +33,7 @@ export const useCameraState = () => {
   const flyCamera = useFlyCameraContext();
   const thirdPersonCamera = useThirdPersonCameraContext();
 
-  const toggleCameraMode = (newMode: CameraModes) => {
+  const _toggleCameraMode = (newMode: CameraModes) => {
     if (newMode === CameraModes.ThirdPerson) {
       camera.current.mode = CameraModes.Fly;
       thirdPersonCamera.activate();

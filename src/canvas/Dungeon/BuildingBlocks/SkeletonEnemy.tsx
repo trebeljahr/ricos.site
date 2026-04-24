@@ -158,7 +158,7 @@ export const SkeletonWithAnimations = ({
   skeletonType?: SkeletonTypes;
 }) => {
   const [animationToPlay, setAnimationToPlay] = useState<CommonActions>(CommonActions.Walk);
-  const [rayPositions, setRayPositions] = useState<{
+  const [_rayPositions, setRayPositions] = useState<{
     sourceOffset: Vector3;
     destOffset: Vector3;
   } | null>(null);

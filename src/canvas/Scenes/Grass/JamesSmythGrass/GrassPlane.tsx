@@ -30,7 +30,7 @@ export const SingleStylizedGrassPlane = ({
 
   const timeRef = useRef(0);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     timeRef.current += delta;
 
     materialRef.current.iTime = timeRef.current * 1000;

@@ -1,6 +1,6 @@
-import { execSync } from "child_process";
-import { mkdirSync, writeFileSync } from "fs";
-import { resolve } from "path";
+import { execSync } from "node:child_process";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 const NOTES_DIR = resolve("src/content/Notes");
 const NOW_FILE = "pages/now.md";

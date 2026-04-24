@@ -286,7 +286,7 @@ export class DungeonGenerator3D {
       [CellType3D.RoomCenterAxis]: 0,
     };
 
-    this.grid.forEach((pos, cell) => {
+    this.grid.forEach((_pos, cell) => {
       cellCounts[cell]++;
     });
 

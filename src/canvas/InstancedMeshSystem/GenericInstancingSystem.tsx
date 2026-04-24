@@ -31,7 +31,7 @@ export type SingleInstanceProps = {
   material: Material;
 };
 
-const SingleInstancedMesh = ({ positions, geo, material }: SingleInstanceProps) => {
+const _SingleInstancedMesh = ({ positions, geo, material }: SingleInstanceProps) => {
   const singleInstanceRef = useRef<InstancedMesh>(null!);
 
   useEffect(() => {

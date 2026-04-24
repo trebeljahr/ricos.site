@@ -1,5 +1,5 @@
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 // Folder to process – adjust as needed or pass as a command line argument
 const folderPath = path.join(process.cwd(), "/src/models/nature_pack");

@@ -1,6 +1,6 @@
-import { execSync } from "child_process";
-import fs from "fs";
-import path from "path";
+import { execSync } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
 import * as glob from "glob";
 import matter from "gray-matter";
 
@@ -35,13 +35,12 @@ function parseDateFromTitle(title: string) {
     const dateISO = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
     const parsedDate = new Date(dateISO);
 
-    if (isNaN(parsedDate.getTime())) {
+    if (Number.isNaN(parsedDate.getTime())) {
       return false;
     }
     return parsedDate.toISOString().slice(0, 10);
-  } else {
-    return false;
   }
+  return false;
 }
 
 function getCreationDate(filePath: string): string {
@@ -77,7 +76,7 @@ mdFiles.forEach((filePath: string) => {
     ...frontmatter,
   } as { [key: string]: any };
 
-  delete newFrontmatter["draft"];
+  delete newFrontmatter.draft;
 
   const newContent = matter.stringify(content, newFrontmatter);
   fs.writeFileSync(filePath, newContent, "utf8");

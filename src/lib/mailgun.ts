@@ -30,7 +30,7 @@ type EmailData = {
 
 export async function deleteDomain() {
   const mg = createMgClient();
-  const destroyedDomain = await mg.domains.destroy(
+  const _destroyedDomain = await mg.domains.destroy(
     "sandboxf09111c8e9aa47da869eb96201663b74.mailgun.org",
   );
 }
@@ -41,7 +41,7 @@ export async function createNewMailingList() {
 
   if (existingLists.items.length !== 0) return;
 
-  const newList = await mg.lists.create({
+  const _newList = await mg.lists.create({
     address: newsletterListMail,
     name: "Trebeljahr's Newsletter List",
     description: "Default Newsletter List for newsletter.trebeljahr.com",
@@ -62,7 +62,7 @@ export async function isAlreadySubscribed(email: string) {
   try {
     const existingMember = await mg.lists.members.getMember(newsletterListMail, email);
     return existingMember.subscribed;
-  } catch (err) {
+  } catch (_err) {
     return false;
   }
 }
@@ -70,7 +70,7 @@ export async function isAlreadySubscribed(email: string) {
 export async function addNewMemberToEmailList(newMember: Member) {
   const mg = createMgClient();
 
-  const member = await mg.lists.members.createMember(newsletterListMail, {
+  const _member = await mg.lists.members.createMember(newsletterListMail, {
     address: newMember.email,
     name: newMember.name || "",
     vars: JSON.stringify(newMember.vars),
@@ -82,7 +82,7 @@ export async function addNewMemberToEmailList(newMember: Member) {
 export async function activateEmailListMember(email: string) {
   const mg = createMgClient();
 
-  const newMember = await mg.lists.members.updateMember(newsletterListMail, email, {
+  const _newMember = await mg.lists.members.updateMember(newsletterListMail, email, {
     subscribed: "yes",
   } as unknown as CreateUpdateMailListMembers);
 }

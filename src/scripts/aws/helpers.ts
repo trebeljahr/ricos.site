@@ -1,5 +1,5 @@
-import { readFileSync } from "fs";
-import path from "path";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { HeadObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import mime from "mime";
 import { createS3Client } from "src/lib/aws";

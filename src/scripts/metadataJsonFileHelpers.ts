@@ -1,8 +1,8 @@
 import { Presets, SingleBar } from "cli-progress";
 import "dotenv/config";
-import { promises as fs } from "fs";
-import path from "path";
-import { readFile } from "fs/promises";
+import { promises as fs } from "node:fs";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import pLimit from "p-limit";
 import { collectFilesInPath } from "./aws/directoryTraversal";
 import { getWidthAndHeightFromFileSystem } from "./aws/getWidthAndHeight";

@@ -14,13 +14,13 @@
  *   npm run drift:fix -- --yes
  */
 import "dotenv/config";
-import { statSync } from "fs";
-import { dirname, extname, join } from "path";
+import { statSync } from "node:fs";
+import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, rm } from "node:fs/promises";
+import { dirname, extname, join } from "node:path";
+import { cwd } from "node:process";
 import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
-import { readFile, writeFile } from "fs/promises";
-import { mkdir, rm } from "fs/promises";
 import inquirer from "inquirer";
-import { cwd } from "process";
 import { createS3Client } from "src/lib/aws";
 import { deleteObjects, listAllObjects, renameObject } from "./lib/buckets";
 import { isUglyName, stripImageExt } from "./lib/hashing";
@@ -248,7 +248,7 @@ async function handleContentDupes(
       try {
         statSync(localFrom);
         await mkdir(dirname(localTo), { recursive: true });
-        const { rename: fsRename } = await import("fs/promises");
+        const { rename: fsRename } = await import("node:fs/promises");
         await fsRename(localFrom, localTo);
       } catch {
         /* local file may not exist */
@@ -276,7 +276,7 @@ async function handleContentDupes(
   let rewrites = 0;
   let filesTouched = 0;
   async function* walk(dir: string): AsyncGenerator<string> {
-    const { readdir } = await import("fs/promises");
+    const { readdir } = await import("node:fs/promises");
     let entries;
     try {
       entries = await readdir(dir, { withFileTypes: true });

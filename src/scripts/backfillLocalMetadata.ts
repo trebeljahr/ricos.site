@@ -7,11 +7,11 @@
  * were added to the Notes submodule but metadata.json wasn't refreshed.
  */
 import "dotenv/config";
-import { resolve } from "path";
-import { relative } from "path";
+import { readFile, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { relative } from "node:path";
+import { cwd } from "node:process";
 import chokidar from "chokidar";
-import { readFile, writeFile } from "fs/promises";
-import { cwd } from "process";
 import sharp from "sharp";
 
 const METADATA_PATH = resolve(cwd(), "src/content/Notes/_data/metadata.json");

@@ -16,8 +16,8 @@ type GLTFResult = GLTF & {
     Rock_Snow_2_2: Mesh;
   };
   materials: {
-    ["Rock.001"]: MeshStandardMaterial;
-    ["Snow.001"]: MeshStandardMaterial;
+    "Rock.001": MeshStandardMaterial;
+    "Snow.001": MeshStandardMaterial;
   };
 };
 

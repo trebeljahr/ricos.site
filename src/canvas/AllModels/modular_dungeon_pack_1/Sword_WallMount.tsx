@@ -23,7 +23,7 @@ type GLTFResult = GLTF & {
   materials: {
     DarkWood: MeshStandardMaterial;
     DarkSteel: MeshStandardMaterial;
-    ["DarkWood.001"]: MeshStandardMaterial;
+    "DarkWood.001": MeshStandardMaterial;
     LightWood: MeshStandardMaterial;
     LightSteel: MeshStandardMaterial;
     Steel: MeshStandardMaterial;

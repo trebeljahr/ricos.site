@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 
 const quoteText = await readFile("./quote-text.md", "utf-8");
 const quotes = quoteText

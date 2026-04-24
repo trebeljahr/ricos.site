@@ -1,4 +1,4 @@
-import { createReadStream } from "fs";
+import { createReadStream } from "node:fs";
 import probe from "probe-image-size";
 
 export async function getWidthAndHeightFromFileSystem(imagePath: string) {

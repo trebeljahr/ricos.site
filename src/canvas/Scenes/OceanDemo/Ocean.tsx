@@ -13,7 +13,7 @@ declare module "@react-three/fiber" {
 
 export function OceanSurface({ position = [0, 0, 0] as [number, number, number] }) {
   const ref = useRef<Water>(null!);
-  const gl = useThree((state) => state.gl);
+  const _gl = useThree((state) => state.gl);
   const waterNormals = useLoader(TextureLoader, "/3d-assets/textures/waternormals.jpeg");
   waterNormals.wrapS = waterNormals.wrapT = RepeatWrapping;
   const geom = useMemo(() => new PlaneGeometry(10000, 10000), []);
@@ -30,7 +30,7 @@ export function OceanSurface({ position = [0, 0, 0] as [number, number, number] 
     }),
     [waterNormals],
   );
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (ref.current) {
       ref.current.material.uniforms.time.value += delta;
     }

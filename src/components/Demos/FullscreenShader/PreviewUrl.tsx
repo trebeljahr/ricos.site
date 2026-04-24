@@ -66,7 +66,7 @@ type PreviewUrlProps = {
 export function PreviewUrl({ url, onDelete, onUpdate, index }: PreviewUrlProps) {
   const handleUpdateFileChange = (index: number, event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (files && files[0]) {
+    if (files?.[0]) {
       onUpdate(index, files[0]);
     }
   };

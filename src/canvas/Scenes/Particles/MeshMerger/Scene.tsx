@@ -141,7 +141,7 @@ export const MeshMerger = ({
 
   const timeRef = useRef(0);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     timeRef.current += delta;
     const totalTime = timeRef.current;
     const timeElapsed = totalTime / samplers.length;

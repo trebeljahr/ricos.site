@@ -170,7 +170,7 @@ export class Polygon {
         new_y = newpoint.y;
         new_direction = Math.atan2(new_y - old_y, new_x - old_x);
 
-        if (old_x == new_x && old_y == new_y) {
+        if (old_x === new_x && old_y === new_y) {
           return false;
         }
 
@@ -193,8 +193,8 @@ export class Polygon {
         angle_sum += angle;
       }
 
-      return Math.abs(Math.round(angle_sum / TWO_PI)) == 1;
-    } catch (error) {
+      return Math.abs(Math.round(angle_sum / TWO_PI)) === 1;
+    } catch (_error) {
       return false;
     }
   }
@@ -275,7 +275,8 @@ export class Polygon {
 function getItem<T>(arr: T[], i: number) {
   if (i >= arr.length) {
     return arr[i % arr.length];
-  } else if (i < 0) {
+  }
+  if (i < 0) {
     return arr[(i % arr.length) + arr.length];
   }
   return arr[i];

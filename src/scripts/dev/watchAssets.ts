@@ -18,12 +18,12 @@
  * NEVER deletes S3 objects. Deletions go through `npm run drift:fix`.
  */
 import "dotenv/config";
-import { dirname, relative, resolve } from "path";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, relative, resolve } from "node:path";
+import { cwd } from "node:process";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import chokidar from "chokidar";
-import { mkdir, readFile, writeFile } from "fs/promises";
 import mime from "mime";
-import { cwd } from "process";
 import sharp from "sharp";
 import { createS3Client } from "src/lib/aws";
 

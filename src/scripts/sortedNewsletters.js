@@ -1,5 +1,5 @@
-import path from "path";
-import { readdir } from "fs/promises";
+import { readdir } from "node:fs/promises";
+import path from "node:path";
 
 export const newsletterPath = path.join(process.cwd(), "src", "content", "Notes", "newsletters");
 

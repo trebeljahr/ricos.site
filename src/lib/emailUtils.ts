@@ -1,5 +1,5 @@
-import { scrypt as scryptCallback } from "crypto";
-import { promisify } from "util";
+import { scrypt as scryptCallback } from "node:crypto";
+import { promisify } from "node:util";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { activateEmailListMember } from "./mailgun";
 

@@ -180,8 +180,8 @@ export default function NowHistory({ entries }: Props) {
 }
 
 export async function getStaticProps() {
-  const { readdirSync, readFileSync } = await import("fs");
-  const { resolve } = await import("path");
+  const { readdirSync, readFileSync } = await import("node:fs");
+  const { resolve } = await import("node:path");
   const { bundleMDX } = await import("mdx-bundler");
   const { diffLines } = await import("diff");
 

@@ -4,10 +4,10 @@ import type { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    ["Staff_02_Circle001-Mesh"]: Mesh;
-    ["Staff_02_Circle001-Mesh_1"]: Mesh;
-    ["Staff_02_Circle001-Mesh_2"]: Mesh;
-    ["Staff_02_Circle001-Mesh_3"]: Mesh;
+    "Staff_02_Circle001-Mesh": Mesh;
+    "Staff_02_Circle001-Mesh_1": Mesh;
+    "Staff_02_Circle001-Mesh_2": Mesh;
+    "Staff_02_Circle001-Mesh_3": Mesh;
   };
   materials: {
     Iron_staff_02: MeshStandardMaterial;

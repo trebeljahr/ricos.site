@@ -13,7 +13,7 @@ export const ProgressBar: FC = () => {
 
       progressBarRef.current.style.setProperty(
         "--scroll-percent",
-        `${isNaN(scrollPercent) ? 0 : scrollPercent}%`,
+        `${Number.isNaN(scrollPercent) ? 0 : scrollPercent}%`,
       );
     };
 
@@ -37,7 +37,7 @@ export const ProgressBar: FC = () => {
           transform: "translateX(calc(var(--scroll-percent, 0%) - 100%))",
           transition: "transform 0.1s linear",
         }}
-      ></div>
+      />
     </div>
   );
 };

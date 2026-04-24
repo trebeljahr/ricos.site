@@ -63,7 +63,7 @@ export function Birds({ amount = 1000 }) {
 
     initBirds();
 
-    return () => gpuCompute && gpuCompute.dispose();
+    return () => gpuCompute?.dispose();
   }, [gpuCompute]);
 
   const birdGeometry = useMemo(() => {
@@ -103,14 +103,14 @@ export function Birds({ amount = 1000 }) {
 
     if (!positionUniforms.current || !velocityUniforms.current) return;
 
-    positionUniforms.current["time"].value = now;
-    positionUniforms.current["delta"].value = delta;
-    velocityUniforms.current["time"].value = now;
-    velocityUniforms.current["delta"].value = delta;
-    birdMaterial.current.uniforms["time"].value = now;
-    birdMaterial.current.uniforms["delta"].value = delta;
+    positionUniforms.current.time.value = now;
+    positionUniforms.current.delta.value = delta;
+    velocityUniforms.current.time.value = now;
+    velocityUniforms.current.delta.value = delta;
+    birdMaterial.current.uniforms.time.value = now;
+    birdMaterial.current.uniforms.delta.value = delta;
 
-    velocityUniforms.current["predator"].value.set(
+    velocityUniforms.current.predator.value.set(
       (0.5 * mouseX.current) / windowHalfX,
       (-0.5 * mouseY.current) / windowHalfY,
       0,
@@ -123,11 +123,11 @@ export function Birds({ amount = 1000 }) {
 
     if (!birdMaterial.current || !positionVariable.current || !velocityVariable.current) return;
 
-    birdMaterial.current.uniforms["texturePosition"].value = gpuCompute.getCurrentRenderTarget(
+    birdMaterial.current.uniforms.texturePosition.value = gpuCompute.getCurrentRenderTarget(
       positionVariable.current,
     ).texture;
 
-    birdMaterial.current.uniforms["textureVelocity"].value = gpuCompute.getCurrentRenderTarget(
+    birdMaterial.current.uniforms.textureVelocity.value = gpuCompute.getCurrentRenderTarget(
       velocityVariable.current,
     ).texture;
   });

@@ -75,7 +75,7 @@ const useKinematicCharacterController = ({
   });
 
   const jumpGravity = useMemo(
-    () => -(2 * maxJumpHeight) / Math.pow(timeToJumpApex, 2),
+    () => -(2 * maxJumpHeight) / timeToJumpApex ** 2,
     [maxJumpHeight, timeToJumpApex],
   );
 
@@ -134,7 +134,7 @@ const useKinematicCharacterController = ({
 
     const characterCollider = characterColliderRef.current;
 
-    const speed = (1.0 - Math.pow(0.0001, delta)) * (sprint ? 1.5 : 1);
+    const speed = (1.0 - 0.0001 ** delta) * (sprint ? 1.5 : 1);
 
     characterLinvel.copy(characterRigidBody.current.linvel() as Vector3);
     const currentSpeed = characterLinvel.length();
@@ -148,7 +148,7 @@ const useKinematicCharacterController = ({
     const smoothing =
       velocityXZSmoothing * (grounded ? accelerationTimeGrounded : accelerationTimeAirborne);
 
-    const factor = 1 - Math.pow(smoothing, delta);
+    const factor = 1 - smoothing ** delta;
 
     // x and z movement
     frontVector.set(0, 0, Number(backward) - Number(forward));

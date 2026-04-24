@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
 const metadataPath = "src/content/Notes/_data/metadata.json";
 const assetsRoot = "src/content/Notes/assets";

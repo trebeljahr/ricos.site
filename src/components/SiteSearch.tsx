@@ -151,7 +151,6 @@ export const SiteSearch = () => {
               <FiSearch className="w-5 h-5 text-gray-400" />
               <input
                 ref={inputRef}
-                autoFocus
                 type="text"
                 placeholder="Search posts, books, newsletters, travel..."
                 value={query}

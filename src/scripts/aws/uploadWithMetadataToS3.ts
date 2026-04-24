@@ -1,7 +1,7 @@
 import { Presets, SingleBar } from "cli-progress";
 import "dotenv/config";
-import { lstatSync } from "fs";
-import path from "path";
+import { lstatSync } from "node:fs";
+import path from "node:path";
 import inquirer from "inquirer";
 import pLimit from "p-limit";
 import yargs from "yargs";

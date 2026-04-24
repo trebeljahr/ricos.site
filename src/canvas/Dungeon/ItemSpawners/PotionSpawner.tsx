@@ -44,7 +44,7 @@ export const RandomPotionSpawner: SpawnerImplementation = (props) => {
 
   const { heal } = useHealthContext();
 
-  const onCollected = (data: PotionData) => {
+  const onCollected = (_data: PotionData) => {
     heal(0.1);
     addItem({
       id: "potion",

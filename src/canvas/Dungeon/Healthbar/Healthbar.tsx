@@ -110,7 +110,7 @@ export const GenericHealthBar = ({
 
   const sizeVec = useMemo(() => new Vector2(scale[0], scale[2]), [scale]);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (!materialRef.current || health.current === null) return;
     timeRef.current += delta;
 

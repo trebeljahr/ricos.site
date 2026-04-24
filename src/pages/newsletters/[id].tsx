@@ -48,7 +48,7 @@ const Newsletter = ({
   relatedNewsletters,
   backlinks,
 }: Props) => {
-  const newsletterTag = "Live and Learn #" + number;
+  const _newsletterTag = "Live and Learn #" + number;
   const fullTitle = seoTitle || title;
   const url = `newsletters/${slugTitle}`;
 

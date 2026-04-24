@@ -20,7 +20,7 @@ const ChunkRenderer = () => {
   const { camera } = useThree();
   return (
     <group>
-      {Array.from(chunks).map(([key, chunkData], index) => {
+      {Array.from(chunks).map(([_key, chunkData], index) => {
         if (!chunkData.data) return null;
         return (
           <Suspense key={index}>

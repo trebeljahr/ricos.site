@@ -26,10 +26,10 @@
  * dependency — a fresh `npm install && npm run dev` works.
  */
 import "dotenv/config";
-import { spawn } from "child_process";
-import { existsSync, lstatSync, mkdirSync, readlinkSync, symlinkSync, unlinkSync } from "fs";
-import { join, resolve } from "path";
-import { cwd } from "process";
+import { spawn } from "node:child_process";
+import { existsSync, lstatSync, mkdirSync, readlinkSync, symlinkSync, unlinkSync } from "node:fs";
+import { join, resolve } from "node:path";
+import { cwd } from "node:process";
 import { ensureRclone } from "./lib/rclone-binary";
 
 const API_PORT = process.env.S3_API_PORT ?? "9200";

@@ -15,8 +15,8 @@ declare module "@react-three/fiber" {
 
 extend({ InstancedMesh2 });
 
-const emptyRotation = new Vector3(0, 0, 0);
-const temp = new Object3D();
+const _emptyRotation = new Vector3(0, 0, 0);
+const _temp = new Object3D();
 
 export type InstancedMeshMultiMaterialHook = ReturnType<typeof useInstancedMeshMultiMaterial>;
 

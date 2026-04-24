@@ -23,12 +23,12 @@ type GLTFResult = GLTF & {
     IKFrontLegR: Bone;
   };
   materials: {
-    ["Material.001"]: MeshStandardMaterial;
-    ["Material.003"]: MeshStandardMaterial;
+    "Material.001": MeshStandardMaterial;
+    "Material.003": MeshStandardMaterial;
     Material: MeshStandardMaterial;
-    ["Material.010"]: MeshStandardMaterial;
-    ["Material.001"]: MeshStandardMaterial;
-    ["Material.011"]: MeshStandardMaterial;
+    "Material.010": MeshStandardMaterial;
+    "Material.001": MeshStandardMaterial;
+    "Material.011": MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };

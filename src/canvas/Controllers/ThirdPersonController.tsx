@@ -140,7 +140,7 @@ export function useCharacterController(
       if (!isMoving) return;
 
       const position = rigidBody.translation();
-      const angleYCameraDirection = Math.atan2(
+      const _angleYCameraDirection = Math.atan2(
         camera.position.x - position.x,
         camera.position.z - position.z,
       );
@@ -170,7 +170,7 @@ export function useCharacterController(
         const ray = new Ray(translation, { x: 0, y: -1, z: 0 });
         const hit = world.castRay(ray, 0.5, false, 1);
         if (hit) {
-          const grounded = hit && hit.collider && Math.abs(hit.timeOfImpact) <= 1.75;
+          const grounded = hit?.collider && Math.abs(hit.timeOfImpact) <= 1.75;
           if (grounded) {
             storedFallRef.current = 0;
             walkDirection.y = lerp(0, Math.abs(hit.timeOfImpact), 0.5);
@@ -180,7 +180,7 @@ export function useCharacterController(
         walkDirection.x = walkDirection.x * velocity * delta;
         walkDirection.z = walkDirection.z * velocity * delta;
 
-        const collider = world.getCollider(rigidBody.handle);
+        const _collider = world.getCollider(rigidBody.handle);
         const api = rigidBody;
         const collider2 = api.collider(0);
 

@@ -134,9 +134,9 @@ export const useStaff7 = () => {
 
   const group = new Group();
   group.name = "Staff_7";
-  const staffMesh = new Mesh(nodes["group1762687703"].geometry, materials.mat2);
-  const staffMesh2 = new Mesh(nodes["mesh2096346305"].geometry, materials.mat20);
-  const staffMesh3 = new Mesh(nodes["mesh2096346305_1"].geometry, materials.mat17);
+  const staffMesh = new Mesh(nodes.group1762687703.geometry, materials.mat2);
+  const staffMesh2 = new Mesh(nodes.mesh2096346305.geometry, materials.mat20);
+  const staffMesh3 = new Mesh(nodes.mesh2096346305_1.geometry, materials.mat17);
 
   group.scale.set(0.02, 0.02, 0.02);
   group.position.set(0, 0.005, 0);

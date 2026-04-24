@@ -1,5 +1,5 @@
-import { extname, join } from "path";
-import { readdir } from "fs/promises";
+import { readdir } from "node:fs/promises";
+import { extname, join } from "node:path";
 import { md5File } from "./hashing";
 
 const IMG_EXTS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"]);

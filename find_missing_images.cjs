@@ -1,5 +1,5 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 function walk(dir) {
   let results = [];
@@ -9,7 +9,7 @@ function walk(dir) {
     if (file === "node_modules" || file === ".git" || file === ".next") return;
     file = path.join(dir, file);
     const stat = fs.statSync(file);
-    if (stat && stat.isDirectory()) {
+    if (stat?.isDirectory()) {
       results = results.concat(walk(file));
     } else {
       if (file.endsWith(".md") || file.endsWith(".mdx")) {
@@ -23,7 +23,7 @@ function walk(dir) {
 const metadataPath = "src/content/Notes/_data/metadata.json";
 const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
 const files = walk("src/content");
-const missing = [];
+const _missing = [];
 const allRefs = [];
 
 const mdImageRegex = /!\[.*?\]\((.+?)\)/g;
@@ -65,7 +65,7 @@ allRefs.forEach((ref) => {
   let decodedKey = key;
   try {
     decodedKey = decodeURIComponent(key);
-  } catch (e) {}
+  } catch (_e) {}
 
   if (!metadata[decodedKey] && !metadata[key]) {
     if (!report[decodedKey]) {

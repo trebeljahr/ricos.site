@@ -8,7 +8,7 @@ import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import { type Group, Quaternion } from "three";
 
-const tempQ = new Quaternion();
+const _tempQ = new Quaternion();
 
 const Character = () => {
   const playerGroupRef = useRef<Group>(null!);

@@ -16,7 +16,7 @@ const accelerationTimeGrounded = 0.025;
 const timeToJumpApex = 1.2;
 const maxJumpHeight = 10;
 const minJumpHeight = 6;
-const jumpGravity = -(1.5 * maxJumpHeight) / Math.pow(timeToJumpApex, 1.5);
+const jumpGravity = -(1.5 * maxJumpHeight) / timeToJumpApex ** 1.5;
 const maxJumpVelocity = Math.abs(jumpGravity) * timeToJumpApex;
 const minJumpVelocity = Math.sqrt(2 * Math.abs(jumpGravity) * minJumpHeight);
 
@@ -86,7 +86,7 @@ export const FirstPersonController = (props: JSX.IntrinsicElements["group"]) => 
     let smoothing = velocityXZSmoothing;
     smoothing *= grounded ? accelerationTimeGrounded : accelerationTimeAirborne;
 
-    const factor = 1 - Math.pow(smoothing, delta);
+    const factor = 1 - smoothing ** delta;
 
     const { leveledX, leveledY } = joystick.getData();
     frontVector.set(0, 0, -leveledY);

@@ -1,4 +1,4 @@
-import { readdir } from "fs/promises";
+import { readdir } from "node:fs/promises";
 
 export async function getShaderFileNames() {
   const directory = process.cwd() + "/src/shaders/standaloneFragmentShaders";

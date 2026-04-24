@@ -7,7 +7,7 @@ import { getAllStorageObjectKeys } from "src/lib/aws";
 import { nextImageUrl } from "src/lib/mapToImageProps";
 
 const imageKeys = await getAllStorageObjectKeys(process.env.AWS_BUCKET_NAME!);
-let totalInvocations = 0;
+let _totalInvocations = 0;
 
 const imageSizes = [128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840];
 
@@ -21,7 +21,7 @@ for (const imageKey of imageKeys) {
   const promises: Promise<any>[] = [];
 
   for (const size of imageSizes) {
-    totalInvocations++;
+    _totalInvocations++;
     const url = nextImageUrl("/" + imageKey, size);
     promises.push(axios.get(url));
   }

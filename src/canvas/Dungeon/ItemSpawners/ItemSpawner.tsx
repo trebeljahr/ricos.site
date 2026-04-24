@@ -62,7 +62,7 @@ export const ItemSpawner: ItemSpawnerType = ({
   const ItemRef = useRef<Group>(null!);
   const timeRef = useRef(0);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (!ItemRef.current) return;
     timeRef.current += delta;
 

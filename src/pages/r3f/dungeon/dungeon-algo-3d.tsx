@@ -16,7 +16,7 @@ import {
   Vector3 as Vector3FromThreeJS,
 } from "three";
 
-const backgroundColor = "#191616";
+const _backgroundColor = "#191616";
 const viewDistance = 300;
 
 const materials = {

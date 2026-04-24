@@ -89,7 +89,7 @@ export const useFollowCam = ({
    * Touch events
    */
   // Touch end event
-  const onTouchEnd = (e: TouchEvent) => {
+  const onTouchEnd = (_e: TouchEvent) => {
     previousTouch1 = null;
     previousTouch2 = null;
   };

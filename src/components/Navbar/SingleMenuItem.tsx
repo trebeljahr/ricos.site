@@ -19,7 +19,7 @@ export function SingleMenuItem({ link, closeNav, left }: SingleMenuItemProps) {
             left ? "text-left" : "text-right",
           )}
           onClick={() => {
-            closeNav && closeNav();
+            closeNav?.();
             close();
           }}
         >

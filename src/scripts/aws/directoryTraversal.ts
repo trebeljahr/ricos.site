@@ -1,5 +1,5 @@
-import path from "path";
-import { readdir } from "fs/promises";
+import { readdir } from "node:fs/promises";
+import path from "node:path";
 
 type Options = { ignoreDirectories?: string[]; filePattern?: RegExp };
 

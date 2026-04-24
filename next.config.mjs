@@ -13,8 +13,8 @@ if (shouldRunVelite) {
   await build({ watch: isDev, clean: !isDev, logLevel: "error" });
 
   // Generate R3F navigation links JSON (replaces next-plugin-preval)
-  const { readdir, lstat, writeFile } = await import("fs/promises");
-  const { resolve, join } = await import("path");
+  const { readdir, lstat, writeFile } = await import("node:fs/promises");
+  const { resolve, join } = await import("node:path");
   const r3fDir = resolve("src/pages/r3f");
   const shaderDir = resolve("src/shaders/standaloneFragmentShaders");
   const toTitleCase = (s) =>
@@ -40,7 +40,7 @@ if (shouldRunVelite) {
   await writeFile(resolve(".velite/r3f-links.json"), JSON.stringify({ links }));
 
   // Generate search index and backlinks from velite data
-  const { execSync } = await import("child_process");
+  const { execSync } = await import("node:child_process");
   try {
     execSync("npx tsx src/scripts/generateSearchIndex.ts", { stdio: "pipe" });
   } catch {}

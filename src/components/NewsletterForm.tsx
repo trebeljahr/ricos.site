@@ -60,7 +60,7 @@ export const NewsletterForm = ({
 
       setSuccess(data.success);
       setLoading(false);
-    } catch (err) {
+    } catch (_err) {
       setError("Something went wrong while signing up... maybe, try again?");
       setLoading(false);
     }

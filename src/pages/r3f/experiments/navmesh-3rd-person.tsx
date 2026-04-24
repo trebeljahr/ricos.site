@@ -132,7 +132,7 @@ const SingleLightningStrike = ({
   );
 };
 
-const LightningAttack = () => {
+const _LightningAttack = () => {
   const [rayPositions, setRayPositions] = useState<{
     sourceOffset: Vector3;
     destOffset: Vector3;

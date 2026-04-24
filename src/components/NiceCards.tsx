@@ -106,7 +106,7 @@ export const VerticalCard = ({
         <h2 className="my-6! tracking-tight">{title}</h2>
         {subtitle && <p className="font-normal text-base">{subtitle}</p>}
         {markdownExcerpt && <MDXExcerpt source={markdownExcerpt} />}
-        <div className="grow mb-5"></div>
+        <div className="grow mb-5" />
         <div className="place-self-end">
           <MetadataDisplay
             date={date}

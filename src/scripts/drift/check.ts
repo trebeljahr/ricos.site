@@ -10,7 +10,7 @@
  *   npm run drift:check
  */
 import "dotenv/config";
-import { cwd } from "process";
+import { cwd } from "node:process";
 import { listAllObjects } from "./lib/buckets";
 import { stripImageExt } from "./lib/hashing";
 import { LOCAL_ASSETS_ROOT, hashLocalImages, listLocalImages } from "./lib/localAssets";

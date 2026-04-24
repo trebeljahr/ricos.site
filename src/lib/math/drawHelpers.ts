@@ -43,12 +43,12 @@ export function insidePoly({ x, y }: Vec2, vertices: Vec2[]) {
   let inside = false;
 
   for (let i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
-    const xi = vertices[i].x,
-      yi = vertices[i].y;
-    const xj = vertices[j].x,
-      yj = vertices[j].y;
+    const xi = vertices[i].x;
+    const yi = vertices[i].y;
+    const xj = vertices[j].x;
+    const yj = vertices[j].y;
 
-    const intersect = yi > y != yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+    const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
     if (intersect) inside = !inside;
   }
 
@@ -233,7 +233,7 @@ export function starPoints() {
   let n = 0;
 
   for (let a = -Math.PI / 2; a < (3 * Math.PI) / 2; a += step) {
-    const r = n % 2 == 0 ? 2 : 1;
+    const r = n % 2 === 0 ? 2 : 1;
     const x = r * Math.cos(a);
     const y = r * Math.sin(a);
     pts.push(new Vec2(x, y));
@@ -370,7 +370,7 @@ export function instrument(
     selectPolygon(event);
   };
 
-  const handleMouseUp = (event: PointerEvent) => {
+  const handleMouseUp = (_event: PointerEvent) => {
     reset();
   };
 

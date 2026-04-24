@@ -32,7 +32,7 @@ function PlayerController({ children }: PropsWithChildren) {
     });
   }, [subscribe]);
 
-  useFrame((_, delta) => {
+  useFrame((_, _delta) => {
     if (!rigidBodyRef.current) return;
 
     const { forward, backward, leftward, rightward, jump, descend, sprint } = get();

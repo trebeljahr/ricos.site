@@ -16,8 +16,8 @@ type GLTFResult = GLTF & {
     CommonTree_Dead_Snow_5_2: Mesh;
   };
   materials: {
-    ["Wood.002"]: MeshStandardMaterial;
-    ["Snow.002"]: MeshStandardMaterial;
+    "Wood.002": MeshStandardMaterial;
+    "Snow.002": MeshStandardMaterial;
   };
 };
 

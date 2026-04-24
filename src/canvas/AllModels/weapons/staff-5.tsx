@@ -4,9 +4,9 @@ import type { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    ["Staff_05_Circle016-Mesh"]: Mesh;
-    ["Staff_05_Circle016-Mesh_1"]: Mesh;
-    ["Staff_05_Circle016-Mesh_2"]: Mesh;
+    "Staff_05_Circle016-Mesh": Mesh;
+    "Staff_05_Circle016-Mesh_1": Mesh;
+    "Staff_05_Circle016-Mesh_2": Mesh;
   };
   materials: {
     Brown: MeshStandardMaterial;

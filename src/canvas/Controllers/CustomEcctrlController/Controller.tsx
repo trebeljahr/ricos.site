@@ -206,7 +206,7 @@ const Ecctrl = ({
   }
   const isInsideKeyboardControls = useIsInsideKeyboardControls();
 
-  const [subscribeKeys, getKeys] = useKeyboardControls();
+  const [_subscribeKeys, getKeys] = useKeyboardControls();
 
   const presetKeys = {
     forward: false,
@@ -433,13 +433,13 @@ const Ecctrl = ({
      * Check if character complete turned to the wanted direction
      */
     characterRotated =
-      Math.sin(characterModelIndicator.rotation.y).toFixed(3) == Math.sin(modelEuler.y).toFixed(3);
+      Math.sin(characterModelIndicator.rotation.y).toFixed(3) === Math.sin(modelEuler.y).toFixed(3);
 
     // If character hasn't complete turning, change the impulse quaternion follow characterModelIndicator quaternion
     if (!characterRotated) {
       moveImpulse.set(
         moveForceNeeded.x * turnVelMultiplier * (canJump ? 1 : airDragMultiplier), // if it's in the air, give it less control
-        slopeAngle === null || slopeAngle == 0 // if it's on a slope, apply extra up/down force to the body
+        slopeAngle === null || slopeAngle === 0 // if it's on a slope, apply extra up/down force to the body
           ? 0
           : movingDirection.y *
               turnVelMultiplier *
@@ -454,7 +454,7 @@ const Ecctrl = ({
     else {
       moveImpulse.set(
         moveForceNeeded.x * (canJump ? 1 : airDragMultiplier),
-        slopeAngle === null || slopeAngle == 0 // if it's on a slope, apply extra up/down force to the body
+        slopeAngle === null || slopeAngle === 0 // if it's on a slope, apply extra up/down force to the body
           ? 0
           : movingDirection.y *
               (movingDirection.y > 0 // check it is on slope up or slope down
@@ -588,9 +588,9 @@ const Ecctrl = ({
   useEffect(() => {
     // Lock character rotations at Y axis
     (characterRef.current?.rigidBody as any)?.setEnabledRotations(
-      autoBalance ? true : false,
-      autoBalance ? true : false,
-      autoBalance ? true : false,
+      !!autoBalance,
+      !!autoBalance,
+      !!autoBalance,
       false,
     );
 
@@ -626,7 +626,7 @@ const Ecctrl = ({
 
     // Character current position/velocity
     if (rb) {
-      const player = rb?.userData as userDataType;
+      const _player = rb?.userData as userDataType;
       currentPos.copy(rb.translation() as Vector3);
       currentVel.copy(rb.linvel() as Vector3);
 
@@ -725,8 +725,7 @@ const Ecctrl = ({
       );
       // Apply jump force downward to the standing platform
       characterMassForce.y *= jumpForceToGroundMult;
-      rayHit &&
-        rayHit.collider.parent()?.applyImpulseAtPoint(characterMassForce, standingForcePoint, true);
+      rayHit?.collider.parent()?.applyImpulseAtPoint(characterMassForce, standingForcePoint, true);
     }
 
     // Rotate character Indicator
@@ -949,7 +948,7 @@ const Ecctrl = ({
     /**
      * Detect character falling state
      */
-    isFalling = currentVel.y < 0 && !canJump ? true : false;
+    isFalling = !!(currentVel.y < 0 && !canJump);
 
     /**
      * Setup max falling speed && extra falling gravity

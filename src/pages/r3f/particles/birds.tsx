@@ -48,7 +48,7 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
       <ambientLight intensity={0.5} />
       <directionalLight />
 
-      <Stage></Stage>
+      <Stage />
 
       <Birds />
       {/* <Fishes /> */}

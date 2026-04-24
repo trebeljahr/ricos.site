@@ -95,7 +95,7 @@ export function Fishes({
 
     initFishs();
 
-    return () => gpuCompute && gpuCompute.dispose();
+    return () => gpuCompute?.dispose();
   }, [gpuCompute]);
 
   const last = useRef(performance.now());
@@ -111,24 +111,24 @@ export function Fishes({
 
     if (!fishMaterial.current || !positionUniforms.current || !velocityUniforms.current) return;
 
-    positionUniforms.current["time"].value = now;
-    positionUniforms.current["delta"].value = delta;
+    positionUniforms.current.time.value = now;
+    positionUniforms.current.delta.value = delta;
 
-    velocityUniforms.current["time"].value = now;
-    velocityUniforms.current["delta"].value = delta;
+    velocityUniforms.current.time.value = now;
+    velocityUniforms.current.delta.value = delta;
 
-    fishMaterial.current.uniforms["time"].value = now;
-    fishMaterial.current.uniforms["delta"].value = delta;
+    fishMaterial.current.uniforms.time.value = now;
+    fishMaterial.current.uniforms.delta.value = delta;
     fishMaterial.current.uniforms.minX.value = minX;
     fishMaterial.current.uniforms.maxX.value = maxX;
 
     gpuCompute.compute();
 
     const posValue = gpuCompute.getCurrentRenderTarget(positionVariable.current).texture;
-    fishMaterial.current.uniforms["texturePosition"].value = posValue;
+    fishMaterial.current.uniforms.texturePosition.value = posValue;
 
     const velValue = gpuCompute.getCurrentRenderTarget(velocityVariable.current).texture;
-    fishMaterial.current.uniforms["textureVelocity"].value = velValue;
+    fishMaterial.current.uniforms.textureVelocity.value = velValue;
   });
 
   const fishMesh = useRef<Mesh<BufferGeometry, ShaderMaterial>>(null!);
@@ -171,11 +171,11 @@ export function Fishes({
       normals.push(fishGeo.getAttribute("normal").array[fishIndex]);
     }
 
-    let r = Math.random();
+    let _r = Math.random();
     for (let i = 0; i < fishGeo.getAttribute("position").count * amount; i++) {
       const fishIndex = i % fishGeo.getAttribute("position").count;
       const fish = Math.floor(i / fishGeo.getAttribute("position").count);
-      if (fishIndex === 0) r = Math.random();
+      if (fishIndex === 0) _r = Math.random();
       const j = ~~fish;
       const x = (j % fishTextureWidth) / fishTextureWidth;
       const y = ~~(j / fishTextureWidth) / fishTextureWidth;

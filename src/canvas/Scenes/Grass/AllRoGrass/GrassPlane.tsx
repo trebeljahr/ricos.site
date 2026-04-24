@@ -32,7 +32,7 @@ export const AllRoGrass = ({ size = 1, width = 32, instances = 10000, ...props }
     "/3d-assets/textures/grass/blade_alpha.jpg",
   ]);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     timeRef.current += delta;
     materialRef.current.map = texture;
     materialRef.current.alphaMap = alphaMap;
@@ -56,8 +56,8 @@ export const AllRoGrass = ({ size = 1, width = 32, instances = 10000, ...props }
     const positions = geo.attributes.position;
 
     for (let i = 0; i < positions.count; i++) {
-      const x = positions.getX(i);
-      const z = positions.getZ(i);
+      const _x = positions.getX(i);
+      const _z = positions.getZ(i);
       // const y = getYPosition(x, z);
       // positions.setXYZ(i, x, y, z);
     }
@@ -147,7 +147,7 @@ export const AllRoGrassForArbitrarySurface = ({
     "/3d-assets/textures/grass/blade_alpha.jpg",
   ]);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     timeRef.current += delta;
     materialRef.current.map = texture;
     materialRef.current.alphaMap = alphaMap;
@@ -321,7 +321,7 @@ function multiplyQuaternions(q1: Vector4, q2: Vector4) {
 }
 
 function getYPosition(x: number, z: number) {
-  var y = 2 * noise2D(x / 50, z / 50);
+  let y = 2 * noise2D(x / 50, z / 50);
   y += 4 * noise2D(x / 100, z / 100);
   y += 0.2 * noise2D(x / 10, z / 10);
   return y;
@@ -379,7 +379,7 @@ const createConveyorBeltMesh = (points: Vector3[], beltWidth = 1.0) => {
 
 export const PlayerWithGrassTrail = () => {
   const trailMeshRef = useRef<Mesh>(null!);
-  const [grassKey, setGrassKey] = useState(0);
+  const [grassKey, _setGrassKey] = useState(0);
 
   const trailPointsRef = useRef<Vector3[]>([]);
 

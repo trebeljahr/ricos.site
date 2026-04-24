@@ -23,10 +23,10 @@ type GLTFResult = GLTF & {
   };
   materials: {
     Material: MeshStandardMaterial;
-    ["Material.001"]: MeshStandardMaterial;
-    ["Material.006"]: MeshStandardMaterial;
-    ["Material.003"]: MeshStandardMaterial;
-    ["Material.002"]: MeshStandardMaterial;
+    "Material.001": MeshStandardMaterial;
+    "Material.006": MeshStandardMaterial;
+    "Material.003": MeshStandardMaterial;
+    "Material.002": MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };

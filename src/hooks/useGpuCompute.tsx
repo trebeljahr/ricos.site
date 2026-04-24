@@ -51,16 +51,16 @@ export function initComputeRenderer(
   positionUniforms.current = positionVariable.current.material.uniforms;
   velocityUniforms.current = velocityVariable.current.material.uniforms;
 
-  positionUniforms.current["time"] = { value: 0.0 };
-  positionUniforms.current["delta"] = { value: 0.0 };
-  velocityUniforms.current["time"] = { value: 1.0 };
-  velocityUniforms.current["delta"] = { value: 0.0 };
-  velocityUniforms.current["testing"] = { value: 1.0 };
-  velocityUniforms.current["separationDistance"] = { value: 1.0 };
-  velocityUniforms.current["alignmentDistance"] = { value: 1.0 };
-  velocityUniforms.current["cohesionDistance"] = { value: 1.0 };
-  velocityUniforms.current["freedomFactor"] = { value: 1.0 };
-  velocityUniforms.current["predator"] = { value: new Vector3(1, 1, 1) };
+  positionUniforms.current.time = { value: 0.0 };
+  positionUniforms.current.delta = { value: 0.0 };
+  velocityUniforms.current.time = { value: 1.0 };
+  velocityUniforms.current.delta = { value: 0.0 };
+  velocityUniforms.current.testing = { value: 1.0 };
+  velocityUniforms.current.separationDistance = { value: 1.0 };
+  velocityUniforms.current.alignmentDistance = { value: 1.0 };
+  velocityUniforms.current.cohesionDistance = { value: 1.0 };
+  velocityUniforms.current.freedomFactor = { value: 1.0 };
+  velocityUniforms.current.predator = { value: new Vector3(1, 1, 1) };
   velocityVariable.current.material.defines.BOUNDS = bounds.toFixed(2);
 
   velocityVariable.current.wrapS = RepeatWrapping;

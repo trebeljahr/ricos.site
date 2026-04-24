@@ -1,7 +1,7 @@
 #!/usr/bin/env npx ts-node
 
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
 const NOTES_DIR: string = process.argv[2] ?? "./src/content/Notes/booknotes";
 const EXTENSIONS: string[] = [".md", ".mdx"];

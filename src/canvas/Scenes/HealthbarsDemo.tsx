@@ -6,7 +6,7 @@ export const HealthbarsDemo = () => {
   const health = useRef(0.75);
   const timeRef = useRef(0);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     timeRef.current += delta;
     health.current = Math.sin(timeRef.current * 0.5) * 0.5 + 0.5;
   });

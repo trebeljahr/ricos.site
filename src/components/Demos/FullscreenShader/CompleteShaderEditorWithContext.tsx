@@ -14,7 +14,7 @@ type Props = {
 const ExpandButton = () => {
   const { expanded, setExpanded } = useEditorContext();
 
-  const expandFullscreen = () => {
+  const _expandFullscreen = () => {
     const elem = document.documentElement;
     if (elem.requestFullscreen) {
       elem.requestFullscreen();
@@ -87,7 +87,7 @@ const InProvider = () => {
           </PanelGroup>
         </>
       ) : (
-        <div className="h-[1024px] lg:h-full bg-gray-400"></div>
+        <div className="h-[1024px] lg:h-full bg-gray-400" />
       )}
     </div>
   );

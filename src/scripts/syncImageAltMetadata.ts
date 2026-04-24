@@ -16,9 +16,9 @@
  *     (manual wins).
  */
 import "dotenv/config";
-import { join, resolve } from "path";
-import { readFile, readdir, writeFile } from "fs/promises";
-import { argv, cwd } from "process";
+import { readFile, readdir, writeFile } from "node:fs/promises";
+import { join, resolve } from "node:path";
+import { argv, cwd } from "node:process";
 
 const METADATA_PATH = resolve(cwd(), "src/content/Notes/_data/metadata.json");
 

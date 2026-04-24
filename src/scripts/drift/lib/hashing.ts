@@ -1,5 +1,5 @@
-import { createHash } from "crypto";
-import { readFile } from "fs/promises";
+import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
 
 /**
  * md5 of a local file, hex-encoded. Matches the ETag of a non-multipart S3

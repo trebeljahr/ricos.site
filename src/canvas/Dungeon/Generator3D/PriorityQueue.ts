@@ -3,8 +3,6 @@ export class PriorityQueue<T> {
 
   private itemMap = new Map<T, number>();
 
-  constructor() {}
-
   enqueue(item: T, priority: number): void {
     this.items.push({ item, priority });
 

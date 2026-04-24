@@ -8,4 +8,4 @@ export enum CommonActions {
   Walk = "Walk",
 }
 
-const CommonEnemy = () => {};
+const _CommonEnemy = () => {};

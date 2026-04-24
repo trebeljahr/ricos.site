@@ -1,5 +1,5 @@
-import { readFileSync } from "fs";
-import { resolve } from "path";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 function loadStubBooknotes() {
   try {
@@ -59,7 +59,7 @@ const nextSitemapConfig = {
   ],
   changefreq: null,
   priority: null,
-  transform: async (config, url) => {
+  transform: async (_config, url) => {
     // Exclude stub booknotes (no summary written yet)
     if (stubBooknotes.has(url)) return null;
 

@@ -60,7 +60,7 @@ const PineTrees = [
   (props: Props) => <PineTree_5 {...props} />,
 ];
 
-const AutumnBirchTrees = [
+const _AutumnBirchTrees = [
   (props: Props) => <BirchTree_Autumn_1 {...props} />,
   (props: Props) => <BirchTree_Autumn_2 {...props} />,
   (props: Props) => <BirchTree_Autumn_3 {...props} />,

@@ -9,7 +9,7 @@ import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
 
 extend({ EffectComposer, ShaderPass, RenderPass });
 
-const shaderPassOptions = {
+const _shaderPassOptions = {
   uniforms: {
     time: { value: 0 },
     tDiffuse: { value: null },
@@ -49,10 +49,10 @@ export const DepthBufferEffect = () => {
     state.gl.render(scene, camera);
 
     if (ref.current) {
-      ref.current.uniforms["depthTexture"].value = target.depthTexture;
-      ref.current.uniforms["projectionMatrixInverse"].value = camera.projectionMatrixInverse;
-      ref.current.uniforms["viewMatrixInverse"].value = camera.matrixWorld;
-      ref.current.uniforms["time"].value = state.clock.elapsedTime;
+      ref.current.uniforms.depthTexture.value = target.depthTexture;
+      ref.current.uniforms.projectionMatrixInverse.value = camera.projectionMatrixInverse;
+      ref.current.uniforms.viewMatrixInverse.value = camera.matrixWorld;
+      ref.current.uniforms.time.value = state.clock.elapsedTime;
     }
     // composer.current.render()
   }, 1);

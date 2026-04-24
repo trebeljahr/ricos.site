@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import { Feed } from "feed";
 import { baseUrl } from "src/lib/urlUtils";
 import { byOnlyPublished } from "src/lib/utils/filters";

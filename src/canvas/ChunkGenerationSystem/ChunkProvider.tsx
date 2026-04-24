@@ -172,16 +172,16 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
 
       const distanceInTiles = Math.max(Math.abs(x), Math.abs(z));
 
-      let lodLevel = maxLodLevel;
+      let _lodLevel = maxLodLevel;
       const stepDecrease = Math.floor(maxLodLevel / 3);
       if (distanceInTiles > firstLodLevelDistance) {
-        lodLevel -= stepDecrease;
+        _lodLevel -= stepDecrease;
       }
       if (distanceInTiles > secondLodLevelDistance) {
-        lodLevel -= stepDecrease;
+        _lodLevel -= stepDecrease;
       }
       if (distanceInTiles > thirdLodLevelDistance) {
-        lodLevel -= 1;
+        _lodLevel -= 1;
       }
 
       const resolution = 64; //Math.pow(2, lodLevel);

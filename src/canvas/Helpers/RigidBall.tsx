@@ -8,7 +8,7 @@ import type { Vector3 } from "three";
 export const RigidBall = memo(({ position }: { position: Vector3 }) => {
   return (
     <RigidBody colliders="ball" position={position} scale={1}>
-      <Sphere castShadow receiveShadow></Sphere>
+      <Sphere castShadow receiveShadow />
     </RigidBody>
   );
 });

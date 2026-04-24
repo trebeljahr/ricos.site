@@ -1,6 +1,6 @@
 import "dotenv/config";
-import { promises as fs } from "fs";
-import path from "path";
+import { promises as fs } from "node:fs";
+import path from "node:path";
 import { Presets, SingleBar } from "cli-progress";
 import pLimit from "p-limit";
 import { getImageMetadataFromS3 } from "../lib/aws";
@@ -56,7 +56,7 @@ async function main() {
           try {
             const s3Meta = await getImageMetadataFromS3(SOURCE_BUCKET, key);
             metadata[key] = s3Meta;
-          } catch (e) {
+          } catch (_e) {
             // If S3 doesn't have dimensions in its custom metadata, try to find local file and probe it
             const localPath = path.join(LOCAL_ASSETS_ROOT, key);
             try {
@@ -68,7 +68,7 @@ async function main() {
                 aspectRatio: width / height,
                 existsInS3: true,
               };
-            } catch (localError) {
+            } catch (_localError) {
               // If local file is also not available, we have a problem.
               // We'll skip it for now or mark it as broken.
               // console.error(`\nCould not get dimensions for ${key}`);

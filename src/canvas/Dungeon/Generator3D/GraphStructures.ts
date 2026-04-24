@@ -70,10 +70,6 @@ class Edge {
 
 class DelaunayEdge extends Edge {
   public isBad = false;
-
-  constructor(u: Vertex, v: Vertex) {
-    super(u, v);
-  }
 }
 
 class Triangle {

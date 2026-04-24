@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 
 // In local-dev mode, images go through the in-process /api/img route (which
 // reads from MinIO, transforms via sharp, caches to the local resized bucket).

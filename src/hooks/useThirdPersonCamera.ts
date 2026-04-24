@@ -32,7 +32,7 @@ export function updateThirdPersonCamera(camera: Camera, target: Group, timeElaps
   const idealOffset = calculateIdealOffset(target);
   const idealLookat = calculateIdealLookat(target);
 
-  const t = 1.0 - Math.pow(0.001, timeElapsed * 100);
+  const t = 1.0 - 0.001 ** (timeElapsed * 100);
 
   currentPosition.lerp(idealOffset, t);
   currentLookAt.lerp(idealLookat, t);

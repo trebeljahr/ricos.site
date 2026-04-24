@@ -10,7 +10,7 @@ import { EntityManager, FleeBehavior, Matrix4, SeekBehavior, Vehicle, WanderBeha
 import { tileSize } from "../../ChunkGenerationSystem/config";
 
 const gridSize = tileSize;
-const halfGridSize = gridSize / 2;
+const _halfGridSize = gridSize / 2;
 const panicRadius = 5;
 const safetyRadius = panicRadius * 3;
 const seekerSpeed = 3;

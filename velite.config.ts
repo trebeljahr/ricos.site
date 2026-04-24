@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 import remarkCallout from "@r4ai/remark-callout";
 import { transformerNotationDiff, transformerNotationHighlight } from "@shikijs/transformers";
 import slugify from "@sindresorhus/slugify";
@@ -320,7 +320,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
             isFoldable: callout.isFoldable.toString(),
           },
         }),
-        body: (callout: any) => ({
+        body: (_callout: any) => ({
           tagName: "callout-body",
           properties: {},
         }),

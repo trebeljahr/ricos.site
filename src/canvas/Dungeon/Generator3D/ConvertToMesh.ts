@@ -348,14 +348,14 @@ export class DungeonMeshGenerator {
   private addStairRailings(pos: Vector3Int, stairDirection: Vector3, meshes: MeshInstance[]): void {
     const worldPos = new Vector3(pos.x * scale, pos.y * scale, pos.z * scale);
 
-    let forwardDir: Vector3Int;
+    let _forwardDir: Vector3Int;
     let rightDir: Vector3Int;
 
     if (stairDirection.y === 0 || stairDirection.y === Math.PI) {
-      forwardDir = new Vector3Int(0, 0, 1);
+      _forwardDir = new Vector3Int(0, 0, 1);
       rightDir = new Vector3Int(1, 0, 0);
     } else {
-      forwardDir = new Vector3Int(1, 0, 0);
+      _forwardDir = new Vector3Int(1, 0, 0);
       rightDir = new Vector3Int(0, 0, 1);
     }
 

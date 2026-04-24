@@ -1,5 +1,5 @@
-import path from "path";
-import { readFile } from "fs/promises";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 
 export async function generateRedirects() {
   const veliteDir = path.resolve(path.dirname(""), ".velite");

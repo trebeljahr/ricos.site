@@ -35,19 +35,16 @@ export const TreeTile = ({
 
       <SimpleGrassGroundPlane size={size} />
 
-      {debug && (
-        <>
-          {positions.map((position, index) => {
-            return (
-              <group key={nanoid() + index} position={position}>
-                <Sphere args={[0.5, 16, 16]}>
-                  <meshBasicMaterial color={"#005105"} />
-                </Sphere>
-              </group>
-            );
-          })}
-        </>
-      )}
+      {debug &&
+        positions.map((position, index) => {
+          return (
+            <group key={nanoid() + index} position={position}>
+              <Sphere args={[0.5, 16, 16]}>
+                <meshBasicMaterial color={"#005105"} />
+              </Sphere>
+            </group>
+          );
+        })}
     </group>
   );
 };

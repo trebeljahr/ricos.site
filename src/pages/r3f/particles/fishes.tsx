@@ -33,7 +33,7 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
     >
       <Fishes />
 
-      <Stage></Stage>
+      <Stage />
 
       <ambientLight intensity={1} />
       <hemisphereLight />

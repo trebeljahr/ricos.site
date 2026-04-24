@@ -48,7 +48,7 @@ const Demo = () => {
   const ref = useRef<FixedLightningStrike>(null);
   const timeRef = useRef(0);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (!ref.current) return;
     timeRef.current += delta;
     const t = timeRef.current;

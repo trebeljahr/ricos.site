@@ -1,5 +1,5 @@
-import path from "path";
-import { readFile, readdir, writeFile } from "fs/promises";
+import { readFile, readdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 
 // Resolve to main repo's content submodule (not worktree)
 const BOOKNOTES_DIR = process.env.BOOKNOTES_DIR || path.resolve("src/content/Notes/booknotes");

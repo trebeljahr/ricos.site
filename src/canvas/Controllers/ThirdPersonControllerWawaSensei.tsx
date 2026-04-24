@@ -45,7 +45,7 @@ export const ThirdPersonControllerWawaSensei = () => {
   const cameraTarget = useRef<Group>(null!);
   const cameraPosition = useRef<Group>(null!);
 
-  const [animation, setAnimation] = useState("idle");
+  const [_animation, setAnimation] = useState("idle");
 
   const characterRotationTarget = useRef(0);
   const rotationTarget = useRef(0);
@@ -56,10 +56,10 @@ export const ThirdPersonControllerWawaSensei = () => {
   const isClicking = useRef(false);
 
   useEffect(() => {
-    const onMouseDown = (e: MouseEvent | TouchEvent) => {
+    const onMouseDown = (_e: MouseEvent | TouchEvent) => {
       isClicking.current = true;
     };
-    const onMouseUp = (e: MouseEvent | TouchEvent) => {
+    const onMouseUp = (_e: MouseEvent | TouchEvent) => {
       isClicking.current = false;
     };
     document.addEventListener("mousedown", onMouseDown);

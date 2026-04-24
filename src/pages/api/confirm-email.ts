@@ -5,7 +5,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     await confirmEmail(req, res);
     res.redirect("/email-signup-success");
-  } catch (err) {
+  } catch (_err) {
     res.redirect("/email-signup-error");
   }
 }

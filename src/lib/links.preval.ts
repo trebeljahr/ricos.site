@@ -1,5 +1,5 @@
-import path from "path";
-import { lstat, readdir } from "fs/promises";
+import { lstat, readdir } from "node:fs/promises";
+import path from "node:path";
 import preval from "next-plugin-preval";
 import { getShaderFileNames } from "./getShaderFileNames";
 import { turnKebabIntoTitleCase } from "./utils/turnKebapIntoTitleCase";

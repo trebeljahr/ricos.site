@@ -12,6 +12,7 @@ export const SinAndCosineDemo = () => {
     setAngle((old) => old + 1);
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   useEffect(() => {
     if (!cnv) return;
     cnv.tabIndex = 0;

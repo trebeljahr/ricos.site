@@ -93,6 +93,7 @@ export const InstancedPalmTree = forwardRef(function InstancedPalmTree(
 
   useImperativeHandle(ref, () => groupRef.current, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually — auto-suppressed during biome migration
   useEffect(() => {
     if (!woodMeshRef.current || !greenMeshRef.current || !darkGreenMeshRef.current) return;
 

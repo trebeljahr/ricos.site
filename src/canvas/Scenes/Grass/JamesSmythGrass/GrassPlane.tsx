@@ -24,6 +24,7 @@ export const SingleStylizedGrassPlane = ({
 
   const materialRef = useRef<typeof StylizedGrassMaterial & typeof grassUniforms>(null!);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   useEffect(() => {
     materialRef.current.textures = [grassTexture, cloudTexture];
   }, []);
@@ -36,6 +37,7 @@ export const SingleStylizedGrassPlane = ({
     materialRef.current.iTime = timeRef.current * 1000;
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   const geom = useMemo(() => {
     function convertRange(
       val: number,

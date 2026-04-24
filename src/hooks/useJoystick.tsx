@@ -34,6 +34,7 @@ export function useJoystick({
   const joystickDataRef = useRef<JoystickData>(null!);
 
   /* eslint-disable react-hooks/exhaustive-deps -- Joystick should only be created once on mount; `parameters` is a new object each render and `cb` is captured via ref-like pattern */
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   useEffect(() => {
     if (typeof window === "undefined") return;
 

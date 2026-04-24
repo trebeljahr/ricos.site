@@ -29,6 +29,7 @@ export const useFollowCam = ({
 
   const originZDis = useRef<number>(camInitDis ?? -5);
   const pivot = useMemo(() => new Object3D(), []);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually — auto-suppressed during biome migration
   const followCam = useMemo(() => {
     const origin = new Object3D();
     origin.position.set(
@@ -232,6 +233,7 @@ export const useFollowCam = ({
     followCam.position.lerp(camLerpingPoint, 1 - Math.exp(-camCollisionSpeedMult * delta)); // delta * 2 for rapier ray setup
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually — auto-suppressed during biome migration
   useEffect(() => {
     // Initialize camera facing direction
     pivot.rotation.y = camInitDir.y;
@@ -305,6 +307,7 @@ export const useFollowCam = ({
   }, []);
 
   // If followCam is disabled set to disableFollowCamPos, target to disableFollowCamTarget
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually — auto-suppressed during biome migration
   useEffect(() => {
     if (disableFollowCam) {
       if (disableFollowCamPos)
@@ -317,6 +320,7 @@ export const useFollowCam = ({
   }, [disableFollowCam]);
 
   // Handle scene add/remove objects events
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually — auto-suppressed during biome migration
   useEffect(() => {
     const onObjectAdded = (e: any) => customTraverseAdd(e.child);
     const onObjectRemoved = (e: any) => customTraverseRemove(e.child);

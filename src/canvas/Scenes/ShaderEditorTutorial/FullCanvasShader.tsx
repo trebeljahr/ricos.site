@@ -11,6 +11,7 @@ export function FullCanvasShader({ otherUniforms = {}, fragmentShader }: Props) 
   const shaderRef = useRef<ShaderMaterial>(null!);
   const timeRef = useRef(0);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   const uniforms = useMemo(
     () => ({
       ...otherUniforms,

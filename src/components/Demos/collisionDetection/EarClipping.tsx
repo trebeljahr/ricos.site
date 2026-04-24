@@ -23,6 +23,7 @@ export const EarClipping = () => {
     setVisualizing(!visualizing);
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   useEffect(() => {
     if (!cnv || !poly) return;
 

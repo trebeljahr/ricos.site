@@ -17,6 +17,7 @@ export default function Search<T extends Record<string, any>>({
 }: SearchProps<T>) {
   const [searchTerm, setSearchTerm] = useState("");
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   useEffect(() => {
     if (searchTerm.trim() === "") {
       setFiltered(all);

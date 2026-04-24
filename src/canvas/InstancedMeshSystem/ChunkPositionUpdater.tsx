@@ -45,6 +45,7 @@ export const ChunkPositionUpdater = ({
     };
   }, [addPositions]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   useEffect(() => {
     const currentChunkKeys = new Set(chunks.keys());
     const prevChunkKeys = prevChunksRef.current;

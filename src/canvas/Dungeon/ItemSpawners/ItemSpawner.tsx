@@ -39,6 +39,7 @@ export const ItemSpawner: ItemSpawnerType = ({
   const [intersection, setIntersection] = useState(false);
   const [play] = useSound(achievementSound, { volume: 0.5 });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually — auto-suppressed during biome migration
   useEffect(() => {
     let timeout: NodeJS.Timeout;
     if (intersection) {

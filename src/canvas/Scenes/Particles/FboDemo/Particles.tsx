@@ -47,6 +47,7 @@ export const FBOParticles = () => {
     type: FloatType,
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   const particlesPosition = useMemo(() => {
     const length = size * size;
     const particles = new Float32Array(length * 3);

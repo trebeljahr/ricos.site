@@ -143,6 +143,7 @@ export const PlasmaBall = () => {
     return { contactPoints, targets };
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   const plasmaMaterial = useMemo(() => {
     const material = new MeshStandardMaterial({
       color: plasmaColor,

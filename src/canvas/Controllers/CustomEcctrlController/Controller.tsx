@@ -247,6 +247,7 @@ const Ecctrl = ({
   // can jump setup
   let canJump = false;
   let isFalling = false;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually — auto-suppressed during biome migration
   const initialGravityScale: number = useMemo(() => props.gravityScale ?? 1, []);
 
   // on moving object state
@@ -605,6 +606,7 @@ const Ecctrl = ({
     };
   }, [autoBalance]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually — auto-suppressed during biome migration
   useEffect(() => {
     modelEuler.y = characterInitDir;
 

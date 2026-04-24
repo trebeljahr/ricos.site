@@ -23,6 +23,7 @@ export const SimpleReactCanvasComponent = ({ setCnv, ...props }: CanvasProps) =>
 
   const canvasRef = useRef<null | HTMLCanvasElement>(null);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -32,6 +33,7 @@ export const SimpleReactCanvasComponent = ({ setCnv, ...props }: CanvasProps) =>
     setHeight(500);
   }, [windowWidth, setCnv]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   useEffect(() => {
     const cnv = canvasRef.current;
     if (!cnv || !width || !height) return;

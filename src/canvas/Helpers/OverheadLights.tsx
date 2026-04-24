@@ -93,6 +93,7 @@ export default function useShadowHelper(ref: MutableRefObject<Light | undefined>
   const helper = useRef<CameraHelper>();
   const scene = useThree((state) => state.scene);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   useEffect(() => {
     if (!ref.current || !debug) return;
 

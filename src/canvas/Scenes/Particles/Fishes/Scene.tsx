@@ -59,6 +59,7 @@ export function Fishes({
   const positionUniforms = useRef<Uniforms>(null!);
   const velocityUniforms = useRef<Uniforms>(null!);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   const fishUniforms = useMemo<Uniforms>(
     () => ({
       color: { value: new Color(color) },
@@ -136,6 +137,7 @@ export function Fishes({
 
   const fishGeometryArray = useFishGeos(fishType);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   const { fishGeo, minX, maxX } = useMemo(() => {
     const merged = mergeBufferGeometries([...fishGeometryArray]);
     const fishGeo = merged as BufferGeometry;

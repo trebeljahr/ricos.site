@@ -115,6 +115,7 @@ export const useGenericAnimationController = ({
     }
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually — auto-suppressed during biome migration
   useEffect(() => {
     type MixerListener = EventListener<
       {
@@ -239,6 +240,7 @@ export const GenericAnimationController = ({
 
   const animationName = animation || defaultAction;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually — auto-suppressed during biome migration
   useEffect(() => {
     actions[animationName]?.reset().fadeIn(fadeDuration).play();
     return () => {

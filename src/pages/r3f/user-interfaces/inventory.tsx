@@ -98,6 +98,7 @@ const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
     addItem(newItem);
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   const findRandomItem = useCallback(() => {
     const randomItem = sampleItems[Math.floor(Math.random() * sampleItems.length)];
 

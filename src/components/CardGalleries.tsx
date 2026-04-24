@@ -72,6 +72,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
     });
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   const handleScrolling = useMemo(
     () => (direction: "left" | "right") => {
       const elementWidth = scrollRef.current?.children[0].clientWidth;

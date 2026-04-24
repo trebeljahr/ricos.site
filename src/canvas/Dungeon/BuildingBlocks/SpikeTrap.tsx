@@ -32,6 +32,7 @@ export const SpikeTrap = ({ interval = 2000 }: { interval?: number }) => {
     }
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually — auto-suppressed during biome migration
   useEffect(() => {
     const openSound = openAudioRef.current;
     const closeSound = closeAudioRef.current;

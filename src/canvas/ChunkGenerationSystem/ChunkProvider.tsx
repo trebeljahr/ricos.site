@@ -143,6 +143,7 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
     };
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually — auto-suppressed during biome migration
   useEffect(() => {
     if (!workerRef.current) return;
 

@@ -250,6 +250,7 @@ function Effects({
     lensRef.current.uniforms.get("iResolution").value.y = viewport.height;
   }, [viewport]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   return useMemo(
     () => (
       <LensFlare

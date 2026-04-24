@@ -61,6 +61,7 @@ export const Player = (props: RigidBodyProps) => {
   const jumpTime = useRef(0);
   const jumping = useRef(false);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually — auto-suppressed during biome migration
   useEffect(() => {
     const { world } = rapier;
 

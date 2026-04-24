@@ -74,6 +74,7 @@ export const useInstancedMesh2 = ({
   };
 
   const InstancedMesh = () => {
+    // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
     useEffect(() => {
       if (material instanceof MeshStandardMaterial && emissiveColor) {
         material.emissive.set(emissiveColor);
@@ -136,6 +137,7 @@ export const Single = ({ positions, geo, material }: SingleInstanceProps) => {
     geometry: geo,
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   useEffect(() => {
     const prev = prevPositions || [];
 

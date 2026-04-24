@@ -52,6 +52,7 @@ export function FullCanvasShaderMesh() {
     [textures],
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   const uniforms = useMemo(
     () => ({
       u_time: { value: 0 },

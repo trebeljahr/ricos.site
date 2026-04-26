@@ -1,16 +1,37 @@
 import { ExternalLink } from "@components/ExternalLink";
 import { FancyLink } from "@components/FancyUI";
 import { HomePageSection } from "@components/HomePageSection";
+import { ImageWithLoader } from "@components/ImageWithLoader";
 import { WebSiteJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { WavingHand } from "@components/WavingHand";
 import type { SectionDescription } from "@velite";
 import Link from "next/link";
-import type { CommonMetadata } from "src/@types";
+import type { CommonMetadata, ImageProps } from "src/@types";
 import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
+
+// Hand-curated picks for the homepage — keep small so the page stays fast.
+const FEATURED_PHOTOGRAPHY_TRIPS = [
+  "best-of",
+  "alps",
+  "italy",
+  "vietnam",
+  "sri-lanka",
+  "india-2023",
+];
+
+const FEATURED_R3F_DEMOS: { name: string; href: string }[] = [
+  { name: "shader-art-demo", href: "/r3f/scenes/shader-art-demo" },
+  { name: "underwater-shader", href: "/r3f/scenes/underwater-shader" },
+  { name: "ocean", href: "/r3f/scenes/ocean" },
+  { name: "terrain", href: "/r3f/scenes/terrain" },
+  { name: "grass-experiments", href: "/r3f/scenes/grass-experiments" },
+  { name: "fbo-demo", href: "/r3f/particles/fbo-demo" },
+];
 
 const IndexPage = ({ seo, ...props }: Props) => {
   return (
@@ -121,7 +142,79 @@ const IndexPage = ({ seo, ...props }: Props) => {
           />
         </section>
 
+        <section className="pt-1 pb-20 px-3">
+          <div className="mx-auto max-w-(--breakpoint-lg)">
+            <h2 className="text-5xl">Photography 📸</h2>
+            <p className="mb-14 max-w-prose">
+              Trips through Asia, Europe, the Caribbean and South America, told in pictures. Six
+              of my favourite collections below — see <Link href="/photography">all trips</Link>{" "}
+              for the rest.
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-12">
+              {props.featuredTrips.map(({ tripName, image }) => (
+                <Link
+                  key={tripName}
+                  href={`/photography/${tripName}`}
+                  className="relative aspect-square overflow-hidden no-underline"
+                >
+                  <ImageWithLoader
+                    src={image.src}
+                    alt={image.alt || `Photo from ${tripName}`}
+                    width={image.width}
+                    height={image.height}
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                    style={{ filter: "brightness(60%)" }}
+                    className="absolute inset-0 z-0 object-cover w-full h-full hover:scale-105 transform transition-transform duration-300 ease-in-out"
+                  />
+                  <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center">
+                    <h3 className="text-lg md:text-xl font-bold text-white">
+                      {turnKebabIntoTitleCase(tripName)}
+                    </h3>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <FancyLink href="/photography" text="Browse All Trips" />
+          </div>
+        </section>
+
         <section className="dark:bg-gray-950 bg-slate-100 pt-1 pb-20 px-3">
+          <div className="mx-auto max-w-(--breakpoint-lg)">
+            <h2 className="text-5xl">Creative Coding 🎨</h2>
+            <p className="mb-14 max-w-prose">
+              Three.js / R3F experiments — shaders, oceans, generative terrain, particle systems.
+              These are the standouts; the full playground has dozens more.
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-12">
+              {FEATURED_R3F_DEMOS.map(({ name, href }) => (
+                <Link
+                  key={name}
+                  href={href}
+                  className="group block no-underline rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-700 hover:border-myBlue transition-colors"
+                >
+                  <div className="relative aspect-video overflow-hidden bg-gray-900">
+                    <ImageWithLoader
+                      src={`/assets/pages/${name}.png`}
+                      alt={`Preview of the ${turnKebabIntoTitleCase(name)} R3F demo`}
+                      width={400}
+                      height={225}
+                      sizes="(max-width: 768px) 50vw, 33vw"
+                      className="absolute inset-0 object-cover w-full h-full group-hover:scale-105 transform transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="p-3">
+                    <h3 className="text-base font-semibold m-0">
+                      {turnKebabIntoTitleCase(name)}
+                    </h3>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <FancyLink href="/r3f" text="Open the Playground" />
+          </div>
+        </section>
+
+        <section className="pt-1 pb-20 px-3">
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <div className="max-w-prose">
               <h2>Webpages</h2>
@@ -151,6 +244,7 @@ type Props = {
   postsSelection: CommonMetadata[];
   newsletterSelection: CommonMetadata[];
   booknotesSelection: CommonMetadata[];
+  featuredTrips: { tripName: string; image: ImageProps }[];
   texts: {
     booknotes?: SectionDescription["content"];
     traveling?: SectionDescription["content"];
@@ -162,6 +256,14 @@ type Props = {
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
+  const { trips } = await import("src/pages/photography");
+  const { getImgWidthAndHeightDuringBuild } = await import(
+    "src/lib/getImgWidthAndHeightDuringBuild"
+  );
+  const { getFirstImageFromMetadata, photographyFolder } = await import(
+    "src/lib/imageMetadata"
+  );
+
   const travelblogs = loadVeliteData("travelblogs.json");
   const posts = loadVeliteData("posts.json");
   const newsletters = loadVeliteData("newsletters.json");
@@ -178,6 +280,21 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
     .filter(({ summary }: any) => summary)
     .slice(0, 30);
 
+  const featuredTrips = await Promise.all(
+    FEATURED_PHOTOGRAPHY_TRIPS.map(async (name) => {
+      const trip = trips.find((t) => t.name === name);
+      if (trip && trip.src) {
+        const { width, height } = await getImgWidthAndHeightDuringBuild(trip.src);
+        return {
+          tripName: name,
+          image: { width, height, src: trip.src, alt: trip.alt } as ImageProps,
+        };
+      }
+      const image = getFirstImageFromMetadata(photographyFolder + name) as ImageProps;
+      return { tripName: name, image };
+    }),
+  );
+
   return {
     props: {
       seo: getSeoInfo("/"),
@@ -185,6 +302,7 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
       postsSelection,
       newsletterSelection,
       booknotesSelection,
+      featuredTrips,
       texts: {
         booknotes: sectionDescriptions.find(
           ({ title }: SectionDescription) => title === "Booknotes",

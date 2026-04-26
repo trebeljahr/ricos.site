@@ -4,6 +4,7 @@ import { Meta } from "./Meta";
 import { LeftSmallNavbar } from "./Navbar/LeftSmallNavbar";
 import { TailwindNavbar } from "./Navbar/TailwindNavbar";
 import { OpenGraph } from "./OpenGraph";
+import { SiteFooter } from "./SiteFooter";
 
 type Props = {
   children: ReactNode;
@@ -58,6 +59,7 @@ const Layout = ({
       {leftSmallNavbar ? <LeftSmallNavbar /> : <TailwindNavbar withProgressBar={withProgressBar} />}
 
       {children}
+      <SiteFooter />
     </div>
   );
 };

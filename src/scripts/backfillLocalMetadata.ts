@@ -5,8 +5,16 @@
  *
  * Use when build fails with "Failed to get image dimensions" because files
  * were added to the Notes submodule but metadata.json wasn't refreshed.
+ *
+ * Build-pipeline safety:
+ *   - Always exits 0 unless something genuinely catastrophic happened,
+ *     so wiring this into `prebuild` never breaks Vercel / Docker / CI
+ *     builds when the Notes submodule isn't initialized.
+ *   - Skips silently when metadata.json or the assets dir isn't there.
+ *   - Tolerates read-only filesystems (logs and continues).
  */
 import "dotenv/config";
+import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { relative } from "node:path";
@@ -58,6 +66,21 @@ async function listAssetFiles(): Promise<string[]> {
 }
 
 async function main() {
+  // Bail early on build-pipeline hosts (Vercel, Docker, CI) where the Notes
+  // submodule may not be initialized. Better to no-op than to break the build.
+  if (!existsSync(METADATA_PATH)) {
+    console.log(
+      `backfillLocalMetadata: skipping — ${METADATA_PATH} not present (Notes submodule probably uninitialized).`,
+    );
+    return;
+  }
+  if (!existsSync(ASSETS_ROOT)) {
+    console.log(
+      `backfillLocalMetadata: skipping — ${ASSETS_ROOT} not present.`,
+    );
+    return;
+  }
+
   const raw = await readFile(METADATA_PATH, "utf8");
   const meta = JSON.parse(raw) as Record<string, Entry>;
 
@@ -88,18 +111,31 @@ async function main() {
     added++;
   }
 
-  await writeFile(METADATA_PATH, JSON.stringify(meta, null, 2) + "\n");
+  if (added === 0) {
+    console.log(
+      `backfillLocalMetadata: nothing to do (${skipped}/${files.length} already indexed).`,
+    );
+    return;
+  }
+  try {
+    await writeFile(METADATA_PATH, JSON.stringify(meta, null, 2) + "\n");
+  } catch (e) {
+    // Read-only filesystems on some hosted CI platforms — log and move on.
+    console.warn(
+      `backfillLocalMetadata: couldn't write ${METADATA_PATH} (${(e as Error).message}); continuing.`,
+    );
+    return;
+  }
   console.log(
     `backfillLocalMetadata: +${added} new entries, ${skipped} already present (${Object.keys(meta).length} total)`,
   );
-  if (added > 0) {
-    console.log(
-      "Run `npm run syncImageAlt -- --include-photography` next to fill alt text for the new entries.",
-    );
-  }
+  console.log(
+    "Run `npm run syncImageAlt -- --include-photography` next to fill alt text for the new entries.",
+  );
 }
 
 main().catch((e) => {
-  console.error(e);
-  process.exit(1);
+  // Never fail the build pipeline. Surface the error for inspection but
+  // exit 0 so prebuild hooks remain safe in CI.
+  console.warn("backfillLocalMetadata: unexpected error, continuing build:", e);
 });

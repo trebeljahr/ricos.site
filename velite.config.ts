@@ -23,8 +23,6 @@ import {
 import type { Node, Pluggable } from "unified/lib";
 import { SKIP, visit } from "unist-util-visit";
 import { type ZodMeta, defineConfig, s } from "velite";
-// @ts-nocheck — velite config uses remark/rehype/mdx plugin types that are
-// mutually incompatible. Previously suppressed by next-plugin-preval's webpack wrapper.
 import seoMetadata from "./src/content/seo-metadata.json";
 
 declare module "mdast" {
@@ -165,10 +163,20 @@ const commonFields = {
       src: s.string(),
       alt: s.string(),
     })
-    .transform(async (cover) => {
+    .transform(async (cover, ctx) => {
       const defaultCover = "assets/midjourney/the-door-to-the-ocean.jpg";
+      const usingDefault = cover.src === "";
+      if (usingDefault) {
+        // Surface entries that fall through to the shared default cover so
+        // they're easy to find and replace with something specific.
+        const where =
+          (ctx as { meta?: { path?: string } }).meta?.path ?? "(unknown source)";
+        console.warn(
+          `[velite] no cover image set — using default Midjourney cover for: ${where}`,
+        );
+      }
       const { width, height } = await getImgWidthAndHeightDuringBuild(
-        cover.src === "" ? defaultCover : cover.src,
+        usingDefault ? defaultCover : cover.src,
       );
       return {
         ...cover,

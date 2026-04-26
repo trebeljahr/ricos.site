@@ -16,6 +16,7 @@
  *     (manual wins).
  */
 import "dotenv/config";
+import { existsSync } from "node:fs";
 import { readFile, readdir, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { argv, cwd } from "node:process";
@@ -64,6 +65,12 @@ async function loadStagingMaps(dir: string): Promise<Record<string, string>> {
 }
 
 async function main() {
+  if (!existsSync(METADATA_PATH)) {
+    console.log(
+      `syncImageAlt: skipping — ${METADATA_PATH} not present (Notes submodule probably uninitialized).`,
+    );
+    return;
+  }
   const meta = JSON.parse(await readFile(METADATA_PATH, "utf8")) as Metadata;
 
   const aiAlts = STAGING_DIR ? await loadStagingMaps(STAGING_DIR) : {};
@@ -99,7 +106,16 @@ async function main() {
     generatedAdded++;
   }
 
-  await writeFile(METADATA_PATH, JSON.stringify(meta, null, 2) + "\n");
+  if (aiApplied + generatedAdded > 0) {
+    try {
+      await writeFile(METADATA_PATH, JSON.stringify(meta, null, 2) + "\n");
+    } catch (e) {
+      console.warn(
+        `syncImageAlt: couldn't write ${METADATA_PATH} (${(e as Error).message}); continuing.`,
+      );
+      return;
+    }
+  }
 
   const withAlt = Object.values(meta).filter((e) => e?.alt).length;
   console.log(
@@ -112,6 +128,6 @@ async function main() {
 }
 
 main().catch((e) => {
-  console.error(e);
-  process.exit(1);
+  // Build-pipeline safety: surface but don't crash.
+  console.warn("syncImageAlt: unexpected error, continuing build:", e);
 });

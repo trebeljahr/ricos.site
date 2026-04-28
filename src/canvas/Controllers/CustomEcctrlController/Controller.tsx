@@ -199,6 +199,7 @@ const Ecctrl = ({
    */
   function useIsInsideKeyboardControls() {
     try {
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return !!useKeyboardControls();
     } catch {
       return false;

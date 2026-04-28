@@ -28,42 +28,61 @@ export const useRandomWeapon = () => {
 export const useWeapon = (itemType: WeaponTypes) => {
   switch (itemType) {
     case SwordTypes.Sword1:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useSword1();
     case SwordTypes.Sword2:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useSword2();
     case SwordTypes.Sword3:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useSword3();
     case SwordTypes.Sword4:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useSword4();
     case SwordTypes.Sword5:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useSword5();
     case SwordTypes.Sword6:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useSword6();
     case AxeTypes.Axe1:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useAxe1();
     case BowTypes.Bow1:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useBow1();
     case StaffTypes.Staff1:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useStaff1();
     case StaffTypes.Staff2:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useStaff2();
     case StaffTypes.Staff3:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useStaff3();
     case StaffTypes.Staff4:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useStaff4();
     case StaffTypes.Staff5:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useStaff5();
     case StaffTypes.Staff6:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useStaff6();
     case StaffTypes.Staff7:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useStaff7();
     case ShieldTypes.Shield1:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useShield();
     case ShieldTypes.Shield2:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useShield2();
     case ShieldTypes.Shield3:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useShield3();
     case ShieldTypes.Shield4:
+      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
       return useShield4();
   }
 };

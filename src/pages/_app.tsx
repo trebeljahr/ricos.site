@@ -5,13 +5,12 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import "../styles/globals.css";
 
-import clsx from "clsx";
-import { Inter } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-});
+// next/font/google previously loaded Inter and passed `inter.className` as
+// a prop to page components, but no page component actually applies that
+// prop — so the 49KB woff2 was preloaded at high priority on every page
+// and never rendered. globals.css already lists InterVariable / Inter as
+// the preferred families with system-font fallbacks; the visible result
+// for users is unchanged.
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -42,7 +41,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         enabled={process.env.NODE_ENV === "production"}
       >
         <ThemeProvider attribute="class" enableSystem={false} defaultTheme="dark">
-          <Component {...pageProps} className={clsx(pageProps.className, inter.className)} />
+          <Component {...pageProps} />
         </ThemeProvider>
       </PlausibleProvider>
     </>

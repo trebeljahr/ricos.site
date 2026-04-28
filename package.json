@@ -2,6 +2,14 @@
   "name": "ricos.site",
   "author": "Rico Trebeljahr",
   "license": "MIT",
+  "browserslist": [
+    "chrome >= 100",
+    "edge >= 100",
+    "firefox >= 100",
+    "safari >= 15.4",
+    "ios_saf >= 15.4",
+    "not dead"
+  ],
   "scripts": {
     "dev": "NEXT_PUBLIC_IMAGE_BACKEND=local concurrently -n s3,next,watch -c cyan,magenta,yellow --kill-others-on-fail \"npm run s3:start\" \"npm run dev:next\" \"npm run watch:assets\"",
     "dev:cloud": "next dev -p 3713",
@@ -152,6 +160,7 @@
     "chokidar": "^5.0.0",
     "cli-progress": "^3.12.0",
     "concurrently": "^9.2.1",
+    "critters": "^0.0.25",
     "dotenv": "^17.3.1",
     "esbuild": "^0.27.4",
     "eslint": "10.1.0",
@@ -223,9 +232,7 @@
     "@opentelemetry/semantic-conventions": "1.13.0"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,jsonc,css}": [
-      "biome check --write --no-errors-on-unmatched"
-    ]
+    "*.{js,jsx,ts,tsx,json,jsonc,css}": ["biome check --write --no-errors-on-unmatched"]
   },
   "packageManager": "pnpm@10.33.2"
 }

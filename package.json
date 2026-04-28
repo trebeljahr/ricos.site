@@ -10,6 +10,9 @@
     "ios_saf >= 15.4",
     "not dead"
   ],
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "NEXT_PUBLIC_IMAGE_BACKEND=local concurrently -n s3,next,watch -c cyan,magenta,yellow --kill-others-on-fail \"npm run s3:start\" \"npm run dev:next\" \"npm run watch:assets\"",
     "dev:cloud": "next dev -p 3713",
@@ -130,7 +133,7 @@
   },
   "devDependencies": {
     "@aws-sdk/client-lambda": "^3.1019.0",
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.4.13",
     "@r4ai/remark-callout": "^0.6.2",
     "@rehype-pretty/transformers": "^0.13.2",
     "@shikijs/transformers": "^4.0.2",
@@ -163,8 +166,6 @@
     "critters": "^0.0.25",
     "dotenv": "^17.3.1",
     "esbuild": "^0.27.4",
-    "eslint": "10.1.0",
-    "eslint-config-next": "^16.2.1",
     "feed": "^5.2.0",
     "file-loader": "^6.2.0",
     "glob": "^13.0.6",
@@ -232,7 +233,9 @@
     "@opentelemetry/semantic-conventions": "1.13.0"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,jsonc,css}": ["biome check --write --no-errors-on-unmatched"]
+    "*.{js,jsx,ts,tsx,json,jsonc,css}": [
+      "biome check --write --no-errors-on-unmatched"
+    ]
   },
   "packageManager": "pnpm@10.33.2"
 }

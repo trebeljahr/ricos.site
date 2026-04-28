@@ -1,9 +1,9 @@
 import { FiMenu, FiX } from "@components/Icons";
 import { ProgressBar } from "@components/ProgressBar";
 import { SiteSearch } from "@components/SiteSearch";
-import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useScrollLock } from "src/hooks/useScrollLock";
 import { CollapsibleMenuDesktop, CollapsibleMenuMobile } from "./CollapsibleMenus";
 import { DarkModeHandler } from "./DarkModeHandler";
@@ -32,70 +32,92 @@ export function TailwindNavbar({
 }: {
   withProgressBar?: boolean;
 } = {}) {
-  return (
-    <Disclosure>
-      {({ open, close }) => (
-        <header
-          id="navbar"
-          className={`fixed top-0 w-screen not-prose left-0 z-999 ${
-            open ? "bg-white" : "glassy hover:bg-white dark:bg-gray-900"
-          } w-full dark:bg-gray-900 pt-3 transition-colors duration-300 ${
-            withProgressBar ? "" : "pb-2"
-          }`}
-        >
-          <nav className="mx-auto px-3 xl:px-10 pb-1 flex items-center justify-between">
-            <RicosSiteBanner />
-            <div className="flex xl:hidden items-center gap-1">
-              <SiteSearch />
-              <DarkModeHandler />
-              <MobileVersion {...{ open, close }} />
-            </div>
+  const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
 
-            <div className="hidden xl:flex items-center gap-2">
-              <DesktopVersion />
-              <SiteSearch />
-              <DarkModeHandler />
-            </div>
-          </nav>
-          {withProgressBar && <ProgressBar />}
-        </header>
-      )}
-    </Disclosure>
+  return (
+    <header
+      id="navbar"
+      className={`fixed top-0 w-screen not-prose left-0 z-999 ${
+        open ? "bg-white" : "glassy hover:bg-white dark:bg-gray-900"
+      } w-full dark:bg-gray-900 pt-3 transition-colors duration-300 ${
+        withProgressBar ? "" : "pb-2"
+      }`}
+    >
+      <nav className="mx-auto px-3 xl:px-10 pb-1 flex items-center justify-between">
+        <RicosSiteBanner />
+        <div className="flex xl:hidden items-center gap-1">
+          <SiteSearch />
+          <DarkModeHandler />
+          <MobileVersion open={open} setOpen={setOpen} close={close} />
+        </div>
+
+        <div className="hidden xl:flex items-center gap-2">
+          <DesktopVersion />
+          <SiteSearch />
+          <DarkModeHandler />
+        </div>
+      </nav>
+      {withProgressBar && <ProgressBar />}
+    </header>
   );
 }
 
-type NavbarProps = {
+type MobileVersionProps = {
   open: boolean;
+  setOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
   close: () => void;
 };
 
-function MobileVersion({ open, close }: NavbarProps) {
+function MobileVersion({ open, setOpen, close }: MobileVersionProps) {
   useScrollLock(open);
+
+  // Close on Escape; close on route hash change so navigation also dismisses.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, close]);
 
   return (
     <div>
       <div className="flex items-center">
-        <DisclosureButton className="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700">
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls="mobile-menu"
+          onClick={() => setOpen((p) => !p)}
+          className="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700"
+        >
           <span className="sr-only">Open main menu</span>
           {open ? <FiX /> : <FiMenu />}
-        </DisclosureButton>
+        </button>
       </div>
-      <DisclosurePanel className="absolute z-50 top-12 p-2 w-screen h-screen right-0 bg-white dark:bg-gray-900">
-        <div className="flex flex-col px-2 pb-3 pt-2 items-end justify-end">
-          {navigation.map((item) => (
-            <Link
-              key={item}
-              href={"/" + item}
-              className="block w-fit rounded-md px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 "
-            >
-              <DisclosureButton>{item}</DisclosureButton>
-            </Link>
-          ))}
+      {open && (
+        <div
+          id="mobile-menu"
+          className="absolute z-50 top-12 p-2 w-screen h-screen right-0 bg-white dark:bg-gray-900"
+        >
+          <div className="flex flex-col px-2 pb-3 pt-2 items-end justify-end">
+            {navigation.map((item) => (
+              <Link
+                key={item}
+                href={"/" + item}
+                onClick={close}
+                className="block w-fit rounded-md px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 "
+              >
+                {item}
+              </Link>
+            ))}
 
-          <CollapsibleMenuMobile links={resources} text="resources" closeNav={close} />
-          <CollapsibleMenuMobile links={about} text="about" closeNav={close} />
+            <CollapsibleMenuMobile links={resources} text="resources" closeNav={close} />
+            <CollapsibleMenuMobile links={about} text="about" closeNav={close} />
+          </div>
         </div>
-      </DisclosurePanel>
+      )}
     </div>
   );
 }

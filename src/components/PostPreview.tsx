@@ -37,7 +37,7 @@ export const OtherPostsPreview = ({ posts }: { posts: CommonMetadata[] }) => {
     <div>
       {posts.map(
         ({ slug, link, title, markdownExcerpt, cover, date, metadata: { readingTime } }, index) => {
-          const priority = index <= 1;
+          const priority = index === 0;
 
           return (
             <HorizontalCard

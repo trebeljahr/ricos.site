@@ -23,7 +23,9 @@ export function BookPreview({ book, index }: Props) {
   const { link, title, cover, excerpt, subtitle, bookAuthor, markdownExcerpt, rating } = book;
 
   const defaultExcerpt = "";
-  const priority = index < 3;
+  // Only the first cover is a real LCP candidate. Multiple priority images
+  // compete for the same "high" fetch slot and slow the actual LCP.
+  const priority = index === 0;
   return (
     <Link
       as={link}

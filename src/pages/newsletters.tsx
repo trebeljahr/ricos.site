@@ -24,10 +24,10 @@ const sortByNumbers = (arr: CommonMetadata[]) => {
 };
 
 const toNiceCard = (
-  { link, number, title, markdownExcerpt, cover, date, metadata: { readingTime } }: CommonMetadata,
+  { link, title, markdownExcerpt, cover, date, metadata: { readingTime } }: CommonMetadata,
   index: number,
 ) => {
-  const priority = index <= 1;
+  const priority = index === 0;
 
   return (
     <HorizontalCard
@@ -71,6 +71,7 @@ const Newsletters = ({ newsletterData, seo }: Props) => {
 
           <div className="my-32">
             <NewsletterForm
+              // biome-ignore lint/complexity/noUselessFragments: empty fragment is truthy, suppresses NewsletterForm's default link
               link={<></>}
               heading={<h2 className="mt-0!">Not subscribed yet? 🙊</h2>}
             />
@@ -79,7 +80,10 @@ const Newsletters = ({ newsletterData, seo }: Props) => {
           {newsletterData.slice(2).map(toNiceCard)}
         </section>
         <footer>
-          <NewsletterForm link={<></>} />
+          <NewsletterForm
+            // biome-ignore lint/complexity/noUselessFragments: empty fragment is truthy, suppresses NewsletterForm's default link
+            link={<></>}
+          />
           <ToTopButton />
         </footer>
       </main>

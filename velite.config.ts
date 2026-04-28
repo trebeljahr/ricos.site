@@ -51,6 +51,139 @@ const rehypeUnwrapGalleries = () => {
   };
 };
 
+// Bake width/height metadata into the alt of single ![](markdown) images
+// that survive remarkGroupImages (i.e. weren't merged into a SimpleGallery).
+// Without dimensions ImageRenderer falls back to width=1/height=1, the
+// browser reserves a 1x1 box, then the loaded image expands and forces a
+// big CLS jump. Reads from the local metadata.json keyed by asset path.
+const remarkBakeDimensionsIntoSingleImages: Pluggable = () => {
+  return (tree: Node) => {
+    visit(tree, "image", (node) => {
+      // biome-ignore lint/suspicious/noExplicitAny: mdast image node
+      const img = node as any;
+      const url: string = img.url || "";
+      if (!url || /^https?:\/\//i.test(url)) return;
+      const alt: string = img.alt || "";
+      if (/\/width:\s*\d+\s*\//.test(alt) && /\/height:\s*\d+\s*\//.test(alt)) return;
+
+      try {
+        // biome-ignore lint/suspicious/noExplicitAny: dynamic require for build-time
+        const { getLocalMetadata } = require("./src/lib/imageMetadata") as any;
+        const all = getLocalMetadata();
+        const key = url.replace(/^\//, "");
+        const entry = all[key];
+        if (!entry?.width || !entry?.height) return;
+
+        const dims = ` /width: ${entry.width} /height: ${entry.height} /`;
+        img.alt = alt ? `${alt}${dims}` : dims.trim();
+      } catch {
+        /* metadata lookup is best-effort */
+      }
+    });
+  };
+};
+
+// Pull width/height for a raw <img src> when it points at a known asset.
+// Supports both relative `/assets/...` paths and the resized CloudFront
+// pattern `https://*/assets/<key>/<width>.webp`.
+function lookupImageMeta(
+  src: string,
+): { width: number; height: number; aspectRatio: number } | undefined {
+  // biome-ignore lint/suspicious/noExplicitAny: imageMetadata typed locally
+  const meta = require("./src/lib/imageMetadata") as any;
+  const all: Record<string, { width: number; height: number } | undefined> =
+    meta.getLocalMetadata();
+
+  let key = src;
+  // strip protocol+host
+  key = key.replace(/^https?:\/\/[^/]+/, "");
+  // strip leading slash
+  key = key.replace(/^\//, "");
+  // resized variant: assets/<path>/<width>.webp -> match any extension under assets/<path>
+  const resizedMatch = key.match(/^(assets\/.+)\/(\d+)\.(?:webp|avif|jpe?g|png)$/i);
+  if (resizedMatch) {
+    const baseKey = resizedMatch[1];
+    // try common original extensions
+    for (const ext of ["jpeg", "jpg", "png", "webp", "gif"]) {
+      const candidate = `${baseKey}.${ext}`;
+      if (all[candidate]) {
+        const m = all[candidate]!;
+        return { width: m.width, height: m.height, aspectRatio: m.width / m.height };
+      }
+    }
+  }
+  if (all[key]) {
+    const m = all[key]!;
+    return { width: m.width, height: m.height, aspectRatio: m.width / m.height };
+  }
+  return undefined;
+}
+
+// Raw <img> JSX in MDX bypasses the next/image renderer:
+//   - React 19 SSR auto-emits a <link rel="preload" as="image"> for every
+//     eager <img>, so on image-heavy posts those preloads crowd out the LCP
+//     image. We force loading="lazy" unless the author opted in (priority,
+//     fetchPriority="high", or already-set loading).
+//   - Without explicit width/height, the browser cannot reserve layout space
+//     for the image, which produces CLS. We fill them in from the local
+//     metadata cache when the URL matches a known asset.
+const remarkLazyLoadInlineImages: Pluggable = () => {
+  return (tree: Node) => {
+    visit(tree, (node) => {
+      // biome-ignore lint/suspicious/noExplicitAny: mdx-jsx node types live outside the unified mdast typings
+      const n = node as any;
+      if ((n.type !== "mdxJsxFlowElement" && n.type !== "mdxJsxTextElement") || n.name !== "img") {
+        return;
+      }
+      // biome-ignore lint/suspicious/noExplicitAny: ditto
+      const attrs: any[] = n.attributes || [];
+      const findAttr = (name: string) =>
+        attrs.find((a) => a.type === "mdxJsxAttribute" && a.name === name);
+      const has = (name: string) => Boolean(findAttr(name));
+      const hasFetchPriorityHigh = attrs.some(
+        (a) =>
+          a.type === "mdxJsxAttribute" &&
+          (a.name === "fetchpriority" || a.name === "fetchPriority") &&
+          a.value === "high",
+      );
+
+      if (!has("loading") && !has("priority") && !hasFetchPriorityHigh) {
+        attrs.push({ type: "mdxJsxAttribute", name: "loading", value: "lazy" });
+      }
+
+      if (!has("width") || !has("height")) {
+        const srcAttr = findAttr("src");
+        const src = typeof srcAttr?.value === "string" ? srcAttr.value : undefined;
+        if (src) {
+          const meta = lookupImageMeta(src);
+          if (meta) {
+            // Use a sensible rendered width (from `/640.webp`-style URLs) and
+            // derive height from the source aspect ratio so layout space is
+            // reserved correctly without forcing a specific display size.
+            const widthMatch = src.match(/\/(\d+)\.(?:webp|avif|jpe?g|png)$/i);
+            const renderedWidth = widthMatch ? Number(widthMatch[1]) : meta.width;
+            const renderedHeight = Math.round(renderedWidth / meta.aspectRatio);
+            if (!has("width")) {
+              attrs.push({
+                type: "mdxJsxAttribute",
+                name: "width",
+                value: String(renderedWidth),
+              });
+            }
+            if (!has("height")) {
+              attrs.push({
+                type: "mdxJsxAttribute",
+                name: "height",
+                value: String(renderedHeight),
+              });
+            }
+          }
+        }
+      }
+    });
+  };
+};
+
 function applicable(node: Element, inLink: boolean): 1 | 2 | 3 {
   let image: 1 | 2 | 3 = unknown;
   let index = -1;
@@ -341,6 +474,8 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
       },
     ],
     remarkGroupImages,
+    remarkBakeDimensionsIntoSingleImages,
+    remarkLazyLoadInlineImages,
     remarkGfm,
     remarkToc,
     remarkMath,

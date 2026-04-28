@@ -1,13 +1,6 @@
 import { motion, useAnimation } from "motion/react";
 import { useEffect } from "react";
-
-export const HandEmoji = () => {
-  return (
-    <span role="img" aria-label="Hand waving">
-      👋🏻
-    </span>
-  );
-};
+import { HandEmoji } from "./HandEmoji";
 
 const WavingHand = () => {
   const controls = useAnimation();

@@ -1,13 +1,12 @@
-"use client";
-import { Suspense, lazy } from "react";
-import { HandEmoji } from "./WavingHand";
+import dynamic from "next/dynamic";
+import { HandEmoji } from "./HandEmoji";
 
-const WavingHandComponent = lazy(() => import("./WavingHand"));
+// Defer the motion/react animation chunk until after hydration so the
+// motion library doesn't bloat the eager bundle on every page that uses
+// the home-page banner.
+const WavingHandAnimated = dynamic(() => import("./WavingHand"), {
+  ssr: false,
+  loading: () => <HandEmoji />,
+});
 
-export const WavingHand = () => {
-  return (
-    <Suspense fallback={<HandEmoji />}>
-      <WavingHandComponent />
-    </Suspense>
-  );
-};
+export const WavingHand = () => <WavingHandAnimated />;

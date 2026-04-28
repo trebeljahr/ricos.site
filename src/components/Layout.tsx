@@ -1,10 +1,16 @@
+import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
 import { toTitleCase } from "src/lib/utils/toTitleCase";
 import { Meta } from "./Meta";
-import { LeftSmallNavbar } from "./Navbar/LeftSmallNavbar";
 import { TailwindNavbar } from "./Navbar/TailwindNavbar";
 import { OpenGraph } from "./OpenGraph";
 import { SiteFooter } from "./SiteFooter";
+
+// LeftSmallNavbar pulls motion/react for slide-in animations; load it
+// only on pages that actually opt in via the leftSmallNavbar prop.
+const LeftSmallNavbar = dynamic(() =>
+  import("./Navbar/LeftSmallNavbar").then((m) => m.LeftSmallNavbar),
+);
 
 type Props = {
   children: ReactNode;

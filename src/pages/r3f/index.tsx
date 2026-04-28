@@ -1,5 +1,8 @@
-import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { Meta } from "@components/Meta";
+import { OpenGraph } from "@components/OpenGraph";
+import { NavbarR3F } from "@components/dom/NavbarR3F";
 import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { toTitleCase } from "src/lib/utils/toTitleCase";
 
 const defaultSeoInfo = {
   title: "Rico's R3F Playground",
@@ -11,6 +14,10 @@ const defaultSeoInfo = {
   imageAlt: "image of a 3D playground",
 };
 
+// Index page intentionally avoids ThreeFiberLayout: there's no scene to
+// render here, so loading three.js + @react-three/fiber and starting a WebGL
+// context would be ~1MB of JS for nothing. Demo subpages keep using the
+// full layout.
 export default function Page({ seo }: { seo: SeoInfo | null }) {
   const seoInfo = {
     ...defaultSeoInfo,
@@ -22,10 +29,26 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
       keywords: seo.keywords,
     }),
   };
+  const properTitle = toTitleCase(seoInfo.title);
+
   return (
-    <ThreeFiberLayout seoInfo={seoInfo}>
-      <In>
-        <div className="flex-col items-center justify-center m-auto mt-10 max-w-2xl">
+    <>
+      <Meta
+        description={seoInfo.description}
+        title={properTitle}
+        url={seoInfo.url}
+        keywords={seoInfo.keywords}
+      />
+      <OpenGraph
+        title={properTitle}
+        description={seoInfo.description}
+        url={seoInfo.url}
+        image={seoInfo.image}
+        imageAlt={seoInfo.imageAlt}
+      />
+      <NavbarR3F />
+      <main className="w-full min-h-screen">
+        <div className="flex-col items-center justify-center m-auto mt-10 max-w-2xl px-4">
           <h1>Welcome to my R3F Playground!</h1>
           <p>
             Here is where I experiment with all things Three.js and React Three Fibre to learn those
@@ -34,8 +57,8 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
             side panel.
           </p>
         </div>
-      </In>
-    </ThreeFiberLayout>
+      </main>
+    </>
   );
 }
 

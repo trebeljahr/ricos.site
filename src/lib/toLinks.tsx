@@ -24,7 +24,11 @@ export const toLinksFromNameUrlTuples = ({
   url: string;
   name: string;
 }) => (
-  <Link key={url} href={url}>
+  // Each demo route ships its own three.js + r3f bundle (often megabytes).
+  // Default <Link> prefetch loads every visible link's chunk; on the R3F
+  // side panel that's dozens of multi-MB chunks and tanks TBT. Disable
+  // viewport prefetch — Next still prefetches on hover.
+  <Link key={url} href={url} prefetch={false}>
     <div className="mb-5 cursor-pointer duration-200 hover:transform hover:scale-105">
       <ImageWithLoader
         src={previewSrc(name, url)}

@@ -6,7 +6,7 @@ import { resolveAlt } from "src/lib/imageAlt";
 import { CalloutBody, CalloutRoot, CalloutTitle } from "./Callouts";
 import { CodeWithCopyButton } from "./CodeCopyButton";
 import { ExternalLink } from "./ExternalLink";
-import { SimpleGallery } from "./Galleries";
+import { SimpleGallery, SingleImage } from "./Galleries";
 
 export const ImageRenderer = ({ src, alt }: ImgHTMLAttributes<HTMLImageElement>) => {
   if (!src) return null;
@@ -71,7 +71,12 @@ export const LinkRenderer = ({
 
 const handleNiceImageGalleries = (props: { images: string }) => {
   const photos = JSON.parse(props.images);
-
+  // Single-photo "groups" need an SSR-rendered path so the browser can
+  // reserve layout space at first paint — RowsPhotoAlbum reflows on
+  // hydration and produces CLS otherwise.
+  if (photos.length === 1) {
+    return <SingleImage photo={photos[0]} />;
+  }
   return <SimpleGallery photos={photos} />;
 };
 

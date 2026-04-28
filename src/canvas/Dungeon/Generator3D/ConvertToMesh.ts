@@ -179,23 +179,6 @@ export class DungeonMeshGenerator {
     }
   }
 
-  private convertStairRotationToDirection(rotation: Vector3) {
-    if (rotation.y === 0) {
-      return new Vector3Int(0, 0, -1);
-    }
-    if (rotation.y === Math.PI) {
-      return new Vector3Int(0, 0, 1);
-    }
-    if (rotation.y === Math.PI / 2) {
-      return new Vector3Int(-1, 0, 0);
-    }
-    if (rotation.y === Math.PI + Math.PI / 2) {
-      return new Vector3Int(1, 0, 0);
-    }
-
-    return new Vector3Int(0, 0, 0);
-  }
-
   private convertStairDirectionToRotation(direction: Vector3Int) {
     if (new Vector3Int(0, 0, -1).equals(direction)) {
       return new Vector3(0, 0, 0);

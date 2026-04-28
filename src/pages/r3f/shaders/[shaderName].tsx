@@ -1,7 +1,7 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasShader";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { getShaderFileNames } from "src/lib/getShaderFileNames";
 
 export default function Page({

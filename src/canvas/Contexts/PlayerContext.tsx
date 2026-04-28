@@ -2,7 +2,7 @@ import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { vec3 } from "gl-matrix";
-import { type PropsWithChildren, createContext, useContext, useRef } from "react";
+import { createContext, type PropsWithChildren, useContext, useRef } from "react";
 import { useThirdPersonCameraContext } from "./ThirdPersonCameraContext";
 
 const initial = vec3.fromValues(10, 0, 1);

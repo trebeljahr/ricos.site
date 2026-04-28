@@ -1,7 +1,7 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { UnderwaterContextProvider } from "@contexts/UnderwaterContext";
 import dynamic from "next/dynamic";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 const UnderwaterShaderDemo = dynamic(
   () => import("src/canvas/Scenes/UnderwaterShader/UnderwaterShaderDemo"),

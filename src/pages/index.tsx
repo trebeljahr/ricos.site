@@ -9,10 +9,9 @@ import { WavingHand } from "@components/WavingHand";
 import type { SectionDescription } from "@velite";
 import Link from "next/link";
 import type { CommonMetadata, ImageProps } from "src/@types";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
-import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
-
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
+import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
 // Hand-curated picks for the homepage — keep small so the page stays fast.
 const FEATURED_PHOTOGRAPHY_TRIPS = [
@@ -146,9 +145,9 @@ const IndexPage = ({ seo, ...props }: Props) => {
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <h2 className="text-5xl">Photography 📸</h2>
             <p className="mb-14 max-w-prose">
-              Trips through Asia, Europe, the Caribbean and South America, told in pictures. Six
-              of my favourite collections below — see <Link href="/photography">all trips</Link>{" "}
-              for the rest.
+              Trips through Asia, Europe, the Caribbean and South America, told in pictures. Six of
+              my favourite collections below — see <Link href="/photography">all trips</Link> for
+              the rest.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-12">
               {props.featuredTrips.map(({ tripName, image }) => (
@@ -203,9 +202,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
                     />
                   </div>
                   <div className="p-3">
-                    <h3 className="text-base font-semibold m-0">
-                      {turnKebabIntoTitleCase(name)}
-                    </h3>
+                    <h3 className="text-base font-semibold m-0">{turnKebabIntoTitleCase(name)}</h3>
                   </div>
                 </Link>
               ))}
@@ -260,9 +257,7 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
   const { getImgWidthAndHeightDuringBuild } = await import(
     "src/lib/getImgWidthAndHeightDuringBuild"
   );
-  const { getFirstImageFromMetadata, photographyFolder } = await import(
-    "src/lib/imageMetadata"
-  );
+  const { getFirstImageFromMetadata, photographyFolder } = await import("src/lib/imageMetadata");
 
   const travelblogs = loadVeliteData("travelblogs.json");
   const posts = loadVeliteData("posts.json");
@@ -283,7 +278,7 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
   const featuredTrips = await Promise.all(
     FEATURED_PHOTOGRAPHY_TRIPS.map(async (name) => {
       const trip = trips.find((t) => t.name === name);
-      if (trip && trip.src) {
+      if (trip?.src) {
         const { width, height } = await getImgWidthAndHeightDuringBuild(trip.src);
         return {
           tripName: name,

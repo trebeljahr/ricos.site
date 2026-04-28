@@ -1,8 +1,8 @@
 import "katex/dist/katex.min.css";
-import PlausibleProvider from "next-plausible";
-import { ThemeProvider } from "next-themes";
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import PlausibleProvider from "next-plausible";
+import { ThemeProvider } from "next-themes";
 import "../styles/globals.css";
 
 // next/font/google previously loaded Inter and passed `inter.className` as

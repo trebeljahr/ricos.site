@@ -1,13 +1,11 @@
 import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { wireframe } from "@r3f/ChunkGenerationSystem/config";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
-
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { DungeonGenerator3D } from "@r3f/Dungeon/Generator3D/Generator";
 import { CellType3D, Vector3, Vector3Int } from "@r3f/Dungeon/Generator3D/Types";
-
 import { Sky } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import {
   BoxGeometry,
   type InstancedMesh,
@@ -219,7 +217,11 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 
       <MinecraftSpectatorController speed={0.2} />
       <In>
-        <button type="button" onClick={handleClick} className="absolute top-0 right-0 z-20 p-2 bg-slate-500">
+        <button
+          type="button"
+          onClick={handleClick}
+          className="absolute top-0 right-0 z-20 p-2 bg-slate-500"
+        >
           Click for new dungeon
         </button>
       </In>

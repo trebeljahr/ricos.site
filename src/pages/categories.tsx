@@ -3,7 +3,7 @@ import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
 import Link from "next/link";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { byReadingTime } from "src/lib/utils/sorting";
 import { toTitleCase } from "src/lib/utils/toTitleCase";

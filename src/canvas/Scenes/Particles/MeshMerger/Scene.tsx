@@ -14,8 +14,8 @@ import {
   GLSL3,
   Mesh,
   MeshStandardMaterial,
-  RGBAFormat,
   RawShaderMaterial,
+  RGBAFormat,
   Sphere,
   SphereGeometry,
   TorusGeometry,
@@ -27,11 +27,7 @@ import { MeshSurfaceSampler } from "three-stdlib";
 import fragmentShader from "./shaders/particlesFragmentShader.glsl";
 import vertexShader from "./shaders/particlesVertexShader.glsl";
 
-export const MeshMerger = ({
-  numParticles = 100,
-}: {
-  numParticles?: number;
-}) => {
+export const MeshMerger = ({ numParticles = 100 }: { numParticles?: number }) => {
   const diffuseTexture = useTexture("/3d-assets/textures/particles/circle.png");
   const sword = useSword1();
   const axe = useAxe1();

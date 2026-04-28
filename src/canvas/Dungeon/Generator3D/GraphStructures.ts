@@ -190,4 +190,4 @@ class Tetrahedron {
   }
 }
 
-export { Vertex, VertexWithData, Edge, DelaunayEdge, Triangle, Tetrahedron };
+export { DelaunayEdge, Edge, Tetrahedron, Triangle, Vertex, VertexWithData };

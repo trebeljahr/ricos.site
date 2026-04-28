@@ -1,5 +1,5 @@
-import { type ReactThreeFiber, extend, useFrame } from "@react-three/fiber";
-import { type PropsWithChildren, forwardRef, useImperativeHandle, useRef } from "react";
+import { extend, type ReactThreeFiber, useFrame } from "@react-three/fiber";
+import { forwardRef, type PropsWithChildren, useImperativeHandle, useRef } from "react";
 import { Clock, type Material, type Object3D } from "three";
 import { LightningStrike, type RayParameters } from "three-stdlib";
 

@@ -1,15 +1,16 @@
 import { useGenericAnimationController } from "@r3f/Controllers/GenericAnimationController";
 import { CommonActions } from "@r3f/Dungeon/BuildingBlocks/CommonEnemy";
 import {
+  mapCommonActionToSkeletonAction,
   type SkeletonActionName,
   type SkeletonEnemyProps,
-  mapCommonActionToSkeletonAction,
 } from "@r3f/Dungeon/BuildingBlocks/SkeletonEnemy";
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import type { AnimationClip, Bone, Group, Mesh, MeshStandardMaterial, SkinnedMesh } from "three";
 import { type GLTF, SkeletonUtils } from "three-stdlib";
+
 interface GLTFAction extends AnimationClip {
   name: SkeletonActionName;
 }

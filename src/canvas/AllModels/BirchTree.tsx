@@ -2,8 +2,8 @@ import { useGLTF } from "@react-three/drei";
 import { type GroupProps, useLoader } from "@react-three/fiber";
 import { useLayoutEffect } from "react";
 import { DoubleSide, type Mesh, type MeshStandardMaterial } from "three";
-import type { GLTF } from "three-stdlib";
 import { TextureLoader } from "three/src/loaders/TextureLoader";
+import type { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {

@@ -1,9 +1,9 @@
 import Image from "next/image";
 import {
   type ContainerRect,
-  type Slide,
   isImageFitCover,
   isImageSlide,
+  type Slide,
   useLightboxProps,
   useLightboxState,
 } from "yet-another-react-lightbox";

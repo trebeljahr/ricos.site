@@ -6,7 +6,7 @@ import { TreeWithHullPhysics } from "@r3f/Trees/TreesWithPhysics";
 import { Box, Sky } from "@react-three/drei";
 import { Physics, RigidBody } from "@react-three/rapier";
 import { physicsDebug } from "src/canvas/ChunkGenerationSystem/config";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Some experiments with grass shaders",

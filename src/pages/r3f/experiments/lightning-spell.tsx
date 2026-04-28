@@ -5,7 +5,7 @@ import { type FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningR
 import { OrbitControls } from "@react-three/drei";
 import { Bloom, EffectComposer, ToneMapping } from "@react-three/postprocessing";
 import { useEffect, useState } from "react";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { DoubleSide, type Mesh, Raycaster, Vector3 } from "three";
 import type { RayParameters } from "three-stdlib";
 

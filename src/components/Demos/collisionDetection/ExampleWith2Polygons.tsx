@@ -1,7 +1,5 @@
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
 import { useEffect, useState } from "react";
-
-import { Vec2 } from "../../../lib/math/Vector";
 import {
   colorEdge,
   drawBackground,
@@ -9,6 +7,7 @@ import {
   initPolygons,
   instrument,
 } from "../../../lib/math/drawHelpers";
+import { Vec2 } from "../../../lib/math/Vector";
 export const ExampleWith2Polygons = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
 

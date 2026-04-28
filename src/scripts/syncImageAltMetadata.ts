@@ -17,7 +17,7 @@
  */
 import "dotenv/config";
 import { existsSync } from "node:fs";
-import { readFile, readdir, writeFile } from "node:fs/promises";
+import { readdir, readFile, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { argv, cwd } from "node:process";
 

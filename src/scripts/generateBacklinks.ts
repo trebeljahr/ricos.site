@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { extname, join, parse, resolve } from "node:path";
 import slugify from "@sindresorhus/slugify";
 

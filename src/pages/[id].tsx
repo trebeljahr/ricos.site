@@ -1,14 +1,13 @@
+import { Backlinks } from "@components/Backlinks";
+import { BreadCrumbs } from "@components/BreadCrumbs";
 import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
+import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Page as PageType } from "@velite";
-
-import { Backlinks } from "@components/Backlinks";
-import { BreadCrumbs } from "@components/BreadCrumbs";
-import { MetadataDisplay } from "@components/MetadataDisplay";
 import dynamic from "next/dynamic";
 
 const MDXContentWithDemos = dynamic(

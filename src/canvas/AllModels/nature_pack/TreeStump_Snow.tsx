@@ -21,11 +21,7 @@ type GLTFResult = GLTF & {
   };
 };
 
-export function InstancedTreeStumpSnow({
-  positions,
-}: {
-  positions: Vector3[];
-}) {
+export function InstancedTreeStumpSnow({ positions }: { positions: Vector3[] }) {
   const meshMaterialCombos: MeshMaterialCombos = [
     ["TreeStump_Snow_1", "Wood"],
     ["TreeStump_Snow_2", "Snow"],

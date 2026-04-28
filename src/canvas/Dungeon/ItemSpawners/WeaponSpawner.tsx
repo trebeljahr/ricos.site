@@ -8,9 +8,9 @@ import {
   Dagger,
   Dagger_Golden,
   Sword,
-  Sword_Golden,
   Sword_big,
   Sword_big_Golden,
+  Sword_Golden,
 } from "@r3f/AllModels/rpg_items_pack";
 import { nanoid } from "nanoid";
 import { useCallback, useMemo } from "react";

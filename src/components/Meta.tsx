@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { completeUrl } from "src/lib/urlUtils";
+
 interface Props {
   description: string;
   title: string;
@@ -61,32 +62,27 @@ export const Meta = ({
   noindex = false,
 }: Props) => {
   return (
-    <>
-      <Head>
-        <title>{title}</title>
+    <Head>
+      <title>{title}</title>
 
-        {noindex && <meta name="robots" content="noindex, nofollow" />}
-        <link rel="canonical" href={completeUrl(url)} />
+      {noindex && <meta name="robots" content="noindex, nofollow" />}
+      <link rel="canonical" href={completeUrl(url)} />
 
-        <meta name="description" content={description} />
-        <meta name="application-name" content="ricos.site" />
+      <meta name="description" content={description} />
+      <meta name="application-name" content="ricos.site" />
 
-        {/* Pinterest Domain Verification */}
-        <meta name="p:domain_verify" content="d355ee7955ac253c916874514a8ee100" />
+      {/* Pinterest Domain Verification */}
+      <meta name="p:domain_verify" content="d355ee7955ac253c916874514a8ee100" />
 
-        <meta name="generator" content="Next.js" />
-        <meta
-          name="keywords"
-          content={[...new Set([...keywords, ...generalKeywords])].join(", ")}
-        />
-        <meta name="referrer" content="origin-when-cross-origin" />
-        <meta name="color-scheme" content="dark" />
+      <meta name="generator" content="Next.js" />
+      <meta name="keywords" content={[...new Set([...keywords, ...generalKeywords])].join(", ")} />
+      <meta name="referrer" content="origin-when-cross-origin" />
+      <meta name="color-scheme" content="dark" />
 
-        <meta name="author" content="Rico Trebeljahr" />
-        <meta name="creator" content="Rico Trebeljahr" />
-        <meta name="publisher" content="Rico Trebeljahr" />
-        <meta name="format-detection" content="telephone=no, address=no, email=no" />
-      </Head>
-    </>
+      <meta name="author" content="Rico Trebeljahr" />
+      <meta name="creator" content="Rico Trebeljahr" />
+      <meta name="publisher" content="Rico Trebeljahr" />
+      <meta name="format-detection" content="telephone=no, address=no, email=no" />
+    </Head>
   );
 };

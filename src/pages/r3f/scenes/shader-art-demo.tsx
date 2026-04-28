@@ -1,6 +1,6 @@
-import { FaCheck, FaInfo, FaShareAlt, FiX } from "@components/Icons";
 import { NavbarR3F } from "@components/dom/NavbarR3F";
 import { SceneWithLoadingState, SeoInfo } from "@components/dom/ThreeFiberLayout";
+import { FaCheck, FaInfo, FaShareAlt, FiX } from "@components/Icons";
 import { nav, recording } from "@r3f/ChunkGenerationSystem/config";
 import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasShader";
 import controllableShaderArt from "@shaders/controllableShaderArt.glsl";

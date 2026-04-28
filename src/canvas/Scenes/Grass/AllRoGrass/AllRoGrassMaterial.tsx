@@ -1,5 +1,5 @@
 import { shaderMaterial } from "@react-three/drei";
-import { type ReactThreeFiber, extend } from "@react-three/fiber";
+import { extend, type ReactThreeFiber } from "@react-three/fiber";
 import fragShader from "@shaders/grass/frag.glsl";
 import vertShader from "@shaders/grass/vert.glsl";
 import { Color, DoubleSide, type Material, type ShaderMaterial, type Texture } from "three";

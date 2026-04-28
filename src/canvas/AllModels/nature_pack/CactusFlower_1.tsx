@@ -19,11 +19,7 @@ type GLTFResult = GLTF & {
   };
 };
 
-export function InstancedCactusFlower1({
-  positions,
-}: {
-  positions: Vector3[];
-}) {
+export function InstancedCactusFlower1({ positions }: { positions: Vector3[] }) {
   const meshMaterialCombos: MeshMaterialCombos = [["CactusFlower_1", "Green"]];
 
   return (

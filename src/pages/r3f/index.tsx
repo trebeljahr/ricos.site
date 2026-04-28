@@ -1,7 +1,7 @@
+import { NavbarR3F } from "@components/dom/NavbarR3F";
 import { Meta } from "@components/Meta";
 import { OpenGraph } from "@components/OpenGraph";
-import { NavbarR3F } from "@components/dom/NavbarR3F";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { toTitleCase } from "src/lib/utils/toTitleCase";
 
 const defaultSeoInfo = {

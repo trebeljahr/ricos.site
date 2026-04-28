@@ -15,7 +15,10 @@ import { SimpleGrassGroundPlane } from "../Helpers/SimpleGrassGroundPlane";
 export const TreeTile = ({
   size = 100,
   offset = new Vector2(0, 0),
-}: { size?: number; offset?: Vector2 } = {}) => {
+}: {
+  size?: number;
+  offset?: Vector2;
+} = {}) => {
   const positions = useMemo(() => poissonDiskSample(size, 3, 20, { offset }), [size, offset]);
 
   const groups = splitIntoRandomGroups(positions, 5);

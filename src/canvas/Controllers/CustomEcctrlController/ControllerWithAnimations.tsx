@@ -7,7 +7,7 @@ import {
   SupportedAnimations,
   useMixamoAnimations,
 } from "@r3f/Characters/CharacterWithAnimations";
-import { SwordTypes, type WeaponTypes, useWeapon } from "@r3f/Dungeon/Enemies/Weapons";
+import { SwordTypes, useWeapon, type WeaponTypes } from "@r3f/Dungeon/Enemies/Weapons";
 import { useAnimations, useKeyboardControls, useProgress } from "@react-three/drei";
 import { type GroupProps, useFrame } from "@react-three/fiber";
 import { type MutableRefObject, Suspense, useRef } from "react";

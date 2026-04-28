@@ -1,4 +1,7 @@
-import { type NoiseFunction2D, createNoise2D } from "simplex-noise";
+import PoissonDiskSampling from "poisson-disk-sampling";
+// import { mkAlea } from "@spissvinkel/alea";
+import { alea } from "seedrandom";
+import { createNoise2D, type NoiseFunction2D } from "simplex-noise";
 import {
   detailLevels,
   heightNoiseScale,
@@ -6,16 +9,12 @@ import {
   persistence,
   temperatureNoiseScale,
 } from "src/canvas/ChunkGenerationSystem/config";
-
-import PoissonDiskSampling from "poisson-disk-sampling";
-// import { mkAlea } from "@spissvinkel/alea";
-import { alea } from "seedrandom";
 import { Vector3 } from "three";
 
 const SEED_VALUE = "1234567890";
 // const { random } = mkAlea(SEED_VALUE);
 
-// @ts-ignore-next-line
+// @ts-expect-error-next-line
 const random = new alea(SEED_VALUE);
 
 const normalizeNoise = (func: NoiseFunction2D) => {

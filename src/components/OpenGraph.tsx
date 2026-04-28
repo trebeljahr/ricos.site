@@ -2,6 +2,7 @@ import Head from "next/head";
 import type { FC } from "react";
 import { nextImageUrl } from "src/lib/mapToImageProps";
 import { completeUrl, tld } from "src/lib/urlUtils";
+
 interface OpenGraphProps {
   title: string;
   description: string;

@@ -15,7 +15,7 @@ export const NavmeshDebug = () => {
   useFrame(() => {
     const nav = navQuery.first;
 
-    if (!nav || !nav.nav.navMesh) {
+    if (!nav?.nav.navMesh) {
       if (helper) {
         setHelper(undefined);
       }

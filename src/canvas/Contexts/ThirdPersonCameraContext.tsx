@@ -2,7 +2,7 @@ import { getHeight } from "@r3f/ChunkGenerationSystem/getHeight";
 import { usePointerContext } from "@r3f/Contexts/PointerContext";
 import { useFrame } from "@react-three/fiber";
 import { mat4, quat2, vec3 } from "gl-matrix";
-import { type PropsWithChildren, createContext, useContext, useRef } from "react";
+import { createContext, type PropsWithChildren, useContext, useRef } from "react";
 import { usePlayerContext } from "./PlayerContext";
 
 const defaultThirdPersonCameraState = {

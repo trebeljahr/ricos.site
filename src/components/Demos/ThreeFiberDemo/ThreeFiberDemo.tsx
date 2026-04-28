@@ -1,5 +1,5 @@
 import { SpinningLoader } from "@components/SpinningLoader";
-import { Suspense, lazy } from "react";
+import { lazy, Suspense } from "react";
 
 const ThreeJs = lazy(() => import("./ThreeJs"));
 

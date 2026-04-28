@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { OceanSurface } from "src/canvas/Scenes/OceanDemo/Ocean";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 const Ship = dynamic(() => import("@r3f/AllModels/Ship"), {
   ssr: false,

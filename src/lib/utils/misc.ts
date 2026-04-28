@@ -54,7 +54,7 @@ export const byReadingTime = (
 };
 
 export const createRandomFunction = (seed: string): (() => number) => {
-  // @ts-ignore-next-line
+  // @ts-expect-error-next-line
   const prng = new alea(seed);
   return prng;
 };

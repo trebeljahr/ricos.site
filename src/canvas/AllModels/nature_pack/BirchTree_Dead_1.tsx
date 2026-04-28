@@ -21,11 +21,7 @@ type GLTFResult = GLTF & {
   };
 };
 
-export function InstancedBirchTreeDead1({
-  positions,
-}: {
-  positions: Vector3[];
-}) {
+export function InstancedBirchTreeDead1({ positions }: { positions: Vector3[] }) {
   const meshMaterialCombos: MeshMaterialCombos = [
     ["BirchTree_Dead_1_1", "White"],
     ["BirchTree_Dead_1_2", "Black"],

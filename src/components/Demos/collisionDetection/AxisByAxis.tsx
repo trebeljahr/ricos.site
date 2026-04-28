@@ -1,8 +1,5 @@
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
 import { useEffect, useState } from "react";
-
-import type { Polygon } from "../../../lib/math/Poly";
-import { Vec2 } from "../../../lib/math/Vector";
 import {
   colorEdge,
   drawBackground,
@@ -10,6 +7,8 @@ import {
   initPolygons,
   instrument,
 } from "../../../lib/math/drawHelpers";
+import type { Polygon } from "../../../lib/math/Poly";
+import { Vec2 } from "../../../lib/math/Vector";
 
 export const AxisByAxis = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
@@ -27,7 +26,7 @@ export const AxisByAxis = () => {
     const polys = initPolygons(ctx);
 
     const drawFn = () => {
-      if (!ctx || !ctx.canvas) return;
+      if (!ctx?.canvas) return;
       drawBackground(ctx);
 
       // biome-ignore lint/complexity/noForEach: callback uses early return / vendored script

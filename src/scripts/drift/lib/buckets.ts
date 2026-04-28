@@ -14,7 +14,7 @@ export interface S3Object {
 export async function listAllObjects(bucket: string, prefix = ""): Promise<S3Object[]> {
   const client = createS3Client();
   const out: S3Object[] = [];
-  let token: string | undefined = undefined;
+  let token: string | undefined;
   do {
     // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     const resp: any = await client.send(

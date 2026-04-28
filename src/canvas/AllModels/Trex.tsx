@@ -1,6 +1,6 @@
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { type GroupProps, useFrame, useThree } from "@react-three/fiber";
-import { type ForwardedRef, type MutableRefObject, forwardRef, useRef } from "react";
+import { type ForwardedRef, forwardRef, type MutableRefObject, useRef } from "react";
 
 import { TrexAnimationController } from "src/canvas/Controllers/GenericAnimationController";
 import {

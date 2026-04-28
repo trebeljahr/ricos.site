@@ -12,7 +12,7 @@ import { Physics } from "@react-three/rapier";
 import { Suspense } from "react";
 import { physicsDebug, tileSize, tilesDistance } from "src/canvas/ChunkGenerationSystem/config";
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 const ChunkRenderer = () => {
   const chunks = useChunkContext();

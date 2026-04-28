@@ -29,7 +29,10 @@ const defaultParameters = {
 export function useJoystick({
   cb,
   params,
-}: { cb?: JoystickCallback; params?: Partial<typeof defaultParameters> }) {
+}: {
+  cb?: JoystickCallback;
+  params?: Partial<typeof defaultParameters>;
+}) {
   const parameters = { ...defaultParameters, ...params };
   const joystickDataRef = useRef<JoystickData>(null!);
 

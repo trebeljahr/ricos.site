@@ -1,9 +1,6 @@
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
-import { useEffect, useState } from "react";
-
 import { useWindowWidth } from "@react-hook/window-size";
-import { Polygon, triangulateVisualization } from "../../../lib/math/Poly";
-import { Vec2 } from "../../../lib/math/Vector";
+import { useEffect, useState } from "react";
 import {
   drawBackground,
   initPolygons,
@@ -11,6 +8,8 @@ import {
   niceGreen,
   starPoints,
 } from "../../../lib/math/drawHelpers";
+import { Polygon, triangulateVisualization } from "../../../lib/math/Poly";
+import { Vec2 } from "../../../lib/math/Vector";
 export const EarClipping = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);
   //

@@ -1,26 +1,21 @@
 import { HeadObjectCommand, ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
 import "dotenv/config";
 import pLimit from "p-limit";
-import { type ImageMetadata, getMetadataFromJsonFile } from "src/lib/imageMetadata";
+import { getMetadataFromJsonFile, type ImageMetadata } from "src/lib/imageMetadata";
 
 export async function getImageMetadataFromS3(Bucket: string, Key: string): Promise<ImageMetadata> {
   const client = createS3Client();
   const command = new HeadObjectCommand({ Bucket, Key });
   const response = await client.send(command);
 
-  if (
-    !response.Metadata ||
-    !response.Metadata.width ||
-    !response.Metadata.height ||
-    !response.Metadata.aspectRatio
-  ) {
+  if (!response.Metadata?.width || !response.Metadata.height || !response.Metadata.aspectRatio) {
     throw new Error(`Some metadata missing for the object ${Key}`);
   }
 
   return {
     key: Key,
-    width: Number.parseInt(response.Metadata.width),
-    height: Number.parseInt(response.Metadata.height),
+    width: Number.parseInt(response.Metadata.width, 10),
+    height: Number.parseInt(response.Metadata.height, 10),
     aspectRatio: Number.parseFloat(response.Metadata.aspectRatio),
     existsInS3: true,
   };
@@ -144,7 +139,7 @@ export type ImageDataFromAWS = {
 const limit = pLimit(10);
 
 let _s3Client: S3Client | null = null;
-function getS3Client() {
+function _getS3Client() {
   if (!_s3Client) _s3Client = createS3Client();
   return _s3Client;
 }

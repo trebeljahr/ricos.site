@@ -18,22 +18,20 @@ export const HomePageSection = ({
   description,
 }: HomePageSectionProps) => {
   return (
-    <>
-      <div className="mx-auto max-w-(--breakpoint-lg)">
-        <h2 className="text-5xl">{title}</h2>
+    <div className="mx-auto max-w-(--breakpoint-lg)">
+      <h2 className="text-5xl">{title}</h2>
 
-        {description && (
-          <div className="mb-14 max-w-prose">
-            <MDXContent source={description} />
-          </div>
-        )}
-        {carousel ? (
-          <ScrollableCardGallery {...cardGalleryProps} />
-        ) : (
-          <CardGallery {...cardGalleryProps} />
-        )}
-        <div className="mt-12">{linkElem}</div>
-      </div>
-    </>
+      {description && (
+        <div className="mb-14 max-w-prose">
+          <MDXContent source={description} />
+        </div>
+      )}
+      {carousel ? (
+        <ScrollableCardGallery {...cardGalleryProps} />
+      ) : (
+        <CardGallery {...cardGalleryProps} />
+      )}
+      <div className="mt-12">{linkElem}</div>
+    </div>
   );
 };

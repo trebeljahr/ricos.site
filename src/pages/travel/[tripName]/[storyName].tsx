@@ -13,12 +13,11 @@ import { ToTopButton } from "@components/ToTopButton";
 import slugify from "@sindresorhus/slugify";
 import type { Travelblog } from "@velite";
 import type { ReactNode } from "react";
+import type { CommonMetadata } from "src/@types";
+import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { replaceUndefinedWithNull } from "src/lib/utils/replaceUndefinedWithNull";
 import { byDate } from "src/lib/utils/sorting";
-
-import type { CommonMetadata } from "src/@types";
-import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
 type BacklinkItem = { title: string; link: string; type: string };
 

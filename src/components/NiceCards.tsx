@@ -2,8 +2,7 @@ import { ImageWithLoader } from "@components/ImageWithLoader";
 import { getMDXComponent } from "mdx-bundler/client";
 import Link from "next/link";
 import { useMemo } from "react";
-import type { MDXResult } from "src/@types";
-import type { CommonMetadata } from "src/@types";
+import type { CommonMetadata, MDXResult } from "src/@types";
 import { MetadataDisplay } from "./MetadataDisplay";
 
 const MDXExcerpt = ({ source }: { source: MDXResult }) => {

@@ -17,13 +17,7 @@ export const FancyButton = (props: JSX.IntrinsicElements["button"]) => {
   );
 };
 
-export const FancyLink = ({
-  href,
-  text = "Read More",
-}: {
-  href: string;
-  text?: string;
-}) => {
+export const FancyLink = ({ href, text = "Read More" }: { href: string; text?: string }) => {
   return (
     <Link
       href={href}

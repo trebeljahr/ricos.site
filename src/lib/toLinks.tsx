@@ -17,13 +17,7 @@ const previewSrc = (name: string, url: string) =>
     ? `/assets/pages/r3f/${name}.png`
     : `/assets/pages/${name}.png`;
 
-export const toLinksFromNameUrlTuples = ({
-  url,
-  name,
-}: {
-  url: string;
-  name: string;
-}) => (
+export const toLinksFromNameUrlTuples = ({ url, name }: { url: string; name: string }) => (
   // Each demo route ships its own three.js + r3f bundle (often megabytes).
   // Default <Link> prefetch loads every visible link's chunk; on the R3F
   // side panel that's dozens of multi-MB chunks and tanks TBT. Disable

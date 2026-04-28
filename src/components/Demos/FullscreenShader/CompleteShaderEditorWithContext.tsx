@@ -4,8 +4,8 @@ import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from "reac
 import { CodeEditor } from "./CodeEditor";
 import { EditorContextProvider, useEditorContext } from "./EditorContextProvider";
 import { FullCanvasShader } from "./FullCanvasShader";
-import { TextureUploadUI } from "./TextureUploadUI";
 import defaultShader from "./shaders/fragmentShader.glsl";
+import { TextureUploadUI } from "./TextureUploadUI";
 
 type Props = {
   initialShader: string;

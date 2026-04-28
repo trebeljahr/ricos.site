@@ -34,11 +34,7 @@ export const InstancedTileSpawner = ({ geometry, material }: SingleHookProps) =>
   return <InstancedMesh />;
 };
 
-export const InstancedMeshSpawnerMultiMaterial = ({
-  modelPath,
-}: {
-  modelPath: string;
-}) => {
+export const InstancedMeshSpawnerMultiMaterial = ({ modelPath }: { modelPath: string }) => {
   const { InstancedMesh, addPositions, removePositions } = useInstancedMeshMultiMaterial({
     modelPath,
   });

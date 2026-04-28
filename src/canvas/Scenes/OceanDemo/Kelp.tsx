@@ -14,9 +14,9 @@ import {
   type ShaderMaterial,
   Vector2,
 } from "three";
+import { randFloat } from "three/src/math/MathUtils";
 import CustomShaderMaterial from "three-custom-shader-material";
 import type CustomShaderMaterialType from "three-custom-shader-material/vanilla";
-import { randFloat } from "three/src/math/MathUtils";
 import { scale } from "./OceanFloor";
 
 export function CustomKelpShaderMaterial() {

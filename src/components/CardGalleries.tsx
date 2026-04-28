@@ -1,6 +1,6 @@
 import { FaChevronLeft, FaChevronRight } from "@components/Icons";
 import { useWindowWidth } from "@react-hook/window-size";
-import { type FC, type WheelEventHandler, createRef, useEffect, useMemo, useState } from "react";
+import { createRef, type FC, useEffect, useMemo, useState, type WheelEventHandler } from "react";
 import type { CommonMetadata } from "src/@types";
 import { VerticalCard } from "./NiceCards";
 

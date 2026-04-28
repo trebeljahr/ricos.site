@@ -1,7 +1,7 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
+import { enemyQuery, playerQuery } from "@r3f/AI/ecs";
 import { NavmeshDebug, NavmeshEcs } from "@r3f/AI/NavmeshWithEcs";
 import { Agent } from "@r3f/AI/RigidBodyAgent";
-import { enemyQuery, playerQuery } from "@r3f/AI/ecs";
 import { MixamoEcctrlControllerWithAnimations } from "@r3f/Controllers/CustomEcctrlController/ControllerWithAnimations";
 import { RandomSkeletonWithRandomWeapons } from "@r3f/Dungeon/BuildingBlocks/SkeletonEnemy";
 
@@ -12,7 +12,7 @@ import { useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { useState } from "react";
 import { init as initRecast } from "recast-navigation";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { suspend } from "suspend-react";
 import { DoubleSide, Vector3 } from "three";
 import type { RayParameters } from "three-stdlib";
@@ -38,13 +38,7 @@ const defaultSeoInfo = {
   imageAlt: "a 3rd person character fighting a skeleton in a 3D scene",
 };
 
-const SingleLightningStrike = ({
-  source,
-  target,
-}: {
-  source: Vector3;
-  target: Vector3;
-}) => {
+const SingleLightningStrike = ({ source, target }: { source: Vector3; target: Vector3 }) => {
   const rayParams: RayParameters = {
     sourceOffset: source,
     destOffset: target,

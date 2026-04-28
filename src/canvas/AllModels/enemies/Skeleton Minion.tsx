@@ -1,8 +1,8 @@
 import { useGenericAnimationController } from "@r3f/Controllers/GenericAnimationController";
 import { CommonActions } from "@r3f/Dungeon/BuildingBlocks/CommonEnemy";
 import {
-  type SkeletonEnemyProps,
   mapCommonActionToSkeletonAction,
+  type SkeletonEnemyProps,
 } from "@r3f/Dungeon/BuildingBlocks/SkeletonEnemy";
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";

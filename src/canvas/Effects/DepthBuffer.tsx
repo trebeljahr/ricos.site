@@ -1,4 +1,4 @@
-import { type Node, extend, useFrame, useThree } from "@react-three/fiber";
+import { extend, type Node, useFrame, useThree } from "@react-three/fiber";
 import vertexShader from "@shaders/depth2.vert";
 import fragmentShader from "@shaders/sampleDepthBuffer.frag";
 import { useEffect, useMemo, useRef } from "react";
@@ -58,7 +58,7 @@ export const DepthBufferEffect = () => {
   }, 1);
 
   return (
-    // @ts-ignore: next-line
+    // @ts-expect-error: next-line
     <effectComposer ref={composer} args={[gl]}>
       {/* <renderPass attach='passes' scene={scene} camera={camera} /> */}
       {/* @ts-ignore: next-line */}

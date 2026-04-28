@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import { type PropsWithChildren, createContext, useContext, useEffect, useRef } from "react";
+import { createContext, type PropsWithChildren, useContext, useEffect, useRef } from "react";
 
 const defaultPointerState = {
   deltaTemp: { x: 0, y: 0 },

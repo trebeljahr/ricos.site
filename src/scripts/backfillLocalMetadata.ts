@@ -16,8 +16,7 @@
 import "dotenv/config";
 import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
-import { relative } from "node:path";
+import { relative, resolve } from "node:path";
 import { cwd } from "node:process";
 import chokidar from "chokidar";
 import sharp from "sharp";
@@ -75,9 +74,7 @@ async function main() {
     return;
   }
   if (!existsSync(ASSETS_ROOT)) {
-    console.log(
-      `backfillLocalMetadata: skipping — ${ASSETS_ROOT} not present.`,
-    );
+    console.log(`backfillLocalMetadata: skipping — ${ASSETS_ROOT} not present.`);
     return;
   }
 

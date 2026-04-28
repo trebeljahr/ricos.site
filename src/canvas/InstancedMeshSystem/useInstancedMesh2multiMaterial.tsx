@@ -1,5 +1,5 @@
 import { useGLTF } from "@react-three/drei";
-import { type Object3DNode, extend } from "@react-three/fiber";
+import { extend, type Object3DNode } from "@react-three/fiber";
 import { InstancedMesh2 } from "@three.ez/instanced-mesh";
 import type { GLTFResult } from "src/@types";
 import { Mesh, Object3D, Vector3 } from "three";

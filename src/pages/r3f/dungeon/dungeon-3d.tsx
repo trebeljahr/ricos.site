@@ -1,6 +1,4 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
-
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import {
   Arches,
@@ -14,9 +12,9 @@ import {
 import { DungeonMeshGenerator, MeshType } from "@r3f/Dungeon/Generator3D/ConvertToMesh";
 import { DungeonGenerator3D } from "@r3f/Dungeon/Generator3D/Generator";
 import { CellType3D, type Vector3, Vector3Int } from "@r3f/Dungeon/Generator3D/Types";
-
 import { Bloom, EffectComposer, ToneMapping } from "@react-three/postprocessing";
 import { useMemo } from "react";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 const RenderDungeon = ({ seed }: { seed?: number }) => {
   const { grid3D, renderPass } = useMemo(() => {

@@ -26,11 +26,7 @@ void main() {
 }
 `;
 
-export function SideBySideShaderEditor({
-  initialCode = defaultShader,
-}: {
-  initialCode: string;
-}) {
+export function SideBySideShaderEditor({ initialCode = defaultShader }: { initialCode: string }) {
   const [value, setValue] = useState(initialCode);
   const onChange = useCallback((val: string) => {
     setValue(val);

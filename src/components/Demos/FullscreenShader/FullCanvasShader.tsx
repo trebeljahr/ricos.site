@@ -1,9 +1,8 @@
+import { SceneWithLoadingState } from "@components/dom/ThreeFiberLayout";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import { type ShaderMaterial, type Texture, Vector2, Vector3, Vector4 } from "three";
 import { useEditorContext } from "./EditorContextProvider";
-
-import { SceneWithLoadingState } from "@components/dom/ThreeFiberLayout";
 import shadertoyDefinitions from "./shaders/shadertoyDefinitions.glsl";
 import vertexShader from "./shaders/vertexShader.glsl";
 

@@ -1,5 +1,5 @@
 import { useFBO } from "@react-three/drei";
-import { type Object3DNode, createPortal, extend, useFrame } from "@react-three/fiber";
+import { createPortal, extend, type Object3DNode, useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import {
   AdditiveBlending,
@@ -12,14 +12,11 @@ import {
   Scene,
   type ShaderMaterial,
 } from "three";
-
+import { SimulationMaterial } from "./SimulationMaterial";
 import fragmentShader from "./shaders/shader.frag";
 import vertexShader from "./shaders/shader.vert";
-
 import simulationFragmentShader from "./shaders/simulation.frag";
 import simulationVertexShader from "./shaders/simulation.vert";
-
-import { SimulationMaterial } from "./SimulationMaterial";
 
 extend({ SimulationMaterial: SimulationMaterial });
 

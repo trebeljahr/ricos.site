@@ -27,11 +27,7 @@ export const RicosSiteBanner = () => {
   );
 };
 
-export function TailwindNavbar({
-  withProgressBar = false,
-}: {
-  withProgressBar?: boolean;
-} = {}) {
+export function TailwindNavbar({ withProgressBar = false }: { withProgressBar?: boolean } = {}) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 

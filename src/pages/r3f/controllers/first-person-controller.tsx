@@ -1,10 +1,9 @@
-import { FirstPersonController } from "src/canvas/Controllers/FirstPersonController";
-
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { Obstacles } from "@r3f/Helpers/Obstacles";
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { FirstPersonController } from "src/canvas/Controllers/FirstPersonController";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "First Person Controller",

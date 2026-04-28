@@ -2,7 +2,7 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { OrbitControls, Stage, useFBX } from "@react-three/drei";
 import { useControls } from "leva";
 import { useRef } from "react";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import type { Mesh } from "three";
 
 // Dynamically import components

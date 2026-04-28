@@ -21,11 +21,7 @@ type GLTFResult = GLTF & {
   };
 };
 
-export function InstancedWillowDeadSnow1({
-  positions,
-}: {
-  positions: Vector3[];
-}) {
+export function InstancedWillowDeadSnow1({ positions }: { positions: Vector3[] }) {
   const meshMaterialCombos: MeshMaterialCombos = [
     ["Willow_Dead_Snow_1_1", "Wood"],
     ["Willow_Dead_Snow_1_2", "Snow"],

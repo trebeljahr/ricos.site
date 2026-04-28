@@ -7,8 +7,8 @@ import {
   Stairs_Modular,
   Stairs_SideCover,
   Stairs_SideCoverWall,
-  WallCover_Modular,
   Wall_Modular,
+  WallCover_Modular,
 } from "@r3f/AllModels/modular_dungeon_pack_1";
 import type { GroupProps } from "@react-three/fiber";
 

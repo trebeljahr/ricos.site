@@ -15,8 +15,7 @@
  */
 import "dotenv/config";
 import { type Dirent, statSync } from "node:fs";
-import { readFile, writeFile } from "node:fs/promises";
-import { mkdir, rm } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, extname, join } from "node:path";
 import { cwd } from "node:process";
 import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";

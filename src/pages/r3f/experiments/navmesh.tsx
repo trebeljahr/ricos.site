@@ -5,7 +5,7 @@ import { useThree } from "@react-three/fiber";
 import { DebugDrawer, threeToSoloNavMesh } from "@recast-navigation/three";
 import { useEffect } from "react";
 import { init } from "recast-navigation";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { Mesh } from "three";
 
 const NavmeshExample = () => {

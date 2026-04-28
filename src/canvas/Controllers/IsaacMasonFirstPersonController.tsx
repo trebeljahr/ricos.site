@@ -373,20 +373,18 @@ export const Player = (props: ThreeElements["group"]) => {
 
 export function FirstPersonControllerWithWeapons() {
   return (
-    <>
-      <KeyboardControls
-        map={[
-          { name: "forward", keys: ["ArrowUp", "w", "W"] },
-          { name: "backward", keys: ["ArrowDown", "s", "S"] },
-          { name: "left", keys: ["ArrowLeft", "a", "A"] },
-          { name: "right", keys: ["ArrowRight", "d", "D"] },
-          { name: "jump", keys: ["Space"] },
-          { name: "sprint", keys: ["Shift"] },
-        ]}
-      >
-        <Player position={[0, 50, -10]} />
-        <PointerLockControls makeDefault selector={"canvas"} />
-      </KeyboardControls>
-    </>
+    <KeyboardControls
+      map={[
+        { name: "forward", keys: ["ArrowUp", "w", "W"] },
+        { name: "backward", keys: ["ArrowDown", "s", "S"] },
+        { name: "left", keys: ["ArrowLeft", "a", "A"] },
+        { name: "right", keys: ["ArrowRight", "d", "D"] },
+        { name: "jump", keys: ["Space"] },
+        { name: "sprint", keys: ["Shift"] },
+      ]}
+    >
+      <Player position={[0, 50, -10]} />
+      <PointerLockControls makeDefault selector={"canvas"} />
+    </KeyboardControls>
   );
 }

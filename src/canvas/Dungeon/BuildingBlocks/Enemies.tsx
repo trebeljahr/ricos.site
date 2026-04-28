@@ -18,7 +18,7 @@ import { Slime } from "@r3f/AllModels/enemies/Slime Enemy";
 import { useControls } from "leva";
 import { useMemo } from "react";
 import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
-import { WeaponTypes, getRandomWeaponType } from "../Enemies/Weapons";
+import { getRandomWeaponType, WeaponTypes } from "../Enemies/Weapons";
 import { CommonActions } from "./CommonEnemy";
 import { SkeletonTypes, SkeletonWithWeapons } from "./SkeletonEnemy";
 

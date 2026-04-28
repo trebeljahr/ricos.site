@@ -6,7 +6,7 @@ import { physicsDebug, tileSize } from "src/canvas/ChunkGenerationSystem/config"
 import { KeyboardControlsProvider } from "src/canvas/Controllers/KeyboardControls";
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { InstancedTreesWithMultiMaterial } from "src/canvas/InstancedMeshSystem/InstancedRocks";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "A test of the InstancedMesh2 Library",

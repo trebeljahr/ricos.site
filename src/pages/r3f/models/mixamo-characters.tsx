@@ -3,7 +3,7 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { OrbitControls, Stage } from "@react-three/drei";
 
 import dynamic from "next/dynamic";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 const DynamicCharacter = dynamic(() => import("@r3f/Characters/Character"), {
   ssr: false,

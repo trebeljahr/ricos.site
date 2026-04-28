@@ -3,7 +3,7 @@ import formData from "form-data";
 import Mailgun from "mailgun.js";
 import type { CreateUpdateMailListMembers } from "mailgun.js/interfaces/mailListMembers";
 
-// @ts-ignore:next-line
+// @ts-expect-error:next-line
 const mailgun = new Mailgun(formData);
 
 const DOMAIN = "newsletter.trebeljahr.com";

@@ -1,7 +1,9 @@
 @import "tailwindcss";
 @plugin '@tailwindcss/typography';
 
-@variant dark (&:where(.dark, .dark *));
+@variant dark
+(
+&:where(.dark, .dark *));
 
 @theme {
   --breakpoint-xs: 320px;
@@ -63,7 +65,7 @@ a {
 }
 
 body:has(.popup) {
-  overflow: hidden !important;
+  overflow: hidden;
 }
 
 .prose p {
@@ -102,7 +104,7 @@ figure[data-rehype-pretty-code-figure] {
 }
 
 .rehype-code-title {
-  margin: 32px 0 -1px 0 !important;
+  margin: 32px 0 -1px 0;
   width: fit-content;
   background: #e8e8e8;
   color: #000;
@@ -221,7 +223,7 @@ code[data-line-numbers-max-digits="4"] > [data-line]::before {
 
 pre {
   overflow-x: auto;
-  padding: 0.5rem 0.5rem !important;
+  padding: 0.5rem 0.5rem;
 }
 
 pre [data-line] {
@@ -324,6 +326,6 @@ code {
 }
 
 [data-site-search] * {
-  list-style: none !important;
-  margin-block: 0 !important;
+  list-style: none;
+  margin-block: 0;
 }

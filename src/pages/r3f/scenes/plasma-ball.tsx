@@ -1,9 +1,8 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
-
 import { PlasmaBall } from "@r3f/Scenes/PlasmaBall";
 import { OrbitControls, Stage } from "@react-three/drei";
 import { Bloom, EffectComposer, ToneMapping } from "@react-three/postprocessing";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Plasma Ball",

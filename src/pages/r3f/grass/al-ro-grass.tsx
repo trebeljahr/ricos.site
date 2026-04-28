@@ -4,7 +4,7 @@ import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreative
 import { AllRoGrass } from "@r3f/Scenes/Grass/AllRoGrass/GrassPlane";
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { Vector3 } from "three";
 
 const defaultSeoInfo = {

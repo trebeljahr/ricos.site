@@ -6,7 +6,10 @@ import { DepthFormat, DepthTexture, UnsignedShortType } from "three";
 export function useDepthBuffer({
   size = 256,
   frames = Number.POSITIVE_INFINITY,
-}: { size?: number; frames?: number } = {}) {
+}: {
+  size?: number;
+  frames?: number;
+} = {}) {
   const dpr = useThree((state) => state.viewport.dpr);
   const { width, height } = useThree((state) => state.size);
   const w = size || width * dpr;

@@ -30,11 +30,7 @@ export enum SupportedAnimations {
   SwordL3 = "swordL3",
 }
 
-const useMixamoCharacter = ({
-  characterName,
-}: {
-  characterName: MixamoCharacterNames;
-}) => {
+const useMixamoCharacter = ({ characterName }: { characterName: MixamoCharacterNames }) => {
   const characterModel = useGLTF(`/3d-assets/glb/characters/${characterName}-transformed.glb`);
   useGenericAnimationController;
   return characterModel;
@@ -105,11 +101,7 @@ export function useMixamoAnimations() {
   return { animationsForHook };
 }
 
-export function CharacterWithAnimationsControlled({
-  characterName,
-}: {
-  characterName: string;
-}) {
+export function CharacterWithAnimationsControlled({ characterName }: { characterName: string }) {
   const characterModel = useGLTF(`/3d-assets/glb/characters/${characterName}-transformed.glb`);
 
   const { animationsForHook } = useMixamoAnimations();

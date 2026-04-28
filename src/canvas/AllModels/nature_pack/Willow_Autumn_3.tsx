@@ -21,11 +21,7 @@ type GLTFResult = GLTF & {
   };
 };
 
-export function InstancedWillowAutumn3({
-  positions,
-}: {
-  positions: Vector3[];
-}) {
+export function InstancedWillowAutumn3({ positions }: { positions: Vector3[] }) {
   const meshMaterialCombos: MeshMaterialCombos = [
     ["Willow_Autumn_3_1", "Wood"],
     ["Willow_Autumn_3_2", "Orange"],

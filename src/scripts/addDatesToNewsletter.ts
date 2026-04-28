@@ -8,7 +8,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const newslettersDir = path.join(__dirname, "..", "content", "Notes", "newsletters");
 const files = fs.readdirSync(newslettersDir).filter((file: string) => file.match(/^\d+\.md$/));
 
-files.sort((a: string, b: string) => Number.parseInt(a) - Number.parseInt(b));
+files.sort((a: string, b: string) => Number.parseInt(a, 10) - Number.parseInt(b, 10));
 
 const latestEditionNumber = 46;
 const today = new Date();

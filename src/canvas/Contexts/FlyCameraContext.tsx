@@ -1,6 +1,6 @@
 import { useFrame } from "@react-three/fiber";
-import { type ReadonlyQuat, quat2, vec3 } from "gl-matrix";
-import { type PropsWithChildren, createContext, useContext, useEffect, useRef } from "react";
+import { quat2, type ReadonlyQuat, vec3 } from "gl-matrix";
+import { createContext, type PropsWithChildren, useContext, useEffect, useRef } from "react";
 
 const defaultForward = vec3.fromValues(0, 0, 1);
 const defaultFlyCameraState = {

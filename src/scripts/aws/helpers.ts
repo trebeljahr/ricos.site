@@ -2,8 +2,11 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { HeadObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import mime from "mime";
-import { createS3Client } from "src/lib/aws";
-import { getAllStorageObjectKeys, getImageMetadataFromFileSystemOrAWS } from "src/lib/aws";
+import {
+  createS3Client,
+  getAllStorageObjectKeys,
+  getImageMetadataFromFileSystemOrAWS,
+} from "src/lib/aws";
 import { getWidthAndHeightFromFileSystem } from "src/scripts/aws/getWidthAndHeight";
 import { assetsMetadataFilePath, updateMetadataFile } from "../metadataJsonFileHelpers";
 
@@ -54,8 +57,8 @@ export async function uploadWithMetadata(
 
     await updateMetadataFile(assetsMetadataFilePath, {
       key: Key,
-      width: Number.parseInt(Metadata.width),
-      height: Number.parseInt(Metadata.height),
+      width: Number.parseInt(Metadata.width, 10),
+      height: Number.parseInt(Metadata.height, 10),
       aspectRatio: Number.parseFloat(Metadata.aspectRatio),
       existsInS3: true,
     });

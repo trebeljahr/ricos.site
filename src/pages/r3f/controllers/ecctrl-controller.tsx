@@ -5,7 +5,7 @@ import { Physics } from "@react-three/rapier";
 import { EcctrlController } from "src/canvas/Controllers/EcctrlController";
 
 import { Lights } from "src/canvas/Helpers/Lights";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "R3F Ecctrl Controller",

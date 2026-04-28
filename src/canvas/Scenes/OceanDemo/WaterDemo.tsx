@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 import { Color, type FogExp2, type Group, Vector3 } from "three";
 import type { Sky as SkyImpl } from "three-stdlib";
 import { SwimmingController } from "../../Controllers/SwimmingController";
-import { FishType, Fishes } from "../Particles/Fishes/Scene";
+import { Fishes, FishType } from "../Particles/Fishes/Scene";
 import { OceanSurface } from "./Ocean";
 import { Terrain } from "./OceanFloor";
 import { UI } from "./OxygenBar";

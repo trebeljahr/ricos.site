@@ -3,7 +3,7 @@ import equipSound from "@sounds/equip.mp3";
 import errorSound from "@sounds/error-short.mp3";
 import switchSound from "@sounds/switch.mp3";
 import trashSound from "@sounds/trash.mp3";
-import { type FC, type ReactNode, createContext, useCallback, useContext, useState } from "react";
+import { createContext, type FC, type ReactNode, useCallback, useContext, useState } from "react";
 import useSound from "use-sound";
 
 export type ItemType = "weapon" | "armor" | "consumable" | "material" | "quest";
@@ -142,7 +142,7 @@ export const InventoryProvider: FC<InventoryProviderProps> = ({
         return newItems;
       }
 
-      const freeIndex = prevItems.findIndex((item) => item === null);
+      const freeIndex = prevItems.indexOf(null);
       if (freeIndex === -1) {
         return prevItems;
       }
@@ -270,7 +270,7 @@ export const InventoryProvider: FC<InventoryProviderProps> = ({
       const mappedEquipmentSlot = slotMapping[slot];
 
       const itemInEquipmentSlot = equippedItems[mappedEquipmentSlot];
-      const inventorySlot = indexToUnequipTo ?? items.findIndex((item) => item === null);
+      const inventorySlot = indexToUnequipTo ?? items.indexOf(null);
       const noItemInInventorySlot = items[inventorySlot] === null;
       const canMoveItem = itemInEquipmentSlot !== null && noItemInInventorySlot;
 

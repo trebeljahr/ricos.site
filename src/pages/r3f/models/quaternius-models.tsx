@@ -1,17 +1,16 @@
+import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import * as animals from "@r3f/AllModels/animals_pack";
 import * as dinosaurs from "@r3f/AllModels/dinosaurs_pack";
 import * as natureAssets from "@r3f/AllModels/nature_pack";
 import * as simpleNatureAssets from "@r3f/AllModels/simple_nature_pack";
+import { Plane, Text } from "@react-three/drei";
 import { type GroupProps, useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Leva } from "leva";
+import { type ComponentType, type PropsWithChildren, useRef } from "react";
 import { debug, physicsDebug, tileSize } from "src/canvas/ChunkGenerationSystem/config";
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
-
-import { In, ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import { Plane, Text } from "@react-three/drei";
-import { type ComponentType, type PropsWithChildren, useRef } from "react";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { DoubleSide } from "three";
 
 const allNatureAssets = {

@@ -1,10 +1,6 @@
 import { type ReactElement, useEffect, useState } from "react";
 
-export function useScrollVisibility({
-  howFarDown = 50,
-}: {
-  howFarDown: number;
-}) {
+export function useScrollVisibility({ howFarDown = 50 }: { howFarDown: number }) {
   const [visible, setVisible] = useState(false);
   const [hasTriggered, setHasTriggered] = useState(false);
 

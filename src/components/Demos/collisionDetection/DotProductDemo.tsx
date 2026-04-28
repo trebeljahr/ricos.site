@@ -1,7 +1,5 @@
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
 import { useEffect, useState } from "react";
-
-import { Vec2 } from "../../../lib/math/Vector";
 import {
   drawArrow,
   drawBackground,
@@ -11,6 +9,7 @@ import {
   niceGreen,
   toDegrees,
 } from "../../../lib/math/drawHelpers";
+import { Vec2 } from "../../../lib/math/Vector";
 
 export const DotProductDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

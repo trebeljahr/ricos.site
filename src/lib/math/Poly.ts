@@ -1,4 +1,3 @@
-import { Vec2 } from "./Vector";
 import {
   circle,
   drawBackground,
@@ -8,6 +7,7 @@ import {
   toRadians,
 } from "./drawHelpers";
 import type { Matrix } from "./matrix";
+import { Vec2 } from "./Vector";
 
 const randomBetween = (min: number, max: number) => {
   return min + Math.floor(Math.random() * (max - min + 1));

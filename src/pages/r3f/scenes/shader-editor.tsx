@@ -1,7 +1,7 @@
 import { CompleteShaderEditor } from "@components/Demos/FullscreenShader";
 import { NavbarR3F } from "@components/dom/NavbarR3F";
 import { SeoInfo } from "@components/dom/ThreeFiberLayout";
-import { type SeoInfo as SeoInfoType, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo as SeoInfoType } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Shader Editor",

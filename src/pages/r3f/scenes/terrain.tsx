@@ -3,11 +3,11 @@ import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreativeController";
 import { Physics } from "@react-three/rapier";
 import { Leva, useControls } from "leva";
-import { WorldManager } from "src/canvas/ChunkGenerationSystem/WorldManager";
 import { debug, physicsDebug, tileSize } from "src/canvas/ChunkGenerationSystem/config";
+import { WorldManager } from "src/canvas/ChunkGenerationSystem/WorldManager";
 import { RayCaster } from "src/canvas/Helpers/RayCaster";
 import { RigidBallSpawner } from "src/canvas/Helpers/RigidBall";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Terrain Demo",

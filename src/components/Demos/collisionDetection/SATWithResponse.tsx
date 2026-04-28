@@ -1,7 +1,5 @@
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
 import { useEffect, useState } from "react";
-
-import { Polygon } from "../../../lib/math/Poly";
 import {
   checkCollision,
   drawAllProjections,
@@ -12,6 +10,7 @@ import {
   starPoints,
   visualizeCollision,
 } from "../../../lib/math/drawHelpers";
+import { Polygon } from "../../../lib/math/Poly";
 export const SATWithResponse = ({
   drawProjections = true,
   changeColorOnCollision = true,

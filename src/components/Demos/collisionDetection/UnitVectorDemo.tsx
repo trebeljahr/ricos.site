@@ -1,8 +1,5 @@
 import { SimpleReactCanvasComponent } from "@components/SimpleReactCanvasComponent";
 import { useEffect, useState } from "react";
-
-import { makeBrighter } from "../../../lib/math/Poly";
-import { Vec2 } from "../../../lib/math/Vector";
 import {
   circle,
   drawArrow,
@@ -12,6 +9,8 @@ import {
   niceBlue,
   niceGreen,
 } from "../../../lib/math/drawHelpers";
+import { makeBrighter } from "../../../lib/math/Poly";
+import { Vec2 } from "../../../lib/math/Vector";
 
 export const UnitVectorDemo = () => {
   const [cnv, setCnv] = useState<HTMLCanvasElement | null>(null);

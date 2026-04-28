@@ -1,7 +1,7 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { Fishes } from "@r3f/Scenes/Particles/Fishes/Scene";
 import { OrbitControls, Stage } from "@react-three/drei";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { Vector3 } from "three";
 
 const defaultSeoInfo = {

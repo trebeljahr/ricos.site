@@ -1,6 +1,6 @@
 import { usePrevious } from "@hooks/usePrevious";
 import { useGLTF } from "@react-three/drei";
-import { type Object3DNode, extend, useThree } from "@react-three/fiber";
+import { extend, type Object3DNode, useThree } from "@react-three/fiber";
 import { InstancedMesh2 } from "@three.ez/instanced-mesh";
 import { nanoid } from "nanoid";
 import { useEffect, useMemo, useRef } from "react";

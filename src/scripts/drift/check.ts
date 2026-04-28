@@ -13,7 +13,7 @@ import "dotenv/config";
 import { cwd } from "node:process";
 import { listAllObjects } from "./lib/buckets";
 import { stripImageExt } from "./lib/hashing";
-import { LOCAL_ASSETS_ROOT, hashLocalImages, listLocalImages } from "./lib/localAssets";
+import { hashLocalImages, LOCAL_ASSETS_ROOT, listLocalImages } from "./lib/localAssets";
 import { DYNAMIC_PREFIXES, scanReferences } from "./lib/references";
 
 const SOURCE_BUCKET = "images.trebeljahr.com";

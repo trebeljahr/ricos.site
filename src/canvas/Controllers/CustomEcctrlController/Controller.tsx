@@ -6,10 +6,10 @@ import { useFrame } from "@react-three/fiber";
 import {
   CapsuleCollider,
   CylinderCollider,
+  quat,
   type RapierRigidBody,
   RigidBody,
   type RigidBodyProps,
-  quat,
   useRapier,
 } from "@react-three/rapier";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
@@ -235,7 +235,7 @@ const Ecctrl = ({
   };
   const mergedKeys = useMemo(
     () => Object.assign({}, defaultControllerKeys, controllerKeys),
-    [controllerKeys],
+    [controllerKeys, defaultControllerKeys],
   );
 
   const handleButtons = (buttons: readonly GamepadButton[]) => {

@@ -1,6 +1,6 @@
 import { useFrame } from "@react-three/fiber";
 import { quat2, vec3 } from "gl-matrix";
-import { type PropsWithChildren, createContext, useContext, useRef } from "react";
+import { createContext, type PropsWithChildren, useContext, useRef } from "react";
 import { useFlyCameraContext } from "./FlyCameraContext";
 import { useThirdPersonCameraContext } from "./ThirdPersonCameraContext";
 

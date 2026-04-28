@@ -2,7 +2,7 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { Physics } from "@react-three/rapier";
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { YukaSimulation } from "src/canvas/Scenes/Yuka/YukaExample";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "A simple game AI simulation in R3F using the Yuka library",

@@ -8,7 +8,7 @@ import { MinecraftSpectatorController } from "@r3f/Controllers/MinecraftCreative
 import { LightsAndFog } from "@r3f/Helpers/LightsAndFog";
 import { RigidBallSpawner } from "@r3f/Helpers/RigidBall";
 import { Physics } from "@react-three/rapier";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
   title: "Infinite Heightfield Demo with Physics",

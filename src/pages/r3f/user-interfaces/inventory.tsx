@@ -6,7 +6,7 @@ import {
 } from "@r3f/Dungeon/InventorySystem/GameInventoryContext";
 import { Inventory, InventoryToggleButton } from "@r3f/Dungeon/InventorySystem/GameInventoryUI";
 import { type FC, useCallback, useEffect, useMemo } from "react";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 // Example item generator
 const createItem = (

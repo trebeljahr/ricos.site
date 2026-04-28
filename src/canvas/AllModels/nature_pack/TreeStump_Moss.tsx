@@ -21,11 +21,7 @@ type GLTFResult = GLTF & {
   };
 };
 
-export function InstancedTreeStumpMoss({
-  positions,
-}: {
-  positions: Vector3[];
-}) {
+export function InstancedTreeStumpMoss({ positions }: { positions: Vector3[] }) {
   const meshMaterialCombos: MeshMaterialCombos = [
     ["TreeStump_Moss_1", "Wood"],
     ["TreeStump_Moss_2", "Green"],

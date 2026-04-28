@@ -2,7 +2,9 @@
 // React 19 moved JSX from global to the 'react' module.
 // This restores global access for gltfjsx-generated model files (390+ files).
 import type { JSX } from "react";
+
 export type { JSX };
+
 declare global {
   // biome-ignore lint/suspicious/noRedeclare: global type augmentation
   namespace JSX {

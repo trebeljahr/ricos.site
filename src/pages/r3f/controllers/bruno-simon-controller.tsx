@@ -3,7 +3,7 @@ import { ChunkProvider } from "@r3f/ChunkGenerationSystem/ChunkProvider";
 import { ChunkRenderer } from "@r3f/ChunkGenerationSystem/ChunkRenderer";
 import { BrunoSimonController } from "@r3f/Controllers/BrunoSimonController";
 
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { MeshStandardMaterial } from "three";
 
 const defaultSeoInfo = {

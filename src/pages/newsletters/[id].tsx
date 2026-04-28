@@ -153,12 +153,12 @@ export async function getStaticProps({ params }: Params) {
   const newsletter = newsletters.find(({ slugTitle }) => slugTitle === params.id);
   if (!newsletter) throw Error("Newsletter not found");
 
-  const number = Number.parseInt(String(newsletter.number));
+  const number = Number.parseInt(String(newsletter.number), 10);
   const next = number + 1;
   const prev = number - 1;
 
-  const nextPost = newsletters.find((nl) => Number.parseInt(String(nl.number)) === next);
-  const prevPost = newsletters.find((nl) => Number.parseInt(String(nl.number)) === prev);
+  const nextPost = newsletters.find((nl) => Number.parseInt(String(nl.number), 10) === next);
+  const prevPost = newsletters.find((nl) => Number.parseInt(String(nl.number), 10) === prev);
 
   const { toOnlyMetadata } = await import("src/lib/utils/toOnlyMetadata");
   const relatedNewsletters = getRelatedContent(newsletter, published, 3).map((nl: NewsletterType) =>

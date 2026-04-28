@@ -6,7 +6,7 @@ import pLimit from "p-limit";
 import { getImageMetadataFromS3 } from "../lib/aws";
 import { getWidthAndHeightFromFileSystem } from "./aws/getWidthAndHeight";
 import { listAllObjects } from "./drift/lib/buckets";
-import { type ImageMetadata, assetsMetadataFilePath } from "./metadataJsonFileHelpers";
+import { assetsMetadataFilePath, type ImageMetadata } from "./metadataJsonFileHelpers";
 
 const SOURCE_BUCKET = "images.trebeljahr.com";
 const LOCAL_ASSETS_ROOT = path.join(process.cwd(), "src", "content", "Notes");

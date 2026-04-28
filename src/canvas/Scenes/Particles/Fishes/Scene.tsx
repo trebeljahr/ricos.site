@@ -24,7 +24,7 @@ import {
 } from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import type CustomShaderMaterialType from "three-custom-shader-material/vanilla";
-import { type Variable, mergeBufferGeometries } from "three-stdlib";
+import { mergeBufferGeometries, type Variable } from "three-stdlib";
 import fishFragment from "./shaders/fishFrag.glsl";
 import fishVertex from "./shaders/fishVert.glsl";
 import positionShader from "./shaders/positionFrag.glsl";

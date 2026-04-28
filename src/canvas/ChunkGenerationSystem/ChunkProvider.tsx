@@ -1,16 +1,15 @@
 import type { TerrainData } from "@r3f/my-workers/terrainWorker";
 import { useFrame, useThree } from "@react-three/fiber";
 import {
-  type PropsWithChildren,
   createContext,
   memo,
+  type PropsWithChildren,
   useContext,
   useEffect,
   useRef,
   useState,
 } from "react";
 import { BufferGeometry, Float32BufferAttribute, Vector3 } from "three";
-import { DebugTile } from "./DebugTile";
 import {
   debug,
   firstLodLevelDistance,
@@ -21,6 +20,7 @@ import {
   tileSize,
   tilesDistance,
 } from "./config";
+import { DebugTile } from "./DebugTile";
 
 const tempVec = new Vector3();
 

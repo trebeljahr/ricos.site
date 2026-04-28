@@ -22,7 +22,7 @@ import {
 } from "src/lib/getImgWidthAndHeightDuringBuild";
 import type { Node, Pluggable } from "unified/lib";
 import { SKIP, visit } from "unist-util-visit";
-import { type ZodMeta, defineConfig, s } from "velite";
+import { defineConfig, s, type ZodMeta } from "velite";
 import seoMetadata from "./src/content/seo-metadata.json";
 
 declare module "mdast" {
@@ -302,11 +302,8 @@ const commonFields = {
       if (usingDefault) {
         // Surface entries that fall through to the shared default cover so
         // they're easy to find and replace with something specific.
-        const where =
-          (ctx as { meta?: { path?: string } }).meta?.path ?? "(unknown source)";
-        console.warn(
-          `[velite] no cover image set — using default Midjourney cover for: ${where}`,
-        );
+        const where = (ctx as { meta?: { path?: string } }).meta?.path ?? "(unknown source)";
+        console.warn(`[velite] no cover image set — using default Midjourney cover for: ${where}`);
       }
       const { width, height } = await getImgWidthAndHeightDuringBuild(
         usingDefault ? defaultCover : cover.src,

@@ -4,6 +4,7 @@ import { OrbitControls, Plane, Stage } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { useControls } from "leva";
 import { useEffect, useRef } from "react";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import {
   BrownBarkMaterial,
   ForestFloorMaterial1,
@@ -17,7 +18,6 @@ import {
   RocksGroundMaterial2,
   SnowMaterial,
 } from "src/Materials/TextureMaterials";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
 import { BufferAttribute, type Mesh, Vector2 } from "three";
 
 const Scene = () => {

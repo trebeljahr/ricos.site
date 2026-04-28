@@ -1,4 +1,4 @@
-import { type Object3DNode, extend, useThree } from "@react-three/fiber";
+import { extend, type Object3DNode, useThree } from "@react-three/fiber";
 import { InstancedMesh2 } from "@three.ez/instanced-mesh";
 import { useEffect, useRef } from "react";
 import { type BufferGeometry, type Material, Object3D, type Vector3 } from "three";

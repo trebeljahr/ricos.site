@@ -5,7 +5,7 @@ import { OrbitControls, Stage } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { Bloom, EffectComposer, ToneMapping } from "@react-three/postprocessing";
 import { useRef } from "react";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { DoubleSide, Vector3 } from "three";
 
 const defaultSeoInfo = {

@@ -9,7 +9,7 @@ import { useMemo, useRef, useState } from "react";
 import { pickRandomFromArray } from "src/lib/utils/randomFromArray";
 import type { AnimationClip, Group, Mesh, MeshStandardMaterial, SkinnedMesh, Vector3 } from "three";
 import type { GLTF } from "three-stdlib";
-import { WeaponTypes, getRandomWeaponType, useWeapon } from "../Enemies/Weapons";
+import { getRandomWeaponType, useWeapon, WeaponTypes } from "../Enemies/Weapons";
 import { CommonActions } from "./CommonEnemy";
 
 export type SkeletonEnemyProps = GroupProps & {

@@ -14,15 +14,13 @@ import {
   Sword_WallMount,
   Trap_empty,
   Trap_spikes,
-  WallCover_Modular,
   Wall_Modular,
+  WallCover_Modular,
   Woodfire,
 } from "@r3f/AllModels/modular_dungeon_pack_1";
 import { debug } from "@r3f/ChunkGenerationSystem/config";
 import { HealthContextProvider } from "@r3f/Contexts/HealthbarContext";
 import { MixamoEcctrlControllerWithAnimations } from "@r3f/Controllers/CustomEcctrlController/ControllerWithAnimations";
-import { type SeoInfo as SeoInfoType, getSeoInfo } from "src/lib/getSeoInfo";
-
 import { BackgroundMusicLoop } from "@r3f/Dungeon/BuildingBlocks/BackgroundMusic";
 import { Enemies } from "@r3f/Dungeon/BuildingBlocks/Enemies";
 import { SpikeTrap } from "@r3f/Dungeon/BuildingBlocks/SpikeTrap";
@@ -32,13 +30,13 @@ import { Inventory } from "@r3f/Dungeon/InventorySystem/GameInventoryUI";
 import { RandomArmorSpawner } from "@r3f/Dungeon/ItemSpawners/ArmorSpawner";
 import { RandomPotionSpawner } from "@r3f/Dungeon/ItemSpawners/PotionSpawner";
 import { RandomWeaponsSpawner } from "@r3f/Dungeon/ItemSpawners/WeaponSpawner";
-
 import useShadowHelper from "@r3f/Helpers/OverheadLights";
 import { Box, Sky } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import { LevaPanel } from "leva";
 import { Suspense, useEffect, useRef } from "react";
+import { getSeoInfo, type SeoInfo as SeoInfoType } from "src/lib/getSeoInfo";
 import { type DirectionalLight, Mesh, PCFSoftShadowMap } from "three";
 
 const CanvasContent = () => {

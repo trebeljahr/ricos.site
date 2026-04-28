@@ -2,11 +2,7 @@ import { tileSize, tilesDistance } from "@r3f/ChunkGenerationSystem/config";
 import type { ColorRepresentation } from "three";
 import { OverheadLights } from "./OverheadLights";
 
-export const LightsAndFog = ({
-  skyColor,
-}: {
-  skyColor: ColorRepresentation;
-}) => {
+export const LightsAndFog = ({ skyColor }: { skyColor: ColorRepresentation }) => {
   return (
     <>
       <color attach="background" args={[skyColor]} />

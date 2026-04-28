@@ -72,7 +72,7 @@ async function main() {
     if (node.type === "element" && node.tagName === "img") {
       node.properties = {
         ...node.properties,
-        alt: node?.properties?.alt?.replace(/\/[^\/]*\//g, "") || "",
+        alt: node?.properties?.alt?.replace(/\/[^/]*\//g, "") || "",
         width: "600",
         height: "",
         border: "0",

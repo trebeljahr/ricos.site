@@ -5,13 +5,7 @@ import { useEffect } from "react";
 import type { GLTFResult, XYZ } from "src/@types";
 import { Color, DynamicDrawUsage } from "three";
 
-function Particles({
-  positions,
-  colors,
-}: {
-  positions: Float32Array;
-  colors: Float32Array;
-}) {
+function Particles({ positions, colors }: { positions: Float32Array; colors: Float32Array }) {
   return (
     <points frustumCulled={false}>
       <bufferGeometry>
@@ -36,13 +30,7 @@ function Particles({
   );
 }
 
-export const Railings = ({
-  positions,
-  rotations,
-}: {
-  positions: XYZ[];
-  rotations: XYZ[];
-}) => {
+export const Railings = ({ positions, rotations }: { positions: XYZ[]; rotations: XYZ[] }) => {
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Fence_Straight_Modular.glb",
     defaultScale: 0.5,
@@ -74,13 +62,7 @@ export const SideWallStairs = ({
   return <InstancedMesh />;
 };
 
-export const Torches = ({
-  positions,
-  rotations,
-}: {
-  positions: XYZ[];
-  rotations: XYZ[];
-}) => {
+export const Torches = ({ positions, rotations }: { positions: XYZ[]; rotations: XYZ[] }) => {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/modular_dungeon_1/Torch.glb",
   ) as unknown as unknown as unknown as GLTFResult;
@@ -153,13 +135,7 @@ export const Torches = ({
   );
 };
 
-export const Stairs = ({
-  positions,
-  rotations,
-}: {
-  positions: XYZ[];
-  rotations: XYZ[];
-}) => {
+export const Stairs = ({ positions, rotations }: { positions: XYZ[]; rotations: XYZ[] }) => {
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Stairs_Modular.glb",
     defaultScale: 0.5,
@@ -172,13 +148,7 @@ export const Stairs = ({
   return <InstancedMesh />;
 };
 
-export const Coins = ({
-  positions,
-  rotations,
-}: {
-  positions: XYZ[];
-  rotations: XYZ[];
-}) => {
+export const Coins = ({ positions, rotations }: { positions: XYZ[]; rotations: XYZ[] }) => {
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Coin_Pile.glb",
     defaultScale: 5,
@@ -191,13 +161,7 @@ export const Coins = ({
   return <InstancedMesh />;
 };
 
-export const Floors = ({
-  positions,
-  rotations,
-}: {
-  positions: XYZ[];
-  rotations: XYZ[];
-}) => {
+export const Floors = ({ positions, rotations }: { positions: XYZ[]; rotations: XYZ[] }) => {
   const { nodes, materials } = useGLTF(
     "/3d-assets/glb/modular_dungeon_1/Floor_Modular.glb",
   ) as unknown as unknown as unknown as GLTFResult;
@@ -215,13 +179,7 @@ export const Floors = ({
   return <InstancedMesh />;
 };
 
-export const Walls = ({
-  positions,
-  rotations,
-}: {
-  positions: XYZ[];
-  rotations: XYZ[];
-}) => {
+export const Walls = ({ positions, rotations }: { positions: XYZ[]; rotations: XYZ[] }) => {
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Wall_Modular.glb",
     defaultScale: 0.5,
@@ -234,13 +192,7 @@ export const Walls = ({
   return <InstancedMesh />;
 };
 
-export const Arches = ({
-  positions,
-  rotations,
-}: {
-  positions: XYZ[];
-  rotations: XYZ[];
-}) => {
+export const Arches = ({ positions, rotations }: { positions: XYZ[]; rotations: XYZ[] }) => {
   const { InstancedMesh, addPositions } = useInstancedMeshMultiMaterial({
     modelPath: "/3d-assets/glb/modular_dungeon_1/Arch.glb",
     defaultScale: 0.25,

@@ -196,7 +196,11 @@ export const Inventory: FC = () => {
 
           <div className="flex items-center">
             <div className="text-gray-300 text-sm">Weight: {getTotalWeight().toFixed(1)} / 100</div>
-            <button type="button" onClick={closeInventory} className="text-gray-400 hover:text-white">
+            <button
+              type="button"
+              onClick={closeInventory}
+              className="text-gray-400 hover:text-white"
+            >
               <svg aria-hidden="true" viewBox="0 0 24 24" className="w-6 h-6">
                 <path
                   fill="currentColor"

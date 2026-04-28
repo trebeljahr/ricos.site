@@ -321,7 +321,7 @@ function multiplyQuaternions(q1: Vector4, q2: Vector4) {
   return new Vector4(x, y, z, w);
 }
 
-function getYPosition(x: number, z: number) {
+function _getYPosition(x: number, z: number) {
   let y = 2 * noise2D(x / 50, z / 50);
   y += 4 * noise2D(x / 100, z / 100);
   y += 0.2 * noise2D(x / 10, z / 10);

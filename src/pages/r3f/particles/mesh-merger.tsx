@@ -1,7 +1,7 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { MeshMerger } from "@r3f/Scenes/Particles/MeshMerger/Scene";
 import { OrbitControls } from "@react-three/drei";
-import { type SeoInfo, getSeoInfo } from "src/lib/getSeoInfo";
+import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { Vector3 } from "three";
 
 const defaultSeoInfo = {

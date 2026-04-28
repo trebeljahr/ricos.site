@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { getRandomInInterval } from "src/lib/utils/misc";
 import { BufferAttribute, BufferGeometry, Vector3 } from "three";
 import { LightGreenPlaneMaterial } from "../GroundPlaneMaterials";
-import { StylizedGrassMaterial, type grassUniforms } from "./JamesSmythGrassMaterial";
+import { type grassUniforms, StylizedGrassMaterial } from "./JamesSmythGrassMaterial";
 
 export const SingleStylizedGrassPlane = ({
   planeSize = 30,

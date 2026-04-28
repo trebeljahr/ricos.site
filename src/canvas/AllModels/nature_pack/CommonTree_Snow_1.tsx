@@ -23,11 +23,7 @@ type GLTFResult = GLTF & {
   };
 };
 
-export function InstancedCommonTreeSnow1({
-  positions,
-}: {
-  positions: Vector3[];
-}) {
+export function InstancedCommonTreeSnow1({ positions }: { positions: Vector3[] }) {
   const meshMaterialCombos: MeshMaterialCombos = [
     ["CommonTree_Snow_1_1", "Wood"],
     ["CommonTree_Snow_1_2", "Green"],

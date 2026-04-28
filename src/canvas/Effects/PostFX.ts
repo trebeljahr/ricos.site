@@ -4,12 +4,12 @@ import {
   type Camera,
   Mesh,
   OrthographicCamera,
-  RGBFormat,
   RawShaderMaterial,
+  RGBFormat,
   Scene,
   Vector2,
-  WebGLRenderTarget,
   type WebGLRenderer,
+  WebGLRenderTarget,
 } from "three";
 
 export default class PostFX {

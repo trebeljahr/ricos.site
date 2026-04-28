@@ -1,6 +1,6 @@
+import { Matrix } from "./matrix";
 import { Polygon } from "./Poly";
 import { Vec2 } from "./Vector";
-import { Matrix } from "./matrix";
 
 export const toDegrees = (radians: number) => (radians * 180) / Math.PI;
 export const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
@@ -317,8 +317,8 @@ export function instrument(
       if (insidePoly(mousePos, poly.vertices)) {
         state.draggedPoly = poly;
         for (const poly of polys) {
-      poly.selected = false;
-    }
+          poly.selected = false;
+        }
 
         poly.selected = true;
         return;

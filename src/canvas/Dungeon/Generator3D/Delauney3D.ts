@@ -328,4 +328,4 @@ class DelaunayEdge {
   }
 }
 
-export { Delaunay3D, DelaunayTetrahedron, DelaunayTriangle, DelaunayEdge, Matrix4x4 };
+export { Delaunay3D, DelaunayEdge, DelaunayTetrahedron, DelaunayTriangle, Matrix4x4 };

@@ -55,11 +55,7 @@ export const CustomLightBox = ({
   );
 };
 
-export const useCustomLightbox = ({
-  photos,
-}: {
-  photos: (ImageProps & { id: string })[];
-}) => {
+export const useCustomLightbox = ({ photos }: { photos: (ImageProps & { id: string })[] }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(Number.POSITIVE_INFINITY);
 

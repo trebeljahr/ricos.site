@@ -37,7 +37,7 @@ export const BlogLayout = ({
   morePosts,
   backlinks,
   post: {
-    excerpt,
+    _excerpt,
     title,
     subtitle,
     date,
@@ -49,7 +49,7 @@ export const BlogLayout = ({
     seoKeywords,
     seoOgImage,
     seoOgImageAlt,
-    metadata: { readingTime, wordCount },
+    metadata: { readingTime, _wordCount },
   },
 }: Props) => {
   const url = `posts/${slug}`;

@@ -31,7 +31,7 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
       keywords: seo.keywords,
     }),
   };
-  const { height: y } = getHeight(0, 0);
+  const { height: _y } = getHeight(0, 0);
   return (
     <ThreeFiberLayout seoInfo={seoInfo} camera={{ position: [100, 50, 100] }}>
       <Physics debug={physicsDebug}>

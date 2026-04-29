@@ -7,7 +7,7 @@ type Props = {
   cover: CommonMetadata["cover"];
 };
 
-export const PostCoverImage = ({ cover, title, priority = false }: Props) => {
+export const PostCoverImage = ({ cover, _title, priority = false }: Props) => {
   return (
     <ImageWithLoader
       src={cover.src}

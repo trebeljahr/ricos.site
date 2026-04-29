@@ -71,7 +71,7 @@ const NewsletterModalPopup = ({ howFarDown = 50 }: { howFarDown?: number }) => {
                       <p className="mb-4">No spam. No noise. Just a postcard.</p>
                     </>
                   }
-                  link={<></>}
+                  link={null}
                 />
                 <button
                   type="button"

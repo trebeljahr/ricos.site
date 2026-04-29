@@ -7,7 +7,7 @@ import { type SingleHookProps, useInstancedMesh2 } from "./useInstancedMesh2";
 import { useInstancedMeshMultiMaterial } from "./useInstancedMesh2multiMaterial";
 
 export const InstancedTileSpawner = ({ geometry, material }: SingleHookProps) => {
-  const { InstancedMesh, addPositions, removePositions, ref } = useInstancedMesh2({
+  const { InstancedMesh, addPositions, removePositions, _ref } = useInstancedMesh2({
     geometry,
     material,
   });

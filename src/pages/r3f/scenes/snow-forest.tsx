@@ -17,7 +17,7 @@ import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 const ChunkRenderer = () => {
   const chunks = useChunkContext();
 
-  const { camera } = useThree();
+  const { _camera } = useThree();
   return (
     <group>
       {Array.from(chunks).map(([_key, chunkData], index) => {

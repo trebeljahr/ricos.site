@@ -19,7 +19,7 @@ export const useFollowCam = ({
   camCollisionSpeedMult = 4,
   camListenerTarget = "domElement",
   // biome-ignore lint/correctness/noUnusedVariables: kept for future use
-  ...props
+  ..._props
 }: UseFollowCamProps = {}) => {
   const { scene, camera, gl } = useThree();
   // const { rapier, world } = useRapier();

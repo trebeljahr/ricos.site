@@ -36,7 +36,7 @@ interface LayoutProps extends TravelBlogProps {
 export const TravelBlogLayout = ({
   children,
   post: {
-    excerpt,
+    _excerpt,
     slug,
     cover,
     title,

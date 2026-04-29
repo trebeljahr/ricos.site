@@ -132,7 +132,7 @@ export const InstancedMesh2Group = ({
 export const Single = ({ positions, geo, material }: SingleInstanceProps) => {
   const prevPositions = usePrevious(positions);
 
-  const { InstancedMesh, addPositions, removePositions, ref } = useInstancedMesh2({
+  const { InstancedMesh, addPositions, removePositions, _ref } = useInstancedMesh2({
     material,
     geometry: geo,
   });

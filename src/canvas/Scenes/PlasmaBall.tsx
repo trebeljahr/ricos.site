@@ -99,7 +99,7 @@ export const PlasmaBall = () => {
     hoverPointRef.current = null;
   };
 
-  const jitterStrength = 0.025;
+  const jitterStrength = 0.08;
   const hoverLerp = 0.55;
   const snapDistance = 0.05;
 

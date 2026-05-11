@@ -104,13 +104,15 @@ export const PlasmaBall = () => {
   const dispersalDecayMs = 600;
   const hoverLerp = 0.55;
   const snapDistance = 0.05;
-  const contactSpread = 0.35;
+  const contactSpread = 0.09;
+  const contactWander = 0.04;
 
   const dispersalEndsAtRef = useRef(0);
 
   const centerDir = useMemo(() => new Vector3(), []);
   const tangent = useMemo(() => new Vector3(), []);
   const perRayTarget = useMemo(() => new Vector3(), []);
+  const wanderTarget = useMemo(() => new Vector3(), []);
 
   useFrame(() => {
     const hoverPoint = hoverPointRef.current;
@@ -123,6 +125,10 @@ export const PlasmaBall = () => {
         if (!dest) return;
         const offset = hoverOffsets[i];
         if (!offset) return;
+        // Wander each per-ray offset toward a fresh random direction so the
+        // patch keeps shimmering instead of being frozen.
+        wanderTarget.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+        offset.lerp(wanderTarget, contactWander);
         // Nudge centerDir by a per-ray tangent inside a small cone around the cursor.
         tangent.copy(offset).addScaledVector(centerDir, -offset.dot(centerDir));
         perRayTarget

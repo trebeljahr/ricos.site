@@ -102,19 +102,35 @@ export const PlasmaBall = () => {
   const jitterStrength = 0.08;
   const hoverLerp = 0.55;
   const snapDistance = 0.05;
+  const contactSpread = 0.35;
+
+  const centerDir = useMemo(() => new Vector3(), []);
+  const tangent = useMemo(() => new Vector3(), []);
+  const perRayTarget = useMemo(() => new Vector3(), []);
 
   useFrame(() => {
     const hoverPoint = hoverPointRef.current;
 
     if (hoverPoint) {
       wasHoveringRef.current = true;
+      centerDir.copy(hoverPoint).sub(plasmaOrigin).normalize();
       lightningRefs.current.forEach((thisRef, i) => {
         const dest = thisRef.rayParameters.destOffset;
         if (!dest) return;
-        if (dest.distanceTo(hoverPoint) < snapDistance) {
-          dest.copy(hoverPoint);
+        const offset = hoverOffsets[i];
+        if (!offset) return;
+        // Nudge centerDir by a per-ray tangent inside a small cone around the cursor.
+        tangent.copy(offset).addScaledVector(centerDir, -offset.dot(centerDir));
+        perRayTarget
+          .copy(centerDir)
+          .addScaledVector(tangent, contactSpread)
+          .normalize()
+          .multiplyScalar(sphereRadius)
+          .add(plasmaOrigin);
+        if (dest.distanceTo(perRayTarget) < snapDistance) {
+          dest.copy(perRayTarget);
         } else {
-          dest.lerp(hoverPoint, hoverLerp);
+          dest.lerp(perRayTarget, hoverLerp);
         }
         if (contactPointRefs.current[i]) {
           contactPointRefs.current[i].position.copy(dest);
@@ -173,17 +189,20 @@ export const PlasmaBall = () => {
     });
   });
 
-  const { contactPoints, targets } = useMemo(() => {
+  const { contactPoints, targets, hoverOffsets } = useMemo(() => {
     const contactPoints = [] as { phi: number; theta: number }[];
     const targets = [] as { phi: number; theta: number }[];
+    const hoverOffsets = [] as Vector3[];
     const numLightningRays = 30;
 
     for (let i = 0; i < numLightningRays; i++) {
       contactPoints.push(randomPointOnSphere());
       targets.push(randomPointOnSphere());
+      // Random unit direction, scaled by sqrt(random) to bias toward edge of unit disc.
+      hoverOffsets.push(new Vector3().randomDirection().multiplyScalar(Math.sqrt(Math.random())));
     }
 
-    return { contactPoints, targets };
+    return { contactPoints, targets, hoverOffsets };
   }, []);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually

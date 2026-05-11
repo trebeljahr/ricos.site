@@ -99,10 +99,14 @@ export const PlasmaBall = () => {
     hoverPointRef.current = null;
   };
 
-  const jitterStrength = 0.08;
+  const jitterStrength = 0.01;
+  const dispersalBoost = 0.12;
+  const dispersalDecayMs = 600;
   const hoverLerp = 0.55;
   const snapDistance = 0.05;
   const contactSpread = 0.35;
+
+  const dispersalEndsAtRef = useRef(0);
 
   const centerDir = useMemo(() => new Vector3(), []);
   const tangent = useMemo(() => new Vector3(), []);
@@ -145,6 +149,7 @@ export const PlasmaBall = () => {
 
     if (wasHoveringRef.current) {
       wasHoveringRef.current = false;
+      dispersalEndsAtRef.current = performance.now() + dispersalDecayMs;
       lightningRefs.current.forEach((thisRef, i) => {
         if (!thisRef.rayParameters.destOffset) return;
         if (!contactPoints[i]) return;
@@ -157,6 +162,10 @@ export const PlasmaBall = () => {
       });
     }
 
+    const remainingBoostMs = dispersalEndsAtRef.current - performance.now();
+    const boost = remainingBoostMs > 0 ? remainingBoostMs / dispersalDecayMs : 0;
+    const effectiveJitter = jitterStrength + boost * (dispersalBoost - jitterStrength);
+
     lightningRefs.current.forEach((thisRef, i) => {
       if (!thisRef.rayParameters.destOffset) return;
       if (!targets[i]) return;
@@ -166,8 +175,8 @@ export const PlasmaBall = () => {
       const directionPhi = targets[i].phi - contactPoints[i].phi;
       const directionTheta = targets[i].theta - contactPoints[i].theta;
 
-      contactPoints[i].phi += (directionPhi / Math.abs(directionPhi)) * jitterStrength;
-      contactPoints[i].theta += (directionTheta / Math.abs(directionTheta)) * jitterStrength;
+      contactPoints[i].phi += (directionPhi / Math.abs(directionPhi)) * effectiveJitter;
+      contactPoints[i].theta += (directionTheta / Math.abs(directionTheta)) * effectiveJitter;
 
       const delta = 0.1;
 

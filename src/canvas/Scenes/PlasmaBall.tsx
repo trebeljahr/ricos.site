@@ -4,6 +4,7 @@ import { type ThreeEvent, useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import {
   DoubleSide,
+  type Group,
   type Mesh,
   MeshLambertMaterial,
   MeshStandardMaterial,
@@ -80,20 +81,25 @@ export const PlasmaBall = () => {
     },
   };
 
+  const groupRef = useRef<Group>(null!);
   const hoverPointRef = useRef<Vector3 | null>(null);
   const wasHoveringRef = useRef(false);
+  const sphereRadius = glassSphereDiameter / 2;
 
   const onPointerMove = (event: ThreeEvent<PointerEvent>) => {
-    if (!event.point) return;
+    if (!event.point || !groupRef.current) return;
+    const local = groupRef.current.worldToLocal(event.point.clone());
+    // Clamp to the plasma sphere surface in local space — Stage may scale us.
+    local.sub(plasmaOrigin).normalize().multiplyScalar(sphereRadius).add(plasmaOrigin);
     if (!hoverPointRef.current) hoverPointRef.current = new Vector3();
-    hoverPointRef.current.copy(event.point);
+    hoverPointRef.current.copy(local);
   };
 
   const onPointerOut = () => {
     hoverPointRef.current = null;
   };
 
-  const jitterStrength = 0.01;
+  const jitterStrength = 0.025;
   const hoverLerp = 0.55;
   const snapDistance = 0.05;
 
@@ -130,6 +136,8 @@ export const PlasmaBall = () => {
         const sph = new Spherical().setFromVector3(tmp);
         contactPoints[i].phi = sph.phi;
         contactPoints[i].theta = sph.theta;
+        // Fresh random target so each ray walks off in its own direction.
+        targets[i] = randomPointOnSphere();
       });
     }
 
@@ -194,7 +202,7 @@ export const PlasmaBall = () => {
   const contactPointRefs = useRef<Mesh[]>([]);
 
   return (
-    <group scale={1}>
+    <group scale={1} ref={groupRef}>
       {contactPoints.map((pos, index) => {
         const currentPosition = new Vector3()
           .setFromSphericalCoords(glassSphereDiameter / 2, pos.phi, pos.theta)

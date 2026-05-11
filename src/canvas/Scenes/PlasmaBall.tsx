@@ -1,6 +1,6 @@
 import { type FixedLightningStrike, LightningRay } from "@r3f/Helpers/LightningRay";
 import { Box, Sphere as SphereMesh } from "@react-three/drei";
-import { type ThreeEvent, useFrame } from "@react-three/fiber";
+import { type ThreeEvent, useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import {
   DoubleSide,
@@ -9,6 +9,7 @@ import {
   MeshLambertMaterial,
   MeshStandardMaterial,
   Spherical,
+  Vector2,
   Vector3,
 } from "three";
 import type { LightningStrike, RayParameters } from "three-stdlib";
@@ -82,21 +83,41 @@ export const PlasmaBall = () => {
   };
 
   const groupRef = useRef<Group>(null!);
+  const glassMeshRef = useRef<Mesh>(null!);
   const hoverPointRef = useRef<Vector3 | null>(null);
+  const pointerNDCRef = useRef<Vector2 | null>(null);
   const wasHoveringRef = useRef(false);
   const sphereRadius = glassSphereDiameter / 2;
+  const { camera, raycaster } = useThree();
+  const worldHit = useMemo(() => new Vector3(), []);
 
   const onPointerMove = (event: ThreeEvent<PointerEvent>) => {
-    if (!event.point || !groupRef.current) return;
-    const local = groupRef.current.worldToLocal(event.point.clone());
-    // Clamp to the plasma sphere surface in local space — Stage may scale us.
-    local.sub(plasmaOrigin).normalize().multiplyScalar(sphereRadius).add(plasmaOrigin);
-    if (!hoverPointRef.current) hoverPointRef.current = new Vector3();
-    hoverPointRef.current.copy(local);
+    if (!pointerNDCRef.current) pointerNDCRef.current = new Vector2();
+    pointerNDCRef.current.copy(event.pointer);
   };
 
   const onPointerOut = () => {
+    pointerNDCRef.current = null;
     hoverPointRef.current = null;
+  };
+
+  const updateHoverPointFromPointer = () => {
+    const ndc = pointerNDCRef.current;
+    if (!ndc || !groupRef.current || !glassMeshRef.current) {
+      hoverPointRef.current = null;
+      return;
+    }
+    raycaster.setFromCamera(ndc, camera);
+    const hits = raycaster.intersectObject(glassMeshRef.current, false);
+    if (hits.length === 0) {
+      hoverPointRef.current = null;
+      return;
+    }
+    worldHit.copy(hits[0].point);
+    const local = groupRef.current.worldToLocal(worldHit);
+    local.sub(plasmaOrigin).normalize().multiplyScalar(sphereRadius).add(plasmaOrigin);
+    if (!hoverPointRef.current) hoverPointRef.current = new Vector3();
+    hoverPointRef.current.copy(local);
   };
 
   const jitterStrength = 0.01;
@@ -115,6 +136,7 @@ export const PlasmaBall = () => {
   const wanderTarget = useMemo(() => new Vector3(), []);
 
   useFrame(() => {
+    updateHoverPointFromPointer();
     const hoverPoint = hoverPointRef.current;
 
     if (hoverPoint) {
@@ -301,6 +323,7 @@ export const PlasmaBall = () => {
 
       <mesh
         position={[0, poleHeight / 2, 0]}
+        ref={glassMeshRef}
         onPointerMove={onPointerMove}
         onPointerOut={onPointerOut}
       >

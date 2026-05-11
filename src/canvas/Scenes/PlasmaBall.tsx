@@ -18,6 +18,19 @@ function randomUnitDirection(target = new Vector3()) {
   return target.randomDirection();
 }
 
+function fibonacciSphere(n: number) {
+  // Evenly spaced directions on the unit sphere (golden-angle spiral).
+  const points: Vector3[] = [];
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < n; i++) {
+    const y = 1 - (i / Math.max(1, n - 1)) * 2;
+    const r = Math.sqrt(Math.max(0, 1 - y * y));
+    const t = goldenAngle * i;
+    points.push(new Vector3(r * Math.cos(t), y, r * Math.sin(t)));
+  }
+  return points;
+}
+
 export const PlasmaBall = () => {
   const poleHeight = 30;
   const glassSphereDiameter = 20;
@@ -116,7 +129,7 @@ export const PlasmaBall = () => {
 
   const jitterStrength = 0.01;
   const dispersalBoost = 0.12;
-  const dispersalDecayMs = 600;
+  const dispersalDecayMs = 1400;
   const hoverLerp = 0.55;
   const snapDistance = 0.05;
   const contactSpread = 0.09;
@@ -129,7 +142,9 @@ export const PlasmaBall = () => {
   const perRayTarget = useMemo(() => new Vector3(), []);
   const wanderTarget = useMemo(() => new Vector3(), []);
   const axis = useMemo(() => new Vector3(), []);
+  const dispersalAxis = useMemo(() => new Vector3(), []);
   const targetDelta = 0.05;
+  const dispersingRef = useRef(false);
 
   useFrame(() => {
     updateHoverPointFromPointer();
@@ -170,19 +185,34 @@ export const PlasmaBall = () => {
     if (wasHoveringRef.current) {
       wasHoveringRef.current = false;
       dispersalEndsAtRef.current = performance.now() + dispersalDecayMs;
+      dispersingRef.current = true;
+      // Random rotation so the spread pattern looks fresh every release.
+      randomUnitDirection(dispersalAxis);
+      const dispersalAngle = Math.random() * Math.PI * 2;
+      // Shuffle Fibonacci index → ray assignment to avoid the same ray always
+      // landing in the same spot.
+      const order = fibOrder;
+      for (let k = order.length - 1; k > 0; k--) {
+        const j = Math.floor(Math.random() * (k + 1));
+        [order[k], order[j]] = [order[j], order[k]];
+      }
       lightningRefs.current.forEach((thisRef, i) => {
         const dest = thisRef.rayParameters.destOffset;
-        if (!dest || !contactDirs[i] || !targetDirs[i]) return;
+        if (!dest || !contactDirs[i] || !targetDirs[i] || !fibPoints[order[i]]) return;
         contactDirs[i].copy(dest).sub(plasmaOrigin).normalize();
-        // Pick a fresh, uniformly random target on the sphere so each ray
-        // walks off in its own great-circle direction.
-        randomUnitDirection(targetDirs[i]);
+        // Target = this ray's Fibonacci slot, rotated by a per-release axis so
+        // 30 evenly-spaced spots redirect dispersal uniformly across the sphere.
+        targetDirs[i].copy(fibPoints[order[i]]).applyAxisAngle(dispersalAxis, dispersalAngle);
       });
     }
 
     const remainingBoostMs = dispersalEndsAtRef.current - performance.now();
     const boost = remainingBoostMs > 0 ? remainingBoostMs / dispersalDecayMs : 0;
     const effectiveJitter = jitterStrength + boost * (dispersalBoost - jitterStrength);
+    // Hold Fibonacci targets until boost ends so rays actually arrive at the
+    // evenly-spaced spots; then resume normal random wandering.
+    if (dispersingRef.current && boost === 0) dispersingRef.current = false;
+    const isDispersing = dispersingRef.current;
 
     lightningRefs.current.forEach((thisRef, i) => {
       const dest = thisRef.rayParameters.destOffset;
@@ -192,18 +222,22 @@ export const PlasmaBall = () => {
       if (!dir || !target || !contactPointRefs.current[i]) return;
 
       const angle = dir.angleTo(target);
-      if (angle < targetDelta) {
+      if (angle < targetDelta && !isDispersing) {
         randomUnitDirection(target);
-      } else {
+      } else if (angle >= targetDelta) {
         // Rotate dir toward target along the great-circle axis = dir × target.
         axis.crossVectors(dir, target);
         if (axis.lengthSq() > 1e-8) {
           axis.normalize();
           dir.applyAxisAngle(axis, Math.min(effectiveJitter, angle));
-        } else {
-          // Degenerate: dir and target collinear in opposite directions.
-          // Re-roll the target so we can move.
+        } else if (!isDispersing) {
+          // Degenerate: dir and target collinear opposite. Re-roll target.
           randomUnitDirection(target);
+        } else {
+          // Dispersing and antipodal: nudge target slightly off-axis so the
+          // cross product is non-zero next frame.
+          target.x += 1e-3;
+          target.normalize();
         }
       }
 
@@ -212,29 +246,31 @@ export const PlasmaBall = () => {
     });
   });
 
-  const { contactDirs, targetDirs, hoverOffsets, initialPositions } = useMemo(() => {
-    const contactDirs = [] as Vector3[];
-    const targetDirs = [] as Vector3[];
-    const hoverOffsets = [] as Vector3[];
-    const initialPositions = [] as Vector3[];
-    const numLightningRays = 30;
+  const { contactDirs, targetDirs, hoverOffsets, initialPositions, fibPoints, fibOrder } =
+    useMemo(() => {
+      const contactDirs = [] as Vector3[];
+      const targetDirs = [] as Vector3[];
+      const hoverOffsets = [] as Vector3[];
+      const initialPositions = [] as Vector3[];
+      const numLightningRays = 30;
+      const fibPoints = fibonacciSphere(numLightningRays);
+      const fibOrder = Array.from({ length: numLightningRays }, (_, i) => i);
 
-    for (let i = 0; i < numLightningRays; i++) {
-      const dir = randomUnitDirection();
-      contactDirs.push(dir);
-      targetDirs.push(randomUnitDirection());
-      // Random unit direction, scaled by sqrt(random) to bias toward edge of unit disc.
-      hoverOffsets.push(new Vector3().randomDirection().multiplyScalar(Math.sqrt(Math.random())));
-      initialPositions.push(
-        dir
-          .clone()
-          .multiplyScalar(glassSphereDiameter / 2)
-          .add(plasmaOrigin),
-      );
-    }
+      for (let i = 0; i < numLightningRays; i++) {
+        const dir = fibPoints[i].clone();
+        contactDirs.push(dir);
+        targetDirs.push(randomUnitDirection());
+        hoverOffsets.push(new Vector3().randomDirection().multiplyScalar(Math.sqrt(Math.random())));
+        initialPositions.push(
+          dir
+            .clone()
+            .multiplyScalar(glassSphereDiameter / 2)
+            .add(plasmaOrigin),
+        );
+      }
 
-    return { contactDirs, targetDirs, hoverOffsets, initialPositions };
-  }, []);
+      return { contactDirs, targetDirs, hoverOffsets, initialPositions, fibPoints, fibOrder };
+    }, []);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   const plasmaMaterial = useMemo(() => {

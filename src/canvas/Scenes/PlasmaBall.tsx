@@ -80,23 +80,58 @@ export const PlasmaBall = () => {
     },
   };
 
-  const ref = useRef<FixedLightningStrike>(null!);
+  const hoverPointRef = useRef<Vector3 | null>(null);
+  const wasHoveringRef = useRef(false);
 
-  const onPointerOver = (event: ThreeEvent<PointerEvent>) => {
-    if (!ref.current) return;
-    if (!ref.current.rayParameters.destOffset) return;
+  const onPointerMove = (event: ThreeEvent<PointerEvent>) => {
+    if (!event.point) return;
+    if (!hoverPointRef.current) hoverPointRef.current = new Vector3();
+    hoverPointRef.current.copy(event.point);
+  };
 
-    const point = event.point;
-    if (!point) return;
-
-    ref.current.rayParameters.destOffset.copy(point.add(plasmaOrigin));
+  const onPointerOut = () => {
+    hoverPointRef.current = null;
   };
 
   const jitterStrength = 0.01;
+  const hoverLerp = 0.55;
+  const snapDistance = 0.05;
 
   useFrame(() => {
+    const hoverPoint = hoverPointRef.current;
+
+    if (hoverPoint) {
+      wasHoveringRef.current = true;
+      lightningRefs.current.forEach((thisRef, i) => {
+        const dest = thisRef.rayParameters.destOffset;
+        if (!dest) return;
+        if (dest.distanceTo(hoverPoint) < snapDistance) {
+          dest.copy(hoverPoint);
+        } else {
+          dest.lerp(hoverPoint, hoverLerp);
+        }
+        if (contactPointRefs.current[i]) {
+          contactPointRefs.current[i].position.copy(dest);
+        }
+      });
+      return;
+    }
+
     const s = new Spherical(glassSphereDiameter / 2);
     const p = new Vector3();
+    const tmp = new Vector3();
+
+    if (wasHoveringRef.current) {
+      wasHoveringRef.current = false;
+      lightningRefs.current.forEach((thisRef, i) => {
+        if (!thisRef.rayParameters.destOffset) return;
+        if (!contactPoints[i]) return;
+        tmp.copy(thisRef.rayParameters.destOffset).sub(plasmaOrigin);
+        const sph = new Spherical().setFromVector3(tmp);
+        contactPoints[i].phi = sph.phi;
+        contactPoints[i].theta = sph.theta;
+      });
+    }
 
     lightningRefs.current.forEach((thisRef, i) => {
       if (!thisRef.rayParameters.destOffset) return;
@@ -222,7 +257,11 @@ export const PlasmaBall = () => {
         <meshStandardMaterial color={plasmaColor} emissive={plasmaColor} emissiveIntensity={3} />
       </mesh>
 
-      <mesh position={[0, poleHeight / 2, 0]} onPointerMove={onPointerOver}>
+      <mesh
+        position={[0, poleHeight / 2, 0]}
+        onPointerMove={onPointerMove}
+        onPointerOut={onPointerOut}
+      >
         <sphereGeometry args={[glassSphereDiameter / 2, 80, 40]} />
         <meshPhysicalMaterial
           color={"#ffffff"}

@@ -8,20 +8,14 @@ import {
   type Mesh,
   MeshLambertMaterial,
   MeshStandardMaterial,
-  Spherical,
   Vector2,
   Vector3,
 } from "three";
 import type { LightningStrike, RayParameters } from "three-stdlib";
 
-function randomPointOnSphere() {
-  const phi = Math.random() * Math.PI - 0.3;
-  const theta = Math.random() * Math.PI * 2;
-
-  return {
-    phi,
-    theta,
-  };
+function randomUnitDirection(target = new Vector3()) {
+  // Uniform on the unit sphere — equal area density.
+  return target.randomDirection();
 }
 
 export const PlasmaBall = () => {
@@ -134,6 +128,8 @@ export const PlasmaBall = () => {
   const tangent = useMemo(() => new Vector3(), []);
   const perRayTarget = useMemo(() => new Vector3(), []);
   const wanderTarget = useMemo(() => new Vector3(), []);
+  const axis = useMemo(() => new Vector3(), []);
+  const targetDelta = 0.05;
 
   useFrame(() => {
     updateHoverPointFromPointer();
@@ -171,22 +167,16 @@ export const PlasmaBall = () => {
       return;
     }
 
-    const s = new Spherical(glassSphereDiameter / 2);
-    const p = new Vector3();
-    const tmp = new Vector3();
-
     if (wasHoveringRef.current) {
       wasHoveringRef.current = false;
       dispersalEndsAtRef.current = performance.now() + dispersalDecayMs;
       lightningRefs.current.forEach((thisRef, i) => {
-        if (!thisRef.rayParameters.destOffset) return;
-        if (!contactPoints[i]) return;
-        tmp.copy(thisRef.rayParameters.destOffset).sub(plasmaOrigin);
-        const sph = new Spherical().setFromVector3(tmp);
-        contactPoints[i].phi = sph.phi;
-        contactPoints[i].theta = sph.theta;
-        // Fresh random target so each ray walks off in its own direction.
-        targets[i] = randomPointOnSphere();
+        const dest = thisRef.rayParameters.destOffset;
+        if (!dest || !contactDirs[i] || !targetDirs[i]) return;
+        contactDirs[i].copy(dest).sub(plasmaOrigin).normalize();
+        // Pick a fresh, uniformly random target on the sphere so each ray
+        // walks off in its own great-circle direction.
+        randomUnitDirection(targetDirs[i]);
       });
     }
 
@@ -195,51 +185,55 @@ export const PlasmaBall = () => {
     const effectiveJitter = jitterStrength + boost * (dispersalBoost - jitterStrength);
 
     lightningRefs.current.forEach((thisRef, i) => {
-      if (!thisRef.rayParameters.destOffset) return;
-      if (!targets[i]) return;
-      if (!contactPoints[i]) return;
-      if (!contactPointRefs.current[i]) return;
+      const dest = thisRef.rayParameters.destOffset;
+      if (!dest) return;
+      const dir = contactDirs[i];
+      const target = targetDirs[i];
+      if (!dir || !target || !contactPointRefs.current[i]) return;
 
-      const directionPhi = targets[i].phi - contactPoints[i].phi;
-      const directionTheta = targets[i].theta - contactPoints[i].theta;
-
-      contactPoints[i].phi += (directionPhi / Math.abs(directionPhi)) * effectiveJitter;
-      contactPoints[i].theta += (directionTheta / Math.abs(directionTheta)) * effectiveJitter;
-
-      const delta = 0.1;
-
-      const distancePhi = Math.abs(contactPoints[i].phi - targets[i].phi);
-      const distanceTheta = Math.abs(contactPoints[i].theta - targets[i].theta);
-
-      const hasReachedTarget = distancePhi <= delta && distanceTheta <= delta;
-      if (hasReachedTarget) {
-        const newTarget = randomPointOnSphere();
-        targets[i] = newTarget;
+      const angle = dir.angleTo(target);
+      if (angle < targetDelta) {
+        randomUnitDirection(target);
+      } else {
+        // Rotate dir toward target along the great-circle axis = dir × target.
+        axis.crossVectors(dir, target);
+        if (axis.lengthSq() > 1e-8) {
+          axis.normalize();
+          dir.applyAxisAngle(axis, Math.min(effectiveJitter, angle));
+        } else {
+          // Degenerate: dir and target collinear in opposite directions.
+          // Re-roll the target so we can move.
+          randomUnitDirection(target);
+        }
       }
 
-      s.phi = contactPoints[i].phi;
-      s.theta = contactPoints[i].theta;
-
-      thisRef.rayParameters.destOffset.copy(p.setFromSpherical(s).add(plasmaOrigin));
-
-      contactPointRefs.current[i].position.copy(thisRef.rayParameters.destOffset);
+      dest.copy(dir).multiplyScalar(sphereRadius).add(plasmaOrigin);
+      contactPointRefs.current[i].position.copy(dest);
     });
   });
 
-  const { contactPoints, targets, hoverOffsets } = useMemo(() => {
-    const contactPoints = [] as { phi: number; theta: number }[];
-    const targets = [] as { phi: number; theta: number }[];
+  const { contactDirs, targetDirs, hoverOffsets, initialPositions } = useMemo(() => {
+    const contactDirs = [] as Vector3[];
+    const targetDirs = [] as Vector3[];
     const hoverOffsets = [] as Vector3[];
+    const initialPositions = [] as Vector3[];
     const numLightningRays = 30;
 
     for (let i = 0; i < numLightningRays; i++) {
-      contactPoints.push(randomPointOnSphere());
-      targets.push(randomPointOnSphere());
+      const dir = randomUnitDirection();
+      contactDirs.push(dir);
+      targetDirs.push(randomUnitDirection());
       // Random unit direction, scaled by sqrt(random) to bias toward edge of unit disc.
       hoverOffsets.push(new Vector3().randomDirection().multiplyScalar(Math.sqrt(Math.random())));
+      initialPositions.push(
+        dir
+          .clone()
+          .multiplyScalar(glassSphereDiameter / 2)
+          .add(plasmaOrigin),
+      );
     }
 
-    return { contactPoints, targets, hoverOffsets };
+    return { contactDirs, targetDirs, hoverOffsets, initialPositions };
   }, []);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
@@ -259,40 +253,34 @@ export const PlasmaBall = () => {
 
   return (
     <group scale={1} ref={groupRef}>
-      {contactPoints.map((pos, index) => {
-        const currentPosition = new Vector3()
-          .setFromSphericalCoords(glassSphereDiameter / 2, pos.phi, pos.theta)
-          .add(plasmaOrigin);
+      {initialPositions.map((pos, index) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
+        <group key={index}>
+          <SphereMesh
+            args={[glassSphereDiameter * 0.004, 24, 12]}
+            position={pos.clone()}
+            material={plasmaMaterial}
+            ref={(elem) => {
+              if (elem) {
+                contactPointRefs.current.push(elem);
+              }
+            }}
+          />
 
-        return (
-          // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
-          <group key={index}>
-            <SphereMesh
-              args={[glassSphereDiameter * 0.004, 24, 12]}
-              position={currentPosition.clone()}
-              material={plasmaMaterial}
-              ref={(elem) => {
-                if (elem) {
-                  contactPointRefs.current.push(elem);
-                }
-              }}
-            />
-
-            <LightningRay
-              {...rayParams}
-              destOffset={currentPosition.clone()}
-              radius0={0.06}
-              radius1={0.06}
-              material={plasmaMaterial}
-              ref={(elem) => {
-                if (elem) {
-                  lightningRefs.current.push(elem);
-                }
-              }}
-            />
-          </group>
-        );
-      })}
+          <LightningRay
+            {...rayParams}
+            destOffset={pos.clone()}
+            radius0={0.06}
+            radius1={0.06}
+            material={plasmaMaterial}
+            ref={(elem) => {
+              if (elem) {
+                lightningRefs.current.push(elem);
+              }
+            }}
+          />
+        </group>
+      ))}
 
       <Box
         args={[glassSphereDiameter * 0.5, poleHeight * 0.1, glassSphereDiameter * 0.5]}

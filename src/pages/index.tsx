@@ -25,10 +25,10 @@ const FEATURED_PHOTOGRAPHY_TRIPS = [
 
 const FEATURED_R3F_DEMOS: { name: string; href: string }[] = [
   { name: "shader-art-demo", href: "/r3f/scenes/shader-art-demo" },
-  { name: "underwater-shader", href: "/r3f/scenes/underwater-shader" },
+  { name: "plasma-ball", href: "/r3f/scenes/plasma-ball" },
   { name: "ocean", href: "/r3f/scenes/ocean" },
-  { name: "terrain", href: "/r3f/scenes/terrain" },
-  { name: "grass-experiments", href: "/r3f/scenes/grass-experiments" },
+  { name: "snow-forest", href: "/r3f/scenes/snow-forest" },
+  { name: "mesh-merger", href: "/r3f/particles/mesh-merger" },
   { name: "fbo-demo", href: "/r3f/particles/fbo-demo" },
 ];
 

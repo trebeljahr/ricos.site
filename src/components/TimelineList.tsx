@@ -109,9 +109,14 @@ export function TimelineList({
       )}
 
       <div className="space-y-12">
-        {visibleSections.map(({ year, items }) => (
+        {visibleSections.map(({ year, items, stats }) => (
           <section key={year}>
-            <h2 className="m-0 mb-6 text-4xl font-bold tracking-normal">{year}</h2>
+            <h2 className="m-0 mb-6 text-4xl font-bold tracking-normal">
+              {year}
+              <span className="ml-3 text-lg font-normal text-gray-400">
+                {stats.count} {stats.count === 1 ? "work" : "works"}
+              </span>
+            </h2>
             <div className="flex flex-col">
               {items.map((entry) => (
                 <HorizontalCard

@@ -7,10 +7,7 @@ import { useEffect, useState } from "react";
 import { useScrollLock } from "src/hooks/useScrollLock";
 import { CollapsibleMenuDesktop, CollapsibleMenuMobile } from "./CollapsibleMenus";
 import { DarkModeHandler } from "./DarkModeHandler";
-
-const navigation = ["posts", "newsletters", "photography"];
-const resources = ["quotes", "booknotes", "needlestack", "podcastnotes", "r3f"];
-const about = ["now", "travel", "principles", "1-month-projects", "support", "imprint", "privacy"];
+import { aboutNavigation, mainNavigation, resourceNavigation } from "./navItems";
 
 export const RicosSiteBanner = () => {
   return (
@@ -98,19 +95,19 @@ function MobileVersion({ open, setOpen, close }: MobileVersionProps) {
           className="absolute z-50 top-12 p-2 w-screen h-screen right-0 bg-white dark:bg-gray-900"
         >
           <div className="flex flex-col px-2 pb-3 pt-2 items-end justify-end">
-            {navigation.map((item) => (
+            {mainNavigation.map((item) => (
               <Link
-                key={item}
-                href={"/" + item}
+                key={item.href}
+                href={item.href}
                 onClick={close}
                 className="block w-fit rounded-md px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 "
               >
-                {item}
+                {item.label}
               </Link>
             ))}
 
-            <CollapsibleMenuMobile links={resources} text="resources" closeNav={close} />
-            <CollapsibleMenuMobile links={about} text="about" closeNav={close} />
+            <CollapsibleMenuMobile links={resourceNavigation} text="resources" closeNav={close} />
+            <CollapsibleMenuMobile links={aboutNavigation} text="about" closeNav={close} />
           </div>
         </div>
       )}
@@ -123,17 +120,17 @@ function DesktopVersion() {
     <div className="h-fit w-full flex flex-1 mr-0 items-center">
       <div className="ml-6 block justify-self-end">
         <div className="flex space-x-4">
-          {navigation.map((item) => (
+          {mainNavigation.map((item) => (
             <Link
-              key={item}
+              key={item.href}
               className="rounded-md px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 "
-              href={"/" + item}
+              href={item.href}
             >
-              {item}
+              {item.label}
             </Link>
           ))}
-          <CollapsibleMenuDesktop links={resources} text="resources" />
-          <CollapsibleMenuDesktop links={about} text="about" />
+          <CollapsibleMenuDesktop links={resourceNavigation} text="resources" />
+          <CollapsibleMenuDesktop links={aboutNavigation} text="about" />
         </div>
       </div>
     </div>

@@ -4,11 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { CollapsibleMenuMobile } from "./CollapsibleMenus";
 import { DarkModeHandler } from "./DarkModeHandler";
+import { aboutNavigation, mainNavigation, resourceNavigation } from "./navItems";
 import { RicosSiteBanner } from "./TailwindNavbar";
-
-const navigation = ["posts", "newsletters", "photography"];
-const resources = ["quotes", "booknotes", "needlestack", "podcastnotes", "r3f"];
-const about = ["now", "travel", "principles", "1-month-projects", "support", "imprint", "privacy"];
 
 export const LeftSmallNavbar = () => {
   const [open, setOpen] = useState(false);
@@ -43,18 +40,23 @@ export const LeftSmallNavbar = () => {
             <div className="flex flex-col pb-3 pt-2 px-3 items-start justify-start">
               <RicosSiteBanner />
               <div className="pt-3">
-                {navigation.map((item) => (
+                {mainNavigation.map((item) => (
                   <Link
-                    key={item}
-                    href={"/" + item}
+                    key={item.href}
+                    href={item.href}
                     className="block w-fit rounded-md px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 "
                   >
-                    {item}
+                    {item.label}
                   </Link>
                 ))}
 
-                <CollapsibleMenuMobile links={resources} text="resources" closeNav={close} left />
-                <CollapsibleMenuMobile links={about} text="about" closeNav={close} left />
+                <CollapsibleMenuMobile
+                  links={resourceNavigation}
+                  text="resources"
+                  closeNav={close}
+                  left
+                />
+                <CollapsibleMenuMobile links={aboutNavigation} text="about" closeNav={close} left />
               </div>
             </div>
           </motion.div>

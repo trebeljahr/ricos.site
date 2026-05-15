@@ -1,10 +1,11 @@
 import { FiChevronDown } from "@components/Icons";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
+import type { NavItem } from "./navItems";
 import { SingleMenuItem } from "./SingleMenuItem";
 
 type DesktopMenuProps = {
-  links: string[];
+  links: NavItem[];
   text: string;
 };
 
@@ -61,7 +62,7 @@ export function CollapsibleMenuDesktop({ links, text }: DesktopMenuProps) {
           className="overflow-hidden bg-white dark:bg-gray-800 flex-col absolute box-border right-0 z-50 mt-2 origin-top-right w-fit rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
         >
           {links.map((item) => (
-            <SingleMenuItem key={item} link={item} onSelect={close} />
+            <SingleMenuItem key={item.href} link={item} onSelect={close} />
           ))}
         </div>
       )}
@@ -106,7 +107,7 @@ export function CollapsibleMenuMobile({ links, text, closeNav, left = false }: M
             className="overflow-hidden bg-white dark:bg-slate-800 mt-2 w-48 origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
           >
             {links.map((item) => (
-              <SingleMenuItem key={item} link={item} onSelect={handleSelect} left={left} />
+              <SingleMenuItem key={item.href} link={item} onSelect={handleSelect} left={left} />
             ))}
           </div>
         )}

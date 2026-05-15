@@ -1,8 +1,9 @@
 import clsx from "clsx";
 import Link from "next/link";
+import type { NavItem } from "./navItems";
 
 type SingleMenuItemProps = {
-  link: string;
+  link: NavItem;
   onSelect?: () => void;
   left?: boolean;
 };
@@ -10,7 +11,7 @@ type SingleMenuItemProps = {
 export function SingleMenuItem({ link, onSelect, left }: SingleMenuItemProps) {
   return (
     <Link
-      href={`/${link}`}
+      href={link.href}
       role="menuitem"
       className={clsx(
         "block px-4 py-2 break-keep whitespace-nowrap hover:bg-gray-200 dark:hover:bg-gray-700",
@@ -18,7 +19,7 @@ export function SingleMenuItem({ link, onSelect, left }: SingleMenuItemProps) {
       )}
       onClick={onSelect}
     >
-      {link}
+      {link.label}
     </Link>
   );
 }

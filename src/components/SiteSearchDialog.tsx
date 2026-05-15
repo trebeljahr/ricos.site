@@ -3,6 +3,7 @@ import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import Fuse from "fuse.js";
 import { useRouter } from "next/router";
 import { type ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { isSameLocalUrl } from "src/lib/urlUtils";
 
 type SearchItem = {
   title: string;
@@ -84,6 +85,7 @@ export default function SiteSearchDialog({ open, onClose }: Props) {
   const navigate = useCallback(
     (link: string) => {
       onClose();
+      if (isSameLocalUrl(router.asPath, link)) return;
       router.push(link);
     },
     [router, onClose],

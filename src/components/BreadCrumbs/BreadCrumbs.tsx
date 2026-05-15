@@ -42,6 +42,8 @@ export default function _Component({
         </div>
         {pathParts.map((part, index) => {
           const overwrite = overwrites?.find(({ matchingPath }) => matchingPath === part);
+          const isCurrentPage = index === pathParts.length - 1;
+          const label = turnKebabIntoTitleCase(overwrite?.newText || part);
 
           return (
             <div key={part}>
@@ -61,12 +63,18 @@ export default function _Component({
                     d="m1 9 4-4-4-4"
                   />
                 </svg>
-                <Link
-                  href={"/" + pathParts.slice(0, index + 1).join("/")}
-                  className="ml-1 text-sm font-medium  hover:text-myBlue md:ml-2"
-                >
-                  {turnKebabIntoTitleCase(overwrite?.newText || part)}
-                </Link>
+                {isCurrentPage ? (
+                  <span className="ml-1 text-sm font-medium md:ml-2" aria-current="page">
+                    {label}
+                  </span>
+                ) : (
+                  <Link
+                    href={"/" + pathParts.slice(0, index + 1).join("/")}
+                    className="ml-1 text-sm font-medium  hover:text-myBlue md:ml-2"
+                  >
+                    {label}
+                  </Link>
+                )}
               </div>
             </div>
           );

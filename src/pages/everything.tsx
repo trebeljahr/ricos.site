@@ -25,10 +25,10 @@ type Props = {
 type TripImage = { src: string; width: number; height: number; alt?: string };
 
 function getPhotographyEntries(
-  trips: { tripName: string; image: TripImage }[],
+  trips: { tripName: string; image: TripImage; description?: string }[],
   travelblogs: CommonMetadata[],
 ): TimelineEntry[] {
-  return trips.map(({ tripName, image }) => {
+  return trips.map(({ tripName, image, description }) => {
     const dateInfo = getPhotographyTimelineDate(tripName, travelblogs);
     const title = turnKebabIntoTitleCase(tripName);
     return {
@@ -37,6 +37,7 @@ function getPhotographyEntries(
       type: "photography",
       typeLabel: "Photo set",
       title,
+      ...(description ? { excerpt: description } : {}),
       cover: image?.src
         ? {
             src: image.src,
@@ -95,13 +96,13 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
   const pages: CommonMetadata[] = loadVeliteData("pages.json");
 
   const tripsMeta = await Promise.all(
-    trips.map(async ({ name, src, alt }) => {
+    trips.map(async ({ name, src, alt, description }) => {
       if (src === "") {
         const image = getFirstImageFromMetadata(photographyFolder + name);
-        return { image, tripName: name };
+        return { image, tripName: name, description };
       }
       const { width, height } = await getImgWidthAndHeightDuringBuild(src);
-      return { image: { width, height, src, alt }, tripName: name };
+      return { image: { width, height, src, alt }, tripName: name, description };
     }),
   );
 

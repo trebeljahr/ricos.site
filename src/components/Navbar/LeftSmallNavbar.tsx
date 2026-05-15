@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { CollapsibleMenuMobile } from "./CollapsibleMenus";
 import { DarkModeHandler } from "./DarkModeHandler";
-import { aboutNavigation, mainNavigation, resourceNavigation } from "./navItems";
+import { navGroups, primaryNavigation } from "./navItems";
 import { RicosSiteBanner } from "./TailwindNavbar";
 
 export const LeftSmallNavbar = () => {
@@ -40,23 +40,26 @@ export const LeftSmallNavbar = () => {
             <div className="flex flex-col pb-3 pt-2 px-3 items-start justify-start">
               <RicosSiteBanner />
               <div className="pt-3">
-                {mainNavigation.map((item) => (
+                {navGroups.map((group) => (
+                  <CollapsibleMenuMobile
+                    key={group.label}
+                    links={group.items}
+                    text={group.label}
+                    closeNav={close}
+                    left
+                  />
+                ))}
+
+                {primaryNavigation.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
+                    onClick={close}
                     className="block w-fit rounded-md px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 "
                   >
                     {item.label}
                   </Link>
                 ))}
-
-                <CollapsibleMenuMobile
-                  links={resourceNavigation}
-                  text="resources"
-                  closeNav={close}
-                  left
-                />
-                <CollapsibleMenuMobile links={aboutNavigation} text="about" closeNav={close} left />
               </div>
             </div>
           </motion.div>

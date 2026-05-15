@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useScrollLock } from "src/hooks/useScrollLock";
 import { CollapsibleMenuDesktop, CollapsibleMenuMobile } from "./CollapsibleMenus";
 import { DarkModeHandler } from "./DarkModeHandler";
-import { aboutNavigation, mainNavigation, resourceNavigation } from "./navItems";
+import { navGroups, primaryNavigation } from "./navItems";
 
 export const RicosSiteBanner = () => {
   return (
@@ -96,7 +96,16 @@ function MobileVersion({ open, setOpen, close }: MobileVersionProps) {
           className="absolute z-50 top-12 p-2 w-screen h-screen right-0 bg-white dark:bg-gray-900"
         >
           <div className="flex flex-col px-2 pb-3 pt-2 items-end justify-end">
-            {mainNavigation.map((item) => (
+            {navGroups.map((group) => (
+              <CollapsibleMenuMobile
+                key={group.label}
+                links={group.items}
+                text={group.label}
+                closeNav={close}
+              />
+            ))}
+
+            {primaryNavigation.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -106,9 +115,6 @@ function MobileVersion({ open, setOpen, close }: MobileVersionProps) {
                 {item.label}
               </Link>
             ))}
-
-            <CollapsibleMenuMobile links={resourceNavigation} text="resources" closeNav={close} />
-            <CollapsibleMenuMobile links={aboutNavigation} text="about" closeNav={close} />
           </div>
         </div>
       )}
@@ -121,7 +127,10 @@ function DesktopVersion() {
     <div className="h-fit w-full flex flex-1 mr-0 items-center">
       <div className="ml-6 block justify-self-end">
         <div className="flex space-x-4">
-          {mainNavigation.map((item) => (
+          {navGroups.map((group) => (
+            <CollapsibleMenuDesktop key={group.label} links={group.items} text={group.label} />
+          ))}
+          {primaryNavigation.map((item) => (
             <Link
               key={item.href}
               className="rounded-md px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 "
@@ -130,8 +139,6 @@ function DesktopVersion() {
               {item.label}
             </Link>
           ))}
-          <CollapsibleMenuDesktop links={resourceNavigation} text="resources" />
-          <CollapsibleMenuDesktop links={aboutNavigation} text="about" />
         </div>
       </div>
     </div>

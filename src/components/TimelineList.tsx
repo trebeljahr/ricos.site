@@ -119,6 +119,7 @@ export function TimelineList({
                   cover={entry.cover || FALLBACK_COVER}
                   link={entry.href}
                   title={entry.title}
+                  typeLabel={entry.typeLabel}
                   excerpt={entry.excerpt}
                   date={entry.date}
                   readingTime={entry.readingTime}

@@ -1,8 +1,7 @@
 import { FaCheckCircle } from "@components/Icons";
 import Link from "next/link";
-import { type ChangeEvent, useRef, useState } from "react";
+import { type ChangeEvent, type FormEvent, type ReactNode, useRef, useState } from "react";
 import ConfettiExplosion, { type ConfettiProps } from "react-confetti-explosion";
-import type { ReactElement } from "react-markdown/lib/react-markdown";
 import { FancyButton } from "./FancyUI";
 import { SpinningLoader } from "./SpinningLoader";
 
@@ -28,9 +27,9 @@ export const NewsletterForm = ({
   heading,
   text,
 }: {
-  link?: ReactElement;
-  heading?: ReactElement;
-  text?: ReactElement;
+  link?: ReactNode;
+  heading?: ReactNode;
+  text?: ReactNode;
 }) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -38,7 +37,9 @@ export const NewsletterForm = ({
   const [error, setError] = useState<string | null>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     if (emailInputRef.current && !emailInputRef.current.checkValidity()) {
       setError(emailInputRef.current.validationMessage);
       return;
@@ -89,7 +90,7 @@ export const NewsletterForm = ({
   const defaultHeading = <h2 className="mt-0!">Subscribe to Live and Learn 🌱</h2>;
 
   return (
-    <div className="w-full mt-16">
+    <div className="mx-auto w-full max-w-prose mt-16 text-base leading-7">
       {success ? (
         <div className="rounded-md overflow-hidden p-3 py-3 bg-white dark:bg-gray-800 shadow-lg w-full">
           <div className="newsletter-success-ribbon w-full" />
@@ -125,8 +126,8 @@ export const NewsletterForm = ({
           {heading || defaultHeading}
           {text || defaultText}
 
-          <form className="form flex flex-col justify-center">
-            <div className="flex items-center">
+          <form className="form flex flex-col justify-center" onSubmit={handleSubmit}>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <input
                 name="email"
                 type="email"
@@ -134,7 +135,7 @@ export const NewsletterForm = ({
                 aria-describedby={error ? "email-error" : undefined}
                 required
                 autoComplete="email"
-                className={`pl-2 focus:outline-none w-1/2 bg-slate-100 dark:bg-gray-900  dark:text-white py-2.5 bg-inherit ${
+                className={`w-full sm:flex-1 pl-2 focus:outline-none bg-slate-100 dark:bg-gray-900  dark:text-white py-2.5 bg-inherit ${
                   error ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
                 }`}
                 value={email}
@@ -143,9 +144,8 @@ export const NewsletterForm = ({
                 ref={emailInputRef}
               />
               <FancyButton
-                onClick={handleSubmit}
                 type="submit"
-                className="w-40 flex justify-center min-h-fit ml-10"
+                className="w-full sm:w-40 flex justify-center min-h-fit"
                 disabled={loading}
                 aria-label="Subscribe to the newsletter"
               >

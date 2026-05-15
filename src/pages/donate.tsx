@@ -25,24 +25,32 @@ const platforms = [
   },
 ];
 
-export default function SupportPage() {
+export default function DonatePage() {
   return (
     <Layout
-      title="Support my work – ricos.site"
+      title="Donate – ricos.site"
       description="If the writing, photography, or open-source experiments here have been useful to you, here's how to throw a few euros my way."
-      url="support"
-      keywords={["support", "ko-fi", "patreon", "buy me a coffee", "sponsor", "Rico Trebeljahr"]}
+      url="donate"
+      keywords={[
+        "donate",
+        "support",
+        "ko-fi",
+        "patreon",
+        "buy me a coffee",
+        "sponsor",
+        "Rico Trebeljahr",
+      ]}
     >
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },
-          { name: "Support", url: "/support" },
+          { name: "Donate", url: "/donate" },
         ]}
       />
       <main className="py-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose prose dark:prose-invert">
-          <BreadCrumbs path="support" />
-          <h1 className="text-4xl mt-16!">Support my work</h1>
+          <BreadCrumbs path="donate" />
+          <h1 className="text-4xl mt-16!">Donate</h1>
 
           <p>
             Everything on this site — essays, photography, open-source experiments, the newsletter —

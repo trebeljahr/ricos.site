@@ -203,5 +203,10 @@ async function customRedirects() {
       destination: "/start-here",
       permanent: true,
     },
+    {
+      source: "/support",
+      destination: "/donate",
+      permanent: true,
+    },
   ];
 }

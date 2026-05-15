@@ -276,6 +276,37 @@ type SeoEntry = {
 
 const seoData: Record<string, SeoEntry> = seoMetadata as Record<string, SeoEntry>;
 
+const defaultCoverPaths = new Set<string>();
+let defaultCoverFlushTimer: ReturnType<typeof setTimeout> | undefined;
+
+function flushDefaultCoverWarnings() {
+  if (defaultCoverFlushTimer) {
+    clearTimeout(defaultCoverFlushTimer);
+    defaultCoverFlushTimer = undefined;
+  }
+
+  if (defaultCoverPaths.size === 0) return;
+
+  console.warn(
+    `[velite] ${defaultCoverPaths.size} entries use the default Midjourney cover. ` +
+      "Set VELITE_DEFAULT_COVER_WARNINGS=verbose to list paths.",
+  );
+  defaultCoverPaths.clear();
+}
+
+process.once("beforeExit", flushDefaultCoverWarnings);
+
+function recordDefaultCover(where: string) {
+  if (process.env.VELITE_DEFAULT_COVER_WARNINGS === "verbose") {
+    console.warn(`[velite] no cover image set — using default Midjourney cover for: ${where}`);
+    return;
+  }
+
+  defaultCoverPaths.add(where);
+  if (defaultCoverFlushTimer) clearTimeout(defaultCoverFlushTimer);
+  defaultCoverFlushTimer = setTimeout(flushDefaultCoverWarnings, 1000);
+}
+
 const parseGermanDate = (dateString: string) => {
   const [day, month, year] = dateString.split(".").map(Number);
   return new Date(year, month - 1, day).toISOString();
@@ -300,10 +331,8 @@ const commonFields = {
       const defaultCover = "assets/midjourney/the-door-to-the-ocean.jpg";
       const usingDefault = cover.src === "";
       if (usingDefault) {
-        // Surface entries that fall through to the shared default cover so
-        // they're easy to find and replace with something specific.
         const where = (ctx as { meta?: { path?: string } }).meta?.path ?? "(unknown source)";
-        console.warn(`[velite] no cover image set — using default Midjourney cover for: ${where}`);
+        recordDefaultCover(where);
       }
       const { width, height } = await getImgWidthAndHeightDuringBuild(
         usingDefault ? defaultCover : cover.src,

@@ -3,6 +3,43 @@ import { generateRedirects } from "./src/scripts/createRedirects.js";
 
 const isDev = process.argv.indexOf("dev") !== -1;
 const isBuild = process.argv.indexOf("build") !== -1;
+const veliteHmrFiles = [
+  "sectionDescriptions.json",
+  "posts.json",
+  "newsletters.json",
+  "booknotes.json",
+  "pages.json",
+  "podcastnotes.json",
+  "travelblogs.json",
+  "backlinks.json",
+  "r3f-links.json",
+];
+
+async function writeVeliteHmrStamps(files) {
+  const { mkdir, stat, writeFile } = await import("node:fs/promises");
+  const { resolve } = await import("node:path");
+  const stampDir = resolve(".velite/hmr");
+  await mkdir(stampDir, { recursive: true });
+
+  await Promise.all(
+    files.map(async (file) => {
+      const source = resolve(".velite", file);
+      let mtimeMs = 0;
+      let size = 0;
+      try {
+        const stats = await stat(source);
+        mtimeMs = stats.mtimeMs;
+        size = stats.size;
+      } catch {}
+
+      await writeFile(
+        resolve(stampDir, file),
+        JSON.stringify({ file, mtimeMs, size, updatedAt: Date.now() }),
+      );
+    }),
+  );
+}
+
 // VELITE_STARTED guard only applies to dev (HMR may re-import next.config).
 // Production builds always rebuild velite to avoid serving a stale/empty
 // .velite cache from an earlier Vercel build.
@@ -47,6 +84,7 @@ if (shouldRunVelite) {
   try {
     execSync("npx tsx src/scripts/generateBacklinks.ts", { stdio: "pipe" });
   } catch {}
+  await writeVeliteHmrStamps(veliteHmrFiles);
 }
 
 /** @type {import('next').NextConfig} */

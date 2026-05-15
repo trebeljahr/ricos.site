@@ -10,18 +10,18 @@ const platforms = [
     name: "Ko-fi",
     url: "https://ko-fi.com/trebeljahr",
     blurb:
-      "One-off tip jar. Buy me a coffee (or, realistically, a flat white)—no account required.",
+      "Simple one-off tip jar. Buy me a coffee or, realistically, a flat white. No account needed.",
   },
   {
     name: "Buy Me a Coffee",
     url: "https://buymeacoffee.com/trebeljahr",
-    blurb: "Same deal, different platform. Pick whichever you already have an account with.",
+    blurb: "Same idea, different button. Use whichever one already feels least annoying.",
   },
   {
     name: "Patreon",
     url: "https://www.patreon.com/RicoTrebeljahr",
     blurb:
-      "Monthly support if you'd like to keep the essays, code, and photography coming on a regular cadence.",
+      "Monthly support if you want to help make room for more essays, code experiments, photos, and newsletters.",
   },
 ];
 
@@ -29,7 +29,7 @@ export default function DonatePage() {
   return (
     <Layout
       title="Donate – ricos.site"
-      description="If the writing, photography, or open-source experiments here have been useful to you, here's how to throw a few euros my way."
+      description="If something here was useful or made your day a little better, here are a few ways to help me keep making more of it."
       url="donate"
       keywords={[
         "donate",
@@ -53,9 +53,14 @@ export default function DonatePage() {
           <h1 className="text-4xl mt-16!">Donate</h1>
 
           <p>
-            Everything on this site — essays, photography, open-source experiments, the newsletter —
-            is free and stays that way. If some of it has been useful to you and you'd like to help
-            keep it going, these are the easiest ways:
+            Most things I make here are free: essays, photos, notes, weird Three.js demos, the
+            newsletter. I like it that way. If you got something out of this site and feel like
+            sending a few euros back, that helps me buy time to make the next thing.
+          </p>
+
+          <p>
+            No pressure, obviously. The whole point of this place is that you can wander around
+            without having to pay first.
           </p>
 
           <ul className="not-prose mt-8 flex flex-col gap-4">
@@ -72,20 +77,20 @@ export default function DonatePage() {
             ))}
           </ul>
 
-          <h2 className="mt-12">Non-monetary ways to help</h2>
-          <p>Free things that also move the needle:</p>
+          <h2 className="mt-12">Other ways to help</h2>
+          <p>Money is nice, but it is not the only useful thing.</p>
           <ul>
             <li>
-              Share a piece you liked with someone who'd enjoy it — that's how the little audience
-              here got built in the first place.
+              Send a piece to a friend who would actually enjoy it. That is still the best kind of
+              distribution.
             </li>
             <li>
-              Reply to the newsletter. I read every reply and the best conversations I've had about
-              this stuff started there.
+              Reply to the newsletter. I read those, and some of my favorite conversations started
+              that way.
             </li>
             <li>
-              If you run a publication, podcast, or event and think I'd have something to
-              contribute, reach out. Contact info is on the{" "}
+              If you run a publication, podcast, event, or just know a place where this work would
+              fit, reach out. Contact info is on the{" "}
               <a href="/imprint" className="text-myBlue hover:underline">
                 imprint
               </a>{" "}
@@ -93,7 +98,7 @@ export default function DonatePage() {
             </li>
           </ul>
 
-          <p className="mt-10">Thanks for being here. 🌱</p>
+          <p className="mt-10">Thanks for being here and reading along. 🌱</p>
         </article>
 
         <footer className="mx-auto max-w-prose">

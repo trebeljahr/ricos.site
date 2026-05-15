@@ -1,9 +1,4 @@
-import {
-  GetObjectCommand,
-  HeadObjectCommand,
-  PutObjectCommand,
-  S3Client,
-} from "@aws-sdk/client-s3";
+import { GetObjectCommand, HeadObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 /**
  * Local image resize + cache — the dev-time replacement for the
  * CloudFront → ImgTransformationStack Lambda pipeline.
@@ -12,31 +7,29 @@ import {
  * Example:                     /api/img/assets/blog/colombia-2024/sad-art/1080.webp
  *
  * Architecture:
- *   - Source bucket: rclone serves the Obsidian assets folder (symlinked
- *     under .rclone-data/) as an S3 endpoint. No duplication — every file
- *     on disk IS the S3 object. Prod uses real S3 for this; dev uses
- *     rclone. Code is identical.
+ *   - Source bucket: the local AWS SDK v3 mock serves a bucket directory whose
+ *     assets folder is symlinked to Obsidian. No asset bytes are duplicated.
+ *     Prod uses real S3 for this; dev uses the local mock. Code is identical.
  *
- *   - Resized bucket: rclone-backed writable directory. Populated via S3
- *     PUT on cache misses. Persistent between dev runs, inspectable via
- *     any S3 browser, queryable via the drift tool.
+ *   - Resized bucket: mock-backed writable directory. Populated via S3
+ *     PUT on cache misses. Persistent between dev runs, inspectable on disk,
+ *     and queryable via the drift tool.
  *
  * Flow:
  *   1. Parse URL → derive source key + requested width.
  *   2. Fast path: if the resized bucket already has this variant, stream it.
- *   3. Miss: GET source from rclone, resize with sharp, PUT variant to
- *      rclone, stream the response.
+ *   3. Miss: GET source from the local mock, resize with sharp, PUT variant
+ *      back to the mock, stream the response.
  *
  * Only runs when NEXT_PUBLIC_IMAGE_BACKEND=local. In prod it's dead code.
  */
 import type { NextApiRequest, NextApiResponse } from "next";
 import sharp from "sharp";
+import { createS3Client } from "src/lib/aws";
 import { imageSizes } from "src/lib/mapToImageProps";
 
 const SOURCE_BUCKET = "images.trebeljahr.com";
 const RESIZED_BUCKET = "images.trebeljahr.com.resized";
-
-const ENDPOINT = process.env.S3_ENDPOINT ?? `http://localhost:${process.env.S3_API_PORT ?? "9200"}`;
 
 // Hybrid fallback: if the source image isn't on disk locally, fall back to
 // the deployed CloudFront URL. Lets dev keep working when only some images
@@ -45,25 +38,37 @@ const CLOUDFRONT_ID = process.env.NEXT_PUBLIC_CLOUDFRONT_ID;
 const ALLOW_CLOUDFRONT_FALLBACK =
   process.env.IMAGE_FALLBACK_CLOUDFRONT !== "false" && Boolean(CLOUDFRONT_ID);
 
-// One shared client per process. When S3_ENDPOINT is set we're in local-dev
-// mode — use MinIO credentials (from S3_ACCESS_KEY_ID / S3_SECRET_ACCESS_KEY,
-// defaulting to minioadmin/minioadmin). DO NOT fall through to AWS_* in local
-// mode: .env typically contains real AWS credentials which rclone would reject.
-const client = new S3Client({
-  region: process.env.AWS_REGION ?? "eu-west-2",
-  endpoint: ENDPOINT,
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY_ID ?? "minioadmin",
-    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY ?? "minioadmin",
-  },
-  forcePathStyle: true,
-});
+// One shared client per process. In local-dev mode this is the file-backed
+// mock client; in endpoint/cloud mode createS3Client keeps the old AWS path.
+const client = createS3Client();
 
 const SOURCE_EXTS = ["jpg", "jpeg", "png", "webp", "gif", "avif"];
+
+type ByteArrayBody = {
+  transformToByteArray(): Promise<Uint8Array>;
+};
+
+function hasTransformToByteArray(value: unknown): value is ByteArrayBody {
+  if (!value || typeof value !== "object") return false;
+  const maybeBody = value as { transformToByteArray?: unknown };
+  return typeof maybeBody.transformToByteArray === "function";
+}
+
+function httpStatus(error: unknown): number | undefined {
+  if (!error || typeof error !== "object") return undefined;
+  return (error as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode;
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "unknown";
+}
 
 async function streamToBuffer(stream: NodeJS.ReadableStream | Blob | unknown) {
   if (stream instanceof Blob) {
     return Buffer.from(await stream.arrayBuffer());
+  }
+  if (hasTransformToByteArray(stream)) {
+    return Buffer.from(await stream.transformToByteArray());
   }
   const chunks: Buffer[] = [];
   for await (const chunk of stream as AsyncIterable<Buffer | Uint8Array>) {
@@ -76,10 +81,10 @@ async function bucketHas(bucket: string, key: string): Promise<boolean> {
   try {
     await client.send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
     return true;
-  } catch (e: any) {
-    const status = e?.$metadata?.httpStatusCode;
+  } catch (error: unknown) {
+    const status = httpStatus(error);
     if (status === 404 || status === 403) return false;
-    throw e;
+    throw error;
   }
 }
 
@@ -94,11 +99,11 @@ async function readSource(logicalKey: string): Promise<Buffer | null> {
     try {
       const r = await client.send(new GetObjectCommand({ Bucket: SOURCE_BUCKET, Key: candidate }));
       if (!r.Body) continue;
-      return await streamToBuffer(r.Body as any);
-    } catch (e: any) {
-      const status = e?.$metadata?.httpStatusCode;
+      return await streamToBuffer(r.Body);
+    } catch (error: unknown) {
+      const status = httpStatus(error);
       if (status === 404 || status === 403) continue;
-      throw e;
+      throw error;
     }
   }
   return null;
@@ -107,7 +112,7 @@ async function readSource(logicalKey: string): Promise<Buffer | null> {
 async function readResized(key: string): Promise<Buffer> {
   const r = await client.send(new GetObjectCommand({ Bucket: RESIZED_BUCKET, Key: key }));
   if (!r.Body) throw new Error("empty body");
-  return streamToBuffer(r.Body as any);
+  return streamToBuffer(r.Body);
 }
 
 async function writeResized(key: string, body: Buffer): Promise<void> {
@@ -184,17 +189,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const output = await pipeline.toBuffer();
 
     // 3. Write-through cache, then respond.
-    await writeResized(variantKey, output).catch((err) => {
-      console.warn(`[/api/img] failed to cache ${variantKey}:`, err.message);
+    await writeResized(variantKey, output).catch((error) => {
+      console.warn(`[/api/img] failed to cache ${variantKey}:`, errorMessage(error));
     });
 
     res.setHeader("Content-Type", "image/webp");
     res.setHeader("X-Image-Cache", "MISS");
     res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
     res.status(200).send(output);
-  } catch (e: any) {
-    console.error(`[/api/img] error for ${variantKey}:`, e);
-    res.status(500).send(`image pipeline error: ${e?.message ?? "unknown"}`);
+  } catch (error: unknown) {
+    console.error(`[/api/img] error for ${variantKey}:`, error);
+    res.status(500).send(`image pipeline error: ${errorMessage(error)}`);
   }
 }
 

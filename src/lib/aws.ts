@@ -2,6 +2,7 @@ import { HeadObjectCommand, ListObjectsV2Command, S3Client } from "@aws-sdk/clie
 import "dotenv/config";
 import pLimit from "p-limit";
 import { getMetadataFromJsonFile, type ImageMetadata } from "src/lib/imageMetadata";
+import { createLocalS3Client } from "src/lib/localS3";
 
 export async function getImageMetadataFromS3(Bucket: string, Key: string): Promise<ImageMetadata> {
   const client = createS3Client();
@@ -68,26 +69,28 @@ export async function getAllStorageObjectKeys(Bucket: string, Prefix = "") {
 export const photographyFolder = "assets/photography/";
 
 export function createS3Client() {
-  // Dual-mode: cloud (real AWS) or local (MinIO). Presence of S3_ENDPOINT
-  // flips to local mode. We keep credentials namespaces separate:
-  //   AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY  → real AWS (.env)
-  //   S3_ACCESS_KEY_ID  / S3_SECRET_ACCESS_KEY   → MinIO (local dev)
-  // This avoids sending real AWS keys to MinIO (which rejects them) and
-  // vice-versa.
+  // Dual-mode: cloud (real AWS) or local mock. NEXT_PUBLIC_IMAGE_BACKEND=local
+  // uses a file-backed AWS SDK v3 mock. S3_ENDPOINT remains supported for
+  // explicit endpoint testing.
   const endpoint = process.env.S3_ENDPOINT;
-  const isLocal = Boolean(endpoint);
+  const useLocalMock =
+    !endpoint &&
+    (process.env.NEXT_PUBLIC_IMAGE_BACKEND === "local" || process.env.IMAGE_BACKEND === "local");
+  if (useLocalMock) return createLocalS3Client();
 
-  const accessKeyId = isLocal
-    ? (process.env.S3_ACCESS_KEY_ID ?? "minioadmin")
+  const isEndpointLocal = Boolean(endpoint);
+
+  const accessKeyId = isEndpointLocal
+    ? (process.env.S3_ACCESS_KEY_ID ?? "S3RVER")
     : process.env.AWS_ACCESS_KEY_ID;
-  const secretAccessKey = isLocal
-    ? (process.env.S3_SECRET_ACCESS_KEY ?? "minioadmin")
+  const secretAccessKey = isEndpointLocal
+    ? (process.env.S3_SECRET_ACCESS_KEY ?? "S3RVER")
     : process.env.AWS_SECRET_ACCESS_KEY;
-  const awsRegion = process.env.AWS_REGION ?? (isLocal ? "eu-west-2" : undefined);
+  const awsRegion = process.env.AWS_REGION ?? (isEndpointLocal ? "eu-west-2" : undefined);
 
   if (!accessKeyId || !secretAccessKey || !awsRegion) {
     throw new Error(
-      isLocal
+      isEndpointLocal
         ? "S3_ACCESS_KEY_ID / S3_SECRET_ACCESS_KEY / AWS_REGION not set"
         : "No AWS credentials provided",
     );

@@ -26,5 +26,5 @@ export const aboutNavigation: NavItem[] = [
   { label: "now", href: "/now" },
   { label: "principles", href: "/principles" },
   { label: "1-month-projects", href: "/1-month-projects" },
-  { label: "support", href: "/support" },
+  { label: "donate", href: "/donate" },
 ];

@@ -4,7 +4,7 @@ import Link from "next/link";
  * Tiny site-wide footer rendered at the bottom of every Layout. Keep this
  * lean — it's on every page and most visitors don't engage with footers.
  * Just enough to surface the things people occasionally hunt for: RSS,
- * support, legal.
+ * donations, legal.
  */
 export const SiteFooter = () => {
   const year = new Date().getFullYear();
@@ -13,8 +13,8 @@ export const SiteFooter = () => {
       <div className="mx-auto max-w-(--breakpoint-lg) flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <span>© {year} Rico Trebeljahr</span>
         <nav className="flex flex-wrap gap-x-5 gap-y-2">
-          <Link href="/support" className="hover:text-myBlue">
-            Support
+          <Link href="/donate" className="hover:text-myBlue">
+            Donate
           </Link>
           <a
             href="/rss.xml"

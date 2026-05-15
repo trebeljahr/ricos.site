@@ -94,34 +94,28 @@ function titleFromPath(path: string) {
   return turnKebabIntoTitleCase(lastPart);
 }
 
-const R3F_FALLBACK_COVER = {
-  src: "/assets/blog/network.jpg",
-  alt: "a network of connected dots",
-  width: 1200,
-  height: 630,
-};
-
 export function getR3fTimelineEntries(): TimelineEntry[] {
-  return Object.entries(r3fCreatedAtByPath).map(([href, date]) => {
+  return Object.entries(r3fCreatedAtByPath).flatMap(([href, date]) => {
     const seo = getSeoEntry(href);
-    return {
-      id: `r3f:${href}`,
-      href,
-      type: "r3f",
-      typeLabel: "R3F demo",
-      title: seo?.metaTitle || titleFromPath(href),
-      excerpt: seo?.metaDescription,
-      date,
-      datePrecision: "day",
-      cover: seo?.ogImage
-        ? {
-            src: seo.ogImage,
-            alt: seo.ogImageAlt || seo?.metaTitle || titleFromPath(href),
-            width: 1200,
-            height: 630,
-          }
-        : R3F_FALLBACK_COVER,
-    };
+    if (!seo?.ogImage) return [];
+    return [
+      {
+        id: `r3f:${href}`,
+        href,
+        type: "r3f" as const,
+        typeLabel: "R3F demo",
+        title: seo.metaTitle || titleFromPath(href),
+        excerpt: seo.metaDescription,
+        date,
+        datePrecision: "day" as const,
+        cover: {
+          src: seo.ogImage,
+          alt: seo.ogImageAlt || seo.metaTitle || titleFromPath(href),
+          width: 1200,
+          height: 630,
+        },
+      },
+    ];
   });
 }
 

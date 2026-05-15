@@ -41,7 +41,7 @@ export const navGroups: NavGroup[] = [
       { label: "needlestack", href: "/needlestack" },
       { label: "principles", href: "/principles" },
       { label: "categories", href: "/categories" },
-      { label: "everything", href: "/everything" },
+      { label: "timeline", href: "/timeline" },
     ],
   },
 ];

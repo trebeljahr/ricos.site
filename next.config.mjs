@@ -247,5 +247,10 @@ async function customRedirects() {
       destination: "/donate",
       permanent: true,
     },
+    {
+      source: "/everything",
+      destination: "/timeline",
+      permanent: true,
+    },
   ];
 }

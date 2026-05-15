@@ -52,26 +52,26 @@ function getPhotographyEntries(
   });
 }
 
-export default function Everything({ entries, seo }: Props) {
-  const url = "everything";
+export default function Timeline({ entries, seo }: Props) {
+  const url = "timeline";
 
   return (
     <Layout
-      title={seo?.metaTitle || "Everything"}
+      title={seo?.metaTitle || "Timeline"}
       description={
         seo?.metaDescription ||
         "Everything published on ricos.site in one chronological stream: writing, notes, travel, photography, and R3F demos."
       }
       image={seo?.ogImage || "/assets/blog/network.jpg"}
       imageAlt={seo?.ogImageAlt || "a network of connected dots"}
-      keywords={seo?.keywords || ["everything", "timeline", "writing", "photography", "r3f"]}
+      keywords={seo?.keywords || ["timeline", "writing", "photography", "r3f"]}
       url={url}
     >
       <main className="py-20 px-3 max-w-(--breakpoint-lg) mx-auto">
         <BreadCrumbs path={url} />
 
         <section className="mb-14">
-          <Header title="Everything" />
+          <Header title="Timeline" />
         </section>
 
         <TimelineList entries={entries} initialCount={24} batchSize={16} />
@@ -124,7 +124,7 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
   return {
     props: {
       entries: toSerializableTimelineEntries(entries),
-      seo: getSeoInfo("/everything"),
+      seo: getSeoInfo("/timeline"),
     },
   };
 };

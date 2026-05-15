@@ -140,14 +140,101 @@ export function toTimelineEntries(
 }
 
 export function sortTimelineEntries(entries: TimelineEntry[]) {
-  return [...entries].sort((a, b) => {
+  const sorted = [...entries].sort((a, b) => {
     const aTime = getTimelineUtcDate(a)?.getTime();
     const bTime = getTimelineUtcDate(b)?.getTime();
     if (aTime === undefined && bTime === undefined) return a.title.localeCompare(b.title);
     if (aTime === undefined) return 1;
     if (bTime === undefined) return -1;
-    return bTime - aTime;
+    if (aTime !== bTime) return bTime - aTime;
+    return typeOrder(a.type) - typeOrder(b.type);
   });
+  return interleaveByType(sorted);
+}
+
+const typeRotation: TimelineEntryType[] = [
+  "essay",
+  "r3f",
+  "newsletter",
+  "photography",
+  "booknote",
+  "travel",
+  "podcast",
+  "page",
+];
+const typeOrderMap = new Map(typeRotation.map((t, i) => [t, i]));
+function typeOrder(t: TimelineEntryType) {
+  return typeOrderMap.get(t) ?? typeRotation.length;
+}
+
+const MAX_RUN = 3;
+
+function interleaveByType(sorted: TimelineEntry[]): TimelineEntry[] {
+  const result: TimelineEntry[] = [];
+  const deferred: TimelineEntry[] = [];
+
+  for (const entry of sorted) {
+    flushDeferred(result, deferred);
+    if (tailRun(result, entry.type) < MAX_RUN) {
+      result.push(entry);
+    } else {
+      deferred.push(entry);
+    }
+  }
+
+  spreadDeferred(result, deferred);
+  return result;
+}
+
+function flushDeferred(result: TimelineEntry[], deferred: TimelineEntry[]) {
+  let i = 0;
+  while (i < deferred.length) {
+    if (tailRun(result, deferred[i].type) < MAX_RUN) {
+      result.push(deferred.splice(i, 1)[0]);
+    } else {
+      i++;
+    }
+  }
+}
+
+function spreadDeferred(result: TimelineEntry[], deferred: TimelineEntry[]) {
+  if (deferred.length === 0) return;
+
+  const gaps: number[] = [];
+  for (let i = 1; i < result.length; i++) {
+    if (result[i].type !== deferred[0].type) gaps.push(i);
+  }
+
+  if (gaps.length === 0) {
+    result.push(...deferred);
+    return;
+  }
+
+  let gapIdx = gaps.length - 1;
+  const perGap = Math.max(1, Math.ceil(deferred.length / gaps.length));
+  let dIdx = deferred.length - 1;
+
+  while (dIdx >= 0 && gapIdx >= 0) {
+    const batch: TimelineEntry[] = [];
+    for (let n = 0; n < perGap && dIdx >= 0; n++, dIdx--) {
+      batch.unshift(deferred[dIdx]);
+    }
+    result.splice(gaps[gapIdx], 0, ...batch);
+    gapIdx--;
+  }
+
+  while (dIdx >= 0) {
+    result.push(deferred[dIdx--]);
+  }
+}
+
+function tailRun(list: TimelineEntry[], type: TimelineEntryType) {
+  let run = 0;
+  for (let i = list.length - 1; i >= 0; i--) {
+    if (list[i].type === type) run++;
+    else break;
+  }
+  return run;
 }
 
 export function getTimelineYear(entry: TimelineEntry) {

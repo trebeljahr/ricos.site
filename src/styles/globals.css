@@ -43,6 +43,10 @@
   color: var(--color-myBlue);
 }
 
+details.callout-root[open] > summary .callout-chevron {
+  transform: rotate(90deg);
+}
+
 h1,
 h2,
 h3,

@@ -18,6 +18,7 @@ export const RicosSiteBanner = () => {
         alt="ricos.site logo of a chemistry beaker"
         width={32}
         height={32}
+        unoptimized
       />
       <span className="ml-1 text-xl font-bold">ricos.site</span>
     </Link>

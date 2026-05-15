@@ -1,33 +1,16 @@
 // JSON reads stay dynamic so Turbopack does not bundle large Velite outputs.
-// The tiny stamp requires below give dev HMR a cheap dependency to invalidate.
+// Stamp reads are optional; keep them hidden from static analysis so clean dev
+// starts do not warn when .velite/hmr has not been created yet.
 
 function trackVeliteHmr(filename: string) {
   try {
-    switch (filename) {
-      case "sectionDescriptions.json":
-        require("../../.velite/hmr/sectionDescriptions.json");
-        break;
-      case "posts.json":
-        require("../../.velite/hmr/posts.json");
-        break;
-      case "newsletters.json":
-        require("../../.velite/hmr/newsletters.json");
-        break;
-      case "booknotes.json":
-        require("../../.velite/hmr/booknotes.json");
-        break;
-      case "pages.json":
-        require("../../.velite/hmr/pages.json");
-        break;
-      case "podcastnotes.json":
-        require("../../.velite/hmr/podcastnotes.json");
-        break;
-      case "travelblogs.json":
-        require("../../.velite/hmr/travelblogs.json");
-        break;
-      case "backlinks.json":
-        require("../../.velite/hmr/backlinks.json");
-        break;
+    // biome-ignore lint/security/noGlobalEval: hide optional dev stamp reads from Turbopack
+    const fs = eval("require")("fs");
+    // biome-ignore lint/security/noGlobalEval: hide optional dev stamp reads from Turbopack
+    const path = eval("require")("path");
+    const stampPath = path.resolve(process.cwd(), ".velite", "hmr", filename);
+    if (fs.existsSync(stampPath)) {
+      fs.readFileSync(stampPath, "utf-8");
     }
   } catch {
     // Missing stamps should not block scripts or a first clean build.

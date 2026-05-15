@@ -5,6 +5,17 @@ import chokidar from "chokidar";
 const VELITE_DIR = resolve(process.cwd(), ".velite");
 const HMR_DIR = resolve(VELITE_DIR, "hmr");
 const DEBOUNCE_MS = 75;
+const HMR_FILES = [
+  "sectionDescriptions.json",
+  "posts.json",
+  "newsletters.json",
+  "booknotes.json",
+  "pages.json",
+  "podcastnotes.json",
+  "travelblogs.json",
+  "backlinks.json",
+  "r3f-links.json",
+];
 
 const timers = new Map<string, NodeJS.Timeout>();
 
@@ -44,12 +55,10 @@ function schedule(filePath: string) {
 async function seedExistingStamps() {
   try {
     await mkdir(VELITE_DIR, { recursive: true });
+    await mkdir(HMR_DIR, { recursive: true });
     const files = await readdir(VELITE_DIR);
-    await Promise.all(
-      files
-        .filter((file) => file.endsWith(".json"))
-        .map((file) => writeStamp(resolve(VELITE_DIR, file))),
-    );
+    const jsonFiles = new Set([...HMR_FILES, ...files.filter((file) => file.endsWith(".json"))]);
+    await Promise.all(Array.from(jsonFiles).map((file) => writeStamp(resolve(VELITE_DIR, file))));
   } catch {}
 }
 

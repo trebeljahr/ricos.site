@@ -243,7 +243,7 @@ export const CalloutRoot: FC<CalloutRootProps> = ({
       isFoldable={isFoldable}
       defaultFolded={defaultFolded}
       className={clsx(
-        "group/root my-6 space-y-2 rounded-lg border bg-card p-2",
+        "callout-root my-6 space-y-2 rounded-lg border bg-card p-2",
         callout.className.root,
         className,
       )}
@@ -276,7 +276,7 @@ export const CalloutTitle: FC<CalloutTitleProps> = ({
       {callout.icon}
       <span>{children ?? callout.label}</span>
       {isFoldable && (
-        <FaChevronRight className="size-3 shrink-0 transition-transform group-open/root:rotate-90" />
+        <FaChevronRight className="callout-chevron size-3 shrink-0 transition-transform" />
       )}
     </Summary>
   );

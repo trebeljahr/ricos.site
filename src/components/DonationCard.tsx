@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ExternalLink } from "./ExternalLink";
 
 type DonationMode = "monthly" | "once";
@@ -76,17 +76,41 @@ const fallbackLinks = [
 
 const hasMonthlyLinks = monthlyOptions.some((option) => option.href);
 const hasOneTimeLinks = oneTimeOptions.some((option) => option.href);
+const hasAnyStripeLinks = hasMonthlyLinks || hasOneTimeLinks;
 const defaultDonationMode: DonationMode = hasMonthlyLinks || !hasOneTimeLinks ? "monthly" : "once";
 
 type DonationCardProps = {
   className?: string;
 };
 
+function FallbackDonationLinks() {
+  return (
+    <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+      {fallbackLinks.map((link) => (
+        <ExternalLink
+          key={link.name}
+          href={link.url}
+          className="inline-flex min-h-14 flex-1 basis-48 flex-col justify-center rounded-md border-2 border-gray-200 px-4 py-3 no-underline transition-colors hover:border-myBlue dark:border-gray-700"
+        >
+          <span className="font-semibold text-gray-900 dark:text-white">{link.name}</span>
+          <span className="mt-1 text-sm text-gray-600 dark:text-gray-300">{link.blurb}</span>
+        </ExternalLink>
+      ))}
+    </div>
+  );
+}
+
 export function DonationCard({ className }: DonationCardProps) {
+  const [isMounted, setIsMounted] = useState(false);
   const [mode, setMode] = useState<DonationMode>(defaultDonationMode);
   const options = mode === "monthly" ? monthlyOptions : oneTimeOptions;
   const configuredOptions = options.filter((option) => option.href);
   const hasStripeLinks = configuredOptions.length > 0;
+  const showStripeControls = isMounted && hasAnyStripeLinks;
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <section className={clsx("not-prose w-full", className)} aria-labelledby="donation-card-title">
@@ -101,69 +125,76 @@ export function DonationCard({ className }: DonationCardProps) {
           going.
         </p>
 
-        <div className="mt-6 inline-flex rounded-md border-2 border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-900">
-          {[
-            ["monthly", "Monthly"],
-            ["once", "One-time"],
-          ].map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              className={clsx(
-                "min-w-24 rounded-sm px-4 py-2 text-sm font-semibold transition-colors",
-                mode === value
-                  ? "bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white"
-                  : "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white",
-              )}
-              aria-pressed={mode === value}
-              onClick={() => setMode(value as DonationMode)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        {showStripeControls ? (
+          <>
+            <div className="mt-6 inline-flex rounded-md border-2 border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-900">
+              {[
+                ["monthly", "Monthly"],
+                ["once", "One-time"],
+              ].map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  className={clsx(
+                    "min-w-24 rounded-sm px-4 py-2 text-sm font-semibold transition-colors",
+                    mode === value
+                      ? "bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white"
+                      : "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white",
+                  )}
+                  aria-pressed={mode === value}
+                  onClick={() => setMode(value as DonationMode)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
 
-        {hasStripeLinks ? (
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            {configuredOptions.map((option) => (
-              <ExternalLink
-                key={option.label}
-                href={option.href ?? "#"}
-                className="group flex min-h-24 flex-col justify-between rounded-md border-2 border-gray-200 px-4 py-3 no-underline transition-colors hover:border-myBlue dark:border-gray-700"
-              >
-                <span className="text-xl font-bold text-gray-900 dark:text-white">
-                  {option.label}
-                  {mode === "monthly" ? " / month" : ""}
-                </span>
-                <span className="mt-2 text-sm text-gray-600 group-hover:text-gray-800 dark:text-gray-300 dark:group-hover:text-gray-100">
-                  {option.note}
-                </span>
-              </ExternalLink>
-            ))}
-          </div>
+            {hasStripeLinks ? (
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                {configuredOptions.map((option) => (
+                  <ExternalLink
+                    key={option.label}
+                    href={option.href ?? "#"}
+                    className="group flex min-h-24 flex-col justify-between rounded-md border-2 border-gray-200 px-4 py-3 no-underline transition-colors hover:border-myBlue dark:border-gray-700"
+                  >
+                    <span className="text-xl font-bold text-gray-900 dark:text-white">
+                      {option.label}
+                      {mode === "monthly" ? " / month" : ""}
+                    </span>
+                    <span className="mt-2 text-sm text-gray-600 group-hover:text-gray-800 dark:text-gray-300 dark:group-hover:text-gray-100">
+                      {option.note}
+                    </span>
+                  </ExternalLink>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-5 rounded-md border-2 border-dashed border-gray-200 px-4 py-3 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-300">
+                Direct Stripe donations are coming online. Until then, the older doors below still
+                work.
+              </p>
+            )}
+
+            <details className="mt-5 text-sm text-gray-600 dark:text-gray-300">
+              <summary className="w-fit cursor-pointer font-semibold hover:text-myBlue">
+                Prefer another platform?
+              </summary>
+              <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                {fallbackLinks.map((link) => (
+                  <ExternalLink
+                    key={link.name}
+                    href={link.url}
+                    className="rounded-md border border-gray-200 px-3 py-2 no-underline transition-colors hover:border-myBlue dark:border-gray-700"
+                  >
+                    <span className="font-semibold text-gray-900 dark:text-white">{link.name}</span>
+                    <span className="ml-2 text-gray-600 dark:text-gray-300">{link.blurb}</span>
+                  </ExternalLink>
+                ))}
+              </div>
+            </details>
+          </>
         ) : (
-          <p className="mt-5 rounded-md border-2 border-dashed border-gray-200 px-4 py-3 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-300">
-            Direct Stripe donations are coming online. Until then, the older doors below still work.
-          </p>
+          <FallbackDonationLinks />
         )}
-
-        <details className="mt-5 text-sm text-gray-600 dark:text-gray-300">
-          <summary className="w-fit cursor-pointer font-semibold hover:text-myBlue">
-            Prefer another platform?
-          </summary>
-          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-            {fallbackLinks.map((link) => (
-              <ExternalLink
-                key={link.name}
-                href={link.url}
-                className="rounded-md border border-gray-200 px-3 py-2 no-underline transition-colors hover:border-myBlue dark:border-gray-700"
-              >
-                <span className="font-semibold text-gray-900 dark:text-white">{link.name}</span>
-                <span className="ml-2 text-gray-600 dark:text-gray-300">{link.blurb}</span>
-              </ExternalLink>
-            ))}
-          </div>
-        </details>
       </div>
     </section>
   );

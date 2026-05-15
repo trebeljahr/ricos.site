@@ -11,3 +11,9 @@ I want to commit to writing for this blog, every day of the week, every week, pu
 This site should also serve as an artifact, that shows who I am and what I am doing. To showcase what I think and read. It should aggregate my learnigns and life lessons in a digestable form and help me organize my thoughts and serve as a reminder to myself. Of what I want to do and where I want to go. Furthermore it might one day be a valuable resource to other people besides myself. 
 
 But that would be an added benefit not the main goal behind creating it.  
+
+## Local Development
+
+The donate card reads Stripe Payment Link URLs from `.env.local`.
+
+Use `.env.example` as the list of required keys. The `NEXT_PUBLIC_STRIPE_DONATION_*_URL` values are public checkout URLs, not Stripe API secrets. Keep actual Stripe secret keys out of client-facing env vars.

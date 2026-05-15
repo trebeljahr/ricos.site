@@ -71,12 +71,27 @@ function datePartsToDateOnly(parts: Intl.DateTimeFormatPart[]) {
   return `${partMap.year}-${partMap.month}-${partMap.day}`;
 }
 
-function normalizeTimelineDate(date?: string) {
-  if (!date) return undefined;
-  if (dateOnlyPattern.test(date)) return date;
+function toUtcDate(year: number, month: number, day: number) {
+  const date = new Date(Date.UTC(year, month - 1, day));
 
-  const parsed = new Date(date);
-  if (Number.isNaN(parsed.getTime())) return undefined;
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    return undefined;
+  }
+
+  return date;
+}
+
+function normalizeTimelineDate(date?: string) {
+  const value = date?.trim();
+  if (!value) return undefined;
+  if (dateOnlyPattern.test(value)) return value;
+
+  const parsed = new Date(value);
+  if (!Number.isFinite(parsed.getTime())) return undefined;
 
   return datePartsToDateOnly(datePartFormatter.formatToParts(parsed));
 }
@@ -89,7 +104,7 @@ function getTimelineUtcDate(entry: TimelineEntry) {
   if (!match) return undefined;
 
   const [, year, month, day] = match;
-  return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+  return toUtcDate(Number(year), Number(month), Number(day));
 }
 
 export function toTimelineEntries(

@@ -57,12 +57,14 @@ export function HorizontalCard({
         </div>
         <div className="p-5 lg:pl-10 md:border-t-4 md:border-r-4 md:border-b-4 max-md:rounded-bl-lg max-md:rounded-br-lg md:rounded-tr-lg md:rounded-br-lg border-gray-200 dark:border-gray-700 prose-headings:mt-2 prose-p:text-zinc-800 dark:prose-p:text-slate-300 w-fit font-normal">
           <div className="max-w-prose">
-            {typeLabel && (
-              <span className="inline-block rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wide px-3 py-1 mb-3 not-prose">
-                {typeLabel}
-              </span>
-            )}
-            {title && <h2 className="pt-0 font-bold leading-snug">{title}</h2>}
+            <div className="flex items-start justify-between gap-3">
+              {title && <h2 className="pt-0 font-bold leading-snug grow">{title}</h2>}
+              {typeLabel && (
+                <span className="shrink-0 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wide px-3 py-1 mt-2 not-prose">
+                  {typeLabel}
+                </span>
+              )}
+            </div>
             {subtitle && <p className="font-normal text-base">{subtitle}</p>}
             {markdownExcerpt ? (
               <MDXExcerpt source={markdownExcerpt} />

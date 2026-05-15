@@ -157,7 +157,7 @@ export default function NowHistory({ entries }: Props) {
                 {showDiff && selected.diff ? (
                   <DiffView diff={selected.diff} />
                 ) : (
-                  <div className="prose dark:prose-invert max-w-none">
+                  <div className="prose md:prose-lg xl:prose-xl dark:prose-invert max-w-none">
                     <NowMDX
                       code={selected.content.code}
                       frontmatter={selected.content.frontmatter}

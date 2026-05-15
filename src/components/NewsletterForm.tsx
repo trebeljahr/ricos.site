@@ -90,7 +90,7 @@ export const NewsletterForm = ({
   const defaultHeading = <h2 className="mt-0!">Subscribe to Live and Learn 🌱</h2>;
 
   return (
-    <div className="mx-auto w-full max-w-prose mt-16 text-base leading-7">
+    <div className="mx-auto w-full max-w-prose mt-16">
       {success ? (
         <div className="rounded-md overflow-hidden p-3 py-3 bg-white dark:bg-gray-800 shadow-lg w-full">
           <div className="newsletter-success-ribbon w-full" />

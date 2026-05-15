@@ -103,11 +103,11 @@ export default function ImprintPage() {
           <p>
             Favicon:{" "}
             <a
-              href="https://www.flaticon.com/free-icons/sapling"
-              title="sapling icons"
+              href="https://www.flaticon.com/free-icons/flask"
+              title="flask icons"
               className="text-myBlue hover:underline"
             >
-              Sapling icons created by KP Arts - Flaticon
+              Flask icons created by Freepik - Flaticon
             </a>
             .
           </p>

@@ -24,14 +24,11 @@ export const navGroups: NavGroup[] = [
     items: [
       { label: "galleries", href: "/photography" },
       { label: "best of", href: "/photography/best-of" },
-      { label: "photo essays", href: "/photography/essays" },
-      { label: "prints", href: "/photography/prints" },
     ],
   },
   {
     label: "projects",
     items: [
-      { label: "art & drawings", href: "/art" },
       { label: "3D playground", href: "/r3f" },
       { label: "midjourney", href: "/midjourney" },
       { label: "1-month projects", href: "/1-month-projects" },

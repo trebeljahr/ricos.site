@@ -92,7 +92,6 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
   const newsletters: CommonMetadata[] = loadVeliteData("newsletters.json");
   const travelblogs: CommonMetadata[] = loadVeliteData("travelblogs.json");
   const booknotes: CommonMetadata[] = loadVeliteData("booknotes.json");
-  const podcastnotes: CommonMetadata[] = loadVeliteData("podcastnotes.json");
   const pages: CommonMetadata[] = loadVeliteData("pages.json");
 
   const tripsMeta = await Promise.all(
@@ -114,7 +113,6 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
       booknotes.filter((booknote) => byOnlyPublished(booknote) && booknote.summary),
       "Booknote",
     ),
-    ...toTimelineEntries(podcastnotes.filter(byOnlyPublished), "Podcastnote"),
   ];
   const entries = [
     ...writingEntries,

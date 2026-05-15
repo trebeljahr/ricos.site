@@ -265,7 +265,6 @@ export async function getStaticProps() {
     loadVeliteData("booknotes.json"),
     loadVeliteData("pages.json"),
     loadVeliteData("newsletters.json"),
-    loadVeliteData("podcastnotes.json"),
     loadVeliteData("travelblogs.json"),
   ];
   const allDocs = buckets.flat().filter(byOnlyPublished);

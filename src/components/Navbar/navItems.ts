@@ -15,7 +15,6 @@ export const navGroups: NavGroup[] = [
       { label: "essays", href: "/posts" },
       { label: "newsletters", href: "/newsletters" },
       { label: "travel stories", href: "/travel" },
-      { label: "podcast notes", href: "/podcastnotes" },
     ],
   },
   {

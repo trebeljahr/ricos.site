@@ -22,7 +22,6 @@ function generateSearchIndex() {
   const newsletters = loadJson("newsletters.json");
   const booknotes = loadJson("booknotes.json");
   const travelblogs = loadJson("travelblogs.json");
-  const podcastnotes = loadJson("podcastnotes.json");
   const pages = loadJson("pages.json");
 
   const items: SearchItem[] = [];
@@ -68,17 +67,6 @@ function generateSearchIndex() {
       link: t.link,
       type: "Travel",
       tags: t.tags || "",
-    });
-  }
-
-  for (const p of podcastnotes) {
-    if (!p.published) continue;
-    items.push({
-      title: p.title,
-      description: p.excerpt || p.metaDescription || "",
-      link: p.link,
-      type: "Podcast",
-      tags: p.tags || "",
     });
   }
 

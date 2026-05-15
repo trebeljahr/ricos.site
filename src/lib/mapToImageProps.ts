@@ -5,7 +5,7 @@ export const imageSizes = [
 ];
 
 // In local-dev mode, images are served from the in-process /api/img route
-// (which reads from local MinIO, transforms via sharp, caches to the local
+// (which reads from the local S3 mock, transforms via sharp, caches to the local
 // resized bucket). In prod/cloud mode, they come from CloudFront.
 //
 // Both end up producing URLs of the same shape:
@@ -53,7 +53,7 @@ export const nextImageUrl = (src: string, width: number) => {
 
   // Pass-through paths that aren't under /assets/. These are static files
   // served directly from /public (e.g. /favicon/*), not pipeline-transformed
-  // images. Routing them through /api/img would 404 because rclone only
+  // images. Routing them through /api/img would 404 because the local mock only
   // exposes the Obsidian assets tree.
   if (!src.startsWith("http") && !/^\/?assets\//.test(src)) {
     return src;

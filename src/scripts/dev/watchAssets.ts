@@ -9,8 +9,8 @@
  *
  * Modes:
  *   IMAGE_BACKEND=local  (or unset)  → update metadata.json only.
- *                                      MinIO serves the file directly from
- *                                      disk, no upload step required.
+ *                                      local S3 mock sees the symlinked files,
+ *                                      no upload step required.
  *   IMAGE_BACKEND=aws                → also upload new/changed files to
  *                                      the real S3 bucket with width/height/
  *                                      aspectRatio metadata.
@@ -19,20 +19,21 @@
  */
 import "dotenv/config";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, relative, resolve } from "node:path";
+import { dirname, relative, resolve, sep } from "node:path";
 import { cwd } from "node:process";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import chokidar from "chokidar";
 import mime from "mime";
 import sharp from "sharp";
 import { createS3Client } from "src/lib/aws";
+import { ASSETS_ROOT } from "src/lib/localS3";
 
-const ASSETS_ROOT = resolve(cwd(), "src/content/Notes/assets");
 const METADATA_PATH = resolve(cwd(), "src/content/Notes/_data/metadata.json");
 const BUCKET = "images.trebeljahr.com";
 const IMAGE_RE = /\.(jpg|jpeg|png|webp|gif|avif)$/i;
 
-const IS_LOCAL = (process.env.NEXT_PUBLIC_IMAGE_BACKEND ?? process.env.IMAGE_BACKEND) === "local";
+const IS_LOCAL =
+  (process.env.NEXT_PUBLIC_IMAGE_BACKEND ?? process.env.IMAGE_BACKEND ?? "local") === "local";
 const DEBOUNCE_MS = 800;
 
 type Metadata = Record<
@@ -61,7 +62,7 @@ async function saveMetadata(meta: Metadata): Promise<void> {
 }
 
 function keyFor(absPath: string): string {
-  return "assets/" + relative(ASSETS_ROOT, absPath);
+  return `assets/${relative(ASSETS_ROOT, absPath).split(sep).join("/")}`;
 }
 
 async function getDimensions(absPath: string): Promise<{ width: number; height: number } | null> {
@@ -140,7 +141,7 @@ async function handleUpsert(absPath: string) {
   const sameDims = existing && existing.width === dims.width && existing.height === dims.height;
 
   if (IS_LOCAL) {
-    // No S3 upload in local mode — MinIO reads directly from the FS.
+    // No S3 upload in local mode - the mock reads the symlinked source files.
     if (!sameDims || !existing) {
       metadata[key] = {
         key,

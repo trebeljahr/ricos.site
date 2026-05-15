@@ -52,6 +52,7 @@ logfile
 .claude/settings.local.json
 .claude/worktrees/
 # Local S3 mock data dirs (symlinked source bucket + cached variants)
+.rclone-data/
 .local-s3-data/
 
 # standard defaults (mirrors ~/.config/git/ignore)

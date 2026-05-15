@@ -10,6 +10,13 @@ export type TimelineEntryType =
   | "photography"
   | "r3f";
 
+export type TimelineCover = {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+};
+
 export type TimelineEntry = {
   id: string;
   title: string;
@@ -21,6 +28,7 @@ export type TimelineEntry = {
   excerpt?: string;
   readingTime?: number;
   wordCount?: number;
+  cover?: TimelineCover;
 };
 
 export type TimelineStats = {
@@ -127,6 +135,7 @@ export function toTimelineEntries(
     excerpt: document.excerpt || document.metaDescription,
     readingTime: document.metadata?.readingTime,
     wordCount: document.metadata?.wordCount,
+    cover: document.cover,
   }));
 }
 

@@ -10,7 +10,6 @@ import {
 } from "src/lib/everythingTimeline";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import {
-  summarizeTimelineEntries,
   type TimelineEntry,
   toSerializableTimelineEntries,
   toTimelineEntries,
@@ -20,38 +19,39 @@ import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
 type Props = {
   entries: TimelineEntry[];
-  totalPieces: number;
-  datedPieces: number;
-  missingDateCount: number;
   seo: SeoInfo | null;
 };
 
+type TripImage = { src: string; width: number; height: number; alt?: string };
+
 function getPhotographyEntries(
-  trips: { name: string }[],
+  trips: { tripName: string; image: TripImage }[],
   travelblogs: CommonMetadata[],
 ): TimelineEntry[] {
-  return trips.map(({ name }) => {
-    const dateInfo = getPhotographyTimelineDate(name, travelblogs);
+  return trips.map(({ tripName, image }) => {
+    const dateInfo = getPhotographyTimelineDate(tripName, travelblogs);
+    const title = turnKebabIntoTitleCase(tripName);
     return {
-      id: `photography:${name}`,
-      href: `/photography/${name}`,
+      id: `photography:${tripName}`,
+      href: `/photography/${tripName}`,
       type: "photography",
       typeLabel: "Photo set",
-      title: turnKebabIntoTitleCase(name),
-      excerpt: "Photography collection.",
+      title,
+      cover: image?.src
+        ? {
+            src: image.src,
+            alt: image.alt || `A photo from ${title}`,
+            width: image.width,
+            height: image.height,
+          }
+        : undefined,
       ...(dateInfo.date ? { date: dateInfo.date } : {}),
       ...(dateInfo.datePrecision ? { datePrecision: dateInfo.datePrecision } : {}),
     };
   });
 }
 
-export default function Everything({
-  entries,
-  totalPieces,
-  datedPieces,
-  missingDateCount,
-  seo,
-}: Props) {
+export default function Everything({ entries, seo }: Props) {
   const url = "everything";
 
   return (
@@ -66,18 +66,11 @@ export default function Everything({
       keywords={seo?.keywords || ["everything", "timeline", "writing", "photography", "r3f"]}
       url={url}
     >
-      <main className="py-20 px-3 max-w-5xl mx-auto">
+      <main className="py-20 px-3 max-w-(--breakpoint-lg) mx-auto">
         <BreadCrumbs path={url} />
 
         <section className="mb-14">
-          <Header
-            title="Everything"
-            subtitle={`${totalPieces} things total, ${datedPieces} placed in time, ${missingDateCount} need dates`}
-          />
-          <p className="max-w-prose text-gray-600 dark:text-gray-300">
-            Whole-site stream: writing, notes, pages, photography, and demos. Items without a real
-            timestamp sit at the bottom until they get one.
-          </p>
+          <Header title="Everything" />
         </section>
 
         <TimelineList entries={entries} initialCount={24} batchSize={16} />
@@ -89,12 +82,28 @@ export default function Everything({
 export const getStaticProps = async (): Promise<{ props: Props }> => {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const { trips } = await import("src/pages/photography");
+  const { getImgWidthAndHeightDuringBuild } = await import(
+    "src/lib/getImgWidthAndHeightDuringBuild"
+  );
+  const { getFirstImageFromMetadata, photographyFolder } = await import("src/lib/imageMetadata");
+
   const posts: CommonMetadata[] = loadVeliteData("posts.json");
   const newsletters: CommonMetadata[] = loadVeliteData("newsletters.json");
   const travelblogs: CommonMetadata[] = loadVeliteData("travelblogs.json");
   const booknotes: CommonMetadata[] = loadVeliteData("booknotes.json");
   const podcastnotes: CommonMetadata[] = loadVeliteData("podcastnotes.json");
   const pages: CommonMetadata[] = loadVeliteData("pages.json");
+
+  const tripsMeta = await Promise.all(
+    trips.map(async ({ name, src, alt }) => {
+      if (src === "") {
+        const image = getFirstImageFromMetadata(photographyFolder + name);
+        return { image, tripName: name };
+      }
+      const { width, height } = await getImgWidthAndHeightDuringBuild(src);
+      return { image: { width, height, src, alt }, tripName: name };
+    }),
+  );
 
   const writingEntries = [
     ...toTimelineEntries(posts.filter(byOnlyPublished), "Post"),
@@ -109,18 +118,13 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
   const entries = [
     ...writingEntries,
     ...getPageTimelineEntries(pages),
-    ...getPhotographyEntries(trips, travelblogs.filter(byOnlyPublished)),
+    ...getPhotographyEntries(tripsMeta, travelblogs.filter(byOnlyPublished)),
     ...getR3fTimelineEntries(),
   ];
-  const stats = summarizeTimelineEntries(entries);
-  const missingDateCount = entries.filter((entry) => !entry.date).length;
 
   return {
     props: {
       entries: toSerializableTimelineEntries(entries),
-      totalPieces: stats.count,
-      datedPieces: stats.count - missingDateCount,
-      missingDateCount,
       seo: getSeoInfo("/everything"),
     },
   };

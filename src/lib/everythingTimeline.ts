@@ -94,6 +94,13 @@ function titleFromPath(path: string) {
   return turnKebabIntoTitleCase(lastPart);
 }
 
+const R3F_FALLBACK_COVER = {
+  src: "/assets/blog/network.jpg",
+  alt: "a network of connected dots",
+  width: 1200,
+  height: 630,
+};
+
 export function getR3fTimelineEntries(): TimelineEntry[] {
   return Object.entries(r3fCreatedAtByPath).map(([href, date]) => {
     const seo = getSeoEntry(href);
@@ -106,6 +113,14 @@ export function getR3fTimelineEntries(): TimelineEntry[] {
       excerpt: seo?.metaDescription,
       date,
       datePrecision: "day",
+      cover: seo?.ogImage
+        ? {
+            src: seo.ogImage,
+            alt: seo.ogImageAlt || seo?.metaTitle || titleFromPath(href),
+            width: 1200,
+            height: 630,
+          }
+        : R3F_FALLBACK_COVER,
     };
   });
 }
@@ -124,6 +139,7 @@ export function getPageTimelineEntries(pages: CommonMetadata[]): TimelineEntry[]
       datePrecision: "day",
       readingTime: page.metadata?.readingTime,
       wordCount: page.metadata?.wordCount,
+      cover: page.cover,
     }));
 }
 

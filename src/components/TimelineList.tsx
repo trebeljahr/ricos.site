@@ -1,14 +1,13 @@
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  formatTimelineDate,
   groupTimelineEntries,
   sortTimelineEntries,
+  type TimelineCover,
   type TimelineEntry,
   type TimelineEntryType,
-  type TimelineStats,
   timelineTypeLabels,
 } from "src/lib/timeline";
+import { VerticalCard } from "./NiceCards";
 
 type Props = {
   entries: TimelineEntry[];
@@ -17,43 +16,12 @@ type Props = {
   filterable?: boolean;
 };
 
-const numberFormatter = new Intl.NumberFormat("en");
-
-function formatNumber(value: number) {
-  return numberFormatter.format(value);
-}
-
-function plural(count: number, singular: string, pluralForm = `${singular}s`) {
-  return `${formatNumber(count)} ${count === 1 ? singular : pluralForm}`;
-}
-
-function formatStats(stats: TimelineStats) {
-  const parts = [plural(stats.count, "thing")];
-
-  if (stats.wordCount > 0) {
-    parts.push(`${formatNumber(stats.wordCount)} words`);
-  }
-
-  if (stats.readingTime > 0) {
-    parts.push(`${formatNumber(stats.readingTime)} min`);
-  }
-
-  const nonWritingTypes = Object.entries(stats.typeCounts)
-    .filter(([type]) => type === "photography" || type === "r3f")
-    .map(([type, count]) => {
-      const label = type === "r3f" ? "demo" : "photo set";
-      return plural(count || 0, label);
-    });
-
-  return [...parts, ...nonWritingTypes].join(" · ");
-}
-
-function getEntryMeta(entry: TimelineEntry) {
-  const parts = [];
-  if (entry.readingTime) parts.push(`${entry.readingTime} min`);
-  if (entry.wordCount) parts.push(`${formatNumber(entry.wordCount)} words`);
-  return parts.join(" · ");
-}
+const FALLBACK_COVER: TimelineCover = {
+  src: "/assets/blog/network.jpg",
+  alt: "a network of connected dots",
+  width: 1200,
+  height: 630,
+};
 
 export function TimelineList({
   entries,
@@ -76,15 +44,8 @@ export function TimelineList({
     return sortedEntries.filter((entry) => entry.type === selectedType);
   }, [selectedType, sortedEntries]);
 
-  const fullSectionsByYear = useMemo(() => {
-    return new Map(groupTimelineEntries(filteredEntries).map((section) => [section.year, section]));
-  }, [filteredEntries]);
-
   const visibleEntries = filteredEntries.slice(0, visibleCount);
-  const visibleSections = groupTimelineEntries(visibleEntries).map((section) => ({
-    ...section,
-    stats: fullSectionsByYear.get(section.year)?.stats || section.stats,
-  }));
+  const visibleSections = groupTimelineEntries(visibleEntries);
   const hasMore = visibleCount < filteredEntries.length;
   const selectType = (type: TimelineEntryType | "all") => {
     setSelectedType(type);
@@ -147,48 +108,23 @@ export function TimelineList({
         </div>
       )}
 
-      <div className="space-y-6">
-        {visibleSections.map(({ year, stats, items }) => (
-          <section
-            key={year}
-            className="grid gap-6 border-t border-gray-200 pt-8 dark:border-gray-800 lg:grid-cols-[10rem_1fr]"
-          >
-            <div className="lg:sticky lg:top-24 lg:self-start">
-              <h2 className="m-0 text-4xl font-bold tracking-normal">{year}</h2>
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{formatStats(stats)}</p>
+      <div className="space-y-12">
+        {visibleSections.map(({ year, items }) => (
+          <section key={year}>
+            <h2 className="m-0 mb-6 text-4xl font-bold tracking-normal">{year}</h2>
+            <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max">
+              {items.map((entry) => (
+                <VerticalCard
+                  key={entry.id}
+                  cover={entry.cover || FALLBACK_COVER}
+                  link={entry.href}
+                  title={entry.title}
+                  subtitle={entry.typeLabel}
+                  date={entry.date}
+                  readingTime={entry.readingTime}
+                />
+              ))}
             </div>
-
-            <ol className="m-0 list-none p-0">
-              {items.map((entry) => {
-                const meta = getEntryMeta(entry);
-                return (
-                  <li key={entry.id} className="border-b border-gray-200 dark:border-gray-800">
-                    <Link
-                      href={entry.href}
-                      className="group grid gap-3 py-5 text-inherit no-underline transition-colors hover:text-myBlue sm:grid-cols-[8rem_1fr]"
-                    >
-                      <time className="text-sm text-gray-500 dark:text-gray-400">
-                        {formatTimelineDate(entry)}
-                      </time>
-                      <div>
-                        <div className="mb-2 flex flex-wrap items-center gap-2 text-xs uppercase tracking-normal text-gray-500 dark:text-gray-400">
-                          <span>{entry.typeLabel}</span>
-                          {meta && <span>{meta}</span>}
-                        </div>
-                        <h3 className="m-0 text-xl font-semibold tracking-normal text-gray-950 transition-colors group-hover:text-myBlue dark:text-white">
-                          {entry.title}
-                        </h3>
-                        {entry.excerpt && (
-                          <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
-                            {entry.excerpt}
-                          </p>
-                        )}
-                      </div>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ol>
           </section>
         ))}
       </div>

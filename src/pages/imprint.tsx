@@ -98,6 +98,19 @@ export default function ImprintPage() {
             copyright law. Duplication, processing, distribution, and any kind of use outside the
             limits of copyright require the written consent of the respective author or creator.
           </p>
+
+          <h2>Credits</h2>
+          <p>
+            Favicon:{" "}
+            <a
+              href="https://www.flaticon.com/free-icons/sapling"
+              title="sapling icons"
+              className="text-myBlue hover:underline"
+            >
+              Sapling icons created by KP Arts - Flaticon
+            </a>
+            .
+          </p>
         </article>
 
         <footer className="mx-auto max-w-prose">

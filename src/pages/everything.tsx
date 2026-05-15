@@ -38,12 +38,9 @@ function getPhotographyEntries(
       type: "photography",
       typeLabel: "Photo set",
       title: turnKebabIntoTitleCase(name),
-      excerpt: dateInfo.date
-        ? "Photography collection."
-        : "Photography collection. Needs an exact date for the timeline.",
+      excerpt: "Photography collection.",
       ...(dateInfo.date ? { date: dateInfo.date } : {}),
       ...(dateInfo.datePrecision ? { datePrecision: dateInfo.datePrecision } : {}),
-      ...(dateInfo.dateLabel ? { dateLabel: dateInfo.dateLabel } : {}),
     };
   });
 }

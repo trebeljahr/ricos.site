@@ -56,32 +56,31 @@ const r3fCreatedAtByPath: Record<string, string> = {
   "/r3f/user-interfaces/inventory": "2025-03-25",
 };
 
-const photographyTimelineDates: Record<
-  string,
-  Pick<TimelineEntry, "date" | "datePrecision" | "dateLabel">
-> = {
-  "best-of": { date: "2024-12-30", datePrecision: "day" },
-  alps: { date: "2020-08-01", datePrecision: "month" },
-  crete: { date: "2021-06-01", datePrecision: "month" },
-  "east-india": { date: "2022-01-01", datePrecision: "month" },
+const photographyTimelineDates: Record<string, Pick<TimelineEntry, "date" | "datePrecision">> = {
+  "best-of": { date: "2024-12-30", datePrecision: "year" },
+  alps: { date: "2020-08-01", datePrecision: "year" },
+  crete: { date: "2021-06-01", datePrecision: "year" },
+  "east-india": { date: "2022-01-01", datePrecision: "year" },
   germany: { date: "2023-01-01", datePrecision: "year" },
-  indonesia: { date: "2018-05-01", datePrecision: "month" },
-  laos: { date: "2018-07-01", datePrecision: "month" },
-  rajasthan: { date: "2019-03-01", datePrecision: "month" },
-  "sri-lanka": { date: "2018-01-01", datePrecision: "month" },
-  thailand: { date: "2018-06-15", datePrecision: "month" },
-  vietnam: { date: "2018-06-01", datePrecision: "month" },
-  "central-india": { date: "2018-09-01", datePrecision: "month" },
-  dominica: { date: "2024-04-10", datePrecision: "month" },
-  egypt: { date: "2016-01-01", datePrecision: "year", dateLabel: "2016?" },
+  indonesia: { date: "2018-05-01", datePrecision: "year" },
+  laos: { date: "2018-07-01", datePrecision: "year" },
+  rajasthan: { date: "2019-03-01", datePrecision: "year" },
+  "sri-lanka": { date: "2018-01-01", datePrecision: "year" },
+  thailand: { date: "2018-06-15", datePrecision: "year" },
+  vietnam: { date: "2018-06-01", datePrecision: "year" },
+  "central-india": { date: "2018-09-01", datePrecision: "year" },
+  dominica: { date: "2024-04-10", datePrecision: "year" },
+  egypt: { date: "2016-01-01", datePrecision: "year" },
   "himachal-pradesh": { date: "2021-01-01", datePrecision: "year" },
-  italy: { date: "2012-01-01", datePrecision: "year", dateLabel: "2012?" },
-  nepal: { date: "2018-03-15", datePrecision: "month", dateLabel: "Mar-Apr 2018" },
-  "south-india": { date: "2018-02-01", datePrecision: "month" },
-  varanasi: { date: "2018-09-15", datePrecision: "month" },
-  guadeloupe: { date: "2024-03-01", datePrecision: "month" },
-  transat: { date: "2024-01-15", datePrecision: "month", dateLabel: "Jan-Feb 2024" },
-  martinique: { date: "2024-04-25", datePrecision: "month", dateLabel: "Late Apr 2024" },
+  italy: { date: "2012-01-01", datePrecision: "year" },
+  nepal: { date: "2018-03-15", datePrecision: "year" },
+  "south-india": { date: "2018-02-01", datePrecision: "year" },
+  delhi: { date: "2018-02-10", datePrecision: "year" },
+  tenerife: { date: "2022-09-18", datePrecision: "year" },
+  varanasi: { date: "2018-09-15", datePrecision: "year" },
+  guadeloupe: { date: "2024-03-01", datePrecision: "year" },
+  transat: { date: "2024-01-15", datePrecision: "year" },
+  martinique: { date: "2024-04-25", datePrecision: "year" },
 };
 
 const pageExcludeList = new Set(["privacy", "imprint", "support"]);
@@ -146,7 +145,7 @@ export function getPhotographyTimelineDate(tripName: string, travelblogs: Common
   )[0];
 
   if (matchingTravel?.date) {
-    return { date: matchingTravel.date, datePrecision: "day" as const };
+    return { date: matchingTravel.date, datePrecision: "year" as const };
   }
 
   const year = tripName.match(/(?:^|-)((?:19|20)\d{2})(?:-|$)/)?.[1];

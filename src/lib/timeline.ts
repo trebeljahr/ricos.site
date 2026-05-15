@@ -18,7 +18,6 @@ export type TimelineEntry = {
   typeLabel: string;
   date?: string;
   datePrecision?: "day" | "month" | "year";
-  dateLabel?: string;
   excerpt?: string;
   readingTime?: number;
   wordCount?: number;
@@ -124,7 +123,6 @@ export function groupTimelineEntries(entries: TimelineEntry[]): TimelineYearSect
 
 export function formatTimelineDate(entry: TimelineEntry) {
   if (!entry.date) return "Date needed";
-  if (entry.dateLabel) return entry.dateLabel;
   if (entry.datePrecision === "year") return getTimelineYear(entry);
   if (entry.datePrecision === "month") {
     return new Intl.DateTimeFormat("en", {

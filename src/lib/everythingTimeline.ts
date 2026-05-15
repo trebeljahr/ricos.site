@@ -56,6 +56,34 @@ const r3fCreatedAtByPath: Record<string, string> = {
   "/r3f/user-interfaces/inventory": "2025-03-25",
 };
 
+const photographyTimelineDates: Record<
+  string,
+  Pick<TimelineEntry, "date" | "datePrecision" | "dateLabel">
+> = {
+  "best-of": { date: "2024-12-30", datePrecision: "day" },
+  alps: { date: "2020-08-01", datePrecision: "month" },
+  crete: { date: "2021-06-01", datePrecision: "month" },
+  "east-india": { date: "2022-01-01", datePrecision: "month" },
+  germany: { date: "2023-01-01", datePrecision: "year" },
+  indonesia: { date: "2018-05-01", datePrecision: "month" },
+  laos: { date: "2018-07-01", datePrecision: "month" },
+  rajasthan: { date: "2019-03-01", datePrecision: "month" },
+  "sri-lanka": { date: "2018-01-01", datePrecision: "month" },
+  thailand: { date: "2018-06-15", datePrecision: "month" },
+  vietnam: { date: "2018-06-01", datePrecision: "month" },
+  "central-india": { date: "2018-09-01", datePrecision: "month" },
+  dominica: { date: "2024-04-10", datePrecision: "month" },
+  egypt: { date: "2016-01-01", datePrecision: "year", dateLabel: "2016?" },
+  "himachal-pradesh": { date: "2021-01-01", datePrecision: "year" },
+  italy: { date: "2012-01-01", datePrecision: "year", dateLabel: "2012?" },
+  nepal: { date: "2018-03-15", datePrecision: "month", dateLabel: "Mar-Apr 2018" },
+  "south-india": { date: "2018-02-01", datePrecision: "month" },
+  varanasi: { date: "2018-09-15", datePrecision: "month" },
+  guadeloupe: { date: "2024-03-01", datePrecision: "month" },
+  transat: { date: "2024-01-15", datePrecision: "month", dateLabel: "Jan-Feb 2024" },
+  martinique: { date: "2024-04-25", datePrecision: "month", dateLabel: "Late Apr 2024" },
+};
+
 const pageExcludeList = new Set(["privacy", "imprint", "support"]);
 
 function getSeoEntry(path: string) {
@@ -101,6 +129,9 @@ export function getPageTimelineEntries(pages: CommonMetadata[]): TimelineEntry[]
 }
 
 export function getPhotographyTimelineDate(tripName: string, travelblogs: CommonMetadata[]) {
+  const curatedDate = photographyTimelineDates[tripName];
+  if (curatedDate) return curatedDate;
+
   const matchingTravel = sortTimelineEntries(
     travelblogs
       .filter((story) => story.parentFolder === tripName && story.date)

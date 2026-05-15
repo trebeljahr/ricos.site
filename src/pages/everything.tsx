@@ -43,6 +43,7 @@ function getPhotographyEntries(
         : "Photography collection. Needs an exact date for the timeline.",
       ...(dateInfo.date ? { date: dateInfo.date } : {}),
       ...(dateInfo.datePrecision ? { datePrecision: dateInfo.datePrecision } : {}),
+      ...(dateInfo.dateLabel ? { dateLabel: dateInfo.dateLabel } : {}),
     };
   });
 }

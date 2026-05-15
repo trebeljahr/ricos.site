@@ -309,7 +309,7 @@ function recordDefaultCover(where: string) {
 
 const parseGermanDate = (dateString: string) => {
   const [day, month, year] = dateString.split(".").map(Number);
-  return new Date(year, month - 1, day).toISOString();
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 };
 
 const commonFields = {

@@ -47,6 +47,15 @@ export const timelineTypeLabels: Record<TimelineEntryType, string> = {
   r3f: "R3F",
 };
 
+const contentTimeZone = "Europe/Berlin";
+const dateOnlyPattern = /^(\d{4})-(\d{2})-(\d{2})$/;
+const datePartFormatter = new Intl.DateTimeFormat("en", {
+  day: "2-digit",
+  month: "2-digit",
+  timeZone: contentTimeZone,
+  year: "numeric",
+});
+
 const contentTypeMap: Record<string, { type: TimelineEntryType; label: string }> = {
   Post: { type: "essay", label: "Essay" },
   Newsletter: { type: "newsletter", label: "Newsletter" },
@@ -55,6 +64,33 @@ const contentTypeMap: Record<string, { type: TimelineEntryType; label: string }>
   Podcastnote: { type: "podcast", label: "Podcast note" },
   Page: { type: "page", label: "Page" },
 };
+
+function datePartsToDateOnly(parts: Intl.DateTimeFormatPart[]) {
+  const partMap = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  if (!partMap.year || !partMap.month || !partMap.day) return undefined;
+  return `${partMap.year}-${partMap.month}-${partMap.day}`;
+}
+
+function normalizeTimelineDate(date?: string) {
+  if (!date) return undefined;
+  if (dateOnlyPattern.test(date)) return date;
+
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) return undefined;
+
+  return datePartsToDateOnly(datePartFormatter.formatToParts(parsed));
+}
+
+function getTimelineUtcDate(entry: TimelineEntry) {
+  const date = normalizeTimelineDate(entry.date);
+  if (!date) return undefined;
+
+  const match = date.match(dateOnlyPattern);
+  if (!match) return undefined;
+
+  const [, year, month, day] = match;
+  return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+}
 
 export function toTimelineEntries(
   documents: CommonMetadata[],
@@ -81,16 +117,19 @@ export function toTimelineEntries(
 
 export function sortTimelineEntries(entries: TimelineEntry[]) {
   return [...entries].sort((a, b) => {
-    if (!a.date && !b.date) return a.title.localeCompare(b.title);
-    if (!a.date) return 1;
-    if (!b.date) return -1;
-    return new Date(b.date).getTime() - new Date(a.date).getTime();
+    const aTime = getTimelineUtcDate(a)?.getTime();
+    const bTime = getTimelineUtcDate(b)?.getTime();
+    if (aTime === undefined && bTime === undefined) return a.title.localeCompare(b.title);
+    if (aTime === undefined) return 1;
+    if (bTime === undefined) return -1;
+    return bTime - aTime;
   });
 }
 
 export function getTimelineYear(entry: TimelineEntry) {
-  if (!entry.date) return "Needs dates";
-  return String(new Date(`${entry.date}T00:00:00Z`).getUTCFullYear());
+  const date = getTimelineUtcDate(entry);
+  if (!date) return "Needs dates";
+  return String(date.getUTCFullYear());
 }
 
 export function summarizeTimelineEntries(entries: TimelineEntry[]): TimelineStats {
@@ -122,14 +161,15 @@ export function groupTimelineEntries(entries: TimelineEntry[]): TimelineYearSect
 }
 
 export function formatTimelineDate(entry: TimelineEntry) {
-  if (!entry.date) return "Date needed";
+  const date = getTimelineUtcDate(entry);
+  if (!date) return "Date needed";
   if (entry.datePrecision === "year") return getTimelineYear(entry);
   if (entry.datePrecision === "month") {
     return new Intl.DateTimeFormat("en", {
       month: "short",
       year: "numeric",
       timeZone: "UTC",
-    }).format(new Date(`${entry.date}T00:00:00Z`));
+    }).format(date);
   }
 
   return new Intl.DateTimeFormat("en", {
@@ -137,7 +177,7 @@ export function formatTimelineDate(entry: TimelineEntry) {
     day: "numeric",
     year: "numeric",
     timeZone: "UTC",
-  }).format(new Date(`${entry.date}T00:00:00Z`));
+  }).format(date);
 }
 
 export function toSerializableTimelineEntries(entries: TimelineEntry[]) {

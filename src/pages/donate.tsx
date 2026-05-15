@@ -1,29 +1,9 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
-import { ExternalLink } from "@components/ExternalLink";
+import { DonationCard } from "@components/DonationCard";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
-
-const platforms = [
-  {
-    name: "Ko-fi",
-    url: "https://ko-fi.com/trebeljahr",
-    blurb:
-      "Simple one-off tip jar. Buy me a coffee or, realistically, a flat white. No account needed.",
-  },
-  {
-    name: "Buy Me a Coffee",
-    url: "https://buymeacoffee.com/trebeljahr",
-    blurb: "Same idea, different button. Use whichever one already feels least annoying.",
-  },
-  {
-    name: "Patreon",
-    url: "https://www.patreon.com/RicoTrebeljahr",
-    blurb:
-      "Monthly support if you want to help make room for more essays, code experiments, photos, and newsletters.",
-  },
-];
 
 export default function DonatePage() {
   return (
@@ -53,29 +33,24 @@ export default function DonatePage() {
           <h1 className="text-4xl mt-16!">Donate</h1>
 
           <p>
-            Most things I make here are free: essays, photos, notes, weird Three.js demos, the
-            newsletter. I like it that way. If you got something out of this site and feel like
-            sending a few euros back, that helps me buy time to make the next thing.
+            All things I make here are free: essays, photos, notes, weird Three.js demos, the
+            newsletter. I like it that way. No paywalls, no ads, no tracking circus. I want this
+            place to stay open and human.
           </p>
 
           <p>
             No pressure, obviously. The whole point of this place is that you can wander around
-            without having to pay first.
+            without having to pay, ever. I hate ads, so there won&apos;t be any here either.
           </p>
 
-          <ul className="not-prose mt-8 flex flex-col gap-4">
-            {platforms.map((p) => (
-              <li
-                key={p.name}
-                className="rounded-lg border-2 border-gray-200 dark:border-gray-700 p-5 transition-transform hover:scale-[1.01] hover:border-myBlue"
-              >
-                <ExternalLink href={p.url} className="block no-underline text-inherit">
-                  <h2 className="text-xl font-bold m-0">{p.name}</h2>
-                  <p className="mt-2 mb-0">{p.blurb}</p>
-                </ExternalLink>
-              </li>
-            ))}
-          </ul>
+          <p>
+            The ethos is to run this as a passion project. Something I love doing because I think it
+            provides a little value to the world. Donations are a way of feeding the project without
+            changing what it is. They let me keep the lights on, keep the ads out, and make room for
+            the next thing.
+          </p>
+
+          <DonationCard className="mt-8" />
 
           <h2 className="mt-12">Other ways to help</h2>
           <p>Money is nice, but it is not the only useful thing.</p>

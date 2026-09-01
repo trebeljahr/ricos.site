@@ -50,7 +50,7 @@ if (shouldRunVelite) {
   await build({ watch: isDev, clean: !isDev, logLevel: "error" });
 
   // Generate R3F navigation links JSON (replaces next-plugin-preval)
-  const { readdir, lstat, writeFile } = await import("node:fs/promises");
+  const { readdir, lstat, readFile, writeFile } = await import("node:fs/promises");
   const { resolve, join } = await import("node:path");
   const r3fDir = resolve("src/pages/r3f");
   const shaderDir = resolve("src/shaders/standaloneFragmentShaders");
@@ -59,6 +59,15 @@ if (shouldRunVelite) {
       .split("-")
       .map((w) => w[0].toUpperCase() + w.slice(1))
       .join(" ");
+  // Demos that exist as routes but aren't finished yet: keep them reachable by
+  // direct URL for local iteration, but out of the nav (and the timeline).
+  let hiddenR3fRoutes = new Set();
+  try {
+    const hidden = JSON.parse(
+      await readFile(resolve("src/content/r3f-hidden-routes.json"), "utf-8"),
+    );
+    hiddenR3fRoutes = new Set(hidden.hidden);
+  } catch {}
   const links = {};
   const dirs = (await readdir(r3fDir)).filter((f) => !f.includes(".tsx"));
   for (const dir of dirs) {
@@ -68,7 +77,8 @@ if (shouldRunVelite) {
     const files = await readdir(dirPath);
     links[toTitleCase(dir)] = files
       .map((f) => f.replace(".tsx", ""))
-      .map((name) => ({ name, url: `/r3f/${dir}/${name}` }));
+      .map((name) => ({ name, url: `/r3f/${dir}/${name}` }))
+      .filter(({ url }) => !hiddenR3fRoutes.has(url));
   }
   const shaders = (await readdir(shaderDir))
     .filter((f) => f.endsWith(".frag"))

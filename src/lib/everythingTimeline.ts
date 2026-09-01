@@ -1,4 +1,5 @@
 import type { CommonMetadata } from "src/@types";
+import hiddenR3fRoutes from "src/content/r3f-hidden-routes.json";
 import seoMetadata from "src/content/seo-metadata.json";
 import type { TimelineEntry } from "./timeline";
 import { sortTimelineEntries } from "./timeline";
@@ -94,8 +95,12 @@ function titleFromPath(path: string) {
   return turnKebabIntoTitleCase(lastPart);
 }
 
+// Unfinished demos stay reachable by direct URL but out of nav + timeline.
+const hiddenR3fPaths = new Set<string>(hiddenR3fRoutes.hidden);
+
 export function getR3fTimelineEntries(): TimelineEntry[] {
   return Object.entries(r3fCreatedAtByPath).flatMap(([href, date]) => {
+    if (hiddenR3fPaths.has(href)) return [];
     const seo = getSeoEntry(href);
     if (!seo?.ogImage) return [];
     return [

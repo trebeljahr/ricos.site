@@ -3,7 +3,11 @@ import { InfiniteScrollGallery } from "@components/Galleries";
 import Layout from "@components/Layout";
 import { ToTopButton } from "@components/ToTopButton";
 import type { ImageProps } from "src/@types";
-import { getDataFromMetadata, getLocalMetadata, photographyFolder } from "src/lib/imageMetadata";
+import {
+  getDataFromMetadata,
+  getPhotographyTripNames,
+  photographyFolder,
+} from "src/lib/imageMetadata";
 import { imageSizes, nextImageUrl } from "src/lib/mapToImageProps";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 import { trips } from "../photography";
@@ -85,14 +89,7 @@ type StaticProps = {
 };
 
 export async function getStaticPaths() {
-  const tripNames = [
-    ...new Set(
-      Object.keys(getLocalMetadata())
-        .filter((key: string) => key.startsWith(photographyFolder))
-        .map((key: string) => key.replace(photographyFolder, "").split("/")[0])
-        .filter(Boolean),
-    ),
-  ].sort();
+  const tripNames = getPhotographyTripNames();
 
   return {
     paths: tripNames.map((tripName: string) => {

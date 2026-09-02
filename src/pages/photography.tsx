@@ -6,7 +6,11 @@ import Link from "next/link";
 import type { ImageProps } from "src/@types";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
 import type { SeoInfo } from "src/lib/getSeoInfo";
-import { getFirstImageFromMetadata, photographyFolder } from "src/lib/imageMetadata";
+import {
+  getFirstImageFromMetadata,
+  getPhotographyTripNames,
+  photographyFolder,
+} from "src/lib/imageMetadata";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
 export const trips = [
@@ -179,6 +183,13 @@ export const trips = [
       "The Rota Vicentina — hiking the Fisherman's Trail along Alentejo's wild coast, plus quieter inland villages and the Algarve cliffs.",
   },
   {
+    src: "",
+    alt: "",
+    name: "spain-2024",
+    description:
+      "Madrid and Barcelona in autumn — rooftop views, window reflections, old bars, and the flight down the Iberian coast.",
+  },
+  {
     src: "/assets/photography/india-2023/PXL_20230930_051423720~2.jpg",
     alt: "woman standing in front of a cliff in the Himalayas on the Markha Valley trek in Ladakh, India",
     name: "india-2023",
@@ -258,8 +269,23 @@ export default function Photography({ trips, seo }: Props) {
 }
 
 export async function getStaticProps(): Promise<{ props: Props }> {
+  // The `/photography/[tripName]` routes are generated from the image metadata,
+  // not from `trips`. Deriving this index from the same source keeps the two in
+  // sync: a gallery folder that nobody added to `trips` still gets listed here
+  // instead of becoming an orphan page, and a curated entry whose folder is gone
+  // no longer produces a dead link. `trips` only supplies order and cover images.
+  const galleryNames = getPhotographyTripNames();
+  const curatedNames = new Set(trips.map(({ name }) => name));
+
+  const listedTrips = [
+    ...trips.filter(({ name }) => galleryNames.includes(name)),
+    ...galleryNames
+      .filter((name) => !curatedNames.has(name))
+      .map((name) => ({ name, src: "", alt: "" })),
+  ];
+
   const tripsMeta = await Promise.all(
-    trips.map(async ({ name, src, alt }) => {
+    listedTrips.map(async ({ name, src, alt }) => {
       if (src === "") {
         const image = getFirstImageFromMetadata(photographyFolder + name);
         return { image, tripName: name };

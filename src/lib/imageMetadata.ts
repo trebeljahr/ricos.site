@@ -60,3 +60,19 @@ export function getFirstImageFromMetadata(prefix: string) {
     height: meta!.height,
   };
 }
+
+/**
+ * Every photography gallery folder that has images in the metadata. This is the
+ * single source of truth for which `/photography/[tripName]` routes exist, so
+ * both the gallery index and `getStaticPaths` read from it and can't drift apart.
+ */
+export function getPhotographyTripNames(): string[] {
+  return [
+    ...new Set(
+      Object.keys(getLocalMetadata())
+        .filter((key) => key.startsWith(photographyFolder))
+        .map((key) => key.replace(photographyFolder, "").split("/")[0])
+        .filter(Boolean),
+    ),
+  ].sort();
+}

@@ -56,16 +56,22 @@ export function CollapsibleMenuDesktop({ links, text }: DesktopMenuProps) {
           <FiChevronDown className="h-3 w-3 ml-1" />
         </span>
       </button>
-      {open && (
-        <div
-          role="menu"
-          className="overflow-hidden bg-white dark:bg-gray-800 flex-col absolute box-border right-0 z-50 mt-2 origin-top-right w-fit rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
-        >
-          {links.map((item) => (
-            <SingleMenuItem key={item.href} link={item} onSelect={close} />
-          ))}
-        </div>
-      )}
+      {/*
+        Rendered (hidden) rather than mounted on open, so the links stay in the
+        server-rendered HTML. Crawlers don't click dropdowns — pages that are
+        only reachable from this menu were showing up as orphans otherwise.
+      */}
+      <div
+        role="menu"
+        className={clsx(
+          "overflow-hidden bg-white dark:bg-gray-800 flex-col absolute box-border right-0 z-50 mt-2 origin-top-right w-fit rounded-md shadow-lg ring-1 ring-black ring-opacity-5",
+          !open && "hidden",
+        )}
+      >
+        {links.map((item) => (
+          <SingleMenuItem key={item.href} link={item} onSelect={close} />
+        ))}
+      </div>
     </div>
   );
 }

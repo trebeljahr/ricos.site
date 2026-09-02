@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const highlights = [
   {
-    href: "/diatoms",
+    href: "/posts/diatoms",
     label: "Diatom Arrangements",
     note: "A glimpse into the invisible world of microscopic algae art",
   },

@@ -53,7 +53,9 @@ const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
         ]}
       />
       <main className="py-20 px-3 max-w-5xl mx-auto">
-        <BreadCrumbs path={url} />
+        {/* Podcast notes are unlisted — the /podcastnotes index was removed, so
+            that crumb is plain text rather than a link to a route that 404s. */}
+        <BreadCrumbs path={url} overwrites={[{ matchingPath: "podcastnotes", unlinked: true }]} />
         <MetadataDisplay date={podcastnote.date} readingTime={podcastnote.metadata.readingTime} />
 
         <article>

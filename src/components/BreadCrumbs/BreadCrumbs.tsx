@@ -9,7 +9,10 @@ export default function _Component({
   overwrites?: {
     matchingPath: string;
     newText?: string;
+    /** Send this crumb somewhere other than the path segment it sits on. */
     alternateLink?: string;
+    /** Render as plain text: the path segment has no page behind it. */
+    unlinked?: boolean;
   }[];
 }) {
   const pathParts = path.split("/").filter((part) => part !== "");
@@ -63,8 +66,11 @@ export default function _Component({
                     d="m1 9 4-4-4-4"
                   />
                 </svg>
-                {isCurrentPage ? (
-                  <span className="ml-1 text-sm font-medium md:ml-2" aria-current="page">
+                {isCurrentPage || overwrite?.unlinked ? (
+                  <span
+                    className="ml-1 text-sm font-medium md:ml-2"
+                    aria-current={isCurrentPage ? "page" : undefined}
+                  >
                     {label}
                   </span>
                 ) : (

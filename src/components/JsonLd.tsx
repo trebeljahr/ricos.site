@@ -2,6 +2,9 @@ import Head from "next/head";
 import { nextImageUrl } from "src/lib/mapToImageProps";
 import { baseUrl, completeUrl } from "src/lib/urlUtils";
 
+const BEST_RATING = 10;
+const WORST_RATING = 1;
+
 type ArticleJsonLdProps = {
   title: string;
   description: string;
@@ -13,6 +16,7 @@ type ArticleJsonLdProps = {
   type: "article" | "book" | "website";
   bookAuthor?: string;
   bookRating?: number;
+  bookUrl?: string;
 };
 
 export const JsonLd = ({
@@ -26,6 +30,7 @@ export const JsonLd = ({
   type,
   bookAuthor,
   bookRating,
+  bookUrl,
 }: ArticleJsonLdProps) => {
   const fullUrl = completeUrl(url);
   const imageUrl = image ? nextImageUrl(image, 1080) : undefined;
@@ -38,7 +43,12 @@ export const JsonLd = ({
 
   let schema: Record<string, unknown>;
 
-  if (type === "book" && bookAuthor) {
+  // Google's Review rich result requires itemReviewed, author and reviewRating.
+  // A rating of 0 means "not rated yet" in the booknote frontmatter, so without a
+  // real rating we fall back to Article schema instead of emitting a partial Review.
+  const hasRating = typeof bookRating === "number" && bookRating >= WORST_RATING;
+
+  if (type === "book" && bookAuthor && hasRating) {
     schema = {
       "@context": "https://schema.org",
       "@type": "Review",
@@ -49,17 +59,17 @@ export const JsonLd = ({
           "@type": "Person",
           name: bookAuthor,
         },
+        ...(bookUrl && { sameAs: bookUrl }),
       },
       author,
       reviewBody: description,
       url: fullUrl,
-      ...(bookRating && {
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: bookRating,
-          bestRating: 10,
-        },
-      }),
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: bookRating,
+        bestRating: BEST_RATING,
+        worstRating: WORST_RATING,
+      },
       ...(imageUrl && {
         image: {
           "@type": "ImageObject",
@@ -70,7 +80,7 @@ export const JsonLd = ({
       ...(datePublished && { datePublished }),
       ...(dateModified && { dateModified }),
     };
-  } else if (type === "article") {
+  } else if (type === "article" || type === "book") {
     schema = {
       "@context": "https://schema.org",
       "@type": "Article",

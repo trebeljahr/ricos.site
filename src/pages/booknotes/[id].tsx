@@ -66,6 +66,7 @@ const Book = ({ booknote, relatedBooks, backlinks }: Props) => {
         type="book"
         bookAuthor={booknote.bookAuthor}
         bookRating={booknote.rating}
+        bookUrl={booknote.goodreadsLink}
       />
       <BreadcrumbJsonLd
         items={[

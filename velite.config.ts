@@ -802,10 +802,13 @@ export default defineConfig({
           const parentFolder = slugify(name);
           const slug = slugify(meta.stem);
 
+          // `meta.path` is an absolute filesystem path (`/vercel/path0/...` on
+          // Vercel, `/Users/...` locally). It is used to derive `parentFolder`
+          // above but deliberately not emitted: getStaticProps would serialise
+          // it into __NEXT_DATA__ on every travel page.
           return {
             ...data,
             slug,
-            path: meta.path,
             contentType: "Travelblog",
             link: path.join("/", "travel", parentFolder, slug),
             parentFolder,

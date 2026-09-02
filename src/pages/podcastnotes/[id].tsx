@@ -10,8 +10,31 @@ import { ToTopButton } from "@components/ToTopButton";
 import type { Podcastnote as PodcastnoteType } from "@velite";
 
 import { byOnlyPublished } from "src/lib/utils/filters";
+import { pickProps } from "src/lib/utils/pickProps";
 
 type BacklinkItem = { title: string; link: string; type: string };
+
+// Fields this page renders. link, excerpt, markdownExcerpt, seoOgImage*,
+// contentType, published, date-last-updated and hasDemos stay out of
+// __NEXT_DATA__.
+const PODCASTNOTE_FIELDS = [
+  "slug",
+  "title",
+  "displayTitle",
+  "show",
+  "episode",
+  "rating",
+  "links",
+  "date",
+  "cover",
+  "tags",
+  "metadata",
+  "metaDescription",
+  "seoTitle",
+  "seoKeywords",
+  "hasMath",
+  "content",
+] as const;
 
 type Props = {
   podcastnote: PodcastnoteType;
@@ -106,13 +129,14 @@ export async function getStaticProps({ params }: Params) {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const podcastnotes: PodcastnoteType[] = loadVeliteData("podcastnotes.json");
   const podcastnote = podcastnotes.filter(byOnlyPublished).find(({ slug }) => params.id === slug);
+  if (!podcastnote) throw Error(`Podcastnote not found: ${params.id}`);
 
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");
   const backlinks = getBacklinks(podcastnote.link);
 
   return {
     props: {
-      podcastnote,
+      podcastnote: pickProps(podcastnote, PODCASTNOTE_FIELDS),
       backlinks,
     },
   };

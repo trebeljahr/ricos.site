@@ -13,19 +13,40 @@ import { ToTopButton } from "@components/ToTopButton";
 import slugify from "@sindresorhus/slugify";
 import type { Travelblog } from "@velite";
 import type { ReactNode } from "react";
-import type { CommonMetadata } from "src/@types";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { byOnlyPublished } from "src/lib/utils/filters";
+import { pickProps } from "src/lib/utils/pickProps";
 import { replaceUndefinedWithNull } from "src/lib/utils/replaceUndefinedWithNull";
 import { byDate } from "src/lib/utils/sorting";
+import type { CardMetadata } from "src/lib/utils/toOnlyMetadata";
 
 type BacklinkItem = { title: string; link: string; type: string };
+
+// Everything the layout below reads off the entry. Anything not listed here
+// (the build-time source path, link, excerpt, markdownExcerpt, contentType,
+// published, date-last-updated, hasDemos) never reaches __NEXT_DATA__.
+const POST_FIELDS = [
+  "slug",
+  "title",
+  "date",
+  "cover",
+  "tags",
+  "metadata",
+  "parentFolder",
+  "metaDescription",
+  "seoTitle",
+  "seoKeywords",
+  "seoOgImage",
+  "seoOgImageAlt",
+  "hasMath",
+  "content",
+] as const;
 
 type TravelBlogProps = {
   post: Travelblog;
   nextSlug: string | null;
   previousSlug: string | null;
-  relatedStories: CommonMetadata[];
+  relatedStories: CardMetadata[];
   backlinks: BacklinkItem[];
 };
 
@@ -36,7 +57,6 @@ interface LayoutProps extends TravelBlogProps {
 export const TravelBlogLayout = ({
   children,
   post: {
-    _excerpt,
     slug,
     cover,
     title,
@@ -201,9 +221,9 @@ export async function getStaticProps({ params: { storyName, tripName } }: Params
 
   // Related stories from OTHER trips (cross-trip discovery)
   const otherTripStories = allPublished.filter(({ parentFolder }) => parentFolder !== tripName);
-  const { toOnlyMetadata } = await import("src/lib/utils/toOnlyMetadata");
+  const { toCardMetadata } = await import("src/lib/utils/toOnlyMetadata");
   const relatedStories = getRelatedContent(travelingStory, otherTripStories, 3).map(
-    (s: Travelblog) => toOnlyMetadata(s),
+    (s: Travelblog) => toCardMetadata(s),
   );
 
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");
@@ -211,7 +231,7 @@ export async function getStaticProps({ params: { storyName, tripName } }: Params
 
   return {
     props: {
-      post: replaceUndefinedWithNull(travelingStory),
+      post: replaceUndefinedWithNull(pickProps(travelingStory, POST_FIELDS)),
       nextSlug,
       previousSlug,
       relatedStories,

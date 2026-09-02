@@ -22,8 +22,30 @@ import { ogImageDimensions } from "src/lib/ogImage";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { getRelatedContent } from "src/lib/utils/getRelatedContent";
+import { pickProps } from "src/lib/utils/pickProps";
 
 type BacklinkItem = { title: string; link: string; type: string };
+
+// Fields the layout below actually reads. The rest of the velite entry (link,
+// excerpt, markdownExcerpt, contentType, published, date-last-updated) is
+// dropped so it never lands in __NEXT_DATA__.
+const POST_FIELDS = [
+  "slug",
+  "title",
+  "subtitle",
+  "date",
+  "cover",
+  "tags",
+  "metadata",
+  "metaDescription",
+  "seoTitle",
+  "seoKeywords",
+  "seoOgImage",
+  "seoOgImageAlt",
+  "hasMath",
+  "hasDemos",
+  "content",
+] as const;
 
 type Props = {
   children: ReactNode;
@@ -37,7 +59,6 @@ export const BlogLayout = ({
   morePosts,
   backlinks,
   post: {
-    _excerpt,
     title,
     subtitle,
     date,
@@ -50,7 +71,7 @@ export const BlogLayout = ({
     seoOgImage,
     seoOgImageAlt,
     hasMath,
-    metadata: { readingTime, _wordCount },
+    metadata: { readingTime },
   },
 }: Props) => {
   const url = `posts/${slug}`;
@@ -160,5 +181,5 @@ export async function getStaticProps({ params }: Params) {
   const morePosts = getRelatedContent(post, publishedPosts, 3);
   const backlinks = getBacklinks(post.link);
 
-  return { props: { post, morePosts, backlinks } };
+  return { props: { post: pickProps(post, POST_FIELDS), morePosts, backlinks } };
 }

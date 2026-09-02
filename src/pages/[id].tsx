@@ -10,12 +10,33 @@ import { ToTopButton } from "@components/ToTopButton";
 import type { Page as PageType } from "@velite";
 import dynamic from "next/dynamic";
 import { ogImageDimensions } from "src/lib/ogImage";
+import { pickProps } from "src/lib/utils/pickProps";
 
 const MDXContentWithDemos = dynamic(
   () => import("@components/MDXContentWithDemos").then((m) => m.MDXContentWithDemos),
   { ssr: true },
 );
 type BacklinkItem = { title: string; link: string; type: string };
+
+// Fields this page renders. link, excerpt, markdownExcerpt, contentType,
+// published and date-last-updated are dropped before serialisation.
+const PAGE_FIELDS = [
+  "slug",
+  "title",
+  "subtitle",
+  "date",
+  "cover",
+  "tags",
+  "metadata",
+  "metaDescription",
+  "seoTitle",
+  "seoKeywords",
+  "seoOgImage",
+  "seoOgImageAlt",
+  "hasMath",
+  "hasDemos",
+  "content",
+] as const;
 
 type Props = {
   page: PageType;
@@ -97,9 +118,10 @@ export async function getStaticProps({ params }: Params) {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const pages: PageType[] = loadVeliteData("pages.json");
   const page = pages.find((page: PageType) => page.slug === params.id);
+  if (!page) throw Error(`Page not found: ${params.id}`);
 
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");
   const backlinks = getBacklinks(page.link);
 
-  return { props: { page, backlinks } };
+  return { props: { page: pickProps(page, PAGE_FIELDS), backlinks } };
 }

@@ -11,17 +11,39 @@ import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Newsletter as NewsletterType } from "@velite";
-import type { CommonMetadata } from "src/@types";
 import { ogImageDimensions } from "src/lib/ogImage";
 import { byOnlyPublished } from "src/lib/utils/filters";
+import { pickProps } from "src/lib/utils/pickProps";
+import type { CardMetadata } from "src/lib/utils/toOnlyMetadata";
 
 type BacklinkItem = { title: string; link: string; type: string };
+
+// Fields this page renders. link, slug, markdownExcerpt, contentType,
+// published, date-last-updated and hasDemos are dropped before serialisation.
+const NEWSLETTER_FIELDS = [
+  "slugTitle",
+  "number",
+  "title",
+  "date",
+  "cover",
+  "tags",
+  "metadata",
+  "excerpt",
+  "excludeExcerpt",
+  "metaDescription",
+  "seoTitle",
+  "seoKeywords",
+  "seoOgImage",
+  "seoOgImageAlt",
+  "hasMath",
+  "content",
+] as const;
 
 type Props = {
   newsletter: NewsletterType;
   nextPost: null | number;
   prevPost: null | number;
-  relatedNewsletters: CommonMetadata[];
+  relatedNewsletters: CardMetadata[];
   backlinks: BacklinkItem[];
 };
 
@@ -164,9 +186,9 @@ export async function getStaticProps({ params }: Params) {
   const nextPost = newsletters.find((nl) => Number.parseInt(String(nl.number), 10) === next);
   const prevPost = newsletters.find((nl) => Number.parseInt(String(nl.number), 10) === prev);
 
-  const { toOnlyMetadata } = await import("src/lib/utils/toOnlyMetadata");
+  const { toCardMetadata } = await import("src/lib/utils/toOnlyMetadata");
   const relatedNewsletters = getRelatedContent(newsletter, published, 3).map((nl: NewsletterType) =>
-    toOnlyMetadata(nl),
+    toCardMetadata(nl),
   );
 
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");
@@ -174,7 +196,7 @@ export async function getStaticProps({ params }: Params) {
 
   return {
     props: {
-      newsletter,
+      newsletter: pickProps(newsletter, NEWSLETTER_FIELDS),
       nextPost: nextPost?.slugTitle || null,
       prevPost: prevPost?.slugTitle || null,
       relatedNewsletters,

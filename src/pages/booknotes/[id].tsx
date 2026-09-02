@@ -10,15 +10,40 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { HorizontalCard } from "@components/NiceCards";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Booknote } from "@velite";
-import type { CommonMetadata } from "src/@types";
 import { ogImageDimensions } from "src/lib/ogImage";
 import { byOnlyPublished } from "src/lib/utils/filters";
+import { pickProps } from "src/lib/utils/pickProps";
+import type { CardMetadata } from "src/lib/utils/toOnlyMetadata";
 
 type BacklinkItem = { title: string; link: string; type: string };
 
+// Fields this page renders. Everything else on the entry (link, excerpt,
+// markdownExcerpt, detailedNotes, amazonAffiliateLink, contentType, published,
+// date-last-updated, hasDemos) stays out of __NEXT_DATA__.
+const BOOKNOTE_FIELDS = [
+  "slug",
+  "title",
+  "subtitle",
+  "bookAuthor",
+  "rating",
+  "goodreadsLink",
+  "summary",
+  "date",
+  "cover",
+  "tags",
+  "metadata",
+  "metaDescription",
+  "seoTitle",
+  "seoKeywords",
+  "seoOgImage",
+  "seoOgImageAlt",
+  "hasMath",
+  "content",
+] as const;
+
 type Props = {
   booknote: Booknote;
-  relatedBooks: CommonMetadata[];
+  relatedBooks: CardMetadata[];
   backlinks: BacklinkItem[];
 };
 
@@ -145,10 +170,10 @@ export async function getStaticProps({ params }: Params) {
   const published = booknotes.filter(byOnlyPublished);
   const booknote = published.find(({ slug }: Booknote) => params.id === slug);
 
-  const { toOnlyMetadata } = await import("src/lib/utils/toOnlyMetadata");
+  const { toCardMetadata } = await import("src/lib/utils/toOnlyMetadata");
   const withContent = published.filter((b: Booknote) => b.summary);
   const relatedBooks = getRelatedContent(booknote, withContent, 4).map((b: Booknote) =>
-    toOnlyMetadata(b),
+    toCardMetadata(b),
   );
 
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");
@@ -156,7 +181,7 @@ export async function getStaticProps({ params }: Params) {
 
   return {
     props: {
-      booknote,
+      booknote: pickProps(booknote, BOOKNOTE_FIELDS),
       relatedBooks,
       backlinks,
     },

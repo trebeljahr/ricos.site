@@ -191,6 +191,14 @@ async function customRedirects() {
   const redirects = await generateRedirects();
   return [
     ...redirects,
+    // Exact "/newsletter" has to come first: the ":id*" rule below also matches
+    // it with an empty id and resolves to "/newsletters/", which Next then
+    // redirects again to "/newsletters" (trailingSlash is false). One hop, not two.
+    {
+      source: "/newsletter",
+      destination: "/newsletters",
+      permanent: true,
+    },
     {
       source: "/newsletter/:id*",
       destination: "/newsletters/:id*",

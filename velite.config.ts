@@ -312,6 +312,27 @@ const parseGermanDate = (dateString: string) => {
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 };
 
+// A published entry that sets a cover image but leaves `alt` empty renders as
+// `<img alt="">` in the cards and heroes — invisible to screen readers, and
+// flagged by SEO crawlers as missing alt text. Throw rather than let velite
+// downgrade it to a log line nobody reads: a silent empty alt is exactly how
+// these slipped onto the site in the first place. Drafts and entries without
+// a cover (`src: ""` falls back to the shared default cover) are exempt.
+const requireCoverAltWhenPublished = <
+  T extends { cover: { src: string; alt: string }; published: boolean },
+>(
+  data: T,
+  { meta }: { meta: ZodMeta },
+): T => {
+  if (data.published && data.cover.src.trim() && !data.cover.alt.trim()) {
+    throw Error(
+      `Missing cover.alt in ${meta.path} — published entries must describe their cover image ("${data.cover.src}")`,
+    );
+  }
+
+  return data;
+};
+
 const commonFields = {
   title: s.string(),
   date: s
@@ -677,6 +698,7 @@ export default defineConfig({
           ...commonFields,
           subtitle: s.string(),
         })
+        .transform(requireCoverAltWhenPublished)
         .transform((data) => ({ ...data, contentType: "Post" }))
         .transform(addLinksAndSlugTransformer("posts"))
         .transform(addBundledMDXContent),
@@ -690,6 +712,7 @@ export default defineConfig({
           excerpt: s.string(),
           excludeExcerpt: s.boolean().default(false),
         })
+        .transform(requireCoverAltWhenPublished)
         .transform((data, { meta }) => ({
           ...data,
           slugTitle: slugify(data.title),
@@ -714,6 +737,7 @@ export default defineConfig({
           amazonAffiliateLink: s.string(),
           goodreadsLink: s.string(),
         })
+        .transform(requireCoverAltWhenPublished)
         .transform((data) => ({ ...data, contentType: "Booknote" }))
         .transform(addLinksAndSlugTransformer("booknotes"))
         .transform(addBundledMDXContent),
@@ -726,6 +750,7 @@ export default defineConfig({
           ...commonFields,
           subtitle: s.string(),
         })
+        .transform(requireCoverAltWhenPublished)
         .transform((data) => ({ ...data, contentType: "Page" }))
         .transform(addLinksAndSlugTransformer())
         .transform(addBundledMDXContent),
@@ -745,6 +770,7 @@ export default defineConfig({
             youtube: s.string(),
           }),
         })
+        .transform(requireCoverAltWhenPublished)
         .transform((data) => {
           return {
             ...data,
@@ -760,6 +786,7 @@ export default defineConfig({
       pattern: "travel/**/*.md",
       schema: s
         .object({ ...commonFields })
+        .transform(requireCoverAltWhenPublished)
         .transform((data, { meta }) => {
           const name = meta.path.replace(".md", "").split("/").at(-2);
 

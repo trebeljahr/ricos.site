@@ -10,22 +10,22 @@ const highlights = [
     note: "A glimpse into the invisible world of microscopic algae art",
   },
   {
-    href: "/photos",
+    href: "/photography/best-of",
     label: "Photography",
     note: "15 years of photography distilled into a single gallery.",
   },
   {
-    href: "/plasma",
+    href: "/r3f/scenes/plasma-ball",
     label: "Plasma Ball",
     note: "A mesmerizing 3D plasma ball.",
   },
   {
-    href: "/shader-art",
+    href: "/r3f/scenes/shader-art-demo",
     label: "Shader Art",
     note: "Fractal patterns to play around and make art with.",
   },
   {
-    href: "/needles",
+    href: "/needlestack",
     label: "Needlestack",
     note: "The best things I've found on the internet. Period.",
   },
@@ -35,7 +35,7 @@ const highlights = [
     note: "Digital postcards, filled with a mix of travel stories and beautiful things I've found.",
   },
   {
-    href: "/yellow",
+    href: "/posts/the-best-yellow",
     label: "The Best Yellow",
     note: "A whimsical exploration of which is the best yellow available on Amazon.",
   },

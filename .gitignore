@@ -84,3 +84,6 @@ venv/
 .env.test
 .envrc.local
 .vercel/
+
+# link checker cache + external link report
+.link-check/

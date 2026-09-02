@@ -34,10 +34,12 @@
     "extractNowHistory": "tsx src/scripts/extractNowHistory.ts",
     "postbuild": "npm run generateSitemap && npm run generateRSS && npm run generateSearchIndex && npm run generateBacklinks && npm run checkLinks && npm run checkAlt",
     "checkLinks": "tsx src/scripts/checkInternalLinks.ts",
+    "checkLinks:external": "tsx src/scripts/checkInternalLinks.ts --external",
     "checkAlt": "tsx src/scripts/checkImageAlt.ts",
     "postinstall": "patch-package",
     "start": "next start",
     "typecheck": "tsc",
+    "test": "vitest run",
     "tweet": "tsx src/scripts/tweet.ts",
     "renameFiles": "tsx src/scripts/renameFiles.ts",
     "addDatesToNewsletters": "tsx src/scripts/addDatesToNewsletters.ts",
@@ -224,6 +226,8 @@
     "url-loader": "^4.1.1",
     "velite": "^0.3.1",
     "vercel-submodules": "^1.1.0",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.11",
     "yargs": "^18.0.0"
   },
   "overrides": {

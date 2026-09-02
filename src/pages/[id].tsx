@@ -38,6 +38,7 @@ export default function Page({ page, backlinks }: Props) {
       withProgressBar={true}
       ogType="article"
       articlePublishedTime={page.date}
+      hasMath={page.hasMath}
     >
       <JsonLd
         title={page.seoTitle || title}

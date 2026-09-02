@@ -35,6 +35,7 @@ const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
       imageHeight={podcastnote.cover.height}
       ogType="article"
       articlePublishedTime={podcastnote.date}
+      hasMath={podcastnote.hasMath}
     >
       <JsonLd
         title={podcastnote.seoTitle || podcastnote.displayTitle}

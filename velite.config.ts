@@ -641,6 +641,12 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   ];
   const hasDemos = demoComponentNames.some((name) => rawContent.includes(`<${name}`));
 
+  // rehypeKatex emits `className: "katex"` wrappers, so its presence in the
+  // compiled MDX is an exact signal for "this page renders math". Only 5 of
+  // ~386 pages do, and katex.min.css is 21KB (a fifth of the whole stylesheet)
+  // — so it's loaded per-page from /public instead of globally in _app.
+  const hasMath = mdxCode.includes("katex");
+
   return {
     ...data,
     content: mdxSource,
@@ -652,6 +658,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     seoOgImage,
     seoOgImageAlt,
     hasDemos,
+    hasMath,
   };
 };
 

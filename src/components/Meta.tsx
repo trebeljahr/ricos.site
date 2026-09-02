@@ -7,6 +7,7 @@ interface Props {
   keywords?: string[];
   url: string;
   noindex?: boolean;
+  hasMath?: boolean;
 }
 
 const defaultKeywords = [
@@ -60,6 +61,7 @@ export const Meta = ({
   keywords = defaultKeywords,
   url,
   noindex = false,
+  hasMath = false,
 }: Props) => {
   return (
     <Head>
@@ -71,6 +73,11 @@ export const Meta = ({
           dead-ends. */}
       {noindex && <meta name="robots" content="noindex, follow" />}
       <link rel="canonical" href={completeUrl(url)} />
+
+      {/* KaTeX styles are ~21KB and only 5 pages render math, so they are not
+          part of the global bundle. Vendored under /public/katex so the
+          @font-face url(fonts/...) refs resolve next to the stylesheet. */}
+      {hasMath && <link rel="stylesheet" href="/katex/katex.min.css" />}
 
       <meta name="description" content={description} />
       <meta name="application-name" content="ricos.site" />

@@ -56,6 +56,7 @@ const Book = ({ booknote, relatedBooks, backlinks }: Props) => {
       withProgressBar={true}
       ogType="article"
       articlePublishedTime={booknote.date}
+      hasMath={booknote.hasMath}
       noindex={!booknote.summary}
     >
       <JsonLd

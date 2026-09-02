@@ -36,7 +36,12 @@ export function BookPreview({ book, index }: Props) {
         <ImageWithLoader
           src={cover.src}
           alt={cover.alt}
-          sizes={`(max-width: 768px) 100vw, (max-width: 1092px) ${priority ? 768 : 357}`}
+          // Cover sits in the fixed 15rem grid column at md+. The old value
+          // interpolated bare numbers (`768` / `357`) with no unit and had no
+          // trailing default size, so the attribute was invalid and every
+          // cover fell back to 100vw — a 240px slot pulling the 3840px variant
+          // (985KB) on desktop.
+          sizes="(max-width: 768px) calc(100vw - 24px), 240px"
           width={cover.width}
           height={cover.height}
           priority={priority}

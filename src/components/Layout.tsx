@@ -30,6 +30,8 @@ type Props = {
   ogType?: "website" | "article";
   articlePublishedTime?: string;
   noindex?: boolean;
+  /** Load katex.min.css for this page only. Set from the content's hasMath. */
+  hasMath?: boolean;
 };
 
 const Layout = ({
@@ -47,6 +49,7 @@ const Layout = ({
   ogType = "website",
   articlePublishedTime,
   noindex = false,
+  hasMath = false,
 }: Props) => {
   const properTitle = toTitleCase(title);
 
@@ -58,6 +61,7 @@ const Layout = ({
         url={url}
         keywords={keywords}
         noindex={noindex}
+        hasMath={hasMath}
       />
       <OpenGraph
         title={properTitle}

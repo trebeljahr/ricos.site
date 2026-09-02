@@ -49,6 +49,7 @@ export const TravelBlogLayout = ({
     seoKeywords,
     seoOgImage,
     seoOgImageAlt,
+    hasMath,
   },
   nextSlug,
   previousSlug,
@@ -69,6 +70,7 @@ export const TravelBlogLayout = ({
       withProgressBar={true}
       ogType="article"
       articlePublishedTime={date}
+      hasMath={hasMath}
     >
       <JsonLd
         title={seoTitle || title}

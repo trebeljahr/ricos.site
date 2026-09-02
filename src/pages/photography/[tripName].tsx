@@ -2,6 +2,7 @@ import { BreadCrumbs } from "@components/BreadCrumbs";
 import { InfiniteScrollGallery } from "@components/Galleries";
 import Layout from "@components/Layout";
 import { ToTopButton } from "@components/ToTopButton";
+import { useMemo } from "react";
 import type { ImageProps } from "src/@types";
 import {
   getDataFromMetadata,
@@ -19,19 +20,27 @@ export default function SinglePhotographyShowcasePage({
   images: ImageProps[];
   tripName: string;
 }) {
-  const imagesWithSrcSet = images.map((image) => {
-    return {
-      ...image,
-      srcSet: imageSizes.map((size) => {
-        const aspectRatio = Math.round(image.height / image.width);
+  // Memoized: the largest gallery is 572 images x 16 sizes = 9,152 objects,
+  // which was rebuilt on every render. `images` is a stable prop from
+  // getStaticProps, so this only runs when navigating to another trip.
+  const imagesWithSrcSet = useMemo(
+    () =>
+      images.map((image) => {
+        // Math.round() collapsed the aspect ratio to an integer (a 3:2
+        // landscape photo became 1), so every srcSet entry carried a wrong
+        // height and react-photo-album reserved the wrong box.
+        const aspectRatio = image.height / image.width;
         return {
-          src: nextImageUrl(image.src, size),
-          width: size,
-          height: aspectRatio * size,
+          ...image,
+          srcSet: imageSizes.map((size) => ({
+            src: nextImageUrl(image.src, size),
+            width: size,
+            height: Math.round(aspectRatio * size),
+          })),
         };
       }),
-    };
-  });
+    [images],
+  );
 
   const tripMeta = trips.find(({ name }) => name === tripName) || {
     src: "/assets/blog/photography.png",

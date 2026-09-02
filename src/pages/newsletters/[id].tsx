@@ -41,6 +41,7 @@ const Newsletter = ({
     seoKeywords,
     seoOgImage,
     seoOgImageAlt,
+    hasMath,
     metadata: { readingTime },
   },
   nextPost,
@@ -65,6 +66,7 @@ const Newsletter = ({
       withProgressBar={true}
       ogType="article"
       articlePublishedTime={date}
+      hasMath={hasMath}
     >
       <JsonLd
         title={fullTitle}

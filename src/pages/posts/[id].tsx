@@ -49,6 +49,7 @@ export const BlogLayout = ({
     seoKeywords,
     seoOgImage,
     seoOgImageAlt,
+    hasMath,
     metadata: { readingTime, _wordCount },
   },
 }: Props) => {
@@ -67,6 +68,7 @@ export const BlogLayout = ({
       withProgressBar={true}
       ogType="article"
       articlePublishedTime={date}
+      hasMath={hasMath}
     >
       <JsonLd
         title={fullTitle}

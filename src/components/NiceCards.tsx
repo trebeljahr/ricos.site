@@ -50,7 +50,11 @@ export function HorizontalCard({
             alt={cover.alt}
             width={cover.width}
             height={cover.height}
-            sizes={`(max-width: 768px) calc(100vw-24px), 350px`}
+            // The image sits in the fixed 15rem grid column at md+, and spans
+            // the padded page width below it. `calc(100vw-24px)` (no spaces) is
+            // a CSS parse error, which invalidates the whole sizes attribute
+            // and makes the browser fall back to 100vw.
+            sizes="(max-width: 768px) calc(100vw - 24px), 240px"
             priority={priority}
             className="object-cover w-full h-full"
           />
@@ -106,7 +110,10 @@ export const VerticalCard = ({
           alt={cover.alt}
           width={cover.width}
           height={cover.height}
-          sizes={`(max-width: 768px) calc(100vw-24px), (max-width: 1092px) calc(50vw-24px-16px), 325px`}
+          // Same missing-whitespace calc() bug as HorizontalCard above: without
+          // the spaces these are parse errors and the whole attribute is
+          // dropped, so every card fetched a 100vw-sized variant.
+          sizes="(max-width: 768px) calc(100vw - 24px), (max-width: 1092px) calc(50vw - 40px), 325px"
           className="object-cover rounded-t-lg w-full h-full"
         />
       </div>

@@ -37,7 +37,6 @@ export const navGroups: NavGroup[] = [
     label: "notebook",
     items: [
       { label: "booknotes", href: "/booknotes" },
-      { label: "podcast notes", href: "/podcastnotes" },
       { label: "quotes", href: "/quotes" },
       { label: "needlestack", href: "/needlestack" },
       { label: "principles", href: "/principles" },

@@ -69,7 +69,7 @@ export default function _Component({
                   </span>
                 ) : (
                   <Link
-                    href={"/" + pathParts.slice(0, index + 1).join("/")}
+                    href={overwrite?.alternateLink || "/" + pathParts.slice(0, index + 1).join("/")}
                     className="ml-1 text-sm font-medium  hover:text-myBlue md:ml-2"
                   >
                     {label}

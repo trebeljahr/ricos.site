@@ -1,12 +1,21 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-function loadStubBooknotes() {
+/**
+ * A page that renders `<meta name="robots" content="noindex">` has no business
+ * being in the sitemap: it lands in Ahrefs as an orphan (in the sitemap, no
+ * inlinks) forever, because nothing is supposed to link to it. Reading it back
+ * out of the prerendered HTML means the sitemap follows whatever the page
+ * actually declares, instead of a second list that drifts from it.
+ */
+function isNoindex(url) {
+  const relative = url === "/" ? "index" : url.replace(/^\//, "");
   try {
-    const data = JSON.parse(readFileSync(resolve(".velite", "booknotes.json"), "utf-8"));
-    return new Set(data.filter((b) => !b.summary).map((b) => b.link));
+    const html = readFileSync(resolve(".next", "server", "pages", `${relative}.html`), "utf-8");
+    return /<meta name="robots" content="noindex/.test(html);
   } catch {
-    return new Set();
+    // Not prerendered (SSR or dynamic) — nothing to read, so keep the entry.
+    return false;
   }
 }
 
@@ -50,7 +59,6 @@ function loadContentDates() {
 }
 
 const contentDates = loadContentDates();
-const stubBooknotes = loadStubBooknotes();
 const hiddenR3fRoutes = loadHiddenR3fRoutes();
 
 /** @type {import('next-sitemap').IConfig} */
@@ -66,8 +74,10 @@ const nextSitemapConfig = {
   changefreq: null,
   priority: null,
   transform: async (_config, url) => {
-    // Exclude stub booknotes (no summary written yet)
-    if (stubBooknotes.has(url)) return null;
+    // Exclude anything the page itself marks noindex — stub booknotes with no
+    // summary written yet, and the placeholder shelves (/art, /photography/essays,
+    // /photography/prints) that exist as routes but have no content yet.
+    if (isNoindex(url)) return null;
 
     // Exclude unfinished R3F demos (see src/content/r3f-hidden-routes.json)
     if (hiddenR3fRoutes.has(url)) return null;

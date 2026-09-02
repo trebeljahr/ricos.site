@@ -1,25 +1,21 @@
 import { BreadCrumbs } from "@components/BreadCrumbs";
+import { ContentListRow } from "@components/ContentListRow";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { ToTopButton } from "@components/ToTopButton";
 import Link from "next/link";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
-import { canonicalizeTags, type Theme, themes } from "src/lib/themes/themesData";
-import { byOnlyPublished } from "src/lib/utils/filters";
+import {
+  byDateDesc,
+  canonicalTagsByDoc,
+  type Item,
+  itemsForTheme,
+  loadThemeDocs,
+  toItem,
+} from "src/lib/themes/themeContent";
+import { type Theme, themes } from "src/lib/themes/themesData";
 import { toTitleCase } from "src/lib/utils/toTitleCase";
-
-type ItemCover = { src: string; alt: string; width: number; height: number } | null;
-
-type Item = {
-  link: string;
-  title: string;
-  contentType: string;
-  date?: string;
-  excerpt?: string;
-  readingTime?: number;
-  cover: ItemCover;
-};
 
 type TagEntry = { tag: string; items: Item[] };
 
@@ -106,46 +102,6 @@ function TagCloud({ tags }: { tags: TagEntry[] }) {
   );
 }
 
-function TagSectionRow({ item }: { item: Item }) {
-  const meta: string[] = [];
-  if (item.contentType) meta.push(item.contentType);
-  if (item.readingTime) meta.push(`${item.readingTime} min`);
-  if (item.date) meta.push(new Date(item.date).getFullYear().toString());
-  return (
-    <li className="border-b border-gray-200 dark:border-gray-800 last:border-b-0">
-      <Link
-        href={item.link}
-        className="group grid gap-4 py-4 no-underline text-inherit hover:text-myBlue sm:grid-cols-[5rem_1fr]"
-      >
-        <div className="relative aspect-square overflow-hidden rounded-md bg-gray-100 dark:bg-gray-800">
-          {item.cover ? (
-            <ImageWithLoader
-              src={item.cover.src}
-              alt={item.cover.alt}
-              fill
-              sizes="80px"
-              className="object-cover"
-            />
-          ) : null}
-        </div>
-        <div className="min-w-0">
-          <div className="mb-1 text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
-            {meta.join(" · ")}
-          </div>
-          <h4 className="m-0 text-base font-semibold text-gray-950 transition-colors group-hover:text-myBlue dark:text-white">
-            {item.title}
-          </h4>
-          {item.excerpt && (
-            <p className="m-0 mt-1 line-clamp-2 text-sm text-gray-600 dark:text-gray-300">
-              {item.excerpt}
-            </p>
-          )}
-        </div>
-      </Link>
-    </li>
-  );
-}
-
 export default function CategoriesPage({ themes, tags, totalDocs, seo }: Props) {
   const url = "categories";
   return (
@@ -204,7 +160,7 @@ export default function CategoriesPage({ themes, tags, totalDocs, seo }: Props) 
               </h3>
               <ul className="not-prose m-0 list-none p-0">
                 {items.map((item) => (
-                  <TagSectionRow key={item.link} item={item} />
+                  <ContentListRow key={item.link} item={item} />
                 ))}
               </ul>
             </div>
@@ -220,60 +176,9 @@ export default function CategoriesPage({ themes, tags, totalDocs, seo }: Props) 
   );
 }
 
-type RawDoc = {
-  title: string;
-  link: string;
-  contentType: string;
-  date?: string;
-  excerpt?: string;
-  tags?: string;
-  cover?: { src: string; alt: string; width: number; height: number };
-  metadata?: { readingTime?: number };
-  draft?: boolean;
-  published?: boolean;
-};
-
-function toItem(doc: RawDoc): Item {
-  return {
-    link: doc.link,
-    title: doc.title,
-    contentType: doc.contentType,
-    date: doc.date,
-    excerpt: doc.excerpt,
-    readingTime: doc.metadata?.readingTime,
-    cover: doc.cover
-      ? {
-          src: doc.cover.src,
-          alt: doc.cover.alt,
-          width: doc.cover.width,
-          height: doc.cover.height,
-        }
-      : null,
-  };
-}
-
-function byDateDesc(a: Item, b: Item) {
-  const ad = a.date ? Date.parse(a.date) : 0;
-  const bd = b.date ? Date.parse(b.date) : 0;
-  return bd - ad;
-}
-
 export async function getStaticProps() {
-  const { loadVeliteData } = await import("src/lib/loadVeliteData");
-  const buckets: RawDoc[][] = [
-    loadVeliteData("posts.json"),
-    loadVeliteData("booknotes.json"),
-    loadVeliteData("pages.json"),
-    loadVeliteData("newsletters.json"),
-    loadVeliteData("travelblogs.json"),
-  ];
-  const allDocs = buckets.flat().filter(byOnlyPublished);
-
-  // Per-document canonical tags
-  const docCanonicalTags = new Map<RawDoc, string[]>();
-  for (const doc of allDocs) {
-    docCanonicalTags.set(doc, canonicalizeTags(doc.tags));
-  }
+  const allDocs = await loadThemeDocs();
+  const docCanonicalTags = canonicalTagsByDoc(allDocs);
 
   // Build per-tag bucket
   const tagMap = new Map<string, Item[]>();
@@ -289,21 +194,10 @@ export async function getStaticProps() {
     .map(([tag, items]) => ({ tag, items: items.sort(byDateDesc) }))
     .sort((a, b) => b.items.length - a.items.length);
 
-  // Build per-theme card
+  // Build per-theme card. The full list behind each card lives at
+  // /themes/[slug] and is built from the same itemsForTheme() call.
   const themeCards: ThemeCard[] = themes.map((theme) => {
-    const tagSet = new Set(theme.tagMembers);
-    const fallback = new Set(theme.contentTypeFallback ?? []);
-    const matched: RawDoc[] = [];
-    const seen = new Set<string>();
-    for (const doc of allDocs) {
-      const tags = docCanonicalTags.get(doc) ?? [];
-      const hit = tags.some((t) => tagSet.has(t)) || fallback.has(doc.contentType);
-      if (hit && !seen.has(doc.link)) {
-        seen.add(doc.link);
-        matched.push(doc);
-      }
-    }
-    const items = matched.map(toItem).sort(byDateDesc);
+    const items = itemsForTheme(theme, allDocs, docCanonicalTags);
     return {
       slug: theme.slug,
       title: theme.title,

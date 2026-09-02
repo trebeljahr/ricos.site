@@ -141,7 +141,14 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/(.*)",
+        // Everything except Next's dev-only asset directory. Next 16 serves
+        // /_next/static/development/_clientMiddlewareManifest.js as
+        // `application/json` while loading it in a <script> tag, so a blanket
+        // `nosniff` makes the browser refuse to execute it:
+        //   Refused to execute script from '…/_clientMiddlewareManifest.js'
+        //   because its MIME type ('application/json') is not executable.
+        // Production responses are unaffected — that path only exists in dev.
+        source: "/((?!_next/static/development).*)",
         headers: [
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },

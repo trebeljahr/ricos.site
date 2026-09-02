@@ -70,7 +70,15 @@ const nextSitemapConfig = {
     policies: [{ userAgent: "*", allow: "/" }],
     additionalSitemaps: [],
   },
-  exclude: ["/email-signup-success", "/email-signup-error", "/emergency", "/sub", "/midjourney"],
+  exclude: [
+    "/email-signup-success",
+    "/email-signup-error",
+    "/emergency",
+    "/sub",
+    "/midjourney",
+    // dev-only tool; 404s in production but still shows up in the route manifest
+    "/dev/alt-review",
+  ],
   changefreq: null,
   priority: null,
   transform: async (_config, url) => {

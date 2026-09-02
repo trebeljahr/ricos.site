@@ -65,7 +65,11 @@ export const Meta = ({
     <Head>
       <title>{title}</title>
 
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
+      {/* "follow" is deliberate: these pages should stay out of the index, but
+          crawlers must still traverse their outgoing links. Stub booknotes link
+          to plenty of indexable pages, and "nofollow" turned them into crawl
+          dead-ends. */}
+      {noindex && <meta name="robots" content="noindex, follow" />}
       <link rel="canonical" href={completeUrl(url)} />
 
       <meta name="description" content={description} />

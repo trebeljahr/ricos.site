@@ -18,11 +18,15 @@ const SimpleGallery = ({ photos: images }: { photos: ImageProps[] }) => {
         targetRowHeight={400}
         render={{ image: CustomImageRenderer as any }}
         defaultContainerWidth={1200}
+        // Inline galleries render inside the `max-w-prose` column, not the
+        // viewport: 100vw - 24px below 768px, 651px to 1279px, 723px above.
+        // The old `calc(100vw - 24px)` default over-declared by ~2x and pulled
+        // 1920/3840 variants into ~350px slots.
         sizes={{
-          size: "calc(100vw - 24px)",
+          size: "723px",
           sizes: [
             { viewport: "(max-width: 768px)", size: "calc(100vw - 24px)" },
-            { viewport: "(max-width: 1200px)", size: "calc(65ch)" },
+            { viewport: "(max-width: 1279px)", size: "651px" },
           ],
         }}
         onClick={({ photo }: any) => {

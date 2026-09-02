@@ -121,7 +121,9 @@ export const TravelBlogLayout = ({
             width={780}
             height={780}
             alt={cover.alt}
-            sizes="100vw"
+            // Renders in `max-w-5xl px-3` (1000px), not full-bleed — `100vw`
+            // pulled the 3840 variant into a 2000-device-pixel slot.
+            sizes="(max-width: 1024px) calc(100vw - 24px), 1000px"
             style={{
               width: "100%",
               height: "auto",

@@ -161,7 +161,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
                     alt={image.alt || `Photo from ${tripName}`}
                     width={image.width}
                     height={image.height}
-                    sizes="(max-width: 768px) 50vw, 33vw"
+                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 336px"
                     style={{ filter: "brightness(60%)" }}
                     className="absolute inset-0 z-0 object-cover w-full h-full hover:scale-105 transform transition-transform duration-300 ease-in-out"
                   />
@@ -197,7 +197,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
                       alt={`Preview of the ${turnKebabIntoTitleCase(name)} R3F demo`}
                       width={400}
                       height={225}
-                      sizes="(max-width: 768px) 50vw, 33vw"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 336px"
                       className="absolute inset-0 object-cover w-full h-full group-hover:scale-105 transform transition-transform duration-300"
                     />
                   </div>

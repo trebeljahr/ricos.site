@@ -31,7 +31,8 @@ const SingleImage = ({ photo: rawPhoto }: { photo: ImageProps }) => {
           alt={resolveAlt(photo.src, photo.alt)}
           width={photo.width}
           height={photo.height}
-          sizes="(max-width: 768px) calc(100vw - 24px), 65ch"
+          // Same measured `max-w-prose` column as MarkdownRenderers' img.
+          sizes="(max-width: 768px) calc(100vw - 24px), (max-width: 1279px) 651px, 723px"
           style={{ width: "100%", height: "auto" }}
         />
       </button>

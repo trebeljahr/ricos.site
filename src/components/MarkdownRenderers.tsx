@@ -33,14 +33,13 @@ export const ImageRenderer = ({ src, alt }: ImgHTMLAttributes<HTMLImageElement>)
           priority={!!isPriority}
           width={Number.parseFloat(width)}
           height={Number.parseFloat(height)}
-          // `calc(100vw-24px)` (no spaces) is a CSS parse error, so the mobile
-          // entry was dropped and small screens fell through to 65ch.
-          // 65ch is kept deliberately: `ch` in sizes resolves against the
-          // initial 16px font, i.e. ~533px, while the max-w-prose column
-          // actually renders ~723px. That under-request is what keeps post
-          // bodies on the 1080 variant instead of the 1920 one; raising it to
-          // the true column width roughly doubles image bytes on retina.
-          sizes="(max-width: 768px) calc(100vw - 24px), 65ch"
+          // Measured widths of the `max-w-prose` column (Chromium, 1440x900):
+          // <=768px it is `100vw - 24px`, 769-1279px it is 651px (md:prose-lg,
+          // 18px base), >=1280px it is 723px (xl:prose-xl, 20px base).
+          // `65ch` here used to resolve against the *initial* 16px font, i.e.
+          // 520px, not the 723px the column actually renders at — so retina
+          // desktop got the 1080 variant for a 1446-device-pixel slot.
+          sizes="(max-width: 768px) calc(100vw - 24px), (max-width: 1279px) 651px, 723px"
           style={{ width: "100%", height: "auto" }}
         />
       </span>

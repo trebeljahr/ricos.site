@@ -104,16 +104,17 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
               }}
               render={{ image: CustomImageRenderer as any }}
               defaultContainerWidth={1200}
+              // react-photo-album divides this by each photo's share of the
+              // row, so it has to be the album's real width. Measured: the
+              // album sits in `max-w-5xl px-3`, i.e. min(100vw - 24px, 1000px).
+              // `calc(100vw - 24px)` alone over-declared by 1.4x at 1440px and
+              // pulled 1920 variants into ~490px slots.
               sizes={{
-                size: "calc(100vw - 24px)",
+                size: "1000px",
                 sizes: [
                   {
-                    viewport: "(max-width: 520px)",
-                    size: "calc(80vw - 105px)",
-                  },
-                  {
-                    viewport: "(max-width: 1150px)",
-                    size: "calc(80vw - 105px)",
+                    viewport: "(max-width: 1024px)",
+                    size: "calc(100vw - 24px)",
                   },
                 ],
               }}

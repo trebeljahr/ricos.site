@@ -120,7 +120,8 @@ export const BlogLayout = ({
               width={780}
               height={780}
               alt={cover.alt}
-              sizes="(max-width: 768px) calc(100vw - 24px), 65ch"
+              // Full `max-w-5xl px-3` column, i.e. min(100vw - 24px, 1000px).
+              sizes="(max-width: 1024px) calc(100vw - 24px), 1000px"
               style={{ width: "100%", height: "auto" }}
             />
           </div>

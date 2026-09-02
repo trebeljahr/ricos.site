@@ -44,7 +44,8 @@ function ThemeCardLink({ theme }: { theme: ThemeCard }) {
             src={theme.hero.src}
             alt={theme.hero.alt}
             fill
-            sizes="(max-width: 768px) 100vw, 50vw"
+            // sm:grid-cols-2 gap-6 inside `max-w-5xl px-3`, so 488px at desktop.
+            sizes="(max-width: 639px) calc(100vw - 24px), (max-width: 1024px) calc(50vw - 24px), 488px"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />

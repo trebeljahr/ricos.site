@@ -106,21 +106,43 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   // NOTE: `experimental.optimizeCss` (Critters) used to inline the whole
-  // stylesheet here via inlineThreshold=200000. Measured on prod it was a net
-  // loss and a correctness bug:
+  // stylesheet here via inlineThreshold=200000, which is larger than the
+  // compiled CSS, so Critters inlined everything and stripped the <link>.
+  // Measured on prod it was a net loss and a correctness bug:
   //
-  //   - 120,316 bytes of raw CSS (20,628 gz) went into *every* one of the 386
-  //     pages — 69% of the median page's uncompressed HTML — with only ~29%
-  //     of the rules used on any given page and zero cross-page reuse. The
-  //     external stylesheet it replaced is served immutable/1yr and cached by
-  //     Cloudflare, so it costs one round-trip on the first page of a session
-  //     and nothing after that.
+  //   - The same ~120KB of raw CSS went into *every* page - around 70% of the
+  //     median page's uncompressed HTML - with only ~29% of the rules used on
+  //     any given page and zero cross-page reuse. HTML is served
+  //     `max-age=0, must-revalidate`, so that block was re-downloaded on every
+  //     full page load; the external stylesheet it replaced is served
+  //     immutable/1yr and cached, so it costs one round trip on the first page
+  //     of a session and nothing after that.
   //   - Inlining does not rewrite relative url(). KaTeX's @font-face srcs
   //     (../media/KaTeX_*.woff2) resolved against /_next/static/css/ before,
   //     and against the *page* URL after, so every KaTeX font 404'd and all
   //     math on the site rendered in fallback fonts.
   //
-  // Keep the plain <link rel="stylesheet">.
+  // Keep the plain <link rel="stylesheet">. Re-measured since (Chrome, CDP
+  // throttling, median of 9 runs, 460 prerendered pages):
+  //
+  //     booknote HTML    26.1KB -> 8.9KB brotli
+  //     homepage HTML    45.8KB -> 28.2KB brotli
+  //     whole corpus     13.0MB -> 5.0MB brotli   (what a full crawl costs)
+  //
+  // The one thing inlining did buy is a round trip on a COLD load, since the
+  // CSS then arrives in the same response as the HTML: cold FCP is ~36ms worse
+  // on cable, ~96ms on 4G, ~700ms on Fast 3G and ~2.5s on Slow 3G without it.
+  // That is latency, not bytes, so shrinking the CSS will not recover it. Warm
+  // loads (CSS already cached) are faster at every profile, and break-even is
+  // ~6 hard page loads per visitor.
+  //
+  // Do NOT try to win that round trip back by putting Critters in
+  // preload:'media' or 'swap' mode. That is what caused the late-load reflow
+  // this config previously worked around: next-themes sets the theme class
+  // from a script after SSR, so Critters cannot see the `.dark` rules when it
+  // splits critical from deferred CSS. A render-blocking <link> cannot flash by
+  // construction - verified 0 unstyled painted frames on the homepage, a
+  // booknote, a photography gallery and an r3f demo at Slow 3G.
   turbopack: {
     rules: {
       "*.mp3": { loaders: ["url-loader"], as: "*.js" },

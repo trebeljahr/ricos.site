@@ -10,6 +10,19 @@ function loadStubBooknotes() {
   }
 }
 
+function loadHiddenR3fRoutes() {
+  // Demos that exist as routes but aren't finished yet. next.config.mjs keeps
+  // them out of the nav and the timeline; keep them out of the sitemap too.
+  try {
+    const data = JSON.parse(
+      readFileSync(resolve("src", "content", "r3f-hidden-routes.json"), "utf-8"),
+    );
+    return new Set(data.hidden ?? []);
+  } catch {
+    return new Set();
+  }
+}
+
 function loadContentDates() {
   const dateMap = {};
   const collections = [
@@ -38,6 +51,7 @@ function loadContentDates() {
 
 const contentDates = loadContentDates();
 const stubBooknotes = loadStubBooknotes();
+const hiddenR3fRoutes = loadHiddenR3fRoutes();
 
 /** @type {import('next-sitemap').IConfig} */
 const nextSitemapConfig = {
@@ -48,20 +62,15 @@ const nextSitemapConfig = {
     policies: [{ userAgent: "*", allow: "/" }],
     additionalSitemaps: [],
   },
-  exclude: [
-    "/email-signup-success",
-    "/email-signup-error",
-    "/emergency",
-    "/r3f",
-    "/r3f/*",
-    "/sub",
-    "/midjourney",
-  ],
+  exclude: ["/email-signup-success", "/email-signup-error", "/emergency", "/sub", "/midjourney"],
   changefreq: null,
   priority: null,
   transform: async (_config, url) => {
     // Exclude stub booknotes (no summary written yet)
     if (stubBooknotes.has(url)) return null;
+
+    // Exclude unfinished R3F demos (see src/content/r3f-hidden-routes.json)
+    if (hiddenR3fRoutes.has(url)) return null;
 
     const contentDate = contentDates[url];
     const lastmod = contentDate ? new Date(contentDate).toISOString() : new Date().toISOString();
@@ -110,6 +119,25 @@ const nextSitemapConfig = {
         changefreq: "monthly",
         priority: 0.6,
         lastmod,
+      };
+    }
+
+    // R3F demo gallery: an index plus one page per finished demo. Real content,
+    // but secondary to the writing, and it changes rarely once a demo is done.
+    if (url === "/r3f") {
+      return {
+        loc: url,
+        changefreq: "monthly",
+        priority: 0.6,
+        lastmod: new Date().toISOString(),
+      };
+    }
+    if (url.startsWith("/r3f/")) {
+      return {
+        loc: url,
+        changefreq: "monthly",
+        priority: 0.5,
+        lastmod: new Date().toISOString(),
       };
     }
 

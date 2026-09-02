@@ -245,8 +245,8 @@ export default function ShaderEditorPage() {
   return (
     <>
       <SeoInfo
-        title="Shader Art Demo"
-        description="A shader art demo that allows you to control a beautiful shader with sliders."
+        title="Shader Art Demo - Controllable GLSL Shader in R3F"
+        description="An interactive shader art demo built with React Three Fiber. Tweak the shader uniforms with sliders and share the result with others via the URL."
         url="/r3f/scenes/shader-art-demo"
         keywords={[]}
         image="/assets/blog/shader-art-demo.png"

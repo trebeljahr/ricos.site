@@ -27,6 +27,8 @@ export const SeoInfo = ({ description, title, url, image, keywords, imageAlt }: 
 
   return (
     <>
+      {/* The demo pages are pure canvases, so this is their only (screen-reader only) h1. */}
+      <h1 className="sr-only">{properTitle}</h1>
       <Meta description={description} title={properTitle} url={url} keywords={keywords} />
       <OpenGraph
         title={properTitle}

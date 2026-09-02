@@ -9,7 +9,7 @@ export default function ImprintPage() {
   return (
     <Layout
       title="Imprint – ricos.site"
-      description="Imprint and contact information for ricos.site, the personal website of Rico Trebeljahr."
+      description="Legal notice and contact details for ricos.site, the personal website of Rico Trebeljahr, including service provider information under German law."
       url="imprint"
       keywords={["imprint", "impressum", "legal notice", "contact", "Rico Trebeljahr"]}
     >

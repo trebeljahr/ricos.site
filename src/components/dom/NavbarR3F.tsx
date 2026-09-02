@@ -50,7 +50,8 @@ export const NavbarR3F = () => {
           <nav className="flex flex-col not-prose px-3">
             <RicosSiteBanner />
             <Link href={"/r3f"}>
-              <h1 className="text-3xl font-bold mb-3 mt-12">3D Playground</h1>
+              {/* Site-wide nav label, not the page heading: pages own their single h1. */}
+              <span className="block text-3xl font-bold mb-3 mt-12">3D Playground</span>
             </Link>
             {Object.entries(data.links).map(([key, links]) => {
               return (

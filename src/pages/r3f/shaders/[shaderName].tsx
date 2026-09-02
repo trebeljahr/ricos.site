@@ -3,6 +3,7 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasShader";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { getShaderFileNames } from "src/lib/getShaderFileNames";
+import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
 export default function Page({
   fragmentShader,
@@ -13,9 +14,12 @@ export default function Page({
   fragmentShader: string;
   seo: SeoInfo | null;
 }) {
+  // Fallback for shaders without a hand-written entry in seo-metadata.json.
+  // Kept under the 155 character limit search engines truncate descriptions at.
+  const readableName = turnKebabIntoTitleCase(shaderName || "");
   const defaultSeoInfo = {
-    title: shaderName || "",
-    description: `Interactive ${shaderName} shader demo — a real-time WebGL fragment shader built with React Three Fiber. Explore the code and visuals live in the browser.`,
+    title: readableName ? `${readableName} Shader - Interactive WebGL Demo` : "",
+    description: `An interactive ${readableName} fragment shader running in real time with React Three Fiber. Read the GLSL code and watch it render in the browser.`,
     url: "/r3f/shaders/" + shaderName,
     keywords: [
       "threejs",

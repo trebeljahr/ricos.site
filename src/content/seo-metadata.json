@@ -1,7 +1,7 @@
 {
   "/booknotes/12-rules-for-life": {
     "metaTitle": "12 Rules for Life – Rico's Book Notes",
-    "metaDescription": "Key lessons and takeaways from Jordan Peterson's 12 Rules for Life on finding meaning through responsibility, order, confronting chaos, and personal growth.",
+    "metaDescription": "Key lessons from Jordan Peterson's 12 Rules for Life on finding meaning through responsibility, order, confronting chaos, and personal growth.",
     "ogImage": "/assets/book-covers/12-rules-for-life.jpg",
     "ogImageAlt": "12 Rules for Life book cover",
     "keywords": [
@@ -302,7 +302,7 @@
   },
   "/booknotes/bhagavad-gita": {
     "metaTitle": "Bhagavad Gita – Rico's Book Notes & Key Takeaways",
-    "metaDescription": "Book notes on the Bhagavad Gita, one of the most influential spiritual texts ever written. Ancient wisdom on duty, selfless action, and the path to self-realization.",
+    "metaDescription": "Book notes on the Bhagavad Gita, one of the most influential spiritual texts ever written. Ancient wisdom on duty, action, and self-realization.",
     "ogImage": "/assets/book-covers/bhagavad-gita.jpg",
     "ogImageAlt": "Bhagavad Gita book cover",
     "keywords": [
@@ -945,7 +945,7 @@
   },
   "/booknotes/godel-escher-bach": {
     "metaTitle": "Gödel, Escher, Bach – Rico's Book Notes",
-    "metaDescription": "How intertwining patterns in mathematics, art, and music reveal deep truths about the nature of consciousness and meaning. Notes on Hofstadter's Pulitzer-winning classic.",
+    "metaDescription": "How patterns in mathematics, art, and music reveal deep truths about consciousness and meaning. Notes on Hofstadter's Pulitzer-winning classic.",
     "ogImage": "/assets/book-covers/goedel-escher-bach.jpg",
     "ogImageAlt": "Gödel, Escher, Bach book cover",
     "keywords": [
@@ -1071,7 +1071,7 @@
   },
   "/booknotes/hell-yeah-or-no": {
     "metaTitle": "Hell Yeah or No – Rico's Book Notes",
-    "metaDescription": "Derek Sivers on simplifying life decisions by only committing to things that truly excite you. Key takeaways and notes on focus, priorities, and intentional living.",
+    "metaDescription": "Derek Sivers on simplifying decisions by only committing to things that truly excite you. Notes on focus, priorities, and intentional living.",
     "ogImage": "/assets/book-covers/hell-yeah-or-no.jpg",
     "ogImageAlt": "Hell Yeah or No book cover",
     "keywords": [
@@ -1232,7 +1232,7 @@
   },
   "/booknotes/influence": {
     "metaTitle": "Influence by Robert Cialdini – Rico's Book Notes",
-    "metaDescription": "Robert Cialdini's six principles of persuasion — reciprocity, commitment, social proof, authority, liking, and scarcity — and how they shape our everyday decisions.",
+    "metaDescription": "Robert Cialdini's six principles of persuasion — reciprocity, commitment, social proof, authority, liking, scarcity — and how they shape us.",
     "ogImage": "/assets/book-covers/influence.jpg",
     "ogImageAlt": "Influence book cover",
     "keywords": [
@@ -1340,7 +1340,7 @@
   },
   "/booknotes/life-the-universe-and-everything": {
     "metaTitle": "Life, the Universe and Everything – Rico's Book Notes",
-    "metaDescription": "Douglas Adams's third Hitchhiker's Guide adventure. Book notes on the game of cricket, the warlike Krikkit civilization, and the cosmic absurdity of the universe.",
+    "metaDescription": "Douglas Adams's third Hitchhiker's Guide adventure. Book notes on the game of cricket, the warlike Krikkit, and the absurdity of the universe.",
     "ogImage": "/assets/book-covers/life-the-universe-and-everything.jpg",
     "ogImageAlt": "Life, the Universe and Everything book cover",
     "keywords": [
@@ -1495,7 +1495,7 @@
   },
   "/booknotes/mind-children": {
     "metaTitle": "Mind Children – Rico's Book Notes",
-    "metaDescription": "Hans Moravec's bold predictions about AI, robotics, and the future of human-machine evolution. A visionary look at our technological destiny. Summary and book notes.",
+    "metaDescription": "Hans Moravec's predictions about AI, robotics, and human-machine evolution. A visionary look at our technological destiny. Summary and notes.",
     "ogImage": "/assets/book-covers/mind-children.jpg",
     "ogImageAlt": "Mind Children book cover",
     "keywords": [
@@ -1651,7 +1651,7 @@
   },
   "/booknotes/outlive": {
     "metaTitle": "Outlive by Peter Attia – Rico's Book Notes",
-    "metaDescription": "Peter Attia's science-backed strategies for extending healthspan through exercise, nutrition, sleep, and emotional health. Summary and key takeaways from Outlive.",
+    "metaDescription": "Peter Attia's science-backed strategies for extending healthspan through exercise, nutrition, sleep, and emotional health. Key takeaways.",
     "ogImage": "/assets/book-covers/outlive.jpg",
     "ogImageAlt": "Outlive book cover",
     "keywords": [
@@ -1759,7 +1759,7 @@
   },
   "/booknotes/remote": {
     "metaTitle": "Remote by Jason Fried & DHH – Rico's Book Notes",
-    "metaDescription": "Jason Fried and DHH's guide to making remote work succeed. Practical advice on productivity, communication, and distributed teams from the creators of Basecamp.",
+    "metaDescription": "Jason Fried and DHH's guide to making remote work succeed. Advice on productivity, communication, and distributed teams from Basecamp's founders.",
     "ogImage": "/assets/book-covers/remote.jpg",
     "ogImageAlt": "Remote book cover",
     "keywords": [
@@ -3245,7 +3245,7 @@
   },
   "/booknotes/vagabonding": {
     "metaTitle": "Vagabonding by Rolf Potts – Rico's Book Notes",
-    "metaDescription": "Rolf Potts's Vagabonding: the art of long-term world travel, simplifying your life, and discovering new cultures on your own terms. Book notes and key takeaways.",
+    "metaDescription": "Rolf Potts's Vagabonding: the art of long-term world travel, simplifying your life, and discovering new cultures. Book notes and key takeaways.",
     "ogImage": "/assets/book-covers/vagabonding.jpg",
     "ogImageAlt": "Vagabonding book cover",
     "keywords": [
@@ -3369,7 +3369,7 @@
   },
   "/booknotes/why-zebras-dont-get-ulcers": {
     "metaTitle": "Why Zebras Don't Get Ulcers – Rico's Book Notes",
-    "metaDescription": "Robert Sapolsky explains how chronic stress damages human health and why zebras handle acute stress far better than we do. Book notes, summary, and key takeaways.",
+    "metaDescription": "Robert Sapolsky on how chronic stress damages human health, and why zebras handle acute stress far better than we do. Notes and key takeaways.",
     "ogImage": "/assets/book-covers/why-zebras-dont-get-ulcers.jpg",
     "ogImageAlt": "Why Zebras Don't Get Ulcers book cover",
     "keywords": [
@@ -3651,7 +3651,7 @@
   },
   "/newsletters/computational-languages-gpt-4-and-midjourney-v5": {
     "metaTitle": "Live and Learn #13 – GPT-4, Midjourney v5 & Languages",
-    "metaDescription": "John Gardner's speech on craft, HustleGPT as a creative GPT-4 use case, the visual leap of Midjourney v5, and productivity life hacks compiled by Alexey Guzey.",
+    "metaDescription": "John Gardner's speech on craft, HustleGPT as a creative GPT-4 use case, the visual leap of Midjourney v5, and productivity hacks by Alexey Guzey.",
     "ogImage": "/assets/midjourney/cyberpunk-spaceship-art-in-the-style-of-van-gogh.webp",
     "ogImageAlt": "cyberpunk spaceship art in the style of van gogh",
     "keywords": [
@@ -3682,7 +3682,7 @@
   },
   "/newsletters/planning-for-agi-code-that-fixes-itself-and-sam": {
     "metaTitle": "Live and Learn #15 – Planning for AGI & Self-Fixing Code",
-    "metaDescription": "The Wolverine system that enables code to autonomously fix its own bugs, the implications of Software 3.0, and OpenAI's strategy for developing safe and beneficial AGI.",
+    "metaDescription": "The Wolverine system that lets code fix its own bugs, the implications of Software 3.0, and OpenAI's strategy for safe and beneficial AGI.",
     "ogImage": "/assets/midjourney/portal-grown-out-of-trees-to-another-dimension-mist.webp",
     "ogImageAlt": "portal grown out of trees to another dimension mist",
     "keywords": [
@@ -3804,7 +3804,7 @@
   },
   "/newsletters/brain2-music-biosecurity-risks-and-fly-wire-a-connectome-of-a-fruit-fly-brain": {
     "metaTitle": "Live and Learn #23 – Brain2Music, Biosecurity & FlyWire",
-    "metaDescription": "Decoding neural stimuli into music with Brain2Music, biosecurity risks from dual-use AI advances, and a landmark complete connectome mapping of a fruit fly brain.",
+    "metaDescription": "Decoding neural stimuli into music with Brain2Music, biosecurity risks from dual-use AI, and a complete connectome map of a fruit fly brain.",
     "ogImage": "/assets/midjourney/a-photon.webp",
     "ogImageAlt": "A glowing door into the unknown",
     "keywords": [
@@ -4003,7 +4003,7 @@
   },
   "/newsletters/open-ais-sora-ai-sound-effects-and-gemini-1-5": {
     "metaTitle": "Live and Learn #36 – Sora, AI Sound Effects & Gemini 1.5",
-    "metaDescription": "OpenAI's Sora and Elevenlabs transforming video and sound creation, Google broadening LLM access for developers, and the Gemini 1.5 million-token context window.",
+    "metaDescription": "OpenAI's Sora and Elevenlabs transforming video and sound creation, Google broadening LLM access, and Gemini 1.5's million-token context window.",
     "ogImage": "/assets/midjourney/robot-filming-a-movie.webp",
     "ogImageAlt": "a robot filming a movie",
     "keywords": [
@@ -4160,7 +4160,7 @@
   },
   "/newsletters/text-to-3-d-robot-tele-vision-and-neuralink-livestream": {
     "metaTitle": "Live and Learn #46 – Text to 3D & Robot TeleVision",
-    "metaDescription": "Meta's text-to-3D model for creating assets from prompts, training robots via Apple Vision Pro teleoperation, and highlights from the latest Neuralink livestream.",
+    "metaDescription": "Meta's text-to-3D model for creating assets from prompts, training robots via Apple Vision Pro teleoperation, and the Neuralink livestream.",
     "ogImage": "/assets/midjourney/synthetic-consciousness.png",
     "ogImageAlt": "an artistic depiction of a synthetic consciousness",
     "keywords": [
@@ -4191,7 +4191,7 @@
   },
   "/newsletters/more-advanced-robotics-neuralink-podcast-and-sam-2": {
     "metaTitle": "Live and Learn #48 – Advanced Robotics, Neuralink & SAM 2",
-    "metaDescription": "Highlights from SIGGRAPH's fireside chat on graphics and AI, exciting robotics advances from multiple labs, and Meta's release of SAM 2 for real-time image segmentation.",
+    "metaDescription": "SIGGRAPH's fireside chat on graphics and AI, robotics advances from several labs, and Meta's SAM 2 for real-time image segmentation.",
     "ogImage": "/assets/midjourney/robot-arm-playing-table-tennis.png",
     "ogImageAlt": "robot arm playing table tennis",
     "keywords": [
@@ -4208,7 +4208,7 @@
   },
   "/newsletters/an-ai-scientist-metas-sapiens-and-grok-2": {
     "metaTitle": "Live and Learn #49 – An AI Scientist, Sapiens & Grok 2",
-    "metaDescription": "Sakana AI's autonomous AI Scientist that writes and reviews research papers, improved 3D generation models, and xAI's Grok 2 release alongside other AI breakthroughs.",
+    "metaDescription": "Sakana AI's autonomous AI Scientist that writes and reviews research papers, improved 3D generation models, and xAI's release of Grok 2.",
     "ogImage": "/assets/newsletter/49/ai-researcher-at-a-screen.jpeg",
     "ogImageAlt": "AI researcher at a screen",
     "keywords": [
@@ -4369,7 +4369,7 @@
   },
   "/newsletters/sam-altmans-reflections-nvidia-ces-keynote-and-ai-as-a-parasitic-cancer": {
     "metaTitle": "Live and Learn #59 – Sam Altman, Nvidia CES & AI Critique",
-    "metaDescription": "Sam Altman's reflections on OpenAI's future, Jensen Huang's Nvidia CES 2025 keynote on physical AI, and critical lessons learned about LLMs throughout 2024.",
+    "metaDescription": "Sam Altman's reflections on OpenAI's future, Jensen Huang's Nvidia CES 2025 keynote on physical AI, and lessons learned about LLMs in 2024.",
     "ogImage": "assets/newsletter/59/generative-ai-as-a-demon.png",
     "ogImageAlt": "generative AI as a demon",
     "keywords": [
@@ -4417,7 +4417,7 @@
   },
   "/newsletters/grok3-quantum-chips-and-googles-ai-co-scientist": {
     "metaTitle": "Live and Learn #62 – Grok 3, Quantum Chips & AI Co-Scientist",
-    "metaDescription": "Figure's Helix AI for humanoid robots, Microsoft's Majorana quantum chip architecture, xAI's Grok 3 with chain-of-thought reasoning, and Google's AI Co-Scientist tool.",
+    "metaDescription": "Figure's Helix AI for humanoid robots, Microsoft's Majorana quantum chip, xAI's Grok 3 with chain-of-thought, and Google's AI Co-Scientist.",
     "ogImage": "assets/newsletter/62/ai-helix-scientist.png",
     "ogImageAlt": "AI robot scientist holding a helix",
     "keywords": [
@@ -4481,7 +4481,7 @@
   },
   "/newsletters/nvidia-ttt-google-cloud-next-and-ai-scientist-v2-0": {
     "metaTitle": "Live and Learn #66 – Nvidia TTT & AI Scientist v2.0",
-    "metaDescription": "What AI may never truly understand, OpenAI's efficient o4-mini model, breakthroughs in temporal consistency for AI video generation, and Sakana's AI Scientist v2.0.",
+    "metaDescription": "What AI may never truly understand, OpenAI's efficient o4-mini model, temporal consistency in AI video, and Sakana's AI Scientist v2.0.",
     "ogImage": "/assets/newsletter/66/ai-exponential-progress.png",
     "ogImageAlt": "a visualization of what AI's potential progress might look like",
     "keywords": [
@@ -4843,7 +4843,7 @@
   },
   "/r3f/models/mixamo-characters": {
     "metaTitle": "Mixamo Characters in 3D - React Three Fiber Demo",
-    "metaDescription": "Interactive showcase of animated Mixamo characters in a React Three Fiber 3D scene with selectable models, real-time animations, and smooth animation transitions.",
+    "metaDescription": "Interactive showcase of animated Mixamo characters in a React Three Fiber scene, with selectable models and smooth animation transitions.",
     "ogImage": "/assets/pages/mixamo-characters.png",
     "ogImageAlt": "Mixamo character dancing in a 3D scene",
     "keywords": [
@@ -4859,7 +4859,7 @@
   },
   "/r3f/models/quaternius-models": {
     "metaTitle": "Quaternius 3D Models Showcase - R3F Grid Display",
-    "metaDescription": "A browsable grid showcase of free Quaternius low-poly 3D models rendered in React Three Fiber. Select and preview animals, nature, and fantasy models in real time.",
+    "metaDescription": "A browsable grid of free Quaternius low-poly 3D models rendered in React Three Fiber. Preview animals, nature, and fantasy models in real time.",
     "ogImage": "/assets/pages/quaternius-models.png",
     "ogImageAlt": "Image of a grid filled with 3D models",
     "keywords": [
@@ -4871,22 +4871,6 @@
       "low poly",
       "3D models",
       "model showcase"
-    ]
-  },
-  "/r3f/models/Ship": {
-    "metaTitle": "3D Ship on Ocean - React Three Fiber Demo",
-    "metaDescription": "A ship model floating on the drei ocean shader surface, one of my first demos built with React Three Fiber and Three.js.",
-    "ogImage": "/assets/pages/ship.png",
-    "ogImageAlt": "a 3D model of a ship floating in the ocean",
-    "keywords": [
-      "react three fiber",
-      "three.js",
-      "3D",
-      "webgl",
-      "ship",
-      "ocean shader",
-      "water",
-      "3D model"
     ]
   },
   "/r3f/particles/birds": {
@@ -4908,7 +4892,7 @@
   },
   "/r3f/particles/fbo-demo": {
     "metaTitle": "FBO Particles Demo - Compute Shader in Three.js",
-    "metaDescription": "A Frame Buffer Object particles demo using GPU compute shaders to update thousands of particle positions in React Three Fiber with bloom post-processing effects.",
+    "metaDescription": "A Frame Buffer Object particle demo using GPU compute shaders to update thousands of particles in React Three Fiber, with bloom post-processing.",
     "ogImage": "/assets/pages/fbo-demo.png",
     "ogImageAlt": "a set of glowing particles flying around in a 3D scene",
     "keywords": [
@@ -4941,7 +4925,7 @@
   },
   "/r3f/particles/mesh-merger": {
     "metaTitle": "Mesh Merger Particles - 3D Effect in Three.js",
-    "metaDescription": "A WebGL particle system for visually merging and morphing between 3D meshes in React Three Fiber, creating smooth animated transitions between different 3D shapes.",
+    "metaDescription": "A WebGL particle system for merging and morphing between 3D meshes in React Three Fiber, creating smooth animated transitions between shapes.",
     "ogImage": "/assets/pages/mesh-merger.png",
     "ogImageAlt": "particles transitioning between 3D mesh shapes",
     "keywords": [
@@ -4972,7 +4956,7 @@
   },
   "/r3f/controllers/ecctrl-controller": {
     "metaTitle": "Ecctrl Controller Demo - 3D Character in R3F",
-    "metaDescription": "Implementation of the Ecctrl character controller in React Three Fiber with a Mixamo model, smooth animations, physics-based movement, and configurable camera controls.",
+    "metaDescription": "The Ecctrl character controller in React Three Fiber with a Mixamo model, smooth animations, physics-based movement, and configurable cameras.",
     "ogImage": "/assets/pages/r3f/ecctrl-controller.png",
     "ogImageAlt": "an image of a girl standing in front of some trees",
     "keywords": [
@@ -5004,7 +4988,7 @@
   },
   "/r3f/controllers/third-person-controller": {
     "metaTitle": "Custom Third Person Controller - 3D R3F Demo",
-    "metaDescription": "A custom-built third person character controller experiment in React Three Fiber featuring a dinosaur model, camera follow mechanics, and keyboard-driven controls.",
+    "metaDescription": "A custom third person character controller in React Three Fiber, featuring a dinosaur model, camera follow mechanics, and keyboard controls.",
     "ogImage": "/assets/pages/r3f/third-person-controller.png",
     "ogImageAlt": "a dinosaur Trex model in a 3D scene",
     "keywords": [
@@ -5020,7 +5004,7 @@
   },
   "/r3f/experiments/gaming-testbed": {
     "metaTitle": "3D Gaming Testbed - Inventory & Combat in R3F",
-    "metaDescription": "A testbed for gaming features in React Three Fiber including an inventory system, enemy AI, environmental traps, sword combat mechanics, and interactive 3D exploration.",
+    "metaDescription": "A testbed for gaming features in React Three Fiber: an inventory system, enemy AI, environmental traps, sword combat, and 3D exploration.",
     "ogImage": "/assets/pages/gaming-testbed.png",
     "ogImageAlt": "an image of a 3D model of a character with a sword attacking a wizard skeleton",
     "keywords": [
@@ -5085,7 +5069,7 @@
   },
   "/r3f/experiments/navmesh": {
     "metaTitle": "Recast Navmesh Demo - 3D Pathfinding in R3F",
-    "metaDescription": "A demo of Recast navigation mesh pathfinding in a 3D environment. Agents navigate obstacles using the recast-js library integrated with React Three Fiber and physics.",
+    "metaDescription": "A Recast navigation mesh pathfinding demo. Agents navigate obstacles using the recast-js library integrated with React Three Fiber and physics.",
     "ogImage": "/assets/pages/navmesh.png",
     "ogImageAlt": "a simple navmesh with debug triangles shown in a 3D scene",
     "keywords": [
@@ -5167,7 +5151,7 @@
   },
   "/r3f/grass/al-ro-grass": {
     "metaTitle": "3D Grass Plane Shader - React Three Fiber Demo",
-    "metaDescription": "A single square grass plane rendered in React Three Fiber, based on al-ro's codepen. Features custom grass blade vertex and fragment shaders with wind animation.",
+    "metaDescription": "A single square grass plane rendered in React Three Fiber, based on al-ro's codepen. Custom grass blade shaders with wind animation.",
     "ogImage": "/assets/pages/al-ro-grass.png",
     "ogImageAlt": "a 3D view of a grassy plane",
     "keywords": [
@@ -5183,7 +5167,7 @@
   },
   "/r3f/grass/james-smyth-grass": {
     "metaTitle": "Stylized Grass Shader - Three.js R3F Implementation",
-    "metaDescription": "A stylized procedural grass shader ported into React Three Fiber and TypeScript from James Smyth's original demo, rendering 500K individual grass blade instances.",
+    "metaDescription": "A stylized procedural grass shader ported to React Three Fiber and TypeScript from James Smyth's demo, rendering 500K grass blade instances.",
     "ogImage": "/assets/pages/james-smyth-grass.png",
     "ogImageAlt": "a plane filled with a stylized grass shader",
     "keywords": [
@@ -5214,7 +5198,7 @@
   },
   "/r3f/user-interfaces/healthbars": {
     "metaTitle": "3D Healthbar Shaders - React Three Fiber UI Demo",
-    "metaDescription": "Multiple healthbar shader implementations in React Three Fiber, ported from a Unity tutorial. Includes gradient, segmented, and animated bar styles for in-game UI.",
+    "metaDescription": "Multiple healthbar shader implementations in React Three Fiber, ported from a Unity tutorial. Gradient, segmented, and animated bar styles.",
     "ogImage": "/assets/pages/healthbars.png",
     "ogImageAlt": "an assortment of healthbar shaders",
     "keywords": [
@@ -5226,22 +5210,6 @@
       "shader",
       "game UI",
       "HUD"
-    ]
-  },
-  "/r3f/scenes/inventory": {
-    "metaTitle": "3D Inventory System Demo - React Three Fiber",
-    "metaDescription": "An interactive inventory system prototype built with React and React Three Fiber, featuring drag-and-drop item management, equipment slots, and 3D item previews.",
-    "ogImage": "/assets/pages/inventory.png",
-    "ogImageAlt": "a inventory prototype for a simple game",
-    "keywords": [
-      "react three fiber",
-      "three.js",
-      "3D",
-      "webgl",
-      "inventory system",
-      "game UI",
-      "item management",
-      "RPG"
     ]
   },
   "/podcastnotes/huberman-control-pain-and-heal-faster-with-your-brain": {
@@ -5386,7 +5354,7 @@
   },
   "/podcastnotes/lex-guillaume-verdon": {
     "metaTitle": "Lex Fridman x Guillaume Verdon (e/acc) – Rico's Notes",
-    "metaDescription": "Notes from Lex Fridman Podcast Ep 407 with Guillaume Verdon on effective accelerationism (e/acc), quantum computing, physics-inspired AI architectures, and tech optimism.",
+    "metaDescription": "Notes from Lex Fridman Ep 407 with Guillaume Verdon on effective accelerationism, quantum computing, physics-inspired AI, and tech optimism.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -5401,7 +5369,7 @@
   },
   "/podcastnotes/lex-jeff-bezos-amazon-and-blue-origin": {
     "metaTitle": "Lex Fridman x Jeff Bezos: Amazon & Blue Origin – Rico's Notes",
-    "metaDescription": "Notes from Lex Fridman Ep 405 with Jeff Bezos on building Amazon from a garage, Blue Origin's mission, resourcefulness as a key leadership trait, and the space race.",
+    "metaDescription": "Notes from Lex Fridman Ep 405 with Jeff Bezos on building Amazon from a garage, Blue Origin's mission, resourcefulness, and the space race.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -5448,7 +5416,7 @@
   },
   "/podcastnotes/lex-marc-andreessen-future-of-the-internet-technology-and-ai": {
     "metaTitle": "Lex Fridman x Marc Andreessen: Internet & AI – Rico's Notes",
-    "metaDescription": "Notes from Lex Fridman Podcast Ep 386 with Marc Andreessen on the evolving internet, the future of search and AI, new content creation paradigms, and the impact of LLMs.",
+    "metaDescription": "Notes from Lex Fridman Ep 386 with Marc Andreessen on the evolving internet, the future of search and AI, and the impact of large language models.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -5993,7 +5961,7 @@
   },
   "/posts/my-productivity-system": {
     "metaTitle": "My Productivity System - Habits, Tricks & Systems",
-    "metaDescription": "How I read 200+ books, built a website, wrote a newsletter, and traveled the world. A practical productivity system for getting more done without willpower.",
+    "metaDescription": "How I read 200+ books, built a website, wrote a newsletter, and traveled the world. A practical productivity system for getting more done.",
     "ogImage": "/assets/blog/productivity-systems.jpg",
     "ogImageAlt": "A table with laptop, notebook, pen, and coffee for productivity work",
     "keywords": [
@@ -6322,7 +6290,7 @@
   },
   "/achievements": {
     "metaTitle": "Developer Achievements - Programming Skills Checklist",
-    "metaDescription": "A personal achievements tracker inspired by the question: what have you achieved that felt impossible a year ago? Milestones across programming, fitness, and travel.",
+    "metaDescription": "A personal achievements tracker inspired by one question: what have you achieved that felt impossible a year ago? Programming, fitness, travel.",
     "ogImage": "/assets/midjourney/pattern-of-swirling-lights.jpg",
     "ogImageAlt": "Pattern of swirling lights representing developer achievements",
     "keywords": [
@@ -6486,7 +6454,7 @@
   },
   "/travel/guadeloupe/port-luis": {
     "metaTitle": "Surfing in Port Luis | Guadeloupe Travel Story",
-    "metaDescription": "Catching waves at sunset in Port Luis, Guadeloupe. A day of surfing on the Caribbean island's Atlantic coast, warm water, and the laid-back island lifestyle.",
+    "metaDescription": "Catching waves at sunset in Port Luis, Guadeloupe. A day of surfing on the Caribbean island's Atlantic coast and the laid-back island life.",
     "ogImage": "/assets/photography/guadeloupe/port-luis-surfers-at-sunset.jpg",
     "ogImageAlt": "surfing in Port Luis at sunset",
     "keywords": [
@@ -6665,7 +6633,7 @@
   },
   "/travel/dominica/wavine-cyrique-waterfall": {
     "metaTitle": "Wavine Cyrique Waterfall | Dominica",
-    "metaDescription": "Trekking to the remote Wavine Cyrique waterfall in Dominica, where a powerful cascade plunges off a cliff onto a secluded black sand beach on the wild coast.",
+    "metaDescription": "Trekking to the remote Wavine Cyrique waterfall in Dominica, where a powerful cascade plunges off a cliff onto a secluded black sand beach.",
     "ogImage": "/assets/photography/dominica/PXL_20240522_163131183~2.jpg",
     "ogImageAlt": "the Wavine Cyrique waterfall as seen from the distance",
     "keywords": [
@@ -6825,7 +6793,7 @@
   },
   "/travel/portugal-2024/the-garden": {
     "metaTitle": "The Garden | Portugal 2024 Travel Story",
-    "metaDescription": "A story about The Garden in Portugal. Slow unhurried days surrounded by nature, and the simple beauty of life in the quiet Portuguese countryside during a long stay.",
+    "metaDescription": "A story about The Garden in Portugal. Slow unhurried days surrounded by nature, and the simple beauty of life in the Portuguese countryside.",
     "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
@@ -6919,7 +6887,7 @@
   },
   "/travel/thinking-of-dave/4-tod-lanzarote-to-gran-canaria": {
     "metaTitle": "Lanzarote to Gran Canaria | Thinking of Dave",
-    "metaDescription": "Sailing between the Canary Islands from Lanzarote to Gran Canaria aboard the Thinking of Dave. Island hopping under sail with ocean swells and volcanic island views.",
+    "metaDescription": "Sailing between the Canary Islands from Lanzarote to Gran Canaria aboard the Thinking of Dave. Island hopping under sail with ocean swells.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -7449,7 +7417,7 @@
   },
   "/travel/colombia-2024/day-3-girardot-to-ibague": {
     "metaTitle": "Cycling Girardot to Ibagué | Colombia",
-    "metaDescription": "Cycling from Girardot to Ibagué along Colombia's main highway. Mangos from roadside vendors, hot pavement under the tropical sun, and a long day of riding in the heat.",
+    "metaDescription": "Cycling from Girardot to Ibagué along Colombia's main highway. Mangos from roadside vendors, hot pavement, and a long day of riding in the heat.",
     "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green",
     "keywords": [
@@ -7920,7 +7888,7 @@
   },
   "/travel/crete/day-14-kalamaki": {
     "metaTitle": "Day 14 - Kalamaki | Crete Travel Story",
-    "metaDescription": "A relaxed day in Kalamaki on Crete's southern coast. Quiet beach vibes, local Greek tavernas, and the laid-back Mediterranean charm of this small seaside village.",
+    "metaDescription": "A relaxed day in Kalamaki on Crete's southern coast. Quiet beach vibes, local Greek tavernas, and the charm of this small seaside village.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -8044,7 +8012,7 @@
   },
   "/travel/crete/day-22-hora-sfakion": {
     "metaTitle": "Day 22 - More Days in Hora Sfakion | Crete",
-    "metaDescription": "Another day in the remote coastal village of Hora Sfakion on Crete's wild southern shore. Enjoying the slow rhythm of life between dramatic cliffs and the Libyan Sea.",
+    "metaDescription": "Another day in the remote coastal village of Hora Sfakion on Crete's wild southern shore, between dramatic cliffs and the Libyan Sea.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -8301,7 +8269,7 @@
   },
   "/travel/india-2020/13-bangalore-iii": {
     "metaTitle": "Bangalore Day 3 | India 2020 Travel Story",
-    "metaDescription": "The final day in Bangalore wrapping up the India 2020 journey. Last impressions of the garden city, farewell chai, and reflecting on weeks of travel before heading home.",
+    "metaDescription": "The final day in Bangalore wrapping up the India 2020 journey. Last impressions of the garden city and reflections on weeks of travel.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -8392,7 +8360,7 @@
   },
   "/travel/india-2022/6-shillong": {
     "metaTitle": "Shillong – Scotland of the East | India 2022",
-    "metaDescription": "Visiting Shillong, known as the Scotland of the East. Live music, monsoon rain, and the unique Khasi matrilineal culture of Meghalaya in India's lush northeast region.",
+    "metaDescription": "Visiting Shillong, the Scotland of the East. Live music, monsoon rain, and the Khasi matrilineal culture of Meghalaya in India's northeast.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -8456,7 +8424,7 @@
   },
   "/travel/india-2022/10-nohkalikai-falls": {
     "metaTitle": "Nohkalikai Falls | Meghalaya, India 2022",
-    "metaDescription": "Witnessing Nohkalikai Falls, India's tallest plunge waterfall at 340 meters. A dramatic cascade dropping into a turquoise pool in the misty Khasi Hills of Meghalaya.",
+    "metaDescription": "Witnessing Nohkalikai Falls, India's tallest plunge waterfall at 340 meters, dropping into a turquoise pool in the misty Khasi Hills.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -8706,7 +8674,7 @@
   },
   "/travel/india-2023/8-ahmedabad": {
     "metaTitle": "Ahmedabad – Step Wells & Old Town | India 2023",
-    "metaDescription": "Exploring Ahmedabad, Gujarat's vibrant largest city. Ornate step wells, winding old town streets, the Sabarmati Ashram, and the rich cultural heritage of western India.",
+    "metaDescription": "Exploring Ahmedabad, Gujarat's largest city. Ornate step wells, winding old town streets, the Sabarmati Ashram, and rich cultural heritage.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -8852,7 +8820,7 @@
   },
   "/travel/spain-2024/6-madrid-couchsurfing-with-alvaro": {
     "metaTitle": "Madrid Part 3 - Last Days | Spain 2024",
-    "metaDescription": "Final days in Madrid couchsurfing with Alvaro. One last round of tapas bars, late-night conversations, and exploring hidden corners before leaving the capital.",
+    "metaDescription": "Final days in Madrid couchsurfing with Alvaro. One last round of tapas bars, late-night conversations, and hidden corners before leaving.",
     "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
@@ -8979,7 +8947,7 @@
   },
   "/travel/india-2018": {
     "metaTitle": "India 2018 - Varanasi | Travel Stories",
-    "metaDescription": "Travel stories from India in 2018. A transformative first journey to Varanasi, the ancient holy city on the banks of the Ganges, with its burning ghats and rituals.",
+    "metaDescription": "Travel stories from India in 2018. A transformative first journey to Varanasi, the holy city on the Ganges, with its burning ghats and rituals.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -9026,7 +8994,7 @@
   },
   "/travel/india-2023": {
     "metaTitle": "India 2023 - Ladakh, Gujarat & South | Travel",
-    "metaDescription": "From Jaipur's Pink City to Ladakh's Markha Valley trek, the vast Rann of Kutch salt desert, and down through Mumbai and Goa to Kerala. A grand India tour in 2023.",
+    "metaDescription": "From Jaipur's Pink City to Ladakh's Markha Valley trek, the Rann of Kutch salt desert, and down through Mumbai and Goa to Kerala. India 2023.",
     "ogImage": "",
     "ogImageAlt": "",
     "keywords": [
@@ -9074,7 +9042,7 @@
   },
   "/travel/bolivia-2025": {
     "metaTitle": "Bolivia 2025 - Altiplano Adventures | Travel",
-    "metaDescription": "Travel stories from Bolivia in 2025. La Paz's markets, climbing near Sajama, crossing the Salar de Uyuni salt flats, and hiking Torotoro's dinosaur track canyons.",
+    "metaDescription": "Travel stories from Bolivia in 2025. La Paz's markets, climbing near Sajama, the Salar de Uyuni salt flats, and Torotoro's dinosaur canyons.",
     "ogImage": "/assets/photography/guadeloupe/more-sea-of-green.jpg",
     "ogImageAlt": "the sea of green in the Guadeloupe jungle",
     "keywords": [
@@ -9102,6 +9070,159 @@
       "travel blog",
       "travel stories",
       "South America"
+    ]
+  },
+  "/r3f/models/ship": {
+    "metaTitle": "3D Ship on Ocean - React Three Fiber Demo",
+    "metaDescription": "A ship model floating on the drei ocean shader surface, one of my first demos built with React Three Fiber and Three.js.",
+    "ogImage": "/assets/pages/ship.png",
+    "ogImageAlt": "a 3D model of a ship floating in the ocean",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "ship",
+      "ocean shader",
+      "water",
+      "3D model"
+    ]
+  },
+  "/r3f/user-interfaces/inventory": {
+    "metaTitle": "3D Inventory System Demo - React Three Fiber",
+    "metaDescription": "An interactive inventory system prototype built with React and React Three Fiber, with drag-and-drop items, equipment slots, and 3D previews.",
+    "ogImage": "/assets/pages/inventory.png",
+    "ogImageAlt": "a inventory prototype for a simple game",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "inventory system",
+      "game UI",
+      "item management",
+      "RPG"
+    ]
+  },
+  "/r3f/shaders/worley-noise": {
+    "metaTitle": "Worley Noise Shader - Interactive WebGL Demo",
+    "metaDescription": "An interactive Worley (cellular) noise fragment shader running in real time with React Three Fiber. Read the GLSL code and watch the pattern move.",
+    "ogImage": "/assets/pages/worley-noise.png",
+    "ogImageAlt": "a cellular Worley noise pattern rendered as a fullscreen shader",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "GLSL",
+      "fragment shader",
+      "worley noise",
+      "cellular noise",
+      "procedural noise"
+    ]
+  },
+  "/r3f/shaders/perlin-noise": {
+    "metaTitle": "Perlin Noise Shader - Interactive WebGL Demo",
+    "metaDescription": "An interactive Perlin noise fragment shader running in real time with React Three Fiber. Read the GLSL code behind classic gradient noise in WebGL.",
+    "ogImage": "/assets/pages/perlin-noise.png",
+    "ogImageAlt": "a smooth Perlin noise pattern rendered as a fullscreen shader",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "GLSL",
+      "fragment shader",
+      "perlin noise",
+      "gradient noise",
+      "procedural noise"
+    ]
+  },
+  "/r3f/shaders/value-noise": {
+    "metaTitle": "Value Noise Shader - Interactive WebGL Demo",
+    "metaDescription": "An interactive value noise fragment shader running in real time with React Three Fiber. See how interpolated random values build up procedural noise.",
+    "ogImage": "/assets/pages/value-noise.png",
+    "ogImageAlt": "a value noise pattern rendered as a fullscreen shader",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "GLSL",
+      "fragment shader",
+      "value noise",
+      "procedural noise",
+      "interpolation"
+    ]
+  },
+  "/r3f/shaders/fractal-noise": {
+    "metaTitle": "Fractal Noise Shader - Interactive WebGL Demo",
+    "metaDescription": "An interactive fractal Brownian motion shader in React Three Fiber. Stacked octaves of noise turn into clouds and terrain, with the GLSL code to read.",
+    "ogImage": "/assets/pages/fractal-noise.png",
+    "ogImageAlt": "a fractal brownian motion noise pattern rendered as a fullscreen shader",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "GLSL",
+      "fragment shader",
+      "fractal noise",
+      "fbm",
+      "fractal brownian motion",
+      "procedural noise"
+    ]
+  },
+  "/r3f/shaders/checker-board": {
+    "metaTitle": "Checkerboard Shader - Interactive WebGL Demo",
+    "metaDescription": "An interactive checkerboard fragment shader built with React Three Fiber. A minimal starting point for learning UV coordinates and GLSL in the browser.",
+    "ogImage": "/assets/pages/checker-board.png",
+    "ogImageAlt": "a checkerboard pattern rendered as a fullscreen shader",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "GLSL",
+      "fragment shader",
+      "checkerboard",
+      "UV coordinates",
+      "shader basics"
+    ]
+  },
+  "/r3f/shaders/ray-marching": {
+    "metaTitle": "Ray Marching Shader - Interactive WebGL Demo",
+    "metaDescription": "An interactive ray marching fragment shader in React Three Fiber. Signed distance fields render 3D shapes with lighting from a single GLSL shader.",
+    "ogImage": "/assets/pages/ray-marching.png",
+    "ogImageAlt": "a ray marched 3D scene rendered as a fullscreen shader",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "GLSL",
+      "fragment shader",
+      "ray marching",
+      "signed distance field",
+      "SDF",
+      "raymarcher"
+    ]
+  },
+  "/r3f/shaders/moving-color-gradient": {
+    "metaTitle": "Moving Color Gradient Shader - WebGL Demo",
+    "metaDescription": "An animated color gradient fragment shader built with React Three Fiber. Cosine palettes shift over time, with the full GLSL source to read along.",
+    "ogImage": "/assets/pages/moving-color-gradient.png",
+    "ogImageAlt": "an animated color gradient rendered as a fullscreen shader",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "GLSL",
+      "fragment shader",
+      "color gradient",
+      "cosine palette",
+      "animated shader"
     ]
   }
 }

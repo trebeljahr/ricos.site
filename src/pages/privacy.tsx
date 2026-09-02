@@ -9,7 +9,7 @@ export default function PrivacyPage() {
   return (
     <Layout
       title="Privacy – ricos.site"
-      description="Privacy policy for ricos.site, describing what data is collected and how it is processed."
+      description="Privacy policy for ricos.site: what data is collected, how it is processed, which hosting and analytics services are used, and your GDPR rights."
       url="privacy"
       keywords={["privacy", "datenschutz", "GDPR", "DSGVO", "Rico Trebeljahr"]}
     >

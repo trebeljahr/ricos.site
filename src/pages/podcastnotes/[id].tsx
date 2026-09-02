@@ -31,6 +31,8 @@ const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
       withProgressBar={true}
       image={podcastnote.cover.src}
       imageAlt={podcastnote.cover.alt}
+      imageWidth={podcastnote.cover.width}
+      imageHeight={podcastnote.cover.height}
       ogType="article"
       articlePublishedTime={podcastnote.date}
     >

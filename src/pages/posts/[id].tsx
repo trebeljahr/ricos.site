@@ -18,7 +18,7 @@ import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Post } from "@velite";
 import type { ReactNode } from "react";
-
+import { ogImageDimensions } from "src/lib/ogImage";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { getRelatedContent } from "src/lib/utils/getRelatedContent";
@@ -54,14 +54,16 @@ export const BlogLayout = ({
 }: Props) => {
   const url = `posts/${slug}`;
   const fullTitle = seoTitle || title + " – " + subtitle;
+  const ogImage = seoOgImage || cover.src;
   return (
     <Layout
       description={metaDescription}
       title={fullTitle}
-      image={seoOgImage || cover.src}
+      image={ogImage}
       url={url}
       keywords={seoKeywords.length > 0 ? seoKeywords : tags.split(",")}
       imageAlt={seoOgImageAlt || cover.alt}
+      {...ogImageDimensions(cover, ogImage)}
       withProgressBar={true}
       ogType="article"
       articlePublishedTime={date}

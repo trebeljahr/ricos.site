@@ -12,7 +12,7 @@ import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Newsletter as NewsletterType } from "@velite";
 import type { CommonMetadata } from "src/@types";
-
+import { ogImageDimensions } from "src/lib/ogImage";
 import { byOnlyPublished } from "src/lib/utils/filters";
 
 type BacklinkItem = { title: string; link: string; type: string };
@@ -51,6 +51,7 @@ const Newsletter = ({
   const _newsletterTag = "Live and Learn #" + number;
   const fullTitle = seoTitle || title;
   const url = `newsletters/${slugTitle}`;
+  const ogImage = seoOgImage || cover.src;
 
   return (
     <Layout
@@ -58,8 +59,9 @@ const Newsletter = ({
       description={metaDescription}
       url={url}
       keywords={seoKeywords.length > 0 ? seoKeywords : tags.split(",")}
-      image={seoOgImage || cover.src}
+      image={ogImage}
       imageAlt={seoOgImageAlt || cover.alt}
+      {...ogImageDimensions(cover, ogImage)}
       withProgressBar={true}
       ogType="article"
       articlePublishedTime={date}

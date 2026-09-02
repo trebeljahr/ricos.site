@@ -11,7 +11,7 @@ import { HorizontalCard } from "@components/NiceCards";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Booknote } from "@velite";
 import type { CommonMetadata } from "src/@types";
-
+import { ogImageDimensions } from "src/lib/ogImage";
 import { byOnlyPublished } from "src/lib/utils/filters";
 
 type BacklinkItem = { title: string; link: string; type: string };
@@ -43,14 +43,16 @@ const BooknotesWithDefault = ({ booknote }: Props) => {
 
 const Book = ({ booknote, relatedBooks, backlinks }: Props) => {
   const url = `booknotes/${booknote.slug}`;
+  const ogImage = booknote.seoOgImage || booknote.cover.src;
   return (
     <Layout
       title={booknote.seoTitle || `Rico's booknotes for ${booknote.title}`}
       description={booknote.metaDescription}
       url={url}
       keywords={booknote.seoKeywords.length > 0 ? booknote.seoKeywords : booknote.tags.split(",")}
-      image={booknote.seoOgImage || booknote.cover.src}
+      image={ogImage}
       imageAlt={booknote.seoOgImageAlt || booknote.cover.alt}
+      {...ogImageDimensions(booknote.cover, ogImage)}
       withProgressBar={true}
       ogType="article"
       articlePublishedTime={booknote.date}

@@ -18,8 +18,12 @@ type Props = {
   title: string;
   url: string;
   keywords: string[];
-  image: string;
-  imageAlt: string;
+  /** Cover image for the share card. Omit to fall back to the site-wide default. */
+  image?: string;
+  imageAlt?: string;
+  /** Intrinsic dimensions of `image`, used to emit an accurate og:image:height. */
+  imageWidth?: number;
+  imageHeight?: number;
   fullScreen?: boolean;
   leftSmallNavbar?: boolean;
   withProgressBar?: boolean;
@@ -36,6 +40,8 @@ const Layout = ({
   image,
   keywords,
   imageAlt,
+  imageWidth,
+  imageHeight,
   leftSmallNavbar = false,
   withProgressBar = false,
   ogType = "website",
@@ -59,6 +65,8 @@ const Layout = ({
         url={url}
         image={image}
         imageAlt={imageAlt}
+        imageWidth={imageWidth}
+        imageHeight={imageHeight}
         ogType={ogType}
         articlePublishedTime={articlePublishedTime}
       />

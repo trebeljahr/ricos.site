@@ -329,16 +329,21 @@ const commonFields = {
     })
     .transform(async (cover, ctx) => {
       const defaultCover = "assets/midjourney/the-door-to-the-ocean.jpg";
+      const defaultCoverAlt = "a door standing in the middle of the ocean";
       const usingDefault = cover.src === "";
       if (usingDefault) {
         const where = (ctx as { meta?: { path?: string } }).meta?.path ?? "(unknown source)";
         recordDefaultCover(where);
       }
-      const { width, height } = await getImgWidthAndHeightDuringBuild(
-        usingDefault ? defaultCover : cover.src,
-      );
+      // Resolve the default into `src` too, not just into the dimensions.
+      // Leaving src empty meant these entries rendered a broken <img> and
+      // emitted no og:image at all.
+      const src = usingDefault ? defaultCover : cover.src;
+      const { width, height } = await getImgWidthAndHeightDuringBuild(src);
       return {
         ...cover,
+        src,
+        alt: cover.alt || (usingDefault ? defaultCoverAlt : ""),
         width,
         height,
       };

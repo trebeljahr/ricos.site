@@ -37,13 +37,22 @@ export default function SinglePhotographyShowcasePage({
   const readableName = turnKebabIntoTitleCase(tripName);
   const photoCount = images.length;
 
+  // Several trips have no hand-picked hero shot (src: "" in `trips`). Use the
+  // first photo of the gallery for those, so every gallery gets an og:image.
+  const firstImage = images[0];
+  const heroSrc = tripMeta.src || firstImage?.src || "";
+  const heroAlt = tripMeta.alt || `A photo from ${readableName}`;
+  const heroDimensions = tripMeta.src ? undefined : firstImage;
+
   return (
     <Layout
       title={`${readableName} Photography – Rico Trebeljahr`}
       description={`Browse ${photoCount} photos from ${readableName}. Travel photography by Rico Trebeljahr capturing landscapes, people, and moments from around the world.`}
       url={`/photography/${tripName}`}
-      image={tripMeta.src}
-      imageAlt={tripMeta.alt}
+      image={heroSrc}
+      imageAlt={heroAlt}
+      imageWidth={heroDimensions?.width}
+      imageHeight={heroDimensions?.height}
       keywords={[
         "photography",
         "gallery",

@@ -9,6 +9,7 @@ import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Page as PageType } from "@velite";
 import dynamic from "next/dynamic";
+import { ogImageDimensions } from "src/lib/ogImage";
 
 const MDXContentWithDemos = dynamic(
   () => import("@components/MDXContentWithDemos").then((m) => m.MDXContentWithDemos),
@@ -23,13 +24,15 @@ type Props = {
 
 export default function Page({ page, backlinks }: Props) {
   const { subtitle, title, cover } = page;
+  const ogImage = page.seoOgImage || cover.src;
 
   return (
     <Layout
       title={page.seoTitle || title + " – " + subtitle}
       description={page.metaDescription}
-      image={page.seoOgImage || cover.src}
+      image={ogImage}
       imageAlt={page.seoOgImageAlt || cover.alt}
+      {...ogImageDimensions(cover, ogImage)}
       url={page.slug}
       keywords={page.seoKeywords.length > 0 ? page.seoKeywords : page.tags.split(",")}
       withProgressBar={true}

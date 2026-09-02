@@ -15,8 +15,9 @@ type SeoProps = {
   title: string;
   url: string;
   keywords: string[];
-  image: string;
-  imageAlt: string;
+  /** Cover image for the share card. Omit to fall back to the site-wide default. */
+  image?: string;
+  imageAlt?: string;
 };
 
 export const { In, Out } = tunnel();

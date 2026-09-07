@@ -14,7 +14,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "dev": "npm run s3:start && NEXT_PUBLIC_IMAGE_BACKEND=local concurrently -n next,assets,velite-hmr -c magenta,yellow,blue --kill-others-on-fail \"npm run dev:next\" \"npm run watch:assets\" \"npm run watch:velite-hmr\"",
+    "dev": "pnpm run s3:start && NEXT_PUBLIC_IMAGE_BACKEND=local concurrently -n next,assets,velite-hmr -c magenta,yellow,blue --kill-others-on-fail \"pnpm run dev:next\" \"pnpm run watch:assets\" \"pnpm run watch:velite-hmr\"",
     "dev:cloud": "next dev -p 3713",
     "dev:remote": "next dev -p 3713",
     "dev:local-only": "IMAGE_FALLBACK_CLOUDFRONT=false npm run dev",

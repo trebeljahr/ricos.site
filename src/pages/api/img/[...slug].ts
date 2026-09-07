@@ -3,8 +3,10 @@ import { GetObjectCommand, HeadObjectCommand, PutObjectCommand } from "@aws-sdk/
  * Local image resize + cache — the dev-time replacement for the
  * CloudFront → ImgTransformationStack Lambda pipeline.
  *
- * URL shape (matches prod):   /api/img/<key-without-ext>/<width>.webp
- * Example:                     /api/img/assets/blog/colombia-2024/sad-art/1080.webp
+ * Reached via /api/local-image?slug=<key-without-ext>/<width>.webp, which is
+ * the route callers actually generate (see ./local-image.ts for why). Legacy
+ * /api/img/<key-without-ext>/<width>.webp URLs are rewritten to it in
+ * next.config.mjs, and this file still handles both slug shapes.
  *
  * Architecture:
  *   - Source bucket: the local AWS SDK v3 mock serves a bucket directory whose
@@ -126,24 +128,39 @@ async function writeResized(key: string, body: Buffer): Promise<void> {
   );
 }
 
-function parseSlug(slug: string[] | undefined): {
+function decodeSegment(part: string): string {
+  try {
+    return decodeURIComponent(part);
+  } catch {
+    return part;
+  }
+}
+
+function parseSlug(slug: string | string[] | undefined): {
   variantKey: string;
   logicalKey: string;
   width: number;
 } | null {
-  if (!slug || slug.length < 2) return null;
-  const last = slug[slug.length - 1];
+  if (!slug) return null;
+  // A catch-all slug arrives already decoded. The string form comes from
+  // ?slug= (decoded by Next) or from the /api/img/* rewrite, which passes the
+  // path through still percent-encoded - so "a b" stays "a%20b" and would miss
+  // the local bucket and silently fall through to CloudFront. Decode per
+  // segment, tolerating a literal "%" in a filename.
+  const parts = Array.isArray(slug) ? slug : slug.split("/").map(decodeSegment);
+  if (parts.length < 2) return null;
+  const last = parts[parts.length - 1];
   const match = last.match(/^(\d+)\.webp$/);
   if (!match) return null;
   const width = Number.parseInt(match[1], 10);
   if (!imageSizes.includes(width)) return null;
-  const logicalKey = slug.slice(0, -1).join("/");
+  const logicalKey = parts.slice(0, -1).join("/");
   const variantKey = `${logicalKey}/${last}`;
   return { variantKey, logicalKey, width };
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const parsed = parseSlug(req.query.slug as string[]);
+  const parsed = parseSlug(req.query.slug as string | string[] | undefined);
   if (!parsed) {
     res.status(400).send("bad image url");
     return;

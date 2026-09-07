@@ -159,6 +159,16 @@ const nextConfig = {
     loader: "custom",
     loaderFile: "./image-loader.js",
   },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: "/api/img/:slug*",
+          destination: "/api/local-image?slug=:slug*",
+        },
+      ],
+    };
+  },
   redirects: customRedirects,
   async headers() {
     return [

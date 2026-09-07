@@ -4,21 +4,16 @@ export const imageSizes = [
   16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840,
 ];
 
-// In local-dev mode, images are served from the in-process /api/img route
+// In local-dev mode, images are served from the in-process /api/local-image route
 // (which reads from the local S3 mock, transforms via sharp, caches to the local
 // resized bucket). In prod/cloud mode, they come from CloudFront.
-//
-// Both end up producing URLs of the same shape:
-//   <base>/<key-without-ext>/<width>.webp
-// so no consumer of this module needs to care.
-const IS_LOCAL_BACKEND = process.env.NEXT_PUBLIC_IMAGE_BACKEND === "local";
+const CLOUDFRONT_ID = process.env.NEXT_PUBLIC_CLOUDFRONT_ID;
+const IS_LOCAL_BACKEND = process.env.NEXT_PUBLIC_IMAGE_BACKEND === "local" || !CLOUDFRONT_ID;
 
-export const cloudFrontUrl = IS_LOCAL_BACKEND
-  ? ""
-  : `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net`;
+export const cloudFrontUrl = IS_LOCAL_BACKEND ? "" : `https://${CLOUDFRONT_ID}.cloudfront.net`;
 
 /** Prefix that `nextImageUrl` prepends to logical image paths. */
-export const imageBaseUrl = IS_LOCAL_BACKEND ? "/api/img" : cloudFrontUrl;
+export const imageBaseUrl = IS_LOCAL_BACKEND ? "/api/local-image" : cloudFrontUrl;
 
 export const getImgWidthAndHeight = (src: string) => {
   const img = new Image();
@@ -48,12 +43,12 @@ export const nextImageUrl = (src: string, width: number) => {
 
   // Empty/missing src: return empty so callers can short-circuit (e.g. OpenGraph
   // uses `{imageUrl && <meta…>}`). Without this, path.join("","") returns "."
-  // and we'd generate bogus "/api/img/./<width>.webp" URLs that 400 in dev.
+  // and we'd generate bogus "./<width>.webp" slugs that 400 in dev.
   if (!src) return "";
 
   // Pass-through paths that aren't under /assets/. These are static files
   // served directly from /public (e.g. /favicon/*), not pipeline-transformed
-  // images. Routing them through /api/img would 404 because the local mock only
+  // images. Routing them through /api/local-image would 404 because the mock only
   // exposes the Obsidian assets tree.
   if (!src.startsWith("http") && !/^\/?assets\//.test(src)) {
     return src;
@@ -71,5 +66,12 @@ export const nextImageUrl = (src: string, width: number) => {
     return src;
   }
 
-  return `${imageBaseUrl}${fixedSource}/${width}.webp`;
+  if (IS_LOCAL_BACKEND) {
+    return `${imageBaseUrl}?slug=${encodeURIComponent(`${fixedSource.slice(1)}/${width}.webp`)}`;
+  }
+
+  // encodeURI, matching image-loader.js. Keys with spaces exist, and the two
+  // must agree: next/image goes through the loader, OpenGraph/meta tags come
+  // through here, and a mismatch means two URLs for one image.
+  return `${cloudFrontUrl}${encodeURI(fixedSource)}/${width}.webp`;
 };

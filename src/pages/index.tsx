@@ -146,8 +146,8 @@ const IndexPage = ({ seo, ...props }: Props) => {
             <h2 className="text-5xl">Photography 📸</h2>
             <p className="mb-14 max-w-prose">
               Trips through Asia, Europe, the Caribbean and South America, told in pictures. Six of
-              my favourite collections below — see <Link href="/photography">all trips</Link> for
-              the rest.
+              my favourite collections below. See <Link href="/photography">all trips</Link> for the
+              rest.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-12">
               {props.featuredTrips.map(({ tripName, image }) => (
@@ -181,7 +181,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <h2 className="text-5xl">Creative Coding 🎨</h2>
             <p className="mb-14 max-w-prose">
-              Three.js / R3F experiments — shaders, oceans, generative terrain, particle systems.
+              Three.js and R3F experiments. Shaders, oceans, generative terrain, particle systems.
               These are the standouts; the full playground has dozens more.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-12">

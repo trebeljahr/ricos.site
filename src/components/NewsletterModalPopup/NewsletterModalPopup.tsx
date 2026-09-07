@@ -59,8 +59,8 @@ const NewsletterModalPopup = ({ howFarDown = 50 }: { howFarDown?: number }) => {
                   text={
                     <>
                       <p className="mb-4">
-                        Live and Learn is a digital postcard I send out every couple of weeks — part
-                        travel diary, part essay, plus a handful of links to things worth sharing.
+                        Live and Learn is a digital postcard I send out every couple of weeks.
+                        Travel stories, an essay or two and a handful of links worth sharing.
                       </p>
                       <ul className="list-disc mb-4 pl-3">
                         <li>🌌 Travel stories from wherever I am</li>

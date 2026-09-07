@@ -50,7 +50,7 @@ export default function StartHerePage() {
   return (
     <Layout
       title="Start Here – A Guide to ricos.site"
-      description="New here? Here are the best things on ricos.site — essays, photography, creative coding, and a newsletter worth reading."
+      description="New here? Start with the best essays, photography and creative coding demos on ricos.site, plus the newsletter."
       url="start-here"
       image="/assets/midjourney/young-man-looking-absolutely-relaxed-while-reading-a-book-in-the-milkyway.jpg"
       imageAlt="a person reading a book, while floating in space"

@@ -1,6 +1,5 @@
-// Editorial themes layer for the /categories page and /themes/[slug] landings.
+// Themes layer for the /categories page and /themes/[slug] landings.
 // Source of truth for theme membership, tag canonicalization, and drop list.
-// Curated from .scratch/themes-plan.json (subagent editorial pass).
 
 export type Theme = {
   slug: string;
@@ -15,7 +14,7 @@ export const themes: Theme[] = [
   {
     slug: "ai-frontier",
     title: "The AI Frontier",
-    oneliner: "Weekly notes on the labs, models, and moments shaping artificial intelligence.",
+    oneliner: "Weekly notes on the AI labs, the models they ship and what actually changed.",
     tagMembers: [
       "ai",
       "openai",
@@ -55,7 +54,7 @@ export const themes: Theme[] = [
   {
     slug: "mind-and-meaning",
     title: "Mind & Meaning",
-    oneliner: "Psychology, neuroscience, and the long human project of understanding ourselves.",
+    oneliner: "Psychology, neuroscience and the long attempt to understand our own heads.",
     tagMembers: [
       "psychology",
       "neuroscience",
@@ -75,7 +74,7 @@ export const themes: Theme[] = [
   {
     slug: "living-well",
     title: "Living Well",
-    oneliner: "Notes from a life of habits, focus, and figuring out what actually matters.",
+    oneliner: "Habits, focus and figuring out what actually matters.",
     tagMembers: [
       "self-help",
       "good-life",
@@ -100,7 +99,7 @@ export const themes: Theme[] = [
   {
     slug: "reading-life",
     title: "A Reading Life",
-    oneliner: "Books I underline, dog-ear, and keep coming back to — from fiction to philosophy.",
+    oneliner: "Books I underline, dog-ear and keep coming back to, from fiction to philosophy.",
     tagMembers: [
       "non-fiction",
       "fiction",
@@ -121,7 +120,7 @@ export const themes: Theme[] = [
   {
     slug: "on-the-road",
     title: "On the Road",
-    oneliner: "Photo essays and field notes from islands, mountains, and the spaces between.",
+    oneliner: "Photo essays and notes from islands, mountains and long bus rides.",
     tagMembers: [
       "travel",
       "adventure",
@@ -144,7 +143,7 @@ export const themes: Theme[] = [
   {
     slug: "making-things",
     title: "Making Things",
-    oneliner: "Creative coding, 3D, shaders, and the craft of building strange visual systems.",
+    oneliner: "Creative coding, 3D and shaders. Building strange things that move.",
     tagMembers: ["programming", "engineering", "design", "art", "music", "beauty"],
     hero: {
       src: "/assets/blog/fractal-garden.png",
@@ -154,7 +153,7 @@ export const themes: Theme[] = [
   {
     slug: "science-and-nature",
     title: "Science & Nature",
-    oneliner: "Where biology, physics, and curiosity collide — the universe still rewards looking.",
+    oneliner: "Biology, physics and the parts of the world that get better the closer you look.",
     tagMembers: [
       "science",
       "biology",
@@ -175,7 +174,7 @@ export const themes: Theme[] = [
   {
     slug: "future-arriving",
     title: "How the Future Arrives",
-    oneliner: "Long arcs: progress, technology, and the shape of what comes next.",
+    oneliner: "Progress, technology and where all of it might be going.",
     tagMembers: [
       "future",
       "progress",
@@ -195,7 +194,7 @@ export const themes: Theme[] = [
   {
     slug: "personal-essays",
     title: "Personal Essays",
-    oneliner: "Slower writing on flow, decisions, and the strange business of being alive.",
+    oneliner: "Slower writing about flow, decisions and being alive.",
     tagMembers: ["personal development"],
     contentTypeFallback: ["Post"],
     hero: {
@@ -206,7 +205,7 @@ export const themes: Theme[] = [
   {
     slug: "first-principles",
     title: "First Principles",
-    oneliner: "Math, computation, and the conceptual bedrock under the rest of the site.",
+    oneliner: "Math and computation, the groundwork under most of the rest of the site.",
     tagMembers: ["mathematics", "programming", "computation", "physics", "engineering"],
     hero: {
       src: "/assets/blog/vector-demo.png",

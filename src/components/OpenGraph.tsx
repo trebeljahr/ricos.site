@@ -10,7 +10,7 @@ import { completeUrl, tld } from "src/lib/urlUtils";
  */
 export const defaultOgImage = "/og-default.png";
 export const defaultOgImageAlt =
-  "ricos.site — essays, photography, notes and Three.js experiments by Rico Trebeljahr";
+  "ricos.site: essays, photography, notes and Three.js experiments by Rico Trebeljahr";
 const defaultOgImageWidth = 1200;
 const defaultOgImageHeight = 630;
 

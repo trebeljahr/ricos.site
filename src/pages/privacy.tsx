@@ -41,7 +41,7 @@ export default function PrivacyPage() {
             basis: Art. 6 (1) (f) GDPR (legitimate interest in operating the site securely).
           </p>
 
-          <h2>Analytics — Plausible (self-hosted)</h2>
+          <h2>Analytics: Plausible (self-hosted)</h2>
           <p>
             This site uses <a href="https://plausible.io">Plausible Analytics</a>, a privacy-focused
             web analytics tool. The instance is self-hosted on a server I operate under{" "}
@@ -59,14 +59,14 @@ export default function PrivacyPage() {
           </p>
           <p>
             The following aggregated data is recorded: page URL, HTTP referrer, browser, operating
-            system, device type, country (derived from the IP, which is then discarded), and — for
-            users who have opted in — outbound-link clicks and file downloads.
+            system, device type, country (derived from the IP, which is then discarded), and, for
+            users who have opted in, outbound-link clicks and file downloads.
           </p>
           <p>
             Because no information is stored on or read from your device, no consent under § 25 (1)
             TTDSG is required. Legal basis for the processing itself is Art. 6 (1) (f) GDPR
             (legitimate interest in understanding aggregate site usage to improve the site). You can
-            object to this processing at any time — see "Your Rights" below. You can also enable the
+            object to this processing at any time. See "Your Rights" below. You can also enable the
             "Do Not Track" setting in your browser; Plausible respects it.
           </p>
 
@@ -95,7 +95,7 @@ export default function PrivacyPage() {
               Object to processing based on legitimate interest, including analytics (Art. 21 GDPR)
             </li>
             <li>
-              Lodge a complaint with a supervisory authority (Art. 77 GDPR) — in Germany, the
+              Lodge a complaint with a supervisory authority (Art. 77 GDPR). In Germany that is the
               authority of the federal state in which you reside
             </li>
           </ul>

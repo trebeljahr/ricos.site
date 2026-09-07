@@ -110,7 +110,7 @@ export default function CategoriesPage({ themes, tags, totalDocs, seo }: Props) 
       title={seo?.metaTitle || "Categories – Themes and Tags"}
       description={
         seo?.metaDescription ||
-        `Ten editorial themes Rico keeps returning to, plus ${tags.length} tags for diving deeper. ${totalDocs} pieces in all.`
+        `${themes.length} themes Rico keeps coming back to, plus ${tags.length} tags to browse by. ${totalDocs} pieces in all.`
       }
       url={url}
       keywords={seo?.keywords || themes.map((t) => t.title)}
@@ -123,8 +123,8 @@ export default function CategoriesPage({ themes, tags, totalDocs, seo }: Props) 
         <section className="mb-14">
           <h1 className="mt-16!">Categories</h1>
           <p className="max-w-prose text-lg text-gray-600 dark:text-gray-400">
-            {themes.length} editorial themes I keep returning to, plus {tags.length} tags for diving
-            deeper — {totalDocs} pieces in all.
+            {themes.length} themes I keep coming back to, plus {tags.length} tags to browse by.{" "}
+            {totalDocs} pieces in all.
           </p>
         </section>
 

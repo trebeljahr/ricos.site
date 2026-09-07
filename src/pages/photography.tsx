@@ -19,77 +19,77 @@ export const trips = [
     alt: "reflection at the Taj Mahal, Agra, India, surreal looking upside down image",
     name: "best-of",
     description:
-      "A curated set spanning every trip — favorite frames from the Himalayas, the Caribbean, Southeast Asia, and a few quieter corners in between.",
+      "My favourite frames from every trip, in one gallery. Himalayas, Caribbean, Southeast Asia and a lot of places in between.",
   },
   {
     src: "/assets/photography/best-of/DSC04904-38054.webp",
     alt: "man with a yellow jacket hiking in the Alps, with a beautiful view of the mountains and a pristine mountain lake in the background",
     name: "alps",
     description:
-      "Hut-to-hut hiking in the Austrian and Italian Alps. Mountain lakes, larch forests, and long ridgeline days under thin air.",
+      "Hut-to-hut hiking in the Austrian and Italian Alps. Long days on the ridgelines, with mountain lakes and larch forests on the way down.",
   },
   {
     src: "/assets/photography/best-of/DSC08919-41892.webp",
     alt: "beautiful beach in Chrissy, Crete, Greece, with turquoise water and gentle, soft morning light",
     name: "crete",
     description:
-      "Coastlines, mountain villages, and turquoise coves on the largest Greek island. Mostly early mornings before the heat hit.",
+      "Coastlines, mountain villages and turquoise coves on Crete. Shot mostly in the early morning, before the heat.",
   },
   {
     src: "",
     alt: "",
     name: "east-india",
     description:
-      "Kolkata street life, the colonial bones of the old town, and the slow river ferries crossing the Hooghly at dusk.",
+      "Street life in the old colonial parts of Kolkata, and the slow ferries crossing the Hooghly at dusk.",
   },
   {
     src: "/assets/photography/best-of/DSC00984.webp",
     alt: "a man standing in beautiful sunlight in the autumn forest",
     name: "germany",
     description:
-      "Home turf — autumn forests, foggy mornings near the Baltic coast, and the quieter side of a country I usually only photograph by accident.",
+      "Home turf. Autumn forests, foggy mornings near the Baltic coast and a country I usually only photograph by accident.",
   },
   {
     src: "/assets/photography/best-of/DSC00940.webp",
     alt: "green island in Indonesia Komodo national park",
     name: "indonesia",
     description:
-      "Komodo National Park from a liveaboard boat — pink beaches, green islands rising straight out of the sea, and the dragons themselves.",
+      "Komodo National Park from a liveaboard boat. Pink beaches, green islands rising straight out of the sea and the dragons.",
   },
   {
     src: "/assets/photography/best-of/DSC04727.webp",
     alt: "Pha That Luang, the Golden Stupa in Vientiane Laos",
     name: "laos",
     description:
-      "Slow-boating down the Mekong, the temples of Luang Prabang at sunrise, and the Golden Stupa of Vientiane glowing at dusk.",
+      "A slow boat down the Mekong, the temples of Luang Prabang at sunrise and the Golden Stupa in Vientiane at dusk.",
   },
   {
     src: "/assets/photography/best-of/DSC02563.webp",
     alt: "elephants riding down the street near the main fort Jaipur, Rajasthan, India",
     name: "rajasthan",
     description:
-      "The pink city of Jaipur, fort-strewn deserts around Jodhpur and Jaisalmer, and elephants ambling past the Amber Fort gates.",
+      "Jaipur, the pink city. Forts in the desert around Jodhpur and Jaisalmer, and elephants walking up to the Amber Fort.",
   },
   {
     src: "/assets/photography/best-of/DSC04986-3.webp",
     alt: "long time exposure with streaking effect of the Ravana waterfalls in Ella, Sri Lanka",
     name: "sri-lanka",
     description:
-      "Tea-country hills around Ella, long-exposure waterfalls, and the southern beaches before the monsoon broke.",
+      "Tea country around Ella, long exposures of waterfalls and the beaches in the south, right before the monsoon.",
   },
   {
     src: "/assets/photography/thailand/DSC08256.webp",
     alt: "Wat Rong Khun, White Temple in Chiang Rai, Thailand",
     name: "thailand",
     description:
-      "Chiang Rai's White Temple, the limestone karsts of the south, and Bangkok night markets — a first taste of Southeast Asia.",
+      "My first trip to Southeast Asia. The White Temple in Chiang Rai, the limestone karsts in the south and the night markets of Bangkok.",
   },
   {
     src: "/assets/photography/best-of/DSC03117.webp",
     alt: "mystical carst mountain formations near Bai Tu Long Bay, Vietnam",
     name: "vietnam",
     description:
-      "Bai Tu Long Bay's lesser-known karst islands, Hanoi's old quarter at night, and the long winding ride north toward the Chinese border.",
+      "The quieter karst islands of Bai Tu Long Bay, Hanoi's old quarter at night and the long ride north towards the Chinese border.",
   },
   {
     src: "",
@@ -103,112 +103,112 @@ export const trips = [
     alt: "",
     name: "dominica",
     description:
-      "The Caribbean's Nature Island — Boiling Lake, Trafalgar Falls, Emerald Pool, and rainforest hikes that left everything soaking wet.",
+      "The Nature Island of the Caribbean. Boiling Lake, Trafalgar Falls, Emerald Pool and rainforest hikes that left everything soaking wet.",
   },
   {
     src: "",
     alt: "",
     name: "delhi",
     description:
-      "Old Delhi street life, Humayun's Tomb, Jama Masjid at dawn, and the Lodi Gardens in the smog-soft winter light.",
+      "Old Delhi street life, Humayun's Tomb, Jama Masjid at dawn and the Lodi Gardens in the hazy winter light.",
   },
   {
     src: "",
     alt: "",
     name: "egypt",
     description:
-      "Cairo's pyramids and bazaars, the temples of Luxor and Karnak, and a slow felucca down the Nile toward Aswan.",
+      "The pyramids and bazaars of Cairo, the temples of Luxor and Karnak. Then a felucca down the Nile to Aswan.",
   },
   {
     src: "/assets/photography/best-of/DSC02531-54305-Pano.webp",
     alt: "Chandratal lake in the middle of Himachal Pradesh near Spiti Valley at 4200 meters",
     name: "himachal-pradesh",
     description:
-      "Spiti Valley at 4200 m — Chandratal lake, ancient monasteries clinging to cliffs, and the desolate beauty of the Indian Himalayas.",
+      "Spiti Valley at 4200 m. Chandratal lake, old monasteries built into the cliffs and a lot of empty high-altitude nothing.",
   },
   {
     src: "/assets/photography/best-of/IMG_8960.webp",
     alt: "ice surrounding the apple bloom in the spring in the Alps in Italy, South Tyrol",
     name: "italy",
     description:
-      "Dolomites trail days, the apple blossom in South Tyrol caught in a late frost, and small-town Italy from Tuscany to the alpine north.",
+      "Hiking in the Dolomites, apple blossom in South Tyrol caught by a late frost, and small towns from Tuscany up to the Alps.",
   },
   {
     src: "/assets/photography/nepal/DSC07690 (2).webp",
     alt: "looking onto the Annapurna mountain range, specifically the Fish Tail mountain in Nepal",
     name: "nepal",
     description:
-      "The Annapurna Circuit — Machapuchare at sunrise, prayer flags strung over high passes, and tea houses at the edge of the snow line.",
+      "The Annapurna Circuit. Machapuchare at sunrise, prayer flags on the high passes and tea houses just below the snow line.",
   },
   {
     src: "",
     alt: "",
     name: "south-india",
     description:
-      "Backwaters of Kerala, the colonial waterfront of Kochi, and the tea hills around Munnar in early morning fog.",
+      "The backwaters of Kerala and the old waterfront in Kochi. Plus the tea hills around Munnar, usually in fog.",
   },
   {
     src: "/assets/photography/best-of/DSC02444.webp",
     alt: "man in yellow sweater walking on the edge of a mountain range in Anaga Tenerife",
     name: "tenerife",
     description:
-      "Hiking the Anaga ridge, Teide's volcanic landscape above the clouds, and quieter coves on the island's wild north coast.",
+      "Hiking the Anaga ridge, the volcanic landscape around Teide above the clouds, and small coves on the wild north coast.",
   },
   {
     src: "",
     alt: "",
     name: "varanasi",
     description:
-      "Ghats along the Ganges at dawn, evening aarti ceremonies by the river, and the impossibly dense old streets of one of India's oldest cities.",
+      "One of the oldest cities in India. Ghats along the Ganges at dawn, aarti ceremonies by the river in the evening and streets narrow enough to get lost in.",
   },
   {
     src: "",
     alt: "",
     name: "guadeloupe",
     description:
-      "Hiking the GR-G1 across Basse-Terre's jungle, diving the Caribbean reefs, and waterfall-hopping between hostels on the French Antilles.",
+      "Hiking the GR-G1 through the jungle of Basse-Terre, diving the reefs and going from waterfall to waterfall across the French Antilles.",
   },
   {
     src: "",
     alt: "",
     name: "transat",
     description:
-      "Crossing the Atlantic by sailboat — three weeks at sea, storms and stars, and the slow rhythm of life on a 40-foot cutter.",
+      "Crossing the Atlantic on a 40-foot sailboat. Three weeks at sea, storms, stars and not a lot else.",
   },
   {
     src: "",
     alt: "",
     name: "portugal-2024",
     description:
-      "The Rota Vicentina — hiking the Fisherman's Trail along Alentejo's wild coast, plus quieter inland villages and the Algarve cliffs.",
+      "The Rota Vicentina. Hiking the Fisherman's Trail along the coast of the Alentejo, plus inland villages and the cliffs of the Algarve.",
   },
   {
     src: "",
     alt: "",
     name: "spain-2024",
     description:
-      "Madrid and Barcelona in autumn — rooftop views, window reflections, old bars, and the flight down the Iberian coast.",
+      "Madrid and Barcelona in autumn. Rooftops, reflections in windows, old bars and the flight down the Iberian coast.",
   },
   {
     src: "/assets/photography/india-2023/PXL_20230930_051423720~2.jpg",
     alt: "woman standing in front of a cliff in the Himalayas on the Markha Valley trek in Ladakh, India",
     name: "india-2023",
     description:
-      "Ladakh and the Markha Valley trek — high-altitude desert, Buddhist monasteries, and the long road from Leh to Manali.",
+      "Ladakh and the Markha Valley trek. High-altitude desert, Buddhist monasteries and the long road from Leh to Manali.",
   },
   {
     src: "",
     alt: "",
     name: "martinique",
     description:
-      "Fort-de-France, the Tombolo sandbank, giant trees in the rainforest, and the Schoelcher Library's strange wrought-iron beauty.",
+      "Fort-de-France, the Tombolo sandbank, giant trees in the rainforest and the strange wrought-iron Schoelcher Library.",
   },
   {
     src: "",
     alt: "",
     name: "colombia-2024",
     description:
-      "Coffee triangle hills, the colonial streets of Cartagena, and the trail into the jungle toward Ciudad Perdida.",
+      "The hills of the coffee triangle, the old streets of Cartagena and the jungle trail to Ciudad Perdida.",
   },
 ];
 
@@ -224,7 +224,7 @@ export default function Photography({ trips, seo }: Props) {
       title={seo?.metaTitle || "Photography"}
       description={
         seo?.metaDescription ||
-        "Travel photography by Rico Trebeljahr — landscapes, people, and moments from journeys across Asia, Europe, the Caribbean, and South America."
+        "Travel photography by Rico Trebeljahr. Landscapes, people and moments from trips across Asia, Europe, the Caribbean and South America."
       }
       url={url}
       fullScreen={true}

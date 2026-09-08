@@ -533,7 +533,7 @@
       "German literature"
     ]
   },
-  "/booknotes/der-weg-zum-glück": {
+  "/booknotes/der-weg-zum-glueck": {
     "metaTitle": "Der Weg zum Glück (Dalai Lama) – Rico's Book Notes",
     "metaDescription": "The Dalai Lama on compassion and contentment, and on how much of a hectic life we bring on ourselves. Notes on the German edition.",
     "ogImage": "/assets/book-covers/der-weg-zum-glueck.jpg",
@@ -5398,7 +5398,7 @@
       "podcast notes"
     ]
   },
-  "/podcastnotes/lex-joscha-bach-life-intelligence-consciousness-ai-&-the-future-of-humans": {
+  "/podcastnotes/lex-joscha-bach-life-intelligence-consciousness-ai-and-the-future-of-humans": {
     "metaTitle": "Lex Fridman x Joscha Bach: Consciousness & AI  – Rico's Notes",
     "metaDescription": "Joscha Bach on life, intelligence, consciousness and the seven stages of lucidity. Notes from episode 392.",
     "ogImage": "",
@@ -9224,5 +9224,19 @@
       "cosine palette",
       "animated shader"
     ]
+  },
+  "/newsletters/building-faster-than-i-can-live": {
+    "metaTitle": "Live and Learn #79 – Building Faster than I can Live",
+    "metaDescription": "200 euro of Claude Code and one week produced playtiao.com, a two-player board game with matchmaking, AI opponents and tournaments.",
+    "ogImage": "/assets/newsletter/79/gamat-bay.jpg",
+    "ogImageAlt": "clear turquoise water at Gamat Bay, with a small boat anchored off a palm-fringed beach below green cliffs",
+    "keywords": ["newsletter", "live and learn", "claude code", "playtiao", "board game", "AI"]
+  },
+  "/newsletters/the-sadness-after-good-days": {
+    "metaTitle": "Live and Learn #80 – The Sadness After Good Days",
+    "metaDescription": "Sardinia went past too fast to feel real. Dancing to Rage Against the Machine, bittersweet goodbyes and the flatness that follows.",
+    "ogImage": "/assets/newsletter/80/tent.jpg",
+    "ogImageAlt": "a canvas bell tent pitched under a tarp among mossy oak trees in a green spring forest",
+    "keywords": ["newsletter", "live and learn", "Sardinia", "travel", "friendship"]
   }
 }

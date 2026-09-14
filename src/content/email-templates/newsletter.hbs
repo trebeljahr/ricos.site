@@ -113,7 +113,7 @@
 
         <div id="preview-text">
           <span style="display: none; max-height: 0; overflow: hidden;">
-            {{excerpt}}
+            {{preheader}}
           </span>
 
           <span style="display: none; max-height: 0; overflow: hidden;">
@@ -181,7 +181,7 @@
                 <h1 style="line-height: 1.6;">
                   {{title}}
                 </h1>
-                <p style="white-space: pre-line;">{{excerpt}}</p>
+                {{#if excerpt}}<p style="white-space: pre-line;">{{excerpt}}</p>{{/if}}
                 <img
                   src="{{coverImageSrc}}"
                   width="600"

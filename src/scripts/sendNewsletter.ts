@@ -67,6 +67,27 @@ async function main() {
     };
   }
 
+  // Gmail's inbox row renders "Subject - snippet". Without an excerpt the hidden
+  // preheader is only invisible filler, so the snippet looks empty and a lone
+  // dash trails the subject. Collect the opening paragraph text as a fallback.
+  let openingText = "";
+  function collectOpeningText() {
+    // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
+    return (tree: any) => {
+      // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
+      visit(tree, "element", (node: any) => {
+        if (node.tagName !== "p" || openingText.length >= 200) return;
+        let paragraph = "";
+        // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
+        visit(node, "text", (textNode: any) => {
+          paragraph += textNode.value;
+        });
+        paragraph = paragraph.replace(/\s+/g, " ").trim();
+        if (paragraph) openingText = `${openingText} ${paragraph}`.trim();
+      });
+    };
+  }
+
   // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
   function rewrite(node: any) {
     if (node.type === "element" && node.tagName === "img") {
@@ -111,6 +132,7 @@ async function main() {
     .use(remarkParse as any)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rewriteUrls)
+    .use(collectOpeningText)
     // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     .use(rehypeRewrite as any, { rewrite })
     // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
@@ -128,11 +150,17 @@ async function main() {
   const newsletterTagLine = "Live and Learn #" + number;
   const realTitle = `${title}`;
 
+  const visibleExcerpt = excludeExcerpt ? "" : excerpt || defaultExcerpt;
+  const truncatedOpening =
+    openingText.length > 200 ? `${openingText.slice(0, 200).replace(/\s+\S*$/, "")}…` : openingText;
+  const preheader = visibleExcerpt || truncatedOpening || defaultExcerpt;
+
   const htmlEmail = template({
     content: file.value,
     tagLine: newsletterTagLine,
     title: realTitle.trim(),
-    excerpt: excludeExcerpt ? "" : excerpt || defaultExcerpt,
+    excerpt: visibleExcerpt,
+    preheader,
     coverImageSrc: nextImageUrl(cover.src, 1080),
     coverImageAlt: cover.alt,
     webversion,

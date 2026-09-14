@@ -32,7 +32,13 @@ const IGNORED_ASSET_PREFIXES = ["/assets/", "/_next/"];
 
 const FILE_EXTENSION = /\.[a-z0-9]{2,12}$/i;
 
-export type Reference = { href: string; file: string; line: number };
+export type Reference = {
+  href: string;
+  file: string;
+  line: number;
+  /** A markdown link, which the content build resolves through the redirect table. */
+  markdown?: boolean;
+};
 
 export type References = {
   routes: Reference[];
@@ -154,8 +160,10 @@ export async function collectReferences(): Promise<References> {
     MARKDOWN_LINK.lastIndex = 0;
     let match = MARKDOWN_LINK.exec(raw);
     while (match !== null) {
-      const bucket = match[1] === "!" ? images : links;
-      bucket.push({ href: match[2], file: relativeFile, line: lineOf(raw, match.index) });
+      const image = match[1] === "!";
+      const reference = { href: match[2], file: relativeFile, line: lineOf(raw, match.index) };
+      if (image) images.push(reference);
+      else links.push({ ...reference, markdown: true });
       match = MARKDOWN_LINK.exec(raw);
     }
     sort(links);

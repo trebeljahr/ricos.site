@@ -14,6 +14,11 @@
  *      it works, it costs a hop, and Ahrefs counts it as a broken-ish link. An
  *      audit turned up 39 of these across 25 pages, all hand-fixed — this stops
  *      them coming back, and shouts louder about multi-hop chains.
+ *      Markdown is exempt: src/lib/remarkResolveRedirects.ts rewrites those
+ *      links to their destination at build time, so short forms such as
+ *      `/newsletters/81` are fine in the vault. The check still fails when that
+ *      rewrite lands somewhere other than the manifest's final destination, or
+ *      when the destination is not a route. TSX hrefs get no rewrite.
  *   4. Missing local assets. Anything under public/ that a page, a component or
  *      a stylesheet references but that does not exist on disk. The KaTeX font
  *      404 the performance audit found was exactly this shape.
@@ -35,10 +40,17 @@
 
 import { existsSync } from "node:fs";
 import { relative, resolve } from "node:path";
+import { loadBuildRedirects, resolveInternalHref } from "../lib/remarkResolveRedirects";
 import { checkExternalLinks } from "./links/external";
 import { collectCoverage } from "./links/orphans";
-import { resolveRedirectChain } from "./links/redirects";
-import { collectReferences, normalizeRoute, PUBLIC_DIR, type Reference } from "./links/references";
+import { type RedirectRule, resolveRedirectChain } from "./links/redirects";
+import {
+  CONTENT_DIR,
+  collectReferences,
+  normalizeRoute,
+  PUBLIC_DIR,
+  type Reference,
+} from "./links/references";
 import { collectRoutes, isServable, type Routes } from "./links/routes";
 
 const MAX_ADVISORY_LINES = 30;
@@ -52,7 +64,11 @@ function describeChain(hops: string[], truncated: boolean): string {
   return `redirects ${hops.length}x (${hops.join(" → ")}) — link ${destination} directly`;
 }
 
-function checkRoutes(references: Reference[], routes: Routes): Finding[] {
+function checkRoutes(
+  references: Reference[],
+  routes: Routes,
+  buildRedirects: RedirectRule[],
+): Finding[] {
   const findings: Finding[] = [];
 
   for (const reference of references) {
@@ -64,10 +80,25 @@ function checkRoutes(references: Reference[], routes: Routes): Finding[] {
     const chain = resolveRedirectChain(path, routes.redirects);
     if (chain) {
       const destination = chain.hops[chain.hops.length - 1];
-      const message = isServable(destination, routes)
-        ? describeChain(chain.hops, chain.truncated)
-        : `redirects to ${destination}, which is not a route either`;
-      findings.push({ ...reference, message });
+      if (!isServable(destination, routes)) {
+        findings.push({
+          ...reference,
+          message: `redirects to ${destination}, which is not a route either`,
+        });
+        continue;
+      }
+      if (reference.markdown && !chain.truncated) {
+        const rewritten = normalizeRoute(resolveInternalHref(path, buildRedirects));
+        if (rewritten === destination) continue;
+        findings.push({
+          ...reference,
+          message:
+            `redirects to ${destination}, but the markdown build rewrites it to ${rewritten} — ` +
+            "remarkResolveRedirects has drifted from the Next redirect table",
+        });
+        continue;
+      }
+      findings.push({ ...reference, message: describeChain(chain.hops, chain.truncated) });
       continue;
     }
 
@@ -120,7 +151,7 @@ async function runOffline() {
   }
 
   const references = await collectReferences();
-  const broken = checkRoutes(references.routes, routes);
+  const broken = checkRoutes(references.routes, routes, loadBuildRedirects(CONTENT_DIR));
   const relativeLinks: Finding[] = references.relative.map((reference) => ({
     ...reference,
     message: "relative link, needs a leading slash",
@@ -156,8 +187,9 @@ async function runOffline() {
   console.error(
     "\nA link to content with `published: false` in its frontmatter fails here: " +
       "publish the target or drop the link syntax and keep the anchor text.\n" +
-      "A link that redirects still works, but costs a hop and reads as broken to " +
-      "crawlers: point it at the destination shown above.\n",
+      "A TSX link that redirects still works, but costs a hop and reads as broken to " +
+      "crawlers: point it at the destination shown above. Markdown links are rewritten " +
+      "to their destination at build time and only fail here if that goes wrong.\n",
   );
   process.exit(1);
 }

@@ -169,7 +169,7 @@ const nextConfig = {
       ],
     };
   },
-  redirects: customRedirects,
+  redirects: generateRedirects,
   async headers() {
     return [
       {
@@ -229,89 +229,3 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 
 export default withBundleAnalyzer(nextConfig);
-
-async function customRedirects() {
-  const redirects = await generateRedirects();
-  return [
-    ...redirects,
-    // Exact "/newsletter" has to come first: the ":id*" rule below also matches
-    // it with an empty id and resolves to "/newsletters/", which Next then
-    // redirects again to "/newsletters" (trailingSlash is false). One hop, not two.
-    {
-      source: "/newsletter",
-      destination: "/newsletters",
-      permanent: true,
-    },
-    {
-      source: "/newsletter/:id*",
-      destination: "/newsletters/:id*",
-      permanent: true,
-    },
-    {
-      source: "/pages/:id*",
-      destination: "/:id*",
-      permanent: true,
-    },
-    {
-      source: "/feed.xml",
-      destination: "/rss.xml",
-      permanent: true,
-    },
-    {
-      source: "/posts/my-productivity-systems",
-      destination: "/posts/my-productivity-system",
-      permanent: true,
-    },
-    // Short links for key pages
-    {
-      source: "/plasmaball",
-      destination: "/r3f/scenes/plasma-ball",
-      permanent: true,
-    },
-    {
-      source: "/plasma",
-      destination: "/r3f/scenes/plasma-ball",
-      permanent: true,
-    },
-    {
-      source: "/plasma-ball",
-      destination: "/r3f/scenes/plasma-ball",
-      permanent: true,
-    },
-    {
-      source: "/photos",
-      destination: "/photography/best-of",
-      permanent: true,
-    },
-    {
-      source: "/needles",
-      destination: "/needlestack",
-      permanent: true,
-    },
-    {
-      source: "/shader-art",
-      destination: "/r3f/scenes/shader-art-demo",
-      permanent: true,
-    },
-    {
-      source: "/yellow",
-      destination: "/posts/the-best-yellow",
-      permanent: true,
-    },
-    {
-      source: "/start",
-      destination: "/start-here",
-      permanent: true,
-    },
-    {
-      source: "/support",
-      destination: "/donate",
-      permanent: true,
-    },
-    {
-      source: "/everything",
-      destination: "/timeline",
-      permanent: true,
-    },
-  ];
-}

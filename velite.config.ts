@@ -20,6 +20,7 @@ import {
   getImgMetaDuringBuild,
   getImgWidthAndHeightDuringBuild,
 } from "src/lib/getImgWidthAndHeightDuringBuild";
+import { remarkResolveRedirects } from "src/lib/remarkResolveRedirects";
 import type { Node, Pluggable } from "unified/lib";
 import { SKIP, visit } from "unist-util-visit";
 import { defineConfig, s, type ZodMeta } from "velite";
@@ -531,6 +532,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     remarkGfm,
     remarkToc,
     remarkMath,
+    [remarkResolveRedirects, { contentDir: path.resolve("src/content/Notes") }],
   ];
 
   const rehypePlugins: Pluggable[] = [
@@ -600,7 +602,11 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     source: excerptString,
     cwd: path.resolve("src/content/Notes"),
     mdxOptions(options) {
-      options.remarkPlugins = [...(options.remarkPlugins ?? []), remarkGfm];
+      options.remarkPlugins = [
+        ...(options.remarkPlugins ?? []),
+        remarkGfm,
+        [remarkResolveRedirects, { contentDir: path.resolve("src/content/Notes") }],
+      ];
       return options;
     },
     esbuildOptions(options) {

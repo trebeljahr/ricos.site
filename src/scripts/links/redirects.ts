@@ -3,7 +3,7 @@
  *
  * Kept free of filesystem and manifest access so it can be tested directly:
  * everything it needs is the `{ source, destination, regex }` triples out of
- * routes-manifest.json.
+ * routes-manifest.json, or the same triples built by `compileRedirect`.
  */
 
 export type RedirectRule = {
@@ -43,6 +43,44 @@ export function applyRedirect(path: string, rule: RedirectRule): string | undefi
   });
 
   return tidy(destination);
+}
+
+const REGEX_SPECIAL = /[.+*?=^!:${}()[\]|\\]/g;
+const SEGMENT_PARAM = /^:[A-Za-z0-9_]+([+*?]?)$/;
+const ONE_SEGMENT = "([^/]+?)";
+const MANY_SEGMENTS = "((?:[^/]+?)(?:/(?:[^/]+?))*)";
+
+/**
+ * Compile a next.config `{ source, destination }` into the regex Next writes
+ * to routes-manifest.json, so code that runs before `next build` (the markdown
+ * build) resolves redirects exactly like the manifest does. Only whole-segment
+ * params are supported — that is all the table uses — and anything else throws
+ * rather than silently diverging from Next.
+ */
+export function compileRedirect({
+  source,
+  destination,
+}: {
+  source: string;
+  destination: string;
+}): RedirectRule {
+  let body = "";
+  for (const segment of source.split("/").slice(1)) {
+    const param = SEGMENT_PARAM.exec(segment);
+    if (!param) {
+      if (segment.includes(":") || segment.includes("(")) {
+        throw new Error(`compileRedirect: unsupported source pattern ${source}`);
+      }
+      body += `/${segment.replace(REGEX_SPECIAL, "\\$&")}`;
+      continue;
+    }
+    const modifier = param[1];
+    if (modifier === "") body += `/${ONE_SEGMENT}`;
+    else if (modifier === "?") body += `(?:/${ONE_SEGMENT})?`;
+    else if (modifier === "+") body += `/${MANY_SEGMENTS}`;
+    else body += `(?:/${MANY_SEGMENTS})?`;
+  }
+  return { source, destination, regex: `^(?!/_next)${body}(?:/)?$` };
 }
 
 export type RedirectChain = {

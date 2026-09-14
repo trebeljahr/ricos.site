@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { applyRedirect, type RedirectRule, resolveRedirectChain } from "./redirects";
+import {
+  applyRedirect,
+  compileRedirect,
+  type RedirectRule,
+  resolveRedirectChain,
+} from "./redirects";
 
 /**
  * Shapes copied verbatim out of .next/routes-manifest.json so the tests break
@@ -104,5 +109,28 @@ describe("resolveRedirectChain", () => {
       { source: "/b", destination: "/a", regex: "^/b$" },
     ];
     expect(resolveRedirectChain("/a", loop)).toEqual({ hops: ["/b", "/a"], truncated: true });
+  });
+});
+
+describe("compileRedirect", () => {
+  it("produces the regex Next writes to the routes manifest", () => {
+    for (const rule of [NEWSLETTER_NUMBER, NEWSLETTER_SINGULAR, NEWSLETTER_SINGULAR_ID, PAGES]) {
+      expect(compileRedirect(rule).regex).toBe(rule.regex);
+    }
+    expect(compileRedirect({ source: "/feed.xml", destination: "/rss.xml" }).regex).toBe(
+      "^(?!/_next)/feed\\.xml(?:/)?$",
+    );
+  });
+
+  it("compiles single-segment and optional params", () => {
+    const rule = compileRedirect({ source: "/a/:id/:rest?", destination: "/b/:id/:rest?" });
+    expect(applyRedirect("/a/one", rule)).toBe("/b/one");
+    expect(applyRedirect("/a/one/two", rule)).toBe("/b/one/two");
+    expect(applyRedirect("/a/one/two/three", rule)).toBeUndefined();
+  });
+
+  it("refuses patterns it cannot compile the way Next does", () => {
+    expect(() => compileRedirect({ source: "/a-:id", destination: "/b" })).toThrow();
+    expect(() => compileRedirect({ source: "/a/:id(\\d+)", destination: "/b" })).toThrow();
   });
 });

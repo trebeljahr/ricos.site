@@ -1,0 +1,870 @@
+{
+  "/": {
+    "metaTitle": "Rico Trebeljahr - Blog, Book Notes, Photography & Code",
+    "metaDescription": "Explore Rico Trebeljahr's writing on AI, philosophy, travel, and programming. Book notes, photography, newsletters, and creative coding projects.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Rico Trebeljahr",
+      "personal blog",
+      "book notes",
+      "travel blog",
+      "programming blog",
+      "AI writing",
+      "photography portfolio",
+      "creative coding"
+    ]
+  },
+  "/posts": {
+    "metaTitle": "Blog Posts - Essays on AI, Philosophy & Programming",
+    "metaDescription": "Read essays and deep dives on artificial intelligence, philosophy of life, web development, mathematics, and personal growth by Rico Trebeljahr.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "blog posts",
+      "essays",
+      "AI articles",
+      "philosophy essays",
+      "programming tutorials",
+      "personal development",
+      "web development blog"
+    ]
+  },
+  "/booknotes": {
+    "metaTitle": "Book Notes & Summaries - 200+ Books Reviewed",
+    "metaDescription": "Browse detailed notes and summaries from 200+ books on science, philosophy, psychology, economics, and self-improvement. Find your next great read.",
+    "ogImage": "/assets/blog/a-bookshelf.png",
+    "ogImageAlt": "A bookshelf filled with books representing the book notes collection",
+    "keywords": [
+      "book notes",
+      "book summaries",
+      "book reviews",
+      "reading list",
+      "nonfiction books",
+      "best books",
+      "book recommendations",
+      "self-improvement books"
+    ]
+  },
+  "/newsletters": {
+    "metaTitle": "Live and Learn Newsletter - Biweekly Curiosity Digest",
+    "metaDescription": "Explore the archive of Live and Learn, a biweekly newsletter covering AI progress, science, philosophy, and the most interesting corners of the internet.",
+    "ogImage": "/assets/midjourney/live-and-learn-cover.png",
+    "ogImageAlt": "Live and Learn newsletter cover art",
+    "keywords": [
+      "newsletter archive",
+      "Live and Learn",
+      "curated newsletter",
+      "AI newsletter",
+      "science newsletter",
+      "biweekly digest",
+      "curiosity newsletter"
+    ]
+  },
+  "/podcastnotes": {
+    "metaTitle": "Podcast Notes - Key Takeaways from Top Podcasts",
+    "metaDescription": "Detailed notes and key insights from podcasts by Lex Fridman, Dwarkesh Patel, Tim Ferriss, and more. Save hours of listening with curated summaries.",
+    "ogImage": "/assets/blog/podcastnotes.jpg",
+    "ogImageAlt": "Podcast notes collection with headphones and notepad",
+    "keywords": [
+      "podcast notes",
+      "podcast summaries",
+      "Lex Fridman notes",
+      "podcast takeaways",
+      "best podcasts",
+      "podcast reviews",
+      "Dwarkesh Patel"
+    ]
+  },
+  "/quotes": {
+    "metaTitle": "Quote Collection - Wisdom from Books & Thinkers",
+    "metaDescription": "A curated collection of thought-provoking quotes from books, thinkers, and creators on life, science, philosophy, and human nature.",
+    "ogImage": "/assets/midjourney/a-collection-of-notes-of-importance.jpg",
+    "ogImageAlt": "A collection of important notes representing curated quotes",
+    "keywords": [
+      "quotes collection",
+      "book quotes",
+      "inspirational quotes",
+      "philosophy quotes",
+      "wisdom quotes",
+      "thought-provoking quotes",
+      "best quotes"
+    ]
+  },
+  "/photography": {
+    "metaTitle": "Photography Portfolio - Travel & Nature Photos",
+    "metaDescription": "Browse a photography portfolio spanning landscapes, travel moments, and nature across the Caribbean, Europe, and Southeast Asia.",
+    "ogImage": "/assets/blog/photography.png",
+    "ogImageAlt": "Photography portfolio showcasing travel and nature photos",
+    "keywords": [
+      "travel photography",
+      "nature photography",
+      "photography portfolio",
+      "landscape photos",
+      "travel photos",
+      "Caribbean photography",
+      "Europe travel photos"
+    ]
+  },
+  "/midjourney": {
+    "metaTitle": "AI Art Gallery - Midjourney Creations",
+    "metaDescription": "Explore an AI art gallery of images generated with Midjourney. Surreal landscapes, abstract patterns, and creative experiments with generative AI.",
+    "ogImage": "/assets/blog/midjourney.png",
+    "ogImageAlt": "AI-generated art from Midjourney gallery",
+    "keywords": [
+      "Midjourney art",
+      "AI art gallery",
+      "AI generated images",
+      "generative art",
+      "Midjourney creations",
+      "AI artwork",
+      "text to image art"
+    ]
+  },
+  "/categories": {
+    "metaTitle": "Content Categories - Browse by Topic",
+    "metaDescription": "Navigate all content by category. Find posts, book notes, and resources on AI, philosophy, programming, travel, neuroscience, and more.",
+    "ogImage": "/assets/blog/network.jpg",
+    "ogImageAlt": "Network visualization representing content categories",
+    "keywords": [
+      "blog categories",
+      "content topics",
+      "browse by category",
+      "AI articles",
+      "philosophy writing",
+      "programming posts",
+      "travel stories"
+    ]
+  },
+  "/travel": {
+    "metaTitle": "Travel Stories - Adventures Across the World",
+    "metaDescription": "Read travel stories from sailing the Atlantic, hiking in Portugal, exploring Caribbean islands, and more. Adventures that shaped a worldview.",
+    "ogImage": "/assets/blog/traveling-van.png",
+    "ogImageAlt": "A traveling van representing travel adventures and stories",
+    "keywords": [
+      "travel stories",
+      "travel blog",
+      "adventure travel",
+      "Caribbean travel",
+      "Atlantic crossing",
+      "backpacking",
+      "travel writing",
+      "Europe travel"
+    ]
+  },
+  "/travel/guadeloupe": {
+    "metaTitle": "Guadeloupe Travel Stories - Caribbean Island Adventures",
+    "metaDescription": "Discover Guadeloupe through hiking its volcanic trails, chasing waterfalls, and snorkeling coral reefs. Stories from exploring this Caribbean gem.",
+    "ogImage": "/assets/blog/guadeloupe/meditating-in-front-of-the-third-carbet-fall.jpg",
+    "ogImageAlt": "Meditating in front of the third Carbet waterfall in Guadeloupe",
+    "keywords": [
+      "Guadeloupe travel",
+      "Caribbean island",
+      "Guadeloupe hiking",
+      "Carbet Falls",
+      "Caribbean travel stories",
+      "French Caribbean",
+      "Guadeloupe waterfalls"
+    ]
+  },
+  "/travel/transat": {
+    "metaTitle": "Atlantic Crossing - Sailing Stories from the Transat",
+    "metaDescription": "Follow the journey of crossing the Atlantic Ocean by sailboat. Storms, starry nights, and the challenge of weeks at open sea.",
+    "ogImage": "/assets/blog/transat/christian-and-rebecca-steering-the-boat-through-the-storm.jpg",
+    "ogImageAlt": "Steering the sailboat through a storm during the Atlantic crossing",
+    "keywords": [
+      "Atlantic crossing",
+      "transatlantic sailing",
+      "ocean sailing",
+      "sailing adventure",
+      "transat stories",
+      "sailboat journey",
+      "open ocean sailing"
+    ]
+  },
+  "/travel/portugal-2024": {
+    "metaTitle": "Portugal Hiking Stories - Trails & Starry Nights",
+    "metaDescription": "Hiking stories from Portugal featuring coastal trails, mountain paths, and unforgettable starry nights under clear skies.",
+    "ogImage": "/assets/blog/portugal-2024/starry-night.jpg",
+    "ogImageAlt": "Starry night sky captured during a Portugal hiking trip",
+    "keywords": [
+      "Portugal hiking",
+      "Portugal travel",
+      "hiking trails Portugal",
+      "Portugal travel stories",
+      "starry night photography",
+      "coastal hiking",
+      "Portugal nature"
+    ]
+  },
+  "/travel/martinique-2024": {
+    "metaTitle": "Martinique Travel Stories - Caribbean Exploration",
+    "metaDescription": "Explore Martinique through its beaches, rainforests, and volcanic landscapes. Travel stories from this vibrant French Caribbean island.",
+    "ogImage": "/assets/blog/martinique-2024/anse-du-sinai-panorama.jpg",
+    "ogImageAlt": "Panoramic view of Anse du Sinai beach in Martinique",
+    "keywords": [
+      "Martinique travel",
+      "Caribbean island",
+      "Martinique beaches",
+      "French Caribbean",
+      "Martinique hiking",
+      "Caribbean travel stories",
+      "Mount Pelee"
+    ]
+  },
+  "/travel/dominica": {
+    "metaTitle": "Dominica Travel Stories - The Nature Island",
+    "metaDescription": "Adventures on Dominica, the Caribbean's nature island. Hot springs, volcanic hikes, lush rainforests, and pristine rivers.",
+    "ogImage": "/assets/blog/dominica/PXL_20240506_203704114.LONG_EXPOSURE-01.COVER~2.jpg",
+    "ogImageAlt": "Long exposure photo of a waterfall or river in Dominica",
+    "keywords": [
+      "Dominica travel",
+      "nature island",
+      "Caribbean hiking",
+      "Dominica hot springs",
+      "Caribbean nature",
+      "Dominica waterfalls",
+      "Caribbean adventure"
+    ]
+  },
+  "/posts/answer-to-ai-600b-question": {
+    "metaTitle": "AI's $600B Question - Why the Datacenter Buildout",
+    "metaDescription": "The real reason tech giants pour hundreds of billions into GPU infrastructure: they believe AI will replace most knowledge work. Here's the case.",
+    "ogImage": "/assets/blog/money-pile.jpg",
+    "ogImageAlt": "A pile of dollar bills representing massive AI infrastructure investment",
+    "keywords": [
+      "AI investment",
+      "datacenter buildout",
+      "AI replacing jobs",
+      "GPU infrastructure",
+      "AI scaling laws",
+      "knowledge work automation",
+      "AI business case",
+      "Sequoia Capital AI"
+    ]
+  },
+  "/posts/betting-heavy-when-convinced": {
+    "metaTitle": "Betting Heavy When Convinced - Investment Philosophy",
+    "metaDescription": "Why diversification is overrated when you truly understand something. A personal investment philosophy balancing conviction with never going broke.",
+    "ogImage": "/assets/blog/tall-buildings.jpg",
+    "ogImageAlt": "Tall city buildings symbolizing investment and financial ambition",
+    "keywords": [
+      "investment advice",
+      "concentrated investing",
+      "betting big",
+      "personal finance philosophy",
+      "investment strategy",
+      "risk management",
+      "conviction investing"
+    ]
+  },
+  "/posts/blogging-challenge": {
+    "metaTitle": "Blog Questions Challenge - Why I Write",
+    "metaDescription": "Answering the blog questions challenge: why I started blogging, how I write, who I write for, and future plans for this site.",
+    "ogImage": "/assets/blog/puzzle.jpg",
+    "ogImageAlt": "Puzzle pieces representing the blogging challenge questions",
+    "keywords": [
+      "blogging challenge",
+      "why I blog",
+      "blog questions",
+      "writing process",
+      "personal blogging",
+      "blog inspiration"
+    ]
+  },
+  "/posts/collision-detection": {
+    "metaTitle": "Collision Detection in 2D - Separating Axis Theorem",
+    "metaDescription": "Learn how 2D collision detection works with interactive demos. A deep dive into the Separating Axis Theorem (SAT) with math and code.",
+    "ogImage": "/assets/blog/sat.png",
+    "ogImageAlt": "A polygon casting a shadow onto a line demonstrating the Separating Axis Theorem",
+    "keywords": [
+      "collision detection",
+      "Separating Axis Theorem",
+      "SAT algorithm",
+      "2D collision detection",
+      "game physics",
+      "polygon collision",
+      "interactive demo",
+      "game development math"
+    ]
+  },
+  "/posts/computer-games": {
+    "metaTitle": "Computer Games - Controlling the Addiction",
+    "metaDescription": "Are video games a valuable way to spend time? Exploring the tension between flow, addiction, and the artificial rewards of gaming.",
+    "ogImage": "/assets/blog/keyboard.jpg",
+    "ogImageAlt": "A keyboard with mouse and headset for computer gaming",
+    "keywords": [
+      "video game addiction",
+      "gaming psychology",
+      "flow state gaming",
+      "computer games",
+      "gaming and productivity",
+      "meaningful play",
+      "game design psychology"
+    ]
+  },
+  "/posts/create-shader-editor-r3f": {
+    "metaTitle": "Build an Interactive Shader Editor with React Three Fiber",
+    "metaDescription": "Step-by-step tutorial to build a ShaderToy-like editor using React Three Fiber, Three.js, and CodeMirror. Write and preview GLSL shaders live.",
+    "ogImage": "/assets/blog/puzzle.jpg",
+    "ogImageAlt": "Puzzle representing the creative challenge of building a shader editor",
+    "keywords": [
+      "shader editor tutorial",
+      "React Three Fiber",
+      "GLSL shaders",
+      "Three.js tutorial",
+      "ShaderToy clone",
+      "CodeMirror",
+      "WebGL shaders",
+      "interactive shader",
+      "fragment shader"
+    ]
+  },
+  "/posts/decisions": {
+    "metaTitle": "Decisions - Why Making Them Is Harder Than You Think",
+    "metaDescription": "Your brain's neural networks compete to control your actions. Explore why free will might be an illusion and what that means for better decision-making.",
+    "ogImage": "/assets/blog/brain.jpg",
+    "ogImageAlt": "Brain illustration representing the neuroscience of decision making",
+    "keywords": [
+      "decision making",
+      "free will",
+      "neuroscience of decisions",
+      "neural networks brain",
+      "psychology of choice",
+      "better decisions",
+      "cognitive science"
+    ]
+  },
+  "/posts/diatoms": {
+    "metaTitle": "Diatom Arrangements - Microscopic Algae Art",
+    "metaDescription": "Discover the hidden beauty of diatom arrangements: stunning art made from single-celled algae with glass shells that refract light into vivid colors.",
+    "ogImage": "/assets/blog/diatoms/klaus-kemp-15.jpg",
+    "ogImageAlt": "A diatom arrangement by Klaus Kemp showing microscopic algae art",
+    "keywords": [
+      "diatom art",
+      "diatom arrangements",
+      "microscopy art",
+      "Klaus Kemp",
+      "single-celled algae",
+      "microscopic beauty",
+      "diatom photography",
+      "biological art"
+    ]
+  },
+  "/posts/flow": {
+    "metaTitle": "Flow State - The Feeling of Bliss in Deep Focus",
+    "metaDescription": "Flow is losing yourself in an activity. Learn why this deep focus state matters more than any other conscious experience for a fulfilled life.",
+    "ogImage": "/assets/blog/water.jpg",
+    "ogImageAlt": "Flowing water symbolizing the flow state of deep focus",
+    "keywords": [
+      "flow state",
+      "deep focus",
+      "Mihaly Csikszentmihalyi",
+      "optimal experience",
+      "peak performance",
+      "concentration",
+      "mindfulness",
+      "productivity flow"
+    ]
+  },
+  "/posts/following-the-progress-of-ai": {
+    "metaTitle": "Following the Progress of AI - A Comprehensive Overview",
+    "metaDescription": "A showcase of AI capabilities across text, images, video, and 3D. Track the rapid progress of artificial intelligence year by year.",
+    "ogImage": "/assets/blog/progress-of-ai.jpg",
+    "ogImageAlt": "AI written across a chip on a circuit board showing AI progress",
+    "keywords": [
+      "AI progress",
+      "artificial intelligence overview",
+      "AI capabilities",
+      "AI state of the art",
+      "generative AI",
+      "AI timeline",
+      "machine learning progress"
+    ]
+  },
+  "/posts/fractal-learnings-1": {
+    "metaTitle": "Fractal Garden Learnings Part 1 - Working Effectively",
+    "metaDescription": "Lessons from building a fractal visualization project in one month. Marketing fears, accepting imperfection, and staying productive on side projects.",
+    "ogImage": "/assets/blog/mandelbrot.jpg",
+    "ogImageAlt": "Mandelbrot Set fractal visualization from the Fractal Garden project",
+    "keywords": [
+      "1-month project",
+      "side project lessons",
+      "fractal garden",
+      "productivity",
+      "project management",
+      "marketing fear",
+      "perfectionism",
+      "Mandelbrot set"
+    ]
+  },
+  "/posts/fractal-learnings-2": {
+    "metaTitle": "Fractal Garden Learnings Part 2 - L-Systems & Code",
+    "metaDescription": "Dive into L-Systems, the Chaos Game, and iterated function systems. Technical learnings from building an interactive fractal visualization website.",
+    "ogImage": "/assets/blog/fractal-garden.png",
+    "ogImageAlt": "Fractal Garden visualization showing L-System generated fractals",
+    "keywords": [
+      "L-Systems",
+      "fractals",
+      "Chaos Game",
+      "iterated function systems",
+      "fractal algorithms",
+      "generative art",
+      "fractal visualization",
+      "mathematical art"
+    ]
+  },
+  "/posts/fundamental-problems": {
+    "metaTitle": "Fundamental Problems - Obstacles to a Fulfilled Life",
+    "metaDescription": "Health, financial shackles, procrastination, addiction, and pride: five fundamental problems blocking the path to a fulfilling life and how to face them.",
+    "ogImage": "/assets/blog/missing-puzzle-piece.jpg",
+    "ogImageAlt": "A missing puzzle piece representing fundamental life problems",
+    "keywords": [
+      "personal development",
+      "life obstacles",
+      "procrastination",
+      "addiction",
+      "self-improvement",
+      "fulfilled life",
+      "overcoming challenges",
+      "personal growth"
+    ]
+  },
+  "/posts/future-discounting": {
+    "metaTitle": "Reverse Future Discounting - Rethinking Life Decisions",
+    "metaDescription": "Why 'live like it's your last day' is terrible advice. How your perception of the future should shape smarter decisions between pleasure and growth.",
+    "ogImage": "/assets/blog/tall-buildings.jpg",
+    "ogImageAlt": "Tall buildings representing long-term thinking and future discounting",
+    "keywords": [
+      "future discounting",
+      "decision making",
+      "delayed gratification",
+      "life philosophy",
+      "long-term thinking",
+      "hedonism vs growth",
+      "temporal discounting"
+    ]
+  },
+  "/posts/learnings-from-2024": {
+    "metaTitle": "Learnings from 2024 - Extracting Insights from My Year",
+    "metaDescription": "A personal reflection on 2024: recurring patterns, the gap between knowledge and action, travel insights, and lessons from years of diary writing.",
+    "ogImage": "/assets/blog/morning.jpg",
+    "ogImageAlt": "Morning dew on a meadow reflecting on learnings from the year",
+    "keywords": [
+      "year in review",
+      "2024 learnings",
+      "personal reflection",
+      "self-improvement",
+      "annual review",
+      "life lessons",
+      "journaling insights"
+    ]
+  },
+  "/posts/morning-meditation": {
+    "metaTitle": "Morning Meditation - Noticing Beauty in a Walk",
+    "metaDescription": "A meditative morning walk through Berlin's fields in September. When music matches the serenity of the moment and the mind finally goes quiet.",
+    "ogImage": "/assets/blog/morning.jpg",
+    "ogImageAlt": "Morning dew on a meadow during a meditative walk",
+    "keywords": [
+      "morning meditation",
+      "mindful walking",
+      "nature walk",
+      "finding beauty",
+      "mindfulness",
+      "Berlin nature",
+      "meditative writing",
+      "inner peace"
+    ]
+  },
+  "/posts/my-productivity-system": {
+    "metaTitle": "My Productivity System - Habits, Tricks & Systems",
+    "metaDescription": "How I read 200+ books, built a website, write a newsletter, and travel the world. A practical productivity system for getting more done without willpower.",
+    "ogImage": "/assets/blog/productivity-systems.jpg",
+    "ogImageAlt": "A table with laptop, notebook, pen, and coffee for productivity work",
+    "keywords": [
+      "productivity system",
+      "habit building",
+      "personal productivity",
+      "time management",
+      "getting things done",
+      "productivity tips",
+      "routine building",
+      "procrastination"
+    ]
+  },
+  "/posts/neural-networks": {
+    "metaTitle": "What Is a Neural Network? Build One from Scratch",
+    "metaDescription": "Understand neural networks from the ground up with interactive demos. Learn the math behind neurons, layers, and how machines actually learn.",
+    "ogImage": "/assets/blog/tall-buildings.jpg",
+    "ogImageAlt": "Tall buildings representing the layered architecture of neural networks",
+    "keywords": [
+      "neural network",
+      "machine learning basics",
+      "build neural network",
+      "deep learning tutorial",
+      "neural network math",
+      "AI from scratch",
+      "backpropagation"
+    ]
+  },
+  "/posts/on-the-beauty-of-living": {
+    "metaTitle": "The Beauty of Being Alive - Why Things Matter",
+    "metaDescription": "Late-night reflections on existence, beauty, and the fragility of conscious experience. A meditation on what makes life worth living.",
+    "ogImage": "/assets/blog/fkj-salar-de-uyuni-cercle.jpg",
+    "ogImageAlt": "FKJ playing music on the Salar de Uyuni salt flat in Bolivia",
+    "keywords": [
+      "beauty of life",
+      "existential reflection",
+      "meaning of life",
+      "conscious experience",
+      "philosophical essay",
+      "living fully",
+      "FKJ Salar de Uyuni"
+    ]
+  },
+  "/posts/open-ai-codex": {
+    "metaTitle": "OpenAI Codex - Will AI Replace Programmers?",
+    "metaDescription": "After watching the OpenAI Codex demo, a software engineer reflects on AI coding tools and what developers should do before automation catches up.",
+    "ogImage": "/assets/blog/open-ai-avatar.png",
+    "ogImageAlt": "OpenAI logo representing the Codex AI coding assistant",
+    "keywords": [
+      "OpenAI Codex",
+      "AI coding",
+      "AI replacing programmers",
+      "future of programming",
+      "AI software development",
+      "GitHub Copilot",
+      "automated coding",
+      "developer career"
+    ]
+  },
+  "/posts/open-ai-drama": {
+    "metaTitle": "OpenAI Drama - Why Everyone Is Leaving",
+    "metaDescription": "A look at the exodus of top researchers and executives from OpenAI and what it reveals about the company's shifting priorities on AI safety.",
+    "ogImage": "/assets/blog/road.jpg",
+    "ogImageAlt": "A road ahead symbolizing OpenAI's uncertain direction",
+    "keywords": [
+      "OpenAI",
+      "AI safety",
+      "OpenAI departures",
+      "Sam Altman",
+      "AI research",
+      "OpenAI controversy",
+      "AI company culture"
+    ]
+  },
+  "/posts/purpose": {
+    "metaTitle": "Improvement as the Purpose of Life",
+    "metaDescription": "Life evolves through constant improvement. Explore why the drive to get better is wired into biology, ideas, and human nature itself.",
+    "ogImage": "/assets/blog/road.jpg",
+    "ogImageAlt": "A road stretching forward symbolizing life's path of improvement",
+    "keywords": [
+      "purpose of life",
+      "self-improvement",
+      "evolution",
+      "personal growth",
+      "meaning of life",
+      "continuous improvement",
+      "philosophy of life"
+    ]
+  },
+  "/posts/refusing-to-partake-in-the-great-online-game": {
+    "metaTitle": "Refusing the Great Online Game - Against Content Marketing",
+    "metaDescription": "SEO funnels, syndication, and manufactured problems. Why I refuse to turn my blog into a marketing machine and what the internet loses when everyone does.",
+    "ogImage": "/assets/blog/refusing-to-partake-in-the-great-online-game.png",
+    "ogImageAlt": "A person standing on a cliff refusing to partake in the great online game",
+    "keywords": [
+      "great online game",
+      "content marketing criticism",
+      "authentic blogging",
+      "internet culture",
+      "SEO criticism",
+      "creator economy",
+      "indie web",
+      "anti-marketing"
+    ]
+  },
+  "/posts/semiconductor-industry": {
+    "metaTitle": "The Semiconductor Industry - Building More Tiny Transistors",
+    "metaDescription": "How ASML, TSMC, and tech giants are scrambling to build ever-smaller transistors and massive chip foundries to power the AI revolution.",
+    "ogImage": "/assets/blog/road.jpg",
+    "ogImageAlt": "A road representing the semiconductor industry's forward march",
+    "keywords": [
+      "semiconductor industry",
+      "ASML",
+      "TSMC",
+      "chip manufacturing",
+      "transistor scaling",
+      "AI chips",
+      "GPU manufacturing",
+      "EUV lithography"
+    ]
+  },
+  "/posts/sense-of-progress": {
+    "metaTitle": "A Sense of Progress - Why Humans Need to Improve",
+    "metaDescription": "Progress makes us happy and evolution explains why. Explore how nature and nurture shape our drive to learn, grow, and master new skills.",
+    "ogImage": "/assets/blog/hike.jpg",
+    "ogImageAlt": "Hiker group on a mountain representing the human sense of progress",
+    "keywords": [
+      "sense of progress",
+      "personal growth",
+      "evolution of motivation",
+      "mastery",
+      "self-improvement",
+      "intrinsic motivation",
+      "learning drive",
+      "human nature"
+    ]
+  },
+  "/posts/shaders": {
+    "metaTitle": "Complete Intro to Shaders - Graphics Pipeline Explained",
+    "metaDescription": "Learn shaders from the ground up: the graphics pipeline, vertex and fragment shaders, rasterization, and how to pass data from CPU to GPU.",
+    "ogImage": "/assets/blog/puzzle.jpg",
+    "ogImageAlt": "Puzzle representing the building blocks of shader programming",
+    "keywords": [
+      "shaders tutorial",
+      "graphics pipeline",
+      "vertex shader",
+      "fragment shader",
+      "GLSL",
+      "GPU programming",
+      "rasterization",
+      "WebGL shaders"
+    ]
+  },
+  "/posts/the-best-yellow": {
+    "metaTitle": "The Best Yellow Acrylic Paint - Testing 11 Brands",
+    "metaDescription": "I tested 11 yellow acrylic paints from Amazon for coverage and opacity. Only one brand truly impressed. See the results and find the best yellow.",
+    "ogImage": "/assets/blog/best-yellow/all-the-yellows.jpeg",
+    "ogImageAlt": "All the different yellow acrylic paint colors tested from Amazon",
+    "keywords": [
+      "best yellow acrylic paint",
+      "acrylic paint review",
+      "paint opacity test",
+      "art supplies review",
+      "best acrylic paint brands",
+      "yellow paint comparison",
+      "acrylic paint coverage"
+    ]
+  },
+  "/posts/the-internet-is-not-dead-yet-but-we-are-damn-hard-trying-to-kill-it": {
+    "metaTitle": "The Internet Is Not Dead Yet - But We're Trying to Kill It",
+    "metaDescription": "Google favors media conglomerates, AI floods the web with slop, and creators burn out chasing algorithms. How we're killing what made the internet great.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "internet decline",
+      "Google search problems",
+      "content creators",
+      "algorithm optimization",
+      "AI generated content",
+      "SEO gaming",
+      "indie web",
+      "internet culture"
+    ]
+  },
+  "/posts/the-people-i-have-learned-from-the-most": {
+    "metaTitle": "People I Learned from Most - Creators Who Shaped My Life",
+    "metaDescription": "A guide to the thinkers, writers, and podcasters who shaped my worldview. From Farnam Street to Lex Fridman, the internet people who changed everything.",
+    "ogImage": "/assets/blog/learning-from-other-people-bookshelf.jpg",
+    "ogImageAlt": "Crammed bookshelves in an old library representing people who influenced learning",
+    "keywords": [
+      "influential thinkers",
+      "best content creators",
+      "Lex Fridman",
+      "Farnam Street",
+      "Tim Ferriss",
+      "Derek Sivers",
+      "internet mentors",
+      "self-education",
+      "Dwarkesh Patel"
+    ]
+  },
+  "/posts/the-problem-at-the-heart-of-capitalism": {
+    "metaTitle": "The Problem at the Heart of Capitalism",
+    "metaDescription": "Free markets create prosperity but also exploit human nature. A deep dive into social media, addiction, and the cuckoo bird problem in modern capitalism.",
+    "ogImage": "/assets/blog/cuckoo.jpeg",
+    "ogImageAlt": "A cuckoo bird symbolizing exploitation in capitalist markets",
+    "keywords": [
+      "capitalism critique",
+      "market exploitation",
+      "social media addiction",
+      "free market problems",
+      "human nature economics",
+      "attention economy",
+      "capitalism and psychology"
+    ]
+  },
+  "/posts/the-state-of-ai-agents": {
+    "metaTitle": "The State of AI Agents - Replacing Jobs with AI",
+    "metaDescription": "An overview of AI agent platforms from Replit and Cursor to CrewAI and AutoGen. How companies are building autonomous AI agents to automate work.",
+    "ogImage": "/assets/blog/road.jpg",
+    "ogImageAlt": "A road ahead representing the future direction of AI agents",
+    "keywords": [
+      "AI agents",
+      "autonomous AI",
+      "Replit Agent",
+      "Cursor AI",
+      "AI automation",
+      "AI coding agents",
+      "CrewAI",
+      "AI replacing jobs"
+    ]
+  },
+  "/posts/the-state-of-robotics-in-2024": {
+    "metaTitle": "The State of Robotics in 2024 - Humanoid Robots Rise",
+    "metaDescription": "From Tesla Optimus to Boston Dynamics Atlas, a roundup of every major humanoid robot pushing toward commercial reality in 2024.",
+    "ogImage": "/assets/blog/road.jpg",
+    "ogImageAlt": "A road representing the forward march of humanoid robotics",
+    "keywords": [
+      "humanoid robots 2024",
+      "Tesla Optimus",
+      "Boston Dynamics Atlas",
+      "Figure robotics",
+      "robotics industry",
+      "humanoid robot companies",
+      "Unitree G1"
+    ]
+  },
+  "/posts/things-to-do": {
+    "metaTitle": "So Many Awesome Things to Do - Embracing FOMO",
+    "metaDescription": "Too many skills to learn, too little time. Embracing the beautiful dilemma of infinite possibilities and finding peace with never doing it all.",
+    "ogImage": "/assets/blog/write-code.png",
+    "ogImageAlt": "Write code motivational poster representing the many things to pursue",
+    "keywords": [
+      "FOMO",
+      "too many interests",
+      "polymath life",
+      "curiosity",
+      "lifelong learning",
+      "choosing what to do",
+      "multipotentialite",
+      "information overload"
+    ]
+  },
+  "/posts/vectors-101": {
+    "metaTitle": "Vectors 101 - A Practical Intro to 2D Vector Math",
+    "metaDescription": "Master 2D vector mathematics with interactive examples. Addition, dot product, cross product, and projections explained visually and in code.",
+    "ogImage": "/assets/blog/vector-demo.png",
+    "ogImageAlt": "Vector demo showing 2D vector operations and mathematics",
+    "keywords": [
+      "vector math",
+      "2D vectors",
+      "dot product",
+      "cross product",
+      "vector operations",
+      "linear algebra basics",
+      "game math",
+      "vector tutorial"
+    ]
+  },
+  "/posts/why-do-i-like-traveling": {
+    "metaTitle": "Why I Like Traveling - Building Memories That Last",
+    "metaDescription": "Traveling creates vivid memories that reshape who you are. Exploring why the urge to travel runs deep and what it teaches about happiness and change.",
+    "ogImage": "/assets/blog/laos-rice-field.jpg",
+    "ogImageAlt": "Rice field in Laos captured during travel adventures",
+    "keywords": [
+      "why travel",
+      "travel memories",
+      "travel philosophy",
+      "backpacking motivation",
+      "travel and happiness",
+      "wanderlust",
+      "travel benefits",
+      "meaningful travel"
+    ]
+  },
+  "/posts/writing-down-what-i-know": {
+    "metaTitle": "Writing Down What I Know - Should I Become a Writer?",
+    "metaDescription": "A commitment to writing as a way of synthesizing knowledge. Connecting ideas across books, science, and technology into something new and shareable.",
+    "ogImage": "/assets/blog/writing-down-what-i-know.jpg",
+    "ogImageAlt": "A person writing down what they know in a journal",
+    "keywords": [
+      "writing habit",
+      "knowledge synthesis",
+      "blogging commitment",
+      "learning by writing",
+      "personal blog",
+      "writing motivation",
+      "knowledge sharing"
+    ]
+  },
+  "/1-month-projects": {
+    "metaTitle": "1-Month Projects - A Plan for Focused Exploration",
+    "metaDescription": "Spend one month pursuing a single project, push to the limit, ship something real. A framework for exploring curiosity through time-boxed creative work.",
+    "ogImage": "/assets/midjourney/hands-typing-on-a-keyboard-viewed-from-above.jpg",
+    "ogImageAlt": "Hands typing on a keyboard working on a one-month project",
+    "keywords": [
+      "1-month projects",
+      "side projects",
+      "time-boxed projects",
+      "creative exploration",
+      "project-based learning",
+      "shipping projects",
+      "maker projects",
+      "learning by doing"
+    ]
+  },
+  "/achievements": {
+    "metaTitle": "Developer Achievements - Programming Skills Checklist",
+    "metaDescription": "A developer's achievement tracker inspired by the question: what's left to learn? Track progress across languages, platforms, and programming challenges.",
+    "ogImage": "/assets/midjourney/pattern-of-swirling-lights.jpg",
+    "ogImageAlt": "Pattern of swirling lights representing developer achievements",
+    "keywords": [
+      "developer achievements",
+      "programming checklist",
+      "developer skills",
+      "coding challenges",
+      "learn programming",
+      "software engineer growth",
+      "developer roadmap"
+    ]
+  },
+  "/needlestack": {
+    "metaTitle": "Needlestack - Best of the Internet, Curated",
+    "metaDescription": "A personal collection of the best content on the internet. Needles carefully sifted from the haystack across science, philosophy, tech, and more.",
+    "ogImage": "/assets/midjourney/a-stack-of-needles.jpg",
+    "ogImageAlt": "A stack of needles representing curated internet content",
+    "keywords": [
+      "curated links",
+      "best of internet",
+      "link collection",
+      "internet gems",
+      "resource collection",
+      "useful websites",
+      "needlestack",
+      "content curation"
+    ]
+  },
+  "/now": {
+    "metaTitle": "Now - What Rico Trebeljahr Is Doing Right Now",
+    "metaDescription": "A now page sharing what I'm currently working on, where I am in the world, and what's next. Updated regularly with the latest plans and projects.",
+    "ogImage": "/assets/midjourney/a-moment-in-time-now.jpg",
+    "ogImageAlt": "A moment in time representing the now page concept",
+    "keywords": [
+      "now page",
+      "what I'm doing",
+      "current projects",
+      "Derek Sivers now page",
+      "personal update",
+      "digital nomad",
+      "travel plans"
+    ]
+  },
+  "/principles": {
+    "metaTitle": "My Principles - Rules for a Happy and Fulfilled Life",
+    "metaDescription": "A personal principles list for better decisions and a fulfilled life. Fight procrastination, stay curious, invest in relationships, and keep learning.",
+    "ogImage": "/assets/midjourney/a-person-standing-in-front-of-a-large-mountain-range.jpg",
+    "ogImageAlt": "A person standing before a mountain range representing life principles",
+    "keywords": [
+      "life principles",
+      "personal principles",
+      "decision making rules",
+      "Ray Dalio principles",
+      "self-improvement",
+      "life rules",
+      "values list",
+      "personal philosophy"
+    ]
+  }
+}

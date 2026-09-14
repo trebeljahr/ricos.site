@@ -1,0 +1,1376 @@
+{
+  "/booknotes/12-rules-for-life": {
+    "metaTitle": "12 Rules for Life – Key Takeaways & Book Notes",
+    "metaDescription": "Key takeaways from 12 Rules for Life by Jordan Peterson. Learn why order and discipline are essential for a meaningful life and how to apply these 12 rules.",
+    "ogImage": "/assets/book-covers/12-rules-for-life.jpg",
+    "ogImageAlt": "12 Rules for Life book cover",
+    "keywords": [
+      "12 Rules for Life",
+      "Jordan Peterson",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "self-help",
+      "psychology",
+      "personal development",
+      "philosophy"
+    ]
+  },
+  "/booknotes/7-habits": {
+    "metaTitle": "7 Habits of Highly Effective People – Book Notes",
+    "metaDescription": "Notes on The 7 Habits of Highly Effective People by Stephen Covey. Discover the timeless habits for personal and interpersonal effectiveness.",
+    "ogImage": "/assets/book-covers/7-habits.jpg",
+    "ogImageAlt": "7 Habits of Highly Effective People book cover",
+    "keywords": [
+      "7 Habits of Highly Effective People",
+      "Stephen Covey",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "self-help",
+      "personal development",
+      "productivity",
+      "character ethics"
+    ]
+  },
+  "/booknotes/a-guide-to-the-good-life": {
+    "metaTitle": "A Guide to the Good Life – Book Notes & Summary",
+    "metaDescription": "Notes on A Guide to the Good Life by William Irvine. An accessible introduction to Stoic philosophy and how to find lasting joy and resilience.",
+    "ogImage": "/assets/book-covers/a-guide-to-the-good-life-the-ancient-art-of-stoic-joy.jpg",
+    "ogImageAlt": "A Guide to the Good Life book cover",
+    "keywords": [
+      "A Guide to the Good Life",
+      "William Irvine",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "stoicism",
+      "stoic philosophy",
+      "joy",
+      "resilience"
+    ]
+  },
+  "/booknotes/a-new-kind-of-science": {
+    "metaTitle": "A New Kind of Science – Book Notes & Summary",
+    "metaDescription": "Notes on A New Kind of Science by Stephen Wolfram. Explore how simple computational rules can generate extraordinary complexity in nature.",
+    "ogImage": "",
+    "ogImageAlt": "A New Kind of Science book cover",
+    "keywords": [
+      "A New Kind of Science",
+      "Stephen Wolfram",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "computational rules",
+      "cellular automata",
+      "complexity",
+      "science"
+    ]
+  },
+  "/booknotes/algorithms-to-live-by": {
+    "metaTitle": "Algorithms to Live By – Key Takeaways & Book Notes",
+    "metaDescription": "Notes on Algorithms to Live By by Brian Christian and Tom Griffiths. Learn how computer science algorithms like the 37% rule can improve everyday decisions.",
+    "ogImage": "/assets/book-covers/algorithms-to-live-by.jpg",
+    "ogImageAlt": "Algorithms to Live By book cover",
+    "keywords": [
+      "Algorithms to Live By",
+      "Brian Christian",
+      "Tom Griffiths",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "computer science",
+      "decision making",
+      "37% rule",
+      "optimal stopping"
+    ]
+  },
+  "/booknotes/all-about-love": {
+    "metaTitle": "All About Love – Book Notes & Summary",
+    "metaDescription": "Notes on All About Love by bell hooks. Explore a redefinition of love as nurturing growth and how our culture misuses the word love.",
+    "ogImage": "/assets/book-covers/all-about-love.png",
+    "ogImageAlt": "All About Love book cover",
+    "keywords": [
+      "All About Love",
+      "bell hooks",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "love",
+      "relationships",
+      "feminism",
+      "psychology",
+      "personal growth"
+    ]
+  },
+  "/booknotes/almanack-of-naval-ravikant": {
+    "metaTitle": "Almanack of Naval Ravikant – Book Notes & Summary",
+    "metaDescription": "Notes on The Almanack of Naval Ravikant. A guide to wealth and happiness through critical thinking, leveraged skills, and first-principles reasoning.",
+    "ogImage": "/assets/book-covers/navalmanack.jpg",
+    "ogImageAlt": "The Almanack of Naval Ravikant book cover",
+    "keywords": [
+      "Almanack of Naval Ravikant",
+      "Naval Ravikant",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "wealth",
+      "happiness",
+      "leverage",
+      "first principles",
+      "wisdom"
+    ]
+  },
+  "/booknotes/anthem": {
+    "metaTitle": "Anthem by Ayn Rand – Book Notes & Summary",
+    "metaDescription": "Notes on Anthem by Ayn Rand. A dystopian novella about reclaiming individuality in a collectivist society that has abolished the word 'I'.",
+    "ogImage": "/assets/book-covers/anthem.jpg",
+    "ogImageAlt": "Anthem book cover",
+    "keywords": [
+      "Anthem",
+      "Ayn Rand",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "dystopia",
+      "individualism",
+      "fiction",
+      "philosophy",
+      "collectivism"
+    ]
+  },
+  "/booknotes/antifragile": {
+    "metaTitle": "Antifragile – Key Takeaways & Book Notes",
+    "metaDescription": "Notes on Antifragile by Nassim Taleb. Learn about systems that gain from disorder and why antifragility beats robustness in an unpredictable world.",
+    "ogImage": "/assets/book-covers/antifragile.jpg",
+    "ogImageAlt": "Antifragile book cover",
+    "keywords": [
+      "Antifragile",
+      "Nassim Taleb",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "antifragility",
+      "black swan",
+      "risk",
+      "complexity",
+      "philosophy"
+    ]
+  },
+  "/booknotes/anything-you-want": {
+    "metaTitle": "Anything You Want – Book Notes & Summary",
+    "metaDescription": "Notes on Anything You Want by Derek Sivers. 40 lessons on building a business driven by joy, customer care, and creative freedom instead of industry norms.",
+    "ogImage": "/assets/book-covers/anything-you-want.jpg",
+    "ogImageAlt": "Anything You Want book cover",
+    "keywords": [
+      "Anything You Want",
+      "Derek Sivers",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "entrepreneurship",
+      "business",
+      "CD Baby",
+      "customer service",
+      "creativity"
+    ]
+  },
+  "/booknotes/art-and-artist": {
+    "metaTitle": "Art and Artist – Book Notes & Summary",
+    "metaDescription": "Notes on Art and Artist by Otto Rank. A psychological exploration of creativity, the artistic impulse, and the tension between art and the self.",
+    "ogImage": "/assets/book-covers/7-habits.jpg",
+    "ogImageAlt": "Art and Artist book cover",
+    "keywords": [
+      "Art and Artist",
+      "Otto Rank",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "psychology",
+      "creativity",
+      "art",
+      "creative impulse"
+    ]
+  },
+  "/booknotes/atlas-shrugged": {
+    "metaTitle": "Atlas Shrugged – Key Takeaways & Book Notes",
+    "metaDescription": "Notes on Atlas Shrugged by Ayn Rand. A philosophical novel arguing that rational egoism and personal accountability drive societal progress.",
+    "ogImage": "/assets/book-covers/atlas-shrugged.jpg",
+    "ogImageAlt": "Atlas Shrugged book cover",
+    "keywords": [
+      "Atlas Shrugged",
+      "Ayn Rand",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "objectivism",
+      "rational egoism",
+      "capitalism",
+      "philosophy",
+      "fiction"
+    ]
+  },
+  "/booknotes/atomic-habits": {
+    "metaTitle": "Atomic Habits – Key Takeaways & Book Notes",
+    "metaDescription": "Notes on Atomic Habits by James Clear. Learn the four laws of behavior change and how tiny habits compound into remarkable results over time.",
+    "ogImage": "/assets/book-covers/atomic-habits.jpg",
+    "ogImageAlt": "Atomic Habits book cover",
+    "keywords": [
+      "Atomic Habits",
+      "James Clear",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "habits",
+      "behavior change",
+      "productivity",
+      "self-improvement",
+      "habit stacking"
+    ]
+  },
+  "/booknotes/awareness": {
+    "metaTitle": "Awareness by Anthony de Mello – Book Notes & Summary",
+    "metaDescription": "Notes on Awareness by Anthony de Mello. A spiritual guide to waking up, letting go of attachments, and discovering who you truly are beyond your desires.",
+    "ogImage": "/assets/book-covers/awareness.jpg",
+    "ogImageAlt": "Awareness book cover",
+    "keywords": [
+      "Awareness",
+      "Anthony de Mello",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "spirituality",
+      "mindfulness",
+      "self-awareness",
+      "detachment",
+      "waking up"
+    ]
+  },
+  "/booknotes/behave": {
+    "metaTitle": "Behave by Robert Sapolsky – Book Notes & Summary",
+    "metaDescription": "Notes on Behave by Robert Sapolsky. A tour de force exploring the biology behind human behavior, from neurons firing to millennia of evolution.",
+    "ogImage": "/assets/book-covers/behave.jpg",
+    "ogImageAlt": "Behave book cover",
+    "keywords": [
+      "Behave",
+      "Robert Sapolsky",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "biology",
+      "neuroscience",
+      "human behavior",
+      "evolution",
+      "psychology"
+    ]
+  },
+  "/booknotes/being-you": {
+    "metaTitle": "Being You by Anil Seth – Book Notes & Summary",
+    "metaDescription": "Notes on Being You by Anil Seth. A new science of consciousness exploring how the brain constructs our experience of reality from the inside out.",
+    "ogImage": "/assets/book-covers/being-you.jpg",
+    "ogImageAlt": "Being You book cover",
+    "keywords": [
+      "Being You",
+      "Anil Seth",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "consciousness",
+      "neuroscience",
+      "perception",
+      "free energy principle",
+      "IIT"
+    ]
+  },
+  "/booknotes/better-angels": {
+    "metaTitle": "Better Angels of Our Nature – Book Notes & Summary",
+    "metaDescription": "Notes on The Better Angels of Our Nature by Steven Pinker. Data-driven evidence that violence has declined and why the modern world is more peaceful.",
+    "ogImage": "/assets/book-covers/better-angels.jpg",
+    "ogImageAlt": "The Better Angels of Our Nature book cover",
+    "keywords": [
+      "Better Angels of Our Nature",
+      "Steven Pinker",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "violence",
+      "history",
+      "peace",
+      "human nature",
+      "sociology"
+    ]
+  },
+  "/booknotes/bhagavad-gita": {
+    "metaTitle": "Bhagavad Gita – Book Notes & Key Takeaways",
+    "metaDescription": "Notes on the Bhagavad Gita translated by Stephen Mitchell. Timeless wisdom on detachment, duty, and spiritual growth from one of history's most influential texts.",
+    "ogImage": "/assets/book-covers/bhagavad-gita.jpg",
+    "ogImageAlt": "Bhagavad Gita book cover",
+    "keywords": [
+      "Bhagavad Gita",
+      "Stephen Mitchell",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "Hinduism",
+      "philosophy",
+      "spirituality",
+      "detachment",
+      "wisdom"
+    ]
+  },
+  "/booknotes/black-swan": {
+    "metaTitle": "The Black Swan – Key Takeaways & Book Notes",
+    "metaDescription": "Notes on The Black Swan by Nassim Taleb. Understand why rare, unpredictable events dominate our world and how our minds fail to see them coming.",
+    "ogImage": "/assets/book-covers/black-swan.jpg",
+    "ogImageAlt": "The Black Swan book cover",
+    "keywords": [
+      "The Black Swan",
+      "Nassim Taleb",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "black swan events",
+      "probability",
+      "risk",
+      "economics",
+      "mental models"
+    ]
+  },
+  "/booknotes/blink": {
+    "metaTitle": "Blink by Malcolm Gladwell – Book Notes & Summary",
+    "metaDescription": "Notes on Blink by Malcolm Gladwell. Explore the power and pitfalls of snap judgments, intuition, and thin-slicing in decision making.",
+    "ogImage": "/assets/book-covers/blink.jpg",
+    "ogImageAlt": "Blink book cover",
+    "keywords": [
+      "Blink",
+      "Malcolm Gladwell",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "intuition",
+      "snap judgments",
+      "psychology",
+      "decision making",
+      "thin-slicing"
+    ]
+  },
+  "/booknotes/blood-music": {
+    "metaTitle": "Blood Music by Greg Bear – Book Notes & Summary",
+    "metaDescription": "Notes on Blood Music by Greg Bear. A sci-fi masterpiece about biotechnology, emergent intelligence, and what it means to be human.",
+    "ogImage": "/assets/book-covers/blood-music.jpg",
+    "ogImageAlt": "Blood Music book cover",
+    "keywords": [
+      "Blood Music",
+      "Greg Bear",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "science fiction",
+      "biotechnology",
+      "intelligence",
+      "nanotechnology"
+    ]
+  },
+  "/booknotes/brave-new-world": {
+    "metaTitle": "Brave New World – Key Takeaways & Book Notes",
+    "metaDescription": "Notes on Brave New World by Aldous Huxley. A dystopian warning about a society enslaved by comfort, drugs, and engineered happiness.",
+    "ogImage": "/assets/book-covers/brave-new-world.jpg",
+    "ogImageAlt": "Brave New World book cover",
+    "keywords": [
+      "Brave New World",
+      "Aldous Huxley",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "dystopia",
+      "fiction",
+      "social control",
+      "individuality",
+      "consumerism"
+    ]
+  },
+  "/booknotes/built-to-last": {
+    "metaTitle": "Built to Last – Book Notes & Summary",
+    "metaDescription": "Notes on Built to Last by Jim Collins. Learn what visionary companies have in common and why culture and people matter more than a single great idea.",
+    "ogImage": "/assets/book-covers/built-to-last.jpg",
+    "ogImageAlt": "Built to Last book cover",
+    "keywords": [
+      "Built to Last",
+      "Jim Collins",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "business",
+      "visionary companies",
+      "company culture",
+      "management",
+      "leadership"
+    ]
+  },
+  "/booknotes/but-how-do-it-know": {
+    "metaTitle": "But How Do It Know? – Book Notes & Summary",
+    "metaDescription": "Notes on But How Do It Know? by J. Clark Scott. A clear explanation of how computers work from logic gates to the CPU, for everyone.",
+    "ogImage": "/assets/book-covers/but-how-do-it-know.jpg",
+    "ogImageAlt": "But How Do It Know? book cover",
+    "keywords": [
+      "But How Do It Know",
+      "J. Clark Scott",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "computers",
+      "CPU",
+      "logic gates",
+      "binary",
+      "computer science"
+    ]
+  },
+  "/booknotes/chaos": {
+    "metaTitle": "Chaos: Making a New Science – Book Notes & Summary",
+    "metaDescription": "Notes on Chaos by James Gleick. An introduction to chaos theory, fractals, and how nonlinear dynamics shape the world around us.",
+    "ogImage": "/assets/book-covers/chaos.jpg",
+    "ogImageAlt": "Chaos book cover",
+    "keywords": [
+      "Chaos",
+      "James Gleick",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "chaos theory",
+      "fractals",
+      "nonlinear dynamics",
+      "complexity",
+      "mathematics"
+    ]
+  },
+  "/booknotes/charlies-almanack": {
+    "metaTitle": "Poor Charlie's Almanack – Book Notes & Summary",
+    "metaDescription": "Notes on Poor Charlie's Almanack by Charlie Munger. Wisdom on mental models, inversion, lifelong learning, and principled decision making.",
+    "ogImage": "/assets/book-covers/charlies-almanack.jpeg",
+    "ogImageAlt": "Poor Charlie's Almanack book cover",
+    "keywords": [
+      "Poor Charlie's Almanack",
+      "Charlie Munger",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "mental models",
+      "investing",
+      "wisdom",
+      "decision making",
+      "Berkshire Hathaway"
+    ]
+  },
+  "/booknotes/complexity": {
+    "metaTitle": "Complexity – Book Notes & Summary",
+    "metaDescription": "Notes on Complexity by Mitchell Waldrop. Discover the science of emergence at the edge of order and chaos, from economics to consciousness.",
+    "ogImage": "/assets/book-covers/complexity.jpg",
+    "ogImageAlt": "Complexity book cover",
+    "keywords": [
+      "Complexity",
+      "Mitchell Waldrop",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "complexity theory",
+      "emergence",
+      "Santa Fe Institute",
+      "chaos",
+      "systems thinking"
+    ]
+  },
+  "/booknotes/creativity-inc": {
+    "metaTitle": "Creativity Inc. – Key Takeaways & Book Notes",
+    "metaDescription": "Notes on Creativity Inc. by Ed Catmull. How Pixar built a culture of creative excellence through honest feedback and iterative problem solving.",
+    "ogImage": "/assets/book-covers/creativity-inc.jpg",
+    "ogImageAlt": "Creativity Inc. book cover",
+    "keywords": [
+      "Creativity Inc",
+      "Ed Catmull",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "Pixar",
+      "creativity",
+      "management",
+      "innovation",
+      "company culture"
+    ]
+  },
+  "/booknotes/deep-work": {
+    "metaTitle": "Deep Work by Cal Newport – Book Notes & Summary",
+    "metaDescription": "Notes on Deep Work by Cal Newport. Learn to distinguish deep from shallow work and build habits that protect focused, high-value productivity.",
+    "ogImage": "/assets/book-covers/deep-work.jpg",
+    "ogImageAlt": "Deep Work book cover",
+    "keywords": [
+      "Deep Work",
+      "Cal Newport",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "focus",
+      "productivity",
+      "concentration",
+      "habits",
+      "shallow work"
+    ]
+  },
+  "/booknotes/der-steppenwolf": {
+    "metaTitle": "Der Steppenwolf – Book Notes & Summary",
+    "metaDescription": "Notes on Der Steppenwolf by Hermann Hesse. A philosophical novel about loneliness, self-discovery, and the Magical Theater of alternate lives.",
+    "ogImage": "/assets/book-covers/der-steppenwolf.jpg",
+    "ogImageAlt": "Der Steppenwolf book cover",
+    "keywords": [
+      "Der Steppenwolf",
+      "Hermann Hesse",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "fiction",
+      "philosophy",
+      "psychology",
+      "self-discovery",
+      "German literature"
+    ]
+  },
+  "/booknotes/der-weg-zum-glück": {
+    "metaTitle": "Der Weg zum Glück (Dalai Lama) – Book Notes",
+    "metaDescription": "Notes on Der Weg zum Glück by the Dalai Lama. Teachings on compassion, contentment, and rediscovering our shared humanity in a hectic world.",
+    "ogImage": "/assets/book-covers/der-weg-zum-glueck.jpg",
+    "ogImageAlt": "Der Weg zum Glück book cover",
+    "keywords": [
+      "Der Weg zum Glück",
+      "Dalai Lama",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "Buddhism",
+      "compassion",
+      "happiness",
+      "spirituality",
+      "wisdom"
+    ]
+  },
+  "/booknotes/determined": {
+    "metaTitle": "Determined by Robert Sapolsky – Book Notes & Summary",
+    "metaDescription": "Notes on Determined by Robert Sapolsky. A neuroscientist's case against free will and what it means for blame, praise, and the justice system.",
+    "ogImage": "/assets/book-covers/determined.jpg",
+    "ogImageAlt": "Determined book cover",
+    "keywords": [
+      "Determined",
+      "Robert Sapolsky",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "free will",
+      "neuroscience",
+      "determinism",
+      "brain",
+      "justice"
+    ]
+  },
+  "/booknotes/discourses-and-selected-writings": {
+    "metaTitle": "Discourses by Epictetus – Book Notes & Summary",
+    "metaDescription": "Notes on Discourses and Selected Writings by Epictetus. Stoic wisdom on personal responsibility, virtue, and mastering what is within your control.",
+    "ogImage": "/assets/book-covers/discourses-and-selected-writings.jpg",
+    "ogImageAlt": "Discourses and Selected Writings book cover",
+    "keywords": [
+      "Discourses",
+      "Epictetus",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "stoicism",
+      "philosophy",
+      "virtue",
+      "self-discipline",
+      "dichotomy of control"
+    ]
+  },
+  "/booknotes/disturbing-the-universe": {
+    "metaTitle": "Disturbing the Universe – Book Notes & Summary",
+    "metaDescription": "Notes on Disturbing the Universe by Freeman Dyson. A physicist's memoir on science, space exploration, and an optimistic vision for humanity's future.",
+    "ogImage": "/assets/book-covers/disturbing-the-universe.jpg",
+    "ogImageAlt": "Disturbing the Universe book cover",
+    "keywords": [
+      "Disturbing the Universe",
+      "Freeman Dyson",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "physics",
+      "autobiography",
+      "space exploration",
+      "Dyson sphere",
+      "science"
+    ]
+  },
+  "/booknotes/drive": {
+    "metaTitle": "Drive by Daniel Pink – Book Notes & Summary",
+    "metaDescription": "Notes on Drive by Daniel Pink. Learn why autonomy, mastery, and purpose outperform rewards and punishment as sources of motivation.",
+    "ogImage": "/assets/book-covers/drive.jpg",
+    "ogImageAlt": "Drive book cover",
+    "keywords": [
+      "Drive",
+      "Daniel Pink",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "motivation",
+      "autonomy",
+      "mastery",
+      "purpose",
+      "intrinsic motivation"
+    ]
+  },
+  "/booknotes/einsteins-dreams": {
+    "metaTitle": "Einstein's Dreams – Book Notes & Summary",
+    "metaDescription": "Notes on Einstein's Dreams by Alan Lightman. Beautiful short stories exploring alternate worlds where time works differently, each revealing deep human truths.",
+    "ogImage": "/assets/book-covers/einsteins-dreams.jpg",
+    "ogImageAlt": "Einstein's Dreams book cover",
+    "keywords": [
+      "Einstein's Dreams",
+      "Alan Lightman",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "fiction",
+      "time",
+      "philosophy",
+      "prose",
+      "short stories"
+    ]
+  },
+  "/booknotes/elon-musk": {
+    "metaTitle": "Elon Musk by Ashley Vance – Book Notes & Summary",
+    "metaDescription": "Notes on the Elon Musk biography by Ashley Vance. Inside the relentless drive behind Tesla and SpaceX and lessons on building the impossible.",
+    "ogImage": "/assets/book-covers/elon-musk.jpg",
+    "ogImageAlt": "Elon Musk book cover",
+    "keywords": [
+      "Elon Musk",
+      "Ashley Vance",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "biography",
+      "Tesla",
+      "SpaceX",
+      "entrepreneurship",
+      "innovation"
+    ]
+  },
+  "/booknotes/ending-aging": {
+    "metaTitle": "Ending Aging – Book Notes & Summary",
+    "metaDescription": "Notes on Ending Aging by Aubrey de Grey. A roadmap for treating aging as an engineering problem with seven types of damage that science can fix.",
+    "ogImage": "/assets/book-covers/ending-aging.jpg",
+    "ogImageAlt": "Ending Aging book cover",
+    "keywords": [
+      "Ending Aging",
+      "Aubrey de Grey",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "longevity",
+      "aging",
+      "SENS",
+      "biotechnology",
+      "life extension"
+    ]
+  },
+  "/booknotes/engines-of-creation": {
+    "metaTitle": "Engines of Creation – Book Notes & Summary",
+    "metaDescription": "Notes on Engines of Creation by Eric Drexler. A visionary look at nanotechnology and how atomic-scale manufacturing could transform civilization.",
+    "ogImage": "/assets/book-covers/engines-of-creation.jpg",
+    "ogImageAlt": "Engines of Creation book cover",
+    "keywords": [
+      "Engines of Creation",
+      "Eric Drexler",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "nanotechnology",
+      "futurism",
+      "molecular manufacturing",
+      "science",
+      "technology"
+    ]
+  },
+  "/booknotes/enough": {
+    "metaTitle": "Enough by John Bogle – Book Notes & Summary",
+    "metaDescription": "Notes on Enough by John Bogle. The Vanguard founder on restoring character to finance and knowing when you have enough money, business, and life.",
+    "ogImage": "/assets/book-covers/enough.jpg",
+    "ogImageAlt": "Enough book cover",
+    "keywords": [
+      "Enough",
+      "John Bogle",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "investing",
+      "finance",
+      "Vanguard",
+      "index funds",
+      "character",
+      "virtue"
+    ]
+  },
+  "/booknotes/essentialism": {
+    "metaTitle": "Essentialism by Greg McKeown – Book Notes & Summary",
+    "metaDescription": "Notes on Essentialism by Greg McKeown. Focus on what truly matters by eliminating the nonessential and doing less but better.",
+    "ogImage": "/assets/book-covers/essentialism.jpg",
+    "ogImageAlt": "Essentialism book cover",
+    "keywords": [
+      "Essentialism",
+      "Greg McKeown",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "minimalism",
+      "focus",
+      "productivity",
+      "self-help",
+      "declutter"
+    ]
+  },
+  "/booknotes/ethics": {
+    "metaTitle": "Ethics by Spinoza – Book Notes & Summary",
+    "metaDescription": "Notes on Ethics by Spinoza. A philosophical exploration of God, nature, and human freedom through understanding the fundamental order of reality.",
+    "ogImage": "/assets/book-covers/ethics.jpg",
+    "ogImageAlt": "Ethics book cover",
+    "keywords": [
+      "Ethics",
+      "Spinoza",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "philosophy",
+      "metaphysics",
+      "God",
+      "nature",
+      "freedom",
+      "determinism"
+    ]
+  },
+  "/booknotes/finite-and-infinite-games": {
+    "metaTitle": "Finite and Infinite Games – Book Notes & Summary",
+    "metaDescription": "Notes on Finite and Infinite Games by James Carse. A philosophical lens on life: play finite games to win, or infinite games to keep playing.",
+    "ogImage": "/assets/book-covers/finite-and-infinite-games.jpg",
+    "ogImageAlt": "Finite and Infinite Games book cover",
+    "keywords": [
+      "Finite and Infinite Games",
+      "James Carse",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "philosophy",
+      "game theory",
+      "positive sum",
+      "zero sum",
+      "life philosophy"
+    ]
+  },
+  "/booknotes/flow": {
+    "metaTitle": "Flow by Csikszentmihalyi – Book Notes & Summary",
+    "metaDescription": "Notes on Flow by Mihaly Csikszentmihalyi. Understand the psychology of optimal experience and how to enter flow states for a happier, more productive life.",
+    "ogImage": "/assets/book-covers/flow.jpg",
+    "ogImageAlt": "Flow book cover",
+    "keywords": [
+      "Flow",
+      "Csikszentmihalyi",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "flow state",
+      "optimal experience",
+      "happiness",
+      "psychology",
+      "mastery"
+    ]
+  },
+  "/booknotes/foundation-1-foundation": {
+    "metaTitle": "Foundation by Isaac Asimov – Book Notes & Summary",
+    "metaDescription": "Notes on Foundation by Isaac Asimov. The first novel in the epic sci-fi series about preserving knowledge as a galactic empire collapses.",
+    "ogImage": "/assets/book-covers/foundation.jpg",
+    "ogImageAlt": "Foundation book cover",
+    "keywords": [
+      "Foundation",
+      "Isaac Asimov",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "science fiction",
+      "psychohistory",
+      "Hari Seldon",
+      "galactic empire"
+    ]
+  },
+  "/booknotes/foundation-2-foundation-and-empire": {
+    "metaTitle": "Foundation and Empire – Book Notes & Summary",
+    "metaDescription": "Notes on Foundation and Empire by Isaac Asimov. The dying Empire clashes with the rising Foundation in this gripping second installment.",
+    "ogImage": "/assets/book-covers/foundation-and-empire.jpg",
+    "ogImageAlt": "Foundation and Empire book cover",
+    "keywords": [
+      "Foundation and Empire",
+      "Isaac Asimov",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "science fiction",
+      "Foundation series",
+      "galactic empire",
+      "the Mule"
+    ]
+  },
+  "/booknotes/foundation-3-second-foundation": {
+    "metaTitle": "Second Foundation – Book Notes & Summary",
+    "metaDescription": "Notes on Second Foundation by Isaac Asimov. The search for the mysterious Second Foundation and its rumored psychic powers threatens the Seldon Plan.",
+    "ogImage": "/assets/book-covers/second-foundation.jpg",
+    "ogImageAlt": "Second Foundation book cover",
+    "keywords": [
+      "Second Foundation",
+      "Isaac Asimov",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "science fiction",
+      "Foundation series",
+      "Seldon Plan",
+      "psychohistory"
+    ]
+  },
+  "/booknotes/foundation-4-foundations-edge": {
+    "metaTitle": "Foundation's Edge – Book Notes & Summary",
+    "metaDescription": "Notes on Foundation's Edge by Isaac Asimov. A hidden power guides the Seldon Plan, leading to the mysterious planet Gaia in this fourth installment.",
+    "ogImage": "/assets/book-covers/foundations-edge.jpg",
+    "ogImageAlt": "Foundation's Edge book cover",
+    "keywords": [
+      "Foundation's Edge",
+      "Isaac Asimov",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "science fiction",
+      "Foundation series",
+      "Gaia",
+      "Seldon Plan"
+    ]
+  },
+  "/booknotes/foundation-5-foundation-and-earth": {
+    "metaTitle": "Foundation and Earth – Book Notes & Summary",
+    "metaDescription": "Notes on Foundation and Earth by Isaac Asimov. An adventure to find humanity's origin planet across the galaxy in this fifth Foundation novel.",
+    "ogImage": "/assets/book-covers/foundation-and-earth.jpg",
+    "ogImageAlt": "Foundation and Earth book cover",
+    "keywords": [
+      "Foundation and Earth",
+      "Isaac Asimov",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "science fiction",
+      "Foundation series",
+      "Earth",
+      "origin of humanity"
+    ]
+  },
+  "/booknotes/foundation-6-prelude-to-foundation": {
+    "metaTitle": "Prelude to Foundation – Book Notes & Summary",
+    "metaDescription": "Notes on Prelude to Foundation by Isaac Asimov. The origin story of Hari Seldon and the birth of psychohistory amid galactic political intrigue.",
+    "ogImage": "/assets/book-covers/prelude-to-foundation.jpg",
+    "ogImageAlt": "Prelude to Foundation book cover",
+    "keywords": [
+      "Prelude to Foundation",
+      "Isaac Asimov",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "science fiction",
+      "Foundation series",
+      "Hari Seldon",
+      "psychohistory"
+    ]
+  },
+  "/booknotes/foundation-7-forward-the-foundation": {
+    "metaTitle": "Forward the Foundation – Book Notes & Summary",
+    "metaDescription": "Notes on Forward the Foundation by Isaac Asimov. The final Foundation novel chronicling Hari Seldon's sacrifices to launch the Seldon Plan.",
+    "ogImage": "/assets/book-covers/forward-the-foundation.jpg",
+    "ogImageAlt": "Forward the Foundation book cover",
+    "keywords": [
+      "Forward the Foundation",
+      "Isaac Asimov",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "science fiction",
+      "Foundation series",
+      "Hari Seldon",
+      "Seldon Plan"
+    ]
+  },
+  "/booknotes/free-agents": {
+    "metaTitle": "Free Agents – Book Notes & Key Takeaways",
+    "metaDescription": "Notes on Free Agents by Kevin Mitchell. How evolution produced organisms that make choices for their own reasons, making a case for genuine free will.",
+    "ogImage": "/assets/book-covers/free-agents.jpg",
+    "ogImageAlt": "Free Agents book cover",
+    "keywords": [
+      "Free Agents",
+      "Kevin Mitchell",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "free will",
+      "evolution",
+      "neuroscience",
+      "consciousness",
+      "agency",
+      "biology"
+    ]
+  },
+  "/booknotes/from-bacteria-to-bach-and-back": {
+    "metaTitle": "From Bacteria to Bach and Back – Book Notes",
+    "metaDescription": "Notes on From Bacteria to Bach and Back by Daniel Dennett. How evolution builds competence without comprehension and gives rise to conscious minds.",
+    "ogImage": "/assets/book-covers/from-bacteria-to-bach-and-back.jpg",
+    "ogImageAlt": "From Bacteria to Bach and Back book cover",
+    "keywords": [
+      "From Bacteria to Bach and Back",
+      "Daniel Dennett",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "evolution",
+      "consciousness",
+      "mind",
+      "competence",
+      "philosophy"
+    ]
+  },
+  "/booknotes/godel-escher-bach": {
+    "metaTitle": "Gödel, Escher, Bach – Book Notes & Summary",
+    "metaDescription": "Notes on Gödel, Escher, Bach by Douglas Hofstadter. A masterpiece exploring self-reference, recursion, and the emergence of meaning across math, art, and music.",
+    "ogImage": "/assets/book-covers/goedel-escher-bach.jpg",
+    "ogImageAlt": "Gödel, Escher, Bach book cover",
+    "keywords": [
+      "Gödel Escher Bach",
+      "Douglas Hofstadter",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "self-reference",
+      "recursion",
+      "AI",
+      "mathematics",
+      "consciousness"
+    ]
+  },
+  "/booknotes/godels-proof": {
+    "metaTitle": "Gödel's Proof – Book Notes & Summary",
+    "metaDescription": "Notes on Gödel's Proof by Nagel and Newman. An accessible guide to the incompleteness theorem that shook the foundations of mathematics.",
+    "ogImage": "/assets/book-covers/goedels-proof.jpg",
+    "ogImageAlt": "Gödel's Proof book cover",
+    "keywords": [
+      "Gödel's Proof",
+      "Ernest Nagel",
+      "James Newman",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "incompleteness theorem",
+      "mathematics",
+      "logic",
+      "formal systems"
+    ]
+  },
+  "/booknotes/good-to-great": {
+    "metaTitle": "Good to Great – Book Notes & Key Takeaways",
+    "metaDescription": "Notes on Good to Great by Jim Collins. What separates great companies from good ones: Level 5 leadership, the hedgehog concept, and disciplined execution.",
+    "ogImage": "/assets/book-covers/good-to-great.jpg",
+    "ogImageAlt": "Good to Great book cover",
+    "keywords": [
+      "Good to Great",
+      "Jim Collins",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "business",
+      "leadership",
+      "hedgehog concept",
+      "management",
+      "Level 5 leadership"
+    ]
+  },
+  "/booknotes/grit": {
+    "metaTitle": "Grit by Angela Duckworth – Book Notes & Summary",
+    "metaDescription": "Notes on Grit by Angela Duckworth. Why passion and perseverance predict success better than talent and how to cultivate grit in your own life.",
+    "ogImage": "/assets/book-covers/grit.jpg",
+    "ogImageAlt": "Grit book cover",
+    "keywords": [
+      "Grit",
+      "Angela Duckworth",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "perseverance",
+      "passion",
+      "success",
+      "psychology",
+      "resilience"
+    ]
+  },
+  "/booknotes/growth": {
+    "metaTitle": "Growth by Vaclav Smil – Book Notes & Summary",
+    "metaDescription": "Notes on Growth by Vaclav Smil. A sweeping analysis of growth patterns from microorganisms to megacities, and the limits of our biosphere.",
+    "ogImage": "/assets/book-covers/growth.jpg",
+    "ogImageAlt": "Growth book cover",
+    "keywords": [
+      "Growth",
+      "Vaclav Smil",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "growth patterns",
+      "energy",
+      "technology",
+      "civilization",
+      "limits"
+    ]
+  },
+  "/booknotes/guns-germs-and-steel": {
+    "metaTitle": "Guns, Germs, and Steel – Book Notes & Summary",
+    "metaDescription": "Notes on Guns, Germs, and Steel by Jared Diamond. Why geography and environment, not race, determined which civilizations rose to dominate the world.",
+    "ogImage": "/assets/book-covers/guns-germs-and-steel.jpg",
+    "ogImageAlt": "Guns, Germs, and Steel book cover",
+    "keywords": [
+      "Guns Germs and Steel",
+      "Jared Diamond",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "history",
+      "geography",
+      "anthropology",
+      "civilization",
+      "agriculture"
+    ]
+  },
+  "/booknotes/hallucinations": {
+    "metaTitle": "Hallucinations by Oliver Sacks – Book Notes & Summary",
+    "metaDescription": "Notes on Hallucinations by Oliver Sacks. A neurologist explores the fascinating world of hallucinations and what they reveal about the human brain.",
+    "ogImage": "/assets/book-covers/hallucinations.jpg",
+    "ogImageAlt": "Hallucinations book cover",
+    "keywords": [
+      "Hallucinations",
+      "Oliver Sacks",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "neurology",
+      "brain",
+      "perception",
+      "consciousness",
+      "Charles Bonnet syndrome"
+    ]
+  },
+  "/booknotes/hell-yeah-or-no": {
+    "metaTitle": "Hell Yeah or No – Book Notes & Key Takeaways",
+    "metaDescription": "Notes on Hell Yeah or No by Derek Sivers. Practical wisdom on clarifying what you truly want and making better life decisions by saying no to almost everything.",
+    "ogImage": "/assets/book-covers/hell-yeah-or-no.jpg",
+    "ogImageAlt": "Hell Yeah or No book cover",
+    "keywords": [
+      "Hell Yeah or No",
+      "Derek Sivers",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "decision making",
+      "self-help",
+      "priorities",
+      "minimalism",
+      "life philosophy"
+    ]
+  },
+  "/booknotes/high-output-management": {
+    "metaTitle": "High Output Management – Book Notes & Summary",
+    "metaDescription": "Notes on High Output Management by Andy Grove. Intel's legendary CEO on leverage, meetings, and managing knowledge workers for maximum team output.",
+    "ogImage": "/assets/book-covers/high-output-management.jpg",
+    "ogImageAlt": "High Output Management book cover",
+    "keywords": [
+      "High Output Management",
+      "Andy Grove",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "management",
+      "leadership",
+      "Intel",
+      "productivity",
+      "meetings"
+    ]
+  },
+  "/booknotes/how-to-live": {
+    "metaTitle": "How to Live by Derek Sivers – Book Notes & Summary",
+    "metaDescription": "Notes on How to Live by Derek Sivers. 27 conflicting answers to life's biggest question, revealing that there is no single right way to live.",
+    "ogImage": "/assets/book-covers/how-to-live.jpg",
+    "ogImageAlt": "How to Live book cover",
+    "keywords": [
+      "How to Live",
+      "Derek Sivers",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "life philosophy",
+      "self-help",
+      "personal values",
+      "wisdom",
+      "contradictions"
+    ]
+  },
+  "/booknotes/how-to-read-a-book": {
+    "metaTitle": "How to Read a Book – Book Notes & Summary",
+    "metaDescription": "Notes on How to Read a Book by Mortimer Adler. Master four levels of reading from elementary to syntopical to extract maximum insight from any text.",
+    "ogImage": "/assets/book-covers/how-to-read-a-book.jpg",
+    "ogImageAlt": "How to Read a Book book cover",
+    "keywords": [
+      "How to Read a Book",
+      "Mortimer Adler",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "reading",
+      "learning",
+      "syntopical reading",
+      "productivity",
+      "education"
+    ]
+  },
+  "/booknotes/how-to-solve-it": {
+    "metaTitle": "How to Solve It – Book Notes & Summary",
+    "metaDescription": "Notes on How to Solve It by George Polya. Classic strategies for mathematical problem solving: understand, plan, execute, and look back.",
+    "ogImage": "/assets/book-covers/how-to-solve-it.jpg",
+    "ogImageAlt": "How to Solve It book cover",
+    "keywords": [
+      "How to Solve It",
+      "George Polya",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "problem solving",
+      "mathematics",
+      "heuristics",
+      "thinking",
+      "strategy"
+    ]
+  },
+  "/booknotes/how-to-travel-the-world-on-50-a-day": {
+    "metaTitle": "How to Travel the World on $50 a Day – Book Notes",
+    "metaDescription": "Notes on How to Travel the World on $50 a Day by Matt Kepnes. Budget travel strategies that let you see the world for less than staying home.",
+    "ogImage": "/assets/book-covers/how-to-travel-the-world-on-50-a-day.jpg",
+    "ogImageAlt": "How to Travel the World on $50 a Day book cover",
+    "keywords": [
+      "How to Travel the World on 50 a Day",
+      "Matt Kepnes",
+      "Nomadic Matt",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "budget travel",
+      "backpacking",
+      "travel tips"
+    ]
+  },
+  "/booknotes/how-to-win-friends-and-influence-people": {
+    "metaTitle": "How to Win Friends and Influence People – Book Notes",
+    "metaDescription": "Notes on How to Win Friends and Influence People by Dale Carnegie. Timeless principles for building genuine relationships and caring for others.",
+    "ogImage": "/assets/book-covers/how-to-win-friends-and-influence-people.jpg",
+    "ogImageAlt": "How to Win Friends and Influence People book cover",
+    "keywords": [
+      "How to Win Friends and Influence People",
+      "Dale Carnegie",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "communication",
+      "relationships",
+      "self-help",
+      "social skills",
+      "leadership"
+    ]
+  },
+  "/booknotes/immune": {
+    "metaTitle": "Immune by Philipp Dettmer – Book Notes & Summary",
+    "metaDescription": "Notes on Immune by Philipp Dettmer (Kurzgesagt). A vivid guide to how the human immune system works, from cells to proteins to fighting disease.",
+    "ogImage": "/assets/book-covers/immune.jpg",
+    "ogImageAlt": "Immune book cover",
+    "keywords": [
+      "Immune",
+      "Philipp Dettmer",
+      "Kurzgesagt",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "immune system",
+      "biology",
+      "immunology",
+      "health"
+    ]
+  },
+  "/booknotes/indistractable": {
+    "metaTitle": "Indistractable by Nir Eyal – Book Notes & Summary",
+    "metaDescription": "Notes on Indistractable by Nir Eyal. Practical techniques for managing attention, controlling triggers, and becoming focused in a distracted world.",
+    "ogImage": "/assets/book-covers/indistractable.jpg",
+    "ogImageAlt": "Indistractable book cover",
+    "keywords": [
+      "Indistractable",
+      "Nir Eyal",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "focus",
+      "distraction",
+      "productivity",
+      "attention",
+      "self-help"
+    ]
+  },
+  "/booknotes/influence": {
+    "metaTitle": "Influence by Robert Cialdini – Book Notes & Summary",
+    "metaDescription": "Notes on Influence by Robert Cialdini. The six psychological principles of persuasion: reciprocity, scarcity, authority, consistency, liking, and consensus.",
+    "ogImage": "/assets/book-covers/influence.jpg",
+    "ogImageAlt": "Influence book cover",
+    "keywords": [
+      "Influence",
+      "Robert Cialdini",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "persuasion",
+      "psychology",
+      "marketing",
+      "reciprocity",
+      "social proof"
+    ]
+  },
+  "/booknotes/innate": {
+    "metaTitle": "Innate by Kevin Mitchell – Book Notes & Summary",
+    "metaDescription": "Notes on Innate by Kevin Mitchell. How genetics and brain wiring shape personality and intelligence, and why even identical twins turn out differently.",
+    "ogImage": "/assets/book-covers/innate.jpg",
+    "ogImageAlt": "Innate book cover",
+    "keywords": [
+      "Innate",
+      "Kevin Mitchell",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "genetics",
+      "neuroscience",
+      "personality",
+      "intelligence",
+      "brain development"
+    ]
+  },
+  "/booknotes/intelligence": {
+    "metaTitle": "Intelligence by Osho – Book Notes & Summary",
+    "metaDescription": "Notes on Intelligence by Osho. A spiritual take on reclaiming natural intelligence lost through education, fear, and conditioning.",
+    "ogImage": "/assets/book-covers/intelligence.jpg",
+    "ogImageAlt": "Intelligence book cover",
+    "keywords": [
+      "Intelligence",
+      "Osho",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "spirituality",
+      "meditation",
+      "education",
+      "awareness",
+      "creativity"
+    ]
+  },
+  "/booknotes/lessons-in-psychomagic": {
+    "metaTitle": "Turn Your Life into Art – Book Notes & Summary",
+    "metaDescription": "Notes on Turn Your Life into Art by Caveat Magister. How the San Francisco underground designed transformative experiences using psychomagic and art.",
+    "ogImage": "/assets/book-covers/lessons-in-psychomagic.jpg",
+    "ogImageAlt": "Turn Your Life into Art book cover",
+    "keywords": [
+      "Turn Your Life into Art",
+      "Caveat Magister",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "psychomagic",
+      "experience design",
+      "Burning Man",
+      "art",
+      "personal transformation"
+    ]
+  },
+  "/booknotes/letters-from-a-stoic": {
+    "metaTitle": "Letters from a Stoic – Book Notes & Summary",
+    "metaDescription": "Notes on Letters from a Stoic by Seneca. Timeless Stoic wisdom on contentment, resilience, and accepting what the world throws at you with grace.",
+    "ogImage": "/assets/book-covers/letters-from-a-stoic.jpg",
+    "ogImageAlt": "Letters from a Stoic book cover",
+    "keywords": [
+      "Letters from a Stoic",
+      "Seneca",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "stoicism",
+      "philosophy",
+      "contentment",
+      "resilience",
+      "wisdom"
+    ]
+  },
+  "/booknotes/life-3-0": {
+    "metaTitle": "Life 3.0 by Max Tegmark – Book Notes & Summary",
+    "metaDescription": "Notes on Life 3.0 by Max Tegmark. A thought-provoking exploration of AI safety, superintelligence, and what future we should build for humanity.",
+    "ogImage": "/assets/book-covers/life-3-0.jpg",
+    "ogImageAlt": "Life 3.0 book cover",
+    "keywords": [
+      "Life 3.0",
+      "Max Tegmark",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "artificial intelligence",
+      "AI safety",
+      "superintelligence",
+      "futurism",
+      "existential risk"
+    ]
+  },
+  "/booknotes/life-the-universe-and-everything": {
+    "metaTitle": "Life, the Universe and Everything – Book Notes",
+    "metaDescription": "Notes on Life, the Universe and Everything by Douglas Adams. The third Hitchhiker's Guide adventure blending absurd humor with deep philosophical questions.",
+    "ogImage": "/assets/book-covers/life-the-universe-and-everything.jpg",
+    "ogImageAlt": "Life, the Universe and Everything book cover",
+    "keywords": [
+      "Life the Universe and Everything",
+      "Douglas Adams",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "Hitchhiker's Guide",
+      "science fiction",
+      "humor",
+      "philosophy"
+    ]
+  },
+  "/booknotes/lying": {
+    "metaTitle": "Lying by Sam Harris – Book Notes & Summary",
+    "metaDescription": "Notes on Lying by Sam Harris. A concise argument for radical honesty: why even small lies erode trust and damage relationships over time.",
+    "ogImage": "/assets/book-covers/lying.jpg",
+    "ogImageAlt": "Lying book cover",
+    "keywords": [
+      "Lying",
+      "Sam Harris",
+      "book notes",
+      "summary",
+      "key takeaways",
+      "honesty",
+      "ethics",
+      "morality",
+      "trust",
+      "philosophy"
+    ]
+  }
+}

@@ -1,0 +1,822 @@
+{
+  "/r3f": {
+    "metaTitle": "R3F Playground - 3D Demos with React Three Fiber",
+    "metaDescription": "Explore interactive 3D demos built with React Three Fiber and Three.js. Scenes, models, particles, controllers, and experiments in the browser.",
+    "ogImage": "/assets/pages/r3f.png",
+    "ogImageAlt": "image of a 3D playground",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "r3f",
+      "3D demos",
+      "browser games",
+      "interactive 3D"
+    ]
+  },
+  "/r3f/scenes/ocean": {
+    "metaTitle": "3D Ocean Demo - Underwater Scene in React Three Fiber",
+    "metaDescription": "An underwater ocean demo built with React Three Fiber and Three.js, featuring kelp, whales, and water shaders in the browser.",
+    "ogImage": "/assets/pages/ocean.png",
+    "ogImageAlt": "3D render of low poly kelp and a whale swimming around the ocean",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "ocean",
+      "underwater",
+      "water shader",
+      "r3f"
+    ]
+  },
+  "/r3f/scenes/heightfield": {
+    "metaTitle": "Infinite Heightfield Terrain - 3D Physics Demo in R3F",
+    "metaDescription": "Procedural infinite terrain generated with a heightfield algorithm in React Three Fiber, featuring physics and chunk-based rendering.",
+    "ogImage": "/assets/pages/heightfield.png",
+    "ogImageAlt": "a simple heightfield of rolling hills stretching into the distance",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "heightfield",
+      "procedural terrain",
+      "physics",
+      "chunk generation"
+    ]
+  },
+  "/r3f/scenes/plasma-ball": {
+    "metaTitle": "3D Plasma Ball Effect - Three.js Lightning Demo",
+    "metaDescription": "A plasma ball simulation using LightningStrike geometry in React Three Fiber with bloom and tone mapping postprocessing effects.",
+    "ogImage": "/assets/pages/plasma-ball.png",
+    "ogImageAlt": "a 3D rendered simulation of a plasma ball",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "plasma ball",
+      "lightning",
+      "postprocessing",
+      "bloom"
+    ]
+  },
+  "/r3f/scenes/shader-editor": {
+    "metaTitle": "Interactive Shader Editor - GLSL in React Three Fiber",
+    "metaDescription": "A live GLSL shader editor built with React Three Fiber. Edit shader code and see real-time results, similar to Shadertoy.",
+    "ogImage": "/assets/pages/shader-editor.png",
+    "ogImageAlt": "an window half split between a text editor with shader code and a rendered shader voronoi shader on the other side",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "shader editor",
+      "GLSL",
+      "shadertoy",
+      "fragment shader"
+    ]
+  },
+  "/r3f/scenes/terrain": {
+    "metaTitle": "Procedural Terrain with Biomes - 3D R3F Demo",
+    "metaDescription": "Procedurally generated terrain with biomes based on temperature, height and moisture noise in React Three Fiber. Color-coded biome categories.",
+    "ogImage": "/assets/pages/terrain.png",
+    "ogImageAlt": "rolling hills with different colors based on biome",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "procedural generation",
+      "terrain",
+      "biomes",
+      "noise",
+      "procgen"
+    ]
+  },
+  "/r3f/scenes/snow-forest": {
+    "metaTitle": "Endless Snow Forest - 3D Scene in React Three Fiber",
+    "metaDescription": "An endless procedural snow forest built with React Three Fiber using chunk generation, web workers, and instanced meshes.",
+    "ogImage": "/assets/pages/snow-forest.png",
+    "ogImageAlt": "a snow covered forest scene extending towards the horizon",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "snow forest",
+      "procedural generation",
+      "instancing",
+      "chunk generation"
+    ]
+  },
+  "/r3f/scenes/grass-experiments": {
+    "metaTitle": "3D Grass Shader Experiments - React Three Fiber",
+    "metaDescription": "Experiments with grass shaders in React Three Fiber, sampling grass blades onto arbitrary geometries with custom shaders.",
+    "ogImage": "/assets/pages/grass-experiments.png",
+    "ogImageAlt": "a 3D scene with grass shader experiments on various geometries",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "grass shader",
+      "geometry sampling",
+      "custom shaders"
+    ]
+  },
+  "/r3f/models/cat": {
+    "metaTitle": "3D Cat Model Demo - React Three Fiber Scene",
+    "metaDescription": "A simple 3D scene showcasing a low-poly cat model loaded with the drei library and Stage component in React Three Fiber.",
+    "ogImage": "/assets/pages/cat.png",
+    "ogImageAlt": "a low poly 3D model of a cat",
+    "keywords": ["react three fiber", "three.js", "3D", "webgl", "3D model", "cat", "gltf", "drei"]
+  },
+  "/r3f/models/fbx-viewer": {
+    "metaTitle": "FBX Model Viewer - Loading FBX in React Three Fiber",
+    "metaDescription": "A viewer for FBX models in React Three Fiber, demonstrating how to load and display FBX format 3D models in the browser.",
+    "ogImage": "/assets/pages/fbx-viewer.png",
+    "ogImageAlt": "a 3D model view of the default x-bot character from Mixamo",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "FBX",
+      "model viewer",
+      "Mixamo",
+      "3D models"
+    ]
+  },
+  "/r3f/models/mixamo-characters": {
+    "metaTitle": "Mixamo Characters in 3D - React Three Fiber Demo",
+    "metaDescription": "Showcasing animated Mixamo characters in a React Three Fiber 3D scene with selectable models and dance animations.",
+    "ogImage": "/assets/pages/mixamo-characters.png",
+    "ogImageAlt": "Mixamo character dancing in a 3D scene",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "Mixamo",
+      "character animation",
+      "3D characters",
+      "dance"
+    ]
+  },
+  "/r3f/models/quaternius-models": {
+    "metaTitle": "Quaternius 3D Models Showcase - R3F Grid Display",
+    "metaDescription": "A grid showcase of free Quaternius low-poly 3D models rendered in React Three Fiber for browsing and selection.",
+    "ogImage": "/assets/pages/quaternius-models.png",
+    "ogImageAlt": "Image of a grid filled with 3D models",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "Quaternius",
+      "low poly",
+      "3D models",
+      "model showcase"
+    ]
+  },
+  "/r3f/models/Ship": {
+    "metaTitle": "3D Ship on Ocean - React Three Fiber Demo",
+    "metaDescription": "A ship model floating on the drei ocean shader surface, one of the first demos built with React Three Fiber and Three.js.",
+    "ogImage": "/assets/pages/ship.png",
+    "ogImageAlt": "a 3D model of a ship floating in the ocean",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "ship",
+      "ocean shader",
+      "water",
+      "3D model"
+    ]
+  },
+  "/r3f/particles/birds": {
+    "metaTitle": "3D Bird Flocking Simulation - GPGPU Particles in R3F",
+    "metaDescription": "A bird flocking simulation using FBO particles and compute shaders in React Three Fiber, ported from the Three.js examples.",
+    "ogImage": "/assets/pages/birds.png",
+    "ogImageAlt": "a flock of birds flying around in a 3D scene",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "particles",
+      "flocking simulation",
+      "GPGPU",
+      "compute shader",
+      "FBO"
+    ]
+  },
+  "/r3f/particles/fbo-demo": {
+    "metaTitle": "FBO Particles Demo - Compute Shader in Three.js",
+    "metaDescription": "A simple FBO particles demo using compute shaders to update particle positions in React Three Fiber with bloom effects.",
+    "ogImage": "/assets/pages/fbo-demo.png",
+    "ogImageAlt": "a set of glowing particles flying around in a 3D scene",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "FBO",
+      "particles",
+      "compute shader",
+      "bloom"
+    ]
+  },
+  "/r3f/particles/fishes": {
+    "metaTitle": "3D Fish School Simulation - FBO Particles in R3F",
+    "metaDescription": "A school of fish simulated with FBO particles in React Three Fiber, using custom meshes and compute shaders for position updates.",
+    "ogImage": "/assets/pages/fishes.png",
+    "ogImageAlt": "a school of fish swimming around in a 3D scene",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "fish",
+      "particles",
+      "FBO",
+      "compute shader",
+      "simulation"
+    ]
+  },
+  "/r3f/particles/mesh-merger": {
+    "metaTitle": "Mesh Merger Particles - 3D Effect in Three.js",
+    "metaDescription": "A particle system for merging meshes in React Three Fiber, creating visual transitions between 3D shapes with WebGL.",
+    "ogImage": "/assets/pages/mesh-merger.png",
+    "ogImageAlt": "particles transitioning between 3D mesh shapes",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "particles",
+      "mesh merger",
+      "morph",
+      "transition"
+    ]
+  },
+  "/r3f/controllers/bruno-simon-controller": {
+    "metaTitle": "Bruno Simon Third Person Controller - R3F Demo",
+    "metaDescription": "A demo of Bruno Simon's third person controller ported to React Three Fiber with procedural terrain and character movement.",
+    "ogImage": "/assets/pages/r3f/bruno-simon-controller.png",
+    "ogImageAlt": "girl standing in a simple 3D terrain",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "third person controller",
+      "Bruno Simon",
+      "character controller"
+    ]
+  },
+  "/r3f/controllers/ecctrl-controller": {
+    "metaTitle": "Ecctrl Controller Demo - 3D Character in R3F",
+    "metaDescription": "Implementation of the Ecctrl character controller in React Three Fiber with a Mixamo model, animations, and physics.",
+    "ogImage": "/assets/pages/r3f/ecctrl-controller.png",
+    "ogImageAlt": "an image of a girl standing in front of some trees",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "ecctrl",
+      "character controller",
+      "Mixamo",
+      "animations"
+    ]
+  },
+  "/r3f/controllers/first-person-controller": {
+    "metaTitle": "First Person Controller - 3D R3F with Rapier Physics",
+    "metaDescription": "A first person controller built with React Three Fiber and the Rapier physics engine, featuring joystick controls and obstacles.",
+    "ogImage": "/assets/pages/r3f/first-person-controller.png",
+    "ogImageAlt": "a first person view of a 3D scene with joystick controls",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "first person controller",
+      "Rapier",
+      "physics",
+      "FPS"
+    ]
+  },
+  "/r3f/controllers/third-person-controller": {
+    "metaTitle": "Custom Third Person Controller - 3D R3F Demo",
+    "metaDescription": "A custom third person controller experiment in React Three Fiber with a dinosaur model and camera follow mechanics.",
+    "ogImage": "/assets/pages/r3f/third-person-controller.png",
+    "ogImageAlt": "a dinosaur Trex model in a 3D scene",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "third person controller",
+      "dinosaur",
+      "camera",
+      "character controller"
+    ]
+  },
+  "/r3f/experiments/gaming-testbed": {
+    "metaTitle": "3D Gaming Testbed - Inventory & Combat in R3F",
+    "metaDescription": "A testbed for gaming features in React Three Fiber including inventory, enemies, traps, and sword combat mechanics.",
+    "ogImage": "/assets/pages/gaming-testbed.png",
+    "ogImageAlt": "an image of a 3D model of a character with a sword attacking a wizard skeleton",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "game development",
+      "inventory",
+      "combat",
+      "enemies",
+      "RPG"
+    ]
+  },
+  "/r3f/experiments/instanced-mesh-2": {
+    "metaTitle": "InstancedMesh2 Library Test - 3D Trees in R3F",
+    "metaDescription": "Testing the InstancedMesh2 library in React Three Fiber to efficiently spawn and remove large numbers of 3D trees.",
+    "ogImage": "/assets/pages/instanced-mesh-2.png",
+    "ogImageAlt": "a 3D scene with a bunch of trees",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "instanced mesh",
+      "performance",
+      "trees",
+      "instancing"
+    ]
+  },
+  "/r3f/experiments/lightning-spell": {
+    "metaTitle": "Lightning Spell Effect - 3D Three.js Demo",
+    "metaDescription": "A lightning spell hitting a 3D object, implemented with Three.js LightningStrike geometry in React Three Fiber with bloom.",
+    "ogImage": "/assets/pages/lightning-spell.png",
+    "ogImageAlt": "a lightning strike spell hitting an enemy in a 3D scene",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "lightning",
+      "spell effect",
+      "VFX",
+      "bloom"
+    ]
+  },
+  "/r3f/experiments/lightning-strike": {
+    "metaTitle": "Lightning Strike Geometry - Three.js R3F Example",
+    "metaDescription": "Using the LightningStrike geometry from three-stdlib in React Three Fiber to create realistic lightning effects with bloom.",
+    "ogImage": "/assets/pages/lightning-strike.png",
+    "ogImageAlt": "a blueish lightning bolt in a 3D scene",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "lightning strike",
+      "geometry",
+      "three-stdlib",
+      "effects"
+    ]
+  },
+  "/r3f/experiments/navmesh": {
+    "metaTitle": "Recast Navmesh Demo - 3D Pathfinding in R3F",
+    "metaDescription": "A demo of Recast navigation mesh pathfinding in a 3D scene, powered by the recast-js library and React Three Fiber.",
+    "ogImage": "/assets/pages/navmesh.png",
+    "ogImageAlt": "a simple navmesh with debug triangles shown in a 3D scene",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "navmesh",
+      "pathfinding",
+      "recast",
+      "navigation"
+    ]
+  },
+  "/r3f/experiments/navmesh-3rd-person": {
+    "metaTitle": "Navmesh 3rd Person Controller - 3D Combat in R3F",
+    "metaDescription": "A third person controller with navmesh AI agents using recast-navigation in React Three Fiber for enemy pathfinding and combat.",
+    "ogImage": "/assets/pages/navmesh-3rd-person.png",
+    "ogImageAlt": "a 3rd person character fighting a skeleton in a 3D scene",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "navmesh",
+      "pathfinding",
+      "third person",
+      "AI",
+      "combat"
+    ]
+  },
+  "/r3f/experiments/navmesh-rigid-body-agent": {
+    "metaTitle": "Navmesh Rigid Body Agent - 3D AI Demo in R3F",
+    "metaDescription": "First person controller with navmesh rigid body AI agents using recast-navigation in React Three Fiber for enemy behavior.",
+    "ogImage": "/assets/pages/navmesh-rigid-body-agent.png",
+    "ogImageAlt": "a skeleton throwing lightning strikes at a player in a 3D scene",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "navmesh",
+      "rigid body",
+      "AI agent",
+      "pathfinding",
+      "combat"
+    ]
+  },
+  "/r3f/experiments/textures": {
+    "metaTitle": "3D Texture Demo - PBR Materials in React Three Fiber",
+    "metaDescription": "Interactive demo of PBR textures applied to a 3D plane with Leva sliders for controlling texture properties in React Three Fiber.",
+    "ogImage": "/assets/pages/textures.png",
+    "ogImageAlt": "a simple 3D plane with a rocky texture applied to it",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "textures",
+      "PBR",
+      "materials",
+      "Leva"
+    ]
+  },
+  "/r3f/experiments/yuka-ai-implementation": {
+    "metaTitle": "Yuka Game AI - Deer vs Raptor Simulation in R3F",
+    "metaDescription": "A game AI simulation using the Yuka library in React Three Fiber, where a deer flees from a chasing velociraptor.",
+    "ogImage": "/assets/pages/yuka-ai-implementation.png",
+    "ogImageAlt": "a deer running away from a velociraptor in a 3D scene",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "Yuka",
+      "game AI",
+      "steering behaviors",
+      "simulation"
+    ]
+  },
+  "/r3f/grass/al-ro-grass": {
+    "metaTitle": "3D Grass Plane Shader - React Three Fiber Demo",
+    "metaDescription": "A single square grass plane in React Three Fiber based on al-ro's codepen, featuring custom grass blade shaders.",
+    "ogImage": "/assets/pages/al-ro-grass.png",
+    "ogImageAlt": "a 3D view of a grassy plane",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "grass shader",
+      "grass plane",
+      "custom shader",
+      "vegetation"
+    ]
+  },
+  "/r3f/grass/james-smyth-grass": {
+    "metaTitle": "Stylized Grass Shader - Three.js R3F Implementation",
+    "metaDescription": "Stylized grass shader ported into React Three Fiber and TypeScript from James Smyth's demo with 500K blade instances.",
+    "ogImage": "/assets/pages/james-smyth-grass.png",
+    "ogImageAlt": "a plane filled with a stylized grass shader",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "grass shader",
+      "stylized",
+      "instancing",
+      "vegetation"
+    ]
+  },
+  "/r3f/dungeon/dungeon-algo-3d": {
+    "metaTitle": "Procedural 3D Dungeon Generator - R3F Demo",
+    "metaDescription": "A procedural 3D dungeon generator ported from Unity to the browser using React Three Fiber, TypeScript, and Quaternius models.",
+    "ogImage": "/assets/pages/r3f/dungeon-algo-3d.png",
+    "ogImageAlt": "a visualization of a procedurally generated 3D dungeon",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "dungeon generator",
+      "procedural generation",
+      "game development"
+    ]
+  },
+  "/r3f/user-interfaces/healthbars": {
+    "metaTitle": "3D Healthbar Shaders - React Three Fiber UI Demo",
+    "metaDescription": "Different healthbar shader implementations in React Three Fiber, ported from a Unity demo for in-game UI rendering.",
+    "ogImage": "/assets/pages/healthbars.png",
+    "ogImageAlt": "an assortment of healthbar shaders",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "healthbar",
+      "shader",
+      "game UI",
+      "HUD"
+    ]
+  },
+  "/r3f/scenes/inventory": {
+    "metaTitle": "3D Inventory System Demo - React Three Fiber",
+    "metaDescription": "An inventory system prototype built with React and React Three Fiber, featuring item management and equipment slots.",
+    "ogImage": "/assets/pages/inventory.png",
+    "ogImageAlt": "a inventory prototype for a simple game",
+    "keywords": [
+      "react three fiber",
+      "three.js",
+      "3D",
+      "webgl",
+      "inventory system",
+      "game UI",
+      "item management",
+      "RPG"
+    ]
+  },
+  "/podcastnotes/huberman-control-pain-and-heal-faster-with-your-brain": {
+    "metaTitle": "Huberman Lab: Control Pain & Heal Faster - Notes",
+    "metaDescription": "Key takeaways from Huberman Lab Episode 9 on using neuroplasticity to control pain and accelerate healing with your brain.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Huberman Lab",
+      "Andrew Huberman",
+      "pain control",
+      "neuroplasticity",
+      "healing",
+      "neuroscience",
+      "podcast notes"
+    ]
+  },
+  "/podcastnotes/huberman-controlling-dopamine": {
+    "metaTitle": "Huberman Lab: Controlling Dopamine - Podcast Notes",
+    "metaDescription": "Notes from Huberman Lab Ep 39 on dopamine, motivation, and focus. Learn how dopamine pulses work and how to maintain healthy levels.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Huberman Lab",
+      "Andrew Huberman",
+      "dopamine",
+      "motivation",
+      "focus",
+      "neuroscience",
+      "podcast notes",
+      "productivity"
+    ]
+  },
+  "/podcastnotes/huberman-controlling-sugar": {
+    "metaTitle": "Huberman Lab: Controlling Sugar Cravings - Notes",
+    "metaDescription": "Notes from Huberman Lab Ep 64 on sugar cravings and metabolism. Learn how sugar controls appetite through taste and blood sugar.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Huberman Lab",
+      "Andrew Huberman",
+      "sugar cravings",
+      "metabolism",
+      "nutrition",
+      "neuroscience",
+      "podcast notes",
+      "health"
+    ]
+  },
+  "/podcastnotes/huberman-daily-productivity-tools": {
+    "metaTitle": "Huberman Lab: Daily Productivity Tools - Notes",
+    "metaDescription": "Notes from Huberman Lab Ep 28 on maximizing daily productivity and health. Andrew Huberman's personal routine and science-based tools.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Huberman Lab",
+      "Andrew Huberman",
+      "productivity",
+      "daily routine",
+      "health",
+      "neuroscience",
+      "podcast notes",
+      "habits"
+    ]
+  },
+  "/podcastnotes/huberman-how-to-focus-to-change-your-brain": {
+    "metaTitle": "Huberman Lab: How to Focus to Change Your Brain",
+    "metaDescription": "Notes from Huberman Lab Episode 6 on neuroplasticity and focus. How adults can harness brain plasticity through deliberate focus.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Huberman Lab",
+      "Andrew Huberman",
+      "focus",
+      "neuroplasticity",
+      "brain change",
+      "neuroscience",
+      "podcast notes"
+    ]
+  },
+  "/podcastnotes/huberman-how-to-learn-faster-by-using-failues-movement-and-balance": {
+    "metaTitle": "Huberman Lab: Learn Faster with Movement - Notes",
+    "metaDescription": "Notes from Huberman Lab Ep 7 on learning faster through failures, movement, and balance. How motor neurons drive neuroplasticity.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Huberman Lab",
+      "Andrew Huberman",
+      "learning",
+      "movement",
+      "balance",
+      "neuroplasticity",
+      "podcast notes",
+      "motor neurons"
+    ]
+  },
+  "/podcastnotes/huberman-optimize-your-brain-with-science-based-tools": {
+    "metaTitle": "Huberman Lab: Optimize Your Brain - Podcast Notes",
+    "metaDescription": "Notes from Huberman Lab Ep 8 on optimizing neuroplasticity with science-based tools, routines, and protocols for brain change.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Huberman Lab",
+      "Andrew Huberman",
+      "brain optimization",
+      "neuroplasticity",
+      "protocols",
+      "neuroscience",
+      "podcast notes"
+    ]
+  },
+  "/podcastnotes/huberman-science-of-making-habits": {
+    "metaTitle": "Huberman Lab: Science of Making Habits - Notes",
+    "metaDescription": "Notes from Huberman Lab Ep 53 on the science of habits. Learn about context dependence, limbic friction, and how to build habits.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Huberman Lab",
+      "Andrew Huberman",
+      "habits",
+      "neuroplasticity",
+      "limbic friction",
+      "neuroscience",
+      "podcast notes"
+    ]
+  },
+  "/podcastnotes/lex-elon-musk-war-ai-aliens-politics-physics-video-games-and-humanity": {
+    "metaTitle": "Lex Fridman x Elon Musk: War, AI & Humanity - Notes",
+    "metaDescription": "Notes from Lex Fridman Ep 400 with Elon Musk discussing war, AI, politics, physics, video games, and the future of humanity.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Lex Fridman",
+      "Elon Musk",
+      "AI",
+      "war",
+      "politics",
+      "physics",
+      "podcast notes",
+      "humanity"
+    ]
+  },
+  "/podcastnotes/lex-guillaume-verdon": {
+    "metaTitle": "Lex Fridman x Guillaume Verdon (e/acc) - Notes",
+    "metaDescription": "Notes from Lex Fridman Ep 407 with Guillaume Verdon on e/acc, quantum computing, physics-based AI, and accelerationism.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Lex Fridman",
+      "Guillaume Verdon",
+      "e/acc",
+      "quantum computing",
+      "AI",
+      "accelerationism",
+      "podcast notes"
+    ]
+  },
+  "/podcastnotes/lex-jeff-bezos-amazon-and-blue-origin": {
+    "metaTitle": "Lex Fridman x Jeff Bezos: Amazon & Blue Origin",
+    "metaDescription": "Notes from Lex Fridman Ep 405 with Jeff Bezos on Amazon, Blue Origin, resourcefulness, and the space race.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Lex Fridman",
+      "Jeff Bezos",
+      "Amazon",
+      "Blue Origin",
+      "space",
+      "entrepreneurship",
+      "podcast notes"
+    ]
+  },
+  "/podcastnotes/lex-john-carmack-doom-quake-vr-agi-video": {
+    "metaTitle": "Lex Fridman x John Carmack: Doom, Quake & AGI",
+    "metaDescription": "Notes from Lex Fridman Ep 309 with John Carmack on Doom, Quake, VR, AGI, video games, programming languages, and rockets.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Lex Fridman",
+      "John Carmack",
+      "Doom",
+      "Quake",
+      "VR",
+      "AGI",
+      "game development",
+      "podcast notes"
+    ]
+  },
+  "/podcastnotes/lex-joscha-bach-life-intelligence-consciousness-ai-&-the-future-of-humans": {
+    "metaTitle": "Lex Fridman x Joscha Bach: Consciousness & AI",
+    "metaDescription": "Notes from Lex Fridman Ep 392 with Joscha Bach on life, intelligence, consciousness, AI, and the seven stages of lucidity.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Lex Fridman",
+      "Joscha Bach",
+      "consciousness",
+      "AI",
+      "intelligence",
+      "lucidity",
+      "philosophy",
+      "podcast notes"
+    ]
+  },
+  "/podcastnotes/lex-marc-andreessen-future-of-the-internet-technology-and-ai": {
+    "metaTitle": "Lex Fridman x Marc Andreessen: Internet & AI",
+    "metaDescription": "Notes from Lex Fridman Ep 386 with Marc Andreessen on the future of internet, search, AI, content creation, and LLMs.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Lex Fridman",
+      "Marc Andreessen",
+      "internet",
+      "AI",
+      "LLMs",
+      "search",
+      "technology",
+      "podcast notes"
+    ]
+  },
+  "/podcastnotes/lex-mark-zuckerberg-future-of-ai-at-meta-facebook-instagram-and-whatsapp": {
+    "metaTitle": "Lex Fridman x Mark Zuckerberg: AI at Meta - Notes",
+    "metaDescription": "Notes from Lex Fridman Ep 383 with Mark Zuckerberg on AI at Meta, physicality, consciousness, and the future of social media.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Lex Fridman",
+      "Mark Zuckerberg",
+      "Meta",
+      "AI",
+      "Facebook",
+      "Instagram",
+      "social media",
+      "podcast notes"
+    ]
+  },
+  "/podcastnotes/lex-michael-levin": {
+    "metaTitle": "Lex Fridman x Michael Levin: Biology & Xenobots",
+    "metaDescription": "Notes from Lex Fridman Ep 325 with Michael Levin on biology, evolution, xenobots, and emergent hierarchies of intelligence.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Lex Fridman",
+      "Michael Levin",
+      "xenobots",
+      "biology",
+      "evolution",
+      "intelligence",
+      "emergence",
+      "podcast notes"
+    ]
+  },
+  "/podcastnotes/lex-ray-kurzweil": {
+    "metaTitle": "Lex Fridman x Ray Kurzweil: Singularity & AGI",
+    "metaDescription": "Notes from Lex Fridman Ep 321 with Ray Kurzweil on the singularity, AGI predictions, consciousness, and the Turing test.",
+    "ogImage": "",
+    "ogImageAlt": "",
+    "keywords": [
+      "Lex Fridman",
+      "Ray Kurzweil",
+      "singularity",
+      "AGI",
+      "consciousness",
+      "Turing test",
+      "AI",
+      "podcast notes"
+    ]
+  }
+}

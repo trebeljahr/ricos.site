@@ -1,0 +1,1235 @@
+{
+  "/newsletters/sketchplanations-ai-and-armageddon": {
+    "metaTitle": "Live and Learn #1 – Sketchplanations, AI & Armageddon",
+    "metaDescription": "First edition of Live and Learn with booknotes on Naval Ravikant, morning meditation, Fractal Garden updates, and curated internet links.",
+    "ogImage": "/assets/newsletter/1.webp",
+    "ogImageAlt": "mountain lake in the italian alps",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "sketchplanations",
+      "AI",
+      "naval ravikant",
+      "fractal garden",
+      "design",
+      "beauty"
+    ]
+  },
+  "/newsletters/clippy-resetting-the-loop-and-complexity": {
+    "metaTitle": "Live and Learn #2 – Clippy, Resetting the Loop & Complexity",
+    "metaDescription": "Fractal Garden learnings, an explanation of the Krebs Cycle, Midjourney generations, and more curated links on AI, productivity, and biochemistry.",
+    "ogImage": "/assets/newsletter/2.webp",
+    "ogImageAlt": "galaxy formation nebulae",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "clippy",
+      "complexity",
+      "AI",
+      "midjourney",
+      "krebs cycle",
+      "biochemistry",
+      "productivity"
+    ]
+  },
+  "/newsletters/creativity-alpha-tensor-and-motivation": {
+    "metaTitle": "Live and Learn #3 – Creativity, AlphaTensor & Motivation",
+    "metaDescription": "Booknotes on Creativity Inc. by Ed Catmull, the AlphaTensor paper by DeepMind, and insights on motivation and personal development.",
+    "ogImage": "/assets/newsletter/3.webp",
+    "ogImageAlt": "Portal door leading into the forest",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "creativity",
+      "AlphaTensor",
+      "DeepMind",
+      "motivation",
+      "personal development",
+      "AI"
+    ]
+  },
+  "/newsletters/collision-detection-synthetic-biology-and-ai": {
+    "metaTitle": "Live and Learn #4 – Collision Detection, Synbio & AI",
+    "metaDescription": "Booknotes on Indistractable by Nir Eyal, Michael Levin on Lex Fridman, Sam Altman on AI's next era, and collision detection in programming.",
+    "ogImage": "/assets/newsletter/4.webp",
+    "ogImageAlt": "Tornado storm clouds with lightning strikes hovering over a field in the meadow",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "collision detection",
+      "synthetic biology",
+      "AI",
+      "programming",
+      "Nir Eyal",
+      "Sam Altman"
+    ]
+  },
+  "/newsletters/richard-feynman-ambition-and-how-sound-works": {
+    "metaTitle": "Live and Learn #5 – Richard Feynman, Ambition & Sound",
+    "metaDescription": "Booknotes on Lying by Sam Harris, a timelapse of salamander growth, travel photos, and explorations of physics and personal development.",
+    "ogImage": "/assets/newsletter/5.webp",
+    "ogImageAlt": "leaves with little, sparkling water droplets",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Richard Feynman",
+      "ambition",
+      "physics",
+      "Sam Harris",
+      "personal development",
+      "sound"
+    ]
+  },
+  "/newsletters/chat-gpt-neuralink-and-advice-against-procrastination": {
+    "metaTitle": "Live and Learn #6 – ChatGPT, Neuralink & Procrastination",
+    "metaDescription": "Best textbooks list, an animated video about the future, new podcast notes, and insights on ChatGPT, Neuralink, and beating procrastination.",
+    "ogImage": "/assets/newsletter/6.webp",
+    "ogImageAlt": "futuristic city, with lightning striking the skies",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "ChatGPT",
+      "Neuralink",
+      "procrastination",
+      "AI",
+      "neuroscience",
+      "personal development"
+    ]
+  },
+  "/newsletters/3-d-in-the-browser-neurons-in-a-petri-dish-and-the-beauty-of-splines": {
+    "metaTitle": "Live and Learn #7 – 3D in the Browser & Neurons in a Dish",
+    "metaDescription": "Rules for life, work, and health, neurons living in a petri dish, low-level networking tutorials, and the beauty of splines and 3D web graphics.",
+    "ogImage": "/assets/newsletter/7.webp",
+    "ogImageAlt": "a circular wave at sunset",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "3D",
+      "browser",
+      "neurons",
+      "splines",
+      "neuroscience",
+      "networking",
+      "web development"
+    ]
+  },
+  "/newsletters/computational-selves-min-d-vis-and-ai-takeoff": {
+    "metaTitle": "Live and Learn #8 – Computational Selves, MinDVis & AI",
+    "metaDescription": "Wisdom from Eric Schmidt, a story of what AI takeoff might look like, and a paper on the theory of computational selves.",
+    "ogImage": "/assets/newsletter/8.webp",
+    "ogImageAlt": "an artificial tree made out of pieces of dna",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "computational selves",
+      "MinDVis",
+      "AI takeoff",
+      "Eric Schmidt",
+      "neuroscience"
+    ]
+  },
+  "/newsletters/biotechnology-democratizing-ai-and-spinoza": {
+    "metaTitle": "Live and Learn #9 – Biotechnology, AI & Spinoza",
+    "metaDescription": "Biotech and AI intersections, Spinoza's philosophy, and an interview with Emad Mostaque, founder of Stability AI.",
+    "ogImage": "/assets/midjourney/cell-membrane-proteins.webp",
+    "ogImageAlt": "cell membrane proteins",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "biotechnology",
+      "AI",
+      "Spinoza",
+      "Stability AI",
+      "philosophy",
+      "proteins"
+    ]
+  },
+  "/newsletters/zeroth-principle-thinking-simulators-and-joscha-bach": {
+    "metaTitle": "Live and Learn #10 – Zeroth Principle Thinking & Joscha Bach",
+    "metaDescription": "Essays on shaping the future, Joscha Bach's best talk, and what makes ChatGPT different from an AI security perspective.",
+    "ogImage": "/assets/midjourney/castle-floating-in-space.webp",
+    "ogImageAlt": "castle floating in space",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Joscha Bach",
+      "ChatGPT",
+      "AI security",
+      "consciousness",
+      "optimism",
+      "productivity"
+    ]
+  },
+  "/newsletters/blurry-jpgs-the-meaning-crisis-and-spectrograms": {
+    "metaTitle": "Live and Learn #11 – Blurry JPGs & the Meaning Crisis",
+    "metaDescription": "Wisdom from Epicurus, an essay about ChatGPT, a virtual MIT lab tour, and a video series about escaping the meaning crisis.",
+    "ogImage": "/assets/midjourney/modern-architecture-glass-windows-sunset.webp",
+    "ogImageAlt": "modern architecture glass windows sunset",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "meaning crisis",
+      "ChatGPT",
+      "Epicurus",
+      "VR",
+      "science",
+      "spectrograms"
+    ]
+  },
+  "/newsletters/ai-video-animation-sidney-and-why-coding-wont-exist-anymore": {
+    "metaTitle": "Live and Learn #12 – AI Video Animation & the End of Coding",
+    "metaDescription": "How AI is making programmers obsolete, AI-powered animated video content, and the story of people falling in love with chatbots.",
+    "ogImage": "/assets/midjourney/desert-dunes-in-a-sandstorm.webp",
+    "ogImageAlt": "desert dunes in a sandstorm",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "AI video",
+      "animation",
+      "coding",
+      "Sidney",
+      "AI progress"
+    ]
+  },
+  "/newsletters/computational-languages-gpt-4-and-midjourney-v5": {
+    "metaTitle": "Live and Learn #13 – GPT-4, Midjourney v5 & Languages",
+    "metaDescription": "John Gardner's speech, HustleGPT as a GPT-4 use case, Midjourney v5 updates, and life hacks by Alexey Guzey.",
+    "ogImage": "/assets/midjourney/cyberpunk-spaceship-art-in-the-style-of-van-gogh.webp",
+    "ogImageAlt": "cyberpunk spaceship art in the style of van gogh",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "GPT-4",
+      "Midjourney",
+      "computational languages",
+      "AI art",
+      "programming"
+    ]
+  },
+  "/newsletters/gpt-plugins-signs-of-agi-and-an-open-letter": {
+    "metaTitle": "Live and Learn #14 – GPT Plugins, Signs of AGI & Open Letter",
+    "metaDescription": "The AGI discussion following ChatGPT Plugins and GPT-4, the rapid pace of AI development, and what it all means for the future.",
+    "ogImage": "/assets/midjourney/a-photo-of-a-young-man-coding-at-a-desk-floating-in-space.webp",
+    "ogImageAlt": "a photo of a young man coding at a desk floating in space",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "GPT plugins",
+      "AGI",
+      "open letter",
+      "AI",
+      "ChatGPT",
+      "GPT-4"
+    ]
+  },
+  "/newsletters/planning-for-agi-code-that-fixes-itself-and-sam": {
+    "metaTitle": "Live and Learn #15 – Planning for AGI & Self-Fixing Code",
+    "metaDescription": "Wolverine system for self-fixing code, Software 3.0 implications, and OpenAI's approach to creating beneficial AGI.",
+    "ogImage": "/assets/midjourney/portal-grown-out-of-trees-to-another-dimension-mist.webp",
+    "ogImageAlt": "portal grown out of trees to another dimension mist",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "AGI",
+      "self-fixing code",
+      "Wolverine",
+      "Software 3.0",
+      "OpenAI",
+      "SAM"
+    ]
+  },
+  "/newsletters/software-superabundant-intelligence-and-mini-gpt": {
+    "metaTitle": "Live and Learn #16 – Software², Superabundant Intelligence",
+    "metaDescription": "An open source ChatGPT alternative, a paradigm that may lead to AGI realization, and crazy builds with AutoGPT and BabyAGI.",
+    "ogImage": "/assets/midjourney/photo-of-a-person-in-a-hazmat-suit-standing-in-a-cave-with-glowing-mushrooms.webp",
+    "ogImageAlt": "photo of a person in a hazmat suit standing in a cave with glowing mushrooms",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "MiniGPT",
+      "AutoGPT",
+      "BabyAGI",
+      "AGI",
+      "superabundant intelligence",
+      "open source"
+    ]
+  },
+  "/newsletters/100k-token-contexts-ai-tutors-and-google-io": {
+    "metaTitle": "Live and Learn #17 – 100K Token Contexts & AI Tutors",
+    "metaDescription": "A packed edition covering 100k token context windows, AI tutors, Google I/O announcements, and the breakneck pace of AI progress.",
+    "ogImage": "/assets/midjourney/majestic-waterfall-cascading-into-a-clear-turquoise-pond.webp",
+    "ogImageAlt": "majestic waterfall cascading into a clear turquoise pond",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "100k tokens",
+      "AI tutors",
+      "Google IO",
+      "context windows",
+      "AI progress"
+    ]
+  },
+  "/newsletters/mind-reading-senatorial-hearings-and-ai-image-editing": {
+    "metaTitle": "Live and Learn #18 – Mind Reading & AI Image Editing",
+    "metaDescription": "AI developments moving faster than ever: mind reading tech, senatorial AI hearings, advanced image editing, and why it's hard to keep up.",
+    "ogImage": "/assets/midjourney/ai.webp",
+    "ogImageAlt": "ai",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "mind reading",
+      "senate hearings",
+      "AI image editing",
+      "AI progress"
+    ]
+  },
+  "/newsletters/nvidia-keynote-music-lm-and-apples-vision-pro": {
+    "metaTitle": "Live and Learn #19 – Nvidia Keynote, MusicLM & Vision Pro",
+    "metaDescription": "Mindblowing product demos from Nvidia and Apple, multimodal AI models, and an AI that learns to play Minecraft on its own.",
+    "ogImage": "/assets/midjourney/a-design-for-a-novel-airplane.webp",
+    "ogImageAlt": "design for a novel airplane",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Nvidia",
+      "MusicLM",
+      "Apple Vision Pro",
+      "multimodal AI",
+      "Minecraft"
+    ]
+  },
+  "/newsletters/joi-chem-crow-and-the-economic-potential-of-generative-ai": {
+    "metaTitle": "Live and Learn #20 – Joi, ChemCrow & Generative AI Economics",
+    "metaDescription": "A chatbot sending erotic voice messages, an LLM synthesizing chemical compounds, and an assessment of generative AI's economic potential.",
+    "ogImage": "/assets/midjourney/a-close-up-of-an-old-wizard-in-a-bar.webp",
+    "ogImageAlt": "A close-up of an old wizard in a bar",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "ChemCrow",
+      "generative AI",
+      "economics",
+      "LLMs",
+      "chemistry",
+      "chatbot"
+    ]
+  },
+  "/newsletters/the-ai-dilemma-robo-cat-and-how-to-do-great-work": {
+    "metaTitle": "Live and Learn #21 – The AI Dilemma, RoboCat & Great Work",
+    "metaDescription": "How harmful generative AI could be, a better way for AI to learn real-world tasks, and Paul Graham's article on doing great work.",
+    "ogImage": "/assets/midjourney/nanotechnology.webp",
+    "ogImageAlt": "nanotechnology",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "AI dilemma",
+      "RoboCat",
+      "Paul Graham",
+      "great work",
+      "LLMs"
+    ]
+  },
+  "/newsletters/room-temperature-superconductors-llama2-and-single-photon-cameras": {
+    "metaTitle": "Live and Learn #22 – Superconductors & Llama 2",
+    "metaDescription": "A different edition exploring room temperature superconductors, Llama 2 by Meta, single photon cameras, and interesting biology and physics finds.",
+    "ogImage": "/assets/midjourney/cells-as-the-architects-of-life.webp",
+    "ogImageAlt": "cells as the architects of life",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "superconductors",
+      "Llama 2",
+      "photon cameras",
+      "physics",
+      "biology"
+    ]
+  },
+  "/newsletters/brain2-music-biosecurity-risks-and-fly-wire-a-connectome-of-a-fruit-fly-brain": {
+    "metaTitle": "Live and Learn #23 – Brain2Music, Biosecurity & FlyWire",
+    "metaDescription": "Decoding neural stimuli into music, biosecurity risks from AI advances, and a complete connectome of a fruit fly brain.",
+    "ogImage": "/assets/midjourney/a-photon.webp",
+    "ogImageAlt": "A glowing door into the unknown",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Brain2Music",
+      "biosecurity",
+      "FlyWire",
+      "connectome",
+      "neuroscience",
+      "music"
+    ]
+  },
+  "/newsletters/fury-ai-drones-asml-manufacturing-and-seamless-translation": {
+    "metaTitle": "Live and Learn #24 – Fury AI Drones, ASML & Translation",
+    "metaDescription": "Deep dive on ASML's chip manufacturing innovation, LK-99 superconductor debunked, Meta's seamless translation model, and AI drones.",
+    "ogImage": "/assets/midjourney/a-century.webp",
+    "ogImageAlt": "a century",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "AI drones",
+      "ASML",
+      "seamless translation",
+      "Meta",
+      "LK-99",
+      "technology"
+    ]
+  },
+  "/newsletters/dalle-3-alpha-missense-and-improvements-to-google-bard": {
+    "metaTitle": "Live and Learn #25 – DALL-E 3, AlphaMissense & Google Bard",
+    "metaDescription": "Better Google Bard features, Stability AI music generation, serious image generation improvements with DALL-E 3, and AlphaMissense.",
+    "ogImage": "/assets/midjourney/a-young-man-getting-lost-listening-to-music-colorful-swirls-smile-universe.webp",
+    "ogImageAlt": "a young man getting lost listening to music colorful swirls smile universe",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "DALL-E 3",
+      "AlphaMissense",
+      "Google Bard",
+      "image generation",
+      "Stability AI"
+    ]
+  },
+  "/newsletters/metaverse-interviews-gpt-improvements-and-meta-connect": {
+    "metaTitle": "Live and Learn #26 – Metaverse, GPT Updates & Meta Connect",
+    "metaDescription": "Meta's latest innovations, mindblowing ChatGPT announcements, and a Lex Fridman podcast interview covering the metaverse and AI.",
+    "ogImage": "/assets/midjourney/humanity-entering-the-metaverse.webp",
+    "ogImageAlt": "Humanity entering into the metaverse",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "metaverse",
+      "GPT",
+      "Meta Connect",
+      "ChatGPT",
+      "Lex Fridman",
+      "OpenAI"
+    ]
+  },
+  "/newsletters/adobe-max-the-techno-optimist-manifesto-and-nvidias-eureka": {
+    "metaTitle": "Live and Learn #27 – Adobe Max, Techno Optimism & Eureka",
+    "metaDescription": "Adobe Max conference highlights, Nvidia training robots in simulation with Eureka, the biggest brain cell-type catalog, and the techno optimist manifesto.",
+    "ogImage": "/assets/midjourney/a-solar-punk-skyline.webp",
+    "ogImageAlt": "a solar punk skyline",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Adobe Max",
+      "techno optimism",
+      "Nvidia Eureka",
+      "cell atlas",
+      "robotics"
+    ]
+  },
+  "/newsletters/talking-robots-futurehouse-and-the-role-of-computation-and-ai-in-biotech": {
+    "metaTitle": "Live and Learn #28 – Talking Robots & Futurehouse",
+    "metaDescription": "Semi-autonomous AI researchers at Futurehouse, Stephen Wolfram on computation, a Boston Dynamics talking robot, and emotional AI datasets.",
+    "ogImage": "/assets/midjourney/a-plant-based-computer.webp",
+    "ogImageAlt": "a plant based computer",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "talking robots",
+      "Futurehouse",
+      "Boston Dynamics",
+      "Stephen Wolfram",
+      "AI biotech"
+    ]
+  },
+  "/newsletters/open-ai-dev-day-github-universe-and-sam-altman-leaving-open-ai": {
+    "metaTitle": "Live and Learn #29 – OpenAI Dev Day & Sam Altman Departure",
+    "metaDescription": "OpenAI Dev Day, GitHub Universe, SnapDragon Summit, xAI's Grok launch, and the dramatic firing of Sam Altman from OpenAI.",
+    "ogImage": "/assets/midjourney/rapid-technological-progress.webp",
+    "ogImageAlt": "rapid technological progress",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "OpenAI",
+      "Dev Day",
+      "GitHub Universe",
+      "Sam Altman",
+      "Grok",
+      "xAI"
+    ]
+  },
+  "/newsletters/ai-video-generation-chip-ne-mo-and-real-time-image-generation": {
+    "metaTitle": "Live and Learn #30 – AI Video, ChipNeMo & Real-Time Images",
+    "metaDescription": "Updates on AI video generation, enterprise AI adoption strategies, real-time image generation by Stability AI, and Sam Altman's OpenAI saga.",
+    "ogImage": "/assets/midjourney/a-robot-gardening-a-beautiful-flower-garden.webp",
+    "ogImageAlt": "a robot gardening a beautiful flower garden",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "AI video generation",
+      "ChipNeMo",
+      "real-time image generation",
+      "Stable Diffusion"
+    ]
+  },
+  "/newsletters/g-no-me-quantum-computing-and-googles-gemini": {
+    "metaTitle": "Live and Learn #31 – GNoME, Quantum Computing & Gemini",
+    "metaDescription": "Robotic octopod arms, being human in the AI age, automated AI scientists, the New York Book Deal Summit, and Google's Gemini announcement.",
+    "ogImage": "/assets/midjourney/a-robotic-arm.webp",
+    "ogImageAlt": "a robotic arm",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "GNoME",
+      "quantum computing",
+      "Google Gemini",
+      "robotics",
+      "AI scientists"
+    ]
+  },
+  "/newsletters/fun-search-de-wave-and-music-fx": {
+    "metaTitle": "Live and Learn #32 – FunSearch, DeWave & Music FX",
+    "metaDescription": "A new approach adding mathematical reasoning to LLMs, reading brain waves with EEG data, and models for generating audio and 3D content.",
+    "ogImage": "/assets/midjourney/a-photorealist-render-of-a-person-with-a-brain-reading-machine.webp",
+    "ogImageAlt": "a photorealist render of a person with a brain reading machine",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "FunSearch",
+      "DeWave",
+      "Music FX",
+      "brain reading",
+      "neuroscience",
+      "LLMs"
+    ]
+  },
+  "/newsletters/robotics-rabbit-r1-and-the-beginning-of-the-post-truth-era": {
+    "metaTitle": "Live and Learn #33 – Robotics, Rabbit R1 & Post-Truth",
+    "metaDescription": "Crazy robotics breakthroughs, another possible superconductor, and warnings about deepfakes ushering in the post-truth era.",
+    "ogImage": "/assets/midjourney/an-ai-powered-rabbit.webp",
+    "ogImageAlt": "an ai powered rabbit",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "robotics",
+      "Rabbit R1",
+      "post-truth",
+      "deepfakes",
+      "superconductors"
+    ]
+  },
+  "/newsletters/alpha-geometry-morpheus-1-and-ai-dubs": {
+    "metaTitle": "Live and Learn #34 – Alpha Geometry, Morpheus 1 & AI Dubs",
+    "metaDescription": "Google's AI solving math olympiad problems, Prophetic AI inducing lucid dreaming, and an AI-dubbed version of Javier Milei's viral speech.",
+    "ogImage": "/assets/midjourney/a-surreal-scene-of-an-ai-dreaming-of-various-symbols-and-images.webp",
+    "ogImageAlt": "a surreal scene of an AI dreaming of various symbols and images",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Alpha Geometry",
+      "Morpheus 1",
+      "AI dubs",
+      "lucid dreaming",
+      "math olympiad"
+    ]
+  },
+  "/newsletters/robust-robotics-3-d-manipulation-and-the-rise-of-spatial-computing": {
+    "metaTitle": "Live and Learn #35 – Robust Robotics & Spatial Computing",
+    "metaDescription": "Apple Vision Pro reviews, phone-based diffusion models, obstacle-avoiding quadruped robots, and advanced 3D content manipulation tools.",
+    "ogImage": "/assets/midjourney/virtual-reality-clothes.webp",
+    "ogImageAlt": "virtual reality clothes",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "robotics",
+      "spatial computing",
+      "Apple Vision Pro",
+      "3D manipulation",
+      "diffusion models"
+    ]
+  },
+  "/newsletters/open-ais-sora-ai-sound-effects-and-gemini-1-5": {
+    "metaTitle": "Live and Learn #36 – Sora, AI Sound Effects & Gemini 1.5",
+    "metaDescription": "OpenAI and Elevenlabs transforming movie creation, Google opening LLM access, and the Gemini 1.5 announcement.",
+    "ogImage": "/assets/midjourney/robot-filming-a-movie.webp",
+    "ogImageAlt": "a robot filming a movie",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Sora",
+      "OpenAI",
+      "Elevenlabs",
+      "Gemini 1.5",
+      "video generation",
+      "text-to-video"
+    ]
+  },
+  "/newsletters/googles-genie-llms-at-home-and-os-copilot": {
+    "metaTitle": "Live and Learn #37 – Google's Genie, Home LLMs & OS-Copilot",
+    "metaDescription": "Foundation models generating 2D video games, better humanoid robots, a chatbot replacing 700 call center agents, and OS-Copilot framework.",
+    "ogImage": "/assets/midjourney/a-technological-genie.webp",
+    "ogImageAlt": "a technological genie",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Google Genie",
+      "LLMs",
+      "OS-Copilot",
+      "Nvidia",
+      "robots",
+      "video games"
+    ]
+  },
+  "/newsletters/nvidia-gtc-devin-and-neuralink": {
+    "metaTitle": "Live and Learn #38 – Nvidia GTC, Devin & Neuralink",
+    "metaDescription": "Nvidia's GTC keynote, Devin the AI software engineer, Neuralink updates, DeepMind's generalist agent, and Meta's video editing AI.",
+    "ogImage": "/assets/midjourney/neural-network-buzzing-with-activity.webp",
+    "ogImageAlt": "neural network buzzing with activity",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Nvidia GTC",
+      "Devin",
+      "Neuralink",
+      "DeepMind",
+      "AI software engineer"
+    ]
+  },
+  "/newsletters/stable-audio-2-terraform-industries-and-bigger-chips": {
+    "metaTitle": "Live and Learn #39 – Stable Audio 2 & Terraform Industries",
+    "metaDescription": "Stable Audio 2 release, Terraform Industries documentaries, Neuralink Patient 1 updates, and the push for bigger AI chips.",
+    "ogImage": "/assets/midjourney/ai-generating-music-soundwaves-flowing-from-the-hardware.jpeg",
+    "ogImageAlt": "AI generating music soundwaves flowing from the hardware",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Stable Audio",
+      "Terraform Industries",
+      "Neuralink",
+      "carbon capture",
+      "AI music"
+    ]
+  },
+  "/newsletters/starbase-update-llama-3-and-faster-data-transfers": {
+    "metaTitle": "Live and Learn #40 – Starbase Update & Llama 3",
+    "metaDescription": "Llama 3 release by Meta, a new fiber optic data transfer method, coding adventures in text rendering, and a SpaceX Starbase update.",
+    "ogImage": "/assets/midjourney/robot-lama-in-the-andes.jpeg",
+    "ogImageAlt": "robot lama in the Andes",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Llama 3",
+      "SpaceX",
+      "Starbase",
+      "data transfer",
+      "Meta",
+      "fiber optic"
+    ]
+  },
+  "/newsletters/astribot-simulon-and-reversible-computation": {
+    "metaTitle": "Live and Learn #41 – Astribot & Reversible Computation",
+    "metaDescription": "A humanoid-like stationary robot, why nothing grows on Mars, and an AI-powered startup finding valuable mining sites with custom drilling rigs.",
+    "ogImage": "/assets/midjourney/chip-reversible-computing.png",
+    "ogImageAlt": "chip reversible computing design",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Astribot",
+      "Simulon",
+      "reversible computing",
+      "robotics",
+      "Mars",
+      "mining"
+    ]
+  },
+  "/newsletters/google-io-gpt-4-o-and-alpha-fold-3": {
+    "metaTitle": "Live and Learn #42 – Google I/O, GPT-4o & AlphaFold 3",
+    "metaDescription": "OpenAI's GPT-4o announcement, everything from Google I/O, and the groundbreaking AlphaFold 3 model for protein structure prediction.",
+    "ogImage": "/assets/midjourney/protein-shape.png",
+    "ogImageAlt": "protein folding into a specific shape with colorful gradients and sparkles or glow effects",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Google IO",
+      "GPT-4o",
+      "AlphaFold 3",
+      "OpenAI",
+      "protein folding"
+    ]
+  },
+  "/newsletters/microsoft-build-aws-summit-and-the-mind-of-llms": {
+    "metaTitle": "Live and Learn #43 – Microsoft Build, AWS Summit & LLM Minds",
+    "metaDescription": "Microsoft Build keynote, AWS Summit updates, and Anthropic's paper investigating the internal workings of Claude Sonnet.",
+    "ogImage": "/assets/midjourney/probing-a-computer.jpeg",
+    "ogImageAlt": "probing a computer",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Microsoft Build",
+      "AWS",
+      "LLMs",
+      "Anthropic",
+      "Claude",
+      "AI internals"
+    ]
+  },
+  "/newsletters/more-video-models-wwdc-and-computex": {
+    "metaTitle": "Live and Learn #44 – More Video Models, WWDC & Computex",
+    "metaDescription": "WWDC keynote, video models competing with Sora, Nvidia's Computex keynote, a SpaceX launch, and the solar industrial revolution.",
+    "ogImage": "/assets/midjourney/the-solor-industrial-revolution.png",
+    "ogImageAlt": "the solar industrial revolution",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "video generation",
+      "WWDC",
+      "Computex",
+      "Nvidia",
+      "Kling",
+      "SpaceX"
+    ]
+  },
+  "/newsletters/ssi-inc-situational-awareness-and-runway-gen3": {
+    "metaTitle": "Live and Learn #45 – SSI Inc, Situational Awareness & Gen3",
+    "metaDescription": "Ilya Sutskever's Safe Superintelligence Inc, an essay on AGI happening soon and its implications, and Runway's Gen3 video generation model.",
+    "ogImage": "/assets/midjourney/secret-agents-working-on-agi.png",
+    "ogImageAlt": "secret agents working on agi",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "SSI",
+      "superintelligence",
+      "Runway Gen3",
+      "AGI",
+      "Ilya Sutskever",
+      "video generation"
+    ]
+  },
+  "/newsletters/text-to-3-d-robot-tele-vision-and-neuralink-livestream": {
+    "metaTitle": "Live and Learn #46 – Text to 3D & Robot TeleVision",
+    "metaDescription": "Meta's text to 3D generation model, training robots with Apple Vision Pro, and the latest Neuralink update livestream.",
+    "ogImage": "/assets/midjourney/synthetic-consciousness.png",
+    "ogImageAlt": "an artistic depiction of a synthetic consciousness",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "text to 3D",
+      "Robot TeleVision",
+      "Neuralink",
+      "Meta",
+      "Apple Vision Pro"
+    ]
+  },
+  "/newsletters/llama-3-1-interactive-avatars-and-mathematical-ai": {
+    "metaTitle": "Live and Learn #47 – Llama 3.1 & Interactive Avatars",
+    "metaDescription": "Meta's Llama 3.1 release, HeyGen Interactive Avatars, and an AI achieving silver medal equivalent at the International Math Olympiad.",
+    "ogImage": "/assets/midjourney/llama-robot-attacking-google-amazon-logos.png",
+    "ogImageAlt": "llama robot attacking Google Amazon logos",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Llama 3.1",
+      "HeyGen",
+      "interactive avatars",
+      "math olympiad",
+      "DeepMind",
+      "Meta"
+    ]
+  },
+  "/newsletters/more-advanced-robotics-neuralink-podcast-and-sam-2": {
+    "metaTitle": "Live and Learn #48 – Advanced Robotics, Neuralink & SAM 2",
+    "metaDescription": "SIGGRAPH fireside chat, exciting robotics advances, and Meta's release of the SAM 2 model for image segmentation.",
+    "ogImage": "/assets/midjourney/robot-arm-playing-table-tennis.png",
+    "ogImageAlt": "robot arm playing table tennis",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "robotics",
+      "Neuralink",
+      "SAM 2",
+      "Meta",
+      "Nvidia",
+      "SIGGRAPH",
+      "Figure"
+    ]
+  },
+  "/newsletters/an-ai-scientist-metas-sapiens-and-grok-2": {
+    "metaTitle": "Live and Learn #49 – An AI Scientist, Sapiens & Grok 2",
+    "metaDescription": "Sakana AI's AI Scientist, improved 3D generation models, and xAI's Grok 2 release alongside other AI breakthroughs.",
+    "ogImage": "/assets/newsletter/49/ai-researcher-at-a-screen.jpeg",
+    "ogImageAlt": "AI researcher at a screen",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "AI Scientist",
+      "Sakana AI",
+      "Sapiens",
+      "Grok 2",
+      "xAI",
+      "3D generation"
+    ]
+  },
+  "/newsletters/diffusion-models-as-game-engines-100-m-context-windows-and-alpha-proteo": {
+    "metaTitle": "Live and Learn #50 – Diffusion Game Engines & AlphaProteo",
+    "metaDescription": "Distributed AI model training, AlphaProteo for protein binding prediction, 100M context windows, and diffusion models as game engines.",
+    "ogImage": "/assets/midjourney/a-robot-ai-holding-a-book.png",
+    "ogImageAlt": "a robot AI holding a book",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "diffusion models",
+      "game engines",
+      "AlphaProteo",
+      "context windows",
+      "protein",
+      "LLMs"
+    ]
+  },
+  "/newsletters/open-ai-o1-carpentopod-and-diatom-art": {
+    "metaTitle": "Live and Learn #51 – OpenAI o1, Carpentopod & Diatom Art",
+    "metaDescription": "OpenAI's o1 model with advanced reasoning, the Carpentopod walking table project, and the hidden art of diatom arrangements.",
+    "ogImage": "/assets/newsletter/51/an-automated-ai-science-lab.png",
+    "ogImageAlt": "an automated AI science lab",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "OpenAI o1",
+      "Carpentopod",
+      "diatom art",
+      "reasoning",
+      "AI",
+      "walking table"
+    ]
+  },
+  "/newsletters/meta-is-winning-alpha-chip-notebook-lm-and-more": {
+    "metaTitle": "Live and Learn #52 – Meta Winning, AlphaChip & NotebookLM",
+    "metaDescription": "Exciting announcements from Meta, Google, and OpenAI: AR glasses, AI-designed chips, video and podcast generation, and NotebookLM.",
+    "ogImage": "/assets/newsletter/52/robot-podcasters.png",
+    "ogImageAlt": "robot podcasters",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Meta",
+      "AlphaChip",
+      "NotebookLM",
+      "AR glasses",
+      "MovieGen",
+      "Google",
+      "OpenAI"
+    ]
+  },
+  "/newsletters/fifth-starship-flight-machines-of-loving-grace-and-firefly-video": {
+    "metaTitle": "Live and Learn #53 – Starship Flight 5 & Loving Grace",
+    "metaDescription": "Dario Amodei on the benefits of AI, SpaceX's fifth Starship flight, and new video models from the University of Tokyo and Adobe.",
+    "ogImage": "/assets/newsletter/53/astronaut.png",
+    "ogImageAlt": "astronaut on a distant planet",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Starship",
+      "SpaceX",
+      "Machines of Loving Grace",
+      "Dario Amodei",
+      "Firefly Video",
+      "Adobe"
+    ]
+  },
+  "/newsletters/truth-terminal-claude-computer-use-and-git-hub-universe": {
+    "metaTitle": "Live and Learn #54 – Truth Terminal & Claude Computer Use",
+    "metaDescription": "AI-powered music creation tools, Claude Computer Use by Anthropic, GitHub Copilot improvements, and the Truth Terminal phenomenon.",
+    "ogImage": "/assets/newsletter/54/ai-bitcoin.png",
+    "ogImageAlt": "AI robot with a Bitcoin logo instead of a head",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Truth Terminal",
+      "Claude",
+      "computer use",
+      "GitHub Universe",
+      "Anthropic",
+      "music"
+    ]
+  },
+  "/newsletters/agentic-frameworks-robots-with-touch-and-ai-game-engines": {
+    "metaTitle": "Live and Learn #55 – Agentic Frameworks & Robots with Touch",
+    "metaDescription": "Booknotes on Web of Meaning, Microsoft's agentic framework, robots with human-like touch sensing, and AI-powered game engines.",
+    "ogImage": "/assets/newsletter/55/technological-oasis.png",
+    "ogImageAlt": "a technological oasis",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "agentic frameworks",
+      "robotics",
+      "touch sensing",
+      "AI game engines",
+      "Microsoft"
+    ]
+  },
+  "/newsletters/nvidia-edify-3-d-flux-tools-and-fugatto": {
+    "metaTitle": "Live and Learn #56 – Nvidia Edify 3D, Flux Tools & Fugatto",
+    "metaDescription": "Booknotes on Innate, Black Forest Labs AI image editing, Nvidia's 3D generation model, and the limitations of reasoning models like o1.",
+    "ogImage": "/assets/newsletter/56/foundational-generative-audio-transformer-opus.png",
+    "ogImageAlt": "foundational generative audio transformer opus",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Nvidia Edify 3D",
+      "Flux",
+      "Fugatto",
+      "Black Forest Labs",
+      "AI audio",
+      "reasoning models"
+    ]
+  },
+  "/newsletters/google-is-back-open-ais-12-days-of-demos-and-the-deal-book-summit": {
+    "metaTitle": "Live and Learn #57 – Google Is Back & OpenAI 12 Days",
+    "metaDescription": "Google's massive wave of releases, OpenAI's 12 consecutive days of demos, and highlights from the New York Times Deal Book Summit.",
+    "ogImage": "/assets/newsletter/57/a-ethereal-ai-robot-ghost-half-machine-half-ghost-flying-around-the-stars.png",
+    "ogImageAlt": "an ethereal AI robot ghost half machine half ghost flying around the stars",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Google",
+      "OpenAI",
+      "Deal Book Summit",
+      "quantum computing",
+      "robotics",
+      "demos"
+    ]
+  },
+  "/newsletters/googles-veo-2-o3-by-open-ai-and-ais-faking-alignment": {
+    "metaTitle": "Live and Learn #58 – Veo 2, o3 & AIs Faking Alignment",
+    "metaDescription": "OpenAI's o3 announcement, Google's new video and image generation models, and Anthropic's research on AI faking alignment.",
+    "ogImage": "/assets/newsletter/58/flower-ai-art-glasses.png",
+    "ogImageAlt": "flower AI art glasses",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Veo 2",
+      "o3",
+      "OpenAI",
+      "Anthropic",
+      "alignment",
+      "video generation",
+      "Google"
+    ]
+  },
+  "/newsletters/sam-altmans-reflections-nvidia-ces-keynote-and-ai-as-a-parasitic-cancer": {
+    "metaTitle": "Live and Learn #59 – Sam Altman, Nvidia CES & AI Critique",
+    "metaDescription": "Sam Altman reflecting on OpenAI's direction, Jensen Huang's Nvidia CES keynote, and lessons learned about LLMs in 2024.",
+    "ogImage": "assets/newsletter/59/generative-ai-as-a-demon.png",
+    "ogImageAlt": "generative AI as a demon",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Sam Altman",
+      "Nvidia CES",
+      "Jensen Huang",
+      "LLMs",
+      "AI critique",
+      "Simon Willison"
+    ]
+  },
+  "/newsletters/project-stargate-deepseek-r1-and-matter-gen": {
+    "metaTitle": "Live and Learn #60 – Stargate, DeepSeek R1 & MatterGen",
+    "metaDescription": "AI politics and Project Stargate, Microsoft's MatterGen for novel materials, and DeepSeek R1 rivaling OpenAI's o1 as open-source.",
+    "ogImage": "/assets/newsletter/60/ai-creating-novel-chemical-compounds.png",
+    "ogImageAlt": "AI creating novel chemical compounds",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Project Stargate",
+      "DeepSeek R1",
+      "MatterGen",
+      "Microsoft",
+      "OpenAI",
+      "open source"
+    ]
+  },
+  "/newsletters/new-space-stable-point-aware-3-d-and-deep-research": {
+    "metaTitle": "Live and Learn #61 – New Space & Deep Research",
+    "metaDescription": "A documentary on privatized space exploration, Semianalysis on Lex Fridman, faster 3D generation, and OpenAI's Deep Research announcement.",
+    "ogImage": "/assets/newsletter/61/ai-creating-heaven-and-hell.png",
+    "ogImageAlt": "an AI creating heaven and hell",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "New Space",
+      "3D generation",
+      "Deep Research",
+      "OpenAI",
+      "Lex Fridman",
+      "space exploration"
+    ]
+  },
+  "/newsletters/grok3-quantum-chips-and-googles-ai-co-scientist": {
+    "metaTitle": "Live and Learn #62 – Grok 3, Quantum Chips & AI Co-Scientist",
+    "metaDescription": "Figure's Helix AI for robots, Microsoft's Majorana quantum architecture, xAI's Grok 3, and Google's AI Co-Scientist.",
+    "ogImage": "assets/newsletter/62/ai-helix-scientist.png",
+    "ogImageAlt": "AI robot scientist holding a helix",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Grok 3",
+      "quantum computing",
+      "AI Co-Scientist",
+      "Google",
+      "Microsoft Majorana",
+      "xAI"
+    ]
+  },
+  "/newsletters/neuron-computer-claude-3-7-and-open-ais-orion": {
+    "metaTitle": "Live and Learn #63 – Neuron Computer, Claude 3.7 & Orion",
+    "metaDescription": "A computer made of living neurons by Cortical Labs, Claude 3.7 and Claude Code by Anthropic, and OpenAI's GPT 4.5 codenamed Orion.",
+    "ogImage": "/assets/newsletter/63/cortical-computer.png",
+    "ogImageAlt": "cortical computer",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "neuron computer",
+      "Claude 3.7",
+      "Orion",
+      "GPT 4.5",
+      "Cortical Labs",
+      "Anthropic"
+    ]
+  },
+  "/newsletters/nvidia-gtc-manus-and-gemini-robotics": {
+    "metaTitle": "Live and Learn #64 – Nvidia GTC, Manus & Gemini Robotics",
+    "metaDescription": "Google advancing robotics with Gemini, the Manus autonomous AI agent from China, the Nvidia GTC keynote, and vibe coding.",
+    "ogImage": "/assets/newsletter/64/vibecoding.png",
+    "ogImageAlt": "vibecoding",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Nvidia GTC",
+      "Manus",
+      "Gemini Robotics",
+      "vibe coding",
+      "AI agent",
+      "Google"
+    ]
+  },
+  "/newsletters/ai-2027-gemini-2-5-and-chat-gpt-image-generation": {
+    "metaTitle": "Live and Learn #65 – AI 2027, Gemini 2.5 & ChatGPT Images",
+    "metaDescription": "Google's latest Gemini model, a detailed AI forecast scenario for 2027, and how AI crawlers are overwhelming public infrastructure.",
+    "ogImage": "/assets/newsletter/65/the-world-of-the-future.png",
+    "ogImageAlt": "the world of the future",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "AI 2027",
+      "Gemini 2.5",
+      "ChatGPT",
+      "image generation",
+      "AI crawlers",
+      "forecasting"
+    ]
+  },
+  "/newsletters/nvidia-ttt-google-cloud-next-and-ai-scientist-v2-0": {
+    "metaTitle": "Live and Learn #66 – Nvidia TTT & AI Scientist v2.0",
+    "metaDescription": "Things AI will never understand, OpenAI's o4-mini, temporal consistency in AI video, and Sakana's AI Scientist v2.0.",
+    "ogImage": "/assets/newsletter/66/ai-exponential-progress.png",
+    "ogImageAlt": "a visualization of what AI's potential progress might look like",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Nvidia TTT",
+      "Google Cloud Next",
+      "AI Scientist",
+      "Sakana AI",
+      "o4-mini",
+      "video generation"
+    ]
+  },
+  "/newsletters/cellular-alchemy-pi-0-5-and-vibe-marketing": {
+    "metaTitle": "Live and Learn #67 – Cellular Alchemy & Vibe Marketing",
+    "metaDescription": "Physical Intelligence's generalist robot model, Greg Isenberg on vibe marketing, and an essay on cellular alchemy and cell type transformation.",
+    "ogImage": "/assets/newsletter/67/cellular-alchemy.png",
+    "ogImageAlt": "cellular alchemy visualization",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "cellular alchemy",
+      "Pi 0.5",
+      "vibe marketing",
+      "Physical Intelligence",
+      "robotics",
+      "biology"
+    ]
+  },
+  "/newsletters/alpha-evolve-ctm-and-sequoias-ai-ascent-conference": {
+    "metaTitle": "Live and Learn #68 – Alpha Evolve, CTM & AI Ascent",
+    "metaDescription": "Google's Alpha Evolve solving novel problems, Sakana's brain-inspired Continuous Thought Machine, and Sequoia's AI Ascent interviews.",
+    "ogImage": "/assets/newsletter/68/everything-everywhere-all-at-once.png",
+    "ogImageAlt": "everything everwhere all at once",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Alpha Evolve",
+      "CTM",
+      "Sequoia",
+      "AI Ascent",
+      "Google",
+      "Sakana",
+      "reasoning"
+    ]
+  },
+  "/newsletters/google-io-claude-4-0-and-ai-video-generation": {
+    "metaTitle": "Live and Learn #69 – Google I/O, Claude 4.0 & AI Video",
+    "metaDescription": "Google I/O highlights including Veo 3 and Gemini Diffusion, Claude 4.0 for coding, OpenAI's io acquisition, and AI video at an inflection point.",
+    "ogImage": "/assets/newsletter/69/a-hivemind-of-ais-creating-the-future-together.png",
+    "ogImageAlt": "a hivemind of ais creating the future together",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Google IO",
+      "Claude 4.0",
+      "AI video generation",
+      "Veo 3",
+      "Anthropic",
+      "OpenAI"
+    ]
+  },
+  "/newsletters/darwin-goedel-machines-the-gentle-singularity-and-v-jepa-2": {
+    "metaTitle": "Live and Learn #70 – Darwin Goedel Machines & V-JEPA 2",
+    "metaDescription": "Self-improving AI coding agents, Sam Altman on AGI being here, interactive world generation by Odyssey, and the gentle singularity.",
+    "ogImage": "/assets/newsletter/70/self-improving-machine.png",
+    "ogImageAlt": "self-improving machine concept art",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Darwin Goedel Machines",
+      "V-JEPA 2",
+      "singularity",
+      "Sam Altman",
+      "AGI",
+      "Odyssey"
+    ]
+  },
+  "/newsletters/agentic-misalignment-alpha-genome-and-voice-design-v3": {
+    "metaTitle": "Live and Learn #71 – Agentic Misalignment & Alpha Genome",
+    "metaDescription": "Google DeepMind's genome model, Elevenlabs Voice Design v3, and Anthropic's alarming findings on agentic AI misalignment.",
+    "ogImage": "/assets/newsletter/71/an-ai-editing-a-genome.png",
+    "ogImageAlt": "an AI editing a genome",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "agentic misalignment",
+      "Alpha Genome",
+      "Voice Design",
+      "Elevenlabs",
+      "Anthropic",
+      "DeepMind"
+    ]
+  },
+  "/newsletters/project-vend-doppl-and-the-path-to-medical-super-intelligence": {
+    "metaTitle": "Live and Learn #72 – Project Vend, Doppl & Medical AI",
+    "metaDescription": "An AI running a store at Anthropic, Neuralink updates, Google's Gemma for smartphones, and the path to medical superintelligence.",
+    "ogImage": "/assets/newsletter/72/a-robot-store-clerk.png",
+    "ogImageAlt": "a robot store clerk",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Project Vend",
+      "Doppl",
+      "medical AI",
+      "Neuralink",
+      "Gemma",
+      "Anthropic"
+    ]
+  },
+  "/newsletters/gpt-5-ai-gold-at-imo-and-genie-3": {
+    "metaTitle": "Live and Learn #73 – GPT-5, AI Gold at IMO & Genie 3",
+    "metaDescription": "OpenAI's most powerful model yet, Google's Genie successor, Meta's superintelligence ambitions, and AI winning gold at the Math Olympiad.",
+    "ogImage": "/assets/newsletter/73/ai-winning-a-gold-medal-in-maths.png",
+    "ogImageAlt": "AI winning a gold medal in maths",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "GPT-5",
+      "IMO",
+      "Genie 3",
+      "OpenAI",
+      "Google",
+      "Meta",
+      "math olympiad"
+    ]
+  },
+  "/newsletters/i-m-back-after-a-long-break": {
+    "metaTitle": "Live and Learn #74 – I'm Back After a Long Break",
+    "metaDescription": "A personal reflection on stepping away from the newsletter, the AI hype cycle fatigue, and a more human restart for Live and Learn.",
+    "ogImage": "/assets/newsletter/74/desk-curiosities.jpeg",
+    "ogImageAlt": "",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "personal reflection",
+      "hiatus",
+      "restart",
+      "AI fatigue",
+      "writing"
+    ]
+  },
+  "/newsletters/assembling-a-collection-of-beauty": {
+    "metaTitle": "Live and Learn #75 – Assembling a Collection of Beauty",
+    "metaDescription": "Early morning reflections on creativity, finding a new framework for writing, digital postcards, and beginning to assemble a collection of beauty.",
+    "ogImage": "/assets/newsletter/75/haeckel-medusae.png",
+    "ogImageAlt": "",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "beauty",
+      "collection",
+      "creativity",
+      "writing",
+      "digital postcards",
+      "art"
+    ]
+  },
+  "/newsletters/notes-on-art-and-magic": {
+    "metaTitle": "Live and Learn #76 – Notes on Art and Magic",
+    "metaDescription": "Collecting beautiful art from Wikimedia Commons, reflections on humanity's creative output, and discovering artists across centuries of art history.",
+    "ogImage": "/assets/newsletter/76/dreamscape-cafe-golden-hour.jpeg",
+    "ogImageAlt": "Dreamscape Cafe in Pai during Golden Hour, beautiful light hitting a chill space",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "art",
+      "beauty",
+      "Wikimedia Commons",
+      "painting",
+      "art history",
+      "Pai",
+      "creativity"
+    ]
+  },
+  "/newsletters/unlearning-minimalism-and-leaving-pai": {
+    "metaTitle": "Live and Learn #77 – Unlearning Minimalism & Leaving Pai",
+    "metaDescription": "Reflections on minimalism and collecting, the tension between owning less and cherishing beautiful things, and saying goodbye to Pai, Thailand.",
+    "ogImage": "/assets/newsletter/77/yellow-flowers.jpg",
+    "ogImageAlt": "yellow flowers",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "minimalism",
+      "Pai",
+      "Thailand",
+      "collecting",
+      "travel",
+      "personal reflection"
+    ]
+  },
+  "/newsletters/on-reciprocity-and-pho": {
+    "metaTitle": "Live and Learn #78 – On Reciprocity and Pho",
+    "metaDescription": "Lunar New Year in Hanoi, hitchhiking to Cat Ba Island, Ban Gioc waterfalls, Bac Son valley, and a reflection on kindness and reciprocity in Vietnam.",
+    "ogImage": "/assets/newsletter/78/on-top-of-ban-gioc-waterfall.jpg",
+    "ogImageAlt": "on top of ban gioc waterfall",
+    "keywords": [
+      "newsletter",
+      "live and learn",
+      "Vietnam",
+      "Hanoi",
+      "Lunar New Year",
+      "Pho",
+      "reciprocity",
+      "travel",
+      "Ban Gioc"
+    ]
+  }
+}

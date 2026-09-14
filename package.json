@@ -244,5 +244,10 @@
       "biome check --write --no-errors-on-unmatched"
     ]
   },
+  "pnpm": {
+    "patchedDependencies": {
+      "velite@0.3.1": "patches/velite@0.3.1.patch"
+    }
+  },
   "packageManager": "pnpm@10.33.2"
 }

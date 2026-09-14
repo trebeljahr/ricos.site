@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  velite@0.3.1:
+    hash: 047f112334cdd9da7720537d042d615c25485dee7822b577d724bb0ae8d3c87d
+    path: patches/velite@0.3.1.patch
+
 importers:
 
   .:
@@ -485,7 +490,7 @@ importers:
         version: 4.1.1(file-loader@6.2.0(webpack@5.105.4(esbuild@0.27.4)))(webpack@5.105.4(esbuild@0.27.4))
       velite:
         specifier: ^0.3.1
-        version: 0.3.1
+        version: 0.3.1(patch_hash=047f112334cdd9da7720537d042d615c25485dee7822b577d724bb0ae8d3c87d)
       vercel-submodules:
         specifier: ^1.1.0
         version: 1.1.0
@@ -12973,7 +12978,7 @@ snapshots:
 
   v8n@1.5.1: {}
 
-  velite@0.3.1:
+  velite@0.3.1(patch_hash=047f112334cdd9da7720537d042d615c25485dee7822b577d724bb0ae8d3c87d):
     dependencies:
       '@mdx-js/mdx': 3.1.1
       esbuild: 0.25.12

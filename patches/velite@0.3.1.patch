@@ -1,0 +1,38 @@
+diff --git a/dist/chunk-4HFW4XPZ.js b/dist/chunk-4HFW4XPZ.js
+index 68120c9..06130a3 100644
+--- a/dist/chunk-4HFW4XPZ.js
++++ b/dist/chunk-4HFW4XPZ.js
+@@ -38094,8 +38094,33 @@ var watch = async (config) => {
+   const { root: root4, collections, configImports } = config;
+   logger.info(`watching for changes in '${root4}'`);
+   const patterns = Object.values(collections).flatMap(({ pattern }) => pattern);
++  // chokidar 4 has no fsevents backend, so on macOS every watched file holds an
++  // open fd. Watching all of `root` pulls in assets, .git, etc. and pushes the
++  // host process past OPEN_MAX (10240), after which child_process.spawn fails
++  // with EBADF. Only watch the directories collection patterns can match.
++  const rootAbs = resolve(root4);
++  const bases = patterns.filter((p) => !p.startsWith("!")).map((p) => {
++    const segments = p.replaceAll("\\", "/").split("/");
++    const staticSegments = [];
++    for (const segment of segments) {
++      if (/[*?[\]{}()!+@]/.test(segment)) break;
++      staticSegments.push(segment);
++    }
++    if (staticSegments.length === segments.length) staticSegments.pop();
++    return staticSegments.join("/");
++  });
++  const isIgnored = (path, stats) => {
++    const rel = relative(rootAbs, resolve(path)).replaceAll("\\", "/");
++    if (rel === "" || rel.startsWith("..")) return false;
++    if (rel.split("/").some((segment) => segment.startsWith("."))) return true;
++    if (bases.includes("")) return stats?.isFile() ? !matchPatterns(rel, patterns) : false;
++    const related = bases.some((base) => rel === base || rel.startsWith(base + "/") || base.startsWith(rel + "/"));
++    if (!related) return true;
++    return stats?.isFile() ? !matchPatterns(rel, patterns) : false;
++  };
+   const watcher = watch2([".", ...configImports], {
+     cwd: root4,
++    ignored: isIgnored,
+     ignoreInitial: true,
+     awaitWriteFinish: { stabilityThreshold: 50, pollInterval: 10 }
+   }).on("all", async (event, filename) => {

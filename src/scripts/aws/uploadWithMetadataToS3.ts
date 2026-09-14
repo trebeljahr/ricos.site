@@ -52,14 +52,12 @@ const limit = pLimit(5);
 async function uploadDir(directoryPath: string) {
   const files = await collectFilesInPath(directoryPath);
 
-  let counter = 1;
-
   const dirName = path.basename(directoryPath);
   const format = `${dirName} | {bar} | {percentage}% | {value}/{total} | {eta}s`;
   const progress = new SingleBar({ format }, Presets.shades_classic);
 
   console.info("Checking for existing files...");
-  progress.start(files.length, counter);
+  progress.start(files.length, 0);
 
   const filesToUploadPromises = await Promise.all(
     files.map(async (filePath) => {
@@ -68,14 +66,14 @@ async function uploadDir(directoryPath: string) {
       const fileMetadata = localMetadata[key];
 
       if (fileMetadata?.existsInS3) {
-        progress.update(counter++);
+        progress.increment();
         return;
       }
 
       const fileDoesNotExist = !(await limit(() => doesFileExistInS3(key)));
       const fileHasRightEnding = /\.(jpg|jpeg|png|webp)$/i.test(filePath);
 
-      progress.update(counter++);
+      progress.increment();
 
       if (fileDoesNotExist && fileHasRightEnding) {
         return filePath;
@@ -99,10 +97,14 @@ async function uploadDir(directoryPath: string) {
 
   const filesToUpload = filesToUploadPromises.filter(Boolean) as string[];
   progress.stop();
-  counter = 1;
+
+  if (filesToUpload.length === 0) {
+    console.info("Nothing to upload.");
+    return;
+  }
 
   console.info("Uploading Files...");
-  progress.start(filesToUpload.length, counter);
+  progress.start(filesToUpload.length, 0);
 
   const uploadsPromises = filesToUpload.map(async (filePath) => {
     const data = await getWidthAndHeightFromFileSystem(filePath);
@@ -114,7 +116,7 @@ async function uploadDir(directoryPath: string) {
         aspectRatio: String(data?.width / data?.height),
       }),
     );
-    progress.update(counter++);
+    progress.increment();
   });
 
   await Promise.all(uploadsPromises);

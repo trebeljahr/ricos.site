@@ -104,13 +104,13 @@ type Params = {
 };
 
 export async function getStaticPaths() {
-  const { loadVeliteData } = await import("src/lib/loadVeliteData");
+  const { loadVeliteData, veliteFallback } = await import("src/lib/loadVeliteData");
   const pages: PageType[] = loadVeliteData("pages.json");
   return {
     paths: pages.map<Params>(({ slug }: PageType) => ({
       params: { id: slug },
     })),
-    fallback: false,
+    fallback: veliteFallback,
   };
 }
 
@@ -118,7 +118,7 @@ export async function getStaticProps({ params }: Params) {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const pages: PageType[] = loadVeliteData("pages.json");
   const page = pages.find((page: PageType) => page.slug === params.id);
-  if (!page) throw Error(`Page not found: ${params.id}`);
+  if (!page) return { notFound: true } as const;
 
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");
   const backlinks = getBacklinks(page.link);

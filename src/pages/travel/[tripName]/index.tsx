@@ -74,15 +74,18 @@ type Params = {
 
 export const getStaticPaths = async () => {
   const { getTravelingStoryNames } = await import("src/lib/travelData");
+  const { veliteFallback } = await import("src/lib/loadVeliteData");
   return {
     paths: getTravelingStoryNames().map<Params>((post) => ({
       params: { tripName: post },
     })),
-    fallback: false,
+    fallback: veliteFallback,
   };
 };
 
-export const getStaticProps = async ({ params }: Params): Promise<{ props: Props }> => {
+export const getStaticProps = async ({
+  params,
+}: Params): Promise<{ props: Props } | { notFound: true }> => {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const { extractAndSortMetadata } = await import("src/lib/utils/extractAndSortMetadata");
   const { getSeoInfo } = await import("src/lib/getSeoInfo");
@@ -92,6 +95,7 @@ export const getStaticProps = async ({ params }: Params): Promise<{ props: Props
     // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
     .filter(({ parentFolder }: any) => !params.tripName || parentFolder === params.tripName)
     .reverse();
+  if (posts.length === 0) return { notFound: true };
 
   return {
     props: { posts, tripName: params.tripName, seo: getSeoInfo(`/travel/${params.tripName}`) },

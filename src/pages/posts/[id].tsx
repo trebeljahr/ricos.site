@@ -158,7 +158,7 @@ export default function PostComponent({ post, morePosts, backlinks }: BlogProps)
 }
 
 export async function getStaticPaths() {
-  const { loadVeliteData } = await import("src/lib/loadVeliteData");
+  const { loadVeliteData, veliteFallback } = await import("src/lib/loadVeliteData");
   const posts = loadVeliteData("posts.json");
   const paths = posts.filter(byOnlyPublished).map(({ slug }: Post) => ({ params: { id: slug } }));
 
@@ -167,7 +167,7 @@ export async function getStaticPaths() {
       process.env.NODE_ENV === "development"
         ? [...paths, { params: { id: "site-demo-post" } }, { params: { id: "test" } }]
         : paths,
-    fallback: false,
+    fallback: veliteFallback,
   };
 }
 
@@ -178,6 +178,7 @@ export async function getStaticProps({ params }: Params) {
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");
   const posts = loadVeliteData("posts.json");
   const post = posts.find((post: Post) => post.slug === params.id);
+  if (!post) return { notFound: true } as const;
   const publishedPosts = extractAndSortMetadata(posts);
   const morePosts = getRelatedContent(post, publishedPosts, 3);
   const backlinks = getBacklinks(post.link);

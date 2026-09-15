@@ -169,6 +169,7 @@ export async function getStaticProps({ params }: Params) {
   const booknotes = loadVeliteData("booknotes.json");
   const published = booknotes.filter(byOnlyPublished);
   const booknote = published.find(({ slug }: Booknote) => params.id === slug);
+  if (!booknote) return { notFound: true } as const;
 
   const { toCardMetadata } = await import("src/lib/utils/toOnlyMetadata");
   const withContent = published.filter((b: Booknote) => b.summary);
@@ -189,7 +190,7 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const { loadVeliteData } = await import("src/lib/loadVeliteData");
+  const { loadVeliteData, veliteFallback } = await import("src/lib/loadVeliteData");
   const booknotes = loadVeliteData("booknotes.json");
   if (!Array.isArray(booknotes) || booknotes.length === 0) {
     throw new Error(
@@ -211,6 +212,6 @@ export async function getStaticPaths() {
 
   return {
     paths,
-    fallback: false,
+    fallback: veliteFallback,
   };
 }

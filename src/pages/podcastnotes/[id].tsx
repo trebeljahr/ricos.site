@@ -129,7 +129,7 @@ export async function getStaticProps({ params }: Params) {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const podcastnotes: PodcastnoteType[] = loadVeliteData("podcastnotes.json");
   const podcastnote = podcastnotes.filter(byOnlyPublished).find(({ slug }) => params.id === slug);
-  if (!podcastnote) throw Error(`Podcastnote not found: ${params.id}`);
+  if (!podcastnote) return { notFound: true } as const;
 
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");
   const backlinks = getBacklinks(podcastnote.link);
@@ -144,9 +144,9 @@ export async function getStaticProps({ params }: Params) {
 
 export async function getStaticPaths(): Promise<{
   paths: Params[];
-  fallback: boolean;
+  fallback: false | "blocking";
 }> {
-  const { loadVeliteData } = await import("src/lib/loadVeliteData");
+  const { loadVeliteData, veliteFallback } = await import("src/lib/loadVeliteData");
   const podcastnotes: PodcastnoteType[] = loadVeliteData("podcastnotes.json");
   const paths = podcastnotes.filter(byOnlyPublished).map((podcastnote) => {
     return {
@@ -158,6 +158,6 @@ export async function getStaticPaths(): Promise<{
 
   return {
     paths,
-    fallback: false,
+    fallback: veliteFallback,
   };
 }

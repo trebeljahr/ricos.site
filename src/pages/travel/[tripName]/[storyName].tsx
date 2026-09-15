@@ -184,7 +184,7 @@ export default function PostComponent({
 type Params = { params: { storyName: string; tripName: string } };
 
 export async function getStaticPaths() {
-  const { loadVeliteData } = await import("src/lib/loadVeliteData");
+  const { loadVeliteData, veliteFallback } = await import("src/lib/loadVeliteData");
   const travelblogs = loadVeliteData("travelblogs.json");
   const paths: Params[] = extractAndSortMetadata(travelblogs).map(
     // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
@@ -198,7 +198,7 @@ export async function getStaticPaths() {
 
   return {
     paths,
-    fallback: false,
+    fallback: veliteFallback,
   };
 }
 
@@ -213,6 +213,7 @@ export async function getStaticProps({ params: { storyName, tripName } }: Params
     .filter(({ parentFolder }) => tripName === parentFolder);
 
   const currentIndex = stories.findIndex((post) => post.slug === storyName);
+  if (currentIndex === -1) return { notFound: true } as const;
 
   const travelingStory = stories[currentIndex];
   const prevIndex = currentIndex - 1;

@@ -3,41 +3,14 @@ import { generateRedirects } from "./src/scripts/createRedirects.js";
 
 const isDev = process.argv.includes("dev") || process.env.NODE_ENV === "development";
 const isBuild = process.argv.includes("build");
-const veliteHmrFiles = [
-  "sectionDescriptions.json",
-  "posts.json",
-  "newsletters.json",
-  "booknotes.json",
-  "pages.json",
-  "podcastnotes.json",
-  "travelblogs.json",
-  "backlinks.json",
-  "r3f-links.json",
-];
-
-async function writeVeliteHmrStamps(files) {
-  const { mkdir, stat, writeFile } = await import("node:fs/promises");
+// Dev live reload stamp, imported by src/lib/loadVeliteData.ts. It must exist
+// before Turbopack first compiles a content page; after that
+// src/scripts/dev/watchVeliteHmr.ts rewrites it on every Velite rebuild.
+async function writeVeliteHmrStamp() {
+  const { mkdir, writeFile } = await import("node:fs/promises");
   const { resolve } = await import("node:path");
-  const stampDir = resolve(".velite/hmr");
-  await mkdir(stampDir, { recursive: true });
-
-  await Promise.all(
-    files.map(async (file) => {
-      const source = resolve(".velite", file);
-      let mtimeMs = 0;
-      let size = 0;
-      try {
-        const stats = await stat(source);
-        mtimeMs = stats.mtimeMs;
-        size = stats.size;
-      } catch {}
-
-      await writeFile(
-        resolve(stampDir, file),
-        JSON.stringify({ file, mtimeMs, size, updatedAt: Date.now() }),
-      );
-    }),
-  );
+  await mkdir(resolve(".velite/hmr"), { recursive: true });
+  await writeFile(resolve(".velite/hmr/stamp.json"), JSON.stringify({ updatedAt: Date.now() }));
 }
 
 // VELITE_STARTED guard only applies to dev (HMR may re-import next.config).
@@ -94,7 +67,7 @@ if (shouldRunVelite) {
   try {
     execSync("npx tsx src/scripts/generateBacklinks.ts", { stdio: "pipe" });
   } catch {}
-  await writeVeliteHmrStamps(veliteHmrFiles);
+  await writeVeliteHmrStamp();
 }
 
 /** @type {import('next').NextConfig} */

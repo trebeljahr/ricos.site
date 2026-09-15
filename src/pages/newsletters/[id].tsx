@@ -179,7 +179,7 @@ export async function getStaticProps({ params }: Params) {
   const newsletters = (rawNewsletters.default || rawNewsletters) as NewsletterType[];
   const published = newsletters.filter(byOnlyPublished);
   const newsletter = newsletters.find(({ slugTitle }) => slugTitle === params.id);
-  if (!newsletter) throw Error("Newsletter not found");
+  if (!newsletter) return { notFound: true } as const;
 
   const number = Number.parseInt(String(newsletter.number), 10);
   const next = number + 1;
@@ -208,7 +208,7 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const { loadVeliteData } = await import("src/lib/loadVeliteData");
+  const { loadVeliteData, veliteFallback } = await import("src/lib/loadVeliteData");
   const newsletters: NewsletterType[] = loadVeliteData("newsletters.json");
   const newsletterTitles = newsletters.filter(byOnlyPublished).map(({ slugTitle }) => {
     return {
@@ -220,6 +220,6 @@ export async function getStaticPaths() {
 
   return {
     paths: newsletterTitles,
-    fallback: false,
+    fallback: veliteFallback,
   };
 }

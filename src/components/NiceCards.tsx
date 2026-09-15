@@ -10,6 +10,10 @@ const MDXExcerpt = ({ source }: { source: MDXResult }) => {
   return <Component />;
 };
 
+// The browser draws the "…" when an excerpt overflows, so cards keep a
+// consistent height no matter how long the stored excerpt is.
+const excerptClassName = "mt-1 line-clamp-4 [&_p]:my-0";
+
 type CardProps = {
   cover: CommonMetadata["cover"];
   link: string;
@@ -62,19 +66,19 @@ export function HorizontalCard({
         <div className="p-5 lg:pl-10 md:border-t-4 md:border-r-4 md:border-b-4 max-md:rounded-bl-lg max-md:rounded-br-lg md:rounded-tr-lg md:rounded-br-lg border-gray-200 dark:border-gray-700 prose-headings:mt-2 prose-p:text-zinc-800 dark:prose-p:text-slate-300 w-fit font-normal">
           <div className="max-w-prose">
             <div className="flex items-start justify-between gap-3">
-              {title && <h2 className="pt-0 font-bold leading-snug grow">{title}</h2>}
+              {title && <h2 className="pt-0 mb-2! font-bold leading-snug grow">{title}</h2>}
               {typeLabel && (
                 <span className="shrink-0 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wide px-3 py-1 mt-2 not-prose">
                   {typeLabel}
                 </span>
               )}
             </div>
-            {subtitle && <p className="font-normal text-base">{subtitle}</p>}
-            {markdownExcerpt ? (
-              <MDXExcerpt source={markdownExcerpt} />
-            ) : excerpt ? (
-              <p>{excerpt}</p>
-            ) : null}
+            {subtitle && <p className="font-normal text-base my-0!">{subtitle}</p>}
+            {(markdownExcerpt || excerpt) && (
+              <div className={excerptClassName}>
+                {markdownExcerpt ? <MDXExcerpt source={markdownExcerpt} /> : <p>{excerpt}</p>}
+              </div>
+            )}
 
             <MetadataDisplay
               date={date}
@@ -118,9 +122,13 @@ export const VerticalCard = ({
         />
       </div>
       <div className="flex flex-col grow align-self-stretch p-3 min-h-fit prose-p:text-zinc-800 dark:prose-p:text-slate-300 w-full border-r-4 border-l-4 border-b-4 rounded-bl-lg rounded-br-lg border-gray-200 dark:border-gray-700">
-        <h2 className="my-6! tracking-tight">{title}</h2>
-        {subtitle && <p className="font-normal text-base">{subtitle}</p>}
-        {markdownExcerpt && <MDXExcerpt source={markdownExcerpt} />}
+        <h2 className="mt-4! mb-2! tracking-tight">{title}</h2>
+        {subtitle && <p className="font-normal text-base my-0!">{subtitle}</p>}
+        {markdownExcerpt && (
+          <div className={excerptClassName}>
+            <MDXExcerpt source={markdownExcerpt} />
+          </div>
+        )}
         <div className="grow mb-5" />
         <div className="place-self-end">
           <MetadataDisplay

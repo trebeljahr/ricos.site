@@ -67,11 +67,11 @@ export function BookPreview({ book, index }: Props) {
         />
         <p className="text-sm mt-2">🏆 Rated: {rating}/10</p>
 
-        <div>
+        <div className="mt-1 line-clamp-4 [&_p]:my-0">
           {markdownExcerpt ? (
             <MDXExcerpt source={markdownExcerpt} />
           ) : excerpt ? (
-            <p className="mb-2">{excerpt}</p>
+            <p>{excerpt}</p>
           ) : (
             <p>{defaultExcerpt}</p>
           )}

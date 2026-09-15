@@ -16,6 +16,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkToc from "remark-toc";
 import type { MDXResult } from "src/@types";
+import { escapeMdx, generateExcerpt, markdownToParagraphs } from "src/lib/excerpt";
 import {
   getImgMetaDuringBuild,
   getImgWidthAndHeightDuringBuild,
@@ -213,54 +214,6 @@ function applicable(node: Element, inLink: boolean): 1 | 2 | 3 {
   }
 
   return image;
-}
-
-function stripMarkdown(text: string): string {
-  return text
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, "") // images ![alt](url)
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1") // links [text](url) → text
-    .replace(/\*\*([^*]+)\*\*/g, "$1") // bold **text** → text
-    .replace(/\*([^*]+)\*/g, "$1") // italic *text* → text
-    .replace(/\$[^$]+\$/g, "") // LaTeX $...$
-    .replace(/^>\s*/gm, "") // blockquotes > text → text
-    .replace(/^[-*]\s+/gm, "") // bullet points - text → text
-    .replace(/^\d+\.\s+/gm, ""); // numbered lists 1. text → text
-}
-
-function generateExcerpt(text: string, length: number): string {
-  const lines = text.split("\n").filter((line) => {
-    const trimmed = line.trim();
-    if (/^#/.test(trimmed)) return false; // headings
-    if (/^!\[/.test(trimmed)) return false; // image-only lines
-    if (!trimmed) return false; // empty lines
-    return true;
-  });
-  const joined = stripMarkdown(lines.join(" ")).replace(/\s+/g, " ").trim();
-
-  if (!joined) return "";
-
-  const parts = joined.split(/([.,!?])\s*/);
-  let excerpt = "";
-
-  for (let i = 0; i < parts.length - 1; i += 2) {
-    const sentence = parts[i] + parts[i + 1];
-    if (excerpt.length + sentence.length <= length) {
-      excerpt += sentence + " ";
-    } else {
-      break;
-    }
-  }
-
-  excerpt = excerpt.trim();
-
-  // If sentence-based splitting produced nothing useful, truncate at word boundary
-  if (!excerpt || excerpt === ".") {
-    const truncated = joined.slice(0, length);
-    const lastSpace = truncated.lastIndexOf(" ");
-    return lastSpace > 0 ? truncated.slice(0, lastSpace) + "..." : truncated + "...";
-  }
-
-  return excerpt.slice(0, -1) + ".";
 }
 
 function generateMetaDescription(text: string): string {
@@ -584,10 +537,15 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   const link = data.link || "";
   const seoEntry = seoData[link] || {};
 
-  let excerptString = data.excerpt || generateExcerpt(rawContent, 280);
+  // A hand-written frontmatter excerpt is Markdown and rendered as such on
+  // cards; everything else is generated plain text and escaped for MDX.
+  const frontmatterExcerpt: string = (data.excerpt?.trim() || "").replace(/\.{3}/g, "…");
+  let excerptString = frontmatterExcerpt
+    ? markdownToParagraphs(frontmatterExcerpt).join(" ")
+    : generateExcerpt(rawContent, 280);
 
-  // Fallback chain for empty/broken excerpts
-  if (!excerptString || excerptString === ".") {
+  // Fallback chain for empty excerpts
+  if (!excerptString) {
     excerptString = seoEntry.metaDescription || "";
   }
   if (!excerptString) {
@@ -599,7 +557,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   }
 
   const { code: excerptCode } = await bundleMDX({
-    source: excerptString,
+    source: frontmatterExcerpt || escapeMdx(excerptString),
     cwd: path.resolve("src/content/Notes"),
     mdxOptions(options) {
       options.remarkPlugins = [

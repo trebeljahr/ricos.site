@@ -26,6 +26,8 @@ type Props = {
   fullScreen?: boolean;
   leftSmallNavbar?: boolean;
   withProgressBar?: boolean;
+  /** Section-specific nav next to the logo in the site navbar. */
+  navbarSecondary?: ReactNode;
   ogType?: "website" | "article";
   articlePublishedTime?: string;
   noindex?: boolean;
@@ -45,6 +47,7 @@ const Layout = ({
   imageHeight,
   leftSmallNavbar = false,
   withProgressBar = false,
+  navbarSecondary,
   ogType = "website",
   articlePublishedTime,
   noindex = false,
@@ -73,7 +76,11 @@ const Layout = ({
         ogType={ogType}
         articlePublishedTime={articlePublishedTime}
       />
-      {leftSmallNavbar ? <LeftSmallNavbar /> : <TailwindNavbar withProgressBar={withProgressBar} />}
+      {leftSmallNavbar ? (
+        <LeftSmallNavbar />
+      ) : (
+        <TailwindNavbar withProgressBar={withProgressBar} secondary={navbarSecondary} />
+      )}
 
       {children}
       <SiteFooter />

@@ -1,5 +1,5 @@
-import { NavbarR3F } from "@components/dom/NavbarR3F";
 import { SceneWithLoadingState, SeoInfo } from "@components/dom/ThreeFiberLayout";
+import { ImmersiveNavbar } from "@components/Navbar/ImmersiveNavbar";
 import {
   Arch,
   Column2,
@@ -245,7 +245,7 @@ export default function Page({ seo }: { seo: SeoInfoType | null }) {
   return (
     <>
       <SeoInfo {...seoInfo} />
-      <NavbarR3F />
+      <ImmersiveNavbar />
       <div className="w-screen h-screen overscroll-none">
         <InventoryProvider maxSlots={28} maxWeight={100}>
           <Inventory />

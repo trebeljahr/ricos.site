@@ -1,4 +1,5 @@
 import { Meta } from "@components/Meta";
+import { ImmersiveNavbar } from "@components/Navbar/ImmersiveNavbar";
 import { OpenGraph } from "@components/OpenGraph";
 import { nav } from "@r3f/ChunkGenerationSystem/config";
 import { KeyboardControlsProvider } from "@r3f/Controllers/KeyboardControls";
@@ -8,7 +9,6 @@ import dynamic from "next/dynamic";
 import { type PropsWithChildren, Suspense } from "react";
 import { toTitleCase } from "src/lib/utils/toTitleCase";
 import tunnel from "tunnel-rat";
-import { NavbarR3F } from "./NavbarR3F";
 
 type SeoProps = {
   description: string;
@@ -48,7 +48,7 @@ export const ThreeFiberLayout = ({
   return (
     <>
       <SeoInfo {...seoInfo} />
-      {nav && <NavbarR3F />}
+      {nav && <ImmersiveNavbar />}
       <div className="w-full h-screen overscoll-none">
         <Out />
         <SceneWithLoadingState {...sceneWithLoadingStateProps}>{children}</SceneWithLoadingState>

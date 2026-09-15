@@ -1,6 +1,6 @@
 import { cppLanguage } from "@codemirror/lang-cpp";
-import { NavbarR3F } from "@components/dom/NavbarR3F";
 import { SceneWithLoadingState } from "@components/dom/ThreeFiberLayout";
+import { ImmersiveNavbar } from "@components/Navbar/ImmersiveNavbar";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { useCallback, useState } from "react";
@@ -34,7 +34,7 @@ export function SideBySideShaderEditor({ initialCode = defaultShader }: { initia
 
   return (
     <div className="flex h-full mt-10">
-      <NavbarR3F />
+      <ImmersiveNavbar />
       <ReactCodeMirror
         value={value}
         height="100%"

@@ -1,6 +1,6 @@
-import { NavbarR3F } from "@components/dom/NavbarR3F";
 import { SceneWithLoadingState, SeoInfo } from "@components/dom/ThreeFiberLayout";
 import { FaCheck, FaInfo, FaShareAlt, FiX } from "@components/Icons";
+import { ImmersiveNavbar } from "@components/Navbar/ImmersiveNavbar";
 import { nav, recording } from "@r3f/ChunkGenerationSystem/config";
 import { FullCanvasShader } from "@r3f/Scenes/ShaderEditorTutorial/FullCanvasShader";
 import controllableShaderArt from "@shaders/controllableShaderArt.glsl";
@@ -252,7 +252,7 @@ export default function ShaderEditorPage() {
         image="/assets/blog/shader-art-demo.png"
         imageAlt="Shader Art Demo"
       />
-      {nav && <NavbarR3F />}
+      {nav && <ImmersiveNavbar />}
       <Leva hidden={recording} />
 
       <div className="w-screen h-screen relative bg-leva-medium dark:bg-leva-dark">

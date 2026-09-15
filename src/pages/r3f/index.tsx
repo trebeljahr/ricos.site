@@ -1,8 +1,6 @@
-import { NavbarR3F } from "@components/dom/NavbarR3F";
-import { Meta } from "@components/Meta";
-import { OpenGraph } from "@components/OpenGraph";
+import Layout from "@components/Layout";
+import { PlaygroundSceneGrid, PlaygroundSecondaryNav } from "@components/Navbar/PlaygroundNav";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
-import { toTitleCase } from "src/lib/utils/toTitleCase";
 
 const defaultSeoInfo = {
   title: "Rico's R3F Playground",
@@ -16,8 +14,8 @@ const defaultSeoInfo = {
 
 // Index page intentionally avoids ThreeFiberLayout: there's no scene to
 // render here, so loading three.js + @react-three/fiber and starting a WebGL
-// context would be ~1MB of JS for nothing. Demo subpages keep using the
-// full layout.
+// context would be ~1MB of JS for nothing. It is a regular text page with the
+// site navbar; demo subpages use the immersive variant of the same navbar.
 export default function Page({ seo }: { seo: SeoInfo | null }) {
   const seoInfo = {
     ...defaultSeoInfo,
@@ -29,36 +27,23 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
       keywords: seo.keywords,
     }),
   };
-  const properTitle = toTitleCase(seoInfo.title);
 
   return (
-    <>
-      <Meta
-        description={seoInfo.description}
-        title={properTitle}
-        url={seoInfo.url}
-        keywords={seoInfo.keywords}
-      />
-      <OpenGraph
-        title={properTitle}
-        description={seoInfo.description}
-        url={seoInfo.url}
-        image={seoInfo.image}
-        imageAlt={seoInfo.imageAlt}
-      />
-      <NavbarR3F />
-      <main className="w-full min-h-screen">
-        <div className="flex-col items-center justify-center m-auto mt-10 max-w-2xl px-4">
-          <h1>Welcome to my R3F Playground!</h1>
-          <p>
-            Here is where I experiment with all things Three.js and React Three Fibre to learn those
-            technologies, building out little demos, trying to improve my understanding so that I
-            can one day build a complete 3D game in the browser. You can check out the demos in the
-            side panel.
-          </p>
+    <Layout {...seoInfo} navbarSecondary={<PlaygroundSecondaryNav />}>
+      <main className="w-full min-h-screen pt-24 pb-10 px-4">
+        <div className="mx-auto max-w-5xl">
+          <div className="prose md:prose-lg dark:prose-invert max-w-2xl">
+            <h1>Welcome to my R3F Playground!</h1>
+            <p>
+              Here is where I experiment with all things Three.js and React Three Fibre to learn
+              those technologies, building out little demos, trying to improve my understanding so
+              that I can one day build a complete 3D game in the browser. Pick a demo below.
+            </p>
+          </div>
+          <PlaygroundSceneGrid />
         </div>
       </main>
-    </>
+    </Layout>
   );
 }
 

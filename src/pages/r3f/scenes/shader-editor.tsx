@@ -1,6 +1,6 @@
 import { CompleteShaderEditor } from "@components/Demos/FullscreenShader";
-import { NavbarR3F } from "@components/dom/NavbarR3F";
 import { SeoInfo } from "@components/dom/ThreeFiberLayout";
+import { ImmersiveNavbar } from "@components/Navbar/ImmersiveNavbar";
 import { getSeoInfo, type SeoInfo as SeoInfoType } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
@@ -28,7 +28,7 @@ export default function ShaderEditorPage({ seo }: { seo: SeoInfoType | null }) {
   return (
     <>
       <SeoInfo {...seoInfo} />
-      <NavbarR3F />
+      <ImmersiveNavbar />
       <CompleteShaderEditor shaderName="shadertoyExample1" />
     </>
   );

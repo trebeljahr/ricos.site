@@ -6,8 +6,7 @@ import { TailwindNavbar } from "./Navbar/TailwindNavbar";
 import { OpenGraph } from "./OpenGraph";
 import { SiteFooter } from "./SiteFooter";
 
-// LeftSmallNavbar pulls motion/react for slide-in animations; load it
-// only on pages that actually opt in via the leftSmallNavbar prop.
+// Load LeftSmallNavbar only on pages that opt in via the leftSmallNavbar prop.
 const LeftSmallNavbar = dynamic(() =>
   import("./Navbar/LeftSmallNavbar").then((m) => m.LeftSmallNavbar),
 );

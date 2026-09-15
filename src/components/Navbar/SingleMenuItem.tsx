@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import type { MouseEvent } from "react";
@@ -8,10 +7,9 @@ import type { NavItem } from "./navItems";
 type SingleMenuItemProps = {
   link: NavItem;
   onSelect?: () => void;
-  left?: boolean;
 };
 
-export function SingleMenuItem({ link, onSelect, left }: SingleMenuItemProps) {
+export function SingleMenuItem({ link, onSelect }: SingleMenuItemProps) {
   const router = useRouter();
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -28,11 +26,7 @@ export function SingleMenuItem({ link, onSelect, left }: SingleMenuItemProps) {
   return (
     <Link
       href={link.href}
-      role="menuitem"
-      className={clsx(
-        "block px-4 py-2 break-keep whitespace-nowrap hover:bg-gray-200 dark:hover:bg-gray-700",
-        left ? "text-left" : "text-right",
-      )}
+      className="block whitespace-nowrap rounded-md px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700"
       onClick={handleClick}
     >
       {link.label}

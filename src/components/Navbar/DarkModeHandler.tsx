@@ -11,11 +11,19 @@ export const DarkModeHandler = () => {
   return (
     <button
       type="button"
-      className="ml-0 md:ml-3 mr-3 md:mr-0 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 inline-flex items-center justify-center rounded-md"
+      className="inline-flex size-9 items-center justify-center rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       aria-label="Toggle dark mode"
     >
-      {mounted ? resolvedTheme === "dark" ? <IoMoon /> : <IoSunny /> : <span className="w-4 h-4" />}
+      {mounted ? (
+        resolvedTheme === "dark" ? (
+          <IoMoon className="size-4" />
+        ) : (
+          <IoSunny className="size-4" />
+        )
+      ) : (
+        <span className="size-4" />
+      )}
     </button>
   );
 };

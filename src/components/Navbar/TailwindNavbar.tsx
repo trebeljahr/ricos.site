@@ -1,9 +1,10 @@
 import { FiMenu, FiX } from "@components/Icons";
 import { ProgressBar } from "@components/ProgressBar";
 import { SiteSearch } from "@components/SiteSearch";
+import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useScrollLock } from "src/hooks/useScrollLock";
 import { CollapsibleMenuDesktop, CollapsibleMenuMobile } from "./CollapsibleMenus";
 import { DarkModeHandler } from "./DarkModeHandler";
@@ -27,120 +28,114 @@ export const RicosSiteBanner = () => {
 
 export function TailwindNavbar({ withProgressBar = false }: { withProgressBar?: boolean } = {}) {
   const [open, setOpen] = useState(false);
-  const close = () => setOpen(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const close = useCallback(() => setOpen(false), []);
 
-  return (
-    <header
-      id="navbar"
-      className={`fixed top-0 w-screen not-prose left-0 z-999 ${
-        open ? "bg-white" : "glassy hover:bg-white dark:bg-gray-900"
-      } w-full dark:bg-gray-900 pt-3 transition-colors duration-300 ${
-        withProgressBar ? "" : "pb-2"
-      }`}
-    >
-      <nav className="mx-auto px-3 xl:px-10 pb-1 flex items-center justify-between">
-        <RicosSiteBanner />
-        <div className="flex xl:hidden items-center gap-1">
-          <SiteSearch />
-          <DarkModeHandler />
-          <MobileVersion open={open} setOpen={setOpen} close={close} />
-        </div>
-
-        <div className="hidden xl:flex items-center gap-2">
-          <DesktopVersion />
-          <SiteSearch />
-          <DarkModeHandler />
-        </div>
-      </nav>
-      {withProgressBar && <ProgressBar />}
-    </header>
-  );
-}
-
-type MobileVersionProps = {
-  open: boolean;
-  setOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
-  close: () => void;
-};
-
-function MobileVersion({ open, setOpen, close }: MobileVersionProps) {
   useScrollLock(open);
 
-  // Close on Escape; close on route hash change so navigation also dismisses.
+  // Escape closes the menu and hands focus back to the toggle.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
+      if (e.key !== "Escape") return;
+      close();
+      toggleRef.current?.focus();
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open, close]);
 
   return (
-    <div>
-      <div className="flex items-center">
-        <button
-          type="button"
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-          onClick={() => setOpen((p) => !p)}
-          className="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700"
-        >
-          <span className="sr-only">Open main menu</span>
-          {open ? <FiX /> : <FiMenu />}
-        </button>
-      </div>
-      {open && (
-        <div
-          id="mobile-menu"
-          className="absolute z-50 top-12 p-2 w-screen h-screen right-0 bg-white dark:bg-gray-900"
-        >
-          <div className="flex flex-col px-2 pb-3 pt-2 items-end justify-end">
-            {navGroups.map((group) => (
-              <CollapsibleMenuMobile
-                key={group.label}
-                links={group.items}
-                text={group.label}
-                closeNav={close}
-              />
-            ))}
-
-            {primaryNavigation.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={close}
-                className="block w-fit rounded-md px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 "
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        </div>
+    <header
+      id="navbar"
+      className={clsx(
+        "fixed top-0 left-0 z-999 w-full not-prose pt-3 transition-colors duration-300 dark:bg-gray-900",
+        open ? "bg-white" : "glassy hover:bg-white",
+        !withProgressBar && "pb-2",
       )}
+    >
+      <nav className="mx-auto flex items-center justify-between gap-4 px-3 pb-1 xl:px-10">
+        <RicosSiteBanner />
+        <div className="flex items-center gap-1">
+          <DesktopLinks />
+          <span
+            aria-hidden
+            className="mx-2 hidden h-5 w-px bg-gray-300 xl:block dark:bg-gray-700"
+          />
+          {/* One instance for both layouts, so Cmd+K only ever opens one dialog. */}
+          <SiteSearch onOpen={close} />
+          <DarkModeHandler />
+          <button
+            ref={toggleRef}
+            type="button"
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            onClick={() => setOpen((p) => !p)}
+            className="inline-flex size-9 items-center justify-center rounded-md hover:bg-gray-200 xl:hidden dark:hover:bg-gray-700"
+          >
+            <span className="sr-only">{open ? "Close main menu" : "Open main menu"}</span>
+            {open ? <FiX className="size-5" /> : <FiMenu className="size-5" />}
+          </button>
+        </div>
+      </nav>
+      {withProgressBar && <ProgressBar />}
+      <MobileMenu open={open} close={close} />
+    </header>
+  );
+}
+
+function MobileMenu({ open, close }: { open: boolean; close: () => void }) {
+  return (
+    // Always rendered so the transition can play in both directions; `inert`
+    // plus `invisible` keep the closed panel out of the tab order and a11y tree.
+    <div
+      id="mobile-menu"
+      inert={!open}
+      className={clsx(
+        "absolute inset-x-0 top-full h-[calc(100dvh-100%)] overflow-y-auto overscroll-contain bg-white xl:hidden dark:bg-gray-900",
+        "transition-[opacity,translate,visibility] duration-200 ease-out motion-reduce:transition-none",
+        open ? "visible translate-y-0 opacity-100" : "invisible -translate-y-2 opacity-0",
+      )}
+    >
+      <div className="flex flex-col px-1 pt-2 pb-8">
+        {navGroups.map((group) => (
+          <CollapsibleMenuMobile
+            key={group.label}
+            links={group.items}
+            text={group.label}
+            closeNav={close}
+          />
+        ))}
+        {primaryNavigation.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={close}
+            className="flex items-center rounded-md px-3 py-3 text-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            {item.label}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
 
-function DesktopVersion() {
+function DesktopLinks() {
   return (
-    <div className="h-fit w-full flex flex-1 mr-0 items-center">
-      <div className="ml-6 block justify-self-end">
-        <div className="flex space-x-4">
-          {navGroups.map((group) => (
-            <CollapsibleMenuDesktop key={group.label} links={group.items} text={group.label} />
-          ))}
-          {primaryNavigation.map((item) => (
-            <Link
-              key={item.href}
-              className="rounded-md px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 "
-              href={item.href}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </div>
+    <div className="hidden items-center gap-1 xl:flex">
+      {navGroups.map((group) => (
+        <CollapsibleMenuDesktop key={group.label} links={group.items} text={group.label} />
+      ))}
+      {primaryNavigation.map((item) => (
+        <Link
+          key={item.href}
+          className="inline-flex h-9 items-center rounded-md px-3 hover:bg-gray-200 dark:hover:bg-gray-700"
+          href={item.href}
+        >
+          {item.label}
+        </Link>
+      ))}
     </div>
   );
 }

@@ -14,11 +14,20 @@ const useIsMac = () => {
   return isMac;
 };
 
-export const SiteSearch = () => {
+type SiteSearchProps = {
+  /** Called whenever the dialog opens (click or Cmd+K), e.g. to close a mobile menu. */
+  onOpen?: () => void;
+};
+
+export const SiteSearch = ({ onOpen }: SiteSearchProps = {}) => {
   const [open, setOpen] = useState(false);
   // Once true, keep the dialog component mounted so re-opening is instant.
   const [hasOpened, setHasOpened] = useState(false);
   const isMac = useIsMac();
+
+  useEffect(() => {
+    if (open) onOpen?.();
+  }, [open, onOpen]);
 
   const openSearch = () => {
     setOpen(true);
@@ -45,12 +54,12 @@ export const SiteSearch = () => {
       <button
         type="button"
         onClick={openSearch}
-        className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        className="inline-flex size-9 items-center justify-center gap-2 rounded-md text-sm transition-colors hover:bg-gray-200 sm:mr-1 sm:w-auto sm:justify-start sm:border sm:border-gray-200 sm:bg-gray-50 sm:pr-1.5 sm:pl-3 sm:text-gray-500 dark:hover:bg-gray-700 sm:dark:border-gray-700 sm:dark:bg-gray-800 sm:dark:text-gray-400"
         aria-label="Search the site"
       >
-        <FiSearch className="w-4 h-4" />
-        <span className="hidden sm:inline">Search</span>
-        <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs bg-gray-200 dark:bg-gray-700 rounded">
+        <FiSearch className="size-4 shrink-0" />
+        <span className="hidden pr-4 sm:inline">Search</span>
+        <kbd className="hidden h-6 items-center rounded border border-gray-200 bg-white px-1.5 font-sans text-xs text-gray-500 sm:inline-flex dark:border-gray-600 dark:bg-gray-900 dark:text-gray-400">
           {isMac ? "⌘" : "Ctrl+"}K
         </kbd>
       </button>

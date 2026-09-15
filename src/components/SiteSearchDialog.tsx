@@ -104,7 +104,8 @@ export default function SiteSearchDialog({ open, onClose }: Props) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} className="relative z-50" data-site-search="">
+    // Above the fixed navbar (z-999) so the header and mobile menu never cover it.
+    <Dialog open={open} onClose={onClose} className="relative z-1000" data-site-search="">
       <DialogBackdrop className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
 
       <div className="fixed inset-0 flex items-start justify-center pt-4 sm:pt-[20vh]">
@@ -113,6 +114,7 @@ export default function SiteSearchDialog({ open, onClose }: Props) {
             <FiSearch className="w-5 h-5 text-gray-400" />
             <input
               ref={inputRef}
+              data-autofocus
               type="text"
               placeholder="Search posts, books, newsletters, travel..."
               value={query}

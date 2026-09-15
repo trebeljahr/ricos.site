@@ -16,17 +16,20 @@
  *                                      aspectRatio metadata.
  *
  * NEVER deletes S3 objects. Deletions go through `npm run drift:fix`.
+ *
+ * Also sets up the local S3 mock layout on start (what `npm run s3:start`
+ * does), so `pnpm dev` does not pay for a separate tsx boot before Next.
  */
 import "dotenv/config";
+import { existsSync, watch } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, relative, resolve, sep } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { cwd } from "node:process";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
-import chokidar from "chokidar";
 import mime from "mime";
 import sharp from "sharp";
 import { createS3Client } from "src/lib/aws";
-import { ASSETS_ROOT } from "src/lib/localS3";
+import { ASSETS_ROOT, ensureLocalS3Layout } from "src/lib/localS3";
 
 const METADATA_PATH = resolve(cwd(), "src/content/Notes/_data/metadata.json");
 const BUCKET = "images.trebeljahr.com";
@@ -132,7 +135,7 @@ function queueMetaSave() {
 }
 
 async function handleUpsert(absPath: string) {
-  if (!IMAGE_RE.test(absPath)) return;
+  if (!IMAGE_RE.test(absPath) || !existsSync(absPath)) return;
   const key = keyFor(absPath);
   const dims = await getDimensions(absPath);
   if (!dims) return;
@@ -171,23 +174,26 @@ async function handleUpsert(absPath: string) {
 }
 
 async function main() {
+  // Throws with setup instructions when the Notes submodule is missing;
+  // concurrently's --kill-others-on-fail then stops the rest of `pnpm dev`.
+  ensureLocalS3Layout();
   metadata = await loadMetadata();
   const mode = IS_LOCAL ? "local (metadata only, no uploads)" : "cloud (S3 uploads enabled)";
   console.log(`Watching ${ASSETS_ROOT}  [${mode}]`);
 
-  const watcher = chokidar.watch(ASSETS_ROOT, {
-    ignoreInitial: true,
-    persistent: true,
-    awaitWriteFinish: {
-      stabilityThreshold: 400,
-      pollInterval: 100,
-    },
+  // One recursive fs.watch (FSEvents on macOS) instead of chokidar: chokidar 4+
+  // has no fsevents backend and holds an fd per file, which was ~8,100 open
+  // fds and a 2-3s initial scan for the assets folder. Renames, adds and
+  // changes all arrive as events; the per-file debounce above stands in for
+  // awaitWriteFinish, and handleUpsert skips paths that no longer exist.
+  const watcher = watch(ASSETS_ROOT, { recursive: true, persistent: true }, (_event, filename) => {
+    if (!filename) return;
+    const absPath = join(ASSETS_ROOT, filename.toString());
+    if (!IMAGE_RE.test(absPath)) return;
+    schedule(absPath, () => handleUpsert(absPath));
   });
-
-  watcher.on("add", (p) => schedule(p, () => handleUpsert(p)));
-  watcher.on("change", (p) => schedule(p, () => handleUpsert(p)));
   watcher.on("error", (e) => console.error("  [watch] error:", e));
-  watcher.on("ready", () => console.log("  [watch] initial scan complete, watching for changes…"));
+  console.log("  [watch] watching for changes…");
 }
 
 main().catch((e) => {

@@ -3,71 +3,44 @@ import { generateRedirects } from "./src/scripts/createRedirects.js";
 
 const isDev = process.argv.includes("dev") || process.env.NODE_ENV === "development";
 const isBuild = process.argv.includes("build");
-// Dev live reload stamp, imported by src/lib/loadVeliteData.ts. It must exist
-// before Turbopack first compiles a content page; after that
-// src/scripts/dev/watchVeliteHmr.ts rewrites it on every Velite rebuild.
-async function writeVeliteHmrStamp() {
-  const { mkdir, writeFile } = await import("node:fs/promises");
-  const { resolve } = await import("node:path");
-  await mkdir(resolve(".velite/hmr"), { recursive: true });
-  await writeFile(resolve(".velite/hmr/stamp.json"), JSON.stringify({ updatedAt: Date.now() }));
-}
+// `pnpm dev` runs Velite in its own process (src/scripts/dev/watchVelite.ts)
+// and sets VELITE_EXTERNAL=1. Building ~500 markdown files takes 15-40s of
+// CPU; doing it here blocked every request to the Next server until it was
+// done (plus ~10s of search index + backlinks), even when .velite already
+// held usable data from the last run.
+const veliteExternal = isDev && process.env.VELITE_EXTERNAL === "1";
 
 // VELITE_STARTED guard only applies to dev (HMR may re-import next.config).
 // Production builds always rebuild velite to avoid serving a stale/empty
 // .velite cache from an earlier Vercel build.
-const shouldRunVelite = isBuild || (isDev && !process.env.VELITE_STARTED);
+const shouldRunVelite = isBuild || (isDev && !veliteExternal && !process.env.VELITE_STARTED);
 if (shouldRunVelite) {
   if (isDev) process.env.VELITE_STARTED = "1";
   const { build } = await import("velite");
   await build({ watch: isDev, clean: !isDev, logLevel: "error" });
 
-  // Generate R3F navigation links JSON (replaces next-plugin-preval)
-  const { readdir, lstat, readFile, writeFile } = await import("node:fs/promises");
-  const { resolve, join } = await import("node:path");
-  const r3fDir = resolve("src/pages/r3f");
-  const shaderDir = resolve("src/shaders/standaloneFragmentShaders");
-  const toTitleCase = (s) =>
-    s
-      .split("-")
-      .map((w) => w[0].toUpperCase() + w.slice(1))
-      .join(" ");
-  // Demos that exist as routes but aren't finished yet: keep them reachable by
-  // direct URL for local iteration, but out of the nav (and the timeline).
-  let hiddenR3fRoutes = new Set();
-  try {
-    const hidden = JSON.parse(
-      await readFile(resolve("src/content/r3f-hidden-routes.json"), "utf-8"),
-    );
-    hiddenR3fRoutes = new Set(hidden.hidden);
-  } catch {}
-  const links = {};
-  const dirs = (await readdir(r3fDir)).filter((f) => !f.includes(".tsx"));
-  for (const dir of dirs) {
-    if (dir === "shaders") continue;
-    const dirPath = join(r3fDir, dir);
-    if ((await lstat(dirPath)).isFile()) continue;
-    const files = await readdir(dirPath);
-    links[toTitleCase(dir)] = files
-      .map((f) => f.replace(".tsx", ""))
-      .map((name) => ({ name, url: `/r3f/${dir}/${name}` }))
-      .filter(({ url }) => !hiddenR3fRoutes.has(url));
-  }
-  const shaders = (await readdir(shaderDir))
-    .filter((f) => f.endsWith(".frag"))
-    .map((f) => f.replace(".frag", ""));
-  links["Shader Demos"] = shaders.map((name) => ({ name, url: `/r3f/shaders/${name}` }));
-  await writeFile(resolve(".velite/r3f-links.json"), JSON.stringify({ links }));
-
-  // Generate search index and backlinks from velite data
-  const { execSync } = await import("node:child_process");
-  try {
-    execSync("npx tsx src/scripts/generateSearchIndex.ts", { stdio: "pipe" });
-  } catch {}
-  try {
-    execSync("npx tsx src/scripts/generateBacklinks.ts", { stdio: "pipe" });
-  } catch {}
+  const { generateR3fLinks, generateSearchIndexAndBacklinks, writeVeliteHmrStamp } = await import(
+    "./src/scripts/veliteDerived.mjs"
+  );
+  await generateR3fLinks();
+  await generateSearchIndexAndBacklinks();
   await writeVeliteHmrStamp();
+} else if (veliteExternal) {
+  // Only a clean checkout has no .velite output yet; wait for the first build
+  // so pages and redirects do not fail on missing JSON.
+  const { veliteHmrStampExists, veliteOutputExists, writeVeliteHmrStamp } = await import(
+    "./src/scripts/veliteDerived.mjs"
+  );
+  if (!(await veliteOutputExists())) {
+    console.log("  [velite] waiting for the first content build...");
+    while (!(await veliteOutputExists())) {
+      await new Promise((r) => setTimeout(r, 250));
+    }
+  }
+  // loadVeliteData.ts imports the stamp statically, so it has to exist before
+  // the first compile. Leave an existing one alone: rewriting it would refetch
+  // getStaticProps in open tabs whenever Next reloads this config.
+  if (!(await veliteHmrStampExists())) await writeVeliteHmrStamp();
 }
 
 /** @type {import('next').NextConfig} */
@@ -117,6 +90,10 @@ const nextConfig = {
   // construction - verified 0 unstyled painted frames on the homepage, a
   // booknote, a photography gallery and an r3f demo at Slow 3G.
   turbopack: {
+    // Pin the root to this checkout. Agent worktrees live under
+    // .claude/worktrees/ with their own lockfile, so Next otherwise infers the
+    // parent repo as root and watches every sibling worktree.
+    root: import.meta.dirname,
     rules: {
       "*.mp3": { loaders: ["url-loader"], as: "*.js" },
       "*.ogg": { loaders: ["url-loader"], as: "*.js" },

@@ -1,6 +1,18 @@
 @import "tailwindcss";
 @plugin '@tailwindcss/typography';
 
+/*
+ * Automatic source detection scans everything not gitignored. That included
+ * ~1,000 unpublished vault notes, glTF JSON and agent scratch dirs: ~3,500
+ * files and 4-11s per scan, and every vault edit triggered a rescan. None of
+ * these files render on the site (Velite only reads the published folders,
+ * which stay scanned), so they only added stray utilities from note prose.
+ */
+@source not "../content/Notes/texts";
+@source not "../content/Notes/newsletter-stuff";
+@source not "../../public/3d-assets";
+@source not "../../.claude";
+
 @variant dark (&:where(.dark, .dark *));
 
 @theme {

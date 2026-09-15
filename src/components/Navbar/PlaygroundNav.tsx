@@ -1,10 +1,10 @@
-import { FiX } from "@components/Icons";
+import { FiChevronDown, FiX } from "@components/Icons";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useScrollLock } from "src/hooks/useScrollLock";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 import data from "../../../.velite/r3f-links.json";
 
@@ -43,48 +43,77 @@ export function PlaygroundCrumb() {
 type ScenesButtonProps = {
   open: boolean;
   onClick: () => void;
+  /** Fully rounded, for use inside the collapsed pill. */
+  round?: boolean;
   className?: string;
 };
 
-export function PlaygroundScenesButton({ open, onClick, className }: ScenesButtonProps) {
+export function PlaygroundScenesButton({ open, onClick, round, className }: ScenesButtonProps) {
   return (
     <button
       type="button"
+      data-scenes-toggle=""
       aria-expanded={open}
       aria-controls="playground-scenes"
       onClick={onClick}
       className={clsx(
-        "inline-flex items-center rounded-md px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700",
+        "inline-flex h-9 items-center gap-1 px-3 hover:bg-gray-200 dark:hover:bg-gray-700",
+        round ? "rounded-full" : "rounded-md",
+        open && "bg-gray-200 dark:bg-gray-700",
         className,
       )}
     >
       scenes
+      <FiChevronDown
+        className={clsx(
+          "size-3 transition-transform duration-200 motion-reduce:transition-none",
+          open && "rotate-180",
+        )}
+      />
     </button>
   );
 }
 
-type DrawerProps = {
+type PanelProps = {
   open: boolean;
   onClose: () => void;
+  /** Where focus goes after closing from inside the panel. Defaults to the element focused before opening. */
+  restoreFocus?: () => void;
 };
 
 /**
- * Scene list for the 3D playground. Links stay in the server-rendered HTML
- * (the drawer is only translated off-screen and made inert), so every demo
- * stays reachable for crawlers from every demo page.
+ * Scene list for the 3D playground. Render it as a direct child of a navbar
+ * header: it drops down from the bottom edge of the bar, so the site nav
+ * stays visible above it.
+ *
+ * Links stay in the server-rendered HTML (the closed panel is only hidden
+ * and inert), so every demo stays reachable for crawlers. The preview
+ * images mount on first open, so demo pages don't download ~40 PNGs.
  */
-export function PlaygroundDrawer({ open, onClose }: DrawerProps) {
+export function PlaygroundScenesPanel({ open, onClose, restoreFocus }: PanelProps) {
   const router = useRouter();
   const current = pathWithoutQuery(router.asPath);
   const panelRef = useRef<HTMLDivElement>(null);
+  const [hasOpened, setHasOpened] = useState(false);
+
+  useScrollLock(open);
 
   useEffect(() => {
     if (!open) return;
-    const returnFocusTo = document.activeElement as HTMLElement | null;
+    setHasOpened(true);
+    const previousFocus = document.activeElement as HTMLElement | null;
     const panel = panelRef.current;
-    (
-      panel?.querySelector<HTMLElement>("nav a[aria-current]") ?? panel?.querySelector("a")
-    )?.focus();
+    const currentLink = panel?.querySelector<HTMLElement>("nav a[aria-current]");
+    // Centre the current scene inside the list without scrolling the page.
+    const list = panel?.querySelector("nav");
+    if (list && currentLink) {
+      list.scrollTop = currentLink.offsetTop - list.clientHeight / 2 + currentLink.offsetHeight / 2;
+    }
+    // Next task: when opened with Enter, the keypress of that same Enter
+    // would otherwise land on the newly focused link and follow it.
+    const focusTimer = window.setTimeout(() => {
+      (currentLink ?? panel?.querySelector<HTMLElement>("a"))?.focus({ preventScroll: true });
+    }, 0);
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -92,9 +121,14 @@ export function PlaygroundDrawer({ open, onClose }: DrawerProps) {
     document.addEventListener("keydown", onKey);
     return () => {
       document.removeEventListener("keydown", onKey);
-      returnFocusTo?.focus();
+      window.clearTimeout(focusTimer);
+      // Only hand focus back when it was still in the panel; a click into the
+      // scene should leave focus with the scene.
+      if (!panel?.contains(document.activeElement)) return;
+      if (restoreFocus) window.setTimeout(restoreFocus, 0);
+      else previousFocus?.focus();
     };
-  }, [open, onClose]);
+  }, [open, onClose, restoreFocus]);
 
   // Close after navigating to another scene.
   useEffect(() => {
@@ -110,45 +144,49 @@ export function PlaygroundDrawer({ open, onClose }: DrawerProps) {
         aria-hidden="true"
         onClick={onClose}
         className={clsx(
-          "fixed inset-0 z-1002 cursor-default bg-black/40 transition-opacity duration-300 motion-reduce:transition-none",
+          "absolute inset-x-0 top-full h-[calc(100dvh-100%)] cursor-default bg-black/30 transition-opacity duration-200 motion-reduce:transition-none",
           open ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       />
       <div
         ref={panelRef}
         id="playground-scenes"
-        role="dialog"
-        aria-label="3D playground scenes"
         inert={!open}
         className={clsx(
-          "not-prose fixed inset-y-0 left-0 z-1003 flex w-72 max-w-[85vw] flex-col bg-white text-gray-900 shadow-xl transition-transform duration-300 ease-out motion-reduce:transition-none dark:bg-gray-900 dark:text-gray-100",
-          open ? "translate-x-0" : "-translate-x-full",
+          "absolute inset-x-0 top-full flex h-[calc(100dvh-100%)] flex-col overflow-hidden bg-white text-gray-900 shadow-xl dark:bg-gray-900 dark:text-gray-100",
+          "sm:right-auto sm:left-3 sm:mt-2 sm:h-auto sm:max-h-[calc(100dvh-100%-1.5rem)] sm:w-[28rem] sm:rounded-xl sm:ring-1 sm:ring-black/5 xl:left-10 sm:dark:ring-white/10",
+          "duration-200 ease-out motion-reduce:transition-none",
+          // Visibility flips at once when opening, so the list can take focus
+          // straight away, and waits for the fade when closing.
+          open
+            ? "visible translate-y-0 opacity-100 transition-[opacity,translate]"
+            : "invisible -translate-y-2 opacity-0 transition-[opacity,translate,visibility]",
         )}
       >
-        <div className="flex items-center justify-between border-b border-gray-200 px-3 py-3 dark:border-gray-800">
+        <div className="flex items-center justify-between border-b border-gray-200 py-2 pr-2 pl-4 dark:border-gray-800">
           <Link
             href="/r3f"
             aria-current={current === "/r3f" ? "page" : undefined}
-            className="rounded-md px-2 py-1 text-lg font-bold hover:bg-gray-200 dark:hover:bg-gray-700"
+            className="text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
           >
-            3D Playground
+            All demos on one page
           </Link>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700"
+            className="inline-flex size-9 items-center justify-center rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
           >
             <span className="sr-only">Close scene list</span>
-            <FiX />
+            <FiX className="size-5" />
           </button>
         </div>
-        <nav aria-label="Scenes" className="flex-1 overflow-y-auto overscroll-contain px-3 pb-6">
+        <nav aria-label="Scenes" className="relative overflow-y-auto overscroll-contain px-4 pb-6">
           {sections.map(([section, scenes]) => (
-            <div key={section} className="mt-4">
-              <h2 className="px-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <div key={section} className="mt-5">
+              <h2 className="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
                 {section}
               </h2>
-              <ul className="mt-1">
+              <ul className="mt-2 grid grid-cols-2 gap-3">
                 {scenes.map((scene) => {
                   const isCurrent = current === scene.url;
                   return (
@@ -159,11 +197,30 @@ export function PlaygroundDrawer({ open, onClose }: DrawerProps) {
                         prefetch={false}
                         aria-current={isCurrent ? "page" : undefined}
                         className={clsx(
-                          "block rounded-md px-2 py-1.5 text-sm hover:bg-gray-200 dark:hover:bg-gray-700",
-                          isCurrent && "bg-gray-100 font-semibold dark:bg-gray-800",
+                          "group block rounded-lg p-1 hover:bg-gray-100 dark:hover:bg-gray-800",
+                          isCurrent && "bg-gray-100 ring-2 ring-myBlue dark:bg-gray-800",
                         )}
                       >
-                        {turnKebabIntoTitleCase(scene.name)}
+                        <span className="block aspect-video overflow-hidden rounded-md bg-gray-200 dark:bg-gray-800">
+                          {hasOpened && (
+                            <ImageWithLoader
+                              src={previewSrc(scene)}
+                              alt=""
+                              width={320}
+                              height={180}
+                              sizes="200px"
+                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none"
+                            />
+                          )}
+                        </span>
+                        <span
+                          className={clsx(
+                            "block truncate px-1 pt-1.5 pb-0.5 text-sm",
+                            isCurrent && "font-semibold",
+                          )}
+                        >
+                          {turnKebabIntoTitleCase(scene.name)}
+                        </span>
                       </Link>
                     </li>
                   );
@@ -177,18 +234,10 @@ export function PlaygroundDrawer({ open, onClose }: DrawerProps) {
   );
 }
 
-/**
- * Breadcrumb + scene list for the regular navbar on playground text pages.
- * The drawer is portaled out of the header: the header's backdrop-filter
- * would otherwise become the containing block of the fixed drawer. The
- * page itself lists every scene, so the client-only drawer costs no links.
- */
+/** Breadcrumb + scene list toggle for the regular navbar on playground text pages. */
 export function PlaygroundSecondaryNav() {
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const close = useCallback(() => setOpen(false), []);
-
-  useEffect(() => setMounted(true), []);
 
   return (
     <>
@@ -197,7 +246,7 @@ export function PlaygroundSecondaryNav() {
       <span className="hidden sm:flex">
         <PlaygroundScenesButton open={open} onClick={() => setOpen((p) => !p)} className="ml-1" />
       </span>
-      {mounted && createPortal(<PlaygroundDrawer open={open} onClose={close} />, document.body)}
+      <PlaygroundScenesPanel open={open} onClose={close} />
     </>
   );
 }

@@ -1,8 +1,7 @@
-import { FiChevronDown } from "@components/Icons";
 import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import { PlaygroundCrumb, PlaygroundDrawer, PlaygroundScenesButton } from "./PlaygroundNav";
+import { PlaygroundCrumb, PlaygroundScenesButton, PlaygroundScenesPanel } from "./PlaygroundNav";
 import { MobileMenu, RicosSiteBanner, SiteNavControls, useSiteMenu } from "./TailwindNavbar";
 
 // Long enough to read the bar on arrival, short enough to stay out of the way.
@@ -14,12 +13,14 @@ const TOP_EDGE_PX = 6;
 /**
  * The site navbar for fullscreen canvas pages. It shows the same bar as
  * every other page on arrival, then tucks itself away and leaves a small
- * pill with the way home, the playground index and the scene list.
+ * pill: logo (home), "3D Playground" (index) and a "scenes" toggle. The
+ * toggle is the one way back into the nav: it brings the full bar back with
+ * the scene list dropped down underneath it.
  *
  * It never covers the canvas with an invisible hit area: the top-edge reveal
  * is a window pointermove check, not an overlay element. Interacting with the
- * scene hides the bar and drops focus out of it, so keys like Space go to
- * the scene's controls instead of re-pressing the last nav button.
+ * scene hides everything and drops focus out of the nav, so keys like Space
+ * go to the scene's controls instead of re-pressing the last nav button.
  */
 export function ImmersiveNavbar() {
   const [expanded, setExpanded] = useState(true);
@@ -30,6 +31,8 @@ export function ImmersiveNavbar() {
   const pillRef = useRef<HTMLDivElement>(null);
   const hideTimer = useRef<number | undefined>(undefined);
   const hovering = useRef(false);
+
+  const barHidden = !expanded && !menuOpen && !scenesOpen;
 
   const cancelHide = useCallback(() => window.clearTimeout(hideTimer.current), []);
 
@@ -52,7 +55,39 @@ export function ImmersiveNavbar() {
     setExpanded(true);
   }, [cancelHide]);
 
-  const closeScenes = useCallback(() => setScenesOpen(false), []);
+  /** Close menus and tuck the bar back into the pill. */
+  const collapse = useCallback(() => {
+    cancelHide();
+    setScenesOpen(false);
+    closeMenu();
+    setExpanded(false);
+  }, [cancelHide, closeMenu]);
+
+  // Closing the list leaves the nav entirely, unless the pointer is on the bar.
+  const closeScenes = useCallback(() => {
+    setScenesOpen(false);
+    if (!hovering.current) setExpanded(false);
+  }, []);
+
+  const toggleScenes = () => {
+    if (scenesOpen) {
+      closeScenes();
+      return;
+    }
+    closeMenu();
+    show();
+    setScenesOpen(true);
+  };
+
+  const focusToggle = useCallback(() => {
+    const target = barRef.current?.inert ? pillRef.current : barRef.current;
+    target?.querySelector<HTMLElement>("[data-scenes-toggle]")?.focus();
+  }, []);
+
+  // The mobile menu and the scene list share the space under the bar.
+  useEffect(() => {
+    if (menuOpen) setScenesOpen(false);
+  }, [menuOpen]);
 
   // Both callbacks are stable, so this runs once on arrival. Later hides are
   // driven by the pointer or focus leaving the bar.
@@ -74,15 +109,13 @@ export function ImmersiveNavbar() {
     const onPointerDown = (e: PointerEvent) => {
       const target = e.target as Element;
       if (barRef.current?.contains(target) || pillRef.current?.contains(target)) return;
-      // Portaled UI opened from the bar (site search) or the scene drawer.
+      // Portaled UI opened from the bar (site search).
       if (target.closest?.("[role='dialog']")) return;
 
-      cancelHide();
-      setExpanded(false);
-      closeMenu();
       const active = document.activeElement;
       const navHasFocus = barRef.current?.contains(active) || pillRef.current?.contains(active);
       if (active instanceof HTMLElement && navHasFocus) active.blur();
+      collapse();
     };
 
     window.addEventListener("pointermove", onPointerMove, { passive: true });
@@ -91,93 +124,79 @@ export function ImmersiveNavbar() {
       window.removeEventListener("pointermove", onPointerMove);
       document.removeEventListener("pointerdown", onPointerDown, true);
     };
-  }, [show, scheduleHide, cancelHide, closeMenu]);
+  }, [show, scheduleHide, collapse]);
 
   const hideFromKeyboard = (e: React.KeyboardEvent) => {
+    // The mobile menu handles its own Escape and returns focus to its toggle.
     if (e.key !== "Escape" || menuOpen) return;
-    cancelHide();
-    flushSync(() => setExpanded(false));
-    pillRef.current?.querySelector<HTMLElement>("[data-reveal]")?.focus();
+    flushSync(collapse);
+    focusToggle();
   };
 
-  const barHidden = !expanded && !menuOpen;
+  const keepOpen = menuOpen || scenesOpen;
 
   return (
     <>
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: hover and focus only drive auto-hide; every action inside is a real link or button. */}
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: focus only drives auto-hide; every action inside is a real link or button. */}
       <header
         ref={barRef}
-        id="immersive-navbar"
         inert={barHidden}
-        onPointerEnter={() => {
-          hovering.current = true;
-          cancelHide();
-        }}
-        onPointerLeave={() => {
-          hovering.current = false;
-          if (!menuOpen) scheduleHide(LEAVE_HIDE_MS);
-        }}
         onFocus={show}
         onBlur={(e) => {
-          if (!e.currentTarget.contains(e.relatedTarget as Node) && !menuOpen) {
+          if (!e.currentTarget.contains(e.relatedTarget as Node) && !keepOpen) {
             scheduleHide(LEAVE_HIDE_MS);
           }
         }}
         onKeyDown={hideFromKeyboard}
         className={clsx(
-          "not-prose fixed inset-x-0 top-0 z-1001 bg-white/85 py-2 text-gray-900 shadow-sm backdrop-blur-md transition-[translate,opacity] duration-300 ease-out motion-reduce:transition-none dark:bg-gray-900/85 dark:text-gray-100",
+          "not-prose fixed inset-x-0 top-0 z-1001 py-2 text-gray-900 transition-[translate,opacity,background-color] duration-300 ease-out motion-reduce:transition-none dark:text-gray-100",
+          // Solid while a panel hangs off the bar, so both read as one surface.
+          keepOpen
+            ? "bg-white shadow-sm dark:bg-gray-900"
+            : "bg-white/85 shadow-sm backdrop-blur-md dark:bg-gray-900/85",
           barHidden ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100",
         )}
       >
+        {/* Hover counts on the bar itself only, not on the panels and backdrop hanging below it. */}
         <nav
           aria-label="Site"
+          onPointerEnter={() => {
+            hovering.current = true;
+            cancelHide();
+          }}
+          onPointerLeave={() => {
+            hovering.current = false;
+            if (!keepOpen) scheduleHide(LEAVE_HIDE_MS);
+          }}
           className="mx-auto flex items-center justify-between gap-4 px-3 xl:px-10"
         >
           <div className="flex min-w-0 items-center gap-1 xl:shrink-0">
-            <RicosSiteBanner />
+            <RicosSiteBanner compact />
+            {/* No room on phones next to search, theme and menu; the pill and the scene panel link the index. */}
             <span className="hidden min-w-0 items-center gap-1 sm:flex">
               <PlaygroundCrumb />
             </span>
-            <PlaygroundScenesButton
-              open={scenesOpen}
-              onClick={() => setScenesOpen((p) => !p)}
-              className="ml-1"
-            />
+            <PlaygroundScenesButton open={scenesOpen} onClick={toggleScenes} className="ml-1" />
           </div>
           <SiteNavControls menu={menu} />
         </nav>
         <MobileMenu open={menuOpen} close={closeMenu} />
+        <PlaygroundScenesPanel open={scenesOpen} onClose={closeScenes} restoreFocus={focusToggle} />
       </header>
 
       <div
         ref={pillRef}
         inert={!barHidden}
         className={clsx(
-          "not-prose fixed left-2 top-2 z-1001 flex items-center gap-1 rounded-full bg-white/85 py-1 pl-3 pr-1 text-sm text-gray-900 shadow-md ring-1 ring-black/5 backdrop-blur-md transition-[translate,opacity] duration-300 ease-out motion-reduce:transition-none dark:bg-gray-900/85 dark:text-gray-100 dark:ring-white/10",
-          barHidden ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0 pointer-events-none",
+          "not-prose fixed top-2 left-2 z-1001 flex items-center gap-1 rounded-full bg-white/85 py-0.5 pr-0.5 pl-3 text-sm text-gray-900 shadow-md ring-1 ring-black/5 backdrop-blur-md transition-[translate,opacity] duration-300 ease-out motion-reduce:transition-none dark:bg-gray-900/85 dark:text-gray-100 dark:ring-white/10",
+          barHidden ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0",
         )}
       >
         <RicosSiteBanner iconOnly />
         <PlaygroundCrumb />
-        <PlaygroundScenesButton open={scenesOpen} onClick={() => setScenesOpen((p) => !p)} />
-        <button
-          type="button"
-          data-reveal=""
-          aria-expanded={!barHidden}
-          aria-controls="immersive-navbar"
-          onClick={() => {
-            // Commit the un-inert bar before moving focus into it.
-            flushSync(show);
-            barRef.current?.querySelector<HTMLElement>("a, button")?.focus();
-          }}
-          className="rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-700"
-        >
-          <span className="sr-only">Show site navigation</span>
-          <FiChevronDown className="size-3.5" />
-        </button>
+        <span aria-hidden className="mx-1 h-5 w-px bg-gray-300 dark:bg-gray-700" />
+        <PlaygroundScenesButton open={scenesOpen} onClick={toggleScenes} round />
       </div>
-
-      <PlaygroundDrawer open={scenesOpen} onClose={closeScenes} />
     </>
   );
 }

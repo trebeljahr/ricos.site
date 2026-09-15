@@ -77,14 +77,15 @@ export function FullCanvasShaderMesh() {
     [fragmentShader],
   );
 
-  useFrame(({ size, pointer }, delta) => {
+  useFrame(({ size, pointer, viewport }, delta) => {
     if (!shaderRef.current) return;
 
     timeRef.current += delta;
     frameCount.current++;
 
     const mat = shaderRef.current;
-    const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
+    // Renderer DPR (R3F clamps it), so it matches gl_FragCoord's pixel grid.
+    const dpr = viewport.dpr;
 
     if (isShaderToy) {
       mat.uniforms.iResolution.value.set(size.width, size.height, dpr);

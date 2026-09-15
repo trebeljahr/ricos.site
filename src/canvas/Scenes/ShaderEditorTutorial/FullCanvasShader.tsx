@@ -25,13 +25,17 @@ export function FullCanvasShader({ otherUniforms = {}, fragmentShader }: Props) 
     [fragmentShader],
   );
 
-  useFrame(({ size }, delta) => {
+  useFrame(({ size, viewport }, delta) => {
     const mat = shaderRef.current;
     if (!mat) return;
 
     timeRef.current += delta;
     mat.uniforms.u_time.value = timeRef.current;
     mat.uniforms.u_resolution.value.set(size.width, size.height);
+    // The renderer's DPR, not window.devicePixelRatio: R3F clamps it (default
+    // [1, 2]), so on 3x screens or zoomed browsers the two differ and any
+    // gl_FragCoord / u_pixelRatio math drifts off-center.
+    mat.uniforms.u_pixelRatio.value = viewport.dpr;
 
     // Sync otherUniforms values every frame (from Leva controls)
     for (const key in otherUniforms) {

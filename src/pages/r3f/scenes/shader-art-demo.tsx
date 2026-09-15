@@ -255,38 +255,23 @@ export default function ShaderEditorPage() {
       {nav && <NavbarR3F />}
       <Leva hidden={recording} />
 
-      <div className="w-screen h-screen relative bg-leva-medium dark:bg-leva-dark flex items-center justify-center">
-        {/*
-          Canvas is a centered square sized to the smaller viewport edge, so
-          the shader keeps a 1:1 aspect and stays centered on any screen.
-        */}
-        <div
-          className="relative"
-          style={{
-            width: "min(100vw, 100vh)",
-            height: "min(100vw, 100vh)",
+      <div className="w-screen h-screen relative bg-leva-medium dark:bg-leva-dark">
+        <SceneWithLoadingState
+          withKeyboardControls={false}
+          orthographic
+          camera={{
+            left: -1,
+            right: 1,
+            top: 1,
+            bottom: -1,
+            near: 0.1,
+            far: 1000,
+            position: [0, 0, 1],
           }}
+          resize={{ debounce: 0 }}
         >
-          <SceneWithLoadingState
-            withKeyboardControls={false}
-            orthographic
-            camera={{
-              left: -1,
-              right: 1,
-              top: 1,
-              bottom: -1,
-              near: 0.1,
-              far: 1000,
-              position: [0, 0, 1],
-            }}
-            resize={{ debounce: 0 }}
-          >
-            <FullCanvasShader
-              fragmentShader={controllableShaderArt}
-              otherUniforms={otherUniforms}
-            />
-          </SceneWithLoadingState>
-        </div>
+          <FullCanvasShader fragmentShader={controllableShaderArt} otherUniforms={otherUniforms} />
+        </SceneWithLoadingState>
 
         {!recording && <ShareWithOthersButton />}
         {!recording && <InfoButton />}

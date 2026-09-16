@@ -94,7 +94,10 @@ export function Card({
       prefetch={prefetch}
       className={clsx(
         "group not-prose relative w-full overflow-hidden rounded-xl border-2 border-gray-200 bg-white text-gray-900 no-underline shadow-sm",
-        "transition duration-300 hover:-translate-y-1 hover:border-myBlue/50 hover:shadow-xl",
+        // The card moves as one piece: a separate cover zoom on its own timing
+        // made the image drift against the frame. transform-gpu keeps the cover
+        // from re-rasterising (and visibly snapping) when the lift settles.
+        "transform-gpu transition duration-300 ease-out hover:-translate-y-1 hover:border-myBlue/50 hover:shadow-xl",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-myBlue",
         "dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-myBlue/60",
         "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
@@ -118,7 +121,7 @@ export function Card({
           {...(hasDimensions ? { width: cover.width, height: cover.height } : { fill: true })}
           sizes={sizes ?? defaultSizes[layout]}
           priority={priority}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
+          className="h-full w-full object-cover"
         />
       </div>
 

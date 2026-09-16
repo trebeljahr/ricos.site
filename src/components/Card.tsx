@@ -102,7 +102,8 @@ export function Card({
         // from re-rasterising (and visibly snapping) when the lift settles.
         "transform-gpu transition duration-300 ease-out hover:-translate-y-1",
         // Hover glow: an even, all-sides blue shadow so the border itself looks lit.
-        "hover:border-myBlue/70 hover:shadow-[0_0_24px_-2px] hover:shadow-myBlue/40",
+        // Light mode uses a darker blue for the border and title so they hold up on white.
+        "hover:border-[color-mix(in_srgb,var(--color-myBlue)_75%,black)] hover:shadow-[0_0_24px_-2px] hover:shadow-myBlue/40",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-myBlue",
         "dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-myBlue/80 dark:hover:shadow-myBlue/50",
         "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
@@ -149,7 +150,7 @@ export function Card({
         <div className="flex items-start justify-between gap-3">
           <Heading
             className={clsx(
-              "m-0 grow leading-snug tracking-tight transition-colors duration-300 ease-out group-hover:text-myBlue",
+              "m-0 grow leading-snug tracking-tight transition-colors duration-300 ease-out group-hover:text-[color-mix(in_srgb,var(--color-myBlue)_75%,black)]",
               // A lighter blue reads better against the dark card.
               "dark:group-hover:text-[color-mix(in_srgb,var(--color-myBlue)_70%,white)]",
               compact ? "text-base font-semibold" : "text-xl font-bold md:text-2xl",

@@ -234,17 +234,20 @@ export function PlaygroundScenesPanel({ open, onClose, restoreFocus }: PanelProp
   );
 }
 
-/** Breadcrumb + scene list toggle for the regular navbar on playground text pages. */
+/**
+ * Scene list toggle for the regular navbar on the playground index. No
+ * breadcrumb here: you are already on the playground, the crumb only shows
+ * once you drill down into a scene.
+ */
 export function PlaygroundSecondaryNav() {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
 
   return (
     <>
-      <PlaygroundCrumb />
       {/* Phones get the scene grid on the page itself; keep the bar uncluttered. */}
       <span className="hidden sm:flex">
-        <PlaygroundScenesButton open={open} onClick={() => setOpen((p) => !p)} className="ml-1" />
+        <PlaygroundScenesButton open={open} onClick={() => setOpen((p) => !p)} className="ml-2" />
       </span>
       <PlaygroundScenesPanel open={open} onClose={close} />
     </>

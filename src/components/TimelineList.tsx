@@ -123,6 +123,7 @@ export function TimelineList({
                   layout="horizontal"
                   key={entry.id}
                   cover={entry.cover || FALLBACK_COVER}
+                  coverAspect={entry.coverAspect}
                   link={entry.href}
                   title={entry.title}
                   typeLabel={entry.typeLabel}

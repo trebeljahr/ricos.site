@@ -1,3 +1,4 @@
+import type { CoverAspect } from "@components/Card";
 import type { CommonMetadata } from "src/@types";
 
 export type TimelineEntryType =
@@ -30,6 +31,7 @@ export type TimelineEntry = {
   readingTime?: number;
   wordCount?: number;
   cover?: TimelineCover;
+  coverAspect?: CoverAspect;
 };
 
 export type TimelineStats = {

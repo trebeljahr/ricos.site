@@ -10,6 +10,13 @@ const isBuild = process.argv.includes("build");
 // held usable data from the last run.
 const veliteExternal = isDev && process.env.VELITE_EXTERNAL === "1";
 
+// A .next/dev cache built for another Next version or config made Turbopack
+// spawn PostCSS workers in a loop (thousands of processes). See the guard.
+if (isDev) {
+  const { clearStaleDevCache } = await import("./src/scripts/dev/devCacheGuard.mjs");
+  clearStaleDevCache(import.meta.dirname);
+}
+
 // VELITE_STARTED guard only applies to dev (HMR may re-import next.config).
 // Production builds always rebuild velite to avoid serving a stale/empty
 // .velite cache from an earlier Vercel build.

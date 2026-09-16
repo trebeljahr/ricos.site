@@ -1,6 +1,8 @@
 export type NavItem = {
   label: string;
   href: string;
+  /** Draw a separator above this item, to split a group into sections. */
+  dividerBefore?: boolean;
 };
 
 export type NavGroup = {
@@ -31,7 +33,6 @@ export const navGroups: NavGroup[] = [
       { label: "3D playground", href: "/r3f" },
       { label: "midjourney", href: "/midjourney" },
       { label: "1-month projects", href: "/1-month-projects" },
-      { label: "achievements", href: "/achievements" },
     ],
   },
   {
@@ -40,11 +41,17 @@ export const navGroups: NavGroup[] = [
       { label: "booknotes", href: "/booknotes" },
       { label: "quotes", href: "/quotes" },
       { label: "needlestack", href: "/needlestack" },
+    ],
+  },
+  {
+    label: "about",
+    items: [
+      { label: "start here", href: "/start-here" },
+      { label: "now", href: "/now" },
       { label: "principles", href: "/principles" },
+      { label: "achievements", href: "/achievements" },
+      { label: "timeline", href: "/timeline", dividerBefore: true },
       { label: "categories", href: "/categories" },
-      { label: "timeline", href: "/timeline" },
     ],
   },
 ];
-
-export const primaryNavigation: NavItem[] = [{ label: "now", href: "/now" }];

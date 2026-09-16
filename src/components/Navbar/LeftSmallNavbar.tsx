@@ -1,10 +1,9 @@
 import { FiMenu, FiX } from "@components/Icons";
 import clsx from "clsx";
-import Link from "next/link";
 import { useState } from "react";
 import { CollapsibleMenuMobile } from "./CollapsibleMenus";
 import { DarkModeHandler } from "./DarkModeHandler";
-import { navGroups, primaryNavigation } from "./navItems";
+import { navGroups } from "./navItems";
 import { RicosSiteBanner } from "./TailwindNavbar";
 
 export const LeftSmallNavbar = () => {
@@ -50,17 +49,6 @@ export const LeftSmallNavbar = () => {
                 text={group.label}
                 closeNav={close}
               />
-            ))}
-
-            {primaryNavigation.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={close}
-                className="flex items-center rounded-md px-3 py-3 text-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                {item.label}
-              </Link>
             ))}
           </div>
         </div>

@@ -1,8 +1,12 @@
 import { FiChevronDown } from "@components/Icons";
 import clsx from "clsx";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useId, useRef, useState } from "react";
 import type { NavItem } from "./navItems";
 import { SingleMenuItem } from "./SingleMenuItem";
+
+function MenuDivider({ className }: { className: string }) {
+  return <hr className={clsx("border-gray-200 dark:border-gray-700", className)} />;
+}
 
 type DesktopMenuProps = {
   links: NavItem[];
@@ -87,7 +91,10 @@ export function CollapsibleMenuDesktop({ links, text }: DesktopMenuProps) {
         )}
       >
         {links.map((item) => (
-          <SingleMenuItem key={item.href} link={item} onSelect={() => close()} />
+          <Fragment key={item.href}>
+            {item.dividerBefore && <MenuDivider className="mx-2 my-1" />}
+            <SingleMenuItem link={item} onSelect={() => close()} />
+          </Fragment>
         ))}
       </div>
     </div>
@@ -135,7 +142,10 @@ export function CollapsibleMenuMobile({ links, text, closeNav }: MobileMenuProps
         <div className="min-h-0 overflow-hidden">
           <div className="mb-2 ml-3 flex flex-col border-l border-gray-200 pl-2 dark:border-gray-700">
             {links.map((item) => (
-              <SingleMenuItem key={item.href} link={item} onSelect={handleSelect} />
+              <Fragment key={item.href}>
+                {item.dividerBefore && <MenuDivider className="my-1 mr-3" />}
+                <SingleMenuItem link={item} onSelect={handleSelect} />
+              </Fragment>
             ))}
           </div>
         </div>

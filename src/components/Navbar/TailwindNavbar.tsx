@@ -8,7 +8,7 @@ import { type ReactNode, useCallback, useEffect, useRef, useState } from "react"
 import { useScrollLock } from "src/hooks/useScrollLock";
 import { CollapsibleMenuDesktop, CollapsibleMenuMobile } from "./CollapsibleMenus";
 import { DarkModeHandler } from "./DarkModeHandler";
-import { navGroups, primaryNavigation } from "./navItems";
+import { navGroups } from "./navItems";
 
 type BannerProps = {
   iconOnly?: boolean;
@@ -148,16 +148,6 @@ export function MobileMenu({ open, close }: { open: boolean; close: () => void }
             closeNav={close}
           />
         ))}
-        {primaryNavigation.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={close}
-            className="flex items-center rounded-md px-3 py-3 text-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-          >
-            {item.label}
-          </Link>
-        ))}
       </div>
     </div>
   );
@@ -168,15 +158,6 @@ function DesktopLinks() {
     <div className="hidden items-center gap-1 xl:flex">
       {navGroups.map((group) => (
         <CollapsibleMenuDesktop key={group.label} links={group.items} text={group.label} />
-      ))}
-      {primaryNavigation.map((item) => (
-        <Link
-          key={item.href}
-          className="inline-flex h-9 items-center rounded-md px-3 hover:bg-gray-200 dark:hover:bg-gray-700"
-          href={item.href}
-        >
-          {item.label}
-        </Link>
       ))}
     </div>
   );

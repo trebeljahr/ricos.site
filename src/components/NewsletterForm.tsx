@@ -18,7 +18,6 @@ const mediumConfettiProps: ConfettiProps = {
   particleCount: 200,
   width: 1000,
   zIndex: 400,
-  colors: ["#4ade80", "#2dd4bf", "#38bdf8", "#2563eb", "#ffffff"],
 };
 
 export const NewsletterForm = ({

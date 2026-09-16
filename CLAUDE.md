@@ -25,3 +25,6 @@
 - `/src/pages` - Next.js pages
 - `/src/models` - 3D models and related components
 - `/src/lib` - Utility functions and helpers
+## Dev Server: Stale CSS
+- `@tailwindcss/postcss` rebuilds only when a CSS file's mtime changes, not its content. A checkout or ff-merge that changes `globals.css` and `.tsx` files together could leave the dev server serving old `@theme`/`@utility` rules forever. `src/scripts/dev/tailwindMtimeGuard.cjs` (first plugin in `postcss.config.cjs`) prevents this; keep it before Tailwind.
+- Turbopack persists PostCSS output and errors in `.next/dev`, so restarting the dev server does not clear a bad result. If CSS is still stale, or `globals.css` fails with "failed to receive message" (a PostCSS worker was killed), stop the server, delete `.next/dev` and start again.

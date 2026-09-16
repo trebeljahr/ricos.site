@@ -18,7 +18,12 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const INPUTS = ["next.config.mjs", "postcss.config.cjs", "pnpm-lock.yaml"];
+const INPUTS = [
+  "next.config.mjs",
+  "postcss.config.cjs",
+  "src/scripts/dev/tailwindMtimeGuard.cjs",
+  "pnpm-lock.yaml",
+];
 
 function stampFor(root) {
   const hash = createHash("sha256");

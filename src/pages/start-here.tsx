@@ -68,7 +68,7 @@ const Photo = ({
       fill
       sizes={sizes}
       priority={priority}
-      className="object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
+      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none"
     />
   </div>
 );
@@ -166,26 +166,38 @@ export default function StartHerePage({ photos, demos, rabbitHoles }: Props) {
           text="My favourite frames from every trip, collected in one gallery."
         >
           {bigPhoto && (
-            <Link href="/photography/best-of" className="group block no-underline">
+            <>
               <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2">
-                <Photo
-                  cover={bigPhoto}
-                  sizes="(max-width: 768px) 100vw, 490px"
-                  className="col-span-2 aspect-4/3 rounded-xl md:row-span-2 md:aspect-auto"
-                />
-                {smallPhotos.map((cover) => (
-                  <Photo
+                {[bigPhoto, ...smallPhotos].map((cover, index) => (
+                  // Each photo is its own link and hover group, so only the
+                  // one under the cursor zooms. "isolate" keeps the scaled
+                  // image clipped to the rounded corners in Safari.
+                  <Link
                     key={cover.src}
-                    cover={cover}
-                    sizes="(max-width: 768px) 50vw, 240px"
-                    className="aspect-square rounded-xl"
-                  />
+                    href="/photography/best-of"
+                    aria-label={index === 0 ? "Open the best-of gallery" : undefined}
+                    tabIndex={index === 0 ? undefined : -1}
+                    className={clsx(
+                      "group relative isolate block overflow-hidden rounded-xl",
+                      index === 0
+                        ? "col-span-2 aspect-4/3 md:row-span-2 md:aspect-auto"
+                        : "aspect-square",
+                    )}
+                  >
+                    <Photo
+                      cover={cover}
+                      sizes={
+                        index === 0
+                          ? "(max-width: 768px) calc(100vw - 24px), 490px"
+                          : "(max-width: 768px) 50vw, 240px"
+                      }
+                      className="absolute inset-0"
+                    />
+                  </Link>
                 ))}
               </div>
-              <span className="mt-6 inline-flex items-center gap-2 font-semibold text-myBlue group-hover:underline">
-                Open the best-of gallery <Arrow />
-              </span>
-            </Link>
+              <MoreLink href="/photography/best-of">Open the best-of gallery</MoreLink>
+            </>
           )}
         </Section>
 

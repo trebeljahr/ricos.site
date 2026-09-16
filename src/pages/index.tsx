@@ -217,8 +217,8 @@ const IndexPage = ({ seo, ...props }: Props) => {
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <h2 className="text-5xl">Projects 🛠️</h2>
             <p className="mb-14 max-w-prose">
-              Games, developer tools and art I have built and put online. Most of them are open
-              source, and each card links to the live site. My software studio,{" "}
+              Games, developer tools and art I have built and put online. Each card links to the
+              live site. My software studio,{" "}
               <ExternalLink href="https://ricoslabs.com" rel="noopener">
                 Ricos Labs
               </ExternalLink>

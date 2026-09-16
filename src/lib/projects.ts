@@ -27,12 +27,12 @@ export const PROJECT_SECTIONS: { title: ProjectSection; intro: string }[] = [
   {
     title: "Games",
     intro:
-      "Browser games, from multiplayer board games to a 3D tower defense. Most run on the web and are open source.",
+      "Games that run in the browser, from a two-player board game to a 3D tower defense. All of them are open source.",
   },
   {
     title: "Apps & tools",
     intro:
-      "Developer tools, asset libraries and apps for day-to-day work. Each one is a live site, an npm package or a public repo.",
+      "Developer tools, 3D asset viewers and a time tracker. Each one has a live site and public source code.",
   },
   {
     title: "Art & 3D",
@@ -57,7 +57,7 @@ export const PROJECTS: Project[] = [
     slug: "tiao",
     title: "Tiao",
     tagline:
-      "Open-source two-player board game in the browser with online matches, AI opponents, tournaments and friends.",
+      "Two-player board game in the browser, with online matches, AI opponents and tournaments.",
     href: "https://playtiao.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/tiao",

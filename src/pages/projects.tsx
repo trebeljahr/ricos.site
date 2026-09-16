@@ -38,16 +38,16 @@ export default function ProjectsPage() {
       <main className="py-20 px-3 max-w-(--breakpoint-lg) mx-auto">
         <h1 className="text-5xl mt-16!">Projects</h1>
         <p className="max-w-prose">
-          These are the things I have built and put online. Most of them are open source, so each
-          card links to the live site and to the code. My software studio,{" "}
+          These are the things I have built and put online. Each card links to the live site, and
+          the Source link opens the code on GitHub. My software studio,{" "}
           <ExternalLink href="https://ricoslabs.com" rel="noopener">
             Ricos Labs
           </ExternalLink>
           , shows this work too.
         </p>
         <p className="max-w-prose mb-14">
-          Some of these started as <Link href="/1-month-projects">1-month projects</Link>, where I
-          spend one month on a single idea. My checklist of programming milestones lives on the{" "}
+          I also write about <Link href="/1-month-projects">1-month projects</Link>, where I spend
+          one month on a single idea. My checklist of programming milestones lives on the{" "}
           <Link href="/achievements">achievements</Link> page.
         </p>
 

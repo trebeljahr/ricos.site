@@ -1,11 +1,11 @@
 import { Backlinks } from "@components/Backlinks";
+import { Card } from "@components/Card";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
-import { HorizontalCard } from "@components/NiceCards";
 import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
@@ -146,7 +146,8 @@ const Newsletter = ({
             <div className="mt-10">
               <h2>More from Live and Learn</h2>
               {relatedNewsletters.map((nl) => (
-                <HorizontalCard
+                <Card
+                  layout="horizontal"
                   key={nl.slug}
                   cover={nl.cover}
                   link={nl.link}

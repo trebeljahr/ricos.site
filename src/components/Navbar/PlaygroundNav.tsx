@@ -1,3 +1,4 @@
+import { Card } from "@components/Card";
 import { FiChevronDown, FiX } from "@components/Icons";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import clsx from "clsx";
@@ -260,26 +261,17 @@ export function PlaygroundSceneGrid() {
           <h2 className="text-2xl font-bold">{section}</h2>
           <ul className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {scenes.map((scene) => (
-              <li key={scene.url}>
-                <Link
-                  href={scene.url}
+              <li key={scene.url} className="flex">
+                <Card
+                  link={scene.url}
                   prefetch={false}
-                  className="group block overflow-hidden rounded-lg ring-1 ring-gray-200 hover:ring-gray-400 dark:ring-gray-800 dark:hover:ring-gray-600"
-                >
-                  <span className="block aspect-video overflow-hidden">
-                    <ImageWithLoader
-                      src={previewSrc(scene)}
-                      alt=""
-                      width={400}
-                      height={225}
-                      sizes="(min-width: 1024px) 320px, (min-width: 640px) 50vw, 100vw"
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none"
-                    />
-                  </span>
-                  <span className="block px-3 py-2 font-medium">
-                    {turnKebabIntoTitleCase(scene.name)}
-                  </span>
-                </Link>
+                  title={turnKebabIntoTitleCase(scene.name)}
+                  headingAs="h3"
+                  size="compact"
+                  coverAspect="video"
+                  cover={{ src: previewSrc(scene), alt: "", width: 400, height: 225 }}
+                  sizes="(min-width: 1024px) 320px, (min-width: 640px) 50vw, 100vw"
+                />
               </li>
             ))}
           </ul>

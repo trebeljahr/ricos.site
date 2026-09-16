@@ -1,6 +1,6 @@
+import { Card } from "@components/Card";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
-import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { CommonMetadata } from "src/@types";
@@ -29,7 +29,8 @@ const toNiceCard = (
   const priority = index === 0;
 
   return (
-    <HorizontalCard
+    <Card
+      layout="horizontal"
       key={link}
       cover={cover}
       link={link}

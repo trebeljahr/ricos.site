@@ -1,4 +1,5 @@
 import { Backlinks } from "@components/Backlinks";
+import { Card } from "@components/Card";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
@@ -6,7 +7,6 @@ import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
-import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import slugify from "@sindresorhus/slugify";
@@ -141,7 +141,8 @@ export const TravelBlogLayout = ({
             <div className="mt-10">
               <h2>More travel stories</h2>
               {relatedStories.map((story) => (
-                <HorizontalCard
+                <Card
+                  layout="horizontal"
                   key={story.slug}
                   cover={story.cover}
                   link={story.link}

@@ -1,4 +1,5 @@
 import { Backlinks } from "@components/Backlinks";
+import { Card } from "@components/Card";
 import { BookCover } from "@components/CoverImage";
 import { ExternalLink } from "@components/ExternalLink";
 import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
@@ -6,7 +7,6 @@ import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
-import { HorizontalCard } from "@components/NiceCards";
 import { PageTop } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Booknote } from "@velite";
@@ -135,7 +135,8 @@ const Book = ({ booknote, relatedBooks, backlinks }: Props) => {
             <div className="mt-10">
               <h2>More book notes</h2>
               {relatedBooks.map((book) => (
-                <HorizontalCard
+                <Card
+                  layout="horizontal"
                   key={book.slug}
                   cover={book.cover}
                   link={book.link}

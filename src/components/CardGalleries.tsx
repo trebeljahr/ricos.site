@@ -2,7 +2,7 @@ import { FaChevronLeft, FaChevronRight } from "@components/Icons";
 import { useWindowWidth } from "@react-hook/window-size";
 import { createRef, type FC, useEffect, useMemo, useState, type WheelEventHandler } from "react";
 import type { CommonMetadata } from "src/@types";
-import { type CoverAspect, VerticalCard } from "./NiceCards";
+import { Card, type CoverAspect } from "./Card";
 
 // The subset of CommonMetadata the cards render, so non-content data (e.g.
 // src/lib/projects.ts) can reuse the same galleries.
@@ -27,7 +27,7 @@ export const CardGallery = ({
   return (
     <div className="grid gap-2 md:gap-4 lg:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max justify-items-center pb-5">
       {content.map((singlePiece) => (
-        <VerticalCard
+        <Card
           key={singlePiece.slug}
           readingTime={singlePiece.metadata?.readingTime}
           {...singlePiece}
@@ -149,7 +149,8 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
   return (
     <div className="flex place-items-center relative mb-10 xl:mb-0">
       <div
-        className="-ml-3 overflow-x-scroll w-full overscroll-x-none snap-x snap-mandatory flex transition-transform duration-300 ease-in-out pb-5 no-scrollbar"
+        // pt-2 leaves room for the hover lift, which overflow-x-scroll would clip.
+        className="-ml-3 overflow-x-scroll w-full overscroll-x-none snap-x snap-mandatory flex transition-transform duration-300 ease-in-out pt-2 pb-5 no-scrollbar"
         ref={scrollRef}
         onWheel={scrollHandler}
         onScroll={handleScrollEffect}
@@ -163,7 +164,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
             data-index={index}
             className="px-3 flex self-stretch w-full md:w-1/2 xl:w-1/3 snap-start shrink-0"
           >
-            <VerticalCard
+            <Card
               {...singlePiece}
               coverAspect={coverAspect}
               markdownExcerpt={withExcerpt ? singlePiece.markdownExcerpt : undefined}

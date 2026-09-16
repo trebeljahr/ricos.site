@@ -1,5 +1,5 @@
+import { Card } from "@components/Card";
 import Layout from "@components/Layout";
-import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
 import { nanoid } from "nanoid";
 import type { CommonMetadata } from "src/@types";
@@ -54,7 +54,8 @@ const Traveling = ({ posts, tripName, seo }: Props) => {
             const priority = index <= 1;
 
             return (
-              <HorizontalCard
+              <Card
+                layout="horizontal"
                 key={nanoid()}
                 priority={priority}
                 readingTime={post.metadata.readingTime}

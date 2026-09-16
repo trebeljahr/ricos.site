@@ -1,5 +1,5 @@
 import type { CommonMetadata } from "src/@types";
-import { HorizontalCard } from "./NiceCards";
+import { Card } from "./Card";
 
 type Props = {
   post: CommonMetadata;
@@ -17,7 +17,8 @@ export const PostPreview = ({
   },
 }: Props) => {
   return (
-    <HorizontalCard
+    <Card
+      layout="horizontal"
       title={title}
       cover={cover}
       markdownExcerpt={markdownExcerpt}
@@ -40,7 +41,8 @@ export const OtherPostsPreview = ({ posts }: { posts: CommonMetadata[] }) => {
           const priority = index === 0;
 
           return (
-            <HorizontalCard
+            <Card
+              layout="horizontal"
               key={slug}
               cover={cover}
               link={link}

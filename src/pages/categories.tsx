@@ -1,5 +1,5 @@
+import { Card } from "@components/Card";
 import { ContentListRow } from "@components/ContentListRow";
-import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
@@ -37,40 +37,27 @@ type Props = {
 
 function ThemeCardLink({ theme }: { theme: ThemeCard }) {
   return (
-    <Link href={`/themes/${theme.slug}`} className="group block no-underline text-inherit">
-      <article className="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 transition-colors hover:border-myBlue/60">
-        <div className="relative aspect-[16/9] overflow-hidden">
-          <ImageWithLoader
-            src={theme.hero.src}
-            alt={theme.hero.alt}
-            fill
-            // sm:grid-cols-2 gap-6 inside `max-w-5xl px-3`, so 488px at desktop.
-            sizes="(max-width: 639px) calc(100vw - 24px), (max-width: 1024px) calc(50vw - 24px), 488px"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-5">
-            <h3 className="m-0 text-2xl font-semibold text-white">{theme.title}</h3>
-            <p className="m-0 mt-1 text-sm text-white/85">{theme.oneliner}</p>
-          </div>
-        </div>
-        <div className="p-5">
-          <p className="m-0 mb-3 text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
-            {theme.count} {theme.count === 1 ? "piece" : "pieces"}
-          </p>
-          <ul className="m-0 list-none p-0 space-y-1.5">
-            {theme.samples.map((s) => (
-              <li
-                key={s.link}
-                className="truncate text-sm text-gray-700 transition-colors dark:text-gray-300 group-hover:text-myBlue"
-              >
-                {s.title}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </article>
-    </Link>
+    <Card
+      link={`/themes/${theme.slug}`}
+      title={theme.title}
+      subtitle={theme.oneliner}
+      headingAs="h3"
+      coverAspect="video"
+      cover={theme.hero}
+      // sm:grid-cols-2 gap-6 inside `max-w-5xl px-3`, so 488px at desktop.
+      sizes="(max-width: 639px) calc(100vw - 24px), (max-width: 1024px) calc(50vw - 24px), 488px"
+    >
+      <p className="m-0 mt-4 mb-2 text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
+        {theme.count} {theme.count === 1 ? "piece" : "pieces"}
+      </p>
+      <ul className="m-0 list-none space-y-1.5 p-0">
+        {theme.samples.map((s) => (
+          <li key={s.link} className="truncate text-sm text-gray-700 dark:text-gray-300">
+            {s.title}
+          </li>
+        ))}
+      </ul>
+    </Card>
   );
 }
 

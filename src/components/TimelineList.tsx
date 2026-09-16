@@ -7,7 +7,7 @@ import {
   type TimelineEntryType,
   timelineTypeLabels,
 } from "src/lib/timeline";
-import { HorizontalCard } from "./NiceCards";
+import { Card } from "./Card";
 
 type Props = {
   entries: TimelineEntry[];
@@ -119,7 +119,8 @@ export function TimelineList({
             </h2>
             <div className="flex flex-col">
               {items.map((entry) => (
-                <HorizontalCard
+                <Card
+                  layout="horizontal"
                   key={entry.id}
                   cover={entry.cover || FALLBACK_COVER}
                   link={entry.href}

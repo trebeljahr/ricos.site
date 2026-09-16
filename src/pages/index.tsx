@@ -1,3 +1,4 @@
+import { Card } from "@components/Card";
 import { ExternalLink } from "@components/ExternalLink";
 import { FancyLink } from "@components/FancyUI";
 import { HomePageSection } from "@components/HomePageSection";
@@ -187,25 +188,21 @@ const IndexPage = ({ seo, ...props }: Props) => {
             </p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-12">
               {FEATURED_R3F_DEMOS.map(({ name, href }) => (
-                <Link
+                <Card
                   key={name}
-                  href={href}
-                  className="group block no-underline rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-700 hover:border-myBlue transition-colors"
-                >
-                  <div className="relative aspect-video overflow-hidden bg-gray-900">
-                    <ImageWithLoader
-                      src={`/assets/pages/${name}.png`}
-                      alt={`Preview of the ${turnKebabIntoTitleCase(name)} R3F demo`}
-                      width={400}
-                      height={225}
-                      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 336px"
-                      className="absolute inset-0 object-cover w-full h-full group-hover:scale-105 transform transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-3">
-                    <h3 className="text-base font-semibold m-0">{turnKebabIntoTitleCase(name)}</h3>
-                  </div>
-                </Link>
+                  link={href}
+                  title={turnKebabIntoTitleCase(name)}
+                  headingAs="h3"
+                  size="compact"
+                  coverAspect="video"
+                  cover={{
+                    src: `/assets/pages/${name}.png`,
+                    alt: `Preview of the ${turnKebabIntoTitleCase(name)} R3F demo`,
+                    width: 400,
+                    height: 225,
+                  }}
+                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 336px"
+                />
               ))}
             </div>
             <FancyLink href="/r3f" text="Open the Playground" />

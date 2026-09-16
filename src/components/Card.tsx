@@ -28,7 +28,8 @@ export type CardLayout = "vertical" | "horizontal";
 
 // "tall" crops photos into a fixed-height banner. "video" keeps the whole
 // image at 16:9, which suits screenshots (e.g. the /projects cards); in the
-// horizontal layout it widens the cover column and centres a 16:9 frame.
+// horizontal layout the frame matches every other card and the whole image
+// sits inside it over a blurred copy, so mixed lists keep one card shape.
 // "portrait" is for book covers: in the horizontal layout it narrows the cover
 // column and keeps at least a 2:3 frame, so the whole cover stays visible.
 export type CoverAspect = "tall" | "video" | "portrait";
@@ -91,6 +92,7 @@ export function Card({
   const hasMetadata = Boolean(date || readingTime || amountOfStories);
   const portrait = coverAspect === "portrait";
   const video = coverAspect === "video";
+  const letterboxed = horizontal && video;
   const hasDimensions = cover.width !== undefined && cover.height !== undefined;
 
   return (
@@ -112,11 +114,7 @@ export function Card({
         horizontal
           ? clsx(
               "mb-6 block md:grid",
-              portrait
-                ? "md:grid-cols-[10rem_1fr]"
-                : video
-                  ? "md:grid-cols-[20rem_1fr] md:items-center"
-                  : "md:grid-cols-[15rem_1fr]",
+              portrait ? "md:grid-cols-[10rem_1fr]" : "md:grid-cols-[15rem_1fr]",
             )
           : "flex flex-col self-stretch",
         className,
@@ -125,16 +123,28 @@ export function Card({
       <div
         className={clsx(
           "relative w-full shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-700",
-          video
-            ? "aspect-video"
-            : horizontal
-              ? clsx("h-64 md:h-auto", portrait ? "md:min-h-60" : "md:min-h-52")
+          horizontal
+            ? clsx("h-64 md:h-auto", portrait ? "md:min-h-60" : "md:min-h-52")
+            : video
+              ? "aspect-video"
               : "h-64",
         )}
       >
         {/* Absolutely positioned so the cover never sets the card's height: in
             the horizontal layout a tall book cover used to stretch the row and
             leave a gap under the text. The frame's own height rules instead. */}
+        {letterboxed && (
+          // Same file and sizes as the cover below, so the browser fetches it once.
+          <div aria-hidden="true" className="absolute inset-0 scale-125 blur-xl">
+            <ImageWithLoader
+              src={cover.src}
+              alt=""
+              {...(hasDimensions ? { width: cover.width, height: cover.height } : { fill: true })}
+              sizes={sizes ?? defaultSizes[layout]}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
         <div className="absolute inset-0">
           <ImageWithLoader
             src={cover.src}
@@ -144,12 +154,10 @@ export function Card({
               sizes ??
               (horizontal && portrait
                 ? "(max-width: 768px) calc(100vw - 24px), 160px"
-                : horizontal && video
-                  ? "(max-width: 768px) calc(100vw - 24px), 320px"
-                  : defaultSizes[layout])
+                : defaultSizes[layout])
             }
             priority={priority}
-            className="h-full w-full object-cover"
+            className={clsx("h-full w-full", letterboxed ? "object-contain" : "object-cover")}
           />
         </div>
       </div>

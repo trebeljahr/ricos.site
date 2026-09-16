@@ -70,15 +70,21 @@ function QuoteSlip({ quote, portrait }: { quote: NumberedQuote; portrait?: Portr
   return (
     <figure
       style={{ "--width": `${width}px`, "--grow": width } as CSSProperties}
-      className="m-0 flex w-full flex-col rounded-sm bg-stone-50 p-5 shadow-sm ring-1 ring-black/5 md:w-auto md:[flex:var(--grow)_1_var(--width)] dark:bg-slate-800/70 dark:ring-white/10"
+      className="relative m-0 flex w-full flex-col overflow-hidden rounded-sm bg-stone-50 px-6 pt-10 pb-5 shadow-sm ring-1 ring-black/5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0 md:w-auto md:[flex:var(--grow)_1_var(--width)] dark:bg-slate-800/70 dark:ring-white/10"
     >
-      <blockquote className="m-0 grow text-lg whitespace-pre-line text-zinc-800 dark:text-slate-200">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -top-1 left-3 font-serif text-8xl leading-none text-myBlue/50 select-none"
+      >
+        &ldquo;
+      </span>
+      <blockquote className="m-0 grow font-serif text-lg leading-relaxed whitespace-pre-line text-zinc-800 dark:text-slate-200">
         {quote.content}
       </blockquote>
-      <figcaption className="mt-4 flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+      <figcaption className="mt-5 flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
         {portrait && <Avatar author={author} portrait={portrait} />}
         <span className="min-w-0">
-          <span className="font-medium tracking-wide uppercase">{author}</span>
+          <span className="text-xs font-semibold tracking-widest uppercase">— {author}</span>
           {quote.source && (
             <>
               {" · "}

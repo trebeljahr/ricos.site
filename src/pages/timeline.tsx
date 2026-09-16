@@ -67,7 +67,7 @@ export default function Timeline({ entries, seo }: Props) {
       keywords={seo?.keywords || ["timeline", "writing", "photography", "r3f"]}
       url={url}
     >
-      <main className="py-20 px-3 max-w-(--breakpoint-lg) mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-(--breakpoint-lg) mx-auto">
         <BreadCrumbs path={url} />
 
         <section className="mb-14">

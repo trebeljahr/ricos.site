@@ -76,7 +76,7 @@ export default function Page({ page, backlinks }: Props) {
           { name: title, url: `/${page.slug}` },
         ]}
       />
-      <main className="py-20 px-3 max-w-5xl mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose">
           <BreadCrumbs path={page.slug} />
           <MetadataDisplay date={page.date} readingTime={page.metadata.readingTime} />

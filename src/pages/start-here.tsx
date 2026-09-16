@@ -62,7 +62,7 @@ export default function StartHerePage() {
           { name: "Start Here", url: "/start-here" },
         ]}
       />
-      <main className="py-20 px-3 max-w-5xl mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose">
           <h1 className="text-4xl mt-16!">Start Here</h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-12">

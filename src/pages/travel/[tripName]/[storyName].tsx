@@ -109,7 +109,7 @@ export const TravelBlogLayout = ({
           { name: title, url: `/${url}` },
         ]}
       />
-      <main className="py-20 px-3  max-w-5xl mx-auto">
+      <main className="pt-5 pb-20 px-3  max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
         <MetadataDisplay date={date} readingTime={readingTime} />
         <Header title={title || ""} />

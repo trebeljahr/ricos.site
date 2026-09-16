@@ -34,7 +34,7 @@ export default function Books({ booknotes, seo }: Props) {
       url={url}
       imageAlt={seo?.ogImageAlt || "a bookshelf filled with lots of books"}
     >
-      <main className="py-20 px-3 max-w-5xl mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
 
         <Header title="Booknotes" subtitle="What I have learned while reading" />

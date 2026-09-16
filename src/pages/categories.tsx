@@ -117,7 +117,7 @@ export default function CategoriesPage({ themes, tags, totalDocs, seo }: Props) 
       image={seo?.ogImage || "/assets/blog/network.jpg"}
       imageAlt={seo?.ogImageAlt || "a network of connected dots"}
     >
-      <main className="py-20 px-3 max-w-5xl mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
 
         <section className="mb-14">

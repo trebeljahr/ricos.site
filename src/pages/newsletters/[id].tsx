@@ -106,7 +106,7 @@ const Newsletter = ({
           { name: `#${number}`, url: `/${url}` },
         ]}
       />
-      <main className="py-20 px-3 max-w-5xl mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]} />
         <MetadataDisplay date={date} readingTime={readingTime} />
 

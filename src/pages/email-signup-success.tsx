@@ -49,7 +49,7 @@ export default function EmailSignupSuccess() {
         image="/assets/blog/success.png"
         imageAlt="a green success checkmark on a black background"
       >
-        <article className="py-20 px-3 mx-auto max-w-prose">
+        <article className="pt-5 pb-20 px-3 mx-auto max-w-prose">
           <h1 className="mt-16!">Welcome aboard!</h1>
           <p className="text-lg">
             You have successfully confirmed your subscription to Live and Learn. Emails go out every

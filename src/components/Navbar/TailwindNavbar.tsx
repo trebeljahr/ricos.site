@@ -78,7 +78,7 @@ export function TailwindNavbar({ withProgressBar = false, secondary }: TailwindN
     <header
       id="navbar"
       className={clsx(
-        "fixed top-0 left-0 z-999 w-full not-prose pt-3 transition-colors duration-300 dark:bg-gray-900",
+        "sticky top-0 z-999 w-full not-prose pt-3 transition-colors duration-300 dark:bg-gray-900",
         menu.open ? "bg-white" : "glassy hover:bg-white",
         !withProgressBar && "pb-2",
       )}

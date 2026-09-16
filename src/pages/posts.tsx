@@ -30,7 +30,7 @@ const Posts = ({ posts, seo }: Props) => {
       imageAlt={seo?.ogImageAlt || "a hand writing down thoughts on a piece of paper"}
       keywords={seo?.keywords || ["posts", "writings", "thoughts", "essays", "life"]}
     >
-      <main className="py-20 px-3 max-w-5xl mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <BreadCrumbs path={url} />
 
         <section>

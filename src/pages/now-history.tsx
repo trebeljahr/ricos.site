@@ -230,7 +230,7 @@ export default function NowHistory({ entries }: Props) {
           { name: "History", url: "/now-history" },
         ]}
       />
-      <main className="py-20 px-3 max-w-5xl mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose">
           <BreadCrumbs path="now-history" />
           <h1 className="text-4xl mt-16!">Now Page History</h1>

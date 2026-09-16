@@ -76,7 +76,7 @@ const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
           { name: podcastnote.title, url: `/${url}` },
         ]}
       />
-      <main className="py-20 px-3 max-w-5xl mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         {/* Podcast notes are unlisted — the /podcastnotes index was removed, so
             that crumb is plain text rather than a link to a route that 404s. */}
         <BreadCrumbs path={url} overwrites={[{ matchingPath: "podcastnotes", unlinked: true }]} />

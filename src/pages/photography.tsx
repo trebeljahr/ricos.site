@@ -232,7 +232,7 @@ export default function Photography({ trips, seo }: Props) {
       imageAlt={seo?.ogImageAlt || "a high quality rendering of an old film camera"}
       keywords={seo?.keywords || ["photography", "gallery", "photos", "portfolio"]}
     >
-      <main className="mb-20 px-3 max-w-7xl mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-7xl mx-auto">
         <BreadCrumbs path={url} />
 
         <Header subtitle="My travels in pictures" title="Photography" />

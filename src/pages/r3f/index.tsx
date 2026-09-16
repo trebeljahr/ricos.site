@@ -31,7 +31,7 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 
   return (
     <Layout {...seoInfo} navbarSecondary={<PlaygroundSecondaryNav />}>
-      <main className="w-full min-h-screen pt-24 pb-10 px-4">
+      <main className="w-full min-h-screen pt-9 pb-10 px-4">
         <div className="mx-auto max-w-5xl">
           <BreadCrumbs
             path="/r3f"

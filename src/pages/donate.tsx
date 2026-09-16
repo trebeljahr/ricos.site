@@ -27,7 +27,7 @@ export default function DonatePage() {
           { name: "Donate", url: "/donate" },
         ]}
       />
-      <main className="py-20 px-3 max-w-5xl mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose prose md:prose-lg xl:prose-xl dark:prose-invert">
           <BreadCrumbs path="donate" />
           <h1 className="text-4xl mt-16!">Donate</h1>

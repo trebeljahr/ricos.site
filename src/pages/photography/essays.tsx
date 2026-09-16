@@ -14,7 +14,7 @@ export default function PhotographyEssaysPage() {
       keywords={["photography essays", "photo essays", "travel photography", "visual stories"]}
       noindex
     >
-      <main className="py-20 px-3 max-w-5xl mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose">
           <BreadCrumbs path="photography/essays" />
           <Header title="Photography Essays" subtitle="Image-led stories and longer visual work" />

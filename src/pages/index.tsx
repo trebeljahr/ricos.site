@@ -53,7 +53,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
       fullScreen={true}
     >
       <WebSiteJsonLd />
-      <main className="mt-32">
+      <main className="mt-16">
         <section className="px-3 pb-20">
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <div className="max-w-prose">

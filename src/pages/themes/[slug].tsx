@@ -32,7 +32,7 @@ export default function ThemePage({ theme, items, seo }: Props) {
       imageAlt={seo?.ogImageAlt || theme.hero.alt}
       keywords={seo?.keywords || theme.tagMembers.slice(0, 12)}
     >
-      <main className="py-20 px-3 max-w-5xl mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         {/* There is no /themes index — /categories is the list of themes. */}
         <BreadCrumbs
           path={url}

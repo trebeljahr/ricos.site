@@ -33,7 +33,7 @@ export default function Quotes({ seo }: { seo: SeoInfo | null }) {
       url={url}
       keywords={seo?.keywords || ["quotes", "collection", "books", "inspiration"]}
     >
-      <main className="py-20 px-3 mx-auto max-w-prose">
+      <main className="pt-5 pb-20 px-3 mx-auto max-w-prose">
         <BreadCrumbs path={url} />
 
         <section>

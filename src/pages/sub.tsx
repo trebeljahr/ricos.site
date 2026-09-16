@@ -11,7 +11,7 @@ const SubscribePage = () => {
       imageAlt={"a hand writing down thoughts on a piece of paper"}
       keywords={[]}
     >
-      <main className="py-20 px-3 max-w-5xl mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <footer>
           <NewsletterForm />
         </footer>

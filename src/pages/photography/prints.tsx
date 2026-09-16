@@ -14,7 +14,7 @@ export default function PhotographyPrintsPage() {
       keywords={["photography prints", "photo prints", "travel photography", "wall art"]}
       noindex
     >
-      <main className="py-20 px-3 max-w-5xl mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose">
           <BreadCrumbs path="photography/prints" />
           <Header title="Photography Prints" subtitle="Selected photographs for walls and rooms" />

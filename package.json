@@ -245,7 +245,8 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "velite@0.3.1": "patches/velite@0.3.1.patch"
+      "velite@0.3.1": "patches/velite@0.3.1.patch",
+      "next@16.2.1": "patches/next@16.2.1.patch"
     }
   },
   "packageManager": "pnpm@10.33.2"

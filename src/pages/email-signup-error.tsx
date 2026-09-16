@@ -1,5 +1,6 @@
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
+import Header from "@components/PostHeader";
 export default function EmailSignupError() {
   return (
     <Layout
@@ -10,8 +11,8 @@ export default function EmailSignupError() {
       image="/assets/blog/error.png"
       imageAlt="an error sign in the middle of nowhere"
     >
-      <article className="mt-10 mx-auto max-w-prose">
-        <h1>Hmm... seems like something went wrong</h1>
+      <article className="pt-5 px-3 mx-auto max-w-prose">
+        <Header title="Hmm... seems like something went wrong" />
         <p>Maybe try subscribing to the newsletter once more?</p>
         <div className="mt-[-80px]">
           <NewsletterForm />

@@ -1,4 +1,3 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { HorizontalCard } from "@components/NiceCards";
@@ -97,10 +96,9 @@ const TravelBlogs = ({ cardContent, seo }: Props) => {
       keywords={seo?.keywords || ["travel", "blog", "adventures", "stories"]}
     >
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
-        <BreadCrumbs path="travel" />
-
         <section>
           <Header
+            breadcrumbs={{ path: "travel" }}
             title="Traveling"
             subtitle="Stories of the adventures and places I have been to"
           />

@@ -1,5 +1,4 @@
 import { Backlinks } from "@components/Backlinks";
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
@@ -110,9 +109,11 @@ export const TravelBlogLayout = ({
         ]}
       />
       <main className="pt-5 pb-20 px-3  max-w-5xl mx-auto">
-        <BreadCrumbs path={url} />
-        <MetadataDisplay date={date} readingTime={readingTime} />
-        <Header title={title || ""} />
+        <Header
+          breadcrumbs={{ path: url }}
+          meta={<MetadataDisplay date={date} readingTime={readingTime} />}
+          title={title || ""}
+        />
 
         <div className="mb-5">
           <ImageWithLoader

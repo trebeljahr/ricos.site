@@ -1,7 +1,7 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
+import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import Link from "next/link";
 
@@ -21,8 +21,7 @@ export default function ImprintPage() {
       />
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose prose md:prose-lg xl:prose-xl dark:prose-invert">
-          <BreadCrumbs path="imprint" />
-          <h1 className="text-4xl mt-16!">Imprint</h1>
+          <Header breadcrumbs={{ path: "imprint" }} title="Imprint" />
 
           <p>
             Information pursuant to § 5 DDG (German Digital Services Act) and § 18 (2) MStV

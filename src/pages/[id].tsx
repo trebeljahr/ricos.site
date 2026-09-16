@@ -1,5 +1,4 @@
 import { Backlinks } from "@components/Backlinks";
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
@@ -78,9 +77,12 @@ export default function Page({ page, backlinks }: Props) {
       />
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose">
-          <BreadCrumbs path={page.slug} />
-          <MetadataDisplay date={page.date} readingTime={page.metadata.readingTime} />
-          <Header subtitle={subtitle} title={title} />
+          <Header
+            breadcrumbs={{ path: page.slug }}
+            meta={<MetadataDisplay date={page.date} readingTime={page.metadata.readingTime} />}
+            subtitle={subtitle}
+            title={title}
+          />
 
           {page.hasDemos ? (
             <MDXContentWithDemos source={page.content} />

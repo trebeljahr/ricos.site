@@ -1,4 +1,3 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { HorizontalCard } from "@components/NiceCards";
 import Header from "@components/PostHeader";
@@ -45,9 +44,12 @@ const Traveling = ({ posts, tripName, seo }: Props) => {
       }
     >
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
-        <BreadCrumbs path={url} />
         <section>
-          <Header title={turnKebabIntoTitleCase(tripName)} subtitle={subtitle || defaultSubtitle} />
+          <Header
+            breadcrumbs={{ path: url }}
+            title={turnKebabIntoTitleCase(tripName)}
+            subtitle={subtitle || defaultSubtitle}
+          />
           {posts.map((post, index) => {
             const priority = index <= 1;
 

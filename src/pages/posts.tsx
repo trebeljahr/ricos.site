@@ -1,4 +1,3 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
@@ -31,10 +30,12 @@ const Posts = ({ posts, seo }: Props) => {
       keywords={seo?.keywords || ["posts", "writings", "thoughts", "essays", "life"]}
     >
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
-        <BreadCrumbs path={url} />
-
         <section>
-          <Header title="Posts" subtitle="Longer Form Essays about Tech and Self-Improvement" />
+          <Header
+            breadcrumbs={{ path: url }}
+            title="Posts"
+            subtitle="Longer Form Essays about Tech and Self-Improvement"
+          />
           <OtherPostsPreview posts={posts} />
         </section>
 

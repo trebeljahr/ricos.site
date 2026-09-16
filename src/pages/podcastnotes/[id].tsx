@@ -1,11 +1,11 @@
 import { Backlinks } from "@components/Backlinks";
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ExternalLink } from "@components/ExternalLink";
 import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
+import { PageTop } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Podcastnote as PodcastnoteType } from "@velite";
 
@@ -79,29 +79,37 @@ const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         {/* Podcast notes are unlisted — the /podcastnotes index was removed, so
             that crumb is plain text rather than a link to a route that 404s. */}
-        <BreadCrumbs path={url} overwrites={[{ matchingPath: "podcastnotes", unlinked: true }]} />
-        <MetadataDisplay date={podcastnote.date} readingTime={podcastnote.metadata.readingTime} />
-
         <article>
-          <section className="Podcastnote-info">
-            <div className="Podcastnote-preview-text">
-              <h1 className="mt-16! mb-2!">
-                <p className="text-2xl font-normal">
-                  {podcastnote.show} | Episode – {podcastnote.episode}{" "}
+          <PageTop
+            breadcrumbs={{
+              path: url,
+              overwrites: [{ matchingPath: "podcastnotes", unlinked: true }],
+            }}
+          >
+            <MetadataDisplay
+              date={podcastnote.date}
+              readingTime={podcastnote.metadata.readingTime}
+            />
+            <section className="Podcastnote-info">
+              <div className="Podcastnote-preview-text">
+                <h1 className="mt-2! mb-2!">
+                  <p className="text-2xl font-normal">
+                    {podcastnote.show} | Episode – {podcastnote.episode}{" "}
+                  </p>
+                  <p className="mt-2">{podcastnote.title}</p>
+                </h1>
+                {/* <p className="mt-10 mb-0"></p> */}
+                <p className="mt-0 mb-0">
+                  <b>Rating: {podcastnote.rating}/10</b>
                 </p>
-                <p className="mt-2">{podcastnote.title}</p>
-              </h1>
-              {/* <p className="mt-10 mb-0"></p> */}
-              <p className="mt-0 mb-0">
-                <b>Rating: {podcastnote.rating}/10</b>
-              </p>
-              <span className="mt-2">
-                Listen on: <ExternalLink href={podcastnote.links.youtube}>Youtube</ExternalLink> |{" "}
-                <ExternalLink href={podcastnote.links.spotify}>Spotify</ExternalLink> |{" "}
-                <ExternalLink href={podcastnote.links.web}>Web</ExternalLink>
-              </span>
-            </div>
-          </section>
+                <span className="mt-2">
+                  Listen on: <ExternalLink href={podcastnote.links.youtube}>Youtube</ExternalLink> |{" "}
+                  <ExternalLink href={podcastnote.links.spotify}>Spotify</ExternalLink> |{" "}
+                  <ExternalLink href={podcastnote.links.web}>Web</ExternalLink>
+                </span>
+              </div>
+            </section>
+          </PageTop>
           <section>
             <MDXContent source={podcastnote.content} />
           </section>

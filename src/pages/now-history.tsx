@@ -1,8 +1,8 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MarkdownRenderers } from "@components/MarkdownRenderers";
 import { NewsletterForm } from "@components/NewsletterForm";
+import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { getMDXComponent } from "mdx-bundler/client";
 import { type KeyboardEvent, useMemo, useRef, useState } from "react";
@@ -232,8 +232,7 @@ export default function NowHistory({ entries }: Props) {
       />
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose">
-          <BreadCrumbs path="now-history" />
-          <h1 className="text-4xl mt-16!">Now Page History</h1>
+          <Header breadcrumbs={{ path: "now-history" }} title="Now Page History" />
           <div className="text-gray-600 dark:text-gray-400 mb-8">
             Past editions of my{" "}
             <a href="/now" className="text-myBlue hover:underline">

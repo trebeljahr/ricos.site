@@ -1,4 +1,3 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
 import Link from "next/link";
@@ -16,8 +15,11 @@ export default function PhotographyEssaysPage() {
     >
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose">
-          <BreadCrumbs path="photography/essays" />
-          <Header title="Photography Essays" subtitle="Image-led stories and longer visual work" />
+          <Header
+            breadcrumbs={{ path: "photography/essays" }}
+            title="Photography Essays"
+            subtitle="Image-led stories and longer visual work"
+          />
           <p>
             Photo essays will collect longer visual stories here. For now, browse the{" "}
             <Link href="/photography">galleries</Link> or read the{" "}

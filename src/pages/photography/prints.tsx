@@ -1,4 +1,3 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
 import Link from "next/link";
@@ -16,8 +15,11 @@ export default function PhotographyPrintsPage() {
     >
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose">
-          <BreadCrumbs path="photography/prints" />
-          <Header title="Photography Prints" subtitle="Selected photographs for walls and rooms" />
+          <Header
+            breadcrumbs={{ path: "photography/prints" }}
+            title="Photography Prints"
+            subtitle="Selected photographs for walls and rooms"
+          />
           <p>
             Prints will live here once the shop flow is ready. For now, start with the{" "}
             <Link href="/photography/best-of">best-of gallery</Link> or the full{" "}

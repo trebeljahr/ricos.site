@@ -1,4 +1,3 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
@@ -34,10 +33,12 @@ export default function Quotes({ seo }: { seo: SeoInfo | null }) {
       keywords={seo?.keywords || ["quotes", "collection", "books", "inspiration"]}
     >
       <main className="pt-5 pb-20 px-3 mx-auto max-w-prose">
-        <BreadCrumbs path={url} />
-
         <section>
-          <Header title="Quotes" subtitle="Snippets of writing that I want to remember" />
+          <Header
+            breadcrumbs={{ path: url }}
+            title="Quotes"
+            subtitle="Snippets of writing that I want to remember"
+          />
 
           <Search
             all={quotes}

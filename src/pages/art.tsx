@@ -1,4 +1,3 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
 import Link from "next/link";
@@ -16,8 +15,11 @@ export default function ArtPage() {
     >
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose">
-          <BreadCrumbs path="art" />
-          <Header title="Art & Drawings" subtitle="Drawings, studies, and visual experiments" />
+          <Header
+            breadcrumbs={{ path: "art" }}
+            title="Art & Drawings"
+            subtitle="Drawings, studies, and visual experiments"
+          />
           <p>
             This shelf is reserved for drawings, painting studies, and visual experiments. Until it
             fills up, the closest things live in the{" "}

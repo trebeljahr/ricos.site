@@ -1,5 +1,4 @@
 import { Backlinks } from "@components/Backlinks";
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
@@ -107,11 +106,15 @@ const Newsletter = ({
         ]}
       />
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
-        <BreadCrumbs path={url} overwrites={[{ matchingPath: slugTitle, newText: `${number}` }]} />
-        <MetadataDisplay date={date} readingTime={readingTime} />
-
         <article>
-          <Header title={fullTitle} />
+          <Header
+            breadcrumbs={{
+              path: url,
+              overwrites: [{ matchingPath: slugTitle, newText: `${number}` }],
+            }}
+            meta={<MetadataDisplay date={date} readingTime={readingTime} />}
+            title={fullTitle}
+          />
           <div className="mb-5">
             <ImageWithLoader
               priority

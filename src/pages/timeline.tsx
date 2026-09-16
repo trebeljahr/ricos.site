@@ -1,4 +1,3 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
 import { TimelineList } from "@components/TimelineList";
@@ -68,10 +67,8 @@ export default function Timeline({ entries, seo }: Props) {
       url={url}
     >
       <main className="pt-5 pb-20 px-3 max-w-(--breakpoint-lg) mx-auto">
-        <BreadCrumbs path={url} />
-
         <section className="mb-14">
-          <Header title="Timeline" />
+          <Header breadcrumbs={{ path: url }} title="Timeline" />
         </section>
 
         <TimelineList entries={entries} initialCount={24} batchSize={16} />

@@ -1,8 +1,8 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ContentListRow } from "@components/ContentListRow";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
+import { PageTop } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import Link from "next/link";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
@@ -34,31 +34,33 @@ export default function ThemePage({ theme, items, seo }: Props) {
     >
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         {/* There is no /themes index — /categories is the list of themes. */}
-        <BreadCrumbs
-          path={url}
-          overwrites={[{ matchingPath: "themes", alternateLink: "/categories" }]}
-        />
-
-        <section className="mb-12">
-          <div className="not-prose relative mb-8 aspect-[16/9] overflow-hidden rounded-2xl">
-            <ImageWithLoader
-              src={theme.hero.src}
-              alt={theme.hero.alt}
-              fill
-              sizes="(max-width: 768px) 100vw, 1024px"
-              className="object-cover"
-            />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-6">
-              <h1 className="m-0 text-3xl font-semibold text-white sm:text-4xl">{theme.title}</h1>
-              <p className="m-0 mt-2 max-w-prose text-white/85">{theme.oneliner}</p>
+        <PageTop
+          breadcrumbs={{
+            path: url,
+            overwrites: [{ matchingPath: "themes", alternateLink: "/categories" }],
+          }}
+        >
+          <section className="mb-12">
+            <div className="not-prose relative mb-8 aspect-[16/9] overflow-hidden rounded-2xl">
+              <ImageWithLoader
+                src={theme.hero.src}
+                alt={theme.hero.alt}
+                fill
+                sizes="(max-width: 768px) 100vw, 1024px"
+                className="object-cover"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-6">
+                <h1 className="m-0 text-3xl font-semibold text-white sm:text-4xl">{theme.title}</h1>
+                <p className="m-0 mt-2 max-w-prose text-white/85">{theme.oneliner}</p>
+              </div>
             </div>
-          </div>
-          <p className="text-gray-600 dark:text-gray-400">
-            {items.length} {items.length === 1 ? "piece" : "pieces"} in this theme. Browse{" "}
-            <Link href="/categories">all themes and tags</Link>.
-          </p>
-        </section>
+            <p className="text-gray-600 dark:text-gray-400">
+              {items.length} {items.length === 1 ? "piece" : "pieces"} in this theme. Browse{" "}
+              <Link href="/categories">all themes and tags</Link>.
+            </p>
+          </section>
+        </PageTop>
 
         <section aria-labelledby="pieces-heading">
           <h2 id="pieces-heading" className="sr-only">

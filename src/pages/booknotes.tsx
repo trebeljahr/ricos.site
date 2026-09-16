@@ -1,5 +1,4 @@
 import { BookPreview } from "@components/BookPreview";
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
@@ -35,9 +34,11 @@ export default function Books({ booknotes, seo }: Props) {
       imageAlt={seo?.ogImageAlt || "a bookshelf filled with lots of books"}
     >
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
-        <BreadCrumbs path={url} />
-
-        <Header title="Booknotes" subtitle="What I have learned while reading" />
+        <Header
+          breadcrumbs={{ path: url }}
+          title="Booknotes"
+          subtitle="What I have learned while reading"
+        />
         <div>
           <Search
             all={booknotes}

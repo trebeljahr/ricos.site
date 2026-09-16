@@ -1,6 +1,7 @@
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
+import Header from "@components/PostHeader";
 import Link from "next/link";
 
 const highlights = [
@@ -64,10 +65,11 @@ export default function StartHerePage() {
       />
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose">
-          <h1 className="text-4xl mt-16!">Start Here</h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-12">
-            New here? These are the things I&apos;m most proud of.
-          </p>
+          <Header
+            breadcrumbs={{ path: "start-here" }}
+            title="Start Here"
+            subtitle="New here? These are the things I'm most proud of."
+          />
 
           <div className="space-y-6">
             {highlights.map((item) => (

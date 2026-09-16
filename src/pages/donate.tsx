@@ -1,8 +1,8 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import { DonationCard } from "@components/DonationCard";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
+import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 
 export default function DonatePage() {
@@ -29,8 +29,7 @@ export default function DonatePage() {
       />
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <article className="mx-auto max-w-prose prose md:prose-lg xl:prose-xl dark:prose-invert">
-          <BreadCrumbs path="donate" />
-          <h1 className="text-4xl mt-16!">Donate</h1>
+          <Header breadcrumbs={{ path: "donate" }} title="Donate" />
 
           <p>
             All things I make here are free: essays, photos, notes, weird Three.js demos, the

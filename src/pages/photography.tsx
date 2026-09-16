@@ -1,4 +1,3 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
@@ -233,9 +232,7 @@ export default function Photography({ trips, seo }: Props) {
       keywords={seo?.keywords || ["photography", "gallery", "photos", "portfolio"]}
     >
       <main className="pt-5 pb-20 px-3 max-w-7xl mx-auto">
-        <BreadCrumbs path={url} />
-
-        <Header subtitle="My travels in pictures" title="Photography" />
+        <Header breadcrumbs={{ path: url }} subtitle="My travels in pictures" title="Photography" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-20">
           {trips.map(({ tripName, image }, index) => {
             return (

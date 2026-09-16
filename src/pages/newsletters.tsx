@@ -1,4 +1,3 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { HorizontalCard } from "@components/NiceCards";
@@ -60,10 +59,9 @@ const Newsletters = ({ newsletterData, seo }: Props) => {
       }
     >
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
-        <BreadCrumbs path={url} />
-
         <section>
           <Header
+            breadcrumbs={{ path: url }}
             subtitle={"All the newsletters I have published so far since 2022."}
             title={"Live and Learn Newsletters 💌"}
           />

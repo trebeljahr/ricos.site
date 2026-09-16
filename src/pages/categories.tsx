@@ -1,8 +1,8 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import { ContentListRow } from "@components/ContentListRow";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
+import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import Link from "next/link";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
@@ -118,14 +118,12 @@ export default function CategoriesPage({ themes, tags, totalDocs, seo }: Props) 
       imageAlt={seo?.ogImageAlt || "a network of connected dots"}
     >
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
-        <BreadCrumbs path={url} />
-
         <section className="mb-14">
-          <h1 className="mt-16!">Categories</h1>
-          <p className="max-w-prose text-lg text-gray-600 dark:text-gray-400">
-            {themes.length} themes I keep coming back to, plus {tags.length} tags to browse by.{" "}
-            {totalDocs} pieces in all.
-          </p>
+          <Header
+            breadcrumbs={{ path: url }}
+            title="Categories"
+            subtitle={`${themes.length} themes I keep coming back to, plus ${tags.length} tags to browse by. ${totalDocs} pieces in all.`}
+          />
         </section>
 
         <section aria-labelledby="themes-heading" className="mb-24">

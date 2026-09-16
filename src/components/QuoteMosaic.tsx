@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { cleanAuthor, type Portrait, type Portraits } from "src/lib/quotePortraits";
@@ -40,6 +41,16 @@ function baseWidth(quote: Quote) {
   return Math.round(width * jitter);
 }
 
+// Steps along the newsletter gradient (green-400 -> teal-400 -> blue-600).
+const MARK_COLORS = [
+  "text-green-400/80",
+  "text-emerald-400/80",
+  "text-teal-400/80",
+  "text-cyan-500/70",
+  "text-sky-500/70",
+  "text-blue-600/70 dark:text-blue-500/80",
+];
+
 function Avatar({ author, portrait }: { author: string; portrait: Portrait }) {
   return (
     <a
@@ -66,15 +77,19 @@ function Avatar({ author, portrait }: { author: string; portrait: Portrait }) {
 function QuoteSlip({ quote, portrait }: { quote: NumberedQuote; portrait?: Portrait }) {
   const author = cleanAuthor(quote.author);
   const width = baseWidth(quote);
+  const markColor = MARK_COLORS[(hash(quote.content) >>> 8) % MARK_COLORS.length];
 
   return (
     <figure
       style={{ "--width": `${width}px`, "--grow": width } as CSSProperties}
-      className="relative m-0 flex w-full flex-col overflow-hidden rounded-sm bg-stone-50 px-6 pt-10 pb-5 shadow-sm ring-1 ring-black/5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0 md:w-auto md:[flex:var(--grow)_1_var(--width)] dark:bg-slate-800/70 dark:ring-white/10"
+      className="relative m-0 flex w-full flex-col overflow-hidden rounded-sm bg-stone-50 px-7 pt-16 pb-6 shadow-sm ring-1 ring-black/5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0 md:w-auto md:[flex:var(--grow)_1_var(--width)] dark:bg-slate-800/70 dark:ring-white/10"
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute -top-1 left-3 font-serif text-8xl leading-none text-myBlue/50 select-none"
+        className={clsx(
+          "pointer-events-none absolute top-3 left-6 font-serif text-8xl leading-none select-none",
+          markColor,
+        )}
       >
         &ldquo;
       </span>
@@ -115,7 +130,7 @@ export function QuoteMosaic({
   portraits: Portraits;
 }) {
   return (
-    <div className="not-prose flex flex-wrap gap-3">
+    <div className="not-prose flex flex-wrap gap-4">
       {quotes.map((quote) => (
         <QuoteSlip key={quote.id} quote={quote} portrait={portraits[cleanAuthor(quote.author)]} />
       ))}

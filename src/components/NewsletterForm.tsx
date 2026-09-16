@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import Link from "next/link";
 import { type ChangeEvent, type FormEvent, type ReactNode, useRef, useState } from "react";
 import ConfettiExplosion, { type ConfettiProps } from "react-confetti-explosion";
@@ -32,14 +33,21 @@ export const NewsletterForm = ({
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ message: string; invalidEmail: boolean } | null>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (emailInputRef.current && !emailInputRef.current.checkValidity()) {
-      setError(emailInputRef.current.validationMessage);
+    const input = emailInputRef.current;
+    if (input && !input.checkValidity()) {
+      setError({
+        message: input.validity.valueMissing
+          ? "Enter your email address to subscribe."
+          : "That email address looks incomplete. Check it for typos.",
+        invalidEmail: true,
+      });
+      input.focus();
       return;
     }
 
@@ -60,13 +68,17 @@ export const NewsletterForm = ({
       setSuccess(data.success);
       setLoading(false);
     } catch (_err) {
-      setError("Something went wrong while signing up... maybe, try again?");
+      setError({
+        message: "Something went wrong while signing up... maybe, try again?",
+        invalidEmail: false,
+      });
       setLoading(false);
     }
   };
 
   const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
+    if (error?.invalidEmail) setError(null);
   };
 
   const defaultLink = (
@@ -136,18 +148,21 @@ export const NewsletterForm = ({
           {heading || defaultHeading}
           {text || defaultText}
 
-          <form className="form flex flex-col justify-center" onSubmit={handleSubmit}>
+          <form className="form flex flex-col justify-center" onSubmit={handleSubmit} noValidate>
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <input
                 name="email"
                 type="email"
-                aria-invalid={!!error}
+                aria-invalid={error?.invalidEmail || undefined}
                 aria-describedby={error ? "email-error" : undefined}
                 required
                 autoComplete="email"
-                className={`w-full sm:flex-1 pl-2 focus:outline-none bg-slate-100 dark:bg-gray-900  dark:text-white py-2.5 bg-inherit ${
-                  error ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
-                }`}
+                className={clsx(
+                  "w-full sm:flex-1 px-3 py-2.5 rounded-md bg-slate-100 dark:bg-gray-900 dark:text-white transition-shadow duration-300 focus:outline-none",
+                  error?.invalidEmail
+                    ? "ring-2 ring-rose-400/70 dark:ring-rose-500/60"
+                    : "focus:ring-2 focus:ring-teal-400/60 dark:focus:ring-teal-500/50",
+                )}
                 value={email}
                 placeholder="Type your email..."
                 onChange={handleInput}
@@ -164,7 +179,29 @@ export const NewsletterForm = ({
               </FancyButton>
             </div>
 
-            {/* <button></button> */}
+            {error && (
+              <p
+                id="email-error"
+                role="alert"
+                key={error.message}
+                className="flex items-start gap-2 mt-3 mb-0 text-sm text-rose-600 dark:text-rose-400 animate-rise-in motion-reduce:animate-none"
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="size-4 shrink-0 mt-0.5"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                {error.message}
+              </p>
+            )}
+
             {link || defaultLink}
           </form>
         </div>

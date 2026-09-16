@@ -1,28 +1,26 @@
+import { Card, type CardCover } from "@components/Card";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
-import clsx from "clsx";
 import Link from "next/link";
 import type { ReactNode } from "react";
-
-type Cover = { src: string; alt: string };
 
 type Tile = {
   title: string;
   href: string;
-  cover: Cover;
-  note?: string;
+  cover: CardCover;
+  note: string;
 };
 
 type Props = {
-  photos: Cover[];
+  bestOf: Tile;
   demos: Tile[];
   rabbitHoles: Tile[];
 };
 
-const PORTRAIT: Cover = {
+const PORTRAIT: CardCover = {
   src: "/assets/photography/transat/me-steering-the-boat-smiling-happily.jpg",
   alt: "Rico steering a sailboat in the middle of the Atlantic and smiling",
 };
@@ -40,37 +38,6 @@ const MoreLink = ({ href, children }: { href: string; children: ReactNode }) => 
   >
     {children} <Arrow />
   </Link>
-);
-
-const Photo = ({
-  cover,
-  sizes,
-  className,
-  priority,
-}: {
-  cover: Cover;
-  sizes: string;
-  className?: string;
-  priority?: boolean;
-}) => (
-  // Callers position the frame; a missing "absolute" falls back to "relative"
-  // so the filled image always has a positioned parent.
-  <div
-    className={clsx(
-      "overflow-hidden bg-gray-200 dark:bg-gray-800",
-      !className?.includes("absolute") && "relative",
-      className,
-    )}
-  >
-    <ImageWithLoader
-      src={cover.src}
-      alt={cover.alt}
-      fill
-      sizes={sizes}
-      priority={priority}
-      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none"
-    />
-  </div>
 );
 
 const Section = ({
@@ -94,31 +61,7 @@ const Section = ({
   </section>
 );
 
-const Card = ({ tile, sizes, large }: { tile: Tile; sizes: string; large?: boolean }) => (
-  <Link
-    href={tile.href}
-    className="group flex flex-col overflow-hidden rounded-2xl border-2 border-gray-200 bg-white text-inherit no-underline shadow-sm transition hover:border-myBlue/50 hover:shadow-xl dark:border-gray-700 dark:bg-gray-800"
-  >
-    <Photo cover={tile.cover} sizes={sizes} className={large ? "aspect-video" : "aspect-4/3"} />
-    <div className="flex grow flex-col p-5 md:p-6">
-      <p
-        className={clsx(
-          "m-0! font-bold leading-tight transition-colors group-hover:text-myBlue",
-          large ? "text-2xl!" : "text-xl!",
-        )}
-      >
-        {tile.title}
-      </p>
-      {tile.note && (
-        <p className="mt-2! mb-0! text-base! text-gray-600 dark:text-gray-300">{tile.note}</p>
-      )}
-    </div>
-  </Link>
-);
-
-export default function StartHerePage({ photos, demos, rabbitHoles }: Props) {
-  const [bigPhoto, ...smallPhotos] = photos;
-
+export default function StartHerePage({ bestOf, demos, rabbitHoles }: Props) {
   return (
     <Layout
       title="Start Here – A Guide to ricos.site"
@@ -142,12 +85,16 @@ export default function StartHerePage({ photos, demos, rabbitHoles }: Props) {
         />
 
         <section className="grid items-center gap-8 md:grid-cols-[2fr_3fr] md:gap-12">
-          <Photo
-            cover={PORTRAIT}
-            sizes="(max-width: 768px) calc(100vw - 24px), 400px"
-            priority
-            className="aspect-4/3 rounded-2xl md:aspect-4/5"
-          />
+          <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-gray-200 dark:bg-gray-800 md:aspect-4/5">
+            <ImageWithLoader
+              src={PORTRAIT.src}
+              alt={PORTRAIT.alt}
+              fill
+              sizes="(max-width: 768px) calc(100vw - 24px), 400px"
+              priority
+              className="object-cover"
+            />
+          </div>
           <div className="[&_p]:text-lg! md:[&_p]:text-xl!">
             <p className="mt-0!">
               Hey, I&apos;m Rico. I travel slowly, read a lot and make games and 3D experiments.
@@ -163,42 +110,17 @@ export default function StartHerePage({ photos, demos, rabbitHoles }: Props) {
         <Section
           kicker="Photography"
           title="Photos from the road"
-          text="My favourite frames from every trip, collected in one gallery."
+          text="If you only open one gallery, open this one."
         >
-          {bigPhoto && (
-            <>
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2">
-                {[bigPhoto, ...smallPhotos].map((cover, index) => (
-                  // Each photo is its own link and hover group, so only the
-                  // one under the cursor zooms. "isolate" keeps the scaled
-                  // image clipped to the rounded corners in Safari.
-                  <Link
-                    key={cover.src}
-                    href="/photography/best-of"
-                    aria-label={index === 0 ? "Open the best-of gallery" : undefined}
-                    tabIndex={index === 0 ? undefined : -1}
-                    className={clsx(
-                      "group relative isolate block overflow-hidden rounded-xl",
-                      index === 0
-                        ? "col-span-2 aspect-4/3 md:row-span-2 md:aspect-auto"
-                        : "aspect-square",
-                    )}
-                  >
-                    <Photo
-                      cover={cover}
-                      sizes={
-                        index === 0
-                          ? "(max-width: 768px) calc(100vw - 24px), 490px"
-                          : "(max-width: 768px) 50vw, 240px"
-                      }
-                      className="absolute inset-0"
-                    />
-                  </Link>
-                ))}
-              </div>
-              <MoreLink href="/photography/best-of">Open the best-of gallery</MoreLink>
-            </>
-          )}
+          <Card
+            link={bestOf.href}
+            title={bestOf.title}
+            excerpt={bestOf.note}
+            cover={bestOf.cover}
+            coverAspect="video"
+            headingAs="h3"
+            sizes="(max-width: 1024px) calc(100vw - 24px), 976px"
+          />
         </Section>
 
         <Section
@@ -210,8 +132,12 @@ export default function StartHerePage({ photos, demos, rabbitHoles }: Props) {
             {demos.map((tile) => (
               <Card
                 key={tile.href}
-                tile={tile}
-                large
+                link={tile.href}
+                title={tile.title}
+                excerpt={tile.note}
+                cover={tile.cover}
+                coverAspect="video"
+                headingAs="h3"
                 sizes="(max-width: 768px) calc(100vw - 24px), 490px"
               />
             ))}
@@ -228,7 +154,11 @@ export default function StartHerePage({ photos, demos, rabbitHoles }: Props) {
             {rabbitHoles.map((tile) => (
               <Card
                 key={tile.href}
-                tile={tile}
+                link={tile.href}
+                title={tile.title}
+                excerpt={tile.note}
+                cover={tile.cover}
+                headingAs="h3"
                 sizes="(max-width: 640px) calc(100vw - 24px), 320px"
               />
             ))}
@@ -281,14 +211,17 @@ export default function StartHerePage({ photos, demos, rabbitHoles }: Props) {
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
   const { trips } = await import("src/pages/photography");
-  const { BEST_OF_PHOTOS, DEMO_PICKS, RABBIT_HOLES } = await import("src/lib/startHere");
+  const { BEST_OF_GALLERY, DEMO_PICKS, RABBIT_HOLES } = await import("src/lib/startHere");
 
   // Build fails loudly when a pick is renamed, instead of shipping a hole.
-  const photos = BEST_OF_PHOTOS.map((name) => {
-    const trip = trips.find((entry) => entry.name === name && entry.src);
-    if (!trip) throw new Error(`start-here: no cover photo for gallery "${name}"`);
-    return { src: trip.src, alt: trip.alt };
-  });
+  const trip = trips.find((entry) => entry.name === BEST_OF_GALLERY && entry.src);
+  if (!trip) throw new Error(`start-here: no cover photo for gallery "${BEST_OF_GALLERY}"`);
+  const bestOf: Tile = {
+    title: "Best of",
+    href: `/photography/${BEST_OF_GALLERY}`,
+    note: trip.description,
+    cover: { src: trip.src, alt: trip.alt },
+  };
 
   const demos = DEMO_PICKS.map(({ name, title, href, note }) => ({
     title,
@@ -297,5 +230,5 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
     cover: { src: `/assets/pages/${name}.png`, alt: `Preview of the ${title} 3D scene` },
   }));
 
-  return { props: { photos, demos, rabbitHoles: RABBIT_HOLES } };
+  return { props: { bestOf, demos, rabbitHoles: RABBIT_HOLES } };
 };

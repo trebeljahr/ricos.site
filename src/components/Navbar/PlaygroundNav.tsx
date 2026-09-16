@@ -23,8 +23,17 @@ const previewSrc = ({ name, url }: Scene) =>
 
 const pathWithoutQuery = (asPath: string) => asPath.split(/[?#]/)[0];
 
+// Inside the collapsed pill (radius 26px, 8px padding) hover shapes need an
+// 18px radius to follow its curve: fully round on the 36px controls. An
+// explicit 18px, unlike rounded-full, animates evenly back to rounded-md.
+const hoverShape = (round?: boolean) =>
+  clsx(
+    "transition-[border-radius,background-color] duration-300 motion-reduce:transition-none",
+    round ? "rounded-[18px]" : "rounded-md",
+  );
+
 /** "/ 3D Playground" next to the site logo: the way back to the playground index. */
-export function PlaygroundCrumb() {
+export function PlaygroundCrumb({ round }: { round?: boolean }) {
   return (
     <>
       <span aria-hidden="true" className="text-sm text-gray-400 dark:text-gray-500">
@@ -32,7 +41,10 @@ export function PlaygroundCrumb() {
       </span>
       <Link
         href="/r3f"
-        className="truncate rounded-md px-1.5 py-1 text-sm text-gray-600 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
+        className={clsx(
+          "truncate px-1.5 py-1 text-sm text-gray-600 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100",
+          hoverShape(round),
+        )}
       >
         3D Playground
       </Link>
@@ -43,10 +55,12 @@ export function PlaygroundCrumb() {
 type ScenesButtonProps = {
   open: boolean;
   onClick: () => void;
+  /** Pill-shaped hover, for the collapsed immersive navbar. */
+  round?: boolean;
   className?: string;
 };
 
-export function PlaygroundScenesButton({ open, onClick, className }: ScenesButtonProps) {
+export function PlaygroundScenesButton({ open, onClick, round, className }: ScenesButtonProps) {
   return (
     <button
       type="button"
@@ -55,7 +69,8 @@ export function PlaygroundScenesButton({ open, onClick, className }: ScenesButto
       aria-controls="playground-scenes"
       onClick={onClick}
       className={clsx(
-        "inline-flex h-9 shrink-0 items-center gap-1 rounded-md px-2 text-sm sm:px-2.5 hover:bg-gray-200 dark:hover:bg-gray-700",
+        "inline-flex h-9 shrink-0 items-center gap-1 px-2 text-sm sm:px-2.5 hover:bg-gray-200 dark:hover:bg-gray-700",
+        hoverShape(round),
         open && "bg-gray-200 dark:bg-gray-700",
         className,
       )}

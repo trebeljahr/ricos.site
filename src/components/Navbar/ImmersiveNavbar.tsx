@@ -219,8 +219,13 @@ export function ImmersiveNavbar() {
           )}
         >
           <RicosSiteBanner compact />
-          <PlaygroundCrumb />
-          <PlaygroundScenesButton open={scenesOpen} onClick={toggleScenes} className="sm:ml-1" />
+          <PlaygroundCrumb round={collapsed} />
+          <PlaygroundScenesButton
+            open={scenesOpen}
+            onClick={toggleScenes}
+            round={collapsed}
+            className="sm:ml-1"
+          />
         </div>
         <div
           ref={controlsRef}

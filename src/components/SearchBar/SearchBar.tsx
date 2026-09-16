@@ -7,6 +7,8 @@ export type SearchProps<T extends Record<string, any>> = {
   all: T[];
   searchByTitle: string;
   searchKeys: string[];
+  /** fuzzysort score cutoff (0–1). Raise it when searching long text, where low scores match nearly everything. */
+  threshold?: number;
 };
 
 export default function Search<T extends Record<string, any>>({
@@ -14,6 +16,7 @@ export default function Search<T extends Record<string, any>>({
   all,
   searchKeys,
   searchByTitle = "Search...",
+  threshold = 0.1,
 }: SearchProps<T>) {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -26,7 +29,7 @@ export default function Search<T extends Record<string, any>>({
 
     const results = fuzzysort.go(searchTerm, all, {
       keys: searchKeys,
-      threshold: 0.1,
+      threshold,
     });
 
     setFiltered(results.map((result) => result.obj));

@@ -1,22 +1,24 @@
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
+import { type NumberedQuote, type Quote, QuoteMosaic } from "@components/QuoteMosaic";
 import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import { useState } from "react";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import quotesJSON from "../content/Notes/pages/quotes.json";
 
-const quotes: Quote[] = quotesJSON;
+// `tagText` flattens tags into one string, since fuzzysort only searches string keys.
+type SearchableQuote = NumberedQuote & { tagText: string };
 
-type Quote = {
-  author: string;
-  content: string;
-  tags: string[];
-};
+const quotes: SearchableQuote[] = (quotesJSON as Quote[]).map((quote, index) => ({
+  ...quote,
+  id: index + 1,
+  tagText: quote.tags.join(" "),
+}));
 
 export default function Quotes({ seo }: { seo: SeoInfo | null }) {
-  const [filtered, setFiltered] = useState<Quote[] | null>(null);
+  const [filtered, setFiltered] = useState<SearchableQuote[] | null>(null);
   const displayedQuotes = filtered ?? quotes;
   const url = "quotes";
 
@@ -32,7 +34,7 @@ export default function Quotes({ seo }: { seo: SeoInfo | null }) {
       url={url}
       keywords={seo?.keywords || ["quotes", "collection", "books", "inspiration"]}
     >
-      <main className="pt-5 pb-20 px-3 mx-auto max-w-prose">
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <section>
           <Header
             breadcrumbs={{ path: url }}
@@ -43,21 +45,12 @@ export default function Quotes({ seo }: { seo: SeoInfo | null }) {
           <Search
             all={quotes}
             setFiltered={setFiltered}
-            searchKeys={["author"]}
-            searchByTitle="Search by author..."
+            searchKeys={["content", "author", "tagText"]}
+            threshold={0.3}
+            searchByTitle="Search by words, author or tag..."
           />
           <p>Amount: {displayedQuotes.length}</p>
-          {displayedQuotes.map(({ author, content }, index) => {
-            return (
-              // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
-              <div key={author + index} className="quote">
-                <blockquote>
-                  <p>{content}</p>
-                </blockquote>
-                <p>— {author}</p>
-              </div>
-            );
-          })}
+          <QuoteMosaic quotes={displayedQuotes} />
         </section>
 
         <footer>

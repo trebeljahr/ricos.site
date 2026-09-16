@@ -1,9 +1,7 @@
-import { FaCheckCircle } from "@components/Icons";
 import Link from "next/link";
 import { type ChangeEvent, type FormEvent, type ReactNode, useRef, useState } from "react";
 import ConfettiExplosion, { type ConfettiProps } from "react-confetti-explosion";
-import { FancyButton } from "./FancyUI";
-import { SpinningLoader } from "./SpinningLoader";
+import { FancyButton, LoadingDots } from "./FancyUI";
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
   const response = await fetch(input, init);
@@ -20,6 +18,7 @@ const mediumConfettiProps: ConfettiProps = {
   particleCount: 200,
   width: 1000,
   zIndex: 400,
+  colors: ["#4ade80", "#2dd4bf", "#38bdf8", "#2563eb", "#ffffff"],
 };
 
 export const NewsletterForm = ({
@@ -92,34 +91,46 @@ export const NewsletterForm = ({
   return (
     <div className="mx-auto w-full max-w-prose mt-16">
       {success ? (
-        <div className="rounded-md overflow-hidden p-3 py-3 bg-white dark:bg-gray-800 shadow-lg w-full">
-          <div className="newsletter-success-ribbon w-full" />
-          <div className="ml-2 md:ml-5">
-            <div className="flex w-full justify-center">
-              <ConfettiExplosion {...mediumConfettiProps} />
-            </div>
-            <h2 className="pt-0 mt-0 mb-3 flex items-center text-gray-900 dark:text-white">
-              Almost there!
-              <FaCheckCircle className="text-green-500 ml-2" />
-            </h2>
-            <p className="text-lg font-medium text-gray-800 dark:text-gray-100 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-md p-4">
-              Check your inbox and click the confirmation link to complete your signup. If you
-              don&apos;t see it, check your spam folder.
+        <div className="relative overflow-hidden px-5 py-10 rounded-lg bg-white dark:bg-gray-800 border-4 border-gray-200 dark:border-gray-700">
+          <div
+            aria-hidden
+            className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-green-400 via-teal-400 to-blue-600"
+          />
+          <div className="flex w-full justify-center">
+            <ConfettiExplosion {...mediumConfettiProps} />
+          </div>
+          <div className="animate-rise-in motion-reduce:animate-none">
+            <span className="flex size-12 items-center justify-center rounded-full bg-linear-to-br from-green-400 to-blue-600 text-white shadow-lg shadow-teal-500/20">
+              <svg aria-hidden="true" viewBox="0 0 24 24" className="size-6" fill="none">
+                <path
+                  d="M5 12.5l4.5 4.5L19 7.5"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  pathLength={1}
+                  strokeDasharray={1}
+                  className="animate-draw-check motion-reduce:animate-none"
+                />
+              </svg>
+            </span>
+            <h2 className="mt-5! mb-3">Almost there!</h2>
+            <p className="mb-4">
+              We sent a confirmation link to{" "}
+              <span className="font-medium text-gray-900 dark:text-white">{email}</span>. Click it
+              to complete your signup. If you don&apos;t see it, check your spam folder.
             </p>
 
             {!link && defaultLink}
 
             <button
               type="button"
-              className="mt-5 text-left text-sm text-gray-400 dark:text-gray-500 underline decoration-gray-300 dark:decoration-gray-600 hover:text-gray-600 dark:hover:text-gray-400 cursor-pointer transition-colors"
+              className="mt-3 text-left text-sm text-gray-500 dark:text-gray-400 underline decoration-gray-300 dark:decoration-gray-600 underline-offset-4 hover:text-gray-800 dark:hover:text-gray-200 cursor-pointer transition-colors"
               onClick={() => setSuccess(null)}
-              aria-label="Sign up with another email address"
             >
               Sign up with a different email
             </button>
           </div>
-
-          <div className="newsletter-success-ribbon mt-10" />
         </div>
       ) : (
         <div className="px-5 py-10 rounded-lg bg-white dark:bg-gray-800 border-4 border-gray-200 dark:border-gray-700">
@@ -147,9 +158,10 @@ export const NewsletterForm = ({
                 type="submit"
                 className="w-full sm:w-40 flex justify-center min-h-fit"
                 disabled={loading}
-                aria-label="Subscribe to the newsletter"
+                loading={loading}
+                aria-label={loading ? undefined : "Subscribe to the newsletter"}
               >
-                {loading ? <SpinningLoader /> : "Subscribe"}
+                {loading ? <LoadingDots label="Subscribing" /> : "Subscribe"}
               </FancyButton>
             </div>
 

@@ -149,8 +149,8 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
   return (
     <div className="flex place-items-center relative mb-10 xl:mb-0">
       <div
-        // pt-2 leaves room for the hover lift, which overflow-x-scroll would clip.
-        className="-ml-3 overflow-x-scroll w-full overscroll-x-none snap-x snap-mandatory flex transition-transform duration-300 ease-in-out pt-2 pb-5 no-scrollbar"
+        // pt-6 leaves room for the hover lift and glow, which overflow-x-scroll would clip.
+        className="-ml-3 overflow-x-scroll w-full overscroll-x-none snap-x snap-mandatory flex transition-transform duration-300 ease-in-out pt-6 pb-6 no-scrollbar"
         ref={scrollRef}
         onWheel={scrollHandler}
         onScroll={handleScrollEffect}

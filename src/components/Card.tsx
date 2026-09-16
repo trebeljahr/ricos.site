@@ -100,9 +100,11 @@ export function Card({
         // The card moves as one piece: a separate cover zoom on its own timing
         // made the image drift against the frame. transform-gpu keeps the cover
         // from re-rasterising (and visibly snapping) when the lift settles.
-        "transform-gpu transition duration-300 ease-out hover:-translate-y-1 hover:border-myBlue/50 hover:shadow-xl",
+        "transform-gpu transition duration-300 ease-out hover:-translate-y-1",
+        // Hover glow: an even, all-sides blue shadow so the border itself looks lit.
+        "hover:border-myBlue/70 hover:shadow-[0_0_24px_-2px] hover:shadow-myBlue/40",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-myBlue",
-        "dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-myBlue/60",
+        "dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-myBlue/80 dark:hover:shadow-myBlue/50",
         "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
         horizontal
           ? clsx(

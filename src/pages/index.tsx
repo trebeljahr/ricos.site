@@ -84,15 +84,6 @@ const IndexPage = ({ seo, ...props }: Props) => {
               </p>
 
               <p>
-                I also built{" "}
-                {/* rel without noreferrer so collectionofbeauty.com analytics see the referrer */}
-                <ExternalLink href="https://collectionofbeauty.com" rel="noopener">
-                  Collection of Beauty
-                </ExternalLink>
-                : 4,000+ handpicked public-domain artworks, with a walkable 3D museum.
-              </p>
-
-              <p>
                 Wanna know what I am up to? I have a{" "}
                 <Link as={`/now`} href="/now">
                   /now

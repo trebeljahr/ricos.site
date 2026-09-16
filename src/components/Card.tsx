@@ -149,10 +149,9 @@ export function Card({
         <div className="flex items-start justify-between gap-3">
           <Heading
             className={clsx(
-              "m-0 grow leading-snug tracking-tight transition-[color,text-shadow] duration-300 ease-out group-hover:text-myBlue",
-              // The title glows along with the card; dark mode gets a lighter blue.
-              "group-hover:text-shadow-[0_0_14px] group-hover:text-shadow-myBlue/50",
-              "dark:group-hover:text-[color-mix(in_srgb,var(--color-myBlue)_70%,white)] dark:group-hover:text-shadow-myBlue/60",
+              "m-0 grow leading-snug tracking-tight transition-colors duration-300 ease-out group-hover:text-myBlue",
+              // A lighter blue reads better against the dark card.
+              "dark:group-hover:text-[color-mix(in_srgb,var(--color-myBlue)_70%,white)]",
               compact ? "text-base font-semibold" : "text-xl font-bold md:text-2xl",
             )}
           >

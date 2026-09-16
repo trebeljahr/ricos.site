@@ -42,7 +42,7 @@ export function PlaygroundCrumb({ round }: { round?: boolean }) {
       <Link
         href="/r3f"
         className={clsx(
-          "truncate px-1.5 py-1 text-sm text-gray-600 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100",
+          "block h-9 truncate px-2 text-sm leading-9 text-gray-600 sm:px-2.5 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100",
           hoverShape(round),
         )}
       >

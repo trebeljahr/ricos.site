@@ -210,7 +210,7 @@ export function ImmersiveNavbar() {
         <div
           ref={leftRef}
           className={clsx(
-            "pointer-events-auto flex min-w-0 items-center gap-1 transition-transform duration-300 ease-out motion-reduce:transition-none xl:shrink-0",
+            "pointer-events-auto flex min-w-0 items-center gap-0.5 transition-transform sm:gap-1 duration-300 ease-out motion-reduce:transition-none xl:shrink-0",
             // Moves the group from the bar's padding (12px, 40px from xl) to
             // PILL_CONTENT_LEFT, and down by PILL_OFFSET into the pill.
             collapsed

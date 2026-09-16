@@ -13,7 +13,11 @@ export const FancyButton = (props: JSX.IntrinsicElements["button"]) => {
       <span className="flex justify-center w-full relative overflow-hidden px-5 py-2.5 bg-white dark:bg-gray-900 rounded-md">
         <span
           aria-hidden
-          className="absolute inset-y-0 -inset-x-4 -skew-x-12 -translate-x-[110%] bg-linear-to-br from-green-400 to-blue-600 transition-transform duration-500 ease-out group-hover:translate-x-0 group-focus-visible:translate-x-0 motion-reduce:transition-none"
+          className="absolute inset-y-0 -left-4 w-[180%] -skew-x-12 -translate-x-full bg-[linear-gradient(to_right,var(--color-green-400),var(--color-teal-400)_33%,var(--color-blue-600)_66%)] mask-r-from-66% mask-r-to-100% transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0 group-hover:animate-shimmer-drift group-focus-visible:translate-x-0 motion-reduce:transition-none motion-reduce:animate-none"
+        />
+        <span
+          aria-hidden
+          className="absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-transparent via-white/60 to-transparent opacity-0 group-hover:animate-shimmer-glint motion-reduce:hidden"
         />
         <span className="relative flex justify-center w-full">{props.children}</span>
       </span>

@@ -1,5 +1,13 @@
 import clsx from "clsx";
-import { type CSSProperties, useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/router";
+import {
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { flushSync } from "react-dom";
 import { PlaygroundCrumb, PlaygroundScenesButton, PlaygroundScenesPanel } from "./PlaygroundNav";
 import { MobileMenu, RicosSiteBanner, SiteNavControls, useSiteMenu } from "./TailwindNavbar";
@@ -38,12 +46,21 @@ const PILL_PAD_RIGHT = 8;
  * and drops focus out of it, so keys like Space go to the scene's controls
  * instead of re-pressing the last nav button.
  */
+// Each demo page renders its own ImmersiveNavbar, so it remounts on every
+// scene change. Only the first one in a visit opens expanded (continuity when
+// arriving from the site); later ones start as the pill.
+let shownExpandedOnce = false;
+// Last measured width of the left group, so a remounted navbar paints the
+// pill at the right size straight away instead of animating to it.
+let lastLeftWidth = 0;
+
 export function ImmersiveNavbar() {
-  const [expanded, setExpanded] = useState(true);
+  const router = useRouter();
+  const [expanded, setExpanded] = useState(() => !shownExpandedOnce);
   const menu = useSiteMenu();
   const { open: menuOpen, close: closeMenu } = menu;
   const [scenesOpen, setScenesOpen] = useState(false);
-  const [leftWidth, setLeftWidth] = useState(0);
+  const [leftWidth, setLeftWidth] = useState(() => lastLeftWidth);
   const barRef = useRef<HTMLElement>(null);
   const leftRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<HTMLDivElement>(null);
@@ -108,11 +125,18 @@ export function ImmersiveNavbar() {
     if (menuOpen) setScenesOpen(false);
   }, [menuOpen]);
 
-  // The pill's right edge follows the left group's width (the wordmark shows from sm up).
-  useEffect(() => {
+  // The pill's right edge follows the left group's width (the wordmark shows
+  // from sm up). Measured before the first paint so a navbar that mounts
+  // collapsed never shows a full-width frame; the observer tracks later changes.
+  useLayoutEffect(() => {
     const el = leftRef.current;
     if (!el) return;
-    const observer = new ResizeObserver(() => setLeftWidth(el.offsetWidth));
+    const measure = () => {
+      lastLeftWidth = el.offsetWidth;
+      setLeftWidth(el.offsetWidth);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
@@ -120,9 +144,23 @@ export function ImmersiveNavbar() {
   // Both callbacks are stable, so this runs once on arrival. Later hides are
   // driven by the pointer or focus leaving the bar.
   useEffect(() => {
+    shownExpandedOnce = true;
     scheduleHide(INITIAL_HIDE_MS);
     return cancelHide;
   }, [scheduleHide, cancelHide]);
+
+  // Picking a scene (or any link) collapses everything at once, even with the
+  // pointer still on the bar.
+  useEffect(() => {
+    const onRouteChange = () => {
+      hovering.current = false;
+      const active = document.activeElement;
+      if (active instanceof HTMLElement && barRef.current?.contains(active)) active.blur();
+      collapse();
+    };
+    router.events.on("routeChangeStart", onRouteChange);
+    return () => router.events.off("routeChangeStart", onRouteChange);
+  }, [router.events, collapse]);
 
   useEffect(() => {
     const onPointerMove = (e: PointerEvent) => {

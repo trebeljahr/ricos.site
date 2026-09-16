@@ -1,5 +1,5 @@
 import Layout from "@components/Layout";
-import { PlaygroundSceneGrid, PlaygroundSecondaryNav } from "@components/Navbar/PlaygroundNav";
+import { PlaygroundSceneGrid } from "@components/Navbar/PlaygroundNav";
 import Header from "@components/PostHeader";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
@@ -16,7 +16,8 @@ const defaultSeoInfo = {
 // Index page intentionally avoids ThreeFiberLayout: there's no scene to
 // render here, so loading three.js + @react-three/fiber and starting a WebGL
 // context would be ~1MB of JS for nothing. It is a regular text page with the
-// site navbar; demo subpages use the immersive variant of the same navbar.
+// plain site navbar: the scene grid below already lists every demo, so the
+// breadcrumb and scenes dropdown only appear on demo subpages.
 export default function Page({ seo }: { seo: SeoInfo | null }) {
   const seoInfo = {
     ...defaultSeoInfo,
@@ -30,7 +31,7 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
   };
 
   return (
-    <Layout {...seoInfo} navbarSecondary={<PlaygroundSecondaryNav />}>
+    <Layout {...seoInfo}>
       <main className="min-h-screen pt-5 pb-10 px-3 max-w-5xl mx-auto">
         <Header
           breadcrumbs={{

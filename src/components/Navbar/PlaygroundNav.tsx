@@ -3,7 +3,7 @@ import { ImageWithLoader } from "@components/ImageWithLoader";
 import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useScrollLock } from "src/hooks/useScrollLock";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 import data from "../../../.velite/r3f-links.json";
@@ -232,26 +232,6 @@ export function PlaygroundScenesPanel({ open, onClose, restoreFocus }: PanelProp
           ))}
         </nav>
       </div>
-    </>
-  );
-}
-
-/**
- * Scene list toggle for the regular navbar on the playground index. No
- * breadcrumb here: you are already on the playground, the crumb only shows
- * once you drill down into a scene.
- */
-export function PlaygroundSecondaryNav() {
-  const [open, setOpen] = useState(false);
-  const close = useCallback(() => setOpen(false), []);
-
-  return (
-    <>
-      {/* Phones get the scene grid on the page itself; keep the bar uncluttered. */}
-      <span className="hidden sm:flex">
-        <PlaygroundScenesButton open={open} onClick={() => setOpen((p) => !p)} className="ml-2" />
-      </span>
-      <PlaygroundScenesPanel open={open} onClose={close} />
     </>
   );
 }

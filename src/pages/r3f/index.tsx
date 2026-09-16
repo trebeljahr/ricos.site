@@ -1,6 +1,6 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { PlaygroundSceneGrid, PlaygroundSecondaryNav } from "@components/Navbar/PlaygroundNav";
+import Header from "@components/PostHeader";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
@@ -31,22 +31,20 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 
   return (
     <Layout {...seoInfo} navbarSecondary={<PlaygroundSecondaryNav />}>
-      <main className="w-full min-h-screen pt-9 pb-10 px-4">
-        <div className="mx-auto max-w-5xl">
-          <BreadCrumbs
-            path="/r3f"
-            overwrites={[{ matchingPath: "r3f", newText: "3D Playground" }]}
-          />
-          <div className="prose md:prose-lg dark:prose-invert max-w-2xl">
-            <h1>Welcome to my R3F Playground!</h1>
-            <p>
-              Here is where I experiment with all things Three.js and React Three Fibre to learn
-              those technologies, building out little demos, trying to improve my understanding so
-              that I can one day build a complete 3D game in the browser. Pick a demo below.
-            </p>
-          </div>
-          <PlaygroundSceneGrid />
-        </div>
+      <main className="min-h-screen pt-5 pb-10 px-3 max-w-5xl mx-auto">
+        <Header
+          breadcrumbs={{
+            path: "/r3f",
+            overwrites: [{ matchingPath: "r3f", newText: "3D Playground" }],
+          }}
+          title="Welcome to my R3F Playground!"
+        />
+        <p className="max-w-2xl">
+          Here is where I experiment with all things Three.js and React Three Fibre to learn those
+          technologies, building out little demos, trying to improve my understanding so that I can
+          one day build a complete 3D game in the browser. Pick a demo below.
+        </p>
+        <PlaygroundSceneGrid />
       </main>
     </Layout>
   );

@@ -1,8 +1,8 @@
-import { BreadCrumbs } from "@components/BreadCrumbs";
 import { CardGallery } from "@components/CardGalleries";
 import { ExternalLink } from "@components/ExternalLink";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
+import Header from "@components/PostHeader";
 import Link from "next/link";
 import { PROJECT_SECTIONS, projectsInSection } from "src/lib/projects";
 
@@ -36,10 +36,8 @@ export default function ProjectsPage() {
           { name: "Projects", url: "/projects" },
         ]}
       />
-      <main className="py-20 px-3 max-w-(--breakpoint-lg) mx-auto">
-        <BreadCrumbs path="/projects" />
-
-        <h1 className="text-5xl mt-16!">Projects</h1>
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+        <Header breadcrumbs={{ path: "/projects" }} title="Projects" />
         <p className="max-w-prose">
           Here are the things I have built over the years. Some are games, some are tools, and some
           are just nice to look at. Click on a card to try one out. If you want to see the code,

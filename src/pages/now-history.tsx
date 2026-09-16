@@ -235,7 +235,7 @@ export default function NowHistory({ entries }: Props) {
           <Header breadcrumbs={{ path: "now-history" }} title="Now Page History" />
           <div className="text-gray-600 dark:text-gray-400 mb-8">
             Past editions of my{" "}
-            <a href="/now" className="text-myBlue hover:underline">
+            <a href="/now" className="text-accent hover:underline">
               /now
             </a>{" "}
             page, showing what I was focused on at different points in time.

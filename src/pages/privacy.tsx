@@ -26,7 +26,7 @@ export default function PrivacyPage() {
           <p>
             Information on the processing of personal data pursuant to Art. 13 GDPR and § 25 TTDSG.
             The operator of this site is Rico Trebeljahr (see{" "}
-            <Link href="/imprint" className="text-myBlue hover:underline">
+            <Link href="/imprint" className="text-accent hover:underline">
               Imprint
             </Link>
             ).
@@ -76,7 +76,7 @@ export default function PrivacyPage() {
             unsubscribe at any time via the link in every newsletter email or by emailing{" "}
             <a
               href="mailto:imprint+ricos.site@trebeljahr.com"
-              className="text-myBlue hover:underline"
+              className="text-accent hover:underline"
             >
               imprint+ricos.site@trebeljahr.com
             </a>
@@ -102,7 +102,7 @@ export default function PrivacyPage() {
             To exercise any of these rights, contact{" "}
             <a
               href="mailto:imprint+ricos.site@trebeljahr.com"
-              className="text-myBlue hover:underline"
+              className="text-accent hover:underline"
             >
               imprint+ricos.site@trebeljahr.com
             </a>

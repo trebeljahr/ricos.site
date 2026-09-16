@@ -115,7 +115,7 @@ export function DonationCard({ className }: DonationCardProps) {
   return (
     <section className={clsx("not-prose w-full", className)} aria-labelledby="donation-card-title">
       <div className="rounded-lg border-4 border-gray-200 bg-white px-5 py-10 dark:border-gray-700 dark:bg-gray-800">
-        <p className="m-0 text-sm font-semibold text-accent">donating = loving</p>
+        <p className="m-0 text-sm font-semibold text-myBlue">donating = loving</p>
         <h2 id="donation-card-title" className="mt-2 mb-3 text-2xl font-bold">
           Keep this place alive
         </h2>

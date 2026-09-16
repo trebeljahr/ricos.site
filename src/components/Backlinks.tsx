@@ -44,7 +44,7 @@ export const Backlinks = ({ items }: { items: BacklinkItem[] }) => {
               <ul className="space-y-1 list-none pl-0! mt-0!">
                 {typeItems.map((item) => (
                   <li key={item.link} className="pl-0!">
-                    <Link href={item.link} className="text-accent hover:underline">
+                    <Link href={item.link} className="text-myBlue hover:underline">
                       {item.title}
                     </Link>
                   </li>

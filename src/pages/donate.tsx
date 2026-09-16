@@ -65,7 +65,7 @@ export default function DonatePage() {
             <li>
               If you run a publication, podcast, event, or just know a place where this work would
               fit, reach out. Contact info is on the{" "}
-              <a href="/imprint" className="text-accent hover:underline">
+              <a href="/imprint" className="text-myBlue hover:underline">
                 imprint
               </a>{" "}
               page.

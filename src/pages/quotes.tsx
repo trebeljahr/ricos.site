@@ -6,6 +6,7 @@ import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import { useState } from "react";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
+import type { Portraits } from "src/lib/quotePortraits";
 import quotesJSON from "../content/Notes/pages/quotes.json";
 
 // fuzzysort only searches string keys, so tags and the source title get flattened.
@@ -18,7 +19,7 @@ const quotes: SearchableQuote[] = (quotesJSON as Quote[]).map((quote, index) => 
   sourceTitle: quote.source?.title ?? "",
 }));
 
-export default function Quotes({ seo }: { seo: SeoInfo | null }) {
+export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portraits: Portraits }) {
   const [filtered, setFiltered] = useState<SearchableQuote[] | null>(null);
   const displayedQuotes = filtered ?? quotes;
   const url = "quotes";
@@ -51,7 +52,7 @@ export default function Quotes({ seo }: { seo: SeoInfo | null }) {
             searchByTitle="Search by words, author, tag or book..."
           />
           <p>Amount: {displayedQuotes.length}</p>
-          <QuoteMosaic quotes={displayedQuotes} />
+          <QuoteMosaic quotes={displayedQuotes} portraits={portraits} />
         </section>
 
         <footer>
@@ -63,6 +64,13 @@ export default function Quotes({ seo }: { seo: SeoInfo | null }) {
   );
 }
 
-export function getStaticProps() {
-  return { props: { seo: getSeoInfo("/quotes") } };
+export async function getStaticProps() {
+  // Read at build time rather than imported: the file only exists once portraits
+  // have been reviewed and applied (pnpm quotes:portraits:apply).
+  const { readFile } = await import("node:fs/promises");
+  let portraits: Portraits = {};
+  try {
+    portraits = JSON.parse(await readFile("src/content/Notes/pages/quote-portraits.json", "utf8"));
+  } catch {}
+  return { props: { seo: getSeoInfo("/quotes"), portraits } };
 }

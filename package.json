@@ -25,6 +25,8 @@
     "watch:velite-hmr": "tsx src/scripts/dev/watchVeliteHmr.ts",
     "quotes:export": "tsx src/scripts/quotes/quoteReview.ts export",
     "quotes:candidates": "tsx src/scripts/quotes/booknoteQuoteCandidates.ts",
+    "quotes:portraits": "tsx src/scripts/quotes/authorPortraits.ts resolve",
+    "quotes:portraits:apply": "tsx src/scripts/quotes/authorPortraits.ts apply",
     "quotes:apply": "tsx src/scripts/quotes/quoteReview.ts apply",
     "drift:check": "tsx src/scripts/drift/check.ts",
     "drift:fix": "tsx src/scripts/drift/reconcile.ts",

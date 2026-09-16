@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import Link from "next/link";
+import { cleanAuthor, type Portrait, type Portraits } from "src/lib/quotePortraits";
 
 export type Quote = {
   author: string;
@@ -9,10 +10,10 @@ export type Quote = {
   source?: { title: string; url: string };
 };
 
-/** A quote plus its slip number: the position in the full collection, so it stays put while filtering. */
+/** A quote plus its position in the full collection, a stable key while filtering. */
 export type NumberedQuote = Quote & { id: number };
 
-// FNV-1a. Layout choices come from the quote text, not Math.random, so the
+// FNV-1a. The card shape comes from the quote text, not Math.random, so the
 // server and client render the same mosaic and a quote keeps its shape
 // between visits.
 function hash(text: string) {
@@ -50,13 +51,6 @@ const shapes = {
   ],
 };
 
-const papers = [
-  "bg-stone-50 dark:bg-slate-800/70",
-  "bg-amber-50/80 dark:bg-amber-950/25",
-  "bg-sky-50/80 dark:bg-sky-950/30",
-  "bg-white dark:bg-gray-800/70",
-];
-
 function sizeOf(content: string): keyof typeof shapes {
   if (content.length <= 90) return "short";
   if (content.length <= 200) return "medium";
@@ -64,31 +58,42 @@ function sizeOf(content: string): keyof typeof shapes {
   return "xlong";
 }
 
-function QuoteSlip({ quote }: { quote: NumberedQuote }) {
+function Avatar({ author, portrait }: { author: string; portrait: Portrait }) {
+  return (
+    <a
+      href={portrait.page}
+      target="_blank"
+      rel="noreferrer"
+      title={`Photo of ${author}: ${portrait.artist}, ${portrait.license}, via Wikimedia Commons`}
+      className="shrink-0"
+    >
+      {/* Hotlinked Commons thumbnail: next/image would route it through our own image backend. */}
+      {/* biome-ignore lint/performance/noImgElement: see above */}
+      <img
+        src={portrait.thumb}
+        alt={author}
+        width={36}
+        height={36}
+        loading="lazy"
+        className="size-9 rounded-full object-cover object-top contrast-125 grayscale ring-1 ring-black/10 dark:ring-white/10"
+      />
+    </a>
+  );
+}
+
+function QuoteSlip({ quote, portrait }: { quote: NumberedQuote; portrait?: Portrait }) {
+  const author = cleanAuthor(quote.author);
   const h = hash(quote.content);
   const options = shapes[sizeOf(quote.content)];
   const shape = options[h % options.length];
-  const paper = papers[(h >>> 8) % papers.length];
 
   return (
     <figure
       className={clsx(
-        "m-0 flex flex-col rounded-sm p-5 shadow-sm ring-1 ring-black/5 dark:ring-white/10",
-        paper,
+        "m-0 flex flex-col rounded-sm bg-stone-50 p-5 shadow-sm ring-1 ring-black/5 dark:bg-slate-800/70 dark:ring-white/10",
         shape.span,
       )}
     >
-      {/* Slip header: number and rule, like an index card in a Zettelkasten. */}
-      <div className="mb-3 flex items-baseline justify-between border-b border-red-300/70 pb-1 dark:border-red-400/30">
-        <span className="font-mono text-xs text-gray-500 dark:text-gray-400">
-          № {String(quote.id).padStart(3, "0")}
-        </span>
-        {quote.tags.length > 0 && (
-          <span className="truncate pl-3 text-xs text-gray-500 dark:text-gray-400">
-            {quote.tags.map((tag) => `#${tag}`).join(" ")}
-          </span>
-        )}
-      </div>
       <blockquote
         className={clsx(
           "m-0 flex grow items-center whitespace-pre-line text-zinc-800 dark:text-slate-200",
@@ -97,29 +102,43 @@ function QuoteSlip({ quote }: { quote: NumberedQuote }) {
       >
         {quote.content}
       </blockquote>
-      <figcaption className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-        <span className="font-medium tracking-wide uppercase">{quote.author}</span>
-        {quote.source && (
-          <>
-            {" · "}
-            <Link
-              href={quote.source.url}
-              className="italic underline decoration-gray-400/50 underline-offset-2 hover:text-gray-900 dark:hover:text-gray-100"
-            >
-              {quote.source.title}
-            </Link>
-          </>
-        )}
+      <figcaption className="mt-4 flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+        {portrait && <Avatar author={author} portrait={portrait} />}
+        <span className="min-w-0">
+          <span className="font-medium tracking-wide uppercase">{author}</span>
+          {quote.source && (
+            <>
+              {" · "}
+              <Link
+                href={quote.source.url}
+                className="italic underline decoration-gray-400/50 underline-offset-2 hover:text-gray-900 dark:hover:text-gray-100"
+              >
+                {quote.source.title}
+              </Link>
+            </>
+          )}
+          {quote.tags.length > 0 && (
+            <span className="mt-1 block text-xs text-gray-500 dark:text-gray-500">
+              {quote.tags.map((tag) => `#${tag}`).join(" ")}
+            </span>
+          )}
+        </span>
       </figcaption>
     </figure>
   );
 }
 
-export function QuoteMosaic({ quotes }: { quotes: NumberedQuote[] }) {
+export function QuoteMosaic({
+  quotes,
+  portraits,
+}: {
+  quotes: NumberedQuote[];
+  portraits: Portraits;
+}) {
   return (
     <div className="not-prose grid grid-flow-row-dense auto-rows-[minmax(7rem,auto)] grid-cols-1 gap-3 md:grid-cols-4 lg:grid-cols-6">
       {quotes.map((quote) => (
-        <QuoteSlip key={quote.id} quote={quote} />
+        <QuoteSlip key={quote.id} quote={quote} portrait={portraits[cleanAuthor(quote.author)]} />
       ))}
     </div>
   );

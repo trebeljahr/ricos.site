@@ -1,5 +1,5 @@
-import clsx from "clsx";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { cleanAuthor, type Portrait, type Portraits } from "src/lib/quotePortraits";
 
 export type Quote = {
@@ -13,8 +13,8 @@ export type Quote = {
 /** A quote plus its position in the full collection, a stable key while filtering. */
 export type NumberedQuote = Quote & { id: number };
 
-// FNV-1a. The card shape comes from the quote text, not Math.random, so the
-// server and client render the same mosaic and a quote keeps its shape
+// FNV-1a. A small width jitter comes from the quote text, not Math.random, so
+// the server and client render the same layout and a quote keeps its width
 // between visits.
 function hash(text: string) {
   let h = 0x811c9dc5;
@@ -25,37 +25,19 @@ function hash(text: string) {
   return h >>> 0;
 }
 
-// Class strings are spelled out in full so Tailwind can find them.
-// Columns: 1 on phones, 4 from md, 6 from lg.
-const shapes = {
-  short: [
-    { span: "md:col-span-2 lg:col-span-2", text: "text-2xl leading-snug" },
-    { span: "md:col-span-2 lg:col-span-3", text: "text-2xl leading-snug md:text-3xl" },
-    {
-      span: "md:col-span-2 lg:col-span-2 md:row-span-2",
-      text: "text-2xl leading-snug md:text-4xl md:leading-tight",
-    },
-  ],
-  medium: [
-    { span: "md:col-span-2 lg:col-span-2", text: "text-lg" },
-    { span: "md:col-span-2 lg:col-span-3", text: "text-lg md:text-xl" },
-  ],
-  long: [
-    { span: "md:col-span-2 lg:col-span-3", text: "text-base" },
-    { span: "md:col-span-4 lg:col-span-4", text: "text-lg" },
-    { span: "md:col-span-2 lg:col-span-2 md:row-span-2", text: "text-base" },
-  ],
-  xlong: [
-    { span: "md:col-span-4 lg:col-span-4", text: "text-base" },
-    { span: "md:col-span-4 lg:col-span-3 lg:row-span-2", text: "text-base" },
-  ],
-};
+// Justified rows: cards wrap like words in a line, and each row stretches to
+// fill the full width, so there are no holes. A card's base width follows the
+// length of its quote, which keeps the cards in a row at similar heights at
+// one shared font size. Row filling grows every card in proportion to its base
+// width, so that balance survives the stretch.
+const CHAR_WIDTH = 1.6;
+const MIN_WIDTH = 250;
+const MAX_WIDTH = 640;
 
-function sizeOf(content: string): keyof typeof shapes {
-  if (content.length <= 90) return "short";
-  if (content.length <= 200) return "medium";
-  if (content.length <= 400) return "long";
-  return "xlong";
+function baseWidth(quote: Quote) {
+  const jitter = 0.9 + (hash(quote.content) % 21) / 100;
+  const width = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, quote.content.length * CHAR_WIDTH));
+  return Math.round(width * jitter);
 }
 
 function Avatar({ author, portrait }: { author: string; portrait: Portrait }) {
@@ -83,23 +65,14 @@ function Avatar({ author, portrait }: { author: string; portrait: Portrait }) {
 
 function QuoteSlip({ quote, portrait }: { quote: NumberedQuote; portrait?: Portrait }) {
   const author = cleanAuthor(quote.author);
-  const h = hash(quote.content);
-  const options = shapes[sizeOf(quote.content)];
-  const shape = options[h % options.length];
+  const width = baseWidth(quote);
 
   return (
     <figure
-      className={clsx(
-        "m-0 flex flex-col rounded-sm bg-stone-50 p-5 shadow-sm ring-1 ring-black/5 dark:bg-slate-800/70 dark:ring-white/10",
-        shape.span,
-      )}
+      style={{ "--width": `${width}px`, "--grow": width } as CSSProperties}
+      className="m-0 flex w-full flex-col rounded-sm bg-stone-50 p-5 shadow-sm ring-1 ring-black/5 md:w-auto md:[flex:var(--grow)_1_var(--width)] dark:bg-slate-800/70 dark:ring-white/10"
     >
-      <blockquote
-        className={clsx(
-          "m-0 flex grow items-center whitespace-pre-line text-zinc-800 dark:text-slate-200",
-          shape.text,
-        )}
-      >
+      <blockquote className="m-0 grow text-lg whitespace-pre-line text-zinc-800 dark:text-slate-200">
         {quote.content}
       </blockquote>
       <figcaption className="mt-4 flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
@@ -136,10 +109,12 @@ export function QuoteMosaic({
   portraits: Portraits;
 }) {
   return (
-    <div className="not-prose grid grid-flow-row-dense auto-rows-[minmax(7rem,auto)] grid-cols-1 gap-3 md:grid-cols-4 lg:grid-cols-6">
+    <div className="not-prose flex flex-wrap gap-3">
       {quotes.map((quote) => (
         <QuoteSlip key={quote.id} quote={quote} portrait={portraits[cleanAuthor(quote.author)]} />
       ))}
+      {/* Soaks up the leftover space in the last row, so its cards keep their base width. */}
+      <div aria-hidden className="hidden grow-[99999] basis-0 md:block" />
     </div>
   );
 }

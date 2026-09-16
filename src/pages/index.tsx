@@ -5,11 +5,13 @@ import { ImageWithLoader } from "@components/ImageWithLoader";
 import { WebSiteJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
+import { ProjectCard } from "@components/ProjectCard";
 import { WavingHand } from "@components/WavingHand";
 import type { SectionDescription } from "@velite";
 import Link from "next/link";
 import type { CommonMetadata, ImageProps } from "src/@types";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
+import { FEATURED_PROJECTS } from "src/lib/projects";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
@@ -212,6 +214,26 @@ const IndexPage = ({ seo, ...props }: Props) => {
         </section>
 
         <section className="pt-1 pb-20 px-3">
+          <div className="mx-auto max-w-(--breakpoint-lg)">
+            <h2 className="text-5xl">Projects 🛠️</h2>
+            <p className="mb-14 max-w-prose">
+              Games, developer tools and art I have built and put online. Most of them are open
+              source, and each card links to the live site. My software studio,{" "}
+              <ExternalLink href="https://ricoslabs.com" rel="noopener">
+                Ricos Labs
+              </ExternalLink>
+              , shows this work too.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-12">
+              {FEATURED_PROJECTS.map((project) => (
+                <ProjectCard key={project.slug} project={project} />
+              ))}
+            </div>
+            <FancyLink href="/projects" text="See All Projects" />
+          </div>
+        </section>
+
+        <section className="dark:bg-gray-950 bg-slate-100 pt-1 pb-20 px-3">
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <div className="max-w-prose">
               <h2>Webpages</h2>

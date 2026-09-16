@@ -113,6 +113,7 @@ const nextSitemapConfig = {
       "/podcastnotes",
       "/categories",
       "/quotes",
+      "/projects",
     ];
     if (listingPages.includes(url)) {
       return {

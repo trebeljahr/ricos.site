@@ -27,6 +27,7 @@ export const navGroups: NavGroup[] = [
   {
     label: "projects",
     items: [
+      { label: "all projects", href: "/projects" },
       { label: "3D playground", href: "/r3f" },
       { label: "midjourney", href: "/midjourney" },
       { label: "1-month projects", href: "/1-month-projects" },

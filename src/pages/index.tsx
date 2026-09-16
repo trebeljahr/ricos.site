@@ -186,7 +186,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
               Three.js and R3F experiments. Shaders, oceans, generative terrain, particle systems.
               These are the standouts; the full playground has dozens more.
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-12">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-12">
               {FEATURED_R3F_DEMOS.map(({ name, href }) => (
                 <Card
                   key={name}

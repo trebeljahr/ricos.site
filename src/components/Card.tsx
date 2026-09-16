@@ -28,7 +28,9 @@ export type CardLayout = "vertical" | "horizontal";
 
 // "tall" crops photos into a fixed-height banner. "video" keeps the whole
 // image at 16:9, which suits screenshots (e.g. the /projects cards).
-export type CoverAspect = "tall" | "video";
+// "portrait" is for book covers: in the horizontal layout it narrows the cover
+// column and keeps at least a 2:3 frame, so the whole cover stays visible.
+export type CoverAspect = "tall" | "video" | "portrait";
 
 export type CardProps = {
   link: string;
@@ -86,6 +88,7 @@ export function Card({
   const horizontal = layout === "horizontal";
   const compact = size === "compact";
   const hasMetadata = Boolean(date || readingTime || amountOfStories);
+  const portrait = coverAspect === "portrait";
   const hasDimensions = cover.width !== undefined && cover.height !== undefined;
 
   return (
@@ -93,15 +96,20 @@ export function Card({
       href={link}
       prefetch={prefetch}
       className={clsx(
-        "group not-prose relative w-full overflow-hidden rounded-xl border-2 border-gray-200 bg-white text-gray-900 no-underline shadow-sm",
+        // card-trace (globals.css) draws the border, its hover sweep and the transitions.
+        "card-trace group not-prose relative w-full overflow-hidden rounded-xl text-gray-900 no-underline shadow-sm",
         // The card moves as one piece: a separate cover zoom on its own timing
         // made the image drift against the frame. transform-gpu keeps the cover
         // from re-rasterising (and visibly snapping) when the lift settles.
-        "transform-gpu transition duration-300 ease-out hover:-translate-y-1 hover:border-myBlue/50 hover:shadow-xl",
+        "transform-gpu hover:-translate-y-1 hover:shadow-xl",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-myBlue",
-        "dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-myBlue/60",
-        "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
-        horizontal ? "mb-10 block md:grid md:grid-cols-[15rem_1fr]" : "flex flex-col self-stretch",
+        "dark:text-gray-100 motion-reduce:hover:translate-y-0",
+        horizontal
+          ? clsx(
+              "mb-6 block md:grid",
+              portrait ? "md:grid-cols-[10rem_1fr]" : "md:grid-cols-[15rem_1fr]",
+            )
+          : "flex flex-col self-stretch",
         className,
       )}
     >
@@ -109,20 +117,30 @@ export function Card({
         className={clsx(
           "relative w-full shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-700",
           horizontal
-            ? "h-64 md:h-auto md:min-h-56"
+            ? clsx("h-64 md:h-auto", portrait ? "md:min-h-60" : "md:min-h-52")
             : coverAspect === "video"
               ? "aspect-video"
               : "h-64",
         )}
       >
-        <ImageWithLoader
-          src={cover.src}
-          alt={cover.alt}
-          {...(hasDimensions ? { width: cover.width, height: cover.height } : { fill: true })}
-          sizes={sizes ?? defaultSizes[layout]}
-          priority={priority}
-          className="h-full w-full object-cover"
-        />
+        {/* Absolutely positioned so the cover never sets the card's height: in
+            the horizontal layout a tall book cover used to stretch the row and
+            leave a gap under the text. The frame's own height rules instead. */}
+        <div className="absolute inset-0">
+          <ImageWithLoader
+            src={cover.src}
+            alt={cover.alt}
+            {...(hasDimensions ? { width: cover.width, height: cover.height } : { fill: true })}
+            sizes={
+              sizes ??
+              (horizontal && portrait
+                ? "(max-width: 768px) calc(100vw - 24px), 160px"
+                : defaultSizes[layout])
+            }
+            priority={priority}
+            className="h-full w-full object-cover"
+          />
+        </div>
       </div>
 
       <div className={clsx("flex min-w-0 grow flex-col", compact ? "px-3 py-2.5" : "p-5 md:p-6")}>
@@ -143,13 +161,15 @@ export function Card({
         </div>
 
         {subtitle && (
-          <p className="m-0 mt-1.5 text-base text-gray-600 dark:text-gray-300">{subtitle}</p>
+          <p className="m-0 mt-1.5 text-base font-medium text-gray-700 dark:text-gray-200">
+            {subtitle}
+          </p>
         )}
 
         {(markdownExcerpt || excerpt) && (
           // The browser draws the "…" when an excerpt overflows, so cards keep
           // a consistent height no matter how long the stored excerpt is.
-          <div className="mt-3 line-clamp-4 text-base leading-relaxed text-zinc-700 dark:text-slate-300 [&_p]:my-0">
+          <div className="mt-3 line-clamp-4 text-[0.9375rem] leading-relaxed text-gray-600 dark:text-gray-400 [&_p]:my-0">
             {markdownExcerpt ? <MDXExcerpt source={markdownExcerpt} /> : <p>{excerpt}</p>}
           </div>
         )}
@@ -157,7 +177,8 @@ export function Card({
         {children}
 
         {hasMetadata && (
-          <div className={clsx(!horizontal && "mt-auto")}>
+          // Pinned to the bottom so metadata lines up across a row of cards.
+          <div className="mt-auto pt-1">
             <MetadataDisplay
               date={date}
               readingTime={readingTime}

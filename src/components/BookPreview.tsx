@@ -12,6 +12,7 @@ export function BookPreview({ book, index }: Props) {
   return (
     <Card
       layout="horizontal"
+      coverAspect="portrait"
       link={link}
       title={title}
       cover={cover}

@@ -27,12 +27,12 @@ const pathWithoutQuery = (asPath: string) => asPath.split(/[?#]/)[0];
 export function PlaygroundCrumb() {
   return (
     <>
-      <span aria-hidden="true" className="text-gray-400 dark:text-gray-500">
+      <span aria-hidden="true" className="text-sm text-gray-400 dark:text-gray-500">
         /
       </span>
       <Link
         href="/r3f"
-        className="truncate rounded-md px-1.5 py-1 font-semibold hover:bg-gray-200 dark:hover:bg-gray-700"
+        className="truncate rounded-md px-1.5 py-1 text-sm text-gray-600 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
       >
         3D Playground
       </Link>
@@ -43,12 +43,10 @@ export function PlaygroundCrumb() {
 type ScenesButtonProps = {
   open: boolean;
   onClick: () => void;
-  /** Fully rounded, for use inside the collapsed pill. */
-  round?: boolean;
   className?: string;
 };
 
-export function PlaygroundScenesButton({ open, onClick, round, className }: ScenesButtonProps) {
+export function PlaygroundScenesButton({ open, onClick, className }: ScenesButtonProps) {
   return (
     <button
       type="button"
@@ -57,8 +55,7 @@ export function PlaygroundScenesButton({ open, onClick, round, className }: Scen
       aria-controls="playground-scenes"
       onClick={onClick}
       className={clsx(
-        "inline-flex h-9 items-center gap-1 px-3 hover:bg-gray-200 dark:hover:bg-gray-700",
-        round ? "rounded-full" : "rounded-md",
+        "inline-flex h-9 shrink-0 items-center gap-1 rounded-md px-2 text-sm sm:px-2.5 hover:bg-gray-200 dark:hover:bg-gray-700",
         open && "bg-gray-200 dark:bg-gray-700",
         className,
       )}
@@ -154,7 +151,9 @@ export function PlaygroundScenesPanel({ open, onClose, restoreFocus }: PanelProp
         inert={!open}
         className={clsx(
           "absolute inset-x-0 top-full flex h-[calc(100dvh-100%)] flex-col overflow-hidden bg-white text-gray-900 shadow-xl dark:bg-gray-900 dark:text-gray-100",
-          "sm:right-auto sm:left-3 sm:mt-2 sm:h-auto sm:max-h-[calc(100dvh-100%-1.5rem)] sm:w-[28rem] sm:rounded-xl sm:ring-1 sm:ring-black/5 xl:left-10 sm:dark:ring-white/10",
+          // A sidebar flush with the left edge and the bottom of the bar; its
+          // content lines up with the logo via the same horizontal padding.
+          "sm:right-auto sm:w-[28rem] sm:border-t sm:border-r sm:border-gray-200 xl:w-[31rem] sm:dark:border-gray-800",
           "duration-200 ease-out motion-reduce:transition-none",
           // Visibility flips at once when opening, so the list can take focus
           // straight away, and waits for the fade when closing.
@@ -163,7 +162,7 @@ export function PlaygroundScenesPanel({ open, onClose, restoreFocus }: PanelProp
             : "invisible -translate-y-2 opacity-0 transition-[opacity,translate,visibility]",
         )}
       >
-        <div className="flex items-center justify-between border-b border-gray-200 py-2 pr-2 pl-4 dark:border-gray-800">
+        <div className="flex items-center justify-between border-b border-gray-200 py-2 pr-2 pl-3 xl:pl-10 dark:border-gray-800">
           <Link
             href="/r3f"
             aria-current={current === "/r3f" ? "page" : undefined}
@@ -180,10 +179,13 @@ export function PlaygroundScenesPanel({ open, onClose, restoreFocus }: PanelProp
             <FiX className="size-5" />
           </button>
         </div>
-        <nav aria-label="Scenes" className="relative overflow-y-auto overscroll-contain px-4 pb-6">
+        <nav
+          aria-label="Scenes"
+          className="relative overflow-y-auto overscroll-contain pr-3 pb-6 pl-2 xl:pl-9"
+        >
           {sections.map(([section, scenes]) => (
             <div key={section} className="mt-5">
-              <h2 className="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
+              <h2 className="px-1 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
                 {section}
               </h2>
               <ul className="mt-2 grid grid-cols-2 gap-3">

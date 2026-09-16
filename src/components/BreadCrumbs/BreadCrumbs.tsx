@@ -29,7 +29,7 @@ export default function _Component({
         <div className="inline-flex items-center">
           <Link
             href="/"
-            className="inline-flex items-center text-sm font-medium  hover:text-myBlue "
+            className="inline-flex items-center text-sm font-medium  hover:text-accent "
           >
             <svg
               aria-hidden="true"
@@ -76,7 +76,7 @@ export default function _Component({
                 ) : (
                   <Link
                     href={overwrite?.alternateLink || "/" + pathParts.slice(0, index + 1).join("/")}
-                    className="ml-1 text-sm font-medium  hover:text-myBlue md:ml-2"
+                    className="ml-1 text-sm font-medium  hover:text-accent md:ml-2"
                   >
                     {label}
                   </Link>

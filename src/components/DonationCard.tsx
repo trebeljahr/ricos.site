@@ -90,7 +90,7 @@ function FallbackDonationLinks() {
         <ExternalLink
           key={link.name}
           href={link.url}
-          className="inline-flex min-h-14 flex-1 basis-48 flex-col justify-center rounded-md border-2 border-gray-200 px-4 py-3 no-underline transition-colors hover:border-myBlue dark:border-gray-700"
+          className="inline-flex min-h-14 flex-1 basis-48 flex-col justify-center rounded-md border-2 border-gray-200 px-4 py-3 no-underline transition-colors hover:border-accent dark:border-gray-700"
         >
           <span className="font-semibold text-gray-900 dark:text-white">{link.name}</span>
           <span className="mt-1 text-sm text-gray-600 dark:text-gray-300">{link.blurb}</span>
@@ -115,7 +115,7 @@ export function DonationCard({ className }: DonationCardProps) {
   return (
     <section className={clsx("not-prose w-full", className)} aria-labelledby="donation-card-title">
       <div className="rounded-lg border-4 border-gray-200 bg-white px-5 py-10 dark:border-gray-700 dark:bg-gray-800">
-        <p className="m-0 text-sm font-semibold text-myBlue">donating = loving</p>
+        <p className="m-0 text-sm font-semibold text-accent">donating = loving</p>
         <h2 id="donation-card-title" className="mt-2 mb-3 text-2xl font-bold">
           Keep this place alive
         </h2>
@@ -155,7 +155,7 @@ export function DonationCard({ className }: DonationCardProps) {
                   <ExternalLink
                     key={option.label}
                     href={option.href ?? "#"}
-                    className="group flex min-h-24 flex-col justify-between rounded-md border-2 border-gray-200 px-4 py-3 no-underline transition-colors hover:border-myBlue dark:border-gray-700"
+                    className="group flex min-h-24 flex-col justify-between rounded-md border-2 border-gray-200 px-4 py-3 no-underline transition-colors hover:border-accent dark:border-gray-700"
                   >
                     <span className="text-xl font-bold text-gray-900 dark:text-white">
                       {option.label}
@@ -175,7 +175,7 @@ export function DonationCard({ className }: DonationCardProps) {
             )}
 
             <details className="mt-5 text-sm text-gray-600 dark:text-gray-300">
-              <summary className="w-fit cursor-pointer font-semibold hover:text-myBlue">
+              <summary className="w-fit cursor-pointer font-semibold hover:text-accent">
                 Prefer another platform?
               </summary>
               <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
@@ -183,7 +183,7 @@ export function DonationCard({ className }: DonationCardProps) {
                   <ExternalLink
                     key={link.name}
                     href={link.url}
-                    className="rounded-md border border-gray-200 px-3 py-2 no-underline transition-colors hover:border-myBlue dark:border-gray-700"
+                    className="rounded-md border border-gray-200 px-3 py-2 no-underline transition-colors hover:border-accent dark:border-gray-700"
                   >
                     <span className="font-semibold text-gray-900 dark:text-white">{link.name}</span>
                     <span className="ml-2 text-gray-600 dark:text-gray-300">{link.blurb}</span>

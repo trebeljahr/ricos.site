@@ -30,6 +30,8 @@
   --color-ultraLightBlue: rgb(184, 216, 249);
   --color-lightBlue: rgb(153, 204, 255);
   --color-myBlue: rgb(68, 160, 255);
+  /* Link and hover accent. The dark-mode value is set on .dark below. */
+  --color-accent: rgb(25, 128, 232);
   --color-darkBlue: rgb(15, 76, 229);
   --color-successGreen: rgb(31, 214, 85);
   --color-grey: rgb(51, 51, 51);
@@ -102,6 +104,15 @@
   }
 }
 
+/*
+ * One accent for links and hovered cards, so interactive highlights match
+ * across the site: a vivid darker blue that holds up on white, and a lighter
+ * blue that reads on dark backgrounds.
+ */
+.dark {
+  --color-accent: color-mix(in srgb, var(--color-myBlue) 70%, white);
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -115,7 +126,7 @@
   transition: color 0.15s ease;
 }
 .prose :where(a):not(:where(.not-prose, .not-prose *)):hover {
-  color: var(--color-myBlue);
+  color: var(--color-accent);
 }
 
 details.callout-root[open] > summary .callout-chevron {

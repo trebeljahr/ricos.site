@@ -13,27 +13,27 @@ export const SiteFooter = () => {
       <div className="mx-auto max-w-(--breakpoint-lg) flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <span>© {year} Rico Trebeljahr</span>
         <nav className="flex flex-wrap gap-x-5 gap-y-2">
-          <Link href="/categories" className="hover:text-myBlue">
+          <Link href="/categories" className="hover:text-accent">
             Categories
           </Link>
-          <Link href="/donate" className="hover:text-myBlue">
+          <Link href="/donate" className="hover:text-accent">
             Donate
           </Link>
           <a
             href="/rss.xml"
-            className="hover:text-myBlue"
+            className="hover:text-accent"
             target="_blank"
             rel="noopener noreferrer"
           >
             RSS
           </a>
-          <Link href="/now" className="hover:text-myBlue">
+          <Link href="/now" className="hover:text-accent">
             Now
           </Link>
-          <Link href="/imprint" className="hover:text-myBlue">
+          <Link href="/imprint" className="hover:text-accent">
             Imprint
           </Link>
-          <Link href="/privacy" className="hover:text-myBlue">
+          <Link href="/privacy" className="hover:text-accent">
             Privacy
           </Link>
         </nav>

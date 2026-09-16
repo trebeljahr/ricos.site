@@ -102,10 +102,10 @@ export function Card({
         // from re-rasterising (and visibly snapping) when the lift settles.
         "transform-gpu transition duration-300 ease-out hover:-translate-y-1",
         // Hover glow: an even, all-sides blue shadow so the border itself looks lit.
-        // Light mode uses a darker, still saturated blue for the border and title so they hold up on white.
-        "hover:border-[rgb(25,128,232)] hover:shadow-[0_0_24px_-2px] hover:shadow-myBlue/40",
+        // Border and title use the site-wide accent (globals.css), same as links.
+        "hover:border-accent hover:shadow-[0_0_24px_-2px] hover:shadow-myBlue/40",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-myBlue",
-        "dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-myBlue/80 dark:hover:shadow-myBlue/50",
+        "dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:shadow-myBlue/50",
         "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
         horizontal
           ? clsx(
@@ -150,9 +150,7 @@ export function Card({
         <div className="flex items-start justify-between gap-3">
           <Heading
             className={clsx(
-              "m-0 grow leading-snug tracking-tight transition-colors duration-300 ease-out group-hover:text-[rgb(25,128,232)]",
-              // A lighter blue reads better against the dark card.
-              "dark:group-hover:text-[color-mix(in_srgb,var(--color-myBlue)_70%,white)]",
+              "m-0 grow leading-snug tracking-tight transition-colors duration-300 ease-out group-hover:text-accent",
               compact ? "text-base font-semibold" : "text-xl font-bold md:text-2xl",
             )}
           >

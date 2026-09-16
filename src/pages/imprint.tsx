@@ -26,7 +26,7 @@ export default function ImprintPage() {
           <p>
             Information pursuant to § 5 DDG (German Digital Services Act) and § 18 (2) MStV
             (Interstate Media Treaty). See also the{" "}
-            <Link href="/privacy" className="text-myBlue hover:underline">
+            <Link href="/privacy" className="text-accent hover:underline">
               Privacy Policy
             </Link>
             .
@@ -50,7 +50,7 @@ export default function ImprintPage() {
             Email:{" "}
             <a
               href="mailto:imprint+ricos.site@trebeljahr.com"
-              className="text-myBlue hover:underline"
+              className="text-accent hover:underline"
             >
               imprint+ricos.site@trebeljahr.com
             </a>
@@ -104,7 +104,7 @@ export default function ImprintPage() {
             <a
               href="https://www.flaticon.com/free-icons/flask"
               title="flask icons"
-              className="text-myBlue hover:underline"
+              className="text-accent hover:underline"
             >
               Flask icons created by Freepik - Flaticon
             </a>

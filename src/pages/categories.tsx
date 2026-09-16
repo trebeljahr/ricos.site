@@ -78,7 +78,7 @@ function TagCloud({ tags }: { tags: TagEntry[] }) {
           key={tag}
           href={"#" + tag}
           style={{ fontSize: `${scale(items.length)}rem` }}
-          className="text-myBlue no-underline transition-colors hover:underline"
+          className="text-accent no-underline transition-colors hover:underline"
         >
           {toTitleCase(tag)}
           <span className="ml-1 text-gray-400 dark:text-gray-500 text-xs align-baseline">

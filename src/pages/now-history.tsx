@@ -178,7 +178,7 @@ const Timeline = ({ labels, position, onChange }: TimelineProps) => {
                     ? "size-4 bg-myBlue ring-4 ring-myBlue/25"
                     : i < position
                       ? "size-2.5 bg-myBlue group-hover:scale-125"
-                      : "size-2.5 border-2 border-gray-300 bg-white group-hover:scale-125 group-hover:border-myBlue dark:border-gray-600 dark:bg-gray-900"
+                      : "size-2.5 border-2 border-gray-300 bg-white group-hover:scale-125 group-hover:border-accent dark:border-gray-600 dark:bg-gray-900"
                 }`}
               />
             </button>
@@ -235,7 +235,7 @@ export default function NowHistory({ entries }: Props) {
           <Header breadcrumbs={{ path: "now-history" }} title="Now Page History" />
           <div className="text-gray-600 dark:text-gray-400 mb-8">
             Past editions of my{" "}
-            <a href="/now" className="text-myBlue hover:underline">
+            <a href="/now" className="text-accent hover:underline">
               /now
             </a>{" "}
             page, showing what I was focused on at different points in time.

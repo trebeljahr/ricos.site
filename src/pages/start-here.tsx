@@ -35,7 +35,7 @@ const Arrow = () => (
 const MoreLink = ({ href, children }: { href: string; children: ReactNode }) => (
   <Link
     href={href}
-    className="group mt-6 inline-flex items-center gap-2 font-semibold text-myBlue no-underline hover:underline"
+    className="group mt-6 inline-flex items-center gap-2 font-semibold text-accent no-underline hover:underline"
   >
     {children} <Arrow />
   </Link>
@@ -54,7 +54,7 @@ const Section = ({
 }) => (
   <section className="mt-24">
     <div className="mb-8 max-w-prose">
-      <p className="m-0! text-sm font-semibold uppercase tracking-widest text-myBlue">{kicker}</p>
+      <p className="m-0! text-sm font-semibold uppercase tracking-widest text-accent">{kicker}</p>
       <h2 className="mt-2! mb-0! text-3xl md:text-4xl">{title}</h2>
       <p className="mt-3! mb-0! text-lg! text-gray-600 dark:text-gray-300">{text}</p>
     </div>
@@ -217,7 +217,7 @@ export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Prop
                 ].map(([href, label, note]) => (
                   <li key={href} className="m-0! p-0!">
                     <Link href={href} className="group block text-inherit no-underline">
-                      <span className="inline-flex items-center gap-2 text-lg font-semibold text-myBlue group-hover:underline">
+                      <span className="inline-flex items-center gap-2 text-lg font-semibold text-accent group-hover:underline">
                         {label} <Arrow />
                       </span>
                       <span className="block text-gray-600 dark:text-gray-300">{note}</span>

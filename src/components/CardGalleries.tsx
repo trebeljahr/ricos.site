@@ -2,7 +2,7 @@ import { FaChevronLeft, FaChevronRight } from "@components/Icons";
 import { useWindowWidth } from "@react-hook/window-size";
 import { createRef, type FC, useEffect, useMemo, useState, type WheelEventHandler } from "react";
 import type { CommonMetadata } from "src/@types";
-import { VerticalCard } from "./NiceCards";
+import { type CoverAspect, VerticalCard } from "./NiceCards";
 
 // The subset of CommonMetadata the cards render, so non-content data (e.g.
 // src/lib/projects.ts) can reuse the same galleries.
@@ -15,12 +15,14 @@ export type CardGalleryProps = {
   content: CardGalleryItem[];
   withExcerpt?: boolean;
   withSubtitle?: boolean;
+  coverAspect?: CoverAspect;
 };
 
 export const CardGallery = ({
   content,
   withExcerpt = false,
   withSubtitle = false,
+  coverAspect,
 }: CardGalleryProps) => {
   return (
     <div className="grid gap-2 md:gap-4 lg:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max justify-items-center pb-5">
@@ -29,6 +31,7 @@ export const CardGallery = ({
           key={singlePiece.slug}
           readingTime={singlePiece.metadata?.readingTime}
           {...singlePiece}
+          coverAspect={coverAspect}
           markdownExcerpt={withExcerpt ? singlePiece.markdownExcerpt : undefined}
           subtitle={withSubtitle ? singlePiece.subtitle : undefined}
         />
@@ -41,6 +44,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
   content,
   withExcerpt = false,
   withSubtitle: withDescription = false,
+  coverAspect,
 }) => {
   const [scrolled, setScrolled] = useState(false);
   const [hovering, setHovering] = useState(false);
@@ -161,6 +165,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
           >
             <VerticalCard
               {...singlePiece}
+              coverAspect={coverAspect}
               markdownExcerpt={withExcerpt ? singlePiece.markdownExcerpt : undefined}
               subtitle={withDescription ? singlePiece.subtitle : undefined}
               readingTime={singlePiece.metadata?.readingTime}

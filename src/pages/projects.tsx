@@ -48,12 +48,11 @@ export default function ProjectsPage() {
         </p>
         <p className="max-w-prose">
           A few of these, like Fractal Garden and the Quaternius page, started as{" "}
-          <Link href="/1-month-projects">1-month projects</Link>. I also run a small software studio
-          called{" "}
+          <Link href="/1-month-projects">1-month projects</Link>.{" "}
           <ExternalLink href="https://ricoslabs.com" rel="noopener">
             Ricos Labs
-          </ExternalLink>
-          .
+          </ExternalLink>{" "}
+          is where I make games, and the umbrella for the rest of my software work.
         </p>
         <p className="max-w-prose mb-14">
           Wanna know what I still want to learn as a programmer? I have an{" "}
@@ -64,7 +63,7 @@ export default function ProjectsPage() {
           <section key={title} id={toAnchor(title)} className="mb-16">
             <h2 className="text-3xl">{title}</h2>
             <p className="max-w-prose mb-8">{intro}</p>
-            <CardGallery content={projectsInSection(title)} withSubtitle />
+            <CardGallery content={projectsInSection(title)} withSubtitle coverAspect="video" />
           </section>
         ))}
       </main>

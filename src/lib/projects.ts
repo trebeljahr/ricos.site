@@ -24,13 +24,14 @@ export const PROJECT_SECTIONS: { title: ProjectSection; intro: string }[] = [
   },
 ];
 
-// Pre-sized 800x450 webp files committed under public/projects/. They are
+// 16:9 webp files committed under public/projects/ (1280x720, cropped from
+// each project's own screenshots), shown with coverAspect="video". They are
 // served straight from public/ (the image loader passes non-/assets/ paths
 // through), so they behave the same in dev and production.
 const screenshot = (slug: string, alt: string): Project["cover"] => ({
   src: `/projects/${slug}.webp`,
-  width: 800,
-  height: 450,
+  width: 1280,
+  height: 720,
   alt,
 });
 

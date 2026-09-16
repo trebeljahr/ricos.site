@@ -1,4 +1,5 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
+import clsx from "clsx";
 import { getMDXComponent } from "mdx-bundler/client";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -27,7 +28,12 @@ type CardProps = {
   amountOfStories?: number;
   date?: string;
   readingTime?: number;
+  coverAspect?: CoverAspect;
 };
+
+// "tall" crops photos into a fixed-height banner. "video" keeps the whole
+// image at 16:9, which suits screenshots (e.g. the /projects cards).
+export type CoverAspect = "tall" | "video";
 
 export function HorizontalCard({
   cover,
@@ -102,13 +108,19 @@ export const VerticalCard = ({
   markdownExcerpt,
   date,
   readingTime,
+  coverAspect = "tall",
 }: CardProps) => {
   return (
     <Link
       className="w-full flex flex-col align-self-stretch whitespace-no-wrap mt-2 no-underline prose-headings:text-inherit transform transition-transform duration-300 hover:scale-[1.02] rounded-lg bg-white dark:bg-gray-800"
       href={link}
     >
-      <div className="h-72 w-full relative not-prose max-w-full rounded-t-lg overflow-hidden">
+      <div
+        className={clsx(
+          "w-full relative not-prose max-w-full rounded-t-lg overflow-hidden",
+          coverAspect === "video" ? "aspect-video" : "h-72",
+        )}
+      >
         <ImageWithLoader
           src={cover.src}
           alt={cover.alt}

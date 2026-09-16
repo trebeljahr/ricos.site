@@ -214,17 +214,21 @@ const IndexPage = ({ seo, ...props }: Props) => {
 
         <section className="pt-1 pb-20 px-3">
           <HomePageSection
-            cardGalleryProps={{ content: FEATURED_PROJECTS, withSubtitle: true }}
+            cardGalleryProps={{
+              content: FEATURED_PROJECTS,
+              withSubtitle: true,
+              coverAspect: "video",
+            }}
             title="Projects 🛠️"
             linkElem={<FancyLink href="/projects" text="See All Projects" />}
           >
             <p>
               Some of the things I have built. Games, tools, and a few things that are just nice to
-              look at. I also run a small software studio called{" "}
+              look at.{" "}
               <ExternalLink href="https://ricoslabs.com" rel="noopener">
                 Ricos Labs
-              </ExternalLink>
-              .
+              </ExternalLink>{" "}
+              is where I make games, and the umbrella for the rest of my software work.
             </p>
           </HomePageSection>
         </section>

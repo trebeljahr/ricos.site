@@ -1,14 +1,7 @@
 import clsx from "clsx";
 import Link from "next/link";
-import type { Project, ProjectStatus } from "src/lib/projects";
+import type { Project } from "src/lib/projects";
 import { ImageWithLoader } from "./ImageWithLoader";
-
-const STATUS_CLASSES: Record<ProjectStatus, string> = {
-  Live: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200",
-  Demo: "bg-sky-100 text-sky-800 dark:bg-sky-900/60 dark:text-sky-200",
-  "In progress": "bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200",
-  Archived: "bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
-};
 
 const FALLBACK_GRADIENTS = [
   "from-indigo-500 to-sky-400",
@@ -30,7 +23,7 @@ const titleLinkClasses =
   "no-underline text-inherit after:absolute after:inset-0 after:content-[''] focus-visible:outline-none";
 
 export const ProjectCard = ({ project, headingLevel = "h3" }: ProjectCardProps) => {
-  const { slug, title, tagline, href, external, sourceUrl, status, image } = project;
+  const { slug, title, tagline, href, external, sourceUrl, image } = project;
   const Heading = headingLevel;
 
   return (
@@ -65,7 +58,7 @@ export const ProjectCard = ({ project, headingLevel = "h3" }: ProjectCardProps) 
       </div>
 
       <div className="flex flex-col grow p-3">
-        <div className="flex items-start justify-between gap-2">
+        <div>
           <Heading className="text-base font-semibold m-0!">
             {external ? (
               <a href={href} target="_blank" rel="noopener" className={titleLinkClasses}>
@@ -77,14 +70,6 @@ export const ProjectCard = ({ project, headingLevel = "h3" }: ProjectCardProps) 
               </Link>
             )}
           </Heading>
-          <span
-            className={clsx(
-              "shrink-0 rounded-full px-2 py-0.5 text-xs font-medium",
-              STATUS_CLASSES[status],
-            )}
-          >
-            {status}
-          </span>
         </div>
         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1! mb-0! grow">{tagline}</p>
         {sourceUrl && (

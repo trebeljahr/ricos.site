@@ -1,5 +1,3 @@
-export type ProjectStatus = "Live" | "Demo" | "In progress" | "Archived";
-
 export type ProjectSection = "Games" | "Apps & tools" | "Art & 3D";
 
 export type ProjectImage = {
@@ -16,7 +14,6 @@ export type Project = {
   href: string;
   external: boolean;
   sourceUrl?: string;
-  status: ProjectStatus;
   section: ProjectSection;
   year: string;
   image?: ProjectImage;
@@ -36,8 +33,7 @@ export const PROJECT_SECTIONS: { title: ProjectSection; intro: string }[] = [
   },
   {
     title: "Art & 3D",
-    intro:
-      "Interactive art, fractals, generative animation and React Three Fiber scenes in the browser.",
+    intro: "Interactive art, fractals and React Three Fiber scenes in the browser.",
   },
 ];
 
@@ -61,7 +57,6 @@ export const PROJECTS: Project[] = [
     href: "https://playtiao.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/tiao",
-    status: "Live",
     section: "Games",
     year: "2026",
     image: screenshot("tiao", "Tiao start screen with options to play over the board or online"),
@@ -75,7 +70,6 @@ export const PROJECTS: Project[] = [
     href: "https://protocol.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/extinction-protocol",
-    status: "Demo",
     section: "Games",
     year: "2026",
     image: screenshot(
@@ -91,7 +85,6 @@ export const PROJECTS: Project[] = [
     href: "https://raptor.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/raptor-runner",
-    status: "Live",
     section: "Games",
     year: "2022",
     image: screenshot(
@@ -108,7 +101,6 @@ export const PROJECTS: Project[] = [
     href: "https://mc.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/minecraft-clone",
-    status: "Demo",
     section: "Games",
     year: "2021",
     image: screenshot("minecraft-clone", "Voxel landscape with grassy hills and a block toolbar"),
@@ -121,7 +113,6 @@ export const PROJECTS: Project[] = [
     href: "https://asteroids.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/asteroid-game",
-    status: "Live",
     section: "Games",
     year: "2019",
     image: screenshot("asteroids", "Spaceship flying between asteroids in a dark starfield"),
@@ -134,7 +125,6 @@ export const PROJECTS: Project[] = [
     href: "https://chess.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/chess-app",
-    status: "Live",
     section: "Games",
     year: "2019",
     image: screenshot("online-chess", "Online chess board next to match status and chat panels"),
@@ -149,7 +139,6 @@ export const PROJECTS: Project[] = [
     href: "https://trackyourtime.dev",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/trackyourtime",
-    status: "Live",
     section: "Apps & tools",
     year: "2026",
     image: screenshot(
@@ -165,7 +154,6 @@ export const PROJECTS: Project[] = [
     href: "https://hatchkit.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/hatchkit",
-    status: "Live",
     section: "Apps & tools",
     year: "2026",
     image: screenshot("hatchkit", "Hatchkit landing page with a terminal running npx hatchkit"),
@@ -178,7 +166,6 @@ export const PROJECTS: Project[] = [
     href: "https://sprites.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/sprite-tools",
-    status: "Live",
     section: "Apps & tools",
     year: "2026",
     image: screenshot("sprite-tools", "sprite-tools landing page with a sprite preview"),
@@ -191,7 +178,6 @@ export const PROJECTS: Project[] = [
     href: "https://gamedev.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/gamedev",
-    status: "Live",
     section: "Apps & tools",
     year: "2026",
     image: screenshot("gamedev-asset-library", "Grid of asset packs in the GameDev Asset Library"),
@@ -204,7 +190,6 @@ export const PROJECTS: Project[] = [
     href: "https://conv3d.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/conv3d",
-    status: "Live",
     section: "Apps & tools",
     year: "2025",
     image: screenshot("conv3d", "Terminal output of conv3D converting a model to GLB and TSX"),
@@ -217,7 +202,6 @@ export const PROJECTS: Project[] = [
     href: "https://quaternius.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/quaternius-showcase",
-    status: "Live",
     section: "Apps & tools",
     year: "2022",
     image: screenshot("quaternius-showcase", "Low-poly stegosaurus model in the 3D viewer"),
@@ -231,7 +215,6 @@ export const PROJECTS: Project[] = [
     href: "https://collectionofbeauty.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/collection-of-beauty",
-    status: "Live",
     section: "Art & 3D",
     year: "2026",
     image: screenshot(
@@ -248,7 +231,6 @@ export const PROJECTS: Project[] = [
     href: "https://fractal.garden",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/fractal-garden",
-    status: "Live",
     section: "Art & 3D",
     year: "2021",
     image: screenshot("fractal-garden", "Mandelbrot set rendered in blue on a black background"),
@@ -261,27 +243,11 @@ export const PROJECTS: Project[] = [
     href: "/r3f",
     external: false,
     sourceUrl: "https://github.com/trebeljahr/ricos.site",
-    status: "Live",
     section: "Art & 3D",
     year: "2025",
     image: screenshot(
       "interactive-3d-demos",
       "Colourful concentric shader pattern from the 3D playground",
-    ),
-  },
-  {
-    slug: "procedural-screensaver",
-    title: "Procedural Screensaver",
-    tagline: "Generative p5.js animation that runs as a screensaver-style page in the browser.",
-    href: "https://trebeljahr.github.io/apple-screensaver/",
-    external: true,
-    sourceUrl: "https://github.com/trebeljahr/apple-screensaver",
-    status: "Demo",
-    section: "Art & 3D",
-    year: "2023",
-    image: screenshot(
-      "procedural-screensaver",
-      "Glowing gradient strokes of the procedural screensaver",
     ),
   },
 ];

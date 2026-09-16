@@ -16,11 +16,12 @@ export const PROJECT_SECTIONS: { title: ProjectSection; intro: string }[] = [
   },
   {
     title: "Apps & tools",
-    intro: "Tools for making games and websites, and a time tracker for freelancers.",
+    intro: "Tools and apps I built, mostly to make building games and software a bit easier.",
   },
   {
     title: "Art & 3D",
-    intro: "Things that are mostly just nice to look at. Old paintings, fractals and 3D scenes.",
+    intro:
+      "Things that are mostly just nice to look at. Old paintings, fractals, 3D models and scenes.",
   },
 ];
 
@@ -146,15 +147,6 @@ export const PROJECTS: Project[] = [
     section: "Apps & tools",
     cover: screenshot("conv3d", "Terminal output of conv3D converting a model to GLB and TSX"),
   },
-  {
-    slug: "quaternius-showcase",
-    title: "Quaternius Showcase",
-    subtitle:
-      "Browse the free 3D model packs by Quaternius and look at every model before you download it.",
-    link: "https://quaternius.trebeljahr.com",
-    section: "Apps & tools",
-    cover: screenshot("quaternius-showcase", "Low-poly stegosaurus model in the 3D viewer"),
-  },
 
   // Art & 3D
   {
@@ -178,6 +170,15 @@ export const PROJECTS: Project[] = [
     section: "Art & 3D",
     cover: screenshot("fractal-garden", "Mandelbrot set rendered in blue on a black background"),
     featured: true,
+  },
+  {
+    slug: "quaternius-showcase",
+    title: "Quaternius Showcase",
+    subtitle:
+      "Browse the free 3D model packs by Quaternius and look at every model before you download it.",
+    link: "https://quaternius.trebeljahr.com",
+    section: "Art & 3D",
+    cover: screenshot("quaternius-showcase", "Low-poly stegosaurus model in the 3D viewer"),
   },
   {
     slug: "interactive-3d-demos",

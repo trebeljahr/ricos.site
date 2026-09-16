@@ -1,7 +1,7 @@
+import { CardGallery } from "@components/CardGalleries";
 import { ExternalLink } from "@components/ExternalLink";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
-import { ProjectCard } from "@components/ProjectCard";
 import Link from "next/link";
 import { PROJECT_SECTIONS, projectsInSection } from "src/lib/projects";
 
@@ -40,7 +40,11 @@ export default function ProjectsPage() {
         <p className="max-w-prose">
           Here are the things I have built over the years. Some are games, some are tools, and some
           are just nice to look at. Click on a card to try one out. If you want to see the code,
-          most of it is on GitHub.
+          most of it is on{" "}
+          <ExternalLink href="https://github.com/trebeljahr" rel="noopener">
+            GitHub
+          </ExternalLink>
+          .
         </p>
         <p className="max-w-prose">
           A few of these, like Fractal Garden and the Quaternius page, started as{" "}
@@ -60,11 +64,7 @@ export default function ProjectsPage() {
           <section key={title} id={toAnchor(title)} className="mb-16">
             <h2 className="text-3xl">{title}</h2>
             <p className="max-w-prose mb-8">{intro}</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {projectsInSection(title).map((project) => (
-                <ProjectCard key={project.slug} project={project} />
-              ))}
-            </div>
+            <CardGallery content={projectsInSection(title)} withSubtitle />
           </section>
         ))}
       </main>

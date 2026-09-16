@@ -4,8 +4,15 @@ import { createRef, type FC, useEffect, useMemo, useState, type WheelEventHandle
 import type { CommonMetadata } from "src/@types";
 import { VerticalCard } from "./NiceCards";
 
+// The subset of CommonMetadata the cards render, so non-content data (e.g.
+// src/lib/projects.ts) can reuse the same galleries.
+export type CardGalleryItem = Pick<CommonMetadata, "slug" | "link" | "title" | "cover"> &
+  Partial<Pick<CommonMetadata, "subtitle" | "markdownExcerpt" | "date">> & {
+    metadata?: Partial<CommonMetadata["metadata"]>;
+  };
+
 export type CardGalleryProps = {
-  content: CommonMetadata[];
+  content: CardGalleryItem[];
   withExcerpt?: boolean;
   withSubtitle?: boolean;
 };
@@ -20,7 +27,7 @@ export const CardGallery = ({
       {content.map((singlePiece) => (
         <VerticalCard
           key={singlePiece.slug}
-          readingTime={singlePiece.metadata.readingTime}
+          readingTime={singlePiece.metadata?.readingTime}
           {...singlePiece}
           markdownExcerpt={withExcerpt ? singlePiece.markdownExcerpt : undefined}
           subtitle={withSubtitle ? singlePiece.subtitle : undefined}
@@ -156,7 +163,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
               {...singlePiece}
               markdownExcerpt={withExcerpt ? singlePiece.markdownExcerpt : undefined}
               subtitle={withDescription ? singlePiece.subtitle : undefined}
-              readingTime={singlePiece.metadata.readingTime}
+              readingTime={singlePiece.metadata?.readingTime}
             />
           </div>
         ))}

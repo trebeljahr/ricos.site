@@ -11,24 +11,16 @@ describe("projects catalogue", () => {
     expect(new Set(slugs).size).toBe(slugs.length);
   });
 
-  it("points every image at an existing file in public/", () => {
-    for (const { image, slug } of PROJECTS) {
-      if (!image) continue;
-      expect(existsSync(resolve("public", `.${image.src}`)), slug).toBe(true);
-      expect(image.alt.trim(), slug).not.toBe("");
+  it("points every cover at an existing file in public/", () => {
+    for (const { cover, slug } of PROJECTS) {
+      expect(existsSync(resolve("public", `.${cover.src}`)), slug).toBe(true);
+      expect(cover.alt.trim(), slug).not.toBe("");
     }
   });
 
-  it("marks external links consistently", () => {
-    for (const { href, external, slug } of PROJECTS) {
-      expect(external, slug).toBe(/^https?:\/\//.test(href));
-      if (!external) expect(INTERNAL_ROUTES, slug).toContain(href);
-    }
-  });
-
-  it("uses https source links", () => {
-    for (const { sourceUrl, slug } of PROJECTS) {
-      if (sourceUrl) expect(sourceUrl, slug).toMatch(/^https:\/\//);
+  it("links to https sites or known internal routes", () => {
+    for (const { link, slug } of PROJECTS) {
+      if (!link.startsWith("https://")) expect(INTERNAL_ROUTES, slug).toContain(link);
     }
   });
 

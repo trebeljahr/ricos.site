@@ -5,7 +5,6 @@ import { ImageWithLoader } from "@components/ImageWithLoader";
 import { WebSiteJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
-import { ProjectCard } from "@components/ProjectCard";
 import { WavingHand } from "@components/WavingHand";
 import type { SectionDescription } from "@velite";
 import Link from "next/link";
@@ -214,9 +213,12 @@ const IndexPage = ({ seo, ...props }: Props) => {
         </section>
 
         <section className="pt-1 pb-20 px-3">
-          <div className="mx-auto max-w-(--breakpoint-lg)">
-            <h2 className="text-5xl">Projects 🛠️</h2>
-            <p className="mb-14 max-w-prose">
+          <HomePageSection
+            cardGalleryProps={{ content: FEATURED_PROJECTS, withSubtitle: true }}
+            title="Projects 🛠️"
+            linkElem={<FancyLink href="/projects" text="See All Projects" />}
+          >
+            <p>
               Some of the things I have built. Games, tools, and a few things that are just nice to
               look at. I also run a small software studio called{" "}
               <ExternalLink href="https://ricoslabs.com" rel="noopener">
@@ -224,13 +226,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
               </ExternalLink>
               .
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-12">
-              {FEATURED_PROJECTS.map((project) => (
-                <ProjectCard key={project.slug} project={project} />
-              ))}
-            </div>
-            <FancyLink href="/projects" text="See All Projects" />
-          </div>
+          </HomePageSection>
         </section>
 
         <section className="dark:bg-gray-950 bg-slate-100 pt-1 pb-20 px-3">

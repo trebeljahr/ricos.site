@@ -96,14 +96,14 @@ export function Card({
       href={link}
       prefetch={prefetch}
       className={clsx(
-        // card-trace (globals.css) draws the border, its hover sweep and the transitions.
-        "card-trace group not-prose relative w-full overflow-hidden rounded-xl text-gray-900 no-underline shadow-sm",
+        "group not-prose relative w-full overflow-hidden rounded-xl border-2 border-gray-200 bg-white text-gray-900 no-underline shadow-sm",
         // The card moves as one piece: a separate cover zoom on its own timing
         // made the image drift against the frame. transform-gpu keeps the cover
         // from re-rasterising (and visibly snapping) when the lift settles.
-        "transform-gpu hover:-translate-y-1 hover:shadow-xl",
+        "transform-gpu transition duration-300 ease-out hover:-translate-y-1 hover:border-myBlue/50 hover:shadow-xl",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-myBlue",
-        "dark:text-gray-100 motion-reduce:hover:translate-y-0",
+        "dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-myBlue/60",
+        "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
         horizontal
           ? clsx(
               "mb-6 block md:grid",

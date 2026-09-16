@@ -39,54 +39,6 @@
   --color-leva-light-grey: #8c92a4;
 }
 
-/*
- * Card border that traces itself around the card on hover instead of lighting
- * up all at once. The border area is painted by a conic gradient under a solid
- * padding-box layer, so it follows border-radius. Registering --card-trace as
- * an <angle> is what lets the sweep transition; browsers without @property
- * just switch colour instantly.
- */
-@property --card-trace {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-
-@utility card-trace {
-  --card-bg: var(--color-white);
-  --card-edge: var(--color-gray-200);
-  --card-edge-lit: color-mix(in srgb, var(--color-myBlue) 60%, var(--card-edge));
-  border: 2px solid transparent;
-  background:
-    linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
-    conic-gradient(
-        from 0deg,
-        var(--card-edge-lit) calc(var(--card-trace) - 12deg),
-        var(--card-edge) var(--card-trace)
-      )
-      border-box;
-  /* Owns the whole transition list so Tailwind's transition-property can't drop the sweep. */
-  transition:
-    --card-trace 700ms ease-in-out,
-    transform 300ms ease-out,
-    box-shadow 300ms ease-out;
-
-  /* 360deg plus the feather width, so no unlit seam remains at the start. */
-  &:hover,
-  &:focus-visible {
-    --card-trace: 372deg;
-  }
-
-  @variant dark {
-    --card-bg: var(--color-gray-800);
-    --card-edge: var(--color-gray-700);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
-}
-
 @layer base {
   * {
     box-sizing: border-box;

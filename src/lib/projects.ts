@@ -68,7 +68,7 @@ export const PROJECTS: Project[] = [
     section: "Games",
     cover: screenshot(
       "raptor-runner",
-      "Raptor Runner start screen with a pixel-art raptor in a desert",
+      "Raptor Runner at dusk: a raptor in a cowboy hat runs toward a coin under a pterodactyl",
     ),
     featured: true,
   },

@@ -1,7 +1,8 @@
 import clsx from "clsx";
 import Link from "next/link";
-import type { CSSProperties } from "react";
+import { type CSSProperties, useMemo } from "react";
 import { cleanAuthor, type Portrait, type Portraits } from "src/lib/quotePortraits";
+import { planQuoteRows } from "src/lib/quoteRows";
 
 export type Quote = {
   author: string;
@@ -14,9 +15,8 @@ export type Quote = {
 /** A quote plus its position in the full collection, a stable key while filtering. */
 export type NumberedQuote = Quote & { id: number };
 
-// FNV-1a. A small width jitter comes from the quote text, not Math.random, so
-// the server and client render the same layout and a quote keeps its width
-// between visits.
+// FNV-1a. The mark colour comes from the quote text, not Math.random, so the
+// server and client agree and a quote keeps its colour between visits.
 function hash(text: string) {
   let h = 0x811c9dc5;
   for (let i = 0; i < text.length; i++) {
@@ -26,20 +26,9 @@ function hash(text: string) {
   return h >>> 0;
 }
 
-// Justified rows: cards wrap like words in a line, and each row stretches to
-// fill the full width, so there are no holes. A card's base width follows the
-// length of its quote, which keeps the cards in a row at similar heights at
-// one shared font size. Row filling grows every card in proportion to its base
-// width, so that balance survives the stretch.
-const CHAR_WIDTH = 1.6;
-const MIN_WIDTH = 250;
-const MAX_WIDTH = 640;
-
-function baseWidth(quote: Quote) {
-  const jitter = 0.9 + (hash(quote.content) % 21) / 100;
-  const width = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, quote.content.length * CHAR_WIDTH));
-  return Math.round(width * jitter);
-}
+/** Sets a flex shorthand from md up; phones stack every card at full width. */
+const flex = (value: string) => ({ "--flex": value }) as CSSProperties;
+const FLEX_FROM_MD = "md:[flex:var(--flex)]";
 
 // Steps along the newsletter gradient (green-400 -> teal-400 -> blue-600).
 const MARK_COLORS = [
@@ -74,15 +63,25 @@ function Avatar({ author, portrait }: { author: string; portrait: Portrait }) {
   );
 }
 
-function QuoteSlip({ quote, portrait }: { quote: NumberedQuote; portrait?: Portrait }) {
+function QuoteSlip({
+  quote,
+  portrait,
+  style,
+}: {
+  quote: NumberedQuote;
+  portrait?: Portrait;
+  style: CSSProperties;
+}) {
   const author = cleanAuthor(quote.author);
-  const width = baseWidth(quote);
   const markColor = MARK_COLORS[(hash(quote.content) >>> 8) % MARK_COLORS.length];
 
   return (
     <figure
-      style={{ "--width": `${width}px`, "--grow": width } as CSSProperties}
-      className="relative m-0 flex w-full flex-col overflow-hidden rounded-sm bg-stone-50 px-7 pt-16 pb-6 shadow-sm ring-1 ring-black/5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0 md:w-auto md:[flex:var(--grow)_1_var(--width)] dark:bg-slate-800/70 dark:ring-white/10"
+      style={style}
+      className={clsx(
+        "relative m-0 flex flex-col overflow-hidden rounded-sm bg-stone-50 px-7 pt-16 pb-6 shadow-sm ring-1 ring-black/5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0 dark:bg-slate-800/70 dark:ring-white/10",
+        FLEX_FROM_MD,
+      )}
     >
       <span
         aria-hidden
@@ -129,13 +128,59 @@ export function QuoteMosaic({
   quotes: NumberedQuote[];
   portraits: Portraits;
 }) {
+  const rows = useMemo(
+    () =>
+      planQuoteRows(
+        quotes.map((quote) => ({
+          length: quote.content.length,
+          tallCaption: Boolean(
+            portraits[cleanAuthor(quote.author)] || quote.source || quote.tags.length > 0,
+          ),
+        })),
+      ),
+    [quotes, portraits],
+  );
+
+  const slip = (index: number, style: CSSProperties) => {
+    const quote = quotes[index];
+    return (
+      <QuoteSlip
+        key={quote.id}
+        quote={quote}
+        portrait={portraits[cleanAuthor(quote.author)]}
+        style={style}
+      />
+    );
+  };
+
   return (
-    <div className="not-prose flex flex-wrap gap-4">
-      {quotes.map((quote) => (
-        <QuoteSlip key={quote.id} quote={quote} portrait={portraits[cleanAuthor(quote.author)]} />
+    <div className="not-prose flex flex-col gap-4">
+      {rows.map((row) => (
+        <div key={quotes[row.units[0].items[0]].id} className="flex flex-col gap-4 md:flex-row">
+          {row.units.map((unit) =>
+            unit.items.length === 1 ? (
+              slip(unit.items[0], flex(`${unit.width} 1 0px`))
+            ) : (
+              // Two short quotes stacked beside a taller one. The stack takes
+              // the row's height and shares it out by what each card needs.
+              <div
+                key={quotes[unit.items[0]].id}
+                style={flex(`${unit.width} 1 0px`)}
+                className={clsx("flex flex-col gap-4", FLEX_FROM_MD)}
+              >
+                {unit.items.map((index, k) => slip(index, flex(`${unit.heights[k]} 1 auto`)))}
+              </div>
+            ),
+          )}
+          {row.spare > 0 && (
+            <div
+              aria-hidden
+              style={flex(`${row.spare} 1 0px`)}
+              className={clsx("hidden md:block", FLEX_FROM_MD)}
+            />
+          )}
+        </div>
       ))}
-      {/* Soaks up the leftover space in the last row, so its cards keep their base width. */}
-      <div aria-hidden className="hidden grow-[99999] basis-0 md:block" />
     </div>
   );
 }

@@ -96,7 +96,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
           </div>
         </section>
 
-        <section className="dark:bg-blue-950/60 bg-slate-100 pt-1 pb-20 px-3">
+        <section className="dark:bg-nightBlue bg-slate-100 pt-1 pb-20 px-3">
           <HomePageSection
             cardGalleryProps={{
               content: props.postsSelection,
@@ -120,7 +120,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
           />
         </section>
 
-        <section className="dark:bg-blue-950/60 bg-slate-100 pt-1 pb-20 px-3">
+        <section className="dark:bg-nightBlue bg-slate-100 pt-1 pb-20 px-3">
           <HomePageSection
             cardGalleryProps={{
               content: props.newsletterSelection,
@@ -179,7 +179,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
           </div>
         </section>
 
-        <section className="dark:bg-blue-950/60 bg-slate-100 pt-1 pb-20 px-3">
+        <section className="dark:bg-nightBlue bg-slate-100 pt-1 pb-20 px-3">
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <h2 className="text-5xl">Creative Coding 🎨</h2>
             <p className="mb-14 max-w-prose">
@@ -230,7 +230,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
           </HomePageSection>
         </section>
 
-        <section className="dark:bg-blue-950/60 bg-slate-100 pt-1 pb-20 px-3">
+        <section className="dark:bg-nightBlue bg-slate-100 pt-1 pb-20 px-3">
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <div className="max-w-prose">
               <h2>Webpages</h2>

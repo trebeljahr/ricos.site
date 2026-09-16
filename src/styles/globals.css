@@ -33,6 +33,8 @@
   /* Link and hover accent. The dark-mode value is set on .dark below. */
   --color-accent: rgb(25, 128, 232);
   --color-darkBlue: rgb(15, 76, 229);
+  /* Near-black with a blue cast, for dark-mode alternate sections on the home page. */
+  --color-nightBlue: oklch(15% 0.045 255);
   --color-successGreen: rgb(31, 214, 85);
   --color-grey: rgb(51, 51, 51);
   --color-leva-white: #fefefe;

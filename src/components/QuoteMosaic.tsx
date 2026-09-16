@@ -1,9 +1,12 @@
 import clsx from "clsx";
+import Link from "next/link";
 
 export type Quote = {
   author: string;
   content: string;
   tags: string[];
+  /** Where the quote was collected, e.g. the booknote it came from. */
+  source?: { title: string; url: string };
 };
 
 /** A quote plus its slip number: the position in the full collection, so it stays put while filtering. */
@@ -94,8 +97,19 @@ function QuoteSlip({ quote }: { quote: NumberedQuote }) {
       >
         {quote.content}
       </blockquote>
-      <figcaption className="mt-4 text-sm font-medium tracking-wide text-gray-600 uppercase dark:text-gray-400">
-        {quote.author}
+      <figcaption className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+        <span className="font-medium tracking-wide uppercase">{quote.author}</span>
+        {quote.source && (
+          <>
+            {" · "}
+            <Link
+              href={quote.source.url}
+              className="italic underline decoration-gray-400/50 underline-offset-2 hover:text-gray-900 dark:hover:text-gray-100"
+            >
+              {quote.source.title}
+            </Link>
+          </>
+        )}
       </figcaption>
     </figure>
   );

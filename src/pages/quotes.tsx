@@ -8,13 +8,14 @@ import { useState } from "react";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import quotesJSON from "../content/Notes/pages/quotes.json";
 
-// `tagText` flattens tags into one string, since fuzzysort only searches string keys.
-type SearchableQuote = NumberedQuote & { tagText: string };
+// fuzzysort only searches string keys, so tags and the source title get flattened.
+type SearchableQuote = NumberedQuote & { tagText: string; sourceTitle: string };
 
 const quotes: SearchableQuote[] = (quotesJSON as Quote[]).map((quote, index) => ({
   ...quote,
   id: index + 1,
   tagText: quote.tags.join(" "),
+  sourceTitle: quote.source?.title ?? "",
 }));
 
 export default function Quotes({ seo }: { seo: SeoInfo | null }) {
@@ -45,9 +46,9 @@ export default function Quotes({ seo }: { seo: SeoInfo | null }) {
           <Search
             all={quotes}
             setFiltered={setFiltered}
-            searchKeys={["content", "author", "tagText"]}
+            searchKeys={["content", "author", "tagText", "sourceTitle"]}
             threshold={0.3}
-            searchByTitle="Search by words, author or tag..."
+            searchByTitle="Search by words, author, tag or book..."
           />
           <p>Amount: {displayedQuotes.length}</p>
           <QuoteMosaic quotes={displayedQuotes} />

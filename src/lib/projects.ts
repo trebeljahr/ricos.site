@@ -1,5 +1,11 @@
 import type { CommonMetadata } from "src/@types";
 
+export type ProjectSprint = {
+  // YYYY-MM-DD of the sprint's first commit.
+  date: string;
+  summary: string;
+};
+
 export type ProjectSection = "Games" | "Apps & tools" | "Art & 3D";
 
 // Shaped like CardGalleryItem so projects render with the site's shared cards.
@@ -7,6 +13,8 @@ export type Project = Pick<CommonMetadata, "slug" | "title" | "link" | "cover"> 
   subtitle: string;
   // YYYY-MM-DD the project started (first real commit). Places it on /timeline.
   date: string;
+  // Later development sprints, each listed on /timeline as its own entry.
+  sprints?: ProjectSprint[];
   section: ProjectSection;
   featured?: boolean;
 };
@@ -67,6 +75,12 @@ export const PROJECTS: Project[] = [
   {
     slug: "raptor-runner",
     date: "2022-04-06",
+    sprints: [
+      {
+        date: "2026-04-10",
+        summary: "Came back to it with achievements, a shop, and desktop and mobile builds.",
+      },
+    ],
     title: "Raptor Runner",
     subtitle:
       "A small runner game inspired by the dinosaur on Chrome's offline page, with day, night and changing weather.",
@@ -81,6 +95,12 @@ export const PROJECTS: Project[] = [
   {
     slug: "minecraft-clone",
     date: "2021-05-06",
+    sprints: [
+      {
+        date: "2023-11-22",
+        summary: "Made chunk generation faster and added a loading bar and saving.",
+      },
+    ],
     title: "Minecraft Clone",
     subtitle:
       "My take on Minecraft in the browser, with generated landscapes, caves and blocks you can place.",
@@ -91,6 +111,13 @@ export const PROJECTS: Project[] = [
   {
     slug: "asteroids",
     date: "2019-11-17",
+    sprints: [
+      {
+        date: "2026-03-23",
+        summary:
+          "Rebuilt the menus in React and added a battle royale mode with online multiplayer.",
+      },
+    ],
     title: "Asteroids",
     subtitle: "The classic asteroid shooter. Play on your own or against other people online.",
     link: "https://asteroids.trebeljahr.com",
@@ -100,6 +127,9 @@ export const PROJECTS: Project[] = [
   {
     slug: "online-chess",
     date: "2019-01-25",
+    sprints: [
+      { date: "2026-04-06", summary: "Added chess clocks, ELO ratings, spectating and rematches." },
+    ],
     title: "Online Chess",
     subtitle: "Play chess online with a friend, with a lobby and a chat.",
     link: "https://chess.trebeljahr.com",
@@ -154,6 +184,12 @@ export const PROJECTS: Project[] = [
   {
     slug: "conv3d",
     date: "2025-03-05",
+    sprints: [
+      {
+        date: "2026-05-01",
+        summary: "Added init and doctor commands, a landing page, and prepared the first release.",
+      },
+    ],
     title: "conv3D",
     subtitle: "Turns 3D models into small GLB files and ready-to-use React components.",
     link: "https://conv3d.trebeljahr.com",
@@ -178,6 +214,12 @@ export const PROJECTS: Project[] = [
   {
     slug: "fractal-garden",
     date: "2022-09-02",
+    sprints: [
+      {
+        date: "2026-03-23",
+        summary: "Added the Burning Ship fractal, new controls, and more polish on each fractal.",
+      },
+    ],
     title: "Fractal Garden",
     subtitle:
       "A garden of fractals you can explore, each with a short explanation of how it works.",

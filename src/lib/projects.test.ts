@@ -41,6 +41,18 @@ describe("projects catalogue", () => {
     }
   });
 
+  it("dates every sprint after the project start, oldest first", () => {
+    for (const { date, slug, sprints = [] } of PROJECTS) {
+      let previous = date;
+      for (const sprint of sprints) {
+        expect(sprint.date, slug).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(sprint.date > previous, slug).toBe(true);
+        expect(sprint.summary.trim(), slug).not.toBe("");
+        previous = sprint.date;
+      }
+    }
+  });
+
   it("features between 3 and 6 projects, in multiples of 3", () => {
     expect(FEATURED_PROJECTS.length).toBeGreaterThanOrEqual(3);
     expect(FEATURED_PROJECTS.length).toBeLessThanOrEqual(6);

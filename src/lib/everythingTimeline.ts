@@ -126,17 +126,31 @@ export function getR3fTimelineEntries(): TimelineEntry[] {
 }
 
 export function getProjectTimelineEntries(): TimelineEntry[] {
-  return PROJECTS.map((project) => ({
-    id: `project:${project.slug}`,
-    href: project.link,
-    type: "project",
-    typeLabel: "Project",
-    title: project.title,
-    excerpt: project.subtitle,
-    date: project.date,
-    datePrecision: "month",
-    cover: project.cover,
-  }));
+  return PROJECTS.flatMap((project) => {
+    const shared = {
+      href: project.link,
+      type: "project" as const,
+      title: project.title,
+      datePrecision: "month" as const,
+      cover: project.cover,
+    };
+    return [
+      {
+        ...shared,
+        id: `project:${project.slug}`,
+        typeLabel: "Project",
+        excerpt: project.subtitle,
+        date: project.date,
+      },
+      ...(project.sprints ?? []).map((sprint) => ({
+        ...shared,
+        id: `project:${project.slug}:${sprint.date}`,
+        typeLabel: "Project sprint",
+        excerpt: sprint.summary,
+        date: sprint.date,
+      })),
+    ];
+  });
 }
 
 export function getPageTimelineEntries(pages: CommonMetadata[]): TimelineEntry[] {

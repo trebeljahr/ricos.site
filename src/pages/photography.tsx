@@ -231,7 +231,7 @@ export default function Photography({ trips, seo }: Props) {
       imageAlt={seo?.ogImageAlt || "a high quality rendering of an old film camera"}
       keywords={seo?.keywords || ["photography", "gallery", "photos", "portfolio"]}
     >
-      <main className="pt-5 pb-20 px-3 max-w-7xl mx-auto">
+      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <Header breadcrumbs={{ path: url }} subtitle="My travels in pictures" title="Photography" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-20">
           {trips.map(({ tripName, image }, index) => {
@@ -243,7 +243,7 @@ export default function Photography({ trips, seo }: Props) {
               >
                 <ImageWithLoader
                   src={image.src}
-                  sizes={"calc(50vw - 40px)"}
+                  sizes={"(min-width: 1024px) 490px, (min-width: 768px) 50vw, 100vw"}
                   width={image.width}
                   height={image.height}
                   priority={index === 0}

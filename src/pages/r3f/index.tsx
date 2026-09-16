@@ -1,3 +1,4 @@
+import { BreadCrumbs } from "@components/BreadCrumbs";
 import Layout from "@components/Layout";
 import { PlaygroundSceneGrid, PlaygroundSecondaryNav } from "@components/Navbar/PlaygroundNav";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
@@ -32,6 +33,10 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
     <Layout {...seoInfo} navbarSecondary={<PlaygroundSecondaryNav />}>
       <main className="w-full min-h-screen pt-24 pb-10 px-4">
         <div className="mx-auto max-w-5xl">
+          <BreadCrumbs
+            path="/r3f"
+            overwrites={[{ matchingPath: "r3f", newText: "3D Playground" }]}
+          />
           <div className="prose md:prose-lg dark:prose-invert max-w-2xl">
             <h1>Welcome to my R3F Playground!</h1>
             <p>

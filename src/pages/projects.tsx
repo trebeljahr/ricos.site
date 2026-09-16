@@ -1,3 +1,4 @@
+import { BreadCrumbs } from "@components/BreadCrumbs";
 import { CardGallery } from "@components/CardGalleries";
 import { ExternalLink } from "@components/ExternalLink";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
@@ -36,6 +37,8 @@ export default function ProjectsPage() {
         ]}
       />
       <main className="py-20 px-3 max-w-(--breakpoint-lg) mx-auto">
+        <BreadCrumbs path="/projects" />
+
         <h1 className="text-5xl mt-16!">Projects</h1>
         <p className="max-w-prose">
           Here are the things I have built over the years. Some are games, some are tools, and some

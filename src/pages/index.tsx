@@ -217,12 +217,12 @@ const IndexPage = ({ seo, ...props }: Props) => {
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <h2 className="text-5xl">Projects 🛠️</h2>
             <p className="mb-14 max-w-prose">
-              Games, developer tools and art I have built and put online. Each card links to the
-              live site. My software studio,{" "}
+              Some of the things I have built. Games, tools, and a few things that are just nice to
+              look at. I also run a small software studio called{" "}
               <ExternalLink href="https://ricoslabs.com" rel="noopener">
                 Ricos Labs
               </ExternalLink>
-              , shows this work too.
+              .
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-12">
               {FEATURED_PROJECTS.map((project) => (

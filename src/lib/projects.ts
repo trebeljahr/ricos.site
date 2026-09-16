@@ -23,17 +23,15 @@ export type Project = {
 export const PROJECT_SECTIONS: { title: ProjectSection; intro: string }[] = [
   {
     title: "Games",
-    intro:
-      "Games that run in the browser, from a two-player board game to a 3D tower defense. All of them are open source.",
+    intro: "Games I made. They all run in your browser, so you can start playing right away.",
   },
   {
     title: "Apps & tools",
-    intro:
-      "Developer tools, 3D asset viewers and a time tracker. Each one has a live site and public source code.",
+    intro: "Tools for making games and websites, and a time tracker for freelancers.",
   },
   {
     title: "Art & 3D",
-    intro: "Interactive art, fractals and React Three Fiber scenes in the browser.",
+    intro: "Things that are mostly just nice to look at. Old paintings, fractals and 3D scenes.",
   },
 ];
 
@@ -53,7 +51,7 @@ export const PROJECTS: Project[] = [
     slug: "tiao",
     title: "Tiao",
     tagline:
-      "Two-player board game in the browser, with online matches, AI opponents and tournaments.",
+      "A board game for two. Play with a friend at the same screen, online, or against the computer.",
     href: "https://playtiao.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/tiao",
@@ -66,7 +64,7 @@ export const PROJECTS: Project[] = [
     slug: "mesozoic-protocol",
     title: "Mesozoic Protocol",
     tagline:
-      "3D roguelite tower defense game where sci-fi turrets defend outposts against waves of dinosaurs.",
+      "A 3D tower defense game where you hold off waves of dinosaurs. The demo is playable now.",
     href: "https://protocol.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/extinction-protocol",
@@ -81,7 +79,7 @@ export const PROJECTS: Project[] = [
     slug: "raptor-runner",
     title: "Raptor Runner",
     tagline:
-      "Pixel-art endless runner based on Chrome's offline dinosaur game, with a day/night cycle, weather and cosmetics.",
+      "A small runner game inspired by the dinosaur on Chrome's offline page, with day, night and changing weather.",
     href: "https://raptor.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/raptor-runner",
@@ -97,7 +95,7 @@ export const PROJECTS: Project[] = [
     slug: "minecraft-clone",
     title: "Minecraft Clone",
     tagline:
-      "Browser voxel sandbox in Three.js with procedural terrain, biomes, caves, lighting and block placing.",
+      "My take on Minecraft in the browser, with generated landscapes, caves and blocks you can place.",
     href: "https://mc.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/minecraft-clone",
@@ -108,8 +106,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "asteroids",
     title: "Asteroids",
-    tagline:
-      "Browser asteroid shooter with single-player mode and real-time online 1v1 and battle-royale modes.",
+    tagline: "The classic asteroid shooter. Play on your own or against other people online.",
     href: "https://asteroids.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/asteroid-game",
@@ -120,8 +117,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "online-chess",
     title: "Online Chess",
-    tagline:
-      "Multiplayer chess site with accounts, a lobby and live board updates over WebSockets.",
+    tagline: "Play chess online with a friend, with a lobby and a chat.",
     href: "https://chess.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/chess-app",
@@ -135,7 +131,7 @@ export const PROJECTS: Project[] = [
     slug: "track-your-time",
     title: "Track Your Time",
     tagline:
-      "Open-source time tracker for freelancers that turns tracked hours into reports and invoices, hosted or self-hosted.",
+      "A simple time tracker for freelancers. It turns your hours into reports and invoices, and you can host it yourself.",
     href: "https://trackyourtime.dev",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/trackyourtime",
@@ -150,7 +146,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "hatchkit",
     title: "Hatchkit",
-    tagline: "CLI that scaffolds a full-stack TypeScript app and deploys it to your own server.",
+    tagline: "One command sets up a full-stack TypeScript app and puts it on your own server.",
     href: "https://hatchkit.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/hatchkit",
@@ -162,7 +158,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "sprite-tools",
     title: "sprite-tools",
-    tagline: "Web app, npm CLI and MCP server that turn sprite sheets into game-ready assets.",
+    tagline: "Turns sprite sheets into assets you can drop straight into a game.",
     href: "https://sprites.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/sprite-tools",
@@ -174,7 +170,7 @@ export const PROJECTS: Project[] = [
     slug: "gamedev-asset-library",
     title: "GameDev Asset Library",
     tagline:
-      "Searchable catalog of free game assets with 3D preview, audio playback, license and creator info.",
+      "A searchable collection of free game assets. You can look at the 3D models and listen to the sounds right on the page.",
     href: "https://gamedev.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/gamedev",
@@ -185,8 +181,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "conv3d",
     title: "conv3D",
-    tagline:
-      "npm CLI that converts FBX, OBJ and glTF models to GLB and generates React Three Fiber components.",
+    tagline: "Turns 3D models into small GLB files and ready-to-use React components.",
     href: "https://conv3d.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/conv3d",
@@ -198,7 +193,7 @@ export const PROJECTS: Project[] = [
     slug: "quaternius-showcase",
     title: "Quaternius Showcase",
     tagline:
-      "Browser viewer for previewing Quaternius's free 3D model packs before downloading them.",
+      "Browse the free 3D model packs by Quaternius and look at every model before you download it.",
     href: "https://quaternius.trebeljahr.com",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/quaternius-showcase",
@@ -226,8 +221,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "fractal-garden",
     title: "Fractal Garden",
-    tagline:
-      "Interactive fractals in the browser, rendered with WebGL shaders and L-systems, each with a written explanation.",
+    tagline: "A garden of fractals you can explore, each with a short explanation of how it works.",
     href: "https://fractal.garden",
     external: true,
     sourceUrl: "https://github.com/trebeljahr/fractal-garden",
@@ -239,7 +233,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "interactive-3d-demos",
     title: "Interactive 3D Demos",
-    tagline: "Gallery of React Three Fiber scenes with custom GLSL shaders, hosted on this site.",
+    tagline: "My playground for 3D experiments on this site, like shaders, oceans and particles.",
     href: "/r3f",
     external: false,
     sourceUrl: "https://github.com/trebeljahr/ricos.site",

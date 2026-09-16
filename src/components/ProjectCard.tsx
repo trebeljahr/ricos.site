@@ -18,7 +18,7 @@ const gradientFor = (slug: string) => {
 };
 
 // Stretched-link card: the title link covers the whole card via ::after, so the
-// optional "Source" link can sit on top of it without nesting anchors.
+// optional "Code" link can sit on top of it without nesting anchors.
 const titleLinkClasses =
   "no-underline text-inherit after:absolute after:inset-0 after:content-[''] focus-visible:outline-none";
 
@@ -79,7 +79,7 @@ export const ProjectCard = ({ project, headingLevel = "h3" }: ProjectCardProps) 
             rel="noopener"
             className="relative z-10 self-start mt-2 text-sm text-myBlue hover:underline"
           >
-            Source
+            Code
           </a>
         )}
       </div>

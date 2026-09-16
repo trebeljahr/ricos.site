@@ -1,8 +1,9 @@
 // Hand-picked content for /start-here. Keep it small: this page is a glimpse
 // of what the site is about, not an index of everything on it.
 
-// Gallery name from the trips list in src/pages/photography.tsx.
-export const BEST_OF_GALLERY = "best-of";
+// Covers from the best-of gallery, taken from the trips list in
+// src/pages/photography.tsx. The first one is shown large.
+export const BEST_OF_PHOTOS = ["best-of", "alps", "vietnam", "sri-lanka", "italy"];
 
 export const DEMO_PICKS: { name: string; title: string; href: string; note: string }[] = [
   {

@@ -4,6 +4,7 @@ import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
+import clsx from "clsx";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -15,7 +16,7 @@ type Tile = {
 };
 
 type Props = {
-  bestOf: Tile;
+  bestOfPhotos: CardCover[];
   demos: Tile[];
   rabbitHoles: Tile[];
 };
@@ -61,7 +62,7 @@ const Section = ({
   </section>
 );
 
-export default function StartHerePage({ bestOf, demos, rabbitHoles }: Props) {
+export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Props) {
   return (
     <Layout
       title="Start Here – A Guide to ricos.site"
@@ -110,17 +111,40 @@ export default function StartHerePage({ bestOf, demos, rabbitHoles }: Props) {
         <Section
           kicker="Photography"
           title="Photos from the road"
-          text="If you only open one gallery, open this one."
+          text="My favourite frames from every trip, collected in one gallery."
         >
-          <Card
-            link={bestOf.href}
-            title={bestOf.title}
-            excerpt={bestOf.note}
-            cover={bestOf.cover}
-            coverAspect="video"
-            headingAs="h3"
-            sizes="(max-width: 1024px) calc(100vw - 24px), 976px"
-          />
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2">
+            {bestOfPhotos.map((cover, index) => (
+              // Each photo is its own link and hover group, so only the one
+              // under the cursor zooms. "isolate" keeps the scaled image
+              // clipped to the rounded corners in Safari.
+              <Link
+                key={cover.src}
+                href="/photography/best-of"
+                aria-label={index === 0 ? "Open the best-of gallery" : undefined}
+                tabIndex={index === 0 ? undefined : -1}
+                className={clsx(
+                  "group relative isolate block overflow-hidden rounded-xl bg-gray-200 dark:bg-gray-800",
+                  index === 0
+                    ? "col-span-2 aspect-4/3 md:row-span-2 md:aspect-auto"
+                    : "aspect-square",
+                )}
+              >
+                <ImageWithLoader
+                  src={cover.src}
+                  alt={cover.alt}
+                  fill
+                  sizes={
+                    index === 0
+                      ? "(max-width: 768px) calc(100vw - 24px), 490px"
+                      : "(max-width: 768px) 50vw, 240px"
+                  }
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none"
+                />
+              </Link>
+            ))}
+          </div>
+          <MoreLink href="/photography/best-of">Open the best-of gallery</MoreLink>
         </Section>
 
         <Section
@@ -211,17 +235,14 @@ export default function StartHerePage({ bestOf, demos, rabbitHoles }: Props) {
 
 export const getStaticProps = async (): Promise<{ props: Props }> => {
   const { trips } = await import("src/pages/photography");
-  const { BEST_OF_GALLERY, DEMO_PICKS, RABBIT_HOLES } = await import("src/lib/startHere");
+  const { BEST_OF_PHOTOS, DEMO_PICKS, RABBIT_HOLES } = await import("src/lib/startHere");
 
   // Build fails loudly when a pick is renamed, instead of shipping a hole.
-  const trip = trips.find((entry) => entry.name === BEST_OF_GALLERY && entry.src);
-  if (!trip) throw new Error(`start-here: no cover photo for gallery "${BEST_OF_GALLERY}"`);
-  const bestOf: Tile = {
-    title: "Best of",
-    href: `/photography/${BEST_OF_GALLERY}`,
-    note: trip.description,
-    cover: { src: trip.src, alt: trip.alt },
-  };
+  const bestOfPhotos = BEST_OF_PHOTOS.map((name) => {
+    const trip = trips.find((entry) => entry.name === name && entry.src);
+    if (!trip) throw new Error(`start-here: no cover photo for gallery "${name}"`);
+    return { src: trip.src, alt: trip.alt };
+  });
 
   const demos = DEMO_PICKS.map(({ name, title, href, note }) => ({
     title,
@@ -230,5 +251,5 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
     cover: { src: `/assets/pages/${name}.png`, alt: `Preview of the ${title} 3D scene` },
   }));
 
-  return { props: { bestOf, demos, rabbitHoles: RABBIT_HOLES } };
+  return { props: { bestOfPhotos, demos, rabbitHoles: RABBIT_HOLES } };
 };

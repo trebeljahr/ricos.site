@@ -1,6 +1,7 @@
 import type { CommonMetadata } from "src/@types";
 import hiddenR3fRoutes from "src/content/r3f-hidden-routes.json";
 import seoMetadata from "src/content/seo-metadata.json";
+import { PROJECTS } from "./projects";
 import type { TimelineEntry } from "./timeline";
 import { sortTimelineEntries } from "./timeline";
 import { turnKebabIntoTitleCase } from "./utils/turnKebapIntoTitleCase";
@@ -122,6 +123,20 @@ export function getR3fTimelineEntries(): TimelineEntry[] {
       },
     ];
   });
+}
+
+export function getProjectTimelineEntries(): TimelineEntry[] {
+  return PROJECTS.map((project) => ({
+    id: `project:${project.slug}`,
+    href: project.link,
+    type: "project",
+    typeLabel: "Project",
+    title: project.title,
+    excerpt: project.subtitle,
+    date: project.date,
+    datePrecision: "month",
+    cover: project.cover,
+  }));
 }
 
 export function getPageTimelineEntries(pages: CommonMetadata[]): TimelineEntry[] {

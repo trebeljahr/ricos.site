@@ -5,6 +5,8 @@ export type ProjectSection = "Games" | "Apps & tools" | "Art & 3D";
 // Shaped like CardGalleryItem so projects render with the site's shared cards.
 export type Project = Pick<CommonMetadata, "slug" | "title" | "link" | "cover"> & {
   subtitle: string;
+  // YYYY-MM-DD the project started (first real commit). Places it on /timeline.
+  date: string;
   section: ProjectSection;
   featured?: boolean;
 };
@@ -40,6 +42,7 @@ export const PROJECTS: Project[] = [
   // Games
   {
     slug: "tiao",
+    date: "2025-12-05",
     title: "Tiao",
     subtitle:
       "A board game for two. Play with a friend at the same screen, online, or against the computer.",
@@ -50,6 +53,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "mesozoic-protocol",
+    date: "2026-04-21",
     title: "Mesozoic Protocol",
     subtitle:
       "A 3D tower defense game where you hold off waves of dinosaurs. The demo is playable now.",
@@ -62,6 +66,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "raptor-runner",
+    date: "2022-04-06",
     title: "Raptor Runner",
     subtitle:
       "A small runner game inspired by the dinosaur on Chrome's offline page, with day, night and changing weather.",
@@ -75,6 +80,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "minecraft-clone",
+    date: "2021-05-06",
     title: "Minecraft Clone",
     subtitle:
       "My take on Minecraft in the browser, with generated landscapes, caves and blocks you can place.",
@@ -84,6 +90,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "asteroids",
+    date: "2019-11-17",
     title: "Asteroids",
     subtitle: "The classic asteroid shooter. Play on your own or against other people online.",
     link: "https://asteroids.trebeljahr.com",
@@ -92,6 +99,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "online-chess",
+    date: "2019-01-25",
     title: "Online Chess",
     subtitle: "Play chess online with a friend, with a lobby and a chat.",
     link: "https://chess.trebeljahr.com",
@@ -102,6 +110,7 @@ export const PROJECTS: Project[] = [
   // Apps & tools
   {
     slug: "track-your-time",
+    date: "2026-08-21",
     title: "Track Your Time",
     subtitle:
       "A simple time tracker for freelancers. It turns your hours into reports and invoices, and you can host it yourself.",
@@ -115,6 +124,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "hatchkit",
+    date: "2026-03-26",
     title: "Hatchkit",
     subtitle: "One command sets up a full-stack TypeScript app and puts it on your own server.",
     link: "https://hatchkit.trebeljahr.com",
@@ -124,6 +134,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "sprite-tools",
+    date: "2026-03-22",
     title: "sprite-tools",
     subtitle: "Turns sprite sheets into assets you can drop straight into a game.",
     link: "https://sprites.trebeljahr.com",
@@ -132,6 +143,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "gamedev-asset-library",
+    date: "2026-05-06",
     title: "GameDev Asset Library",
     subtitle:
       "A searchable collection of free game assets. You can look at the 3D models and listen to the sounds right on the page.",
@@ -141,6 +153,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "conv3d",
+    date: "2025-03-05",
     title: "conv3D",
     subtitle: "Turns 3D models into small GLB files and ready-to-use React components.",
     link: "https://conv3d.trebeljahr.com",
@@ -151,6 +164,7 @@ export const PROJECTS: Project[] = [
   // Art & 3D
   {
     slug: "collection-of-beauty",
+    date: "2026-04-19",
     title: "Collection of Beauty",
     subtitle: "4,000+ handpicked public-domain artworks, with a walkable 3D museum.",
     link: "https://collectionofbeauty.com",
@@ -163,6 +177,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "fractal-garden",
+    date: "2022-09-02",
     title: "Fractal Garden",
     subtitle:
       "A garden of fractals you can explore, each with a short explanation of how it works.",
@@ -173,6 +188,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "quaternius-showcase",
+    date: "2022-12-03",
     title: "Quaternius Showcase",
     subtitle:
       "Browse the free 3D model packs by Quaternius and look at every model before you download it.",
@@ -182,6 +198,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "interactive-3d-demos",
+    date: "2025-01-05",
     title: "Interactive 3D Demos",
     subtitle: "My playground for 3D experiments on this site, like shaders, oceans and particles.",
     link: "/r3f",

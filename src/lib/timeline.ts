@@ -8,6 +8,7 @@ export type TimelineEntryType =
   | "podcast"
   | "page"
   | "photography"
+  | "project"
   | "r3f";
 
 export type TimelineCover = {
@@ -52,6 +53,7 @@ export const timelineTypeLabels: Record<TimelineEntryType, string> = {
   podcast: "Podcast notes",
   page: "Pages",
   photography: "Photography",
+  project: "Projects",
   r3f: "R3F",
 };
 

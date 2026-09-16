@@ -5,6 +5,7 @@ import type { CommonMetadata } from "src/@types";
 import {
   getPageTimelineEntries,
   getPhotographyTimelineDate,
+  getProjectTimelineEntries,
   getR3fTimelineEntries,
 } from "src/lib/everythingTimeline";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
@@ -59,11 +60,11 @@ export default function Timeline({ entries, seo }: Props) {
       title={seo?.metaTitle || "Timeline"}
       description={
         seo?.metaDescription ||
-        "Everything published on ricos.site in one chronological stream: writing, notes, travel, photography, and R3F demos."
+        "Everything published on ricos.site in one chronological stream: writing, notes, travel, photography, projects, and R3F demos."
       }
       image={seo?.ogImage || "/assets/blog/network.jpg"}
       imageAlt={seo?.ogImageAlt || "a network of connected dots"}
-      keywords={seo?.keywords || ["timeline", "writing", "photography", "r3f"]}
+      keywords={seo?.keywords || ["timeline", "writing", "photography", "projects", "r3f"]}
       url={url}
     >
       <main className="pt-5 pb-20 px-3 max-w-(--breakpoint-lg) mx-auto">
@@ -115,6 +116,7 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
     ...writingEntries,
     ...getPageTimelineEntries(pages),
     ...getPhotographyEntries(tripsMeta, travelblogs.filter(byOnlyPublished)),
+    ...getProjectTimelineEntries(),
     ...getR3fTimelineEntries(),
   ];
 

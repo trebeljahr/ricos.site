@@ -34,6 +34,13 @@ describe("projects catalogue", () => {
       ).toBe(true);
   });
 
+  it("records a real start date for the timeline", () => {
+    for (const { date, slug } of PROJECTS) {
+      expect(date, slug).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(Number.isNaN(Date.parse(date)), slug).toBe(false);
+    }
+  });
+
   it("features between 3 and 6 projects, in multiples of 3", () => {
     expect(FEATURED_PROJECTS.length).toBeGreaterThanOrEqual(3);
     expect(FEATURED_PROJECTS.length).toBeLessThanOrEqual(6);

@@ -139,6 +139,7 @@ export function Card({
             <ImageWithLoader
               src={cover.src}
               alt=""
+              aria-hidden="true"
               {...(hasDimensions ? { width: cover.width, height: cover.height } : { fill: true })}
               sizes={sizes ?? defaultSizes[layout]}
               className="h-full w-full object-cover"

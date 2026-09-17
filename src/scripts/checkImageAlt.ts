@@ -25,6 +25,8 @@ const PAGES_DIR = resolve(ROOT, ".next/server/pages");
 const IMG_TAG = /<img\b[^>]*>/g;
 const ALT_ATTR = /\balt="([^"]*)"/;
 const SRC_ATTR = /\bsrc="([^"]*)"/;
+/** Decorative images (e.g. Card's blurred letterbox backdrop) opt out explicitly. */
+const DECORATIVE = /\baria-hidden="true"|\brole="presentation"/;
 
 /**
  * Alt text that is a camera or screenshot filename rather than a description.
@@ -62,6 +64,7 @@ async function main() {
     const html = readFileSync(file, "utf-8");
 
     for (const [tag] of html.matchAll(IMG_TAG)) {
+      if (DECORATIVE.test(tag)) continue;
       images++;
       const src = describe(tag.match(SRC_ATTR)?.[1] ?? "");
       const altMatch = tag.match(ALT_ATTR);

@@ -2,8 +2,9 @@ import { ImageWithLoader } from "@components/ImageWithLoader";
 import clsx from "clsx";
 import { getMDXComponent } from "mdx-bundler/client";
 import Link from "next/link";
-import { type ReactNode, useMemo } from "react";
+import { type ReactNode, useMemo, useRef } from "react";
 import type { MDXResult } from "src/@types";
+import { startCoverTransition } from "src/lib/coverTransition";
 import { MetadataDisplay } from "./MetadataDisplay";
 
 // The whole card is one <a>, so links inside an excerpt would nest anchors.
@@ -95,11 +96,13 @@ export function Card({
   const letterboxed = horizontal && video;
   const hasDimensions = cover.width !== undefined && cover.height !== undefined;
   const hasExcerpt = Boolean(markdownExcerpt || excerpt);
+  const coverRef = useRef<HTMLDivElement>(null);
 
   return (
     <Link
       href={link}
       prefetch={prefetch}
+      onClick={(e) => startCoverTransition(e, coverRef.current)}
       className={clsx(
         "group not-prose relative w-full overflow-hidden rounded-xl border-2 border-gray-200 bg-white text-gray-900 no-underline shadow-sm",
         // The card moves as one piece: a separate cover zoom on its own timing
@@ -122,6 +125,7 @@ export function Card({
       )}
     >
       <div
+        ref={coverRef}
         className={clsx(
           "relative w-full shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-700",
           horizontal

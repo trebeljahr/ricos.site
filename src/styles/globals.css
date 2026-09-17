@@ -403,6 +403,21 @@ code {
   }
 }
 
+/* Card cover -> page cover morph (src/lib/coverTransition.ts). Both snapshots
+   fill the morphing box and crop like object-cover, so a banner-shaped card
+   cover and a square page cover blend without stretching. */
+::view-transition-group(*.cover) {
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+::view-transition-old(*.cover),
+::view-transition-new(*.cover) {
+  height: 100%;
+  object-fit: cover;
+  overflow: clip;
+}
+
 [data-site-search] * {
   list-style: none;
   margin-block: 0;

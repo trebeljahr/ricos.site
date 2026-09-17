@@ -17,6 +17,7 @@ import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Post } from "@velite";
 import type { ReactNode } from "react";
+import { coverTransitionStyle } from "src/lib/coverTransition";
 import { ogImageDimensions } from "src/lib/ogImage";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { byOnlyPublished } from "src/lib/utils/filters";
@@ -114,7 +115,7 @@ export const BlogLayout = ({
             subtitle={subtitle}
             title={title}
           />
-          <div className="mb-5">
+          <div className="mb-5" style={coverTransitionStyle(url)}>
             <ImageWithLoader
               priority
               src={cover.src}

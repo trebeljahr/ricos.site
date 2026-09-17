@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import Link from "next/link";
 import { type CSSProperties, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { cleanAuthor, type Portrait, type Portraits } from "src/lib/quotePortraits";
 import { planQuoteRows } from "src/lib/quoteRows";
@@ -9,7 +8,7 @@ export type Quote = {
   content: string;
   /** Topics for the filter on /quotes; not shown on the card. */
   tags: string[];
-  /** Where the quote was collected, e.g. the booknote it came from. */
+  /** Where the quote was collected, e.g. the booknote it came from. Searchable, not shown on the card. */
   source?: { title: string; url: string };
 };
 
@@ -130,17 +129,6 @@ function QuoteSlip({
         {portrait && <Avatar author={author} portrait={portrait} />}
         <span className="min-w-0">
           <span className="text-xs font-semibold tracking-widest uppercase">— {author}</span>
-          {quote.source && (
-            <>
-              {" · "}
-              <Link
-                href={quote.source.url}
-                className="italic underline decoration-gray-400/50 underline-offset-2 hover:text-gray-900 dark:hover:text-gray-100"
-              >
-                {quote.source.title}
-              </Link>
-            </>
-          )}
         </span>
       </figcaption>
     </figure>
@@ -159,7 +147,7 @@ export function QuoteMosaic({
       planQuoteRows(
         quotes.map((quote) => ({
           length: quote.content.length,
-          tallCaption: Boolean(portraits[cleanAuthor(quote.author)] || quote.source),
+          tallCaption: Boolean(portraits[cleanAuthor(quote.author)]),
         })),
       ),
     [quotes, portraits],

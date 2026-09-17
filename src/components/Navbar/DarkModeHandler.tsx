@@ -48,10 +48,14 @@ const SunMoonIcon = () => {
   );
 };
 
-// The new theme spreads out as a circle from the button. The `theme-reveal`
-// class scopes the CSS (globals.css) to this transition, so the card cover
-// morph keeps its default root crossfade.
-const revealTheme = (e: MouseEvent<HTMLButtonElement>, apply: () => void) => {
+// Switching to light spreads the light page out of the button as a circle;
+// switching back shrinks it into the button again, the same motion reversed.
+// Like an Android ripple, the circle's centre drifts from the click point to
+// the middle of the screen while it grows, so it reaches every corner at the
+// same moment instead of hitting the nearest edge first and crawling to the
+// far one. The `theme-reveal` class scopes the CSS (globals.css) to this
+// transition, so the card cover morph keeps its default root crossfade.
+const revealTheme = (e: MouseEvent<HTMLButtonElement>, toLight: boolean, apply: () => void) => {
   if (
     typeof document.startViewTransition !== "function" ||
     window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -61,31 +65,50 @@ const revealTheme = (e: MouseEvent<HTMLButtonElement>, apply: () => void) => {
   }
 
   const rect = e.currentTarget.getBoundingClientRect();
-  const x = rect.left + rect.width / 2;
-  const y = rect.top + rect.height / 2;
-  const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+  // Keyboard activation has no pointer position (detail 0): use the button centre.
+  const x = e.detail ? e.clientX : rect.left + rect.width / 2;
+  const y = e.detail ? e.clientY : rect.top + rect.height / 2;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
   const root = document.documentElement;
 
   root.classList.add("theme-reveal");
+  root.classList.toggle("theme-reveal-in", !toLight);
+  let clip: Animation | undefined;
+  const cleanUp = () => {
+    // `fill: both` keeps the animation alive on <html> after the pseudo
+    // element is gone; cancel it so toggles don't pile up animations.
+    clip?.cancel();
+    root.classList.remove("theme-reveal", "theme-reveal-in");
+  };
   try {
     // flushSync so next-themes has swapped the `dark` class before the new
     // snapshot is taken.
     const transition = document.startViewTransition(() => flushSync(apply));
     transition.ready
-      .then(() =>
-        root.animate(
-          { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+      .then(() => {
+        clip = root.animate(
           {
-            duration: 500,
-            easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-            pseudoElement: "::view-transition-new(root)",
+            clipPath: [
+              `circle(0px at ${x}px ${y}px)`,
+              `circle(${Math.hypot(width, height) / 2}px at ${width / 2}px ${height / 2}px)`,
+            ],
           },
-        ),
-      )
+          {
+            duration: 600,
+            easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+            // Shrinking runs the growing animation backwards on the outgoing
+            // light page, which sits on top (globals.css).
+            direction: toLight ? "normal" : "reverse",
+            fill: "both",
+            pseudoElement: toLight ? "::view-transition-new(root)" : "::view-transition-old(root)",
+          },
+        );
+      })
       .catch(() => {});
-    transition.finished.finally(() => root.classList.remove("theme-reveal"));
+    transition.finished.finally(cleanUp);
   } catch {
-    root.classList.remove("theme-reveal");
+    cleanUp();
     apply();
   }
 };
@@ -97,7 +120,10 @@ export const DarkModeHandler = () => {
     <button
       type="button"
       className="inline-flex size-9 items-center justify-center rounded-md transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none"
-      onClick={(e) => revealTheme(e, () => setTheme(resolvedTheme === "dark" ? "light" : "dark"))}
+      onClick={(e) => {
+        const toLight = resolvedTheme === "dark";
+        revealTheme(e, toLight, () => setTheme(toLight ? "light" : "dark"));
+      }}
       aria-label="Toggle dark mode"
     >
       <SunMoonIcon />

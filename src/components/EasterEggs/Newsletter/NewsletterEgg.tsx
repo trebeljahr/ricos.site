@@ -68,8 +68,8 @@ const NewsletterEgg = () => {
             <motion.span
               key="postmark"
               aria-hidden="true"
-              className="pointer-events-none absolute top-1/2 left-1/2 flex size-[4.4em] items-center justify-center rounded-full border-[0.18em] border-red-600 pl-[0.1em] text-[0.42em] leading-none font-bold tracking-widest text-red-600 outline-[0.06em] outline-offset-[-0.42em] outline-red-600 outline-solid dark:border-red-400 dark:text-red-400 dark:outline-red-400"
-              style={{ x: "-35%", y: "-50%", rotate: -14 }}
+              className="pointer-events-none absolute top-1/2 left-1/2 flex size-[4.2em] items-center justify-center rounded-full border-[0.16em] border-red-600 pl-[0.1em] text-[0.28em] leading-none font-bold tracking-widest text-red-600 outline-[0.06em] outline-offset-[-0.4em] outline-red-600 outline-solid dark:border-red-400 dark:text-red-400 dark:outline-red-400"
+              style={{ x: "-50%", y: "-50%", rotate: -14 }}
               initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 2.2 }}
               animate={{ opacity: 0.9, scale: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.35 } }}

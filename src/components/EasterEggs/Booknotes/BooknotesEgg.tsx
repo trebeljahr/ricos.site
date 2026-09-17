@@ -18,6 +18,7 @@ type Bubble = RandomQuote & {
 const BooknotesEgg = () => {
   const reduceMotion = useReducedMotion();
   const bookRef = useRef<HTMLSpanElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const loading = useRef<AbortController | null>(null);
   const closeTimer = useRef<number | undefined>(undefined);
   const [bubble, setBubble] = useState<Bubble | null>(null);
@@ -66,12 +67,43 @@ const BooknotesEgg = () => {
     }
   }, []);
 
+  const isOpen = bubble !== null;
+
+  // An open quote closes when the reader moves on: scrolling, clicking anywhere
+  // except the book (which swaps in the next quote), or pressing Escape.
+  useEffect(() => {
+    if (!isOpen) return;
+    const close = () => {
+      window.clearTimeout(closeTimer.current);
+      setBubble(null);
+    };
+    const startY = window.scrollY;
+    const onScroll = () => {
+      if (Math.abs(window.scrollY - startY) > 24) close();
+    };
+    const onPointerDown = (event: PointerEvent) => {
+      if (!buttonRef.current?.contains(event.target as Node)) close();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") close();
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isOpen]);
+
   const registerClick = useEasterEgg("booknotes", { onTrigger: () => void showQuote() });
 
   return (
     <>
       Booknotes{" "}
       <EmojiButton
+        ref={buttonRef}
         label="Books"
         onClick={() => {
           // While a quote is open, every click swaps in another one.

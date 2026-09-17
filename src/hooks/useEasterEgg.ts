@@ -16,7 +16,7 @@ type EasterEggOptions = {
  */
 export function useEasterEgg(
   id: string,
-  { clicks = 5, windowMs = 2000, onTrigger }: EasterEggOptions,
+  { clicks = 3, windowMs = 2000, onTrigger }: EasterEggOptions,
 ) {
   const plausible = usePlausible();
   const clickTimes = useRef<number[]>([]);

@@ -7,7 +7,7 @@ type HandButtonProps = {
 };
 
 export const HandButton = ({ children, onClick }: HandButtonProps) => (
-  <EmojiButton label="Wave back" onClick={onClick}>
+  <EmojiButton label="Wave back" onClick={onClick} hint={false}>
     {children}
   </EmojiButton>
 );

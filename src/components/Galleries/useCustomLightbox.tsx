@@ -1,6 +1,11 @@
 import { type MouseEvent, useEffect, useRef, useState } from "react";
 import type { ImageProps } from "src/@types";
-import Lightbox from "yet-another-react-lightbox";
+import Lightbox, {
+  CloseIcon,
+  type ControllerRef,
+  IconButton,
+  type ZoomRef,
+} from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
@@ -17,6 +22,43 @@ type Props = {
   animateImageBackToGallery: () => void;
 };
 
+// Same length as the thumbnail morphs in both directions.
+const ANIMATION_MS = 300;
+
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+
+// The zoom plugin starts its Web Animation in a layout effect, so it only
+// exists a tick after `changeZoom`. Wait for it to settle before the caller
+// closes the lightbox — otherwise the zoom-out and the morph back into the
+// gallery grid run on top of each other and the image jumps. Timers rather
+// than rAF, so a backgrounded tab still closes.
+const waitForZoomOut = () =>
+  new Promise<void>((resolve) => {
+    let settled = false;
+    const done = () => {
+      if (settled) return;
+      settled = true;
+      resolve();
+    };
+
+    window.setTimeout(() => {
+      const wrapper = document.querySelector(".yarl__slide_current .yarl__slide_wrapper");
+      const animations = wrapper?.getAnimations?.() ?? [];
+
+      if (animations.length === 0) {
+        done();
+        return;
+      }
+
+      Promise.all(animations.map((animation) => animation.finished)).then(done, done);
+    }, 32);
+
+    // Fallback in case an animation is cancelled and never settles.
+    window.setTimeout(done, ANIMATION_MS + 100);
+  });
+
 export const CustomLightBox = ({
   isModalOpen,
   handleClose,
@@ -25,6 +67,44 @@ export const CustomLightBox = ({
   setCurrentImageIndex,
   animateImageBackToGallery,
 }: Props) => {
+  const zoomRef = useRef<ZoomRef | null>(null);
+  const controllerRef = useRef<ControllerRef | null>(null);
+  const isZoomingOutRef = useRef(false);
+
+  // The lightbox fires `exiting` (and with it the morph back to the grid) the
+  // moment it starts closing, so a zoomed-in image has to be zoomed back out
+  // *before* the close reaches the lightbox. Returns true when the close was
+  // deferred and the caller should swallow the event.
+  const deferCloseUntilZoomedOut = () => {
+    if (isZoomingOutRef.current) return true;
+
+    const zoom = zoomRef.current;
+    if (!zoom || zoom.disabled || zoom.zoom <= zoom.minZoom || prefersReducedMotion()) return false;
+
+    isZoomingOutRef.current = true;
+    zoom.changeZoom(zoom.minZoom);
+    waitForZoomOut().then(() => {
+      isZoomingOutRef.current = false;
+      controllerRef.current?.close();
+    });
+    return true;
+  };
+
+  // The Close button is replaced below, but Escape goes straight to the
+  // lightbox's own keyboard handler — intercept it before React sees it.
+  useEffect(() => {
+    if (!isModalOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || !deferCloseUntilZoomedOut()) return;
+      event.preventDefault();
+      event.stopPropagation();
+    };
+
+    document.addEventListener("keydown", onKeyDown, true);
+    return () => document.removeEventListener("keydown", onKeyDown, true);
+  });
+
   return (
     <Lightbox
       open={isModalOpen}
@@ -40,10 +120,24 @@ export const CustomLightBox = ({
         },
       }}
       carousel={{ finite: true }}
-      // Same length as the thumbnail morphs in both directions.
-      animation={{ fade: 300 }}
+      animation={{ fade: ANIMATION_MS, zoom: ANIMATION_MS }}
+      controller={{ ref: controllerRef }}
+      zoom={{ ref: zoomRef }}
       plugins={[Thumbnails, Zoom]}
-      render={{ slide: NextJsSlideImage, thumbnail: NextJsSlideImage }}
+      render={{
+        slide: NextJsSlideImage,
+        thumbnail: NextJsSlideImage,
+        buttonClose: () => (
+          <IconButton
+            key="close"
+            label="Close"
+            icon={CloseIcon}
+            onClick={() => {
+              if (!deferCloseUntilZoomedOut()) controllerRef.current?.close();
+            }}
+          />
+        ),
+      }}
       thumbnails={{
         position: "bottom",
         border: 0,

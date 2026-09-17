@@ -5,8 +5,9 @@ import Header from "@components/PostHeader";
 import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Booknote } from "@velite";
-import { useState } from "react";
+import { useRef } from "react";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
+import { useListTransition } from "src/lib/listTransition";
 
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 
@@ -16,9 +17,13 @@ type Props = {
 };
 
 export default function Books({ booknotes, seo }: Props) {
-  const [filtered, setFiltered] = useState<Booknote[] | null>(null);
-
-  const displayedBooks = filtered ?? booknotes;
+  const listRef = useRef<HTMLDivElement>(null);
+  const [displayedBooks, setDisplayedBooks] = useListTransition(
+    booknotes,
+    listRef,
+    ":scope > *",
+    150,
+  );
   const url = "booknotes";
 
   return (
@@ -42,13 +47,13 @@ export default function Books({ booknotes, seo }: Props) {
         <div>
           <Search
             all={booknotes}
-            setFiltered={setFiltered}
+            setFiltered={setDisplayedBooks}
             searchByTitle="Search by author, title, or tags..."
             searchKeys={["bookAuthor", "title", "tags"]}
           />
           <p>Amount: {displayedBooks.length}</p>
         </div>
-        <div className="prose-a:no-underline">
+        <div ref={listRef} className="prose-a:no-underline">
           {displayedBooks.map((book, index) => {
             return <BookPreview key={book.link} book={book} index={index} />;
           })}

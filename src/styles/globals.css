@@ -458,6 +458,27 @@ html.lightbox-transition::view-transition-new(root) {
   animation: none;
 }
 
+/* Filtered list items (src/lib/listTransition.ts): cards that stay slide to
+   their new place, cards filtered out fade away, new ones fade in. The rest of
+   the page swaps at once, so the search input never shows a ghost of old text. */
+html.list-transition::view-transition-old(root) {
+  display: none;
+}
+
+html.list-transition::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-group(*.list-item) {
+  animation-duration: 350ms;
+  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+::view-transition-old(*.list-item),
+::view-transition-new(*.list-item) {
+  animation-duration: 200ms;
+}
+
 [data-site-search] * {
   list-style: none;
   margin-block: 0;

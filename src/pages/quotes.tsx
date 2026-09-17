@@ -6,8 +6,9 @@ import { type NumberedQuote, type Quote, QuoteMosaic } from "@components/QuoteMo
 import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import clsx from "clsx";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
+import { useListTransition } from "src/lib/listTransition";
 import type { Portraits } from "src/lib/quotePortraits";
 import quotesJSON from "../content/Notes/pages/quotes.json";
 
@@ -39,8 +40,9 @@ const chip = (active: boolean) =>
   );
 
 export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portraits: Portraits }) {
-  const [searched, setSearched] = useState<SearchableQuote[]>(quotes);
-  const [topic, setTopic] = useState<string | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const [searched, setSearched] = useListTransition(quotes, listRef, "figure", 150);
+  const [topic, setTopic] = useListTransition<string | null>(null, listRef, "figure");
   const [topicsOpen, setTopicsOpen] = useState(false);
   const displayedQuotes = useMemo(
     () => (topic ? searched.filter((quote) => quote.tags.includes(topic)) : searched),
@@ -118,7 +120,9 @@ export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portra
             </fieldset>
           )}
           <p>Amount: {displayedQuotes.length}</p>
-          <QuoteMosaic quotes={displayedQuotes} portraits={portraits} />
+          <div ref={listRef}>
+            <QuoteMosaic quotes={displayedQuotes} portraits={portraits} />
+          </div>
         </section>
 
         <footer>

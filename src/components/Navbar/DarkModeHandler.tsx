@@ -1,5 +1,5 @@
 import { useTheme } from "next-themes";
-import { type MouseEvent, useId } from "react";
+import { useId } from "react";
 import { flushSync } from "react-dom";
 
 const RAY_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315];
@@ -48,14 +48,12 @@ const SunMoonIcon = () => {
   );
 };
 
-// Switching to light spreads the light page out of the button as a circle;
-// switching back shrinks it into the button again, the same motion reversed.
-// Like an Android ripple, the circle's centre drifts from the click point to
-// the middle of the screen while it grows, so it reaches every corner at the
-// same moment instead of hitting the nearest edge first and crawling to the
-// far one. The `theme-reveal` class scopes the CSS (globals.css) to this
+// Switching to light is a lamp switching on: the light page spreads down from
+// the top centre of the screen as a circle until it reaches both bottom
+// corners. Switching back runs the same motion reversed, pulling the light up
+// into the top again. The `theme-reveal` class scopes the CSS (globals.css) to this
 // transition, so the card cover morph keeps its default root crossfade.
-const revealTheme = (e: MouseEvent<HTMLButtonElement>, toLight: boolean, apply: () => void) => {
+const revealTheme = (toLight: boolean, apply: () => void) => {
   if (
     typeof document.startViewTransition !== "function" ||
     window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -64,12 +62,8 @@ const revealTheme = (e: MouseEvent<HTMLButtonElement>, toLight: boolean, apply: 
     return;
   }
 
-  const rect = e.currentTarget.getBoundingClientRect();
-  // Keyboard activation has no pointer position (detail 0): use the button centre.
-  const x = e.detail ? e.clientX : rect.left + rect.width / 2;
-  const y = e.detail ? e.clientY : rect.top + rect.height / 2;
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+  const x = window.innerWidth / 2;
+  const radius = Math.hypot(x, window.innerHeight);
   const root = document.documentElement;
 
   root.classList.add("theme-reveal");
@@ -89,10 +83,7 @@ const revealTheme = (e: MouseEvent<HTMLButtonElement>, toLight: boolean, apply: 
       .then(() => {
         clip = root.animate(
           {
-            clipPath: [
-              `circle(0px at ${x}px ${y}px)`,
-              `circle(${Math.hypot(width, height) / 2}px at ${width / 2}px ${height / 2}px)`,
-            ],
+            clipPath: [`circle(0px at ${x}px 0px)`, `circle(${radius}px at ${x}px 0px)`],
           },
           {
             duration: 600,
@@ -120,9 +111,9 @@ export const DarkModeHandler = () => {
     <button
       type="button"
       className="inline-flex size-9 items-center justify-center rounded-md transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none"
-      onClick={(e) => {
+      onClick={() => {
         const toLight = resolvedTheme === "dark";
-        revealTheme(e, toLight, () => setTheme(toLight ? "light" : "dark"));
+        revealTheme(toLight, () => setTheme(toLight ? "light" : "dark"));
       }}
       aria-label="Toggle dark mode"
     >

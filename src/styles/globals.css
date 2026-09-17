@@ -420,7 +420,7 @@ code {
 
 /* Theme toggle reveal (Navbar/DarkModeHandler.tsx): one snapshot is clipped to
    a circle in JS, so both root snapshots skip the default crossfade. When the
-   light page shrinks back into the button, the outgoing snapshot is on top. */
+   light page is pulled back up, the outgoing snapshot is on top. */
 html.theme-reveal::view-transition-old(root),
 html.theme-reveal::view-transition-new(root) {
   animation: none;

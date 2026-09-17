@@ -20,6 +20,7 @@ const LightboxOnClick = ({
       close={onClose}
       slides={[photo]}
       carousel={{ finite: true }}
+      animation={{ fade: 300 }}
       plugins={[Zoom]}
       render={{ slide: NextJsSlideImage }}
     />

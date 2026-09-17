@@ -29,11 +29,7 @@ const SimpleGallery = ({ photos: images }: { photos: ImageProps[] }) => {
             { viewport: "(max-width: 1279px)", size: "651px" },
           ],
         }}
-        onClick={({ photo }: any) => {
-          openModal({
-            ...photo,
-          });
-        }}
+        onClick={({ event, index }) => openModal(index, event)}
       />
       <CustomLightBox {...props} photos={photos} />
     </>

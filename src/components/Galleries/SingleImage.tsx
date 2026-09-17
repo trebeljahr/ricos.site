@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 import type { ImageProps } from "src/@types";
 import { resolveAlt } from "src/lib/imageAlt";
+import { openWithLightboxTransition } from "src/lib/lightboxTransition";
 import { addIdAndIndex } from "src/lib/utils/misc";
 
 // Lightbox is heavy (yet-another-react-lightbox + plugins) and only
@@ -21,7 +22,11 @@ const SingleImage = ({ photo: rawPhoto }: { photo: ImageProps }) => {
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        // Warm the lightbox chunk so it can render inside the morph's wait window.
+        onPointerEnter={() => void import("./LightboxOnClick")}
+        onClick={(e) =>
+          openWithLightboxTransition(() => setOpen(true), e.currentTarget.querySelector("img"), e)
+        }
         aria-label={photo.alt ? `Open image: ${photo.alt}` : "Open image"}
         className="block w-full p-0 m-0 border-0 bg-transparent cursor-zoom-in"
       >

@@ -431,6 +431,33 @@ html.theme-reveal-in::view-transition-old(root) {
   z-index: 1;
 }
 
+/* Gallery thumbnail -> lightbox slide morph (src/lib/lightboxTransition.ts).
+   300ms ease-in-out matches the closing FLIP in useCustomLightbox. Both ends
+   show the same photo, so the slide covers the thumbnail instead of
+   crossfading, which dims it midway. The root doesn't crossfade either: the
+   lightbox's own 300ms backdrop fade plays live. */
+::view-transition-group(*.lightbox) {
+  animation-duration: 300ms;
+  animation-timing-function: ease-in-out;
+}
+
+::view-transition-old(*.lightbox):not(:only-child) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(*.lightbox) {
+  animation: none;
+}
+
+html.lightbox-transition::view-transition-old(root) {
+  display: none;
+}
+
+html.lightbox-transition::view-transition-new(root) {
+  animation: none;
+}
+
 [data-site-search] * {
   list-style: none;
   margin-block: 0;

@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import type { ClickHandler, Photo } from "react-photo-album";
+import { type MouseEvent, useEffect, useRef, useState } from "react";
 import type { ImageProps } from "src/@types";
 import Lightbox from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/styles.css";
+import { openWithLightboxTransition } from "src/lib/lightboxTransition";
 import NextJsSlideImage from "./SlideImage";
 
 type Props = {
@@ -40,6 +40,8 @@ export const CustomLightBox = ({
         },
       }}
       carousel={{ finite: true }}
+      // Same length as the thumbnail morphs in both directions.
+      animation={{ fade: 300 }}
       plugins={[Thumbnails, Zoom]}
       render={{ slide: NextJsSlideImage, thumbnail: NextJsSlideImage }}
       thumbnails={{
@@ -117,9 +119,19 @@ export const useCustomLightbox = ({ photos }: { photos: (ImageProps & { id: stri
     });
   };
 
-  const openModal: ClickHandler<Photo> = ({ index }) => {
-    setCurrentImageIndex(index);
-    setIsModalOpen(true);
+  const openModal = (index: number, event?: MouseEvent) => {
+    const thumb =
+      event?.currentTarget instanceof HTMLElement
+        ? event.currentTarget
+        : document.getElementById(photos[index]?.id ?? "");
+    openWithLightboxTransition(
+      () => {
+        setCurrentImageIndex(index);
+        setIsModalOpen(true);
+      },
+      thumb,
+      event,
+    );
   };
 
   useEffect(() => {

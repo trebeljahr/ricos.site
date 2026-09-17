@@ -95,13 +95,7 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
             <RowsPhotoAlbum
               photos={group}
               targetRowHeight={400}
-              onClick={({ photo }: any) => {
-                const globalIndex = idToGlobalIndex.get(photo.id) ?? 0;
-                openModal({
-                  ...photo,
-                  index: globalIndex,
-                });
-              }}
+              onClick={({ event, photo }) => openModal(idToGlobalIndex.get(photo.id) ?? 0, event)}
               render={{ image: CustomImageRenderer as any }}
               defaultContainerWidth={1200}
               // react-photo-album divides this by each photo's share of the

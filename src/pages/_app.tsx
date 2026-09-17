@@ -2,6 +2,9 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import PlausibleProvider from "next-plausible";
 import { ThemeProvider } from "next-themes";
+import { useEffect } from "react";
+import { installCoverTransitions } from "src/lib/coverTransition";
+import { installHistoryTracking } from "src/lib/historyState";
 import "../styles/globals.css";
 
 // next/font/google previously loaded Inter and passed `inter.className` as
@@ -12,6 +15,15 @@ import "../styles/globals.css";
 // for users is unchanged.
 
 export default function MyApp({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    const stopTracking = installHistoryTracking();
+    const stopCovers = installCoverTransitions();
+    return () => {
+      stopCovers();
+      stopTracking();
+    };
+  }, []);
+
   return (
     <>
       <Head>

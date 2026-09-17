@@ -98,13 +98,13 @@ const sameItems = (a: unknown, b: unknown) =>
  * while a transition captures its snapshots and each keystroke would stutter.
  */
 export function useListTransition<T>(
-  initial: T,
+  initial: T | (() => T),
   list: RefObject<HTMLElement | null>,
   itemSelector: string,
   debounceMs = 0,
 ) {
   const [value, setValue] = useState(initial);
-  const latest = useRef(initial);
+  const latest = useRef(value);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
 

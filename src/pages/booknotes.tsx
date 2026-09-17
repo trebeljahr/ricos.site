@@ -5,11 +5,15 @@ import Header from "@components/PostHeader";
 import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Booknote } from "@velite";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { fuzzySearch } from "src/lib/fuzzySearch";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
+import { readHistoryState } from "src/lib/historyState";
 import { useListTransition } from "src/lib/listTransition";
 
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
+
+const searchKeys = ["bookAuthor", "title", "tags"];
 
 type Props = {
   booknotes: Booknote[];
@@ -18,8 +22,11 @@ type Props = {
 
 export default function Books({ booknotes, seo }: Props) {
   const listRef = useRef<HTMLDivElement>(null);
+  // Coming back from a booknote restores the search, and the list has to
+  // match it on the first render for the scroll position to land.
+  const [initialTerm] = useState(() => readHistoryState("search", ""));
   const [displayedBooks, setDisplayedBooks] = useListTransition(
-    booknotes,
+    () => fuzzySearch(booknotes, initialTerm, searchKeys),
     listRef,
     ":scope > *",
     150,
@@ -49,7 +56,9 @@ export default function Books({ booknotes, seo }: Props) {
             all={booknotes}
             setFiltered={setDisplayedBooks}
             searchByTitle="Search by author, title, or tags..."
-            searchKeys={["bookAuthor", "title", "tags"]}
+            searchKeys={searchKeys}
+            initialTerm={initialTerm}
+            historyName="search"
           />
           <p>Amount: {displayedBooks.length}</p>
         </div>

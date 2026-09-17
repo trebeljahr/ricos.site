@@ -1,6 +1,7 @@
 import { FiSearch } from "@components/Icons";
-import fuzzysort from "fuzzysort";
 import { type ChangeEvent, useEffect, useState } from "react";
+import { fuzzySearch } from "src/lib/fuzzySearch";
+import { writeHistoryState } from "src/lib/historyState";
 
 export type SearchProps<T extends Record<string, any>> = {
   setFiltered: (filtered: T[]) => void;
@@ -9,6 +10,10 @@ export type SearchProps<T extends Record<string, any>> = {
   searchKeys: string[];
   /** fuzzysort score cutoff (0–1). Raise it when searching long text, where low scores match nearly everything. */
   threshold?: number;
+  /** Starting term, e.g. one restored with `readHistoryState(historyName, "")`. */
+  initialTerm?: string;
+  /** Saves the term on the history entry under this name, so going back restores it. */
+  historyName?: string;
 };
 
 export default function Search<T extends Record<string, any>>({
@@ -17,22 +22,15 @@ export default function Search<T extends Record<string, any>>({
   searchKeys,
   searchByTitle = "Search...",
   threshold = 0.1,
+  initialTerm = "",
+  historyName,
 }: SearchProps<T>) {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(initialTerm);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
   useEffect(() => {
-    if (searchTerm.trim() === "") {
-      setFiltered(all);
-      return;
-    }
-
-    const results = fuzzysort.go(searchTerm, all, {
-      keys: searchKeys,
-      threshold,
-    });
-
-    setFiltered(results.map((result) => result.obj));
+    if (historyName) writeHistoryState(historyName, searchTerm);
+    setFiltered(fuzzySearch(all, searchTerm, searchKeys, threshold));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm]);
 

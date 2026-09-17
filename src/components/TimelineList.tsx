@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useHistoryState } from "src/lib/historyState";
 import {
   groupTimelineEntries,
   sortTimelineEntries,
@@ -29,8 +30,13 @@ export function TimelineList({
   batchSize = 12,
   filterable = true,
 }: Props) {
-  const [selectedType, setSelectedType] = useState<TimelineEntryType | "all">("all");
-  const [visibleCount, setVisibleCount] = useState(initialCount);
+  // Kept per history entry, so coming back from an entry shows the same
+  // filter and enough of the list for the scroll position to land.
+  const [selectedType, setSelectedType] = useHistoryState<TimelineEntryType | "all">(
+    "timeline-type",
+    "all",
+  );
+  const [visibleCount, setVisibleCount] = useHistoryState("timeline-count", initialCount);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const sortedEntries = useMemo(() => sortTimelineEntries(entries), [entries]);
@@ -52,9 +58,11 @@ export function TimelineList({
     setVisibleCount(initialCount);
   };
 
-  useEffect(() => {
+  const [countFor, setCountFor] = useState(initialCount);
+  if (countFor !== initialCount) {
+    setCountFor(initialCount);
     setVisibleCount(initialCount);
-  }, [initialCount]);
+  }
 
   useEffect(() => {
     if (!hasMore) return;

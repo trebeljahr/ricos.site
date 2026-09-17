@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { returnWithCoverTransition } from "src/lib/coverTransition";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
 export default function _Component({
@@ -76,6 +77,7 @@ export default function _Component({
                 ) : (
                   <Link
                     href={overwrite?.alternateLink || "/" + pathParts.slice(0, index + 1).join("/")}
+                    onClick={returnWithCoverTransition}
                     className="ml-1 text-sm font-medium  hover:text-accent md:ml-2"
                   >
                     {label}

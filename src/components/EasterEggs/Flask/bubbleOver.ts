@@ -19,8 +19,8 @@ function spawn(x: number, y: number): Bubble {
   return {
     x: x + (Math.random() - 0.5) * 8,
     y,
-    vx: -40 + Math.random() * 190,
-    vy: -(90 + Math.random() * 170),
+    vx: (Math.random() < 0.5 ? -1 : 1) * (60 + Math.random() * 260),
+    vy: -(30 + Math.random() * 90),
     r: 3 + Math.random() * 8,
     age: 0,
     life: 2.2 + Math.random() * 2.2,

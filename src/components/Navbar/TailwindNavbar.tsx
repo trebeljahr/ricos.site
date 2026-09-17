@@ -1,10 +1,11 @@
-import { onLogoClick } from "@components/EasterEggs/Flask/logoClicks";
+import { getLogoClickSeq, onLogoClick } from "@components/EasterEggs/Flask/logoClicks";
 import { FiMenu, FiX } from "@components/Icons";
 import { ProgressBar } from "@components/ProgressBar";
 import { SiteSearch } from "@components/SiteSearch";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useScrollLock } from "src/hooks/useScrollLock";
 import { CollapsibleMenuDesktop, CollapsibleMenuMobile } from "./CollapsibleMenus";
@@ -17,11 +18,26 @@ type BannerProps = {
   compact?: boolean;
 };
 
+// Long enough to tell a single click from the start of an egg hunt.
+const NAVIGATE_DELAY_MS = 400;
+
 export const RicosSiteBanner = ({ iconOnly = false, compact = false }: BannerProps) => {
+  const router = useRouter();
+
   return (
     <Link
       href="/"
-      onClick={(event) => onLogoClick(event.currentTarget.querySelector("img"))}
+      onClick={(event) => {
+        // Hold the link for a moment: clicking the logo again keeps you on the
+        // page so the flask egg can be found without navigating away.
+        event.preventDefault();
+        // A burst of clicks is an egg hunt, never a request to go home.
+        if (onLogoClick(event.currentTarget.querySelector("img"))) return;
+        const seq = getLogoClickSeq();
+        window.setTimeout(() => {
+          if (getLogoClickSeq() === seq && router.pathname !== "/") router.push("/");
+        }, NAVIGATE_DELAY_MS);
+      }}
       className="flex shrink-0 items-center not-prose"
       aria-label={iconOnly ? "ricos.site home" : undefined}
     >

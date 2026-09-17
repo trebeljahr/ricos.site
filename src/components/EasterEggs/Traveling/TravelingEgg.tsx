@@ -6,6 +6,9 @@ import { PageLayer, pageBox } from "../PageLayer";
 import { useEggRunner } from "../useEggRunner";
 
 const GLOBES = ["🌍", "🌎", "🌏"];
+const CLICKS = 5;
+// Turning a globe is not a race: the clicks may be slow.
+const CLICK_WINDOW_MS = 12_000;
 const SPIN_FRAME_MS = 130;
 const TURNS = 2;
 const OUT_MS = 1100;
@@ -63,20 +66,14 @@ const TravelingEgg = () => {
       .finished.catch(() => undefined);
   };
 
-  const spinning = useRef(false);
-  // Clicks before the fifth spin the globe one turn instead of wiggling it.
-  const spinOnce = async () => {
-    if (spinning.current || reduceMotion) return;
-    spinning.current = true;
-    for (let i = 1; i <= GLOBES.length; i++) {
-      setGlobe(GLOBES[i % GLOBES.length]);
-      await wait(90);
-    }
-    spinning.current = false;
-  };
+  // Each click turns the globe one step further; no need to hurry.
+  const spinOne = () =>
+    setGlobe((current) => GLOBES[(GLOBES.indexOf(current) + 1) % GLOBES.length]);
 
   const registerClick = useEasterEgg("traveling", {
-    onProgress: () => void spinOnce(),
+    clicks: CLICKS,
+    windowMs: CLICK_WINDOW_MS,
+    onProgress: spinOne,
     onTrigger: () =>
       run(async () => {
         if (!globeRef.current) return;
@@ -92,8 +89,8 @@ const TravelingEgg = () => {
           return;
         }
 
-        for (let i = 1; i <= GLOBES.length * TURNS; i++) {
-          setGlobe(GLOBES[i % GLOBES.length]);
+        for (let i = 0; i < GLOBES.length * TURNS; i++) {
+          spinOne();
           await wait(SPIN_FRAME_MS);
         }
         setFlight(plan);

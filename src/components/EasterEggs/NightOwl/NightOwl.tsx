@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 const PERCH_MS = 6000;
-const OWL_SIZE = 26;
+const OWL_SIZE = 21;
 
 /**
  * An owl flies in from the top right, perches on the site logo, looks around,
@@ -52,22 +52,40 @@ const NightOwl = ({
       if (gone) return;
       gone = true;
       window.clearTimeout(perchTimer.current);
+      // The moon on the theme toggle: the owl hops over and settles on it.
+      const moon = anchor.getBoundingClientRect();
+      const toMoon = {
+        x: moon.left + moon.width / 2 - OWL_SIZE / 2 - left,
+        y: moon.top - OWL_SIZE + 9 - top,
+      };
       const exit = calm
         ? body.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: "forwards" })
         : body.animate(
             [
               { transform: "translate(0, 0) rotate(0deg)", opacity: 1 },
-              { transform: "translate(-10px, 6px) scale(1, 0.85)", opacity: 1, offset: 0.15 },
               {
-                transform: `translate(${fromX * 0.5}px, -70px) rotate(-12deg)`,
+                transform: `translate(${toMoon.x * 0.5}px, ${toMoon.y - 26}px) rotate(-6deg)`,
                 opacity: 1,
-                offset: 0.6,
+                offset: 0.55,
               },
-              { transform: `translate(${fromX}px, -140px) rotate(-18deg)`, opacity: 0 },
+              { transform: `translate(${toMoon.x}px, ${toMoon.y}px) rotate(0deg)`, opacity: 1 },
             ],
-            { duration: 1100, easing: "ease-in", fill: "forwards" },
+            { duration: 900, easing: "ease-in-out", fill: "forwards" },
           );
-      exit.finished.then(() => onDoneRef.current()).catch(() => undefined);
+      const fadeOut = () =>
+        body
+          .animate([{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: "forwards" })
+          .finished.then(() => onDoneRef.current())
+          .catch(() => undefined);
+
+      // It stays on the moon, and only leaves when the moon does.
+      if (calm) exit.finished.then(() => onDoneRef.current()).catch(() => undefined);
+      else
+        exit.finished
+          .then(() => {
+            flyOff.current = fadeOut;
+          })
+          .catch(() => undefined);
     };
     flyOff.current = leaveNow;
 
@@ -114,7 +132,7 @@ const NightOwl = ({
       window.clearTimeout(perchTimer.current);
       arrive.cancel();
     };
-  }, [left]);
+  }, [left, top, anchor]);
 
   useEffect(() => {
     if (leave) flyOff.current();

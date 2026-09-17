@@ -65,7 +65,7 @@ const Newsletters = ({ newsletterData, seo }: Props) => {
           <Header
             breadcrumbs={{ path: url }}
             subtitle={"All the newsletters I have published so far since 2022."}
-            title={"Live and Learn Newsletters 💌"}
+            title={"Live and Learn Newsletters"}
           />
           <div className="mt-20">{newsletterData.slice(0, 2).map(toNiceCard)}</div>
 

@@ -1,16 +1,17 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useEasterEgg } from "src/hooks/useEasterEgg";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 import type { RandomPhoto } from "src/pages/api/random-photo";
 import { EmojiButton } from "../EmojiButton";
 import { clampPageX, PageLayer, pageBox } from "../PageLayer";
-import { useEggRunner } from "../useEggRunner";
 import type { EggPhoto } from ".";
 
 const POLAROID_WIDTH = 184;
 const DEVELOP_MS = 2600;
+// Never two flashes in quick succession, however fast the clicking.
+const FLASH_GAP_MS = 700;
 
 type Print = { photo: EggPhoto; left: number; top: number };
 
@@ -34,23 +35,29 @@ function pickFallback(photos: EggPhoto[], last: string | null) {
 
 const PhotographyEgg = ({ photos }: { photos: EggPhoto[] }) => {
   const reduceMotion = useReducedMotion();
-  const { run, wait, busyRef } = useEggRunner();
   const cameraRef = useRef<HTMLSpanElement>(null);
   const lastPhoto = useRef<string | null>(null);
-  const [flash, setFlash] = useState(false);
+  const lastFlash = useRef(0);
+  const hideTimer = useRef<number | undefined>(undefined);
+  const [flash, setFlash] = useState<number | null>(null);
   const [print, setPrint] = useState<Print | null>(null);
 
+  useEffect(() => () => window.clearTimeout(hideTimer.current), []);
+
+  // Every click takes another picture.
   const registerClick = useEasterEgg("photography", {
-    onTrigger: () =>
-      run(async () => {
+    clicks: 1,
+    onTrigger: () => {
+      void (async () => {
         if (!cameraRef.current) return;
         // Fetch while the flash plays, so the print is ready when it ends.
         const photoRequest = fetchRandomPhoto();
 
-        if (!reduceMotion) {
-          setFlash(true);
-          await wait(160);
-          setFlash(false);
+        const now = Date.now();
+        if (!reduceMotion && now - lastFlash.current > FLASH_GAP_MS) {
+          lastFlash.current = now;
+          setFlash(now);
+          window.setTimeout(() => setFlash((current) => (current === now ? null : current)), 200);
         }
 
         const photo = (await photoRequest) ?? pickFallback(photos, lastPhoto.current);
@@ -63,25 +70,20 @@ const PhotographyEgg = ({ photos }: { photos: EggPhoto[] }) => {
           left: clampPageX(camera.left + camera.width / 2 - POLAROID_WIDTH / 2, POLAROID_WIDTH),
           top: camera.top + camera.height + 8,
         });
-        await wait(DEVELOP_MS + 3000);
-        setPrint(null);
-        await wait(400);
-      }),
+        window.clearTimeout(hideTimer.current);
+        hideTimer.current = window.setTimeout(() => setPrint(null), DEVELOP_MS + 3000);
+      })();
+    },
   });
 
   return (
     <>
       Photography{" "}
-      <EmojiButton
-        label="Camera"
-        onClick={() => {
-          if (!busyRef.current) registerClick();
-        }}
-      >
+      <EmojiButton label="Camera" onClick={() => registerClick()}>
         <span ref={cameraRef}>📸</span>
       </EmojiButton>
       <PageLayer>
-        {flash && (
+        {flash !== null && (
           // One soft flash: 160ms, peaking at 55% white.
           <motion.div
             aria-hidden="true"

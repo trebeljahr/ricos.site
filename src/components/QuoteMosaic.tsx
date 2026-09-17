@@ -1,12 +1,13 @@
 import clsx from "clsx";
 import Link from "next/link";
-import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
+import { type CSSProperties, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { cleanAuthor, type Portrait, type Portraits } from "src/lib/quotePortraits";
 import { planQuoteRows } from "src/lib/quoteRows";
 
 export type Quote = {
   author: string;
   content: string;
+  /** Topics for the filter on /quotes; not shown on the card. */
   tags: string[];
   /** Where the quote was collected, e.g. the booknote it came from. */
   source?: { title: string; url: string };
@@ -67,6 +68,32 @@ function Avatar({ author, portrait }: { author: string; portrait: Portrait }) {
   );
 }
 
+// Quotes pasted from articles keep their Markdown emphasis: **bold**, *italic*, _italic_.
+const EMPHASIS = /\*\*(.+?)\*\*|(?<![*\w])\*([^*\n]+?)\*(?![*\w])|(?<!\w)_([^_\n]+?)_(?!\w)/g;
+
+function InlineEmphasis({ text }: { text: string }) {
+  const parts: ReactNode[] = [];
+  let last = 0;
+  for (const match of text.matchAll(EMPHASIS)) {
+    const start = match.index ?? 0;
+    if (start > last) parts.push(text.slice(last, start));
+    const [, bold, star, underscore] = match;
+    parts.push(
+      bold !== undefined ? (
+        <strong key={start}>
+          <InlineEmphasis text={bold} />
+        </strong>
+      ) : (
+        <em key={start}>{star ?? underscore}</em>
+      ),
+    );
+    last = start + match[0].length;
+  }
+  if (last === 0) return text;
+  if (last < text.length) parts.push(text.slice(last));
+  return <>{parts}</>;
+}
+
 function QuoteSlip({
   quote,
   portrait,
@@ -97,7 +124,7 @@ function QuoteSlip({
         &ldquo;
       </span>
       <blockquote className="m-0 grow font-serif text-lg leading-relaxed whitespace-pre-line text-zinc-800 dark:text-slate-200">
-        {quote.content}
+        <InlineEmphasis text={quote.content} />
       </blockquote>
       <figcaption className="mt-5 flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
         {portrait && <Avatar author={author} portrait={portrait} />}
@@ -113,11 +140,6 @@ function QuoteSlip({
                 {quote.source.title}
               </Link>
             </>
-          )}
-          {quote.tags.length > 0 && (
-            <span className="mt-1 block text-xs text-gray-500 dark:text-gray-500">
-              {quote.tags.map((tag) => `#${tag}`).join(" ")}
-            </span>
           )}
         </span>
       </figcaption>
@@ -137,9 +159,7 @@ export function QuoteMosaic({
       planQuoteRows(
         quotes.map((quote) => ({
           length: quote.content.length,
-          tallCaption: Boolean(
-            portraits[cleanAuthor(quote.author)] || quote.source || quote.tags.length > 0,
-          ),
+          tallCaption: Boolean(portraits[cleanAuthor(quote.author)] || quote.source),
         })),
       ),
     [quotes, portraits],

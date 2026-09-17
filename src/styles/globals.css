@@ -154,6 +154,15 @@
   * {
     box-sizing: border-box;
   }
+
+  /* Tailwind v4 dropped v3's `button { cursor: pointer }` from preflight, so
+     every button on the site fell back to the UA arrow cursor. Restore it here
+     once instead of adding `cursor-pointer` to each call site. */
+  button:not(:disabled),
+  summary,
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
 }
 
 /* Override prose link colors: inherit text color by default, blue on hover.

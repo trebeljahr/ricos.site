@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { useEasterEgg } from "src/hooks/useEasterEgg";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
+import type { RandomPhoto } from "src/pages/api/random-photo";
 import { EmojiButton } from "../EmojiButton";
 import { clampPageX, PageLayer, pageBox } from "../PageLayer";
 import { useEggRunner } from "../useEggRunner";
@@ -12,6 +13,24 @@ const POLAROID_WIDTH = 184;
 const DEVELOP_MS = 2600;
 
 type Print = { photo: EggPhoto; left: number; top: number };
+
+/** A random photo from the whole collection; null if the request fails. */
+async function fetchRandomPhoto(): Promise<EggPhoto | null> {
+  try {
+    const res = await fetch("/api/random-photo");
+    if (!res.ok) return null;
+    const { src, tripName } = (await res.json()) as RandomPhoto;
+    return src ? { tripName, image: { src } } : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Without the API, fall back to the featured trip covers the page already has. */
+function pickFallback(photos: EggPhoto[], last: string | null) {
+  const candidates = photos.filter(({ image }) => image.src !== last);
+  return candidates[Math.floor(Math.random() * candidates.length)];
+}
 
 const PhotographyEgg = ({ photos }: { photos: EggPhoto[] }) => {
   const reduceMotion = useReducedMotion();
@@ -24,16 +43,19 @@ const PhotographyEgg = ({ photos }: { photos: EggPhoto[] }) => {
   const registerClick = useEasterEgg("photography", {
     onTrigger: () =>
       run(async () => {
-        const candidates = photos.filter(({ image }) => image.src !== lastPhoto.current);
-        const photo = candidates[Math.floor(Math.random() * candidates.length)];
-        if (!photo || !cameraRef.current) return;
-        lastPhoto.current = photo.image.src;
+        if (!cameraRef.current) return;
+        // Fetch while the flash plays, so the print is ready when it ends.
+        const photoRequest = fetchRandomPhoto();
 
         if (!reduceMotion) {
           setFlash(true);
           await wait(160);
           setFlash(false);
         }
+
+        const photo = (await photoRequest) ?? pickFallback(photos, lastPhoto.current);
+        if (!photo || !cameraRef.current) return;
+        lastPhoto.current = photo.image.src;
 
         const camera = pageBox(cameraRef.current);
         setPrint({

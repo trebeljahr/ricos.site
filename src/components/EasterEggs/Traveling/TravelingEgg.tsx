@@ -1,79 +1,109 @@
 import { useReducedMotion } from "motion/react";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useEasterEgg } from "src/hooks/useEasterEgg";
 import { EmojiButton } from "../EmojiButton";
-import { clampPageX, PageLayer, pageBox } from "../PageLayer";
+import { PageLayer, pageBox } from "../PageLayer";
 import { useEggRunner } from "../useEggRunner";
 
 const GLOBES = ["🌍", "🌎", "🌏"];
 const SPIN_FRAME_MS = 130;
 const TURNS = 2;
-const FLIGHT_MS = 1800;
-const PAD = 28;
+const OUT_MS = 1100;
+const BACK_MS = 1500;
+const LIFT = 90;
+const PAD = 24;
+const OFFSCREEN = 50;
 
-type Flight = { left: number; top: number; width: number; height: number; d: string };
+/** A strip as wide as the viewport around the globe. It clips the plane, so leaving the screen adds no scroll. */
+type Flight = {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  out: string;
+  back: string;
+};
 
-/** A dotted arc from the globe to the right edge of the section, below the heading. */
-function planFlight(globe: Element): Flight | null {
-  const heading = globe.closest("h2");
-  const section = heading?.parentElement;
-  if (!heading || !section) return null;
-
+function planFlight(globe: Element): Flight {
   const g = pageBox(globe);
-  const h = pageBox(heading);
-  const s = pageBox(section);
-  const x0 = g.left + g.width / 2;
-  const y0 = g.top + g.height / 2;
-  const wantX = Math.max(s.left + s.width - 40, x0 + 140);
-  const x1 = clampPageX(wantX, 0, 12 + PAD);
-  // No room to the right of the globe (very narrow screens): skip the flight.
-  if (x1 - x0 < 80) return null;
-  const y1 = h.top + h.height + 16;
-  const dx = x1 - x0;
-  // Climb out of the globe, then flatten out so the plane touches down level.
-  const peak = Math.min(y0, y1) - Math.max(60, dx * 0.25);
+  const width = document.documentElement.clientWidth;
+  const left = window.scrollX;
+  const top = g.top + g.height / 2 - LIFT - PAD;
+  const gx = Math.round(g.left + g.width / 2 - left);
+  const gy = LIFT + PAD;
+  const cruise = PAD;
 
-  const left = x0 - PAD;
-  const top = peak - PAD;
-  const width = dx + PAD * 2;
-  const height = Math.max(y0, y1) - peak + PAD * 2;
-  const p = (x: number, y: number) => `${Math.round(x - left)} ${Math.round(y - top)}`;
-  const d = `M ${p(x0, y0)} C ${p(x0 + dx * 0.2, peak)} ${p(x1 - dx * 0.45, y1)} ${p(x1, y1)}`;
-  return { left, top, width, height, d };
+  // Climb off the globe and leave on the right, then come in from the left and touch down level on the globe.
+  const out = `M ${gx} ${gy} C ${Math.round(gx + (width - gx) * 0.35)} ${gy - LIFT} ${width - 40} ${cruise} ${width + OFFSCREEN} ${cruise}`;
+  const back = `M ${-OFFSCREEN} ${cruise} C ${Math.round(gx * 0.45)} ${cruise} ${gx - Math.max(60, Math.round(gx * 0.4))} ${gy} ${gx} ${gy}`;
+  return { left, top, width, height: LIFT + PAD * 2, out, back };
 }
 
 const TravelingEgg = () => {
   const reduceMotion = useReducedMotion();
   const { run, wait, busyRef } = useEggRunner();
   const globeRef = useRef<HTMLSpanElement>(null);
+  const planeRef = useRef<HTMLSpanElement>(null);
+  const layerRef = useRef<HTMLDivElement>(null);
   const [globe, setGlobe] = useState(GLOBES[0]);
   const [flight, setFlight] = useState<Flight | null>(null);
   const [landed, setLanded] = useState(false);
 
   // Plane and trail share duration and easing, so the dots appear right behind the plane.
-  const flyPlane = useCallback(
-    (plane: HTMLSpanElement | null) => {
-      if (!plane || reduceMotion) return;
-      const timing = { duration: FLIGHT_MS, easing: "ease-in-out", fill: "forwards" } as const;
-      plane.animate([{ offsetDistance: "0%" }, { offsetDistance: "100%" }], timing);
-      const mask = plane.parentElement?.querySelector("[data-trail]");
-      mask?.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], timing);
-    },
-    [reduceMotion],
-  );
+  const fly = async (path: string, trail: string, duration: number, easing: string) => {
+    const plane = planeRef.current;
+    if (!plane) return;
+    plane.style.offsetPath = `path("${path}")`;
+    const timing = { duration, easing, fill: "forwards" } as const;
+    layerRef.current
+      ?.querySelector(`[data-trail="${trail}"]`)
+      ?.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], timing);
+    await plane
+      .animate([{ offsetDistance: "0%" }, { offsetDistance: "100%" }], timing)
+      .finished.catch(() => undefined);
+  };
 
   const registerClick = useEasterEgg("traveling", {
     onTrigger: () =>
       run(async () => {
         if (!globeRef.current) return;
-        if (!reduceMotion) {
-          for (let i = 1; i <= GLOBES.length * TURNS; i++) {
-            setGlobe(GLOBES[i % GLOBES.length]);
-            await wait(SPIN_FRAME_MS);
-          }
+        const plan = planFlight(globeRef.current);
+
+        if (reduceMotion) {
+          setFlight(plan);
+          await wait(1500);
+          setLanded(true);
+          await wait(500);
+          setFlight(null);
+          setLanded(false);
+          return;
         }
-        setFlight(planFlight(globeRef.current));
-        await wait(reduceMotion ? 1500 : FLIGHT_MS + 600);
+
+        for (let i = 1; i <= GLOBES.length * TURNS; i++) {
+          setGlobe(GLOBES[i % GLOBES.length]);
+          await wait(SPIN_FRAME_MS);
+        }
+        setFlight(plan);
+        await wait(30);
+        await fly(plan.out, "out", OUT_MS, "ease-in");
+        await wait(250);
+        await fly(plan.back, "back", BACK_MS, "ease-out");
+
+        // Touchdown: the plane tucks into the globe and the globe bounces.
+        planeRef.current?.animate(
+          [
+            { scale: 1, opacity: 1 },
+            { scale: 0.4, opacity: 0 },
+          ],
+          {
+            duration: 250,
+            fill: "forwards",
+          },
+        );
+        globeRef.current?.animate([{ scale: 1 }, { scale: 1.25 }, { scale: 1 }], {
+          duration: 350,
+          easing: "ease-out",
+        });
         setLanded(true);
         await wait(500);
         setFlight(null);
@@ -81,6 +111,8 @@ const TravelingEgg = () => {
         setGlobe(GLOBES[0]);
       }),
   });
+
+  const gx = flight ? Number(flight.out.split(" ")[1]) : 0;
 
   return (
     <>
@@ -91,13 +123,16 @@ const TravelingEgg = () => {
           if (!busyRef.current) registerClick();
         }}
       >
-        <span ref={globeRef}>{globe}</span>
+        <span ref={globeRef} className="inline-block">
+          {globe}
+        </span>
       </EmojiButton>
       {flight && (
         <PageLayer>
           <div
+            ref={layerRef}
             aria-hidden="true"
-            className="absolute text-base font-normal"
+            className="absolute overflow-hidden text-base font-normal"
             style={{
               left: flight.left,
               top: flight.top,
@@ -105,49 +140,61 @@ const TravelingEgg = () => {
               height: flight.height,
             }}
           >
-            {!reduceMotion && (
-              <svg
-                aria-hidden="true"
-                className="text-accent absolute inset-0 overflow-visible transition-opacity duration-500"
-                width={flight.width}
-                height={flight.height}
-                style={{ opacity: landed ? 0 : 0.8 }}
+            {reduceMotion ? (
+              <span
+                className="absolute text-2xl leading-none transition-opacity duration-500"
+                style={{ left: gx + 16, top: PAD + LIFT - 44, opacity: landed ? 0 : 1 }}
               >
-                <mask id="flight-trail">
-                  <path
-                    data-trail
-                    d={flight.d}
-                    pathLength={1}
-                    fill="none"
-                    stroke="white"
-                    strokeWidth={8}
-                    strokeDasharray="1 1"
-                    strokeDashoffset={1}
-                  />
-                </mask>
-                <path
-                  d={flight.d}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={3}
-                  strokeLinecap="round"
-                  strokeDasharray="0.1 9"
-                  mask="url(#flight-trail)"
-                />
-              </svg>
+                ✈️
+              </span>
+            ) : (
+              <>
+                <svg
+                  aria-hidden="true"
+                  className="text-accent absolute inset-0 transition-opacity duration-500"
+                  width={flight.width}
+                  height={flight.height}
+                  style={{ opacity: landed ? 0 : 0.8 }}
+                >
+                  {(["out", "back"] as const).map((leg) => (
+                    <g key={leg}>
+                      <mask id={`flight-trail-${leg}`}>
+                        <path
+                          data-trail={leg}
+                          d={flight[leg]}
+                          pathLength={1}
+                          fill="none"
+                          stroke="white"
+                          strokeWidth={8}
+                          strokeDasharray="1 1"
+                          strokeDashoffset={1}
+                        />
+                      </mask>
+                      <path
+                        d={flight[leg]}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={3}
+                        strokeLinecap="round"
+                        strokeDasharray="0.1 9"
+                        mask={`url(#flight-trail-${leg})`}
+                      />
+                    </g>
+                  ))}
+                </svg>
+                <span
+                  ref={planeRef}
+                  className="absolute top-0 left-0 text-2xl leading-none"
+                  style={{
+                    offsetPath: `path("${flight.out}")`,
+                    offsetRotate: "auto 45deg",
+                    offsetDistance: "0%",
+                  }}
+                >
+                  ✈️
+                </span>
+              </>
             )}
-            <span
-              ref={flyPlane}
-              className="absolute top-0 left-0 text-2xl leading-none transition-opacity duration-500"
-              style={{
-                offsetPath: `path("${flight.d}")`,
-                offsetRotate: "auto 45deg",
-                offsetDistance: reduceMotion ? "100%" : "0%",
-                opacity: landed ? 0 : 1,
-              }}
-            >
-              ✈️
-            </span>
           </div>
         </PageLayer>
       )}

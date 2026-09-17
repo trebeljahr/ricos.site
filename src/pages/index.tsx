@@ -5,6 +5,7 @@ import { NewsletterEgg } from "@components/EasterEggs/Newsletter";
 import { PhotographyEgg } from "@components/EasterEggs/Photography";
 import { ProjectsEgg } from "@components/EasterEggs/Projects";
 import { TravelingEgg } from "@components/EasterEggs/Traveling";
+import { WebpagesEgg } from "@components/EasterEggs/Webpages";
 import { WritingEgg } from "@components/EasterEggs/Writing";
 import { ExternalLink } from "@components/ExternalLink";
 import { FancyLink } from "@components/FancyUI";
@@ -244,7 +245,9 @@ const IndexPage = ({ seo, ...props }: Props) => {
         <section className="dark:bg-nightBlue bg-slate-100 pt-1 pb-20 px-3">
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <div className="max-w-prose">
-              <h2>Webpages</h2>
+              <h2>
+                <WebpagesEgg />
+              </h2>
               <p>
                 You can also find me on other places around the internet, like{" "}
                 <ExternalLink href="https://www.instagram.com/ricotrebeljahr/">

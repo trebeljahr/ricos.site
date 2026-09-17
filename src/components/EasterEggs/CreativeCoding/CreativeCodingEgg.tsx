@@ -1,89 +1,62 @@
 import clsx from "clsx";
 import { useReducedMotion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { useRef, useState } from "react";
 import { useEasterEgg } from "src/hooks/useEasterEgg";
 import { EmojiButton } from "../EmojiButton";
+import { pageBox } from "../PageLayer";
 import { useEggRunner } from "../useEggRunner";
+import type { PagePoint } from "./LightningOverlay";
 
-const CYCLE_MS = 4000;
-const START_HUE = 255; // Close to the site blue, so the cycle starts and ends near it.
-const STILL_HUE = 330;
-const STILL_MS = 2500;
-// Every accent-coloured link, card border and hover glow reads these two variables.
-const VARIABLES = ["--color-accent", "--color-myBlue"] as const;
+// three.js only loads the first time someone finds this egg.
+const LightningOverlay = dynamic(() => import("./LightningOverlay"), { ssr: false });
 
-function paint(root: HTMLElement, hue: number) {
-  const dark = root.classList.contains("dark");
-  root.style.setProperty("--color-accent", `oklch(${dark ? 0.78 : 0.58} 0.15 ${hue})`);
-  root.style.setProperty("--color-myBlue", `oklch(0.7 0.15 ${hue})`);
-}
+const MAX_BOLTS = 3;
+const GLOW_MS = 1500;
 
-/** Snapshots the inline values of the variables, and returns a function that puts them back. */
-function snapshot(root: HTMLElement) {
-  const saved = VARIABLES.map((name) => ({
-    name,
-    value: root.style.getPropertyValue(name),
-    priority: root.style.getPropertyPriority(name),
-  }));
-  return () => {
-    for (const { name, value, priority } of saved) {
-      if (value) root.style.setProperty(name, value, priority);
-      else root.style.removeProperty(name);
-    }
-  };
+type Strike = { source: PagePoint; targets: PagePoint[] };
+
+/** Bolts go from the palette to up to three random demo cards in the section. */
+function planStrike(palette: Element): Strike {
+  const box = pageBox(palette);
+  const source = { x: box.left + box.width / 2, y: box.top + box.height / 2 };
+  const section = palette.closest("h2")?.parentElement;
+  const cards = [...(section?.querySelectorAll(".grid a") ?? [])]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, MAX_BOLTS)
+    .map((card) => {
+      const c = pageBox(card);
+      return { x: c.left + c.width * (0.3 + Math.random() * 0.4), y: c.top + c.height * 0.4 };
+    });
+  const targets = cards.length ? cards : [{ x: source.x + 240, y: source.y + 160 }];
+  return { source, targets };
 }
 
 const CreativeCodingEgg = () => {
   const reduceMotion = useReducedMotion();
   const { run, wait, busyRef, busy } = useEggRunner();
-  const restore = useRef<(() => void) | null>(null);
-  const frame = useRef(0);
-  const [hue, setHue] = useState(0);
-
-  // Leaving the page mid-cycle must still put the colours back.
-  useEffect(
-    () => () => {
-      cancelAnimationFrame(frame.current);
-      restore.current?.();
-    },
-    [],
-  );
+  const paletteRef = useRef<HTMLSpanElement>(null);
+  const [strike, setStrike] = useState<Strike | null>(null);
+  const done = useRef<() => void>(() => undefined);
 
   const registerClick = useEasterEgg("creative-coding", {
     onTrigger: () =>
       run(async () => {
-        const root = document.documentElement;
-        restore.current = snapshot(root);
-        try {
-          if (reduceMotion) {
-            paint(root, STILL_HUE);
-            setHue(STILL_HUE - START_HUE);
-            await wait(STILL_MS);
-            return;
-          }
-          await new Promise<void>((resolve) => {
-            const start = performance.now();
-            const tick = (now: number) => {
-              const progress = Math.min(1, (now - start) / CYCLE_MS);
-              const turn = 360 * (0.5 - Math.cos(progress * Math.PI) / 2);
-              paint(root, START_HUE + turn);
-              setHue(turn);
-              if (progress < 1) frame.current = requestAnimationFrame(tick);
-              else resolve();
-            };
-            frame.current = requestAnimationFrame(tick);
-          });
-        } finally {
-          restore.current?.();
-          restore.current = null;
-          setHue(0);
+        if (!paletteRef.current) return;
+        if (reduceMotion) {
+          await wait(GLOW_MS);
+          return;
         }
+        await new Promise<void>((resolve) => {
+          done.current = resolve;
+          setStrike(planStrike(paletteRef.current as Element));
+        });
+        setStrike(null);
       }),
   });
 
   return (
     <>
-      {/* No colour transition here: the variable changes every frame, so a transition would restart and never move. */}
       <span className={clsx(busy && "text-accent")}>Creative Coding</span>{" "}
       <EmojiButton
         label="Palette"
@@ -92,12 +65,20 @@ const CreativeCodingEgg = () => {
         }}
       >
         <span
-          className="inline-block"
-          style={hue ? { filter: `hue-rotate(${hue}deg)` } : undefined}
+          ref={paletteRef}
+          className="inline-block transition-[filter] duration-300"
+          style={busy ? { filter: "drop-shadow(0 0 6px #7fd8ff)" } : undefined}
         >
           🎨
         </span>
       </EmojiButton>
+      {strike && (
+        <LightningOverlay
+          source={strike.source}
+          targets={strike.targets}
+          onDone={() => done.current()}
+        />
+      )}
     </>
   );
 };

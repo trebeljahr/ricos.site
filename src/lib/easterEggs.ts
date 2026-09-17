@@ -12,6 +12,7 @@ export const EASTER_EGG_IDS = [
   "photography",
   "creative-coding",
   "projects",
+  "webpages",
 ] as const;
 
 export type EasterEggId = (typeof EASTER_EGG_IDS)[number];

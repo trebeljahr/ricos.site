@@ -31,12 +31,12 @@ export const EmojiButton = forwardRef<HTMLButtonElement, EmojiButtonProps>(
       if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       const now = Date.now();
       clickTimes.current = [...clickTimes.current.filter((t) => now - t < NUDGE_WINDOW_MS), now];
-      const strength = Math.min(clickTimes.current.length, 3);
-      const angle = 8 + strength * 5;
+      const strength = Math.min(clickTimes.current.length, 4);
+      const angle = 6 + strength * 4;
       el.animate(
         [
           { rotate: "0deg", scale: "1" },
-          { rotate: `${-angle}deg`, scale: `${1 + strength * 0.06}` },
+          { rotate: `${-angle}deg`, scale: `${1 + strength * 0.05}` },
           { rotate: `${angle * 0.7}deg` },
           { rotate: `${-angle * 0.3}deg` },
           { rotate: "0deg", scale: "1" },

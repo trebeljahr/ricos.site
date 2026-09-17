@@ -431,11 +431,9 @@ html.theme-reveal-in::view-transition-old(root) {
   z-index: 1;
 }
 
-/* Glowing edge on the reveal circle. Images look the same in both themes, so
-   without it the edge passes over them unseen and they seem stuck on top.
-   DarkModeHandler adds a fixed, empty .theme-reveal-glow for the transition;
-   its group paints above the root snapshots and draws a ring whose radius
-   follows the clip circle. */
+/* Warm rim on the lit side of the reveal circle. DarkModeHandler adds a fixed,
+   empty .theme-reveal-glow for the transition; its group paints above the root
+   snapshots and draws a ring whose radius follows the clip circle. */
 @property --theme-reveal-r {
   syntax: "<length>";
   inherits: false;
@@ -453,11 +451,10 @@ html.theme-reveal-in::view-transition-old(root) {
   animation: none;
   background: radial-gradient(
     circle at 50% 0,
-    transparent calc(var(--theme-reveal-r) - 90px),
-    rgb(255 236 196 / 0.35) calc(var(--theme-reveal-r) - 24px),
-    rgb(255 250 235 / 0.85) var(--theme-reveal-r),
-    rgb(255 236 196 / 0.3) calc(var(--theme-reveal-r) + 14px),
-    transparent calc(var(--theme-reveal-r) + 48px)
+    transparent calc(var(--theme-reveal-r) - 160px),
+    rgb(255 228 170 / 0.18) calc(var(--theme-reveal-r) - 12px),
+    rgb(255 240 210 / 0.3) var(--theme-reveal-r),
+    transparent calc(var(--theme-reveal-r) + 6px)
   );
 }
 

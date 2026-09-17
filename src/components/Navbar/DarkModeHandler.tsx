@@ -77,11 +77,13 @@ const revealTheme = (toLight: boolean, apply: () => void) => {
   document.body.append(glowElement);
   let clip: Animation | undefined;
   let glow: Animation | undefined;
+  let dim: Animation | undefined;
   const cleanUp = () => {
     // `fill: both` keeps the animations alive on <html> after the pseudo
     // elements are gone; cancel them so toggles don't pile up animations.
     clip?.cancel();
     glow?.cancel();
+    dim?.cancel();
     glowElement.remove();
     root.classList.remove("theme-reveal", "theme-reveal-in");
   };
@@ -116,6 +118,18 @@ const revealTheme = (toLight: boolean, apply: () => void) => {
             opacity: [0, 1, 1, 0],
           },
           { ...timing, pseudoElement: "::view-transition-group(theme-reveal-glow)" },
+        );
+        // Images look the same in both themes, so the edge alone crosses them
+        // unseen. Dimming the dark page while the light moves splits each image
+        // into a lit and an unlit part. The dark page starts at full brightness
+        // when it is on screen, so nothing jumps: switching to light, it dims
+        // as it gets covered; switching to dark, it recovers as it is revealed.
+        dim = root.animate(
+          { filter: ["brightness(1)", "brightness(0.55)"] },
+          {
+            ...timing,
+            pseudoElement: toLight ? "::view-transition-old(root)" : "::view-transition-new(root)",
+          },
         );
       })
       .catch(() => {});

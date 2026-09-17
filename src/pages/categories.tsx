@@ -31,7 +31,6 @@ type ThemeCard = {
 type Props = {
   themes: ThemeCard[];
   tags: TagEntry[];
-  totalDocs: number;
   seo: SeoInfo | null;
 };
 
@@ -90,14 +89,13 @@ function TagCloud({ tags }: { tags: TagEntry[] }) {
   );
 }
 
-export default function CategoriesPage({ themes, tags, totalDocs, seo }: Props) {
+export default function CategoriesPage({ themes, tags, seo }: Props) {
   const url = "categories";
   return (
     <Layout
       title={seo?.metaTitle || "Categories – Themes and Tags"}
       description={
-        seo?.metaDescription ||
-        `${themes.length} themes Rico keeps coming back to, plus ${tags.length} tags to browse by. ${totalDocs} pieces in all.`
+        seo?.metaDescription || "Themes Rico keeps coming back to, and every tag he writes under."
       }
       url={url}
       keywords={seo?.keywords || themes.map((t) => t.title)}
@@ -109,7 +107,7 @@ export default function CategoriesPage({ themes, tags, totalDocs, seo }: Props) 
           <Header
             breadcrumbs={{ path: url }}
             title="Categories"
-            subtitle={`${themes.length} themes I keep coming back to, plus ${tags.length} tags to browse by. ${totalDocs} pieces in all.`}
+            subtitle="Themes I keep coming back to, and every tag I write under."
           />
         </section>
 
@@ -125,10 +123,9 @@ export default function CategoriesPage({ themes, tags, totalDocs, seo }: Props) 
         </section>
 
         <section aria-labelledby="cloud-heading" className="mb-16">
-          <h2 id="cloud-heading">All tags</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {tags.length} canonical tags, sized by how often they show up. Click to jump down.
-          </p>
+          <h2 id="cloud-heading" className="mb-6">
+            All tags
+          </h2>
           <div className="not-prose">
             <TagCloud tags={tags} />
           </div>
@@ -198,7 +195,6 @@ export async function getStaticProps() {
     props: {
       themes: themeCards,
       tags: tagEntries,
-      totalDocs: allDocs.length,
       seo: getSeoInfo("/categories"),
     },
   };

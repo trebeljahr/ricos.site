@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { EASTER_EGG_IDS, EASTER_EGGS_CHANGED_EVENT, getFoundEggs } from "src/lib/easterEggs";
@@ -52,7 +53,7 @@ const Bunny = ({ onDone }: { onDone: () => void }) => {
   );
 };
 
-/** "N/9 easter eggs found", once at least one is found. Reads storage after mount, so SSR renders nothing. */
+/** "N/12 easter eggs found", once at least one is found. Reads storage after mount, so SSR renders nothing. */
 export const EggCounter = () => {
   const [found, setFound] = useState(0);
   const [bunnies, setBunnies] = useState<number[]>([]);
@@ -71,7 +72,9 @@ export const EggCounter = () => {
   if (found === 0) return null;
   return (
     <span>
-      {found}/{EASTER_EGG_IDS.length} easter eggs found{" "}
+      <Link href="/eggs" className="hover:text-accent">
+        {found}/{EASTER_EGG_IDS.length} easter eggs found
+      </Link>{" "}
       <EmojiButton
         label="Easter egg"
         onClick={() =>

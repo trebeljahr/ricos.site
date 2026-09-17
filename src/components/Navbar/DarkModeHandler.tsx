@@ -1,6 +1,8 @@
+import { NightOwl } from "@components/EasterEggs/NightOwl";
 import { useTheme } from "next-themes";
-import { useId } from "react";
+import { useId, useRef, useState } from "react";
 import { flushSync } from "react-dom";
+import { useRecordEggFind } from "src/hooks/useEasterEgg";
 
 const RAY_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315];
 
@@ -152,20 +154,43 @@ const revealTheme = (toLight: boolean, apply: () => void) => {
   }
 };
 
+// Waits for the theme reveal (600ms) so the owl is not caught in its snapshots.
+const OWL_DELAY_MS = 650;
+
 export const DarkModeHandler = () => {
   const { setTheme, resolvedTheme } = useTheme();
+  const recordFind = useRecordEggFind();
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [owl, setOwl] = useState<number | null>(null);
 
   return (
-    <button
-      type="button"
-      className="inline-flex size-9 items-center justify-center rounded-md transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none"
-      onClick={() => {
-        const toLight = resolvedTheme === "dark";
-        revealTheme(toLight, () => setTheme(toLight ? "light" : "dark"));
-      }}
-      aria-label="Toggle dark mode"
-    >
-      <SunMoonIcon />
-    </button>
+    <>
+      <button
+        ref={buttonRef}
+        type="button"
+        className="inline-flex size-9 items-center justify-center rounded-md transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none"
+        onClick={() => {
+          const toLight = resolvedTheme === "dark";
+          revealTheme(toLight, () => setTheme(toLight ? "light" : "dark"));
+          // Easter egg: switching to dark mode brings out a night owl.
+          if (!toLight && owl === null) {
+            const id = Date.now();
+            window.setTimeout(() => setOwl((current) => current ?? id), OWL_DELAY_MS);
+            recordFind("night-owl");
+          }
+        }}
+        aria-label="Toggle dark mode"
+      >
+        <SunMoonIcon />
+      </button>
+      {owl !== null && buttonRef.current && (
+        <NightOwl
+          key={owl}
+          anchor={buttonRef.current}
+          leave={resolvedTheme !== "dark"}
+          onDone={() => setOwl(null)}
+        />
+      )}
+    </>
   );
 };

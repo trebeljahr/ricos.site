@@ -7,7 +7,21 @@ type EasterEggOptions = {
   clicks?: number;
   windowMs?: number;
   onTrigger: () => void;
+  /** Called on every click that does not find the egg, with the quick clicks so far. */
+  onProgress?: (clicks: number) => void;
 };
+
+/** Records a find and sends the Plausible event. For eggs that are not found by clicking. */
+export function useRecordEggFind() {
+  const plausible = usePlausible();
+  return useCallback(
+    (id: string) => {
+      plausible("Easter Egg", { props: { egg: id } });
+      markEggFound(id);
+    },
+    [plausible],
+  );
+}
 
 /**
  * Counts quick clicks on an easter egg. Call the returned function on every
@@ -16,22 +30,24 @@ type EasterEggOptions = {
  */
 export function useEasterEgg(
   id: string,
-  { clicks = 5, windowMs = 2000, onTrigger }: EasterEggOptions,
+  { clicks = 5, windowMs = 2000, onTrigger, onProgress }: EasterEggOptions,
 ) {
-  const plausible = usePlausible();
+  const recordFind = useRecordEggFind();
   const clickTimes = useRef<number[]>([]);
-  const onTriggerRef = useRef(onTrigger);
-  onTriggerRef.current = onTrigger;
+  const callbacks = useRef({ onTrigger, onProgress });
+  callbacks.current = { onTrigger, onProgress };
 
   return useCallback((): boolean => {
     const now = Date.now();
     clickTimes.current = [...clickTimes.current.filter((t) => now - t < windowMs), now];
-    if (clickTimes.current.length < clicks) return false;
+    if (clickTimes.current.length < clicks) {
+      callbacks.current.onProgress?.(clickTimes.current.length);
+      return false;
+    }
 
     clickTimes.current = [];
-    plausible("Easter Egg", { props: { egg: id } });
-    markEggFound(id);
-    onTriggerRef.current();
+    recordFind(id);
+    callbacks.current.onTrigger();
     return true;
-  }, [clicks, id, plausible, windowMs]);
+  }, [clicks, id, recordFind, windowMs]);
 }

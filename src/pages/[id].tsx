@@ -1,4 +1,5 @@
 import { Backlinks } from "@components/Backlinks";
+import { NeedleEgg } from "@components/EasterEggs/Needle";
 import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
@@ -81,7 +82,15 @@ export default function Page({ page, backlinks }: Props) {
             breadcrumbs={{ path: page.slug }}
             meta={<MetadataDisplay date={page.date} readingTime={page.metadata.readingTime} />}
             subtitle={subtitle}
-            title={title}
+            title={
+              page.slug === "needlestack" ? (
+                <>
+                  {title} <NeedleEgg />
+                </>
+              ) : (
+                title
+              )
+            }
           />
 
           {page.hasDemos ? (

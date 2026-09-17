@@ -1,4 +1,5 @@
 import { Card } from "@components/Card";
+import { MonkeyEgg } from "@components/EasterEggs/Monkey";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
@@ -72,7 +73,11 @@ const Newsletters = ({ newsletterData, seo }: Props) => {
             <NewsletterForm
               // biome-ignore lint/complexity/noUselessFragments: empty fragment is truthy, suppresses NewsletterForm's default link
               link={<></>}
-              heading={<h2 className="mt-0!">Not subscribed yet? 🙊</h2>}
+              heading={
+                <h2 className="mt-0!">
+                  Not subscribed yet? <MonkeyEgg />
+                </h2>
+              }
             />
           </div>
 

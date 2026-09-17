@@ -43,7 +43,7 @@ export function PlaygroundCrumb({ round }: { round?: boolean }) {
       <Link
         href="/r3f"
         className={clsx(
-          "block h-9 truncate px-2 text-sm leading-9 text-gray-600 sm:px-2.5 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100",
+          "block h-9 truncate px-2 text-sm leading-9 text-gray-600 sm:px-2.5 dark:text-gray-300 transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none",
           hoverShape(round),
         )}
       >
@@ -70,7 +70,7 @@ export function PlaygroundScenesButton({ open, onClick, round, className }: Scen
       aria-controls="playground-scenes"
       onClick={onClick}
       className={clsx(
-        "inline-flex h-9 shrink-0 items-center gap-1 px-2 text-sm sm:px-2.5 hover:bg-gray-200 dark:hover:bg-gray-700",
+        "inline-flex h-9 shrink-0 items-center gap-1 px-2 text-sm sm:px-2.5 transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none",
         hoverShape(round),
         open && "bg-gray-200 dark:bg-gray-700",
         className,
@@ -182,14 +182,14 @@ export function PlaygroundScenesPanel({ open, onClose, restoreFocus }: PanelProp
           <Link
             href="/r3f"
             aria-current={current === "/r3f" ? "page" : undefined}
-            className="text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+            className="text-sm text-gray-500 transition-colors duration-300 ease-out hover:text-accent motion-reduce:transition-none dark:text-gray-400"
           >
             All demos on one page
           </Link>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex size-9 items-center justify-center rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
+            className="inline-flex size-9 items-center justify-center rounded-md transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none"
           >
             <span className="sr-only">Close scene list</span>
             <FiX className="size-5" />
@@ -215,7 +215,7 @@ export function PlaygroundScenesPanel({ open, onClose, restoreFocus }: PanelProp
                         prefetch={false}
                         aria-current={isCurrent ? "page" : undefined}
                         className={clsx(
-                          "group block rounded-lg p-1 hover:bg-gray-100 dark:hover:bg-gray-800",
+                          "group block rounded-lg p-1 transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none",
                           isCurrent && "bg-gray-100 ring-2 ring-myBlue dark:bg-gray-800",
                         )}
                       >

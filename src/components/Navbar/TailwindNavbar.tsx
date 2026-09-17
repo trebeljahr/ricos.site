@@ -117,7 +117,7 @@ export function SiteNavControls({ menu }: { menu: SiteMenu }) {
         aria-expanded={open}
         aria-controls="mobile-menu"
         onClick={() => setOpen((p) => !p)}
-        className="inline-flex size-9 items-center justify-center rounded-md hover:bg-gray-200 xl:hidden dark:hover:bg-gray-700"
+        className="inline-flex size-9 items-center justify-center rounded-md transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none xl:hidden"
       >
         <span className="sr-only">{open ? "Close main menu" : "Open main menu"}</span>
         {open ? <FiX className="size-5" /> : <FiMenu className="size-5" />}

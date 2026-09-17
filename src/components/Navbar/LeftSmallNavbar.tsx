@@ -18,7 +18,7 @@ export const LeftSmallNavbar = () => {
         aria-expanded={open}
         aria-controls="left-small-menu"
         className={clsx(
-          "fixed top-2 z-50 flex items-center justify-center rounded-full bg-white p-3 transition-[left] duration-300 hover:bg-gray-200 motion-reduce:transition-none dark:bg-gray-900 dark:hover:bg-gray-700",
+          "fixed top-2 z-50 flex items-center justify-center rounded-full bg-white p-3 transition-[left,background-color,color] duration-300 ease-out hover:bg-[color-mix(in_srgb,var(--color-accent)_10%,white)] hover:text-accent motion-reduce:transition-none dark:bg-gray-900 dark:hover:bg-[color-mix(in_srgb,var(--color-accent)_15%,var(--color-gray-900))]",
           open ? "left-[175px]" : "left-2",
         )}
         onClick={toggle}

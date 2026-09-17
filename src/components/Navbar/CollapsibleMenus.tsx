@@ -65,7 +65,7 @@ export function CollapsibleMenuDesktop({ links, text }: DesktopMenuProps) {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((p) => !p)}
-        className="inline-flex h-9 items-center gap-1 rounded-md px-3 hover:bg-gray-200 dark:hover:bg-gray-700"
+        className="inline-flex h-9 items-center gap-1 rounded-md px-3 transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none"
       >
         <span>{text}</span>
         <FiChevronDown
@@ -120,7 +120,7 @@ export function CollapsibleMenuMobile({ links, text, closeNav }: MobileMenuProps
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((p) => !p)}
-        className="flex w-full items-center justify-between rounded-md px-3 py-3 text-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+        className="flex w-full items-center justify-between rounded-md px-3 py-3 text-lg transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none"
       >
         <span>{text}</span>
         <FiChevronDown

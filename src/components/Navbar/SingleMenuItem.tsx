@@ -26,7 +26,7 @@ export function SingleMenuItem({ link, onSelect }: SingleMenuItemProps) {
   return (
     <Link
       href={link.href}
-      className="block whitespace-nowrap rounded-md px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700"
+      className="block whitespace-nowrap rounded-md px-3 py-2 text-left transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none"
       onClick={handleClick}
     >
       {link.label}

@@ -1,5 +1,6 @@
 import { useTheme } from "next-themes";
-import { useId } from "react";
+import { type MouseEvent, useId } from "react";
+import { flushSync } from "react-dom";
 
 const RAY_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315];
 
@@ -47,6 +48,48 @@ const SunMoonIcon = () => {
   );
 };
 
+// The new theme spreads out as a circle from the button. The `theme-reveal`
+// class scopes the CSS (globals.css) to this transition, so the card cover
+// morph keeps its default root crossfade.
+const revealTheme = (e: MouseEvent<HTMLButtonElement>, apply: () => void) => {
+  if (
+    typeof document.startViewTransition !== "function" ||
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    apply();
+    return;
+  }
+
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = rect.left + rect.width / 2;
+  const y = rect.top + rect.height / 2;
+  const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+  const root = document.documentElement;
+
+  root.classList.add("theme-reveal");
+  try {
+    // flushSync so next-themes has swapped the `dark` class before the new
+    // snapshot is taken.
+    const transition = document.startViewTransition(() => flushSync(apply));
+    transition.ready
+      .then(() =>
+        root.animate(
+          { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+          {
+            duration: 500,
+            easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+            pseudoElement: "::view-transition-new(root)",
+          },
+        ),
+      )
+      .catch(() => {});
+    transition.finished.finally(() => root.classList.remove("theme-reveal"));
+  } catch {
+    root.classList.remove("theme-reveal");
+    apply();
+  }
+};
+
 export const DarkModeHandler = () => {
   const { setTheme, resolvedTheme } = useTheme();
 
@@ -54,7 +97,7 @@ export const DarkModeHandler = () => {
     <button
       type="button"
       className="inline-flex size-9 items-center justify-center rounded-md transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none"
-      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+      onClick={(e) => revealTheme(e, () => setTheme(resolvedTheme === "dark" ? "light" : "dark"))}
       aria-label="Toggle dark mode"
     >
       <SunMoonIcon />

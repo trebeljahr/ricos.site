@@ -418,6 +418,14 @@ code {
   overflow: clip;
 }
 
+/* Theme toggle reveal (Navbar/DarkModeHandler.tsx): the new theme is clipped
+   to a growing circle in JS, so both root snapshots skip the default crossfade. */
+html.theme-reveal::view-transition-old(root),
+html.theme-reveal::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 [data-site-search] * {
   list-style: none;
   margin-block: 0;

@@ -450,6 +450,20 @@ html.theme-reveal-in::view-transition-old(root) {
   z-index: 1;
 }
 
+/* Page covers keep their view-transition-name for the cover morph. During the
+   reveal that would lift them above both root snapshots, so they would skip
+   the clip and the dim and float over the moving edge. */
+html.theme-reveal [style*="view-transition-name"] {
+  view-transition-name: none !important;
+}
+
+/* The new page is live during the reveal: without this, elements with colour
+   transitions fade in from their old theme inside the lit circle. The sun/moon
+   icon keeps its morph. */
+html.theme-reveal-swap *:not(svg, svg *) {
+  transition: none !important;
+}
+
 /* Warm rim on the lit side of the reveal circle. DarkModeHandler adds a fixed,
    empty .theme-reveal-glow for the transition; its group paints above the root
    snapshots and draws a ring whose radius follows the clip circle. */

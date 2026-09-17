@@ -53,6 +53,9 @@ const SunMoonIcon = () => {
 // corners. Switching back runs the same motion reversed, pulling the light up
 // into the top again. The `theme-reveal` class scopes the CSS (globals.css) to this
 // transition, so the card cover morph keeps its default root crossfade.
+//
+// Phones skip the glowing edge: its ring is a full-screen gradient repainted on
+// every frame, which stutters on a phone GPU at 3x pixel density.
 const revealTheme = (toLight: boolean, apply: () => void) => {
   if (
     typeof document.startViewTransition !== "function" ||
@@ -65,6 +68,7 @@ const revealTheme = (toLight: boolean, apply: () => void) => {
   const x = window.innerWidth / 2;
   const radius = Math.hypot(x, window.innerHeight);
   const root = document.documentElement;
+  const withGlow = !window.matchMedia("(pointer: coarse)").matches;
 
   root.classList.add("theme-reveal");
   root.classList.toggle("theme-reveal-in", !toLight);
@@ -74,7 +78,7 @@ const revealTheme = (toLight: boolean, apply: () => void) => {
   document.querySelectorAll(".theme-reveal-glow").forEach((el) => el.remove());
   const glowElement = document.createElement("div");
   glowElement.className = "theme-reveal-glow";
-  document.body.append(glowElement);
+  if (withGlow) document.body.append(glowElement);
   let clip: Animation | undefined;
   let glow: Animation | undefined;
   let dim: Animation | undefined;
@@ -85,12 +89,18 @@ const revealTheme = (toLight: boolean, apply: () => void) => {
     glow?.cancel();
     dim?.cancel();
     glowElement.remove();
-    root.classList.remove("theme-reveal", "theme-reveal-in");
+    root.classList.remove("theme-reveal", "theme-reveal-in", "theme-reveal-swap");
   };
   try {
     // flushSync so next-themes has swapped the `dark` class before the new
-    // snapshot is taken.
-    const transition = document.startViewTransition(() => flushSync(apply));
+    // snapshot is taken. The new snapshot is live, so `theme-reveal-swap`
+    // turns off CSS transitions first: otherwise navbar and cards fade from
+    // their old colours inside the lit circle. Set here rather than before the
+    // transition so the whole page restyles once, not twice.
+    const transition = document.startViewTransition(() => {
+      root.classList.add("theme-reveal-swap");
+      flushSync(apply);
+    });
     transition.ready
       .then(() => {
         const timing: KeyframeAnimationOptions = {
@@ -112,13 +122,15 @@ const revealTheme = (toLight: boolean, apply: () => void) => {
         );
         // Same timing, so the ring stays on the clip edge. It fades at both
         // ends so no glowing dot lingers at the top of the screen.
-        glow = root.animate(
-          {
-            "--theme-reveal-r": ["0px", `${radius}px`],
-            opacity: [0, 1, 1, 0],
-          },
-          { ...timing, pseudoElement: "::view-transition-group(theme-reveal-glow)" },
-        );
+        glow = withGlow
+          ? root.animate(
+              {
+                "--theme-reveal-r": ["0px", `${radius}px`],
+                opacity: [0, 1, 1, 0],
+              },
+              { ...timing, pseudoElement: "::view-transition-group(theme-reveal-glow)" },
+            )
+          : undefined;
         // Images look the same in both themes, so the edge alone crosses them
         // unseen. Dimming the dark page while the light moves splits each image
         // into a lit and an unlit part. The dark page starts at full brightness

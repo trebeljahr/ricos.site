@@ -1,8 +1,7 @@
 import { motion, useAnimation, useReducedMotion } from "motion/react";
 import dynamic from "next/dynamic";
-import { usePlausible } from "next-plausible";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { markEggFound } from "src/lib/easterEggs";
+import { useEasterEgg } from "src/hooks/useEasterEgg";
 import { HandButton } from "./HandButton";
 import { HandEmoji } from "./HandEmoji";
 
@@ -10,8 +9,6 @@ import { HandEmoji } from "./HandEmoji";
 const ConfettiExplosion = dynamic(() => import("react-confetti-explosion"), { ssr: false });
 
 const EGG_ID = "waving-hand";
-const CLICKS_TO_TRIGGER = 5;
-const CLICK_WINDOW_MS = 2000;
 
 const idleWave = {
   animation: { rotate: [0, 10, 0, 10, 0, 10, 0] },
@@ -32,8 +29,6 @@ const furiousWave = {
 const WavingHand = () => {
   const controls = useAnimation();
   const reduceMotion = useReducedMotion();
-  const plausible = usePlausible();
-  const clickTimes = useRef<number[]>([]);
   const isFurious = useRef(false);
   const [confettiKey, setConfettiKey] = useState<number | null>(null);
 
@@ -48,9 +43,6 @@ const WavingHand = () => {
   }, [controls]);
 
   const triggerEgg = useCallback(async () => {
-    plausible("Easter Egg", { props: { egg: EGG_ID } });
-    markEggFound(EGG_ID);
-
     if (reduceMotion) {
       controls.start(idleWave.animation, idleWave.transition);
       return;
@@ -63,20 +55,14 @@ const WavingHand = () => {
     } finally {
       isFurious.current = false;
     }
-  }, [controls, plausible, reduceMotion]);
+  }, [controls, reduceMotion]);
+
+  const registerClick = useEasterEgg(EGG_ID, { onTrigger: () => void triggerEgg() });
 
   const handleClick = () => {
     if (isFurious.current) return;
 
-    const now = Date.now();
-    clickTimes.current = [...clickTimes.current.filter((t) => now - t < CLICK_WINDOW_MS), now];
-
-    if (clickTimes.current.length >= CLICKS_TO_TRIGGER) {
-      clickTimes.current = [];
-      void triggerEgg();
-      return;
-    }
-
+    if (registerClick()) return;
     controls.start(quickWave.animation, quickWave.transition);
   };
 

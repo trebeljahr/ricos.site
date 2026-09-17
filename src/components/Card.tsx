@@ -94,9 +94,7 @@ export function Card({
   const video = coverAspect === "video";
   const letterboxed = horizontal && video;
   const hasDimensions = cover.width !== undefined && cover.height !== undefined;
-  // Narrow vertical cards show the subtitle or the excerpt, not both: the
-  // subtitle already says what the piece is about.
-  const showExcerpt = Boolean(markdownExcerpt || excerpt) && (horizontal || !subtitle);
+  const hasExcerpt = Boolean(markdownExcerpt || excerpt);
 
   return (
     <Link
@@ -175,8 +173,10 @@ export function Card({
                 ? "text-base font-semibold"
                 : horizontal
                   ? "text-xl font-bold md:text-2xl"
-                  : // Narrow grid columns: one step smaller so long titles wrap less.
-                    "text-xl font-bold",
+                  : // Narrow grid columns: one step smaller so long titles wrap
+                    // less, and room for two lines so the text below starts at
+                    // the same height across a row.
+                    "min-h-[2lh] text-xl font-bold",
             )}
           >
             {title}
@@ -188,24 +188,33 @@ export function Card({
           )}
         </div>
 
-        {subtitle && (
+        {horizontal && subtitle && (
           <p className="m-0 mt-1 text-base text-gray-600 md:text-lg dark:text-gray-300">
             {subtitle}
           </p>
         )}
 
-        {showExcerpt && (
+        {!horizontal && (subtitle || hasExcerpt) && (
+          // Vertical cards sit side by side in grids, so every one shows a single
+          // blurb in the same style: the subtitle when there is one (it already
+          // says what the piece is about), otherwise the excerpt.
+          <div className="mt-2 line-clamp-3 text-base leading-relaxed text-gray-600 md:text-lg dark:text-gray-300 [&_p]:my-0">
+            {subtitle ? (
+              <p>{subtitle}</p>
+            ) : markdownExcerpt ? (
+              <MDXExcerpt source={markdownExcerpt} />
+            ) : (
+              <p>{excerpt}</p>
+            )}
+          </div>
+        )}
+
+        {horizontal && hasExcerpt && (
           // Sized one step below body copy (prose md:prose-lg xl:prose-xl) so
-          // cards don't read as fine print next to the text around them. Narrow
-          // vertical cards get fewer lines so they don't look crammed.
+          // cards don't read as fine print next to the text around them.
           // The browser draws the "…" when an excerpt overflows, so cards keep
           // a consistent height no matter how long the stored excerpt is.
-          <div
-            className={clsx(
-              "mt-3 text-base leading-relaxed text-gray-500 md:text-lg dark:text-gray-400 [&_p]:my-0",
-              horizontal ? "line-clamp-4" : "line-clamp-3",
-            )}
-          >
+          <div className="mt-3 line-clamp-4 text-base leading-relaxed text-gray-500 md:text-lg dark:text-gray-400 [&_p]:my-0">
             {markdownExcerpt ? <MDXExcerpt source={markdownExcerpt} /> : <p>{excerpt}</p>}
           </div>
         )}

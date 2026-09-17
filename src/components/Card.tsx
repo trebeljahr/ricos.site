@@ -94,6 +94,9 @@ export function Card({
   const video = coverAspect === "video";
   const letterboxed = horizontal && video;
   const hasDimensions = cover.width !== undefined && cover.height !== undefined;
+  // Narrow vertical cards show the subtitle or the excerpt, not both: the
+  // subtitle already says what the piece is about.
+  const showExcerpt = Boolean(markdownExcerpt || excerpt) && (horizontal || !subtitle);
 
   return (
     <Link
@@ -168,7 +171,12 @@ export function Card({
           <Heading
             className={clsx(
               "m-0 grow leading-snug tracking-tight transition-colors duration-300 ease-out group-hover:text-accent",
-              compact ? "text-base font-semibold" : "text-xl font-bold md:text-2xl",
+              compact
+                ? "text-base font-semibold"
+                : horizontal
+                  ? "text-xl font-bold md:text-2xl"
+                  : // Narrow grid columns: one step smaller so long titles wrap less.
+                    "text-xl font-bold",
             )}
           >
             {title}
@@ -186,7 +194,7 @@ export function Card({
           </p>
         )}
 
-        {(markdownExcerpt || excerpt) && (
+        {showExcerpt && (
           // Sized one step below body copy (prose md:prose-lg xl:prose-xl) so
           // cards don't read as fine print next to the text around them. Narrow
           // vertical cards get fewer lines so they don't look crammed.

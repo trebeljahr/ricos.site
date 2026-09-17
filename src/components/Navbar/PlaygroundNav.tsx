@@ -269,7 +269,12 @@ export function PlaygroundSceneGrid() {
                   headingAs="h3"
                   size="compact"
                   coverAspect="video"
-                  cover={{ src: previewSrc(scene), alt: "", width: 400, height: 225 }}
+                  cover={{
+                    src: previewSrc(scene),
+                    alt: `Screenshot of the ${turnKebabIntoTitleCase(scene.name)} 3D demo`,
+                    width: 400,
+                    height: 225,
+                  }}
                   sizes="(min-width: 1024px) 320px, (min-width: 640px) 50vw, 100vw"
                 />
               </li>

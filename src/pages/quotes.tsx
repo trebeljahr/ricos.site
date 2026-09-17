@@ -1,3 +1,4 @@
+import { FiChevronDown, FiX } from "@components/Icons";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header from "@components/PostHeader";
@@ -38,6 +39,7 @@ const chip = (active: boolean) =>
 export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portraits: Portraits }) {
   const [searched, setSearched] = useState<SearchableQuote[]>(quotes);
   const [topic, setTopic] = useState<string | null>(null);
+  const [topicsOpen, setTopicsOpen] = useState(false);
   const displayedQuotes = useMemo(
     () => (topic ? searched.filter((quote) => quote.tags.includes(topic)) : searched),
     [searched, topic],
@@ -71,28 +73,51 @@ export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portra
             threshold={0.3}
             searchByTitle="Search by words, author or book..."
           />
-          <fieldset className="not-prose mt-4 flex flex-wrap gap-2">
-            <legend className="sr-only">Filter by topic</legend>
+          <div className="not-prose mt-4 flex flex-wrap items-center gap-2">
             <button
               type="button"
-              aria-pressed={topic === null}
-              onClick={() => setTopic(null)}
-              className={chip(topic === null)}
+              aria-expanded={topicsOpen}
+              aria-controls="quote-topics"
+              onClick={() => setTopicsOpen((open) => !open)}
+              className={clsx(chip(false), "inline-flex items-center gap-1.5")}
             >
-              All
+              Topics
+              <FiChevronDown
+                aria-hidden
+                className={clsx("transition-transform", topicsOpen && "rotate-180")}
+              />
             </button>
-            {topics.map(([tag, count]) => (
+            {topic && (
               <button
-                key={tag}
                 type="button"
-                aria-pressed={topic === tag}
-                onClick={() => setTopic(topic === tag ? null : tag)}
-                className={chip(topic === tag)}
+                onClick={() => setTopic(null)}
+                aria-label={`Clear topic filter: ${topic}`}
+                className={clsx(chip(true), "inline-flex items-center gap-1.5")}
               >
-                {tag} <span className="opacity-60">{count}</span>
+                {topic}
+                <FiX aria-hidden />
               </button>
-            ))}
-          </fieldset>
+            )}
+          </div>
+          {topicsOpen && (
+            <fieldset id="quote-topics" className="not-prose mt-3 flex flex-wrap gap-2">
+              <legend className="sr-only">Filter by topic</legend>
+              {topics.map(([tag, count]) => (
+                <button
+                  key={tag}
+                  type="button"
+                  aria-pressed={topic === tag}
+                  onClick={() => {
+                    setTopic(topic === tag ? null : tag);
+                    setTopicsOpen(false);
+                  }}
+                  className={chip(topic === tag)}
+                >
+                  {tag} <span className="opacity-60">{count}</span>
+                </button>
+              ))}
+            </fieldset>
+          )}
           <p>Amount: {displayedQuotes.length}</p>
           <QuoteMosaic quotes={displayedQuotes} portraits={portraits} />
         </section>

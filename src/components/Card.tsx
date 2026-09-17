@@ -181,17 +181,23 @@ export function Card({
         </div>
 
         {subtitle && (
-          <p className="m-0 mt-1.5 text-base font-medium md:text-lg xl:text-xl text-gray-700 dark:text-gray-200">
+          <p className="m-0 mt-1 text-base text-gray-600 md:text-lg dark:text-gray-300">
             {subtitle}
           </p>
         )}
 
         {(markdownExcerpt || excerpt) && (
           // Sized one step below body copy (prose md:prose-lg xl:prose-xl) so
-          // cards don't read as fine print next to the text around them.
+          // cards don't read as fine print next to the text around them. Narrow
+          // vertical cards get fewer lines so they don't look crammed.
           // The browser draws the "…" when an excerpt overflows, so cards keep
           // a consistent height no matter how long the stored excerpt is.
-          <div className="mt-3 line-clamp-4 text-base leading-relaxed md:text-lg text-gray-600 dark:text-gray-400 [&_p]:my-0">
+          <div
+            className={clsx(
+              "mt-3 text-base leading-relaxed text-gray-500 md:text-lg dark:text-gray-400 [&_p]:my-0",
+              horizontal ? "line-clamp-4" : "line-clamp-3",
+            )}
+          >
             {markdownExcerpt ? <MDXExcerpt source={markdownExcerpt} /> : <p>{excerpt}</p>}
           </div>
         )}
@@ -200,7 +206,7 @@ export function Card({
 
         {hasMetadata && (
           // Pinned to the bottom so metadata lines up across a row of cards.
-          <div className="mt-auto pt-1">
+          <div className="mt-auto pt-1 [&>div]:text-gray-500 dark:[&>div]:text-gray-400">
             <MetadataDisplay
               date={date}
               readingTime={readingTime}

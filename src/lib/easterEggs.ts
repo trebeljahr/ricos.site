@@ -1,4 +1,20 @@
 export const EASTER_EGGS_STORAGE_KEY = "easter-eggs:found";
+/** Fired on window after a new egg is recorded. */
+export const EASTER_EGGS_CHANGED_EVENT = "easter-eggs:changed";
+
+/** Every egg on the site. The found counter shows progress against this list. */
+export const EASTER_EGG_IDS = [
+  "waving-hand",
+  "writing",
+  "traveling",
+  "newsletter",
+  "booknotes",
+  "photography",
+  "creative-coding",
+  "projects",
+] as const;
+
+export type EasterEggId = (typeof EASTER_EGG_IDS)[number];
 
 export function getFoundEggs(): string[] {
   try {
@@ -19,5 +35,6 @@ export function markEggFound(id: string): boolean {
   } catch {
     // Storage blocked (private mode, disabled site data): the find still counts for this visit.
   }
+  window.dispatchEvent(new Event(EASTER_EGGS_CHANGED_EVENT));
   return true;
 }

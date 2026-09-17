@@ -1,4 +1,11 @@
 import { Card } from "@components/Card";
+import { BooknotesEgg } from "@components/EasterEggs/Booknotes";
+import { CreativeCodingEgg } from "@components/EasterEggs/CreativeCoding";
+import { NewsletterEgg } from "@components/EasterEggs/Newsletter";
+import { PhotographyEgg } from "@components/EasterEggs/Photography";
+import { ProjectsEgg } from "@components/EasterEggs/Projects";
+import { TravelingEgg } from "@components/EasterEggs/Traveling";
+import { WritingEgg } from "@components/EasterEggs/Writing";
 import { ExternalLink } from "@components/ExternalLink";
 import { FancyLink } from "@components/FancyUI";
 import { HomePageSection } from "@components/HomePageSection";
@@ -102,7 +109,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
               content: props.postsSelection,
               withSubtitle: true,
             }}
-            title="Writing 📝"
+            title={<WritingEgg />}
             description={props.texts.writing}
             linkElem={<FancyLink href="/posts" text="Browse All Posts" />}
           />
@@ -113,7 +120,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
             cardGalleryProps={{
               content: props.travelBlogsSelection,
             }}
-            title="Traveling Stories 🌍"
+            title={<TravelingEgg />}
             description={props.texts.traveling}
             carousel={true}
             linkElem={<FancyLink href="/travel" text="Explore More Travel Stories" />}
@@ -125,7 +132,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
             cardGalleryProps={{
               content: props.newsletterSelection,
             }}
-            title="Live and Learn Newsletter 💌"
+            title={<NewsletterEgg />}
             description={props.texts.newsletter}
             linkElem={<NewsletterForm />}
           />
@@ -136,7 +143,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
             cardGalleryProps={{
               content: props.booknotesSelection,
             }}
-            title="Booknotes 📚"
+            title={<BooknotesEgg />}
             description={props.texts.booknotes}
             carousel={true}
             linkElem={<FancyLink href="/booknotes" text="Search All Booknotes" />}
@@ -145,7 +152,9 @@ const IndexPage = ({ seo, ...props }: Props) => {
 
         <section className="pt-1 pb-20 px-3">
           <div className="mx-auto max-w-(--breakpoint-lg)">
-            <h2 className="text-5xl">Photography 📸</h2>
+            <h2 className="text-5xl">
+              <PhotographyEgg photos={props.featuredTrips} />
+            </h2>
             <p className="mb-14 max-w-prose">
               Trips through Asia, Europe, the Caribbean and South America, told in pictures. Six of
               my favourite collections below. See <Link href="/photography">all trips</Link> for the
@@ -181,7 +190,9 @@ const IndexPage = ({ seo, ...props }: Props) => {
 
         <section className="dark:bg-nightBlue bg-slate-100 pt-1 pb-20 px-3">
           <div className="mx-auto max-w-(--breakpoint-lg)">
-            <h2 className="text-5xl">Creative Coding 🎨</h2>
+            <h2 className="text-5xl">
+              <CreativeCodingEgg />
+            </h2>
             <p className="mb-14 max-w-prose">
               Three.js and R3F experiments. Shaders, oceans, generative terrain, particle systems.
               These are the standouts; the full playground has dozens more.
@@ -216,7 +227,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
               withSubtitle: true,
               coverAspect: "video",
             }}
-            title="Projects 🛠️"
+            title={<ProjectsEgg />}
             linkElem={<FancyLink href="/projects" text="See All Projects" />}
           >
             <p>

@@ -4,7 +4,7 @@ import { CardGallery, type CardGalleryProps, ScrollableCardGallery } from "./Car
 import { MDXContent } from "./MDXContent";
 
 type HomePageSectionProps = {
-  title: string;
+  title: ReactNode;
   cardGalleryProps: CardGalleryProps;
   description?: SectionDescription["content"];
   linkElem?: JSX.Element;

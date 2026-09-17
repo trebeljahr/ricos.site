@@ -63,7 +63,20 @@ const TravelingEgg = () => {
       .finished.catch(() => undefined);
   };
 
+  const spinning = useRef(false);
+  // Clicks before the fifth spin the globe one turn instead of wiggling it.
+  const spinOnce = async () => {
+    if (spinning.current || reduceMotion) return;
+    spinning.current = true;
+    for (let i = 1; i <= GLOBES.length; i++) {
+      setGlobe(GLOBES[i % GLOBES.length]);
+      await wait(90);
+    }
+    spinning.current = false;
+  };
+
   const registerClick = useEasterEgg("traveling", {
+    onProgress: () => void spinOnce(),
     onTrigger: () =>
       run(async () => {
         if (!globeRef.current) return;
@@ -89,17 +102,12 @@ const TravelingEgg = () => {
         await wait(250);
         await fly(plan.back, "back", BACK_MS, "ease-out");
 
-        // Touchdown: the plane tucks into the globe and the globe bounces.
-        planeRef.current?.animate(
-          [
-            { scale: 1, opacity: 1 },
-            { scale: 0.4, opacity: 0 },
-          ],
-          {
-            duration: 250,
-            fill: "forwards",
-          },
-        );
+        // Touchdown: the plane fades out where it landed, and the globe bounces.
+        planeRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], {
+          duration: 450,
+          easing: "ease-out",
+          fill: "forwards",
+        });
         globeRef.current?.animate([{ scale: 1 }, { scale: 1.25 }, { scale: 1 }], {
           duration: 350,
           easing: "ease-out",
@@ -119,6 +127,7 @@ const TravelingEgg = () => {
       Traveling Stories{" "}
       <EmojiButton
         label="Globe"
+        nudge={false}
         onClick={() => {
           if (!busyRef.current) registerClick();
         }}

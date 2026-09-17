@@ -111,7 +111,7 @@ export const BlogLayout = ({
         <section>
           <Header
             breadcrumbs={{ path: url }}
-            meta={<MetadataDisplay date={date} readingTime={readingTime} />}
+            meta={<MetadataDisplay date={date} readingTime={readingTime} clockEgg />}
             subtitle={subtitle}
             title={title}
           />

@@ -1,3 +1,4 @@
+import { SaplingEgg } from "@components/EasterEggs/Sapling";
 import clsx from "clsx";
 import Link from "next/link";
 import { type ChangeEvent, type FormEvent, type ReactNode, useRef, useState } from "react";
@@ -97,7 +98,11 @@ export const NewsletterForm = ({
     </>
   );
 
-  const defaultHeading = <h2 className="mt-0!">Subscribe to Live and Learn 🌱</h2>;
+  const defaultHeading = (
+    <h2 className="relative mt-0!">
+      Subscribe to Live and Learn <SaplingEgg />
+    </h2>
+  );
 
   return (
     <div className="mx-auto w-full max-w-prose mt-16">

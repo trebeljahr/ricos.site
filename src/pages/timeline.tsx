@@ -1,6 +1,8 @@
+import { DinoTail } from "@components/EasterEggs/Dino";
 import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
 import { TimelineList } from "@components/TimelineList";
+import { useRef } from "react";
 import type { CommonMetadata } from "src/@types";
 import {
   getPageTimelineEntries,
@@ -54,6 +56,7 @@ function getPhotographyEntries(
 
 export default function Timeline({ entries, seo }: Props) {
   const url = "timeline";
+  const titleRef = useRef<HTMLElement>(null);
 
   return (
     <Layout
@@ -68,9 +71,10 @@ export default function Timeline({ entries, seo }: Props) {
       url={url}
     >
       <main className="pt-5 pb-20 px-3 max-w-(--breakpoint-lg) mx-auto">
-        <section className="mb-14">
+        <section ref={titleRef} className="mb-14">
           <Header breadcrumbs={{ path: url }} title="Timeline" />
         </section>
+        <DinoTail anchorRef={titleRef} />
 
         <TimelineList entries={entries} initialCount={24} batchSize={16} />
       </main>

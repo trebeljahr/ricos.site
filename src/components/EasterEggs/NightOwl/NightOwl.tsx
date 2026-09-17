@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-const PERCH_MS = 4500;
-const OWL_SIZE = 30;
+const PERCH_MS = 6000;
+const OWL_SIZE = 26;
 
 /**
- * An owl flies in from the top right, perches on the bottom edge of the
- * navbar next to the theme toggle, looks around, and flies off again.
- * Fixed and click-through, so it never covers anything that can be clicked.
+ * An owl flies in from the top right, perches on the site logo, looks around,
+ * and flies off again. Clicking it makes it hoot. Only the owl itself takes
+ * clicks; the rest of the overlay lets them through.
  */
 const NightOwl = ({
   anchor,
@@ -27,17 +27,18 @@ const NightOwl = ({
 
   // Measured once: the owl stays where it landed even if the page re-renders.
   const [{ left, top }] = useState(() => {
-    const button = anchor.getBoundingClientRect();
-    const bar = (
-      anchor.closest("header") ??
-      anchor.closest("nav") ??
-      anchor
-    ).getBoundingClientRect();
+    const logo =
+      anchor.closest("header")?.querySelector('a[href="/"] img') ??
+      document.querySelector('header a[href="/"] img');
+    const perch = (logo ?? anchor).getBoundingClientRect();
     return {
-      left: Math.max(8, button.left + button.width / 2 - OWL_SIZE - 6),
-      top: bar.bottom - OWL_SIZE + 6,
+      left: Math.max(4, perch.left + perch.width / 2 - OWL_SIZE / 2),
+      // Feet on the rim of the flask.
+      top: Math.max(0, perch.top - OWL_SIZE + 8),
     };
   });
+  const [hoots, setHoots] = useState(0);
+  const perchTimer = useRef(0);
 
   useEffect(() => {
     const body = bodyRef.current;
@@ -46,12 +47,11 @@ const NightOwl = ({
     const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const fromX = window.innerWidth - left + 40;
     let gone = false;
-    let perchTimer = 0;
 
     const leaveNow = () => {
       if (gone) return;
       gone = true;
-      window.clearTimeout(perchTimer);
+      window.clearTimeout(perchTimer.current);
       const exit = calm
         ? body.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: "forwards" })
         : body.animate(
@@ -106,12 +106,12 @@ const NightOwl = ({
             { duration: 2200, delay: 500, easing: "ease-in-out" },
           );
         }
-        perchTimer = window.setTimeout(leaveNow, PERCH_MS);
+        perchTimer.current = window.setTimeout(leaveNow, PERCH_MS);
       })
       .catch(() => undefined);
 
     return () => {
-      window.clearTimeout(perchTimer);
+      window.clearTimeout(perchTimer.current);
       arrive.cancel();
     };
   }, [left]);
@@ -120,16 +120,43 @@ const NightOwl = ({
     if (leave) flyOff.current();
   }, [leave]);
 
+  const onHoot = () => {
+    void import("./hoot").then(({ hoot }) => hoot());
+    setHoots((n) => n + 1);
+    // A hoot bob, and a few more seconds on the perch.
+    headRef.current?.animate(
+      [
+        { transform: "translateY(0) scale(1)" },
+        { transform: "translateY(-3px) scale(1.12, 0.92)" },
+        { transform: "translateY(0) scale(1)" },
+        { transform: "translateY(-2px) scale(1.08, 0.95)", offset: 0.75 },
+        { transform: "translateY(0) scale(1)" },
+      ],
+      { duration: 900, easing: "ease-out" },
+    );
+    window.clearTimeout(perchTimer.current);
+    perchTimer.current = window.setTimeout(() => flyOff.current(), PERCH_MS);
+  };
+
   return createPortal(
     <span
-      aria-hidden="true"
       className="pointer-events-none fixed z-1000 leading-none"
       style={{ left, top, width: OWL_SIZE, height: OWL_SIZE, fontSize: OWL_SIZE - 4 }}
     >
       <span ref={bodyRef} className="inline-block" style={{ opacity: 0 }}>
-        <span ref={headRef} className="inline-block origin-bottom">
-          🦉
-        </span>
+        <button
+          type="button"
+          aria-label="Owl"
+          onClick={onHoot}
+          className="pointer-events-auto cursor-pointer appearance-none border-0 bg-transparent p-0 leading-none"
+        >
+          <span ref={headRef} aria-hidden="true" className="inline-block origin-bottom">
+            🦉
+          </span>
+        </button>
+      </span>
+      <span className="sr-only" aria-live="polite">
+        {hoots > 0 ? "Hoo hoo" : ""}
       </span>
     </span>,
     document.body,

@@ -50,6 +50,22 @@
   --animate-rise-in: rise-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
   /* Easter egg emojis: a small wiggle every 11s so they read as clickable. */
   --animate-egg-hint: egg-hint 11s ease-in-out infinite;
+  --animate-egg-snooze: egg-snooze 2.4s ease-out infinite both;
+
+  /* Easter egg: a napping cat's z's drift up and fade (IdleCat). */
+  @keyframes egg-snooze {
+    0% {
+      opacity: 0;
+      translate: 0 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      translate: 14px -30px;
+    }
+  }
 
   @keyframes egg-hint {
     0%,

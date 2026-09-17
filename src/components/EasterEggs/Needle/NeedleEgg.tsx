@@ -1,14 +1,12 @@
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useEasterEgg } from "src/hooks/useEasterEgg";
-import { EmojiButton } from "../EmojiButton";
-import { clampPageX, PageLayer, pageBox } from "../PageLayer";
-import { useEggRunner } from "../useEggRunner";
+import { useRecordEggFind } from "src/hooks/useEasterEgg";
+import { PageLayer, pageBox } from "../PageLayer";
 
-const CLICK_WINDOW_MS = 2000;
-const SHRINK_PER_CLICK = 0.13;
-// The stack of needles fans out from the first one.
-const STACK_ANGLES = [-38, -19, 19, 38];
+const HAYSTACKS = 10;
+const CLICKS_PER_STACK = 5;
+const SIZE = 28;
+const SHRINK_PER_CLICK = 0.15;
 
 type Straw = {
   id: number;
@@ -19,11 +17,12 @@ type Straw = {
   rotate: number;
   hue: number;
 };
+type Spot = { fx: number; fy: number };
 type Point = { x: number; y: number };
 
 let nextStrawId = 0;
 
-/** Straw pieces pulled off the haystack, flying out and falling. */
+/** Straw pieces pulled off a haystack, flying out and falling. */
 function pullStraws(at: Point, count: number, reach: number): Straw[] {
   return Array.from({ length: count }, () => {
     const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.4;
@@ -75,157 +74,106 @@ const StrawPiece = ({ straw, onDone }: { straw: Straw; onDone: (id: number) => v
   );
 };
 
-const NeedleEgg = () => {
+/** Spread the haystacks down the article, a few per band so they never pile up. */
+function scatter(): Spot[] {
+  return Array.from({ length: HAYSTACKS }, (_, i) => ({
+    fx: 0.04 + Math.random() * 0.9,
+    fy: (i + 0.15 + Math.random() * 0.7) / HAYSTACKS,
+  }));
+}
+
+/**
+ * Easter egg for /needlestack: haystacks are scattered down the page. Clicking
+ * one pulls the hay apart, and one of them, picked at random on every visit,
+ * has the needle in it.
+ */
+const NeedleEgg = ({ container }: { container: React.RefObject<HTMLElement | null> }) => {
   const reduceMotion = useReducedMotion();
-  const { run, wait, busyRef } = useEggRunner();
-  const hayRef = useRef<HTMLSpanElement>(null);
-  const regrow = useRef<number | undefined>(undefined);
-  const [pulled, setPulled] = useState(0);
+  const recordFind = useRecordEggFind();
+  const [spots] = useState(scatter);
+  const [needleIn] = useState(() => Math.floor(Math.random() * HAYSTACKS));
+  const [box, setBox] = useState<{
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null>(null);
+  const [pulled, setPulled] = useState<Record<number, number>>({});
   const [straws, setStraws] = useState<Straw[]>([]);
-  const [found, setFound] = useState<{ caption: Point } | null>(null);
+  const [found, setFound] = useState(false);
 
-  useEffect(() => () => window.clearTimeout(regrow.current), []);
-
-  const center = (): Point | null => {
-    if (!hayRef.current) return null;
-    const b = pageBox(hayRef.current);
-    return { x: b.left + b.width / 2, y: b.top + b.height / 2 };
-  };
-
-  const throwStraws = (count: number, reach: number) => {
-    const at = center();
-    if (!at || reduceMotion) return;
-    setStraws((current) => [...current.slice(-60), ...pullStraws(at, count, reach)]);
-  };
+  // Haystacks sit at fractions of the article box, so they follow its layout.
+  useEffect(() => {
+    const measure = () => container.current && setBox(pageBox(container.current));
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [container]);
 
   const dropStraw = useCallback(
     (id: number) => setStraws((current) => current.filter((s) => s.id !== id)),
     [],
   );
 
-  const registerClick = useEasterEgg("needle", {
-    // Each click pulls some hay off; stop clicking and the stack grows back.
-    onProgress: (clicks) => {
-      setPulled(clicks);
-      throwStraws(8, 60);
-      window.clearTimeout(regrow.current);
-      regrow.current = window.setTimeout(() => setPulled(0), CLICK_WINDOW_MS);
-    },
-    onTrigger: () =>
-      run(async () => {
-        window.clearTimeout(regrow.current);
-        throwStraws(28, 110);
-        const hay = hayRef.current ? pageBox(hayRef.current) : null;
-        const captionWidth = 190;
-        setFound({
-          caption: hay
-            ? {
-                x: clampPageX(hay.left + hay.width / 2 - captionWidth / 2, captionWidth),
-                y: hay.top + hay.height + 12,
-              }
-            : { x: 0, y: 0 },
-        });
-        await wait(4200);
-        setFound(null);
-        setPulled(0);
-        await wait(500);
-      }),
+  if (!box) return null;
+
+  const place = (spot: Spot) => ({
+    left: box.left + spot.fx * Math.max(0, box.width - SIZE),
+    top: box.top + spot.fy * Math.max(0, box.height - SIZE),
   });
 
-  const stackOut = found !== null;
+  const pull = (index: number) => {
+    const at = place(spots[index]);
+    const center = { x: at.left + SIZE / 2, y: at.top + SIZE / 2 };
+    const clicks = (pulled[index] ?? 0) + 1;
+    setPulled((current) => ({ ...current, [index]: clicks }));
+
+    const done = clicks >= CLICKS_PER_STACK;
+    if (!reduceMotion) {
+      setStraws((current) => [
+        ...current.slice(-70),
+        ...pullStraws(center, done ? 24 : 8, done ? 110 : 60),
+      ]);
+    }
+    if (done && index === needleIn && !found) {
+      setFound(true);
+      recordFind("needle");
+    }
+  };
 
   return (
-    <>
-      <EmojiButton
-        label="Haystack"
-        onClick={() => {
-          if (!busyRef.current) registerClick();
-        }}
-      >
-        <span ref={hayRef} className="relative inline-block">
-          <motion.span
-            className="inline-block origin-bottom"
+    <PageLayer>
+      {spots.map((spot, index) => {
+        const clicks = pulled[index] ?? 0;
+        const gone = clicks >= CLICKS_PER_STACK;
+        const isNeedle = gone && index === needleIn;
+        const at = place(spot);
+        return (
+          <motion.button
+            // biome-ignore lint/suspicious/noArrayIndexKey: a fixed number of haystacks
+            key={index}
+            type="button"
+            aria-label={isNeedle ? "Needle" : "Haystack"}
+            onClick={() => !gone && pull(index)}
+            className="pointer-events-auto absolute cursor-pointer appearance-none border-0 bg-transparent p-0 text-center leading-none"
+            style={{ left: at.left, top: at.top, width: SIZE, height: SIZE, fontSize: SIZE - 6 }}
             animate={{
-              scale: stackOut ? 0 : 1 - pulled * SHRINK_PER_CLICK,
-              opacity: stackOut ? 0 : 1,
+              scale: isNeedle ? 1 : gone ? 0 : 1 - clicks * SHRINK_PER_CLICK,
+              opacity: gone && !isNeedle ? 0 : 1,
+              rotate: isNeedle ? -14 : 0,
             }}
             transition={
-              reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 500, damping: 20 }
+              reduceMotion ? { duration: 0.2 } : { type: "spring", stiffness: 420, damping: 16 }
             }
           >
-            🌾
-          </motion.span>
-          <AnimatePresence>
-            {stackOut && (
-              <motion.span
-                key="needles"
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 flex items-center justify-center"
-                exit={{ opacity: 0, transition: { duration: 0.3 } }}
-              >
-                {[0, ...STACK_ANGLES].map((angle, i) => (
-                  <motion.span
-                    key={angle}
-                    className="absolute inline-block origin-bottom"
-                    initial={
-                      reduceMotion
-                        ? { rotate: angle, opacity: 0 }
-                        : {
-                            rotate: 0,
-                            scale: i === 0 ? 0 : 1,
-                            opacity: i === 0 ? 1 : 0,
-                            y: i === 0 ? 20 : 0,
-                          }
-                    }
-                    animate={{ rotate: angle, scale: 1, opacity: 1, y: 0 }}
-                    transition={
-                      reduceMotion
-                        ? { duration: 0.2 }
-                        : i === 0
-                          ? { type: "spring", stiffness: 420, damping: 12 }
-                          : { type: "spring", stiffness: 300, damping: 14, delay: 0.55 + i * 0.08 }
-                    }
-                  >
-                    🪡
-                  </motion.span>
-                ))}
-                {!reduceMotion && (
-                  <motion.span
-                    className="absolute -top-[0.35em] -right-[0.45em] inline-block text-[0.5em]"
-                    initial={{ scale: 0, rotate: -90 }}
-                    animate={{ scale: [0, 1.3, 0], rotate: 90 }}
-                    transition={{ duration: 0.8, delay: 0.25 }}
-                  >
-                    ✨
-                  </motion.span>
-                )}
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </span>
-      </EmojiButton>
-      <PageLayer>
-        {straws.map((straw) => (
-          <StrawPiece key={straw.id} straw={straw} onDone={dropStraw} />
-        ))}
-        <AnimatePresence>
-          {found && (
-            <motion.span
-              key="caption"
-              role="status"
-              className="absolute w-[190px] rounded-full bg-amber-100 px-3 py-1 text-center text-sm font-normal text-amber-900 shadow-md dark:bg-amber-900 dark:text-amber-100"
-              style={{ left: found.caption.x, top: found.caption.y }}
-              initial={{ opacity: 0, y: reduceMotion ? 0 : -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ delay: reduceMotion ? 0 : 0.9, duration: 0.3 }}
-            >
-              You found the needle.
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </PageLayer>
-    </>
+            {isNeedle ? "🪡" : "🌾"}
+          </motion.button>
+        );
+      })}
+      {straws.map((straw) => (
+        <StrawPiece key={straw.id} straw={straw} onDone={dropStraw} />
+      ))}
+    </PageLayer>
   );
 };
 

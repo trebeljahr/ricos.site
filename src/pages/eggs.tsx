@@ -53,13 +53,13 @@ export default function EggsPage() {
                   className="flex items-baseline gap-3 border-b border-gray-200 py-3 last:border-b-0 dark:border-gray-800"
                 >
                   <span aria-hidden="true" className="w-6 shrink-0 text-center">
-                    {isFound ? "🐣" : "🥚"}
+                    {isFound ? egg.emoji : "🥚"}
                   </span>
                   {isFound ? (
                     <span className="font-semibold">{egg.name}</span>
                   ) : (
                     <span className="text-gray-600 dark:text-gray-400">
-                      <span className="sr-only">Not found yet: </span>??? Somewhere on{" "}
+                      <span className="sr-only">Not found yet: </span>??? {egg.where.hint}{" "}
                       <Link href={egg.where.href}>{egg.where.label}</Link>
                     </span>
                   )}

@@ -20,6 +20,7 @@ const BOLT_STAGGER_MS = 170;
 const BOLT_MS = 650;
 const DURATION_MS = 2400;
 const GRAVITY = 1700;
+const FADE_MS = 250;
 
 function burst(
   sparks: Spark[],
@@ -58,16 +59,20 @@ const LightningOverlay = ({
   targets: PagePoint[];
   onDone: () => void;
 }) => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const glRef = useRef<HTMLCanvasElement>(null);
   const sparkRef = useRef<HTMLCanvasElement>(null);
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
 
   useEffect(() => {
+    const wrapper = wrapperRef.current;
     const glCanvas = glRef.current;
     const sparkCanvas = sparkRef.current;
     const ctx = sparkCanvas?.getContext("2d");
-    if (!glCanvas || !sparkCanvas || !ctx) return;
+    if (!wrapper || !glCanvas || !sparkCanvas || !ctx) return;
+    let shown = false;
+    let fadeTimer = 0;
 
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -175,13 +180,24 @@ const LightningOverlay = ({
         ctx.stroke();
       }
 
-      if (elapsed < DURATION_MS) frame = requestAnimationFrame(tick);
-      else onDoneRef.current();
+      // Show the canvases only once they hold a drawn frame, and fade them out
+      // before they are removed: creating or dropping a WebGL canvas can flash.
+      if (!shown) {
+        shown = true;
+        wrapper.style.opacity = "1";
+      }
+      if (elapsed < DURATION_MS) {
+        frame = requestAnimationFrame(tick);
+      } else {
+        wrapper.style.opacity = "0";
+        fadeTimer = window.setTimeout(() => onDoneRef.current(), FADE_MS + 20);
+      }
     };
     frame = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(frame);
+      window.clearTimeout(fadeTimer);
       for (const bolt of bolts) bolt.geometry.dispose();
       material.dispose();
       renderer?.dispose();
@@ -190,7 +206,12 @@ const LightningOverlay = ({
   }, [source, targets]);
 
   return createPortal(
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-50">
+    <div
+      ref={wrapperRef}
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-0 z-50"
+      style={{ opacity: 0, transition: `opacity ${FADE_MS}ms ease-out` }}
+    >
       <canvas
         ref={glRef}
         className="absolute inset-0 h-full w-full"

@@ -1,6 +1,7 @@
 import { Backlinks } from "@components/Backlinks";
 import { Card } from "@components/Card";
 import { BookCover } from "@components/CoverImage";
+import { TrophyEgg } from "@components/EasterEggs/Trophy";
 import { ExternalLink } from "@components/ExternalLink";
 import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
@@ -107,7 +108,11 @@ const Book = ({ booknote, relatedBooks, backlinks }: Props) => {
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
         <article>
           <PageTop breadcrumbs={{ path: url }}>
-            <MetadataDisplay readingTime={booknote.metadata.readingTime} date={booknote.date} />
+            <MetadataDisplay
+              readingTime={booknote.metadata.readingTime}
+              date={booknote.date}
+              clockEgg
+            />
             <section className="flex mt-4!">
               <div
                 className="not-prose block relative mr-2 mb-5 md:mb-0 w-60 overflow-hidden rounded-md"
@@ -120,7 +125,9 @@ const Book = ({ booknote, relatedBooks, backlinks }: Props) => {
                   <h1 className="my-2!">{booknote.title}</h1>
                   <p className="mt-2! mb-0!">{booknote.subtitle}</p>
                   <p className="mt-0! mb-2!">by {booknote.bookAuthor}</p>
-                  <p className="mt-12! mb-2!">🏆 Rated: {booknote.rating}/10</p>
+                  <p className="relative mt-12! mb-2!">
+                    <TrophyEgg rating={booknote.rating} /> Rated: {booknote.rating}/10
+                  </p>
                   {booknote.goodreadsLink && (
                     <ExternalLink href={booknote.goodreadsLink}>View on Goodreads</ExternalLink>
                   )}

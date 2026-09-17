@@ -9,6 +9,7 @@ import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Page as PageType } from "@velite";
 import dynamic from "next/dynamic";
+import { useRef } from "react";
 import { ogImageDimensions } from "src/lib/ogImage";
 import { pickProps } from "src/lib/utils/pickProps";
 
@@ -45,6 +46,7 @@ type Props = {
 
 export default function Page({ page, backlinks }: Props) {
   const { subtitle, title, cover } = page;
+  const articleRef = useRef<HTMLElement>(null);
   const ogImage = page.seoOgImage || cover.src;
 
   return (
@@ -77,20 +79,14 @@ export default function Page({ page, backlinks }: Props) {
         ]}
       />
       <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
-        <article className="mx-auto max-w-prose">
+        <article ref={articleRef} className="mx-auto max-w-prose">
           <Header
             breadcrumbs={{ path: page.slug }}
-            meta={<MetadataDisplay date={page.date} readingTime={page.metadata.readingTime} />}
-            subtitle={subtitle}
-            title={
-              page.slug === "needlestack" ? (
-                <>
-                  {title} <NeedleEgg />
-                </>
-              ) : (
-                title
-              )
+            meta={
+              <MetadataDisplay date={page.date} readingTime={page.metadata.readingTime} clockEgg />
             }
+            subtitle={subtitle}
+            title={title}
           />
 
           {page.hasDemos ? (
@@ -99,6 +95,8 @@ export default function Page({ page, backlinks }: Props) {
             <MDXContent source={page.content} />
           )}
         </article>
+
+        {page.slug === "needlestack" && <NeedleEgg container={articleRef} />}
 
         <footer>
           <NewsletterForm />

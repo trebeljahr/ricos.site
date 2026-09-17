@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import { useReducedMotion } from "motion/react";
 import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
@@ -12,7 +11,7 @@ import type { PagePoint } from "./LightningOverlay";
 const LightningOverlay = dynamic(() => import("./LightningOverlay"), { ssr: false });
 
 const MAX_BOLTS = 3;
-const GLOW_MS = 1500;
+const CALM_MS = 1500;
 
 type Strike = { source: PagePoint; targets: PagePoint[] };
 
@@ -34,9 +33,10 @@ function planStrike(palette: Element): Strike {
 
 const CreativeCodingEgg = () => {
   const reduceMotion = useReducedMotion();
-  const { run, wait, busyRef, busy } = useEggRunner();
+  const { run, wait, busyRef } = useEggRunner();
   const paletteRef = useRef<HTMLSpanElement>(null);
   const [strike, setStrike] = useState<Strike | null>(null);
+  const [calmBolt, setCalmBolt] = useState(false);
   const done = useRef<() => void>(() => undefined);
 
   const registerClick = useEasterEgg("creative-coding", {
@@ -44,7 +44,9 @@ const CreativeCodingEgg = () => {
       run(async () => {
         if (!paletteRef.current) return;
         if (reduceMotion) {
-          await wait(GLOW_MS);
+          setCalmBolt(true);
+          await wait(CALM_MS);
+          setCalmBolt(false);
           return;
         }
         await new Promise<void>((resolve) => {
@@ -57,19 +59,15 @@ const CreativeCodingEgg = () => {
 
   return (
     <>
-      <span className={clsx(busy && "text-accent")}>Creative Coding</span>{" "}
+      Creative Coding{" "}
       <EmojiButton
         label="Palette"
         onClick={() => {
           if (!busyRef.current) registerClick();
         }}
       >
-        <span
-          ref={paletteRef}
-          className="inline-block transition-[filter] duration-300"
-          style={busy ? { filter: "drop-shadow(0 0 6px #7fd8ff)" } : undefined}
-        >
-          🎨
+        <span ref={paletteRef} className="inline-block">
+          {calmBolt ? "⚡" : "🎨"}
         </span>
       </EmojiButton>
       {strike && (

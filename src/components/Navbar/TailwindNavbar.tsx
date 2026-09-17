@@ -1,3 +1,4 @@
+import { onLogoClick } from "@components/EasterEggs/Flask/logoClicks";
 import { FiMenu, FiX } from "@components/Icons";
 import { ProgressBar } from "@components/ProgressBar";
 import { SiteSearch } from "@components/SiteSearch";
@@ -20,6 +21,7 @@ export const RicosSiteBanner = ({ iconOnly = false, compact = false }: BannerPro
   return (
     <Link
       href="/"
+      onClick={(event) => onLogoClick(event.currentTarget.querySelector("img"))}
       className="flex shrink-0 items-center not-prose"
       aria-label={iconOnly ? "ricos.site home" : undefined}
     >

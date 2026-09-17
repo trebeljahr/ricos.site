@@ -4,33 +4,123 @@ export const EASTER_EGGS_CHANGED_EVENT = "easter-eggs:changed";
 
 export type EasterEgg = {
   id: string;
+  /** What the egg does, shown on /eggs once found. */
+  emoji: string;
   /** Shown on /eggs once found. */
   name: string;
   /** Where to look, shown on /eggs before it is found. */
-  where: { label: string; href: string };
+  where: { hint: string; label: string; href: string };
 };
 
 /** Every egg on the site. The counter and /eggs show progress against this list. */
 export const EASTER_EGGS = [
-  { id: "waving-hand", name: "The waving hand", where: { label: "the home page", href: "/" } },
-  { id: "writing", name: "The typo", where: { label: "the home page", href: "/" } },
-  { id: "traveling", name: "The round trip", where: { label: "the home page", href: "/" } },
-  { id: "newsletter", name: "The postmark", where: { label: "the home page", href: "/" } },
-  { id: "booknotes", name: "The talking books", where: { label: "the home page", href: "/" } },
-  { id: "photography", name: "The polaroid", where: { label: "the home page", href: "/" } },
-  { id: "creative-coding", name: "The lightning", where: { label: "the home page", href: "/" } },
-  { id: "projects", name: "The construction site", where: { label: "the home page", href: "/" } },
-  { id: "webpages", name: "The spider", where: { label: "the home page", href: "/" } },
-  { id: "night-owl", name: "The night owl", where: { label: "the navigation bar", href: "/" } },
+  {
+    id: "waving-hand",
+    emoji: "👋",
+    name: "The waving hand",
+    where: { hint: "Somewhere on", label: "the home page", href: "/" },
+  },
+  {
+    id: "writing",
+    emoji: "✍️",
+    name: "The typo",
+    where: { hint: "Somewhere on", label: "the home page", href: "/" },
+  },
+  {
+    id: "traveling",
+    emoji: "✈️",
+    name: "The round trip",
+    where: { hint: "Somewhere on", label: "the home page", href: "/" },
+  },
+  {
+    id: "newsletter",
+    emoji: "📮",
+    name: "The postmark",
+    where: { hint: "Somewhere on", label: "the home page", href: "/" },
+  },
+  {
+    id: "booknotes",
+    emoji: "💬",
+    name: "The talking books",
+    where: { hint: "Somewhere on", label: "the home page", href: "/" },
+  },
+  {
+    id: "photography",
+    emoji: "🖼️",
+    name: "The polaroid",
+    where: { hint: "Somewhere on", label: "the home page", href: "/" },
+  },
+  {
+    id: "creative-coding",
+    emoji: "⚡",
+    name: "The lightning",
+    where: { hint: "Somewhere on", label: "the home page", href: "/" },
+  },
+  {
+    id: "projects",
+    emoji: "🚧",
+    name: "The construction site",
+    where: { hint: "Somewhere on", label: "the home page", href: "/" },
+  },
+  {
+    id: "webpages",
+    emoji: "🕷️",
+    name: "The spider",
+    where: { hint: "Somewhere on", label: "the home page", href: "/" },
+  },
+  {
+    id: "night-owl",
+    emoji: "🦉",
+    name: "The night owl",
+    where: { hint: "Somewhere in", label: "the navigation bar", href: "/" },
+  },
+  {
+    id: "flask",
+    emoji: "🫧",
+    name: "The overflowing flask",
+    where: { hint: "Somewhere in", label: "the navigation bar", href: "/" },
+  },
+  {
+    id: "idle-cat",
+    emoji: "🐈",
+    name: "The napping cat",
+    where: { hint: "Wait a minute on", label: "any page", href: "/" },
+  },
+  {
+    id: "clock",
+    emoji: "⏰",
+    name: "Time flies",
+    where: { hint: "Somewhere on", label: "any post", href: "/posts" },
+  },
+  {
+    id: "dino",
+    emoji: "🦕",
+    name: "The timeline dinosaur",
+    where: { hint: "Somewhere on", label: "/timeline", href: "/timeline" },
+  },
+  {
+    id: "sapling",
+    emoji: "🌳",
+    name: "The watered sapling",
+    where: { hint: "Somewhere on", label: "the home page", href: "/" },
+  },
+  {
+    id: "trophy",
+    emoji: "⭐",
+    name: "The rating stars",
+    where: { hint: "Somewhere on", label: "any booknote", href: "/booknotes" },
+  },
   {
     id: "monkey",
+    emoji: "🍌",
     name: "The three wise monkeys",
-    where: { label: "/newsletters", href: "/newsletters" },
+    where: { hint: "Somewhere on", label: "/newsletters", href: "/newsletters" },
   },
   {
     id: "needle",
+    emoji: "🪡",
     name: "The needle in the haystack",
-    where: { label: "/needlestack", href: "/needlestack" },
+    where: { hint: "Somewhere on", label: "/needlestack", href: "/needlestack" },
   },
 ] as const satisfies readonly EasterEgg[];
 
@@ -59,4 +149,14 @@ export function markEggFound(id: string): boolean {
   }
   window.dispatchEvent(new Event(EASTER_EGGS_CHANGED_EVENT));
   return true;
+}
+
+/**
+ * Records a find from outside React (no usePlausible hook available). Plausible's
+ * snippet queues calls on window.plausible until its script has loaded.
+ */
+export function recordEggFind(id: string) {
+  const plausible = (window as { plausible?: (event: string, options?: object) => void }).plausible;
+  plausible?.("Easter Egg", { props: { egg: id } });
+  markEggFound(id);
 }

@@ -8,6 +8,8 @@ type EmojiButtonProps = {
   className?: string;
   /** Wiggle now and then, and on every click, so the emoji reads as clickable. */
   hint?: boolean;
+  /** Set false when the egg gives its own feedback on each click. */
+  nudge?: boolean;
 };
 
 const NUDGE_WINDOW_MS = 2000;
@@ -21,7 +23,7 @@ function hintDelay(label: string) {
 
 // Reset every button default so the emoji sits in its heading exactly like plain text.
 export const EmojiButton = forwardRef<HTMLButtonElement, EmojiButtonProps>(
-  ({ label, children, onClick, className, hint = true }, ref) => {
+  ({ label, children, onClick, className, hint = true, nudge: nudgeOnClick = true }, ref) => {
     const wiggleRef = useRef<HTMLSpanElement>(null);
     const clickTimes = useRef<number[]>([]);
 
@@ -51,7 +53,7 @@ export const EmojiButton = forwardRef<HTMLButtonElement, EmojiButtonProps>(
         type="button"
         aria-label={label}
         onClick={() => {
-          if (hint) nudge();
+          if (hint && nudgeOnClick) nudge();
           onClick?.();
         }}
         className={clsx(

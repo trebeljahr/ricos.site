@@ -5,7 +5,7 @@ import { EASTER_EGG_IDS, EASTER_EGGS_CHANGED_EVENT, getFoundEggs } from "src/lib
 import { EmojiButton } from "./EmojiButton";
 
 const known = new Set<string>(EASTER_EGG_IDS);
-const MAX_BUNNIES = 4;
+const MAX_BUNNIES = 30;
 const HOP_ACROSS_MS = 5000;
 
 /** A bunny that hops along the bottom of the screen once, then removes itself. */

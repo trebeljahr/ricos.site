@@ -112,7 +112,7 @@ export const TravelBlogLayout = ({
       <main className="pt-5 pb-20 px-3  max-w-5xl mx-auto">
         <Header
           breadcrumbs={{ path: url }}
-          meta={<MetadataDisplay date={date} readingTime={readingTime} />}
+          meta={<MetadataDisplay date={date} readingTime={readingTime} clockEgg />}
           title={title || ""}
         />
 

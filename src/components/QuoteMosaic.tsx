@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import Link from "next/link";
-import { type CSSProperties, useMemo } from "react";
+import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import { cleanAuthor, type Portrait, type Portraits } from "src/lib/quotePortraits";
 import { planQuoteRows } from "src/lib/quoteRows";
 
@@ -29,6 +29,10 @@ function hash(text: string) {
 /** Sets a flex shorthand from md up; phones stack every card at full width. */
 const flex = (value: string) => ({ "--flex": value }) as CSSProperties;
 const FLEX_FROM_MD = "md:[flex:var(--flex)]";
+
+// Rendering all ~900 cards at once makes a huge HTML page and a slow hydration,
+// so rows are revealed in batches as the reader nears the bottom.
+const ROWS_PER_BATCH = 15;
 
 // Steps along the newsletter gradient (green-400 -> teal-400 -> blue-600).
 const MARK_COLORS = [
@@ -141,6 +145,32 @@ export function QuoteMosaic({
     [quotes, portraits],
   );
 
+  // A new list (a search, or clearing one) starts again from the first batch.
+  const [visibleRows, setVisibleRows] = useState(ROWS_PER_BATCH);
+  const [shownQuotes, setShownQuotes] = useState(quotes);
+  if (shownQuotes !== quotes) {
+    setShownQuotes(quotes);
+    setVisibleRows(ROWS_PER_BATCH);
+  }
+
+  const hasMore = visibleRows < rows.length;
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-observe after each batch, because an observer only fires on changes and the sentinel can still be in view
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !hasMore) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setVisibleRows((count) => count + ROWS_PER_BATCH);
+        }
+      },
+      { rootMargin: "1200px 0px" },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, visibleRows]);
+
   const slip = (index: number, style: CSSProperties) => {
     const quote = quotes[index];
     return (
@@ -155,7 +185,7 @@ export function QuoteMosaic({
 
   return (
     <div className="not-prose flex flex-col gap-4">
-      {rows.map((row) => (
+      {rows.slice(0, visibleRows).map((row) => (
         <div key={quotes[row.units[0].items[0]].id} className="flex flex-col gap-4 md:flex-row">
           {row.units.map((unit) =>
             unit.items.length === 1 ? (
@@ -181,6 +211,7 @@ export function QuoteMosaic({
           )}
         </div>
       ))}
+      {hasMore && <div ref={sentinelRef} aria-hidden className="h-px" />}
     </div>
   );
 }

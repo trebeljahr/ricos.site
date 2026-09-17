@@ -66,7 +66,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
         <section className="px-3 pb-20">
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <div className="max-w-prose">
-              <h1 className="text-4xl">
+              <h1 className="text-3xl md:text-4xl">
                 Hi there <WavingHand />
               </h1>
               <span>
@@ -153,7 +153,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
 
         <section className="pt-1 pb-20 px-3">
           <div className="mx-auto max-w-(--breakpoint-lg)">
-            <h2 className="text-5xl">
+            <h2 className="text-3xl md:text-5xl">
               <PhotographyEgg photos={props.featuredTrips} />
             </h2>
             <p className="mb-14 max-w-prose">
@@ -191,7 +191,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
 
         <section className="dark:bg-nightBlue bg-slate-100 pt-1 pb-20 px-3">
           <div className="mx-auto max-w-(--breakpoint-lg)">
-            <h2 className="text-5xl">
+            <h2 className="text-3xl md:text-5xl">
               <CreativeCodingEgg />
             </h2>
             <p className="mb-14 max-w-prose">
@@ -245,7 +245,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
         <section className="dark:bg-nightBlue bg-slate-100 pt-1 pb-20 px-3">
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <div className="max-w-prose">
-              <h2>
+              <h2 className="text-3xl md:text-5xl">
                 <WebpagesEgg />
               </h2>
               <p>

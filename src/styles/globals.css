@@ -407,34 +407,3 @@ code {
   list-style: none;
   margin-block: 0;
 }
-
-/* Card tilt + glare. Card.tsx writes --rx/--ry (degrees) and --gx/--gy (glare
-   position) on pointer move; unset they fall back to a flat card. Plain CSS
-   outside @layer so the transform here wins over Tailwind utilities. */
-.card-tilt {
-  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0);
-}
-
-.card-glare {
-  background: radial-gradient(
-    circle at var(--gx, 50%) var(--gy, 50%),
-    rgb(255 255 255 / 0.5),
-    rgb(255 255 255 / 0) 60%
-  );
-  mix-blend-mode: soft-light;
-}
-
-.dark .card-glare {
-  background: radial-gradient(
-    circle at var(--gx, 50%) var(--gy, 50%),
-    rgb(255 255 255 / 0.2),
-    rgb(255 255 255 / 0) 60%
-  );
-  mix-blend-mode: screen;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .card-tilt {
-    transform: none;
-  }
-}

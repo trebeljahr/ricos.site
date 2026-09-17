@@ -2,7 +2,7 @@ import { ImageWithLoader } from "@components/ImageWithLoader";
 import clsx from "clsx";
 import { getMDXComponent } from "mdx-bundler/client";
 import Link from "next/link";
-import { type ReactNode, useMemo } from "react";
+import { type PointerEvent, type ReactNode, useMemo, useRef } from "react";
 import type { MDXResult } from "src/@types";
 import { MetadataDisplay } from "./MetadataDisplay";
 
@@ -25,6 +25,9 @@ export type CardCover = {
 };
 
 export type CardLayout = "vertical" | "horizontal";
+
+// Wide horizontal cards tilt less: the same angle swings their far edge a lot further.
+const maxTilt: Record<CardLayout, number> = { vertical: 6, horizontal: 2 };
 
 // "tall" crops photos into a fixed-height banner. "video" keeps the whole
 // image at 16:9, which suits screenshots (e.g. the /projects cards); in the
@@ -96,16 +99,45 @@ export function Card({
   const hasDimensions = cover.width !== undefined && cover.height !== undefined;
   const hasExcerpt = Boolean(markdownExcerpt || excerpt);
 
+  // Tilt writes CSS variables straight onto the element: no React state, so a
+  // pointer move never re-renders the card. One write per frame at most.
+  const frame = useRef(0);
+  const onPointerMove = (event: PointerEvent<HTMLAnchorElement>) => {
+    if (event.pointerType !== "mouse") return;
+    const card = event.currentTarget;
+    const { clientX, clientY } = event;
+    cancelAnimationFrame(frame.current);
+    frame.current = requestAnimationFrame(() => {
+      const rect = card.getBoundingClientRect();
+      const x = (clientX - rect.left) / rect.width;
+      const y = (clientY - rect.top) / rect.height;
+      const tilt = maxTilt[layout];
+      card.style.setProperty("--rx", `${((0.5 - y) * 2 * tilt).toFixed(2)}deg`);
+      card.style.setProperty("--ry", `${((x - 0.5) * 2 * tilt).toFixed(2)}deg`);
+      card.style.setProperty("--gx", `${(x * 100).toFixed(1)}%`);
+      card.style.setProperty("--gy", `${(y * 100).toFixed(1)}%`);
+    });
+  };
+  const onPointerLeave = (event: PointerEvent<HTMLAnchorElement>) => {
+    cancelAnimationFrame(frame.current);
+    const { style } = event.currentTarget;
+    for (const name of ["--rx", "--ry", "--gx", "--gy"]) style.removeProperty(name);
+  };
+
   return (
     <Link
       href={link}
       prefetch={prefetch}
+      onPointerMove={onPointerMove}
+      onPointerLeave={onPointerLeave}
       className={clsx(
         "group not-prose relative w-full overflow-hidden rounded-xl border-2 border-gray-200 bg-white text-gray-900 no-underline shadow-sm",
         // The card moves as one piece: a separate cover zoom on its own timing
         // made the image drift against the frame. transform-gpu keeps the cover
         // from re-rasterising (and visibly snapping) when the lift settles.
-        "transform-gpu transition duration-300 ease-out hover:-translate-y-1",
+        // card-tilt (globals.css) adds the pointer-driven 3D tilt and keeps the
+        // translateZ(0) that transform-gpu used to provide.
+        "card-tilt transition duration-300 ease-out hover:-translate-y-1",
         // Hover glow: an even, all-sides blue shadow so the border itself looks lit.
         // Border and title use the site-wide accent (globals.css), same as links.
         "hover:border-accent hover:shadow-[0_0_24px_-2px] hover:shadow-myBlue/40",
@@ -234,6 +266,13 @@ export function Card({
           </div>
         )}
       </div>
+
+      {/* Light glare that follows the pointer; above the cover and text, never
+          catches clicks. */}
+      <span
+        aria-hidden="true"
+        className="card-glare pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100"
+      />
     </Link>
   );
 }

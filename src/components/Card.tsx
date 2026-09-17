@@ -181,15 +181,17 @@ export function Card({
         </div>
 
         {subtitle && (
-          <p className="m-0 mt-1.5 text-base font-medium text-gray-700 dark:text-gray-200">
+          <p className="m-0 mt-1.5 text-base font-medium md:text-lg xl:text-xl text-gray-700 dark:text-gray-200">
             {subtitle}
           </p>
         )}
 
         {(markdownExcerpt || excerpt) && (
+          // Sized one step below body copy (prose md:prose-lg xl:prose-xl) so
+          // cards don't read as fine print next to the text around them.
           // The browser draws the "…" when an excerpt overflows, so cards keep
           // a consistent height no matter how long the stored excerpt is.
-          <div className="mt-3 line-clamp-4 text-[0.9375rem] leading-relaxed text-gray-600 dark:text-gray-400 [&_p]:my-0">
+          <div className="mt-3 line-clamp-4 text-base leading-relaxed md:text-lg text-gray-600 dark:text-gray-400 [&_p]:my-0">
             {markdownExcerpt ? <MDXExcerpt source={markdownExcerpt} /> : <p>{excerpt}</p>}
           </div>
         )}

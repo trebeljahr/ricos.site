@@ -20,13 +20,15 @@ const quotes: SearchableQuote[] = (quotesJSON as Quote[]).map((quote, index) => 
   sourceTitle: quote.source?.title ?? "",
 }));
 
-// Every topic with its quote count, most used first, for the filter above the quotes.
+// Every topic, most used first, for the filter above the quotes.
 const topics = Object.entries(
   quotes.reduce<Record<string, number>>((counts, quote) => {
     for (const tag of quote.tags) counts[tag] = (counts[tag] ?? 0) + 1;
     return counts;
   }, {}),
-).sort(([a, countA], [b, countB]) => countB - countA || a.localeCompare(b));
+)
+  .sort(([a, countA], [b, countB]) => countB - countA || a.localeCompare(b))
+  .map(([tag]) => tag);
 
 const chip = (active: boolean) =>
   clsx(
@@ -102,18 +104,15 @@ export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portra
           {topicsOpen && (
             <fieldset id="quote-topics" className="not-prose mt-3 flex flex-wrap gap-2">
               <legend className="sr-only">Filter by topic</legend>
-              {topics.map(([tag, count]) => (
+              {topics.map((tag) => (
                 <button
                   key={tag}
                   type="button"
                   aria-pressed={topic === tag}
-                  onClick={() => {
-                    setTopic(topic === tag ? null : tag);
-                    setTopicsOpen(false);
-                  }}
+                  onClick={() => setTopic(topic === tag ? null : tag)}
                   className={chip(topic === tag)}
                 >
-                  {tag} <span className="opacity-60">{count}</span>
+                  {tag}
                 </button>
               ))}
             </fieldset>

@@ -68,11 +68,21 @@ const revealTheme = (toLight: boolean, apply: () => void) => {
 
   root.classList.add("theme-reveal");
   root.classList.toggle("theme-reveal-in", !toLight);
+  // Empty overlay whose transition group draws the glowing edge (globals.css).
+  // A quick second toggle can start before the first one cleans up, and two
+  // elements with the same transition name abort the transition.
+  document.querySelectorAll(".theme-reveal-glow").forEach((el) => el.remove());
+  const glowElement = document.createElement("div");
+  glowElement.className = "theme-reveal-glow";
+  document.body.append(glowElement);
   let clip: Animation | undefined;
+  let glow: Animation | undefined;
   const cleanUp = () => {
-    // `fill: both` keeps the animation alive on <html> after the pseudo
-    // element is gone; cancel it so toggles don't pile up animations.
+    // `fill: both` keeps the animations alive on <html> after the pseudo
+    // elements are gone; cancel them so toggles don't pile up animations.
     clip?.cancel();
+    glow?.cancel();
+    glowElement.remove();
     root.classList.remove("theme-reveal", "theme-reveal-in");
   };
   try {
@@ -81,19 +91,31 @@ const revealTheme = (toLight: boolean, apply: () => void) => {
     const transition = document.startViewTransition(() => flushSync(apply));
     transition.ready
       .then(() => {
+        const timing: KeyframeAnimationOptions = {
+          duration: 600,
+          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+          // Shrinking runs the growing animation backwards on the outgoing
+          // light page, which sits on top (globals.css).
+          direction: toLight ? "normal" : "reverse",
+          fill: "both",
+        };
         clip = root.animate(
           {
             clipPath: [`circle(0px at ${x}px 0px)`, `circle(${radius}px at ${x}px 0px)`],
           },
           {
-            duration: 600,
-            easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-            // Shrinking runs the growing animation backwards on the outgoing
-            // light page, which sits on top (globals.css).
-            direction: toLight ? "normal" : "reverse",
-            fill: "both",
+            ...timing,
             pseudoElement: toLight ? "::view-transition-new(root)" : "::view-transition-old(root)",
           },
+        );
+        // Same timing, so the ring stays on the clip edge. It fades at both
+        // ends so no glowing dot lingers at the top of the screen.
+        glow = root.animate(
+          {
+            "--theme-reveal-r": ["0px", `${radius}px`],
+            opacity: [0, 1, 1, 0],
+          },
+          { ...timing, pseudoElement: "::view-transition-group(theme-reveal-glow)" },
         );
       })
       .catch(() => {});

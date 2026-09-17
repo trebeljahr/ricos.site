@@ -431,6 +431,41 @@ html.theme-reveal-in::view-transition-old(root) {
   z-index: 1;
 }
 
+/* Glowing edge on the reveal circle. Images look the same in both themes, so
+   without it the edge passes over them unseen and they seem stuck on top.
+   DarkModeHandler adds a fixed, empty .theme-reveal-glow for the transition;
+   its group paints above the root snapshots and draws a ring whose radius
+   follows the clip circle. */
+@property --theme-reveal-r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+.theme-reveal-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  view-transition-name: theme-reveal-glow;
+}
+
+::view-transition-group(theme-reveal-glow) {
+  animation: none;
+  background: radial-gradient(
+    circle at 50% 0,
+    transparent calc(var(--theme-reveal-r) - 90px),
+    rgb(255 236 196 / 0.35) calc(var(--theme-reveal-r) - 24px),
+    rgb(255 250 235 / 0.85) var(--theme-reveal-r),
+    rgb(255 236 196 / 0.3) calc(var(--theme-reveal-r) + 14px),
+    transparent calc(var(--theme-reveal-r) + 48px)
+  );
+}
+
+::view-transition-old(theme-reveal-glow),
+::view-transition-new(theme-reveal-glow) {
+  display: none;
+}
+
 /* Gallery thumbnail -> lightbox slide morph (src/lib/lightboxTransition.ts).
    300ms ease-in-out matches the closing FLIP in useCustomLightbox. Both ends
    show the same photo, so the slide covers the thumbnail instead of

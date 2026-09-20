@@ -90,7 +90,7 @@ export const NewsletterForm = ({
 
   const defaultText = (
     <>
-      <p className="mb-block">
+      <p className="mb-para">
         Join the Live and Learn Newsletter to receive digital postcards filled with beauty, travel
         stories and links to nice things I have found, once or twice a month. No spam, ever. You can
         unsubscribe at any time.

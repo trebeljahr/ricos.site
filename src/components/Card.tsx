@@ -114,7 +114,7 @@ export function Card({
         "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
         horizontal
           ? clsx(
-              "mb-block block md:grid",
+              "mb-para block md:grid",
               portrait ? "md:grid-cols-[10rem_1fr]" : "md:grid-cols-[15rem_1fr]",
             )
           : "flex flex-col self-stretch",
@@ -167,7 +167,7 @@ export function Card({
       <div
         className={clsx(
           "flex min-w-0 grow flex-col",
-          compact ? "px-label py-label" : "p-stack md:p-block",
+          compact ? "px-label py-label" : "p-stack md:p-para",
         )}
       >
         <div className="flex items-start justify-between gap-label">

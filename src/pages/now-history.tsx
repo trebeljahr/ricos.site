@@ -247,7 +247,7 @@ export default function NowHistory({ entries }: Props) {
             <>
               <Timeline labels={chronologicalLabels} position={position} onChange={setPosition} />
 
-              <div className="border-l-4 border-myBlue pl-block mb-group">
+              <div className="border-l-4 border-myBlue pl-para mb-group">
                 <div className="flex flex-wrap items-center justify-between gap-tight mb-stack">
                   <div className="text-sm text-gray-500 dark:text-gray-400">
                     Snapshot from{" "}

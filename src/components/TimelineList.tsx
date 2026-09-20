@@ -119,7 +119,7 @@ export function TimelineList({
       <div className="space-y-sub">
         {visibleSections.map(({ year, items, stats }) => (
           <section key={year}>
-            <h2 className="m-0 mb-block text-4xl font-bold tracking-normal">
+            <h2 className="m-0 mb-para text-4xl font-bold tracking-normal">
               {year}
               <span className="ml-3 text-lg font-normal text-gray-400">
                 {stats.count} {stats.count === 1 ? "work" : "works"}

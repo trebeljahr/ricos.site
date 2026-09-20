@@ -85,7 +85,7 @@ type DonationCardProps = {
 
 function FallbackDonationLinks() {
   return (
-    <div className="mt-block flex flex-col gap-label sm:flex-row sm:flex-wrap">
+    <div className="mt-para flex flex-col gap-label sm:flex-row sm:flex-wrap">
       {fallbackLinks.map((link) => (
         <ExternalLink
           key={link.name}
@@ -127,7 +127,7 @@ export function DonationCard({ className }: DonationCardProps) {
 
         {showStripeControls ? (
           <>
-            <div className="mt-block inline-flex rounded-md border-2 border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-900">
+            <div className="mt-para inline-flex rounded-md border-2 border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-900">
               {[
                 ["monthly", "Monthly"],
                 ["once", "One-time"],

@@ -243,7 +243,7 @@ export const CalloutRoot: FC<CalloutRootProps> = ({
       isFoldable={isFoldable}
       defaultFolded={defaultFolded}
       className={clsx(
-        "callout-root my-block rounded-lg border bg-card p-2",
+        "callout-root my-para rounded-lg border bg-card p-2",
         callout.className.root,
         className,
       )}

@@ -123,7 +123,7 @@ export default function CategoriesPage({ themes, tags, seo }: Props) {
         </section>
 
         <section aria-labelledby="cloud-heading" className="mb-section">
-          <h2 id="cloud-heading" className="mb-block">
+          <h2 id="cloud-heading" className="mb-para">
             All tags
           </h2>
           <div className="not-prose">

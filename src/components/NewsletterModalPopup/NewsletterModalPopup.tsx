@@ -58,7 +58,7 @@ const NewsletterModalPopup = ({ howFarDown = 50 }: { howFarDown?: number }) => {
                   heading={<h2 className="flush-top">Not subscribed yet?</h2>}
                   text={
                     <>
-                      <p className="mb-block">
+                      <p className="mb-para">
                         Live and Learn is a digital postcard I send out every couple of weeks.
                         Travel stories, an essay or two and a handful of links worth sharing.
                       </p>

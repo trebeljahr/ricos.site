@@ -115,7 +115,7 @@ const Newsletter = ({
             meta={<MetadataDisplay date={date} readingTime={readingTime} />}
             title={fullTitle}
           />
-          <div className="mb-block">
+          <div className="mb-para">
             <ImageWithLoader
               priority
               src={cover.src}

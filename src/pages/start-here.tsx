@@ -35,7 +35,7 @@ const Arrow = () => (
 const MoreLink = ({ href, children }: { href: string; children: ReactNode }) => (
   <Link
     href={href}
-    className="group mt-block inline-flex items-center gap-tight font-semibold text-accent no-underline hover:underline"
+    className="group mt-para inline-flex items-center gap-tight font-semibold text-accent no-underline hover:underline"
   >
     {children} <Arrow />
   </Link>
@@ -96,7 +96,7 @@ export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Prop
               className="object-cover"
             />
           </div>
-          <div className="flow-block [&_p]:text-lg md:[&_p]:text-xl">
+          <div className="flow-para [&_p]:text-lg md:[&_p]:text-xl">
             <p>
               Hey, I&apos;m Rico. I travel slowly, read a lot and make games and cool websites. This
               website is where all of it ends up.
@@ -199,7 +199,7 @@ export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Prop
               <NewsletterForm
                 heading={<h3 className="flush-top text-2xl">Get Live and Learn by email</h3>}
                 text={
-                  <p className="mb-block">
+                  <p className="mb-para">
                     One postcard every few weeks. A story from wherever I am, photos and a few
                     things I found. No ads, and you can unsubscribe with one click.
                   </p>

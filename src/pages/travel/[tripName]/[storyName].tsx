@@ -115,7 +115,7 @@ export const TravelBlogLayout = ({
           title={title || ""}
         />
 
-        <div className="mb-block">
+        <div className="mb-para">
           <ImageWithLoader
             priority
             src={cover.src}

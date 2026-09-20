@@ -114,7 +114,7 @@ export const BlogLayout = ({
             subtitle={subtitle}
             title={title}
           />
-          <div className="mb-block">
+          <div className="mb-para">
             <ImageWithLoader
               priority
               src={cover.src}

@@ -29,7 +29,7 @@
   --spacing-tight: 0.5rem; /* 8px  - items in a row: chips, tags, inline meta */
   --spacing-label: 0.75rem; /* 12px - a label and the thing it labels */
   --spacing-stack: 1rem; /* 16px - consecutive lines of one text block */
-  --spacing-block: 1.5rem; /* 24px - blocks inside a section, the paragraph rhythm */
+  --spacing-para: 1.5rem; /* 24px - blocks inside a section, the paragraph rhythm */
   --spacing-group: 2rem; /* 32px - a heading and the group of blocks under it */
   --spacing-sub: 2.5rem; /* 40px - a subsection break */
   --spacing-section: 4rem; /* 64px - sections of a page */
@@ -226,7 +226,7 @@
 .flow-tight > *,
 .flow-label > *,
 .flow-stack > *,
-.flow-block > *,
+.flow-para > *,
 .page-top > *,
 .post-header > * {
   margin-block: 0;
@@ -246,8 +246,8 @@
   margin-top: var(--spacing-stack);
 }
 
-.flow-block > * + * {
-  margin-top: var(--spacing-block);
+.flow-para > * + * {
+  margin-top: var(--spacing-para);
 }
 
 .flush-top {

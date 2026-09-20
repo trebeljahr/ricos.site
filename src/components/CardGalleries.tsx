@@ -25,7 +25,7 @@ export const CardGallery = ({
   coverAspect,
 }: CardGalleryProps) => {
   return (
-    <div className="grid gap-block grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max justify-items-center pb-block">
+    <div className="grid gap-para grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max justify-items-center pb-para">
       {content.map((singlePiece) => (
         <Card
           key={singlePiece.slug}

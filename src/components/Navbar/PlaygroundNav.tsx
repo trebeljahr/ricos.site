@@ -259,7 +259,7 @@ export function PlaygroundSceneGrid() {
       {sections.map(([section, scenes]) => (
         <section key={section} className="mt-sub">
           <h2 className="text-2xl font-bold">{section}</h2>
-          <ul className="mt-stack grid grid-cols-1 gap-block sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-stack grid grid-cols-1 gap-para sm:grid-cols-2 lg:grid-cols-3">
             {scenes.map((scene) => (
               <li key={scene.url} className="flex">
                 <Card

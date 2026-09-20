@@ -21,7 +21,7 @@ const EmergencyInfoComponent: FC = () => {
       imageAlt="man being rescued by a helicopter"
     >
       <div className="max-w-prose mx-auto mt-page-top p-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold mb-block">Access Emergency Information</h2>
+        <h2 className="text-2xl font-semibold mb-para">Access Emergency Information</h2>
         {!emergencyInfo ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -51,7 +51,7 @@ const EmergencyInfoComponent: FC = () => {
         ) : (
           <div>
             <h3 className="text-xl font-semibold mb-stack">Emergency Numbers</h3>
-            <ul className="space-y-tight mb-block list-none not-prose">
+            <ul className="space-y-tight mb-para list-none not-prose">
               <li className="flex justify-between">
                 <span className="font-medium">Mum:</span>
                 <span>{emergencyInfo.importantNumbers.mum}</span>

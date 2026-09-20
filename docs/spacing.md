@@ -17,11 +17,18 @@ halved and doubled on a 4px grid: 8 → 16 → 24 (about one line) → 32 → 64
 | `--spacing-tight` | `gap-tight`, … | 8px | items in a row: chips, tags, inline meta |
 | `--spacing-label` | `mt-label`, … | 12px | a label and the thing it labels |
 | `--spacing-stack` | `mt-stack`, … | 16px | consecutive lines of one text block |
-| `--spacing-block` | `mb-block`, … | 24px | blocks inside a section, the paragraph rhythm |
+| `--spacing-para` | `mb-para`, … | 24px | blocks inside a section, the paragraph rhythm |
 | `--spacing-group` | `mb-group`, … | 32px | a heading and the group of blocks under it |
 | `--spacing-sub` | `mt-sub`, … | 40px | a subsection break |
 | `--spacing-section` | `mt-section`, … | 64px | sections of a page |
 | `--spacing-region` | `pb-region`, … | 80px | page regions: article to footer, page bottom |
+
+A step name must not collide with the tail of a Tailwind class. Every
+`--spacing-*` token also creates a logical-size utility (`inline-<name>`,
+`block-<name>`), so a step called `block` rewrote `.inline-block` into
+`inline-size: 1.5rem` and collapsed every inline-block element on the site.
+Avoid `block`, `flex`, `grid`, `table`, `full`, `auto`, `screen`, `fit`,
+`min`, `max` and `px` as step names.
 
 Two more are only for the page shell:
 
@@ -60,7 +67,7 @@ Reach for one of these instead of an `!important` margin. An `!important`
 spacing utility means the system is being fought; there are none left in the
 codebase, and a new one is a bug.
 
-- **`.flow-tight` / `.flow-label` / `.flow-stack` / `.flow-block`** — zero the
+- **`.flow-tight` / `.flow-label` / `.flow-stack` / `.flow-para`** — zero the
   prose margins on the children and put that step between them. `.page-top`
   (the flow under the breadcrumbs) and `.post-header` (title, subtitle, byline)
   are named aliases so page code says what the block is.

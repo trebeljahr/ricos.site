@@ -16,7 +16,7 @@
 - **Path Aliases**: Use path aliases defined in tsconfig.json (e.g., @components/*)
 - **Error Handling**: Use try/catch for async operations
 - **Tailwind**: Use Tailwind CSS for styling with clsx for conditional class names
-- **Spacing**: One documented scale, read `docs/spacing.md` before adding any margin, padding or gap. Use the named steps (`mt-block`, `mb-group`, `pb-region`, …), not raw numbers, for spacing decisions. Every content page's `<main>` is `PageMain` from `@components/PostHeader`. `<body>` carries `prose`, so beat the typography plugin's margins with `.flow-*` / `.flush-top` / `not-prose` — never with an `!important` margin. There are zero `!`-important spacing utilities in the codebase; a new one is a bug.
+- **Spacing**: One documented scale, read `docs/spacing.md` before adding any margin, padding or gap. Use the named steps (`mt-para`, `mb-group`, `pb-region`, …), not raw numbers, for spacing decisions. Every content page's `<main>` is `PageMain` from `@components/PostHeader`. `<body>` carries `prose`, so beat the typography plugin's margins with `.flow-*` / `.flush-top` / `not-prose` — never with an `!important` margin. There are zero `!`-important spacing utilities in the codebase; a new one is a bug.
 - **React Hooks**: Follow React hooks best practices and create custom hooks when logic is reused
 - **Three.js/R3F**: Follow established patterns for 3D components in the /r3f directory
 

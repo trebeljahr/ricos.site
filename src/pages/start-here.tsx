@@ -98,8 +98,8 @@ export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Prop
           </div>
           <div className="[&_p]:text-lg! md:[&_p]:text-xl!">
             <p className="mt-0!">
-              Hey, I&apos;m Rico. I travel slowly, read a lot and make games and 3D experiments.
-              This website is where all of it ends up.
+              Hey, I&apos;m Rico. I travel slowly, read a lot and make games and cool websites. This
+              website is where all of it ends up.
             </p>
             <p className="mb-0!">
               Over the years it grew into a lot of pages. You don&apos;t need to see all of them.

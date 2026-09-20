@@ -1,3 +1,4 @@
+import { FaCheck, FaClipboard } from "@components/Icons";
 import clsx from "clsx";
 import { type CSSProperties, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { cleanAuthor, type Portrait, type Portraits } from "src/lib/quotePortraits";
@@ -93,6 +94,39 @@ function InlineEmphasis({ text }: { text: string }) {
   return <>{parts}</>;
 }
 
+/** Copies the quote and its attribution, the way you would paste it elsewhere. */
+function CopyQuoteButton({ quote, author }: { quote: NumberedQuote; author: string }) {
+  const [copied, setCopied] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  const handleClick = async () => {
+    try {
+      await navigator.clipboard.writeText(`"${quote.content}"\n\n— ${author}`);
+    } catch {
+      return;
+    }
+    setCopied(true);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      aria-label={copied ? "Quote copied" : `Copy the quote by ${author}`}
+      className="absolute top-3 right-3 z-10 grid size-8 cursor-pointer place-items-center rounded-full text-gray-500 opacity-0 transition hover:bg-black/5 hover:text-gray-800 focus-visible:opacity-100 group-hover:opacity-100 motion-reduce:transition-none pointer-coarse:opacity-100 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-gray-100"
+    >
+      {copied ? (
+        <FaCheck className="size-4 text-green-600 dark:text-green-400" />
+      ) : (
+        <FaClipboard className="size-4" />
+      )}
+    </button>
+  );
+}
+
 function QuoteSlip({
   quote,
   portrait,
@@ -109,10 +143,11 @@ function QuoteSlip({
     <figure
       style={style}
       className={clsx(
-        "relative m-0 flex flex-col overflow-hidden rounded-sm bg-stone-50 px-7 pt-16 pb-6 shadow-sm ring-1 ring-black/5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0 dark:bg-slate-800/70 dark:ring-white/10",
+        "group relative m-0 flex flex-col overflow-hidden rounded-sm bg-stone-50 px-7 pt-16 pb-6 shadow-sm ring-1 ring-black/5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0 dark:bg-slate-800/70 dark:ring-white/10",
         FLEX_FROM_MD,
       )}
     >
+      <CopyQuoteButton quote={quote} author={author} />
       <span
         aria-hidden
         className={clsx(

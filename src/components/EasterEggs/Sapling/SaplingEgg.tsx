@@ -13,19 +13,20 @@ const SKY_WIDTH = 340;
 const CROSS_MS = 2300;
 const TREE_MS = 2600;
 
-// One goes over for every click: days and nights passing while you water.
-const SKY_BODIES = ["☀️", "☁️", "🌙", "☁️", "☀️", "☁️", "🌙", "☁️"];
+// One drifts over for every click: weather passing while you water.
+const CLOUD = "☁️";
+const CLOUD_SIZES = [0.85, 1.05, 0.95, 1.15];
 
 type Sky = { left: number; top: number; width: number };
-type Body = { id: number; emoji: string; arc: number };
+type Cloud = { id: number; arc: number; scale: number };
 type Pour = { id: number; drops: { dx: number; delay: number }[] };
 
 const DROPS_PER_POUR = 4;
 
 /**
- * Easter egg on the newsletter form: watering the seedling sends a sun, a
- * cloud or a moon across the sky above the heading. After eight waterings
- * the seedling has grown into a tree.
+ * Easter egg on the newsletter form: watering the seedling sends a cloud
+ * drifting across the sky above the heading. After eight waterings the
+ * seedling has grown into a tree.
  */
 const SaplingEgg = () => {
   const reduceMotion = useReducedMotion();
@@ -34,14 +35,14 @@ const SaplingEgg = () => {
   const [grown, setGrown] = useState(false);
   const [pours, setPours] = useState<Pour[]>([]);
   const [sky, setSky] = useState<Sky | null>(null);
-  const [bodies, setBodies] = useState<Body[]>([]);
+  const [clouds, setClouds] = useState<Cloud[]>([]);
 
   const pourDone = useCallback(
     (id: number) => setPours((current) => current.filter((p) => p.id !== id)),
     [],
   );
-  const bodyDone = useCallback(
-    (id: number) => setBodies((current) => current.filter((b) => b.id !== id)),
+  const cloudDone = useCallback(
+    (id: number) => setClouds((current) => current.filter((c) => c.id !== id)),
     [],
   );
 
@@ -74,9 +75,13 @@ const SaplingEgg = () => {
       ]);
       if (reduceMotion) return;
       openSky();
-      setBodies((current) => [
+      setClouds((current) => [
         ...current,
-        { id, emoji: SKY_BODIES[index % SKY_BODIES.length], arc: 8 + (index % 3) * 9 },
+        {
+          id,
+          arc: 8 + (index % 3) * 9,
+          scale: CLOUD_SIZES[index % CLOUD_SIZES.length],
+        },
       ]);
     },
     [openSky, reduceMotion],
@@ -156,16 +161,21 @@ const SaplingEgg = () => {
             style={{ left: sky.left, top: sky.top, width: sky.width, height: SKY_HEIGHT }}
           >
             <AnimatePresence>
-              {bodies.map((body) => (
+              {clouds.map((cloud) => (
                 <motion.span
-                  key={body.id}
+                  key={cloud.id}
                   className="absolute top-1/2 left-0"
-                  initial={{ x: -40, y: 0, opacity: 0 }}
-                  animate={{ x: sky.width + 40, y: [0, -body.arc, 0], opacity: [0, 1, 1, 0] }}
+                  initial={{ x: -40, y: 0, opacity: 0, scale: cloud.scale }}
+                  animate={{
+                    x: sky.width + 40,
+                    y: [0, -cloud.arc, 0],
+                    opacity: [0, 1, 1, 0],
+                    scale: cloud.scale,
+                  }}
                   transition={{ duration: CROSS_MS / 1000, ease: "linear" }}
-                  onAnimationComplete={() => bodyDone(body.id)}
+                  onAnimationComplete={() => cloudDone(cloud.id)}
                 >
-                  {body.emoji}
+                  {CLOUD}
                 </motion.span>
               ))}
             </AnimatePresence>

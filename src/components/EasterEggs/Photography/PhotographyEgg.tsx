@@ -44,6 +44,20 @@ const PhotographyEgg = ({ photos }: { photos: EggPhoto[] }) => {
 
   useEffect(() => () => window.clearTimeout(hideTimer.current), []);
 
+  // Any click off the camera puts the print away at once, so a photo never
+  // sits over the text the reader has moved on to.
+  useEffect(() => {
+    if (!print) return;
+    const dismiss = (event: Event) => {
+      const camera = cameraRef.current?.closest("button");
+      if (camera?.contains(event.target as Node)) return;
+      window.clearTimeout(hideTimer.current);
+      setPrint(null);
+    };
+    document.addEventListener("pointerdown", dismiss, true);
+    return () => document.removeEventListener("pointerdown", dismiss, true);
+  }, [print]);
+
   // Every click takes another picture.
   const registerClick = useEasterEgg("photography", {
     clicks: 1,
@@ -102,7 +116,7 @@ const PhotographyEgg = ({ photos }: { photos: EggPhoto[] }) => {
               style={{ left: print.left, top: print.top, width: POLAROID_WIDTH, rotate: -3 }}
               initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -36, scaleY: 0.4 }}
               animate={{ opacity: 1, y: 0, scaleY: 1 }}
-              exit={{ opacity: 0, transition: { duration: 0.4 } }}
+              exit={{ opacity: 0, transition: { duration: 0.15 } }}
               transition={{ duration: reduceMotion ? 0.2 : 0.55, ease: [0.22, 1, 0.36, 1] }}
             >
               <motion.div

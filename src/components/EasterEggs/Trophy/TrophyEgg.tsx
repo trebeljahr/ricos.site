@@ -66,7 +66,9 @@ const TrophyEgg = ({ rating }: { rating: number }) => {
             key="stars"
             role="img"
             aria-label={`${filled} of ${STARS} stars`}
-            className="pointer-events-none absolute top-full right-0 flex gap-0.5 text-base leading-none whitespace-nowrap sm:right-auto sm:left-0 sm:text-lg"
+            // In the gap above the rating line, which is empty either way, so
+            // the row never lands on the Goodreads link below it.
+            className="pointer-events-none absolute bottom-full left-0 mb-1.5 flex gap-0.5 text-base leading-none whitespace-nowrap sm:text-lg"
             exit={{ opacity: 0, transition: { duration: 0.35 } }}
           >
             {Array.from({ length: STARS }, (_, i) => (

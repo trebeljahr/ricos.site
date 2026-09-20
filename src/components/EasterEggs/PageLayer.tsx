@@ -27,6 +27,8 @@ export function clampPageX(left: number, width: number, gutter = 12) {
  */
 export const PageLayer = ({ children }: { children: ReactNode }) =>
   createPortal(
-    <div className="pointer-events-none absolute top-0 left-0 z-50 h-0 w-0">{children}</div>,
+    <div data-egg-layer="" className="pointer-events-none absolute top-0 left-0 z-50 h-0 w-0">
+      {children}
+    </div>,
     document.body,
   );

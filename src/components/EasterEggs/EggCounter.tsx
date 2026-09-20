@@ -53,7 +53,7 @@ const Bunny = ({ onDone }: { onDone: () => void }) => {
   );
 };
 
-/** "N/12 easter eggs found", once at least one is found. Reads storage after mount, so SSR renders nothing. */
+/** "N/17 easter eggs found", once at least one is found. Reads storage after mount, so SSR renders nothing. */
 export const EggCounter = () => {
   const [found, setFound] = useState(0);
   const [bunnies, setBunnies] = useState<number[]>([]);

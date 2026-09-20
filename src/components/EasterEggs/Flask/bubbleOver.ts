@@ -14,12 +14,14 @@ const FOAM_MS = 900;
 const DURATION_MS = 5200;
 let running = false;
 
-/** A bubble leaving the flask mouth: up and out first, then drifting down over the page. */
+/** A bubble leaving the flask mouth: a short spill sideways, then a long sink down the page. */
 function spawn(x: number, y: number): Bubble {
+  // The logo sits at the left edge, so the spill leans right and stays short.
+  const leftward = Math.random() < 0.3;
   return {
     x: x + (Math.random() - 0.5) * 8,
     y,
-    vx: (Math.random() < 0.5 ? -1 : 1) * (60 + Math.random() * 260),
+    vx: (leftward ? -1 : 1) * (20 + Math.random() * (leftward ? 70 : 150)),
     vy: -(30 + Math.random() * 90),
     r: 3 + Math.random() * 8,
     age: 0,
@@ -145,10 +147,10 @@ export function bubbleOver(logo: HTMLElement | null) {
     for (const b of bubbles) {
       b.age += dt;
       if (b.age >= b.life) continue;
-      // Light as soap: a little gravity, strong air drag.
-      b.vy += 140 * dt;
-      b.vx *= 1 - 1.2 * dt;
-      b.vy *= 1 - 1.2 * dt;
+      // Light as soap: the sideways spill dies fast, the sink down keeps going.
+      b.vy += 260 * dt;
+      b.vx *= 1 - 3 * dt;
+      b.vy *= 1 - 0.6 * dt;
       b.x += b.vx * dt;
       b.y += b.vy * dt;
       drawBubble(ctx, b);

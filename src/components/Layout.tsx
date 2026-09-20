@@ -1,7 +1,6 @@
 import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
 import { toTitleCase } from "src/lib/utils/toTitleCase";
-import { IdleCatWatcher } from "./EasterEggs/IdleCat";
 import { Meta } from "./Meta";
 import { TailwindNavbar } from "./Navbar/TailwindNavbar";
 import { OpenGraph } from "./OpenGraph";
@@ -85,7 +84,6 @@ const Layout = ({
 
       {children}
       <SiteFooter />
-      <IdleCatWatcher />
     </div>
   );
 };

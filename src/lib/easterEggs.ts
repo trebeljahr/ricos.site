@@ -75,12 +75,6 @@ export const EASTER_EGGS = [
     where: { hint: "Somewhere in", label: "the navigation bar", href: "/" },
   },
   {
-    id: "idle-cat",
-    emoji: "🐈",
-    name: "The napping cat",
-    where: { hint: "Wait a minute on", label: "any page", href: "/" },
-  },
-  {
     id: "dino",
     emoji: "🦕",
     name: "The timeline dinosaur",

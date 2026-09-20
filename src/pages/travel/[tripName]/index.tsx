@@ -1,6 +1,6 @@
 import { Card } from "@components/Card";
 import Layout from "@components/Layout";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { nanoid } from "nanoid";
 import type { CommonMetadata } from "src/@types";
 import type { SeoInfo } from "src/lib/getSeoInfo";
@@ -43,7 +43,7 @@ const Traveling = ({ posts, tripName, seo }: Props) => {
         ]
       }
     >
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <section>
           <Header
             breadcrumbs={{ path: url }}
@@ -64,7 +64,7 @@ const Traveling = ({ posts, tripName, seo }: Props) => {
             );
           })}
         </section>
-      </main>
+      </PageMain>
     </Layout>
   );
 };

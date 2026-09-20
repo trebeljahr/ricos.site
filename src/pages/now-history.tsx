@@ -2,7 +2,7 @@ import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MarkdownRenderers } from "@components/MarkdownRenderers";
 import { NewsletterForm } from "@components/NewsletterForm";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { getMDXComponent } from "mdx-bundler/client";
 import { type KeyboardEvent, useMemo, useRef, useState } from "react";
@@ -108,7 +108,7 @@ const Timeline = ({ labels, position, onChange }: TimelineProps) => {
   const stepButtonClass = `shrink-0 flex size-11 items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 transition-colors cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-default disabled:hover:bg-transparent ${focusRing}`;
 
   return (
-    <section aria-label="Snapshot timeline" className="mb-10">
+    <section aria-label="Snapshot timeline" className="mb-sub">
       <div className="flex items-center justify-between gap-3">
         <button
           type="button"
@@ -142,7 +142,7 @@ const Timeline = ({ labels, position, onChange }: TimelineProps) => {
         role="radiogroup"
         aria-label="Choose a snapshot"
         onKeyDown={onKeyDown}
-        className="relative mt-4 flex"
+        className="relative mt-stack flex"
       >
         <div
           aria-hidden="true"
@@ -188,7 +188,7 @@ const Timeline = ({ labels, position, onChange }: TimelineProps) => {
 
       <div
         aria-hidden="true"
-        className="relative mt-1 h-5 text-xs text-gray-500 dark:text-gray-400"
+        className="relative mt-hair h-5 text-xs text-gray-500 dark:text-gray-400"
       >
         {years.map(({ year, index }) => (
           <span
@@ -230,10 +230,10 @@ export default function NowHistory({ entries }: Props) {
           { name: "History", url: "/now-history" },
         ]}
       />
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <article className="mx-auto max-w-prose">
           <Header breadcrumbs={{ path: "now-history" }} title="Now Page History" />
-          <div className="text-gray-600 dark:text-gray-400 mb-8">
+          <div className="text-gray-600 dark:text-gray-400 mb-group">
             Past editions of my{" "}
             <a href="/now" className="text-accent hover:underline">
               /now
@@ -247,8 +247,8 @@ export default function NowHistory({ entries }: Props) {
             <>
               <Timeline labels={chronologicalLabels} position={position} onChange={setPosition} />
 
-              <div className="border-l-4 border-myBlue pl-6 mb-8">
-                <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+              <div className="border-l-4 border-myBlue pl-block mb-group">
+                <div className="flex flex-wrap items-center justify-between gap-tight mb-stack">
                   <div className="text-sm text-gray-500 dark:text-gray-400">
                     Snapshot from{" "}
                     <time
@@ -288,11 +288,11 @@ export default function NowHistory({ entries }: Props) {
           )}
         </article>
 
-        <footer className="mx-auto max-w-prose">
+        <footer className="mx-auto mt-section max-w-prose">
           <NewsletterForm />
           <ToTopButton />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 }

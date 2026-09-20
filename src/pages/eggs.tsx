@@ -1,5 +1,5 @@
 import Layout from "@components/Layout";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { EASTER_EGGS, EASTER_EGGS_CHANGED_EVENT, getFoundEggs } from "src/lib/easterEggs";
@@ -29,7 +29,7 @@ export default function EggsPage() {
       keywords={["easter eggs", "Rico Trebeljahr"]}
       noindex={true}
     >
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <article className="mx-auto max-w-prose">
           <Header
             breadcrumbs={{ path: "eggs" }}
@@ -44,7 +44,7 @@ export default function EggsPage() {
             Small surprises are hidden across this site. Most of them react when you click an emoji
             a few times. This page remembers what you found in this browser only.
           </p>
-          <ul className="not-prose m-0 mt-8 list-none p-0">
+          <ul className="not-prose mt-group list-none p-0">
             {EASTER_EGGS.map((egg) => {
               const isFound = found?.has(egg.id) ?? false;
               return (
@@ -68,7 +68,7 @@ export default function EggsPage() {
             })}
           </ul>
         </article>
-      </main>
+      </PageMain>
     </Layout>
   );
 }

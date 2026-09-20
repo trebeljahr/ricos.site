@@ -26,7 +26,7 @@ export const ImageRenderer = ({ src, alt }: ImgHTMLAttributes<HTMLImageElement>)
 
   return (
     <>
-      <span className="block w-full relative my-5 mx-0">
+      <span className="block w-full relative my-block mx-0">
         <ImageWithLoader
           src={src}
           alt={realAlt}

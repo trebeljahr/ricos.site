@@ -70,7 +70,7 @@ export function PlaygroundScenesButton({ open, onClick, round, className }: Scen
       aria-controls="playground-scenes"
       onClick={onClick}
       className={clsx(
-        "inline-flex h-9 shrink-0 items-center gap-1 px-2 text-sm sm:px-2.5 transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none",
+        "inline-flex h-9 shrink-0 items-center gap-hair px-2 text-sm sm:px-2.5 transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none",
         hoverShape(round),
         open && "bg-gray-200 dark:bg-gray-700",
         className,
@@ -200,11 +200,11 @@ export function PlaygroundScenesPanel({ open, onClose, restoreFocus }: PanelProp
           className="relative overflow-y-auto overscroll-contain pr-3 pb-6 pl-2 xl:pl-9"
         >
           {sections.map(([section, scenes]) => (
-            <div key={section} className="mt-5">
+            <div key={section} className="mt-stack">
               <h2 className="px-1 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
                 {section}
               </h2>
-              <ul className="mt-2 grid grid-cols-2 gap-3">
+              <ul className="mt-tight grid grid-cols-2 gap-label">
                 {scenes.map((scene) => {
                   const isCurrent = current === scene.url;
                   return (
@@ -257,9 +257,9 @@ export function PlaygroundSceneGrid() {
   return (
     <div className="not-prose">
       {sections.map(([section, scenes]) => (
-        <section key={section} className="mt-12">
+        <section key={section} className="mt-sub">
           <h2 className="text-2xl font-bold">{section}</h2>
-          <ul className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-stack grid grid-cols-1 gap-block sm:grid-cols-2 lg:grid-cols-3">
             {scenes.map((scene) => (
               <li key={scene.url} className="flex">
                 <Card

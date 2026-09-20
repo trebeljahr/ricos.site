@@ -1,6 +1,6 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import Link from "next/link";
 import type { ImageProps } from "src/@types";
 import { getImgWidthAndHeightDuringBuild } from "src/lib/getImgWidthAndHeightDuringBuild";
@@ -231,9 +231,9 @@ export default function Photography({ trips, seo }: Props) {
       imageAlt={seo?.ogImageAlt || "a high quality rendering of an old film camera"}
       keywords={seo?.keywords || ["photography", "gallery", "photos", "portfolio"]}
     >
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <Header breadcrumbs={{ path: url }} subtitle="My travels in pictures" title="Photography" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-region">
           {trips.map(({ tripName, image }, index) => {
             return (
               <Link
@@ -260,7 +260,7 @@ export default function Photography({ trips, seo }: Props) {
             );
           })}
         </div>
-      </main>
+      </PageMain>
     </Layout>
   );
 }

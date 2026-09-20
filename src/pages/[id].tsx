@@ -5,7 +5,7 @@ import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Page as PageType } from "@velite";
 import dynamic from "next/dynamic";
@@ -78,7 +78,7 @@ export default function Page({ page, backlinks }: Props) {
           { name: title, url: `/${page.slug}` },
         ]}
       />
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <article ref={articleRef} className="mx-auto max-w-prose">
           <Header
             breadcrumbs={{ path: page.slug }}
@@ -96,12 +96,12 @@ export default function Page({ page, backlinks }: Props) {
 
         {page.slug === "needlestack" && <NeedleEgg container={articleRef} />}
 
-        <footer>
+        <footer className="mt-section">
           <NewsletterForm />
           <Backlinks items={backlinks} />
           <ToTopButton />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 }

@@ -1,5 +1,5 @@
 import Layout from "@components/Layout";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import Link from "next/link";
 
 export default function PhotographyPrintsPage() {
@@ -13,7 +13,7 @@ export default function PhotographyPrintsPage() {
       keywords={["photography prints", "photo prints", "travel photography", "wall art"]}
       noindex
     >
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <article className="mx-auto max-w-prose">
           <Header
             breadcrumbs={{ path: "photography/prints" }}
@@ -26,7 +26,7 @@ export default function PhotographyPrintsPage() {
             <Link href="/photography">photography archive</Link>.
           </p>
         </article>
-      </main>
+      </PageMain>
     </Layout>
   );
 }

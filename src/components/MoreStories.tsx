@@ -7,7 +7,7 @@ type Props = {
 
 export const ReadMore = ({ posts }: Props) => {
   return (
-    <div className="mt-10">
+    <div className="mt-sub">
       <h2>Keep reading:</h2>
       {posts.map((post) => {
         return <PostPreview key={post.title} post={post} isHeroPost={false} />;

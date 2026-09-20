@@ -58,7 +58,7 @@ export const SimpleReactCanvasComponent = ({ setCnv, ...props }: CanvasProps) =>
       width={width}
       height={height}
       {...props}
-      className={clsx(props.className, "cursor-pointer my-10")}
+      className={clsx(props.className, "cursor-pointer my-sub")}
     />
   );
 };

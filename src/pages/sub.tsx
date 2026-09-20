@@ -1,5 +1,6 @@
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
+import { PageMain } from "@components/PostHeader";
 
 const SubscribePage = () => {
   return (
@@ -11,11 +12,11 @@ const SubscribePage = () => {
       imageAlt={"a hand writing down thoughts on a piece of paper"}
       keywords={[]}
     >
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
-        <footer>
+      <PageMain>
+        <footer className="mt-section">
           <NewsletterForm />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 };

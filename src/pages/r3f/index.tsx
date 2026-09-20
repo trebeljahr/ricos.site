@@ -1,6 +1,6 @@
 import Layout from "@components/Layout";
 import { PlaygroundSceneGrid } from "@components/Navbar/PlaygroundNav";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
 const defaultSeoInfo = {
@@ -32,7 +32,7 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 
   return (
     <Layout {...seoInfo}>
-      <main className="min-h-screen pt-5 pb-10 px-3 max-w-5xl mx-auto">
+      <PageMain className="min-h-screen">
         <Header
           breadcrumbs={{
             path: "/r3f",
@@ -46,7 +46,7 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
           one day build a complete 3D game in the browser. Pick a demo below.
         </p>
         <PlaygroundSceneGrid />
-      </main>
+      </PageMain>
     </Layout>
   );
 }

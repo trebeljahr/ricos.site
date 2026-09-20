@@ -7,7 +7,7 @@ import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import slugify from "@sindresorhus/slugify";
 import type { Travelblog } from "@velite";
@@ -108,14 +108,14 @@ export const TravelBlogLayout = ({
           { name: title, url: `/${url}` },
         ]}
       />
-      <main className="pt-5 pb-20 px-3  max-w-5xl mx-auto">
+      <PageMain>
         <Header
           breadcrumbs={{ path: url }}
           meta={<MetadataDisplay date={date} readingTime={readingTime} />}
           title={title || ""}
         />
 
-        <div className="mb-5">
+        <div className="mb-block">
           <ImageWithLoader
             priority
             src={cover.src}
@@ -135,10 +135,10 @@ export const TravelBlogLayout = ({
 
         <article className="mx-auto max-w-prose">{children}</article>
 
-        <footer className="mx-auto max-w-prose">
+        <footer className="mx-auto mt-section max-w-prose">
           <NewsletterForm />
           {relatedStories.length > 0 && (
-            <div className="mt-10">
+            <div className="mt-sub">
               <h2>More travel stories</h2>
               {relatedStories.map((story) => (
                 <Card
@@ -158,7 +158,7 @@ export const TravelBlogLayout = ({
           <Backlinks items={backlinks} />
           <ToTopButton />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 };

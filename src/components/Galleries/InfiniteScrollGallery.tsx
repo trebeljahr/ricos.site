@@ -90,6 +90,9 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
     <div className="not-prose">
       <div>
         {groupImages(displayedPhotos).map((group, i) => (
+          // Off the spacing scale on purpose: this has to match the row gutter
+          // react-photo-album picks for the container width (5/10/15px), so the
+          // gap between two groups looks like the gaps inside one.
           // biome-ignore lint/suspicious/noArrayIndexKey: stable list rendered once, no reorder
           <div key={i} className="mb-[5px] xs:mb-[10px] xl:mb-[15px]">
             <RowsPhotoAlbum

@@ -2,7 +2,7 @@ import { Card } from "@components/Card";
 import { ContentListRow } from "@components/ContentListRow";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import Link from "next/link";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
@@ -46,7 +46,7 @@ function ThemeCardLink({ theme }: { theme: ThemeCard }) {
       // sm:grid-cols-2 gap-6 inside `max-w-5xl px-3`, so 488px at desktop.
       sizes="(max-width: 639px) calc(100vw - 24px), (max-width: 1024px) calc(50vw - 24px), 488px"
     >
-      <p className="m-0 mt-4 mb-2 text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
+      <p className="m-0 mt-stack mb-tight text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
         {theme.count} {theme.count === 1 ? "piece" : "pieces"}
       </p>
       <ul className="m-0 list-none space-y-1.5 p-0">
@@ -102,8 +102,8 @@ export default function CategoriesPage({ themes, tags, seo }: Props) {
       image={seo?.ogImage || "/assets/blog/network.jpg"}
       imageAlt={seo?.ogImageAlt || "a network of connected dots"}
     >
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
-        <section className="mb-14">
+      <PageMain>
+        <section className="mb-section">
           <Header
             breadcrumbs={{ path: url }}
             title="Categories"
@@ -111,7 +111,7 @@ export default function CategoriesPage({ themes, tags, seo }: Props) {
           />
         </section>
 
-        <section aria-labelledby="themes-heading" className="mb-24">
+        <section aria-labelledby="themes-heading" className="mb-region">
           <h2 id="themes-heading" className="sr-only">
             Themes
           </h2>
@@ -122,8 +122,8 @@ export default function CategoriesPage({ themes, tags, seo }: Props) {
           </div>
         </section>
 
-        <section aria-labelledby="cloud-heading" className="mb-16">
-          <h2 id="cloud-heading" className="mb-6">
+        <section aria-labelledby="cloud-heading" className="mb-section">
+          <h2 id="cloud-heading" className="mb-block">
             All tags
           </h2>
           <div className="not-prose">
@@ -137,7 +137,7 @@ export default function CategoriesPage({ themes, tags, seo }: Props) {
           </h2>
           {tags.map(({ tag, items }) => (
             <div key={tag} id={tag} className="scroll-mt-24">
-              <h3 className="mt-0 mb-4">
+              <h3 className="flush-top mb-stack">
                 {toTitleCase(tag)}{" "}
                 <span className="text-gray-500 text-base font-normal">({items.length})</span>
               </h3>
@@ -150,11 +150,11 @@ export default function CategoriesPage({ themes, tags, seo }: Props) {
           ))}
         </section>
 
-        <footer className="mt-20">
+        <footer className="mt-region">
           <NewsletterForm />
           <ToTopButton />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 }

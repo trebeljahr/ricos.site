@@ -1,5 +1,5 @@
 import Layout from "@components/Layout";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import Link from "next/link";
 
 export default function PhotographyEssaysPage() {
@@ -13,7 +13,7 @@ export default function PhotographyEssaysPage() {
       keywords={["photography essays", "photo essays", "travel photography", "visual stories"]}
       noindex
     >
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <article className="mx-auto max-w-prose">
           <Header
             breadcrumbs={{ path: "photography/essays" }}
@@ -26,7 +26,7 @@ export default function PhotographyEssaysPage() {
             <Link href="/travel">travel stories</Link>.
           </p>
         </article>
-      </main>
+      </PageMain>
     </Layout>
   );
 }

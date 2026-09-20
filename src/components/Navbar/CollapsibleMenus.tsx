@@ -65,7 +65,7 @@ export function CollapsibleMenuDesktop({ links, text }: DesktopMenuProps) {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((p) => !p)}
-        className="inline-flex h-9 items-center gap-1 rounded-md px-3 transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none"
+        className="inline-flex h-9 items-center gap-hair rounded-md px-3 transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none"
       >
         <span>{text}</span>
         <FiChevronDown
@@ -85,14 +85,14 @@ export function CollapsibleMenuDesktop({ links, text }: DesktopMenuProps) {
         id={panelId}
         inert={!open}
         className={clsx(
-          "absolute left-0 z-50 mt-2 flex min-w-44 origin-top-left flex-col rounded-lg bg-white p-1 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10",
+          "absolute left-0 z-50 mt-tight flex min-w-44 origin-top-left flex-col rounded-lg bg-white p-1 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10",
           "transition-[opacity,scale,visibility] duration-150 ease-out motion-reduce:transition-none",
           open ? "visible scale-100 opacity-100" : "invisible scale-95 opacity-0",
         )}
       >
         {links.map((item) => (
           <Fragment key={item.href}>
-            {item.dividerBefore && <MenuDivider className="mx-2 my-1" />}
+            {item.dividerBefore && <MenuDivider className="mx-2 my-hair" />}
             <SingleMenuItem link={item} onSelect={() => close()} />
           </Fragment>
         ))}
@@ -140,10 +140,10 @@ export function CollapsibleMenuMobile({ links, text, closeNav }: MobileMenuProps
         )}
       >
         <div className="min-h-0 overflow-hidden">
-          <div className="mb-2 ml-3 flex flex-col border-l border-gray-200 pl-2 dark:border-gray-700">
+          <div className="mb-tight ml-3 flex flex-col border-l border-gray-200 pl-2 dark:border-gray-700">
             {links.map((item) => (
               <Fragment key={item.href}>
-                {item.dividerBefore && <MenuDivider className="my-1 mr-3" />}
+                {item.dividerBefore && <MenuDivider className="my-hair mr-3" />}
                 <SingleMenuItem link={item} onSelect={handleSelect} />
               </Fragment>
             ))}

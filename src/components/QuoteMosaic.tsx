@@ -160,7 +160,7 @@ function QuoteSlip({
       <blockquote className="m-0 grow font-serif text-lg leading-relaxed whitespace-pre-line text-zinc-800 dark:text-slate-200">
         <InlineEmphasis text={quote.content} />
       </blockquote>
-      <figcaption className="mt-5 flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+      <figcaption className="mt-stack flex items-center gap-label text-sm text-gray-600 dark:text-gray-400">
         {portrait && <Avatar author={author} portrait={portrait} />}
         <span className="min-w-0">
           <span className="text-xs font-semibold tracking-widest uppercase">— {author}</span>
@@ -227,9 +227,9 @@ export function QuoteMosaic({
   };
 
   return (
-    <div className="not-prose flex flex-col gap-4">
+    <div className="not-prose flex flex-col gap-stack">
       {rows.slice(0, visibleRows).map((row) => (
-        <div key={quotes[row.units[0].items[0]].id} className="flex flex-col gap-4 md:flex-row">
+        <div key={quotes[row.units[0].items[0]].id} className="flex flex-col gap-stack md:flex-row">
           {row.units.map((unit) =>
             unit.items.length === 1 ? (
               slip(unit.items[0], flex(`${unit.width} 1 0px`))
@@ -239,7 +239,7 @@ export function QuoteMosaic({
               <div
                 key={quotes[unit.items[0]].id}
                 style={flex(`${unit.width} 1 0px`)}
-                className={clsx("flex flex-col gap-4", FLEX_FROM_MD)}
+                className={clsx("flex flex-col gap-stack", FLEX_FROM_MD)}
               >
                 {unit.items.map((index, k) => slip(index, flex(`${unit.heights[k]} 1 auto`)))}
               </div>

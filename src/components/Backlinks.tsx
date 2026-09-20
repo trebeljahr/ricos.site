@@ -30,20 +30,23 @@ export const Backlinks = ({ items }: { items: BacklinkItem[] }) => {
   const sortedTypes = TYPE_ORDER.filter((t) => grouped.has(t));
 
   return (
-    <div className="mt-10">
+    <div className="mt-sub">
       <h2>Links to this page</h2>
-      <div className="space-y-4">
+      {/* A link index, not prose: `not-prose` drops the typography plugin's
+          list and paragraph margins so the spacing tokens below hold without
+          `!important`. */}
+      <div className="not-prose space-y-stack">
         {sortedTypes.map((type) => {
           const typeItems = grouped.get(type)!;
           const label = TYPE_LABELS[type] || type;
           return (
             <div key={type}>
-              <p className="text-sm font-medium text-gray-400 dark:text-gray-500 mb-1 mt-0!">
+              <p className="mb-hair text-sm font-medium text-gray-400 dark:text-gray-500">
                 {label}
               </p>
-              <ul className="space-y-1 list-none pl-0! mt-0!">
+              <ul className="list-none space-y-hair pl-0">
                 {typeItems.map((item) => (
-                  <li key={item.link} className="pl-0!">
+                  <li key={item.link} className="pl-0">
                     <Link href={item.link} className="text-accent hover:underline">
                       {item.title}
                     </Link>

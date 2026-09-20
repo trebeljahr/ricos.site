@@ -1,6 +1,6 @@
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { OtherPostsPreview } from "@components/PostPreview";
 import { ToTopButton } from "@components/ToTopButton";
 import type { CommonMetadata } from "src/@types";
@@ -29,7 +29,7 @@ const Posts = ({ posts, seo }: Props) => {
       imageAlt={seo?.ogImageAlt || "a hand writing down thoughts on a piece of paper"}
       keywords={seo?.keywords || ["posts", "writings", "thoughts", "essays", "life"]}
     >
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <section>
           <Header
             breadcrumbs={{ path: url }}
@@ -39,11 +39,11 @@ const Posts = ({ posts, seo }: Props) => {
           <OtherPostsPreview posts={posts} />
         </section>
 
-        <footer>
+        <footer className="mt-section">
           <NewsletterForm />
           <ToTopButton />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 };

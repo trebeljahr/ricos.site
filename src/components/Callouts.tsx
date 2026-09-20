@@ -243,7 +243,7 @@ export const CalloutRoot: FC<CalloutRootProps> = ({
       isFoldable={isFoldable}
       defaultFolded={defaultFolded}
       className={clsx(
-        "callout-root my-6 space-y-2 rounded-lg border bg-card p-2",
+        "callout-root my-block space-y-tight rounded-lg border bg-card p-2",
         callout.className.root,
         className,
       )}
@@ -271,7 +271,7 @@ export const CalloutTitle: FC<CalloutTitleProps> = ({
   return (
     <Summary
       isFoldable={isFoldable}
-      className={clsx("flex flex-row items-center gap-2", callout.className.title)}
+      className={clsx("flex flex-row items-center gap-tight", callout.className.title)}
     >
       {callout.icon}
       <span>{children ?? callout.label}</span>

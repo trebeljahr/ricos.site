@@ -2,7 +2,7 @@ import { CardGallery } from "@components/CardGalleries";
 import { ExternalLink } from "@components/ExternalLink";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import Link from "next/link";
 import { PROJECT_SECTIONS, projectsInSection } from "src/lib/projects";
 
@@ -36,7 +36,7 @@ export default function ProjectsPage() {
           { name: "Projects", url: "/projects" },
         ]}
       />
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <Header breadcrumbs={{ path: "/projects" }} title="Projects" />
         <p className="max-w-prose">
           Here are the things I have built over the years. Some are games, some are tools, and some
@@ -55,19 +55,19 @@ export default function ProjectsPage() {
           </ExternalLink>{" "}
           is where I make games, and the umbrella for the rest of my software work.
         </p>
-        <p className="max-w-prose mb-14">
+        <p className="max-w-prose mb-section">
           Wanna know what I still want to learn as a programmer? I have an{" "}
           <Link href="/achievements">/achievements</Link> page.
         </p>
 
         {PROJECT_SECTIONS.map(({ title, intro }) => (
-          <section key={title} id={toAnchor(title)} className="mb-16">
+          <section key={title} id={toAnchor(title)} className="mb-section">
             <h2 className="text-3xl">{title}</h2>
-            <p className="max-w-prose mb-8">{intro}</p>
+            <p className="max-w-prose mb-group">{intro}</p>
             <CardGallery content={projectsInSection(title)} withSubtitle coverAspect="video" />
           </section>
         ))}
-      </main>
+      </PageMain>
     </Layout>
   );
 }

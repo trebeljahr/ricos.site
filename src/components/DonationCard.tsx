@@ -85,7 +85,7 @@ type DonationCardProps = {
 
 function FallbackDonationLinks() {
   return (
-    <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+    <div className="mt-block flex flex-col gap-label sm:flex-row sm:flex-wrap">
       {fallbackLinks.map((link) => (
         <ExternalLink
           key={link.name}
@@ -93,7 +93,7 @@ function FallbackDonationLinks() {
           className="inline-flex min-h-14 flex-1 basis-48 flex-col justify-center rounded-md border-2 border-gray-200 px-4 py-3 no-underline transition-colors hover:border-accent dark:border-gray-700"
         >
           <span className="font-semibold text-gray-900 dark:text-white">{link.name}</span>
-          <span className="mt-1 text-sm text-gray-600 dark:text-gray-300">{link.blurb}</span>
+          <span className="mt-hair text-sm text-gray-600 dark:text-gray-300">{link.blurb}</span>
         </ExternalLink>
       ))}
     </div>
@@ -116,7 +116,7 @@ export function DonationCard({ className }: DonationCardProps) {
     <section className={clsx("not-prose w-full", className)} aria-labelledby="donation-card-title">
       <div className="rounded-lg border-4 border-gray-200 bg-white px-5 py-10 dark:border-gray-700 dark:bg-gray-800">
         <p className="m-0 text-sm font-semibold text-accent">donating = loving</p>
-        <h2 id="donation-card-title" className="mt-2 mb-3 text-2xl font-bold">
+        <h2 id="donation-card-title" className="mt-tight mb-label text-2xl font-bold">
           Keep this place alive
         </h2>
         <p className="m-0 max-w-prose text-gray-700 dark:text-gray-200">
@@ -127,7 +127,7 @@ export function DonationCard({ className }: DonationCardProps) {
 
         {showStripeControls ? (
           <>
-            <div className="mt-6 inline-flex rounded-md border-2 border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-900">
+            <div className="mt-block inline-flex rounded-md border-2 border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-900">
               {[
                 ["monthly", "Monthly"],
                 ["once", "One-time"],
@@ -150,7 +150,7 @@ export function DonationCard({ className }: DonationCardProps) {
             </div>
 
             {hasStripeLinks ? (
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="mt-stack grid gap-label sm:grid-cols-2">
                 {configuredOptions.map((option) => (
                   <ExternalLink
                     key={option.label}
@@ -161,24 +161,24 @@ export function DonationCard({ className }: DonationCardProps) {
                       {option.label}
                       {mode === "monthly" ? " / month" : ""}
                     </span>
-                    <span className="mt-2 text-sm text-gray-600 group-hover:text-gray-800 dark:text-gray-300 dark:group-hover:text-gray-100">
+                    <span className="mt-tight text-sm text-gray-600 group-hover:text-gray-800 dark:text-gray-300 dark:group-hover:text-gray-100">
                       {option.note}
                     </span>
                   </ExternalLink>
                 ))}
               </div>
             ) : (
-              <p className="mt-5 rounded-md border-2 border-dashed border-gray-200 px-4 py-3 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-300">
+              <p className="mt-stack rounded-md border-2 border-dashed border-gray-200 px-4 py-3 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-300">
                 Direct Stripe donations are coming online. Until then, the older doors below still
                 work.
               </p>
             )}
 
-            <details className="mt-5 text-sm text-gray-600 dark:text-gray-300">
+            <details className="mt-stack text-sm text-gray-600 dark:text-gray-300">
               <summary className="w-fit cursor-pointer font-semibold hover:text-accent">
                 Prefer another platform?
               </summary>
-              <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+              <div className="mt-label flex flex-col gap-tight sm:flex-row sm:flex-wrap">
                 {fallbackLinks.map((link) => (
                   <ExternalLink
                     key={link.name}

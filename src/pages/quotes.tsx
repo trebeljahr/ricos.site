@@ -1,7 +1,7 @@
 import { FiChevronDown, FiX } from "@components/Icons";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { type NumberedQuote, type Quote, QuoteMosaic } from "@components/QuoteMosaic";
 import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
@@ -62,7 +62,7 @@ export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portra
       url={url}
       keywords={seo?.keywords || ["quotes", "collection", "books", "inspiration"]}
     >
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <section>
           <Header
             breadcrumbs={{ path: url }}
@@ -77,7 +77,7 @@ export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portra
             threshold={0.3}
             searchByTitle="Search by words, author or book..."
           />
-          <div className="not-prose mt-4 flex flex-wrap items-center gap-2">
+          <div className="not-prose mt-stack flex flex-wrap items-center gap-tight">
             <button
               type="button"
               aria-expanded={topicsOpen}
@@ -104,7 +104,7 @@ export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portra
             )}
           </div>
           {topicsOpen && (
-            <fieldset id="quote-topics" className="not-prose mt-3 flex flex-wrap gap-2">
+            <fieldset id="quote-topics" className="not-prose mt-label flex flex-wrap gap-tight">
               <legend className="sr-only">Filter by topic</legend>
               {topics.map((tag) => (
                 <button
@@ -125,11 +125,11 @@ export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portra
           </div>
         </section>
 
-        <footer>
+        <footer className="mt-section">
           <NewsletterForm />
           <ToTopButton />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 }

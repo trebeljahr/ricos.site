@@ -1,6 +1,6 @@
 import { DinoTail } from "@components/EasterEggs/Dino";
 import Layout from "@components/Layout";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { TimelineList } from "@components/TimelineList";
 import { useRef } from "react";
 import type { CommonMetadata } from "src/@types";
@@ -70,14 +70,14 @@ export default function Timeline({ entries, seo }: Props) {
       keywords={seo?.keywords || ["timeline", "writing", "photography", "projects", "r3f"]}
       url={url}
     >
-      <main className="pt-5 pb-20 px-3 max-w-(--breakpoint-lg) mx-auto">
-        <section ref={titleRef} className="mb-14">
+      <PageMain>
+        <section ref={titleRef} className="mb-section">
           <Header breadcrumbs={{ path: url }} title="Timeline" />
         </section>
         <DinoTail anchorRef={titleRef} />
 
         <TimelineList entries={entries} initialCount={24} batchSize={16} />
-      </main>
+      </PageMain>
     </Layout>
   );
 }

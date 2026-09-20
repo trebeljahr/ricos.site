@@ -5,7 +5,7 @@ import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
-import { PageTop } from "@components/PostHeader";
+import { PageMain, PageTop } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Podcastnote as PodcastnoteType } from "@velite";
 
@@ -76,7 +76,7 @@ const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
           { name: podcastnote.title, url: `/${url}` },
         ]}
       />
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         {/* Podcast notes are unlisted — the /podcastnotes index was removed, so
             that crumb is plain text rather than a link to a route that 404s. */}
         <article>
@@ -91,22 +91,24 @@ const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
               readingTime={podcastnote.metadata.readingTime}
             />
             <section className="Podcastnote-info">
-              <div className="Podcastnote-preview-text">
-                <h1 className="mt-2! mb-2!">
+              {/* The show line used to sit in a <p> inside the <h1>, where the
+                  typography plugin still reached it. Both lines are siblings of
+                  one title block now, so `.post-header` sets the rhythm. */}
+              <div className="Podcastnote-preview-text post-header">
+                <hgroup className="post-header">
                   <p className="text-2xl font-normal">
-                    {podcastnote.show} | Episode – {podcastnote.episode}{" "}
+                    {podcastnote.show} | Episode – {podcastnote.episode}
                   </p>
-                  <p className="mt-2">{podcastnote.title}</p>
-                </h1>
-                {/* <p className="mt-10 mb-0"></p> */}
-                <p className="mt-0 mb-0">
+                  <h1>{podcastnote.title}</h1>
+                </hgroup>
+                <p>
                   <b>Rating: {podcastnote.rating}/10</b>
                 </p>
-                <span className="mt-2">
+                <p>
                   Listen on: <ExternalLink href={podcastnote.links.youtube}>Youtube</ExternalLink> |{" "}
                   <ExternalLink href={podcastnote.links.spotify}>Spotify</ExternalLink> |{" "}
                   <ExternalLink href={podcastnote.links.web}>Web</ExternalLink>
-                </span>
+                </p>
               </div>
             </section>
           </PageTop>
@@ -115,12 +117,12 @@ const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
           </section>
         </article>
 
-        <footer>
+        <footer className="mt-section">
           <NewsletterForm />
           <Backlinks items={backlinks} />
           <ToTopButton />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 };

@@ -85,7 +85,7 @@ export function TimelineList({
   return (
     <div className="not-prose">
       {filterable && availableTypes.length > 1 && (
-        <div className="mb-12 flex flex-wrap gap-2">
+        <div className="mb-sub flex flex-wrap gap-tight">
           <button
             type="button"
             aria-pressed={selectedType === "all"}
@@ -116,10 +116,10 @@ export function TimelineList({
         </div>
       )}
 
-      <div className="space-y-12">
+      <div className="space-y-sub">
         {visibleSections.map(({ year, items, stats }) => (
           <section key={year}>
-            <h2 className="m-0 mb-6 text-4xl font-bold tracking-normal">
+            <h2 className="m-0 mb-block text-4xl font-bold tracking-normal">
               {year}
               <span className="ml-3 text-lg font-normal text-gray-400">
                 {stats.count} {stats.count === 1 ? "work" : "works"}
@@ -146,7 +146,7 @@ export function TimelineList({
       </div>
 
       {hasMore && (
-        <div className="mt-10 flex justify-center">
+        <div className="mt-sub flex justify-center">
           <button
             type="button"
             onClick={() =>

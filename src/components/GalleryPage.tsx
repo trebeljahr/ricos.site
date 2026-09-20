@@ -1,5 +1,5 @@
 import { InfiniteScrollGallery } from "@components/Galleries";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { useMemo } from "react";
 import type { ImageProps } from "src/@types";
@@ -37,12 +37,12 @@ export function GalleryPage({ path, title, images }: Props) {
   );
 
   return (
-    <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+    <PageMain>
       <section>
         <Header breadcrumbs={{ path }} title={title} />
         <InfiniteScrollGallery images={imagesWithSrcSet} />
         <ToTopButton />
       </section>
-    </main>
+    </PageMain>
   );
 }

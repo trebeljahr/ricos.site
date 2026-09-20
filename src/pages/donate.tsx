@@ -2,7 +2,7 @@ import { DonationCard } from "@components/DonationCard";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 
 export default function DonatePage() {
@@ -27,7 +27,7 @@ export default function DonatePage() {
           { name: "Donate", url: "/donate" },
         ]}
       />
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <article className="mx-auto max-w-prose prose md:prose-lg xl:prose-xl dark:prose-invert">
           <Header breadcrumbs={{ path: "donate" }} title="Donate" />
 
@@ -49,9 +49,9 @@ export default function DonatePage() {
             the next thing.
           </p>
 
-          <DonationCard className="mt-8" />
+          <DonationCard className="mt-group" />
 
-          <h2 className="mt-12">Other ways to help</h2>
+          <h2>Other ways to help</h2>
           <p>Money is nice, but it is not the only useful thing.</p>
           <ul>
             <li>
@@ -72,14 +72,14 @@ export default function DonatePage() {
             </li>
           </ul>
 
-          <p className="mt-10">Thanks for being here and reading along. 🌱</p>
+          <p className="mt-sub">Thanks for being here and reading along. 🌱</p>
         </article>
 
-        <footer className="mx-auto max-w-prose">
+        <footer className="mx-auto mt-section max-w-prose">
           <NewsletterForm />
           <ToTopButton />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 }

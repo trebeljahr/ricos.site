@@ -3,7 +3,7 @@ import { ImageWithLoader } from "@components/ImageWithLoader";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import clsx from "clsx";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -35,7 +35,7 @@ const Arrow = () => (
 const MoreLink = ({ href, children }: { href: string; children: ReactNode }) => (
   <Link
     href={href}
-    className="group mt-6 inline-flex items-center gap-2 font-semibold text-accent no-underline hover:underline"
+    className="group mt-block inline-flex items-center gap-tight font-semibold text-accent no-underline hover:underline"
   >
     {children} <Arrow />
   </Link>
@@ -52,11 +52,11 @@ const Section = ({
   text: ReactNode;
   children: ReactNode;
 }) => (
-  <section className="mt-24">
-    <div className="mb-8 max-w-prose">
-      <p className="m-0! text-sm font-semibold uppercase tracking-widest text-accent">{kicker}</p>
-      <h2 className="mt-2! mb-0! text-3xl md:text-4xl">{title}</h2>
-      <p className="mt-3! mb-0! text-lg! text-gray-600 dark:text-gray-300">{text}</p>
+  <section className="mt-region">
+    <div className="flow-label mb-group max-w-prose">
+      <p className="text-sm font-semibold uppercase tracking-widest text-accent">{kicker}</p>
+      <h2 className="text-3xl md:text-4xl">{title}</h2>
+      <p className="text-lg text-gray-600 dark:text-gray-300">{text}</p>
     </div>
     {children}
   </section>
@@ -78,7 +78,7 @@ export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Prop
           { name: "Start Here", url: "/start-here" },
         ]}
       />
-      <main className="mx-auto max-w-5xl px-3 pt-5 pb-24">
+      <PageMain>
         <Header
           breadcrumbs={{ path: "start-here" }}
           title="Start Here"
@@ -96,12 +96,12 @@ export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Prop
               className="object-cover"
             />
           </div>
-          <div className="[&_p]:text-lg! md:[&_p]:text-xl!">
-            <p className="mt-0!">
+          <div className="flow-block [&_p]:text-lg md:[&_p]:text-xl">
+            <p>
               Hey, I&apos;m Rico. I travel slowly, read a lot and make games and cool websites. This
               website is where all of it ends up.
             </p>
-            <p className="mb-0!">
+            <p>
               Over the years it grew into a lot of pages. You don&apos;t need to see all of them.
               Scroll down for a small taste instead, and if you like it, stay in touch.
             </p>
@@ -194,12 +194,12 @@ export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Prop
           title="If you liked any of this"
           text="This is how you hear about the next thing."
         >
-          <div className="grid gap-10 lg:grid-cols-[3fr_2fr]">
-            <div className="[&>div]:mt-0!">
+          <div className="grid gap-sub lg:grid-cols-[3fr_2fr]">
+            <div>
               <NewsletterForm
-                heading={<h3 className="mt-0! text-2xl">Get Live and Learn by email</h3>}
+                heading={<h3 className="flush-top text-2xl">Get Live and Learn by email</h3>}
                 text={
-                  <p className="mb-4">
+                  <p className="mb-block">
                     One postcard every few weeks. A story from wherever I am, photos and a few
                     things I found. No ads, and you can unsubscribe with one click.
                   </p>
@@ -207,15 +207,15 @@ export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Prop
               />
             </div>
             <div>
-              <h3 className="mt-0! text-2xl">Get to know me</h3>
-              <ul className="m-0! list-none space-y-4 p-0!">
+              <h3 className="flush-top text-2xl">Get to know me</h3>
+              <ul className="not-prose list-none space-y-stack p-0">
                 {[
                   ["/now", "Now", "What I'm doing right now."],
                   ["/principles", "Principles", "The rules I try to live by."],
                   ["/timeline", "Timeline", "Everything on this site, newest first."],
                   ["/rss.xml", "RSS feed", "For feed readers. Everything new, nothing else."],
                 ].map(([href, label, note]) => (
-                  <li key={href} className="m-0! p-0!">
+                  <li key={href}>
                     <Link href={href} className="group block text-inherit no-underline">
                       <span className="inline-flex items-center gap-2 text-lg font-semibold text-accent group-hover:underline">
                         {label} <Arrow />
@@ -228,7 +228,7 @@ export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Prop
             </div>
           </div>
         </Section>
-      </main>
+      </PageMain>
     </Layout>
   );
 }

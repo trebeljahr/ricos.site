@@ -1,7 +1,7 @@
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import Link from "next/link";
 
@@ -19,7 +19,7 @@ export default function PrivacyPage() {
           { name: "Privacy", url: "/privacy" },
         ]}
       />
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <article className="mx-auto max-w-prose prose md:prose-lg xl:prose-xl dark:prose-invert">
           <Header breadcrumbs={{ path: "privacy" }} title="Privacy Policy" />
 
@@ -110,11 +110,11 @@ export default function PrivacyPage() {
           </p>
         </article>
 
-        <footer className="mx-auto max-w-prose">
+        <footer className="mx-auto mt-section max-w-prose">
           <NewsletterForm />
           <ToTopButton />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 }

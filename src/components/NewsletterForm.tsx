@@ -83,14 +83,14 @@ export const NewsletterForm = ({
   };
 
   const defaultLink = (
-    <Link as="/newsletters" href="/newsletters" className="block w-fit mt-5">
+    <Link as="/newsletters" href="/newsletters" className="mt-stack block w-fit">
       Check out what you missed so far.
     </Link>
   );
 
   const defaultText = (
     <>
-      <p className="mb-4">
+      <p className="mb-block">
         Join the Live and Learn Newsletter to receive digital postcards filled with beauty, travel
         stories and links to nice things I have found, once or twice a month. No spam, ever. You can
         unsubscribe at any time.
@@ -99,13 +99,13 @@ export const NewsletterForm = ({
   );
 
   const defaultHeading = (
-    <h2 className="relative mt-0!">
+    <h2 className="relative flush-top">
       Subscribe to Live and Learn <SaplingEgg />
     </h2>
   );
 
   return (
-    <div className="mx-auto w-full max-w-prose mt-16">
+    <div className="mx-auto w-full max-w-prose">
       {success ? (
         <div className="relative overflow-hidden px-5 py-10 rounded-lg bg-white dark:bg-gray-800 border-4 border-gray-200 dark:border-gray-700">
           <div
@@ -115,7 +115,7 @@ export const NewsletterForm = ({
           <div className="flex w-full justify-center">
             <ConfettiExplosion {...mediumConfettiProps} />
           </div>
-          <div className="animate-rise-in motion-reduce:animate-none">
+          <div className="flow-stack animate-rise-in motion-reduce:animate-none">
             <span className="flex size-12 items-center justify-center rounded-full bg-linear-to-br from-green-400 to-blue-600 text-white shadow-lg shadow-teal-500/20">
               <svg aria-hidden="true" viewBox="0 0 24 24" className="size-6" fill="none">
                 <path
@@ -130,8 +130,8 @@ export const NewsletterForm = ({
                 />
               </svg>
             </span>
-            <h2 className="mt-5! mb-3">Almost there!</h2>
-            <p className="mb-4">
+            <h2>Almost there!</h2>
+            <p>
               We sent a confirmation link to{" "}
               <span className="font-medium text-gray-900 dark:text-white">{email}</span>. Click it
               to complete your signup. If you don&apos;t see it, check your spam folder.
@@ -141,7 +141,7 @@ export const NewsletterForm = ({
 
             <button
               type="button"
-              className="mt-3 text-left text-sm text-gray-500 dark:text-gray-400 underline decoration-gray-300 dark:decoration-gray-600 underline-offset-4 hover:text-gray-800 dark:hover:text-gray-200 cursor-pointer transition-colors"
+              className="text-left text-sm text-gray-500 dark:text-gray-400 underline decoration-gray-300 dark:decoration-gray-600 underline-offset-4 hover:text-gray-800 dark:hover:text-gray-200 cursor-pointer transition-colors"
               onClick={() => setSuccess(null)}
             >
               Sign up with a different email
@@ -154,7 +154,7 @@ export const NewsletterForm = ({
           {text || defaultText}
 
           <form className="form flex flex-col justify-center" onSubmit={handleSubmit} noValidate>
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="flex flex-col gap-stack sm:flex-row sm:items-center">
               <input
                 name="email"
                 type="email"
@@ -189,7 +189,7 @@ export const NewsletterForm = ({
                 id="email-error"
                 role="alert"
                 key={error.message}
-                className="flex items-start gap-2 mt-3 mb-0 text-sm text-rose-600 dark:text-rose-400 animate-rise-in motion-reduce:animate-none"
+                className="flex items-start gap-tight mt-label mb-0 text-sm text-rose-600 dark:text-rose-400 animate-rise-in motion-reduce:animate-none"
               >
                 <svg
                   aria-hidden="true"

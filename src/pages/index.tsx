@@ -62,8 +62,8 @@ const IndexPage = ({ seo, ...props }: Props) => {
       fullScreen={true}
     >
       <WebSiteJsonLd />
-      <main className="mt-16">
-        <section className="px-3 pb-20">
+      <main className="mt-section">
+        <section className="px-gutter pb-region">
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <div className="max-w-prose">
               <h1 className="text-3xl md:text-4xl">
@@ -104,7 +104,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
           </div>
         </section>
 
-        <section className="dark:bg-nightBlue bg-slate-100 pt-1 pb-20 px-3">
+        <section className="dark:bg-nightBlue bg-slate-100 px-gutter pt-hair pb-region">
           <HomePageSection
             cardGalleryProps={{
               content: props.postsSelection,
@@ -116,7 +116,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
           />
         </section>
 
-        <section className="pt-1 pb-20 px-3">
+        <section className="px-gutter pt-hair pb-region">
           <HomePageSection
             cardGalleryProps={{
               content: props.travelBlogsSelection,
@@ -128,7 +128,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
           />
         </section>
 
-        <section className="dark:bg-nightBlue bg-slate-100 pt-1 pb-20 px-3">
+        <section className="dark:bg-nightBlue bg-slate-100 px-gutter pt-hair pb-region">
           <HomePageSection
             cardGalleryProps={{
               content: props.newsletterSelection,
@@ -139,7 +139,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
           />
         </section>
 
-        <section className="pt-1 pb-20 px-3">
+        <section className="px-gutter pt-hair pb-region">
           <HomePageSection
             cardGalleryProps={{
               content: props.booknotesSelection,
@@ -151,17 +151,17 @@ const IndexPage = ({ seo, ...props }: Props) => {
           />
         </section>
 
-        <section className="pt-1 pb-20 px-3">
+        <section className="px-gutter pt-hair pb-region">
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <h2 className="text-3xl md:text-5xl">
               <PhotographyEgg photos={props.featuredTrips} />
             </h2>
-            <p className="mb-14 max-w-prose">
+            <p className="mb-sub max-w-prose">
               Trips through Asia, Europe, the Caribbean and South America, told in pictures. Six of
               my favourite collections below. See <Link href="/photography">all trips</Link> for the
               rest.
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-12">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-sub">
               {props.featuredTrips.map(({ tripName, image }) => (
                 <Link
                   key={tripName}
@@ -189,16 +189,16 @@ const IndexPage = ({ seo, ...props }: Props) => {
           </div>
         </section>
 
-        <section className="dark:bg-nightBlue bg-slate-100 pt-1 pb-20 px-3">
+        <section className="dark:bg-nightBlue bg-slate-100 px-gutter pt-hair pb-region">
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <h2 className="text-3xl md:text-5xl">
               <CreativeCodingEgg />
             </h2>
-            <p className="mb-14 max-w-prose">
+            <p className="mb-sub max-w-prose">
               Three.js and R3F experiments. Shaders, oceans, generative terrain, particle systems.
               These are the standouts; the full playground has dozens more.
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-12">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-sub">
               {FEATURED_R3F_DEMOS.map(({ name, href }) => (
                 <Card
                   key={name}
@@ -221,7 +221,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
           </div>
         </section>
 
-        <section className="pt-1 pb-20 px-3">
+        <section className="px-gutter pt-hair pb-region">
           <HomePageSection
             cardGalleryProps={{
               content: FEATURED_PROJECTS,
@@ -242,7 +242,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
           </HomePageSection>
         </section>
 
-        <section className="dark:bg-nightBlue bg-slate-100 pt-1 pb-20 px-3">
+        <section className="dark:bg-nightBlue bg-slate-100 px-gutter pt-hair pb-region">
           <div className="mx-auto max-w-(--breakpoint-lg)">
             <div className="max-w-prose">
               <h2 className="text-3xl md:text-5xl">

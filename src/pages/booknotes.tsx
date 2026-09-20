@@ -1,7 +1,7 @@
 import { BookPreview } from "@components/BookPreview";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Booknote } from "@velite";
@@ -45,7 +45,7 @@ export default function Books({ booknotes, seo }: Props) {
       url={url}
       imageAlt={seo?.ogImageAlt || "a bookshelf filled with lots of books"}
     >
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <Header
           breadcrumbs={{ path: url }}
           title="Booknotes"
@@ -68,11 +68,11 @@ export default function Books({ booknotes, seo }: Props) {
           })}
         </div>
 
-        <footer>
+        <footer className="mt-section">
           <NewsletterForm />
           <ToTopButton />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 }

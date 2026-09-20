@@ -13,7 +13,7 @@ import { Backlinks } from "@components/Backlinks";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { ReadMore } from "@components/MoreStories";
 import { NewsletterForm } from "@components/NewsletterForm";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Post } from "@velite";
 import type { ReactNode } from "react";
@@ -106,7 +106,7 @@ export const BlogLayout = ({
           { name: title, url: `/${url}` },
         ]}
       />
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <section>
           <Header
             breadcrumbs={{ path: url }}
@@ -114,7 +114,7 @@ export const BlogLayout = ({
             subtitle={subtitle}
             title={title}
           />
-          <div className="mb-5">
+          <div className="mb-block">
             <ImageWithLoader
               priority
               src={cover.src}
@@ -127,16 +127,16 @@ export const BlogLayout = ({
             />
           </div>
 
-          <div className="mx-auto max-w-prose mt-20">{children}</div>
+          <div className="mx-auto mt-region max-w-prose">{children}</div>
         </section>
 
-        <footer className="mx-auto max-w-prose">
+        <footer className="mx-auto mt-section max-w-prose">
           <NewsletterForm />
           {morePosts && <ReadMore posts={morePosts} />}
           <Backlinks items={backlinks} />
           <ToTopButton />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 };

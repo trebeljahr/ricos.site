@@ -1,7 +1,7 @@
 import { Card } from "@components/Card";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { CommonMetadata } from "src/@types";
 import type { SeoInfo } from "src/lib/getSeoInfo";
@@ -95,7 +95,7 @@ const TravelBlogs = ({ cardContent, seo }: Props) => {
       url="travel"
       keywords={seo?.keywords || ["travel", "blog", "adventures", "stories"]}
     >
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <section>
           <Header
             breadcrumbs={{ path: "travel" }}
@@ -120,11 +120,11 @@ const TravelBlogs = ({ cardContent, seo }: Props) => {
           })}
         </section>
 
-        <footer>
+        <footer className="mt-section">
           <NewsletterForm />
           <ToTopButton />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 };

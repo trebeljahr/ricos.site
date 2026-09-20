@@ -114,7 +114,7 @@ export function Card({
         "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
         horizontal
           ? clsx(
-              "mb-6 block md:grid",
+              "mb-block block md:grid",
               portrait ? "md:grid-cols-[10rem_1fr]" : "md:grid-cols-[15rem_1fr]",
             )
           : "flex flex-col self-stretch",
@@ -164,8 +164,13 @@ export function Card({
         </div>
       </div>
 
-      <div className={clsx("flex min-w-0 grow flex-col", compact ? "px-3 py-2.5" : "p-5 md:p-6")}>
-        <div className="flex items-start justify-between gap-3">
+      <div
+        className={clsx(
+          "flex min-w-0 grow flex-col",
+          compact ? "px-label py-label" : "p-stack md:p-block",
+        )}
+      >
+        <div className="flex items-start justify-between gap-label">
           <Heading
             className={clsx(
               "m-0 grow leading-snug tracking-tight transition-colors duration-300 ease-out group-hover:text-accent",
@@ -182,14 +187,14 @@ export function Card({
             {title}
           </Heading>
           {typeLabel && (
-            <span className="mt-1 shrink-0 rounded-full bg-gray-100 px-3 py-1 text-xs uppercase tracking-wide text-gray-700 dark:bg-gray-700 dark:text-gray-200">
+            <span className="mt-hair shrink-0 rounded-full bg-gray-100 px-label py-hair text-xs uppercase tracking-wide text-gray-700 dark:bg-gray-700 dark:text-gray-200">
               {typeLabel}
             </span>
           )}
         </div>
 
         {horizontal && subtitle && (
-          <p className="m-0 mt-1 text-base text-gray-600 md:text-lg dark:text-gray-300">
+          <p className="mt-hair text-base text-gray-600 md:text-lg dark:text-gray-300">
             {subtitle}
           </p>
         )}
@@ -198,7 +203,7 @@ export function Card({
           // Vertical cards sit side by side in grids, so every one shows a single
           // blurb in the same style: the subtitle when there is one (it already
           // says what the piece is about), otherwise the excerpt.
-          <div className="mt-2 line-clamp-3 text-base leading-relaxed text-gray-600 md:text-lg dark:text-gray-300 [&_p]:my-0">
+          <div className="mt-tight line-clamp-3 text-base leading-relaxed text-gray-600 md:text-lg dark:text-gray-300 [&_p]:my-0">
             {subtitle ? (
               <p>{subtitle}</p>
             ) : markdownExcerpt ? (
@@ -214,7 +219,7 @@ export function Card({
           // cards don't read as fine print next to the text around them.
           // The browser draws the "…" when an excerpt overflows, so cards keep
           // a consistent height no matter how long the stored excerpt is.
-          <div className="mt-3 line-clamp-4 text-base leading-relaxed text-gray-500 md:text-lg dark:text-gray-400 [&_p]:my-0">
+          <div className="mt-label line-clamp-4 text-base leading-relaxed text-gray-500 md:text-lg dark:text-gray-400 [&_p]:my-0">
             {markdownExcerpt ? <MDXExcerpt source={markdownExcerpt} /> : <p>{excerpt}</p>}
           </div>
         )}
@@ -223,7 +228,7 @@ export function Card({
 
         {hasMetadata && (
           // Pinned to the bottom so metadata lines up across a row of cards.
-          <div className="mt-auto pt-1 [&>div]:text-gray-500 dark:[&>div]:text-gray-400">
+          <div className="mt-auto pt-stack [&>div]:text-gray-500 dark:[&>div]:text-gray-400">
             <MetadataDisplay
               date={date}
               readingTime={readingTime}

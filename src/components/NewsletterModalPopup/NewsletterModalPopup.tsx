@@ -55,20 +55,20 @@ const NewsletterModalPopup = ({ howFarDown = 50 }: { howFarDown?: number }) => {
             >
               <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-5 pt-10 md:p-12 text-left align-middle shadow-xl transition-all">
                 <NewsletterForm
-                  heading={<h2 className="mt-0">Not subscribed yet?</h2>}
+                  heading={<h2 className="flush-top">Not subscribed yet?</h2>}
                   text={
                     <>
-                      <p className="mb-4">
+                      <p className="mb-block">
                         Live and Learn is a digital postcard I send out every couple of weeks.
                         Travel stories, an essay or two and a handful of links worth sharing.
                       </p>
-                      <ul className="list-disc mb-4 pl-3">
+                      <ul className="list-disc mb-stack pl-3">
                         <li>🌌 Travel stories from wherever I am</li>
                         <li>✍️ Short essays on things I'm thinking about</li>
                         <li>📸 Photos from the road</li>
                         <li>🖇️ A few hand-picked links</li>
                       </ul>
-                      <p className="mb-4">No spam. No noise. Just a postcard.</p>
+                      <p className="mb-stack">No spam. No noise. Just a postcard.</p>
                     </>
                   }
                   link={null}

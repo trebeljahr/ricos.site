@@ -25,7 +25,7 @@ export const CardGallery = ({
   coverAspect,
 }: CardGalleryProps) => {
   return (
-    <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max justify-items-center pb-5">
+    <div className="grid gap-block grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max justify-items-center pb-block">
       {content.map((singlePiece) => (
         <Card
           key={singlePiece.slug}
@@ -147,7 +147,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
   }, [handleNext, scrollRef, scrolled, hovering]);
 
   return (
-    <div className="flex place-items-center relative mb-10 xl:mb-0">
+    <div className="flex place-items-center relative mb-sub xl:mb-0">
       <div
         // pt-6 leaves room for the hover lift and glow, which overflow-x-scroll would clip.
         className="-ml-3 overflow-x-scroll w-full overscroll-x-none snap-x snap-mandatory flex transition-transform duration-300 ease-in-out pt-6 pb-6 no-scrollbar"
@@ -162,7 +162,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
             key={singlePiece.link}
             id={singlePiece.slug}
             data-index={index}
-            className="px-3 flex self-stretch w-full md:w-1/2 xl:w-1/3 snap-start shrink-0"
+            className="px-label flex self-stretch w-full md:w-1/2 xl:w-1/3 snap-start shrink-0"
           >
             <Card
               {...singlePiece}

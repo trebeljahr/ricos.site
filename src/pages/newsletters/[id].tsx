@@ -7,7 +7,7 @@ import { MetadataDisplay } from "@components/MetadataDisplay";
 import { NewsletterForm } from "@components/NewsletterForm";
 import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import { PostBodyWithoutExcerpt } from "@components/PostBody";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Newsletter as NewsletterType } from "@velite";
 import { ogImageDimensions } from "src/lib/ogImage";
@@ -105,7 +105,7 @@ const Newsletter = ({
           { name: `#${number}`, url: `/${url}` },
         ]}
       />
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <article>
           <Header
             breadcrumbs={{
@@ -115,7 +115,7 @@ const Newsletter = ({
             meta={<MetadataDisplay date={date} readingTime={readingTime} />}
             title={fullTitle}
           />
-          <div className="mb-5">
+          <div className="mb-block">
             <ImageWithLoader
               priority
               src={cover.src}
@@ -133,17 +133,17 @@ const Newsletter = ({
             />
           </div>
 
-          <div className="mx-auto max-w-prose mt-8">
+          <div className="mx-auto mt-group max-w-prose">
             {excerpt && !excludeExcerpt && <p>{excerpt}</p>}
 
             <PostBodyWithoutExcerpt content={content} />
           </div>
         </article>
 
-        <footer className="mx-auto max-w-prose">
+        <footer className="mx-auto mt-section max-w-prose">
           <NewsletterForm />
           {relatedNewsletters.length > 0 && (
-            <div className="mt-10">
+            <div className="mt-sub">
               <h2>More from Live and Learn</h2>
               {relatedNewsletters.map((nl) => (
                 <Card
@@ -163,7 +163,7 @@ const Newsletter = ({
           <Backlinks items={backlinks} />
           <ToTopButton />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 };

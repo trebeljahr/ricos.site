@@ -2,7 +2,7 @@ import { ContentListRow } from "@components/ContentListRow";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
-import { PageTop } from "@components/PostHeader";
+import { PageMain, PageTop } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import Link from "next/link";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
@@ -32,7 +32,7 @@ export default function ThemePage({ theme, items, seo }: Props) {
       imageAlt={seo?.ogImageAlt || theme.hero.alt}
       keywords={seo?.keywords || theme.tagMembers.slice(0, 12)}
     >
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         {/* There is no /themes index — /categories is the list of themes. */}
         <PageTop
           breadcrumbs={{
@@ -40,8 +40,8 @@ export default function ThemePage({ theme, items, seo }: Props) {
             overwrites: [{ matchingPath: "themes", alternateLink: "/categories" }],
           }}
         >
-          <section className="mb-12">
-            <div className="not-prose relative mb-8 aspect-[16/9] overflow-hidden rounded-2xl">
+          <section className="mb-sub">
+            <div className="not-prose relative mb-group aspect-[16/9] overflow-hidden rounded-2xl">
               <ImageWithLoader
                 src={theme.hero.src}
                 alt={theme.hero.alt}
@@ -52,7 +52,7 @@ export default function ThemePage({ theme, items, seo }: Props) {
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-6">
                 <h1 className="m-0 text-3xl font-semibold text-white sm:text-4xl">{theme.title}</h1>
-                <p className="m-0 mt-2 max-w-prose text-white/85">{theme.oneliner}</p>
+                <p className="m-0 mt-tight max-w-prose text-white/85">{theme.oneliner}</p>
               </div>
             </div>
             <p className="text-gray-600 dark:text-gray-400">
@@ -73,11 +73,11 @@ export default function ThemePage({ theme, items, seo }: Props) {
           </ul>
         </section>
 
-        <footer className="mt-20">
+        <footer className="mt-region">
           <NewsletterForm />
           <ToTopButton />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 }

@@ -2,7 +2,7 @@ import { Card } from "@components/Card";
 import { MonkeyEgg } from "@components/EasterEggs/Monkey";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
-import Header from "@components/PostHeader";
+import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { CommonMetadata } from "src/@types";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
@@ -60,21 +60,21 @@ const Newsletters = ({ newsletterData, seo }: Props) => {
         seo?.ogImageAlt || "a young boy absorbed in reading a book with sparks flying out of it"
       }
     >
-      <main className="pt-5 pb-20 px-3 max-w-5xl mx-auto">
+      <PageMain>
         <section>
           <Header
             breadcrumbs={{ path: url }}
             subtitle={"All the newsletters I have published so far since 2022."}
             title={"Live and Learn Newsletters"}
           />
-          <div className="mt-20">{newsletterData.slice(0, 2).map(toNiceCard)}</div>
+          <div className="mt-region">{newsletterData.slice(0, 2).map(toNiceCard)}</div>
 
-          <div className="my-32">
+          <div className="my-region">
             <NewsletterForm
               // biome-ignore lint/complexity/noUselessFragments: empty fragment is truthy, suppresses NewsletterForm's default link
               link={<></>}
               heading={
-                <h2 className="mt-0!">
+                <h2 className="flush-top">
                   Not subscribed yet? <MonkeyEgg />
                 </h2>
               }
@@ -83,14 +83,14 @@ const Newsletters = ({ newsletterData, seo }: Props) => {
 
           {newsletterData.slice(2).map(toNiceCard)}
         </section>
-        <footer>
+        <footer className="mt-section">
           <NewsletterForm
             // biome-ignore lint/complexity/noUselessFragments: empty fragment is truthy, suppresses NewsletterForm's default link
             link={<></>}
           />
           <ToTopButton />
         </footer>
-      </main>
+      </PageMain>
     </Layout>
   );
 };

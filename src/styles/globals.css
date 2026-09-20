@@ -16,6 +16,33 @@
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
+  /*
+   * Spacing scale. See docs/spacing.md.
+   *
+   * The site's body copy is `prose md:prose-lg xl:prose-xl` (16/18/20px with a
+   * 1.75 line-height), so one line of text is 28-36px tall. The steps below are
+   * that line box halved and doubled on a 4px grid: 8 -> 16 -> 24(~one line)
+   * -> 32 -> 64. Each step has one meaning, so block spacing is a decision
+   * about structure rather than a number picked per component.
+   */
+  --spacing-hair: 0.25rem; /* 4px  - inside one line: icon and its label */
+  --spacing-tight: 0.5rem; /* 8px  - items in a row: chips, tags, inline meta */
+  --spacing-label: 0.75rem; /* 12px - a label and the thing it labels */
+  --spacing-stack: 1rem; /* 16px - consecutive lines of one text block */
+  --spacing-block: 1.5rem; /* 24px - blocks inside a section, the paragraph rhythm */
+  --spacing-group: 2rem; /* 32px - a heading and the group of blocks under it */
+  --spacing-sub: 2.5rem; /* 40px - a subsection break */
+  --spacing-section: 4rem; /* 64px - sections of a page */
+  --spacing-region: 5rem; /* 80px - page regions: article to footer, page bottom */
+
+  /*
+   * Page shell. `--spacing-page-top` is the navbar-to-breadcrumbs gap Rico
+   * approved for every content page; the navbar is sticky, so this is the only
+   * top padding a page needs. Both are used by `PageMain`.
+   */
+  --spacing-page-top: 1.25rem; /* 20px */
+  --spacing-gutter: 0.75rem; /* 12px - the side gutter at every viewport */
+
   --breakpoint-xs: 320px;
   --breakpoint-sm: 640px;
   --breakpoint-md: 768px;
@@ -175,6 +202,62 @@
   color: var(--color-accent);
 }
 
+/*
+ * Vertical flow. `<body>` carries `prose md:prose-lg xl:prose-xl`, so the
+ * typography plugin gives every heading, paragraph and list on the site its own
+ * em margins. That is right inside an article and wrong inside a title block, a
+ * card or a panel, where the lines belong to each other and the container owns
+ * the gap.
+ *
+ * A `.flow-*` block zeroes those margins on its children and puts one step of
+ * the spacing scale between them instead (docs/spacing.md). `.flush-top` and
+ * `.flush-bottom` do the same for a single element that should sit flush
+ * against its container.
+ *
+ * All of it is unlayered, like the prose link override above: the typography
+ * plugin sits in the `utilities` layer, so a `@layer components` rule would
+ * lose to it however specific it was. This is what the stacked `mt-0! mb-2!`
+ * overrides on page headers, cards and panels used to do by hand.
+ *
+ * `.page-top` (the flow under the breadcrumbs: a meta row, then the title) and
+ * `.post-header` (one title block: title, subtitle, byline) are the two named
+ * cases, so page code says what the block is rather than which step it takes.
+ */
+.flow-tight > *,
+.flow-label > *,
+.flow-stack > *,
+.flow-block > *,
+.page-top > *,
+.post-header > * {
+  margin-block: 0;
+}
+
+.flow-tight > * + * {
+  margin-top: var(--spacing-tight);
+}
+
+.flow-label > * + *,
+.page-top > * + * {
+  margin-top: var(--spacing-label);
+}
+
+.flow-stack > * + *,
+.post-header > * + * {
+  margin-top: var(--spacing-stack);
+}
+
+.flow-block > * + * {
+  margin-top: var(--spacing-block);
+}
+
+.flush-top {
+  margin-top: 0;
+}
+
+.flush-bottom {
+  margin-bottom: 0;
+}
+
 details.callout-root[open] > summary .callout-chevron {
   transform: rotate(90deg);
 }
@@ -238,7 +321,7 @@ figure[data-rehype-pretty-code-figure] {
 }
 
 .rehype-code-title {
-  margin: 32px 0 -1px 0;
+  margin: var(--spacing-group) 0 -1px 0;
   width: fit-content;
   background: #e8e8e8;
   color: #000;

@@ -10,7 +10,7 @@ import { EggCounter } from "./EasterEggs/EggCounter";
 export const SiteFooter = () => {
   const year = new Date().getFullYear();
   return (
-    <footer className="mt-20 border-t border-gray-200 dark:border-gray-800 py-8 px-3 text-sm text-gray-600 dark:text-gray-400">
+    <footer className="mt-region border-t border-gray-200 dark:border-gray-800 py-group px-gutter text-sm text-gray-600 dark:text-gray-400">
       <div className="mx-auto max-w-(--breakpoint-lg) flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <span className="flex flex-wrap gap-x-5 gap-y-2">
           <span>© {year} Rico Trebeljahr</span>

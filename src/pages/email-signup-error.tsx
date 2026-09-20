@@ -11,10 +11,10 @@ export default function EmailSignupError() {
       image="/assets/blog/error.png"
       imageAlt="an error sign in the middle of nowhere"
     >
-      <article className="pt-5 px-3 mx-auto max-w-prose">
+      <article className="mx-auto max-w-prose px-gutter pt-page-top pb-region">
         <Header title="Hmm... seems like something went wrong" />
         <p>Maybe try subscribing to the newsletter once more?</p>
-        <div className="mt-[-80px]">
+        <div className="mt-section">
           <NewsletterForm />
         </div>
       </article>

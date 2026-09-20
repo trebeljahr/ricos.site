@@ -243,7 +243,7 @@ export const CalloutRoot: FC<CalloutRootProps> = ({
       isFoldable={isFoldable}
       defaultFolded={defaultFolded}
       className={clsx(
-        "callout-root my-block space-y-tight rounded-lg border bg-card p-2",
+        "callout-root my-block rounded-lg border bg-card p-2",
         callout.className.root,
         className,
       )}
@@ -288,5 +288,8 @@ export type CalloutBodyProps = {
 };
 
 export const CalloutBody: FC<CalloutBodyProps> = ({ children }) => {
-  return <div className={"prose-p:my-2"}>{children}</div>;
+  // The gap sits on the body, not as `space-y-*` on the root: a closed
+  // <details> keeps the summary's margin-bottom, which showed as a stray gap
+  // under the folded callout.
+  return <div className="mt-tight prose-p:my-tight">{children}</div>;
 };

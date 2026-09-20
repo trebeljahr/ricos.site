@@ -1,6 +1,5 @@
 import { useTheme } from "next-themes";
 import { useId } from "react";
-import { flushSync } from "react-dom";
 
 const RAY_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315];
 
@@ -56,7 +55,9 @@ const SunMoonIcon = () => {
 //
 // Phones skip the glowing edge: its ring is a full-screen gradient repainted on
 // every frame, which stutters on a phone GPU at 3x pixel density.
-const revealTheme = (toLight: boolean, apply: () => void) => {
+const revealTheme = (theme: "light" | "dark", apply: () => void) => {
+  const toLight = theme === "light";
+
   if (
     typeof document.startViewTransition !== "function" ||
     window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -92,14 +93,23 @@ const revealTheme = (toLight: boolean, apply: () => void) => {
     root.classList.remove("theme-reveal", "theme-reveal-in", "theme-reveal-swap");
   };
   try {
-    // flushSync so next-themes has swapped the `dark` class before the new
-    // snapshot is taken. The new snapshot is live, so `theme-reveal-swap`
-    // turns off CSS transitions first: otherwise navbar and cards fade from
-    // their old colours inside the lit circle. Set here rather than before the
+    // The new snapshot is live, so `theme-reveal-swap` turns off CSS
+    // transitions first: otherwise navbar and cards fade from their old
+    // colours inside the lit circle. Set here rather than before the
     // transition so the whole page restyles once, not twice.
     const transition = document.startViewTransition(() => {
       root.classList.add("theme-reveal-swap");
-      flushSync(apply);
+      // next-themes applies the class from a passive effect, so `setTheme`
+      // alone leaves it a whole task late — the new snapshot would be taken
+      // with the old theme still on <html>, and the reveal would uncover the
+      // page it started from. The theme would only appear when the pseudo
+      // elements go away, i.e. a full animation after the click. Write the
+      // same class and colour-scheme next-themes would write, synchronously,
+      // and let `apply` persist it and catch React up.
+      root.classList.remove("light", "dark");
+      root.classList.add(theme);
+      root.style.colorScheme = theme;
+      apply();
     });
     transition.ready
       .then(() => {
@@ -160,8 +170,8 @@ export const DarkModeHandler = () => {
       type="button"
       className="inline-flex size-9 items-center justify-center rounded-md transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none"
       onClick={() => {
-        const toLight = resolvedTheme === "dark";
-        revealTheme(toLight, () => setTheme(toLight ? "light" : "dark"));
+        const next = resolvedTheme === "dark" ? "light" : "dark";
+        revealTheme(next, () => setTheme(next));
       }}
       aria-label="Toggle dark mode"
     >

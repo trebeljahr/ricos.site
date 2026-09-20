@@ -89,7 +89,6 @@ const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
             <MetadataDisplay
               date={podcastnote.date}
               readingTime={podcastnote.metadata.readingTime}
-              clockEgg
             />
             <section className="Podcastnote-info">
               <div className="Podcastnote-preview-text">

@@ -81,12 +81,6 @@ export const EASTER_EGGS = [
     where: { hint: "Wait a minute on", label: "any page", href: "/" },
   },
   {
-    id: "clock",
-    emoji: "⏰",
-    name: "Time flies",
-    where: { hint: "Somewhere on", label: "any post", href: "/posts" },
-  },
-  {
     id: "dino",
     emoji: "🦕",
     name: "The timeline dinosaur",

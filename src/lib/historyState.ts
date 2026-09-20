@@ -1,4 +1,5 @@
 import Router from "next/router";
+import type { MouseEvent } from "react";
 import { useEffect, useState } from "react";
 
 // UI state per browser history entry (a search term, a selected filter), so
@@ -81,4 +82,32 @@ export const installHistoryTracking = () => {
     Router.events.off("routeChangeComplete", complete);
     Router.events.off("routeChangeError", complete);
   };
+};
+
+const isPlainClick = (e: MouseEvent<HTMLAnchorElement>) => {
+  const link = e.currentTarget;
+  return !(
+    e.defaultPrevented ||
+    e.button !== 0 ||
+    e.metaKey ||
+    e.ctrlKey ||
+    e.shiftKey ||
+    e.altKey ||
+    (link.target && link.target !== "_self")
+  );
+};
+
+/**
+ * Click handler for a link up to a parent page, e.g. a breadcrumb. When the
+ * visitor came from that page, it goes back in history instead of pushing a
+ * new entry, so the list returns with its search, filters and scroll position.
+ * Otherwise the link navigates normally.
+ */
+export const returnToPreviousPath = (e: MouseEvent<HTMLAnchorElement>) => {
+  if (!isPlainClick(e)) return;
+  const url = new URL(e.currentTarget.href, window.location.href);
+  if (url.origin !== window.location.origin) return;
+  if (url.search || url.hash || previousPath() !== url.pathname) return;
+  e.preventDefault();
+  window.history.back();
 };

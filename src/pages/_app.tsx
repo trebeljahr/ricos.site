@@ -3,7 +3,6 @@ import Head from "next/head";
 import PlausibleProvider from "next-plausible";
 import { ThemeProvider } from "next-themes";
 import { useEffect } from "react";
-import { installCoverTransitions } from "src/lib/coverTransition";
 import { installHistoryTracking } from "src/lib/historyState";
 import "../styles/globals.css";
 
@@ -16,12 +15,7 @@ import "../styles/globals.css";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
-    const stopTracking = installHistoryTracking();
-    const stopCovers = installCoverTransitions();
-    return () => {
-      stopCovers();
-      stopTracking();
-    };
+    return installHistoryTracking();
   }, []);
 
   return (

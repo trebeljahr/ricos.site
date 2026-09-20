@@ -10,7 +10,6 @@ import { PostBodyWithoutExcerpt } from "@components/PostBody";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Newsletter as NewsletterType } from "@velite";
-import { coverTransitionStyle } from "src/lib/coverTransition";
 import { ogImageDimensions } from "src/lib/ogImage";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { pickProps } from "src/lib/utils/pickProps";
@@ -116,7 +115,7 @@ const Newsletter = ({
             meta={<MetadataDisplay date={date} readingTime={readingTime} />}
             title={fullTitle}
           />
-          <div className="mb-5" style={coverTransitionStyle(url)}>
+          <div className="mb-5">
             <ImageWithLoader
               priority
               src={cover.src}

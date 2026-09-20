@@ -447,21 +447,6 @@ code {
   }
 }
 
-/* Card cover -> page cover morph (src/lib/coverTransition.ts). Both snapshots
-   fill the morphing box and crop like object-cover, so a banner-shaped card
-   cover and a square page cover blend without stretching. */
-::view-transition-group(*.cover) {
-  animation-duration: 400ms;
-  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
-}
-
-::view-transition-old(*.cover),
-::view-transition-new(*.cover) {
-  height: 100%;
-  object-fit: cover;
-  overflow: clip;
-}
-
 /* Theme toggle reveal (Navbar/DarkModeHandler.tsx): one snapshot is clipped to
    a circle in JS, so both root snapshots skip the default crossfade. When the
    light page is pulled back up, the outgoing snapshot is on top. */
@@ -475,9 +460,9 @@ html.theme-reveal-in::view-transition-old(root) {
   z-index: 1;
 }
 
-/* Page covers keep their view-transition-name for the cover morph. During the
-   reveal that would lift them above both root snapshots, so they would skip
-   the clip and the dim and float over the moving edge. */
+/* Lightbox and list items carry a view-transition-name (src/lib/lightboxTransition.ts,
+   src/lib/listTransition.ts). During the reveal that would lift them above both root
+   snapshots, so they would skip the clip and the dim and float over the moving edge. */
 html.theme-reveal [style*="view-transition-name"] {
   view-transition-name: none !important;
 }

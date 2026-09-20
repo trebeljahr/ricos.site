@@ -12,7 +12,6 @@ import { ToTopButton } from "@components/ToTopButton";
 import slugify from "@sindresorhus/slugify";
 import type { Travelblog } from "@velite";
 import type { ReactNode } from "react";
-import { coverTransitionStyle } from "src/lib/coverTransition";
 import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { pickProps } from "src/lib/utils/pickProps";
@@ -116,7 +115,7 @@ export const TravelBlogLayout = ({
           title={title || ""}
         />
 
-        <div className="mb-5" style={coverTransitionStyle(url)}>
+        <div className="mb-5">
           <ImageWithLoader
             priority
             src={cover.src}

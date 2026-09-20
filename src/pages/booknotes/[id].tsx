@@ -11,7 +11,6 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { PageTop } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Booknote } from "@velite";
-import { coverTransitionStyle } from "src/lib/coverTransition";
 import { ogImageDimensions } from "src/lib/ogImage";
 import { byOnlyPublished } from "src/lib/utils/filters";
 import { pickProps } from "src/lib/utils/pickProps";
@@ -110,10 +109,7 @@ const Book = ({ booknote, relatedBooks, backlinks }: Props) => {
           <PageTop breadcrumbs={{ path: url }}>
             <MetadataDisplay readingTime={booknote.metadata.readingTime} date={booknote.date} />
             <section className="flex mt-4!">
-              <div
-                className="not-prose block relative mr-2 mb-5 md:mb-0 w-60 overflow-hidden rounded-md"
-                style={coverTransitionStyle(url)}
-              >
+              <div className="not-prose block relative mr-2 mb-5 md:mb-0 w-60 overflow-hidden rounded-md">
                 <BookCover title={booknote.title} cover={booknote.cover} priority={true} />
               </div>
               <header className="h-fit w-full ml-5">

@@ -5,7 +5,6 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import { PageTop } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import Link from "next/link";
-import { coverTransitionStyle } from "src/lib/coverTransition";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import {
   canonicalTagsByDoc,
@@ -42,10 +41,7 @@ export default function ThemePage({ theme, items, seo }: Props) {
           }}
         >
           <section className="mb-12">
-            <div
-              className="not-prose relative mb-8 aspect-[16/9] overflow-hidden rounded-2xl"
-              style={coverTransitionStyle(url)}
-            >
+            <div className="not-prose relative mb-8 aspect-[16/9] overflow-hidden rounded-2xl">
               <ImageWithLoader
                 src={theme.hero.src}
                 alt={theme.hero.alt}

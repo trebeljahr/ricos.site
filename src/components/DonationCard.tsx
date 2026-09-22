@@ -1,87 +1,40 @@
 import clsx from "clsx";
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import {
+  type DonationMode,
+  defaultDonationMode,
+  fallbackLinks,
+  hasAnyStripeLinks,
+  isInQuietPeriod,
+  monthlyOptions,
+  oneTimeOptions,
+  quickMonthly,
+  quickOnce,
+  SUPPORTED_AT_STORAGE_KEY,
+} from "src/lib/donation";
+import useLocalStorageState from "use-local-storage-state";
 import { ExternalLink } from "./ExternalLink";
-
-type DonationMode = "monthly" | "once";
-
-type DonationOption = {
-  label: string;
-  note: string;
-  href?: string;
-};
-
-const monthlyOptions: DonationOption[] = [
-  {
-    label: "EUR 3",
-    note: "Small monthly nudge.",
-    href: process.env.NEXT_PUBLIC_STRIPE_DONATION_MONTHLY_3_URL,
-  },
-  {
-    label: "EUR 5",
-    note: "A coffee-ish amount.",
-    href: process.env.NEXT_PUBLIC_STRIPE_DONATION_MONTHLY_5_URL,
-  },
-  {
-    label: "EUR 10",
-    note: "Keeps the lights brighter.",
-    href: process.env.NEXT_PUBLIC_STRIPE_DONATION_MONTHLY_10_URL,
-  },
-  {
-    label: "EUR 25",
-    note: "Patron saint mode.",
-    href: process.env.NEXT_PUBLIC_STRIPE_DONATION_MONTHLY_25_URL,
-  },
-];
-
-const oneTimeOptions: DonationOption[] = [
-  {
-    label: "EUR 5",
-    note: "A small thank-you.",
-    href: process.env.NEXT_PUBLIC_STRIPE_DONATION_ONETIME_5_URL,
-  },
-  {
-    label: "EUR 10",
-    note: "A generous nudge.",
-    href: process.env.NEXT_PUBLIC_STRIPE_DONATION_ONETIME_10_URL,
-  },
-  {
-    label: "EUR 25",
-    note: "A proper boost.",
-    href: process.env.NEXT_PUBLIC_STRIPE_DONATION_ONETIME_25_URL,
-  },
-  {
-    label: "Custom",
-    note: "Choose your own amount.",
-    href: process.env.NEXT_PUBLIC_STRIPE_DONATION_ONETIME_CUSTOM_URL,
-  },
-];
-
-const fallbackLinks = [
-  {
-    name: "Ko-fi",
-    url: "https://ko-fi.com/trebeljahr",
-    blurb: "One-time tip jar.",
-  },
-  {
-    name: "Buy Me a Coffee",
-    url: "https://buymeacoffee.com/trebeljahr",
-    blurb: "Same idea, different button.",
-  },
-  {
-    name: "Patreon",
-    url: "https://www.patreon.com/RicoTrebeljahr",
-    blurb: "Monthly patronage.",
-  },
-];
-
-const hasMonthlyLinks = monthlyOptions.some((option) => option.href);
-const hasOneTimeLinks = oneTimeOptions.some((option) => option.href);
-const hasAnyStripeLinks = hasMonthlyLinks || hasOneTimeLinks;
-const defaultDonationMode: DonationMode = hasMonthlyLinks || !hasOneTimeLinks ? "monthly" : "once";
 
 type DonationCardProps = {
   className?: string;
 };
+
+// localStorage is only readable after hydration; until then every surface
+// renders its server markup so the page does not shift.
+function useIsMounted() {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  return isMounted;
+}
+
+export function useDonationSupportedAt() {
+  return useLocalStorageState<number | null>(SUPPORTED_AT_STORAGE_KEY, {
+    defaultValue: null,
+  });
+}
 
 function FallbackDonationLinks() {
   return (
@@ -100,26 +53,25 @@ function FallbackDonationLinks() {
   );
 }
 
+/** The full card with the amount picker. Lives on /donate only. */
 export function DonationCard({ className }: DonationCardProps) {
-  const [isMounted, setIsMounted] = useState(false);
+  const isMounted = useIsMounted();
   const [mode, setMode] = useState<DonationMode>(defaultDonationMode);
   const options = mode === "monthly" ? monthlyOptions : oneTimeOptions;
   const configuredOptions = options.filter((option) => option.href);
   const hasStripeLinks = configuredOptions.length > 0;
   const showStripeControls = isMounted && hasAnyStripeLinks;
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   return (
     <section className={clsx("not-prose w-full", className)} aria-labelledby="donation-card-title">
       <div className="rounded-lg border-4 border-gray-200 bg-white px-5 py-10 dark:border-gray-700 dark:bg-gray-800">
-        <p className="m-0 text-sm font-semibold text-accent">donating = loving</p>
-        <h2 id="donation-card-title" className="mt-tight mb-label text-2xl font-bold">
+        <h2
+          id="donation-card-title"
+          className="m-0 text-2xl font-bold text-gray-900 dark:text-white"
+        >
           Keep this place alive
         </h2>
-        <p className="m-0 max-w-prose text-gray-700 dark:text-gray-200">
+        <p className="mt-label mb-0 max-w-prose text-gray-700 dark:text-gray-200">
           This is a small labor of love, made because I like making useful and beautiful things for
           the internet. If it made your day a little better, a donation is one way to say: keep
           going.
@@ -195,6 +147,98 @@ export function DonationCard({ className }: DonationCardProps) {
         ) : (
           <FallbackDonationLinks />
         )}
+      </div>
+    </section>
+  );
+}
+
+const stripButtonClass =
+  "inline-flex items-center rounded-md border-2 border-gray-200 px-4 py-2 font-semibold text-gray-900 no-underline transition-colors hover:border-accent dark:border-gray-700 dark:text-white";
+
+/**
+ * One sentence and two doors, for the end of a long post. The reader has
+ * finished, so the ask is earned. Goes quiet for a while after a donation
+ * (see /donate?thanks=1), and never appears on short pages.
+ */
+export function DonationStrip({ className }: DonationCardProps) {
+  const isMounted = useIsMounted();
+  const [supportedAt] = useDonationSupportedAt();
+
+  if (isMounted && isInQuietPeriod(supportedAt)) return null;
+
+  const hasQuickLinks = Boolean(quickOnce.href || quickMonthly.href);
+
+  return (
+    <aside
+      aria-label="Support this site"
+      className={clsx(
+        "not-prose rounded-lg border-2 border-gray-200 px-5 py-6 dark:border-gray-700",
+        className,
+      )}
+    >
+      <p className="m-0 font-semibold text-gray-900 dark:text-white">
+        Free to read. Not free to make.
+      </p>
+      <p className="mt-tight mb-0 max-w-prose text-gray-700 dark:text-gray-200">
+        If this piece was worth something to you, a small donation keeps the place ad-free and gives
+        me room for the next one.
+      </p>
+      <div className="mt-stack flex flex-wrap items-center gap-tight">
+        {isMounted && hasQuickLinks ? (
+          <>
+            {quickOnce.href && (
+              <ExternalLink href={quickOnce.href} className={stripButtonClass}>
+                {quickOnce.label} once
+              </ExternalLink>
+            )}
+            {quickMonthly.href && (
+              <ExternalLink href={quickMonthly.href} className={stripButtonClass}>
+                {quickMonthly.label} / month
+              </ExternalLink>
+            )}
+            <Link href="/donate" className="ml-tight text-sm hover:text-accent">
+              All options
+            </Link>
+          </>
+        ) : (
+          <Link href="/donate" className={stripButtonClass}>
+            Support this site
+          </Link>
+        )}
+      </div>
+    </aside>
+  );
+}
+
+/** Replaces the card on /donate after Stripe sends the donor back. */
+export function DonationThanks({ className }: DonationCardProps) {
+  return (
+    <section
+      className={clsx("not-prose w-full", className)}
+      aria-labelledby="donation-thanks-title"
+    >
+      <div className="relative overflow-hidden rounded-lg border-4 border-gray-200 bg-white px-5 py-10 dark:border-gray-700 dark:bg-gray-800">
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-green-400 via-teal-400 to-blue-600"
+        />
+        <h2
+          id="donation-thanks-title"
+          className="m-0 text-2xl font-bold text-gray-900 dark:text-white"
+        >
+          Thank you
+        </h2>
+        <p className="mt-label mb-0 max-w-prose text-gray-700 dark:text-gray-200">
+          Your donation went through. It keeps this place ad-free and gives me room for the next
+          thing. Stripe sends the receipt by email.
+        </p>
+        <p className="mt-stack mb-0 max-w-prose text-sm text-gray-600 dark:text-gray-300">
+          Monthly donations can be stopped at any time. Write me through the{" "}
+          <Link href="/imprint" className="text-accent hover:underline">
+            imprint
+          </Link>{" "}
+          page and I take care of it.
+        </p>
       </div>
     </section>
   );

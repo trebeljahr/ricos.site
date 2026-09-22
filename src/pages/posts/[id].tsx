@@ -10,6 +10,7 @@ const MDXContentWithDemos = dynamic(
 );
 
 import { Backlinks } from "@components/Backlinks";
+import { DonationStrip } from "@components/DonationCard";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { ReadMore } from "@components/MoreStories";
 import { NewsletterForm } from "@components/NewsletterForm";
@@ -24,6 +25,9 @@ import { getRelatedContent } from "src/lib/utils/getRelatedContent";
 import { pickProps } from "src/lib/utils/pickProps";
 
 type BacklinkItem = { title: string; link: string; type: string };
+
+// Only a post long enough to have earned the ask gets the donation strip.
+const LONG_POST_WORDS = 1500;
 
 // Fields the layout below actually reads. The rest of the velite entry (link,
 // excerpt, markdownExcerpt, contentType, published, date-last-updated) is
@@ -70,7 +74,7 @@ export const BlogLayout = ({
     seoOgImage,
     seoOgImageAlt,
     hasMath,
-    metadata: { readingTime },
+    metadata: { readingTime, wordCount },
   },
 }: Props) => {
   const url = `posts/${slug}`;
@@ -131,6 +135,7 @@ export const BlogLayout = ({
         </section>
 
         <footer className="mx-auto mt-section max-w-prose">
+          {wordCount >= LONG_POST_WORDS && <DonationStrip className="mb-section" />}
           <NewsletterForm />
           {morePosts && <ReadMore posts={morePosts} />}
           <Backlinks items={backlinks} />
@@ -184,5 +189,7 @@ export async function getStaticProps({ params }: Params) {
   const morePosts = getRelatedContent(post, publishedPosts, 3);
   const backlinks = getBacklinks(post.link);
 
-  return { props: { post: pickProps(post, POST_FIELDS), morePosts, backlinks } };
+  return {
+    props: { post: pickProps(post, POST_FIELDS), morePosts, backlinks },
+  };
 }

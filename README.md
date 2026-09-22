@@ -17,3 +17,5 @@ But that would be an added benefit not the main goal behind creating it.
 The donate card reads Stripe Payment Link URLs from `.env.local`.
 
 Use `.env.example` as the list of required keys. The `NEXT_PUBLIC_STRIPE_DONATION_*_URL` values are public checkout URLs, not Stripe API secrets. Keep actual Stripe secret keys out of client-facing env vars.
+
+In the Stripe dashboard, point each Payment Link's after-payment redirect at `https://ricos.site/donate?thanks=1`. That query switches `/donate` to its thank-you state and pauses the donation strip under long posts for 90 days on that browser.

@@ -1,11 +1,24 @@
-import { DonationCard } from "@components/DonationCard";
+import { DonationCard, DonationThanks, useDonationSupportedAt } from "@components/DonationCard";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { THANKS_QUERY_KEY } from "src/lib/donation";
 
 export default function DonatePage() {
+  // Stripe sends donors back here with ?thanks=1 (set per Payment Link in the
+  // dashboard). Remember the moment so the inline asks stay quiet for a while.
+  const router = useRouter();
+  const justDonated = router.isReady && router.query[THANKS_QUERY_KEY] !== undefined;
+  const [, setSupportedAt] = useDonationSupportedAt();
+
+  useEffect(() => {
+    if (justDonated) setSupportedAt(Date.now());
+  }, [justDonated, setSupportedAt]);
+
   return (
     <Layout
       title="Donate – ricos.site"
@@ -49,7 +62,11 @@ export default function DonatePage() {
             the next thing.
           </p>
 
-          <DonationCard className="mt-group" />
+          {justDonated ? (
+            <DonationThanks className="mt-group" />
+          ) : (
+            <DonationCard className="mt-group" />
+          )}
 
           <h2>Other ways to help</h2>
           <p>Money is nice, but it is not the only useful thing.</p>

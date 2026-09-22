@@ -14,14 +14,14 @@ export const SiteFooter = () => {
       <div className="mx-auto max-w-(--breakpoint-lg) flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <span className="flex flex-wrap gap-x-5 gap-y-2">
           <span>© {year} Rico Trebeljahr</span>
+          <Link href="/donate" className="hover:text-accent">
+            Reader-funded. No ads.
+          </Link>
           <EggCounter />
         </span>
         <nav className="flex flex-wrap gap-x-5 gap-y-2">
           <Link href="/categories" className="hover:text-accent">
             Categories
-          </Link>
-          <Link href="/donate" className="hover:text-accent">
-            Donate
           </Link>
           <a
             href="/rss.xml"

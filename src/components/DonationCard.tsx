@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -214,8 +215,82 @@ export function DonationStrip({ className }: DonationCardProps) {
   );
 }
 
+// Confetti is a client-only, one-shot flourish; load it lazily so it never
+// runs on the server.
+const ConfettiExplosion = dynamic(() => import("react-confetti-explosion"), {
+  ssr: false,
+});
+
+const thanksConfetti = {
+  force: 0.6,
+  duration: 2600,
+  particleCount: 120,
+  width: 900,
+  zIndex: 30,
+} as const;
+
+// A seedling that draws itself in: stem first, then the two leaves. The whole
+// thing is decorative, so it is aria-hidden and disappears under reduced motion
+// into a plain, fully drawn sprout.
+function GrowingSprout() {
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      className="size-9 shrink-0 animate-rise-in motion-reduce:animate-none"
+      fill="none"
+      aria-hidden
+    >
+      <defs>
+        <linearGradient id="donation-sprout" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stopColor="var(--color-green-400)" />
+          <stop offset="1" stopColor="var(--color-blue-600)" />
+        </linearGradient>
+      </defs>
+      <path
+        d="M24 45 V23"
+        stroke="url(#donation-sprout)"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        pathLength={1}
+        strokeDasharray={1}
+        className="animate-draw-check motion-reduce:animate-none"
+      />
+      <path
+        d="M24 31 C16 31 12 25 12 18 C20 18 24 23 24 31 Z"
+        stroke="url(#donation-sprout)"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        pathLength={1}
+        strokeDasharray={1}
+        className="animate-draw-check motion-reduce:animate-none"
+        style={{ animationDelay: "450ms" }}
+      />
+      <path
+        d="M24 27 C32 27 36 21 36 15 C28 15 24 20 24 27 Z"
+        stroke="url(#donation-sprout)"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        pathLength={1}
+        strokeDasharray={1}
+        className="animate-draw-check motion-reduce:animate-none"
+        style={{ animationDelay: "650ms" }}
+      />
+    </svg>
+  );
+}
+
 /** Replaces the card on /donate after Stripe sends the donor back. */
 export function DonationThanks({ className }: DonationCardProps) {
+  const isMounted = useIsMounted();
+  const [celebrate, setCelebrate] = useState(false);
+
+  useEffect(() => {
+    const calm = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (!calm) setCelebrate(true);
+  }, []);
+
   return (
     <section
       className={clsx("not-prose w-full", className)}
@@ -226,12 +301,20 @@ export function DonationThanks({ className }: DonationCardProps) {
           aria-hidden
           className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-green-400 via-teal-400 to-blue-600"
         />
-        <h2
-          id="donation-thanks-title"
-          className="m-0 text-2xl font-bold text-gray-900 dark:text-white"
-        >
-          Thank you
-        </h2>
+        {isMounted && celebrate && (
+          <div aria-hidden className="pointer-events-none absolute left-1/2 top-2 -translate-x-1/2">
+            <ConfettiExplosion {...thanksConfetti} />
+          </div>
+        )}
+        <div className="flex items-center gap-label">
+          <GrowingSprout />
+          <h2
+            id="donation-thanks-title"
+            className="m-0 text-2xl font-bold text-gray-900 dark:text-white"
+          >
+            Thank you
+          </h2>
+        </div>
         <p className="mt-label mb-0 max-w-prose text-gray-700 dark:text-gray-200">
           Your donation went through. It keeps this place ad-free and gives me room for the next
           thing. Stripe sends the receipt by email.

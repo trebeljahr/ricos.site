@@ -47,8 +47,7 @@ export const oneTimeUrl = process.env.NEXT_PUBLIC_STRIPE_DONATION_ONETIME_CUSTOM
 export const otherDoors = [
   {
     name: "PayPal",
-    // TODO: set to the PayPal.Me link, e.g. https://paypal.me/<handle>
-    url: "",
+    url: "https://www.paypal.com/ncp/payment/2TV2FC34E2XGG",
     blurb: "Any amount, one-time.",
   },
   {

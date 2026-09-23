@@ -11,6 +11,8 @@ export type DonationOption = {
   href?: string;
 };
 
+// Monthly is fixed tiers: a plain Stripe Payment Link cannot take a
+// customer-chosen recurring amount, so each amount is its own subscription.
 export const monthlyOptions: DonationOption[] = [
   {
     label: "EUR 3",
@@ -34,55 +36,42 @@ export const monthlyOptions: DonationOption[] = [
   },
 ];
 
-export const oneTimeOptions: DonationOption[] = [
-  {
-    label: "EUR 5",
-    note: "A small thank-you.",
-    href: process.env.NEXT_PUBLIC_STRIPE_DONATION_ONETIME_5_URL,
-  },
-  {
-    label: "EUR 10",
-    note: "A generous nudge.",
-    href: process.env.NEXT_PUBLIC_STRIPE_DONATION_ONETIME_10_URL,
-  },
-  {
-    label: "EUR 25",
-    note: "A proper boost.",
-    href: process.env.NEXT_PUBLIC_STRIPE_DONATION_ONETIME_25_URL,
-  },
-  {
-    label: "Custom",
-    note: "Choose your own amount.",
-    href: process.env.NEXT_PUBLIC_STRIPE_DONATION_ONETIME_CUSTOM_URL,
-  },
-];
+// One-time is a single pay-what-you-want Stripe link (Stripe's "customers
+// choose what to pay"). No fixed tiles: the donor names the amount on Stripe's
+// page, with EUR 10 suggested and a EUR 1 floor.
+export const oneTimeUrl = process.env.NEXT_PUBLIC_STRIPE_DONATION_ONETIME_CUSTOM_URL;
 
-export const fallbackLinks = [
+// Extra one-time doors for people who would rather not use a card on Stripe.
+// PayPal and Wise both let the sender choose any amount. Patreon is the only
+// third-party monthly option kept, for people already on it.
+export const otherDoors = [
   {
-    name: "Ko-fi",
-    url: "https://ko-fi.com/trebeljahr",
-    blurb: "One-time tip jar.",
+    name: "PayPal",
+    // TODO: set to the PayPal.Me link, e.g. https://paypal.me/<handle>
+    url: "",
+    blurb: "Any amount, one-time.",
   },
   {
-    name: "Buy Me a Coffee",
-    url: "https://buymeacoffee.com/trebeljahr",
-    blurb: "Same idea, different button.",
+    name: "Wise",
+    url: "https://wise.com/pay/business/ricoslabsllc",
+    blurb: "Any amount, good for non-euro senders.",
   },
   {
     name: "Patreon",
     url: "https://www.patreon.com/RicoTrebeljahr",
     blurb: "Monthly patronage.",
   },
-];
+].filter((door) => door.url);
 
 export const hasMonthlyLinks = monthlyOptions.some((option) => option.href);
-export const hasOneTimeLinks = oneTimeOptions.some((option) => option.href);
-export const hasAnyStripeLinks = hasMonthlyLinks || hasOneTimeLinks;
+export const hasOneTimeLink = Boolean(oneTimeUrl);
+export const hasAnyStripeLinks = hasMonthlyLinks || hasOneTimeLink;
+export const hasOtherDoors = otherDoors.length > 0;
 export const defaultDonationMode: DonationMode =
-  hasMonthlyLinks || !hasOneTimeLinks ? "monthly" : "once";
+  hasMonthlyLinks || !hasOneTimeLink ? "monthly" : "once";
 
-// The two cheapest doors, for the compact strip under posts.
-export const quickOnce = oneTimeOptions[0];
+// For the compact strip under posts: the pay-what-you-want door and the
+// smallest monthly tier.
 export const quickMonthly = monthlyOptions[0];
 
 // Stripe sends donors back to /donate?thanks=1 after checkout (configured per

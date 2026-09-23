@@ -4,13 +4,15 @@ import { useEffect, useState } from "react";
 import {
   type DonationMode,
   defaultDonationMode,
-  fallbackLinks,
   hasAnyStripeLinks,
+  hasMonthlyLinks,
+  hasOneTimeLink,
+  hasOtherDoors,
   isInQuietPeriod,
   monthlyOptions,
-  oneTimeOptions,
+  oneTimeUrl,
+  otherDoors,
   quickMonthly,
-  quickOnce,
   SUPPORTED_AT_STORAGE_KEY,
 } from "src/lib/donation";
 import useLocalStorageState from "use-local-storage-state";
@@ -36,31 +38,39 @@ export function useDonationSupportedAt() {
   });
 }
 
-function FallbackDonationLinks() {
+// PayPal, Wise, Patreon: the doors that do not run through Stripe. Shown as a
+// visible row, not buried, but after the Stripe options.
+function OtherDoors() {
+  if (!hasOtherDoors) return null;
   return (
-    <div className="mt-para flex flex-col gap-label sm:flex-row sm:flex-wrap">
-      {fallbackLinks.map((link) => (
-        <ExternalLink
-          key={link.name}
-          href={link.url}
-          className="inline-flex min-h-14 flex-1 basis-48 flex-col justify-center rounded-md border-2 border-gray-200 px-4 py-3 no-underline transition-colors hover:border-accent dark:border-gray-700"
-        >
-          <span className="font-semibold text-gray-900 dark:text-white">{link.name}</span>
-          <span className="mt-hair text-sm text-gray-600 dark:text-gray-300">{link.blurb}</span>
-        </ExternalLink>
-      ))}
+    <div className="mt-stack">
+      <p className="m-0 text-sm font-semibold text-gray-600 dark:text-gray-300">
+        Other ways to give
+      </p>
+      <div className="mt-label flex flex-col gap-tight sm:flex-row sm:flex-wrap">
+        {otherDoors.map((door) => (
+          <ExternalLink
+            key={door.name}
+            href={door.url}
+            className="inline-flex min-h-14 flex-1 basis-44 flex-col justify-center rounded-md border-2 border-gray-200 px-4 py-3 no-underline transition-colors hover:border-accent dark:border-gray-700"
+          >
+            <span className="font-semibold text-gray-900 dark:text-white">{door.name}</span>
+            <span className="mt-hair text-sm text-gray-600 dark:text-gray-300">{door.blurb}</span>
+          </ExternalLink>
+        ))}
+      </div>
     </div>
   );
 }
 
-/** The full card with the amount picker. Lives on /donate only. */
+/** The full card. Lives on /donate only. */
 export function DonationCard({ className }: DonationCardProps) {
   const isMounted = useIsMounted();
   const [mode, setMode] = useState<DonationMode>(defaultDonationMode);
-  const options = mode === "monthly" ? monthlyOptions : oneTimeOptions;
-  const configuredOptions = options.filter((option) => option.href);
-  const hasStripeLinks = configuredOptions.length > 0;
-  const showStripeControls = isMounted && hasAnyStripeLinks;
+  const showStripe = isMounted && hasAnyStripeLinks;
+  // The monthly/once toggle only earns its place when both exist.
+  const showToggle = hasMonthlyLinks && hasOneTimeLink;
+  const monthlyTiles = monthlyOptions.filter((option) => option.href);
 
   return (
     <section className={clsx("not-prose w-full", className)} aria-labelledby="donation-card-title">
@@ -77,41 +87,42 @@ export function DonationCard({ className }: DonationCardProps) {
           going.
         </p>
 
-        {showStripeControls ? (
+        {showStripe ? (
           <>
-            <div className="mt-para inline-flex rounded-md border-2 border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-900">
-              {[
-                ["monthly", "Monthly"],
-                ["once", "One-time"],
-              ].map(([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  className={clsx(
-                    "min-w-24 rounded-sm px-4 py-2 text-sm font-semibold transition-colors",
-                    mode === value
-                      ? "bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white"
-                      : "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white",
-                  )}
-                  aria-pressed={mode === value}
-                  onClick={() => setMode(value as DonationMode)}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+            {showToggle && (
+              <div className="mt-para inline-flex rounded-md border-2 border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-900">
+                {[
+                  ["monthly", "Monthly"],
+                  ["once", "One-time"],
+                ].map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    className={clsx(
+                      "min-w-24 rounded-sm px-4 py-2 text-sm font-semibold transition-colors",
+                      mode === value
+                        ? "bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white"
+                        : "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white",
+                    )}
+                    aria-pressed={mode === value}
+                    onClick={() => setMode(value as DonationMode)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
 
-            {hasStripeLinks ? (
+            {(showToggle ? mode === "monthly" : hasMonthlyLinks) ? (
               <div className="mt-stack grid gap-label sm:grid-cols-2">
-                {configuredOptions.map((option) => (
+                {monthlyTiles.map((option) => (
                   <ExternalLink
                     key={option.label}
                     href={option.href ?? "#"}
                     className="group flex min-h-24 flex-col justify-between rounded-md border-2 border-gray-200 px-4 py-3 no-underline transition-colors hover:border-accent dark:border-gray-700"
                   >
                     <span className="text-xl font-bold text-gray-900 dark:text-white">
-                      {option.label}
-                      {mode === "monthly" ? " / month" : ""}
+                      {option.label} / month
                     </span>
                     <span className="mt-tight text-sm text-gray-600 group-hover:text-gray-800 dark:text-gray-300 dark:group-hover:text-gray-100">
                       {option.note}
@@ -120,32 +131,25 @@ export function DonationCard({ className }: DonationCardProps) {
                 ))}
               </div>
             ) : (
-              <p className="mt-stack rounded-md border-2 border-dashed border-gray-200 px-4 py-3 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-300">
-                Direct Stripe donations are coming online. Until then, the older doors below still
-                work.
-              </p>
+              <div className="mt-stack">
+                <ExternalLink
+                  href={oneTimeUrl ?? "#"}
+                  className="group flex min-h-20 flex-col justify-center rounded-md border-2 border-gray-200 px-5 py-4 no-underline transition-colors hover:border-accent dark:border-gray-700"
+                >
+                  <span className="text-xl font-bold text-gray-900 dark:text-white">
+                    Donate any amount
+                  </span>
+                  <span className="mt-tight text-sm text-gray-600 group-hover:text-gray-800 dark:text-gray-300 dark:group-hover:text-gray-100">
+                    You choose on the next page. EUR 10 suggested, EUR 1 minimum.
+                  </span>
+                </ExternalLink>
+              </div>
             )}
 
-            <details className="mt-stack text-sm text-gray-600 dark:text-gray-300">
-              <summary className="w-fit cursor-pointer font-semibold hover:text-accent">
-                Prefer another platform?
-              </summary>
-              <div className="mt-label flex flex-col gap-tight sm:flex-row sm:flex-wrap">
-                {fallbackLinks.map((link) => (
-                  <ExternalLink
-                    key={link.name}
-                    href={link.url}
-                    className="rounded-md border border-gray-200 px-3 py-2 no-underline transition-colors hover:border-accent dark:border-gray-700"
-                  >
-                    <span className="font-semibold text-gray-900 dark:text-white">{link.name}</span>
-                    <span className="ml-2 text-gray-600 dark:text-gray-300">{link.blurb}</span>
-                  </ExternalLink>
-                ))}
-              </div>
-            </details>
+            <OtherDoors />
           </>
         ) : (
-          <FallbackDonationLinks />
+          <OtherDoors />
         )}
       </div>
     </section>
@@ -166,7 +170,7 @@ export function DonationStrip({ className }: DonationCardProps) {
 
   if (isMounted && isInQuietPeriod(supportedAt)) return null;
 
-  const hasQuickLinks = Boolean(quickOnce.href || quickMonthly.href);
+  const hasQuickLinks = Boolean(oneTimeUrl || quickMonthly.href);
 
   return (
     <aside
@@ -186,9 +190,9 @@ export function DonationStrip({ className }: DonationCardProps) {
       <div className="mt-stack flex flex-wrap items-center gap-tight">
         {isMounted && hasQuickLinks ? (
           <>
-            {quickOnce.href && (
-              <ExternalLink href={quickOnce.href} className={stripButtonClass}>
-                {quickOnce.label} once
+            {oneTimeUrl && (
+              <ExternalLink href={oneTimeUrl} className={stripButtonClass}>
+                Donate once
               </ExternalLink>
             )}
             {quickMonthly.href && (

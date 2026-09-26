@@ -5,14 +5,21 @@ import { PageLayer, pageBox } from "../PageLayer";
 const DINO_SIZE = 48;
 // How much of the dinosaur shows past the screen edge: just the tail.
 const PEEK = 24;
-// Room above the dinosaur for the hop and the walking bob, so neither clips.
-const HEADROOM = 22;
-const WALK_PX_PER_S = 180;
+// Room above the dinosaur for the hop and the walking bob. The emoji also
+// draws well outside its own font box, so both margins are measured from the
+// ink rather than from the 48px box.
+const HEADROOM = 34;
+const WALK_PX_PER_S = 165;
 const TURN_MS = 560;
-// One full stride: two footfalls, so the gait reads as heavy rather than bouncy.
-const STRIDE_MS = 640;
-// Clearance under the feet, so the tilt of a footfall never shaves them off.
-const FOOTROOM = 8;
+// One full stride: two footfalls. Short enough that the feet keep up with the
+// ground speed, so the walk reads as strides rather than a float.
+const STRIDE_MS = 420;
+// Clearance under the feet, for the emoji's descender plus the dip and the
+// tilt of a footfall.
+const FOOTROOM = 26;
+// A walking dinosaur carries its weight forward, so the body keeps a small
+// constant tilt and the gait rocks around it.
+const LEAN = 1.6;
 const RETURN_AFTER_MS = 4000;
 
 const calm = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -123,27 +130,32 @@ const DinoTail = ({ anchorRef }: { anchorRef: RefObject<HTMLElement | null> }) =
         { duration: TURN_MS, easing: "ease-in-out", fill: "forwards" },
       ).finished;
       const distance = row.width + DINO_SIZE;
-      // Two footfalls a stride: it drops and squashes as each foot lands, and
-      // lifts and stretches between them.
+      // Two footfalls a stride. Each one dips and squashes on contact, then
+      // pushes off and stretches through the pass. The body rocks from side to
+      // side as the weight changes feet, around a slight forward lean, and
+      // leaving the ground is fast while the top of the arc is slow.
       const steps = gaitRef.current?.animate(
         [
-          { transform: "translateY(0) rotate(-1.6deg) scale(1.03, 0.97)", easing: "ease-out" },
+          { transform: `translateY(2px) rotate(${LEAN - 2.2}deg) scale(1.06, 0.94)` },
           {
-            transform: "translateY(-5px) rotate(0deg) scale(0.98, 1.03)",
+            transform: `translateY(-7px) rotate(${LEAN}deg) scale(0.97, 1.05)`,
             offset: 0.25,
-            easing: "ease-in",
-          },
-          {
-            transform: "translateY(0) rotate(1.6deg) scale(1.03, 0.97)",
-            offset: 0.5,
             easing: "ease-out",
           },
           {
-            transform: "translateY(-5px) rotate(0deg) scale(0.98, 1.03)",
-            offset: 0.75,
+            transform: `translateY(2px) rotate(${LEAN + 2.2}deg) scale(1.06, 0.94)`,
+            offset: 0.5,
             easing: "ease-in",
           },
-          { transform: "translateY(0) rotate(-1.6deg) scale(1.03, 0.97)" },
+          {
+            transform: `translateY(-7px) rotate(${LEAN}deg) scale(0.97, 1.05)`,
+            offset: 0.75,
+            easing: "ease-out",
+          },
+          {
+            transform: `translateY(2px) rotate(${LEAN - 2.2}deg) scale(1.06, 0.94)`,
+            easing: "ease-in",
+          },
         ],
         { duration: STRIDE_MS, iterations: Number.POSITIVE_INFINITY },
       );
@@ -197,7 +209,7 @@ const DinoTail = ({ anchorRef }: { anchorRef: RefObject<HTMLElement | null> }) =
           >
             <span
               ref={gaitRef}
-              className="inline-block origin-[50%_90%]"
+              className="inline-block origin-[50%_100%]"
               style={{ fontSize: DINO_SIZE, lineHeight: 1 }}
             >
               🦕

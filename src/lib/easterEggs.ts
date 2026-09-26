@@ -104,6 +104,16 @@ export const EASTER_EGGS = [
     name: "The needle in the haystack",
     where: { hint: "Somewhere on", label: "/needlestack", href: "/needlestack" },
   },
+  {
+    id: "search-party",
+    emoji: "🔍",
+    name: "The search party",
+    where: {
+      hint: "Somewhere on",
+      label: "a page that does not exist",
+      href: "/this-page-does-not-exist",
+    },
+  },
 ] as const satisfies readonly EasterEgg[];
 
 export const EASTER_EGG_IDS = EASTER_EGGS.map((egg) => egg.id);

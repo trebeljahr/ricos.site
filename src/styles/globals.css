@@ -77,6 +77,21 @@
   --animate-rise-in: rise-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
   /* Easter egg emojis: a small wiggle every 11s so they read as clickable. */
   --animate-egg-hint: egg-hint 14s ease-in-out infinite;
+  /* Easter egg: the magnifying glass tilts while it scans (SearchParty). */
+  --animate-egg-search: egg-search 1.6s ease-in-out infinite;
+
+  /* Easter egg: a slow scanning tilt under the search party's lens. */
+  @keyframes egg-search {
+    0%,
+    100% {
+      rotate: -7deg;
+      translate: 0 0;
+    }
+    50% {
+      rotate: 7deg;
+      translate: 2px -1px;
+    }
+  }
 
   @keyframes egg-hint {
     0%,

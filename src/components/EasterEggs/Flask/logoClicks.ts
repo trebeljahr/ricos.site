@@ -3,26 +3,15 @@ import { recordEggFind } from "src/lib/easterEggs";
 const CLICKS = 5;
 const WINDOW_MS = 2000;
 
-// Module state, not React state: the navbar remounts on every navigation,
-// and the first logo click on another page navigates home.
+// Module state, not React state: the navbar remounts on every navigation.
 let clickTimes: number[] = [];
-let clickSeq = 0;
-
-/** How many logo clicks have been seen. Lets the navbar tell a single click from a burst. */
-export const getLogoClickSeq = () => clickSeq;
 
 const calm = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/**
- * Counts quick clicks on the site logo. The fifth makes the flask bubble over.
- * Returns true when the click was part of a sequence, so the navbar can keep
- * the logo from navigating away mid-egg.
- */
-export function onLogoClick(logo: HTMLElement | null): boolean {
+/** Counts quick clicks on the flask in the logo. The fifth makes it bubble over. */
+export function onLogoClick(logo: HTMLElement | null): void {
   const now = Date.now();
-  clickSeq++;
   clickTimes = [...clickTimes.filter((t) => now - t < WINDOW_MS), now];
-  const repeated = clickTimes.length > 1;
 
   if (clickTimes.length < CLICKS) {
     if (logo && !calm()) {
@@ -37,12 +26,11 @@ export function onLogoClick(logo: HTMLElement | null): boolean {
         { duration: 320, easing: "ease-out" },
       );
     }
-    return repeated;
+    return;
   }
 
   clickTimes = [];
   recordEggFind("flask");
   // The bubbles only load once someone finds them.
   import("./bubbleOver").then(({ bubbleOver }) => bubbleOver(logo)).catch(() => undefined);
-  return true;
 }

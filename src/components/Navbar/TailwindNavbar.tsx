@@ -1,11 +1,10 @@
-import { getLogoClickSeq, onLogoClick } from "@components/EasterEggs/Flask/logoClicks";
+import { onLogoClick } from "@components/EasterEggs/Flask/logoClicks";
 import { FiMenu, FiX } from "@components/Icons";
 import { ProgressBar } from "@components/ProgressBar";
 import { SiteSearch } from "@components/SiteSearch";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useScrollLock } from "src/hooks/useScrollLock";
 import { CollapsibleMenuDesktop, CollapsibleMenuMobile } from "./CollapsibleMenus";
@@ -13,48 +12,45 @@ import { DarkModeHandler } from "./DarkModeHandler";
 import { navGroups } from "./navItems";
 
 type BannerProps = {
-  iconOnly?: boolean;
   /** Hide the wordmark on phones, e.g. to make room for a breadcrumb. */
   compact?: boolean;
 };
 
-// Long enough to tell a single click from the start of an egg hunt.
-const NAVIGATE_DELAY_MS = 400;
-
-export const RicosSiteBanner = ({ iconOnly = false, compact = false }: BannerProps) => {
-  const router = useRouter();
+export const RicosSiteBanner = ({ compact = false }: BannerProps) => {
+  const flaskRef = useRef<HTMLImageElement>(null);
 
   return (
-    <Link
-      href="/"
-      onClick={(event) => {
-        // Hold the link for a moment: clicking the logo again keeps you on the
-        // page so the flask egg can be found without navigating away.
-        event.preventDefault();
-        // A burst of clicks is an egg hunt, never a request to go home.
-        if (onLogoClick(event.currentTarget.querySelector("img"))) return;
-        const seq = getLogoClickSeq();
-        window.setTimeout(() => {
-          if (getLogoClickSeq() === seq && router.pathname !== "/") router.push("/");
-        }, NAVIGATE_DELAY_MS);
-      }}
-      className="flex shrink-0 items-center not-prose"
-      aria-label={iconOnly ? "ricos.site home" : undefined}
-    >
-      <Image
-        className="h-5 w-auto mr-1"
-        src="/favicon/apple-touch-icon.png"
-        alt={iconOnly ? "" : "ricos.site logo of a chemistry beaker"}
-        width={32}
-        height={32}
-        unoptimized
-      />
-      {!iconOnly && (
-        <span className={clsx("ml-1 text-xl font-bold", compact && "hidden sm:inline")}>
-          ricos.site
-        </span>
-      )}
-    </Link>
+    <span className="flex shrink-0 items-center not-prose">
+      {/* The flask sits outside the home link: clicking it hunts for the egg and
+          must never navigate away mid-bubble. The wordmark is the link home. */}
+      <button
+        type="button"
+        onClick={() => onLogoClick(flaskRef.current)}
+        className="flex shrink-0 items-center"
+        aria-label="ricos.site logo of a chemistry beaker"
+      >
+        <Image
+          ref={flaskRef}
+          className="h-5 w-auto mr-1"
+          src="/favicon/apple-touch-icon.png"
+          alt=""
+          width={32}
+          height={32}
+          unoptimized
+        />
+      </button>
+      {/* Hidden on phones in compact mode, but kept in the page: it is the only
+          way home now that the flask is a button. */}
+      <Link
+        href="/"
+        className={clsx(
+          "ml-1 text-xl font-bold",
+          compact && "sr-only focus-visible:not-sr-only sm:not-sr-only",
+        )}
+      >
+        ricos.site
+      </Link>
+    </span>
   );
 };
 

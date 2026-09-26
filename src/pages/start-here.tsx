@@ -1,4 +1,5 @@
 import { Card, type CardCover } from "@components/Card";
+import { DottedTrail } from "@components/DottedTrail";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
@@ -85,7 +86,10 @@ export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Prop
           subtitle="A few things that show what this site is about."
         />
 
-        <section className="grid items-center gap-8 md:grid-cols-[2fr_3fr] md:gap-12">
+        {/* "isolate" keeps the decorative trail behind the two columns instead of
+            behind the page background. */}
+        <section className="relative isolate grid items-center gap-8 md:grid-cols-[2fr_3fr] md:gap-12">
+          <DottedTrail />
           <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-gray-200 dark:bg-gray-800 md:aspect-4/5">
             <ImageWithLoader
               src={PORTRAIT.src}

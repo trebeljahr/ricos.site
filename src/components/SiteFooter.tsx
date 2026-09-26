@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { EggCounter } from "./EasterEggs/EggCounter";
+import { NightOwl } from "./EasterEggs/NightOwl";
 
 /**
  * Tiny site-wide footer rendered at the bottom of every Layout. Keep this
@@ -10,7 +11,8 @@ import { EggCounter } from "./EasterEggs/EggCounter";
 export const SiteFooter = () => {
   const year = new Date().getFullYear();
   return (
-    <footer className="mt-region border-t border-gray-200 dark:border-gray-800 py-group px-gutter text-sm text-gray-600 dark:text-gray-400">
+    <footer className="relative mt-region border-t border-gray-200 dark:border-gray-800 py-group px-gutter text-sm text-gray-600 dark:text-gray-400">
+      <NightOwl />
       <div className="mx-auto max-w-(--breakpoint-lg) flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <span className="flex flex-wrap gap-x-5 gap-y-2">
           <span>© {year} Rico Trebeljahr</span>

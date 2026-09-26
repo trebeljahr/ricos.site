@@ -79,6 +79,8 @@
   --animate-egg-hint: egg-hint 14s ease-in-out infinite;
   /* Easter egg: the magnifying glass tilts while it scans (SearchParty). */
   --animate-egg-search: egg-search 1.6s ease-in-out infinite;
+  /* Easter egg: a feather the owl loses drifts down and fades (NightOwl). */
+  --animate-egg-feather: egg-feather 2.5s cubic-bezier(0.45, 0, 0.55, 1) both;
 
   /* Easter egg: a slow scanning tilt under the search party's lens. */
   @keyframes egg-search {
@@ -90,6 +92,27 @@
     50% {
       rotate: 7deg;
       translate: 2px -1px;
+    }
+  }
+
+  /* Easter egg: a feather the owl loses drifts down and fades (NightOwl). */
+  @keyframes egg-feather {
+    0% {
+      opacity: 0;
+      rotate: -10deg;
+      translate: 0 0;
+    }
+    15% {
+      opacity: 1;
+    }
+    50% {
+      rotate: 25deg;
+      translate: var(--egg-feather-drift, 10px) 26px;
+    }
+    100% {
+      opacity: 0;
+      rotate: -14deg;
+      translate: 0 58px;
     }
   }
 

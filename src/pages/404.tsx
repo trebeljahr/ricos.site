@@ -20,8 +20,8 @@ export default function Custom404() {
         <Header title={<SearchPartyEgg searchArea={searchArea} />} />
         <p>Sorry but this page does not exist</p>
         <TrySomeOfThese />
-        {/* The empty part of the page, where the search party finds its links. */}
-        <div ref={searchArea} className="min-h-[45vh]" />
+        {/* The empty part of the page. The search party fogs it over and hides links in it. */}
+        <div ref={searchArea} className="relative mt-8 min-h-[55vh]" />
       </PageMain>
     </Layout>
   );

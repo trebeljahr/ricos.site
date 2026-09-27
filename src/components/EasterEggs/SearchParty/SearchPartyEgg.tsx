@@ -6,34 +6,59 @@ import { useRecordEggFind } from "src/hooks/useEasterEgg";
 import { type Point, SmokeCanvas } from "./SmokeCanvas";
 
 /** Pages hiding in the smoke, in no particular order. */
-const HIDDEN_PAGES = ["/quotes", "/timeline", "/art", "/photography", "/eggs"];
-/** Everything the sweep can pull out of the smoke and leave standing. The
-    navbar and the footer belong to the page furniture, so they hide in the
-    cloud too and come back the same way as the text. */
-const STICKY = "main h1, main [data-smoke-stick], header#navbar, body footer";
+const HIDDEN_PAGES = [
+  "/quotes",
+  "/timeline",
+  "/art",
+  "/photography",
+  "/posts",
+  "/booknotes",
+  "/newsletters",
+  "/projects",
+  "/categories",
+  "/start-here",
+  "/midjourney",
+  "/eggs",
+];
+/** Everything the sweep can pull out of the smoke and leave standing. */
+const STICKY = "main h1, main [data-smoke-stick]";
 /** How close the sweep has to pass for something to count as found. */
 const REACH = 66;
 const KEY_STEP = 48;
 const HINT_AFTER_MS = 5000;
-/** The cloud hangs over the navbar (z-999) and everything else on the page. */
-const SMOKE_Z = 1000;
+/** Under the navbar (z-999) and the footer, which stay out of the weather. */
+const SMOKE_Z = 40;
+/** Columns the hiding places are dealt into. A phone has room for fewer. */
+const columns = () => (typeof window !== "undefined" && window.innerWidth < 640 ? 2 : 3);
 
 type Spot = { fx: number; fy: number };
 
-/** One hiding place per page, spread over the field below the text. */
+/** A hiding place per page: one to a cell of a loose grid, in any order, and
+    nowhere near the middle of its cell, so the field looks scattered. */
 function scatter(): Spot[] {
-  return HIDDEN_PAGES.map((_, i) => ({
-    fx: (i % 2 === 0 ? 0.06 : 0.48) + Math.random() * 0.18,
-    fy: 0.06 + (0.88 * (i + 0.2 + Math.random() * 0.6)) / HIDDEN_PAGES.length,
-  }));
+  const cols = columns();
+  const rows = Math.ceil(HIDDEN_PAGES.length / cols);
+  const cells = [...Array(cols * rows).keys()];
+  for (let i = cells.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cells[i], cells[j]] = [cells[j], cells[i]];
+  }
+  return HIDDEN_PAGES.map((_, i) => {
+    const cell = cells[i];
+    return {
+      fx: Math.min(0.8, ((cell % cols) + 0.08 + Math.random() * 0.6) / cols),
+      fy: (Math.floor(cell / cols) + 0.18 + Math.random() * 0.5) / rows,
+    };
+  });
 }
 
 /**
- * Easter egg on the 404 page: smoke hangs over the whole screen and stays
- * there. The pointer parts it a beat behind itself, and whatever the opening
- * passes over — the heading, the line of text, one of the five hidden links —
- * rises out of the cloud and stays out of it. Everywhere else the smoke rolls
- * straight back in. The last of the five links is the list of eggs itself.
+ * Easter egg on the 404 page: smoke hangs over the page and stays there. It
+ * is not worth trying to peer through — nothing shows until the opening that
+ * trails the pointer passes over it. Whatever that opening finds — the
+ * heading, a line of text, one of the hidden links — the cloud holds open
+ * from then on. The navbar and the footer are above the weather, so there is
+ * always a way off the page. The last of the hidden links is the egg list.
  */
 const SearchPartyEgg = () => {
   const reduceMotion = useReducedMotion();
@@ -60,6 +85,13 @@ const SearchPartyEgg = () => {
     recordFind("search-party");
     // The heading and the text belong to the page, so they are picked up from it.
     stickyRef.current = [...document.querySelectorAll<HTMLElement>(STICKY)];
+    // The footer sits in the flow with no stacking of its own, so the cloud
+    // would cover it. The navbar is already above it at z-999.
+    const footer = document.querySelector<HTMLElement>("body footer");
+    if (footer) footer.style.zIndex = String(SMOKE_Z + 1);
+    return () => {
+      if (footer) footer.style.zIndex = "";
+    };
   }, [recordFind]);
 
   // Someone who has not stirred the smoke for a while gets told what it is for.
@@ -170,7 +202,7 @@ const SearchPartyEgg = () => {
     <>
       {/* The field the links hide in. It sits in the page, so they scroll with
           the text and never end up over the footer. */}
-      <div className="relative mt-8 h-[60vh] min-h-96">
+      <div className="relative mt-8 h-[115vh] min-h-[780px]">
         {HIDDEN_PAGES.map((href, i) => (
           <div
             key={href}
@@ -178,7 +210,11 @@ const SearchPartyEgg = () => {
               chipRefs.current[i] = el;
             }}
             className="absolute"
-            style={{ left: `${spots[i].fx * 100}%`, top: `${spots[i].fy * 100}%` }}
+            style={{
+              // Held off the right edge, so the longer names still fit on a phone.
+              left: `min(${spots[i].fx * 100}%, calc(100% - 8rem))`,
+              top: `${spots[i].fy * 100}%`,
+            }}
           >
             <motion.span
               className="inline-block"
@@ -191,8 +227,8 @@ const SearchPartyEgg = () => {
                 aria-hidden={shown(i) ? undefined : true}
                 className={
                   shown(i)
-                    ? "rounded-full border border-dashed border-accent bg-white/90 px-2.5 py-1 font-mono text-sm text-accent no-underline shadow-sm hover:border-solid dark:bg-gray-900/90"
-                    : "rounded-full border border-dashed border-gray-500 px-2.5 py-1 font-mono text-sm text-gray-600 no-underline dark:border-gray-400 dark:text-gray-200"
+                    ? "rounded-full border border-dashed border-accent bg-white/90 px-2 py-0.5 font-mono text-xs text-accent no-underline shadow-sm hover:border-solid sm:px-2.5 sm:py-1 sm:text-sm dark:bg-gray-900/90"
+                    : "rounded-full border border-dashed border-gray-500 px-2 py-0.5 font-mono text-xs text-gray-600 no-underline sm:px-2.5 sm:py-1 sm:text-sm dark:border-gray-400 dark:text-gray-200"
                 }
               >
                 {href}

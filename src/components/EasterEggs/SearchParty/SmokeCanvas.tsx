@@ -127,7 +127,7 @@ void main() {
   float thinned = max(opened, cleared);
   // A floor everywhere, so even the thin parts of the cloud keep the page hidden,
   // and a little haze left inside the opening, so it is a thinning and not a hole.
-  float alpha = (uFloor + density * (1.0 - uFloor)) * (1.0 - thinned * 0.78);
+  float alpha = (uFloor + density * (1.0 - uFloor)) * (1.0 - thinned * 0.88);
   // Kept under white: on a light page the opening is already bright, and the
   // rim on top of that blows the whole thing out.
   vec3 color = min(uTint * (0.78 + density * 0.45 + rim * uRim), vec3(1.0));
@@ -277,7 +277,7 @@ export const SmokeCanvas = ({ pointerRef, onFocus, calm, onReady, clearRef }: Sm
       gl.uniform1f(uTime, calm ? 0 : now * 0.001);
       if (dark) gl.uniform3f(uTint, 0.42, 0.48, 0.6);
       else gl.uniform3f(uTint, 0.72, 0.76, 0.83);
-      gl.uniform1f(uFloor, dark ? 0.74 : 0.82);
+      gl.uniform1f(uFloor, 1.0);
       gl.uniform1f(uRim, dark ? 0.5 : 0.16);
       gl.uniform1f(uReach, Math.min(canvas.width, canvas.height) * REACH);
       gl.uniform3fv(uTrail, trail);

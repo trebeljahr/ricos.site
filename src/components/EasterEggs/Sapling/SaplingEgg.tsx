@@ -5,13 +5,14 @@ import { EmojiButton } from "../EmojiButton";
 import { clampPageX, PageLayer, pageBox } from "../PageLayer";
 import { useEggRunner } from "../useEggRunner";
 
-const CLICKS = 8;
-// Eight quick clicks need more room than the usual two seconds.
-const CLICK_WINDOW_MS = 5000;
+const CLICKS = 5;
+// One watering: the can pours and one cloud crosses the sky.
+// Clicks during a watering are ignored, so each one plays out in full.
+const WATER_MS = 1700;
+// Five waterings take at least four lockouts; leave room for unhurried clicks.
+const CLICK_WINDOW_MS = 15000;
 const SKY_HEIGHT = 54;
 const SKY_WIDTH = 340;
-const CROSS_MS = 2300;
-const TREE_MS = 2600;
 
 // One drifts over for every click: weather passing while you water.
 const CLOUD = "☁️";
@@ -25,8 +26,8 @@ const DROPS_PER_POUR = 4;
 
 /**
  * Easter egg on the newsletter form: watering the seedling sends a cloud
- * drifting across the sky above the heading. After eight waterings the
- * seedling has grown into a tree.
+ * drifting across the sky above the heading. After five waterings the
+ * seedling has grown into a tree, and it stays one.
  */
 const SaplingEgg = () => {
   const reduceMotion = useReducedMotion();
@@ -90,7 +91,11 @@ const SaplingEgg = () => {
   const registerClick = useEasterEgg("sapling", {
     clicks: CLICKS,
     windowMs: CLICK_WINDOW_MS,
-    onProgress: (clicks) => water(clicks - 1),
+    onProgress: (clicks) =>
+      run(async () => {
+        water(clicks - 1);
+        await wait(WATER_MS);
+      }),
     onTrigger: () =>
       run(async () => {
         water(CLICKS - 1);
@@ -100,25 +105,24 @@ const SaplingEgg = () => {
           easing: "ease-out",
           fill: "forwards",
         });
-        await wait(TREE_MS);
+        await wait(WATER_MS);
         plantRef.current?.animate([{ scale: 1.3 }, { scale: 1 }], {
           duration: 400,
           easing: "ease-in-out",
           fill: "forwards",
         });
-        setGrown(false);
         setSky(null);
-        await wait(400);
       }),
   });
 
   return (
     <>
+      {/* Once grown, the tree only wiggles; it is not watered again. */}
       <EmojiButton
-        label="Seedling"
-        nudge={false}
+        label={grown ? "Tree" : "Seedling"}
+        nudge={grown}
         onClick={() => {
-          if (!busyRef.current) registerClick();
+          if (!grown && !busyRef.current) registerClick();
         }}
       >
         <span ref={plantRef} className="inline-block origin-bottom">
@@ -172,7 +176,7 @@ const SaplingEgg = () => {
                     opacity: [0, 1, 1, 0],
                     scale: cloud.scale,
                   }}
-                  transition={{ duration: CROSS_MS / 1000, ease: "linear" }}
+                  transition={{ duration: WATER_MS / 1000, ease: "linear" }}
                   onAnimationComplete={() => cloudDone(cloud.id)}
                 >
                   {CLOUD}

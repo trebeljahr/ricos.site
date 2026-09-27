@@ -29,44 +29,34 @@ export function useInViewport(ref: RefObject<HTMLElement | null>, margin = "200p
  * Slow idle spin that yields to the person using it: any drag, wheel or pinch stops it,
  * and it only comes back after `idleDelayMs` of stillness. Never runs when `enabled` is
  * false, which is how `prefers-reduced-motion`, hover and a selected trip switch it off.
- *
- * `enabled` flips on every hover, so it must not live in the same effect as the listeners:
- * tearing those down and rebuilding them restarts the spin immediately, and the globe
- * drags the region you just picked out of view the moment the pointer leaves a pin. The
- * idle clock therefore runs for the lifetime of the controls, and `enabled` only gates
- * whether the idle state is allowed to become actual rotation.
  */
 export function useIdleAutoRotate(
   controlsRef: RefObject<OrbitControlsImpl | null>,
   enabled: boolean,
   idleDelayMs = 4000,
 ): void {
-  const idle = useRef(true);
-  const allowed = useRef(enabled);
-
   useEffect(() => {
     const controls = controlsRef.current;
     if (!controls) return;
 
-    const apply = () => {
-      controls.autoRotate = allowed.current && idle.current;
-    };
+    if (!enabled) {
+      controls.autoRotate = false;
+      return;
+    }
 
     let timer: ReturnType<typeof setTimeout> | undefined;
     const stop = () => {
       if (timer) clearTimeout(timer);
-      idle.current = false;
-      apply();
+      controls.autoRotate = false;
     };
     const resume = () => {
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => {
-        idle.current = true;
-        apply();
+        controls.autoRotate = true;
       }, idleDelayMs);
     };
 
-    apply();
+    controls.autoRotate = true;
     controls.addEventListener("start", stop);
     controls.addEventListener("end", resume);
     return () => {
@@ -75,13 +65,7 @@ export function useIdleAutoRotate(
       controls.removeEventListener("end", resume);
       controls.autoRotate = false;
     };
-  }, [controlsRef, idleDelayMs]);
-
-  useEffect(() => {
-    allowed.current = enabled;
-    const controls = controlsRef.current;
-    if (controls) controls.autoRotate = enabled && idle.current;
-  }, [controlsRef, enabled]);
+  }, [controlsRef, enabled, idleDelayMs]);
 }
 
 /**

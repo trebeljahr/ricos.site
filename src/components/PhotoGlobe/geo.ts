@@ -3,8 +3,8 @@
  *
  * This duplicates `latLngToVector3` from `src/lib/photoGeo.ts` on purpose: that module
  * reads the generated JSON with `node:fs` at build time, so importing it from a browser
- * component would drag `node:fs` into the client bundle. `landGeometry.test.ts` asserts the
- * two implementations stay identical — if you change one, change both.
+ * component would drag `node:fs` into the client bundle. `geo.test.ts` asserts the two
+ * implementations stay identical — if you change one, change both.
  *
  * Convention: +Y is the north pole, lon 0 points at +X, lon 90E points at -Z.
  */
@@ -47,56 +47,6 @@ export function latLngToVector3(lat: number, lng: number, radius = 1): [number, 
     radius * Math.sin(phi),
     -radius * cosPhi * Math.sin(lambda),
   ];
-}
-
-/**
- * A flat position buffer that grows by doubling.
- *
- * The land mesh is ~220k floats. Collecting those in a plain `number[]` and copying it
- * into a `Float32Array` at the end costs several hundred milliseconds of boxing and
- * reallocation, which on a phone is a visible freeze the moment the globe's lazy chunk
- * lands. Writing straight into typed memory keeps the whole build under a frame budget.
- */
-export class PositionSink {
-  private data: Float32Array;
-  private length = 0;
-
-  constructor(initialFloats = 1024) {
-    this.data = new Float32Array(initialFloats);
-  }
-
-  /** One vertex, already projected. */
-  push3(x: number, y: number, z: number): void {
-    if (this.length + 3 > this.data.length) {
-      const grown = new Float32Array(this.data.length * 2);
-      grown.set(this.data);
-      this.data = grown;
-    }
-    this.data[this.length++] = x;
-    this.data[this.length++] = y;
-    this.data[this.length++] = z;
-  }
-
-  /** One vertex given as lat/lng in degrees. */
-  pushLatLng(lat: number, lng: number, radius: number): void {
-    const phi = lat * DEG_TO_RAD;
-    const lambda = lng * DEG_TO_RAD;
-    const cosPhi = Math.cos(phi);
-    this.push3(
-      radius * cosPhi * Math.cos(lambda),
-      radius * Math.sin(phi),
-      -radius * cosPhi * Math.sin(lambda),
-    );
-  }
-
-  get floatCount(): number {
-    return this.length;
-  }
-
-  /** A view of exactly what was written. Copies once, at the end. */
-  toFloat32Array(): Float32Array {
-    return this.data.slice(0, this.length);
-  }
 }
 
 /** Writes `latLngToVector3` straight into a flat position array — avoids a tuple per vertex. */

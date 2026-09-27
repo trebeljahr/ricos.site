@@ -197,10 +197,10 @@
  * collection, which is never drawn as a pin and never gets a legend swatch.
  */
 :root {
-  --globe-ocean: rgb(179, 209, 238);
+  --globe-ocean: rgb(226, 238, 250);
   --globe-land: rgb(252, 251, 247);
-  --globe-coast: rgb(116, 155, 197);
-  --globe-graticule: rgb(151, 187, 222);
+  --globe-coast: rgb(163, 190, 216);
+  --globe-graticule: rgb(203, 219, 236);
   --globe-atmosphere: rgb(120, 170, 225);
 
   --globe-region-europe: rgb(52, 106, 209);

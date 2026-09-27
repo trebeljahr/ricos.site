@@ -233,19 +233,12 @@ export default function Photography({ trips, seo }: Props) {
     >
       <PageMain>
         <Header breadcrumbs={{ path: url }} subtitle="My travels in pictures" title="Photography" />
-        {/* Both sit between the header and the trip grid rather than above the
-            header, because they are other ways to read the same galleries and
-            not a heading for them. Two short lines, in the gap the header
+        {/* It sits between the header and the trip grid rather than above the
+            header, because it is another way to read the same galleries and
+            not a heading for them. One short line, in the gap the header
             already leaves, so the grid below still starts near the top. */}
         <p className="not-prose mb-para text-base text-gray-600 dark:text-gray-300">
-          Want to see where these photos come from?{" "}
-          <Link href="/photography/world" className="text-accent underline">
-            Open the world map
-          </Link>
-          .
-        </p>
-        <p className="not-prose mb-para text-base text-gray-600 dark:text-gray-300">
-          Or browse them by colour instead of by trip —{" "}
+          Browse the photos by colour instead of by trip —{" "}
           <Link href="/photography/colors" className="text-accent underline">
             twelve colour families
           </Link>
@@ -256,7 +249,6 @@ export default function Photography({ trips, seo }: Props) {
           .
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-region">
-
           {trips.map(({ tripName, image }, index) => {
             return (
               <Link

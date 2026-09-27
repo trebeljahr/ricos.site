@@ -1,5 +1,5 @@
 import { ShapeUtils, Vector2 } from "three";
-import { angularDegrees, PositionSink, writeLatLng } from "./geo";
+import { angularDegrees, writeLatLng } from "./geo";
 
 /** One closed coastline loop as `[lon, lat]` pairs — note the GeoJSON axis order. */
 export type LandRing = [lon: number, lat: number][];
@@ -78,7 +78,7 @@ export function unwrapRing(ring: LandRing): UnwrappedRing {
 }
 
 function pushProjectedTriangle(
-  out: PositionSink,
+  out: number[],
   a: LonLat,
   b: LonLat,
   c: LonLat,
@@ -110,12 +110,12 @@ function pushProjectedTriangle(
     return;
   }
 
-  out.pushLatLng(a.y, a.x, radius);
-  out.pushLatLng(b.y, b.x, radius);
-  out.pushLatLng(c.y, c.x, radius);
+  writeLatLng(out, a.y, a.x, radius);
+  writeLatLng(out, b.y, b.x, radius);
+  writeLatLng(out, c.y, c.x, radius);
 }
 
-function pushCoastline(out: PositionSink, ring: UnwrappedRing, radius: number): void {
+function pushCoastline(out: number[], ring: UnwrappedRing, radius: number): void {
   const { path, polar } = ring;
   if (path.length < 2) return;
   // A polar ring was closed with a synthetic seam across the pole; drawing that seam
@@ -132,8 +132,8 @@ function pushCoastline(out: PositionSink, ring: UnwrappedRing, radius: number): 
     for (let step = 0; step < steps; step++) {
       const t0 = step / steps;
       const t1 = (step + 1) / steps;
-      out.pushLatLng(from.y + (to.y - from.y) * t0, from.x + (to.x - from.x) * t0, radius);
-      out.pushLatLng(from.y + (to.y - from.y) * t1, from.x + (to.x - from.x) * t1, radius);
+      writeLatLng(out, from.y + (to.y - from.y) * t0, from.x + (to.x - from.x) * t0, radius);
+      writeLatLng(out, from.y + (to.y - from.y) * t1, from.x + (to.x - from.x) * t1, radius);
     }
   }
 }
@@ -147,9 +147,8 @@ export function buildLandGeometry(
   rings: LandRing[],
   options: { fillRadius: number; coastRadius: number },
 ): LandGeometryData {
-  // Sized for the shipped 110m outline, so neither buffer usually has to grow at all.
-  const fill = new PositionSink(1 << 18);
-  const coast = new PositionSink(1 << 15);
+  const fill: number[] = [];
+  const coast: number[] = [];
 
   for (const ring of rings) {
     const unwrapped = unwrapRing(ring);
@@ -183,9 +182,9 @@ export function buildLandGeometry(
   }
 
   return {
-    fillPositions: fill.toFloat32Array(),
-    coastPositions: coast.toFloat32Array(),
-    triangleCount: fill.floatCount / 9,
+    fillPositions: new Float32Array(fill),
+    coastPositions: new Float32Array(coast),
+    triangleCount: fill.length / 9,
   };
 }
 

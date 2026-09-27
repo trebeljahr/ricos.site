@@ -81,19 +81,14 @@ describe("buildLandGeometry", () => {
   it("produces a finite, spherical fill", () => {
     expect(geometry.triangleCount).toBeGreaterThan(1000);
     expect(geometry.fillPositions.length % 9).toBe(0);
-
-    // One assertion, not one per vertex: the shipped outline has ~21k triangles, and
-    // 63k expect() calls take longer than the whole test suite is allowed.
-    let worstDeviation = 0;
     for (let i = 0; i < geometry.fillPositions.length; i += 3) {
       const radius = Math.hypot(
         geometry.fillPositions[i],
         geometry.fillPositions[i + 1],
         geometry.fillPositions[i + 2],
       );
-      worstDeviation = Math.max(worstDeviation, Math.abs(radius - 1.0015));
+      expect(radius).toBeCloseTo(1.0015, 6);
     }
-    expect(worstDeviation).toBeLessThan(1e-6);
   });
 
   it("subdivides every triangle below the curvature budget", () => {

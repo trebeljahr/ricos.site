@@ -1,5 +1,6 @@
 /**
- * Turning a click on the spectrum's colour scale into a photograph.
+ * Turning a point on the spectrum's colour scale into a place in the sweep,
+ * and back.
  *
  * Lives here rather than inline in the handler because it is the part that can
  * be wrong quietly. The strip is the only navigation on that page, and the two
@@ -16,45 +17,44 @@ export type ScaleBand = {
 };
 
 /**
- * The photo `along` of the way through `band`, where `along` is 0 at the
- * band's left edge and 1 at its right.
+ * The position in the sweep `along` of the way through `band`, where `along`
+ * is 0 at the band's left edge and 1 at its right. A position is a photo's
+ * index plus how far past it, so 12.5 is halfway through photo 12.
  *
- * Clicking two thirds of the way along Gold lands two thirds of the way
- * through the golds. Jumping to the band's first photo instead — which is what
- * this replaces — made a strip drawn to scale behave like eleven buttons
- * wearing a gradient, and the scale stopped meaning anything at the resolution
- * a reader was aiming at.
+ * Pressing two thirds of the way along Gold lands two thirds of the way
+ * through the golds. Continuous rather than a whole photo, because the scale
+ * is dragged as well as pressed: a drag that moved a photo at a time would
+ * step the page a row at a time too.
  *
  * `along` is mapped inside the band and nowhere else, which is what keeps it
  * honest against a strip whose segments carry a minimum width: the segments
  * are not proportional to each other any more, but each one is still exactly
  * its own band, so a fraction of a segment is that fraction of its band.
- *
- * The result never leaves the band. A click at the extreme right edge returns
- * the band's last photo rather than the first of the next one, because a
- * reader aiming at the end of the greens means the last green.
  */
-export function photoAtFraction(band: ScaleBand, along: number): number {
-  if (band.count <= 0) return band.index;
-  const clamped = Math.min(1, Math.max(0, along));
-  const offset = Math.min(band.count - 1, Math.floor(clamped * band.count));
-  return band.index + offset;
+export function positionInBand(band: ScaleBand, along: number): number {
+  return band.index + Math.min(1, Math.max(0, along)) * Math.max(0, band.count);
 }
 
 /**
- * How far along an element a pointer event landed, 0 to 1.
- *
- * Returns 0 for a keyboard activation, where `detail` is 0 and there is no
- * position to read — the start of the band is the only sensible answer — and
- * for an element with no width, which is what a zero-size viewport reports.
+ * How far along `band` a position sits, 0 to 1 — the inverse of
+ * `positionInBand`, for drawing the marker where a drag put the page.
  */
-export function fractionAcross(
-  box: { left: number; width: number },
-  clientX: number,
-  detail: number,
-): number {
-  if (detail === 0 || box.width === 0) return 0;
-  return Math.min(1, Math.max(0, (clientX - box.left) / box.width));
+export function alongBand(band: ScaleBand, position: number): number {
+  if (band.count <= 0) return 0;
+  return Math.min(1, Math.max(0, (position - band.index) / band.count));
+}
+
+/**
+ * Index of the band holding `position`: the first whose stretch ends past it,
+ * or the last band for a position at or beyond the end of the sweep. A
+ * position exactly on a boundary belongs to the band starting there, which is
+ * the same point on the strip either way — the segments touch.
+ */
+export function bandAt(bands: readonly ScaleBand[], position: number): number {
+  for (let i = 0; i < bands.length; i++) {
+    if (position < bands[i].index + bands[i].count) return i;
+  }
+  return bands.length - 1;
 }
 
 /** Blend two `#rrggbb` colours in sRGB, `t` of the way from `a` to `b`.

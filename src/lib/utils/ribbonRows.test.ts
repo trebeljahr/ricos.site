@@ -1,4 +1,10 @@
-import { type RibbonRow, ribbonRows } from "src/lib/utils/ribbonRows";
+import {
+  offsetOfPosition,
+  positionAtOffset,
+  type RibbonRow,
+  ribbonRows,
+  rowOf,
+} from "src/lib/utils/ribbonRows";
 import { describe, expect, it } from "vitest";
 
 /** Deterministic stand-in for Math.random, so a failure reproduces. */
@@ -134,5 +140,60 @@ describe("ribbonRows", () => {
     expect(ribbonRows([1, 1], 0, 100, 1, 1.35)).toEqual([]);
     expect(ribbonRows([1, 1], 1000, Number.NaN, 1, 1.35)).toEqual([]);
     expect(ribbonRows([], 1000, 100, 1, 1.35)).toEqual([]);
+  });
+});
+
+describe("rowOf", () => {
+  it("finds the row holding each tile", () => {
+    const ratios = archiveLike(600, 5);
+    const rows = ribbonRows(ratios, 1000, 180, 1, 1.35);
+    for (let r = 0; r < rows.length; r++) {
+      for (let tile = rows[r].start; tile < rows[r].end; tile++) {
+        expect(rowOf(rows, tile)).toBe(r);
+      }
+    }
+  });
+});
+
+describe("offsetOfPosition and positionAtOffset", () => {
+  // Three rows of 4, 2 and 3 photos, 181px apart.
+  const rows: RibbonRow[] = [
+    { start: 0, end: 4, scale: 1 },
+    { start: 4, end: 6, scale: 1 },
+    { start: 6, end: 9, scale: null },
+  ];
+  const pitch = 181;
+
+  it("puts a row's first photo at the row's top edge", () => {
+    expect(offsetOfPosition(rows, 0, pitch)).toBe(0);
+    expect(offsetOfPosition(rows, 4, pitch)).toBe(181);
+    expect(offsetOfPosition(rows, 6, pitch)).toBe(362);
+  });
+
+  it("runs evenly through a row", () => {
+    expect(offsetOfPosition(rows, 2, pitch)).toBe(90.5);
+    expect(offsetOfPosition(rows, 5, pitch)).toBe(181 + 90.5);
+  });
+
+  it("clamps to the ends of the ribbon", () => {
+    expect(offsetOfPosition(rows, -5, pitch)).toBe(0);
+    expect(offsetOfPosition(rows, 9, pitch)).toBe(543);
+    expect(offsetOfPosition(rows, 40, pitch)).toBe(543);
+    expect(positionAtOffset(rows, -100, pitch)).toBe(0);
+    expect(positionAtOffset(rows, 10_000, pitch)).toBe(9);
+  });
+
+  it("are inverses, so a drag lands where the marker reads it back", () => {
+    const ratios = archiveLike(800, 6);
+    const real = ribbonRows(ratios, 351, 100, 1, 1.35);
+    for (let position = 0; position < 800; position += 0.37) {
+      const offset = offsetOfPosition(real, position, 101);
+      expect(positionAtOffset(real, offset, 101)).toBeCloseTo(position, 9);
+    }
+  });
+
+  it("returns zero for a ribbon with no rows yet", () => {
+    expect(offsetOfPosition([], 3, pitch)).toBe(0);
+    expect(positionAtOffset([], 300, pitch)).toBe(0);
   });
 });

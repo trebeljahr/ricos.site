@@ -87,3 +87,59 @@ export function ribbonRows(
   }
   return rows;
 }
+
+/*
+ * POSITIONS AND OFFSETS
+ * ---------------------
+ * With the row height fixed, the ribbon's geometry is arithmetic: row `r`
+ * starts `r * pitch` down, where the pitch is the row height plus the gap
+ * under it. The two functions below convert between that and a position in
+ * the sweep — a photo's index plus how far past it, so 12.5 is halfway through
+ * photo 12 — which is what the colour scale is drawn in.
+ *
+ * Inside a row, position runs evenly from the row's first photo at its top
+ * edge to the next row's first photo at its bottom edge. Nothing on the page
+ * is laid out that way; it is there so the two functions are exact inverses
+ * and continuous. Scrolling moves the marker smoothly instead of in one jump
+ * per row, and a drag on the scale lands the page where the marker then
+ * reads back the same place, so marker and pointer never part.
+ */
+
+/** Index into `rows` of the row holding `tile`. `rows` must cover the tile. */
+export function rowOf(rows: readonly RibbonRow[], tile: number): number {
+  let lo = 0;
+  let hi = rows.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    if (rows[mid].start <= tile) lo = mid;
+    else hi = mid - 1;
+  }
+  return lo;
+}
+
+/** Pixels from the top of the ribbon to `position` in the sweep. */
+export function offsetOfPosition(
+  rows: readonly RibbonRow[],
+  position: number,
+  pitch: number,
+): number {
+  if (rows.length === 0) return 0;
+  const last = rows[rows.length - 1].end;
+  const clamped = Math.min(last, Math.max(0, position));
+  const r = rowOf(rows, Math.min(last - 1, Math.floor(clamped)));
+  const row = rows[r];
+  return (r + (clamped - row.start) / (row.end - row.start)) * pitch;
+}
+
+/** The position in the sweep `offset` pixels down the ribbon. */
+export function positionAtOffset(
+  rows: readonly RibbonRow[],
+  offset: number,
+  pitch: number,
+): number {
+  if (rows.length === 0) return 0;
+  const r = Math.min(rows.length - 1, Math.max(0, Math.floor(offset / pitch)));
+  const along = Math.min(1, Math.max(0, offset / pitch - r));
+  const row = rows[r];
+  return row.start + along * (row.end - row.start);
+}

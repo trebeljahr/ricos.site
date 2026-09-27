@@ -17,8 +17,8 @@ import type { ColorBucketId } from "src/lib/colorBuckets.mjs";
 import { nextImageUrl } from "src/lib/mapToImageProps";
 import { formatCount } from "src/lib/utils/formatCount";
 import { addIdAndIndex } from "src/lib/utils/misc";
-import { ribbonRows } from "src/lib/utils/ribbonRows";
-import { fractionAcross, photoAtFraction, segmentGradient } from "src/lib/utils/spectrumScale";
+import { offsetOfPosition, positionAtOffset, ribbonRows } from "src/lib/utils/ribbonRows";
+import { alongBand, bandAt, positionInBand, segmentGradient } from "src/lib/utils/spectrumScale";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
 /**
@@ -41,6 +41,9 @@ type SpectrumMark = {
 type Props = {
   /** Every photo, in spectrum order, straight out of `imagesBySpectrum()`. */
   images: ImageProps[];
+  /** Each photo's mean colour as a CSS colour, in the same order. Its tile
+   *  shows it until the photograph arrives. */
+  tints: string[];
   marks: SpectrumMark[];
 };
 
@@ -59,49 +62,51 @@ type RibbonTile = {
    *  finds the tile by it, so it has to be the photo's own id. */
   id: string;
   /** Position in `photos`, which is the array the lightbox walks with
-   *  prev/next — not the position in the revealed window. */
+   *  prev/next. */
   index: number;
   /** Fallback src for a browser that ignores `srcSet`, at the smallest
    *  variant. */
   src: string;
   srcSet: string;
   sizes: string;
-  /** Layout aspect ratio after clamping: the flex-grow factor and the
-   *  multiplier the basis and max-width are derived from in CSS. */
+  /** Layout aspect ratio after clamping: the flex-grow factor, and the
+   *  multiplier the natural-width basis is derived from in CSS. */
   ratio: number;
   /** Intrinsic width attribute, paired with the constant 180px height. Only
    *  there to reserve the right box before the bytes arrive. */
   width: number;
+  /** Background shown until the photograph arrives. */
+  tint: string;
   label: string;
 };
 
 /**
- * Photos revealed per step, and the first step's size.
- *
- * Sized from the measured ribbon geometry rather than picked round. Across the
- * 4,359 photos the mean tile is 1.06x as wide as it is tall once the aspect
- * ratio is clamped (see RATIO_MIN/RATIO_MAX) — this archive is portrait-heavy,
- * 2,412 portrait frames against 1,943 landscape — so at the smallest row height
- * of 100px the mean tile is 106px wide and a full 1000px-wide row holds about
- * nine of them.
- *
- * The number has to be big enough that appending one chunk pushes the sentinel
- * clear out of the observer's 400px rootMargin, otherwise the sentinel never
- * stops intersecting, IntersectionObserver never fires again (it notifies on
- * threshold *crossings*, not continuously) and the reader is stranded at the
- * bottom of the strip. The binding case is the widest container at the shortest
- * row, where a chunk buys the fewest pixels: at 100px on a 1000px container,
- * 38 photos already clear 400px.
- *
- * It was 700, sized when the rows were 48-80px. At 100-180px the same count
- * buys 2.25x the pixels and 2.25x the bytes, because the taller tiles also pull
- * larger variants — a chunk that used to be a reasonable prefetch became most
- * of a phone's data budget before the reader had scrolled anything. 300 keeps
- * an eightfold margin over the 38 the sentinel needs (32 rows and 3,190px at
- * the worst breakpoint) and cuts the first paint to well under half. Fifteen
- * chunks cover the whole archive.
+ * Tiles rendered before the ribbon has been measured: on the server, and in
+ * the first client render, which has to match it. About a screen and a half
+ * at the widest layout, where a row holds the most photographs. The measured
+ * ribbon replaces them before the browser paints anything else.
  */
-const CHUNK = 300;
+const FIRST_PAINT = 120;
+
+/**
+ * How far past each edge of the viewport rows are kept in the document, in
+ * viewport heights. New rows are rendered once the viewport has come within
+ * half of this of the edge, so ordinary scrolling re-renders about once a
+ * screen rather than once a row.
+ */
+const OVERSCAN = 1;
+
+/**
+ * A tile on screen for less than this, in milliseconds, is not worth fetching.
+ *
+ * A drag along the scale can cross the whole archive in a second, and every
+ * tile it passes would start a download that nothing cancels: a few thousand
+ * requests queued ahead of the photographs where the drag stops, which then
+ * take seconds to appear. While the page moves faster than a viewport per
+ * this many milliseconds, tiles that have not loaded show their tint instead,
+ * and they fetch once it has been still this long.
+ */
+const GLIMPSE_MS = 150;
 
 /**
  * Clamp on the layout aspect ratio.
@@ -192,7 +197,7 @@ const tripOf = (src: string) => turnKebabIntoTitleCase(src.split("/")[2] ?? "");
  * in exactly one place in this strip, which is the whole of the feature: there
  * is no second view it could disagree with.
  */
-export default function PhotographySpectrumPage({ images, marks }: Props) {
+export default function PhotographySpectrumPage({ images, tints, marks }: Props) {
   const total = images.length;
 
   const photos = useMemo(() => images.map(addIdAndIndex), [images]);
@@ -203,12 +208,11 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
    * Memoized for the same reason GalleryPage memoizes its srcSet, only more
    * so, because this page re-renders far more often than a gallery does. The
    * lightbox's current slide is state in `useCustomLightbox`, which this
-   * component calls, so every arrow press in the lightbox — and every chunk
-   * the observer appends — re-renders the whole revealed window. That window
-   * reaches all 4,359 photos once the reader has scrolled the sweep, and
-   * building the strings in the map body meant 4,359 template labels and 4,359
-   * `srcSet` joins over 17,436 `nextImageUrl` calls per keypress, to produce
-   * byte-identical attributes each time.
+   * component calls, so every arrow press in the lightbox — and every screen
+   * the reader scrolls — re-renders the rows in the document. Building the
+   * strings in the map body meant a template label and a `srcSet` join over
+   * four `nextImageUrl` calls per tile per render, to produce byte-identical
+   * attributes each time.
    *
    * `total` is in the deps for the label, and is `images.length`, so it cannot
    * move without `photos` moving too.
@@ -234,408 +238,32 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
           sizes: `(min-width: 1024px) ${Math.round(180 * ratio)}px, (min-width: 640px) ${Math.round(140 * ratio)}px, ${Math.round(100 * ratio)}px`,
           ratio,
           width: Math.round(180 * ratio),
+          tint: tints[photo.index] ?? "transparent",
           // The label, not the alt text, carries the meaning here. Alt from the
-          // filename would read "DSC04727" 4,359 times over, which is worse
+          // filename would read "DSC04727" 1,950 times over, which is worse
           // than nothing, so the image is marked decorative and the button says
           // what it opens.
           label: `Open photo ${formatCount(photo.index + 1)} of ${formatCount(total)}, from ${tripOf(photo.src)}`,
         };
       }),
-    [photos, total],
+    [photos, tints, total],
   );
 
   const lightbox = useCustomLightbox({ photos });
   const { openModal, currentImageIndex, isModalOpen } = lightbox;
 
-  /** The half-open window of photos currently in the document. Both ends move:
-   *  scrolling down grows `end`, scrolling up grows the window backwards by
-   *  lowering `start`, and a chip jump drops a fresh CHUNK anywhere in the
-   *  sweep and lets the reader scroll out of it in either direction. */
-  const [window_, setWindow] = useState({ start: 0, end: Math.min(CHUNK, total) });
-  const { start, end } = window_;
-
-  const ribbonRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLOListElement>(null);
   const progressRef = useRef<HTMLSpanElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const loadingRef = useRef(false);
-  /** Set by `seek`, consumed by the layout effect that does the scrolling. */
-  const pendingSeek = useRef(false);
-  /** True from the moment a jump is requested until its scroll has landed, so
-   *  the page's own movement cannot be mistaken for the reader's. */
-  const seeking = useRef(false);
-  const lastY = useRef(0);
-  const scrollingUp = useRef(false);
-
-  const hasMore = end < total;
-  const hasPrevious = start > 0;
-
-  /** The tile the reader's position is measured against across a prepend, and
-   *  where it sat when the prepend was requested. Null when the pending render
-   *  is not a prepend. Read once, in the layout effect below. */
-  const prependAnchor = useRef<{ id: string; top: number } | null>(null);
-
-  /** Same guard as InfiniteScrollGallery: two intersections can arrive inside
-   *  one frame, while React has not re-rendered the moved sentinel yet. */
-  const holdLoading = useCallback(() => {
-    loadingRef.current = true;
-    setTimeout(() => {
-      loadingRef.current = false;
-    }, 100);
-  }, []);
-
-  const loadMore = useCallback(() => {
-    if (loadingRef.current) return;
-    holdLoading();
-    setWindow((w) => (w.end >= total ? w : { ...w, end: Math.min(total, w.end + CHUNK) }));
-  }, [holdLoading, total]);
-
-  const loadPrevious = useCallback(() => {
-    if (loadingRef.current || seeking.current) return;
-    // Only ever in response to the reader scrolling up. Without this the page
-    // loads backwards whenever the top of the ribbon happens to be near the
-    // viewport, which is exactly where a jump leaves it — so every jump
-    // immediately pulled in the chunk before its target and shoved the reader
-    // down by its height.
-    if (!scrollingUp.current) return;
-    holdLoading();
-    // Recorded here rather than in the updater, which React may run twice.
-    // The anchor is the window's current first tile, which `loadPrevious` only
-    // ever runs while the reader is near, and which is still in the document
-    // after the prepend — just further down it.
-    const anchorId = tiles[start]?.id;
-    const element = anchorId ? document.getElementById(anchorId) : null;
-    prependAnchor.current = element
-      ? { id: element.id, top: element.getBoundingClientRect().top }
-      : null;
-    setWindow((w) => (w.start <= 0 ? w : { ...w, start: Math.max(0, w.start - CHUNK) }));
-  }, [holdLoading, start, tiles]);
-
-  /**
-   * Hold the reader's place when rows are inserted above them.
-   *
-   * Without this the page leaps the instant an upward load fires. Browsers
-   * have scroll anchoring for exactly this, but Safari does not implement it,
-   * so the correction is done by hand.
-   *
-   * It is measured against one tile rather than against the document's height,
-   * and that distinction is the whole of it. The first attempt compared
-   * `scrollHeight` before and after and scrolled by the difference, which is
-   * correct only if the existing rows keep their positions relative to each
-   * other. They do not: the ribbon is a justified `flex-wrap`, so inserting
-   * 300 tiles above re-packs every row below them. Photos move between rows,
-   * row heights stay fixed but row *contents* shift, and the height delta ends
-   * up describing no particular photo's displacement. Correcting by it left
-   * the reader somewhere near where they were, differently wrong on every
-   * load, which is what jumpy means here.
-   *
-   * Measuring one real element survives the reflow, because it asks the
-   * question that actually matters: where did the thing the reader was looking
-   * at go?
-   *
-   * `useLayoutEffect` and not `useEffect` because it has to run before the
-   * browser paints. In an effect the reader sees one frame at the wrong offset,
-   * which reads as a jolt at precisely the moment they are scrolling.
-   *
-   * `window_` is in the deps although the body never reads it, and the linter
-   * is wrong to call it redundant: it is the signal that the window move has
-   * been committed. The effect has to run once per move, and the window object
-   * is the only thing that changes between the render that schedules one and
-   * the render that finishes it. Drop it and the correction runs on the first
-   * commit only, so every upward load after the first one jolts.
-   */
-  // biome-ignore lint/correctness/useExhaustiveDependencies: window_ is the commit signal, see above
-  useLayoutEffect(() => {
-    // A jump scrolls here, after the new window is in the document, and never
-    // in `seek` itself. Scrolling from the event handler aimed at the ribbon's
-    // old geometry — the rows it was measuring were about to be replaced — so
-    // the page started moving towards a position that stopped existing one
-    // render later.
-    if (pendingSeek.current) {
-      pendingSeek.current = false;
-      prependAnchor.current = null;
-      ribbonRef.current?.scrollIntoView({ behavior: "instant", block: "start" });
-      // The reader is now at the top of the new window and has not scrolled.
-      lastY.current = window.scrollY;
-      scrollingUp.current = false;
-      // Released immediately, not on the next animation frame. The frame was
-      // the tidier-looking way to wait out the scroll event this jump is about
-      // to emit, and it was wrong: requestAnimationFrame does not run while a
-      // tab is not being composited, so a jump made in a background tab left
-      // this flag stuck on and killed upward loading for the rest of the
-      // visit. Nothing needs the delay anyway — the scroll this jump causes
-      // arrives with `window.scrollY` already equal to `lastY`, and the
-      // handler ignores an event that reports no movement.
-      seeking.current = false;
-      return;
-    }
-
-    const anchor = prependAnchor.current;
-    if (anchor === null) return;
-    prependAnchor.current = null;
-    const element = document.getElementById(anchor.id);
-    if (!element) return;
-    const delta = element.getBoundingClientRect().top - anchor.top;
-    if (delta !== 0) window.scrollBy(0, delta);
-  }, [window_]);
-
-  /**
-   * Scroll direction, and the upward load.
-   *
-   * This is a scroll listener rather than a second IntersectionObserver, and
-   * the reason is a property of the API rather than a preference:
-   * IntersectionObserver reports *crossings*, not states. A sentinel at the top
-   * of the ribbon is already intersecting the moment a jump lands, so it
-   * reports once, and if that report is ignored — which it must be, since the
-   * reader has not asked for anything — it never reports again while it stays
-   * on screen. Scrolling up from a jump would then load nothing at all.
-   *
-   * Reading position on scroll has neither problem: it is a state, so it is
-   * still true the second time it is asked.
-   */
-  /** Put the marker where the reader is. Writes to the DOM node, never to
-   *  state.
-   *
-   *  Two things here are easy to get wrong and were.
-   *
-   *  It measures against the middle of the viewport rather than its top edge.
-   *  The top edge is the first row *partly* on screen, which is behind
-   *  whatever the reader is actually looking at by half a screen of photos,
-   *  and the marker trailed by that much the whole way down.
-   *
-   *  And it places the marker by measuring the drawn segments instead of
-   *  computing `index / total`. Those agreed while the strip was drawn purely
-   *  to scale; they stopped agreeing the moment segments got a `min-width` so
-   *  the small bands could be clicked, because that widens pink and white well
-   *  past their share and pushes everything after them to the right. The
-   *  arithmetic answer stayed where a to-scale strip would have put it, which
-   *  is left of the band it was naming — the marker sat in pink while the
-   *  photographs on screen were grey. Asking the band where it is cannot drift
-   *  from where it is. */
-  const updateProgress = useCallback(() => {
-    const marker = progressRef.current;
-    const ribbon = ribbonRef.current;
-    const strip = stripRef.current;
-    if (!marker || !ribbon || !strip || total === 0) return;
-
-    const list = ribbon.querySelector("ol");
-    const items = list?.children;
-    if (!items || items.length === 0) return;
-
-    const viewport = window.innerHeight || document.documentElement.clientHeight || 0;
-    const probe = viewport / 2;
-
-    // Which photograph is at the middle of the screen, found by bisecting the
-    // tiles for the first one whose bottom edge is below the probe.
-    //
-    // WHY THIS IS NOT ARITHMETIC AND NOT A HIT TEST
-    // ---------------------------------------------
-    // It was arithmetic first — how far down the ribbon the probe sits, times
-    // how many photos the ribbon holds. That is only right while every row
-    // holds the same number of tiles and the ribbon's height matches its
-    // contents, and neither survives loading: rows hold between about six and
-    // fourteen tiles depending on how many portraits land together, and a
-    // chunk arriving changes the ribbon's height a frame before React has
-    // said the window grew.
-    //
-    // Then it was `elementFromPoint`, with the arithmetic kept as a fallback
-    // for when nothing was under the probe — the pixel gap between tiles, the
-    // strip of page past the last row, the lightbox when it is open. That was
-    // worse in the way that is hardest to see: two estimators disagreeing
-    // with each other, so the marker was exact most of the time and quietly
-    // wrong the rest, and the difference looked like drift.
-    //
-    // Bisection has no gaps and no second opinion. Tiles are in sweep order
-    // in the DOM and rows share an edge, so the first tile whose bottom is
-    // past the probe is in the row the reader is looking at, always. Eleven
-    // reads for 1,500 tiles, on a layout the browser has already computed.
-    let lo = 0;
-    let hi = items.length - 1;
-    let found = hi;
-    while (lo <= hi) {
-      const mid = (lo + hi) >> 1;
-      if ((items[mid] as HTMLElement).getBoundingClientRect().bottom <= probe) {
-        lo = mid + 1;
-      } else {
-        found = mid;
-        hi = mid - 1;
-      }
-    }
-    const index = Number((items[found] as HTMLElement).dataset.index);
-    if (!Number.isFinite(index)) return;
-
-    const segments = strip.querySelectorAll<HTMLElement>("button");
-    const width = strip.clientWidth;
-    if (segments.length !== marks.length || width === 0) return;
-
-    let at = marks.length - 1;
-    for (let i = 0; i < marks.length; i++) {
-      if (index < marks[i].index + marks[i].count) {
-        at = i;
-        break;
-      }
-    }
-    const segment = segments[at];
-    const band = marks[at];
-    const fraction = band.count > 0 ? (index - band.index) / band.count : 0;
-    const left = segment.offsetLeft + Math.min(1, Math.max(0, fraction)) * segment.offsetWidth;
-    marker.style.left = `${Math.min(100, Math.max(0, (left / width) * 100))}%`;
-  }, [total, marks]);
-
-  // After every committed window change, so a jump moves the marker before
-  // the reader has scrolled anything. Keyed on the window rather than on the
-  // callback: `updateProgress` reads only the DOM now, so its identity no
-  // longer changes when the window does, and clicking the same band twice or
-  // going to the top from an already-at-the-top window would otherwise commit
-  // a new layout with a stale marker over it.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: window_ is the commit signal
-  useEffect(updateProgress, [window_, updateProgress]);
-
-  useEffect(() => {
-    lastY.current = window.scrollY;
-    const onScroll = () => {
-      const y = window.scrollY;
-      // First, and unconditionally. Both guards below used to sit in front of
-      // it, and between them they covered most of the ways the page moves
-      // without the reader scrolling: a jump held `seeking` and returned, and
-      // the to-top button set `lastY` to the offset it was about to scroll to,
-      // so the scroll it caused arrived reporting no movement and returned
-      // too. In both cases the marker kept whatever position it had before.
-      updateProgress();
-      // The page's own scrolling, during a jump, is not the reader moving.
-      if (seeking.current) {
-        lastY.current = y;
-        return;
-      }
-      if (y === lastY.current) return;
-      scrollingUp.current = y < lastY.current;
-      lastY.current = y;
-      if (!scrollingUp.current || !hasPrevious) return;
-      // Measured only while scrolling up and only while there is something
-      // above to load, so the layout read costs nothing on the common path.
-      // No requestAnimationFrame throttle around it: rAF does not run while a
-      // tab is not being composited, which would leave the upward load dead in
-      // exactly the situations that are hardest to notice. `loadingRef`
-      // already stops a burst of events from loading more than one chunk.
-      const top = ribbonRef.current?.getBoundingClientRect().top ?? Number.NEGATIVE_INFINITY;
-      // Within a screen of the ribbon's first row, which is the only place an
-      // upward load can be what the reader wants.
-      if (top > -400) loadPrevious();
-    };
-    // Resizing re-packs every row, so the photo at the middle of the screen
-    // changes without a scroll event to announce it.
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", updateProgress, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", updateProgress);
-    };
-  }, [loadPrevious, hasPrevious, updateProgress]);
-
-  /**
-   * Jump to a region of the circle.
-   *
-   * Drops a fresh window at the target instead of revealing everything in
-   * between: reaching pink the long way is 4,224 photos, which would put the
-   * whole archive in one document and undo the chunking the page is built on.
-   *
-   * What makes that acceptable is that the window is no longer a dead end. The
-   * reader can scroll up out of a jump and the photos before it load, the same
-   * way scrolling down loads the ones after, so the sweep stays continuous in
-   * both directions from wherever they landed.
-   */
-  const seek = useCallback(
-    (index: number) => {
-      seeking.current = true;
-      pendingSeek.current = true;
-      prependAnchor.current = null;
-      setWindow({ start: index, end: Math.min(total, index + CHUNK) });
-    },
-    [total],
-  );
-
-  /**
-   * Back to the first photograph.
-   *
-   * Not a scroll. The window holds a few hundred photos out of 1,950, so the
-   * top of the document is only the top of whatever is loaded — from the blue
-   * band that is photo 1,264, and the button appeared to stop short of the
-   * top because it had in fact arrived at it.
-   *
-   * Scrolling there properly would mean loading every chunk in between, which
-   * is both slow and ugly: a few thousand tiles streaming in under a reader
-   * who only wanted to get back to the start. So the window is reset to the
-   * beginning and the page jumps, which loads one chunk and nothing else.
-   *
-   * `seeking` is held across the reset for the same reason every other jump
-   * holds it: the scroll it causes must not be read as the reader scrolling
-   * up, or the backwards loader undoes the reset on the spot.
-   */
-  const toTop = useCallback(() => {
-    seeking.current = true;
-    pendingSeek.current = false;
-    prependAnchor.current = null;
-    setWindow({ start: 0, end: Math.min(CHUNK, total) });
-    window.scrollTo(0, 0);
-    lastY.current = 0;
-    scrollingUp.current = false;
-    seeking.current = false;
-  }, [total]);
-
-  // Arrowing forward in the lightbox can walk past the revealed window. Reveal
-  // in one jump up to the slide plus a chunk, rather than a chunk per tick, so
-  // the morph back into the strip has an element to land on.
-  //
-  // Gated on the lightbox actually being open, which is the whole correctness
-  // of this effect. `currentImageIndex` is not cleared on close — it is what
-  // `animateImageBackToGallery` looks the tile up by while the lightbox is
-  // exiting — so after any visit to the lightbox it keeps pointing at the last
-  // slide viewed, for the rest of the reader's stay on the page. Without the
-  // gate the next *seek* re-ran this against that stale index and read it as a
-  // slide sitting past the new window: view a photo near the end of the sweep,
-  // then jump back to Red, and `currentImageIndex - start + CHUNK` asks for
-  // 5,059 photos, so all 4,359 tiles land in the document at once and the
-  // chunking this page is built on is gone until a reload. While the lightbox
-  // is open the index is live and means what the effect assumes it means.
-  useEffect(() => {
-    if (!isModalOpen) return;
-    if (currentImageIndex >= total) return;
-    if (currentImageIndex < end) return;
-    setWindow((w) => ({ ...w, end: Math.min(total, currentImageIndex + CHUNK) }));
-  }, [isModalOpen, currentImageIndex, end, total]);
-
-  // `hasMore` is in the deps although the effect never reads it, because the
-  // sentinel is only in the tree while it is true. Seeking can flip it back from
-  // false to true — jump to Pink, which reaches the end of the sweep, then jump
-  // back to Red — and that remount produces a *different* DOM node. Without the
-  // re-run the observer would still be watching the detached one and the reader
-  // would be stranded with 700 photos and no way to load the rest.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: hasMore remounts the sentinel; see above
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) loadMore();
-      },
-      { rootMargin: "400px" },
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [loadMore, hasMore]);
-
-  const visible = useMemo(() => tiles.slice(start, end), [tiles, start, end]);
 
   /** The ribbon's width and row height as laid out, which is what the rows
    *  are broken against. Null on the server and in the first client render,
-   *  when the tiles fall back to plain flex-wrap justification. */
+   *  which show the first FIRST_PAINT tiles in plain flex-wrap instead. */
   const [frame, setFrame] = useState<{ width: number; height: number } | null>(null);
 
   // A layout effect so the first measured layout replaces the fallback before
-  // the browser paints it. The observer then fires on every chunk too, since
-  // the list grows taller, and the comparison keeps those from re-rendering:
-  // only a new width or a new row height moves the breaks.
+  // the browser paints it. The observer fires again only when the list's box
+  // changes, which, with its height fixed below, is a resize.
   useLayoutEffect(() => {
     const list = listRef.current;
     if (!list) return;
@@ -654,22 +282,29 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
   }, []);
 
   /**
-   * Each tile's `flex-basis`, as a share of its row: `undefined` leaves the
-   * tile on the natural-width basis in its class.
+   * Every row of the whole sweep, and each tile's `flex-basis`.
    *
-   * A share of 100% rather than a width in pixels, although the pixels are
-   * right there in `frame`. The breaks are worked out against one measured
-   * width and the browser lays out against the real one, and the two disagree
-   * for a frame whenever the page resizes — a scrollbar appearing is enough.
-   * Pixel bases a few px too wide for the real row push its last tile onto
-   * the next line, and the misfit cascades down the whole ribbon. A share of
-   * the row cannot overflow it: at worst, breaks computed for a stale width
+   * Laid out for all 1,950 photos at once, from the first, and only again when
+   * the width changes. That is what makes the ribbon a fixed shape a reader
+   * can scroll through: rows never re-pack under them, and with the row
+   * height constant the whole document's geometry is arithmetic — row `r` is
+   * `r * pitch` down — so the page can be as tall as the sweep while holding
+   * only the rows near the viewport.
+   *
+   * The basis is a share of 100% rather than a width in pixels, although the
+   * pixels are right there in `frame`. The breaks are worked out against one
+   * measured width and the browser lays out against the real one, and the two
+   * disagree for a frame whenever the page resizes — a scrollbar appearing is
+   * enough. Pixel bases a few px too wide for the real row push its last tile
+   * onto the next line, and the misfit cascades down the whole ribbon. A share
+   * of the row cannot overflow it: at worst, breaks computed for a stale width
    * crop a little more than they would have, until the observer catches up.
+   * `undefined` leaves a tile on the natural-width basis in its class, which
+   * is what a short last row uses.
    */
-  const bases = useMemo(() => {
+  const layout = useMemo(() => {
     if (!frame) return null;
-    const ratios = visible.map((tile) => tile.ratio);
-    const result: (string | undefined)[] = new Array(visible.length);
+    const ratios = tiles.map((tile) => tile.ratio);
     const rows = ribbonRows(
       ratios,
       frame.width - ROW_SLACK,
@@ -677,26 +312,240 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
       TILE_GAP,
       TRAILING_MAX_STRETCH,
     );
+    const bases: (string | undefined)[] = new Array(tiles.length);
     for (const row of rows) {
       if (row.scale === null) continue;
       let sum = 0;
       for (let i = row.start; i < row.end; i++) sum += ratios[i];
       const reserved = TILE_GAP * (row.end - row.start - 1) + ROW_SLACK;
       for (let i = row.start; i < row.end; i++) {
-        result[i] = `calc((100% - ${reserved}px) * ${ratios[i] / sum})`;
+        bases[i] = `calc((100% - ${reserved}px) * ${ratios[i] / sum})`;
       }
     }
-    return result;
-  }, [visible, frame]);
+    const pitch = frame.height + TILE_GAP;
+    return { rows, bases, pitch, height: rows.length * pitch };
+  }, [tiles, frame]);
 
-  /** Mark whose stretch of the sweep the window starts in. */
-  const activeKey = useMemo(() => {
-    let current: SpectrumMark["key"] | null = marks[0]?.key ?? null;
-    for (const mark of marks) {
-      if (mark.index <= start) current = mark.key;
-    }
-    return current;
-  }, [marks, start]);
+  /** The rows in the document, `first` inclusive to `last` exclusive. */
+  const [span, setSpan] = useState({ first: 0, last: 0 });
+
+  /** True while the page moves faster than a tile could load; see
+   *  GLIMPSE_MS. Tiles that have not loaded yet show their tint meanwhile. */
+  const [hurrying, setHurrying] = useState(false);
+  /** Tiles whose photograph has arrived, which keep it while `hurrying`. */
+  const loaded = useRef(new Set<string>());
+
+  /** The band the marker is in, for `aria-current`. */
+  const [activeBand, setActiveBand] = useState(0);
+  /** True while a drag on the scale is in progress. The drag places the
+   *  marker itself, under the pointer, and the scroll it causes must not
+   *  move it. */
+  const scrubbing = useRef(false);
+  /** Where in the sweep the reader was at the last scroll, so a relayout can
+   *  put them back there. */
+  const lastPosition = useRef<number | null>(null);
+
+  /**
+   * Put the rows around the viewport into the document.
+   *
+   * Ordinary scrolling calls this on every event and it does nothing until the
+   * viewport has come within half an OVERSCAN of the edge of what is rendered;
+   * then it renders a full OVERSCAN either side. `force` recomputes regardless,
+   * for a relayout, whose row numbers mean different rows.
+   */
+  const updateSpan = useCallback(
+    (force: boolean) => {
+      const list = listRef.current;
+      if (!list || !layout) return;
+      const { rows, pitch } = layout;
+      const viewport = window.innerHeight;
+      const top = -list.getBoundingClientRect().top;
+      const rowAt = (y: number) => Math.min(rows.length, Math.max(0, Math.floor(y / pitch)));
+      setSpan((span) => {
+        const needFirst = rowAt(top - (viewport * OVERSCAN) / 2);
+        const needLast = rowAt(top + viewport + (viewport * OVERSCAN) / 2) + 1;
+        if (!force && span.first <= needFirst && span.last >= Math.min(rows.length, needLast)) {
+          return span;
+        }
+        return {
+          first: rowAt(top - viewport * OVERSCAN),
+          last: Math.min(rows.length, rowAt(top + viewport * (1 + OVERSCAN)) + 1),
+        };
+      });
+    },
+    [layout],
+  );
+
+  /**
+   * Where in the sweep the page is, read off the scroll position alone.
+   *
+   * The colour scale is this page's scrollbar, and it maps the way a scrollbar
+   * does: the top of the page is the first photograph and the bottom of the
+   * page the last, evenly in between. The probe it implies starts at the top
+   * of the ribbon, passes the middle of the viewport halfway down and ends at
+   * the bottom of the ribbon.
+   *
+   * It used to be the photograph at the middle of the viewport, which is the
+   * better answer in the middle of the page and cannot reach either end: the
+   * first and last half-screen of photographs never sit there, so a drag to
+   * the end of White landed the page on the last screen and the marker then
+   * read it back as Grey. Mapped like a scrollbar, a drag and the marker are
+   * exact inverses everywhere, which is what lets the marker stay under the
+   * pointer through a drag and stay put when the pointer lets go.
+   */
+  const positionNow = useCallback((): number | null => {
+    if (!layout) return null;
+    const range = document.documentElement.scrollHeight - window.innerHeight;
+    const along = range > 0 ? Math.min(1, Math.max(0, window.scrollY / range)) : 0;
+    return positionAtOffset(layout.rows, along * layout.height, layout.pitch);
+  }, [layout]);
+
+  /** Scroll to `position`: the inverse of `positionNow`. Instant, because
+   *  it is called on every pointer move of a drag and has to keep up with it;
+   *  a smooth scroll would still be travelling when the next one arrived. */
+  const scrollToPosition = useCallback(
+    (position: number) => {
+      if (!layout) return;
+      const range = document.documentElement.scrollHeight - window.innerHeight;
+      if (range <= 0) return;
+      const along = offsetOfPosition(layout.rows, position, layout.pitch) / layout.height;
+      window.scrollTo({ top: along * range, behavior: "instant" });
+    },
+    [layout],
+  );
+
+  /** Draw the marker at `position`. Writes to the DOM node, never to state:
+   *  the alternative is a re-render of every rendered tile on every scroll
+   *  event to move one element two pixels.
+   *
+   *  It asks each segment where it is drawn instead of computing
+   *  `position / total`, because the segments carry a `min-width` so the
+   *  small bands can be hit, and that widens pink and white well past their
+   *  share and pushes everything after them to the right. */
+  const placeMarker = useCallback(
+    (position: number) => {
+      const marker = progressRef.current;
+      const strip = stripRef.current;
+      if (!marker || !strip) return;
+      const segments = strip.querySelectorAll<HTMLElement>("button");
+      const width = strip.clientWidth;
+      if (segments.length !== marks.length || width === 0) return;
+      const at = bandAt(marks, position);
+      const segment = segments[at];
+      const left = segment.offsetLeft + alongBand(marks[at], position) * segment.offsetWidth;
+      marker.style.left = `${Math.min(100, Math.max(0, (left / width) * 100))}%`;
+      setActiveBand(at);
+    },
+    [marks],
+  );
+
+  /** The position in the sweep under a pointer at `clientX` on the scale. */
+  const positionAtPointer = useCallback(
+    (clientX: number): number | null => {
+      const strip = stripRef.current;
+      if (!strip) return null;
+      const segments = strip.querySelectorAll<HTMLElement>("button");
+      if (segments.length !== marks.length || marks.length === 0) return null;
+      const x = clientX - strip.getBoundingClientRect().left;
+      let at = 0;
+      while (at < marks.length - 1 && x >= segments[at].offsetLeft + segments[at].offsetWidth) {
+        at++;
+      }
+      const segment = segments[at];
+      const along = segment.offsetWidth > 0 ? (x - segment.offsetLeft) / segment.offsetWidth : 0;
+      return positionInBand(marks[at], along);
+    },
+    [marks],
+  );
+
+  const updateProgress = useCallback(() => {
+    const position = positionNow();
+    if (position === null) return;
+    lastPosition.current = position;
+    if (!scrubbing.current) placeMarker(position);
+  }, [positionNow, placeMarker]);
+
+  /** Move the page to the point of the scale under the pointer. */
+  const scrubTo = (clientX: number) => {
+    const position = positionAtPointer(clientX);
+    if (position === null) return;
+    placeMarker(position);
+    scrollToPosition(position);
+  };
+
+  const endScrub = () => {
+    if (!scrubbing.current) return;
+    scrubbing.current = false;
+    updateProgress();
+  };
+
+  // Once per layout: the first, which replaces the server's fallback, and
+  // every one after a resize. A resize re-packs every row, so the same scroll
+  // offset is somewhere else in the sweep; the reader is put back where they
+  // were before the rows are rendered for it.
+  useLayoutEffect(() => {
+    if (!layout) return;
+    if (lastPosition.current !== null) scrollToPosition(lastPosition.current);
+    updateSpan(true);
+    updateProgress();
+  }, [layout, scrollToPosition, updateSpan, updateProgress]);
+
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let lastTime = performance.now();
+    let settle: ReturnType<typeof setTimeout> | undefined;
+    const onScroll = () => {
+      const now = performance.now();
+      const y = window.scrollY;
+      // Pixels per millisecond since the last event. A single jump after a
+      // pause reads slow, which is right: its destination is worth loading.
+      const speed = Math.abs(y - lastY) / Math.max(1, now - lastTime);
+      lastY = y;
+      lastTime = now;
+      if (speed > window.innerHeight / GLIMPSE_MS) {
+        setHurrying(true);
+        clearTimeout(settle);
+        settle = setTimeout(() => setHurrying(false), GLIMPSE_MS);
+      }
+      updateSpan(false);
+      updateProgress();
+    };
+    const onResize = () => {
+      updateSpan(false);
+      updateProgress();
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    return () => {
+      clearTimeout(settle);
+      setHurrying(false);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [updateSpan, updateProgress]);
+
+  // Arrowing through the lightbox can walk off the rows in the document, and
+  // the morph back into the strip on close needs the tile to be there. The
+  // lightbox scrolls a tile it can find into view itself; one it cannot find
+  // is scrolled to here, which renders it. Instant, since the lightbox covers
+  // the page.
+  useEffect(() => {
+    if (!isModalOpen || currentImageIndex >= total) return;
+    if (document.getElementById(photos[currentImageIndex].id)) return;
+    scrollToPosition(currentImageIndex + 0.5);
+  }, [isModalOpen, currentImageIndex, total, photos, scrollToPosition]);
+
+  // Clamped because a relayout renders once with the previous layout's span
+  // before the layout effect replaces it, and a narrower window has more rows.
+  const firstRow = layout ? Math.min(span.first, layout.rows.length) : 0;
+  const lastRow = layout ? Math.min(span.last, layout.rows.length) : 0;
+  const firstTile = layout ? (layout.rows[firstRow]?.start ?? total) : 0;
+  const endTile = layout
+    ? lastRow > firstRow
+      ? layout.rows[lastRow - 1].end
+      : firstTile
+    : Math.min(FIRST_PAINT, total);
+  const rendered = useMemo(() => tiles.slice(firstTile, endTile), [tiles, firstTile, endTile]);
 
   const url = "photography/spectrum";
 
@@ -717,10 +566,12 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
         <Header breadcrumbs={{ path: url }} title="Spectrum" />
 
         {/* ---- the colour scale ------------------------------------------
-            One control, doing both jobs. It shows how much of the sweep each
+            One control, doing three jobs. It shows how much of the sweep each
             colour takes up — green holds 656 photographs and pink 3, and
             seeing that is half of what the page has to say about this archive
-            — and it is also how a reader jumps to one.
+            — it shows where the reader is, and it is the page's scrollbar:
+            press anywhere on it to go there, or drag along it to run through
+            the sweep. See `positionNow` for how it maps.
 
             There used to be a row of labelled chips underneath for the
             jumping, because a band drawn honestly to scale makes pink about
@@ -728,7 +579,7 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
             were a second copy of the same eleven destinations taking up a
             third of the first screen, so they are gone and the band carries
             a `min-width` instead: every segment is at least wide enough to
-            click, and the ones big enough to be drawn to scale still are. The
+            press, and the ones big enough to be drawn to scale still are. The
             distortion is confined to the bands too small to read anyway.
 
             Labels live in `title` and `aria-label` rather than on the strip.
@@ -748,84 +599,79 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
             typography plugin puts list markers and margins on every child and
             the row stops being a row. */}
         <div className="not-prose sticky top-15 z-20 mb-6 bg-white pt-3 pb-3 dark:bg-gray-900">
+          {/* The pointer is handled here rather than on the segments, and
+              captured on the way down, so a drag keeps scrolling when it
+              leaves the strip and a press is handled once, as the drag's
+              first step. `touch-none` gives a finger on the strip to the drag
+              instead of to page scrolling. */}
           <div
             ref={stripRef}
-            className="relative flex h-7 w-full overflow-hidden rounded-full ring-1 ring-black/10 dark:ring-white/10"
+            onPointerDown={(event) => {
+              if (event.button !== 0 || !layout) return;
+              event.currentTarget.setPointerCapture(event.pointerId);
+              scrubbing.current = true;
+              scrubTo(event.clientX);
+            }}
+            onPointerMove={(event) => {
+              if (scrubbing.current) scrubTo(event.clientX);
+            }}
+            onPointerUp={endScrub}
+            onPointerCancel={endScrub}
+            onLostPointerCapture={endScrub}
+            className="relative flex h-7 w-full touch-none select-none overflow-hidden rounded-full ring-1 ring-black/10 dark:ring-white/10"
           >
-            {marks.map((mark, i) => {
-              const isActive = mark.key === activeKey;
-              return (
-                <button
-                  key={mark.key}
-                  type="button"
-                  onClick={(event) => {
-                    // Where in the band they clicked, not the band's start.
-                    // The arithmetic is in src/lib/utils/spectrumScale.ts, on
-                    // its own and tested, because it is the kind that is wrong
-                    // quietly.
-                    const box = event.currentTarget.getBoundingClientRect();
-                    seek(photoAtFraction(mark, fractionAcross(box, event.clientX, event.detail)));
-                  }}
-                  title={`${mark.label} — ${formatCount(mark.count)} photographs`}
-                  aria-label={`Jump to ${mark.label}, ${formatCount(mark.count)} photographs`}
-                  aria-current={isActive ? "true" : undefined}
-                  style={{
-                    // A ramp rather than a block. Each segment runs from the
-                    // midpoint it shares with the band before it to the one it
-                    // shares with the band after, so neighbours meet at the
-                    // same colour and the eleven of them read as one gradient.
-                    // Done per segment because a minimum width means they are
-                    // not proportional, so no single gradient on the container
-                    // could be told where the seams fall.
-                    background: segmentGradient(
-                      mark.fill,
-                      marks[i - 1]?.fill ?? null,
-                      marks[i + 1]?.fill ?? null,
-                    ),
-                    flexGrow: mark.count,
-                    flexBasis: 0,
-                  }}
-                  className={clsx(
-                    // 28px, the smallest a segment can be and still take a
-                    // click reliably. Under the 44px a tap target wants, which
-                    // is the compromise a strip makes: 44px of height for a
-                    // control that is 11 slivers wide is not a strip any more.
-                    "block h-full min-w-7 cursor-pointer",
-                    // The focus ring goes inside: the strip clips its own
-                    // overflow, so an outset ring on a segment is invisible.
-                    "focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-inset",
-                    // Nothing marks the band the reader is in. It used to be
-                    // brightened, which fought the gradient it sits in — a
-                    // lightened slice of a continuous ramp reads as a seam
-                    // where there is none, and the ramp is the thing the strip
-                    // exists to show. The stripe already says where they are,
-                    // to the photograph rather than to the band, so the
-                    // highlight was a second, coarser answer to a question
-                    // that had a better one. `aria-current` above still
-                    // carries it for anyone not looking at the colours.
-                    //
-                    // Hovering does not brighten a band either, for the same
-                    // reason: it cut the same false seam into the ramp under
-                    // the pointer. The cursor and the `title` are the
-                    // affordance.
-                  )}
-                />
-              );
-            })}
-            {/* Where the reader is in the sweep.
-
-                This used to be the loaded window — `start` to `end` — which
-                was the wrong thing to draw and looked it: the window only ever
-                grows as chunks load, so the marker stretched further across
-                the strip the longer anyone scrolled, and by the second screen
-                it claimed most of the archive was "here". What a reader wants
-                from a position indicator is their position.
-
-                Moved by the scroll handler writing to this node directly. Not
-                React state: the alternative is a re-render of up to 1,500
-                tiles on every scroll event to move one element two pixels.
-                `pointer-events-none` so it never swallows a click meant for
-                the band underneath it. */}
+            {marks.map((mark, i) => (
+              <button
+                key={mark.key}
+                type="button"
+                onClick={(event) => {
+                  // Enter or Space on a focused segment, which has no position
+                  // to read, goes to the band's start. A pointer press arrives
+                  // with a non-zero `detail`, and the strip has handled it.
+                  if (event.detail !== 0) return;
+                  scrollToPosition(mark.index);
+                }}
+                title={`${mark.label} — ${formatCount(mark.count)} photographs`}
+                aria-label={`Jump to ${mark.label}, ${formatCount(mark.count)} photographs`}
+                aria-current={i === activeBand ? "true" : undefined}
+                style={{
+                  // A ramp rather than a block. Each segment runs from the
+                  // midpoint it shares with the band before it to the one it
+                  // shares with the band after, so neighbours meet at the
+                  // same colour and the eleven of them read as one gradient.
+                  // Done per segment because a minimum width means they are
+                  // not proportional, so no single gradient on the container
+                  // could be told where the seams fall.
+                  background: segmentGradient(
+                    mark.fill,
+                    marks[i - 1]?.fill ?? null,
+                    marks[i + 1]?.fill ?? null,
+                  ),
+                  flexGrow: mark.count,
+                  flexBasis: 0,
+                }}
+                className={clsx(
+                  // 28px, the smallest a segment can be and still take a
+                  // press reliably. Under the 44px a tap target wants, which
+                  // is the compromise a strip makes: 44px of height for a
+                  // control that is 11 slivers wide is not a strip any more.
+                  "block h-full min-w-7 cursor-pointer",
+                  // The focus ring goes inside: the strip clips its own
+                  // overflow, so an outset ring on a segment is invisible.
+                  "focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-inset",
+                  // Nothing marks the band the reader is in, and hovering
+                  // does not brighten one either. A lightened slice of a
+                  // continuous ramp reads as a seam where there is none, and
+                  // the ramp is the thing the strip exists to show. The
+                  // marker already says where they are, to the photograph
+                  // rather than to the band. `aria-current` carries the band
+                  // for anyone not looking at the colours.
+                )}
+              />
+            ))}
+            {/* Where the reader is in the sweep. Moved by `placeMarker`
+                writing to this node directly. `pointer-events-none` so it
+                never swallows a press meant for the band underneath it. */}
             <span
               ref={progressRef}
               aria-hidden
@@ -839,15 +685,15 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
             One row height for every tile, set as a custom property on the list
             so each tile can derive its own width from it in CSS. That is what
             lets the height be responsive at all: with the width baked into an
-            inline style the three breakpoints would need three widths per tile,
-            4,359 times over.
+            inline style the three breakpoints would need three widths per tile.
 
-            Measured over the whole archive at a 1000px container: the strip is
-            464 rows and about 46,000px tall at the 100px row height, 648 rows at
-            140px and 835 rows at 180px. On a 351px phone the 100px height gives
-            1,321 rows.
+            The list is as tall as the whole sweep, and holds only the rows
+            near the viewport: `paddingTop` stands in for the rows above them
+            and the fixed height for the rows below. `content-start` keeps the
+            rendered rows packed at the top of the space left, instead of
+            spread out to fill it.
 
-            Where the rows break is decided in `bases` above, not by the
+            Where the rows break is decided in `layout` above, not by the
             browser, and every tile in a row gets its share of it as a
             percentage basis, so the row closes exactly. The browser's own
             wrap is greedy and only stretches; it used to run here with each
@@ -858,6 +704,15 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
             row. `flex-grow: <its ratio>` hands out the ROW_SLACK and, before
             measuring, the whole leftover.
 
+            `min-w-0` because a flex item will not shrink below its content
+            by default, and an <img> without a `src` — every tile the page is
+            moving too fast to load — takes its `width` attribute as that
+            content. A squeezed tile then no longer fits its row, wraps, and
+            shifts every row below it by a tile until the photographs arrive.
+            `overflow-anchor: none` because the browser's scroll anchoring
+            answers any such shift by scrolling the page, and this page
+            places its rows itself.
+
             The `after:` filler is what keeps a short last row short. It is
             the last flex item, so it only ever lands on the last line, and
             its enormous grow takes that line's leftover instead of the
@@ -867,58 +722,65 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
             The tiles are under the 44px minimum a tap target wants, which is
             the cost of a ribbon: frames big enough to tap comfortably are too
             big to read as a sweep. Tapping opens the lightbox, which is
-            forgiving about a near miss, and the chips above are full-size
-            targets for the navigation that matters. */}
-        {/* scroll-mt-24 so a jump clears the sticky navbar, the same clearance
-            the anchored tag sections on /categories use. */}
-        <div ref={ribbonRef} className="not-prose scroll-mt-24">
-          {/* `start` so the list numbering matches the position in the sweep
-              after a jump, which is what the tile labels announce. */}
+            forgiving about a near miss, and the scale above is the
+            full-width control for the navigation that matters. */}
+        <div className="not-prose">
+          {/* `start` so the list numbering matches the position in the sweep,
+              which is what the tile labels announce. */}
           <ol
             ref={listRef}
             aria-label="Photographs ordered by colour"
-            start={start + 1}
-            className="flex flex-wrap gap-px [--ribbon-h:100px] after:basis-2 after:grow-[1000000] sm:[--ribbon-h:140px] lg:[--ribbon-h:180px]"
+            start={firstTile + 1}
+            style={
+              layout
+                ? { height: layout.height - TILE_GAP, paddingTop: firstRow * layout.pitch }
+                : undefined
+            }
+            className="flex flex-wrap content-start gap-px [overflow-anchor:none] [--ribbon-h:100px] after:basis-2 after:grow-[1000000] sm:[--ribbon-h:140px] lg:[--ribbon-h:180px]"
           >
-            {visible.map((tile, i) => (
-              <li
-                key={tile.id}
-                // Read back by `updateProgress`, which asks the browser which
-                // tile is under the middle of the viewport rather than working
-                // it out from the ribbon's height.
-                data-index={tile.index}
-                style={{ "--ar": tile.ratio, flexBasis: bases?.[i] } as CSSProperties}
-                className="h-[var(--ribbon-h)] shrink-0 grow-[var(--ar)] basis-[calc(var(--ribbon-h)*var(--ar))]"
-              >
-                <button
-                  type="button"
-                  onClick={(event) => openModal(tile.index, event)}
-                  aria-label={tile.label}
-                  className="block h-full w-full cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+            {rendered.map((tile) => {
+              const show = !hurrying || loaded.current.has(tile.id);
+              return (
+                <li
+                  key={tile.id}
+                  style={
+                    { "--ar": tile.ratio, flexBasis: layout?.bases[tile.index] } as CSSProperties
+                  }
+                  className="h-[var(--ribbon-h)] min-w-0 shrink-0 grow-[var(--ar)] basis-[calc(var(--ribbon-h)*var(--ar))]"
                 >
-                  {/* biome-ignore lint/performance/noImgElement: next/image renders a wrapper span and a loader per tile; at 700 tiles per chunk that machinery costs more than the plain element, and every URL the loader would build is already available from nextImageUrl */}
-                  <img
-                    id={tile.id}
-                    src={tile.src}
-                    srcSet={tile.srcSet}
-                    sizes={tile.sizes}
-                    alt=""
-                    width={tile.width}
-                    height={180}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full bg-gray-200 object-cover dark:bg-gray-800"
-                  />
-                </button>
-              </li>
-            ))}
+                  <button
+                    type="button"
+                    onClick={(event) => openModal(tile.index, event)}
+                    aria-label={tile.label}
+                    className="block h-full w-full cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+                  >
+                    {/* biome-ignore lint/performance/noImgElement: next/image renders a wrapper span and a loader per tile; across the rows in the document that machinery costs more than the plain element, and every URL the loader would build is already available from nextImageUrl */}
+                    <img
+                      id={tile.id}
+                      src={show ? tile.src : undefined}
+                      srcSet={show ? tile.srcSet : undefined}
+                      sizes={tile.sizes}
+                      alt=""
+                      width={tile.width}
+                      height={180}
+                      loading="lazy"
+                      decoding="async"
+                      onLoad={() => loaded.current.add(tile.id)}
+                      // The photograph's own mean colour until it arrives,
+                      // so a fast pass through the sweep still reads as the
+                      // sweep rather than as grey boxes.
+                      style={{ backgroundColor: tile.tint }}
+                      className="h-full w-full object-cover"
+                    />
+                  </button>
+                </li>
+              );
+            })}
           </ol>
         </div>
 
-        {hasMore && <div ref={sentinelRef} className="h-px" aria-hidden />}
-
         <CustomLightBox {...lightbox} photos={photos} />
-        <ToTopButton onScrollToTop={toTop} />
+        <ToTopButton />
       </main>
     </Layout>
   );
@@ -939,7 +801,7 @@ export async function getStaticProps(): Promise<{ props: Props }> {
   // chain reaches src/content/photography-colors.json and the 2.8 MB
   // metadata.json, so the import is put somewhere it provably cannot follow the
   // page into the browser instead of trusting the transform to notice.
-  const { imagesBySpectrum, primaryFamily } = await import("src/lib/photographyColors");
+  const { entryFor, imagesBySpectrum, primaryFamily } = await import("src/lib/photographyColors");
   const { COLOR_BUCKETS } = await import("src/lib/colorBuckets.mjs");
 
   const images = imagesBySpectrum();
@@ -992,7 +854,18 @@ export async function getStaticProps(): Promise<{ props: Props }> {
     }))
     .sort((a, b) => a.index - b.index);
 
+  // Each photo's measured mean colour, in OKLCh because that is what the bake
+  // measures in. The hue is the one of the family the photo is filed under,
+  // not the whole-frame mean, which for a picture of two colours is a third
+  // colour it does not contain. Roughly 20 bytes a photo.
+  const tints = images.map((image) => {
+    const entry = entryFor(image.src);
+    if (!entry) return "transparent";
+    const hue = entry.familyHue[primaryFamily(image.src)] ?? entry.hue ?? 0;
+    return `oklch(${(entry.lightness * 100).toFixed(1)}% ${entry.chroma.toFixed(3)} ${hue.toFixed(0)})`;
+  });
+
   return {
-    props: { images, marks },
+    props: { images, tints, marks },
   };
 }

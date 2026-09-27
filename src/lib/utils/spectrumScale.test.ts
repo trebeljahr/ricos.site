@@ -1,7 +1,8 @@
 import {
-  fractionAcross,
+  alongBand,
+  bandAt,
   mixHex,
-  photoAtFraction,
+  positionInBand,
   segmentGradient,
 } from "src/lib/utils/spectrumScale";
 import { describe, expect, it } from "vitest";
@@ -10,57 +11,61 @@ import { describe, expect, it } from "vitest";
 // a count of 466.
 const gold = { index: 135, count: 466 };
 
-describe("photoAtFraction", () => {
-  it("lands at the start of the band on a click at its left edge", () => {
-    expect(photoAtFraction(gold, 0)).toBe(135);
+describe("positionInBand", () => {
+  it("lands at the start of the band at its left edge", () => {
+    expect(positionInBand(gold, 0)).toBe(135);
   });
 
-  it("lands proportionally inside the band", () => {
-    expect(photoAtFraction(gold, 0.25)).toBe(135 + 116);
-    expect(photoAtFraction(gold, 0.5)).toBe(135 + 233);
-    expect(photoAtFraction(gold, 0.75)).toBe(135 + 349);
+  it("lands proportionally inside the band, between photos too", () => {
+    expect(positionInBand(gold, 0.25)).toBe(135 + 116.5);
+    expect(positionInBand(gold, 0.5)).toBe(135 + 233);
   });
 
-  it("stays inside the band at the right edge", () => {
-    // Not the first photo of the next band: someone aiming at the end of the
-    // golds means the last gold.
-    expect(photoAtFraction(gold, 1)).toBe(135 + 465);
-    expect(photoAtFraction(gold, 0.9999)).toBe(135 + 465);
+  it("clamps a fraction from outside the segment", () => {
+    expect(positionInBand(gold, -3)).toBe(135);
+    expect(positionInBand(gold, 12)).toBe(135 + 466);
   });
 
-  it("clamps a fraction from outside the element", () => {
-    expect(photoAtFraction(gold, -3)).toBe(135);
-    expect(photoAtFraction(gold, 12)).toBe(135 + 465);
-  });
-
-  it("survives a band of one, and one of none", () => {
-    // Pink is 3 photographs; a band of 1 is a re-bake away.
-    expect(photoAtFraction({ index: 40, count: 1 }, 0)).toBe(40);
-    expect(photoAtFraction({ index: 40, count: 1 }, 1)).toBe(40);
-    expect(photoAtFraction({ index: 40, count: 0 }, 0.5)).toBe(40);
+  it("survives a band of none", () => {
+    expect(positionInBand({ index: 40, count: 0 }, 0.5)).toBe(40);
   });
 });
 
-describe("fractionAcross", () => {
-  it("reads the position within the element", () => {
-    expect(fractionAcross({ left: 100, width: 200 }, 100, 1)).toBe(0);
-    expect(fractionAcross({ left: 100, width: 200 }, 200, 1)).toBe(0.5);
-    expect(fractionAcross({ left: 100, width: 200 }, 300, 1)).toBe(1);
+describe("alongBand", () => {
+  it("undoes positionInBand, so the marker lands under the pointer", () => {
+    for (const along of [0, 0.1, 0.333, 0.5, 0.9, 1]) {
+      expect(alongBand(gold, positionInBand(gold, along))).toBeCloseTo(along, 12);
+    }
   });
 
-  it("clamps a pointer outside the element", () => {
-    expect(fractionAcross({ left: 100, width: 200 }, 20, 1)).toBe(0);
-    expect(fractionAcross({ left: 100, width: 200 }, 900, 1)).toBe(1);
+  it("clamps a position outside the band", () => {
+    expect(alongBand(gold, 0)).toBe(0);
+    expect(alongBand(gold, 5000)).toBe(1);
   });
 
-  it("returns the start for a keyboard activation, which has no position", () => {
-    // detail 0 is Enter or Space on a focused segment. clientX is 0 there,
-    // which without this would read as the far left of the strip.
-    expect(fractionAcross({ left: 100, width: 200 }, 0, 0)).toBe(0);
+  it("returns the start for a band of none rather than dividing by it", () => {
+    expect(alongBand({ index: 40, count: 0 }, 40)).toBe(0);
+  });
+});
+
+describe("bandAt", () => {
+  const bands = [{ index: 0, count: 19 }, { index: 19, count: 116 }, gold];
+
+  it("finds the band holding a position", () => {
+    expect(bandAt(bands, 0)).toBe(0);
+    expect(bandAt(bands, 18.9)).toBe(0);
+    expect(bandAt(bands, 100)).toBe(1);
+    expect(bandAt(bands, 300)).toBe(2);
   });
 
-  it("returns the start for a zero-width element rather than dividing by it", () => {
-    expect(fractionAcross({ left: 0, width: 0 }, 50, 1)).toBe(0);
+  it("gives a boundary to the band starting there", () => {
+    expect(bandAt(bands, 19)).toBe(1);
+    expect(bandAt(bands, 135)).toBe(2);
+  });
+
+  it("keeps the end of the sweep in the last band", () => {
+    expect(bandAt(bands, 601)).toBe(2);
+    expect(bandAt(bands, 9999)).toBe(2);
   });
 });
 

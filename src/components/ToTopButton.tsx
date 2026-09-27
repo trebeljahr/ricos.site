@@ -13,23 +13,7 @@ function easeInOutCubic(t: number) {
   return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
 }
 
-type Props = {
-  /** Replaces the scroll animation entirely, for pages where the top of the
-   *  document is not the top of the content.
-   *
-   *  The spectrum is one: it keeps a moving window of a few hundred photos in
-   *  the document, so scrolling to offset zero lands on whatever the window
-   *  currently starts at — photo 1,264, say — rather than on the first
-   *  photograph. Worse, the trip up triggers that page's backwards loading,
-   *  which inserts rows above the reader and corrects the scroll position to
-   *  compensate, so the animation and the correction fight and the button
-   *  stops somewhere arbitrary.
-   *
-   *  Such a page passes a handler that resets its own window instead. */
-  onScrollToTop?: () => void;
-};
-
-export function ToTopButton({ onScrollToTop }: Props = {}) {
+export function ToTopButton() {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { glitterRef, burst } = useGlitter();
   const frame = useRef(0);
@@ -68,11 +52,6 @@ export function ToTopButton({ onScrollToTop }: Props = {}) {
   }, []);
 
   const handleClick = () => {
-    if (onScrollToTop) {
-      burst("up");
-      onScrollToTop();
-      return;
-    }
     const start = window.scrollY;
     if (start === 0) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {

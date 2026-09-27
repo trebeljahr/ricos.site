@@ -15,10 +15,8 @@ const STICKY = "main h1, main [data-smoke-stick], header#navbar, body footer";
 const REACH = 66;
 const KEY_STEP = 48;
 const HINT_AFTER_MS = 5000;
-/** The cloud hangs over the navbar (z-999) as well, so it sits above it. */
+/** The cloud hangs over the navbar (z-999) and everything else on the page. */
 const SMOKE_Z = 1000;
-/** What the sweep finds rises out of the cloud and stays above it. */
-const ABOVE_SMOKE = String(SMOKE_Z + 1);
 
 type Spot = { fx: number; fy: number };
 
@@ -43,12 +41,12 @@ const SearchPartyEgg = () => {
   const pointerRef = useRef<Point | null>(null);
   const chipRefs = useRef<(HTMLElement | null)[]>([]);
   const stickyRef = useRef<HTMLElement[]>([]);
-  const closeRef = useRef(0);
+  // What the cloud is holding open, handed to the canvas to cut out each frame.
+  const clearRef = useRef<HTMLElement[]>([]);
   const foundRef = useRef<boolean[]>(HIDDEN_PAGES.map(() => false));
   const [mounted, setMounted] = useState(false);
   const [spots, setSpots] = useState(scatter);
   const [found, setFound] = useState<boolean[]>(() => HIDDEN_PAGES.map(() => false));
-  const [stuck, setStuck] = useState(0);
   const [swept, setSwept] = useState(false);
   // Without a cloud there is nothing to search: the links are simply there.
   const [smoking, setSmoking] = useState(true);
@@ -70,14 +68,13 @@ const SearchPartyEgg = () => {
     return () => window.clearTimeout(timer);
   }, [swept]);
 
-  /** Lifts a piece of the page out of the smoke, where it lands with a snap. */
+  /** Opens the cloud over a piece of the page for good, with a snap. Nothing
+      is lifted above the smoke: the smoke is cut away over it instead, so the
+      page keeps its own stacking and the navbar stays on top of the text. */
   const stick = useCallback(
     (el: HTMLElement) => {
       el.dataset.smokeFound = "";
-      // The navbar is already sticky and the footer relative: only something
-      // static needs a position of its own for the z-index to take.
-      if (getComputedStyle(el).position === "static") el.style.position = "relative";
-      el.style.zIndex = ABOVE_SMOKE;
+      clearRef.current = [...clearRef.current, el];
       if (reduceMotion) return;
       el.animate([{ scale: "1.03" }, { scale: "0.997" }, { scale: "1" }], {
         duration: 420,
@@ -101,7 +98,6 @@ const SearchPartyEgg = () => {
       for (const el of stickyRef.current) {
         if (el.dataset.smokeFound === undefined && covers(el, REACH * 0.5)) {
           stick(el);
-          setStuck((n) => n + 1);
         }
       }
 
@@ -109,6 +105,8 @@ const SearchPartyEgg = () => {
       const hits = chipRefs.current.map((chip, i) => !foundRef.current[i] && covers(chip, REACH));
       if (!hits.some(Boolean)) return;
 
+      const opened = chipRefs.current.filter((chip, i) => chip && hits[i]) as HTMLElement[];
+      clearRef.current = [...clearRef.current, ...opened];
       foundRef.current = foundRef.current.map((was, i) => was || hits[i]);
       setFound(foundRef.current);
       if (foundRef.current.every(Boolean)) recordFind("search-party");
@@ -168,24 +166,6 @@ const SearchPartyEgg = () => {
     return () => window.removeEventListener("keydown", fan);
   }, [aim]);
 
-  /** Hands everything back to the smoke and hides the links somewhere else. */
-  const hideAgain = () => {
-    // First close the cloud. The opening trails a beat behind the pointer, so
-    // left open it would pick straight back up whatever it still lies over.
-    closeRef.current += 1;
-    for (const el of stickyRef.current) {
-      delete el.dataset.smokeFound;
-      el.style.position = "";
-      el.style.zIndex = "";
-    }
-    foundRef.current = HIDDEN_PAGES.map(() => false);
-    pointerRef.current = null;
-    setFound(foundRef.current);
-    setStuck(0);
-    setSpots(scatter());
-    setSwept(false);
-  };
-
   return (
     <>
       {/* The field the links hide in. It sits in the page, so they scroll with
@@ -198,11 +178,7 @@ const SearchPartyEgg = () => {
               chipRefs.current[i] = el;
             }}
             className="absolute"
-            style={{
-              left: `${spots[i].fx * 100}%`,
-              top: `${spots[i].fy * 100}%`,
-              zIndex: shown(i) ? ABOVE_SMOKE : undefined,
-            }}
+            style={{ left: `${spots[i].fx * 100}%`, top: `${spots[i].fy * 100}%` }}
           >
             <motion.span
               className="inline-block"
@@ -216,9 +192,7 @@ const SearchPartyEgg = () => {
                 className={
                   shown(i)
                     ? "rounded-full border border-dashed border-accent bg-white/90 px-2.5 py-1 font-mono text-sm text-accent no-underline shadow-sm hover:border-solid dark:bg-gray-900/90"
-                    : // The cloud is thin enough to read the page through, so what
-                      // hides in it has to be faint on its own account too.
-                      "rounded-full border border-dashed border-gray-500/40 px-2.5 py-1 font-mono text-sm text-gray-600/45 no-underline dark:border-gray-300/30 dark:text-gray-200/40"
+                    : "rounded-full border border-dashed border-gray-500 px-2.5 py-1 font-mono text-sm text-gray-600 no-underline dark:border-gray-400 dark:text-gray-200"
                 }
               >
                 {href}
@@ -226,18 +200,6 @@ const SearchPartyEgg = () => {
             </motion.span>
           </div>
         ))}
-
-        {/* In the page, not over it: at the end of the field, clear of the footer. */}
-        {smoking && (count > 0 || stuck > 0) && (
-          <button
-            type="button"
-            onClick={hideAgain}
-            style={{ zIndex: ABOVE_SMOKE }}
-            className="absolute right-0 bottom-0 cursor-pointer rounded-full border border-dashed border-gray-400 px-2.5 py-1 text-xs text-gray-500 hover:border-accent hover:text-accent dark:border-gray-600 dark:text-gray-400"
-          >
-            hide it all again
-          </button>
-        )}
       </div>
 
       {mounted &&
@@ -250,7 +212,7 @@ const SearchPartyEgg = () => {
             <SmokeCanvas
               pointerRef={pointerRef}
               onFocus={pickUp}
-              closeRef={closeRef}
+              clearRef={clearRef}
               calm={!!reduceMotion}
               onReady={setSmoking}
             />

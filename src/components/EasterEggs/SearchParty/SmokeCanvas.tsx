@@ -7,13 +7,17 @@ type SmokeProps = {
   pointerRef: RefObject<Point | null>;
   /** Called every frame with the trailing focus, so the egg can pick things up. */
   onFocus: (x: number, y: number) => void;
-  /** Bumped to close the cloud again: the trail and the opening are dropped. */
-  closeRef: RefObject<number>;
   calm: boolean;
   /** Called with false when WebGL is missing, so the page can show its links. */
   onReady: (ok: boolean) => void;
+  /** What the cloud stays open over: everything the sweep has already found. */
+  clearRef: RefObject<HTMLElement[]>;
 };
 
+/** How much of the page the cloud can be holding open at once. */
+const CLEARINGS = 12;
+/** How far the torn edge of a clearing reaches past what was found. */
+const FEATHER = 72;
 /** How many samples of the focus the shader gets. Together they are the trail. */
 const TRAIL = 24;
 /** What is left of a trail sample after one frame. */
@@ -40,10 +44,11 @@ uniform vec2 uRes;
 uniform float uTime;
 uniform vec3 uTint;
 uniform float uFloor;
-uniform float uHaze;
-uniform vec3 uGlow;
 uniform float uReach;
 uniform vec3 uTrail[${TRAIL}];
+uniform vec4 uClear[${CLEARINGS}];
+uniform int uClearCount;
+uniform float uFeather;
 
 out vec4 outColor;
 
@@ -90,20 +95,39 @@ void main() {
     if (puff.z <= 0.0) continue;
     float edge = uReach * (0.48 + 0.45 * density + 0.62 * chew);
     float near = 1.0 - clamp(distance(gl_FragCoord.xy, puff.xy) / edge, 0.0, 1.0);
-    opened = max(opened, puff.z * smoothstep(0.0, 1.0, near));
+    opened = max(opened, puff.z * smoothstep(0.0, 0.72, near));
+  }
+
+  // Whatever the sweep has found holds the cloud open for good. What is found
+  // is a rectangle, but smoke has no rectangles in it, so the distance to it is
+  // rippled by the noise. The ripple dies away towards the middle, which keeps
+  // the clearing over what was found instead of drifting off it.
+  float cleared = 0.0;
+  // Measured as a share of the way out of the clearing rather than in pixels,
+  // which rounds the corners off: what is found sits in a soft oval of thinner
+  // cloud, and the noise pushes that oval's edge about so it is not drawn on.
+  // Finer than the clearing itself, so the edge ripples instead of the whole
+  // oval sliding off what it is meant to be holding open.
+  float wobble = (fbm(uv * 14.0 + 5.0) - 0.5) * 0.14 + (chew - 0.5) * 0.1;
+  for (int i = 0; i < ${CLEARINGS}; i++) {
+    if (i >= uClearCount) break;
+    vec4 box = uClear[i];
+    vec2 middle = box.xy + box.zw * 0.5;
+    vec2 reach = box.zw * 0.5 + vec2(uFeather);
+    float out_ = length((gl_FragCoord.xy - middle) / reach);
+    // Never quite all of it, so a wisp still drifts over what was found.
+    cleared = max(cleared, 0.74 * (1.0 - smoothstep(0.25, 1.05, out_ + wobble)));
   }
 
   // Brightest where the smoke is half gone, which is the curling edge itself.
+  // Only the moving opening lights up like that: a clearing that has been
+  // standing for a while is simply thin, not outlined.
   float rim = opened * (1.0 - opened) * 4.0;
-  // A cloud you look through: a low floor under the billows, so the page reads
-  // everywhere, and the opening takes nearly all of what is left.
-  float haze = (uFloor + density * (1.0 - uFloor)) * uHaze * (1.0 - opened * 0.82);
-  // Thinning smoke over a dark page only uncovers dark page, so the opening
-  // carries its own light: brightest at the curling edge, softer inside it.
-  float glow = (rim * 0.42 + opened * 0.2) * uHaze;
-  float alpha = clamp(haze + glow, 0.0, 1.0);
-  vec3 smoke = uTint * (0.82 + density * 0.34);
-  vec3 color = (smoke * haze + uGlow * glow) / max(alpha, 0.001);
+  float thinned = max(opened, cleared);
+  // A floor everywhere, so even the thin parts of the cloud keep the page hidden,
+  // and a little haze left inside the opening, so it is a thinning and not a hole.
+  float alpha = (uFloor + density * (1.0 - uFloor)) * (1.0 - thinned * 0.6);
+  vec3 color = uTint * (0.78 + density * 0.45 + rim * 0.5);
   outColor = vec4(color * alpha, alpha);
 }`;
 
@@ -125,7 +149,7 @@ function compile(gl: WebGL2RenderingContext, type: number, source: string) {
  * is followed a beat behind, and the last two dozen positions are passed on as
  * the trail that opens the cloud.
  */
-export const SmokeCanvas = ({ pointerRef, onFocus, calm, onReady, closeRef }: SmokeProps) => {
+export const SmokeCanvas = ({ pointerRef, onFocus, calm, onReady, clearRef }: SmokeProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const onFocusRef = useRef(onFocus);
   onFocusRef.current = onFocus;
@@ -172,16 +196,17 @@ export const SmokeCanvas = ({ pointerRef, onFocus, calm, onReady, closeRef }: Sm
     const uTime = uniform("uTime");
     const uTint = uniform("uTint");
     const uFloor = uniform("uFloor");
-    const uHaze = uniform("uHaze");
-    const uGlow = uniform("uGlow");
     const uReach = uniform("uReach");
     const uTrail = uniform("uTrail[0]");
+    const uClear = uniform("uClear[0]");
+    const uClearCount = uniform("uClearCount");
+    const uFeather = uniform("uFeather");
 
     const trail = new Float32Array(TRAIL * 3);
+    const clearings = new Float32Array(CLEARINGS * 4);
     let head = 0;
     let focus: Point | null = null;
     let strength = 0;
-    let closed = closeRef.current;
     let frame = 0;
     let stopped = false;
 
@@ -208,15 +233,6 @@ export const SmokeCanvas = ({ pointerRef, onFocus, calm, onReady, closeRef }: Sm
       frame = window.requestAnimationFrame(draw);
       resize();
 
-      // Asked to close: the opening and everything it has carved are dropped,
-      // so the cloud rolls back in and stops reporting where it used to be.
-      if (closeRef.current !== closed) {
-        closed = closeRef.current;
-        trail.fill(0);
-        focus = null;
-        strength = 0;
-      }
-
       const target = pointerRef.current;
       if (target) {
         const to = { x: target.x * SCALE, y: (canvas.clientHeight - target.y) * SCALE };
@@ -238,18 +254,31 @@ export const SmokeCanvas = ({ pointerRef, onFocus, calm, onReady, closeRef }: Sm
         onFocusRef.current(focus.x / SCALE, canvas.clientHeight - focus.y / SCALE);
       }
 
+      // The found elements move with the page, so their boxes are read fresh.
+      const found = clearRef.current;
+      let count = 0;
+      for (const el of found) {
+        if (count === CLEARINGS) break;
+        const box = el.getBoundingClientRect();
+        if (box.bottom < 0 || box.top > canvas.clientHeight) continue;
+        clearings[count * 4] = box.left * SCALE;
+        clearings[count * 4 + 1] = (canvas.clientHeight - box.bottom) * SCALE;
+        clearings[count * 4 + 2] = box.width * SCALE;
+        clearings[count * 4 + 3] = box.height * SCALE;
+        count++;
+      }
+
       const dark = document.documentElement.classList.contains("dark");
       gl.uniform2f(uRes, canvas.width, canvas.height);
       gl.uniform1f(uTime, calm ? 0 : now * 0.001);
       if (dark) gl.uniform3f(uTint, 0.42, 0.48, 0.6);
       else gl.uniform3f(uTint, 0.72, 0.76, 0.83);
-      // Thin enough to read the page through, and a shade thinner on white.
-      gl.uniform1f(uFloor, dark ? 0.16 : 0.2);
-      gl.uniform1f(uHaze, dark ? 0.62 : 0.56);
-      if (dark) gl.uniform3f(uGlow, 0.88, 0.91, 1.0);
-      else gl.uniform3f(uGlow, 1.0, 1.0, 1.0);
+      gl.uniform1f(uFloor, dark ? 0.55 : 0.66);
       gl.uniform1f(uReach, Math.min(canvas.width, canvas.height) * REACH);
       gl.uniform3fv(uTrail, trail);
+      gl.uniform4fv(uClear, clearings);
+      gl.uniform1i(uClearCount, count);
+      gl.uniform1f(uFeather, FEATHER * SCALE);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
     frame = window.requestAnimationFrame(draw);
@@ -265,7 +294,7 @@ export const SmokeCanvas = ({ pointerRef, onFocus, calm, onReady, closeRef }: Sm
       gl.deleteShader(vertex);
       gl.deleteShader(fragment);
     };
-  }, [calm, pointerRef]);
+  }, [calm, pointerRef, clearRef]);
 
   return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />;
 };

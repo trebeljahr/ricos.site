@@ -52,12 +52,14 @@ export const EmojiButton = forwardRef<HTMLButtonElement, EmojiButtonProps>(
         ref={ref}
         type="button"
         aria-label={label}
+        // Stops a burst of clicks from selecting the text around the emoji.
+        onMouseDown={(event) => event.preventDefault()}
         onClick={() => {
           if (hint && nudgeOnClick) nudge();
           onClick?.();
         }}
         className={clsx(
-          "relative inline cursor-pointer appearance-none rounded-sm border-0 bg-transparent p-0 font-[inherit] leading-[inherit] text-inherit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current",
+          "relative inline cursor-pointer touch-manipulation select-none appearance-none rounded-sm border-0 bg-transparent p-0 font-[inherit] leading-[inherit] text-inherit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current",
           className,
         )}
       >

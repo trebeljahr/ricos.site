@@ -1,7 +1,4 @@
 import dynamic from "next/dynamic";
-import { EmojiButton } from "../EmojiButton";
 
-export const NeedleEgg = dynamic(() => import("./NeedleEgg"), {
-  ssr: false,
-  loading: () => <EmojiButton label="Haystack">🌾</EmojiButton>,
-});
+// Client only: the pile is placed against the measured article box after mount.
+export const NeedleEgg = dynamic(() => import("./NeedleEgg"), { ssr: false });

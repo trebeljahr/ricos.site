@@ -2,14 +2,28 @@ import { motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRecordEggFind } from "src/hooks/useEasterEgg";
 import { type PageBox, PageLayer, pageBox } from "../PageLayer";
+import { Haystack, Needle } from "./Haystack";
 
-const HAYSTACKS = 10;
-const CLICKS_PER_STACK = 5;
-const SIZE = 28;
-const SHRINK_PER_CLICK = 0.15;
+const CLICKS_PER_STACK = 3;
+const SIZE = 46;
+const SHRINK_PER_CLICK = 0.22;
+/** Offsets of the bales in the pile, back row first so the front overlaps it. */
+const PILE = [
+  { x: 34, y: 0 },
+  { x: 98, y: 6 },
+  { x: 160, y: 1 },
+  { x: 0, y: 46 },
+  { x: 62, y: 52 },
+  { x: 126, y: 48 },
+  { x: 188, y: 53 },
+];
+const CLUSTER_W = Math.max(...PILE.map((p) => p.x)) + SIZE;
+const CLUSTER_H = Math.max(...PILE.map((p) => p.y)) + SIZE;
+/** How far a bale may slide from its place in the pile to dodge the text. */
+const NUDGE = 26;
 // Free space a haystack keeps around every piece of text it sits next to.
 const CLEARANCE = 10;
-// Candidates tried per haystack before that band is left empty.
+// Places tried for the pile; the one that fits the most bales wins.
 const TRIES = 200;
 const GUTTER = 8;
 
@@ -123,12 +137,11 @@ const hits = (a: PageBox, b: PageBox) =>
   a.top + a.height > b.top;
 
 /**
- * Spread the haystacks down the article, one per band so they never pile up,
- * and only where nothing is written: the margins beside the column and the
- * gaps between blocks. A band with no free spot is left empty rather than
- * covering a line of text.
+ * Drop the pile somewhere in the article, on empty ground: every bale keeps
+ * off the text, sliding a little from its place in the pile to do so. The spot
+ * that fits the most bales wins, and bales with nowhere to lie are left out.
  */
-function scatter(article: PageBox): Spot[] {
+function pileUp(article: PageBox): Spot[] {
   const blocked = collectBlocked();
   // Bucketed by band, so a candidate is only tested against nearby rectangles.
   const BUCKET = 600;
@@ -148,40 +161,61 @@ function scatter(article: PageBox): Spot[] {
   ];
 
   const minLeft = window.scrollX + GUTTER;
-  const span = Math.max(0, document.documentElement.clientWidth - SIZE - GUTTER * 2);
-  const bandHeight = Math.max(0, article.height - SIZE) / HAYSTACKS;
-  const spots: Spot[] = [];
+  const maxLeft = Math.max(
+    minLeft,
+    window.scrollX + document.documentElement.clientWidth - SIZE - GUTTER,
+  );
+  const span = Math.max(0, document.documentElement.clientWidth - CLUSTER_W - GUTTER * 2);
+  const depth = Math.max(0, article.height - CLUSTER_H);
 
-  for (let i = 0; i < HAYSTACKS; i++) {
-    for (let attempt = 0; attempt < TRIES; attempt++) {
-      const candidate = {
-        left: minLeft + Math.random() * span,
-        top: article.top + (i + Math.random()) * bandHeight,
-        width: SIZE,
-        height: SIZE,
-      };
-      if (near(candidate).some((rect) => hits(candidate, rect))) continue;
-      if (spots.some((other) => hits(candidate, { ...other, width: SIZE, height: SIZE }))) continue;
-      spots.push({ left: candidate.left, top: candidate.top });
-      break;
+  const free = (spot: PageBox, taken: Spot[]) =>
+    !near(spot).some((rect) => hits(spot, rect)) &&
+    !taken.some((other) => hits(spot, { ...other, width: SIZE, height: SIZE }));
+
+  let best: Spot[] = [];
+  for (let attempt = 0; attempt < TRIES && best.length < PILE.length; attempt++) {
+    const left = minLeft + Math.random() * span;
+    const top = article.top + Math.random() * depth;
+    const placed: Spot[] = [];
+    for (const at of PILE) {
+      for (let nudge = 0; nudge < 12; nudge++) {
+        const candidate = {
+          // Clamped, so a nudge never pushes a bale off the side of the page.
+          left: Math.min(
+            maxLeft,
+            Math.max(minLeft, left + at.x + (Math.random() - 0.5) * 2 * NUDGE),
+          ),
+          top: top + at.y + (Math.random() - 0.5) * 2 * NUDGE,
+          width: SIZE,
+          height: SIZE,
+        };
+        if (!free(candidate, placed)) continue;
+        placed.push({ left: candidate.left, top: candidate.top });
+        break;
+      }
     }
+    if (placed.length > best.length) best = placed;
   }
-  return spots;
+  return best;
 }
 
 /**
- * Easter egg for /needlestack: haystacks are scattered down the page. Clicking
- * one pulls the hay apart, and one of them, picked at random on every visit,
- * has the needle in it.
+ * Easter egg for /needlestack: one pile of hay bales, dropped somewhere in the
+ * article. Clicking a bale pulls it apart, and one bale of the pile, picked at
+ * random on every visit, has the needle in it. They lie together, so finding
+ * the pile at all is the hard part, not counting bales down a long page.
  */
 const NeedleEgg = ({ container }: { container: React.RefObject<HTMLElement | null> }) => {
   const reduceMotion = useReducedMotion();
   const recordFind = useRecordEggFind();
-  const [needleIn] = useState(() => Math.floor(Math.random() * HAYSTACKS));
+  const [needleIn] = useState(() => Math.floor(Math.random() * PILE.length));
   const [spots, setSpots] = useState<Spot[] | null>(null);
+  // Clicks land faster than React commits, so the count lives in a ref and the
+  // state only mirrors it for rendering.
+  const pulledRef = useRef<Record<number, number>>({});
   const [pulled, setPulled] = useState<Record<number, number>>({});
   const [straws, setStraws] = useState<Straw[]>([]);
-  const [found, setFound] = useState(false);
+  const foundRef = useRef(false);
 
   // Placement reads the finished layout, so it runs once the fonts and images
   // have settled, and again whenever the text reflows.
@@ -197,7 +231,7 @@ const NeedleEgg = ({ container }: { container: React.RefObject<HTMLElement | nul
         // haystacks against that would pile them all up in the corner. Wait
         // for the layout the reader will actually see.
         if (!box || box.height === 0) return;
-        setSpots(scatter(box));
+        setSpots(pileUp(box));
       }, 120);
     };
     measure();
@@ -220,24 +254,26 @@ const NeedleEgg = ({ container }: { container: React.RefObject<HTMLElement | nul
 
   if (!spots) return null;
 
-  // Bands with no free space drop out, so the needle is one of the ones placed.
+  // Bales with nowhere to lie drop out, so the needle is one of the ones placed.
   const needleAt = spots.length > 0 ? needleIn % spots.length : -1;
 
   const pull = (index: number) => {
+    if ((pulledRef.current[index] ?? 0) >= CLICKS_PER_STACK) return;
     const at = spots[index];
     const center = { x: at.left + SIZE / 2, y: at.top + SIZE / 2 };
-    const clicks = (pulled[index] ?? 0) + 1;
-    setPulled((current) => ({ ...current, [index]: clicks }));
+    const clicks = (pulledRef.current[index] ?? 0) + 1;
+    pulledRef.current = { ...pulledRef.current, [index]: clicks };
+    setPulled(pulledRef.current);
 
     const done = clicks >= CLICKS_PER_STACK;
     if (!reduceMotion) {
       setStraws((current) => [
         ...current.slice(-70),
-        ...pullStraws(center, done ? 24 : 8, done ? 110 : 60),
+        ...pullStraws(center, done ? 26 : 10, done ? 110 : 60),
       ]);
     }
-    if (done && index === needleAt && !found) {
-      setFound(true);
+    if (done && index === needleAt && !foundRef.current) {
+      foundRef.current = true;
       recordFind("needle");
     }
   };
@@ -251,23 +287,25 @@ const NeedleEgg = ({ container }: { container: React.RefObject<HTMLElement | nul
         const at = spot;
         return (
           <motion.button
-            // biome-ignore lint/suspicious/noArrayIndexKey: a fixed number of haystacks
+            // biome-ignore lint/suspicious/noArrayIndexKey: a fixed pile of bales
             key={index}
             type="button"
             aria-label={isNeedle ? "Needle" : "Haystack"}
-            onClick={() => !gone && pull(index)}
-            className="pointer-events-auto absolute cursor-pointer appearance-none border-0 bg-transparent p-0 text-center leading-none"
-            style={{ left: at.left, top: at.top, width: SIZE, height: SIZE, fontSize: SIZE - 6 }}
+            // Stops a burst of clicks from selecting the article text underneath.
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => pull(index)}
+            className="pointer-events-auto absolute cursor-pointer touch-manipulation select-none appearance-none border-0 bg-transparent p-0 leading-none"
+            style={{ left: at.left, top: at.top, width: SIZE, transformOrigin: "50% 100%" }}
             animate={{
               scale: isNeedle ? 1 : gone ? 0 : 1 - clicks * SHRINK_PER_CLICK,
               opacity: gone && !isNeedle ? 0 : 1,
-              rotate: isNeedle ? -14 : 0,
+              rotate: isNeedle ? -8 : 0,
             }}
             transition={
               reduceMotion ? { duration: 0.2 } : { type: "spring", stiffness: 420, damping: 16 }
             }
           >
-            {isNeedle ? "🪡" : "🌾"}
+            {isNeedle ? <Needle size={SIZE} /> : <Haystack size={SIZE} />}
           </motion.button>
         );
       })}

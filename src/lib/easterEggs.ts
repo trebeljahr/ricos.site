@@ -108,7 +108,7 @@ export const EASTER_EGGS = [
     id: "needle",
     emoji: "🪡",
     name: "The needle in the haystack",
-    where: { hint: "Somewhere on", label: "/needlestack", href: "/needlestack" },
+    where: { hint: "A pile of hay somewhere on", label: "/needlestack", href: "/needlestack" },
   },
   {
     id: "search-party",

@@ -23,6 +23,10 @@ const HIDDEN_PAGES = [
 const KEEP_CLEAR = "main h1, main p, [data-page-picture]";
 /** Room left between one hiding place and the next. */
 const ROOM = 16;
+/** And the margin kept from the edges of the window, the navbar and the
+    footer. A link pressed against the bottom of the window reads as
+    something that fell there rather than something that was hidden. */
+const MARGIN = (span: number) => Math.max(24, Math.min(64, Math.round(span * 0.05)));
 /** And the wider berth they give the words and the picture, which are what
     the page is about: the links are meant to be somewhere else, not crowding
     the two things that are already plain to see. */
@@ -116,11 +120,12 @@ const SearchPartyEgg = () => {
         .filter((box) => box.width > 0 && box.height > 0);
       const navbar = document.querySelector<HTMLElement>("header#navbar")?.getBoundingClientRect();
       const footer = document.querySelector<HTMLElement>("body footer")?.getBoundingClientRect();
+      const margin = MARGIN(Math.min(innerWidth, innerHeight));
       const band = {
-        left: ROOM,
-        right: innerWidth - ROOM,
-        top: (navbar?.bottom ?? 0) + ROOM,
-        bottom: (footer && footer.top < innerHeight ? footer.top : innerHeight) - ROOM,
+        left: margin,
+        right: innerWidth - margin,
+        top: (navbar?.bottom ?? 0) + margin,
+        bottom: (footer && footer.top < innerHeight ? footer.top : innerHeight) - margin,
       };
 
       const sizes = chipRefs.current.map((el) => {

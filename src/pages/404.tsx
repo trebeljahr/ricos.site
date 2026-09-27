@@ -84,7 +84,7 @@ export default function Custom404() {
             picture is 614x450, so the width that gives it is about 1.36 of
             the height. On a short window an unchecked picture fills the
             middle and leaves the links nowhere to go but the bottom. */}
-        <Picture className="hidden md:block md:w-[46%] md:max-w-[68vh]" hidden />
+        <Picture className="hidden md:block md:w-[34%] md:max-w-[50vh]" hidden />
       </PageMain>
     </Layout>
   );

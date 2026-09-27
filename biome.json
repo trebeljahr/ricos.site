@@ -18,8 +18,6 @@
       "!**/*.min.css",
       "!**/.obsidian",
       "!**/src/content/Notes/.obsidian",
-      "!**/src/content/world-land.json",
-      "!**/src/content/photo-locations.json",
       "!**/*.css"
     ]
   },

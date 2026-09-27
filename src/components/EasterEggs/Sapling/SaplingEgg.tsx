@@ -16,11 +16,23 @@ const WATER_MS = 1700;
 const CLICK_WINDOW_MS = 15000;
 // The newsletter card has 44px above the heading line; the sky fills it and no more.
 const SKY_HEIGHT = 40;
-const SKY_WIDTH = 340;
-// The sun or moon rises and sets on the bottom edge of the sky, the horizon.
+const SKY_WIDTH = 400;
+// Clouds fade in and out at the sides instead of being cut off mid-card.
+const SKY_EDGE_FADE = "linear-gradient(to right, transparent, black 12%, black 88%, transparent)";
+// The sun or moon rises and sets on the bottom edge of the sky, the horizon,
+// moving across at an even pace.
 const ARC_WIDTH = 140;
-const ARC_HEIGHT = 24;
-const ARC_STEPS = 12;
+const ARC_RISE = 32;
+const ARC_STEPS = 24;
+// The clouds scroll by as one layer, a little faster than the sun, so they
+// keep their spacing and never run into each other.
+const CLOUD_SPEED = 1.25;
+// High clouds are small and faint, low ones big and solid, so the sky has depth.
+const CLOUD_ROWS = [
+  { y: 15, size: 14, opacity: 0.7 },
+  { y: 21, size: 18, opacity: 0.85 },
+  { y: 28, size: 22, opacity: 1 },
+];
 // Shaking the grown tree hard enough drops an apple, one at a time.
 const APPLE_CLICKS = 5;
 const APPLE_WINDOW_MS = 1500;
@@ -28,12 +40,31 @@ const APPLE_MS = 2600;
 const APPLE_ROLL = 64;
 
 type Sky = { left: number; top: number; width: number; plantX: number };
-type Cloud = { from: number; to: number; y: number; scale: number; delay: number };
-type Day = { id: number; body: EmojiSprite; night: boolean; clouds: Cloud[] };
+type Cloud = { x: number; y: number; size: number; opacity: number };
+type Day = { id: number; body: EmojiSprite; night: boolean; clouds: Cloud[]; travel: number };
 type Pour = { id: number; drops: { dx: number; delay: number }[] };
 type Apple = { id: number; left: number; top: number; size: number; drop: number; roll: number };
 
 const DROPS_PER_POUR = 4;
+
+const arcHalfWidth = (sky: Sky) => Math.min(ARC_WIDTH, sky.width / 2 - 16);
+
+/** Clouds along the three rows, with a gap between neighbours. */
+function cloudscape(sky: Sky) {
+  const travel = 2 * arcHalfWidth(sky) * CLOUD_SPEED;
+  const clouds: Cloud[] = [];
+  let row = -1;
+  // Starts a full scroll to the left, so the sky is as cloudy at the end as at the start.
+  for (let x = -travel + Math.random() * 20; x < sky.width; ) {
+    // Never the same row as the cloud before, so neighbours read as separate clouds.
+    row = (row + 1 + Math.floor(Math.random() * (CLOUD_ROWS.length - 1))) % CLOUD_ROWS.length;
+    const { y, size, opacity } = CLOUD_ROWS[row];
+    const cloud = { x, y, size: size + Math.random() * 4, opacity };
+    clouds.push(cloud);
+    x += cloud.size + 12 + Math.random() * 24;
+  }
+  return { clouds, travel };
+}
 
 /**
  * Easter egg on the newsletter form: every watering passes one day over the
@@ -91,22 +122,10 @@ const SaplingEgg = () => {
         },
       ]);
       if (reduceMotion) return;
-      openSky();
+      const next = openSky();
+      if (!next) return;
       const night = resolvedTheme === "dark";
-      // Two clouds, one high and small, one low and big, drifting slower than the sun.
-      const drift = (from: number, y: number, scale: number, delay: number) => ({
-        from: from + Math.random() * 0.1,
-        to: from + 0.45 + Math.random() * 0.1,
-        y: y + Math.random() * 4,
-        scale: scale + Math.random() * 0.15,
-        delay,
-      });
-      setDay({
-        id,
-        body: night ? "🌙" : "☀️",
-        night,
-        clouds: [drift(0.02, 15, 0.75, 0), drift(0.4, 25, 1, 0.25)],
-      });
+      setDay({ id, body: night ? "🌙" : "☀️", night, ...cloudscape(next) });
     },
     [openSky, reduceMotion, resolvedTheme],
   );
@@ -150,12 +169,8 @@ const SaplingEgg = () => {
           easing: "ease-out",
           fill: "forwards",
         });
+        // The tree keeps the size it grew to.
         await wait(WATER_MS);
-        plantRef.current?.animate([{ scale: 1.3 }, { scale: 1 }], {
-          duration: 400,
-          easing: "ease-in-out",
-          fill: "forwards",
-        });
         setSky(null);
       }),
   });
@@ -208,7 +223,13 @@ const SaplingEgg = () => {
           <div
             aria-hidden="true"
             className="absolute overflow-hidden text-xl leading-none"
-            style={{ left: sky.left, top: sky.top, width: sky.width, height: SKY_HEIGHT }}
+            style={{
+              left: sky.left,
+              top: sky.top,
+              width: sky.width,
+              height: SKY_HEIGHT,
+              maskImage: SKY_EDGE_FADE,
+            }}
           >
             {day && <DayPass key={day.id} day={day} sky={sky} onDone={() => dayDone(day.id)} />}
           </div>
@@ -225,45 +246,55 @@ const SaplingEgg = () => {
 
 /** One sun or moon arching over the plant from horizon to horizon, clouds in front. */
 const DayPass = ({ day, sky, onDone }: { day: Day; sky: Sky; onDone: () => void }) => {
-  const rx = Math.min(ARC_WIDTH, sky.width / 2 - 16);
-  const angles = Array.from({ length: ARC_STEPS + 1 }, (_, i) => Math.PI * (1 - i / ARC_STEPS));
+  const rx = arcHalfWidth(sky);
+  const duration = WATER_MS / 1000;
+  const cloudOpacity = day.night ? 0.7 : 1;
+  // Starts just below the horizon; a sine keeps the climb and the descent smooth.
+  const low = SKY_HEIGHT + 12;
+  const heights = Array.from(
+    { length: ARC_STEPS + 1 },
+    (_, i) => low - ARC_RISE * Math.sin((Math.PI * i) / ARC_STEPS),
+  );
   return (
     <>
       <motion.span
         className="absolute top-0 left-0 -mt-2.5 -ml-2.5"
-        initial={{ x: sky.plantX - rx, y: SKY_HEIGHT + 4, opacity: 0 }}
-        animate={{
-          x: angles.map((a) => sky.plantX + rx * Math.cos(a)),
-          y: angles.map((a) => SKY_HEIGHT + 4 - ARC_HEIGHT * Math.sin(a)),
-          opacity: [0, 1, 1, 0],
-        }}
+        initial={{ x: sky.plantX - rx, y: low, opacity: 0 }}
+        animate={{ x: sky.plantX + rx, y: heights, opacity: [0, 1, 1, 0] }}
         transition={{
-          duration: WATER_MS / 1000,
+          duration,
           ease: "linear",
-          opacity: { duration: WATER_MS / 1000, times: [0, 0.1, 0.9, 1] },
+          opacity: { duration, times: [0, 0.06, 0.94, 1] },
         }}
         onAnimationComplete={onDone}
       >
         <Sprite name={day.body} />
       </motion.span>
-      {day.clouds.map((cloud) => (
-        <motion.span
-          key={cloud.delay}
-          className="absolute top-0 left-0 -mt-2.5 -ml-2.5"
-          initial={{ x: cloud.from * sky.width, y: cloud.y, opacity: 0, scale: cloud.scale }}
-          animate={{
-            x: cloud.to * sky.width,
-            opacity: [0, day.night ? 0.7 : 1, day.night ? 0.7 : 1, 0],
-          }}
-          transition={{
-            duration: WATER_MS / 1000 - cloud.delay,
-            delay: cloud.delay,
-            ease: "linear",
-          }}
-        >
-          <Sprite name="☁️" />
-        </motion.span>
-      ))}
+      <motion.div
+        className="absolute inset-0"
+        initial={{ x: 0, opacity: 0 }}
+        animate={{ x: day.travel, opacity: [0, cloudOpacity, cloudOpacity, 0] }}
+        transition={{
+          duration,
+          ease: "linear",
+          opacity: { duration, times: [0, 0.12, 0.88, 1] },
+        }}
+      >
+        {day.clouds.map((cloud) => (
+          <span
+            key={cloud.x}
+            className="absolute leading-none"
+            style={{
+              left: cloud.x,
+              top: cloud.y - cloud.size / 2,
+              fontSize: cloud.size,
+              opacity: cloud.opacity,
+            }}
+          >
+            <Sprite name="☁️" />
+          </span>
+        ))}
+      </motion.div>
     </>
   );
 };

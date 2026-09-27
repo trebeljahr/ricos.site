@@ -29,6 +29,12 @@ export type PhotoGlobeProps = {
   onSelectTrip?: (tripName: string | null) => void;
   /** Sizing and placement. The component fills whatever box this gives it. */
   className?: string;
+  /**
+   * The built-in keyboard strip of trip chips. On by default so the globe is operable on
+   * its own; set false on a page that already renders its own list of trips, otherwise a
+   * keyboard user tabs through every trip twice.
+   */
+  showTripList?: boolean;
 };
 
 function describeTrip(trip: TripLocation): string {
@@ -45,7 +51,13 @@ function describeTrip(trip: TripLocation): string {
  * The page owns the `next/dynamic` wrapper — nothing here touches `window` at import time,
  * but three.js has no business in the eager bundle of a text page.
  */
-export function PhotoGlobe({ trips, selected = null, onSelectTrip, className }: PhotoGlobeProps) {
+export function PhotoGlobe({
+  trips,
+  selected = null,
+  onSelectTrip,
+  className,
+  showTripList = true,
+}: PhotoGlobeProps) {
   const container = useRef<HTMLDivElement>(null);
   const label = useRef<HTMLDivElement>(null);
 
@@ -160,41 +172,56 @@ export function PhotoGlobe({ trips, selected = null, onSelectTrip, className }: 
         The keyboard path into the scene. The list is hidden until something inside it
         takes focus, then it becomes a visible strip of chips, so a sighted keyboard user
         can see where they are instead of watching the globe turn on its own.
+
+        A page that renders its own trip buttons turns this off and keeps only the read-only
+        summary below, so the trips are still described but not tabbed through twice.
       */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30">
-        <ul
-          aria-label="Photography trips on the globe"
-          className="pointer-events-auto sr-only focus-within:not-sr-only focus-within:flex focus-within:flex-wrap focus-within:gap-1.5 focus-within:border-black/10 focus-within:border-t focus-within:bg-white/95 focus-within:p-2 dark:focus-within:border-white/15 dark:focus-within:bg-nightBlue/95"
-        >
+      {!showTripList && (
+        <ul className="sr-only" aria-label="Photography trips on the globe">
           {placeTrips.map((trip) => (
             <li key={trip.name}>
-              <button
-                type="button"
-                aria-pressed={selected === trip.name}
-                onFocus={() => setKeyboardFocus(trip.name)}
-                onBlur={() => setKeyboardFocus(null)}
-                onClick={() => handleSelect(trip.name)}
-                className={clsx(
-                  "flex items-center gap-1.5 rounded-full border px-2 py-1 text-xs",
-                  selected === trip.name
-                    ? "border-accent text-accent"
-                    : "border-black/15 dark:border-white/20",
-                )}
-              >
-                <span
-                  className="inline-block size-2 shrink-0 rounded-full"
-                  style={{ backgroundColor: `var(${REGION_CSS_VARIABLES[trip.region]})` }}
-                />
-                {trip.label}
-                <span className="sr-only">
-                  {" — "}
-                  {trip.region}, {describeTrip(trip)}
-                </span>
-              </button>
+              {trip.label} — {trip.region}, {describeTrip(trip)}
             </li>
           ))}
         </ul>
-      </div>
+      )}
+
+      {showTripList && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30">
+          <ul
+            aria-label="Photography trips on the globe"
+            className="pointer-events-auto sr-only focus-within:not-sr-only focus-within:flex focus-within:flex-wrap focus-within:gap-1.5 focus-within:border-black/10 focus-within:border-t focus-within:bg-white/95 focus-within:p-2 dark:focus-within:border-white/15 dark:focus-within:bg-nightBlue/95"
+          >
+            {placeTrips.map((trip) => (
+              <li key={trip.name}>
+                <button
+                  type="button"
+                  aria-pressed={selected === trip.name}
+                  onFocus={() => setKeyboardFocus(trip.name)}
+                  onBlur={() => setKeyboardFocus(null)}
+                  onClick={() => handleSelect(trip.name)}
+                  className={clsx(
+                    "flex items-center gap-1.5 rounded-full border px-2 py-1 text-xs",
+                    selected === trip.name
+                      ? "border-accent text-accent"
+                      : "border-black/15 dark:border-white/20",
+                  )}
+                >
+                  <span
+                    className="inline-block size-2 shrink-0 rounded-full"
+                    style={{ backgroundColor: `var(${REGION_CSS_VARIABLES[trip.region]})` }}
+                  />
+                  {trip.label}
+                  <span className="sr-only">
+                    {" — "}
+                    {trip.region}, {describeTrip(trip)}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

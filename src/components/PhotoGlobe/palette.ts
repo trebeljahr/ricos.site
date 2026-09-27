@@ -106,7 +106,11 @@ export function useGlobePalette(): GlobePalette {
   const [palette, setPalette] = useState<GlobePalette>(FALLBACK_PALETTE);
 
   useEffect(() => {
-    const update = () => setPalette(readPalette());
+    // Keep the old object when nothing actually changed. Several unrelated features write
+    // classes onto <html> mid-transition — the theme reveal, the lightbox, the list
+    // transition — and a fresh palette identity per mutation would rebuild every marker
+    // geometry that memoises on it, several times, during the transition.
+    const update = () => setPalette((previous) => reuseIfEqual(previous, readPalette()));
     update();
 
     const observer = new MutationObserver(update);
@@ -118,4 +122,21 @@ export function useGlobePalette(): GlobePalette {
   }, []);
 
   return palette;
+}
+
+/** Structural equality on a palette, so an unchanged theme keeps the same object. */
+function reuseIfEqual(previous: GlobePalette, next: GlobePalette): GlobePalette {
+  if (
+    previous.ocean !== next.ocean ||
+    previous.land !== next.land ||
+    previous.coast !== next.coast ||
+    previous.graticule !== next.graticule ||
+    previous.atmosphere !== next.atmosphere
+  ) {
+    return next;
+  }
+  for (const region of Object.keys(next.region) as TripRegion[]) {
+    if (previous.region[region] !== next.region[region]) return next;
+  }
+  return previous;
 }

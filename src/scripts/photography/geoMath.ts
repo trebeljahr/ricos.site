@@ -137,7 +137,10 @@ export function buildTripLocation({ centroid, photoCount, gpsPoints }: TripGeoIn
     photoCount,
     gpsCount: gpsPoints.length,
     bbox: useExif ? boundingBoxOf(kept) : null,
-    points: dedupeRoundedPoints(kept),
+    // `forceManual` has to hide the point cloud too, not only the pin. Germany is the case
+    // that matters: its 35 GPS frames are Berlin, Cologne and home, and a dot cloud there
+    // says more about where Rico lives than the coarse pin it was forced to.
+    points: centroid.forceManual ? [] : dedupeRoundedPoints(kept),
   };
 
   if (centroid.kind) trip.kind = centroid.kind;

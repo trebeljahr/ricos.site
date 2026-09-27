@@ -7,6 +7,8 @@ import { describe, expect, it } from "vitest";
  * anything in the module graph does.
  */
 describe("PhotoGlobe module", () => {
+  // Pulling three, fiber, drei and three-stdlib through vitest's transform costs several
+  // seconds on a cold run, so this one needs more than the 5s default.
   it("imports without a DOM", async () => {
     const globe = await import("./index");
     expect(typeof globe.PhotoGlobe).toBe("function");
@@ -14,5 +16,5 @@ describe("PhotoGlobe module", () => {
     expect(typeof globe.useGlobePalette).toBe("function");
     expect(globe.LEGEND_REGIONS).toHaveLength(7);
     expect(globe.LEGEND_REGIONS).not.toContain("Global");
-  });
+  }, 30_000);
 });

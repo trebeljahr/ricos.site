@@ -1,7 +1,7 @@
 import { Card } from "@components/Card";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import Layout from "@components/Layout";
-import { LEGEND_REGIONS, REGION_CSS_VARIABLES } from "@components/PhotoGlobe";
+import { LEGEND_REGIONS, REGION_CSS_VARIABLES } from "@components/PhotoGlobe/palette";
 import Header from "@components/PostHeader";
 import { SpinningLoader } from "@components/SpinningLoader";
 import clsx from "clsx";
@@ -14,17 +14,25 @@ import type { TripLocation, TripRegion } from "src/lib/photoGeo";
  * three.js plus the land outlines are far too heavy for the eager bundle of a page that is
  * mostly text, and the scene needs a real canvas to measure itself against. Same shape as
  * the gallery components: client only, with a box of the final size held open.
+ *
+ * Both this and the legend constants above reach for leaf modules, never the
+ * `@components/PhotoGlobe` barrel. The barrel re-exports Globe, which pulls in three and the
+ * 84 KB land outline; a static import of it anywhere on this page puts all of that back into
+ * the eager chunk and the lazy split stops buying anything.
  */
-const PhotoGlobe = dynamic(() => import("@components/PhotoGlobe").then((m) => m.PhotoGlobe), {
-  ssr: false,
-  loading: () => (
-    <div className={clsx(GLOBE_BOX, "flex items-center justify-center")}>
-      <div className="w-8">
-        <SpinningLoader />
+const PhotoGlobe = dynamic(
+  () => import("@components/PhotoGlobe/PhotoGlobe").then((m) => m.PhotoGlobe),
+  {
+    ssr: false,
+    loading: () => (
+      <div className={clsx(GLOBE_BOX, "flex items-center justify-center")}>
+        <div className="w-8">
+          <SpinningLoader />
+        </div>
       </div>
-    </div>
-  ),
-});
+    ),
+  },
+);
 
 /** One class list for the canvas and its loading placeholder, so the page never jumps. */
 const GLOBE_BOX = "relative h-[60vh] min-h-[20rem] w-full sm:h-[32rem] lg:h-[36rem]";
@@ -134,22 +142,27 @@ export default function PhotographyWorldPage({ trips, totals }: Props) {
           </p>
         </article>
 
-        <section className="not-prose mt-10" aria-label="Photo trips on a globe">
+        <section className="not-prose mt-sub" aria-label="Photo trips on a globe">
           <div className="overflow-hidden rounded-xl border-2 border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+            {/*
+              The page's own "Pick a trip" chips below are the keyboard path, so the globe
+              drops its built-in copy of the same list — 27 trips, not 54 tab stops.
+            */}
             <PhotoGlobe
               trips={trips}
               selected={selected}
               onSelectTrip={handleSelect}
               className={GLOBE_BOX}
+              showTripList={false}
             />
           </div>
 
-          <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">
+          <p className="mt-label text-sm text-gray-600 dark:text-gray-300">
             Drag to turn the globe. Pinch or scroll to zoom. On a phone, swipe up and down to scroll
             the page and sideways to turn the globe.
           </p>
 
-          <dl className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-600 dark:text-gray-300">
+          <dl className="mt-stack flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-600 dark:text-gray-300">
             <div className="flex gap-1.5">
               <dt>Trips</dt>
               <dd className="m-0 font-semibold text-gray-900 dark:text-gray-100">
@@ -175,14 +188,14 @@ export default function PhotographyWorldPage({ trips, totals }: Props) {
           </p>
         </section>
 
-        <section className="not-prose mt-10" aria-labelledby="world-regions">
+        <section className="not-prose mt-sub" aria-labelledby="world-regions">
           <h2
             id="world-regions"
             className="m-0 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
           >
             Regions
           </h2>
-          <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-gray-700 dark:text-gray-200">
+          <ul className="mt-label flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-gray-700 dark:text-gray-200">
             {LEGEND_REGIONS.map((region) => (
               <li key={region} className="flex items-center gap-1.5">
                 <span
@@ -196,14 +209,14 @@ export default function PhotographyWorldPage({ trips, totals }: Props) {
           </ul>
         </section>
 
-        <section className="not-prose mt-8" aria-labelledby="world-trip-picker">
+        <section className="not-prose mt-group" aria-labelledby="world-trip-picker">
           <h2
             id="world-trip-picker"
             className="m-0 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
           >
             Pick a trip
           </h2>
-          <ul className="mt-3 flex flex-wrap gap-2">
+          <ul className="mt-label flex flex-wrap gap-tight">
             {placeTrips.map((trip) => (
               <li key={trip.name}>
                 <button
@@ -229,7 +242,7 @@ export default function PhotographyWorldPage({ trips, totals }: Props) {
           </ul>
         </section>
 
-        <section ref={panel} className="not-prose mt-10 scroll-mt-24" aria-live="polite">
+        <section ref={panel} className="not-prose mt-sub scroll-mt-24" aria-live="polite">
           {selectedTrip ? (
             <TripDetail trip={selectedTrip} />
           ) : (
@@ -272,12 +285,12 @@ function TripDetail({ trip }: { trip: WorldTrip }) {
           : { src: "/assets/blog/photography.png", alt: "an old film camera" }
       }
     >
-      <p className="m-0 mt-3 text-base text-gray-600 dark:text-gray-300">
+      <p className="m-0 mt-label text-base text-gray-600 dark:text-gray-300">
         {formatCount(trip.photoCount)} photos. {positionSentence(trip)}
       </p>
 
       {rest.length > 0 && (
-        <div className="mt-4 grid grid-cols-3 gap-2">
+        <div className="mt-stack grid grid-cols-3 gap-tight">
           {rest.map((thumbnail) => (
             <span
               key={thumbnail.src}
@@ -286,9 +299,12 @@ function TripDetail({ trip }: { trip: WorldTrip }) {
               <ImageWithLoader
                 src={thumbnail.src}
                 alt={thumbnail.alt}
-                width={128}
-                height={Math.max(1, Math.round(128 * (thumbnail.height / thumbnail.width)))}
-                sizes="128px"
+                width={240}
+                height={Math.max(1, Math.round(240 * (thumbnail.height / thumbnail.width)))}
+                // Three to a row inside the card, so each thumbnail is a third of it — not
+                // the 128px a square icon would suggest, which fetches a blurry source on
+                // any retina screen.
+                sizes="(max-width: 768px) calc((100vw - 64px) / 3), 240px"
                 className="h-full w-full object-cover"
               />
             </span>
@@ -296,7 +312,9 @@ function TripDetail({ trip }: { trip: WorldTrip }) {
         </div>
       )}
 
-      <p className="m-0 mt-4 text-base font-semibold text-accent">Open the {trip.label} gallery</p>
+      <p className="m-0 mt-stack text-base font-semibold text-accent">
+        Open the {trip.label} gallery
+      </p>
     </Card>
   );
 }

@@ -132,7 +132,7 @@ export const TRIP_CENTROIDS: TripCentroid[] = [
     lat: 52.52,
     lng: 13.4,
     forceManual: true,
-    note: "254 photos but only 35 with GPS, in three disjoint clusters — 18 Berlin, 10 Cologne, 3 Wittenberg, 2 stray Alpine frames. Their mean is an empty field near Halle that nobody visited, so this folder is forced to the manual pin on Berlin. The rest of the folder is flowers, cats and forest, i.e. home.",
+    note: "254 photos but only 35 with GPS, in three disjoint clusters — 18 Berlin, 10 Cologne, 3 Wittenberg, 2 stray Alpine frames. Their mean is an empty field near Halle that nobody visited, so this folder is forced to the manual pin on Berlin. The rest of the folder is flowers, cats and forest, i.e. home. forceManual also drops the point cloud, so the home frames stay off the globe.",
   },
   {
     name: "guadeloupe",

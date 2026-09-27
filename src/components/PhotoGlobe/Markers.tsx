@@ -60,13 +60,29 @@ type Track = {
 /**
  * Whether a point on the globe is on the near side of the horizon.
  *
- * Markers on the far side are already hidden by the opaque ocean sphere, but the
- * raycaster happily reaches straight through it, so hover and click need the same test.
+ * Markers on the far side are already hidden by the opaque ocean sphere, but the raycaster
+ * happily reaches straight through it, so hover and click need the same test.
+ *
+ * The ocean casts a shadow cone away from the camera: apex at the camera, half-angle
+ * asin(r / d). A marker is visible when it sits outside that cone. Markers float above the
+ * ocean at MARKER_RADIUS, so testing them against the horizon of the ocean sphere itself
+ * would blank a ring of pins near the limb that are in fact still in view — they would
+ * draw at full opacity and ignore every click.
  */
 function isFacingCamera(position: Vector3, cameraPosition: Vector3): boolean {
   const distance = cameraPosition.length();
   if (distance <= OCEAN_RADIUS) return true;
-  return position.dot(cameraPosition) / distance > (OCEAN_RADIUS * position.length()) / distance;
+
+  // Depth along the camera axis, and how far off that axis the marker sits.
+  const depth = position.dot(cameraPosition) / distance;
+  const radius = position.length();
+  if (depth >= radius) return true;
+  const offAxis = Math.sqrt(Math.max(0, radius * radius - depth * depth));
+
+  const coneRadiusHere =
+    ((distance - depth) * OCEAN_RADIUS) /
+    Math.sqrt(distance * distance - OCEAN_RADIUS * OCEAN_RADIUS);
+  return offAxis > coneRadiusHere;
 }
 
 function pinRadius(photoCount: number, largestFolder: number): number {

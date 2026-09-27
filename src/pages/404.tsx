@@ -59,7 +59,10 @@ export default function Custom404() {
           with them, so the page says what it is while the picture is still
           something to find. The z-index is on the words alone: on the page
           itself it would take the picture up with them. */}
-      <PageMain className="relative text-center md:flex md:max-w-none md:items-center md:gap-region md:px-[7vw] md:text-left">
+      {/* Wider on the left than on the right: the strip beside the title is
+          where a few of the shorter links hide, and at the usual gutter there
+          is not the width for even the shortest of them. */}
+      <PageMain className="relative text-center md:flex md:max-w-none md:items-center md:gap-region md:pr-[5vw] md:pl-[16vw] md:text-left">
         {/* The column is only as solid as what is written in it: its box
             covers half the window, and left to itself it would take the
             pointer away from every link hiding behind it. */}

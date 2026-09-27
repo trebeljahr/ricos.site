@@ -8,6 +8,8 @@ type Bubble = {
   life: number;
   wobble: number;
   hue: number;
+  popY: number;
+  popped: boolean;
 };
 
 const FOAM_MS = 900;
@@ -28,6 +30,8 @@ function spawn(x: number, y: number): Bubble {
     life: 2.2 + Math.random() * 2.2,
     wobble: Math.random() * Math.PI * 2,
     hue: Math.random() < 0.6 ? 330 : 185,
+    popY: y + window.innerHeight / 5,
+    popped: false,
   };
 }
 
@@ -153,6 +157,11 @@ export function bubbleOver(logo: HTMLElement | null) {
       b.vy *= 1 - 0.6 * dt;
       b.x += b.vx * dt;
       b.y += b.vy * dt;
+      // Pop a short way down the page rather than at the end of a long sink.
+      if (!b.popped && b.y >= b.popY) {
+        b.life = b.age + 0.15;
+        b.popped = true;
+      }
       drawBubble(ctx, b);
     }
 

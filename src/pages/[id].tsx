@@ -19,16 +19,14 @@ const MDXContentWithDemos = dynamic(
 );
 type BacklinkItem = { title: string; link: string; type: string };
 
-// The haystack egg on /needlestack stands right under the intro heading, beside
-// the paragraph about the internet as a giant haystack, so it sits in the same
-// spot on every visit and at every screen width.
+// The haystack egg on /needlestack has two fixed spots: at the right of the
+// title from tablet width up, and on phones, where the title leaves no room,
+// right under the intro heading. Only one of the two is ever shown.
 const needlestackRenderers = {
   h2: (props: ComponentProps<"h2">) => (
     <>
       <h2 {...props} />
-      {props.id === "intro" && (
-        <NeedleEgg className="mx-auto md:float-right md:mb-label md:ml-group" />
-      )}
+      {props.id === "intro" && <NeedleEgg className="mx-auto md:hidden" />}
     </>
   ),
 };
@@ -61,7 +59,8 @@ type Props = {
 export default function Page({ page, backlinks }: Props) {
   const { subtitle, title, cover } = page;
   const ogImage = page.seoOgImage || cover.src;
-  const renderers = page.slug === "needlestack" ? needlestackRenderers : undefined;
+  const isNeedlestack = page.slug === "needlestack";
+  const renderers = isNeedlestack ? needlestackRenderers : undefined;
 
   return (
     <Layout
@@ -99,6 +98,7 @@ export default function Page({ page, backlinks }: Props) {
             meta={<MetadataDisplay date={page.date} readingTime={page.metadata.readingTime} eggs />}
             subtitle={subtitle}
             title={title}
+            aside={isNeedlestack && <NeedleEgg className="hidden md:block" />}
           />
 
           {page.hasDemos ? (

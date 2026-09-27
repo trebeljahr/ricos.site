@@ -24,8 +24,8 @@ const Pile = dynamic(() => import("./NeedleEgg"), { ssr: false, loading: StillPi
 
 /**
  * Easter egg for /needlestack: a pile of hay bales with a fixed place in the
- * page. The pile keeps its own box in the text flow, so it sits in the same
- * spot on every visit and at every screen width, and never covers the text.
+ * page. The pile has a box of its own, so it sits in the same spot on every
+ * visit and never covers the text.
  */
 export const NeedleEgg = ({ className }: { className?: string }) => (
   <div

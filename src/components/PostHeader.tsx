@@ -52,11 +52,13 @@ type Props = {
   breadcrumbs?: BreadCrumbsProps;
   /** Row above the title, e.g. date and reading time. */
   meta?: ReactNode;
+  /** Stands at the right of the title, its foot level with the subtitle's. */
+  aside?: ReactNode;
 };
 
-const Header = ({ title, subtitle, breadcrumbs, meta }: Props) => {
+const Header = ({ title, subtitle, breadcrumbs, meta, aside }: Props) => {
   return (
-    <header className="mb-group">
+    <header className={clsx("mb-group", aside && "relative")}>
       <PageTop breadcrumbs={breadcrumbs}>
         {meta}
         <hgroup className="post-header">
@@ -64,6 +66,7 @@ const Header = ({ title, subtitle, breadcrumbs, meta }: Props) => {
           {subtitle && <p className="text-lg">{subtitle}</p>}
         </hgroup>
       </PageTop>
+      {aside && <div className="absolute right-0 bottom-0">{aside}</div>}
     </header>
   );
 };

@@ -124,6 +124,9 @@ const NeedleEgg = () => {
       const root = rootRef.current;
       if (!root || event.button !== 0) return;
       const box = root.getBoundingClientRect();
+      // A page may place a second pile for other screen widths; the hidden
+      // one has no box and guards nothing.
+      if (box.width === 0) return;
       if (
         event.clientX < box.left - MISS_MARGIN ||
         event.clientX > box.right + MISS_MARGIN ||

@@ -184,6 +184,52 @@
   --color-accent: color-mix(in srgb, var(--color-myBlue) 70%, white);
 }
 
+/*
+ * Photo globe palette (src/components/PhotoGlobe).
+ *
+ * These live in plain `:root` / `.dark` rules rather than in `@theme` on purpose: the
+ * globe reads them back at runtime with `getComputedStyle` and feeds them to three.js,
+ * and `@theme` variables are only emitted when a Tailwind utility references them.
+ * Values are written as `rgb()` because `THREE.Color.setStyle` cannot parse `oklch()`.
+ *
+ * The seven region hues are a categorical scale, so they hold their identity across
+ * themes and only shift lightness. `globeRegionGlobal` belongs to the `best-of`
+ * collection, which is never drawn as a pin and never gets a legend swatch.
+ */
+:root {
+  --globe-ocean: rgb(226, 238, 250);
+  --globe-land: rgb(252, 251, 247);
+  --globe-coast: rgb(163, 190, 216);
+  --globe-graticule: rgb(203, 219, 236);
+  --globe-atmosphere: rgb(120, 170, 225);
+
+  --globe-region-europe: rgb(52, 106, 209);
+  --globe-region-south-asia: rgb(209, 120, 28);
+  --globe-region-southeast-asia: rgb(13, 145, 128);
+  --globe-region-caribbean: rgb(201, 64, 135);
+  --globe-region-south-america: rgb(92, 150, 38);
+  --globe-region-africa-middle-east: rgb(203, 68, 52);
+  --globe-region-atlantic: rgb(128, 86, 209);
+  --globe-region-global: rgb(118, 130, 148);
+}
+
+.dark {
+  --globe-ocean: rgb(11, 20, 34);
+  --globe-land: rgb(32, 45, 63);
+  --globe-coast: rgb(72, 99, 132);
+  --globe-graticule: rgb(30, 44, 64);
+  --globe-atmosphere: rgb(76, 138, 214);
+
+  --globe-region-europe: rgb(126, 166, 255);
+  --globe-region-south-asia: rgb(246, 174, 92);
+  --globe-region-southeast-asia: rgb(80, 200, 183);
+  --globe-region-caribbean: rgb(242, 132, 190);
+  --globe-region-south-america: rgb(154, 208, 96);
+  --globe-region-africa-middle-east: rgb(243, 133, 117);
+  --globe-region-atlantic: rgb(181, 149, 252);
+  --globe-region-global: rgb(148, 159, 176);
+}
+
 @layer base {
   * {
     box-sizing: border-box;

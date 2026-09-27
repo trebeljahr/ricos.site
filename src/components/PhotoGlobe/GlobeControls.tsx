@@ -1,5 +1,5 @@
 import { OrbitControls } from "@react-three/drei";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE } from "./geo";
 import { useCameraFocus, useIdleAutoRotate } from "./useGlobeInteraction";
@@ -24,6 +24,18 @@ export function GlobeControls({ autoRotate, damping, focus, instantFocus }: Glob
 
   useIdleAutoRotate(controls, autoRotate);
   useCameraFocus(controls, focus, instantFocus);
+
+  /*
+    OrbitControls sets `touch-action: none` on the canvas when it connects, which makes the
+    globe eat every touch drag and strands a phone reader mid-page. `pan-y` hands vertical
+    swipes back to the browser: the page scrolls, the controls get a pointercancel, and
+    sideways drags still turn the globe. Pinch-to-zoom is not a `pan-y` gesture, so it
+    keeps going to the scene.
+  */
+  useEffect(() => {
+    const element = controls.current?.domElement;
+    if (element instanceof HTMLElement) element.style.touchAction = "pan-y";
+  }, []);
 
   return (
     <OrbitControls

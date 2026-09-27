@@ -24,6 +24,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { label: "galleries", href: "/photography" },
       { label: "best of", href: "/photography/best-of" },
+      { label: "world map", href: "/photography/world" },
     ],
   },
   {

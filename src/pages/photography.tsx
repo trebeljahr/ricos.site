@@ -233,6 +233,13 @@ export default function Photography({ trips, seo }: Props) {
     >
       <PageMain>
         <Header breadcrumbs={{ path: url }} subtitle="My travels in pictures" title="Photography" />
+        <p className="not-prose mb-para text-base text-gray-600 dark:text-gray-300">
+          Want to see where these photos come from?{" "}
+          <Link href="/photography/world" className="text-accent underline">
+            Open the world map
+          </Link>
+          .
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-region">
           {trips.map(({ tripName, image }, index) => {
             return (

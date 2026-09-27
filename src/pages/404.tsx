@@ -2,17 +2,22 @@ import { SearchPartyEgg } from "@components/EasterEggs/SearchParty";
 import Layout from "@components/Layout";
 import Header, { PageMain } from "@components/PostHeader";
 
-/**
- * The picture, cut out of its paper. public/static/404-stamp.png is
- * assets/blog/404.jpg with the cream taken out of it: every pixel's alpha is
- * how much darker than the border colour it was, so what is left is the pipe,
- * its shading and the handwriting. Stamped through that cutout, the page's
- * own ink stands in for the paint, which is how the picture belongs to both
- * themes rather than only the one it was painted for.
+/*
+ * The picture, cut off its paper, in two layers over the same 4:3 box so they
+ * line up as they did in the painting. Both come from assets/blog/404.jpg:
+ * a pixel's alpha is how far its colour stands from the flat colour of the
+ * border, which keeps the pipe's highlights — lighter than the paper, not
+ * darker — as solid as its shadows, and the cream it was painted on is taken
+ * back out of what is left.
+ *
+ *   404-pipe.png   the pipe, in the browns it was painted in
+ *   404-words.png  the handwriting, as a shape only: it is stamped in the
+ *                  page's own ink, because the grey it was written in
+ *                  disappears against a dark page
  */
-const stamp = {
-  maskImage: "url(/static/404-stamp.png)",
-  WebkitMaskImage: "url(/static/404-stamp.png)",
+const WORDS = {
+  maskImage: "url(/static/404-words.png)",
+  WebkitMaskImage: "url(/static/404-words.png)",
   maskRepeat: "no-repeat",
   WebkitMaskRepeat: "no-repeat",
   maskPosition: "center",
@@ -21,7 +26,19 @@ const stamp = {
   WebkitMaskSize: "contain",
 } as const;
 
-const INK = "bg-gray-900/90 dark:bg-gray-100/90";
+const PICTURE = "relative aspect-[4/3] w-full";
+const INK = "absolute inset-0 bg-gray-900/90 dark:bg-gray-100/90";
+
+const Picture = () => (
+  <>
+    <img
+      src="/static/404-pipe.png"
+      alt=""
+      className="absolute inset-0 h-full w-full object-contain"
+    />
+    <div className={INK} style={WORDS} />
+  </>
+);
 
 export default function Custom404() {
   return (
@@ -33,16 +50,14 @@ export default function Custom404() {
       image="/assets/blog/404.jpg"
       imageAlt="this is not a page pipe meme joke"
     >
-      {/* The stamp hangs in the half of the window the words leave free. On a
-          phone it goes in the flow instead, above a title that lines up with
-          it, where it cannot land on anything. */}
+      {/* The picture hangs in the half of the window the words leave free. On
+          a phone it goes in the flow instead, above a title that lines up
+          with it, where it cannot land on anything. */}
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 select-none">
         <div className="absolute inset-y-0 right-0 hidden w-[46%] items-center justify-center md:flex">
-          <div
-            data-page-picture
-            className={`aspect-[4/3] w-[86%] max-w-[30rem] ${INK}`}
-            style={stamp}
-          />
+          <div data-page-picture className={`${PICTURE} w-[86%] max-w-[30rem]`}>
+            <Picture />
+          </div>
         </div>
       </div>
 
@@ -52,9 +67,10 @@ export default function Custom404() {
         <div
           role="img"
           aria-label="this is not a page pipe meme joke"
-          className={`mx-auto mb-group aspect-[4/3] w-full md:hidden ${INK}`}
-          style={stamp}
-        />
+          className={`${PICTURE} mx-auto mb-group md:hidden`}
+        >
+          <Picture />
+        </div>
         {/* All of it is behind the glass until the looking glass passes over. */}
         <Header title="404 - Page Not Found" />
         <p>Sorry but this page does not exist</p>

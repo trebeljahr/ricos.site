@@ -23,8 +23,11 @@ const HIDDEN_PAGES = [
 const KEEP_CLEAR = "main h1, main p, [data-page-picture]";
 /** Room left around everything a hiding place keeps off, and around the next. */
 const ROOM = 16;
-/** Jitters tried inside a cell before the link moves on to another one. */
-const TRIES = 24;
+/** How finely the free space is sampled when working out where to put them. */
+const SAMPLE = 14;
+/** Rounds of settling, and passes of tidying up afterwards. */
+const SETTLE = 40;
+const NUDGES = 26;
 const KEY_STEP = 52;
 const HINT_AFTER_MS = 5000;
 /** Under the navbar (z-999) and the footer, which are never behind the glass. */
@@ -84,81 +87,167 @@ const SearchPartyEgg = () => {
   }, [recordFind]);
 
   /** Deals the links out over the whole window, anywhere the words and the
-      picture are not — above the title, beside the picture, under both. One
-      to a cell of a grid laid over the window, rather than anywhere at all,
-      so they come out spread instead of clumped. */
+      picture are not. They are dropped on a grid to start with and then left
+      to settle: every round each link is pushed off its neighbours and out of
+      whatever it is sitting on, so what comes out is evenly spaced rather
+      than evenly random — no clusters, and the same air around each one. */
   useLayoutEffect(() => {
     if (!hiding || !mounted) return;
 
     const place = () => {
-      const avoid: Box[] = [...document.querySelectorAll<HTMLElement>(KEEP_CLEAR)].map((el) =>
-        el.getBoundingClientRect(),
-      );
+      const blocked: Box[] = [...document.querySelectorAll<HTMLElement>(KEEP_CLEAR)]
+        .map((el) => el.getBoundingClientRect())
+        .filter((box) => box.width > 0 && box.height > 0);
       const navbar = document.querySelector<HTMLElement>("header#navbar")?.getBoundingClientRect();
       const footer = document.querySelector<HTMLElement>("body footer")?.getBoundingClientRect();
-      const top = (navbar?.bottom ?? 0) + ROOM;
-      const floor = (footer && footer.top < innerHeight ? footer.top : innerHeight) - ROOM;
-      const band = { left: ROOM, right: innerWidth - ROOM, top, bottom: floor };
-
-      // A grid of roughly square cells, with a few to spare so that a link
-      // whose cell is taken up by the picture has somewhere else to go.
-      const across = Math.max(
-        1,
-        Math.round(
-          Math.sqrt(
-            HIDDEN_PAGES.length *
-              1.35 *
-              ((band.right - band.left) / Math.max(1, band.bottom - band.top)),
-          ),
-        ),
-      );
-      const down = Math.max(1, Math.ceil((HIDDEN_PAGES.length * 1.35) / across));
-      const cellW = (band.right - band.left) / across;
-      const cellH = (band.bottom - band.top) / down;
-      const cells = [...Array(across * down).keys()];
-      for (let i = cells.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [cells[i], cells[j]] = [cells[j], cells[i]];
-      }
-
-      const taken: Box[] = [];
-      const fits = (x: number, y: number, width: number, height: number) => {
-        const box = {
-          left: x - ROOM,
-          right: x + width + ROOM,
-          top: y - ROOM,
-          bottom: y + height + ROOM,
-        };
-        if (box.left < 0 || box.right > innerWidth) return null;
-        if (box.top < top - ROOM || box.bottom > floor + ROOM) return null;
-        if (avoid.some((other) => clash(box, other))) return null;
-        if (taken.some((other) => clash(box, other))) return null;
-        return box;
+      const band = {
+        left: ROOM,
+        right: innerWidth - ROOM,
+        top: (navbar?.bottom ?? 0) + ROOM,
+        bottom: (footer && footer.top < innerHeight ? footer.top : innerHeight) - ROOM,
       };
 
-      let next = 0;
-      setSpots(
-        chipRefs.current.map((el) => {
-          const { width, height } = el?.getBoundingClientRect() ?? { width: 130, height: 28 };
-          // Walk the cells from wherever the last link stopped, so every link
-          // ends up in a cell of its own and the window fills evenly.
-          for (let step = 0; step < cells.length; step++) {
-            const cell = cells[(next + step) % cells.length];
-            const originX = band.left + (cell % across) * cellW;
-            const originY = band.top + Math.floor(cell / across) * cellH;
-            for (let tries = 0; tries < TRIES; tries++) {
-              const x = originX + Math.random() * Math.max(1, cellW - width);
-              const y = originY + Math.random() * Math.max(1, cellH - height);
-              const box = fits(x, y, width, height);
-              if (!box) continue;
-              taken.push(box);
-              next += step + 1;
-              return { x, y };
+      const sizes = chipRefs.current.map((el) => {
+        const { width, height } = el?.getBoundingClientRect() ?? { width: 130, height: 28 };
+        return { width, height };
+      });
+      const count = sizes.length;
+      if (!count) return;
+
+      // The window, sampled on a coarse grid. Every point on it is ground a
+      // link might stand on, and the shape of that ground is what the spread
+      // below is measured against.
+      const open: number[][] = [];
+      for (let y = band.top; y <= band.bottom; y += SAMPLE) {
+        for (let x = band.left; x <= band.right; x += SAMPLE) open.push([x, y]);
+      }
+
+      const wide = band.right - band.left;
+      const tall = Math.max(1, band.bottom - band.top);
+      const at = sizes.map((size, i) => ({
+        x: band.left + ((i % 4) + 0.5) * (wide / 4),
+        y: band.top + ((Math.floor(i / 4) % 3) + 0.5) * (tall / 3),
+        ...size,
+      }));
+
+      // Which of those points each link could actually stand on: a link is as
+      // wide as its name, so a point that would hang a long one over the words
+      // is ground only the short ones can use.
+      const standable = at.map((one) => {
+        const halfW = one.width / 2 + ROOM;
+        const halfH = one.height / 2 + ROOM;
+        return open.map(
+          ([x, y]) =>
+            x >= band.left + halfW &&
+            x <= band.right - halfW &&
+            y >= band.top + halfH &&
+            y <= band.bottom - halfH &&
+            !blocked.some(
+              (b) =>
+                x + halfW > b.left &&
+                x - halfW < b.right &&
+                y + halfH > b.top &&
+                y - halfH < b.bottom,
+            ),
+        );
+      });
+
+      // Each link takes the middle of the ground that is nearer to it than to
+      // any other, over and over, until every one of them holds about the same
+      // amount. Even ground, rather than even spacing: links can sit a fixed
+      // distance apart in a row and still leave half the window empty.
+      for (let round = 0; round < SETTLE; round++) {
+        const pull = at.map(() => ({ x: 0, y: 0, n: 0 }));
+        for (let s = 0; s < open.length; s++) {
+          const [x, y] = open[s];
+          let nearest = -1;
+          let best = Number.POSITIVE_INFINITY;
+          for (let i = 0; i < count; i++) {
+            if (!standable[i][s]) continue;
+            const away = (at[i].x - x) ** 2 + (at[i].y - y) ** 2;
+            if (away < best) {
+              best = away;
+              nearest = i;
             }
           }
-          return { x: band.left, y: band.top };
-        }),
-      );
+          if (nearest < 0) continue;
+          pull[nearest].x += x;
+          pull[nearest].y += y;
+          pull[nearest].n++;
+        }
+        for (let i = 0; i < count; i++) {
+          if (!pull[i].n) continue;
+          at[i].x = pull[i].x / pull[i].n;
+          at[i].y = pull[i].y / pull[i].n;
+        }
+      }
+
+      const boxOf = (one: (typeof at)[number]) => ({
+        left: one.x - one.width / 2 - ROOM,
+        right: one.x + one.width / 2 + ROOM,
+        top: one.y - one.height / 2 - ROOM,
+        bottom: one.y + one.height / 2 + ROOM,
+      });
+
+      // Middles can be evenly spread and still leave two long links touching,
+      // so they are separated by their boxes afterwards, and anything left
+      // sitting on the words or the picture is moved off outright.
+      for (let pass = 0; pass < NUDGES; pass++) {
+        for (let i = 0; i < count; i++) {
+          for (let j = i + 1; j < count; j++) {
+            const a = boxOf(at[i]);
+            const b = boxOf(at[j]);
+            if (!clash(a, b)) continue;
+            const overX = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+            const overY = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+            if (overX < overY) {
+              const push = (overX / 2) * (at[i].x < at[j].x ? -1 : 1);
+              at[i].x += push;
+              at[j].x -= push;
+            } else {
+              const push = (overY / 2) * (at[i].y < at[j].y ? -1 : 1);
+              at[i].y += push;
+              at[j].y -= push;
+            }
+          }
+        }
+        for (let i = 0; i < count; i++) {
+          const halfW = at[i].width / 2 + ROOM;
+          const halfH = at[i].height / 2 + ROOM;
+          for (const other of blocked) {
+            const box = boxOf(at[i]);
+            if (!clash(box, other)) continue;
+            // Four ways out. A link held against the edge of the window cannot
+            // take the nearest one, so the shortest that it can actually take
+            // is the one it takes.
+            const ways = [
+              { x: other.left - box.right, y: 0 },
+              { x: other.right - box.left, y: 0 },
+              { x: 0, y: other.top - box.bottom },
+              { x: 0, y: other.bottom - box.top },
+            ]
+              .filter((way) => {
+                const x = at[i].x + way.x;
+                const y = at[i].y + way.y;
+                return (
+                  x >= band.left + halfW &&
+                  x <= band.right - halfW &&
+                  y >= band.top + halfH &&
+                  y <= band.bottom - halfH
+                );
+              })
+              .sort((a, b) => Math.hypot(a.x, a.y) - Math.hypot(b.x, b.y));
+            const way = ways[0];
+            if (!way) continue;
+            at[i].x += way.x;
+            at[i].y += way.y;
+          }
+          at[i].x = Math.min(Math.max(at[i].x, band.left + halfW), band.right - halfW);
+          at[i].y = Math.min(Math.max(at[i].y, band.top + halfH), band.bottom - halfH);
+        }
+      }
+
+      setSpots(at.map((one) => ({ x: one.x - one.width / 2, y: one.y - one.height / 2 })));
     };
 
     place();

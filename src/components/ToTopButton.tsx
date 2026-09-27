@@ -98,7 +98,7 @@ export function ToTopButton() {
   };
 
   return (
-    <ShowAfterScrolling>
+    <ShowAfterScrolling afterScreens={1}>
       <button
         ref={buttonRef}
         type="button"

@@ -10,7 +10,7 @@ import { NightOwl } from "./EasterEggs/NightOwl";
  */
 export const SiteFooter = () => {
   return (
-    <footer className="relative mt-region border-t border-gray-200 dark:border-gray-800 py-group px-gutter text-sm text-gray-600 dark:text-gray-400">
+    <footer className="site-footer relative mt-region border-t border-gray-200 dark:border-gray-800 py-group px-gutter text-sm text-gray-600 dark:text-gray-400">
       <NightOwl />
       <div className="mx-auto max-w-(--breakpoint-lg) flex flex-col items-center gap-3 text-center">
         {/* Plain inline text, not flex, so the byline copies as "Made with

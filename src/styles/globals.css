@@ -905,6 +905,40 @@ a {
 }
 
 /*
+ * The to-top button parks above the site footer instead of scrolling over it.
+ * The footer names a view timeline, and html widens its scope to the whole page
+ * so the fixed button, elsewhere in the tree, can run on it. Across the
+ * footer's entry the button rises 1:1 with the scroll, 1000px of travel over
+ * 1000px of range, so the footer's height never needs measuring: the page ends
+ * at the footer's bottom edge, which stops the rise at exactly that height.
+ * ToTopButton does the same from a listener where this is unsupported.
+ */
+html {
+  timeline-scope: --site-footer;
+}
+
+.site-footer {
+  view-timeline: --site-footer block;
+}
+
+@keyframes lift-above-footer {
+  to {
+    transform: translateY(-1000px);
+  }
+}
+
+@supports (animation-timeline: view()) and (timeline-scope: none) {
+  /* Longhands, because the `animation` shorthand resets animation-timeline. */
+  .lift-above-footer {
+    animation-name: lift-above-footer;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --site-footer;
+    animation-range: entry 0% entry 1000px;
+  }
+}
+
+/*
  * Table of contents scroll spy. The marker sits in a gutter to the left of the
  * bullets and is moved by two custom properties the observer writes.
  */

@@ -37,6 +37,36 @@ export function ToTopButton({ onScrollToTop }: Props = {}) {
 
   useEffect(() => () => stopTrip.current(), []);
 
+  // Chrome, Edge and Safari park the button above the footer in CSS (see
+  // .lift-above-footer). Firefox, without scroll timelines, gets it from here.
+  // The check matches the CSS @supports, so exactly one of the two runs.
+  useEffect(() => {
+    if (CSS.supports("(animation-timeline: view()) and (timeline-scope: none)")) return;
+    const button = buttonRef.current;
+    const footer = document.querySelector<HTMLElement>(".site-footer");
+    if (!button || !footer) return;
+
+    let raf = 0;
+    const lift = () => {
+      raf = 0;
+      const showing = window.innerHeight - footer.getBoundingClientRect().top;
+      button.style.transform = showing > 0 ? `translateY(${-showing}px)` : "";
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(lift);
+    };
+
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+    lift();
+
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, []);
+
   const handleClick = () => {
     if (onScrollToTop) {
       burst("up");
@@ -93,7 +123,7 @@ export function ToTopButton({ onScrollToTop }: Props = {}) {
         ref={buttonRef}
         type="button"
         onClick={handleClick}
-        className="fixed bottom-[2vmin] right-[2vmin] cursor-pointer w-fit h-fit p-2 rounded-full flex justify-center items-center z-10 border-none bg-blue-300 text-center hover:bg-blue-400 sm:bottom-[4vmin] sm:right-[8vmin] text-black motion-safe:transition-[translate,scale,background-color] motion-safe:duration-150 motion-safe:ease-out hover:-translate-y-[2px] active:translate-y-[1px] active:scale-90"
+        className="lift-above-footer fixed bottom-[2vmin] right-[2vmin] cursor-pointer w-fit h-fit p-2 rounded-full flex justify-center items-center z-10 border-none bg-blue-300 text-center hover:bg-blue-400 sm:bottom-[4vmin] sm:right-[8vmin] text-black motion-safe:transition-[translate,scale,background-color] motion-safe:duration-150 motion-safe:ease-out hover:-translate-y-[2px] active:translate-y-[1px] active:scale-90"
         aria-label="Scroll to top"
       >
         <GlitterPool ref={glitterRef} />

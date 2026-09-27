@@ -1,5 +1,5 @@
 /**
- * /needlestack/[door] — the paths behind one door.
+ * /needlestack-2/[door] — the paths behind one door.
  *
  * Every path in the door is listed, including the ones with nothing published
  * yet: the list of intents is itself the map, and a reader who sees "Start
@@ -26,7 +26,7 @@ type Props = {
 };
 
 export default function DoorPage({ seo, door, sections, total }: Props) {
-  const url = `needlestack/${door.id}`;
+  const url = `needlestack-2/${door.id}`;
   const others = DOORS.filter((other) => other.id !== door.id);
 
   return (
@@ -43,7 +43,7 @@ export default function DoorPage({ seo, door, sections, total }: Props) {
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },
-          { name: "Needlestack", url: "/needlestack" },
+          { name: "Needlestack 2", url: "/needlestack-2" },
           { name: door.title, url: `/${url}` },
         ]}
       />
@@ -74,7 +74,7 @@ export default function DoorPage({ seo, door, sections, total }: Props) {
               {others.map((other) => (
                 <li key={other.id} className="list-none">
                   <Link
-                    href={`/needlestack/${other.id}`}
+                    href={`/needlestack-2/${other.id}`}
                     className="inline-block rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700 no-underline transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
                   >
                     {other.title}
@@ -83,7 +83,7 @@ export default function DoorPage({ seo, door, sections, total }: Props) {
               ))}
             </ul>
             <p className="mt-para">
-              Or rummage through <Link href="/needlestack/archive">the whole archive</Link>.
+              Or rummage through <Link href="/needlestack-2/archive">the whole archive</Link>.
             </p>
           </nav>
         </article>
@@ -113,7 +113,7 @@ export async function getStaticProps({ params }: { params: { door: string } }) {
 
   return {
     props: {
-      seo: getSeoInfo(`/needlestack/${door.id}`),
+      seo: getSeoInfo(`/needlestack-2/${door.id}`),
       door: { id: door.id, title: door.title, blurb: door.blurb },
       sections,
       total: sections.reduce((sum, section) => sum + section.needles.length, 0),

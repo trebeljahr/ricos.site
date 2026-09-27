@@ -1,14 +1,17 @@
 /**
- * /needlestack — the front of the stack.
+ * /needlestack-2 — the front of the rewritten stack.
  *
  * The old page was one list of ~490 links grouped by format, which only helps
  * someone who already knows what they want. This one asks the reader what they
  * are after instead: six doors, and behind each a handful of paths. What the
  * page shows of the archive itself is small on purpose — the highest-rated
  * needles Rico wrote something about.
+ *
+ * It lives beside the old page, which stays untouched at /needlestack (the
+ * markdown through src/pages/[id].tsx, haystack egg included) until these
+ * pages carry the same links.
  */
 import { Card } from "@components/Card";
-import { NeedleEgg } from "@components/EasterEggs/Needle";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NeedleCard } from "@components/Needlestack/NeedleCard";
@@ -16,7 +19,6 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import Link from "next/link";
-import { useRef } from "react";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import type { DoorCount, PublicNeedle } from "src/lib/needlestack/public";
 import { DOORS, type DoorId } from "src/lib/needlestack/taxonomy";
@@ -36,8 +38,7 @@ const countLine = ({ needles, paths }: DoorCount) => {
 };
 
 export default function NeedlestackPage({ seo, shelf, counts, total }: Props) {
-  const articleRef = useRef<HTMLElement>(null);
-  const url = "needlestack";
+  const url = "needlestack-2";
 
   return (
     <Layout
@@ -50,15 +51,18 @@ export default function NeedlestackPage({ seo, shelf, counts, total }: Props) {
       imageAlt={seo?.ogImageAlt || "A stack of needles"}
       url={url}
       keywords={seo?.keywords || ["needlestack", "curated links", "best of internet"]}
+      // /needlestack is the indexed page on this subject until the rewrite has
+      // something published; an empty hub would only compete with it.
+      noindex={total === 0}
     >
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },
-          { name: "Needlestack", url: "/needlestack" },
+          { name: "Needlestack 2", url: "/needlestack-2" },
         ]}
       />
       <PageMain>
-        <article ref={articleRef}>
+        <article>
           <Header
             breadcrumbs={{ path: url }}
             title="Needlestack"
@@ -94,7 +98,7 @@ export default function NeedlestackPage({ seo, shelf, counts, total }: Props) {
             <p>
               Pick a door below. Each one holds a few paths, and a path is an ordered list with my
               notes on why each thing is there. If you would rather rummage, the{" "}
-              <Link href="/needlestack/archive">archive</Link> holds everything at once, with
+              <Link href="/needlestack-2/archive">archive</Link> holds everything at once, with
               filters and a button that picks for you.
             </p>
           </div>
@@ -122,7 +126,7 @@ export default function NeedlestackPage({ seo, shelf, counts, total }: Props) {
               {DOORS.map((door) => (
                 <Card
                   key={door.id}
-                  link={`/needlestack/${door.id}`}
+                  link={`/needlestack-2/${door.id}`}
                   title={door.title}
                   excerpt={door.blurb}
                   headingAs="h3"
@@ -141,15 +145,12 @@ export default function NeedlestackPage({ seo, shelf, counts, total }: Props) {
               {total === 0
                 ? "The archive is being re-sorted link by link, so the paths above fill up slowly. Nothing is published from it yet."
                 : `The ${total} needles that made it through, filterable by topic, type, level, time and how highly I rate them.`}{" "}
-              <Link href="/needlestack/archive">Open the archive</Link>, or read{" "}
-              <Link href="/needlestack/everything">the old page</Link>, which is the whole list as
-              it stood before this rewrite.
+              <Link href="/needlestack-2/archive">Open the archive</Link>, or read{" "}
+              <Link href="/needlestack">the old page</Link>, which is the whole list as it stood
+              before this rewrite.
             </p>
           </section>
         </article>
-
-        {/* The haystack egg has lived on /needlestack since the old page. */}
-        <NeedleEgg container={articleRef} />
 
         <footer className="mt-section">
           <NewsletterForm />
@@ -171,7 +172,7 @@ export async function getStaticProps() {
 
   return {
     props: {
-      seo: getSeoInfo("/needlestack"),
+      seo: getSeoInfo("/needlestack-2"),
       shelf: frontShelf(needles, 6),
       counts,
       total: needles.length,

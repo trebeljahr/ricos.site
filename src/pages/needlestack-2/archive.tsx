@@ -1,5 +1,5 @@
 /**
- * /needlestack/archive — everything publishable, in one filterable list.
+ * /needlestack-2/archive — everything publishable, in one filterable list.
  *
  * The doors answer "what do I want"; this page is for rummaging. Filters are
  * built from the data that is actually published (see `archiveFacets`), so the
@@ -103,7 +103,7 @@ export default function ArchivePage({ seo, needles }: Props) {
       ?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
-  const url = "needlestack/archive";
+  const url = "needlestack-2/archive";
 
   return (
     <Layout
@@ -122,7 +122,7 @@ export default function ArchivePage({ seo, needles }: Props) {
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },
-          { name: "Needlestack", url: "/needlestack" },
+          { name: "Needlestack 2", url: "/needlestack-2" },
           { name: "Archive", url: `/${url}` },
         ]}
       />
@@ -141,8 +141,8 @@ export default function ArchivePage({ seo, needles }: Props) {
                 the ones I would vouch for come out the other side.
               </p>
               <p>
-                In the meantime, the <Link href="/needlestack">six doors</Link> say what is coming,
-                and <Link href="/needlestack/everything">the old page</Link> is the full list as it
+                In the meantime, the <Link href="/needlestack-2">six doors</Link> say what is
+                coming, and <Link href="/needlestack">the old page</Link> is the full list as it
                 stood before the rewrite.
               </p>
             </div>
@@ -293,6 +293,6 @@ export default function ArchivePage({ seo, needles }: Props) {
 export async function getStaticProps() {
   const { loadPublicNeedles } = await import("src/lib/needlestack/publicData");
   return {
-    props: { seo: getSeoInfo("/needlestack/archive"), needles: await loadPublicNeedles() },
+    props: { seo: getSeoInfo("/needlestack-2/archive"), needles: await loadPublicNeedles() },
   };
 }

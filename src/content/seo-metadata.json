@@ -6321,7 +6321,7 @@
       "content curation"
     ]
   },
-  "/needlestack/archive": {
+  "/needlestack-2/archive": {
     "metaTitle": "The Needlestack Archive - Every Curated Link",
     "metaDescription": "Every link that made it into my needlestack, filterable by topic, kind, level, time commitment and how highly I rate it.",
     "ogImage": "/assets/midjourney/a-stack-of-needles.jpg",
@@ -6334,7 +6334,7 @@
       "reading list"
     ]
   },
-  "/needlestack/understand": {
+  "/needlestack-2/understand": {
     "metaTitle": "Understand - Needlestack",
     "metaDescription": "Curated lectures, articles and videos on how brains, bodies, matter, maths and machines actually work.",
     "ogImage": "/assets/midjourney/a-stack-of-needles.jpg",
@@ -6347,7 +6347,7 @@
       "curated science links"
     ]
   },
-  "/needlestack/build": {
+  "/needlestack-2/build": {
     "metaTitle": "Build - Needlestack",
     "metaDescription": "Curated resources for learning to make things with code, silicon and a soldering iron, from zero to shaders and hardware.",
     "ogImage": "/assets/midjourney/a-stack-of-needles.jpg",
@@ -6360,7 +6360,7 @@
       "developer resources"
     ]
   },
-  "/needlestack/live": {
+  "/needlestack-2/live": {
     "metaTitle": "Live - Needlestack",
     "metaDescription": "Curated reading and watching on direction, habits, attention, health, people, long journeys and learning how to learn.",
     "ogImage": "/assets/midjourney/a-stack-of-needles.jpg",
@@ -6373,7 +6373,7 @@
       "habits and attention"
     ]
   },
-  "/needlestack/work": {
+  "/needlestack-2/work": {
     "metaTitle": "Work - Needlestack",
     "metaDescription": "Curated resources on earning a living on your own terms: solo business, first customers, writing, hiring and developer jobs.",
     "ogImage": "/assets/midjourney/a-stack-of-needles.jpg",
@@ -6386,7 +6386,7 @@
       "developer job interview"
     ]
   },
-  "/needlestack/world": {
+  "/needlestack-2/world": {
     "metaTitle": "The World - Needlestack",
     "metaDescription": "Curated reading on power, money, progress, the internet, surveillance and where AI is heading.",
     "ogImage": "/assets/midjourney/a-stack-of-needles.jpg",
@@ -6399,7 +6399,7 @@
       "privacy and surveillance"
     ]
   },
-  "/needlestack/wonder": {
+  "/needlestack-2/wonder": {
     "metaTitle": "Wonder - Needlestack",
     "metaDescription": "Curated things that are simply beautiful, strange or astonishing, including explorables you can poke and 20 minutes well spent.",
     "ogImage": "/assets/midjourney/a-stack-of-needles.jpg",

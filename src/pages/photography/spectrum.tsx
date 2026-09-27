@@ -705,7 +705,15 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
                     // The focus ring goes inside: the strip clips its own
                     // overflow, so an outset ring on a segment is invisible.
                     "focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-inset",
-                    isActive && "brightness-110",
+                    // Nothing marks the band the reader is in. It used to be
+                    // brightened, which fought the gradient it sits in — a
+                    // lightened slice of a continuous ramp reads as a seam
+                    // where there is none, and the ramp is the thing the strip
+                    // exists to show. The stripe already says where they are,
+                    // to the photograph rather than to the band, so the
+                    // highlight was a second, coarser answer to a question
+                    // that had a better one. `aria-current` below still
+                    // carries it for anyone not looking at the colours.
                   )}
                 />
               );

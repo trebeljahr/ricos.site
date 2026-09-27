@@ -13,13 +13,13 @@ export default function Custom404() {
       image="/assets/blog/404.jpg"
       imageAlt="this is not a page pipe meme joke"
     >
-      <PageMain>
+      <PageMain className="min-h-[80vh]">
         <Header title="404 - Page Not Found" />
         <p>Sorry but this page does not exist</p>
         <TrySomeOfThese />
-        {/* The empty part of the page is full of smoke, with links hidden in it. */}
-        <SearchPartyEgg />
       </PageMain>
+      {/* Smoke over the whole page, with links hidden in it. */}
+      <SearchPartyEgg />
     </Layout>
   );
 }

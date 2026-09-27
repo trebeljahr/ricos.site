@@ -41,8 +41,8 @@ export function CodeWithCopyButton({
 
   return (
     // No `relative` here on purpose: the button is positioned against the
-    // figure that wraps the block, so it stays in the corner while a long
-    // line scrolls the <pre> sideways underneath it.
+    // figure that wraps the block, so it sits still in the corner while a
+    // long line scrolls the <pre> sideways underneath it.
     <pre
       ref={preRef}
       {...props}
@@ -80,7 +80,9 @@ export const CopyButton = ({ handleClick }: CopyButtonProps) => {
       type="button"
       onClick={handleClickAndConfirm}
       aria-label={copied ? "Code copied" : "Copy the code"}
-      className="code-copy-button absolute top-1.5 right-1.5 z-10 grid cursor-pointer place-items-center rounded-md px-2 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-black/5 hover:text-gray-900 motion-reduce:transition-none dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-gray-100"
+      // The chip carries the block's own background, so a long line that
+      // scrolls under it disappears behind it cleanly instead of colliding.
+      className="code-copy-button absolute top-1.5 right-1.5 z-10 grid cursor-pointer place-items-center rounded-md bg-(--shiki-light-bg) px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-transparent transition-colors hover:text-gray-900 hover:ring-gray-400/50 motion-reduce:transition-none dark:bg-(--shiki-dark-bg) dark:text-gray-400 dark:hover:text-gray-100 dark:hover:ring-gray-500/50"
     >
       {/* Both states share one grid cell, so the button keeps its width and
           the two icons cross-fade in place instead of swapping. */}

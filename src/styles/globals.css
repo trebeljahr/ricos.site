@@ -437,9 +437,6 @@ figure[data-rehype-pretty-code-figure] {
 
 figure[data-rehype-pretty-code-figure] > pre {
   border-radius: var(--radius-lg);
-  /* A reserved strip for the copy button (src/components/CodeCopyButton.tsx),
-     so it never covers the first line however narrow the block gets. */
-  padding-top: 2.25rem;
 }
 
 .rehype-code-title + figure {

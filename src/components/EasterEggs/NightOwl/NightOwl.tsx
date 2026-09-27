@@ -1,3 +1,4 @@
+import { Sprite } from "@components/Sprite";
 import { useEffect, useRef, useState } from "react";
 import { useRecordEggFind } from "src/hooks/useEasterEgg";
 import { EmojiButton } from "../EmojiButton";
@@ -246,7 +247,7 @@ export const NightOwl = () => {
                 className="after:absolute after:-inset-3 after:content-['']"
               >
                 <span ref={headRef} className="inline-block origin-bottom">
-                  🦉
+                  <Sprite name="🦉" />
                 </span>
               </EmojiButton>
             </span>
@@ -264,7 +265,7 @@ export const NightOwl = () => {
                 marginTop: feather.y,
               }}
             >
-              🪶
+              <Sprite name="🪶" />
             </span>
           ))}
           <span className="sr-only" aria-live="polite">

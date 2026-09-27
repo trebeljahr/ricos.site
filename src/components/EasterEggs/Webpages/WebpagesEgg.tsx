@@ -1,3 +1,4 @@
+import { Sprite } from "@components/Sprite";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useRef, useState } from "react";
 import { useEasterEgg } from "src/hooks/useEasterEgg";
@@ -137,7 +138,9 @@ const WebpagesEgg = () => {
           if (!busyRef.current) registerClick();
         }}
       >
-        <span ref={webRef}>🕸️</span>
+        <span ref={webRef}>
+          <Sprite name="🕸️" />
+        </span>
       </EmojiButton>
       <PageLayer>
         <AnimatePresence>
@@ -191,7 +194,7 @@ const WebpagesEgg = () => {
                       style={{ height: web.drop }}
                     />
                     <span className="rotate-180 text-2xl leading-none drop-shadow-[0_0_3px_rgba(255,255,255,0.6)]">
-                      🕷️
+                      <Sprite name="🕷️" />
                     </span>
                   </span>
                 </span>

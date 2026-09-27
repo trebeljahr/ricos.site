@@ -1,11 +1,13 @@
+import { Sprite } from "@components/Sprite";
 import { useReducedMotion } from "motion/react";
 import { useRef, useState } from "react";
 import { useEasterEgg } from "src/hooks/useEasterEgg";
+import type { EmojiSprite } from "src/lib/sprites";
 import { EmojiButton } from "../EmojiButton";
 import { PageLayer, pageBox } from "../PageLayer";
 import { useEggRunner } from "../useEggRunner";
 
-const GLOBES = ["🌍", "🌎", "🌏"];
+const GLOBES: EmojiSprite[] = ["🌍", "🌎", "🌏"];
 const CLICKS = 5;
 // Turning a globe is not a race: the clicks may be slow.
 const CLICK_WINDOW_MS = 12_000;
@@ -130,7 +132,7 @@ const TravelingEgg = () => {
         }}
       >
         <span ref={globeRef} className="inline-block">
-          {globe}
+          <Sprite name={globe} />
         </span>
       </EmojiButton>
       {flight && (
@@ -151,7 +153,7 @@ const TravelingEgg = () => {
                 className="absolute text-2xl leading-none transition-opacity duration-500"
                 style={{ left: gx + 16, top: PAD + LIFT - 44, opacity: landed ? 0 : 1 }}
               >
-                ✈️
+                <Sprite name="✈️" />
               </span>
             ) : (
               <>
@@ -197,7 +199,7 @@ const TravelingEgg = () => {
                     offsetDistance: "0%",
                   }}
                 >
-                  ✈️
+                  <Sprite name="✈️" />
                 </span>
               </>
             )}

@@ -1,11 +1,26 @@
+import { Sprite } from "@components/Sprite";
 import { useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { useEasterEgg } from "src/hooks/useEasterEgg";
+import type { EmojiSprite } from "src/lib/sprites";
 import { EmojiButton } from "../EmojiButton";
 import { useEggRunner } from "../useEggRunner";
 
-const FACES = ["🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚", "🕛"];
-const RESTING_FACE = "🕓";
+const FACES: EmojiSprite[] = [
+  "🕐",
+  "🕑",
+  "🕒",
+  "🕓",
+  "🕔",
+  "🕕",
+  "🕖",
+  "🕗",
+  "🕘",
+  "🕙",
+  "🕚",
+  "🕛",
+];
+const RESTING_FACE: EmojiSprite = "🕓";
 const RESTING_INDEX = FACES.indexOf(RESTING_FACE);
 const MIDNIGHT_INDEX = FACES.length - 1;
 
@@ -30,7 +45,7 @@ const ClockEgg = () => {
   const rewind = useRef<number | undefined>(undefined);
   /** The hour the hand stands on, so a spin carries on from the clicks. */
   const hour = useRef(RESTING_INDEX);
-  const [face, setFace] = useState(RESTING_FACE);
+  const [face, setFace] = useState<EmojiSprite>(RESTING_FACE);
 
   const showHour = (index: number) => {
     hour.current = ((index % FACES.length) + FACES.length) % FACES.length;
@@ -95,7 +110,7 @@ const ClockEgg = () => {
       }}
     >
       <span ref={faceRef} className="inline-block">
-        {face}
+        <Sprite name={face} />
       </span>
     </EmojiButton>
   );

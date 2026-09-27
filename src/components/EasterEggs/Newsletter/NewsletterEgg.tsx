@@ -1,3 +1,4 @@
+import { Sprite } from "@components/Sprite";
 import { AnimatePresence, motion, useAnimation, useReducedMotion } from "motion/react";
 import { useRef, useState } from "react";
 import { useEasterEgg } from "src/hooks/useEasterEgg";
@@ -61,7 +62,7 @@ const NewsletterEgg = () => {
         }}
       >
         <motion.span ref={envelopeRef} className="inline-block" animate={controls}>
-          💌
+          <Sprite name="💌" />
         </motion.span>
         <AnimatePresence>
           {stamped && (

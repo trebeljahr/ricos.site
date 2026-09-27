@@ -1,3 +1,4 @@
+import { Sprite } from "@components/Sprite";
 import { useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { useEasterEgg } from "src/hooks/useEasterEgg";
@@ -124,7 +125,7 @@ const WritingEgg = () => {
           if (!busyRef.current) registerClick();
         }}
       >
-        📝
+        <Sprite name="📝" />
       </EmojiButton>
     </>
   );

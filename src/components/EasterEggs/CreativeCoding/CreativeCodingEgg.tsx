@@ -1,3 +1,4 @@
+import { Sprite } from "@components/Sprite";
 import { useReducedMotion } from "motion/react";
 import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
@@ -67,7 +68,7 @@ const CreativeCodingEgg = () => {
         }}
       >
         <span ref={paletteRef} className="inline-block">
-          {calmBolt ? "⚡" : "🎨"}
+          <Sprite name={calmBolt ? "⚡" : "🎨"} />
         </span>
       </EmojiButton>
       {strike && (

@@ -1,13 +1,15 @@
+import { Sprite } from "@components/Sprite";
 import { motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useEasterEgg } from "src/hooks/useEasterEgg";
+import type { EmojiSprite } from "src/lib/sprites";
 import { EmojiButton } from "../EmojiButton";
 import { type PageBox, PageLayer, pageBox } from "../PageLayer";
 import { useEggRunner } from "../useEggRunner";
 
 // See no evil, hear no evil, speak no evil: one per click.
-const WISE_MONKEYS = ["🙈", "🙉", "🙊"];
-const REST_MONKEY = "🙊";
+const WISE_MONKEYS: EmojiSprite[] = ["🙈", "🙉", "🙊"];
+const REST_MONKEY: EmojiSprite = "🙊";
 const THROW_MS = 520;
 const SETTLE_MS = 220;
 const HOLD_MS = 700;
@@ -77,7 +79,7 @@ const MonkeyEgg = () => {
   const rowLength = useRef(0);
   const nextId = useRef(0);
   const lastClick = useRef(0);
-  const [monkey, setMonkey] = useState(REST_MONKEY);
+  const [monkey, setMonkey] = useState<EmojiSprite>(REST_MONKEY);
   const [field, setField] = useState<PageBox | null>(null);
   const [bananas, setBananas] = useState<Banana[]>([]);
   const [clearing, setClearing] = useState(false);
@@ -192,7 +194,7 @@ const MonkeyEgg = () => {
         }}
       >
         <span ref={monkeyRef} className="inline-block">
-          {monkey}
+          <Sprite name={monkey} />
         </span>
       </EmojiButton>
       {field && bananas.length > 0 && (
@@ -233,7 +235,7 @@ const MonkeyEgg = () => {
                       : { duration: THROW_MS / 1000, ease: [0.3, 0.7, 0.5, 1] }
                 }
               >
-                🍌
+                <Sprite name="🍌" />
               </motion.span>
             );
           })}

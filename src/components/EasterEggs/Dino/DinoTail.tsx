@@ -1,3 +1,4 @@
+import { Sprite } from "@components/Sprite";
 import { type RefObject, useEffect, useRef, useState } from "react";
 import { useRecordEggFind } from "src/hooks/useEasterEgg";
 import { PageLayer, pageBox } from "../PageLayer";
@@ -212,7 +213,7 @@ const DinoTail = ({ anchorRef }: { anchorRef: RefObject<HTMLElement | null> }) =
               className="inline-block origin-[50%_100%]"
               style={{ fontSize: DINO_SIZE, lineHeight: 1 }}
             >
-              🦕
+              <Sprite name="🦕" />
             </span>
           </span>
         </button>

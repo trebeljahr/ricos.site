@@ -1,3 +1,4 @@
+import { Sprite } from "@components/Sprite";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { useEasterEgg } from "src/hooks/useEasterEgg";
@@ -202,7 +203,7 @@ const PenEgg = ({ children }: Props) => {
             y: { duration: (phase === "lift" ? LIFT_MS : 140) / 1000 },
           }}
         >
-          ✏️
+          <Sprite name="✏️" />
         </motion.span>
       </EmojiButton>{" "}
       <span ref={lineRef} className="relative inline-block">
@@ -290,7 +291,7 @@ const PenEgg = ({ children }: Props) => {
                   y: { duration: LIFT_MS / 1000 },
                 }}
               >
-                🧽
+                <Sprite name="🧽" />
               </motion.span>
             </EmojiButton>
           </motion.span>

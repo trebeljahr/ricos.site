@@ -1,7 +1,3 @@
-export const HandEmoji = () => {
-  return (
-    <span role="img" aria-label="Hand waving">
-      👋🏻
-    </span>
-  );
-};
+import { Sprite } from "@components/Sprite";
+
+export const HandEmoji = () => <Sprite name="👋🏻" alt="Hand waving" />;

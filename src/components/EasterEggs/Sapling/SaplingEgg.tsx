@@ -1,6 +1,8 @@
+import { Sprite } from "@components/Sprite";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCallback, useRef, useState } from "react";
 import { useEasterEgg } from "src/hooks/useEasterEgg";
+import type { EmojiSprite } from "src/lib/sprites";
 import { EmojiButton } from "../EmojiButton";
 import { clampPageX, PageLayer, pageBox } from "../PageLayer";
 import { useEggRunner } from "../useEggRunner";
@@ -15,7 +17,7 @@ const SKY_HEIGHT = 54;
 const SKY_WIDTH = 340;
 
 // One drifts over for every click: weather passing while you water.
-const CLOUD = "☁️";
+const CLOUD: EmojiSprite = "☁️";
 const CLOUD_SIZES = [0.85, 1.05, 0.95, 1.15];
 
 type Sky = { left: number; top: number; width: number };
@@ -126,7 +128,7 @@ const SaplingEgg = () => {
         }}
       >
         <span ref={plantRef} className="inline-block origin-bottom">
-          {grown ? "🌳" : "🌱"}
+          <Sprite name={grown ? "🌳" : "🌱"} />
         </span>
         <AnimatePresence>
           {pours.map((pour) => (
@@ -139,7 +141,7 @@ const SaplingEgg = () => {
                 transition={{ duration: 1, times: [0, 0.25, 0.7, 1], ease: "easeOut" }}
                 onAnimationComplete={() => pourDone(pour.id)}
               >
-                🫗
+                <Sprite name="🫗" />
               </motion.span>
               {pour.drops.map((drop) => (
                 <motion.span
@@ -149,7 +151,7 @@ const SaplingEgg = () => {
                   animate={{ y: "2.6em", opacity: [0, 1, 1, 0] }}
                   transition={{ duration: 0.5, delay: 0.2 + drop.delay, ease: "easeIn" }}
                 >
-                  💧
+                  <Sprite name="💧" />
                 </motion.span>
               ))}
             </span>
@@ -179,7 +181,7 @@ const SaplingEgg = () => {
                   transition={{ duration: WATER_MS / 1000, ease: "linear" }}
                   onAnimationComplete={() => cloudDone(cloud.id)}
                 >
-                  {CLOUD}
+                  <Sprite name={CLOUD} />
                 </motion.span>
               ))}
             </AnimatePresence>

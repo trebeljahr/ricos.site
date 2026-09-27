@@ -1,3 +1,5 @@
+import type { EmojiSprite } from "./sprites";
+
 export const EASTER_EGGS_STORAGE_KEY = "easter-eggs:found";
 /** Fired on window after a new egg is recorded. */
 export const EASTER_EGGS_CHANGED_EVENT = "easter-eggs:changed";
@@ -5,7 +7,7 @@ export const EASTER_EGGS_CHANGED_EVENT = "easter-eggs:changed";
 export type EasterEgg = {
   id: string;
   /** What the egg does, shown on /eggs once found. */
-  emoji: string;
+  emoji: EmojiSprite;
   /** Shown on /eggs once found. */
   name: string;
   /** Where to look, shown on /eggs before it is found. */
@@ -16,7 +18,7 @@ export type EasterEgg = {
 export const EASTER_EGGS = [
   {
     id: "waving-hand",
-    emoji: "👋",
+    emoji: "👋🏻",
     name: "The waving hand",
     where: { hint: "Somewhere on", label: "the home page", href: "/" },
   },
@@ -131,6 +133,12 @@ export const EASTER_EGGS = [
       label: "a page that does not exist",
       href: "/this-page-does-not-exist",
     },
+  },
+  {
+    id: "easter-bunny",
+    emoji: "🐇",
+    name: "The Easter bunny",
+    where: { hint: "Somewhere in", label: "the footer", href: "#site-footer" },
   },
 ] as const satisfies readonly EasterEgg[];
 

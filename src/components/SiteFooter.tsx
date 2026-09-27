@@ -10,7 +10,10 @@ import { NightOwl } from "./EasterEggs/NightOwl";
  */
 export const SiteFooter = () => {
   return (
-    <footer className="site-footer relative mt-region border-t border-gray-200 dark:border-gray-800 py-group px-gutter text-sm text-gray-600 dark:text-gray-400">
+    <footer
+      id="site-footer"
+      className="site-footer relative mt-region border-t border-gray-200 dark:border-gray-800 py-group px-gutter text-sm text-gray-600 dark:text-gray-400"
+    >
       <NightOwl />
       {/* Narrow screens: the byline on top, the links wrapping underneath it.
           From lg the byline takes the middle of three columns, and the two

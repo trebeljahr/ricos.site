@@ -1,3 +1,4 @@
+import { Sprite } from "@components/Sprite";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -94,7 +95,9 @@ const PhotographyEgg = ({ photos }: { photos: EggPhoto[] }) => {
     <>
       Photography{" "}
       <EmojiButton label="Camera" onClick={() => registerClick()}>
-        <span ref={cameraRef}>📸</span>
+        <span ref={cameraRef}>
+          <Sprite name="📸" />
+        </span>
       </EmojiButton>
       <PageLayer>
         {flash !== null && (

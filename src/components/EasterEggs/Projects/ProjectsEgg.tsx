@@ -1,3 +1,4 @@
+import { Sprite } from "@components/Sprite";
 import { AnimatePresence, motion, useAnimation, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { useEasterEgg } from "src/hooks/useEasterEgg";
@@ -117,8 +118,8 @@ const ProjectsEgg = () => {
               }
               transition={{ duration: reduceMotion ? 0.2 : 0.35, ease: "easeOut" }}
             >
-              <span>🚧</span>
-              <span>🚧</span>
+              <Sprite name="🚧" />
+              <Sprite name="🚧" />
             </motion.span>
           )}
         </AnimatePresence>
@@ -130,7 +131,7 @@ const ProjectsEgg = () => {
         }}
       >
         <motion.span className="inline-block origin-bottom-left" animate={tools}>
-          🛠️
+          <Sprite name="🛠️" />
         </motion.span>
       </EmojiButton>
     </>

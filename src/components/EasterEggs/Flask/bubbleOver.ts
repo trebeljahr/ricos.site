@@ -1,3 +1,5 @@
+import { spriteSrc } from "src/lib/sprites";
+
 type Bubble = {
   x: number;
   y: number;
@@ -65,14 +67,15 @@ function drawBubble(ctx: CanvasRenderingContext2D, b: Bubble) {
 /** Soft fallback for reduced motion: one still bubble emoji next to the logo that fades. */
 function calmBubble(logo: HTMLElement) {
   const rect = logo.getBoundingClientRect();
-  const el = document.createElement("span");
-  el.textContent = "🫧";
-  el.setAttribute("aria-hidden", "true");
+  const el = document.createElement("img");
+  el.src = spriteSrc("🫧");
+  el.alt = "";
   Object.assign(el.style, {
     position: "fixed",
     left: `${rect.right + 2}px`,
     top: `${rect.top - 6}px`,
-    fontSize: "16px",
+    width: "16px",
+    height: "16px",
     pointerEvents: "none",
     zIndex: "1000",
   });

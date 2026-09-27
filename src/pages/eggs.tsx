@@ -1,8 +1,10 @@
 import Layout from "@components/Layout";
 import Header, { PageMain } from "@components/PostHeader";
+import { Sprite } from "@components/Sprite";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { EASTER_EGGS, EASTER_EGGS_CHANGED_EVENT, getFoundEggs } from "src/lib/easterEggs";
+import { EASTER_EGG_SPRITES } from "src/lib/sprites";
 
 export default function EggsPage() {
   // null until mounted: finds live in this browser's storage, so the server cannot know them.
@@ -45,15 +47,19 @@ export default function EggsPage() {
             a few times. This page remembers what you found in this browser only.
           </p>
           <ul className="not-prose mt-group list-none p-0">
-            {EASTER_EGGS.map((egg) => {
+            {EASTER_EGGS.map((egg, index) => {
               const isFound = found?.has(egg.id) ?? false;
               return (
                 <li
                   key={egg.id}
                   className="flex items-baseline gap-3 border-b border-gray-200 py-3 last:border-b-0 dark:border-gray-800"
                 >
-                  <span aria-hidden="true" className="w-6 shrink-0 text-center">
-                    {isFound ? egg.emoji : "🥚"}
+                  <span className="w-6 shrink-0 text-center">
+                    <Sprite
+                      name={
+                        isFound ? egg.emoji : EASTER_EGG_SPRITES[index % EASTER_EGG_SPRITES.length]
+                      }
+                    />
                   </span>
                   {isFound ? (
                     <span className="font-semibold">{egg.name}</span>

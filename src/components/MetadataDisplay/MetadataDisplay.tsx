@@ -1,5 +1,6 @@
 import { ClockEgg } from "@components/EasterEggs/Clock";
 import { PenEgg } from "@components/EasterEggs/Pen";
+import { Sprite } from "@components/Sprite";
 import { format } from "date-fns";
 
 type Props = {
@@ -34,13 +35,25 @@ const _MetadataDisplay = ({
     <div className="text-sm text-gray-700 dark:text-gray-200">
       {readingTime && (
         <span className="text-sm mr-4 mb-hair mt-hair">
-          {eggs ? <ClockEgg /> : "🕓"} {readingTime} min
+          {eggs ? <ClockEgg /> : <Sprite name="🕓" />} {readingTime} min
         </span>
       )}
       {amountOfStories && (
-        <span className="text-sm mr-4 mb-hair mt-hair">📚 {amountOfStories} stories</span>
+        <span className="text-sm mr-4 mb-hair mt-hair">
+          <Sprite name="📚" /> {amountOfStories} stories
+        </span>
       )}
-      {date && <span>{eggs ? <PenEgg>{dateLine}</PenEgg> : <>✏️ {dateLine}</>}</span>}
+      {date && (
+        <span>
+          {eggs ? (
+            <PenEgg>{dateLine}</PenEgg>
+          ) : (
+            <>
+              <Sprite name="✏️" /> {dateLine}
+            </>
+          )}
+        </span>
+      )}
     </div>
   );
 };

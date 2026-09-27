@@ -1,3 +1,4 @@
+import { Sprite } from "@components/Sprite";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useRef, useState } from "react";
 import { useEasterEgg } from "src/hooks/useEasterEgg";
@@ -57,7 +58,7 @@ const TrophyEgg = ({ rating }: { rating: number }) => {
         }}
       >
         <span ref={trophyRef} className="inline-block">
-          🏆
+          <Sprite name="🏆" />
         </span>
       </EmojiButton>
       <AnimatePresence>
@@ -90,7 +91,7 @@ const TrophyEgg = ({ rating }: { rating: number }) => {
                       }
                 }
               >
-                ⭐
+                <Sprite name="⭐" />
               </motion.span>
             ))}
           </motion.span>

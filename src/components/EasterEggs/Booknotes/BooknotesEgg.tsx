@@ -1,3 +1,4 @@
+import { Sprite } from "@components/Sprite";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useEasterEgg } from "src/hooks/useEasterEgg";
@@ -119,7 +120,7 @@ const BooknotesEgg = () => {
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: "spring", stiffness: 500, damping: 18 }}
         >
-          {bubble ? "📖" : "📚"}
+          <Sprite name={bubble ? "📖" : "📚"} />
         </motion.span>
       </EmojiButton>
       <PageLayer>

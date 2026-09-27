@@ -1,3 +1,4 @@
+import { GlitterPool, useGlitter } from "@components/Glitter";
 import { FaClipboard } from "@components/Icons";
 import clsx from "clsx";
 import { type DetailedHTMLProps, type HTMLAttributes, useEffect, useRef, useState } from "react";
@@ -42,7 +43,8 @@ export function CodeWithCopyButton({
   return (
     // No `relative` here on purpose: the button is positioned against the
     // figure that wraps the block, so it sits still in the corner while a
-    // long line scrolls the <pre> sideways underneath it.
+    // long line scrolls the <pre> sideways underneath it. Leaving the <pre>
+    // static also keeps its `overflow-x` from clipping the glitter.
     <pre
       ref={preRef}
       {...props}
@@ -65,12 +67,14 @@ export const CopyButton = ({ handleClick }: CopyButtonProps) => {
   // runs again on a second copy instead of sitting on its finished frame.
   const [copies, setCopies] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const { glitterRef, burst } = useGlitter();
   useEffect(() => () => clearTimeout(timer.current), []);
 
   const handleClickAndConfirm = () => {
     handleClick();
     setCopied(true);
     setCopies((count) => count + 1);
+    burst("up");
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setCopied(false), 3000);
   };
@@ -80,12 +84,19 @@ export const CopyButton = ({ handleClick }: CopyButtonProps) => {
       type="button"
       onClick={handleClickAndConfirm}
       aria-label={copied ? "Code copied" : "Copy the code"}
-      // The chip carries the block's own background, so a long line that
-      // scrolls under it disappears behind it cleanly instead of colliding.
-      className="code-copy-button absolute top-1.5 right-1.5 z-10 grid cursor-pointer place-items-center rounded-md bg-(--shiki-light-bg) px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-transparent transition-colors hover:text-gray-900 hover:ring-gray-400/50 motion-reduce:transition-none dark:bg-(--shiki-dark-bg) dark:text-gray-400 dark:hover:text-gray-100 dark:hover:ring-gray-500/50"
+      // The chip is centred on the first line, not parked at a fixed offset,
+      // so it tracks the line height at every prose step. `0.5lh` only means
+      // the code's half-line if the button carries the code's font size, and
+      // the <pre>-to-<code> ratio changes at each step of
+      // `prose md:prose-lg xl:prose-xl` (1, 8/9, 9/10) -- hence the three
+      // sizes below. Line height itself is inherited unitless, so matching
+      // the font size is enough. The offsets are the <pre>'s 1px border plus
+      // its 0.5rem padding.
+      className="code-copy-button absolute top-[calc(0.5rem+1px+0.5lh)] right-[calc(0.5rem+1px)] z-10 grid -translate-y-1/2 cursor-pointer place-items-center rounded-md bg-(--shiki-light-bg) px-1.5 py-1 text-[1em] text-gray-500 md:text-[0.888889em] xl:text-[0.9em] transition-colors hover:bg-gray-100 hover:text-gray-900 motion-reduce:transition-none dark:bg-(--shiki-dark-bg) dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100"
     >
-      {/* Both states share one grid cell, so the button keeps its width and
-          the two icons cross-fade in place instead of swapping. */}
+      <GlitterPool ref={glitterRef} />
+      {/* Both icons share one grid cell, so the chip keeps the width of a
+          single glyph and the two cross-fade in place. */}
       <span
         aria-hidden="true"
         className={clsx(
@@ -93,16 +104,16 @@ export const CopyButton = ({ handleClick }: CopyButtonProps) => {
           copied ? "opacity-0" : "opacity-100",
         )}
       >
-        <FaClipboard className="size-4" />
+        <FaClipboard className="size-[1.1em]" />
       </span>
       <span
         aria-hidden="true"
         className={clsx(
-          "col-start-1 row-start-1 flex items-center gap-1 whitespace-nowrap text-green-700 transition-opacity duration-200 motion-reduce:transition-none dark:text-green-400",
+          "col-start-1 row-start-1 text-green-600 transition-opacity duration-200 motion-reduce:transition-none dark:text-green-400",
           copied ? "opacity-100" : "opacity-0",
         )}
       >
-        <svg aria-hidden="true" viewBox="0 0 24 24" className="size-4" fill="none">
+        <svg aria-hidden="true" viewBox="0 0 24 24" className="size-[1.1em]" fill="none">
           <path
             key={copies}
             d="M5 12.5l4.5 4.5L19 7.5"
@@ -115,7 +126,6 @@ export const CopyButton = ({ handleClick }: CopyButtonProps) => {
             className="animate-draw-check motion-reduce:animate-none"
           />
         </svg>
-        Copied
       </span>
     </button>
   );

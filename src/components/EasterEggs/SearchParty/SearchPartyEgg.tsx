@@ -1,24 +1,30 @@
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRecordEggFind } from "src/hooks/useEasterEgg";
 import { LookingGlass, type Point } from "./LookingGlass";
 
-/** Pages hiding behind the glass, in no particular order. */
+/** Pages hiding behind the glass: the start of the site, and the best of it. */
 const HIDDEN_PAGES = [
+  "/start-here",
+  "/photography/best-of",
+  "/needlestack",
+  "/posts/diatoms",
+  "/posts/the-best-yellow",
+  "/r3f",
   "/quotes",
   "/timeline",
-  "/art",
-  "/photography",
-  "/posts",
+  "/now",
+  "/principles",
   "/booknotes",
   "/newsletters",
-  "/projects",
-  "/categories",
-  "/start-here",
-  "/midjourney",
-  "/eggs",
 ];
+/** What a hiding place must keep off: the words, and the picture. */
+const KEEP_CLEAR = "main h1, main p, [data-page-picture]";
+/** Room left around everything a hiding place keeps off, and around the next. */
+const ROOM = 16;
+/** How many places to try before a link settles for wherever it can go. */
+const TRIES = 120;
 const KEY_STEP = 52;
 const HINT_AFTER_MS = 5000;
 /** Under the navbar (z-999) and the footer, which are never behind the glass. */
@@ -27,33 +33,16 @@ const GLASS_Z = 40;
     it would be left standing on the paper in the theme's own colours. It takes
     the page's background instead, the way the navbar already carries one. */
 const FOOTER_SOLID = ["bg-white", "dark:bg-gray-900"];
-/** Columns the hiding places are dealt into, over the half of the field the
-    picture leaves free. */
-const COLUMNS = 2;
 /** Looking through glass is a thing you do with a pointer. A touch screen has
     none, so it gets the plain page: the picture, the words, and a list. */
 const canSearch = () =>
   typeof window === "undefined" || window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-type Spot = { fx: number; fy: number };
+type Spot = { x: number; y: number };
+type Box = { left: number; right: number; top: number; bottom: number };
 
-/** A hiding place per page: one to a cell of a loose grid, in any order. The
-    grid stops short of the picture, so nothing is ever hidden on top of it. */
-function scatter(): Spot[] {
-  const rows = Math.ceil(HIDDEN_PAGES.length / COLUMNS);
-  const cells = [...Array(COLUMNS * rows).keys()];
-  for (let i = cells.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [cells[i], cells[j]] = [cells[j], cells[i]];
-  }
-  return HIDDEN_PAGES.map((_, i) => {
-    const cell = cells[i];
-    return {
-      fx: ((cell % COLUMNS) + 0.06 + Math.random() * 0.62) / COLUMNS,
-      fy: (Math.floor(cell / COLUMNS) + 0.16 + Math.random() * 0.56) / rows,
-    };
-  });
-}
+const clash = (a: Box, b: Box) =>
+  a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
 
 /**
  * Easter egg on the 404 page: a sheet of frosted glass lies over everything,
@@ -67,9 +56,10 @@ function scatter(): Spot[] {
 const SearchPartyEgg = () => {
   const recordFind = useRecordEggFind();
   const pointerRef = useRef<Point | null>(null);
+  const chipRefs = useRef<(HTMLElement | null)[]>([]);
   const [mounted, setMounted] = useState(false);
   const [searching] = useState(canSearch);
-  const [spots] = useState(scatter);
+  const [spots, setSpots] = useState<Spot[] | null>(null);
   // Without glass there is nothing to search: the links are simply a list.
   const [glazed, setGlazed] = useState(true);
   const [showHint, setShowHint] = useState(false);
@@ -92,6 +82,50 @@ const SearchPartyEgg = () => {
       footer.classList.remove(...FOOTER_SOLID);
     };
   }, [recordFind]);
+
+  /** Deals the links out over the whole window, anywhere the words and the
+      picture are not — above the title, beside the picture, under both. */
+  useLayoutEffect(() => {
+    if (!hiding || !mounted) return;
+    const place = () => {
+      const avoid: Box[] = [...document.querySelectorAll<HTMLElement>(KEEP_CLEAR)].map((el) =>
+        el.getBoundingClientRect(),
+      );
+      const navbar = document.querySelector<HTMLElement>("header#navbar")?.getBoundingClientRect();
+      const footer = document.querySelector<HTMLElement>("body footer")?.getBoundingClientRect();
+      const top = (navbar?.bottom ?? 0) + ROOM;
+      const floor = (footer && footer.top < innerHeight ? footer.top : innerHeight) - ROOM;
+      const taken: Box[] = [];
+
+      setSpots(
+        chipRefs.current.map((el) => {
+          const { width, height } = el?.getBoundingClientRect() ?? { width: 130, height: 28 };
+          const spanX = Math.max(1, innerWidth - width - ROOM * 2);
+          const spanY = Math.max(1, floor - top - height);
+          let spot = { x: ROOM, y: top };
+          for (let tries = 0; tries < TRIES; tries++) {
+            const at = { x: ROOM + Math.random() * spanX, y: top + Math.random() * spanY };
+            const box = {
+              left: at.x - ROOM,
+              right: at.x + width + ROOM,
+              top: at.y - ROOM,
+              bottom: at.y + height + ROOM,
+            };
+            if (avoid.some((other) => clash(box, other))) continue;
+            if (taken.some((other) => clash(box, other))) continue;
+            taken.push(box);
+            spot = at;
+            break;
+          }
+          return spot;
+        }),
+      );
+    };
+
+    place();
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
+  }, [hiding, mounted]);
 
   // Someone who has not moved the glass for a while gets told what it is for.
   useEffect(() => {
@@ -147,16 +181,15 @@ const SearchPartyEgg = () => {
     return () => window.removeEventListener("keydown", walk);
   }, [look, hiding]);
 
-  // The page is the colour of the picture's border, so the links are written
-  // in its ink rather than in the theme's. Keep in step with PAPER in 404.tsx.
+  // Written in the page's own ink, which is the picture's. See 404.tsx.
   const chip =
-    "rounded-full border border-dashed border-[#2f2a20]/45 px-2.5 py-1 font-mono text-xs text-[#2f2a20] no-underline hover:border-solid hover:bg-[#2f2a20]/5 sm:text-sm";
+    "rounded-full border border-dashed border-[#2f2a20]/45 px-2.5 py-1 font-mono text-xs text-[#2f2a20] no-underline hover:border-solid hover:bg-[#2f2a20]/5 sm:text-sm dark:border-[#f0e6d2]/40 dark:text-[#f0e6d2] dark:hover:bg-[#f0e6d2]/10";
 
   return (
     <>
       {/* A plain list where there is no glass to look through. */}
       {!hiding && (
-        <ul className="mt-group flex list-none flex-wrap gap-2 p-0">
+        <ul className="mt-group flex list-none flex-wrap justify-center gap-2 p-0 md:justify-start">
           {HIDDEN_PAGES.map((href) => (
             <li key={href} className="m-0 p-0">
               <Link href={href} className={chip}>
@@ -167,27 +200,34 @@ const SearchPartyEgg = () => {
         </ul>
       )}
 
-      {/* The field the links hide in. It keeps to the side of the page the
-          picture leaves free, and starts below the words, so a link never
-          sits on top of either. */}
-      {hiding && (
-        <div className="relative mt-group h-[90vh] w-full max-w-[26rem] lg:max-w-[30rem]">
-          {HIDDEN_PAGES.map((href, i) => (
-            <div
-              key={href}
-              className="absolute"
-              style={{
-                left: `min(${spots[i].fx * 100}%, calc(100% - 9rem))`,
-                top: `${spots[i].fy * 100}%`,
-              }}
-            >
-              <Link href={href} className={chip}>
+      {mounted &&
+        hiding &&
+        createPortal(
+          <div
+            className="pointer-events-none fixed inset-0"
+            style={{ zIndex: GLASS_Z - 1 }}
+            aria-label="Pages hidden behind the glass"
+          >
+            {HIDDEN_PAGES.map((href, i) => (
+              <Link
+                key={href}
+                href={href}
+                ref={(el) => {
+                  chipRefs.current[i] = el;
+                }}
+                className={`pointer-events-auto absolute ${chip}`}
+                style={
+                  spots
+                    ? { left: `${spots[i].x}px`, top: `${spots[i].y}px` }
+                    : { left: 0, top: 0, visibility: "hidden" }
+                }
+              >
                 {href}
               </Link>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>,
+          document.body,
+        )}
 
       {mounted &&
         searching &&
@@ -199,7 +239,7 @@ const SearchPartyEgg = () => {
           >
             <LookingGlass pointerRef={pointerRef} calm={false} onReady={setGlazed} />
             {showHint && (
-              <span className="absolute inset-x-0 bottom-16 text-center font-mono text-xs tracking-wide text-[#2f2a20]/70">
+              <span className="absolute inset-x-0 bottom-16 text-center font-mono text-xs tracking-wide text-[#2f2a20]/70 dark:text-[#f0e6d2]/70">
                 look through the glass
               </span>
             )}

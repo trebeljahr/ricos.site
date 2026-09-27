@@ -34,6 +34,15 @@ const CLEARANCE = 36;
 /** The shortest gap that still reads as a gap, when a side of the frame is
     carrying more links than it comfortably holds. */
 const TIGHT = 10;
+/** Links to a side of the frame. The rest share the top and the bottom,
+    which are long enough to take them. */
+const PER_SIDE = 2;
+/** The gap a long side wants between its links. Below it the row is packed
+    rather than set out, and it hands its shortest names to the sides. */
+const COMFY = 36;
+/** How far along its line every other link is nudged, so the frame is even
+    without being a ruler. */
+const STAGGER = 14;
 const KEY_STEP = 52;
 const HINT_AFTER_MS = 5000;
 /** Under the navbar (z-999) and the footer, which are never behind the glass. */
@@ -173,39 +182,68 @@ const SearchPartyEgg = () => {
       const taken = (side: Side) =>
         side.holds.reduce((sum, i) => sum + along(side, i), 0) + (side.holds.length + 1) * ROOM;
 
-      // The longest names first, since they are the ones with somewhere they
-      // will not fit. Each goes to whichever side would be least full with it
-      // — least full for its length, not in plain inches, or the long sides
-      // would take everything and the short ones would stand empty.
-      const order = sizes.map((_, i) => i).sort((a, b) => sizes[b].width - sizes[a].width);
-      for (const i of order) {
-        let best: Side | null = null;
-        let emptiest = Number.POSITIVE_INFINITY;
-        for (const side of sides) {
-          if (across(side, i) + TIGHT > side.depth) continue;
-          const room = length(side);
-          if (room <= 0) continue;
-          const full = (taken(side) + along(side, i)) / room;
-          if (full >= emptiest) continue;
-          emptiest = full;
-          best = side;
-        }
-        (best ?? sides[0]).holds.push(i);
+      // Two to each side, and the rest along the top and the bottom. The
+      // narrowest names take the sides, since a side is only as wide as the
+      // margin beside the words; the widest go first to whichever of the
+      // long two is carrying less, which keeps those two even.
+      const byWidth = sizes.map((_, i) => i).sort((a, b) => sizes[a].width - sizes[b].width);
+      const [above, below, leftward, rightward] = sides;
+      const upright = [leftward, rightward];
+      const long = [above, below];
+
+      const waiting: number[] = [];
+      for (const i of byWidth) {
+        const side = upright.find(
+          (one) => one.holds.length < PER_SIDE && across(one, i) + TIGHT <= one.depth,
+        );
+        if (side) side.holds.push(i);
+        else waiting.push(i);
       }
 
-      // Laid out along each side with the gaps all of a size.
+      for (const i of waiting.sort((a, b) => sizes[b].width - sizes[a].width)) {
+        const room = (side: Side) => (length(side) - taken(side)) / Math.max(1, length(side));
+        const fits = long.filter((one) => across(one, i) + TIGHT <= one.depth);
+        const side = (fits.length ? fits : long).sort((a, b) => room(b) - room(a))[0];
+        side.holds.push(i);
+      }
+
+      // A row with no room above the words carries the lot, which packs it.
+      // Whatever it cannot set out properly goes to the sides instead, even
+      // though they have had their two.
+      for (const side of long) {
+        while (side.holds.length > 1) {
+          const spare = length(side) - side.holds.reduce((sum, i) => sum + along(side, i), 0);
+          if (spare / (side.holds.length + 1) >= COMFY) break;
+          const narrowest = [...side.holds].sort((a, b) => sizes[a].width - sizes[b].width)[0];
+          const target = upright
+            .filter(
+              (one) =>
+                across(one, narrowest) + TIGHT <= one.depth &&
+                length(one) - taken(one) - along(one, narrowest) > TIGHT,
+            )
+            .sort((a, b) => length(b) - taken(b) - (length(a) - taken(a)))[0];
+          if (!target) break;
+          side.holds.splice(side.holds.indexOf(narrowest), 1);
+          target.holds.push(narrowest);
+        }
+      }
+
+      // Laid out along each side with the gaps all of a size, and every other
+      // link nudged along its line: even, but not measured out with a ruler.
       const spots: Spot[] = sizes.map(() => ({ x: 0, y: 0 }));
       for (const side of sides) {
         if (!side.holds.length) continue;
         const spare = length(side) - side.holds.reduce((sum, i) => sum + along(side, i), 0);
         const gap = Math.max(TIGHT, spare / (side.holds.length + 1));
+        const wander = Math.min(STAGGER, Math.max(0, (gap - TIGHT) / 2));
         let at = side.from + gap;
-        for (const i of side.holds) {
+        side.holds.forEach((i, nth) => {
+          const nudged = at + (nth % 2 ? wander : -wander);
           spots[i] = side.upright
-            ? { x: side.line - sizes[i].width / 2, y: at }
-            : { x: at, y: side.line - sizes[i].height / 2 };
+            ? { x: side.line - sizes[i].width / 2, y: nudged }
+            : { x: nudged, y: side.line - sizes[i].height / 2 };
           at += along(side, i) + gap;
-        }
+        });
       }
 
       setSpots(spots);

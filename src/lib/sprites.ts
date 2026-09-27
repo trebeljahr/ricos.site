@@ -1,7 +1,7 @@
 /**
  * Emoji the easter eggs draw as images, so they look the same on every platform.
- * The files in /public/sprites are Apple emoji rendered by
- * src/scripts/sprites/renderSprites.py: add an emoji here, then run the script on a Mac.
+ * The files in /public/sprites are Google's Noto 3D emoji, fetched and scaled by
+ * src/scripts/sprites/renderSprites.py: add an emoji here, then run the script.
  */
 export const EMOJI_SPRITES = [
   // Home page headings

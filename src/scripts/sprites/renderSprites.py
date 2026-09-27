@@ -1,33 +1,41 @@
 """
 Renders the easter egg sprites into public/sprites.
 
-Every emoji listed in src/lib/sprites.ts is drawn from the Apple Color Emoji
-font at its largest size (160 px), so the eggs look the same on every
-platform. The painted Easter eggs start from the plain egg emoji: a pattern is
-multiplied onto it, so the shell keeps Apple's light and shadow.
+Every emoji listed in src/lib/sprites.ts comes from Google's Noto 3D emoji
+(github.com/googlefonts/noto-emoji, 3D/png/512), so the eggs look the same on
+every platform. The painted Easter eggs start from the plain egg emoji: a
+pattern is multiplied onto it, so the shell keeps its light and shadow.
 
-Needs macOS (for the font) and Pillow:
+The source is pinned to one commit, and downloads are cached in
+node_modules/.cache. Needs Pillow:
     python3 -m pip install pillow
     python3 src/scripts/sprites/renderSprites.py
 
-Files that are no longer listed are deleted.
+Files that are no longer listed are deleted. public/sprites/LICENSE.txt
+carries Noto's licence; keep it next to the images.
 """
 
 import math
 import re
+import urllib.error
+import urllib.request
+from io import BytesIO
 from pathlib import Path
 
-from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[3]
 REGISTRY = ROOT / "src/lib/sprites.ts"
 OUT = ROOT / "public/sprites"
-FONT = "/System/Library/Fonts/Apple Color Emoji.ttc"
-SIZE = 160  # The largest bitmap in the font; any other size is a blurry rescale.
+NOTO_COMMIT = "d6a792cb12e3eb7224f4fbf13173a0dded455651"
+NOTO_URL = f"https://raw.githubusercontent.com/googlefonts/noto-emoji/{NOTO_COMMIT}/3D/png/512/emoji_u{{}}.png"
+CACHE = ROOT / f"node_modules/.cache/sprites/noto-3d-{NOTO_COMMIT[:8]}"
+# Every Noto 3D image keeps a 16px margin inside its 512px square. Cropping it
+# lets the art fill the sprite like a glyph fills its em box.
+NOTO_ART_BOX = (16, 16, 496, 496)
+SIZE = 160
 SUPERSAMPLE = 4
 WEBP = {"quality": 90, "method": 6}
-
-font = ImageFont.truetype(FONT, SIZE)
 
 
 def listed(name: str) -> list[str]:
@@ -44,11 +52,18 @@ def file_name(emoji: str) -> str:
 
 
 def render(emoji: str) -> Image.Image:
-    image = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
-    ImageDraw.Draw(image).text((0, 0), emoji, font=font, embedded_color=True)
-    if image.getbbox() is None:
-        raise SystemExit(f"{emoji!r} rendered empty: is it in Apple Color Emoji?")
-    return image
+    code = "_".join(f"{ord(c):x}" for c in emoji if ord(c) != 0xFE0F)
+    cached = CACHE / f"{code}.png"
+    if not cached.exists():
+        try:
+            with urllib.request.urlopen(NOTO_URL.format(code), timeout=30) as response:
+                data = response.read()
+        except urllib.error.HTTPError as error:
+            raise SystemExit(f"{emoji!r} ({code}) is not in Noto 3D: HTTP {error.code}") from error
+        CACHE.mkdir(parents=True, exist_ok=True)
+        cached.write_bytes(data)
+    image = Image.open(BytesIO(cached.read_bytes())).convert("RGBA")
+    return image.crop(NOTO_ART_BOX).resize((SIZE, SIZE), Image.LANCZOS)
 
 
 # --- Painted Easter eggs -----------------------------------------------------
@@ -62,6 +77,10 @@ MINT = (120, 222, 160)
 PURPLE = (180, 130, 255)
 
 # Base colour, then bands from top to bottom: (kind, centre y in px, size, colour, *extras).
+# Drawn for an egg REF_HEIGHT px tall whose top is at REF_TOP; Pattern scales
+# them onto the egg in use.
+REF_TOP = 5
+REF_HEIGHT = 150
 DESIGNS = {
     "easter-egg-pink": ((255, 140, 190), [
         ("dots", 34, 4.4, WHITE, 4),
@@ -109,16 +128,23 @@ class Pattern:
     """Bands drawn around the egg, bigger than needed and downscaled for smooth edges."""
 
     BEND = 9  # A band wrapped round the egg dips toward the sides.
+    LINE = 3.6
 
     def __init__(self, egg_box, base):
-        self.x0, _, self.x1, _ = egg_box
+        self.x0, top, self.x1, bottom = egg_box
         self.cx = (self.x0 + self.x1) / 2
         self.half = (self.x1 - self.x0) / 2
+        self.k = (bottom - top) / REF_HEIGHT
+        self.top = top
         self.image = Image.new("RGB", (SIZE * SUPERSAMPLE, SIZE * SUPERSAMPLE), base)
         self.draw = ImageDraw.Draw(self.image)
 
+    def at(self, design_y):
+        """A design's y, moved onto this egg."""
+        return self.top + (design_y - REF_TOP) * self.k
+
     def y(self, centre, x):
-        return centre + self.BEND * ((x - self.cx) / self.half) ** 2
+        return centre + self.BEND * self.k * ((x - self.cx) / self.half) ** 2
 
     def xs(self, steps):
         left, right = self.x0 - 4, self.x1 + 4
@@ -128,26 +154,30 @@ class Pattern:
         return [(x * SUPERSAMPLE, y * SUPERSAMPLE) for x, y in points]
 
     def band(self, centre, height, colour):
+        centre, height = self.at(centre), height * self.k
         xs = self.xs(120)
         top = [(x, self.y(centre - height / 2, x)) for x in xs]
         bottom = [(x, self.y(centre + height / 2, x)) for x in reversed(xs)]
         self.draw.polygon(self.scaled(top + bottom), fill=colour)
 
     def zigzag(self, centre, height, colour, teeth=7):
+        centre, height = self.at(centre), height * self.k
         points = [
             (x, self.y(centre, x) + (height / 2 if i % 2 else -height / 2))
             for i, x in enumerate(self.xs(teeth * 2))
         ]
-        self.draw.line(self.scaled(points), fill=colour, width=int(3.6 * SUPERSAMPLE), joint="curve")
+        self.draw.line(self.scaled(points), fill=colour, width=round(self.LINE * self.k * SUPERSAMPLE), joint="curve")
 
     def wave(self, centre, amplitude, colour, waves=3):
+        centre, amplitude = self.at(centre), amplitude * self.k
         points = [
             (x, self.y(centre, x) + amplitude * math.sin((x - self.x0) / (self.x1 - self.x0) * waves * 2 * math.pi))
             for x in self.xs(240)
         ]
-        self.draw.line(self.scaled(points), fill=colour, width=int(3.6 * SUPERSAMPLE), joint="curve")
+        self.draw.line(self.scaled(points), fill=colour, width=round(self.LINE * self.k * SUPERSAMPLE), joint="curve")
 
     def dots(self, centre, radius, colour, count):
+        centre, radius = self.at(centre), radius * self.k
         for i in range(count):
             x = self.x0 + (self.x1 - self.x0) * (i + 0.5) / count
             y = self.y(centre, x)

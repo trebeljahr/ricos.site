@@ -7,6 +7,7 @@ import { CalloutBody, CalloutRoot, CalloutTitle } from "./Callouts";
 import { CodeWithCopyButton } from "./CodeCopyButton";
 import { ExternalLink } from "./ExternalLink";
 import { SimpleGallery, SingleImage } from "./Galleries";
+import { TableOfContents } from "./TableOfContents";
 
 export const ImageRenderer = ({ src, alt }: ImgHTMLAttributes<HTMLImageElement>) => {
   if (!src) return null;
@@ -106,6 +107,7 @@ export const MarkdownRenderers = {
   table: TableRenderer,
   div: handleDivs,
   SimpleGallery: handleNiceImageGalleries,
+  "toc-list": TableOfContents,
   "callout-root": CalloutRoot,
   "callout-title": CalloutTitle,
   "callout-body": CalloutBody,

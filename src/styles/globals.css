@@ -800,6 +800,126 @@ a {
   }
 }
 
+/*
+ * Reading position, in two places: the bar under the navbar
+ * (src/components/ProgressBar.tsx) and the marker in the table of contents
+ * gutter (src/components/TableOfContents.tsx). Both end on the link accent so
+ * they read as one mechanism.
+ *
+ * The bar scales along the document's own scroll timeline, which replaces a
+ * scroll listener and the 0.1s transform transition that used to trail behind
+ * it. A page with nothing to scroll has an inactive timeline, so neither
+ * animation applies and the base style — an invisible track — is what shows.
+ */
+.reading-progress {
+  height: 0.25rem;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.dark .reading-progress {
+  background-color: var(--color-gray-900);
+}
+
+.reading-progress-bar {
+  height: 100%;
+  transform-origin: left center;
+  scale: var(--scroll-progress, 0) 1;
+  /* Compressing the gradient rather than sliding it keeps the leading edge on
+     the accent at every scroll position. */
+  background-image: linear-gradient(
+    to right,
+    var(--color-lightBlue),
+    var(--color-myBlue) 55%,
+    var(--color-accent)
+  );
+  will-change: scale;
+}
+
+@keyframes reading-progress-reveal {
+  from,
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes reading-progress-fill {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  /* Longhands, because the `animation` shorthand resets animation-timeline. */
+  .reading-progress,
+  .reading-progress-bar {
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: scroll(root block);
+  }
+
+  .reading-progress {
+    animation-name: reading-progress-reveal;
+  }
+
+  .reading-progress-bar {
+    animation-name: reading-progress-fill;
+  }
+}
+
+/* Firefox keeps the JS-written value, so the track needs telling when the page
+   is too short to scroll. */
+@supports not (animation-timeline: scroll()) {
+  .reading-progress[data-scrollable="yes"] {
+    opacity: 1;
+  }
+}
+
+/*
+ * Table of contents scroll spy. The marker sits in a gutter to the left of the
+ * bullets and is moved by two custom properties the observer writes.
+ */
+.toc-spy {
+  position: relative;
+  padding-left: 0.75rem;
+}
+
+.toc-spy-marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2px;
+  height: var(--toc-active-height, 0px);
+  translate: 0 var(--toc-active-top, 0px);
+  border-radius: 1px;
+  background-image: linear-gradient(to bottom, var(--color-myBlue), var(--color-accent));
+  opacity: 0;
+}
+
+.toc-spy[data-spy="on"] .toc-spy-marker {
+  opacity: 1;
+}
+
+/* The prose rules leave links at the body colour until hover; the current
+   section is the one exception. */
+.prose .toc-spy :where(a)[aria-current="location"] {
+  color: var(--color-accent);
+}
+
+/* Reduced motion still gets the marker and the colour, it just appears at the
+   new section instead of sliding there. */
+@media (prefers-reduced-motion: no-preference) {
+  .toc-spy-marker {
+    transition:
+      translate 250ms cubic-bezier(0.22, 1, 0.36, 1),
+      height 250ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 250ms ease;
+  }
+}
+
 body:has(.popup) {
   overflow: hidden;
 }

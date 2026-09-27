@@ -21,6 +21,7 @@ import {
   getImgMetaDuringBuild,
   getImgWidthAndHeightDuringBuild,
 } from "src/lib/getImgWidthAndHeightDuringBuild";
+import { rehypeTocSpy } from "src/lib/rehypeTocSpy";
 import { remarkResolveRedirects } from "src/lib/remarkResolveRedirects";
 import type { Node, Pluggable } from "unified/lib";
 import { SKIP, visit } from "unist-util-visit";
@@ -493,6 +494,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     rehypeCodeTitles,
     rehypeKatex,
     rehypeSlug,
+    rehypeTocSpy,
     rehypeAccessibleEmojis,
     [
       rehypePrettyCode,

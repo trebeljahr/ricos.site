@@ -1,43 +1,51 @@
 import { type FC, useEffect, useRef } from "react";
 
+/**
+ * Reading progress for the page. Chrome, Edge and Safari drive the bar from the
+ * document's own scroll timeline in CSS, so nothing here runs at all there. Only
+ * Firefox, which still keeps scroll timelines behind a flag, falls back to
+ * writing `--scroll-progress` from a listener.
+ */
 export const ProgressBar: FC = () => {
-  const progressBarRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const updateProgress = () => {
-      if (!progressBarRef.current) return;
+    if (CSS.supports("animation-timeline", "scroll()")) return;
 
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const scrollPercent = (window.scrollY / (documentHeight - windowHeight)) * 100;
+    const track = trackRef.current;
+    if (!track) return;
 
-      progressBarRef.current.style.setProperty(
-        "--scroll-percent",
-        `${Number.isNaN(scrollPercent) ? 0 : scrollPercent}%`,
-      );
+    let frame = 0;
+
+    const measure = () => {
+      frame = 0;
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      // A page that does not scroll gets no bar at all, which is what the CSS
+      // path does by leaving an inactive timeline at its base style.
+      track.dataset.scrollable = scrollable > 1 ? "yes" : "no";
+      const progress = scrollable > 1 ? window.scrollY / scrollable : 0;
+      track.style.setProperty("--scroll-progress", `${Math.min(Math.max(progress, 0), 1)}`);
     };
 
-    window.addEventListener("scroll", updateProgress, { passive: true });
-    window.addEventListener("resize", updateProgress, { passive: true });
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(measure);
+    };
 
-    updateProgress();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+
+    measure();
 
     return () => {
-      window.removeEventListener("scroll", updateProgress);
-      window.removeEventListener("resize", updateProgress);
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
     };
   }, []);
 
   return (
-    <div className="h-1 dark:bg-gray-900 overflow-hidden">
-      <div
-        ref={progressBarRef}
-        className="h-full bg-myBlue w-full transform-gpu"
-        style={{
-          transform: "translateX(calc(var(--scroll-percent, 0%) - 100%))",
-          transition: "transform 0.1s linear",
-        }}
-      />
+    <div ref={trackRef} className="reading-progress" aria-hidden="true">
+      <div className="reading-progress-bar" />
     </div>
   );
 };

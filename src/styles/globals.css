@@ -466,6 +466,24 @@ summary.callout-title:focus-visible {
   }
 }
 
+@keyframes callout-wiggle {
+  0% {
+    rotate: 0deg;
+  }
+  25% {
+    rotate: -9deg;
+  }
+  55% {
+    rotate: 7deg;
+  }
+  80% {
+    rotate: -3deg;
+  }
+  100% {
+    rotate: 0deg;
+  }
+}
+
 @keyframes callout-crease {
   from {
     opacity: 0.9;
@@ -555,23 +573,14 @@ details.callout-root[open] > summary .callout-chevron {
     animation-delay: -13s;
   }
 
-  /* The title row answers the pointer: the icon leans in, the chevron slides
-     the way it is about to turn. */
-  .callout-icon,
   details.callout-root > summary .callout-chevron {
     transition: transform 320ms cubic-bezier(0.34, 1.3, 0.64, 1);
   }
 
+  /* The title row answers the pointer with one wiggle from the icon. It takes
+     over from the idle hint above, which animates the same property. */
   details.callout-root > summary.callout-title:hover .callout-icon {
-    transform: translateX(1px) scale(1.1);
-  }
-
-  details.callout-root > summary.callout-title:hover .callout-chevron {
-    transform: translateX(3px);
-  }
-
-  details.callout-root[open] > summary.callout-title:hover .callout-chevron {
-    transform: rotate(90deg) translateX(3px);
+    animation: callout-wiggle 450ms ease-in-out;
   }
 
   /* The crease the fold leaves behind, gone by the time you have read the

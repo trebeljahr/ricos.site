@@ -159,7 +159,7 @@ export const EggCounter = () => {
         }}
       >
         {/* A size up from the footer text, so the paint on the shell reads. */}
-        <Sprite name="easter-egg-pink" className="text-lg" />
+        <Sprite name="easter-egg-green-blue" className="text-lg" />
       </EmojiButton>
       {bunnies.length > 0 &&
         createPortal(

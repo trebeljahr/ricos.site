@@ -72,6 +72,7 @@ export const EASTER_EGG_SPRITES = [
   "easter-egg-yellow",
   "easter-egg-green",
   "easter-egg-purple",
+  "easter-egg-green-blue",
 ] as const;
 
 export type EmojiSprite = (typeof EMOJI_SPRITES)[number];

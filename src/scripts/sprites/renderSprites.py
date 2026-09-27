@@ -88,6 +88,14 @@ DESIGNS = {
         ("band", 90, 13, PINK),
         ("wave", 116, 5, PURPLE),
     ]),
+    # Green on top, blue below, split by a white zigzag: the footer egg.
+    "easter-egg-green-blue": ((110, 210, 140), [
+        ("dots", 36, 4.4, WHITE, 4),
+        ("wave", 60, 5, (90, 170, 250)),
+        ("band", 122, 76, (90, 170, 250)),
+        ("zigzag", 86, 10, WHITE),
+        ("dots", 118, 4.4, WHITE, 4),
+    ]),
     "easter-egg-purple": ((185, 150, 255), [
         ("zigzag", 48, 10, YELLOW),
         ("band", 76, 7, WHITE),

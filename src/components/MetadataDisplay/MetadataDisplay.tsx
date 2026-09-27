@@ -1,3 +1,4 @@
+import { ClockEgg } from "@components/EasterEggs/Clock";
 import { format } from "date-fns";
 
 type Props = {
@@ -6,6 +7,8 @@ type Props = {
   amountOfStories?: number;
   withAuthorInfo?: boolean;
   longFormDate?: boolean;
+  /** Turn the reading-time clock into an easter egg. Off inside cards, which are links. */
+  clockEgg?: boolean;
 };
 
 const _MetadataDisplay = ({
@@ -14,10 +17,15 @@ const _MetadataDisplay = ({
   amountOfStories,
   withAuthorInfo = false,
   longFormDate = true,
+  clockEgg = false,
 }: Props) => {
   return (
     <div className="text-sm text-gray-700 dark:text-gray-200">
-      {readingTime && <span className="text-sm mr-4 mb-hair mt-hair">🕓 {readingTime} min</span>}
+      {readingTime && (
+        <span className="text-sm mr-4 mb-hair mt-hair">
+          {clockEgg ? <ClockEgg /> : "🕓"} {readingTime} min
+        </span>
+      )}
       {amountOfStories && (
         <span className="text-sm mr-4 mb-hair mt-hair">📚 {amountOfStories} stories</span>
       )}

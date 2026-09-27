@@ -107,7 +107,11 @@ const Book = ({ booknote, relatedBooks, backlinks }: Props) => {
       <PageMain>
         <article>
           <PageTop breadcrumbs={{ path: url }}>
-            <MetadataDisplay readingTime={booknote.metadata.readingTime} date={booknote.date} />
+            <MetadataDisplay
+              readingTime={booknote.metadata.readingTime}
+              date={booknote.date}
+              clockEgg
+            />
             <section className="flex gap-para">
               <div className="not-prose block relative mb-para md:mb-0 w-60 overflow-hidden rounded-md">
                 <BookCover title={booknote.title} cover={booknote.cover} priority={true} />

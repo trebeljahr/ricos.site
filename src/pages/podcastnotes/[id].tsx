@@ -89,6 +89,7 @@ const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
             <MetadataDisplay
               date={podcastnote.date}
               readingTime={podcastnote.metadata.readingTime}
+              clockEgg
             />
             <section className="Podcastnote-info">
               {/* The show line used to sit in a <p> inside the <h1>, where the

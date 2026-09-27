@@ -82,7 +82,9 @@ export default function Page({ page, backlinks }: Props) {
         <article ref={articleRef} className="mx-auto max-w-prose">
           <Header
             breadcrumbs={{ path: page.slug }}
-            meta={<MetadataDisplay date={page.date} readingTime={page.metadata.readingTime} />}
+            meta={
+              <MetadataDisplay date={page.date} readingTime={page.metadata.readingTime} clockEgg />
+            }
             subtitle={subtitle}
             title={title}
           />

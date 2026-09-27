@@ -112,7 +112,7 @@ const Newsletter = ({
               path: url,
               overwrites: [{ matchingPath: slugTitle, newText: `${number}` }],
             }}
-            meta={<MetadataDisplay date={date} readingTime={readingTime} />}
+            meta={<MetadataDisplay date={date} readingTime={readingTime} clockEgg />}
             title={fullTitle}
           />
           <div className="mb-para">

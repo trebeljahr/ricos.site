@@ -359,29 +359,62 @@ export function imagesBySpectrum(): ImageProps[] {
     }
   }
 
-  // Band first, then hue within the band.
+  /** How much of its colour a photo carries — the chroma-weighted share of
+   *  the frame held by the family it is filed under. */
+  const intensity = (src: string) => entries[src].strength[primaryFamily(src)] ?? 0;
+
+  // Bands in ring order, and inside each band a rise and a fall.
   //
-  // Sorting on the hue alone very nearly works now that it is measured per
-  // family — a family's pixels are assigned by angle, so its mean sits inside
-  // its own wedge and the bands fall out contiguous and in ring order for
-  // free. Pink is the exception and the reason this sorts on the band
-  // explicitly: `familyForOklch` sends pale reds to pink as well as the
-  // 318-358 arc, so pink holds members at 4 degrees, and one of them sorted to
-  // the very front of the strip, ahead of red. The scale reads each band's
-  // first index and assumes one run per family, so a single stray photo made
-  // it label the start of the sweep "Pink".
+  // WHY NOT SIMPLY SORTED
+  // ---------------------
+  // Any single sort key runs a band from one extreme to the other, and both
+  // choices were wrong in a way that showed. By hue, the vivid photos scatter
+  // through the band and it never looks like anything in particular. By
+  // intensity, the band opens at full strength and fades out, so every seam
+  // put a band's palest frames against the next band's strongest and the
+  // change of colour arrived as a wall.
   //
-  // Within a band, distance from that band's own centre rather than the raw
-  // angle, so the families that span zero stay in one piece. See `hueOffset`.
-  const ordered = chromatic.sort((a, b) => {
-    const byBand = bandOf(a) - bandOf(b);
-    if (byBand) return byBand;
-    const family = primaryFamily(a);
-    const from = centre.get(family) ?? 0;
-    const byHue = hueOffset(familyHueOf(a) ?? 0, from) - hueOffset(familyHueOf(b) ?? 0, from);
-    if (byHue) return byHue;
-    return entries[b].chroma - entries[a].chroma || a.localeCompare(b);
-  });
+  // A band has a middle, and that is where its colour should be. Sorted into
+  // a ridge — palest at both ends, strongest in the centre — gold builds to
+  // the most gold photograph in the archive and eases off, and the next band
+  // starts where this one left off, pale meeting pale. The seams are the
+  // quietest part of the strip instead of the loudest, and each colour has an
+  // epicentre a reader can scroll towards.
+  //
+  // Built by dealing the strength-sorted band alternately to the two halves:
+  // every other photo to the left, the rest to the right reversed. The two
+  // halves climb towards each other and meet at the strongest.
+  const grouped = new Map<number, string[]>();
+  for (const src of chromatic) {
+    const band = bandOf(src);
+    const bucket = grouped.get(band);
+    if (bucket) bucket.push(src);
+    else grouped.set(band, [src]);
+  }
+
+  const ordered: string[] = [];
+  for (const band of [...grouped.keys()].sort((a, b) => a - b)) {
+    const members = (grouped.get(band) ?? []).sort((a, b) => {
+      const byIntensity = intensity(a) - intensity(b);
+      if (byIntensity) return byIntensity;
+      // Ties by hue, measured from the band's own centre so the families that
+      // span zero do not come apart. See `hueOffset`.
+      const from = centre.get(primaryFamily(a)) ?? 0;
+      return (
+        hueOffset(familyHueOf(a) ?? 0, from) - hueOffset(familyHueOf(b) ?? 0, from) ||
+        a.localeCompare(b)
+      );
+    });
+
+    const rising: string[] = [];
+    const falling: string[] = [];
+    members.forEach((src, i) => {
+      if (i % 2 === 0) rising.push(src);
+      else falling.push(src);
+    });
+    falling.reverse();
+    ordered.push(...rising, ...falling);
+  }
 
   // Lightest first, so the sweep leaves the last colour for white and dims to
   // black rather than dropping straight from a colour into the darkest frames

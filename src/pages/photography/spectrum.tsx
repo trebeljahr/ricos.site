@@ -17,7 +17,7 @@ import type { ColorBucketId } from "src/lib/colorBuckets.mjs";
 import { nextImageUrl } from "src/lib/mapToImageProps";
 import { formatCount } from "src/lib/utils/formatCount";
 import { addIdAndIndex } from "src/lib/utils/misc";
-import { fractionAcross, photoAtFraction } from "src/lib/utils/spectrumScale";
+import { fractionAcross, photoAtFraction, segmentGradient } from "src/lib/utils/spectrumScale";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
 /**
@@ -392,35 +392,51 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
     const strip = stripRef.current;
     if (!marker || !ribbon || !strip || total === 0) return;
 
-    const rect = ribbon.getBoundingClientRect();
+    const list = ribbon.querySelector("ol");
+    const items = list?.children;
+    if (!items || items.length === 0) return;
+
     const viewport = window.innerHeight || document.documentElement.clientHeight || 0;
     const probe = viewport / 2;
 
-    // Ask the browser which photograph is under the middle of the screen.
+    // Which photograph is at the middle of the screen, found by bisecting the
+    // tiles for the first one whose bottom edge is below the probe.
     //
-    // The estimate this replaces — how far down the ribbon the probe sits,
-    // times how many photos the ribbon holds — is only right while every row
+    // WHY THIS IS NOT ARITHMETIC AND NOT A HIT TEST
+    // ---------------------------------------------
+    // It was arithmetic first — how far down the ribbon the probe sits, times
+    // how many photos the ribbon holds. That is only right while every row
     // holds the same number of tiles and the ribbon's height matches its
-    // contents. Neither survives loading: rows hold between about six and
+    // contents, and neither survives loading: rows hold between about six and
     // fourteen tiles depending on how many portraits land together, and a
     // chunk arriving changes the ribbon's height a frame before React has
-    // told the marker the window grew. The marker drifted every time a batch
-    // came in, which is exactly when a reader is looking at it.
+    // said the window grew.
     //
-    // A hit test has no model to be wrong about. It costs one call per scroll
-    // event and reads the answer off the layout the reader is looking at.
-    let index: number | null = null;
-    const hit = document.elementFromPoint(rect.left + rect.width / 2, probe);
-    const tile = hit?.closest<HTMLElement>("[data-index]");
-    if (tile?.dataset.index) index = Number(tile.dataset.index);
-
-    if (index === null) {
-      // Nothing under the probe: above the ribbon, past its end, or covered
-      // by the lightbox. Fall back to the estimate, which is close enough for
-      // the edges it is used at.
-      const through = rect.height > 0 ? (probe - rect.top) / rect.height : 0;
-      index = start + Math.min(1, Math.max(0, through)) * (end - start);
+    // Then it was `elementFromPoint`, with the arithmetic kept as a fallback
+    // for when nothing was under the probe — the pixel gap between tiles, the
+    // strip of page past the last row, the lightbox when it is open. That was
+    // worse in the way that is hardest to see: two estimators disagreeing
+    // with each other, so the marker was exact most of the time and quietly
+    // wrong the rest, and the difference looked like drift.
+    //
+    // Bisection has no gaps and no second opinion. Tiles are in sweep order
+    // in the DOM and rows share an edge, so the first tile whose bottom is
+    // past the probe is in the row the reader is looking at, always. Eleven
+    // reads for 1,500 tiles, on a layout the browser has already computed.
+    let lo = 0;
+    let hi = items.length - 1;
+    let found = hi;
+    while (lo <= hi) {
+      const mid = (lo + hi) >> 1;
+      if ((items[mid] as HTMLElement).getBoundingClientRect().bottom <= probe) {
+        lo = mid + 1;
+      } else {
+        found = mid;
+        hi = mid - 1;
+      }
     }
+    const index = Number((items[found] as HTMLElement).dataset.index);
+    if (!Number.isFinite(index)) return;
 
     const segments = strip.querySelectorAll<HTMLElement>("button");
     const width = strip.clientWidth;
@@ -438,16 +454,28 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
     const fraction = band.count > 0 ? (index - band.index) / band.count : 0;
     const left = segment.offsetLeft + Math.min(1, Math.max(0, fraction)) * segment.offsetWidth;
     marker.style.left = `${Math.min(100, Math.max(0, (left / width) * 100))}%`;
-  }, [start, end, total, marks]);
+  }, [total, marks]);
 
-  // Also on every window change, so a jump moves the marker before the reader
-  // has scrolled anything.
-  useEffect(updateProgress, [updateProgress]);
+  // After every committed window change, so a jump moves the marker before
+  // the reader has scrolled anything. Keyed on the window rather than on the
+  // callback: `updateProgress` reads only the DOM now, so its identity no
+  // longer changes when the window does, and clicking the same band twice or
+  // going to the top from an already-at-the-top window would otherwise commit
+  // a new layout with a stale marker over it.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: window_ is the commit signal
+  useEffect(updateProgress, [window_, updateProgress]);
 
   useEffect(() => {
     lastY.current = window.scrollY;
     const onScroll = () => {
       const y = window.scrollY;
+      // First, and unconditionally. Both guards below used to sit in front of
+      // it, and between them they covered most of the ways the page moves
+      // without the reader scrolling: a jump held `seeking` and returned, and
+      // the to-top button set `lastY` to the offset it was about to scroll to,
+      // so the scroll it caused arrived reporting no movement and returned
+      // too. In both cases the marker kept whatever position it had before.
+      updateProgress();
       // The page's own scrolling, during a jump, is not the reader moving.
       if (seeking.current) {
         lastY.current = y;
@@ -456,7 +484,6 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
       if (y === lastY.current) return;
       scrollingUp.current = y < lastY.current;
       lastY.current = y;
-      updateProgress();
       if (!scrollingUp.current || !hasPrevious) return;
       // Measured only while scrolling up and only while there is something
       // above to load, so the layout read costs nothing on the common path.
@@ -469,8 +496,14 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
       // upward load can be what the reader wants.
       if (top > -400) loadPrevious();
     };
+    // Resizing re-packs every row, so the photo at the middle of the screen
+    // changes without a scroll event to announce it.
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("resize", updateProgress, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", updateProgress);
+    };
   }, [loadPrevious, hasPrevious, updateProgress]);
 
   /**
@@ -647,16 +680,28 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
                   title={`${mark.label} — ${formatCount(mark.count)} photographs`}
                   aria-label={`Jump to ${mark.label}, ${formatCount(mark.count)} photographs`}
                   aria-current={isActive ? "true" : undefined}
-                  style={{ background: mark.fill, flexGrow: mark.count, flexBasis: 0 }}
+                  style={{
+                    // A ramp rather than a block. Each segment runs from the
+                    // midpoint it shares with the band before it to the one it
+                    // shares with the band after, so neighbours meet at the
+                    // same colour and the eleven of them read as one gradient.
+                    // Done per segment because a minimum width means they are
+                    // not proportional, so no single gradient on the container
+                    // could be told where the seams fall.
+                    background: segmentGradient(
+                      mark.fill,
+                      marks[i - 1]?.fill ?? null,
+                      marks[i + 1]?.fill ?? null,
+                    ),
+                    flexGrow: mark.count,
+                    flexBasis: 0,
+                  }}
                   className={clsx(
                     // 28px, the smallest a segment can be and still take a
                     // click reliably. Under the 44px a tap target wants, which
                     // is the compromise a strip makes: 44px of height for a
                     // control that is 11 slivers wide is not a strip any more.
                     "block h-full min-w-7 cursor-pointer transition-[filter] hover:brightness-110",
-                    // A hairline divider rather than a gap: a gap would show
-                    // the page background through and break the sweep.
-                    i > 0 && "border-l border-black/10",
                     // The focus ring goes inside: the strip clips its own
                     // overflow, so an outset ring on a segment is invisible.
                     "focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-inset",

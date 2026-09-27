@@ -56,3 +56,54 @@ export function fractionAcross(
   if (detail === 0 || box.width === 0) return 0;
   return Math.min(1, Math.max(0, (clientX - box.left) / box.width));
 }
+
+/** Blend two `#rrggbb` colours in sRGB, `t` of the way from `a` to `b`.
+ *
+ *  For the scale's gradient. sRGB rather than a perceptual space on purpose:
+ *  the stops are a few per cent apart, where the difference between blending
+ *  models is invisible, and a colour the strip shows has to be exactly the
+ *  swatch its band was measured to have — converting out and back would move
+ *  it by a rounding error for no benefit anyone can see.
+ *
+ *  Returns `a` unchanged if either input is not a six-digit hex, which is the
+ *  only shape `COLOR_BUCKETS` holds. */
+export function mixHex(a: string, b: string, t: number): string {
+  const parse = (hex: string) =>
+    /^#[0-9a-f]{6}$/i.test(hex)
+      ? [
+          Number.parseInt(hex.slice(1, 3), 16),
+          Number.parseInt(hex.slice(3, 5), 16),
+          Number.parseInt(hex.slice(5, 7), 16),
+        ]
+      : null;
+  const from = parse(a);
+  const to = parse(b);
+  if (!from || !to) return a;
+  const at = Math.min(1, Math.max(0, t));
+  const channel = (i: number) =>
+    Math.round(from[i] + (to[i] - from[i]) * at)
+      .toString(16)
+      .padStart(2, "0");
+  return `#${channel(0)}${channel(1)}${channel(2)}`;
+}
+
+/** The gradient one segment of the scale is painted with.
+ *
+ *  Each segment runs from the midpoint it shares with the band before it to
+ *  the midpoint it shares with the band after, holding its own colour across
+ *  the middle. Neighbouring segments therefore meet at the same colour and the
+ *  eleven blocks read as one ramp, without any segment having to know how wide
+ *  the others ended up — which matters, because a minimum width means they are
+ *  not proportional and CSS cannot be told where the seams fall.
+ *
+ *  The ends of the strip hold their own colour rather than fading out of
+ *  nothing. */
+export function segmentGradient(
+  fill: string,
+  previous: string | null,
+  next: string | null,
+): string {
+  const from = previous ? mixHex(previous, fill, 0.5) : fill;
+  const to = next ? mixHex(fill, next, 0.5) : fill;
+  return `linear-gradient(to right, ${from}, ${fill} 50%, ${to})`;
+}

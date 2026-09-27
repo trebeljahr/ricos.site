@@ -133,22 +133,36 @@ vi.mock("src/lib/imageMetadata", () => ({
 const { entryFor, hueOffset, imagesBySpectrum } = await import("src/lib/photographyColors");
 
 describe("imagesBySpectrum", () => {
-  it("walks the ring by family, and each band round the circle within itself", () => {
-    // Bands come from the family a photo is filed under, in ring order: red,
-    // then the greens, then blue. Inside a band the order is by that family's
-    // own hue, so each band ends at the shade it shares with the next one and
-    // the seam between them is the least visible thing on the page.
+  it("builds each band to a peak in its middle and eases off again", () => {
+    // Bands in ring order: red, then the greens, then blue. Inside a band the
+    // order is a ridge — palest at both ends, strongest in the centre — so
+    // each colour has an epicentre and neighbouring bands meet pale against
+    // pale rather than dropping from one at full strength into the next.
     //
-    // c-leaf, shallows and dusk are missing because they carry two colours
-    // and are excluded — see the dominance test below.
+    // Green holds b-leaf 0.40, green-water 0.55 and a-canopy 0.71, so the
+    // ridge is b-leaf, a-canopy, green-water. c-leaf is missing because it
+    // carries two colours — see the dominance test below.
     const srcs = imagesBySpectrum().map((image) => image.src);
     expect(srcs.slice(0, 5)).toEqual([
       "assets/photography/desert/dawn.jpg", // red band
-      "assets/photography/jungle/a-canopy.jpg", // green band, green hue 131.2
-      "assets/photography/jungle/b-leaf.jpg", // 150.5
-      "assets/photography/reef/green-water.jpg", // 160.0
+      "assets/photography/jungle/b-leaf.jpg", // green band: 0.40, rising
+      "assets/photography/jungle/a-canopy.jpg", // 0.71, the peak
+      "assets/photography/reef/green-water.jpg", // 0.55, falling
       "assets/photography/reef/deep.jpg", // blue band
     ]);
+  });
+
+  it("puts a band's weakest members at its edges, where the seams are", () => {
+    // The property the ridge exists for, stated independently of the exact
+    // order: whatever a band's first and last photos are, neither may be its
+    // strongest.
+    const all = imagesBySpectrum().map((image) => image.src);
+    const green = all.filter((src) => entryFor(src)?.buckets[0] === "green");
+    expect(green.length).toBeGreaterThan(2);
+    const strength = (src: string) => entryFor(src)?.strength.green ?? 0;
+    const peak = Math.max(...green.map(strength));
+    expect(strength(green[0])).toBeLessThan(peak);
+    expect(strength(green[green.length - 1])).toBeLessThan(peak);
   });
 
   it("orders a band that wraps past zero by offset from its own centre", () => {

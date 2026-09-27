@@ -471,6 +471,34 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
     [total],
   );
 
+  /**
+   * Back to the first photograph.
+   *
+   * Not a scroll. The window holds a few hundred photos out of 1,950, so the
+   * top of the document is only the top of whatever is loaded — from the blue
+   * band that is photo 1,264, and the button appeared to stop short of the
+   * top because it had in fact arrived at it.
+   *
+   * Scrolling there properly would mean loading every chunk in between, which
+   * is both slow and ugly: a few thousand tiles streaming in under a reader
+   * who only wanted to get back to the start. So the window is reset to the
+   * beginning and the page jumps, which loads one chunk and nothing else.
+   *
+   * `seeking` is held across the reset for the same reason every other jump
+   * holds it: the scroll it causes must not be read as the reader scrolling
+   * up, or the backwards loader undoes the reset on the spot.
+   */
+  const toTop = useCallback(() => {
+    seeking.current = true;
+    pendingSeek.current = false;
+    prependAnchor.current = null;
+    setWindow({ start: 0, end: Math.min(CHUNK, total) });
+    window.scrollTo(0, 0);
+    lastY.current = 0;
+    scrollingUp.current = false;
+    seeking.current = false;
+  }, [total]);
+
   // Arrowing forward in the lightbox can walk past the revealed window. Reveal
   // in one jump up to the slide plus a chunk, rather than a chunk per tick, so
   // the morph back into the strip has an element to land on.
@@ -699,7 +727,7 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
         {hasMore && <div ref={sentinelRef} className="h-px" aria-hidden />}
 
         <CustomLightBox {...lightbox} photos={photos} />
-        <ToTopButton />
+        <ToTopButton onScrollToTop={toTop} />
       </main>
     </Layout>
   );

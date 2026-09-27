@@ -21,12 +21,16 @@ const HIDDEN_PAGES = [
 ];
 /** What a hiding place must keep off: the words, and the picture. */
 const KEEP_CLEAR = "main h1, main p, [data-page-picture]";
-/** Room left around everything a hiding place keeps off, and around the next. */
+/** Room left between one hiding place and the next. */
 const ROOM = 16;
+/** And the wider berth they give the words and the picture, which are what
+    the page is about: the links are meant to be somewhere else, not crowding
+    the two things that are already plain to see. */
+const CLEARANCE = 36;
 /** How finely the free space is sampled when working out where to put them. */
 const SAMPLE = 14;
 /** Rounds of settling, and passes of tidying up afterwards. */
-const SETTLE = 40;
+const SETTLE = 70;
 const NUDGES = 26;
 const KEY_STEP = 52;
 const HINT_AFTER_MS = 5000;
@@ -136,6 +140,8 @@ const SearchPartyEgg = () => {
       const standable = at.map((one) => {
         const halfW = one.width / 2 + ROOM;
         const halfH = one.height / 2 + ROOM;
+        const keepX = one.width / 2 + CLEARANCE;
+        const keepY = one.height / 2 + CLEARANCE;
         return open.map(
           ([x, y]) =>
             x >= band.left + halfW &&
@@ -144,10 +150,10 @@ const SearchPartyEgg = () => {
             y <= band.bottom - halfH &&
             !blocked.some(
               (b) =>
-                x + halfW > b.left &&
-                x - halfW < b.right &&
-                y + halfH > b.top &&
-                y - halfH < b.bottom,
+                x + keepX > b.left &&
+                x - keepX < b.right &&
+                y + keepY > b.top &&
+                y - keepY < b.bottom,
             ),
         );
       });
@@ -182,11 +188,11 @@ const SearchPartyEgg = () => {
         }
       }
 
-      const boxOf = (one: (typeof at)[number]) => ({
-        left: one.x - one.width / 2 - ROOM,
-        right: one.x + one.width / 2 + ROOM,
-        top: one.y - one.height / 2 - ROOM,
-        bottom: one.y + one.height / 2 + ROOM,
+      const boxOf = (one: (typeof at)[number], room = ROOM) => ({
+        left: one.x - one.width / 2 - room,
+        right: one.x + one.width / 2 + room,
+        top: one.y - one.height / 2 - room,
+        bottom: one.y + one.height / 2 + room,
       });
 
       // Middles can be evenly spread and still leave two long links touching,
@@ -215,7 +221,7 @@ const SearchPartyEgg = () => {
           const halfW = at[i].width / 2 + ROOM;
           const halfH = at[i].height / 2 + ROOM;
           for (const other of blocked) {
-            const box = boxOf(at[i]);
+            const box = boxOf(at[i], CLEARANCE);
             if (!clash(box, other)) continue;
             // Four ways out. A link held against the edge of the window cannot
             // take the nearest one, so the shortest that it can actually take
@@ -245,6 +251,34 @@ const SearchPartyEgg = () => {
           at[i].x = Math.min(Math.max(at[i].x, band.left + halfW), band.right - halfW);
           at[i].y = Math.min(Math.max(at[i].y, band.top + halfH), band.bottom - halfH);
         }
+      }
+
+      // Last resort. A link with nowhere good to go can end up pressed
+      // against the words after all that pushing, so any that is still on
+      // them is picked up and put down on the emptiest ground it can stand
+      // on — which is always somewhere, since it had ground to begin with.
+      for (let i = 0; i < count; i++) {
+        const stuck =
+          blocked.some((other) => clash(boxOf(at[i], CLEARANCE), other)) ||
+          at.some((one, j) => j !== i && clash(boxOf(at[i]), boxOf(one)));
+        if (!stuck) continue;
+        let best: number[] | null = null;
+        let emptiest = -1;
+        for (let s = 0; s < open.length; s++) {
+          if (!standable[i][s]) continue;
+          const [x, y] = open[s];
+          let nearest = Number.POSITIVE_INFINITY;
+          for (let j = 0; j < count; j++) {
+            if (j === i) continue;
+            nearest = Math.min(nearest, Math.hypot(at[j].x - x, at[j].y - y));
+          }
+          if (nearest <= emptiest) continue;
+          emptiest = nearest;
+          best = open[s];
+        }
+        if (!best) continue;
+        at[i].x = best[0];
+        at[i].y = best[1];
       }
 
       setSpots(at.map((one) => ({ x: one.x - one.width / 2, y: one.y - one.height / 2 })));

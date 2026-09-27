@@ -8,11 +8,11 @@ import { EmojiButton } from "../EmojiButton";
 import { clampPageX, PageLayer, pageBox } from "../PageLayer";
 import { useEggRunner } from "../useEggRunner";
 
-const CLICKS = 5;
+const CLICKS = 3;
 // One watering: the can pours while a day, or a night in dark mode, passes.
 // Clicks during a watering are ignored, so each one plays out in full.
 const WATER_MS = 1700;
-// Five waterings take at least four lockouts; leave room for unhurried clicks.
+// Three waterings take at least two lockouts; leave room for unhurried clicks.
 const CLICK_WINDOW_MS = 15000;
 // The newsletter card has 44px above the heading line; the sky fills it and no more.
 const SKY_HEIGHT = 40;
@@ -22,16 +22,16 @@ const SKY_EDGE_FADE = "linear-gradient(to right, transparent, black 12%, black 8
 // The sun or moon rises and sets on the bottom edge of the sky, the horizon,
 // moving across at an even pace.
 const ARC_WIDTH = 140;
-const ARC_RISE = 32;
+const ARC_RISE = 36;
 const ARC_STEPS = 24;
 // The clouds scroll by as one layer, a little faster than the sun, so they
 // keep their spacing and never run into each other.
 const CLOUD_SPEED = 1.25;
 // High clouds are small and faint, low ones big and solid, so the sky has depth.
 const CLOUD_ROWS = [
-  { y: 15, size: 14, opacity: 0.7 },
-  { y: 21, size: 18, opacity: 0.85 },
-  { y: 28, size: 22, opacity: 1 },
+  { y: 12, size: 14, opacity: 0.7 },
+  { y: 17, size: 18, opacity: 0.85 },
+  { y: 23, size: 22, opacity: 1 },
 ];
 // Shaking the grown tree hard enough drops an apple, one at a time.
 const APPLE_CLICKS = 5;
@@ -61,7 +61,7 @@ function cloudscape(sky: Sky) {
     const { y, size, opacity } = CLOUD_ROWS[row];
     const cloud = { x, y, size: size + Math.random() * 4, opacity };
     clouds.push(cloud);
-    x += cloud.size + 12 + Math.random() * 24;
+    x += cloud.size + 45 + Math.random() * 50;
   }
   return { clouds, travel };
 }
@@ -69,7 +69,7 @@ function cloudscape(sky: Sky) {
 /**
  * Easter egg on the newsletter form: every watering passes one day over the
  * seedling, a sun arching across the sky above the heading while clouds drift
- * by. In dark mode it is a night with the moon. After five waterings the
+ * by. In dark mode it is a night with the moon. After three waterings the
  * seedling has grown into a tree, and it stays one. Shake the tree with a
  * burst of quick clicks and an apple falls out and rolls away.
  */

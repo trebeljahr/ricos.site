@@ -9,7 +9,7 @@ import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Page as PageType } from "@velite";
 import dynamic from "next/dynamic";
-import { useRef } from "react";
+import type { ComponentProps } from "react";
 import { ogImageDimensions } from "src/lib/ogImage";
 import { pickProps } from "src/lib/utils/pickProps";
 
@@ -18,6 +18,20 @@ const MDXContentWithDemos = dynamic(
   { ssr: true },
 );
 type BacklinkItem = { title: string; link: string; type: string };
+
+// The haystack egg on /needlestack stands right under the intro heading, beside
+// the paragraph about the internet as a giant haystack, so it sits in the same
+// spot on every visit and at every screen width.
+const needlestackRenderers = {
+  h2: (props: ComponentProps<"h2">) => (
+    <>
+      <h2 {...props} />
+      {props.id === "intro" && (
+        <NeedleEgg className="mx-auto md:float-right md:mb-label md:ml-group" />
+      )}
+    </>
+  ),
+};
 
 // Fields this page renders. link, excerpt, markdownExcerpt, contentType,
 // published and date-last-updated are dropped before serialisation.
@@ -46,8 +60,8 @@ type Props = {
 
 export default function Page({ page, backlinks }: Props) {
   const { subtitle, title, cover } = page;
-  const articleRef = useRef<HTMLElement>(null);
   const ogImage = page.seoOgImage || cover.src;
+  const renderers = page.slug === "needlestack" ? needlestackRenderers : undefined;
 
   return (
     <Layout
@@ -79,7 +93,7 @@ export default function Page({ page, backlinks }: Props) {
         ]}
       />
       <PageMain>
-        <article ref={articleRef} className="mx-auto max-w-prose">
+        <article className="mx-auto max-w-prose">
           <Header
             breadcrumbs={{ path: page.slug }}
             meta={<MetadataDisplay date={page.date} readingTime={page.metadata.readingTime} eggs />}
@@ -88,13 +102,11 @@ export default function Page({ page, backlinks }: Props) {
           />
 
           {page.hasDemos ? (
-            <MDXContentWithDemos source={page.content} />
+            <MDXContentWithDemos source={page.content} components={renderers} />
           ) : (
-            <MDXContent source={page.content} />
+            <MDXContent source={page.content} components={renderers} />
           )}
         </article>
-
-        {page.slug === "needlestack" && <NeedleEgg container={articleRef} />}
 
         <footer className="mt-section">
           <NewsletterForm />

@@ -265,8 +265,170 @@
   margin-bottom: 0;
 }
 
-details.callout-root > summary .callout-chevron {
-  transition: transform 320ms cubic-bezier(0.34, 1.3, 0.64, 1);
+/*
+ * Callouts (src/components/Callouts.tsx). One hue per type, carried in
+ * `--callout-accent`: the fill, the rail, the hover tint, the focus ring, the
+ * link color and the nested tints are that same hue at different strengths, so
+ * color-mix keeps them in step instead of fourteen hand-picked sets of
+ * utilities. Tailwind drops a theme color nobody uses as a utility, hence the
+ * literal fallback beside each var.
+ */
+.callout-root {
+  --callout-accent: var(--color-gray-500, #6b7280);
+  --callout-fill: 10%;
+  /* The sticky title paints over the body, so it needs the page behind it. */
+  --callout-surface: #fff;
+  /* Clears the sticky navbar. */
+  --callout-sticky-top: 4.5rem;
+  /* A link in a red box used to hover in the global blue, fighting the box
+     around it. `.prose a:hover` reads this var, so rebinding it here is enough. */
+  --color-accent: color-mix(in oklab, var(--callout-accent) 78%, black);
+
+  background: color-mix(in srgb, var(--callout-accent) var(--callout-fill), transparent);
+  border: 1px solid color-mix(in srgb, var(--callout-accent) 18%, transparent);
+  /* The rail is what you read from the margin while scanning, so it carries
+     the hue at full strength and the rest of the box stays quiet. */
+  border-inline-start: 3px solid color-mix(in srgb, var(--callout-accent) 70%, transparent);
+  /* `clip`, not `hidden`: `hidden` would make the box a scroll container and
+     the sticky title below would stick to the box instead of to the page. */
+  overflow: clip;
+  scroll-margin-top: 85px;
+}
+
+.dark .callout-root {
+  --callout-surface: var(--color-gray-900, #111827);
+  --color-accent: color-mix(in oklab, var(--callout-accent) 78%, white);
+}
+
+.callout-root[data-callout="abstract"] {
+  --callout-accent: var(--color-purple-500, #a855f7);
+}
+
+.callout-root[data-callout="tip"] {
+  --callout-accent: var(--color-teal-500, #14b8a6);
+}
+
+.callout-root[data-callout="success"] {
+  --callout-accent: var(--color-green-500, #22c55e);
+}
+
+.callout-root[data-callout="question"] {
+  --callout-accent: var(--color-yellow-500, #eab308);
+}
+
+.callout-root[data-callout="warning"],
+.callout-root[data-callout="bug"] {
+  --callout-accent: var(--color-orange-500, #f97316);
+}
+
+.callout-root[data-callout="failure"] {
+  --callout-accent: var(--color-red-500, #ef4444);
+}
+
+.callout-root[data-callout="danger"] {
+  --callout-accent: var(--color-pink-500, #ec4899);
+}
+
+.callout-root[data-callout="info"] {
+  --callout-accent: var(--color-blue-500, #3b82f6);
+}
+
+.callout-root[data-callout="todo"] {
+  --callout-accent: var(--color-indigo-500, #6366f1);
+}
+
+.callout-root[data-callout="example"] {
+  --callout-accent: var(--color-violet-500, #8b5cf6);
+}
+
+/* Spelled out rather than left to the default, because a nested callout
+   inherits its parent's hue otherwise. */
+.callout-root[data-callout="quote"],
+.callout-root[data-callout="aside"] {
+  --callout-accent: var(--color-gray-500, #6b7280);
+}
+
+.callout-title {
+  color: color-mix(in oklab, var(--callout-accent) 84%, black);
+}
+
+.dark .callout-title {
+  color: color-mix(in oklab, var(--callout-accent) 82%, white);
+}
+
+/* A long callout keeps its title in view, so you can still tell which box you
+   are reading inside. */
+details.callout-root[open] > summary.callout-title {
+  position: sticky;
+  top: var(--callout-sticky-top);
+  z-index: 1;
+  background: color-mix(in srgb, var(--callout-accent) var(--callout-fill), var(--callout-surface));
+}
+
+summary.callout-title {
+  transition: background-color 150ms ease;
+}
+
+/* Opaque, not a tint over the page: the same row is sticky once the box is
+   open, and a translucent hover would let the body scroll through it. Placed
+   after the sticky rule, which it ties with on specificity. */
+details.callout-root > summary.callout-title:hover {
+  background: color-mix(
+    in srgb,
+    var(--callout-accent) calc(var(--callout-fill) + 8%),
+    var(--callout-surface)
+  );
+}
+
+summary.callout-title:focus-visible {
+  /* Inset, because the box clips its own overflow. */
+  outline: 2px solid color-mix(in srgb, var(--callout-accent) 75%, transparent);
+  outline-offset: -3px;
+}
+
+/* Nested callouts step back instead of shouting as loudly as their parent. */
+.callout-root .callout-root {
+  --callout-fill: 7%;
+  border-inline-start-width: 2px;
+}
+
+.callout-root .callout-root .callout-root {
+  --callout-fill: 5%;
+}
+
+/*
+ * `aside` is a margin note, not a box: no fill, no icon, smaller type. On a
+ * wide screen it steps out of the text column into the right margin, the same
+ * space `.large-bleed` reaches into.
+ */
+.callout-root[data-callout="aside"] {
+  background: none;
+  border-block: 0;
+  border-inline-end: 0;
+  border-inline-start: 2px solid color-mix(in srgb, var(--callout-accent) 45%, transparent);
+  border-radius: 0;
+  font-size: 0.875em;
+}
+
+@media (min-width: 1300px) {
+  .callout-root[data-callout="aside"] {
+    float: right;
+    clear: right;
+    inline-size: 20ch;
+    margin-block: 0;
+    margin-inline: var(--spacing-para) calc(-20ch - var(--spacing-para));
+  }
+}
+
+@keyframes callout-crease {
+  from {
+    opacity: 0.9;
+    transform: scaleX(0.92);
+  }
+  to {
+    opacity: 0;
+    transform: scaleX(1);
+  }
 }
 
 details.callout-root[open] > summary .callout-chevron {
@@ -345,6 +507,41 @@ details.callout-root[open] > summary .callout-chevron {
 
   details.callout-root:nth-child(3n):not([open]) .callout-icon {
     animation-delay: -13s;
+  }
+
+  /* The title row answers the pointer: the icon leans in, the chevron slides
+     the way it is about to turn. */
+  .callout-icon,
+  details.callout-root > summary .callout-chevron {
+    transition: transform 320ms cubic-bezier(0.34, 1.3, 0.64, 1);
+  }
+
+  details.callout-root > summary.callout-title:hover .callout-icon {
+    transform: translateX(1px) scale(1.1);
+  }
+
+  details.callout-root > summary.callout-title:hover .callout-chevron {
+    transform: translateX(3px);
+  }
+
+  details.callout-root[open] > summary.callout-title:hover .callout-chevron {
+    transform: rotate(90deg) translateX(3px);
+  }
+
+  /* The crease the fold leaves behind, gone by the time you have read the
+     first line. */
+  details.callout-root[open] .callout-body {
+    position: relative;
+  }
+
+  details.callout-root[open] .callout-body::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 1px;
+    background: color-mix(in srgb, var(--callout-accent) 65%, transparent);
+    animation: callout-crease 700ms ease-out both;
   }
 }
 

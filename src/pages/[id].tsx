@@ -1,5 +1,4 @@
 import { Backlinks } from "@components/Backlinks";
-import { NeedleEgg } from "@components/EasterEggs/Needle";
 import { BreadcrumbJsonLd, JsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
@@ -9,7 +8,6 @@ import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import type { Page as PageType } from "@velite";
 import dynamic from "next/dynamic";
-import { useRef } from "react";
 import { ogImageDimensions } from "src/lib/ogImage";
 import { pickProps } from "src/lib/utils/pickProps";
 
@@ -46,7 +44,6 @@ type Props = {
 
 export default function Page({ page, backlinks }: Props) {
   const { subtitle, title, cover } = page;
-  const articleRef = useRef<HTMLElement>(null);
   const ogImage = page.seoOgImage || cover.src;
 
   return (
@@ -79,7 +76,7 @@ export default function Page({ page, backlinks }: Props) {
         ]}
       />
       <PageMain>
-        <article ref={articleRef} className="mx-auto max-w-prose">
+        <article className="mx-auto max-w-prose">
           <Header
             breadcrumbs={{ path: page.slug }}
             meta={<MetadataDisplay date={page.date} readingTime={page.metadata.readingTime} eggs />}
@@ -93,8 +90,6 @@ export default function Page({ page, backlinks }: Props) {
             <MDXContent source={page.content} />
           )}
         </article>
-
-        {page.slug === "needlestack" && <NeedleEgg container={articleRef} />}
 
         <footer className="mt-section">
           <NewsletterForm />
@@ -110,13 +105,22 @@ type Params = {
   params: { id: string };
 };
 
+/**
+ * /needlestack is a page of its own now (src/pages/needlestack/index.tsx), and
+ * the markdown behind this slug renders at /needlestack/everything until its
+ * links have moved onto the paths. Two routes cannot prerender one URL.
+ */
+const CLAIMED_SLUGS = new Set(["needlestack"]);
+
 export async function getStaticPaths() {
   const { loadVeliteData, veliteFallback } = await import("src/lib/loadVeliteData");
   const pages: PageType[] = loadVeliteData("pages.json");
   return {
-    paths: pages.map<Params>(({ slug }: PageType) => ({
-      params: { id: slug },
-    })),
+    paths: pages
+      .filter(({ slug }: PageType) => !CLAIMED_SLUGS.has(slug))
+      .map<Params>(({ slug }: PageType) => ({
+        params: { id: slug },
+      })),
     fallback: veliteFallback,
   };
 }
@@ -125,7 +129,7 @@ export async function getStaticProps({ params }: Params) {
   const { loadVeliteData } = await import("src/lib/loadVeliteData");
   const pages: PageType[] = loadVeliteData("pages.json");
   const page = pages.find((page: PageType) => page.slug === params.id);
-  if (!page) return { notFound: true } as const;
+  if (!page || CLAIMED_SLUGS.has(params.id)) return { notFound: true } as const;
 
   const { getBacklinks } = await import("src/lib/utils/getBacklinks");
   const backlinks = getBacklinks(page.link);

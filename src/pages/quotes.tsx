@@ -1,3 +1,4 @@
+import { chipClass, FilterChip } from "@components/FilterChip";
 import { FiChevronDown, FiX } from "@components/Icons";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
@@ -30,14 +31,6 @@ const topics = Object.entries(
 )
   .sort(([a, countA], [b, countB]) => countB - countA || a.localeCompare(b))
   .map(([tag]) => tag);
-
-const chip = (active: boolean) =>
-  clsx(
-    "rounded-full px-3 py-1 text-sm transition-colors",
-    active
-      ? "bg-gray-950 text-white dark:bg-white dark:text-gray-950"
-      : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700",
-  );
 
 export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portraits: Portraits }) {
   const listRef = useRef<HTMLDivElement>(null);
@@ -83,7 +76,7 @@ export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portra
               aria-expanded={topicsOpen}
               aria-controls="quote-topics"
               onClick={() => setTopicsOpen((open) => !open)}
-              className={clsx(chip(false), "inline-flex items-center gap-1.5")}
+              className={clsx(chipClass(false), "inline-flex items-center gap-1.5")}
             >
               Topics
               <FiChevronDown
@@ -96,7 +89,7 @@ export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portra
                 type="button"
                 onClick={() => setTopic(null)}
                 aria-label={`Clear topic filter: ${topic}`}
-                className={clsx(chip(true), "inline-flex items-center gap-1.5")}
+                className={clsx(chipClass(true), "inline-flex items-center gap-1.5")}
               >
                 {topic}
                 <FiX aria-hidden />
@@ -107,15 +100,13 @@ export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portra
             <fieldset id="quote-topics" className="not-prose mt-label flex flex-wrap gap-tight">
               <legend className="sr-only">Filter by topic</legend>
               {topics.map((tag) => (
-                <button
+                <FilterChip
                   key={tag}
-                  type="button"
-                  aria-pressed={topic === tag}
+                  active={topic === tag}
                   onClick={() => setTopic(topic === tag ? null : tag)}
-                  className={chip(topic === tag)}
                 >
                   {tag}
-                </button>
+                </FilterChip>
               ))}
             </fieldset>
           )}

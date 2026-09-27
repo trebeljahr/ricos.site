@@ -836,6 +836,97 @@
       "content curation"
     ]
   },
+  "/needlestack/archive": {
+    "metaTitle": "The Needlestack Archive - Every Curated Link",
+    "metaDescription": "Every link that made it into my needlestack, filterable by topic, kind, level, time commitment and how highly I rate it.",
+    "ogImage": "/assets/midjourney/a-stack-of-needles.jpg",
+    "ogImageAlt": "A stack of needles representing curated internet content",
+    "keywords": [
+      "needlestack archive",
+      "curated links",
+      "link archive",
+      "best of internet",
+      "reading list"
+    ]
+  },
+  "/needlestack/understand": {
+    "metaTitle": "Understand - Needlestack",
+    "metaDescription": "Curated lectures, articles and videos on how brains, bodies, matter, maths and machines actually work.",
+    "ogImage": "/assets/midjourney/a-stack-of-needles.jpg",
+    "ogImageAlt": "A stack of needles representing curated internet content",
+    "keywords": [
+      "neuroscience resources",
+      "physics explained",
+      "learn mathematics",
+      "how llms work",
+      "curated science links"
+    ]
+  },
+  "/needlestack/build": {
+    "metaTitle": "Build - Needlestack",
+    "metaDescription": "Curated resources for learning to make things with code, silicon and a soldering iron, from zero to shaders and hardware.",
+    "ogImage": "/assets/midjourney/a-stack-of-needles.jpg",
+    "ogImageAlt": "A stack of needles representing curated internet content",
+    "keywords": [
+      "learn programming",
+      "shader tutorials",
+      "game development resources",
+      "electronics for beginners",
+      "developer resources"
+    ]
+  },
+  "/needlestack/live": {
+    "metaTitle": "Live - Needlestack",
+    "metaDescription": "Curated reading and watching on direction, habits, attention, health, people, long journeys and learning how to learn.",
+    "ogImage": "/assets/midjourney/a-stack-of-needles.jpg",
+    "ogImageAlt": "A stack of needles representing curated internet content",
+    "keywords": [
+      "how to live well",
+      "learn how to learn",
+      "meditation resources",
+      "long distance travel",
+      "habits and attention"
+    ]
+  },
+  "/needlestack/work": {
+    "metaTitle": "Work - Needlestack",
+    "metaDescription": "Curated resources on earning a living on your own terms: solo business, first customers, writing, hiring and developer jobs.",
+    "ogImage": "/assets/midjourney/a-stack-of-needles.jpg",
+    "ogImageAlt": "A stack of needles representing curated internet content",
+    "keywords": [
+      "solo business resources",
+      "copywriting resources",
+      "writing better",
+      "hiring and management",
+      "developer job interview"
+    ]
+  },
+  "/needlestack/world": {
+    "metaTitle": "The World - Needlestack",
+    "metaDescription": "Curated reading on power, money, progress, the internet, surveillance and where AI is heading.",
+    "ogImage": "/assets/midjourney/a-stack-of-needles.jpg",
+    "ogImageAlt": "A stack of needles representing curated internet content",
+    "keywords": [
+      "how power works",
+      "progress studies",
+      "state of the internet",
+      "ai safety reading",
+      "privacy and surveillance"
+    ]
+  },
+  "/needlestack/wonder": {
+    "metaTitle": "Wonder - Needlestack",
+    "metaDescription": "Curated things that are simply beautiful, strange or astonishing, including explorables you can poke and 20 minutes well spent.",
+    "ogImage": "/assets/midjourney/a-stack-of-needles.jpg",
+    "ogImageAlt": "A stack of needles representing curated internet content",
+    "keywords": [
+      "amazing videos",
+      "explorable explanations",
+      "pale blue dot",
+      "incredible human feats",
+      "beautiful internet"
+    ]
+  },
   "/now": {
     "metaTitle": "Now - What Rico Trebeljahr Is Doing Right Now",
     "metaDescription": "A now page sharing what I'm currently working on, where I am in the world, and what's next. Updated regularly with the latest plans and projects.",

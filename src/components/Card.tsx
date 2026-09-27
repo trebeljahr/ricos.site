@@ -2,7 +2,7 @@ import { ImageWithLoader } from "@components/ImageWithLoader";
 import clsx from "clsx";
 import { getMDXComponent } from "mdx-bundler/client";
 import Link from "next/link";
-import { type ReactNode, useMemo } from "react";
+import { type ComponentPropsWithoutRef, type ReactNode, useMemo } from "react";
 import type { MDXResult } from "src/@types";
 import { MetadataDisplay } from "./MetadataDisplay";
 
@@ -15,6 +15,23 @@ const MDXExcerpt = ({ source }: { source: MDXResult }) => {
   const Component = useMemo(() => getMDXComponent(source.code), [source.code]);
   return <Component components={excerptComponents} />;
 };
+
+/**
+ * A card pointing off-site. next/link would prefetch a foreign origin and open
+ * it in this tab; a curated link wants a new tab and no prefetch at all.
+ */
+const ExternalAnchor = ({
+  href,
+  children,
+  ...rest
+}: { href: string; children: ReactNode } & Omit<
+  ComponentPropsWithoutRef<"a">,
+  "href" | "children"
+>) => (
+  <a href={href} target="_blank" rel="noopener noreferrer" {...rest}>
+    {children}
+  </a>
+);
 
 export type CardCover = {
   src: string;
@@ -37,7 +54,8 @@ export type CoverAspect = "tall" | "video" | "portrait";
 export type CardProps = {
   link: string;
   title: string;
-  cover: CardCover;
+  /** Omit for content that has no picture, e.g. a curated link: the card is then all type. */
+  cover?: CardCover;
   layout?: CardLayout;
   coverAspect?: CoverAspect;
   // "compact" is for dense grids of small tiles (e.g. 3D demo previews).
@@ -53,6 +71,8 @@ export type CardProps = {
   priority?: boolean;
   sizes?: string;
   prefetch?: boolean;
+  /** Point the card off-site: a new tab, and no prefetching of another domain. */
+  external?: boolean;
   className?: string;
   // Extra body content rendered below the excerpt, above the metadata.
   children?: ReactNode;
@@ -84,22 +104,28 @@ export function Card({
   priority = false,
   sizes,
   prefetch,
+  external = false,
   className,
   children,
 }: CardProps) {
   const horizontal = layout === "horizontal";
   const compact = size === "compact";
+  // Without a cover there is no image column to lay a horizontal card out
+  // against, so the text simply fills the card and keeps the row shape.
+  const hasCover = cover !== undefined;
   const hasMetadata = Boolean(date || readingTime || amountOfStories);
   const portrait = coverAspect === "portrait";
   const video = coverAspect === "video";
   const letterboxed = horizontal && video;
-  const hasDimensions = cover.width !== undefined && cover.height !== undefined;
+  const hasDimensions = cover?.width !== undefined && cover?.height !== undefined;
   const hasExcerpt = Boolean(markdownExcerpt || excerpt);
 
+  const Anchor = external ? ExternalAnchor : Link;
+
   return (
-    <Link
+    <Anchor
       href={link}
-      prefetch={prefetch}
+      {...(external ? {} : { prefetch })}
       className={clsx(
         "group not-prose relative w-full overflow-hidden rounded-xl border-2 border-gray-200 bg-white text-gray-900 no-underline shadow-sm",
         // The card moves as one piece: a separate cover zoom on its own timing
@@ -114,55 +140,58 @@ export function Card({
         "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
         horizontal
           ? clsx(
-              "mb-para block md:grid",
-              portrait ? "md:grid-cols-[10rem_1fr]" : "md:grid-cols-[15rem_1fr]",
+              "mb-para block",
+              hasCover && "md:grid",
+              hasCover && (portrait ? "md:grid-cols-[10rem_1fr]" : "md:grid-cols-[15rem_1fr]"),
             )
           : "flex flex-col self-stretch",
         className,
       )}
     >
-      <div
-        className={clsx(
-          "relative w-full shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-700",
-          horizontal
-            ? clsx("h-64 md:h-auto", portrait ? "md:min-h-60" : "md:min-h-52")
-            : video
-              ? "aspect-video"
-              : "h-64",
-        )}
-      >
-        {/* Absolutely positioned so the cover never sets the card's height: in
+      {cover && (
+        <div
+          className={clsx(
+            "relative w-full shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-700",
+            horizontal
+              ? clsx("h-64 md:h-auto", portrait ? "md:min-h-60" : "md:min-h-52")
+              : video
+                ? "aspect-video"
+                : "h-64",
+          )}
+        >
+          {/* Absolutely positioned so the cover never sets the card's height: in
             the horizontal layout a tall book cover used to stretch the row and
             leave a gap under the text. The frame's own height rules instead. */}
-        {letterboxed && (
-          // Same file and sizes as the cover below, so the browser fetches it once.
-          <div aria-hidden="true" className="absolute inset-0 scale-125 blur-xl">
+          {letterboxed && (
+            // Same file and sizes as the cover below, so the browser fetches it once.
+            <div aria-hidden="true" className="absolute inset-0 scale-125 blur-xl">
+              <ImageWithLoader
+                src={cover.src}
+                alt=""
+                aria-hidden="true"
+                {...(hasDimensions ? { width: cover.width, height: cover.height } : { fill: true })}
+                sizes={sizes ?? defaultSizes[layout]}
+                className="h-full w-full object-cover"
+              />
+            </div>
+          )}
+          <div className="absolute inset-0">
             <ImageWithLoader
               src={cover.src}
-              alt=""
-              aria-hidden="true"
+              alt={cover.alt}
               {...(hasDimensions ? { width: cover.width, height: cover.height } : { fill: true })}
-              sizes={sizes ?? defaultSizes[layout]}
-              className="h-full w-full object-cover"
+              sizes={
+                sizes ??
+                (horizontal && portrait
+                  ? "(max-width: 768px) calc(100vw - 24px), 160px"
+                  : defaultSizes[layout])
+              }
+              priority={priority}
+              className={clsx("h-full w-full", letterboxed ? "object-contain" : "object-cover")}
             />
           </div>
-        )}
-        <div className="absolute inset-0">
-          <ImageWithLoader
-            src={cover.src}
-            alt={cover.alt}
-            {...(hasDimensions ? { width: cover.width, height: cover.height } : { fill: true })}
-            sizes={
-              sizes ??
-              (horizontal && portrait
-                ? "(max-width: 768px) calc(100vw - 24px), 160px"
-                : defaultSizes[layout])
-            }
-            priority={priority}
-            className={clsx("h-full w-full", letterboxed ? "object-contain" : "object-cover")}
-          />
         </div>
-      </div>
+      )}
 
       <div
         className={clsx(
@@ -239,6 +268,6 @@ export function Card({
           </div>
         )}
       </div>
-    </Link>
+    </Anchor>
   );
 }

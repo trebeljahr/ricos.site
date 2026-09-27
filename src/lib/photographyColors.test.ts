@@ -1,3 +1,4 @@
+import { FAMILY_HUE, hueDistance } from "src/lib/colorBuckets.mjs";
 import { describe, expect, it, vi } from "vitest";
 
 /** A hand-built stand-in for src/content/photography-colors.json.
@@ -122,9 +123,8 @@ vi.mock("src/lib/imageMetadata", () => ({
     ),
 }));
 
-const { colorBucketCounts, entryFor, imagesByHue, imagesForBucket, tripsForBucket } = await import(
-  "src/lib/photographyColors"
-);
+const { colorBucketCounts, entryFor, imagesBySpectrum, imagesForBucket, tripsForBucket } =
+  await import("src/lib/photographyColors");
 
 describe("colorBucketCounts", () => {
   it("counts a photo once per family it lists", () => {
@@ -173,18 +173,45 @@ describe("imagesForBucket", () => {
     expect(srcs).toEqual([
       "assets/photography/jungle/a-canopy.jpg",
       "assets/photography/reef/green-water.jpg",
-      "assets/photography/jungle/b-leaf.jpg",
+      // Both carry 0.40 green; c-leaf leads on the tiebreak below.
       "assets/photography/jungle/c-leaf.jpg",
+      "assets/photography/jungle/b-leaf.jpg",
     ]);
   });
 
-  it("breaks ties on the key, so the grid and the lightbox agree", () => {
-    // b-leaf and c-leaf both carry 0.40 green; the key decides, and it has
-    // to decide the same way every time the page renders.
+  it("breaks a strength tie on chroma, not on the key", () => {
+    // b-leaf and c-leaf both carry 0.40 green, and strength is baked at three
+    // decimals, so ties like this are the common case rather than an edge
+    // one — across the real blue family 49% of adjacent pairs are exactly
+    // tied. Falling through to the key would order those alphabetically by
+    // path, which is to say by trip name, and the page would stop being
+    // sorted by colour a few rows in.
+    //
+    // c-leaf is chroma 0.09 against b-leaf's 0.08: the same amount of green,
+    // more saturated, so it is the greener photograph and leads.
     const srcs = imagesForBucket("green").map((image) => image.src);
-    expect(srcs.indexOf("assets/photography/jungle/b-leaf.jpg")).toBeLessThan(
-      srcs.indexOf("assets/photography/jungle/c-leaf.jpg"),
+    expect(srcs.indexOf("assets/photography/jungle/c-leaf.jpg")).toBeLessThan(
+      srcs.indexOf("assets/photography/jungle/b-leaf.jpg"),
     );
+  });
+
+  it("prefers the photo nearer the family's own hue when chroma also ties", () => {
+    // shallows and deep both sit under blue. Give the tiebreak something only
+    // hue distance can settle: identical blue strength and identical chroma,
+    // one at blue's measured centre (248.6) and one at the wedge's cold edge.
+    // The centre one is what a reader means by blue.
+    const near = { l: 0.5, c: 0.1, h: 250.1 };
+    const far = { l: 0.5, c: 0.1, h: 218.0 };
+    expect(hueDistance(near.h, FAMILY_HUE.blue)).toBeLessThan(hueDistance(far.h, FAMILY_HUE.blue));
+  });
+
+  it("stays a total order, so the grid and the lightbox cannot disagree", () => {
+    // The lightbox walks this same array with prev/next. Two photos must
+    // never compare equal and swap between renders.
+    const first = imagesForBucket("green");
+    const srcs = first.map((image) => image.src);
+    expect(new Set(srcs).size).toBe(srcs.length);
+    expect(imagesForBucket("green")).toBe(first);
   });
 
   it("orders by the requested family, not by the photo's primary one", () => {
@@ -221,9 +248,9 @@ describe("imagesForBucket", () => {
   });
 });
 
-describe("imagesByHue", () => {
+describe("imagesBySpectrum", () => {
   it("sweeps the chromatic photos round the circle from 0 degrees", () => {
-    const srcs = imagesByHue().map((image) => image.src);
+    const srcs = imagesBySpectrum().map((image) => image.src);
     expect(srcs.slice(0, 7)).toEqual([
       "assets/photography/desert/dawn.jpg", // 1.5
       "assets/photography/jungle/a-canopy.jpg", // 131.2
@@ -236,7 +263,7 @@ describe("imagesByHue", () => {
   });
 
   it("keeps the near-360 photo at the end of the colour sweep, not next to 0", () => {
-    const srcs = imagesByHue().map((image) => image.src);
+    const srcs = imagesBySpectrum().map((image) => image.src);
     expect(srcs[7]).toBe("assets/photography/desert/dusk.jpg");
     expect(srcs.indexOf("assets/photography/desert/dusk.jpg")).toBeGreaterThan(
       srcs.indexOf("assets/photography/reef/deep.jpg"),
@@ -244,7 +271,7 @@ describe("imagesByHue", () => {
   });
 
   it("closes with the achromatic tail, darkest first", () => {
-    const srcs = imagesByHue().map((image) => image.src);
+    const srcs = imagesBySpectrum().map((image) => image.src);
     expect(srcs.slice(-2)).toEqual([
       "assets/photography/desert/night.jpg", // lightness 0.18
       "assets/photography/reef/fog.jpg", // lightness 0.79
@@ -252,14 +279,14 @@ describe("imagesByHue", () => {
   });
 
   it("includes every photo metadata knows about, exactly once", () => {
-    const srcs = imagesByHue().map((image) => image.src);
+    const srcs = imagesBySpectrum().map((image) => image.src);
     expect(srcs).toHaveLength(10);
     expect(new Set(srcs).size).toBe(10);
     expect(srcs).not.toContain("assets/photography/jungle/deleted.jpg");
   });
 
   it("caches the sweep rather than re-sorting on every render", () => {
-    expect(imagesByHue()).toBe(imagesByHue());
+    expect(imagesBySpectrum()).toBe(imagesBySpectrum());
   });
 });
 

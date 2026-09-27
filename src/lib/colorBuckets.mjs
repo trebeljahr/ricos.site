@@ -422,6 +422,46 @@ const WARM_FAMILIES = new Set(["orange", "gold"]);
  *  @type {readonly ColorBucketId[]} */
 export const CHROMATIC_FAMILIES = COLOR_BUCKETS.filter((b) => !b.neutral).map((b) => b.id);
 
+/** The hue each family actually sits at in this archive: the chroma-weighted
+ *  circular mean of every pixel that voted for it, measured over the
+ *  1,117-photo sample. These are the same angles the swatches above were
+ *  derived from, exported because ranking needs them too.
+ *
+ *  Membership says a photo belongs under Blue; it does not say how blue.
+ *  Distance from these angles does, and it is what separates a photo that is
+ *  squarely the family's colour from one sitting at the family's edge — a
+ *  pale cyan at 218 degrees is inside the blue wedge and half a wedge away
+ *  from what a reader means by blue. `strength` cannot express that, because
+ *  it counts area and not which blue.
+ *
+ *  Brown is the one to read carefully: 72.4 degrees is inside gold's angular
+ *  range, because Earth is not a hue at all. It is warm pixels demoted for
+ *  being dark and dull (see BROWN_MAX_LIGHTNESS/BROWN_MAX_CHROMA), so its
+ *  mean angle sits where the warm pixels are and lightness does the real
+ *  separating. Ranking Earth by hue distance is therefore close to
+ *  meaningless, which is why callers fall back to chroma for it.
+ *  @type {Readonly<Record<string, number>>} */
+export const FAMILY_HUE = {
+  red: 22.0,
+  orange: 51.6,
+  gold: 83.1,
+  brown: 72.4,
+  green: 128.9,
+  teal: 196.3,
+  blue: 248.6,
+  purple: 291.0,
+  pink: 347.8,
+};
+
+/** Shortest angular distance between two hues, in degrees (0-180).
+ *  Goes the short way round the circle, so red at 2 degrees is 4 degrees
+ *  from red at 358, not 356.
+ *  @param {number} a @param {number} b @returns {number} */
+export function hueDistance(a, b) {
+  const d = Math.abs((((a - b) % 360) + 360) % 360);
+  return d > 180 ? 360 - d : d;
+}
+
 /**
  * Classify one OKLCh sample into a chromatic family, or null when it's
  * too achromatic to carry a hue.

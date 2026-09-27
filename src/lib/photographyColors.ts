@@ -54,7 +54,14 @@
  */
 import type { ImageProps } from "src/@types";
 import baked from "src/content/photography-colors.json";
-import { COLOR_BUCKETS, type ColorBucketId, isColorBucketId } from "src/lib/colorBuckets.mjs";
+import {
+  CHROMATIC_FAMILIES,
+  COLOR_BUCKETS,
+  type ColorBucketId,
+  FAMILY_HUE,
+  hueDistance,
+  isColorBucketId,
+} from "src/lib/colorBuckets.mjs";
 import { getLocalMetadata } from "src/lib/imageMetadata";
 
 export type PhotoColorEntry = {
@@ -184,11 +191,46 @@ const bucketIndex = new Map<ColorBucketId, ImageProps[]>();
 export function imagesForBucket(id: ColorBucketId): ImageProps[] {
   const cached = bucketIndex.get(id);
   if (cached) return cached;
+  const centre = FAMILY_HUE[id];
   const images = keys()
     .filter((src) => entries[src].buckets.includes(id))
     .sort((a, b) => {
       const byStrength = (entries[b].strength[id] ?? 0) - (entries[a].strength[id] ?? 0);
-      return byStrength || a.localeCompare(b);
+      if (byStrength) return byStrength;
+      // Strength alone cannot order these pages. It is baked at three
+      // decimals, and across 1,185 blue photos that leaves 49% of adjacent
+      // pairs holding the *identical* value — 64% in red, where strengths
+      // are small and round together hardest. Every one of those ties used
+      // to fall through to the key compare below, which is alphabetical by
+      // path, so past the first screen the page stopped being sorted by
+      // colour at all and became sorted by trip name: a run of guadeloupe,
+      // then a run of dominica. The colour ordering was real only until the
+      // first tie, which arrived within a few rows.
+      //
+      // So ties break on the colour the photo actually carries, finest
+      // signal first. Chroma leads: given two photos with the same amount
+      // of blue, the more saturated one is the one a reader means. Hue
+      // distance follows, because a photo sitting at the family's centre is
+      // more that colour than one at its edge — except for Earth, which is
+      // a demotion of dark dull warms rather than a hue, so its centre is
+      // not a meaningful target (see FAMILY_HUE) and chroma carries it.
+      const byChroma = entries[b].chroma - entries[a].chroma;
+      if (byChroma) return byChroma;
+      if (centre !== undefined && id !== "brown") {
+        const ha = entries[a].hue;
+        const hb = entries[b].hue;
+        // A photo with no hue has no distance; it sorts after ones that do.
+        if (ha !== null && hb !== null) {
+          const byHue = hueDistance(ha, centre) - hueDistance(hb, centre);
+          if (byHue) return byHue;
+        } else if (ha !== hb) {
+          return ha === null ? 1 : -1;
+        }
+      }
+      // Last resort, and now genuinely a last resort: stable across renders
+      // because the lightbox walks this same array and must not disagree
+      // with the grid it was opened from.
+      return a.localeCompare(b);
     })
     .map(imageFor);
   bucketIndex.set(id, images);
@@ -197,24 +239,71 @@ export function imagesForBucket(id: ColorBucketId): ImageProps[] {
 
 let hueOrder: ImageProps[] | null = null;
 
-/** Every photo in one continuous sweep: the chromatic ones by hue angle
- *  from 0° (red) round the circle, then the achromatic tail by lightness,
- *  darkest first.
+/** Every photo in one sweep: banded by the family it belongs to, walking the
+ *  ring red → orange → gold → earth → green → teal → blue → purple → pink,
+ *  ascending hue inside each band, then the colourless tail by lightness.
  *
- *  The two groups cannot be interleaved, because a photo with no hue has no
- *  place on a hue axis — inserting a foggy morning at some arbitrary angle
- *  would break the gradient exactly where a reader is following it. Putting
- *  them after, ordered black to white, gives the page one long colour sweep
- *  and then one short greyscale one, which is honest about the difference. */
-export function imagesByHue(): ImageProps[] {
+ *  WHY THIS IS NOT SORTED BY HUE ANGLE, WHICH IS WHAT IT LOOKS LIKE IT WANTS
+ *  ------------------------------------------------------------------------
+ *  It was, and the page did not work. Sorting all 4,359 photos by their mean
+ *  hue produced something indistinguishable from a random grid: the "red"
+ *  end opened with snow mountains, a grey building and a dog.
+ *
+ *  The reason is in the data. `hue` is the chroma-weighted circular mean of
+ *  a photo's chromatic pixels, and in this archive 57% of photos have a mean
+ *  chroma under 0.05 against a CHROMA_FLOOR of 0.045 — they are, as whole
+ *  images, very close to grey. Their mean hue is computed from a thin sliver
+ *  of barely-tinted pixels, so it is a real number carrying almost no visual
+ *  information, and it lands them anywhere on the circle. Measured against
+ *  the classifier: for 24% of photos the wedge their mean hue falls in is
+ *  not even the family they belong to. Ordering by that number scatters
+ *  washed-out photos evenly through every region and there is no gradient
+ *  left to see.
+ *
+ *  Membership does carry the information, because it is prior-normalised and
+ *  thresholded — it already answers "is this photo unusually blue *for this
+ *  archive*", which is the question a reader scrolling a spectrum is asking.
+ *  So the band comes from the family and only the ordering inside a band
+ *  comes from the angle, where the noise can shuffle neighbours a little but
+ *  cannot move a photo out of the colour it actually reads as.
+ *
+ *  A pale photo still sits in its band and still looks pale. That is honest:
+ *  it is a washed-out blue, and it belongs among the blues.
+ *
+ *  The colourless tail cannot be interleaved, because a photo with no hue has
+ *  no place on a hue axis — inserting a foggy morning at some arbitrary angle
+ *  would break the sweep exactly where a reader is following it. Putting them
+ *  after, ordered black to white, gives the page one long colour sweep and
+ *  then one short greyscale one, which is honest about the difference. */
+export function imagesBySpectrum(): ImageProps[] {
   if (hueOrder) return hueOrder;
   const live = keys();
+
+  const bandOf = (src: string) => {
+    const primary = entries[src].buckets[0];
+    const index = CHROMATIC_FAMILIES.indexOf(primary as ColorBucketId);
+    return index;
+  };
+
   const chromatic = live
-    .filter((src) => entries[src].hue !== null)
-    .sort((a, b) => (entries[a].hue ?? 0) - (entries[b].hue ?? 0) || a.localeCompare(b));
+    .filter((src) => bandOf(src) >= 0 && entries[src].hue !== null)
+    .sort((a, b) => {
+      const byBand = bandOf(a) - bandOf(b);
+      if (byBand) return byBand;
+      // Inside a band, ascending angle, so the sweep keeps moving through
+      // the band and hands off to the next one at its far edge rather than
+      // restarting. Chroma breaks the tie: where two photos sit at the same
+      // angle the more saturated one leads, which keeps the washed-out
+      // members from opening a band.
+      const byHue = (entries[a].hue ?? 0) - (entries[b].hue ?? 0);
+      if (byHue) return byHue;
+      return entries[b].chroma - entries[a].chroma || a.localeCompare(b);
+    });
+
   const achromatic = live
-    .filter((src) => entries[src].hue === null)
+    .filter((src) => !(bandOf(src) >= 0 && entries[src].hue !== null))
     .sort((a, b) => entries[a].lightness - entries[b].lightness || a.localeCompare(b));
+
   hueOrder = [...chromatic, ...achromatic].map(imageFor);
   return hueOrder;
 }

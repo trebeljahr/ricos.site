@@ -11,7 +11,7 @@ import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { getLocalMetadata } from "src/lib/imageMetadata";
 import {
   colorBucketCounts,
-  imagesByHue,
+  imagesBySpectrum,
   imagesForBucket,
   type PhotoColorCounts,
 } from "src/lib/photographyColors";
@@ -326,11 +326,11 @@ export async function getStaticProps(): Promise<{ props: Props }> {
     chromaticFamilies.flatMap((bucket) => imagesForBucket(bucket.id).map((image) => image.src)),
   );
 
-  // `imagesByHue()` is every live classified photo in one array, which makes it
+  // `imagesBySpectrum()` is every live classified photo in one array, which makes it
   // the total. Deriving it from the lib rather than from `Object.keys` of the
   // JSON keeps it equal to what the family pages behind these cards will show:
   // the lib drops rows whose photo has left metadata.json since the last bake.
-  const allPhotos = imagesByHue();
+  const allPhotos = imagesBySpectrum();
 
   let inOne = 0;
   let inTwo = 0;

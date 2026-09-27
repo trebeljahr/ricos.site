@@ -29,7 +29,7 @@ type SpectrumMark = {
 };
 
 type Props = {
-  /** Every photo, in hue order, straight out of `imagesByHue()`. */
+  /** Every photo, in spectrum order, straight out of `imagesBySpectrum()`. */
   images: ImageProps[];
   marks: SpectrumMark[];
   chromatic: number;
@@ -61,7 +61,7 @@ type RibbonTile = {
   /** Layout aspect ratio after clamping: the flex-grow factor and the
    *  multiplier the basis and max-width are derived from in CSS. */
   ratio: number;
-  /** Intrinsic width attribute, paired with the constant 80px height. Only
+  /** Intrinsic width attribute, paired with the constant 180px height. Only
    *  there to reserve the right box before the bytes arrive. */
   width: number;
   label: string;
@@ -103,13 +103,13 @@ const RATIO_MAX = 2.5;
 
 /** Thumbnail widths pulled from the pipeline's size ladder.
  *
- *  The ribbon never renders a tile wider than 200 CSS px (the 2.5:1 clamp at
- *  the 80px row height), so the largest useful variant is 384: that covers a
- *  200px tile at device-pixel-ratio 2 with nothing to spare, and 128 covers the
- *  median portrait tile, 60px wide at the same row height, on the same screen.
- *  The browser picks per tile and per screen from these three. A 1080 variant
- *  would be five times the bytes for pixels this page throws away. */
-const THUMB_WIDTHS = [128, 256, 384];
+ *  The ribbon never renders a tile wider than 450 CSS px (the 2.5:1 clamp at
+ *  the 180px row height), so 1080 is the largest that earns its bytes: it
+ *  covers a 450px tile at device-pixel-ratio 2 with nothing to spare. 256
+ *  covers the median portrait tile, 135px wide at that row height, on the same
+ *  screen, and the two in between carry the range. The browser picks per tile
+ *  and per screen. Nothing above 1080 is ever resolved, so the ladder stops. */
+const THUMB_WIDTHS = [256, 384, 640, 1080];
 
 const clampRatio = (width: number, height: number) =>
   Math.min(RATIO_MAX, Math.max(RATIO_MIN, width / height));
@@ -123,16 +123,22 @@ const prefersReducedMotion = () =>
 
 /**
  * /photography/spectrum — the whole archive as one continuous ribbon, ordered
- * by the chroma-weighted mean hue of each photo's pixels.
+ * by the family each photo belongs to, walking the colour ring, and by hue
+ * angle inside each band. See `imagesBySpectrum` for why it is not ordered by
+ * hue angle alone: over half this archive is close enough to grey that its
+ * mean angle is noise, and sorting on it produced a random-looking grid.
  *
  * WHY THIS IS NOT A GALLERY
  * -------------------------
  * `GalleryPage` is the right component everywhere else on the site and the
  * wrong one here. It lays photos out in justified rows at a 400px target
  * height, which is a good size for looking at a photograph and hopeless for
- * looking at four thousand of them: the gradient this page exists to show only
- * appears once each frame is small enough that the eye reads the row instead of
- * the picture. So the tiles are small and uniform-height, and the layout is a
+ * looking at four thousand of them: the sweep this page exists to show only
+ * appears once the frames are small enough that the eye reads the row instead
+ * of the picture. Small, though, not tiny — at the 48px row this started with,
+ * neither the sweep nor the photographs were legible and the strip read as
+ * noise. The row heights below are the smallest at which a frame is still
+ * recognisably a photograph. So the tiles are uniform-height, and the layout is a
  * plain flex wrap rather than react-photo-album — the album's rows layout
  * justifies by varying row *height*, which is exactly the one property that has
  * to stay constant for a ribbon to read as a ribbon.
@@ -193,9 +199,9 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
           // stretched tile is at most 35% under-resolved. Declaring the
           // stretched width instead would move most of the archive from the 128
           // variant to the 256 one to sharpen a 60px thumbnail.
-          sizes: `(min-width: 1024px) ${Math.round(80 * ratio)}px, (min-width: 640px) ${Math.round(64 * ratio)}px, ${Math.round(48 * ratio)}px`,
+          sizes: `(min-width: 1024px) ${Math.round(180 * ratio)}px, (min-width: 640px) ${Math.round(140 * ratio)}px, ${Math.round(100 * ratio)}px`,
           ratio,
-          width: Math.round(80 * ratio),
+          width: Math.round(180 * ratio),
           // The label, not the alt text, carries the meaning here. Alt from the
           // filename would read "DSC04727" 4,359 times over, which is worse
           // than nothing, so the image is marked decorative and the button says
@@ -331,7 +337,7 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
         <Header
           breadcrumbs={{ path: url }}
           title="Spectrum"
-          subtitle="Every photograph in the archive, sorted by hue"
+          subtitle="Every photograph in the archive, grouped by colour"
         />
 
         {/* No prose classes: _document.tsx already puts `prose md:prose-lg
@@ -340,16 +346,16 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
         <div className="mb-8">
           <p>
             Every one of the {formatCount(total)} photographs, in one strip. The order comes from
-            the chroma-weighted mean hue of each photo's pixels, so scrolling walks the colour
-            circle once: red, orange, gold, green, teal, blue, purple, pink, back to red.{" "}
-            {achromatic} photographs carry too little colour to have a hue at all. They sit at the
+            the colour each photo actually reads as, so scrolling walks the circle once: red,
+            orange, gold, earth, green, teal, blue, purple, pink. Inside each stretch the photos run
+            by hue angle. {achromatic} photographs carry too little colour to place. They sit at the
             end, ordered from darkest to lightest.
           </p>
           <p>
-            Each frame is small on purpose. At this size the eye reads the gradient down the page
-            instead of the individual pictures. Click one to see it full size.{" "}
-            <Link href="/photography/colors">The colour families</Link> are the same data sorted the
-            other way — twelve buckets a photo belongs to, rather than one angle it sits at.
+            A pale photo still sits with its colour and still looks pale — the bands thin out at
+            their edges rather than cutting off. Click any frame to see it full size.{" "}
+            <Link href="/photography/colors">The colour families</Link> are the same data as twelve
+            separate pages, each ranked by how much of that colour a photo carries.
           </p>
         </div>
 
@@ -467,9 +473,9 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
           {/* `start` so the list numbering matches the position in the sweep
               after a jump, which is what the tile labels announce. */}
           <ol
-            aria-label="Photographs ordered by hue"
+            aria-label="Photographs ordered by colour"
             start={start + 1}
-            className="flex flex-wrap gap-px [--ribbon-h:48px] [--ribbon-stretch:1.35] sm:[--ribbon-h:64px] lg:[--ribbon-h:80px]"
+            className="flex flex-wrap gap-px [--ribbon-h:100px] [--ribbon-stretch:1.35] sm:[--ribbon-h:140px] lg:[--ribbon-h:180px]"
           >
             {visible.map((tile) => (
               <li
@@ -491,7 +497,7 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
                     sizes={tile.sizes}
                     alt=""
                     width={tile.width}
-                    height={80}
+                    height={180}
                     loading="lazy"
                     decoding="async"
                     className="h-full w-full bg-gray-200 object-cover dark:bg-gray-800"
@@ -537,54 +543,46 @@ export async function getStaticProps(): Promise<{ props: Props }> {
   // chain reaches src/content/photography-colors.json and the 2.8 MB
   // metadata.json, so the import is put somewhere it provably cannot follow the
   // page into the browser instead of trusting the transform to notice.
-  const { imagesByHue, entryFor } = await import("src/lib/photographyColors");
-  const { COLOR_BUCKETS, familyForOklch } = await import("src/lib/colorBuckets.mjs");
+  const { imagesBySpectrum, entryFor } = await import("src/lib/photographyColors");
+  const { COLOR_BUCKETS } = await import("src/lib/colorBuckets.mjs");
 
-  const images = imagesByHue();
+  const images = imagesBySpectrum();
 
   const swatch = new Map(COLOR_BUCKETS.map((bucket) => [bucket.id, bucket]));
 
-  /**
-   * Which hue wedge an angle falls in, asked of the classifier itself rather
-   * than of a second copy of its boundary table — the two must not be able to
-   * disagree about where teal starts.
-   *
-   * The lightness and chroma are stand-ins, not measurements, and they are the
-   * values they are for a reason. `familyForOklch` does more than look up a
-   * wedge: a warm pixel darker than 0.55 and duller than 0.09 comes back as
-   * Earth, and a red pixel lighter than 0.76 and duller than 0.12 comes back as
-   * pink. Feeding it the photo's own lightness would therefore scatter Earth
-   * through the orange and gold stretches and break the scale into
-   * non-contiguous pieces. 0.6 is above the Earth ceiling and below the pink
-   * floor, and 0.15 is above both chroma ceilings, so what comes back is the
-   * hue wedge and nothing else.
-   */
-  const wedgeFor = (hue: number) => familyForOklch({ l: 0.6, c: 0.15, h: hue });
-
+  // The marks read the band straight off each photo's primary family, which is
+  // the same key `imagesBySpectrum` bands by, so a mark cannot point at a
+  // stretch that holds something else.
+  //
+  // This used to derive the band from the photo's mean hue angle instead, and
+  // that is exactly what made the page unreadable: for 24% of photos the wedge
+  // their angle falls in is not the family they belong to, so the labels
+  // promised a colour the tiles under them did not have. Membership is the
+  // honest key — it is prior-normalised and thresholded, so it already means
+  // "unusually this colour for this archive".
   const counts = new Map<ColorBucketId, number>();
   const firstIndex = new Map<ColorBucketId, number>();
   let achromatic = 0;
 
   images.forEach((image, index) => {
-    const hue = entryFor(image.src)?.hue ?? null;
-    if (hue === null) {
+    const entry = entryFor(image.src);
+    const primary = entry?.buckets[0];
+    const band =
+      primary && entry?.hue !== null && swatch.get(primary)?.neutral === false ? primary : null;
+    if (!band) {
       achromatic += 1;
       return;
     }
-    const wedge = wedgeFor(hue);
-    if (!wedge) return;
-    counts.set(wedge, (counts.get(wedge) ?? 0) + 1);
-    if (!firstIndex.has(wedge)) firstIndex.set(wedge, index);
+    counts.set(band, (counts.get(band) ?? 0) + 1);
+    if (!firstIndex.has(band)) firstIndex.set(band, index);
   });
 
-  // COLOR_BUCKETS order is already the walk around the circle, and
-  // `imagesByHue` sorts by ascending angle, so filtering it to the wedges that
-  // actually occur puts the marks in sweep order without a second sort.
-  //
-  // One wrinkle worth recording: red owns both ends of the circle, 0-35 and
-  // 358-360. Three photos in this archive sit in the upper arc, so the red mark
-  // counts 193 photos but jumps to a contiguous run of 190 and those three ride
-  // at the far end of the chromatic sweep, just before the neutral tail.
+  // COLOR_BUCKETS order is already the walk around the circle and is the order
+  // the bands are laid out in, so filtering it to the families that actually
+  // occur puts the marks in sweep order without a second sort. Each band is one
+  // contiguous run now, which the hue-angle version could not guarantee — red
+  // owns both ends of the circle, so it used to appear at both ends of the
+  // strip under a single label.
   const marks: SpectrumMark[] = COLOR_BUCKETS.filter((bucket) => firstIndex.has(bucket.id))
     .map((bucket) => ({
       key: bucket.id,

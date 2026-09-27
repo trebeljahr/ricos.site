@@ -21,16 +21,96 @@ const FOOTROOM = 26;
 // A walking dinosaur carries its weight forward, so the body keeps a small
 // constant tilt and the gait rocks around it.
 const LEAN = 1.6;
+// Walking home after the bump, it hurries: quicker strides, higher steps.
+const TROT_PX_PER_S = 270;
+const TROT_STRIDE_MS = 300;
+// How far the sprite's nose sits in from the left of its box, and how far the
+// head may pass over the title before the neck meets the last letter.
+const NOSE = 1;
+const OVERLAP = 4;
+const RECOIL = 12;
 const RETURN_AFTER_MS = 4000;
 
 const calm = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 type Row = { top: number; width: number; scrollX: number };
+type Facing = 1 | -1;
+
+const titleOf = (anchorRef: RefObject<HTMLElement | null>) =>
+  anchorRef.current?.querySelector("h1") ?? anchorRef.current;
+
+/** Where the title's text ends, in viewport pixels. A heading's box runs the full width. */
+function textRight(el: Element) {
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  return range.getBoundingClientRect().right;
+}
+
+/**
+ * A hop that turns the dinosaur around in the air. Mirroring a flat emoji has
+ * to pass through zero width, so the flip happens at the top of the hop and
+ * lasts about a tenth of a second: it reads as a spin rather than a blink.
+ */
+function turnAround(el: HTMLElement, fromX: number, toX: number, from: Facing) {
+  const to = -from;
+  const at = (t: number) => Math.round(fromX + (toX - fromX) * t);
+  return el.animate(
+    [
+      { transform: `translateX(${fromX}px) translateY(0) scale(${from}, 1)` },
+      {
+        transform: `translateX(${at(0.3)}px) translateY(-15px) scale(${from}, 1.06)`,
+        offset: 0.36,
+      },
+      { transform: `translateX(${at(0.7)}px) translateY(-16px) scale(${to}, 1.06)`, offset: 0.54 },
+      { transform: `translateX(${toX}px) translateY(0) scale(${to * 1.1}, 0.9)`, offset: 0.84 },
+      { transform: `translateX(${toX}px) translateY(0) scale(${to}, 1)` },
+    ],
+    { duration: TURN_MS, easing: "ease-in-out", fill: "forwards" },
+  ).finished;
+}
+
+/**
+ * Two footfalls a stride. Each one dips and squashes on contact, then pushes
+ * off and stretches through the pass. The body rocks from side to side as the
+ * weight changes feet, around a slight forward lean, and leaving the ground is
+ * fast while the top of the arc is slow.
+ */
+function stride(el: HTMLElement | null, ms: number, lift: number) {
+  const contact = (tilt: number) => ({
+    transform: `translateY(2px) rotate(${LEAN + tilt}deg) scale(1.06, 0.94)`,
+  });
+  const pass = { transform: `translateY(-${lift}px) rotate(${LEAN}deg) scale(0.97, 1.05)` };
+  return el?.animate(
+    [
+      contact(-2.2),
+      { ...pass, offset: 0.25, easing: "ease-out" },
+      { ...contact(2.2), offset: 0.5, easing: "ease-in" },
+      { ...pass, offset: 0.75, easing: "ease-out" },
+      { ...contact(-2.2), easing: "ease-in" },
+    ],
+    { duration: ms, iterations: Number.POSITIVE_INFINITY },
+  );
+}
+
+function travel(el: HTMLElement, fromX: number, toX: number, facing: Facing, pxPerS: number) {
+  return el.animate(
+    [
+      { transform: `translateX(${fromX}px) scaleX(${facing})` },
+      { transform: `translateX(${toX}px) scaleX(${facing})` },
+    ],
+    {
+      duration: (Math.abs(toX - fromX) / pxPerS) * 1000,
+      easing: "linear",
+      fill: "forwards",
+    },
+  ).finished;
+}
 
 /**
  * Easter egg for /timeline: a dinosaur hides past the right edge of the screen
  * with only its tail showing. The tail wiggles now and then. Click it and the
- * dinosaur turns around and walks across the screen.
+ * dinosaur turns around, walks into the page title, shakes its head at it, and
+ * trots back off the way it came.
  */
 const DinoTail = ({ anchorRef }: { anchorRef: RefObject<HTMLElement | null> }) => {
   const recordFind = useRecordEggFind();
@@ -39,6 +119,7 @@ const DinoTail = ({ anchorRef }: { anchorRef: RefObject<HTMLElement | null> }) =
   // gait's rotation with the long walking translation, and a rotated
   // translation throws the dinosaur tens of pixels up and down.
   const gaitRef = useRef<HTMLSpanElement>(null);
+  const huhRef = useRef<HTMLSpanElement>(null);
   const [row, setRow] = useState<Row | null>(null);
   const [walking, setWalking] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -46,7 +127,7 @@ const DinoTail = ({ anchorRef }: { anchorRef: RefObject<HTMLElement | null> }) =
   // Line up with the anchor (the page title) and follow resizes.
   useEffect(() => {
     const measure = () => {
-      const anchor = anchorRef.current?.querySelector("h1") ?? anchorRef.current;
+      const anchor = titleOf(anchorRef);
       if (!anchor) return;
       const box = pageBox(anchor);
       setRow({
@@ -108,66 +189,81 @@ const DinoTail = ({ anchorRef }: { anchorRef: RefObject<HTMLElement | null> }) =
       await dino.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: "forwards" })
         .finished;
     } else {
-      // Turn around with a hop. Mirroring a flat emoji has to pass through
-      // zero width, so the flip happens at the top of the hop and lasts about
-      // a tenth of a second: it reads as a spin rather than a blink.
-      await dino.animate(
+      // The dinosaur's box starts at `rest`; every x below is an offset from it.
+      const rest = row.width - PEEK;
+      const title = titleOf(anchorRef);
+      const wall = title ? textRight(title) + window.scrollX - row.scrollX : 0;
+      const turned = -DINO_SIZE;
+      const bump = Math.min(turned, wall - OVERLAP - NOSE - rest);
+      const recoiled = bump + RECOIL;
+
+      await turnAround(dino, 0, turned, -1);
+      const walkSteps = stride(gaitRef.current, STRIDE_MS, 7);
+      await travel(dino, turned, bump, 1, WALK_PX_PER_S);
+      walkSteps?.cancel();
+
+      // Bump: squashed against the letters, then knocked back onto its tail
+      // while the title takes the knock too.
+      title?.animate(
         [
-          { transform: "translateX(0) translateY(0) scale(-1, 1)" },
-          {
-            transform: "translateX(-14px) translateY(-15px) scale(-1, 1.06)",
-            offset: 0.36,
-          },
-          {
-            transform: "translateX(-34px) translateY(-16px) scale(1, 1.06)",
-            offset: 0.54,
-          },
-          {
-            transform: `translateX(-${DINO_SIZE}px) translateY(0) scale(1.1, 0.9)`,
-            offset: 0.84,
-          },
-          { transform: `translateX(-${DINO_SIZE}px) translateY(0) scale(1, 1)` },
+          { translate: "0" },
+          { translate: "-4px 0", offset: 0.25 },
+          { translate: "1px 0", offset: 0.6 },
+          { translate: "0" },
         ],
-        { duration: TURN_MS, easing: "ease-in-out", fill: "forwards" },
-      ).finished;
-      const distance = row.width + DINO_SIZE;
-      // Two footfalls a stride. Each one dips and squashes on contact, then
-      // pushes off and stretches through the pass. The body rocks from side to
-      // side as the weight changes feet, around a slight forward lean, and
-      // leaving the ground is fast while the top of the arc is slow.
-      const steps = gaitRef.current?.animate(
-        [
-          { transform: `translateY(2px) rotate(${LEAN - 2.2}deg) scale(1.06, 0.94)` },
-          {
-            transform: `translateY(-7px) rotate(${LEAN}deg) scale(0.97, 1.05)`,
-            offset: 0.25,
-            easing: "ease-out",
-          },
-          {
-            transform: `translateY(2px) rotate(${LEAN + 2.2}deg) scale(1.06, 0.94)`,
-            offset: 0.5,
-            easing: "ease-in",
-          },
-          {
-            transform: `translateY(-7px) rotate(${LEAN}deg) scale(0.97, 1.05)`,
-            offset: 0.75,
-            easing: "ease-out",
-          },
-          {
-            transform: `translateY(2px) rotate(${LEAN - 2.2}deg) scale(1.06, 0.94)`,
-            easing: "ease-in",
-          },
-        ],
-        { duration: STRIDE_MS, iterations: Number.POSITIVE_INFINITY },
+        { duration: 360, easing: "ease-out" },
       );
       await dino.animate(
         [
-          { transform: `translateX(-${DINO_SIZE}px) scaleX(1)` },
-          { transform: `translateX(-${distance + DINO_SIZE}px) scaleX(1)` },
+          { transform: `translateX(${bump}px) translateY(0) rotate(0deg) scale(1, 1)` },
+          {
+            transform: `translateX(${bump + 1}px) translateY(0) rotate(0deg) scale(0.86, 1.08)`,
+            offset: 0.12,
+          },
+          {
+            transform: `translateX(${bump + RECOIL * 0.8}px) translateY(-7px) rotate(7deg) scale(1.03, 0.98)`,
+            offset: 0.45,
+          },
+          {
+            transform: `translateX(${recoiled}px) translateY(0) rotate(-2deg) scale(1.06, 0.94)`,
+            offset: 0.78,
+          },
+          { transform: `translateX(${recoiled}px) translateY(0) rotate(0deg) scale(1, 1)` },
         ],
-        { duration: (distance / WALK_PX_PER_S) * 1000, easing: "linear", fill: "forwards" },
+        { duration: 420, easing: "ease-out", fill: "forwards" },
       ).finished;
-      steps?.cancel();
+
+      // Confused: a question mark pops up and the dinosaur shakes its head.
+      huhRef.current?.animate(
+        [
+          { opacity: 0, transform: "translateY(6px) scale(0.5)" },
+          { opacity: 1, transform: "translateY(-2px) scale(1.15)", offset: 0.12 },
+          { opacity: 1, transform: "translateY(0) scale(1) rotate(-8deg)", offset: 0.3 },
+          { opacity: 1, transform: "translateY(0) scale(1) rotate(8deg)", offset: 0.55 },
+          { opacity: 1, transform: "translateY(0) scale(1) rotate(0deg)", offset: 0.8 },
+          { opacity: 0, transform: "translateY(-4px) scale(0.9)" },
+        ],
+        { duration: 1300, easing: "ease-in-out" },
+      );
+      await gaitRef.current?.animate(
+        [
+          { transform: "rotate(0deg) translateX(0)" },
+          { transform: "rotate(-7deg) translateX(-1px)", offset: 0.14 },
+          { transform: "rotate(6deg) translateX(1px)", offset: 0.28 },
+          { transform: "rotate(-5deg) translateX(-1px)", offset: 0.42 },
+          { transform: "rotate(4deg) translateX(1px)", offset: 0.56 },
+          { transform: "rotate(-2deg) translateX(0)", offset: 0.7 },
+          { transform: "rotate(0deg) translateX(0)" },
+        ],
+        { duration: 1000, easing: "ease-in-out", endDelay: 300 },
+      ).finished;
+
+      const homeward = recoiled + 28;
+      await turnAround(dino, recoiled, homeward, 1);
+      const trotSteps = stride(gaitRef.current, TROT_STRIDE_MS, 9);
+      // Far enough right that the whole body is past the edge.
+      await travel(dino, homeward, PEEK + 8, -1, TROT_PX_PER_S);
+      trotSteps?.cancel();
     }
     setHidden(true);
     setWalking(false);
@@ -208,6 +304,13 @@ const DinoTail = ({ anchorRef }: { anchorRef: RefObject<HTMLElement | null> }) =
             // The emoji faces left; mirrored it faces away, tail first toward the page.
             style={{ transform: "scaleX(-1)" }}
           >
+            {/* Only shown while it faces the page, so it is never drawn mirrored. */}
+            <span
+              ref={huhRef}
+              className="absolute bottom-full left-0.5 font-bold text-3xl leading-none opacity-0"
+            >
+              ?
+            </span>
             <span
               ref={gaitRef}
               className="inline-block origin-[50%_100%]"

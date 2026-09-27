@@ -125,19 +125,15 @@ export const EASTER_EGGS = [
     where: { hint: "A pile of hay somewhere on", label: "/needlestack", href: "/needlestack" },
   },
   {
-    id: "search-party",
-    emoji: "🔍",
-    name: "The search party",
-    where: {
-      hint: "Somewhere on",
-      label: "a page that does not exist",
-      href: "/this-page-does-not-exist",
-    },
-  },
-  {
     id: "easter-bunny",
     emoji: "🐇",
     name: "The Easter bunny",
+    where: { hint: "Somewhere in", label: "the footer", href: "#site-footer" },
+  },
+  {
+    id: "heartbeat",
+    emoji: "💓",
+    name: "The heart monitor",
     where: { hint: "Somewhere in", label: "the footer", href: "#site-footer" },
   },
 ] as const satisfies readonly EasterEgg[];

@@ -64,8 +64,8 @@ export const EMOJI_SPRITES = [
   "🏆",
   "⭐",
   "🪡",
-  "🔍",
   "🐇",
+  "💓",
 ] as const;
 
 /** Painted Easter eggs. The same script paints them onto the egg emoji. */

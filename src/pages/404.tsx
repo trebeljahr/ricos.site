@@ -1,7 +1,23 @@
-import { SearchPartyEgg } from "@components/EasterEggs/SearchParty";
-import { DidYouMean } from "@components/EasterEggs/SearchParty/DidYouMean";
+import { DidYouMean } from "@components/DidYouMean";
 import Layout from "@components/Layout";
 import { PageMain } from "@components/PostHeader";
+import Link from "next/link";
+
+/** Somewhere to go instead: the start of the site, and the best of it. */
+const OTHER_PAGES = [
+  "/start-here",
+  "/photography/best-of",
+  "/needlestack",
+  "/posts/diatoms",
+  "/posts/the-best-yellow",
+  "/r3f",
+  "/quotes",
+  "/timeline",
+  "/now",
+  "/principles",
+  "/booknotes",
+  "/newsletters",
+];
 
 /*
  * The picture, cut off its paper, in two layers over the same 4:3 box so they
@@ -31,10 +47,8 @@ const WORDS = {
 const Picture = ({ className = "", hidden = false }: { className?: string; hidden?: boolean }) => (
   <div
     className={`relative ${className}`}
-    // What the links keep clear of, and what a reader who cannot see it is
-    // told about. The copy in the flow carries the description; the one on a
-    // wide screen is the same picture again, so it says nothing twice.
-    data-page-picture
+    // The copy in the flow carries the description; the one on a wide screen
+    // is the same picture again, so it says nothing twice.
     {...(hidden
       ? { "aria-hidden": true as const }
       : { role: "img", "aria-label": "this is not a page pipe meme joke" })}
@@ -55,18 +69,8 @@ export default function Custom404() {
       imageAlt="this is not a page pipe meme joke"
       fillViewport
     >
-      {/* The words sit over the haze and the picture stays under it, level
-          with them, so the page says what it is while the picture is still
-          something to find. The z-index is on the words alone: on the page
-          itself it would take the picture up with them. */}
-      {/* Wider on the left than on the right: the strip beside the title is
-          where a few of the shorter links hide, and at the usual gutter there
-          is not the width for even the shortest of them. */}
-      <PageMain className="relative text-center md:flex md:max-w-none md:items-center md:gap-region md:pr-[5vw] md:pl-[16vw] md:text-left">
-        {/* The column is only as solid as what is written in it: its box
-            covers half the window, and left to itself it would take the
-            pointer away from every link hiding behind it. */}
-        <div className="relative z-41 pointer-events-none [&>*]:pointer-events-auto [&>p:last-of-type]:mb-0 md:w-[46%]">
+      <PageMain className="text-center md:flex md:items-center md:gap-region md:text-left">
+        <div className="md:w-3/5">
           <Picture className="mx-auto mb-group w-full md:hidden" />
           {/* The title without the site's usual page top: that carries a
               spacer where breadcrumbs would go, and on a page whose title is
@@ -79,15 +83,26 @@ export default function Custom404() {
           </header>
           <p>Sorry but this page does not exist</p>
           <DidYouMean />
-          <p>Try if you can find some other pages instead.</p>
-          <SearchPartyEgg />
+          <p>Try one of these pages instead:</p>
+          <ul className="flex list-none flex-wrap justify-center gap-2 p-0 md:justify-start">
+            {OTHER_PAGES.map((href) => (
+              <li key={href} className="m-0 p-0">
+                <Link
+                  href={href}
+                  className="rounded-full border border-dashed border-gray-500/50 px-2.5 py-1 font-mono text-xs text-gray-800 no-underline hover:border-solid hover:border-accent hover:text-accent sm:text-sm dark:border-gray-400/50 dark:text-gray-100"
+                >
+                  {href}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* Held to a share of the window's height as well as its width: the
             picture is 614x450, so the width that gives it is about 1.36 of
-            the height. On a short window an unchecked picture fills the
-            middle and leaves the links nowhere to go but the bottom. */}
-        <Picture className="hidden md:block md:w-[34%] md:max-w-[50vh]" hidden />
+            the height. On a short window an unchecked picture would push the
+            footer out of view. */}
+        <Picture className="hidden md:block md:w-2/5 md:max-w-[50vh]" hidden />
       </PageMain>
     </Layout>
   );

@@ -139,6 +139,8 @@ const PenEgg = ({ children }: Props) => {
     <>
       <EmojiButton
         label="Pencil"
+        // The pencil writes over the date and its ink, never under them.
+        className="z-10"
         onClick={() => {
           if (!busyRef.current) registerClick();
         }}

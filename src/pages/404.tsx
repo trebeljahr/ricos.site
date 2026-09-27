@@ -16,8 +16,8 @@ import Header, { PageMain } from "@components/PostHeader";
  *                  disappears against a dark page
  */
 const WORDS = {
-  maskImage: "url(/static/404-words.png)",
-  WebkitMaskImage: "url(/static/404-words.png)",
+  maskImage: "url(/static/404-words.png?v=2)",
+  WebkitMaskImage: "url(/static/404-words.png?v=2)",
   maskRepeat: "no-repeat",
   WebkitMaskRepeat: "no-repeat",
   maskPosition: "center",
@@ -32,7 +32,7 @@ const INK = "absolute inset-0 bg-gray-900/90 dark:bg-gray-100/90";
 const Picture = () => (
   <>
     <img
-      src="/static/404-pipe.png"
+      src="/static/404-pipe.png?v=2"
       alt=""
       className="absolute inset-0 h-full w-full object-contain"
     />

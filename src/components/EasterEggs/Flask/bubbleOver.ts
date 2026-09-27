@@ -7,30 +7,53 @@ type Bubble = {
   age: number;
   life: number;
   wobble: number;
+  wobbleAmp: number;
+  wobbleSpeed: number;
+  drag: number;
+  dragY: number;
+  gravity: number;
+  drift: number;
   hue: number;
   popY: number;
   popped: boolean;
 };
 
 const FOAM_MS = 900;
-const DURATION_MS = 5200;
+const DURATION_MS = 7200;
 let running = false;
 
-/** A bubble leaving the flask mouth: a short spill sideways, then a long sink down the page. */
+/**
+ * A bubble leaving the flask mouth: a spill sideways, then a sink down the page.
+ * Speed, drag, gravity, drift and pop depth are all per bubble — with one shared
+ * drag every bubble came to rest at the same vx/drag distance, so the swarm
+ * ended on a clean arc that read as a wall across the page.
+ */
 function spawn(x: number, y: number): Bubble {
-  // The logo sits at the left edge, so the spill leans right and stays short.
+  // The logo sits at the left edge, so the spill still leans right.
   const leftward = Math.random() < 0.3;
+  // Squared random keeps most bubbles near the flask while a few carry far out,
+  // so the swarm thins towards its edge instead of stopping along one arc.
+  const speed = 30 + Math.random() ** 2.4 * (leftward ? 420 : 1000);
+  const angle = (6 + Math.random() * 62) * (Math.PI / 180);
   return {
-    x: x + (Math.random() - 0.5) * 8,
-    y,
-    vx: (leftward ? -1 : 1) * (20 + Math.random() * (leftward ? 70 : 150)),
-    vy: -(30 + Math.random() * 90),
-    r: 3 + Math.random() * 8,
+    x: x + (Math.random() - 0.5) * 26,
+    y: y + (Math.random() - 0.5) * 14,
+    vx: (leftward ? -1 : 1) * Math.cos(angle) * speed,
+    vy: -Math.sin(angle) * speed * 0.55,
+    r: 2 + Math.random() ** 1.6 * 11,
     age: 0,
-    life: 2.2 + Math.random() * 2.2,
+    life: 1.6 + Math.random() * 4.4,
     wobble: Math.random() * Math.PI * 2,
+    wobbleAmp: 2 + Math.random() * 12,
+    wobbleSpeed: 1.5 + Math.random() * 5,
+    drag: 0.35 + Math.random() * 1.5,
+    dragY: 0.3 + Math.random() * 0.7,
+    gravity: 170 + Math.random() * 220,
+    // Air the bubble never loses: drag pulls towards this instead of a dead
+    // stop, so nothing freezes mid-air at a shared radius.
+    drift: (Math.random() - 0.5) * 80,
     hue: Math.random() < 0.6 ? 330 : 185,
-    popY: y + window.innerHeight / 5,
+    popY: y + window.innerHeight * (0.12 + Math.random() * 0.5),
     popped: false,
   };
 }
@@ -39,7 +62,7 @@ function drawBubble(ctx: CanvasRenderingContext2D, b: Bubble) {
   const popping = b.age > b.life - 0.15;
   const fade = popping ? Math.max(0, (b.life - b.age) / 0.15) : Math.min(1, b.age * 6);
   const r = popping ? b.r * (1 + (1 - fade) * 0.6) : b.r;
-  const x = b.x + Math.sin(b.age * 5 + b.wobble) * 3;
+  const x = b.x + Math.sin(b.age * b.wobbleSpeed + b.wobble) * b.wobbleAmp;
 
   ctx.globalAlpha = fade;
   const fill = ctx.createRadialGradient(x - r * 0.3, b.y - r * 0.3, r * 0.1, x, b.y, r);
@@ -151,10 +174,10 @@ export function bubbleOver(logo: HTMLElement | null) {
     for (const b of bubbles) {
       b.age += dt;
       if (b.age >= b.life) continue;
-      // Light as soap: the sideways spill dies fast, the sink down keeps going.
-      b.vy += 260 * dt;
-      b.vx *= 1 - 3 * dt;
-      b.vy *= 1 - 0.6 * dt;
+      // Light as soap: gravity down, air drag towards the bubble's own drift so
+      // nothing freezes mid-air at a shared distance.
+      b.vx += (b.drift - b.vx) * b.drag * dt;
+      b.vy += (b.gravity - b.vy * b.dragY) * dt;
       b.x += b.vx * dt;
       b.y += b.vy * dt;
       // Pop a short way down the page rather than at the end of a long sink.

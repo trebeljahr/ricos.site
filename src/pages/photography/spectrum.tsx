@@ -17,6 +17,7 @@ import type { ColorBucketId } from "src/lib/colorBuckets.mjs";
 import { nextImageUrl } from "src/lib/mapToImageProps";
 import { formatCount } from "src/lib/utils/formatCount";
 import { addIdAndIndex } from "src/lib/utils/misc";
+import { ribbonRows } from "src/lib/utils/ribbonRows";
 import { fractionAcross, photoAtFraction, segmentGradient } from "src/lib/utils/spectrumScale";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
@@ -125,6 +126,30 @@ const RATIO_MAX = 2.5;
  *  and per screen. Nothing above 1080 is ever resolved, so the ladder stops. */
 const THUMB_WIDTHS = [256, 384, 640, 1080];
 
+/** The ribbon's `gap-px`, which `ribbonRows` has to count into every row. */
+const TILE_GAP = 1;
+
+/**
+ * Pixels each row's tiles are sized short of the full width, handed back to
+ * them by `flex-grow` once the row is laid out.
+ *
+ * The browser rounds every flex basis to its layout unit (1/64px in Chrome and
+ * Safari) before deciding what fits on a line, so a row sized to exactly 100%
+ * can come out a fraction of a pixel over, and its last tile wraps. That tile
+ * then overfills the next row, whose last tile wraps in turn, and the whole
+ * ribbon below it falls apart. Two pixels covers the rounding of a hundred
+ * tiles, and no tile is narrow enough to fit into them.
+ */
+const ROW_SLACK = 2;
+
+/**
+ * How far the last row may be stretched to fill. It has no following tile to
+ * take in instead, so a last row of two photographs would otherwise be pulled
+ * across the whole width; past this it is left short. 1.35 keeps the crop
+ * `object-cover` takes to about a quarter of the frame.
+ */
+const TRAILING_MAX_STRETCH = 1.35;
+
 const clampRatio = (width: number, height: number) =>
   Math.min(RATIO_MAX, Math.max(RATIO_MIN, width / height));
 
@@ -200,11 +225,12 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
             ", ",
           ),
           // The three row heights, in the same breakpoint order the list sets
-          // --ribbon-h in. These are the unstretched basis widths: row
-          // justification can push a tile up to --ribbon-stretch wider, so a
-          // stretched tile is at most 35% under-resolved. Declaring the
-          // stretched width instead would move most of the archive from the 128
-          // variant to the 256 one to sharpen a 60px thumbnail.
+          // --ribbon-h in. These are the unstretched natural widths: filling a
+          // row can push a tile up to 1.25x wider on desktop and about 1.4x on
+          // a phone (see ribbonRows), so a stretched tile is that much
+          // under-resolved. Declaring the stretched width instead would move
+          // most of the archive from the 128 variant to the 256 one to sharpen
+          // a 60px thumbnail.
           sizes: `(min-width: 1024px) ${Math.round(180 * ratio)}px, (min-width: 640px) ${Math.round(140 * ratio)}px, ${Math.round(100 * ratio)}px`,
           ratio,
           width: Math.round(180 * ratio),
@@ -229,6 +255,7 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
   const { start, end } = window_;
 
   const ribbonRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLOListElement>(null);
   const progressRef = useRef<HTMLSpanElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -600,6 +627,68 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
 
   const visible = useMemo(() => tiles.slice(start, end), [tiles, start, end]);
 
+  /** The ribbon's width and row height as laid out, which is what the rows
+   *  are broken against. Null on the server and in the first client render,
+   *  when the tiles fall back to plain flex-wrap justification. */
+  const [frame, setFrame] = useState<{ width: number; height: number } | null>(null);
+
+  // A layout effect so the first measured layout replaces the fallback before
+  // the browser paints it. The observer then fires on every chunk too, since
+  // the list grows taller, and the comparison keeps those from re-rendering:
+  // only a new width or a new row height moves the breaks.
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const measure = () => {
+      const width = list.getBoundingClientRect().width;
+      const height = Number.parseFloat(getComputedStyle(list).getPropertyValue("--ribbon-h"));
+      if (!(width > 0) || !(height > 0)) return;
+      setFrame((prev) =>
+        prev?.width === width && prev.height === height ? prev : { width, height },
+      );
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(list);
+    return () => observer.disconnect();
+  }, []);
+
+  /**
+   * Each tile's `flex-basis`, as a share of its row: `undefined` leaves the
+   * tile on the natural-width basis in its class.
+   *
+   * A share of 100% rather than a width in pixels, although the pixels are
+   * right there in `frame`. The breaks are worked out against one measured
+   * width and the browser lays out against the real one, and the two disagree
+   * for a frame whenever the page resizes — a scrollbar appearing is enough.
+   * Pixel bases a few px too wide for the real row push its last tile onto
+   * the next line, and the misfit cascades down the whole ribbon. A share of
+   * the row cannot overflow it: at worst, breaks computed for a stale width
+   * crop a little more than they would have, until the observer catches up.
+   */
+  const bases = useMemo(() => {
+    if (!frame) return null;
+    const ratios = visible.map((tile) => tile.ratio);
+    const result: (string | undefined)[] = new Array(visible.length);
+    const rows = ribbonRows(
+      ratios,
+      frame.width - ROW_SLACK,
+      frame.height,
+      TILE_GAP,
+      TRAILING_MAX_STRETCH,
+    );
+    for (const row of rows) {
+      if (row.scale === null) continue;
+      let sum = 0;
+      for (let i = row.start; i < row.end; i++) sum += ratios[i];
+      const reserved = TILE_GAP * (row.end - row.start - 1) + ROW_SLACK;
+      for (let i = row.start; i < row.end; i++) {
+        result[i] = `calc((100% - ${reserved}px) * ${ratios[i] / sum})`;
+      }
+    }
+    return result;
+  }, [visible, frame]);
+
   /** Mark whose stretch of the sweep the window starts in. */
   const activeKey = useMemo(() => {
     let current: SpectrumMark["key"] | null = marks[0]?.key ?? null;
@@ -753,14 +842,22 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
             140px and 835 rows at 180px. On a 351px phone the 100px height gives
             1,321 rows.
 
-            --ribbon-stretch is how far a tile may be pushed past its natural
-            width to justify a row. Every tile is `flex-grow: <its ratio>`, so a
-            row's leftover is shared out in proportion and rows end flush on both
-            edges. Without a ceiling the last row — which, while chunks are still
-            loading, is wherever the reader currently is — would stretch a
-            handful of frames across the whole width. 1.35 bounds the crop
-            `object-cover` then takes to about a quarter of the frame, and leaves
-            a partial row visibly partial rather than distorted.
+            Where the rows break is decided in `bases` above, not by the
+            browser, and every tile in a row gets its share of it as a
+            percentage basis, so the row closes exactly. The browser's own
+            wrap is greedy and only stretches; it used to run here with each
+            tile capped at 1.35x its width, and a row that needed more than
+            that to close stayed short, leaving holes down the right edge.
+            The class basis below is the natural width, which is what the
+            tiles use before the ribbon has been measured and in a short last
+            row. `flex-grow: <its ratio>` hands out the ROW_SLACK and, before
+            measuring, the whole leftover.
+
+            The `after:` filler is what keeps a short last row short. It is
+            the last flex item, so it only ever lands on the last line, and
+            its enormous grow takes that line's leftover instead of the
+            tiles. On a full row it does not fit at all — its 8px basis is
+            more than ROW_SLACK — and wraps onto an empty line of its own.
 
             The tiles are under the 44px minimum a tap target wants, which is
             the cost of a ribbon: frames big enough to tap comfortably are too
@@ -773,19 +870,20 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
           {/* `start` so the list numbering matches the position in the sweep
               after a jump, which is what the tile labels announce. */}
           <ol
+            ref={listRef}
             aria-label="Photographs ordered by colour"
             start={start + 1}
-            className="flex flex-wrap gap-px [--ribbon-h:100px] [--ribbon-stretch:1.35] sm:[--ribbon-h:140px] lg:[--ribbon-h:180px]"
+            className="flex flex-wrap gap-px [--ribbon-h:100px] after:basis-2 after:grow-[1000000] sm:[--ribbon-h:140px] lg:[--ribbon-h:180px]"
           >
-            {visible.map((tile) => (
+            {visible.map((tile, i) => (
               <li
                 key={tile.id}
                 // Read back by `updateProgress`, which asks the browser which
                 // tile is under the middle of the viewport rather than working
                 // it out from the ribbon's height.
                 data-index={tile.index}
-                style={{ "--ar": tile.ratio } as CSSProperties}
-                className="h-[var(--ribbon-h)] shrink-0 grow-[var(--ar)] basis-[calc(var(--ribbon-h)*var(--ar))] max-w-[calc(var(--ribbon-h)*var(--ar)*var(--ribbon-stretch))]"
+                style={{ "--ar": tile.ratio, flexBasis: bases?.[i] } as CSSProperties}
+                className="h-[var(--ribbon-h)] shrink-0 grow-[var(--ar)] basis-[calc(var(--ribbon-h)*var(--ar))]"
               >
                 <button
                   type="button"

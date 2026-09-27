@@ -1,5 +1,4 @@
 import { motion, useReducedMotion } from "motion/react";
-import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -8,11 +7,13 @@ import { type Point, SmokeCanvas } from "./SmokeCanvas";
 
 /** Pages hiding in the smoke, in no particular order. */
 const HIDDEN_PAGES = ["/quotes", "/timeline", "/art", "/photography", "/eggs"];
-/** How close the pointer has to pass for something to count as found. */
-const REACH = 64;
+/** Everything the sweep can pull out of the smoke and leave standing. */
+const STICKY = "main h1, main [data-smoke-stick]";
+/** How close the sweep has to pass for something to count as found. */
+const REACH = 66;
 const KEY_STEP = 48;
 const HINT_AFTER_MS = 5000;
-/** Above the smoke layer, which is z-40: what is found rises out of the cloud. */
+/** Above the smoke, which is z-40: what is found rises out of the cloud. */
 const ABOVE_SMOKE = "45";
 
 type Spot = { fx: number; fy: number };
@@ -26,66 +27,60 @@ function scatter(): Spot[] {
 }
 
 /**
- * Easter egg on the 404 page: smoke hangs over the whole screen, with Magritte's
- * pipe behind it and five links hidden in the field below the text. The pointer
- * parts the smoke a beat behind itself, light comes through where it thins and
- * the blur lifts with it, so the painting, the heading and a link at a time
- * become readable. The heading snaps into place once it has been found, the
- * smoke rolls back in everywhere else, and what the sweep touched stays out of
- * it. The last of the five is the list of easter eggs itself.
+ * Easter egg on the 404 page: smoke hangs over the whole screen and stays
+ * there. The pointer parts it a beat behind itself, and whatever the opening
+ * passes over — the heading, the line of text, one of the five hidden links —
+ * rises out of the cloud and stays out of it. Everywhere else the smoke rolls
+ * straight back in. The last of the five links is the list of eggs itself.
  */
 const SearchPartyEgg = () => {
   const reduceMotion = useReducedMotion();
   const recordFind = useRecordEggFind();
-  const skyRef = useRef<HTMLDivElement>(null);
   const pointerRef = useRef<Point | null>(null);
   const chipRefs = useRef<(HTMLElement | null)[]>([]);
-  const titleRef = useRef<HTMLElement | null>(null);
+  const stickyRef = useRef<HTMLElement[]>([]);
   const foundRef = useRef<boolean[]>(HIDDEN_PAGES.map(() => false));
-  const titleFoundRef = useRef(false);
   const [mounted, setMounted] = useState(false);
-  const [round, setRound] = useState(0);
   const [spots, setSpots] = useState(scatter);
   const [found, setFound] = useState<boolean[]>(() => HIDDEN_PAGES.map(() => false));
-  const [titleFound, setTitleFound] = useState(false);
+  const [stuck, setStuck] = useState(0);
   const [swept, setSwept] = useState(false);
+  // Without a cloud there is nothing to search: the links are simply there.
+  const [smoking, setSmoking] = useState(true);
   const [showHint, setShowHint] = useState(false);
 
   const count = found.filter(Boolean).length;
-  const lifted = count === HIDDEN_PAGES.length;
+  const shown = (i: number) => found[i] || !smoking;
 
   useEffect(() => {
     setMounted(true);
-    // The heading belongs to the page, so the egg picks it up from the document.
-    titleRef.current = document.querySelector("main h1");
+    // The heading and the text belong to the page, so they are picked up from it.
+    stickyRef.current = [...document.querySelectorAll<HTMLElement>(STICKY)];
   }, []);
 
   // Someone who has not stirred the smoke for a while gets told what it is for.
   useEffect(() => {
-    if (swept || lifted) return;
+    if (swept) return;
     const timer = window.setTimeout(() => setShowHint(true), HINT_AFTER_MS);
     return () => window.clearTimeout(timer);
-  }, [swept, lifted]);
+  }, [swept]);
 
-  // A found heading rises above the smoke and lands with a snap.
-  useEffect(() => {
-    const title = titleRef.current;
-    if (!title) return;
-    if (!titleFound) {
-      title.style.position = "";
-      title.style.zIndex = "";
-      return;
-    }
-    title.style.position = "relative";
-    title.style.zIndex = ABOVE_SMOKE;
-    if (reduceMotion) return;
-    title.animate([{ scale: "1.04" }, { scale: "0.995" }, { scale: "1" }], {
-      duration: 420,
-      easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
-    });
-  }, [titleFound, reduceMotion]);
+  /** Lifts a piece of the page out of the smoke, where it lands with a snap. */
+  const stick = useCallback(
+    (el: HTMLElement) => {
+      el.dataset.smokeFound = "";
+      el.style.position = "relative";
+      el.style.zIndex = ABOVE_SMOKE;
+      if (reduceMotion) return;
+      el.animate([{ scale: "1.03" }, { scale: "0.997" }, { scale: "1" }], {
+        duration: 420,
+        easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
+      });
+    },
+    [reduceMotion],
+  );
 
-  /** Picks up whatever is at this point of the screen. Sets state only on a new find. */
+  /** Picks up whatever the opening is over. Sets state only on a new find. */
   const pickUp = useCallback(
     (x: number, y: number) => {
       const covers = (el: Element | null, reach: number) => {
@@ -96,9 +91,11 @@ const SearchPartyEgg = () => {
         return Math.hypot(x - nearestX, y - nearestY) <= reach;
       };
 
-      if (!titleFoundRef.current && covers(titleRef.current, REACH * 0.5)) {
-        titleFoundRef.current = true;
-        setTitleFound(true);
+      for (const el of stickyRef.current) {
+        if (el.dataset.smokeFound === undefined && covers(el, REACH * 0.5)) {
+          stick(el);
+          setStuck((n) => n + 1);
+        }
       }
 
       if (foundRef.current.every(Boolean)) return;
@@ -109,14 +106,14 @@ const SearchPartyEgg = () => {
       setFound(foundRef.current);
       if (foundRef.current.every(Boolean)) recordFind("search-party");
     },
-    [recordFind],
+    [recordFind, stick],
   );
 
   const aim = useCallback(
     (x: number, y: number) => {
       pointerRef.current = { x, y };
-      // Picked up from the pointer as well as from the trailing focus, so a quick
-      // sweep never skips something the pointer went straight over.
+      // Picked up from the pointer as well as from the trailing opening, so a
+      // quick sweep never skips something the pointer went straight over.
       pickUp(x, y);
       setSwept(true);
       setShowHint(false);
@@ -127,7 +124,6 @@ const SearchPartyEgg = () => {
   // The smoke lies over the whole page, so the page keeps the pointer and the
   // clicks, and the sweep is read from the window instead.
   useEffect(() => {
-    if (lifted) return;
     const move = (event: PointerEvent) => aim(event.clientX, event.clientY);
     const away = () => {
       pointerRef.current = null;
@@ -140,11 +136,10 @@ const SearchPartyEgg = () => {
       window.removeEventListener("pointercancel", away);
       document.removeEventListener("pointerleave", away);
     };
-  }, [aim, lifted]);
+  }, [aim]);
 
-  /** Keyboard fanning: the arrow keys walk the focus across the screen. */
+  /** Keyboard fanning: the arrow keys walk the opening across the screen. */
   useEffect(() => {
-    if (lifted) return;
     const steps: Record<string, [number, number]> = {
       ArrowLeft: [-1, 0],
       ArrowRight: [1, 0],
@@ -164,18 +159,21 @@ const SearchPartyEgg = () => {
     };
     window.addEventListener("keydown", fan);
     return () => window.removeEventListener("keydown", fan);
-  }, [aim, lifted]);
+  }, [aim]);
 
-  /** Fills the screen with smoke again and hides everything back in it. */
-  const refill = () => {
+  /** Hands everything back to the smoke and hides the links somewhere else. */
+  const hideAgain = () => {
+    for (const el of stickyRef.current) {
+      delete el.dataset.smokeFound;
+      el.style.position = "";
+      el.style.zIndex = "";
+    }
     foundRef.current = HIDDEN_PAGES.map(() => false);
-    titleFoundRef.current = false;
     pointerRef.current = null;
     setFound(foundRef.current);
-    setTitleFound(false);
+    setStuck(0);
     setSpots(scatter());
     setSwept(false);
-    setRound((n) => n + 1);
   };
 
   return (
@@ -193,7 +191,7 @@ const SearchPartyEgg = () => {
             style={{
               left: `${spots[i].fx * 100}%`,
               top: `${spots[i].fy * 100}%`,
-              zIndex: found[i] ? ABOVE_SMOKE : undefined,
+              zIndex: shown(i) ? ABOVE_SMOKE : undefined,
             }}
           >
             <motion.span
@@ -203,10 +201,10 @@ const SearchPartyEgg = () => {
             >
               <Link
                 href={href}
-                tabIndex={found[i] ? undefined : -1}
-                aria-hidden={found[i] ? undefined : true}
+                tabIndex={shown(i) ? undefined : -1}
+                aria-hidden={shown(i) ? undefined : true}
                 className={
-                  found[i]
+                  shown(i)
                     ? "rounded-full border border-dashed border-accent bg-white/90 px-2.5 py-1 font-mono text-sm text-accent no-underline shadow-sm hover:border-solid dark:bg-gray-900/90"
                     : "rounded-full border border-dashed border-gray-500 px-2.5 py-1 font-mono text-sm text-gray-600 no-underline dark:border-gray-400 dark:text-gray-200"
                 }
@@ -218,13 +216,14 @@ const SearchPartyEgg = () => {
         ))}
 
         {/* In the page, not over it: at the end of the field, clear of the footer. */}
-        {lifted && (
+        {smoking && (count > 0 || stuck > 0) && (
           <button
             type="button"
-            onClick={refill}
+            onClick={hideAgain}
+            style={{ zIndex: ABOVE_SMOKE }}
             className="absolute right-0 bottom-0 cursor-pointer rounded-full border border-dashed border-gray-400 px-2.5 py-1 text-xs text-gray-500 hover:border-accent hover:text-accent dark:border-gray-600 dark:text-gray-400"
           >
-            let the smoke back in
+            hide it all again
           </button>
         )}
       </div>
@@ -232,70 +231,21 @@ const SearchPartyEgg = () => {
       {mounted &&
         createPortal(
           // Click-through: the page underneath keeps its clicks and its scrolling.
-          <div
-            ref={skyRef}
-            className="pointer-events-none fixed inset-0 z-40 overflow-hidden [--smoke-glow:rgba(255,255,255,0.98)] dark:[--smoke-glow:rgba(170,205,255,0.72)]"
-          >
-            {/* Magritte's pipe, behind the smoke: this is not a page either. */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-[14%] z-0 transition-opacity duration-1000"
-              style={{
-                opacity: lifted ? 0 : 1,
-                maskImage: "radial-gradient(ellipse at center, #000 40%, transparent 78%)",
-                WebkitMaskImage: "radial-gradient(ellipse at center, #000 40%, transparent 78%)",
-              }}
-            >
-              <Image
-                src="/assets/blog/404.jpg"
-                alt=""
-                fill
-                sizes="70vw"
-                className="object-contain object-center opacity-45 dark:opacity-25"
-              />
-            </div>
-
-            {/* Light behind the smoke, brightest where it is thinnest. */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 z-1 transition-opacity duration-1000"
-              style={{
-                opacity: lifted ? 0 : 1,
-                background:
-                  "radial-gradient(circle calc(var(--focus-r, 0px) * 1.5) at var(--focus-x, 50%) var(--focus-y, 50%), var(--smoke-glow), transparent 70%)",
-              }}
-            />
-
-            {/* Everything is out of focus except under the moving hole. */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 z-10 backdrop-blur-[6px] transition-opacity duration-1000"
-              style={{
-                opacity: lifted ? 0 : 1,
-                maskImage:
-                  "radial-gradient(circle var(--focus-r, 0px) at var(--focus-x, 50%) var(--focus-y, 50%), transparent 0, transparent 45%, #000 100%)",
-                WebkitMaskImage:
-                  "radial-gradient(circle var(--focus-r, 0px) at var(--focus-x, 50%) var(--focus-y, 50%), transparent 0, transparent 45%, #000 100%)",
-              }}
-            />
-
+          <div className="pointer-events-none fixed inset-0 z-40 overflow-hidden">
             <SmokeCanvas
-              key={round}
               pointerRef={pointerRef}
-              varsRef={skyRef}
               onFocus={pickUp}
-              lifted={lifted}
               calm={!!reduceMotion}
+              onReady={setSmoking}
             />
 
-            {showHint && !lifted && (
-              <span className="absolute inset-x-0 bottom-16 z-20 text-center text-xs tracking-wide text-gray-500 dark:text-gray-400">
+            {showHint && smoking && (
+              <span className="absolute inset-x-0 bottom-16 text-center text-xs tracking-wide text-gray-500 dark:text-gray-400">
                 something is in the smoke
               </span>
             )}
-
-            {count > 0 && !lifted && (
-              <span className="absolute right-5 bottom-5 z-20 text-xs text-gray-500 dark:text-gray-400">
+            {count > 0 && smoking && (
+              <span className="absolute right-5 bottom-5 text-xs text-gray-500 dark:text-gray-400">
                 {count} of {HIDDEN_PAGES.length} found
               </span>
             )}

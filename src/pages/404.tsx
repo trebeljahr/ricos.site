@@ -1,5 +1,4 @@
 import { SearchPartyEgg } from "@components/EasterEggs/SearchParty";
-import { TrySomeOfThese } from "@components/IntroLinks";
 import Layout from "@components/Layout";
 import Header, { PageMain } from "@components/PostHeader";
 
@@ -14,10 +13,10 @@ export default function Custom404() {
       imageAlt="this is not a page pipe meme joke"
     >
       <PageMain>
+        {/* The heading and both lines are in the smoke until the sweep finds them. */}
         <Header title="404 - Page Not Found" />
-        <p>Sorry but this page does not exist</p>
-        <TrySomeOfThese />
-        {/* Smoke over the whole page, with links hidden in the field below. */}
+        <p data-smoke-stick>Sorry but this page does not exist</p>
+        <p data-smoke-stick>Try if you can find some other pages instead.</p>
         <SearchPartyEgg />
       </PageMain>
     </Layout>

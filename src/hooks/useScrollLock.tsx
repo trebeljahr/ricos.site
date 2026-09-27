@@ -1,23 +1,28 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 
+/**
+ * Holds the page still while an overlay is open.
+ *
+ * Only touches `<body>` while the lock is on, and puts back whatever was there
+ * before. Unlocking used to assign `overflow: auto`, which ran on mount too —
+ * so every page carried `overflow: auto` on `<body>` whether or not anything
+ * had ever been locked. That is not the initial `visible`: it makes `<body>` a
+ * scroll container, and the sticky navbar then stuck to the body's scrollport
+ * instead of the viewport and scrolled away with the page.
+ */
 export function useScrollLock(lock: boolean) {
-  const lockScroll = useCallback(() => {
-    document.body.style.overflow = "hidden";
-  }, []);
-
-  const unlockScroll = useCallback(() => {
-    document.body.style.overflow = "auto";
-  }, []);
-
   useEffect(() => {
-    if (lock) {
-      lockScroll();
-    } else {
-      unlockScroll();
-    }
+    if (!lock) return;
+
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
     return () => {
-      unlockScroll();
+      if (previous) {
+        document.body.style.overflow = previous;
+      } else {
+        document.body.style.removeProperty("overflow");
+      }
     };
-  }, [lock, lockScroll, unlockScroll]);
+  }, [lock]);
 }

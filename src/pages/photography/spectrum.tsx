@@ -790,7 +790,7 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
                     // click reliably. Under the 44px a tap target wants, which
                     // is the compromise a strip makes: 44px of height for a
                     // control that is 11 slivers wide is not a strip any more.
-                    "block h-full min-w-7 cursor-pointer transition-[filter] hover:brightness-110",
+                    "block h-full min-w-7 cursor-pointer",
                     // The focus ring goes inside: the strip clips its own
                     // overflow, so an outset ring on a segment is invisible.
                     "focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-inset",
@@ -801,8 +801,13 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
                     // exists to show. The stripe already says where they are,
                     // to the photograph rather than to the band, so the
                     // highlight was a second, coarser answer to a question
-                    // that had a better one. `aria-current` below still
+                    // that had a better one. `aria-current` above still
                     // carries it for anyone not looking at the colours.
+                    //
+                    // Hovering does not brighten a band either, for the same
+                    // reason: it cut the same false seam into the ramp under
+                    // the pointer. The cursor and the `title` are the
+                    // affordance.
                   )}
                 />
               );

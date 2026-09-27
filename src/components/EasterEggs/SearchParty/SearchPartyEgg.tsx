@@ -23,8 +23,8 @@ const HIDDEN_PAGES = [
 const KEEP_CLEAR = "main h1, main p, [data-page-picture]";
 /** Room left around everything a hiding place keeps off, and around the next. */
 const ROOM = 16;
-/** How many places to try before a link settles for wherever it can go. */
-const TRIES = 120;
+/** Jitters tried inside a cell before the link moves on to another one. */
+const TRIES = 24;
 const KEY_STEP = 52;
 const HINT_AFTER_MS = 5000;
 /** Under the navbar (z-999) and the footer, which are never behind the glass. */
@@ -84,9 +84,12 @@ const SearchPartyEgg = () => {
   }, [recordFind]);
 
   /** Deals the links out over the whole window, anywhere the words and the
-      picture are not — above the title, beside the picture, under both. */
+      picture are not — above the title, beside the picture, under both. One
+      to a cell of a grid laid over the window, rather than anywhere at all,
+      so they come out spread instead of clumped. */
   useLayoutEffect(() => {
     if (!hiding || !mounted) return;
+
     const place = () => {
       const avoid: Box[] = [...document.querySelectorAll<HTMLElement>(KEEP_CLEAR)].map((el) =>
         el.getBoundingClientRect(),
@@ -95,29 +98,65 @@ const SearchPartyEgg = () => {
       const footer = document.querySelector<HTMLElement>("body footer")?.getBoundingClientRect();
       const top = (navbar?.bottom ?? 0) + ROOM;
       const floor = (footer && footer.top < innerHeight ? footer.top : innerHeight) - ROOM;
-      const taken: Box[] = [];
+      const band = { left: ROOM, right: innerWidth - ROOM, top, bottom: floor };
 
+      // A grid of roughly square cells, with a few to spare so that a link
+      // whose cell is taken up by the picture has somewhere else to go.
+      const across = Math.max(
+        1,
+        Math.round(
+          Math.sqrt(
+            HIDDEN_PAGES.length *
+              1.35 *
+              ((band.right - band.left) / Math.max(1, band.bottom - band.top)),
+          ),
+        ),
+      );
+      const down = Math.max(1, Math.ceil((HIDDEN_PAGES.length * 1.35) / across));
+      const cellW = (band.right - band.left) / across;
+      const cellH = (band.bottom - band.top) / down;
+      const cells = [...Array(across * down).keys()];
+      for (let i = cells.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cells[i], cells[j]] = [cells[j], cells[i]];
+      }
+
+      const taken: Box[] = [];
+      const fits = (x: number, y: number, width: number, height: number) => {
+        const box = {
+          left: x - ROOM,
+          right: x + width + ROOM,
+          top: y - ROOM,
+          bottom: y + height + ROOM,
+        };
+        if (box.left < 0 || box.right > innerWidth) return null;
+        if (box.top < top - ROOM || box.bottom > floor + ROOM) return null;
+        if (avoid.some((other) => clash(box, other))) return null;
+        if (taken.some((other) => clash(box, other))) return null;
+        return box;
+      };
+
+      let next = 0;
       setSpots(
         chipRefs.current.map((el) => {
           const { width, height } = el?.getBoundingClientRect() ?? { width: 130, height: 28 };
-          const spanX = Math.max(1, innerWidth - width - ROOM * 2);
-          const spanY = Math.max(1, floor - top - height);
-          let spot = { x: ROOM, y: top };
-          for (let tries = 0; tries < TRIES; tries++) {
-            const at = { x: ROOM + Math.random() * spanX, y: top + Math.random() * spanY };
-            const box = {
-              left: at.x - ROOM,
-              right: at.x + width + ROOM,
-              top: at.y - ROOM,
-              bottom: at.y + height + ROOM,
-            };
-            if (avoid.some((other) => clash(box, other))) continue;
-            if (taken.some((other) => clash(box, other))) continue;
-            taken.push(box);
-            spot = at;
-            break;
+          // Walk the cells from wherever the last link stopped, so every link
+          // ends up in a cell of its own and the window fills evenly.
+          for (let step = 0; step < cells.length; step++) {
+            const cell = cells[(next + step) % cells.length];
+            const originX = band.left + (cell % across) * cellW;
+            const originY = band.top + Math.floor(cell / across) * cellH;
+            for (let tries = 0; tries < TRIES; tries++) {
+              const x = originX + Math.random() * Math.max(1, cellW - width);
+              const y = originY + Math.random() * Math.max(1, cellH - height);
+              const box = fits(x, y, width, height);
+              if (!box) continue;
+              taken.push(box);
+              next += step + 1;
+              return { x, y };
+            }
           }
-          return spot;
+          return { x: band.left, y: band.top };
         }),
       );
     };
@@ -181,9 +220,8 @@ const SearchPartyEgg = () => {
     return () => window.removeEventListener("keydown", walk);
   }, [look, hiding]);
 
-  // Written in the page's own ink, which is the picture's. See 404.tsx.
   const chip =
-    "rounded-full border border-dashed border-[#2f2a20]/45 px-2.5 py-1 font-mono text-xs text-[#2f2a20] no-underline hover:border-solid hover:bg-[#2f2a20]/5 sm:text-sm dark:border-[#f0e6d2]/40 dark:text-[#f0e6d2] dark:hover:bg-[#f0e6d2]/10";
+    "rounded-full border border-dashed border-gray-500/50 px-2.5 py-1 font-mono text-xs text-gray-800 no-underline hover:border-solid hover:border-accent hover:text-accent sm:text-sm dark:border-gray-400/50 dark:text-gray-100";
 
   return (
     <>
@@ -239,7 +277,7 @@ const SearchPartyEgg = () => {
           >
             <LookingGlass pointerRef={pointerRef} calm={false} onReady={setGlazed} />
             {showHint && (
-              <span className="absolute inset-x-0 bottom-16 text-center font-mono text-xs tracking-wide text-[#2f2a20]/70 dark:text-[#f0e6d2]/70">
+              <span className="absolute inset-x-0 bottom-16 text-center font-mono text-xs tracking-wide text-gray-500 dark:text-gray-400">
                 look through the glass
               </span>
             )}

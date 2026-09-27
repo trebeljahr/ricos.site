@@ -99,6 +99,12 @@ export const EASTER_EGGS = [
     where: { hint: "Somewhere on", label: "any post", href: "/posts" },
   },
   {
+    id: "pen",
+    emoji: "✒️",
+    name: "The signature",
+    where: { hint: "Somewhere on", label: "any post", href: "/posts" },
+  },
+  {
     id: "trophy",
     emoji: "⭐",
     name: "The rating stars",

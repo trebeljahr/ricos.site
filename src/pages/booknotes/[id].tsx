@@ -110,7 +110,7 @@ const Book = ({ booknote, relatedBooks, backlinks }: Props) => {
             <MetadataDisplay
               readingTime={booknote.metadata.readingTime}
               date={booknote.date}
-              clockEgg
+              eggs
             />
             <section className="flex gap-para">
               <div className="not-prose block relative mb-para md:mb-0 w-60 overflow-hidden rounded-md">

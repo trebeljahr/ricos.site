@@ -16,9 +16,9 @@ import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 /**
  * How many photos one family page puts on screen.
  *
- * Five of the twelve families are bigger than any gallery this site has ever
- * shipped: green 1,519, gold 1,426, brown 1,327, blue 1,185, orange 819. The
- * other seven are 491 and down and never hit this limit.
+ * Four of the eleven families are bigger than any gallery this site has ever
+ * shipped: gold 1,549, green 1,520, blue 1,183, orange 986. The other seven
+ * are 491 and down and never hit this limit.
  *
  * 600 is the number because it is the size the gallery is already known to
  * carry. Measured on the green family in this worktree: 600 photos serialise
@@ -27,13 +27,13 @@ import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
  * best-of gallery that is live today. Uncapped green would be 154,245 bytes
  * and 27,632 objects — three times the largest page ever measured here, all of
  * it shipped to a phone before the first tile appears, for photos that carry
- * a green strength of 0.25 and below.
+ * a green strength of 0.22 and below.
  *
- * What the cut actually drops: the 600th green photo still covers a quarter of
- * its frame in green (strength 0.250), and the top 600 hold 65.9% of all the
- * green in the family. Blue cuts at 0.201 (73.7% of its blue), gold at 0.137
- * (70.2%), brown at 0.093 (66.4%), orange at 0.044 (89.7%). So the cap removes
- * the long accent tail and keeps the part of each family a person came for.
+ * What the cut actually drops: the 600th green photo still covers about a
+ * fifth of its frame in green (strength 0.223), and the top 600 hold 70.9% of
+ * all the green in the family. Gold cuts at 0.193 (67.8% of its gold), blue at
+ * 0.178 (78.8%), orange at 0.069 (86.7%). So the cap removes the long accent
+ * tail and keeps the part of each family a person came for.
  *
  * The page says the number out loud whenever it applies, and links to the trip
  * galleries, which are uncapped and hold every photo. A stated cap is a fact a
@@ -46,7 +46,7 @@ const PAGE_LIMIT = 600;
  *
  * Every big family spans all 28 trips, and even pink and purple span 25 — a
  * full row would be four lines of links, most of them reading "Varanasi 1".
- * Measured across the twelve families, the top twelve trips carry between 71%
+ * Measured across the eleven families, the top twelve trips carry between 71%
  * and 98% of a family's photos, so twelve rows answer "where does this colour
  * come from" and the tail only answers "where does it also occur once".
  */
@@ -188,12 +188,12 @@ export default function PhotographyColorFamilyPage({
               <TripRow trips={trips} tripTotal={tripTotal} />
               <p className="m-0! text-sm">
                 <Link href="/photography/colors" className="hover:text-accent">
-                  All twelve colour families
+                  All eleven colour families
                 </Link>
               </p>
             </div>
             {/* Legend off: the heading above already names this family, and the
-                twelve legend rows would repeat the navigation the wheel is. The
+                eleven legend rows would repeat the navigation the wheel is. The
                 width is held down because at its own 352px the wheel outweighs
                 the text beside it and pushes the first row of photos off a
                 laptop screen. */}
@@ -211,9 +211,9 @@ export default function PhotographyColorFamilyPage({
 }
 
 export async function getStaticPaths() {
-  // The twelve families are a fixed list in colorBuckets.mjs, not something
+  // The eleven families are a fixed list in colorBuckets.mjs, not something
   // derived from the baked JSON: a family that happens to be empty still needs
-  // a page, because the wheel links to all twelve from every other page.
+  // a page, because the wheel links to all eleven from every other page.
   return {
     paths: COLOR_BUCKETS.map(({ id }) => ({ params: { family: id } })),
     fallback: false,

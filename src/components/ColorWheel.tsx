@@ -19,7 +19,7 @@ const OUTER = 160;
 const INNER = 88;
 const CENTER = 176;
 const VIEWBOX = CENTER * 2;
-/** Gap between segments, in degrees, so the ring reads as twelve distinct
+/** Gap between segments, in degrees, so the ring reads as eleven distinct
  *  choices rather than one continuous gradient. */
 const GAP_DEG = 1.6;
 /** How far the active segment slides outward along its own bisector. */
@@ -56,7 +56,7 @@ function countLabel(label: string, count: number): string {
 }
 
 /**
- * The colour wheel on /photography/colors: twelve linked segments, one per
+ * The colour wheel on /photography/colors: eleven linked segments, one per
  * family, sized equally rather than by population.
  *
  * Equal segments because the ring is a chooser and not a chart. Scaling by
@@ -73,7 +73,7 @@ function countLabel(label: string, count: number): string {
  * in HTML context and do use `next/link`.
  *
  * The tile grid is the wheel's mobile twin, not a decoration. A legend row of
- * 12 text links gives each one about 20px of height; the thumb it is tapped
+ * 11 text links gives each one about 20px of height; the thumb it is tapped
  * with needs 44. So under `sm` the labels become tiles that clear that, and
  * the legend row takes over from `sm` up where a pointer is likely.
  */

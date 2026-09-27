@@ -62,12 +62,13 @@
 // split are unchanged — they are corpus-independent — and every threshold
 // fitted to varnish was re-measured here. Three moved (the two chromatic-
 // fraction gates and the white band), one moved for a reason opposite to
-// the one expected (the earth split, see BROWN_MAX_CHROMA), and the rest
-// were left alone because the sweep showed no reason to touch them. Each
-// one says below what it was measured against.
+// the one expected, and the rest were left alone because the sweep showed
+// no reason to touch them. Each one says below what it was measured
+// against. The Earth family the port arrived with is gone entirely; see
+// WHY THERE IS NO EARTH FAMILY below.
 
 /**
- * @typedef {"red"|"orange"|"gold"|"brown"|"green"|"teal"|"blue"|"purple"|"pink"|"white"|"grey"|"black"} ColorBucketId
+ * @typedef {"red"|"orange"|"gold"|"green"|"teal"|"blue"|"purple"|"pink"|"white"|"grey"|"black"} ColorBucketId
  */
 
 /**
@@ -79,14 +80,14 @@
  */
 
 /** Ring order: the chromatic families walk the hue circle the way a
- *  painter's colour wheel does, brown sits among the earths it belongs
- *  to, and the three neutral bands close the ring.
+ *  painter's colour wheel does, and the three neutral bands close the
+ *  ring.
  *
  *  Each chromatic swatch carries this corpus's measured hue for that
  *  family — the chroma-weighted circular mean of every pixel that voted
- *  for it across the 1,117-photo sample: red 22.0°, orange 51.6°, gold
- *  83.1°, brown 72.4°, green 128.9°, teal 196.3°, blue 248.6°, purple
- *  291.0°, pink 347.8°. That is why green is a leaf green at 129° rather
+ *  for it across the 1,117-photo sample: red 22.0°, orange 51.1°, gold
+ *  83.5°, green 128.9°, teal 196.3°, blue 248.6°, purple 291.0°, pink
+ *  347.8°. That is why green is a leaf green at 129° rather
  *  than a web #00ff00 at 142°, and why the archive's red sits nearer
  *  terracotta than fire engine.
  *
@@ -95,15 +96,11 @@
  *  the gamut runs out first (teal at 196° and green at 129° do, at these
  *  lightnesses). That is a deliberate departure from the data: the measured
  *  mean chroma of a family here is 0.065-0.103, and twelve swatches at that
- *  chroma are muddy enough that red, brown and orange are not tellable
- *  apart in a 24px circle. The ring is a control, so it has to be legible;
+ *  chroma are muddy enough that red and orange are not tellable apart in
+ *  a 24px circle. The ring is a control, so it has to be legible;
  *  the hue it promises is still the hue the bucket contains.
  *
- *  Earth is the exception to the scaling: its swatch is held at chroma
- *  0.089, just inside BROWN_MAX_CHROMA, because the earth split is defined
- *  by that ceiling. Scale it up like the rest and `bucketForHex` classifies
- *  the Earth swatch as gold — a chooser whose swatch is not a member of the
- *  bucket it opens. The test suite asserts that invariant for all nine
+ *  The test suite asserts that invariant for all eight
  *  chromatic families.
  *
  *  The three neutral swatches are not measured. The mean lightness of the
@@ -115,7 +112,6 @@ export const COLOR_BUCKETS = [
   { id: "red", label: "Red", swatch: "#a2202c", neutral: false },
   { id: "orange", label: "Orange", swatch: "#d06816", neutral: false },
   { id: "gold", label: "Gold", swatch: "#ca9200", neutral: false },
-  { id: "brown", label: "Earth", swatch: "#714a0c", neutral: false },
   { id: "green", label: "Green", swatch: "#477400", neutral: false },
   { id: "teal", label: "Teal", swatch: "#009194", neutral: false },
   { id: "blue", label: "Blue", swatch: "#1482d5", neutral: false },
@@ -245,37 +241,27 @@ export const MAX_FAMILIES = 3;
 export const WHITE_MIN_LIGHTNESS = 0.7;
 export const BLACK_MAX_LIGHTNESS = 0.36;
 
-/** Warm pixels both darker *and* duller than these bounds are earths, not
- *  oranges or golds.
- *
- *  The expectation going in was that this split would need tightening:
- *  this corpus's warm wedge is sunset, sari, spice and desert, and none of
- *  that should collapse to Earth. The measurement says the opposite, so
- *  the chroma ceiling was loosened from 0.08 to 0.09 instead.
- *
- *  Tightening it destroys the family rather than purifying it. At
- *  l<=0.48, c<=0.06 brown holds 258 photos, but the *strongest* of them
- *  carries only 0.159 brown and the median member 0.041 — the pixels that
- *  make something look brown in daylight (mud, dry earth, sandstone, wet
- *  wood) sit at chroma 0.06-0.09, so tightening evicts the subject matter
- *  and leaves a bucket that qualifies on noise amplified by a tiny prior.
- *  Its top three members are a sparkler, a bright corridor and a backlit
- *  dandelion. Loosening to c<=0.09 gives 1,478 photos whose strongest
- *  carries 0.419 and whose median carries 0.078, and whose top members are
- *  a banyan on an unpaved road and sandstone fort passages — which is what
- *  the label promises. The cost is 77 photos of orange membership
- *  (994 -> 917), and the sunsets stay in orange because sunset pixels are
- *  far above 0.09.
- *
- *  The lightness ceiling stays at 0.55. Raising it to 0.60 moves 302 more
- *  photos into Earth, and reading them shows what they are: hazy beaches,
- *  gilded shopfronts and long-exposure golden light, which belong to gold
- *  and orange. Lowering it to 0.52 costs 247 photos of Earth and gains
- *  nothing — the strongest member barely moves (0.412 against 0.419) and
- *  the gold and orange counts only drift. Earth is still this archive's
- *  least coherent family — see the report in src/lib/photographyColors.ts. */
-export const BROWN_MAX_LIGHTNESS = 0.55;
-export const BROWN_MAX_CHROMA = 0.09;
+// WHY THERE IS NO EARTH FAMILY
+// -----------------------------
+// There was one, ported from Collection of Beauty, where it earns its place:
+// varnished canvas and umber are most of a painting corpus and would otherwise
+// drown out the genuinely orange works. It was a demotion rather than a hue —
+// warm pixels darker than 0.55 and duller than 0.09 were pulled out of gold and
+// orange and called Earth.
+//
+// It was this archive's least coherent family, and the reason is that the rule
+// selects on lightness and chroma, not on subject. Sandstone forts and unpaved
+// roads landed in it, which is what the label promises, but so did gilded
+// ceilings and golden-hour hallways — warm interior light is dark and dull by
+// this measure, and a reader looking at them says gold. Ranking inside the
+// family was meaningless too: Earth is not a hue, so distance from a family
+// hue could not order it and it fell back to chroma alone.
+//
+// Removing the demotion sends those pixels back to the wedge their angle
+// already puts them in. Gold absorbs most of them, and the corpus prior below
+// absorbs that in turn — a family's share is divided by its own mean share, so
+// gold growing raises gold's prior and membership stays just as selective. That
+// is the whole point of normalising against the corpus.
 
 /** The mirror of the earth rule at the other end of the red arc: a red
  *  that is pale and soft is pink, not red. Hue alone can't separate the
@@ -309,15 +295,12 @@ export const PINK_MAX_CHROMA = 0.12;
  *  breaking it. Re-measure with
  *  `npm run photographyColors -- --measure-priors` if the composition
  *  changes materially — a first winter trip, say, or a large new
- *  underwater folder. Changing BROWN_MAX_LIGHTNESS or BROWN_MAX_CHROMA
- *  also requires re-measuring, since the earth split decides which pixels
- *  vote brown instead of gold and therefore moves three of these numbers.
+ *  underwater folder.
  *  @type {Readonly<Record<string, number>>} */
 export const FAMILY_PRIOR = {
   red: 0.064,
-  orange: 0.088,
-  gold: 0.187,
-  brown: 0.164,
+  orange: 0.147,
+  gold: 0.292,
   green: 0.185,
   teal: 0.016,
   blue: 0.258,
@@ -415,9 +398,6 @@ const HUE_FAMILIES = [
   { from: 318, to: 358, id: "pink" },
 ];
 
-/** Warm families that collapse to `brown` when dark *and* dull. */
-const WARM_FAMILIES = new Set(["orange", "gold"]);
-
 /** Chromatic families, in the order used for deterministic tie-breaks.
  *  @type {readonly ColorBucketId[]} */
 export const CHROMATIC_FAMILIES = COLOR_BUCKETS.filter((b) => !b.neutral).map((b) => b.id);
@@ -434,18 +414,11 @@ export const CHROMATIC_FAMILIES = COLOR_BUCKETS.filter((b) => !b.neutral).map((b
  *  from what a reader means by blue. `strength` cannot express that, because
  *  it counts area and not which blue.
  *
- *  Brown is the one to read carefully: 72.4 degrees is inside gold's angular
- *  range, because Earth is not a hue at all. It is warm pixels demoted for
- *  being dark and dull (see BROWN_MAX_LIGHTNESS/BROWN_MAX_CHROMA), so its
- *  mean angle sits where the warm pixels are and lightness does the real
- *  separating. Ranking Earth by hue distance is therefore close to
- *  meaningless, which is why callers fall back to chroma for it.
  *  @type {Readonly<Record<string, number>>} */
 export const FAMILY_HUE = {
   red: 22.0,
-  orange: 51.6,
-  gold: 83.1,
-  brown: 72.4,
+  orange: 51.1,
+  gold: 83.5,
   green: 128.9,
   teal: 196.3,
   blue: 248.6,
@@ -479,7 +452,6 @@ export function familyForOklch({ l, c, h }) {
       break;
     }
   }
-  if (WARM_FAMILIES.has(id) && l <= BROWN_MAX_LIGHTNESS && c <= BROWN_MAX_CHROMA) return "brown";
   if (id === "red" && l >= PINK_MIN_LIGHTNESS && c <= PINK_MAX_CHROMA) return "pink";
   return id;
 }

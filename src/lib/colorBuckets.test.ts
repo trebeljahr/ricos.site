@@ -1,6 +1,5 @@
 import {
   BLACK_MAX_LIGHTNESS,
-  BROWN_MAX_CHROMA,
   bucketForHex,
   bucketsFromHistogram,
   CHROMA_FLOOR,
@@ -152,24 +151,17 @@ describe("familyForOklch", () => {
     expect(familyForOklch({ l: 0.75, c: 0.2, h: -110 })).toBe("blue"); // -110 + 360 = 250
   });
 
-  it("reclassifies warm hues as earth only when both dark and dull", () => {
-    // Dark and dull -> earth.
-    expect(familyForOklch({ l: 0.45, c: 0.06, h: 70 })).toBe("brown");
-    // Dark but vivid -> stays gold.
+  it("keeps warm hues in their own wedge however dark or dull they are", () => {
+    // These four all used to be demoted to an Earth family. It is gone: a
+    // warm pixel belongs to the wedge its angle puts it in, and lightness
+    // no longer moves it. See WHY THERE IS NO EARTH FAMILY in the source.
+    expect(familyForOklch({ l: 0.45, c: 0.06, h: 70 })).toBe("gold");
     expect(familyForOklch({ l: 0.45, c: 0.15, h: 70 })).toBe("gold");
-    // Dull but light -> stays gold.
     expect(familyForOklch({ l: 0.85, c: 0.06, h: 70 })).toBe("gold");
+    expect(familyForOklch({ l: 0.3, c: 0.05, h: 50 })).toBe("orange");
   });
 
-  it("holds the earth split exactly at the loosened chroma ceiling", () => {
-    // BROWN_MAX_CHROMA moved from the painting corpus's 0.08 to 0.09
-    // because daylight mud, sandstone and wet wood live at 0.06-0.09; this
-    // pins the boundary the archive's 1,478 Earth photos depend on.
-    expect(familyForOklch({ l: 0.45, c: BROWN_MAX_CHROMA, h: 70 })).toBe("brown");
-    expect(familyForOklch({ l: 0.45, c: BROWN_MAX_CHROMA + 0.001, h: 70 })).toBe("gold");
-  });
-
-  it("never reclassifies cool hues as earth", () => {
+  it("leaves cool hues alone too", () => {
     expect(familyForOklch({ l: 0.4, c: 0.05, h: 250 })).toBe("blue");
     expect(familyForOklch({ l: 0.4, c: 0.05, h: 130 })).toBe("green");
   });
@@ -211,7 +203,7 @@ describe("bucketForHex", () => {
     expect(bucketForHex("#ff0000")).toBe("red");
     expect(bucketForHex("#1f4fa8")).toBe("blue");
     expect(bucketForHex("#2e7d32")).toBe("green");
-    expect(bucketForHex("#7a5230")).toBe("brown");
+    expect(bucketForHex("#7a5230")).toBe("orange");
   });
 
   it("falls back to a neutral band for achromatic input", () => {
@@ -261,7 +253,7 @@ describe("bucketsFromHistogram", () => {
         ["#7a5230", 70],
       ]),
     );
-    expect(buckets).toContain("brown");
+    expect(buckets).toContain("orange");
     expect(buckets).toContain("white");
   });
 
@@ -277,7 +269,7 @@ describe("bucketsFromHistogram", () => {
       ]),
     );
     expect(MUTED_MAX_CHROMATIC_FRACTION).toBe(0.08);
-    expect(at).toEqual(["brown"]);
+    expect(at).toEqual(["orange"]);
   });
 
   it("does not append a neutral band to a fully saturated photo", () => {
@@ -713,6 +705,6 @@ describe("familyVoteShares", () => {
         ["#7a5230", 300], // chroma 0.072, weight 0.6
       ]),
     );
-    expect(shares.blue ?? 0).toBeGreaterThan(shares.brown ?? 0);
+    expect(shares.blue ?? 0).toBeGreaterThan(shares.gold ?? 0);
   });
 });

@@ -73,20 +73,27 @@ type RibbonTile = {
  * Sized from the measured ribbon geometry rather than picked round. Across the
  * 4,359 photos the mean tile is 1.06x as wide as it is tall once the aspect
  * ratio is clamped (see RATIO_MIN/RATIO_MAX) — this archive is portrait-heavy,
- * 2,412 portrait frames against 1,943 landscape — so at the largest row height
- * of 80px the mean tile is 85px wide and a full 1000px-wide row holds about
- * twelve of them.
+ * 2,412 portrait frames against 1,943 landscape — so at the smallest row height
+ * of 100px the mean tile is 106px wide and a full 1000px-wide row holds about
+ * nine of them.
  *
  * The number has to be big enough that appending one chunk pushes the sentinel
  * clear out of the observer's 400px rootMargin, otherwise the sentinel never
  * stops intersecting, IntersectionObserver never fires again (it notifies on
  * threshold *crossings*, not continuously) and the reader is stranded at the
- * bottom of the strip. 700 photos is the smallest chunk that clears it at every
- * breakpoint: 36 rows and 1,850px at the 48px row height on a 1000px container,
- * 3,000px at that height on a 351px phone, 4,950px at the 80px height. Seven
+ * bottom of the strip. The binding case is the widest container at the shortest
+ * row, where a chunk buys the fewest pixels: at 100px on a 1000px container,
+ * 38 photos already clear 400px.
+ *
+ * It was 700, sized when the rows were 48-80px. At 100-180px the same count
+ * buys 2.25x the pixels and 2.25x the bytes, because the taller tiles also pull
+ * larger variants — a chunk that used to be a reasonable prefetch became most
+ * of a phone's data budget before the reader had scrolled anything. 300 keeps
+ * an eightfold margin over the 38 the sentinel needs (32 rows and 3,190px at
+ * the worst breakpoint) and cuts the first paint to well under half. Fifteen
  * chunks cover the whole archive.
  */
-const CHUNK = 700;
+const CHUNK = 300;
 
 /**
  * Clamp on the layout aspect ratio.
@@ -145,21 +152,19 @@ const prefersReducedMotion = () =>
  *
  * WHY THE SCALE ONLY LABELS EIGHT FAMILIES
  * ----------------------------------------
- * The /photography/colors pages file photos into twelve families. Only eight of
- * those own an arc of the hue circle. Earth is not a hue at all — it is dark,
- * dull orange and gold demoted (see BROWN_MAX_LIGHTNESS in
- * src/lib/colorBuckets.mjs), so its members are scattered through the orange
- * and gold stretches rather than gathered anywhere. White, grey and black have
- * no hue by definition and make up the tail. Labelling them on a hue axis would
- * be a promise the axis cannot keep.
+ * The /photography/colors pages file photos into eleven families. Only eight of
+ * those are colours: white, grey and black have no hue by definition and make
+ * up the tail. Labelling those on a colour axis would be a promise the axis
+ * cannot keep.
  *
- * WHY MIXED PHOTOS SIT SOMEWHERE SURPRISING
- * -----------------------------------------
- * The order here comes from one number per photo — the mean hue of the whole
- * frame — while the family pages come from per-family vote shares. A photo of a
- * red wall behind green foliage is a member of both families and has a mean hue
- * somewhere in between, so it lands in the gold stretch and appears on both the
- * red and green pages. Neither view is wrong; they answer different questions.
+ * WHY A PHOTO CAN SIT HERE AND ALSO APPEAR ON TWO FAMILY PAGES
+ * -----------------------------------------------------------
+ * A band here comes from a photo's *primary* family, the one it carries most
+ * of, and every photo has exactly one. The family pages come from membership,
+ * and a photo can be a member of up to three. So a red wall behind green
+ * foliage sits once in the strip, under whichever of the two it carries more
+ * of, and appears on both the red and green pages. Neither view is wrong; they
+ * answer different questions.
  */
 export default function PhotographySpectrumPage({ images, marks, chromatic, achromatic }: Props) {
   const total = images.length;
@@ -347,14 +352,14 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
           <p>
             Every one of the {formatCount(total)} photographs, in one strip. The order comes from
             the colour each photo actually reads as, so scrolling walks the circle once: red,
-            orange, gold, earth, green, teal, blue, purple, pink. Inside each stretch the photos run
-            by hue angle. {achromatic} photographs carry too little colour to place. They sit at the
-            end, ordered from darkest to lightest.
+            orange, gold, green, teal, blue, purple, pink. Each stretch leads with its most
+            saturated photographs and fades towards its palest. {achromatic} photographs carry too
+            little colour to place. They sit at the end, ordered from darkest to lightest.
           </p>
           <p>
             A pale photo still sits with its colour and still looks pale — the bands thin out at
-            their edges rather than cutting off. Click any frame to see it full size.{" "}
-            <Link href="/photography/colors">The colour families</Link> are the same data as twelve
+            their ends rather than cutting off. Click any frame to see it full size.{" "}
+            <Link href="/photography/colors">The colour families</Link> are the same data as eleven
             separate pages, each ranked by how much of that colour a photo carries.
           </p>
         </div>
@@ -450,9 +455,9 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
             4,359 times over.
 
             Measured over the whole archive at a 1000px container: the strip is
-            223 rows and about 10,700px tall at the 48px row height, 297 rows at
-            64px and 370 rows at 80px. On a 351px phone the 48px height gives
-            634 rows.
+            464 rows and about 46,000px tall at the 100px row height, 648 rows at
+            140px and 835 rows at 180px. On a 351px phone the 100px height gives
+            1,321 rows.
 
             --ribbon-stretch is how far a tile may be pushed past its natural
             width to justify a row. Every tile is `flex-grow: <its ratio>`, so a

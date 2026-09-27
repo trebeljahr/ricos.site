@@ -30,27 +30,29 @@
  * second copy of a photo under another prefix, so every figure here is over
  * the 4,359 distinct photographs a reader can actually reach.
  *
- *   green 1,519 (34.8%)   gold 1,426 (32.7%)   brown 1,327 (30.4%)
- *   blue  1,185 (27.2%)   orange  819 (18.8%)  red     491 (11.3%)
+ *   gold  1,549 (35.5%)   green 1,520 (34.9%)   blue  1,183 (27.1%)
+ *   orange  986 (22.6%)   red     491 (11.3%)
  *   grey    195  (4.5%)   purple  140  (3.2%)  teal    128  (2.9%)
  *   pink     89  (2.0%)   black    54  (1.2%)  white    29  (0.7%)
  * A photo can list up to three families plus a neutral band, so these sum
- * past 100% — to 7,402, about 1.7 families per photo: 1,971 photos list one
- * family, 1,751 two, 619 three and 18 get a neutral band on top of three.
+ * past 100% — to 6,364, about 1.5 families per photo: 2,581 photos list one
+ * family, 1,558 two, 213 three and 7 get a neutral band on top of three.
  * 135 photos (3.1%) have no hue at all and live only in a neutral band.
  *
- * Eight of the nine chromatic families are ones a viewer would agree with
- * — the strongest greens are backlit leaves and ferns, the strongest blues
- * are underwater and sky, teal is reef water and turquoise paint, red is a
- * rum cellar and a crimson wall. Earth is the exception and is worth
- * knowing about before trusting it: at the top of the family sit a banyan
- * on an unpaved road and sandstone fort corridors, which is right, but
- * mixed in with them are gilded ceilings and golden-hour hallways that a
- * person would call gold. The split is by construction a demotion of dark,
- * dull warm pixels rather than a hue of its own (see BROWN_MAX_LIGHTNESS
- * and BROWN_MAX_CHROMA), and warm interior light is dark and dull. Purple
- * has a milder version of the same problem, at 154 photos: lightning and
- * asters at the top, then a fish-market counter that is really blue-grey.
+ * All eight chromatic families are ones a viewer would agree with — the
+ * strongest greens are backlit leaves and ferns, the strongest blues are
+ * underwater and sky, teal is reef water and turquoise paint, red is a rum
+ * cellar and a crimson wall.
+ *
+ * There used to be a ninth, Earth, and it was the one that did not hold up:
+ * sandstone forts and unpaved roads, which is what the label promises, mixed
+ * with gilded ceilings and golden-hour hallways that a person would call
+ * gold. It was a demotion of dark dull warm pixels rather than a hue of its
+ * own, and warm interior light is dark and dull by that measure. It has been
+ * removed; see WHY THERE IS NO EARTH FAMILY in src/lib/colorBuckets.mjs.
+ *
+ * Purple is the one left to watch, at 140 photos: lightning and asters at the
+ * top, then a fish-market counter that is really blue-grey.
  */
 import type { ImageProps } from "src/@types";
 import baked from "src/content/photography-colors.json";
@@ -104,7 +106,7 @@ let liveKeys: string[] | null = null;
  *  row until the bake script next runs and drops it. Filtering it out here
  *  rather than only where tiles are built is what keeps the count on the
  *  wheel equal to the number of photos on the page behind it — a swatch
- *  labelled 1,327 that opens onto 1,326 tiles is a bug a reader can see.
+ *  labelled 1,183 that opens onto 1,182 tiles is a bug a reader can see.
  *
  *  WHY THIS ALSO DE-DUPLICATES BY FILENAME
  *  ---------------------------------------
@@ -198,7 +200,7 @@ export function imagesForBucket(id: ColorBucketId): ImageProps[] {
       const byStrength = (entries[b].strength[id] ?? 0) - (entries[a].strength[id] ?? 0);
       if (byStrength) return byStrength;
       // Strength alone cannot order these pages. It is baked at three
-      // decimals, and across 1,185 blue photos that leaves 49% of adjacent
+      // decimals, and across 1,183 blue photos that left 49% of adjacent
       // pairs holding the *identical* value — 64% in red, where strengths
       // are small and round together hardest. Every one of those ties used
       // to fall through to the key compare below, which is alphabetical by
@@ -211,12 +213,10 @@ export function imagesForBucket(id: ColorBucketId): ImageProps[] {
       // signal first. Chroma leads: given two photos with the same amount
       // of blue, the more saturated one is the one a reader means. Hue
       // distance follows, because a photo sitting at the family's centre is
-      // more that colour than one at its edge — except for Earth, which is
-      // a demotion of dark dull warms rather than a hue, so its centre is
-      // not a meaningful target (see FAMILY_HUE) and chroma carries it.
+      // more that colour than one at its edge.
       const byChroma = entries[b].chroma - entries[a].chroma;
       if (byChroma) return byChroma;
-      if (centre !== undefined && id !== "brown") {
+      if (centre !== undefined) {
         const ha = entries[a].hue;
         const hb = entries[b].hue;
         // A photo with no hue has no distance; it sorts after ones that do.
@@ -240,8 +240,8 @@ export function imagesForBucket(id: ColorBucketId): ImageProps[] {
 let hueOrder: ImageProps[] | null = null;
 
 /** Every photo in one sweep: banded by the family it belongs to, walking the
- *  ring red → orange → gold → earth → green → teal → blue → purple → pink,
- *  ascending hue inside each band, then the colourless tail by lightness.
+ *  ring red → orange → gold → green → teal → blue → purple → pink, most
+ *  saturated first inside each band, then the colourless tail by lightness.
  *
  *  WHY THIS IS NOT SORTED BY HUE ANGLE, WHICH IS WHAT IT LOOKS LIKE IT WANTS
  *  ------------------------------------------------------------------------
@@ -290,14 +290,24 @@ export function imagesBySpectrum(): ImageProps[] {
     .sort((a, b) => {
       const byBand = bandOf(a) - bandOf(b);
       if (byBand) return byBand;
-      // Inside a band, ascending angle, so the sweep keeps moving through
-      // the band and hands off to the next one at its far edge rather than
-      // restarting. Chroma breaks the tie: where two photos sit at the same
-      // angle the more saturated one leads, which keeps the washed-out
-      // members from opening a band.
-      const byHue = (entries[a].hue ?? 0) - (entries[b].hue ?? 0);
-      if (byHue) return byHue;
-      return entries[b].chroma - entries[a].chroma || a.localeCompare(b);
+      // Inside a band, most saturated first.
+      //
+      // Ascending hue angle was the obvious choice and it was wrong for this
+      // archive. Median chroma here is about 0.046 against a CHROMA_FLOOR of
+      // 0.045, so most photos are close to grey as whole images; ordering a
+      // band by angle spread its few vivid members evenly through it and
+      // opened every band on whatever happened to sit at its low edge,
+      // usually something washed out. A band that starts grey does not read
+      // as its colour at all.
+      //
+      // Leading with chroma puts the photographs that actually show the
+      // colour at the top of each band, and the band fades out towards its
+      // pale members rather than starting there. Angle then breaks the tie,
+      // so the sweep still moves through the wedge among equally saturated
+      // photos.
+      const byChroma = entries[b].chroma - entries[a].chroma;
+      if (byChroma) return byChroma;
+      return (entries[a].hue ?? 0) - (entries[b].hue ?? 0) || a.localeCompare(b);
     });
 
   const achromatic = live

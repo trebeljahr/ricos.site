@@ -49,11 +49,24 @@ const PHOTOGRAPHY_PREFIX = "assets/photography/";
  *  most of the DCT is never inverse-transformed. */
 const COLOR_SAMPLE_PX = 64;
 
-/** Strength and chroma are fractions of the whole image, so 0.001 is one
- *  pixel in a thousand — finer than a 64px decode can resolve anyway, and
- *  full float64 would add ~15 bytes per family to every one of 4,900 rows
- *  for digits nothing reads. */
-const STRENGTH_PRECISION = 1000;
+/** Strength and chroma are fractions of the whole image.
+ *
+ *  This was 1000 — three decimals — on the reasoning that 0.001 is one pixel
+ *  in a thousand and finer than a 64px decode resolves. That reasoning was
+ *  about the measurement and ignored what the number is used for. Strength
+ *  ranks the family pages, and at three decimals a family's values collide
+ *  constantly: 49% of adjacent pairs in blue and 64% in red came out exactly
+ *  equal, so half the page fell through to a tiebreak and the colour ordering
+ *  stopped meaning anything a few rows in.
+ *
+ *  Five decimals costs about 2 bytes per family per row — roughly 15 KB
+ *  across the whole file — and makes an exact collision rare enough that the
+ *  ordering is decided by the measurement almost everywhere. The 64px decode
+ *  genuinely cannot resolve a difference that fine, so the extra digits are
+ *  not more accurate; they are a deterministic way of not throwing away the
+ *  ordering the vote already computed. The tiebreaks in
+ *  src/lib/photographyColors.ts stay as the backstop. */
+const STRENGTH_PRECISION = 100000;
 const LIGHTNESS_PRECISION = 1000;
 /** Hue to one decimal: 0.1° is far below the angular resolution of a
  *  64px quantized histogram, and the spectrum page only needs a stable

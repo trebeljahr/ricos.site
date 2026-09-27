@@ -140,7 +140,7 @@ describe("colorBucketCounts", () => {
     const counts = colorBucketCounts();
     expect(counts.purple).toBe(0);
     expect(counts.gold).toBe(0);
-    expect(counts.brown).toBe(0);
+    expect(counts.purple).toBe(0);
     expect(counts.orange).toBe(0);
     expect(counts.grey).toBe(0);
   });
@@ -249,16 +249,23 @@ describe("imagesForBucket", () => {
 });
 
 describe("imagesBySpectrum", () => {
-  it("sweeps the chromatic photos round the circle from 0 degrees", () => {
+  it("walks the ring by family, most saturated first inside each band", () => {
+    // Bands come from the family a photo belongs to, in ring order: red,
+    // then the four greens, then teal, then blue. Inside the green band the
+    // order is chroma descending, NOT hue ascending — green-water at 0.10
+    // leads c-leaf at 0.09 and b-leaf at 0.08 even though its hue angle is
+    // the highest of the three. Most of this archive is close to grey, so a
+    // band ordered by angle opens on whatever sits at its low edge, usually
+    // something washed out, and stops reading as its own colour.
     const srcs = imagesBySpectrum().map((image) => image.src);
     expect(srcs.slice(0, 7)).toEqual([
-      "assets/photography/desert/dawn.jpg", // 1.5
-      "assets/photography/jungle/a-canopy.jpg", // 131.2
-      "assets/photography/jungle/c-leaf.jpg", // 140.0
-      "assets/photography/jungle/b-leaf.jpg", // 150.5
-      "assets/photography/reef/green-water.jpg", // 160.0
-      "assets/photography/reef/shallows.jpg", // 196.4
-      "assets/photography/reef/deep.jpg", // 250.1
+      "assets/photography/desert/dawn.jpg", // red band
+      "assets/photography/jungle/a-canopy.jpg", // green band, chroma desc
+      "assets/photography/reef/green-water.jpg", // c 0.10, h 160.0
+      "assets/photography/jungle/c-leaf.jpg", // c 0.09, h 140.0
+      "assets/photography/jungle/b-leaf.jpg", // c 0.08, h 150.5
+      "assets/photography/reef/shallows.jpg", // teal band
+      "assets/photography/reef/deep.jpg", // blue band
     ]);
   });
 

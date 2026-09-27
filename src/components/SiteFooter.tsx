@@ -12,13 +12,22 @@ export const SiteFooter = () => {
   return (
     <footer className="site-footer relative mt-region border-t border-gray-200 dark:border-gray-800 py-group px-gutter text-sm text-gray-600 dark:text-gray-400">
       <NightOwl />
-      <div className="mx-auto max-w-(--breakpoint-lg) flex flex-col items-center gap-3 text-center">
+      {/* Narrow screens: the byline on top, the links wrapping underneath it.
+          From lg the byline takes the middle of three columns, and the two
+          equal 1fr columns keep it centred however wide either side is. */}
+      <div className="mx-auto max-w-(--breakpoint-lg) flex flex-wrap justify-center gap-x-5 gap-y-2 text-center lg:grid lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:gap-x-12">
+        <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 lg:justify-self-end">
+          <Link href="/donate" className="hover:text-accent">
+            Donation Box
+          </Link>
+          <EggCounter />
+        </div>
         {/* Plain inline text, not flex, so the byline copies as "Made with
             love by …". The heart is aria-hidden and the sr-only "love"
             right after it is what screen readers and the clipboard get.
             Keep it flush against </svg>: a space before it garbles the
             copied spacing. Heart path and color match fractal.garden. */}
-        <span>
+        <span className="order-first mb-1 basis-full lg:order-none lg:mb-0">
           Made with{" "}
           <svg
             className="inline-block size-3.5 align-[-0.15em] fill-current text-[#e8839b] animate-heartbeat motion-reduce:animate-none"
@@ -30,10 +39,7 @@ export const SiteFooter = () => {
           </svg>
           <span className="sr-only">love</span> by Rico Trebeljahr
         </span>
-        <nav className="flex flex-wrap justify-center gap-x-5 gap-y-2">
-          <Link href="/donate" className="hover:text-accent">
-            Donation Box
-          </Link>
+        <nav className="flex flex-wrap justify-center gap-x-5 gap-y-2 lg:justify-self-start">
           <a
             href="/rss.xml"
             className="hover:text-accent"
@@ -42,16 +48,12 @@ export const SiteFooter = () => {
           >
             RSS
           </a>
-          <Link href="/now" className="hover:text-accent">
-            Now
-          </Link>
           <Link href="/imprint" className="hover:text-accent">
             Imprint
           </Link>
           <Link href="/privacy" className="hover:text-accent">
             Privacy
           </Link>
-          <EggCounter />
         </nav>
       </div>
     </footer>

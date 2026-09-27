@@ -13,10 +13,10 @@ export default function Custom404() {
       imageAlt="this is not a page pipe meme joke"
     >
       <PageMain>
-        {/* The heading and both lines are in the smoke until the sweep finds them. */}
+        {/* All of it is under the paint until the page is wiped clean. */}
         <Header title="404 - Page Not Found" />
-        <p data-smoke-stick>Sorry but this page does not exist</p>
-        <p data-smoke-stick>Try if you can find some other pages instead.</p>
+        <p>Sorry but this page does not exist</p>
+        <p>Try if you can find some other pages instead.</p>
         <SearchPartyEgg />
       </PageMain>
     </Layout>

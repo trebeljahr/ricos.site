@@ -1,4 +1,6 @@
+import { PAGE_COLUMN } from "@components/PostHeader";
 import { Sprite } from "@components/Sprite";
+import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import { useRecordEggFind } from "src/hooks/useEasterEgg";
 import { EmojiButton } from "../EmojiButton";
@@ -234,8 +236,8 @@ export const NightOwl = () => {
   // The perch lines up with the footer's content column, so the owl sits over
   // the last link rather than out in the page margin.
   return (
-    <span className="pointer-events-none absolute inset-x-0 bottom-full hidden px-gutter leading-none dark:block">
-      <span className="mx-auto block max-w-(--breakpoint-lg) text-right">
+    <span className="pointer-events-none absolute inset-x-0 bottom-full hidden leading-none dark:block">
+      <span className={clsx(PAGE_COLUMN, "block text-right")}>
         <span className="relative inline-block translate-y-[3px]" style={{ fontSize: OWL_SIZE }}>
           {!gone && (
             <span ref={flyerRef} className="pointer-events-auto inline-block">

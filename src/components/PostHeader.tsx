@@ -9,17 +9,17 @@ type PageMainProps = {
   className?: string;
 };
 
+/** The page column: its width and the site gutter. The footer and the night
+ *  owl's perch reuse it so their edges line up with the page above them. */
+export const PAGE_COLUMN = "mx-auto max-w-5xl px-gutter";
+
 /**
  * The shell every content page shares: one column, the site gutter, and the
  * page-top and page-bottom steps of the spacing scale (docs/spacing.md). The
  * navbar is sticky, so `pt-page-top` is the whole top offset a page needs.
  */
 export const PageMain = ({ children, className }: PageMainProps) => {
-  return (
-    <main className={clsx("mx-auto max-w-5xl px-gutter pt-page-top pb-region", className)}>
-      {children}
-    </main>
-  );
+  return <main className={clsx(PAGE_COLUMN, "pt-page-top pb-region", className)}>{children}</main>;
 };
 
 type PageTopProps = {

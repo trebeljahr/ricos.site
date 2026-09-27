@@ -17,6 +17,7 @@ import type { ColorBucketId } from "src/lib/colorBuckets.mjs";
 import { nextImageUrl } from "src/lib/mapToImageProps";
 import { formatCount } from "src/lib/utils/formatCount";
 import { addIdAndIndex } from "src/lib/utils/misc";
+import { fractionAcross, photoAtFraction } from "src/lib/utils/spectrumScale";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
 /**
@@ -394,9 +395,32 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
     const rect = ribbon.getBoundingClientRect();
     const viewport = window.innerHeight || document.documentElement.clientHeight || 0;
     const probe = viewport / 2;
-    const through = rect.height > 0 ? (probe - rect.top) / rect.height : 0;
-    const within = Math.min(1, Math.max(0, through));
-    const index = start + within * (end - start);
+
+    // Ask the browser which photograph is under the middle of the screen.
+    //
+    // The estimate this replaces — how far down the ribbon the probe sits,
+    // times how many photos the ribbon holds — is only right while every row
+    // holds the same number of tiles and the ribbon's height matches its
+    // contents. Neither survives loading: rows hold between about six and
+    // fourteen tiles depending on how many portraits land together, and a
+    // chunk arriving changes the ribbon's height a frame before React has
+    // told the marker the window grew. The marker drifted every time a batch
+    // came in, which is exactly when a reader is looking at it.
+    //
+    // A hit test has no model to be wrong about. It costs one call per scroll
+    // event and reads the answer off the layout the reader is looking at.
+    let index: number | null = null;
+    const hit = document.elementFromPoint(rect.left + rect.width / 2, probe);
+    const tile = hit?.closest<HTMLElement>("[data-index]");
+    if (tile?.dataset.index) index = Number(tile.dataset.index);
+
+    if (index === null) {
+      // Nothing under the probe: above the ribbon, past its end, or covered
+      // by the lightbox. Fall back to the estimate, which is close enough for
+      // the edges it is used at.
+      const through = rect.height > 0 ? (probe - rect.top) / rect.height : 0;
+      index = start + Math.min(1, Math.max(0, through)) * (end - start);
+    }
 
     const segments = strip.querySelectorAll<HTMLElement>("button");
     const width = strip.clientWidth;
@@ -612,7 +636,14 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
                 <button
                   key={mark.key}
                   type="button"
-                  onClick={() => seek(mark.index)}
+                  onClick={(event) => {
+                    // Where in the band they clicked, not the band's start.
+                    // The arithmetic is in src/lib/utils/spectrumScale.ts, on
+                    // its own and tested, because it is the kind that is wrong
+                    // quietly.
+                    const box = event.currentTarget.getBoundingClientRect();
+                    seek(photoAtFraction(mark, fractionAcross(box, event.clientX, event.detail)));
+                  }}
                   title={`${mark.label} — ${formatCount(mark.count)} photographs`}
                   aria-label={`Jump to ${mark.label}, ${formatCount(mark.count)} photographs`}
                   aria-current={isActive ? "true" : undefined}
@@ -696,6 +727,10 @@ export default function PhotographySpectrumPage({ images, marks }: Props) {
             {visible.map((tile) => (
               <li
                 key={tile.id}
+                // Read back by `updateProgress`, which asks the browser which
+                // tile is under the middle of the viewport rather than working
+                // it out from the ribbon's height.
+                data-index={tile.index}
                 style={{ "--ar": tile.ratio } as CSSProperties}
                 className="h-[var(--ribbon-h)] shrink-0 grow-[var(--ar)] basis-[calc(var(--ribbon-h)*var(--ar))] max-w-[calc(var(--ribbon-h)*var(--ar)*var(--ribbon-stretch))]"
               >

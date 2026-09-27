@@ -462,6 +462,9 @@ export function bucketForHex(hex) {
  * @property {Record<string, number>} strength  Per-listed-family share of the whole
  *   image (0-1), chroma-weighted. Comparable across photos within one family;
  *   NOT comparable across families, which is what the prior-normalised score is for.
+ * @property {Record<string, number>} familyHue  Per-listed-family mean hue in degrees,
+ *   over that family's own pixels. Chromatic families only. This is the ordering
+ *   key for the spectrum; `hue` below is the whole-frame average and is not.
  * @property {number | null} hue   Chroma-weighted circular mean hue of the chromatic
  *   pixels, in degrees, or null when there are none (or when they cancel out).
  * @property {number} lightness    Pixel-weighted mean OKLCh lightness, 0-1.
@@ -523,6 +526,10 @@ export function colorProfileFromHistogram(entries) {
   let hueX = 0;
   let hueY = 0;
   let hueWeight = 0;
+  /** @type {Map<ColorBucketId, number>} */
+  const familyHueX = new Map();
+  /** @type {Map<ColorBucketId, number>} */
+  const familyHueY = new Map();
 
   for (const entry of entries) {
     const count = entry.count;
@@ -549,9 +556,19 @@ export function colorProfileFromHistogram(entries) {
     hueX += Math.cos(rad) * vote;
     hueY += Math.sin(rad) * vote;
     hueWeight += vote;
+    // The same sum again, kept per family. `hue` above is the mean over the
+    // whole frame and answers "what colour is this picture on average", which
+    // is a different question from "how gold is the gold in it" — a photo that
+    // is gold and green averages to something that is neither. Ordering a
+    // spectrum needs the second one: a photo filed under Gold has to sort by
+    // the hue of its gold, or the bands overlap and the sweep doubles back on
+    // itself at every seam.
+    familyHueX.set(family, (familyHueX.get(family) ?? 0) + Math.cos(rad) * vote);
+    familyHueY.set(family, (familyHueY.get(family) ?? 0) + Math.sin(rad) * vote);
   }
 
-  if (totalPixels === 0) return { buckets: [], strength: {}, hue: null, lightness: 0, chroma: 0 };
+  if (totalPixels === 0)
+    return { buckets: [], strength: {}, hue: null, familyHue: {}, lightness: 0, chroma: 0 };
 
   const pixels = totalPixels;
   const lightness = lightnessSum / totalPixels;
@@ -593,7 +610,14 @@ export function colorProfileFromHistogram(entries) {
     // tinted pixels survived the floor: it has no hue worth sorting by,
     // and the spectrum page relies on that to park it in the neutral
     // tail rather than wedged between two colour photos.
-    return { buckets: [neutral], strength: strengthFor([neutral]), hue: null, lightness, chroma };
+    return {
+      buckets: [neutral],
+      strength: strengthFor([neutral]),
+      hue: null,
+      familyHue: {},
+      lightness,
+      chroma,
+    };
   }
 
   const totalVote = [...familyVote.values()].reduce((sum, vote) => sum + vote, 0);
@@ -633,7 +657,19 @@ export function colorProfileFromHistogram(entries) {
 
   if (chromaticFraction < MUTED_MAX_CHROMATIC_FRACTION) picked.push(neutral);
   const buckets = picked.length > 0 ? picked : [neutral];
-  return { buckets, strength: strengthFor(buckets), hue, lightness, chroma };
+  /** Mean hue of each listed family's own pixels. Chromatic families only:
+   *  a neutral band has no hue by definition.
+   *  @type {Record<string, number>} */
+  const familyHue = {};
+  for (const id of buckets) {
+    const x = familyHueX.get(id);
+    const y = familyHueY.get(id);
+    if (x === undefined || y === undefined) continue;
+    if (Math.hypot(x, y) < 1e-9) continue;
+    familyHue[id] = ((((Math.atan2(y, x) * 180) / Math.PI) % 360) + 360) % 360;
+  }
+
+  return { buckets, strength: strengthFor(buckets), hue, familyHue, lightness, chroma };
 }
 
 /**

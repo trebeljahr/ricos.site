@@ -97,6 +97,9 @@ type MetadataEntry = { key: string; width: number; height: number; alt?: string 
 export type BakedEntry = {
   buckets: ColorBucketId[];
   strength: Partial<Record<ColorBucketId, number>>;
+  /** Mean hue of each listed chromatic family's own pixels. The spectrum
+   *  orders on this; `hue` below is the whole-frame average. */
+  familyHue: Partial<Record<ColorBucketId, number>>;
   hue: number | null;
   lightness: number;
   chroma: number;
@@ -201,9 +204,14 @@ function bakedEntryFor(entries: HistogramEntry[]): BakedEntry | null {
   for (const [id, value] of Object.entries(profile.strength)) {
     strength[id as ColorBucketId] = round(value, STRENGTH_PRECISION);
   }
+  const familyHue: Partial<Record<ColorBucketId, number>> = {};
+  for (const [id, value] of Object.entries(profile.familyHue)) {
+    familyHue[id as ColorBucketId] = round(value, HUE_PRECISION);
+  }
   return {
     buckets: profile.buckets,
     strength,
+    familyHue,
     hue: profile.hue === null ? null : round(profile.hue, HUE_PRECISION),
     lightness: round(profile.lightness, LIGHTNESS_PRECISION),
     chroma: round(profile.chroma, STRENGTH_PRECISION),

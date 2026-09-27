@@ -23,6 +23,7 @@ const fixture = {
     "assets/photography/jungle/a-canopy.jpg": {
       buckets: ["green"],
       strength: { green: 0.71 },
+      familyHue: { green: 131.2 },
       hue: 131.2,
       lightness: 0.44,
       chroma: 0.11,
@@ -30,6 +31,7 @@ const fixture = {
     "assets/photography/jungle/c-leaf.jpg": {
       buckets: ["green", "blue"],
       strength: { green: 0.4, blue: 0.2 },
+      familyHue: { green: 140.0, blue: 240.0 },
       hue: 140.0,
       lightness: 0.5,
       chroma: 0.09,
@@ -37,6 +39,7 @@ const fixture = {
     "assets/photography/jungle/b-leaf.jpg": {
       buckets: ["green"],
       strength: { green: 0.4 },
+      familyHue: { green: 150.5 },
       hue: 150.5,
       lightness: 0.52,
       chroma: 0.08,
@@ -44,6 +47,7 @@ const fixture = {
     "assets/photography/reef/shallows.jpg": {
       buckets: ["teal", "blue"],
       strength: { teal: 0.33, blue: 0.3 },
+      familyHue: { teal: 196.4, blue: 250.0 },
       hue: 196.4,
       lightness: 0.61,
       chroma: 0.1,
@@ -51,6 +55,7 @@ const fixture = {
     "assets/photography/reef/deep.jpg": {
       buckets: ["blue"],
       strength: { blue: 0.82 },
+      familyHue: { blue: 250.1 },
       hue: 250.1,
       lightness: 0.4,
       chroma: 0.14,
@@ -58,6 +63,7 @@ const fixture = {
     "assets/photography/reef/green-water.jpg": {
       buckets: ["green"],
       strength: { green: 0.55 },
+      familyHue: { green: 160.0 },
       hue: 160.0,
       lightness: 0.47,
       chroma: 0.1,
@@ -66,6 +72,7 @@ const fixture = {
     "assets/photography/desert/dawn.jpg": {
       buckets: ["red"],
       strength: { red: 0.36 },
+      familyHue: { red: 1.5 },
       hue: 1.5,
       lightness: 0.55,
       chroma: 0.12,
@@ -76,6 +83,7 @@ const fixture = {
     "assets/photography/desert/dusk.jpg": {
       buckets: ["pink", "red"],
       strength: { pink: 0.3, red: 0.15 },
+      familyHue: { pink: 340.0, red: 5.0 },
       hue: 357.8,
       lightness: 0.5,
       chroma: 0.1,
@@ -122,27 +130,40 @@ vi.mock("src/lib/imageMetadata", () => ({
     ),
 }));
 
-const { entryFor, imagesBySpectrum } = await import("src/lib/photographyColors");
+const { entryFor, hueOffset, imagesBySpectrum } = await import("src/lib/photographyColors");
 
 describe("imagesBySpectrum", () => {
-  it("walks the ring by family, most saturated first inside each band", () => {
+  it("walks the ring by family, and each band round the circle within itself", () => {
     // Bands come from the family a photo belongs to, in ring order: red,
-    // then the four greens, then teal, then blue. Inside the green band the
-    // order is chroma descending, NOT hue ascending — green-water at 0.10
-    // leads c-leaf at 0.09 and b-leaf at 0.08 even though its hue angle is
-    // the highest of the three. Most of this archive is close to grey, so a
-    // band ordered by angle opens on whatever sits at its low edge, usually
-    // something washed out, and stops reading as its own colour.
+    // then the greens, then teal, then blue. Inside a band the order is by
+    // hue, so each band ends at the shade it shares with the next one and the
+    // seam between them is the least visible thing on the page. Green runs
+    // 131.2, 140.0, 150.5, 160.0 — a-canopy, c-leaf, b-leaf, green-water —
+    // which is the opposite of what chroma-descending gave.
     const srcs = imagesBySpectrum().map((image) => image.src);
     expect(srcs.slice(0, 7)).toEqual([
       "assets/photography/desert/dawn.jpg", // red band
-      "assets/photography/jungle/a-canopy.jpg", // green band, chroma desc
-      "assets/photography/reef/green-water.jpg", // c 0.10, h 160.0
-      "assets/photography/jungle/c-leaf.jpg", // c 0.09, h 140.0
-      "assets/photography/jungle/b-leaf.jpg", // c 0.08, h 150.5
+      "assets/photography/jungle/a-canopy.jpg", // green band, h 131.2
+      "assets/photography/jungle/c-leaf.jpg", // h 140.0
+      "assets/photography/jungle/b-leaf.jpg", // h 150.5
+      "assets/photography/reef/green-water.jpg", // h 160.0
       "assets/photography/reef/shallows.jpg", // teal band
       "assets/photography/reef/deep.jpg", // blue band
     ]);
+  });
+
+  it("orders a band that wraps past zero by offset from its own centre", () => {
+    // The wrap is the subtle part, so it is asserted on the arithmetic rather
+    // than through a fixture: a band centred at 10 degrees has to report 350
+    // as sitting *before* it, not 340 degrees after it. Get this wrong and
+    // red's far-side members sort to the end of their band and the strip
+    // jumps most of the way round the circle on its way into orange.
+    expect(hueOffset(350, 10)).toBe(-20);
+    expect(hueOffset(35, 10)).toBe(25);
+    expect(hueOffset(350, 10)).toBeLessThan(hueOffset(35, 10));
+    // And the ordinary case is untouched.
+    expect(hueOffset(140, 129)).toBe(11);
+    expect(hueOffset(120, 129)).toBe(-9);
   });
 
   it("keeps the near-360 photo at the end of the colour sweep, not next to 0", () => {
@@ -153,11 +174,14 @@ describe("imagesBySpectrum", () => {
     );
   });
 
-  it("closes with the achromatic tail, darkest first", () => {
+  it("closes with the achromatic tail, lightest first so it fades to black", () => {
+    // Lightest first, not darkest: the sweep leaves the last colour band for
+    // white and dims to black, rather than dropping straight from a colour
+    // into the darkest frames in the archive.
     const srcs = imagesBySpectrum().map((image) => image.src);
     expect(srcs.slice(-2)).toEqual([
-      "assets/photography/desert/night.jpg", // lightness 0.18
       "assets/photography/reef/fog.jpg", // lightness 0.79
+      "assets/photography/desert/night.jpg", // lightness 0.18
     ]);
   });
 
@@ -178,6 +202,7 @@ describe("entryFor", () => {
     expect(entryFor("assets/photography/reef/deep.jpg")).toEqual({
       buckets: ["blue"],
       strength: { blue: 0.82 },
+      familyHue: { blue: 250.1 },
       hue: 250.1,
       lightness: 0.4,
       chroma: 0.14,

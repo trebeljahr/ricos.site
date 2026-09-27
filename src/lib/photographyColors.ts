@@ -74,6 +74,9 @@ export type PhotoColorEntry = {
   buckets: ColorBucketId[];
   /** Chroma-weighted share of the whole frame, one entry per listed bucket. */
   strength: Partial<Record<ColorBucketId, number>>;
+  /** Mean hue of each listed chromatic family's own pixels, in degrees. The
+   *  spectrum orders on this. */
+  familyHue: Partial<Record<ColorBucketId, number>>;
   /** Chroma-weighted circular mean hue in degrees, or null for a photo with
    *  no hue worth sorting by. */
   hue: number | null;
@@ -239,6 +242,22 @@ export function primaryFamily(src: string): ColorBucketId {
   return resolved;
 }
 
+/** Signed distance from `centre` to `hue`, in (-180, 180].
+ *
+ *  The sort key that keeps a band continuous across the top of the circle.
+ *  Raw angles cannot do it: red spans 342 degrees through 0 to 35, so sorting
+ *  its members by angle puts the 342s after the 35s and the strip jumps almost
+ *  all the way round the circle on its way out of the band. Measured from the
+ *  band's own centre, 342 comes back as -28 and lands where the eye expects
+ *  it.
+ *
+ *  Exported for the tests: it is the one piece of this file's ordering that is
+ *  pure arithmetic, and the one most likely to be quietly broken by a later
+ *  change to the modulo. */
+export function hueOffset(hue: number, centre: number): number {
+  return ((((hue - centre) % 360) + 540) % 360) - 180;
+}
+
 let hueOrder: ImageProps[] | null = null;
 
 /** Every photo in one sweep: banded by the family it belongs to, walking the
@@ -282,37 +301,63 @@ export function imagesBySpectrum(): ImageProps[] {
   const live = keys();
 
   const bandOf = (src: string) => CHROMATIC_FAMILIES.indexOf(primaryFamily(src));
+  /** The hue of the family a photo is filed under, over that family's own
+   *  pixels — not the whole-frame average, which for a picture of two colours
+   *  is a third colour it does not contain. */
+  const familyHueOf = (src: string) => entries[src].familyHue?.[primaryFamily(src)];
 
-  const chromatic = live
-    .filter((src) => bandOf(src) >= 0 && entries[src].hue !== null)
-    .sort((a, b) => {
-      const byBand = bandOf(a) - bandOf(b);
-      if (byBand) return byBand;
-      // Inside a band, most saturated first.
-      //
-      // Ascending hue angle was the obvious choice and it was wrong for this
-      // archive. Median chroma here is about 0.046 against a CHROMA_FLOOR of
-      // 0.045, so most photos are close to grey as whole images; ordering a
-      // band by angle spread its few vivid members evenly through it and
-      // opened every band on whatever happened to sit at its low edge,
-      // usually something washed out. A band that starts grey does not read
-      // as its colour at all.
-      //
-      // Leading with chroma puts the photographs that actually show the
-      // colour at the top of each band, and the band fades out towards its
-      // pale members rather than starting there. Angle then breaks the tie,
-      // so the sweep still moves through the wedge among equally saturated
-      // photos.
-      const byChroma = entries[b].chroma - entries[a].chroma;
-      if (byChroma) return byChroma;
-      return (entries[a].hue ?? 0) - (entries[b].hue ?? 0) || a.localeCompare(b);
-    });
+  const chromatic = live.filter((src) => bandOf(src) >= 0 && familyHueOf(src) !== undefined);
 
-  const achromatic = live
-    .filter((src) => !(bandOf(src) >= 0 && entries[src].hue !== null))
-    .sort((a, b) => entries[a].lightness - entries[b].lightness || a.localeCompare(b));
+  /** Each family's centre, as the circular mean of its members' family hues.
+   *  Measured rather than declared so it cannot drift from what the band holds. */
+  const centre = new Map<ColorBucketId, number>();
+  {
+    const sin = new Map<ColorBucketId, number>();
+    const cos = new Map<ColorBucketId, number>();
+    for (const src of chromatic) {
+      const family = primaryFamily(src);
+      const radians = ((familyHueOf(src) ?? 0) * Math.PI) / 180;
+      sin.set(family, (sin.get(family) ?? 0) + Math.sin(radians));
+      cos.set(family, (cos.get(family) ?? 0) + Math.cos(radians));
+    }
+    for (const family of sin.keys()) {
+      const degrees = (Math.atan2(sin.get(family) ?? 0, cos.get(family) ?? 0) * 180) / Math.PI;
+      centre.set(family, (degrees + 360) % 360);
+    }
+  }
 
-  hueOrder = [...chromatic, ...achromatic].map(imageFor);
+  // Band first, then hue within the band.
+  //
+  // Sorting on the hue alone very nearly works now that it is measured per
+  // family — a family's pixels are assigned by angle, so its mean sits inside
+  // its own wedge and the bands fall out contiguous and in ring order for
+  // free. Pink is the exception and the reason this sorts on the band
+  // explicitly: `familyForOklch` sends pale reds to pink as well as the
+  // 318-358 arc, so pink holds members at 4 degrees, and one of them sorted to
+  // the very front of the strip, ahead of red. The scale reads each band's
+  // first index and assumes one run per family, so a single stray photo made
+  // it label the start of the sweep "Pink".
+  //
+  // Within a band, distance from that band's own centre rather than the raw
+  // angle, so the families that span zero stay in one piece. See `hueOffset`.
+  const ordered = chromatic.sort((a, b) => {
+    const byBand = bandOf(a) - bandOf(b);
+    if (byBand) return byBand;
+    const family = primaryFamily(a);
+    const from = centre.get(family) ?? 0;
+    const byHue = hueOffset(familyHueOf(a) ?? 0, from) - hueOffset(familyHueOf(b) ?? 0, from);
+    if (byHue) return byHue;
+    return entries[b].chroma - entries[a].chroma || a.localeCompare(b);
+  });
+
+  // Lightest first, so the sweep leaves the last colour for white and dims to
+  // black rather than dropping straight from a colour into the darkest frames
+  // in the archive.
+  const rest = live
+    .filter((src) => !(bandOf(src) >= 0 && familyHueOf(src) !== undefined))
+    .sort((a, b) => entries[b].lightness - entries[a].lightness || a.localeCompare(b));
+
+  hueOrder = [...ordered, ...rest].map(imageFor);
   return hueOrder;
 }
 

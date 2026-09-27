@@ -243,9 +243,10 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
   const hasMore = end < total;
   const hasPrevious = start > 0;
 
-  /** Page height measured immediately before a prepend, or null when the
-   *  pending render is not a prepend. Read once, in the layout effect below. */
-  const prependAnchor = useRef<number | null>(null);
+  /** The tile the reader's position is measured against across a prepend, and
+   *  where it sat when the prepend was requested. Null when the pending render
+   *  is not a prepend. Read once, in the layout effect below. */
+  const prependAnchor = useRef<{ id: string; top: number } | null>(null);
 
   /** Same guard as InfiniteScrollGallery: two intersections can arrive inside
    *  one frame, while React has not re-rendered the moved sentinel yet. */
@@ -272,19 +273,38 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
     if (!scrollingUp.current) return;
     holdLoading();
     // Recorded here rather than in the updater, which React may run twice.
-    prependAnchor.current = document.documentElement.scrollHeight;
+    // The anchor is the window's current first tile, which `loadPrevious` only
+    // ever runs while the reader is near, and which is still in the document
+    // after the prepend — just further down it.
+    const anchorId = tiles[start]?.id;
+    const element = anchorId ? document.getElementById(anchorId) : null;
+    prependAnchor.current = element
+      ? { id: element.id, top: element.getBoundingClientRect().top }
+      : null;
     setWindow((w) => (w.start <= 0 ? w : { ...w, start: Math.max(0, w.start - CHUNK) }));
-  }, [holdLoading]);
+  }, [holdLoading, start, tiles]);
 
   /**
    * Hold the reader's place when rows are inserted above them.
    *
-   * Inserting a chunk above the viewport moves everything below it down by the
-   * height of what was added, so without this the page appears to leap
-   * backwards the instant an upward load fires. Browsers have scroll anchoring
-   * for exactly this, but Safari does not implement it, so the correction is
-   * done by hand: measure the document before the prepend, measure it again
-   * after React has committed the new rows, and scroll by the difference.
+   * Without this the page leaps the instant an upward load fires. Browsers
+   * have scroll anchoring for exactly this, but Safari does not implement it,
+   * so the correction is done by hand.
+   *
+   * It is measured against one tile rather than against the document's height,
+   * and that distinction is the whole of it. The first attempt compared
+   * `scrollHeight` before and after and scrolled by the difference, which is
+   * correct only if the existing rows keep their positions relative to each
+   * other. They do not: the ribbon is a justified `flex-wrap`, so inserting
+   * 300 tiles above re-packs every row below them. Photos move between rows,
+   * row heights stay fixed but row *contents* shift, and the height delta ends
+   * up describing no particular photo's displacement. Correcting by it left
+   * the reader somewhere near where they were, differently wrong on every
+   * load, which is what jumpy means here.
+   *
+   * Measuring one real element survives the reflow, because it asks the
+   * question that actually matters: where did the thing the reader was looking
+   * at go?
    *
    * `useLayoutEffect` and not `useEffect` because it has to run before the
    * browser paints. In an effect the reader sees one frame at the wrong offset,
@@ -323,10 +343,12 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
       return;
     }
 
-    const before = prependAnchor.current;
-    if (before === null) return;
+    const anchor = prependAnchor.current;
+    if (anchor === null) return;
     prependAnchor.current = null;
-    const delta = document.documentElement.scrollHeight - before;
+    const element = document.getElementById(anchor.id);
+    if (!element) return;
+    const delta = element.getBoundingClientRect().top - anchor.top;
     if (delta !== 0) window.scrollBy(0, delta);
   }, [window_]);
 

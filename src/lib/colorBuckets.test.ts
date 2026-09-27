@@ -434,6 +434,7 @@ describe("colorProfileFromHistogram strengths", () => {
     expect(colorProfileFromHistogram([])).toEqual({
       buckets: [],
       strength: {},
+      familyHue: {},
       hue: null,
       lightness: 0,
       chroma: 0,

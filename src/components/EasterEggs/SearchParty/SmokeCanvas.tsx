@@ -9,13 +9,15 @@ type SmokeProps = {
   varsRef: RefObject<HTMLElement | null>;
   /** Called every frame with the eased focus, so the egg can pick up what it passes. */
   onFocus: (x: number, y: number) => void;
-  /** Fades the cloud out for good once everything is found. */
+  /** Fades the cloud out and stops the loop once everything is found. */
   lifted: boolean;
   calm: boolean;
 };
 
 /** Grid the smoke is simulated on. CSS blows it up, so it can stay small. */
-const GRID_W = 160;
+const GRID_W = 128;
+/** The cloud drifts slowly, so half the frames carry it without anyone noticing. */
+const FRAME_MS = 32;
 const NOISE = 128;
 /** How far the focus reaches, as a share of the grid width. */
 const FOCUS = 0.17;
@@ -104,15 +106,18 @@ export const SmokeCanvas = ({ pointerRef, varsRef, onFocus, lifted, calm }: Smok
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
-    if (!canvas || !context) return;
+    if (!canvas || !context || lifted) return;
 
     const cloud = cloudTexture(NOISE);
     let grid = { w: GRID_W, h: 1 };
+    // Two buffers, swapped every frame: the loop allocates nothing.
     let thinned = new Float32Array(0);
+    let scratch = new Float32Array(0);
     let image = context.createImageData(1, 1);
     let focus: Point | null = null;
     let strength = 0;
     let frame = 0;
+    let last = 0;
     let stopped = false;
 
     const resize = () => {
@@ -123,6 +128,7 @@ export const SmokeCanvas = ({ pointerRef, varsRef, onFocus, lifted, calm }: Smok
       canvas.height = h;
       grid = { w: GRID_W, h };
       thinned = new Float32Array(GRID_W * h);
+      scratch = new Float32Array(GRID_W * h);
       image = context.createImageData(GRID_W, h);
     };
     resize();
@@ -131,6 +137,8 @@ export const SmokeCanvas = ({ pointerRef, varsRef, onFocus, lifted, calm }: Smok
     const draw = (now: number) => {
       if (stopped) return;
       frame = window.requestAnimationFrame(draw);
+      if (now - last < FRAME_MS) return;
+      last = now;
       const { w, h } = grid;
       const box = canvas.getBoundingClientRect();
       if (!box.width || !box.height) return;
@@ -153,7 +161,7 @@ export const SmokeCanvas = ({ pointerRef, varsRef, onFocus, lifted, calm }: Smok
       const dark = document.documentElement.classList.contains("dark");
       const [r, g, b] = dark ? [104, 119, 146] : [176, 186, 203];
       const pixels = image.data;
-      const next = new Float32Array(thinned.length);
+      const next = scratch;
 
       for (let y = 0; y < h; y++) {
         const v = y / h;
@@ -193,7 +201,7 @@ export const SmokeCanvas = ({ pointerRef, varsRef, onFocus, lifted, calm }: Smok
             smoothstep(0, 0.14, 1 - x / w) *
             smoothstep(0, 0.1, v) *
             smoothstep(0, 0.12, 1 - v);
-          const alpha = (0.2 + smoothstep(0.34, 0.86, density) * 0.8) * border * (1 - clearness);
+          const alpha = (0.17 + smoothstep(0.32, 0.88, density) * 0.76) * border * (1 - clearness);
           // Denser smoke is a shade paler, as if lit from the side.
           const lit = (density - 0.5) * (dark ? 52 : 40);
           const p = i * 4;
@@ -203,6 +211,7 @@ export const SmokeCanvas = ({ pointerRef, varsRef, onFocus, lifted, calm }: Smok
           pixels[p + 3] = Math.max(0, Math.min(255, alpha * 255));
         }
       }
+      scratch = thinned;
       thinned = next;
       context.putImageData(image, 0, 0);
 
@@ -225,7 +234,7 @@ export const SmokeCanvas = ({ pointerRef, varsRef, onFocus, lifted, calm }: Smok
       window.cancelAnimationFrame(frame);
       window.removeEventListener("resize", resize);
     };
-  }, [calm, pointerRef, varsRef]);
+  }, [calm, lifted, pointerRef, varsRef]);
 
   return (
     <canvas

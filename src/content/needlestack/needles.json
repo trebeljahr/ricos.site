@@ -1158,8 +1158,8 @@
     "type": "video",
     "topics": ["neuroscience", "perception", "consciousness"],
     "paths": ["how-brains-work"],
-    "rating": 0,
-    "status": "classified",
+    "rating": 2,
+    "status": "reviewed",
     "pool": "best",
     "folders": ["Best/Best Videos/Good Videos That Need Sorting"],
     "addedAt": "2026-03-23",
@@ -1177,7 +1177,8 @@
     },
     "door": "understand",
     "level": "intro",
-    "minutes": 4
+    "minutes": 4,
+    "reviewedAt": "2026-09-28"
   },
   {
     "id": "0ca2eb6464",
@@ -1576,8 +1577,8 @@
     "type": "video",
     "topics": ["glsl", "shaders", "threejs"],
     "paths": ["shaders-and-art-with-code"],
-    "rating": 0,
-    "status": "classified",
+    "rating": 2,
+    "status": "reviewed",
     "pool": "best",
     "folders": ["Best/Best Videos/Good Videos That Need Sorting"],
     "addedAt": "2026-03-23",
@@ -1595,7 +1596,8 @@
     },
     "door": "build",
     "level": "deep",
-    "minutes": 7
+    "minutes": 7,
+    "reviewedAt": "2026-09-28"
   },
   {
     "id": "1b0c395963",
@@ -2969,8 +2971,8 @@
     "type": "video",
     "topics": ["computers", "hardware", "architecture", "transistors"],
     "paths": ["how-a-computer-works"],
-    "rating": 0,
-    "status": "classified",
+    "rating": 2,
+    "status": "reviewed",
     "pool": "best",
     "folders": ["Best/Best Videos/Good Videos That Need Sorting"],
     "addedAt": "2026-03-23",
@@ -2988,7 +2990,8 @@
     },
     "door": "build",
     "level": "intro",
-    "minutes": 43
+    "minutes": 43,
+    "reviewedAt": "2026-09-28"
   },
   {
     "id": "44b4179f58",
@@ -4786,8 +4789,8 @@
     "type": "video",
     "topics": ["gpt", "transformers", "machine-learning"],
     "paths": ["build-with-ai-agents"],
-    "rating": 0,
-    "status": "classified",
+    "rating": 3,
+    "status": "reviewed",
     "pool": "best",
     "folders": ["Best/Best Videos/Good Videos That Need Sorting"],
     "addedAt": "2026-03-23",
@@ -4805,7 +4808,8 @@
     },
     "door": "build",
     "level": "deep",
-    "minutes": 116
+    "minutes": 116,
+    "reviewedAt": "2026-09-28"
   },
   {
     "id": "7a7dbef2c4",
@@ -6684,8 +6688,8 @@
     "type": "video",
     "topics": ["euler", "visualization", "mathematics", "beauty"],
     "paths": ["fall-in-love-with-math"],
-    "rating": 0,
-    "status": "classified",
+    "rating": 3,
+    "status": "reviewed",
     "pool": "best",
     "folders": ["Best/Best Videos/Good Videos That Need Sorting"],
     "addedAt": "2026-03-23",
@@ -6703,7 +6707,8 @@
     },
     "door": "understand",
     "level": "intro",
-    "minutes": 27
+    "minutes": 27,
+    "reviewedAt": "2026-09-28"
   },
   {
     "id": "b0b0e61f6a",
@@ -6740,8 +6745,8 @@
     "type": "video",
     "topics": ["assembly", "systems", "low-level", "baremetal"],
     "paths": ["how-a-computer-works"],
-    "rating": 0,
-    "status": "classified",
+    "rating": 2,
+    "status": "reviewed",
     "pool": "best",
     "folders": ["Best/Best Videos/Good Videos That Need Sorting"],
     "addedAt": "2026-03-23",
@@ -6759,7 +6764,8 @@
     },
     "door": "build",
     "level": "deep",
-    "minutes": 26
+    "minutes": 26,
+    "reviewedAt": "2026-09-28"
   },
   {
     "id": "b1d2dc31ad",
@@ -6796,8 +6802,8 @@
     "type": "video",
     "topics": ["3d-graphics", "geometry", "projection", "math"],
     "paths": ["shaders-and-art-with-code"],
-    "rating": 0,
-    "status": "classified",
+    "rating": 2,
+    "status": "reviewed",
     "pool": "best",
     "folders": ["Best/Best Videos/Good Videos That Need Sorting"],
     "addedAt": "2026-03-23",
@@ -6815,7 +6821,8 @@
     },
     "door": "build",
     "level": "deep",
-    "minutes": 39
+    "minutes": 39,
+    "reviewedAt": "2026-09-28"
   },
   {
     "id": "b36c5180fd",
@@ -7158,8 +7165,8 @@
     "type": "video",
     "topics": ["llms", "transformers", "ai", "neural-networks"],
     "paths": ["how-llms-work"],
-    "rating": 0,
-    "status": "classified",
+    "rating": 2,
+    "status": "reviewed",
     "pool": "best",
     "folders": ["Best/Best Videos/Good Videos That Need Sorting"],
     "addedAt": "2026-03-23",
@@ -7177,7 +7184,8 @@
     },
     "door": "understand",
     "level": "intro",
-    "minutes": 60
+    "minutes": 60,
+    "reviewedAt": "2026-09-28"
   },
   {
     "id": "be6689f7fb",
@@ -7713,8 +7721,8 @@
     "type": "video",
     "topics": ["computer-architecture", "transistors", "systems"],
     "paths": ["how-a-computer-works"],
-    "rating": 0,
-    "status": "classified",
+    "rating": 3,
+    "status": "reviewed",
     "pool": "best",
     "folders": ["Best/Best Videos/Good Videos That Need Sorting"],
     "addedAt": "2026-03-23",
@@ -7731,7 +7739,8 @@
       "at": "2026-09-27T21:04:29.626Z"
     },
     "door": "build",
-    "level": "intro"
+    "level": "intro",
+    "reviewedAt": "2026-09-28"
   },
   {
     "id": "d00443c83e",

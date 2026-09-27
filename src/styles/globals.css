@@ -348,6 +348,242 @@ details.callout-root[open] > summary .callout-chevron {
   }
 }
 
+/*
+ * Article reading surfaces: blockquotes, tables, footnotes and inline code.
+ *
+ * All four arrived as @tailwindcss/typography defaults, which is why they read
+ * as "some markdown" next to the callouts and code blocks the site draws
+ * itself. Like the link override and the `.flow-*` steps above, these rules sit
+ * outside every `@layer`: the plugin is in the `utilities` layer, so a
+ * `@layer components` rule loses to it however specific it is. The
+ * `:where(...):not(:where(.not-prose, .not-prose *))` shape is the plugin's own
+ * selector, repeated so `not-prose` still opts a block out.
+ *
+ * Colours are mixes of `--color-gray-500`, a mid grey that holds its contrast
+ * over both `bg-white` and `dark:bg-gray-900`, so one value covers both themes
+ * instead of a `.dark` twin per rule.
+ */
+
+/*
+ * A blockquote is the `quote` callout's quieter relative: the same grey wash
+ * and the same corner radius, but no icon, no label and no full border, so a
+ * quoted passage stays part of the prose instead of becoming a box. The
+ * plugin's italics and 500 weight go: long quotes are the normal case here, and
+ * the rule plus the wash already mark the block.
+ */
+.prose :where(blockquote):not(:where(.not-prose, .not-prose *)) {
+  position: relative;
+  border-inline-start: 3px solid color-mix(in oklab, var(--color-gray-500) 45%, transparent);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  background-color: color-mix(in oklab, var(--color-gray-500) 8%, transparent);
+  padding: var(--spacing-label) var(--spacing-para);
+  padding-inline-start: var(--spacing-group);
+  font-style: normal;
+  font-weight: inherit;
+}
+
+/*
+ * One quote mark, in the gutter between the rule and the text, standing in for
+ * the callout's FaQuoteLeft. The plugin's own `open-quote` / `close-quote`
+ * content on the first and last paragraph would double it, so both go. The
+ * `/ ""` alt text keeps the glyph out of the accessibility tree.
+ */
+.prose :where(blockquote):not(:where(.not-prose, .not-prose *))::before {
+  content: "\201C" / "";
+  position: absolute;
+  inset-block-start: var(--spacing-hair);
+  inset-inline-start: 0.4rem;
+  font-size: 1.75em;
+  line-height: 1;
+  color: color-mix(in oklab, var(--color-gray-500) 55%, transparent);
+}
+
+.prose :where(blockquote p:first-of-type):not(:where(.not-prose, .not-prose *))::before,
+.prose :where(blockquote p:last-of-type):not(:where(.not-prose, .not-prose *))::after {
+  content: none;
+}
+
+/* The block's padding owns the space around the quote, so the paragraphs give
+   up their own em margins and take one step of the scale between them --
+   the same trade the `.flow-*` blocks make. Without this the first line starts
+   a full 24px below the quote mark. */
+.prose :where(blockquote > p):not(:where(.not-prose, .not-prose *)) {
+  margin-block: 0;
+}
+
+.prose :where(blockquote > p + p):not(:where(.not-prose, .not-prose *)) {
+  margin-top: var(--spacing-para);
+}
+
+/*
+ * Tables. `TableRenderer` in src/components/MarkdownRenderers.tsx wraps every
+ * table in `.prose-table-scroll`, because a table wide enough to need scrolling
+ * would otherwise push the whole article column sideways. The wrapper is the
+ * scroll container and carries the table's block margin.
+ *
+ * `width: max-content` with `min-width: 100%` is what decides between wrapping
+ * and scrolling: a narrow table still fills the column, and a wide one overflows
+ * into the scroll. Letting it wrap instead is worse than it sounds -- the
+ * plugin's `width: 100%` squeezes a five column table on a phone until every
+ * cell is one word per line, and a hyphenated token like `--spacing-hair`
+ * breaks across three of them.
+ */
+.prose-table-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  margin-block: var(--spacing-para);
+
+  /*
+   * A clipped table has to say so, or the last column just stops mid-word. The
+   * two shadow layers are pinned to the box (`scroll`) and the two cover layers
+   * scroll with the content (`local`), so a cover parks over its shadow exactly
+   * when there is nothing more to see that way: no overflow means both covers
+   * sit on both edges and neither shadow shows. The covers are solid page
+   * colour and wider than the shadows -- a gradient cover only thins its shadow
+   * instead of hiding it, which left a smudge on tables that fit. It needs no
+   * script and no motion, which is why it beats a scroll-driven fade here.
+   */
+  --table-edge-cover: var(--color-white);
+  background-image:
+    linear-gradient(var(--table-edge-cover), var(--table-edge-cover)),
+    linear-gradient(var(--table-edge-cover), var(--table-edge-cover)),
+    linear-gradient(to right, color-mix(in oklab, var(--color-gray-500) 40%, transparent), transparent),
+    linear-gradient(to left, color-mix(in oklab, var(--color-gray-500) 40%, transparent), transparent);
+  background-position:
+    left center,
+    right center,
+    left center,
+    right center;
+  background-size:
+    1.25rem 100%,
+    1.25rem 100%,
+    0.75rem 100%,
+    0.75rem 100%;
+  background-repeat: no-repeat;
+  background-attachment: local, local, scroll, scroll;
+}
+
+.dark .prose-table-scroll {
+  --table-edge-cover: var(--color-gray-900);
+}
+
+.prose :where(.prose-table-scroll > table):not(:where(.not-prose, .not-prose *)) {
+  width: max-content;
+  min-width: 100%;
+  margin-block: 0;
+  border-collapse: collapse;
+}
+
+/*
+ * The header row is a grey band with a solid rule under it, and body rows are
+ * separated by hairlines. Both are grey-500 mixes rather than the plugin's
+ * grey-200 / grey-700 pair, so the separation is the same strength in either
+ * theme.
+ */
+.prose :where(thead):not(:where(.not-prose, .not-prose *)) {
+  background-color: color-mix(in oklab, var(--color-gray-500) 12%, transparent);
+  border-bottom: 2px solid color-mix(in oklab, var(--color-gray-500) 45%, transparent);
+}
+
+.prose :where(th):not(:where(.not-prose, .not-prose *)) {
+  text-align: start;
+  font-weight: 600;
+  vertical-align: bottom;
+}
+
+.prose :where(tbody tr):not(:where(.not-prose, .not-prose *)) {
+  border-bottom: 1px solid color-mix(in oklab, var(--color-gray-500) 25%, transparent);
+}
+
+.prose :where(tbody tr:last-child):not(:where(.not-prose, .not-prose *)) {
+  border-bottom: none;
+}
+
+/* One padding for every cell. The plugin pulls the first and last cell flush
+   with the column edge, which reads as a hanging indent once the header row is
+   a filled band rather than a line of bold text. */
+.prose :where(th, td):not(:where(.not-prose, .not-prose *)) {
+  padding: var(--spacing-tight) var(--spacing-label);
+}
+
+/*
+ * Footnotes (remark-gfm). The section arrives as a bare `<ol>` behind a
+ * screen-reader-only heading, so nothing marked the end of the article. It gets
+ * the rule and the step of space a section break needs, and smaller, quieter
+ * type, because these are notes rather than prose.
+ */
+.prose :where(section[data-footnotes]):not(:where(.not-prose, .not-prose *)) {
+  margin-top: var(--spacing-section);
+  border-top: 1px solid color-mix(in oklab, var(--color-gray-500) 35%, transparent);
+  padding-top: var(--spacing-group);
+  font-size: 0.875em;
+  color: color-mix(in oklab, currentColor 75%, transparent);
+}
+
+/* A footnote marker is a small target in the middle of a line, so it gets the
+   padding to be clickable and loses the underline it would inherit. */
+.prose :where([data-footnote-ref]):not(:where(.not-prose, .not-prose *)) {
+  padding-inline: 0.15em;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* remark-gfm already puts a space before the arrow, so this only needs to keep
+   it from touching the full stop. */
+.prose :where(.data-footnote-backref):not(:where(.not-prose, .not-prose *)) {
+  margin-inline-start: 0.15em;
+  text-decoration: none;
+}
+
+/* Jumping to a note lands on the `<li>`, which until now looked like every
+   other item in the list. It lights up in the link accent and fades back. */
+@media (prefers-reduced-motion: no-preference) {
+  .prose :where(section[data-footnotes] li:target):not(:where(.not-prose, .not-prose *)) {
+    animation: footnote-landing 1800ms ease-out both;
+  }
+}
+
+/* The box-shadow does the bleed a padding would, so the highlight clears the
+   text without moving the list. */
+@keyframes footnote-landing {
+  0%,
+  35% {
+    background-color: color-mix(in oklab, var(--color-accent) 18%, transparent);
+    box-shadow: 0 0 0 0.35em color-mix(in oklab, var(--color-accent) 18%, transparent);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 0.35em transparent;
+  }
+}
+
+/*
+ * Inline code. rehype-pretty-code runs over it too (`defaultLang: "shell"`), so
+ * it already carries the github-light / github-dark-dimmed token colours and
+ * the theme background set further down this file — it just had no shape. A
+ * hairline box and the padding to go with it make it the code block's chip-
+ * sized version, and the plugin's literal backticks go, since the box is now
+ * doing that job.
+ */
+.prose :where(:not(pre) > code):not(:where(.not-prose, .not-prose *)) {
+  border: 1px solid color-mix(in oklab, currentColor 25%, transparent);
+  border-radius: var(--radius-sm);
+  padding: 0.1em 0.3em;
+  font-size: 0.875em;
+  font-weight: inherit;
+}
+
+/* Excerpts and card copy go through a second MDX pipeline without
+   rehype-pretty-code, so their inline code has no shiki background to inherit. */
+.prose :where(:not(pre) > code):not([data-theme]):not(:where(.not-prose, .not-prose *)) {
+  background-color: color-mix(in oklab, currentColor 8%, transparent);
+}
+
+.prose :where(code):not(:where(.not-prose, .not-prose *))::before,
+.prose :where(code):not(:where(.not-prose, .not-prose *))::after {
+  content: none;
+}
+
 h1,
 h2,
 h3,

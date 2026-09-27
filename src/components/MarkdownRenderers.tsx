@@ -1,7 +1,7 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import clsx from "clsx";
 import Link from "next/link";
-import type { AnchorHTMLAttributes, ImgHTMLAttributes } from "react";
+import type { AnchorHTMLAttributes, ImgHTMLAttributes, TableHTMLAttributes } from "react";
 import { resolveAlt } from "src/lib/imageAlt";
 import { CalloutBody, CalloutRoot, CalloutTitle } from "./Callouts";
 import { CodeWithCopyButton } from "./CodeCopyButton";
@@ -75,6 +75,15 @@ export const LinkRenderer = ({
   );
 };
 
+// A table wide enough to need scrolling would otherwise widen the article
+// column and push the whole page sideways. The wrapper is the scroll container;
+// `.prose-table-scroll` in src/styles/globals.css styles both it and the table.
+export const TableRenderer = ({ children, ...props }: TableHTMLAttributes<HTMLTableElement>) => (
+  <div className="prose-table-scroll">
+    <table {...props}>{children}</table>
+  </div>
+);
+
 const handleNiceImageGalleries = (props: { images: string }) => {
   const photos = JSON.parse(props.images);
   // Single-photo "groups" need an SSR-rendered path so the browser can
@@ -94,6 +103,7 @@ export const MarkdownRenderers = {
   a: LinkRenderer,
   img: ImageRenderer,
   pre: CodeWithCopyButton,
+  table: TableRenderer,
   div: handleDivs,
   SimpleGallery: handleNiceImageGalleries,
   "callout-root": CalloutRoot,

@@ -273,7 +273,7 @@ export const CalloutTitle: FC<CalloutTitleProps> = ({
       isFoldable={isFoldable}
       className={clsx("flex flex-row items-center gap-tight", callout.className.title)}
     >
-      {callout.icon}
+      <span className="callout-icon inline-flex origin-bottom">{callout.icon}</span>
       <span>{children ?? callout.label}</span>
       {isFoldable && (
         <FaChevronRight className="callout-chevron size-3 shrink-0 transition-transform" />
@@ -291,5 +291,5 @@ export const CalloutBody: FC<CalloutBodyProps> = ({ children }) => {
   // The gap sits on the body, not as `space-y-*` on the root: a closed
   // <details> keeps the summary's margin-bottom, which showed as a stray gap
   // under the folded callout.
-  return <div className="mt-tight prose-p:my-tight">{children}</div>;
+  return <div className="callout-body mt-tight prose-p:my-tight">{children}</div>;
 };

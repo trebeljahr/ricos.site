@@ -25,7 +25,7 @@ const TRAIL_DECAY = 0.93;
 /** How lazily the focus follows the pointer: the opening drifts after it. */
 const EASE = 0.14;
 /** Reach of the opening, as a share of the smaller screen side. */
-const REACH = 0.17;
+const REACH = 0.27;
 /** The cloud is soft, so it renders below screen resolution and is scaled up. */
 const SCALE = 0.6;
 
@@ -44,6 +44,7 @@ uniform vec2 uRes;
 uniform float uTime;
 uniform vec3 uTint;
 uniform float uFloor;
+uniform float uRim;
 uniform float uReach;
 uniform vec3 uTrail[${TRAIL}];
 uniform vec4 uClear[${CLEARINGS}];
@@ -126,8 +127,10 @@ void main() {
   float thinned = max(opened, cleared);
   // A floor everywhere, so even the thin parts of the cloud keep the page hidden,
   // and a little haze left inside the opening, so it is a thinning and not a hole.
-  float alpha = (uFloor + density * (1.0 - uFloor)) * (1.0 - thinned * 0.6);
-  vec3 color = uTint * (0.78 + density * 0.45 + rim * 0.5);
+  float alpha = (uFloor + density * (1.0 - uFloor)) * (1.0 - thinned * 0.78);
+  // Kept under white: on a light page the opening is already bright, and the
+  // rim on top of that blows the whole thing out.
+  vec3 color = min(uTint * (0.78 + density * 0.45 + rim * uRim), vec3(1.0));
   outColor = vec4(color * alpha, alpha);
 }`;
 
@@ -196,6 +199,7 @@ export const SmokeCanvas = ({ pointerRef, onFocus, calm, onReady, clearRef }: Sm
     const uTime = uniform("uTime");
     const uTint = uniform("uTint");
     const uFloor = uniform("uFloor");
+    const uRim = uniform("uRim");
     const uReach = uniform("uReach");
     const uTrail = uniform("uTrail[0]");
     const uClear = uniform("uClear[0]");
@@ -273,7 +277,8 @@ export const SmokeCanvas = ({ pointerRef, onFocus, calm, onReady, clearRef }: Sm
       gl.uniform1f(uTime, calm ? 0 : now * 0.001);
       if (dark) gl.uniform3f(uTint, 0.42, 0.48, 0.6);
       else gl.uniform3f(uTint, 0.72, 0.76, 0.83);
-      gl.uniform1f(uFloor, dark ? 0.55 : 0.66);
+      gl.uniform1f(uFloor, dark ? 0.74 : 0.82);
+      gl.uniform1f(uRim, dark ? 0.5 : 0.16);
       gl.uniform1f(uReach, Math.min(canvas.width, canvas.height) * REACH);
       gl.uniform3fv(uTrail, trail);
       gl.uniform4fv(uClear, clearings);

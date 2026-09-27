@@ -52,14 +52,15 @@ const SearchPartyEgg = () => {
   const [smoking, setSmoking] = useState(true);
   const [showHint, setShowHint] = useState(false);
 
-  const count = found.filter(Boolean).length;
   const shown = (i: number) => found[i] || !smoking;
 
   useEffect(() => {
     setMounted(true);
+    // Finding the page at all is what earns it. The five links are for fun.
+    recordFind("search-party");
     // The heading and the text belong to the page, so they are picked up from it.
     stickyRef.current = [...document.querySelectorAll<HTMLElement>(STICKY)];
-  }, []);
+  }, [recordFind]);
 
   // Someone who has not stirred the smoke for a while gets told what it is for.
   useEffect(() => {
@@ -109,9 +110,8 @@ const SearchPartyEgg = () => {
       clearRef.current = [...clearRef.current, ...opened];
       foundRef.current = foundRef.current.map((was, i) => was || hits[i]);
       setFound(foundRef.current);
-      if (foundRef.current.every(Boolean)) recordFind("search-party");
     },
-    [recordFind, stick],
+    [stick],
   );
 
   const aim = useCallback(
@@ -220,11 +220,6 @@ const SearchPartyEgg = () => {
             {showHint && smoking && (
               <span className="absolute inset-x-0 bottom-16 text-center text-xs tracking-wide text-gray-500 dark:text-gray-400">
                 something is in the smoke
-              </span>
-            )}
-            {count > 0 && smoking && (
-              <span className="absolute right-5 bottom-5 text-xs text-gray-500 dark:text-gray-400">
-                {count} of {HIDDEN_PAGES.length} found
               </span>
             )}
           </div>,

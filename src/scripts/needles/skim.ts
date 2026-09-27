@@ -124,7 +124,10 @@ async function main() {
   const needles = await readNeedles();
 
   const todo = needles
-    .filter((needle) => needle.status !== "rejected" && needle.rating >= args.rating)
+    // A dead link has nothing to say about itself; the fetch pass already knows.
+    .filter(
+      (needle) => needle.status !== "rejected" && !needle.dead && needle.rating >= args.rating,
+    )
     .filter((needle) => (args.force ? needle.noteSource !== "manual" : !needle.note))
     .slice(0, args.limit);
 

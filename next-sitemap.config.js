@@ -76,8 +76,10 @@ const nextSitemapConfig = {
     "/emergency",
     "/sub",
     "/midjourney",
-    // dev-only tool; 404s in production but still shows up in the route manifest
+    // dev-only tools; their APIs 404 in production but the routes still show
+    // up in the route manifest
     "/dev/alt-review",
+    "/dev/needlestack",
   ],
   changefreq: null,
   priority: null,

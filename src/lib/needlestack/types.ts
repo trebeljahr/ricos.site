@@ -117,6 +117,12 @@ export type Needle = {
   inNeedlestackMd?: boolean;
   /** ISO date, from the bookmark's add_date when available. */
   addedAt?: string;
+  /**
+   * The page is gone (404, 410, no such host), set by the metadata pass. Kept
+   * on the needle rather than only in meta.json so the public filter and the
+   * triage filters can see it without loading the metadata file.
+   */
+  dead?: boolean;
   reviewedAt?: string;
   guess?: NeedleGuess;
 };
@@ -137,4 +143,4 @@ export type NeedleUpdate = {
 };
 
 export const isPublic = (needle: Needle): boolean =>
-  needle.status === "reviewed" && needle.rating >= 1;
+  needle.status === "reviewed" && needle.rating >= 1 && needle.dead !== true;

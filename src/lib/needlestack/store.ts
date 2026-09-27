@@ -11,12 +11,19 @@ import { existsSync } from "node:fs";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
+import type { NeedleMeta } from "./meta";
 import type { PathId } from "./taxonomy";
 import type { Needle } from "./types";
 
 export const NEEDLESTACK_DIR = resolve(process.cwd(), "src", "content", "needlestack");
 export const NEEDLES_JSON = resolve(NEEDLESTACK_DIR, "needles.json");
 export const PATHS_JSON = resolve(NEEDLESTACK_DIR, "paths.json");
+/**
+ * Fetched page metadata, keyed by needle id, in its own file: it is machine
+ * output that changes on every refetch, and keeping it out of needles.json
+ * leaves that file a readable diff of curation decisions.
+ */
+export const META_JSON = resolve(NEEDLESTACK_DIR, "meta.json");
 
 /** Ordering and intro copy per path: the curated part of a path page. */
 export type PathCuration = {
@@ -49,6 +56,19 @@ export async function writeNeedles(needles: Needle[]): Promise<void> {
     return dateDiff !== 0 ? dateDiff : a.id.localeCompare(b.id);
   });
   await writeJson(NEEDLES_JSON, sorted);
+}
+
+export type MetaFile = Record<string, NeedleMeta>;
+
+export async function readMeta(): Promise<MetaFile> {
+  if (!existsSync(META_JSON)) return {};
+  return JSON.parse(await readFile(META_JSON, "utf8")) as MetaFile;
+}
+
+export async function writeMeta(meta: MetaFile): Promise<void> {
+  // Sorted by id so a refetch of one link does not reshuffle the file.
+  const sorted = Object.fromEntries(Object.entries(meta).sort(([a], [b]) => a.localeCompare(b)));
+  await writeJson(META_JSON, sorted);
 }
 
 export async function readPaths(): Promise<PathsFile> {

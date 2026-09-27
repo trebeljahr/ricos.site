@@ -33,6 +33,7 @@
 
 ## Needlestack curation (local tooling)
 - `src/content/needlestack/needles.json` is the archive: one record per link, written by the scripts in `src/scripts/needles/` and by `/dev/needlestack`. The taxonomy of doors and paths lives in `src/lib/needlestack/taxonomy.ts`; adding a path is a deliberate edit there.
-- `pnpm needles:import` (bookmark export + the old needlestack page, idempotent, never overwrites a human answer) → `pnpm needles:classify` or `pnpm needles:batch export|apply` (machine guesses) → `/dev/needlestack` (keyboard triage) → `pnpm needles:skim` (drafts notes for links rated 2+).
+- `pnpm needles:import` (bookmark export + the old needlestack page, idempotent, never overwrites a human answer) → `pnpm needles:fetch` (thumbnail, site name, description, author, length; writes `meta.json` and fills in minutes, cleaned titles and the dead flag) → `pnpm needles:classify` or `pnpm needles:batch export|apply` (machine guesses) → `/dev/needlestack` (keyboard triage) → `pnpm needles:skim` (drafts notes for links rated 2+).
+- Page metadata lives in `src/content/needlestack/meta.json`, keyed by needle id, separate from `needles.json` so refetches do not churn the file that records curation decisions. `pnpm needles:stats` prints coverage.
 - The public rewrite lives at `/needlestack-2` (hub, `/needlestack-2/[door]`, `/needlestack-2/archive`, in `src/pages/needlestack-2/`). `/needlestack` stays the old markdown page, rendered by `src/pages/[id].tsx` with its haystack egg, until the rewrite carries the same links; do not claim that slug from the new pages.
 - A needle is only public once it is `status: "reviewed"` with `rating >= 1`. No script may set that; only the triage UI does, one link at a time.

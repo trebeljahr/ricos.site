@@ -7,7 +7,7 @@
  * The same numbers show at the top of /dev/needlestack; this is for checking
  * progress without leaving the shell, and for the dev-server banner.
  */
-import { readNeedles } from "src/lib/needlestack/store";
+import { readMeta, readNeedles } from "src/lib/needlestack/store";
 import { DOORS } from "src/lib/needlestack/taxonomy";
 import type { Needle } from "src/lib/needlestack/types";
 
@@ -21,7 +21,7 @@ const line = (label: string, rows: [string | number, number][]) =>
   `${label.padEnd(10)} ${rows.map(([key, count]) => `${key}: ${count}`).join("  ")}`;
 
 async function main() {
-  const needles = await readNeedles();
+  const [needles, meta] = await Promise.all([readNeedles(), readMeta()]);
   if (needles.length === 0) {
     console.log("needles.json is empty — run pnpm needles:import first");
     return;
@@ -49,9 +49,16 @@ async function main() {
       ),
     ),
   );
+  const fetched = needles.filter((needle) => meta[needle.id]);
+  const withImage = fetched.filter((needle) => meta[needle.id]?.image);
   console.log(
     `\n${outstanding.length} need supervision, ${publishable.length} would publish, ` +
       `${withNote.length} of those have a note in your own words`,
+  );
+  console.log(
+    `${fetched.length} fetched (${withImage.length} with a picture, ` +
+      `${needles.filter((needle) => needle.dead).length} dead, ` +
+      `${needles.length - fetched.length} never tried)`,
   );
 
   if (process.argv.includes("--folders")) {

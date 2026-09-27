@@ -18,7 +18,7 @@
  */
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { readNeedles, serialize, writeNeedles } from "src/lib/needlestack/store";
+import { readMeta, readNeedles, serialize, writeNeedles } from "src/lib/needlestack/store";
 import { isDoorId, isPathId } from "src/lib/needlestack/taxonomy";
 import type { Needle, NeedleStatus, NeedleUpdate, Rating } from "src/lib/needlestack/types";
 import { NEEDLE_TYPES } from "src/lib/needlestack/types";
@@ -104,8 +104,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === "GET") {
-    const needles = await readNeedles();
-    res.status(200).json({ needles });
+    // Metadata rides along so triage can show a thumbnail and a source without
+    // a second request per link; it is a local file, and the tab loads once.
+    const [needles, meta] = await Promise.all([readNeedles(), readMeta()]);
+    res.status(200).json({ needles, meta });
     return;
   }
 

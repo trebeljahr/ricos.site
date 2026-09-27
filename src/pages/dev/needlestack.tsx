@@ -1,9 +1,13 @@
 /**
  * /dev/needlestack — triage the link archive.
  *
- * Dev-only (404s in production). Reads and writes
+ * Dev-only (the API behind it 404s in production). Reads and writes
  * src/content/needlestack/needles.json through /api/dev/needles, so progress
  * survives restarts and ships as a normal commit.
+ *
+ * It wears the site's own chrome — navbar, footer, type scale — because it is
+ * where the needlestack is actually made, and judging a link next to the
+ * styling it will be published in beats judging it on a bare white page.
  *
  * The job this page exists for: several thousand imported links, each needing a
  * yes/no, a door, a path and ideally one sentence of why. So it is built for
@@ -16,10 +20,13 @@
  * `reviewed` with a rating of 1 or more, which is exactly what the rating keys
  * do, deliberately, one link at a time.
  */
+import Layout from "@components/Layout";
+import Header, { PageMain } from "@components/PostHeader";
 import clsx from "clsx";
-import Head from "next/head";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import type { NeedleMeta } from "src/lib/needlestack/meta";
+import { hostOf } from "src/lib/needlestack/meta";
 import {
   DOORS,
   type DoorId,
@@ -34,6 +41,7 @@ type SaveState = "idle" | "saving" | "saved" | "error";
 type Mode = "queue" | "sheet";
 type StatusFilter = "outstanding" | "all" | NeedleStatus;
 type NoteFilter = "any" | "missing" | "draft" | "mine";
+type LinkFilter = "any" | "dead" | "unfetched" | "withImage";
 
 /** Door shortcuts, in the order the doors are declared. */
 const DOOR_KEYS = ["q", "w", "e", "r", "t", "y"];
@@ -57,6 +65,7 @@ export default function NeedlestackReview() {
 
 function NeedlestackTool() {
   const [needles, setNeedles] = useState<Needle[] | null>(null);
+  const [meta, setMeta] = useState<Record<string, NeedleMeta>>({});
   const [loadError, setLoadError] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
 
@@ -67,6 +76,7 @@ function NeedlestackTool() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("outstanding");
   const [doorFilter, setDoorFilter] = useState<DoorId | "all" | "none">("all");
   const [noteFilter, setNoteFilter] = useState<NoteFilter>("any");
+  const [linkFilter, setLinkFilter] = useState<LinkFilter>("any");
   const [undo, setUndo] = useState<{ id: string; rating: Rating; status: NeedleStatus } | null>(
     null,
   );
@@ -77,7 +87,10 @@ function NeedlestackTool() {
   useEffect(() => {
     fetch("/api/dev/needles")
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
-      .then((data) => setNeedles(data.needles as Needle[]))
+      .then((data) => {
+        setNeedles(data.needles as Needle[]);
+        setMeta((data.meta ?? {}) as Record<string, NeedleMeta>);
+      })
       .catch((error: Error) => setLoadError(error.message));
   }, []);
 
@@ -163,13 +176,17 @@ function NeedlestackTool() {
       if (noteFilter === "missing" && needle.note) return false;
       if (noteFilter === "draft" && needle.noteSource !== "ai") return false;
       if (noteFilter === "mine" && needle.noteSource !== "manual") return false;
+      const page = meta[needle.id];
+      if (linkFilter === "dead" && !needle.dead) return false;
+      if (linkFilter === "unfetched" && page) return false;
+      if (linkFilter === "withImage" && !page?.image) return false;
       if (q) {
         const haystack = `${needle.title} ${needle.url} ${needle.folders.join(" ")} ${needle.topics.join(" ")}`;
         if (!haystack.toLowerCase().includes(q)) return false;
       }
       return true;
     });
-  }, [needles, query, pool, statusFilter, doorFilter, noteFilter]);
+  }, [needles, query, pool, statusFilter, doorFilter, noteFilter, linkFilter, meta]);
 
   // Confident keepers first: the queue should front-load the easy yeses.
   const queue = useMemo(() => {
@@ -186,8 +203,10 @@ function NeedlestackTool() {
         .length,
       live: all.filter((n) => n.status === "reviewed" && n.rating >= 1).length,
       myNotes: all.filter((n) => n.noteSource === "manual").length,
+      dead: all.filter((n) => n.dead).length,
+      unfetched: all.filter((n) => !meta[n.id]).length,
     };
-  }, [needles]);
+  }, [needles, meta]);
 
   const current = queue[Math.min(cursor, Math.max(queue.length - 1, 0))];
 
@@ -321,7 +340,7 @@ function NeedlestackTool() {
 
   // Filters change what "next" means; start over rather than pointing at a
   // link that just left the list.
-  const filterKey = `${query}|${pool}|${statusFilter}|${doorFilter}|${noteFilter}`;
+  const filterKey = `${query}|${pool}|${statusFilter}|${doorFilter}|${noteFilter}|${linkFilter}`;
   const [lastFilterKey, setLastFilterKey] = useState(filterKey);
   if (filterKey !== lastFilterKey) {
     setLastFilterKey(filterKey);
@@ -348,23 +367,21 @@ function NeedlestackTool() {
 
   return (
     <Shell>
-      <header className="mb-5 flex flex-wrap items-end justify-between gap-6">
-        <div>
-          <h1 className="m-0 text-3xl font-bold">Needlestack triage</h1>
-          <p className="mt-2 mb-0 max-w-prose text-sm text-gray-500 dark:text-gray-400">
-            Every imported link, with the machine&apos;s guess prefilled. A rating of 1 or more plus
-            a review is what puts something on the public pages — nothing else does.
-          </p>
-        </div>
-        <dl className="m-0 flex gap-6 text-right">
-          <Tally label="Needles" value={totals.total} />
-          <Tally label="Outstanding" value={totals.outstanding} accent="text-amber-400" />
-          <Tally label="Would publish" value={totals.live} accent="text-emerald-400" />
-          <Tally label="Your notes" value={totals.myNotes} accent="text-sky-400" />
-        </dl>
-      </header>
+      <p className="max-w-prose text-gray-500 dark:text-gray-400">
+        Every imported link, with the machine&apos;s guess prefilled. A rating of 1 or more plus a
+        review is what puts something on the public pages — nothing else does.
+      </p>
 
-      <div className="sticky top-0 z-20 mb-5 flex flex-wrap items-center gap-2 border-y border-gray-200 bg-white/90 py-3 backdrop-blur dark:border-gray-800 dark:bg-gray-950/90">
+      <dl className="not-prose mt-group flex flex-wrap gap-8">
+        <Tally label="Needles" value={totals.total} />
+        <Tally label="Outstanding" value={totals.outstanding} accent="text-amber-500" />
+        <Tally label="Would publish" value={totals.live} accent="text-emerald-500" />
+        <Tally label="Your notes" value={totals.myNotes} accent="text-sky-500" />
+        <Tally label="No metadata" value={totals.unfetched} />
+        <Tally label="Dead" value={totals.dead} accent="text-red-500" />
+      </dl>
+
+      <div className="not-prose sticky top-0 z-20 mb-5 mt-group flex flex-wrap items-center gap-2 border-y border-gray-200 bg-white/90 py-3 backdrop-blur dark:border-gray-800 dark:bg-gray-950/90">
         <input
           id="needle-search"
           type="search"
@@ -414,6 +431,17 @@ function NeedlestackTool() {
             ["mine", "Written by you"],
           ]}
         />
+        <Select
+          label="Link"
+          value={linkFilter}
+          onChange={(value) => setLinkFilter(value as LinkFilter)}
+          options={[
+            ["any", "Any link"],
+            ["dead", "Dead"],
+            ["unfetched", "No metadata yet"],
+            ["withImage", "Has a picture"],
+          ]}
+        />
         <div className="flex overflow-hidden rounded-full border border-gray-300 dark:border-gray-700">
           {(["queue", "sheet"] as Mode[]).map((value) => (
             <button
@@ -451,6 +479,7 @@ function NeedlestackTool() {
         current ? (
           <QueueCard
             needle={current}
+            page={meta[current.id]}
             position={Math.min(cursor + 1, queue.length)}
             total={queue.length}
             onPatch={patch}
@@ -468,6 +497,7 @@ function NeedlestackTool() {
       ) : (
         <Sheet
           needles={visible.slice(0, SHEET_CAP)}
+          meta={meta}
           truncated={visible.length > SHEET_CAP}
           onPatch={patch}
           onOpenQueue={(id) => {
@@ -483,6 +513,7 @@ function NeedlestackTool() {
 
 function QueueCard({
   needle,
+  page,
   position,
   total,
   onPatch,
@@ -493,6 +524,7 @@ function QueueCard({
   onTogglePath,
 }: {
   needle: Needle;
+  page?: NeedleMeta;
   position: number;
   total: number;
   onPatch: (id: string, update: Omit<NeedleUpdate, "id">) => void;
@@ -505,7 +537,7 @@ function QueueCard({
   const doorPaths = needle.door ? pathsInDoor(needle.door) : [];
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="not-prose grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="m-0 text-2xl font-semibold leading-tight">{needle.title}</h2>
@@ -515,21 +547,17 @@ function QueueCard({
         </div>
 
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          <a
-            href={needle.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="max-w-full truncate font-mono text-sky-600 underline dark:text-sky-400"
-          >
-            {needle.url}
-          </a>
+          <Source needle={needle} page={page} />
           <Chip>{needle.type}</Chip>
           <Chip>{needle.pool}</Chip>
           {needle.minutes && <Chip>{needle.minutes} min</Chip>}
           {needle.level && <Chip>{needle.level}</Chip>}
           {needle.newsletter && <Chip>newsletter #{needle.newsletter}</Chip>}
           {needle.inNeedlestackMd && <Chip accent="emerald">already public</Chip>}
+          {needle.dead && <Chip accent="red">dead: HTTP {page?.httpStatus ?? "?"}</Chip>}
         </div>
+
+        <PagePreview needle={needle} page={page} />
 
         {needle.folders.length > 0 && (
           <p className="m-0 font-mono text-[11px] text-gray-500">{needle.folders.join("  ·  ")}</p>
@@ -753,6 +781,89 @@ function QueueCard({
   );
 }
 
+/**
+ * Where the link goes, as a reader would see it: the site's own favicon and
+ * name, then the URL. A bookmark title like "(32) Answering Your Questions"
+ * is unjudgeable; the same row with "Ben Eater · youtube.com" is not.
+ */
+function Source({ needle, page }: { needle: Needle; page?: NeedleMeta }) {
+  const site = page?.siteName ?? hostOf(needle.url);
+  return (
+    <span className="flex min-w-0 items-center gap-2">
+      {page?.favicon && (
+        // A remote favicon from an arbitrary host: next/image would need every
+        // one of them in remotePatterns, and this page never ships to users.
+        // biome-ignore lint/performance/noImgElement: dev-only, arbitrary hosts
+        <img src={page.favicon} alt="" width={16} height={16} className="h-4 w-4 rounded-sm" />
+      )}
+      <span className="font-medium">{site}</span>
+      {page?.author && <span className="text-gray-500">{page.author}</span>}
+      <a
+        href={needle.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="max-w-[28rem] truncate font-mono text-sky-600 underline dark:text-sky-400"
+      >
+        {needle.url}
+      </a>
+    </span>
+  );
+}
+
+/**
+ * The thumbnail and the page's own description, side by side.
+ *
+ * This is the part that makes triage fast: most links can be judged from the
+ * picture and one sentence the page wrote about itself, without opening
+ * anything. Nothing here is stored on the needle — it is all from meta.json,
+ * refetchable, and none of it is a substitute for Rico's own note.
+ */
+function PagePreview({ needle, page }: { needle: Needle; page?: NeedleMeta }) {
+  if (!page) {
+    return (
+      <p className="m-0 rounded border border-dashed border-gray-300 px-3 py-2 text-xs text-gray-500 dark:border-gray-700">
+        No metadata yet — run <code>pnpm needles:fetch</code>.
+      </p>
+    );
+  }
+
+  const facts = [
+    page.publishedAt ? `published ${page.publishedAt.slice(0, 10)}` : undefined,
+    page.durationSeconds ? `${Math.round(page.durationSeconds / 60)} min long` : undefined,
+    page.words ? `${page.words.toLocaleString("en")} words` : undefined,
+    page.lang && !page.lang.startsWith("en") ? `in ${page.lang}` : undefined,
+    page.ok ? undefined : (page.error ?? `HTTP ${page.httpStatus}`),
+  ].filter(Boolean);
+
+  return (
+    <div className="flex gap-4">
+      {page.image ? (
+        // biome-ignore lint/performance/noImgElement: dev-only, arbitrary hosts
+        <img
+          src={page.image}
+          alt={page.imageAlt ?? ""}
+          className={clsx(
+            "h-28 w-48 shrink-0 rounded border border-gray-200 object-cover dark:border-gray-800",
+            needle.dead && "opacity-40 grayscale",
+          )}
+        />
+      ) : (
+        <span className="flex h-28 w-48 shrink-0 items-center justify-center rounded border border-dashed border-gray-300 text-[11px] text-gray-500 dark:border-gray-700">
+          no picture
+        </span>
+      )}
+      <div className="min-w-0 text-xs text-gray-600 dark:text-gray-400">
+        {page.description ? (
+          <p className="m-0 line-clamp-4">{page.description}</p>
+        ) : (
+          <p className="m-0 italic text-gray-500">The page says nothing about itself.</p>
+        )}
+        {facts.length > 0 && <p className="mt-2 mb-0 text-gray-500">{facts.join(" · ")}</p>}
+      </div>
+    </div>
+  );
+}
+
 const RATING_LABELS: Record<number, string> = {
   1: "archive",
   2: "good",
@@ -761,17 +872,19 @@ const RATING_LABELS: Record<number, string> = {
 
 function Sheet({
   needles,
+  meta,
   truncated,
   onPatch,
   onOpenQueue,
 }: {
   needles: Needle[];
+  meta: Record<string, NeedleMeta>;
   truncated: boolean;
   onPatch: (id: string, update: Omit<NeedleUpdate, "id">) => void;
   onOpenQueue: (id: string) => void;
 }) {
   return (
-    <div className="overflow-x-auto">
+    <div className="not-prose overflow-x-auto">
       {truncated && (
         <p className="mb-2 text-xs text-amber-500">
           Showing the first {needles.length}. Narrow the filter, or use the queue.
@@ -780,7 +893,9 @@ function Sheet({
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b border-gray-200 text-left text-[11px] uppercase tracking-wider text-gray-500 dark:border-gray-800">
-            <th className="py-2 pr-3 font-medium">Link</th>
+            <th className="py-2 pr-3 font-medium" colSpan={2}>
+              Link
+            </th>
             <th className="py-2 pr-3 font-medium">Guess</th>
             <th className="py-2 pr-3 font-medium">Door / paths</th>
             <th className="py-2 pr-3 font-medium">Rate</th>
@@ -789,6 +904,21 @@ function Sheet({
         <tbody>
           {needles.map((needle) => (
             <tr key={needle.id} className="border-b border-gray-100 dark:border-gray-900">
+              <td className="w-24 py-2 pr-3">
+                {meta[needle.id]?.image ? (
+                  // biome-ignore lint/performance/noImgElement: dev-only, arbitrary hosts
+                  <img
+                    src={meta[needle.id]?.image}
+                    alt=""
+                    className={clsx(
+                      "h-12 w-20 rounded object-cover",
+                      needle.dead && "opacity-40 grayscale",
+                    )}
+                  />
+                ) : (
+                  <span className="block h-12 w-20 rounded border border-dashed border-gray-200 dark:border-gray-800" />
+                )}
+              </td>
               <td className="max-w-[420px] py-2 pr-3">
                 <button
                   type="button"
@@ -804,7 +934,7 @@ function Sheet({
                   rel="noopener noreferrer"
                   className="block truncate font-mono text-[11px] text-gray-500"
                 >
-                  {needle.url}
+                  {meta[needle.id]?.siteName ?? needle.url}
                 </a>
               </td>
               <td className="py-2 pr-3 text-[11px] text-gray-500">
@@ -860,15 +990,25 @@ function Sheet({
   );
 }
 
+/**
+ * The site's own chrome around the tool: navbar, footer, theme and type scale.
+ * `not-prose` around the controls, because the body carries `prose` and the
+ * typography plugin would otherwise style every button and table in here.
+ */
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <Head>
-        <title>Needlestack triage</title>
-        <meta name="robots" content="noindex, nofollow" />
-      </Head>
-      <main className="mx-auto max-w-[1500px] px-5 pb-24">{children}</main>
-    </>
+    <Layout
+      title="Needlestack triage"
+      description="Local triage for the needlestack archive."
+      keywords={[]}
+      url="dev/needlestack"
+      noindex
+    >
+      <PageMain>
+        <Header title="Needlestack triage" subtitle="Deciding what the stack is made of" />
+        {children}
+      </PageMain>
+    </Layout>
   );
 }
 
@@ -916,13 +1056,20 @@ function Label({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Chip({ children, accent }: { children: React.ReactNode; accent?: "amber" | "emerald" }) {
+function Chip({
+  children,
+  accent,
+}: {
+  children: React.ReactNode;
+  accent?: "amber" | "emerald" | "red";
+}) {
   return (
     <span
       className={clsx(
         "rounded-full border px-2 py-0.5 text-[10px]",
         accent === "amber" && "border-amber-400 text-amber-600 dark:text-amber-300",
         accent === "emerald" && "border-emerald-500 text-emerald-600 dark:text-emerald-300",
+        accent === "red" && "border-red-500 text-red-600 dark:text-red-400",
         !accent && "border-gray-300 text-gray-500 dark:border-gray-700",
       )}
     >

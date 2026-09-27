@@ -230,6 +230,7 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
   const { start, end } = window_;
 
   const ribbonRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLSpanElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef(false);
   /** Set by `seek`, consumed by the layout effect that does the scrolling. */
@@ -366,6 +367,24 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
    * Reading position on scroll has neither problem: it is a state, so it is
    * still true the second time it is asked.
    */
+  /** Put the marker where the reader is: how far through the loaded rows they
+   *  have scrolled, mapped back onto the whole sweep through the window those
+   *  rows represent. Writes to the DOM node, never to state. */
+  const updateProgress = useCallback(() => {
+    const marker = progressRef.current;
+    const ribbon = ribbonRef.current;
+    if (!marker || !ribbon || total === 0) return;
+    const rect = ribbon.getBoundingClientRect();
+    const through = rect.height > 0 ? (0 - rect.top) / rect.height : 0;
+    const within = Math.min(1, Math.max(0, through));
+    const index = start + within * (end - start);
+    marker.style.left = `${Math.min(100, Math.max(0, (index / total) * 100))}%`;
+  }, [start, end, total]);
+
+  // Also on every window change, so a jump moves the marker before the reader
+  // has scrolled anything.
+  useEffect(updateProgress, [updateProgress]);
+
   useEffect(() => {
     lastY.current = window.scrollY;
     const onScroll = () => {
@@ -378,6 +397,7 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
       if (y === lastY.current) return;
       scrollingUp.current = y < lastY.current;
       lastY.current = y;
+      updateProgress();
       if (!scrollingUp.current || !hasPrevious) return;
       // Measured only while scrolling up and only while there is something
       // above to load, so the layout read costs nothing on the common path.
@@ -392,7 +412,7 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [loadPrevious, hasPrevious]);
+  }, [loadPrevious, hasPrevious, updateProgress]);
 
   /**
    * Jump to a region of the circle.
@@ -529,15 +549,24 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
                 className={clsx("block h-full", i > 0 && "border-l border-black/10")}
               />
             ))}
-            {/* Which slice of the sweep is currently in the document. Grows as
-                chunks load and moves when a mark is clicked, so the reader can
-                see where they are without a scroll listener. */}
+            {/* Where the reader is in the sweep.
+
+                This used to be the loaded window — `start` to `end` — which
+                was the wrong thing to draw and looked it: the window only ever
+                grows as chunks load, so the marker stretched further across
+                the strip the longer anyone scrolled, and by the second screen
+                it claimed most of the archive was "here". What a reader wants
+                from a position indicator is their position.
+
+                So it is a thin marker, moved by the scroll handler writing to
+                this node directly. Not React state: the alternative is a
+                re-render of up to 1,500 tiles on every scroll event to move
+                one element two pixels. */}
             <span
-              className="absolute inset-y-0 bg-white/45 ring-1 ring-white/70 ring-inset motion-safe:transition-all motion-safe:duration-300 dark:bg-white/25"
-              style={{
-                left: `${(start / total) * 100}%`,
-                width: `${((end - start) / total) * 100}%`,
-              }}
+              ref={progressRef}
+              aria-hidden
+              className="absolute inset-y-0 w-1 -translate-x-1/2 rounded-full bg-white ring-1 ring-black/30 dark:ring-black/50"
+              style={{ left: "0%" }}
             />
           </div>
 

@@ -24,24 +24,27 @@
  * is blue. So membership picks the set and strength orders it, and neither
  * can do the other's job. src/lib/colorBuckets.mjs has the long version.
  *
- * HOW THE FAMILIES ACTUALLY CAME OUT, OVER THE 4,359 PHOTOS THESE PAGES SHOW
- * -------------------------------------------------------------------------
- * The bake classifies 4,900 keys; `keys()` below drops the 541 that are a
- * second copy of a photo under another prefix, so every figure here is over
- * the 4,359 distinct photographs a reader can actually reach.
+ * WHAT THE STRIP ACTUALLY HOLDS
+ * -----------------------------
+ * The bake classifies 4,900 keys, all of them under assets/photography.
+ * `keys()` drops the 541 that are a second copy of a photo filed under both a
+ * trip and best-of, leaving 4,359 distinct photographs.
  *
- * Every photo is filed in exactly one of them, so these sum to 4,359:
+ * Of those, 1,950 reach the strip: 1,815 that read as a single colour, and the
+ * 135 with no measurable colour at all. The 2,544 left out are the ones
+ * carrying two colours at once or a colour too faint to name, and leaving them
+ * out is the feature rather than a shortfall — they were what made a sweep
+ * through the archive look like a grid with the colours roughly sorted. See
+ * MIN_BAND_STRENGTH and MIN_BAND_DOMINANCE.
  *
- *   gold  1,105 (25.4%)   green 1,028 (23.6%)   blue    933 (21.4%)
- *   grey    569 (13.1%)   orange  363  (8.3%)   black   112  (2.6%)
- *   red     107  (2.5%)   purple   58  (1.3%)   white    44  (1.0%)
- *   teal     24  (0.6%)   pink     16  (0.4%)
+ *   green   656   gold    466   blue    528   orange  116
+ *   purple   21   red      19   teal      6   pink      3
+ *   grey     93   black    23   white    19
  *
- * Grey being the fourth largest is not a fault, it is the archive: the median
- * photo here has a mean OKLCh chroma of 0.046 against a CHROMA_FLOOR of 0.045,
- * so a large minority of it genuinely has no colour worth naming. See
- * MIN_VISIBLE_STRENGTH for the bar, and for what filing those under a colour
- * looked like before there was one.
+ * The small bands are small because this archive is: six photographs are
+ * unambiguously teal and three unambiguously pink. A band of three is honest,
+ * where a band of 128 padded out with frames that merely contained some
+ * turquoise was not.
  *
  * All eight chromatic families are ones a viewer would agree with — the
  * strongest greens are backlit leaves and ferns, the strongest blues are
@@ -55,8 +58,8 @@
  * own, and warm interior light is dark and dull by that measure. It has been
  * removed; see WHY THERE IS NO EARTH FAMILY in src/lib/colorBuckets.mjs.
  *
- * Purple is the one left to watch, at 58 photos: lightning and asters at the
- * top, then a fish-market counter that is really blue-grey.
+ * Purple is the one left to watch, at 21 photos: lightning and asters, and a
+ * fish-market counter that is really blue-grey.
  */
 import type { ImageProps } from "src/@types";
 import baked from "src/content/photography-colors.json";
@@ -166,27 +169,33 @@ function imageFor(src: string): ImageProps {
 
 const NEUTRAL_IDS = new Set<string>(COLOR_BUCKETS.filter((b) => b.neutral).map((b) => b.id));
 
-/** Share of the frame a colour has to occupy before the photo is filed under
- *  it rather than under white, grey or black.
+/** What it takes for a photo to be in the spectrum at all.
  *
- *  Membership is decided against the corpus — "is this unusually gold *here*"
- *  — and that question has no floor in it, which is deliberate and is what
- *  lets a rare colour be findable at all. But it means a photo can be the most
- *  gold thing in a grey frame and still be, to look at, a grey frame. The gold
- *  band's weakest members carried 0.008 to 0.013 gold at a mean chroma of
- *  0.015: hazy ridgelines, a white corridor, a pale river. Filed under Gold
- *  they were plainly wrong, and they were wrong in the way that makes a reader
- *  distrust the whole page.
+ *  The strip is not the archive and does not try to be. It is the photographs
+ *  that read as one colour, because those are the only ones a gradient can be
+ *  made of: a frame that is equal parts sky and sandstone has no place on a
+ *  hue axis, and putting it there is what made the sweep look like a grid with
+ *  the colours roughly sorted rather than a spectrum.
  *
- *  0.06 is the bar: six per cent of the frame at full chroma weight, or twice
- *  that at the half weight a just-visible tint earns (see CHROMA_FULL_WEIGHT).
- *  Below it the photo is filed by its lightness instead, which is the honest
- *  answer — it is a light picture, or a dark one, not a coloured one. It moves
- *  590 photos, 14% of the archive, out of the colour bands.
+ *  Two bars, and a photo has to clear both.
  *
- *  This is a floor on *visibility*, not a second opinion about hue. A photo
- *  above the bar keeps whatever family the vote gave it. */
-const MIN_VISIBLE_STRENGTH = 0.06;
+ *  `MIN_BAND_STRENGTH` is how much of the frame the colour covers, weighted by
+ *  chroma. At 0.06 — the first attempt — a photo qualified on a colour
+ *  occupying a sixteenth of it, which is an accent, not a subject.
+ *
+ *  `MIN_BAND_DOMINANCE` is the share of the photo's *colour* that the winning
+ *  family holds, and it is the bar that does the work the first one could not.
+ *  Strength alone keeps a photo that is 20% blue and 20% gold: it has plenty
+ *  of blue, and it reads as neither. Requiring three quarters of the colour in
+ *  the frame to belong to one family is what "reads as one colour" actually
+ *  means.
+ *
+ *  Together they keep 1,815 of 4,359 photographs. That is the point rather
+ *  than a cost — the 2,544 left out are the ones that were making the seams
+ *  look arbitrary. Photos with no measurable colour at all are a separate
+ *  case and are kept, because they do read as one thing: see `imagesBySpectrum`. */
+const MIN_BAND_STRENGTH = 0.15;
+const MIN_BAND_DOMINANCE = 0.75;
 
 const primaryCache = new Map<string, ColorBucketId>();
 
@@ -229,15 +238,17 @@ export function primaryFamily(src: string): ColorBucketId {
       best = id;
     }
   }
-  // Either no colour at all, or none of it visible enough to name the photo
-  // after. Both end up in a lightness band: the one the bake already assigned
-  // if there is one, otherwise the band this photo's mean lightness falls in.
+  // No colour at all: the photo lives in a lightness band, the one the bake
+  // assigned if there is one and otherwise the band its mean lightness falls
+  // in. A photo whose colour is merely *weak* still comes back with that
+  // colour here; whether it is strong enough to appear at all is
+  // `readsAsOneColour`'s question, not this one.
   const resolved =
-    best !== null && bestStrength >= MIN_VISIBLE_STRENGTH
-      ? best
-      : ((entry.buckets.find((id) => isColorBucketId(id) && NEUTRAL_IDS.has(id)) as
-          | ColorBucketId
-          | undefined) ?? neutralForLightness(entry.lightness));
+    best ??
+    (entry.buckets.find((id) => isColorBucketId(id) && NEUTRAL_IDS.has(id)) as
+      | ColorBucketId
+      | undefined) ??
+    neutralForLightness(entry.lightness);
   primaryCache.set(src, resolved);
   return resolved;
 }
@@ -256,6 +267,26 @@ export function primaryFamily(src: string): ColorBucketId {
  *  change to the modulo. */
 export function hueOffset(hue: number, centre: number): number {
   return ((((hue - centre) % 360) + 540) % 360) - 180;
+}
+
+/** Whether a photo reads as one colour, and so belongs in the sweep.
+ *
+ *  Answers no for a photo with plenty of one colour that also has plenty of
+ *  another: `MIN_BAND_DOMINANCE` is measured against the photo's own colour
+ *  rather than against the frame, so a half-and-half picture fails however
+ *  vivid both halves are. */
+function readsAsOneColour(src: string): boolean {
+  const entry = entries[src];
+  let top = 0;
+  let total = 0;
+  for (const id of new Set(entry.buckets)) {
+    if (!isColorBucketId(id) || NEUTRAL_IDS.has(id)) continue;
+    const strength = entry.strength[id] ?? 0;
+    total += strength;
+    if (strength > top) top = strength;
+  }
+  if (total === 0) return false;
+  return top >= MIN_BAND_STRENGTH && top / total >= MIN_BAND_DOMINANCE;
 }
 
 let hueOrder: ImageProps[] | null = null;
@@ -306,7 +337,9 @@ export function imagesBySpectrum(): ImageProps[] {
    *  is a third colour it does not contain. */
   const familyHueOf = (src: string) => entries[src].familyHue?.[primaryFamily(src)];
 
-  const chromatic = live.filter((src) => bandOf(src) >= 0 && familyHueOf(src) !== undefined);
+  const chromatic = live.filter(
+    (src) => bandOf(src) >= 0 && familyHueOf(src) !== undefined && readsAsOneColour(src),
+  );
 
   /** Each family's centre, as the circular mean of its members' family hues.
    *  Measured rather than declared so it cannot drift from what the band holds. */
@@ -353,8 +386,13 @@ export function imagesBySpectrum(): ImageProps[] {
   // Lightest first, so the sweep leaves the last colour for white and dims to
   // black rather than dropping straight from a colour into the darkest frames
   // in the archive.
+  // The colourless tail: photos with no chromatic family at all. They are kept
+  // while photos with a weak or divided colour are dropped, and the difference
+  // is not arbitrary — "no colour" is itself a clear reading, and these frames
+  // are white, grey or black to look at. A photo that is faintly two colours
+  // is not clearly anything, which is the whole test.
   const rest = live
-    .filter((src) => !(bandOf(src) >= 0 && familyHueOf(src) !== undefined))
+    .filter((src) => bandOf(src) < 0)
     .sort((a, b) => entries[b].lightness - entries[a].lightness || a.localeCompare(b));
 
   hueOrder = [...ordered, ...rest].map(imageFor);

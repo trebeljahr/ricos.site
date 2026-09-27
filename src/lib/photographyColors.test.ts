@@ -134,20 +134,19 @@ const { entryFor, hueOffset, imagesBySpectrum } = await import("src/lib/photogra
 
 describe("imagesBySpectrum", () => {
   it("walks the ring by family, and each band round the circle within itself", () => {
-    // Bands come from the family a photo belongs to, in ring order: red,
-    // then the greens, then teal, then blue. Inside a band the order is by
-    // hue, so each band ends at the shade it shares with the next one and the
-    // seam between them is the least visible thing on the page. Green runs
-    // 131.2, 140.0, 150.5, 160.0 — a-canopy, c-leaf, b-leaf, green-water —
-    // which is the opposite of what chroma-descending gave.
+    // Bands come from the family a photo is filed under, in ring order: red,
+    // then the greens, then blue. Inside a band the order is by that family's
+    // own hue, so each band ends at the shade it shares with the next one and
+    // the seam between them is the least visible thing on the page.
+    //
+    // c-leaf, shallows and dusk are missing because they carry two colours
+    // and are excluded — see the dominance test below.
     const srcs = imagesBySpectrum().map((image) => image.src);
-    expect(srcs.slice(0, 7)).toEqual([
+    expect(srcs.slice(0, 5)).toEqual([
       "assets/photography/desert/dawn.jpg", // red band
-      "assets/photography/jungle/a-canopy.jpg", // green band, h 131.2
-      "assets/photography/jungle/c-leaf.jpg", // h 140.0
-      "assets/photography/jungle/b-leaf.jpg", // h 150.5
-      "assets/photography/reef/green-water.jpg", // h 160.0
-      "assets/photography/reef/shallows.jpg", // teal band
+      "assets/photography/jungle/a-canopy.jpg", // green band, green hue 131.2
+      "assets/photography/jungle/b-leaf.jpg", // 150.5
+      "assets/photography/reef/green-water.jpg", // 160.0
       "assets/photography/reef/deep.jpg", // blue band
     ]);
   });
@@ -166,12 +165,18 @@ describe("imagesBySpectrum", () => {
     expect(hueOffset(120, 129)).toBe(-9);
   });
 
-  it("keeps the near-360 photo at the end of the colour sweep, not next to 0", () => {
+  it("leaves out a photo that carries two colours rather than one", () => {
+    // These three are the whole point of the filter. c-leaf is 0.40 green and
+    // 0.20 blue, shallows 0.33 teal and 0.30 blue, dusk 0.30 pink and 0.15
+    // red: each has plenty of its winning colour and reads as neither, so no
+    // strength bar alone would catch them. Dominance does — a photo has to
+    // hold three quarters of its own colour in one family.
     const srcs = imagesBySpectrum().map((image) => image.src);
-    expect(srcs[7]).toBe("assets/photography/desert/dusk.jpg");
-    expect(srcs.indexOf("assets/photography/desert/dusk.jpg")).toBeGreaterThan(
-      srcs.indexOf("assets/photography/reef/deep.jpg"),
-    );
+    expect(srcs).not.toContain("assets/photography/jungle/c-leaf.jpg");
+    expect(srcs).not.toContain("assets/photography/reef/shallows.jpg");
+    expect(srcs).not.toContain("assets/photography/desert/dusk.jpg");
+    // a-canopy is the control: 0.71 green and nothing else.
+    expect(srcs).toContain("assets/photography/jungle/a-canopy.jpg");
   });
 
   it("closes with the achromatic tail, lightest first so it fades to black", () => {
@@ -185,10 +190,12 @@ describe("imagesBySpectrum", () => {
     ]);
   });
 
-  it("includes every photo metadata knows about, exactly once", () => {
+  it("lists each photo it keeps exactly once, and never a deleted one", () => {
+    // Not every photo: the strip is the ones that read as a single colour,
+    // plus the colourless tail. What it must never do is repeat one, because
+    // the lightbox walks this array, or show one metadata has dropped.
     const srcs = imagesBySpectrum().map((image) => image.src);
-    expect(srcs).toHaveLength(10);
-    expect(new Set(srcs).size).toBe(10);
+    expect(new Set(srcs).size).toBe(srcs.length);
     expect(srcs).not.toContain("assets/photography/jungle/deleted.jpg");
   });
 

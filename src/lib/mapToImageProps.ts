@@ -1,4 +1,32 @@
-import path from "node:path";
+// `nextImageUrl` runs in client components, and webpack (unlike Turbopack)
+// refuses to bundle `node:`-prefixed builtins for the browser:
+//   Module build failed: UnhandledSchemeError: Reading from "node:path" is not
+//   handled by plugins (Unhandled scheme).
+// The only thing node:path did here was `path.parse` + `path.join`, so both are
+// inlined below. Behaviour is unchanged, down to the way `path.join` collapses
+// the `//` of an absolute URL.
+
+/** `path.parse(p).ext` removed, leaving `dir` + `name` joined by "/". */
+const stripExtension = (p: string) => {
+  const base = p.slice(p.lastIndexOf("/") + 1);
+  const dot = base.lastIndexOf(".");
+  // A leading dot belongs to the name: path.parse("/.env").name is ".env".
+  return dot > 0 ? p.slice(0, p.length - (base.length - dot)) : p;
+};
+
+/** What `path.join` does after concatenating: collapse "//", resolve "." / "..". */
+const normalizePosix = (p: string) => {
+  const isAbsolute = p.startsWith("/");
+  const segments: string[] = [];
+  for (const segment of p.split("/")) {
+    if (segment === "" || segment === ".") continue;
+    if (segment === ".." && segments.length > 0 && segments.at(-1) !== "..") segments.pop();
+    else if (segment !== ".." || !isAbsolute) segments.push(segment);
+  }
+  const joined = segments.join("/");
+  if (isAbsolute) return `/${joined}`;
+  return joined || ".";
+};
 
 export const imageSizes = [
   16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840,
@@ -54,8 +82,7 @@ export const nextImageUrl = (src: string, width: number) => {
     return src;
   }
 
-  const parsedPath = path.parse(src);
-  const noExt = path.join(parsedPath.dir, parsedPath.name);
+  const noExt = normalizePosix(stripExtension(src));
   const fixedSource = noExt.startsWith("/") ? noExt : `/${noExt}`;
 
   if (cloudFrontUrl && src.startsWith(cloudFrontUrl)) {

@@ -14,19 +14,19 @@ const HOLD_MS = 700;
 const CLEAR_MS = 800;
 const CLEAR_STAGGER_MS = 40;
 const RESET_MS = 2400;
+/** Idle wink: the monkey flicks through its faces to be noticed. */
+const PEEK_MIN_MS = 15000;
+const PEEK_MAX_MS = 40000;
+const PEEK_FRAME_MS = 130;
 
-/** Throws it takes to fill the field's edge; the pile fades once it is reached. */
-const BANANAS = 20;
 /** A banana glyph is ~24px wide and tall, so slots of this size never overlap. */
 const SLOT_W = 32;
-const ROW_H = 28;
 const FIRST_X = 6;
 const FIRST_Y = -14;
 
-type Slot = { row: number; col: number };
 type Banana = {
   id: number;
-  slot: Slot;
+  col: number;
   drift: number;
   rotate: number;
   from: { x: number; y: number };
@@ -43,57 +43,82 @@ const glow = (input: Element) =>
   );
 
 /**
- * The spots the bananas come to rest on: a row along the top edge of the field,
- * filled from the corner rightwards, stacking upwards onto the box once the row
- * is full. Slots are a glyph apart, so no two bananas ever land on each other.
+ * The spots the bananas come to rest on: one row along the top edge of the
+ * field, a glyph apart so no two bananas ever land on each other. The first one
+ * takes the top left corner, the rest come in random order across the width.
  */
-function planSlots(field: PageBox): Slot[] {
+function planSlots(field: PageBox): number[] {
   const cols = Math.max(1, Math.floor((field.width - FIRST_X) / SLOT_W));
-  const rows = Math.ceil(BANANAS / cols);
-  const slots: Slot[] = [];
-
-  for (let row = 0; row < rows; row++) {
-    const inRow: Slot[] = [];
-    for (let col = 0; col < cols; col++) inRow.push({ row, col });
-    // Shuffled per row, so the throws scatter across the width but still fill
-    // the row nearest the field before piling up above it.
-    for (let i = inRow.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [inRow[i], inRow[j]] = [inRow[j], inRow[i]];
-    }
-    slots.push(...inRow);
+  const rest = Array.from({ length: cols - 1 }, (_, i) => i + 1);
+  for (let i = rest.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rest[i], rest[j]] = [rest[j], rest[i]];
   }
-
-  // The very first banana keeps the top left corner it always had.
-  const corner = slots.findIndex(({ row, col }) => row === 0 && col === 0);
-  slots.unshift(...slots.splice(corner, 1));
-  return slots.slice(0, BANANAS);
+  return [0, ...rest];
 }
 
 const spotOf = (field: PageBox, banana: Banana) => ({
-  x: field.left + FIRST_X + banana.slot.col * SLOT_W + banana.drift,
-  y: field.top + FIRST_Y - banana.slot.row * ROW_H,
+  x: field.left + FIRST_X + banana.col * SLOT_W + banana.drift,
+  y: field.top + FIRST_Y,
 });
 
 /**
  * Easter egg on the newsletter form: the monkey cycles through the three wise
  * monkeys while you click, and throws one banana each time you click all the
- * way through them. The bananas stay lying on the field until the twentieth
- * one lands, then the whole pile fades away.
+ * way through them. The bananas stay lying on the top edge of the field until
+ * the row is full, then the whole row fades away and it starts over.
  */
 const MonkeyEgg = () => {
   const reduceMotion = useReducedMotion();
   const { run, wait, busyRef } = useEggRunner();
   const monkeyRef = useRef<HTMLSpanElement>(null);
   const reset = useRef<number | undefined>(undefined);
-  const pool = useRef<Slot[]>([]);
+  const pool = useRef<number[]>([]);
+  const rowLength = useRef(0);
   const nextId = useRef(0);
+  const lastClick = useRef(0);
   const [monkey, setMonkey] = useState(REST_MONKEY);
   const [field, setField] = useState<PageBox | null>(null);
   const [bananas, setBananas] = useState<Banana[]>([]);
   const [clearing, setClearing] = useState(false);
 
   useEffect(() => () => window.clearTimeout(reset.current), []);
+
+  // Every now and then the monkey flicks through its three faces, so the egg
+  // has a chance of being noticed. Never while it is throwing, while someone is
+  // clicking it, or in a background tab.
+  useEffect(() => {
+    if (reduceMotion) return;
+    let timer: number | undefined;
+    let flick: number | undefined;
+
+    const schedule = () =>
+      (timer = window.setTimeout(peek, PEEK_MIN_MS + Math.random() * (PEEK_MAX_MS - PEEK_MIN_MS)));
+
+    const peek = () => {
+      if (busyRef.current || document.hidden || Date.now() - lastClick.current < RESET_MS) {
+        schedule();
+        return;
+      }
+      let frame = 0;
+      flick = window.setInterval(() => {
+        frame += 1;
+        if (frame > WISE_MONKEYS.length) {
+          window.clearInterval(flick);
+          setMonkey(REST_MONKEY);
+          schedule();
+          return;
+        }
+        setMonkey(WISE_MONKEYS[frame - 1]);
+      }, PEEK_FRAME_MS);
+    };
+
+    schedule();
+    return () => {
+      window.clearTimeout(timer);
+      window.clearInterval(flick);
+    };
+  }, [busyRef, reduceMotion]);
 
   const emailField = useCallback(
     () => monkeyRef.current?.closest("h2")?.parentElement?.querySelector('input[type="email"]'),
@@ -120,16 +145,19 @@ const MonkeyEgg = () => {
           const box = pageBox(input);
           // A fresh pile starts over at the corner; a resized field moves the
           // ones already lying there along with it.
-          if (!pool.current.length) pool.current = planSlots(box);
-          const slot = pool.current.shift();
+          if (!pool.current.length) {
+            pool.current = planSlots(box);
+            rowLength.current = pool.current.length;
+          }
+          const col = pool.current.shift();
           const monkeyBox = pageBox(monkeyRef.current);
 
-          if (slot) {
+          if (col !== undefined) {
             const thrown: Banana = {
               id: nextId.current++,
-              slot,
-              drift: slot.row === 0 && slot.col === 0 ? 0 : (Math.random() * 2 - 1) * 3,
-              rotate: slot.row === 0 && slot.col === 0 ? -24 : -35 + Math.random() * 60,
+              col,
+              drift: col === 0 ? 0 : (Math.random() * 2 - 1) * 3,
+              rotate: col === 0 ? -24 : -35 + Math.random() * 60,
               from: { x: monkeyBox.left + monkeyBox.width / 2, y: monkeyBox.top },
             };
             setField(box);
@@ -137,10 +165,11 @@ const MonkeyEgg = () => {
             await wait(reduceMotion ? 0 : THROW_MS);
             glow(input);
 
+            // The row is full, so the next throw would have to stack: sweep first.
             if (!pool.current.length) {
               await wait(HOLD_MS);
               setClearing(true);
-              await wait(CLEAR_MS + BANANAS * CLEAR_STAGGER_MS);
+              await wait(CLEAR_MS + rowLength.current * CLEAR_STAGGER_MS);
               setBananas([]);
               setClearing(false);
             }
@@ -158,6 +187,7 @@ const MonkeyEgg = () => {
         label="Monkey"
         nudge={false}
         onClick={() => {
+          lastClick.current = Date.now();
           if (!busyRef.current) registerClick();
         }}
       >

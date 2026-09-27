@@ -1,14 +1,16 @@
 import { InfiniteScrollGallery } from "@components/Galleries";
 import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
-import { useMemo } from "react";
+import { type ReactNode, useMemo } from "react";
 import type { ImageProps } from "src/@types";
 import { imageSizes, nextImageUrl } from "src/lib/mapToImageProps";
 
 type Props = {
   /** Breadcrumb path, e.g. "photography/alps". */
   path: string;
-  title: string;
+  /** Page heading. A node rather than a string so a page can hang a control
+   *  off the title — the colour pages put their swatch and picker there. */
+  title: ReactNode;
   images: ImageProps[];
 };
 
@@ -17,9 +19,6 @@ export function GalleryPage({ path, title, images }: Props) {
   // Memoized: the largest gallery was 572 images x 16 sizes = 9,152 objects,
   // which was rebuilt on every render. `images` is a stable prop from
   // getStaticProps, so this only runs when navigating to another gallery.
-  // The colour family pages are now the biggest callers at 600 images (9,600
-  // objects); they cap there deliberately, see PAGE_LIMIT in
-  // src/pages/photography/colors/[family].tsx.
   const imagesWithSrcSet = useMemo(
     () =>
       images.map((image) => {

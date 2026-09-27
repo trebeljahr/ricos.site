@@ -24,12 +24,9 @@ export const navGroups: NavGroup[] = [
     items: [
       { label: "galleries", href: "/photography" },
       { label: "best of", href: "/photography/best-of" },
-      // Separated because these two cut across the trips rather than listing
-      // them: the same photos, indexed by measured colour instead of by place.
-      // The two above are both ways of asking where a photo was taken; these
-      // two are the only ones that ignore place entirely.
-      { label: "by colour", href: "/photography/colors", dividerBefore: true },
-      { label: "spectrum", href: "/photography/spectrum" },
+      // Separated because it cuts across the trips rather than listing them:
+      // the same photos, indexed by measured colour instead of by place.
+      { label: "spectrum", href: "/photography/spectrum", dividerBefore: true },
     ],
   },
   {

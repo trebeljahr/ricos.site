@@ -3,8 +3,15 @@ import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import clsx from "clsx";
-import Link from "next/link";
-import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { ImageProps } from "src/@types";
 import type { ColorBucketId } from "src/lib/colorBuckets.mjs";
 import { nextImageUrl } from "src/lib/mapToImageProps";
@@ -152,19 +159,17 @@ const prefersReducedMotion = () =>
  *
  * WHY THE SCALE ONLY LABELS EIGHT FAMILIES
  * ----------------------------------------
- * The /photography/colors pages file photos into eleven families. Only eight of
- * those are colours: white, grey and black have no hue by definition and make
- * up the tail. Labelling those on a colour axis would be a promise the axis
- * cannot keep.
+ * Photos are filed into eleven families. Only eight of those are colours:
+ * white, grey and black have no hue by definition and make up the tail.
+ * Labelling those on a colour axis would be a promise the axis cannot keep.
  *
- * WHY A PHOTO CAN SIT HERE AND ALSO APPEAR ON TWO FAMILY PAGES
- * -----------------------------------------------------------
- * A band here comes from a photo's *primary* family, the one it carries most
- * of, and every photo has exactly one. The family pages come from membership,
- * and a photo can be a member of up to three. So a red wall behind green
- * foliage sits once in the strip, under whichever of the two it carries more
- * of, and appears on both the red and green pages. Neither view is wrong; they
- * answer different questions.
+ * WHERE A PHOTO CARRYING TWO COLOURS ENDS UP
+ * ------------------------------------------
+ * In whichever of them covers more of the frame — see `primaryFamily` in
+ * src/lib/photographyColors.ts. A red wall behind green foliage sits once, in
+ * the band for whichever it carries more of, and nowhere else. Every photo is
+ * in exactly one place in this strip, which is the whole of the feature: there
+ * is no second view it could disagree with.
  */
 export default function PhotographySpectrumPage({ images, marks, chromatic, achromatic }: Props) {
   const total = images.length;
@@ -220,55 +225,101 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
   const lightbox = useCustomLightbox({ photos });
   const { openModal, currentImageIndex, isModalOpen } = lightbox;
 
-  /** First photo of the revealed window. Moved only by the hue scale. */
-  const [start, setStart] = useState(0);
-  /** How many photos after `start` are in the document. */
-  const [revealed, setRevealed] = useState(CHUNK);
+  /** The half-open window of photos currently in the document. Both ends move:
+   *  scrolling down grows `end`, scrolling up grows the window backwards by
+   *  lowering `start`, and a chip jump drops a fresh CHUNK anywhere in the
+   *  sweep and lets the reader scroll out of it in either direction. */
+  const [window_, setWindow] = useState({ start: 0, end: Math.min(CHUNK, total) });
+  const { start, end } = window_;
 
   const ribbonRef = useRef<HTMLDivElement>(null);
+  const topSentinelRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef(false);
 
-  // `revealed` is allowed to overshoot — the last chunk and a lightbox jump both
-  // add a whole CHUNK regardless of what is left. `end` is the clamp and the one
-  // number anything else reads, so nothing downstream has to repeat the bound.
-  const end = Math.min(total, start + revealed);
   const hasMore = end < total;
+  const hasPrevious = start > 0;
 
-  const loadMore = useCallback(() => {
-    if (loadingRef.current) return;
+  /** Page height measured immediately before a prepend, or null when the
+   *  pending render is not a prepend. Read once, in the layout effect below. */
+  const prependAnchor = useRef<number | null>(null);
+
+  /** Same guard as InfiniteScrollGallery: two intersections can arrive inside
+   *  one frame, while React has not re-rendered the moved sentinel yet. */
+  const holdLoading = useCallback(() => {
     loadingRef.current = true;
-    setRevealed((previous) => previous + CHUNK);
-    // Same guard as InfiniteScrollGallery: two intersections can arrive inside
-    // one frame while React has not re-rendered the moved sentinel yet.
     setTimeout(() => {
       loadingRef.current = false;
     }, 100);
   }, []);
 
+  const loadMore = useCallback(() => {
+    if (loadingRef.current) return;
+    holdLoading();
+    setWindow((w) => (w.end >= total ? w : { ...w, end: Math.min(total, w.end + CHUNK) }));
+  }, [holdLoading, total]);
+
+  const loadPrevious = useCallback(() => {
+    if (loadingRef.current) return;
+    holdLoading();
+    // Recorded here rather than in the updater, which React may run twice.
+    prependAnchor.current = document.documentElement.scrollHeight;
+    setWindow((w) => (w.start <= 0 ? w : { ...w, start: Math.max(0, w.start - CHUNK) }));
+  }, [holdLoading]);
+
+  /**
+   * Hold the reader's place when rows are inserted above them.
+   *
+   * Inserting a chunk above the viewport moves everything below it down by the
+   * height of what was added, so without this the page appears to leap
+   * backwards the instant an upward load fires. Browsers have scroll anchoring
+   * for exactly this, but Safari does not implement it, so the correction is
+   * done by hand: measure the document before the prepend, measure it again
+   * after React has committed the new rows, and scroll by the difference.
+   *
+   * `useLayoutEffect` and not `useEffect` because it has to run before the
+   * browser paints. In an effect the reader sees one frame at the wrong offset,
+   * which reads as a jolt at precisely the moment they are scrolling.
+   *
+   * `start` is in the deps although the body never reads it, and the linter is
+   * wrong to call it redundant: it is the signal that the prepend has been
+   * committed. The effect has to run once per window move, and the only thing
+   * that changes between the render that schedules a prepend and the render
+   * that finishes it is `start`. Drop it and the correction runs on the first
+   * commit only, so every upward load after the first one jolts.
+   */
+  // biome-ignore lint/correctness/useExhaustiveDependencies: start is the commit signal, see above
+  useLayoutEffect(() => {
+    const before = prependAnchor.current;
+    if (before === null) return;
+    prependAnchor.current = null;
+    const delta = document.documentElement.scrollHeight - before;
+    if (delta !== 0) window.scrollBy(0, delta);
+  }, [start]);
+
   /**
    * Jump to a region of the circle.
    *
-   * This *moves* the window rather than growing it, which is the one real
-   * compromise on the page and worth stating plainly: after jumping to teal the
-   * reader cannot scroll back up into green, only jump there. The alternative
-   * is to reveal everything before the target — 4,686 photos to reach pink —
-   * which puts the whole archive in the document and undoes the chunking that
-   * makes the page usable at all. Growing upwards instead needs the browser to
-   * hold the scroll position while content is inserted above it, and scroll
-   * anchoring is a Chrome and Firefox feature that Safari does not implement, so
-   * it would silently teleport those readers. A jump that always lands at the
-   * top of the strip is predictable on every browser, and the marks plus the
-   * step-back button reach every part of the sweep.
+   * Drops a fresh window at the target instead of revealing everything in
+   * between: reaching pink the long way is 4,224 photos, which would put the
+   * whole archive in one document and undo the chunking the page is built on.
+   *
+   * What makes that acceptable is that the window is no longer a dead end. The
+   * reader can scroll up out of a jump and the photos before it load, the same
+   * way scrolling down loads the ones after, so the sweep stays continuous in
+   * both directions from wherever they landed.
    */
-  const seek = useCallback((index: number) => {
-    setStart(index);
-    setRevealed(CHUNK);
-    ribbonRef.current?.scrollIntoView({
-      behavior: prefersReducedMotion() ? "instant" : "smooth",
-      block: "start",
-    });
-  }, []);
+  const seek = useCallback(
+    (index: number) => {
+      prependAnchor.current = null;
+      setWindow({ start: index, end: Math.min(total, index + CHUNK) });
+      ribbonRef.current?.scrollIntoView({
+        behavior: prefersReducedMotion() ? "instant" : "smooth",
+        block: "start",
+      });
+    },
+    [total],
+  );
 
   // Arrowing forward in the lightbox can walk past the revealed window. Reveal
   // in one jump up to the slide plus a chunk, rather than a chunk per tick, so
@@ -288,9 +339,9 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
   useEffect(() => {
     if (!isModalOpen) return;
     if (currentImageIndex >= total) return;
-    if (currentImageIndex < start + revealed) return;
-    setRevealed(currentImageIndex - start + CHUNK);
-  }, [isModalOpen, currentImageIndex, start, revealed, total]);
+    if (currentImageIndex < end) return;
+    setWindow((w) => ({ ...w, end: Math.min(total, currentImageIndex + CHUNK) }));
+  }, [isModalOpen, currentImageIndex, end, total]);
 
   // `hasMore` is in the deps although the effect never reads it, because the
   // sentinel is only in the tree while it is true. Seeking can flip it back from
@@ -311,6 +362,24 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
     observer.observe(sentinel);
     return () => observer.disconnect();
   }, [loadMore, hasMore]);
+
+  // The upward twin. A much smaller rootMargin than the downward one on
+  // purpose: 400px above the viewport would fire the moment a jump lands,
+  // before the reader has moved at all, and quietly undo the jump by loading
+  // the chunk they deliberately skipped.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: hasPrevious remounts the sentinel, as above
+  useEffect(() => {
+    const sentinel = topSentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) loadPrevious();
+      },
+      { rootMargin: "100px" },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loadPrevious, hasPrevious]);
 
   const visible = useMemo(() => tiles.slice(start, end), [tiles, start, end]);
 
@@ -339,30 +408,7 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
         {/* The crumb is left at "Spectrum" rather than relabelled to match the
             h1: it is the URL segment, and a breadcrumb that disagrees with the
             address bar is a small lie a reader catches when they copy the link. */}
-        <Header
-          breadcrumbs={{ path: url }}
-          title="Spectrum"
-          subtitle="Every photograph in the archive, grouped by colour"
-        />
-
-        {/* No prose classes: _document.tsx already puts `prose md:prose-lg
-            xl:prose-xl` on <body>, so re-declaring `prose` here would reset the
-            type scale to the base size on every screen. */}
-        <div className="mb-8">
-          <p>
-            Every one of the {formatCount(total)} photographs, in one strip. The order comes from
-            the colour each photo actually reads as, so scrolling walks the circle once: red,
-            orange, gold, green, teal, blue, purple, pink. Each stretch leads with its most
-            saturated photographs and fades towards its palest. {achromatic} photographs carry too
-            little colour to place. They sit at the end, ordered from darkest to lightest.
-          </p>
-          <p>
-            A pale photo still sits with its colour and still looks pale — the bands thin out at
-            their ends rather than cutting off. Click any frame to see it full size.{" "}
-            <Link href="/photography/colors">The colour families</Link> are the same data as eleven
-            separate pages, each ranked by how much of that colour a photo carries.
-          </p>
-        </div>
+        <Header breadcrumbs={{ path: url }} title="Spectrum" />
 
         {/* ---- hue scale -------------------------------------------------
             Two elements, each with one job. The strip shows how much of the
@@ -371,7 +417,7 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
             that is half of what the page has to say about this archive. The
             chips below do the jumping, at equal width, because pink's honest
             share of the strip is 12px on a 1000px screen and nobody can hit
-            that with a thumb. Same split as the wheel on /photography/colors,
+            that with a thumb. Same split the colour chips use,
             for the same reason.
 
             `not-prose` because <body> is a prose container: without it the
@@ -379,7 +425,20 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
             0.5em margin on every <li>, and a flex row of chips or tiles laid out
             inside that is not the layout this file describes. Same guard
             InfiniteScrollGallery wraps itself in. */}
-        <div className="not-prose mb-6">
+        {/* Sticky, because it is the only navigation on the page and the page
+            is 46,000px tall. Parked at the top of the document it would be
+            reachable for the first screen and useless for the other 460, and
+            the sweep is exactly the kind of thing a reader wants to jump
+            around in halfway down.
+
+            `top-15` clears the sticky navbar above it, whose bottom edge measures
+            60px. The
+            backdrop is opaque rather than blurred: tiles scrolling under a
+            translucent bar drag their colours through the swatches, and the
+            swatches are the one thing on this page that has to stay
+            trustworthy. z-20 keeps it over the ribbon and well under the
+            navbar's z-999. */}
+        <div className="not-prose sticky top-15 z-20 mb-6 bg-white pt-3 pb-3 dark:bg-gray-900">
           <div
             aria-hidden
             className="relative flex h-3 w-full overflow-hidden rounded-full ring-1 ring-black/10 dark:ring-white/10"
@@ -437,16 +496,6 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
           </ul>
         </div>
 
-        {start > 0 && (
-          <button
-            type="button"
-            onClick={() => seek(Math.max(0, start - CHUNK))}
-            className="mb-3 cursor-pointer rounded-md px-3 py-2 text-sm ring-1 ring-gray-200 hover:ring-gray-400 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent dark:ring-gray-700 dark:hover:ring-gray-500"
-          >
-            Back {formatCount(CHUNK)} photos
-          </button>
-        )}
-
         {/* ---- the ribbon ------------------------------------------------
             One row height for every tile, set as a custom property on the list
             so each tile can derive its own width from it in CSS. That is what
@@ -468,13 +517,18 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
             `object-cover` then takes to about a quarter of the frame, and leaves
             a partial row visibly partial rather than distorted.
 
-            The tiles are deliberately under the 44px minimum a tap target
-            wants — 36x48px on a phone. A ribbon of touch-sized frames is not a
-            ribbon, and /photography/colors reaches every one of these photos at
-            a comfortable size, so the small target costs nobody access. */}
+            The tiles are under the 44px minimum a tap target wants, which is
+            the cost of a ribbon: frames big enough to tap comfortably are too
+            big to read as a sweep. Tapping opens the lightbox, which is
+            forgiving about a near miss, and the chips above are full-size
+            targets for the navigation that matters. */}
         {/* scroll-mt-24 so a jump clears the sticky navbar, the same clearance
             the anchored tag sections on /categories use. */}
         <div ref={ribbonRef} className="not-prose scroll-mt-24">
+          {/* The upward sentinel. Rendered only while there is something above
+              to load, so reaching the true start of the sweep stops the
+              observer rather than leaving it firing against a clamped window. */}
+          {hasPrevious && <div ref={topSentinelRef} className="h-px" aria-hidden />}
           {/* `start` so the list numbering matches the position in the sweep
               after a jump, which is what the tile labels announce. */}
           <ol
@@ -518,11 +572,7 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
         ) : (
           <p className="mt-6 text-sm text-gray-500 dark:text-gray-400">
             That is the end of the sweep: {formatCount(chromatic)} photographs with a hue and{" "}
-            {achromatic} without.{" "}
-            <Link href="/photography/colors" className="hover:text-accent">
-              Browse by colour family
-            </Link>{" "}
-            instead.
+            {achromatic} without.
           </p>
         )}
 
@@ -548,7 +598,7 @@ export async function getStaticProps(): Promise<{ props: Props }> {
   // chain reaches src/content/photography-colors.json and the 2.8 MB
   // metadata.json, so the import is put somewhere it provably cannot follow the
   // page into the browser instead of trusting the transform to notice.
-  const { imagesBySpectrum, entryFor } = await import("src/lib/photographyColors");
+  const { imagesBySpectrum, primaryFamily } = await import("src/lib/photographyColors");
   const { COLOR_BUCKETS } = await import("src/lib/colorBuckets.mjs");
 
   const images = imagesBySpectrum();
@@ -570,11 +620,14 @@ export async function getStaticProps(): Promise<{ props: Props }> {
   let achromatic = 0;
 
   images.forEach((image, index) => {
-    const entry = entryFor(image.src);
-    const primary = entry?.buckets[0];
-    const band =
-      primary && entry?.hue !== null && swatch.get(primary)?.neutral === false ? primary : null;
-    if (!band) {
+    // `primaryFamily` and not `buckets[0]`, and not a second copy of the rule
+    // either: this has to be the exact function `imagesBySpectrum` banded the
+    // strip with. The two disagreed once — the marks read the score-ordered
+    // `buckets[0]` while the ribbon ordered by strength — and the result was a
+    // scale whose labels pointed at the wrong stretches entirely, blue claiming
+    // to start at photo 650 when its band began at 3,088.
+    const band = primaryFamily(image.src);
+    if (swatch.get(band)?.neutral !== false) {
       achromatic += 1;
       return;
     }

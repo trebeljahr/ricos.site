@@ -238,13 +238,9 @@ export default function Photography({ trips, seo }: Props) {
             not a heading for them. One short line, in the gap the header
             already leaves, so the grid below still starts near the top. */}
         <p className="not-prose mb-para text-base text-gray-600 dark:text-gray-300">
-          Browse the photos by colour instead of by trip —{" "}
-          <Link href="/photography/colors" className="text-accent underline">
-            twelve colour families
-          </Link>
-          , or{" "}
+          Or see them{" "}
           <Link href="/photography/spectrum" className="text-accent underline">
-            one continuous hue sweep
+            sorted by colour instead of by trip
           </Link>
           .
         </p>

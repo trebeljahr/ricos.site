@@ -5,7 +5,7 @@
  * src/scripts/photographyColors.ts) and committed, so nothing here decodes
  * an image or measures a colour — this module turns the baked numbers into
  * the three shapes the pages need: counts for the wheel, an ordered list of
- * photos per family for /photography/colors/<id>, and one hue-ordered list
+ * photos per family, and one colour-ordered list
  * for /photography/spectrum.
  *
  * Everything is derived once at module scope, because the JSON cannot change
@@ -60,8 +60,6 @@ import {
   CHROMATIC_FAMILIES,
   COLOR_BUCKETS,
   type ColorBucketId,
-  FAMILY_HUE,
-  hueDistance,
   isColorBucketId,
 } from "src/lib/colorBuckets.mjs";
 import { getLocalMetadata } from "src/lib/imageMetadata";
@@ -77,8 +75,6 @@ export type PhotoColorEntry = {
   lightness: number;
   chroma: number;
 };
-
-export type PhotoColorCounts = Record<ColorBucketId, number>;
 
 /** The baked file, widened from the literal type `resolveJsonModule` infers
  *  for 4,900 keys. The cast is the one place that trusts the bake script's
@@ -160,81 +156,58 @@ function imageFor(src: string): ImageProps {
   return { src, width: meta.width, height: meta.height };
 }
 
-let counts: PhotoColorCounts | null = null;
+const NEUTRAL_IDS = new Set<string>(COLOR_BUCKETS.filter((b) => b.neutral).map((b) => b.id));
 
-/** How many photos list each family. A photo listing `["green", "blue"]`
- *  counts under both, matching the filter, which matches on membership
- *  rather than on the primary family — so these totals sum to more than the
- *  4,359 photos these pages show. Every family starts at zero, so a caller
- *  never reads undefined for a swatch nothing landed in. */
-export function colorBucketCounts(): PhotoColorCounts {
-  if (counts) return counts;
-  const tally = Object.fromEntries(COLOR_BUCKETS.map((b) => [b.id, 0])) as PhotoColorCounts;
-  for (const src of keys()) {
-    // A duplicated id in a hand-edited JSON must not inflate a bucket past
-    // the number of photos actually in it.
-    for (const id of new Set(entries[src].buckets)) {
-      if (isColorBucketId(id) && id in tally) tally[id] += 1;
+const primaryCache = new Map<string, ColorBucketId>();
+
+/** The one family a photo belongs to: the chromatic family occupying most of
+ *  the frame, or its neutral band when no colour does.
+ *
+ *  WHY THIS IS NOT `buckets[0]`
+ *  ----------------------------
+ *  `buckets` is ordered by the prior-normalised score, which answers "is this
+ *  photo unusually teal *for this archive*". That is the right question for
+ *  deciding membership and the wrong one for deciding what a photo is, because
+ *  the prior deliberately amplifies rare colours. Measured over the 1,708
+ *  photos carrying more than one family, the score-first family is not the one
+ *  covering most of the frame in 43% of cases — a street mural that is 24%
+ *  blue and 16% teal was filed under teal, because teal is rare here and blue
+ *  is not.
+ *
+ *  That is what made the pages look wrong. The teal page opened on genuinely
+ *  turquoise water and then, a few rows down, showed a jungle stream, a
+ *  portrait, a mural and a butterfly together — four photos with nothing
+ *  visible in common except that each was a little bit teal and teal was
+ *  scarce enough to win the argument.
+ *
+ *  Strength answers the question a reader is actually asking, so it decides
+ *  the family. The prior still does its job: it is what got a genuinely
+ *  turquoise photo into the teal family in the first place, against an archive
+ *  where gold and green are everywhere. */
+export function primaryFamily(src: string): ColorBucketId {
+  const cached = primaryCache.get(src);
+  if (cached) return cached;
+  const entry = entries[src];
+  let best: ColorBucketId | null = null;
+  let bestStrength = -1;
+  for (const id of new Set(entry.buckets)) {
+    if (!isColorBucketId(id) || NEUTRAL_IDS.has(id)) continue;
+    const strength = entry.strength[id] ?? 0;
+    // Ring order breaks a tie, so the same row always resolves the same way.
+    if (strength > bestStrength) {
+      bestStrength = strength;
+      best = id;
     }
   }
-  counts = tally;
-  return counts;
-}
-
-const bucketIndex = new Map<ColorBucketId, ImageProps[]>();
-
-/** Photos listing `id`, the ones carrying most of that colour first.
- *
- *  Ties break on the key so the sequence is stable across renders: the
- *  lightbox walks this same array with prev/next and must not disagree with
- *  the grid it was opened from. Strength is the right order here and the
- *  prior-normalised score is not — the score decided membership and is a
- *  monotone transform inside one family, so it cannot rank at all. */
-export function imagesForBucket(id: ColorBucketId): ImageProps[] {
-  const cached = bucketIndex.get(id);
-  if (cached) return cached;
-  const centre = FAMILY_HUE[id];
-  const images = keys()
-    .filter((src) => entries[src].buckets.includes(id))
-    .sort((a, b) => {
-      const byStrength = (entries[b].strength[id] ?? 0) - (entries[a].strength[id] ?? 0);
-      if (byStrength) return byStrength;
-      // Strength alone cannot order these pages. It is baked at three
-      // decimals, and across 1,183 blue photos that left 49% of adjacent
-      // pairs holding the *identical* value — 64% in red, where strengths
-      // are small and round together hardest. Every one of those ties used
-      // to fall through to the key compare below, which is alphabetical by
-      // path, so past the first screen the page stopped being sorted by
-      // colour at all and became sorted by trip name: a run of guadeloupe,
-      // then a run of dominica. The colour ordering was real only until the
-      // first tie, which arrived within a few rows.
-      //
-      // So ties break on the colour the photo actually carries, finest
-      // signal first. Chroma leads: given two photos with the same amount
-      // of blue, the more saturated one is the one a reader means. Hue
-      // distance follows, because a photo sitting at the family's centre is
-      // more that colour than one at its edge.
-      const byChroma = entries[b].chroma - entries[a].chroma;
-      if (byChroma) return byChroma;
-      if (centre !== undefined) {
-        const ha = entries[a].hue;
-        const hb = entries[b].hue;
-        // A photo with no hue has no distance; it sorts after ones that do.
-        if (ha !== null && hb !== null) {
-          const byHue = hueDistance(ha, centre) - hueDistance(hb, centre);
-          if (byHue) return byHue;
-        } else if (ha !== hb) {
-          return ha === null ? 1 : -1;
-        }
-      }
-      // Last resort, and now genuinely a last resort: stable across renders
-      // because the lightbox walks this same array and must not disagree
-      // with the grid it was opened from.
-      return a.localeCompare(b);
-    })
-    .map(imageFor);
-  bucketIndex.set(id, images);
-  return images;
+  // No colour at all: the photo lives in whichever neutral band it was given.
+  const resolved =
+    best ??
+    (entry.buckets.find((id) => isColorBucketId(id) && NEUTRAL_IDS.has(id)) as
+      | ColorBucketId
+      | undefined) ??
+    "grey";
+  primaryCache.set(src, resolved);
+  return resolved;
 }
 
 let hueOrder: ImageProps[] | null = null;
@@ -279,11 +252,7 @@ export function imagesBySpectrum(): ImageProps[] {
   if (hueOrder) return hueOrder;
   const live = keys();
 
-  const bandOf = (src: string) => {
-    const primary = entries[src].buckets[0];
-    const index = CHROMATIC_FAMILIES.indexOf(primary as ColorBucketId);
-    return index;
-  };
+  const bandOf = (src: string) => CHROMATIC_FAMILIES.indexOf(primaryFamily(src));
 
   const chromatic = live
     .filter((src) => bandOf(src) >= 0 && entries[src].hue !== null)
@@ -316,32 +285,6 @@ export function imagesBySpectrum(): ImageProps[] {
 
   hueOrder = [...chromatic, ...achromatic].map(imageFor);
   return hueOrder;
-}
-
-const tripIndex = new Map<ColorBucketId, { trip: string; count: number }[]>();
-
-/** Which trips a family comes from, most first — the answer to "where in
- *  the world is this colour", which is the question the colour pages exist
- *  to make askable. Ties break on the trip name so the list is stable.
- *
- *  Derived from the key rather than from any trip metadata, because the key
- *  is what the bake script and the gallery routes already agree on:
- *  "assets/photography/<trip>/<file>". */
-export function tripsForBucket(id: ColorBucketId): { trip: string; count: number }[] {
-  const cached = tripIndex.get(id);
-  if (cached) return cached;
-  const tally = new Map<string, number>();
-  for (const src of keys()) {
-    if (!entries[src].buckets.includes(id)) continue;
-    const trip = src.split("/")[2];
-    if (!trip) continue;
-    tally.set(trip, (tally.get(trip) ?? 0) + 1);
-  }
-  const rows = [...tally]
-    .map(([trip, count]) => ({ trip, count }))
-    .sort((a, b) => b.count - a.count || a.trip.localeCompare(b.trip));
-  tripIndex.set(id, rows);
-  return rows;
 }
 
 /** The baked row for one photo, or null when it was never classified — a

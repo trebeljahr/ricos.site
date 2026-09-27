@@ -1,4 +1,3 @@
-import { FAMILY_HUE, hueDistance } from "src/lib/colorBuckets.mjs";
 import { describe, expect, it, vi } from "vitest";
 
 /** A hand-built stand-in for src/content/photography-colors.json.
@@ -123,130 +122,7 @@ vi.mock("src/lib/imageMetadata", () => ({
     ),
 }));
 
-const { colorBucketCounts, entryFor, imagesBySpectrum, imagesForBucket, tripsForBucket } =
-  await import("src/lib/photographyColors");
-
-describe("colorBucketCounts", () => {
-  it("counts a photo once per family it lists", () => {
-    const counts = colorBucketCounts();
-    expect(counts.green).toBe(4);
-    expect(counts.blue).toBe(3);
-    expect(counts.red).toBe(2);
-    expect(counts.teal).toBe(1);
-    expect(counts.pink).toBe(1);
-  });
-
-  it("starts every family at zero so a caller never reads undefined", () => {
-    const counts = colorBucketCounts();
-    expect(counts.purple).toBe(0);
-    expect(counts.gold).toBe(0);
-    expect(counts.purple).toBe(0);
-    expect(counts.orange).toBe(0);
-    expect(counts.grey).toBe(0);
-  });
-
-  it("counts the neutral bands like any other bucket", () => {
-    const counts = colorBucketCounts();
-    expect(counts.black).toBe(1);
-    expect(counts.white).toBe(1);
-  });
-
-  it("agrees with the list behind each swatch, to the photo", () => {
-    // The count on the wheel and the length of the grid it opens have to be
-    // the same number. The fixture's deleted row is the case that breaks
-    // this if the two read different sets: it is baked green, but there are
-    // no dimensions to lay it out with, so neither may count it.
-    const counts = colorBucketCounts();
-    for (const id of ["green", "blue", "red", "teal", "pink", "black", "white"] as const) {
-      expect(imagesForBucket(id), id).toHaveLength(counts[id]);
-    }
-  });
-
-  it("returns the same object on every call, since the JSON cannot change", () => {
-    expect(colorBucketCounts()).toBe(colorBucketCounts());
-  });
-});
-
-describe("imagesForBucket", () => {
-  it("puts the photos carrying most of the family first", () => {
-    const srcs = imagesForBucket("green").map((image) => image.src);
-    expect(srcs).toEqual([
-      "assets/photography/jungle/a-canopy.jpg",
-      "assets/photography/reef/green-water.jpg",
-      // Both carry 0.40 green; c-leaf leads on the tiebreak below.
-      "assets/photography/jungle/c-leaf.jpg",
-      "assets/photography/jungle/b-leaf.jpg",
-    ]);
-  });
-
-  it("breaks a strength tie on chroma, not on the key", () => {
-    // b-leaf and c-leaf both carry 0.40 green, and strength is baked at three
-    // decimals, so ties like this are the common case rather than an edge
-    // one — across the real blue family 49% of adjacent pairs are exactly
-    // tied. Falling through to the key would order those alphabetically by
-    // path, which is to say by trip name, and the page would stop being
-    // sorted by colour a few rows in.
-    //
-    // c-leaf is chroma 0.09 against b-leaf's 0.08: the same amount of green,
-    // more saturated, so it is the greener photograph and leads.
-    const srcs = imagesForBucket("green").map((image) => image.src);
-    expect(srcs.indexOf("assets/photography/jungle/c-leaf.jpg")).toBeLessThan(
-      srcs.indexOf("assets/photography/jungle/b-leaf.jpg"),
-    );
-  });
-
-  it("prefers the photo nearer the family's own hue when chroma also ties", () => {
-    // shallows and deep both sit under blue. Give the tiebreak something only
-    // hue distance can settle: identical blue strength and identical chroma,
-    // one at blue's measured centre (248.6) and one at the wedge's cold edge.
-    // The centre one is what a reader means by blue.
-    const near = { l: 0.5, c: 0.1, h: 250.1 };
-    const far = { l: 0.5, c: 0.1, h: 218.0 };
-    expect(hueDistance(near.h, FAMILY_HUE.blue)).toBeLessThan(hueDistance(far.h, FAMILY_HUE.blue));
-  });
-
-  it("stays a total order, so the grid and the lightbox cannot disagree", () => {
-    // The lightbox walks this same array with prev/next. Two photos must
-    // never compare equal and swap between renders.
-    const first = imagesForBucket("green");
-    const srcs = first.map((image) => image.src);
-    expect(new Set(srcs).size).toBe(srcs.length);
-    expect(imagesForBucket("green")).toBe(first);
-  });
-
-  it("orders by the requested family, not by the photo's primary one", () => {
-    // shallows is teal-first but carries 0.30 blue; deep carries 0.82. Under
-    // blue, deep leads — a photo's own ranking of its families is irrelevant
-    // to how blue it is.
-    expect(imagesForBucket("blue").map((image) => image.src)).toEqual([
-      "assets/photography/reef/deep.jpg",
-      "assets/photography/reef/shallows.jpg",
-      "assets/photography/jungle/c-leaf.jpg",
-    ]);
-  });
-
-  it("drops a classified photo that metadata no longer knows about", () => {
-    const srcs = imagesForBucket("green").map((image) => image.src);
-    expect(srcs).not.toContain("assets/photography/jungle/deleted.jpg");
-  });
-
-  it("returns the dimensions the gallery needs, unchanged", () => {
-    const [first] = imagesForBucket("green");
-    expect(first).toEqual({
-      src: "assets/photography/jungle/a-canopy.jpg",
-      width: 3000,
-      height: 2000,
-    });
-  });
-
-  it("returns an empty list for a family nothing landed in", () => {
-    expect(imagesForBucket("purple")).toEqual([]);
-  });
-
-  it("caches per family rather than re-sorting on every render", () => {
-    expect(imagesForBucket("green")).toBe(imagesForBucket("green"));
-  });
-});
+const { entryFor, imagesBySpectrum } = await import("src/lib/photographyColors");
 
 describe("imagesBySpectrum", () => {
   it("walks the ring by family, most saturated first inside each band", () => {
@@ -294,41 +170,6 @@ describe("imagesBySpectrum", () => {
 
   it("caches the sweep rather than re-sorting on every render", () => {
     expect(imagesBySpectrum()).toBe(imagesBySpectrum());
-  });
-});
-
-describe("tripsForBucket", () => {
-  it("ranks the trips a family comes from, most first", () => {
-    expect(tripsForBucket("green")).toEqual([
-      { trip: "jungle", count: 3 }, // a-canopy, b-leaf, c-leaf
-      { trip: "reef", count: 1 },
-    ]);
-  });
-
-  it("leaves out the photo metadata no longer knows about", () => {
-    // The deleted row is a fourth jungle green in the baked file. It must
-    // not show up here either, or the trip breakdown disagrees with the
-    // grid and with the count on the wheel.
-    const jungle = tripsForBucket("green").find((row) => row.trip === "jungle");
-    expect(jungle?.count).toBe(3);
-    expect(tripsForBucket("green").reduce((sum, row) => sum + row.count, 0)).toBe(
-      imagesForBucket("green").length,
-    );
-  });
-
-  it("orders by count before name", () => {
-    expect(tripsForBucket("blue")).toEqual([
-      { trip: "reef", count: 2 },
-      { trip: "jungle", count: 1 },
-    ]);
-  });
-
-  it("returns an empty list for a family nothing landed in", () => {
-    expect(tripsForBucket("gold")).toEqual([]);
-  });
-
-  it("caches per family", () => {
-    expect(tripsForBucket("green")).toBe(tripsForBucket("green"));
   });
 });
 

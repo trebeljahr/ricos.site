@@ -17,7 +17,7 @@
  *
  * Shared by the photography colour pages (the wheel's centre number, the
  * family counts, the spectrum copy and its per-tile labels), which is why it
- * sits in src/lib/utils rather than next to any one of them: ColorWheel is a
+ * sits in src/lib/utils rather than next to any one of them: the spectrum is a
  * client component and must not import from src/lib/photographyColors, whose
  * module scope reads the 2.8 MB metadata.json.
  */

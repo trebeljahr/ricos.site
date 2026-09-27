@@ -5,7 +5,7 @@
 //     at 64px, histograms its pixels, bakes buckets/strength/hue into
 //     src/content/photography-colors.json)
 //   - src/lib/photographyColors.ts (runtime — counts, filters and orders
-//     using the same ids, and feeds /photography/colors and
+//     using the same ids, and feeds
 //     /photography/spectrum)
 //
 // Lives as `.mjs` so the tsx bake script and Next's bundler both import it
@@ -401,39 +401,6 @@ const HUE_FAMILIES = [
 /** Chromatic families, in the order used for deterministic tie-breaks.
  *  @type {readonly ColorBucketId[]} */
 export const CHROMATIC_FAMILIES = COLOR_BUCKETS.filter((b) => !b.neutral).map((b) => b.id);
-
-/** The hue each family actually sits at in this archive: the chroma-weighted
- *  circular mean of every pixel that voted for it, measured over the
- *  1,117-photo sample. These are the same angles the swatches above were
- *  derived from, exported because ranking needs them too.
- *
- *  Membership says a photo belongs under Blue; it does not say how blue.
- *  Distance from these angles does, and it is what separates a photo that is
- *  squarely the family's colour from one sitting at the family's edge — a
- *  pale cyan at 218 degrees is inside the blue wedge and half a wedge away
- *  from what a reader means by blue. `strength` cannot express that, because
- *  it counts area and not which blue.
- *
- *  @type {Readonly<Record<string, number>>} */
-export const FAMILY_HUE = {
-  red: 22.0,
-  orange: 51.1,
-  gold: 83.5,
-  green: 128.9,
-  teal: 196.3,
-  blue: 248.6,
-  purple: 291.0,
-  pink: 347.8,
-};
-
-/** Shortest angular distance between two hues, in degrees (0-180).
- *  Goes the short way round the circle, so red at 2 degrees is 4 degrees
- *  from red at 358, not 356.
- *  @param {number} a @param {number} b @returns {number} */
-export function hueDistance(a, b) {
-  const d = Math.abs((((a - b) % 360) + 360) % 360);
-  return d > 180 ? 360 - d : d;
-}
 
 /**
  * Classify one OKLCh sample into a chromatic family, or null when it's

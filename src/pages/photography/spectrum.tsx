@@ -24,8 +24,9 @@ import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
  * hue wedge starts, so a reader can jump to a region of the colour circle.
  */
 type SpectrumMark = {
-  /** The eight hue wedges use their family id; the neutral tail uses "none". */
-  key: ColorBucketId | "none";
+  /** The family this stretch of the strip holds. Every band is a real family
+   *  now, neutrals included, so there is no synthetic key. */
+  key: ColorBucketId;
   label: string;
   /** CSS background for this stretch of the scale strip — a family swatch, or
    *  a black-to-white ramp for the tail, which is ordered by lightness. */
@@ -131,10 +132,6 @@ const clampRatio = (width: number, height: number) =>
 /** Trip folder out of a metadata key, "assets/photography/<trip>/<file>". */
 const tripOf = (src: string) => turnKebabIntoTitleCase(src.split("/")[2] ?? "");
 
-const prefersReducedMotion = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
-
 /**
  * /photography/spectrum — the whole archive as one continuous ribbon, ordered
  * by the family each photo belongs to, walking the colour ring, and by hue
@@ -233,9 +230,15 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
   const { start, end } = window_;
 
   const ribbonRef = useRef<HTMLDivElement>(null);
-  const topSentinelRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef(false);
+  /** Set by `seek`, consumed by the layout effect that does the scrolling. */
+  const pendingSeek = useRef(false);
+  /** True from the moment a jump is requested until its scroll has landed, so
+   *  the page's own movement cannot be mistaken for the reader's. */
+  const seeking = useRef(false);
+  const lastY = useRef(0);
+  const scrollingUp = useRef(false);
 
   const hasMore = end < total;
   const hasPrevious = start > 0;
@@ -260,7 +263,13 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
   }, [holdLoading, total]);
 
   const loadPrevious = useCallback(() => {
-    if (loadingRef.current) return;
+    if (loadingRef.current || seeking.current) return;
+    // Only ever in response to the reader scrolling up. Without this the page
+    // loads backwards whenever the top of the ribbon happens to be near the
+    // viewport, which is exactly where a jump leaves it — so every jump
+    // immediately pulled in the chunk before its target and shoved the reader
+    // down by its height.
+    if (!scrollingUp.current) return;
     holdLoading();
     // Recorded here rather than in the updater, which React may run twice.
     prependAnchor.current = document.documentElement.scrollHeight;
@@ -281,21 +290,87 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
    * browser paints. In an effect the reader sees one frame at the wrong offset,
    * which reads as a jolt at precisely the moment they are scrolling.
    *
-   * `start` is in the deps although the body never reads it, and the linter is
-   * wrong to call it redundant: it is the signal that the prepend has been
-   * committed. The effect has to run once per window move, and the only thing
-   * that changes between the render that schedules a prepend and the render
-   * that finishes it is `start`. Drop it and the correction runs on the first
+   * `window_` is in the deps although the body never reads it, and the linter
+   * is wrong to call it redundant: it is the signal that the window move has
+   * been committed. The effect has to run once per move, and the window object
+   * is the only thing that changes between the render that schedules one and
+   * the render that finishes it. Drop it and the correction runs on the first
    * commit only, so every upward load after the first one jolts.
    */
-  // biome-ignore lint/correctness/useExhaustiveDependencies: start is the commit signal, see above
+  // biome-ignore lint/correctness/useExhaustiveDependencies: window_ is the commit signal, see above
   useLayoutEffect(() => {
+    // A jump scrolls here, after the new window is in the document, and never
+    // in `seek` itself. Scrolling from the event handler aimed at the ribbon's
+    // old geometry — the rows it was measuring were about to be replaced — so
+    // the page started moving towards a position that stopped existing one
+    // render later.
+    if (pendingSeek.current) {
+      pendingSeek.current = false;
+      prependAnchor.current = null;
+      ribbonRef.current?.scrollIntoView({ behavior: "instant", block: "start" });
+      // The reader is now at the top of the new window and has not scrolled.
+      lastY.current = window.scrollY;
+      scrollingUp.current = false;
+      // Released immediately, not on the next animation frame. The frame was
+      // the tidier-looking way to wait out the scroll event this jump is about
+      // to emit, and it was wrong: requestAnimationFrame does not run while a
+      // tab is not being composited, so a jump made in a background tab left
+      // this flag stuck on and killed upward loading for the rest of the
+      // visit. Nothing needs the delay anyway — the scroll this jump causes
+      // arrives with `window.scrollY` already equal to `lastY`, and the
+      // handler ignores an event that reports no movement.
+      seeking.current = false;
+      return;
+    }
+
     const before = prependAnchor.current;
     if (before === null) return;
     prependAnchor.current = null;
     const delta = document.documentElement.scrollHeight - before;
     if (delta !== 0) window.scrollBy(0, delta);
-  }, [start]);
+  }, [window_]);
+
+  /**
+   * Scroll direction, and the upward load.
+   *
+   * This is a scroll listener rather than a second IntersectionObserver, and
+   * the reason is a property of the API rather than a preference:
+   * IntersectionObserver reports *crossings*, not states. A sentinel at the top
+   * of the ribbon is already intersecting the moment a jump lands, so it
+   * reports once, and if that report is ignored — which it must be, since the
+   * reader has not asked for anything — it never reports again while it stays
+   * on screen. Scrolling up from a jump would then load nothing at all.
+   *
+   * Reading position on scroll has neither problem: it is a state, so it is
+   * still true the second time it is asked.
+   */
+  useEffect(() => {
+    lastY.current = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      // The page's own scrolling, during a jump, is not the reader moving.
+      if (seeking.current) {
+        lastY.current = y;
+        return;
+      }
+      if (y === lastY.current) return;
+      scrollingUp.current = y < lastY.current;
+      lastY.current = y;
+      if (!scrollingUp.current || !hasPrevious) return;
+      // Measured only while scrolling up and only while there is something
+      // above to load, so the layout read costs nothing on the common path.
+      // No requestAnimationFrame throttle around it: rAF does not run while a
+      // tab is not being composited, which would leave the upward load dead in
+      // exactly the situations that are hardest to notice. `loadingRef`
+      // already stops a burst of events from loading more than one chunk.
+      const top = ribbonRef.current?.getBoundingClientRect().top ?? Number.NEGATIVE_INFINITY;
+      // Within a screen of the ribbon's first row, which is the only place an
+      // upward load can be what the reader wants.
+      if (top > -400) loadPrevious();
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [loadPrevious, hasPrevious]);
 
   /**
    * Jump to a region of the circle.
@@ -311,12 +386,10 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
    */
   const seek = useCallback(
     (index: number) => {
+      seeking.current = true;
+      pendingSeek.current = true;
       prependAnchor.current = null;
       setWindow({ start: index, end: Math.min(total, index + CHUNK) });
-      ribbonRef.current?.scrollIntoView({
-        behavior: prefersReducedMotion() ? "instant" : "smooth",
-        block: "start",
-      });
     },
     [total],
   );
@@ -363,29 +436,11 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
     return () => observer.disconnect();
   }, [loadMore, hasMore]);
 
-  // The upward twin. A much smaller rootMargin than the downward one on
-  // purpose: 400px above the viewport would fire the moment a jump lands,
-  // before the reader has moved at all, and quietly undo the jump by loading
-  // the chunk they deliberately skipped.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: hasPrevious remounts the sentinel, as above
-  useEffect(() => {
-    const sentinel = topSentinelRef.current;
-    if (!sentinel) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) loadPrevious();
-      },
-      { rootMargin: "100px" },
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [loadPrevious, hasPrevious]);
-
   const visible = useMemo(() => tiles.slice(start, end), [tiles, start, end]);
 
   /** Mark whose stretch of the sweep the window starts in. */
   const activeKey = useMemo(() => {
-    let current: SpectrumMark["key"] = marks[0]?.key ?? "none";
+    let current: SpectrumMark["key"] | null = marks[0]?.key ?? null;
     for (const mark of marks) {
       if (mark.index <= start) current = mark.key;
     }
@@ -525,10 +580,6 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
         {/* scroll-mt-24 so a jump clears the sticky navbar, the same clearance
             the anchored tag sections on /categories use. */}
         <div ref={ribbonRef} className="not-prose scroll-mt-24">
-          {/* The upward sentinel. Rendered only while there is something above
-              to load, so reaching the true start of the sweep stops the
-              observer rather than leaving it firing against a clamped window. */}
-          {hasPrevious && <div ref={topSentinelRef} className="h-px" aria-hidden />}
           {/* `start` so the list numbering matches the position in the sweep
               after a jump, which is what the tile labels announce. */}
           <ol
@@ -627,20 +678,24 @@ export async function getStaticProps(): Promise<{ props: Props }> {
     // scale whose labels pointed at the wrong stretches entirely, blue claiming
     // to start at photo 650 when its band began at 3,088.
     const band = primaryFamily(image.src);
-    if (swatch.get(band)?.neutral !== false) {
-      achromatic += 1;
-      return;
-    }
+    if (swatch.get(band)?.neutral !== false) achromatic += 1;
     counts.set(band, (counts.get(band) ?? 0) + 1);
     if (!firstIndex.has(band)) firstIndex.set(band, index);
   });
 
-  // COLOR_BUCKETS order is already the walk around the circle and is the order
-  // the bands are laid out in, so filtering it to the families that actually
-  // occur puts the marks in sweep order without a second sort. Each band is one
-  // contiguous run now, which the hue-angle version could not guarantee — red
-  // owns both ends of the circle, so it used to appear at both ends of the
-  // strip under a single label.
+  // Sorted by where each band actually starts rather than by COLOR_BUCKETS
+  // order, because the two differ at the tail: the ring lists white, grey,
+  // black, while the tail is laid out by lightness, so it runs black, grey,
+  // white. Sorting on `index` lets the scale describe the strip instead of
+  // describing the ring.
+  //
+  // Black, grey and white are ordinary marks now. They used to be lumped into
+  // one "No hue" chip, which was fair when it held the 135 photos with no
+  // measurable hue at all, and stopped being fair once MIN_VISIBLE_STRENGTH
+  // started filing photos there for having too little colour to name rather
+  // than none: 725 photos is too many to hide behind a label that says they
+  // are all the same, and a pale hazy ridgeline is a thing a reader might
+  // actually be looking for.
   const marks: SpectrumMark[] = COLOR_BUCKETS.filter((bucket) => firstIndex.has(bucket.id))
     .map((bucket) => ({
       key: bucket.id,
@@ -650,19 +705,6 @@ export async function getStaticProps(): Promise<{ props: Props }> {
       count: counts.get(bucket.id) ?? 0,
     }))
     .sort((a, b) => a.index - b.index);
-
-  if (achromatic > 0) {
-    marks.push({
-      key: "none",
-      label: "No hue",
-      // The tail is ordered by lightness rather than angle, and the ramp says
-      // so. Built from the same two neutral swatches the family pages use, so
-      // the two pages cannot disagree about what black and white look like.
-      fill: `linear-gradient(to right, ${swatch.get("black")?.swatch}, ${swatch.get("white")?.swatch})`,
-      index: images.length - achromatic,
-      count: achromatic,
-    });
-  }
 
   return {
     props: { images, marks, chromatic: images.length - achromatic, achromatic },

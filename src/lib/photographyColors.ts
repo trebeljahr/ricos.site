@@ -30,14 +30,18 @@
  * second copy of a photo under another prefix, so every figure here is over
  * the 4,359 distinct photographs a reader can actually reach.
  *
- *   gold  1,549 (35.5%)   green 1,520 (34.9%)   blue  1,183 (27.1%)
- *   orange  986 (22.6%)   red     491 (11.3%)
- *   grey    195  (4.5%)   purple  140  (3.2%)  teal    128  (2.9%)
- *   pink     89  (2.0%)   black    54  (1.2%)  white    29  (0.7%)
- * A photo can list up to three families plus a neutral band, so these sum
- * past 100% — to 6,364, about 1.5 families per photo: 2,581 photos list one
- * family, 1,558 two, 213 three and 7 get a neutral band on top of three.
- * 135 photos (3.1%) have no hue at all and live only in a neutral band.
+ * Every photo is filed in exactly one of them, so these sum to 4,359:
+ *
+ *   gold  1,105 (25.4%)   green 1,028 (23.6%)   blue    933 (21.4%)
+ *   grey    569 (13.1%)   orange  363  (8.3%)   black   112  (2.6%)
+ *   red     107  (2.5%)   purple   58  (1.3%)   white    44  (1.0%)
+ *   teal     24  (0.6%)   pink     16  (0.4%)
+ *
+ * Grey being the fourth largest is not a fault, it is the archive: the median
+ * photo here has a mean OKLCh chroma of 0.046 against a CHROMA_FLOOR of 0.045,
+ * so a large minority of it genuinely has no colour worth naming. See
+ * MIN_VISIBLE_STRENGTH for the bar, and for what filing those under a colour
+ * looked like before there was one.
  *
  * All eight chromatic families are ones a viewer would agree with — the
  * strongest greens are backlit leaves and ferns, the strongest blues are
@@ -51,7 +55,7 @@
  * own, and warm interior light is dark and dull by that measure. It has been
  * removed; see WHY THERE IS NO EARTH FAMILY in src/lib/colorBuckets.mjs.
  *
- * Purple is the one left to watch, at 140 photos: lightning and asters at the
+ * Purple is the one left to watch, at 58 photos: lightning and asters at the
  * top, then a fish-market counter that is really blue-grey.
  */
 import type { ImageProps } from "src/@types";
@@ -61,6 +65,7 @@ import {
   COLOR_BUCKETS,
   type ColorBucketId,
   isColorBucketId,
+  neutralForLightness,
 } from "src/lib/colorBuckets.mjs";
 import { getLocalMetadata } from "src/lib/imageMetadata";
 
@@ -158,6 +163,28 @@ function imageFor(src: string): ImageProps {
 
 const NEUTRAL_IDS = new Set<string>(COLOR_BUCKETS.filter((b) => b.neutral).map((b) => b.id));
 
+/** Share of the frame a colour has to occupy before the photo is filed under
+ *  it rather than under white, grey or black.
+ *
+ *  Membership is decided against the corpus — "is this unusually gold *here*"
+ *  — and that question has no floor in it, which is deliberate and is what
+ *  lets a rare colour be findable at all. But it means a photo can be the most
+ *  gold thing in a grey frame and still be, to look at, a grey frame. The gold
+ *  band's weakest members carried 0.008 to 0.013 gold at a mean chroma of
+ *  0.015: hazy ridgelines, a white corridor, a pale river. Filed under Gold
+ *  they were plainly wrong, and they were wrong in the way that makes a reader
+ *  distrust the whole page.
+ *
+ *  0.06 is the bar: six per cent of the frame at full chroma weight, or twice
+ *  that at the half weight a just-visible tint earns (see CHROMA_FULL_WEIGHT).
+ *  Below it the photo is filed by its lightness instead, which is the honest
+ *  answer — it is a light picture, or a dark one, not a coloured one. It moves
+ *  590 photos, 14% of the archive, out of the colour bands.
+ *
+ *  This is a floor on *visibility*, not a second opinion about hue. A photo
+ *  above the bar keeps whatever family the vote gave it. */
+const MIN_VISIBLE_STRENGTH = 0.06;
+
 const primaryCache = new Map<string, ColorBucketId>();
 
 /** The one family a photo belongs to: the chromatic family occupying most of
@@ -199,13 +226,15 @@ export function primaryFamily(src: string): ColorBucketId {
       best = id;
     }
   }
-  // No colour at all: the photo lives in whichever neutral band it was given.
+  // Either no colour at all, or none of it visible enough to name the photo
+  // after. Both end up in a lightness band: the one the bake already assigned
+  // if there is one, otherwise the band this photo's mean lightness falls in.
   const resolved =
-    best ??
-    (entry.buckets.find((id) => isColorBucketId(id) && NEUTRAL_IDS.has(id)) as
-      | ColorBucketId
-      | undefined) ??
-    "grey";
+    best !== null && bestStrength >= MIN_VISIBLE_STRENGTH
+      ? best
+      : ((entry.buckets.find((id) => isColorBucketId(id) && NEUTRAL_IDS.has(id)) as
+          | ColorBucketId
+          | undefined) ?? neutralForLightness(entry.lightness));
   primaryCache.set(src, resolved);
   return resolved;
 }

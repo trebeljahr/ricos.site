@@ -406,11 +406,17 @@ figure[data-rehype-pretty-code-figure] {
   }
 }
 
+/*
+ * The filename tab and the <pre> under it are one object, not a label sitting
+ * on a code block: same border colour as the block, the same outer radius as
+ * a callout, and a -1px bottom margin that folds the tab's bottom edge into
+ * the pre's top edge so there is no seam where they meet.
+ */
 .rehype-code-title {
   margin: var(--spacing-group) 0 -1px 0;
   width: fit-content;
-  background: #e8e8e8;
-  color: #000;
+  background: var(--color-lightGreyBlue);
+  color: var(--color-grey);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New,
     monospace;
   padding: .25rem 1rem;
@@ -418,21 +424,30 @@ figure[data-rehype-pretty-code-figure] {
   line-height: 1.5rem;
   position: relative;
   z-index: 2;
-  border: 1px solid rgb(107 114 128);
-
-  border-radius: 4px 4px 0 0;
-  border-top: 4px solid #5aa6f2;
+  border: 1px solid var(--color-gray-500);
   border-bottom: none;
+  border-top: 4px solid var(--color-accent);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .dark .rehype-code-title {
-  background: #202224;
-  color: #bac2d0;
+  background: var(--color-gray-800);
+  color: var(--color-lightGreyBlue);
+}
+
+figure[data-rehype-pretty-code-figure] > pre {
+  border-radius: var(--radius-lg);
+  /* A reserved strip for the copy button (src/components/CodeCopyButton.tsx),
+     so it never covers the first line however narrow the block gets. */
+  padding-top: 2.25rem;
 }
 
 .rehype-code-title + figure {
   margin-top: 0;
 }
+
+/* Square where the tab sits, so the left edge runs straight from the tab's
+   top corner down the side of the block. */
 .rehype-code-title + figure > pre {
   border-top-left-radius: 0;
 }

@@ -1,5 +1,6 @@
-import { FaCheck, FaClipboard } from "@components/Icons";
-import { type DetailedHTMLProps, type HTMLAttributes, useRef, useState } from "react";
+import { FaClipboard } from "@components/Icons";
+import clsx from "clsx";
+import { type DetailedHTMLProps, type HTMLAttributes, useEffect, useRef, useState } from "react";
 
 export function CodeWithCopyButton({
   children,
@@ -39,10 +40,13 @@ export function CodeWithCopyButton({
   };
 
   return (
+    // No `relative` here on purpose: the button is positioned against the
+    // figure that wraps the block, so it stays in the corner while a long
+    // line scrolls the <pre> sideways underneath it.
     <pre
       ref={preRef}
       {...props}
-      className="relative border border-gray-500"
+      className="border border-gray-500"
       data-theme="github-dark-dimmed github-light"
     >
       <CopyButton handleClick={handleClickCopy} />
@@ -56,28 +60,61 @@ type CopyButtonProps = {
 };
 
 export const CopyButton = ({ handleClick }: CopyButtonProps) => {
-  const [disabled, setDisabled] = useState(false);
+  const [copied, setCopied] = useState(false);
+  // Counted, not just flagged: the key remounts the check so `draw-check`
+  // runs again on a second copy instead of sitting on its finished frame.
+  const [copies, setCopies] = useState(0);
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(timer.current), []);
 
-  const handleClickAndDisable = () => {
+  const handleClickAndConfirm = () => {
     handleClick();
-    setDisabled(true);
-    setTimeout(() => {
-      setDisabled(false);
-    }, 3000);
+    setCopied(true);
+    setCopies((count) => count + 1);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setCopied(false), 3000);
   };
 
   return (
     <button
       type="button"
-      disabled={disabled}
-      onClick={handleClickAndDisable}
-      className="w-fit h-fit absolute bottom-2 right-2 z-10 flex place-items-center bg-inherit rounded-full"
+      onClick={handleClickAndConfirm}
+      aria-label={copied ? "Code copied" : "Copy the code"}
+      className="code-copy-button absolute top-1.5 right-1.5 z-10 grid cursor-pointer place-items-center rounded-md px-2 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-black/5 hover:text-gray-900 motion-reduce:transition-none dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-gray-100"
     >
-      {disabled ? (
-        <FaCheck className="size-6 text-green-500 dark:text-green-400" />
-      ) : (
-        <FaClipboard className="size-6 text-gray-700 dark:text-gray-200" />
-      )}
+      {/* Both states share one grid cell, so the button keeps its width and
+          the two icons cross-fade in place instead of swapping. */}
+      <span
+        aria-hidden="true"
+        className={clsx(
+          "col-start-1 row-start-1 transition-opacity duration-200 motion-reduce:transition-none",
+          copied ? "opacity-0" : "opacity-100",
+        )}
+      >
+        <FaClipboard className="size-4" />
+      </span>
+      <span
+        aria-hidden="true"
+        className={clsx(
+          "col-start-1 row-start-1 flex items-center gap-1 whitespace-nowrap text-green-700 transition-opacity duration-200 motion-reduce:transition-none dark:text-green-400",
+          copied ? "opacity-100" : "opacity-0",
+        )}
+      >
+        <svg aria-hidden="true" viewBox="0 0 24 24" className="size-4" fill="none">
+          <path
+            key={copies}
+            d="M5 12.5l4.5 4.5L19 7.5"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            pathLength={1}
+            strokeDasharray={1}
+            className="animate-draw-check motion-reduce:animate-none"
+          />
+        </svg>
+        Copied
+      </span>
     </button>
   );
 };

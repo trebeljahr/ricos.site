@@ -2,11 +2,8 @@ import { SearchPartyEgg } from "@components/EasterEggs/SearchParty";
 import { TrySomeOfThese } from "@components/IntroLinks";
 import Layout from "@components/Layout";
 import Header, { PageMain } from "@components/PostHeader";
-import { useRef } from "react";
 
 export default function Custom404() {
-  const searchArea = useRef<HTMLDivElement>(null);
-
   return (
     <Layout
       title="404 Page"
@@ -17,11 +14,11 @@ export default function Custom404() {
       imageAlt="this is not a page pipe meme joke"
     >
       <PageMain>
-        <Header title={<SearchPartyEgg searchArea={searchArea} />} />
+        <Header title="404 - Page Not Found" />
         <p>Sorry but this page does not exist</p>
         <TrySomeOfThese />
-        {/* The empty part of the page. The search party fogs it over and hides links in it. */}
-        <div ref={searchArea} className="relative mt-8 min-h-[55vh]" />
+        {/* The empty part of the page is full of smoke, with links hidden in it. */}
+        <SearchPartyEgg />
       </PageMain>
     </Layout>
   );

@@ -512,36 +512,64 @@ code {
 }
 
 /* The dotted trail behind the intro of /start-here (src/components/DottedTrail.tsx).
-   A soft-edged gradient mask grows down the wrapper, so the dots appear one
-   after another instead of fading in as a block. The mask sits on the element
-   rather than inside the SVG because Chrome caches an SVG <mask> and does not
-   repaint the masked path while only the mask content animates.
-   Without the animation (reduced motion, no support) the mask is already at
-   its full size, so the whole trail is simply there. */
+   Two mask layers, multiplied together:
+   1. a gradient that grows sideways over the wrapper, so the dots appear one
+      after another from left to right instead of fading in as a block. Its
+      soft end is the drawing front while it grows and, once it has stopped,
+      the fade that lets the trail leave the window instead of ending on a
+      hard last dot.
+   2. a static dip in the middle of the window, where the content column sits
+      at every width. The trail crosses behind the photo and the text there,
+      and at a third of its strength it stays out of the way of reading.
+   The mask is on the element and not inside the SVG because Chrome caches an
+   SVG <mask> and does not repaint the masked path while only the mask content
+   animates. Without the animation (reduced motion, no support) the growing
+   layer is already at full size, so the whole trail is simply there. */
 .trail-draw {
-  /* The soft end of the gradient is both the drawing front while the mask
-     grows and, once it has stopped at 135%, the fade that lets the trail
-     trail off instead of ending on a hard last dot. */
-  mask-image: linear-gradient(to bottom, #000 66%, transparent 85%);
+  mask-image:
+    linear-gradient(to right, #000 66%, transparent 85%),
+    linear-gradient(
+      to right,
+      #000 0 8%,
+      rgba(0, 0, 0, 0.7) 24%,
+      rgba(0, 0, 0, 0.7) 76%,
+      #000 92% 100%
+    );
+  mask-composite: intersect;
   mask-repeat: no-repeat;
-  mask-position: top center;
-  mask-size: 100% 135%;
+  mask-position:
+    left center,
+    center;
+  mask-size:
+    135% 100%,
+    100% 100%;
 }
 
 @keyframes trail-draw {
   from {
-    mask-size: 100% 0%;
+    mask-size:
+      0% 100%,
+      100% 100%;
   }
   to {
-    mask-size: 100% 135%;
+    mask-size:
+      135% 100%,
+      100% 100%;
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
   /* Late and slow, so it never pulls attention off the text. */
   .trail-draw {
-    animation: trail-draw 3.8s cubic-bezier(0.33, 0, 0.2, 1) 900ms both;
+    animation: trail-draw 4.2s cubic-bezier(0.33, 0, 0.2, 1) 900ms both;
   }
+}
+
+/* The trail is full-bleed, so nothing it draws may add a horizontal
+   scrollbar. "clip" instead of "hidden": it does not make the root a scroll
+   container, so the sticky navbar keeps working. */
+html {
+  overflow-x: clip;
 }
 
 .glassy {

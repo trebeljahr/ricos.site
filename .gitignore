@@ -89,3 +89,6 @@ venv/
 
 # link checker cache + external link report
 .link-check/
+
+# needlestack classification prompts, answered by agents and thrown away
+.needles-batches/

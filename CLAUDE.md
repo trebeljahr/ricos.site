@@ -29,3 +29,8 @@
 ## Dev Server: Stale CSS
 - `@tailwindcss/postcss` rebuilds only when a CSS file's mtime changes, not its content. A checkout or ff-merge that changes `globals.css` and `.tsx` files together could leave the dev server serving old `@theme`/`@utility` rules forever. `src/scripts/dev/tailwindMtimeGuard.cjs` (first plugin in `postcss.config.cjs`) prevents this; keep it before Tailwind.
 - Turbopack persists PostCSS output and errors in `.next/dev`, so restarting the dev server does not clear a bad result. If CSS is still stale, or `globals.css` fails with "failed to receive message" (a PostCSS worker was killed), stop the server, delete `.next/dev` and start again.
+
+## Needlestack curation (local tooling)
+- `src/content/needlestack/needles.json` is the archive: one record per link, written by the scripts in `src/scripts/needles/` and by `/dev/needlestack`. The taxonomy of doors and paths lives in `src/lib/needlestack/taxonomy.ts`; adding a path is a deliberate edit there.
+- `pnpm needles:import` (bookmark export + the old needlestack page, idempotent, never overwrites a human answer) → `pnpm needles:classify` or `pnpm needles:batch export|apply` (machine guesses) → `/dev/needlestack` (keyboard triage) → `pnpm needles:skim` (drafts notes for links rated 2+).
+- A needle is only public once it is `status: "reviewed"` with `rating >= 1`. No script may set that; only the triage UI does, one link at a time.

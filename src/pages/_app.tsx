@@ -1,7 +1,7 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import PlausibleProvider from "next-plausible";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider, useTheme } from "next-themes";
 import { useEffect } from "react";
 import { installHistoryTracking } from "src/lib/historyState";
 import "../styles/globals.css";
@@ -12,6 +12,21 @@ import "../styles/globals.css";
 // and never rendered. globals.css already lists InterVariable / Inter as
 // the preferred families with system-font fallbacks; the visible result
 // for users is unchanged.
+
+// Safari on macOS and iPadOS paints the overscroll area with theme-color
+// whenever one is set, not with the page background. In dark mode use the
+// header's gray-900 (see `.dark .glassy`) so pulling past the top or bottom
+// edge shows the header/footer color instead of black. The server renders the
+// default dark theme; light mode keeps its old black value.
+function ThemeColorMeta() {
+  const { resolvedTheme } = useTheme();
+
+  return (
+    <Head>
+      <meta name="theme-color" content={resolvedTheme === "light" ? "#000" : "#111827"} />
+    </Head>
+  );
+}
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
@@ -27,7 +42,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <link rel="manifest" href="/favicon/site.webmanifest" />
         <link rel="shortcut icon" href="/favicon/favicon.ico" />
         <meta name="msapplication-TileColor" content="#000000" />
-        <meta name="theme-color" content="#000" />
         <link
           rel="alternate"
           type="application/rss+xml"
@@ -44,6 +58,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         enabled={process.env.NODE_ENV === "production"}
       >
         <ThemeProvider attribute="class" enableSystem={false} defaultTheme="dark">
+          <ThemeColorMeta />
           <Component {...pageProps} />
         </ThemeProvider>
       </PlausibleProvider>

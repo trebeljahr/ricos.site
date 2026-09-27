@@ -65,11 +65,7 @@ export const EMOJI_SPRITES = [
   "⭐",
   "🪡",
   "🔍",
-  // The footer bunny and the grass it leaves behind
   "🐇",
-  "🌿",
-  "🌾",
-  "☘️",
 ] as const;
 
 /** Painted Easter eggs. The same script paints them onto the egg emoji. */

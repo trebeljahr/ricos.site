@@ -4,23 +4,23 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRecordEggFind } from "src/hooks/useEasterEgg";
 import { EASTER_EGG_IDS, EASTER_EGGS_CHANGED_EVENT, getFoundEggs } from "src/lib/easterEggs";
-import { EASTER_EGG_SPRITES, type SpriteName } from "src/lib/sprites";
+import { EASTER_EGG_SPRITES } from "src/lib/sprites";
 import { EmojiButton } from "./EmojiButton";
 
 const known = new Set<string>(EASTER_EGG_IDS);
 const HOP_ACROSS_MS = 5000;
 const HOP_MS = 420;
 const BUNNY_PX = 30;
-// How long an egg or a tuft of grass stays behind the bunny before it is gone.
+// How long an egg stays behind the bunny before it is gone.
 const DROP_SHOWS_MS = 2400;
-const GRASS = ["🌱", "🌿", "🌾", "☘️"] as const;
+const EGG_PX = 16;
 
 type Drop = {
   id: number;
   x: number;
   lift: number;
   size: number;
-  sprite: SpriteName;
+  sprite: (typeof EASTER_EGG_SPRITES)[number];
   tilt: number;
   /** When the bunny's tail reaches `x`. */
   at: number;
@@ -28,39 +28,34 @@ type Drop = {
 
 const pick = <T,>(items: readonly T[]) => items[Math.floor(Math.random() * items.length)];
 
-/**
- * Something lands behind the bunny on every hop, now and then two things:
- * a painted egg or a tuft of grass, a little off the spot it touched down.
- */
+/** Two or three painted eggs land behind the bunny on every hop, a little off the spot. */
 function planDrops(width: number, calm: boolean) {
   const from = -BUNNY_PX - 18;
   const to = width + BUNNY_PX + 18;
   const duration = calm ? HOP_ACROSS_MS * 1.6 : HOP_ACROSS_MS;
   const drops: Drop[] = [];
-  const add = (tail: number, at: number) => {
-    const egg = Math.random() < 0.45;
-    drops.push({
-      id: drops.length,
-      x: tail + (Math.random() - 0.5) * 28,
-      lift: Math.random() * 8,
-      size: egg ? 16 + Math.random() * 4 : 18 + Math.random() * 8,
-      sprite: egg ? pick(EASTER_EGG_SPRITES) : pick(GRASS),
-      tilt: (Math.random() - 0.5) * (egg ? 36 : 16),
-      at,
-    });
-  };
   for (let at = HOP_MS; at < duration; at += HOP_MS) {
     const tail = from + ((to - from) * at) / duration;
     if (tail < 0 || tail > width) continue;
-    add(tail, at);
-    if (Math.random() < 0.5) add(tail - 18, at + 60);
+    const eggs = Math.random() < 0.5 ? 2 : 3;
+    for (let i = 0; i < eggs; i++) {
+      drops.push({
+        id: drops.length,
+        x: tail - i * 16 + (Math.random() - 0.5) * 20,
+        lift: Math.random() * 8,
+        size: EGG_PX + Math.random() * 4,
+        sprite: pick(EASTER_EGG_SPRITES),
+        tilt: (Math.random() - 0.5) * 36,
+        at: at + i * 60,
+      });
+    }
   }
   return { from, to, duration, drops };
 }
 
 /**
  * The Easter bunny hops along the bottom of the screen once and leaves
- * painted eggs and grass where it lands, which pop up and are gone again soon.
+ * painted eggs where it lands, which pop up and are gone again soon.
  */
 const Bunny = ({ onDone }: { onDone: () => void }) => {
   const outer = useRef<HTMLSpanElement>(null);

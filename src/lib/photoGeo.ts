@@ -68,14 +68,19 @@ export type WorldLandData = {
   rings: LandRing[];
 };
 
-const PHOTO_LOCATIONS_PATH = ["src", "content", "photo-locations.json"] as const;
-const WORLD_LAND_PATH = ["src", "content", "world-land.json"] as const;
-
 let _photoGeoData: PhotoGeoData | null = null;
 let _worldLandData: WorldLandData | null = null;
 
-function readJson<T>(segments: readonly string[]): T {
-  const filePath = resolve(process.cwd(), ...segments);
+/**
+ * Keep the argument a single string literal. `resolve(process.cwd(), ...segments)` reads
+ * as a dynamic pattern to the Turbopack/NFT tracer, which then matched 22474 files and
+ * traced the whole project into the page bundle. A literal resolves to the one file.
+ *
+ * A static `import` of the JSON would also silence the tracer, but it drags both files
+ * into every module graph that touches this one — that alone pushed the PhotoGlobe unit
+ * tests from 3s to a timeout.
+ */
+function readJson<T>(filePath: string): T {
   return JSON.parse(readFileSync(filePath, "utf-8")) as T;
 }
 
@@ -86,7 +91,9 @@ function readJson<T>(segments: readonly string[]): T {
  */
 export function getPhotoGeoData(): PhotoGeoData {
   if (_photoGeoData) return _photoGeoData;
-  _photoGeoData = readJson<PhotoGeoData>(PHOTO_LOCATIONS_PATH);
+  _photoGeoData = readJson<PhotoGeoData>(
+    resolve(process.cwd(), "src/content/photo-locations.json"),
+  );
   return _photoGeoData;
 }
 
@@ -96,7 +103,7 @@ export function getPhotoGeoData(): PhotoGeoData {
  */
 export function getWorldLandData(): WorldLandData {
   if (_worldLandData) return _worldLandData;
-  _worldLandData = readJson<WorldLandData>(WORLD_LAND_PATH);
+  _worldLandData = readJson<WorldLandData>(resolve(process.cwd(), "src/content/world-land.json"));
   return _worldLandData;
 }
 

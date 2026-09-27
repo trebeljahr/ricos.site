@@ -28,6 +28,13 @@ const KEY_STEP = 48;
 const HINT_AFTER_MS = 5000;
 /** Under the navbar (z-999) and the footer, which stay out of the weather. */
 const SMOKE_Z = 40;
+/** The footer has no background of its own, and the fog behind it shows
+    straight through, so it borrows the page's while the fog is up. */
+const FOOTER_SOLID = ["bg-white", "dark:bg-gray-900"];
+/** Parting fog is a thing you do with a pointer. A touch screen has none, so
+    there is no fog on one: the page is simply the page. */
+const canSearch = () =>
+  typeof window === "undefined" || window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 /** Columns the hiding places are dealt into. A phone has room for fewer. */
 const columns = () => (typeof window !== "undefined" && window.innerWidth < 640 ? 2 : 3);
 
@@ -70,6 +77,7 @@ const SearchPartyEgg = () => {
   const clearRef = useRef<HTMLElement[]>([]);
   const foundRef = useRef<boolean[]>(HIDDEN_PAGES.map(() => false));
   const [mounted, setMounted] = useState(false);
+  const [searching] = useState(canSearch);
   const [spots, setSpots] = useState(scatter);
   const [found, setFound] = useState<boolean[]>(() => HIDDEN_PAGES.map(() => false));
   const [swept, setSwept] = useState(false);
@@ -77,29 +85,35 @@ const SearchPartyEgg = () => {
   const [smoking, setSmoking] = useState(true);
   const [showHint, setShowHint] = useState(false);
 
-  const shown = (i: number) => found[i] || !smoking;
+  const shown = (i: number) => found[i] || !smoking || !searching;
 
   useEffect(() => {
     setMounted(true);
     // Finding the page at all is what earns it. The five links are for fun.
     recordFind("search-party");
+    if (!searching) return;
     // The heading and the text belong to the page, so they are picked up from it.
     stickyRef.current = [...document.querySelectorAll<HTMLElement>(STICKY)];
     // The footer sits in the flow with no stacking of its own, so the cloud
     // would cover it. The navbar is already above it at z-999.
     const footer = document.querySelector<HTMLElement>("body footer");
-    if (footer) footer.style.zIndex = String(SMOKE_Z + 1);
+    if (footer) {
+      footer.style.zIndex = String(SMOKE_Z + 1);
+      footer.classList.add(...FOOTER_SOLID);
+    }
     return () => {
-      if (footer) footer.style.zIndex = "";
+      if (!footer) return;
+      footer.style.zIndex = "";
+      footer.classList.remove(...FOOTER_SOLID);
     };
-  }, [recordFind]);
+  }, [recordFind, searching]);
 
   // Someone who has not stirred the smoke for a while gets told what it is for.
   useEffect(() => {
-    if (swept) return;
+    if (swept || !searching) return;
     const timer = window.setTimeout(() => setShowHint(true), HINT_AFTER_MS);
     return () => window.clearTimeout(timer);
-  }, [swept]);
+  }, [swept, searching]);
 
   /** Opens the cloud over a piece of the page for good, with a snap. Nothing
       is lifted above the smoke: the smoke is cut away over it instead, so the
@@ -161,6 +175,7 @@ const SearchPartyEgg = () => {
   // The smoke lies over the whole page, so the page keeps the pointer and the
   // clicks, and the sweep is read from the window instead.
   useEffect(() => {
+    if (!searching) return;
     const move = (event: PointerEvent) => aim(event.clientX, event.clientY);
     const away = () => {
       pointerRef.current = null;
@@ -173,7 +188,7 @@ const SearchPartyEgg = () => {
       window.removeEventListener("pointercancel", away);
       document.removeEventListener("pointerleave", away);
     };
-  }, [aim]);
+  }, [aim, searching]);
 
   /** Keyboard fanning: the arrow keys walk the opening across the screen. */
   useEffect(() => {
@@ -183,6 +198,7 @@ const SearchPartyEgg = () => {
       ArrowUp: [0, -1],
       ArrowDown: [0, 1],
     };
+    if (!searching) return;
     const fan = (event: KeyboardEvent) => {
       const step = steps[event.key];
       if (!step || event.target !== document.body) return;
@@ -196,7 +212,7 @@ const SearchPartyEgg = () => {
     };
     window.addEventListener("keydown", fan);
     return () => window.removeEventListener("keydown", fan);
-  }, [aim]);
+  }, [aim, searching]);
 
   return (
     <>
@@ -239,6 +255,7 @@ const SearchPartyEgg = () => {
       </div>
 
       {mounted &&
+        searching &&
         createPortal(
           // Click-through: the page underneath keeps its clicks and its scrolling.
           <div

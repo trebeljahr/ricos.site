@@ -25,7 +25,7 @@ const TRAIL_DECAY = 0.93;
 /** How lazily the focus follows the pointer: the opening drifts after it. */
 const EASE = 0.14;
 /** Reach of the opening, as a share of the smaller screen side. */
-const REACH = 0.27;
+const REACH = 0.34;
 /** The cloud is soft, so it renders below screen resolution and is scaled up. */
 const SCALE = 0.6;
 
@@ -86,7 +86,7 @@ void main() {
   vec2 drift = vec2(uTime * 0.013, -uTime * 0.032);
   vec2 warp = vec2(fbm(uv * 2.3 + drift), fbm(uv * 2.3 + drift + 4.3));
   float density = fbm(uv * 4.1 + warp * 0.8 + drift * 1.7);
-  density = smoothstep(0.3, 0.74, density);
+  density = smoothstep(0.34, 0.7, density);
 
   // Finer noise chews the edge of the opening, so it tears rather than cuts.
   float chew = fbm(uv * 4.4 + drift * 2.0);
@@ -117,20 +117,21 @@ void main() {
     vec2 reach = box.zw * 0.5 + vec2(uFeather);
     float out_ = length((gl_FragCoord.xy - middle) / reach);
     // Never quite all of it, so a wisp still drifts over what was found.
-    cleared = max(cleared, 0.74 * (1.0 - smoothstep(0.25, 1.05, out_ + wobble)));
+    cleared = max(cleared, 1.0 - smoothstep(0.25, 1.05, out_ + wobble));
   }
 
   // Brightest where the smoke is half gone, which is the curling edge itself.
   // Only the moving opening lights up like that: a clearing that has been
-  // standing for a while is simply thin, not outlined.
+  // standing for a while is simply gone, not outlined.
   float rim = opened * (1.0 - opened) * 4.0;
-  float thinned = max(opened, cleared);
   // A floor everywhere, so even the thin parts of the cloud keep the page hidden,
   // and a little haze left inside the opening, so it is a thinning and not a hole.
-  float alpha = (uFloor + density * (1.0 - uFloor)) * (1.0 - thinned * 0.88);
+  // The opening thins the cloud; a clearing takes it away altogether, so what
+  // has been found stays out in the open instead of sitting under a last veil.
+  float alpha = (uFloor + density * (1.0 - uFloor)) * (1.0 - opened * 0.88) * (1.0 - cleared);
   // Kept under white: on a light page the opening is already bright, and the
   // rim on top of that blows the whole thing out.
-  vec3 color = min(uTint * (0.78 + density * 0.45 + rim * uRim), vec3(1.0));
+  vec3 color = min(uTint * (0.68 + density * 0.66 + rim * uRim), vec3(1.0));
   outColor = vec4(color * alpha, alpha);
 }`;
 

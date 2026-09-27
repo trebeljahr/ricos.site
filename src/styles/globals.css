@@ -79,6 +79,8 @@
   --animate-egg-hint: egg-hint 14s ease-in-out infinite;
   /* Easter egg: a feather the owl loses drifts down and fades (NightOwl). */
   --animate-egg-feather: egg-feather 2.5s cubic-bezier(0.45, 0, 0.55, 1) both;
+  /* Footer byline heart, same double beat as fractal.garden and raptor-runner. */
+  --animate-heartbeat: heartbeat 2s ease-in-out infinite;
 
   /* Easter egg: a feather the owl loses drifts down and fades (NightOwl). */
   @keyframes egg-feather {
@@ -98,6 +100,21 @@
       opacity: 0;
       rotate: -14deg;
       translate: 0 58px;
+    }
+  }
+
+  @keyframes heartbeat {
+    0%,
+    28%,
+    56%,
+    100% {
+      transform: scale(1);
+    }
+    14% {
+      transform: scale(1.2);
+    }
+    42% {
+      transform: scale(1.15);
     }
   }
 

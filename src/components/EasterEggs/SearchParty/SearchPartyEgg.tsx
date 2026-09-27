@@ -3,9 +3,9 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRecordEggFind } from "src/hooks/useEasterEgg";
-import { type Point, SmokeCanvas } from "./SmokeCanvas";
+import { FrostedGlass, type Point } from "./FrostedGlass";
 
-/** Pages hiding in the smoke, in no particular order. */
+/** Pages hiding behind the glass, in no particular order. */
 const HIDDEN_PAGES = [
   "/quotes",
   "/timeline",
@@ -20,19 +20,19 @@ const HIDDEN_PAGES = [
   "/midjourney",
   "/eggs",
 ];
-/** Everything the sweep can pull out of the smoke and leave standing. */
-const STICKY = "main h1, main [data-smoke-stick]";
+/** Everything the search can clear the glass over and leave clear. */
+const STICKY = "main h1, main [data-glass-stick]";
 /** How close the sweep has to pass for something to count as found. */
 const REACH = 66;
 const KEY_STEP = 48;
 const HINT_AFTER_MS = 5000;
-/** Under the navbar (z-999) and the footer, which stay out of the weather. */
-const SMOKE_Z = 40;
-/** The footer has no background of its own, and the fog behind it shows
-    straight through, so it borrows the page's while the fog is up. */
+/** Under the navbar (z-999) and the footer, which are never behind the glass. */
+const GLASS_Z = 40;
+/** The footer has no background of its own, and the glass behind it shows
+    straight through, so it borrows the page's while the glass is up. */
 const FOOTER_SOLID = ["bg-white", "dark:bg-gray-900"];
-/** Parting fog is a thing you do with a pointer. A touch screen has none, so
-    there is no fog on one: the page is simply the page. */
+/** Wiping glass is a thing you do with a pointer. A touch screen has none, so
+    there is no glass on one: the page is simply the page. */
 const canSearch = () =>
   typeof window === "undefined" || window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 /** Columns the hiding places are dealt into. A phone has room for fewer. */
@@ -60,12 +60,13 @@ function scatter(): Spot[] {
 }
 
 /**
- * Easter egg on the 404 page: smoke hangs over the page and stays there. It
- * is not worth trying to peer through — nothing shows until the opening that
- * trails the pointer passes over it. Whatever that opening finds — the
- * heading, a line of text, one of the hidden links — the cloud holds open
- * from then on. The navbar and the footer are above the weather, so there is
- * always a way off the page. The last of the hidden links is the egg list.
+ * Easter egg on the 404 page: a sheet of dark frosted glass lies over the
+ * page. Everything is behind it the whole time, blurred past reading, and the
+ * pointer drags a clear hole about the sheet a beat behind itself. Whatever
+ * that hole finds — the heading, a line of text, one of the hidden links —
+ * keeps a hole of its own from then on. The navbar and the footer are in
+ * front of the glass, so there is always a way off the page. The last of the
+ * hidden links is the egg list.
  */
 const SearchPartyEgg = () => {
   const reduceMotion = useReducedMotion();
@@ -81,7 +82,7 @@ const SearchPartyEgg = () => {
   const [spots, setSpots] = useState(scatter);
   const [found, setFound] = useState<boolean[]>(() => HIDDEN_PAGES.map(() => false));
   const [swept, setSwept] = useState(false);
-  // Without a cloud there is nothing to search: the links are simply there.
+  // Without glass there is nothing to search: the links are simply there.
   const [smoking, setSmoking] = useState(true);
   const [showHint, setShowHint] = useState(false);
 
@@ -98,7 +99,7 @@ const SearchPartyEgg = () => {
     // would cover it. The navbar is already above it at z-999.
     const footer = document.querySelector<HTMLElement>("body footer");
     if (footer) {
-      footer.style.zIndex = String(SMOKE_Z + 1);
+      footer.style.zIndex = String(GLASS_Z + 1);
       footer.classList.add(...FOOTER_SOLID);
     }
     return () => {
@@ -108,19 +109,19 @@ const SearchPartyEgg = () => {
     };
   }, [recordFind, searching]);
 
-  // Someone who has not stirred the smoke for a while gets told what it is for.
+  // Someone who has not touched the glass for a while gets told what it is for.
   useEffect(() => {
     if (swept || !searching) return;
     const timer = window.setTimeout(() => setShowHint(true), HINT_AFTER_MS);
     return () => window.clearTimeout(timer);
   }, [swept, searching]);
 
-  /** Opens the cloud over a piece of the page for good, with a snap. Nothing
-      is lifted above the smoke: the smoke is cut away over it instead, so the
-      page keeps its own stacking and the navbar stays on top of the text. */
+  /** Clears the glass over a piece of the page for good, with a snap. Nothing
+      is lifted above the glass: a hole is cut in it instead, so the page keeps
+      its own stacking and the navbar stays on top of the text. */
   const stick = useCallback(
     (el: HTMLElement) => {
-      el.dataset.smokeFound = "";
+      el.dataset.glassFound = "";
       clearRef.current = [...clearRef.current, el];
       if (reduceMotion) return;
       el.animate([{ scale: "1.03" }, { scale: "0.997" }, { scale: "1" }], {
@@ -143,7 +144,7 @@ const SearchPartyEgg = () => {
       };
 
       for (const el of stickyRef.current) {
-        if (el.dataset.smokeFound === undefined && covers(el, REACH * 0.5)) {
+        if (el.dataset.glassFound === undefined && covers(el, REACH * 0.5)) {
           stick(el);
         }
       }
@@ -172,7 +173,7 @@ const SearchPartyEgg = () => {
     [pickUp],
   );
 
-  // The smoke lies over the whole page, so the page keeps the pointer and the
+  // The glass lies over the whole page, so the page keeps the pointer and the
   // clicks, and the sweep is read from the window instead.
   useEffect(() => {
     if (!searching) return;
@@ -190,7 +191,7 @@ const SearchPartyEgg = () => {
     };
   }, [aim, searching]);
 
-  /** Keyboard fanning: the arrow keys walk the opening across the screen. */
+  /** Keyboard searching: the arrow keys walk the hole across the glass. */
   useEffect(() => {
     const steps: Record<string, [number, number]> = {
       ArrowLeft: [-1, 0],
@@ -260,9 +261,9 @@ const SearchPartyEgg = () => {
           // Click-through: the page underneath keeps its clicks and its scrolling.
           <div
             className="pointer-events-none fixed inset-0 overflow-hidden"
-            style={{ zIndex: SMOKE_Z }}
+            style={{ zIndex: GLASS_Z }}
           >
-            <SmokeCanvas
+            <FrostedGlass
               pointerRef={pointerRef}
               onFocus={pickUp}
               clearRef={clearRef}
@@ -272,7 +273,7 @@ const SearchPartyEgg = () => {
 
             {showHint && smoking && (
               <span className="absolute inset-x-0 bottom-16 text-center text-xs tracking-wide text-gray-500 dark:text-gray-400">
-                something is in the smoke
+                there is a page behind the glass
               </span>
             )}
           </div>,

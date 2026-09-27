@@ -40,8 +40,6 @@ type Props = {
   /** Every photo, in spectrum order, straight out of `imagesBySpectrum()`. */
   images: ImageProps[];
   marks: SpectrumMark[];
-  chromatic: number;
-  achromatic: number;
 };
 
 /**
@@ -168,7 +166,7 @@ const tripOf = (src: string) => turnKebabIntoTitleCase(src.split("/")[2] ?? "");
  * in exactly one place in this strip, which is the whole of the feature: there
  * is no second view it could disagree with.
  */
-export default function PhotographySpectrumPage({ images, marks, chromatic, achromatic }: Props) {
+export default function PhotographySpectrumPage({ images, marks }: Props) {
   const total = images.length;
 
   const photos = useMemo(() => images.map(addIdAndIndex), [images]);
@@ -231,6 +229,7 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
 
   const ribbonRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLSpanElement>(null);
+  const stripRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef(false);
   /** Set by `seek`, consumed by the layout effect that does the scrolling. */
@@ -367,19 +366,55 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
    * Reading position on scroll has neither problem: it is a state, so it is
    * still true the second time it is asked.
    */
-  /** Put the marker where the reader is: how far through the loaded rows they
-   *  have scrolled, mapped back onto the whole sweep through the window those
-   *  rows represent. Writes to the DOM node, never to state. */
+  /** Put the marker where the reader is. Writes to the DOM node, never to
+   *  state.
+   *
+   *  Two things here are easy to get wrong and were.
+   *
+   *  It measures against the middle of the viewport rather than its top edge.
+   *  The top edge is the first row *partly* on screen, which is behind
+   *  whatever the reader is actually looking at by half a screen of photos,
+   *  and the marker trailed by that much the whole way down.
+   *
+   *  And it places the marker by measuring the drawn segments instead of
+   *  computing `index / total`. Those agreed while the strip was drawn purely
+   *  to scale; they stopped agreeing the moment segments got a `min-width` so
+   *  the small bands could be clicked, because that widens pink and white well
+   *  past their share and pushes everything after them to the right. The
+   *  arithmetic answer stayed where a to-scale strip would have put it, which
+   *  is left of the band it was naming — the marker sat in pink while the
+   *  photographs on screen were grey. Asking the band where it is cannot drift
+   *  from where it is. */
   const updateProgress = useCallback(() => {
     const marker = progressRef.current;
     const ribbon = ribbonRef.current;
-    if (!marker || !ribbon || total === 0) return;
+    const strip = stripRef.current;
+    if (!marker || !ribbon || !strip || total === 0) return;
+
     const rect = ribbon.getBoundingClientRect();
-    const through = rect.height > 0 ? (0 - rect.top) / rect.height : 0;
+    const viewport = window.innerHeight || document.documentElement.clientHeight || 0;
+    const probe = viewport / 2;
+    const through = rect.height > 0 ? (probe - rect.top) / rect.height : 0;
     const within = Math.min(1, Math.max(0, through));
     const index = start + within * (end - start);
-    marker.style.left = `${Math.min(100, Math.max(0, (index / total) * 100))}%`;
-  }, [start, end, total]);
+
+    const segments = strip.querySelectorAll<HTMLElement>("button");
+    const width = strip.clientWidth;
+    if (segments.length !== marks.length || width === 0) return;
+
+    let at = marks.length - 1;
+    for (let i = 0; i < marks.length; i++) {
+      if (index < marks[i].index + marks[i].count) {
+        at = i;
+        break;
+      }
+    }
+    const segment = segments[at];
+    const band = marks[at];
+    const fraction = band.count > 0 ? (index - band.index) / band.count : 0;
+    const left = segment.offsetLeft + Math.min(1, Math.max(0, fraction)) * segment.offsetWidth;
+    marker.style.left = `${Math.min(100, Math.max(0, (left / width) * 100))}%`;
+  }, [start, end, total, marks]);
 
   // Also on every window change, so a jump moves the marker before the reader
   // has scrolled anything.
@@ -507,48 +542,70 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
             address bar is a small lie a reader catches when they copy the link. */}
         <Header breadcrumbs={{ path: url }} title="Spectrum" />
 
-        {/* ---- hue scale -------------------------------------------------
-            Two elements, each with one job. The strip shows how much of the
-            sweep each hue takes up, which is real information and the reason it
-            is drawn to scale: gold holds 1,503 photos and pink 57, and seeing
-            that is half of what the page has to say about this archive. The
-            chips below do the jumping, at equal width, because pink's honest
-            share of the strip is 12px on a 1000px screen and nobody can hit
-            that with a thumb. Same split the colour chips use,
-            for the same reason.
+        {/* ---- the colour scale ------------------------------------------
+            One control, doing both jobs. It shows how much of the sweep each
+            colour takes up — green holds 656 photographs and pink 3, and
+            seeing that is half of what the page has to say about this archive
+            — and it is also how a reader jumps to one.
+
+            There used to be a row of labelled chips underneath for the
+            jumping, because a band drawn honestly to scale makes pink about
+            3px wide on a 2,000px screen and nobody can hit that. The chips
+            were a second copy of the same eleven destinations taking up a
+            third of the first screen, so they are gone and the band carries
+            a `min-width` instead: every segment is at least wide enough to
+            click, and the ones big enough to be drawn to scale still are. The
+            distortion is confined to the bands too small to read anyway.
+
+            Labels live in `title` and `aria-label` rather than on the strip.
+            Eleven words will not fit across it at any width, and the colour
+            is the label for anyone who can see it.
+
+            Sticky, because it is the only navigation on a page this tall:
+            parked at the top of the document it would be useful for one
+            screen and useless for the rest. `top-15` clears the navbar above
+            it, whose bottom edge measures 60px. The backdrop is opaque rather
+            than blurred — tiles scrolling under a translucent bar drag their
+            colours through the swatches, and the swatches are the one thing
+            here that has to stay trustworthy. z-20 keeps it over the ribbon
+            and well under the navbar's z-999.
 
             `not-prose` because <body> is a prose container: without it the
-            typography plugin puts list markers, an inline-start padding and a
-            0.5em margin on every <li>, and a flex row of chips or tiles laid out
-            inside that is not the layout this file describes. Same guard
-            InfiniteScrollGallery wraps itself in. */}
-        {/* Sticky, because it is the only navigation on the page and the page
-            is 46,000px tall. Parked at the top of the document it would be
-            reachable for the first screen and useless for the other 460, and
-            the sweep is exactly the kind of thing a reader wants to jump
-            around in halfway down.
-
-            `top-15` clears the sticky navbar above it, whose bottom edge measures
-            60px. The
-            backdrop is opaque rather than blurred: tiles scrolling under a
-            translucent bar drag their colours through the swatches, and the
-            swatches are the one thing on this page that has to stay
-            trustworthy. z-20 keeps it over the ribbon and well under the
-            navbar's z-999. */}
+            typography plugin puts list markers and margins on every child and
+            the row stops being a row. */}
         <div className="not-prose sticky top-15 z-20 mb-6 bg-white pt-3 pb-3 dark:bg-gray-900">
           <div
-            aria-hidden
-            className="relative flex h-3 w-full overflow-hidden rounded-full ring-1 ring-black/10 dark:ring-white/10"
+            ref={stripRef}
+            className="relative flex h-7 w-full overflow-hidden rounded-full ring-1 ring-black/10 dark:ring-white/10"
           >
-            {marks.map((mark, i) => (
-              <span
-                key={mark.key}
-                style={{ background: mark.fill, flexGrow: mark.count }}
-                // A hairline divider rather than a gap: a gap would show the
-                // page background through the strip and break the sweep.
-                className={clsx("block h-full", i > 0 && "border-l border-black/10")}
-              />
-            ))}
+            {marks.map((mark, i) => {
+              const isActive = mark.key === activeKey;
+              return (
+                <button
+                  key={mark.key}
+                  type="button"
+                  onClick={() => seek(mark.index)}
+                  title={`${mark.label} — ${formatCount(mark.count)} photographs`}
+                  aria-label={`Jump to ${mark.label}, ${formatCount(mark.count)} photographs`}
+                  aria-current={isActive ? "true" : undefined}
+                  style={{ background: mark.fill, flexGrow: mark.count, flexBasis: 0 }}
+                  className={clsx(
+                    // 28px, the smallest a segment can be and still take a
+                    // click reliably. Under the 44px a tap target wants, which
+                    // is the compromise a strip makes: 44px of height for a
+                    // control that is 11 slivers wide is not a strip any more.
+                    "block h-full min-w-7 cursor-pointer transition-[filter] hover:brightness-110",
+                    // A hairline divider rather than a gap: a gap would show
+                    // the page background through and break the sweep.
+                    i > 0 && "border-l border-black/10",
+                    // The focus ring goes inside: the strip clips its own
+                    // overflow, so an outset ring on a segment is invisible.
+                    "focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-inset",
+                    isActive && "brightness-110",
+                  )}
+                />
+              );
+            })}
             {/* Where the reader is in the sweep.
 
                 This used to be the loaded window — `start` to `end` — which
@@ -558,48 +615,18 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
                 it claimed most of the archive was "here". What a reader wants
                 from a position indicator is their position.
 
-                So it is a thin marker, moved by the scroll handler writing to
-                this node directly. Not React state: the alternative is a
-                re-render of up to 1,500 tiles on every scroll event to move
-                one element two pixels. */}
+                Moved by the scroll handler writing to this node directly. Not
+                React state: the alternative is a re-render of up to 1,500
+                tiles on every scroll event to move one element two pixels.
+                `pointer-events-none` so it never swallows a click meant for
+                the band underneath it. */}
             <span
               ref={progressRef}
               aria-hidden
-              className="absolute inset-y-0 w-1 -translate-x-1/2 rounded-full bg-white ring-1 ring-black/30 dark:ring-black/50"
+              className="pointer-events-none absolute inset-y-0 w-1 -translate-x-1/2 rounded-full bg-white ring-1 ring-black/40"
               style={{ left: "0%" }}
             />
           </div>
-
-          <ul className="mt-3 grid grid-cols-3 gap-2 text-sm xs:grid-cols-5 sm:grid-cols-9">
-            {marks.map((mark) => {
-              const isActive = mark.key === activeKey;
-              return (
-                <li key={mark.key}>
-                  <button
-                    type="button"
-                    onClick={() => seek(mark.index)}
-                    aria-current={isActive ? "true" : undefined}
-                    className={clsx(
-                      "flex min-h-11 w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 ring-1 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent",
-                      isActive
-                        ? "font-medium text-gray-900 ring-gray-400 dark:text-gray-50 dark:ring-gray-500"
-                        : "text-gray-700 ring-gray-200 hover:ring-gray-400 dark:text-gray-300 dark:ring-gray-700 dark:hover:ring-gray-500",
-                    )}
-                  >
-                    <span
-                      aria-hidden
-                      className="h-2 w-full rounded-full ring-1 ring-black/15 ring-inset"
-                      style={{ background: mark.fill }}
-                    />
-                    <span className="truncate">{mark.label}</span>
-                    <span className="text-xs text-gray-500 tabular-nums dark:text-gray-400">
-                      {mark.count}
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
         </div>
 
         {/* ---- the ribbon ------------------------------------------------
@@ -669,14 +696,7 @@ export default function PhotographySpectrumPage({ images, marks, chromatic, achr
           </ol>
         </div>
 
-        {hasMore ? (
-          <div ref={sentinelRef} className="h-px" aria-hidden />
-        ) : (
-          <p className="mt-6 text-sm text-gray-500 dark:text-gray-400">
-            That is the end of the sweep: {formatCount(chromatic)} photographs with a hue and{" "}
-            {achromatic} without.
-          </p>
-        )}
+        {hasMore && <div ref={sentinelRef} className="h-px" aria-hidden />}
 
         <CustomLightBox {...lightbox} photos={photos} />
         <ToTopButton />
@@ -705,8 +725,6 @@ export async function getStaticProps(): Promise<{ props: Props }> {
 
   const images = imagesBySpectrum();
 
-  const swatch = new Map(COLOR_BUCKETS.map((bucket) => [bucket.id, bucket]));
-
   // The marks read the band straight off each photo's primary family, which is
   // the same key `imagesBySpectrum` bands by, so a mark cannot point at a
   // stretch that holds something else.
@@ -719,7 +737,6 @@ export async function getStaticProps(): Promise<{ props: Props }> {
   // "unusually this colour for this archive".
   const counts = new Map<ColorBucketId, number>();
   const firstIndex = new Map<ColorBucketId, number>();
-  let achromatic = 0;
 
   images.forEach((image, index) => {
     // `primaryFamily` and not `buckets[0]`, and not a second copy of the rule
@@ -729,7 +746,6 @@ export async function getStaticProps(): Promise<{ props: Props }> {
     // scale whose labels pointed at the wrong stretches entirely, blue claiming
     // to start at photo 650 when its band began at 3,088.
     const band = primaryFamily(image.src);
-    if (swatch.get(band)?.neutral !== false) achromatic += 1;
     counts.set(band, (counts.get(band) ?? 0) + 1);
     if (!firstIndex.has(band)) firstIndex.set(band, index);
   });
@@ -758,6 +774,6 @@ export async function getStaticProps(): Promise<{ props: Props }> {
     .sort((a, b) => a.index - b.index);
 
   return {
-    props: { images, marks, chromatic: images.length - achromatic, achromatic },
+    props: { images, marks },
   };
 }

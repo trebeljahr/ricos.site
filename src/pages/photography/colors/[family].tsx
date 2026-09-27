@@ -1,15 +1,8 @@
-import { ColorWheel } from "@components/ColorWheel";
 import { GalleryPage } from "@components/GalleryPage";
 import Layout from "@components/Layout";
-import Link from "next/link";
 import type { ImageProps } from "src/@types";
 import { COLOR_BUCKETS, type ColorBucketId, isColorBucketId } from "src/lib/colorBuckets.mjs";
-import {
-  colorBucketCounts,
-  imagesForBucket,
-  type PhotoColorCounts,
-  tripsForBucket,
-} from "src/lib/photographyColors";
+import { imagesForBucket } from "src/lib/photographyColors";
 import { formatCount } from "src/lib/utils/formatCount";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
@@ -35,98 +28,42 @@ import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
  * 0.178 (78.8%), orange at 0.069 (86.7%). So the cap removes the long accent
  * tail and keeps the part of each family a person came for.
  *
- * The page says the number out loud whenever it applies, and links to the trip
- * galleries, which are uncapped and hold every photo. A stated cap is a fact a
- * reader can act on; a silent one is a page that lies about its own totals.
+ * THE CAP IS NOT STATED ON THE PAGE, AND THAT IS A DELIBERATE TRADE
+ * -----------------------------------------------------------------
+ * It used to be: the page opened with "986 photos carry orange, this page
+ * shows the 600 that carry the most", a line about how membership works and a
+ * row of the trips the colour came from. All of it was cut as chrome standing
+ * between the reader and the photographs, which is what they came for.
+ *
+ * So the page now shows 600 of a larger family without saying so. What makes
+ * that acceptable rather than a lie is that nothing on the page claims a
+ * total: there is no count in the heading and no "showing X of Y", so there is
+ * no number for the gallery to contradict. `total` survives only in the meta
+ * description, which is honest about the family's real size.
+ *
+ * It is still a real trade. Someone scrolling the orange page reaches the end
+ * at 600 and has no way to learn that 386 fainter orange photos exist. If that
+ * matters more than the clean page does, the fix is not to reinstate the
+ * paragraph — it is to let the gallery keep paginating past PAGE_LIMIT.
  */
 const PAGE_LIMIT = 600;
-
-/**
- * How many trips the "where it comes from" row names.
- *
- * Every big family spans all 28 trips, and even pink and purple span 25 — a
- * full row would be four lines of links, most of them reading "Varanasi 1".
- * Measured across the eleven families, the top twelve trips carry between 71%
- * and 98% of a family's photos, so twelve rows answer "where does this colour
- * come from" and the tail only answers "where does it also occur once".
- */
-const TRIP_ROW_LIMIT = 12;
-
-type TripCount = { trip: string; count: number };
 
 type Props = {
   family: ColorBucketId;
   /** Up to PAGE_LIMIT photos, the ones carrying most of this colour first. */
   images: ImageProps[];
-  /** Photos in the whole family, which is what the wheel's centre shows. */
+  /** Photos in the whole family, used for the page description. */
   total: number;
-  counts: PhotoColorCounts;
-  trips: TripCount[];
-  /** Trips carrying this family at all, so the row can own up to what it hides. */
-  tripTotal: number;
 };
 
-/** The trips row: "South India 163 · Rajasthan 138 · …", each linking to that
- *  gallery. This is the axis a painting archive does not have — blue in
- *  Indonesia is water, blue in Himachal Pradesh is altitude — so it is worth
- *  a line of its own rather than being left implicit in the photos. */
-function TripRow({ trips, tripTotal }: { trips: TripCount[]; tripTotal: number }) {
-  const hidden = tripTotal - trips.length;
-
-  return (
-    <div className="flex flex-col gap-2">
-      <h2 className="m-0! text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-        Where it comes from
-      </h2>
-      <ul className="m-0 flex list-none flex-wrap gap-x-3 gap-y-1 p-0 text-sm">
-        {trips.map(({ trip, count }) => (
-          <li key={trip} className="m-0">
-            <Link
-              href={`/photography/${trip}`}
-              // Pages Router prefetches every in-viewport link. Twelve trip
-              // galleries is twelve multi-hundred-photo JSON payloads pulled
-              // down for a row nobody has clicked yet, so these opt out and
-              // fetch on hover instead.
-              prefetch={false}
-              className="text-gray-700 hover:text-accent dark:text-gray-300"
-            >
-              {turnKebabIntoTitleCase(trip)}{" "}
-              <span className="text-gray-500 tabular-nums dark:text-gray-400">{count}</span>
-            </Link>
-          </li>
-        ))}
-        {hidden > 0 && (
-          <li className="m-0">
-            <Link
-              href="/photography"
-              prefetch={false}
-              className="text-gray-500 hover:text-accent dark:text-gray-400"
-            >
-              +{hidden} more {hidden === 1 ? "trip" : "trips"}
-            </Link>
-          </li>
-        )}
-      </ul>
-    </div>
-  );
-}
-
-export default function PhotographyColorFamilyPage({
-  family,
-  images,
-  total,
-  counts,
-  trips,
-  tripTotal,
-}: Props) {
+export default function PhotographyColorFamilyPage({ family, images, total }: Props) {
   // `family` came through isColorBucketId, so the bucket exists. COLOR_BUCKETS
   // is imported rather than passed through props because colorBuckets.mjs is
-  // pure arithmetic and constants — ColorWheel already ships it to the client.
+  // pure arithmetic and constants, so it costs less than serialising the label
+  // into every page's props would.
   const bucket = COLOR_BUCKETS.find(({ id }) => id === family);
   const label = bucket?.label ?? turnKebabIntoTitleCase(family);
-  const swatch = bucket?.swatch ?? "#888888";
   const colourWord = label.toLowerCase();
-  const capped = total > images.length;
   const hero = images[0];
 
   return (
@@ -150,62 +87,7 @@ export default function PhotographyColorFamilyPage({
       ]}
       fullScreen={true}
     >
-      <GalleryPage
-        path={`photography/colors/${family}`}
-        title={label}
-        images={images}
-        intro={
-          <div className="mb-10 flex flex-col gap-8 md:flex-row md:items-start md:gap-10">
-            <div className="flex flex-1 flex-col gap-5">
-              <p className="m-0! flex items-baseline gap-2 text-lg">
-                <span
-                  aria-hidden
-                  className="size-4 shrink-0 translate-y-0.5 rounded-full ring-1 ring-black/15 ring-inset"
-                  style={{ backgroundColor: swatch }}
-                />
-                <span>
-                  {formatCount(total)} photos carry {colourWord}.
-                  {capped && ` This page shows the ${images.length} that carry the most.`}
-                </span>
-              </p>
-              {/* Both sentences are here because the order is not obvious and
-                  is the whole reason the page opens the way it does: a photo
-                  joins a family on a low bar, so an unordered page would open
-                  on accents. */}
-              <p className="m-0! text-base text-gray-600 dark:text-gray-300">
-                A photo counts when it carries the colour anywhere in the frame, so the fullest are
-                first and the accents are last.{" "}
-                {capped && (
-                  <>
-                    The rest are in the{" "}
-                    <Link href="/photography" prefetch={false} className="hover:text-accent">
-                      trip galleries
-                    </Link>
-                    , which hold every photo.
-                  </>
-                )}
-              </p>
-              <TripRow trips={trips} tripTotal={tripTotal} />
-              <p className="m-0! text-sm">
-                <Link href="/photography/colors" className="hover:text-accent">
-                  All eleven colour families
-                </Link>
-              </p>
-            </div>
-            {/* Legend off: the heading above already names this family, and the
-                eleven legend rows would repeat the navigation the wheel is. The
-                width is held down because at its own 352px the wheel outweighs
-                the text beside it and pushes the first row of photos off a
-                laptop screen. */}
-            <ColorWheel
-              counts={counts}
-              active={family}
-              showLegend={false}
-              className="w-full max-w-[224px] shrink-0 self-center md:self-start"
-            />
-          </div>
-        }
-      />
+      <GalleryPage path={`photography/colors/${family}`} title={label} images={images} />
     </Layout>
   );
 }
@@ -229,16 +111,12 @@ export async function getStaticProps({
   if (!isColorBucketId(family)) return { notFound: true };
 
   const all = imagesForBucket(family);
-  const tripRows = tripsForBucket(family);
 
   return {
     props: {
       family,
       images: all.slice(0, PAGE_LIMIT),
       total: all.length,
-      counts: colorBucketCounts(),
-      trips: tripRows.slice(0, TRIP_ROW_LIMIT),
-      tripTotal: tripRows.length,
     },
   };
 }

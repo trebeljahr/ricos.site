@@ -122,9 +122,21 @@ def main():
     words = np.zeros((height, width, 4), np.uint8)
     words[..., 3] = (words_alpha * 255).astype(np.uint8)
 
-    Image.fromarray(pipe, "RGBA").save(OUT / "404-pipe.png", optimize=True)
-    Image.fromarray(words, "RGBA").save(OUT / "404-words.png", optimize=True)
-    print(f"wrote {OUT/'404-pipe.png'} and {OUT/'404-words.png'}")
+    # Both are cropped to the same box, tight around everything either of
+    # them holds. The painting has wide margins of bare paper, and once the
+    # paper is gone those margins are empty space inside the picture's own
+    # box: it lines up with the words beside it by its box, so the box has to
+    # be the picture.
+    ink = (pipe[..., 3] > 8) | (words[..., 3] > 8)
+    rows = np.flatnonzero(ink.any(axis=1))
+    cols = np.flatnonzero(ink.any(axis=0))
+    margin = 6
+    top, bottom = max(0, rows[0] - margin), min(height, rows[-1] + 1 + margin)
+    left, right = max(0, cols[0] - margin), min(width, cols[-1] + 1 + margin)
+
+    Image.fromarray(pipe[top:bottom, left:right], "RGBA").save(OUT / "404-pipe.png", optimize=True)
+    Image.fromarray(words[top:bottom, left:right], "RGBA").save(OUT / "404-words.png", optimize=True)
+    print(f"wrote {OUT/'404-pipe.png'} and {OUT/'404-words.png'} at {right-left}x{bottom-top}")
 
 
 if __name__ == "__main__":

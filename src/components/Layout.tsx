@@ -33,6 +33,10 @@ type Props = {
   noindex?: boolean;
   /** Load katex.min.css for this page only. Set from the content's hasMath. */
   hasMath?: boolean;
+  /** For pages with less on them than fills a window. The page grows to take
+      up whatever room is left over, so the footer sits at the bottom of the
+      window rather than partway up it with the background showing below. */
+  fillViewport?: boolean;
 };
 
 const Layout = ({
@@ -52,11 +56,18 @@ const Layout = ({
   articlePublishedTime,
   noindex = false,
   hasMath = false,
+  fillViewport = false,
 }: Props) => {
   const properTitle = toTitleCase(title);
 
   return (
-    <div className="block relative w-full p-0 m-0 min-h-fit overflow-visible">
+    <div
+      className={
+        fillViewport
+          ? "relative m-0 flex min-h-svh w-full flex-col overflow-visible p-0 [&>main]:flex-1"
+          : "block relative w-full p-0 m-0 min-h-fit overflow-visible"
+      }
+    >
       <Meta
         description={description}
         title={properTitle}

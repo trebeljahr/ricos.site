@@ -27,11 +27,23 @@ const ROOM = 16;
     the page is about: the links are meant to be somewhere else, not crowding
     the two things that are already plain to see. */
 const CLEARANCE = 36;
+/** On a short window there is not the room for that berth, and one nothing
+    fits around leaves every link heaped in whatever corner is left, so it
+    gives way as far as this before that happens. */
+const CLEARANCE_MIN = 12;
+/** Spots that have to be standable in each band of the window before the
+    berth is worth keeping — one for the top of it, one for the middle, one
+    for the bottom. A berth that leaves nothing to stand on above the words
+    puts every link below them, which is the heap it was meant to prevent. */
+const ENOUGH_GROUND = 8;
 /** How finely the free space is sampled when working out where to put them. */
 const SAMPLE = 14;
-/** Rounds of settling, and passes of tidying up afterwards. */
-const SETTLE = 70;
-const NUDGES = 26;
+/** Turns of settling and tidying. Tidying a link off its neighbour undoes a
+    little of the evenness the settling found, so the two take turns rather
+    than the tidying having the last word. */
+const TURNS = 5;
+const SETTLE = 26;
+const NUDGES = 8;
 const KEY_STEP = 52;
 const HINT_AFTER_MS = 5000;
 /** Under the navbar (z-999) and the footer, which are never behind the glass. */
@@ -118,6 +130,9 @@ const SearchPartyEgg = () => {
       const count = sizes.length;
       if (!count) return;
 
+      const wide = band.right - band.left;
+      const tall = Math.max(1, band.bottom - band.top);
+
       // The window, sampled on a coarse grid. Every point on it is ground a
       // link might stand on, and the shape of that ground is what the spread
       // below is measured against.
@@ -126,66 +141,53 @@ const SearchPartyEgg = () => {
         for (let x = band.left; x <= band.right; x += SAMPLE) open.push([x, y]);
       }
 
-      const wide = band.right - band.left;
-      const tall = Math.max(1, band.bottom - band.top);
       const at = sizes.map((size, i) => ({
         x: band.left + ((i % 4) + 0.5) * (wide / 4),
         y: band.top + ((Math.floor(i / 4) % 3) + 0.5) * (tall / 3),
         ...size,
       }));
 
-      // Which of those points each link could actually stand on: a link is as
-      // wide as its name, so a point that would hang a long one over the words
-      // is ground only the short ones can use.
-      const standable = at.map((one) => {
-        const halfW = one.width / 2 + ROOM;
-        const halfH = one.height / 2 + ROOM;
-        const keepX = one.width / 2 + CLEARANCE;
-        const keepY = one.height / 2 + CLEARANCE;
-        return open.map(
-          ([x, y]) =>
-            x >= band.left + halfW &&
-            x <= band.right - halfW &&
-            y >= band.top + halfH &&
-            y <= band.bottom - halfH &&
-            !blocked.some(
-              (b) =>
-                x + keepX > b.left &&
-                x - keepX < b.right &&
-                y + keepY > b.top &&
-                y - keepY < b.bottom,
-            ),
-        );
-      });
+      // Which of those points each link could actually stand on: a link is
+      // as wide as its name, so a point that would hang a long one over the
+      // words is ground only the short ones can use.
+      const groundFor = (berth: number) =>
+        at.map((one) => {
+          const halfW = one.width / 2 + ROOM;
+          const halfH = one.height / 2 + ROOM;
+          const keepX = one.width / 2 + berth;
+          const keepY = one.height / 2 + berth;
+          return open.map(
+            ([x, y]) =>
+              x >= band.left + halfW &&
+              x <= band.right - halfW &&
+              y >= band.top + halfH &&
+              y <= band.bottom - halfH &&
+              !blocked.some(
+                (b) =>
+                  x + keepX > b.left &&
+                  x - keepX < b.right &&
+                  y + keepY > b.top &&
+                  y - keepY < b.bottom,
+              ),
+          );
+        });
 
-      // Each link takes the middle of the ground that is nearer to it than to
-      // any other, over and over, until every one of them holds about the same
-      // amount. Even ground, rather than even spacing: links can sit a fixed
-      // distance apart in a row and still leave half the window empty.
-      for (let round = 0; round < SETTLE; round++) {
-        const pull = at.map(() => ({ x: 0, y: 0, n: 0 }));
+      // As wide a berth as the window can actually afford.
+      let clearance = CLEARANCE;
+      let standable = groundFor(clearance);
+      // Ground in every third of the window, not merely a lot of it in one.
+      const roomEnough = (ground: boolean[][]) => {
+        const thirds = [0, 0, 0];
         for (let s = 0; s < open.length; s++) {
-          const [x, y] = open[s];
-          let nearest = -1;
-          let best = Number.POSITIVE_INFINITY;
-          for (let i = 0; i < count; i++) {
-            if (!standable[i][s]) continue;
-            const away = (at[i].x - x) ** 2 + (at[i].y - y) ** 2;
-            if (away < best) {
-              best = away;
-              nearest = i;
-            }
-          }
-          if (nearest < 0) continue;
-          pull[nearest].x += x;
-          pull[nearest].y += y;
-          pull[nearest].n++;
+          if (!ground.some((spots) => spots[s])) continue;
+          const third = Math.min(2, Math.floor(((open[s][1] - band.top) / tall) * 3));
+          thirds[third]++;
         }
-        for (let i = 0; i < count; i++) {
-          if (!pull[i].n) continue;
-          at[i].x = pull[i].x / pull[i].n;
-          at[i].y = pull[i].y / pull[i].n;
-        }
+        return thirds.every((spots) => spots >= ENOUGH_GROUND);
+      };
+      while (clearance > CLEARANCE_MIN && !roomEnough(standable)) {
+        clearance = Math.max(CLEARANCE_MIN, clearance - 8);
+        standable = groundFor(clearance);
       }
 
       const boxOf = (one: (typeof at)[number], room = ROOM) => ({
@@ -195,63 +197,106 @@ const SearchPartyEgg = () => {
         bottom: one.y + one.height / 2 + room,
       });
 
-      // Middles can be evenly spread and still leave two long links touching,
-      // so they are separated by their boxes afterwards, and anything left
-      // sitting on the words or the picture is moved off outright.
-      for (let pass = 0; pass < NUDGES; pass++) {
-        for (let i = 0; i < count; i++) {
-          for (let j = i + 1; j < count; j++) {
-            const a = boxOf(at[i]);
-            const b = boxOf(at[j]);
-            if (!clash(a, b)) continue;
-            const overX = Math.min(a.right, b.right) - Math.max(a.left, b.left);
-            const overY = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
-            if (overX < overY) {
-              const push = (overX / 2) * (at[i].x < at[j].x ? -1 : 1);
-              at[i].x += push;
-              at[j].x -= push;
-            } else {
-              const push = (overY / 2) * (at[i].y < at[j].y ? -1 : 1);
-              at[i].y += push;
-              at[j].y -= push;
+      /** Each link takes the middle of the ground that is nearer to it than
+          to any other. Even ground, rather than even spacing: links can sit a
+          fixed distance apart in a row and still leave half the window
+          empty. */
+      const settle = (rounds: number) => {
+        for (let round = 0; round < rounds; round++) {
+          const pull = at.map(() => ({ x: 0, y: 0, n: 0 }));
+          for (let s = 0; s < open.length; s++) {
+            const [x, y] = open[s];
+            let nearest = -1;
+            let best = Number.POSITIVE_INFINITY;
+            for (let i = 0; i < count; i++) {
+              if (!standable[i][s]) continue;
+              const away = (at[i].x - x) ** 2 + (at[i].y - y) ** 2;
+              if (away < best) {
+                best = away;
+                nearest = i;
+              }
+            }
+            if (nearest < 0) continue;
+            pull[nearest].x += x;
+            pull[nearest].y += y;
+            pull[nearest].n++;
+          }
+          for (let i = 0; i < count; i++) {
+            if (!pull[i].n) continue;
+            at[i].x = pull[i].x / pull[i].n;
+            at[i].y = pull[i].y / pull[i].n;
+          }
+        }
+      };
+
+      /** Middles can be evenly spread and still leave two long links
+          touching, so they are separated by their boxes, and anything sitting
+          on the words or the picture is moved off. */
+      const tidy = (passes: number) => {
+        for (let pass = 0; pass < passes; pass++) {
+          for (let i = 0; i < count; i++) {
+            for (let j = i + 1; j < count; j++) {
+              const a = boxOf(at[i]);
+              const b = boxOf(at[j]);
+              if (!clash(a, b)) continue;
+              const overX = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+              const overY = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+              if (overX < overY) {
+                const push = (overX / 2) * (at[i].x < at[j].x ? -1 : 1);
+                at[i].x += push;
+                at[j].x -= push;
+              } else {
+                const push = (overY / 2) * (at[i].y < at[j].y ? -1 : 1);
+                at[i].y += push;
+                at[j].y -= push;
+              }
             }
           }
-        }
-        for (let i = 0; i < count; i++) {
-          const halfW = at[i].width / 2 + ROOM;
-          const halfH = at[i].height / 2 + ROOM;
-          for (const other of blocked) {
-            const box = boxOf(at[i], CLEARANCE);
-            if (!clash(box, other)) continue;
-            // Four ways out. A link held against the edge of the window cannot
-            // take the nearest one, so the shortest that it can actually take
-            // is the one it takes.
-            const ways = [
-              { x: other.left - box.right, y: 0 },
-              { x: other.right - box.left, y: 0 },
-              { x: 0, y: other.top - box.bottom },
-              { x: 0, y: other.bottom - box.top },
-            ]
-              .filter((way) => {
-                const x = at[i].x + way.x;
-                const y = at[i].y + way.y;
-                return (
-                  x >= band.left + halfW &&
-                  x <= band.right - halfW &&
-                  y >= band.top + halfH &&
-                  y <= band.bottom - halfH
-                );
-              })
-              .sort((a, b) => Math.hypot(a.x, a.y) - Math.hypot(b.x, b.y));
-            const way = ways[0];
-            if (!way) continue;
-            at[i].x += way.x;
-            at[i].y += way.y;
+          for (let i = 0; i < count; i++) {
+            const halfW = at[i].width / 2 + ROOM;
+            const halfH = at[i].height / 2 + ROOM;
+            for (const other of blocked) {
+              const box = boxOf(at[i], clearance);
+              if (!clash(box, other)) continue;
+              // Four ways out. A link held against the edge of the window
+              // cannot take the nearest one, so the shortest it can actually
+              // take is the one it takes.
+              const ways = [
+                { x: other.left - box.right, y: 0 },
+                { x: other.right - box.left, y: 0 },
+                { x: 0, y: other.top - box.bottom },
+                { x: 0, y: other.bottom - box.top },
+              ]
+                .filter((way) => {
+                  const x = at[i].x + way.x;
+                  const y = at[i].y + way.y;
+                  return (
+                    x >= band.left + halfW &&
+                    x <= band.right - halfW &&
+                    y >= band.top + halfH &&
+                    y <= band.bottom - halfH
+                  );
+                })
+                .sort((one, two) => Math.hypot(one.x, one.y) - Math.hypot(two.x, two.y));
+              const way = ways[0];
+              if (!way) continue;
+              at[i].x += way.x;
+              at[i].y += way.y;
+            }
+            at[i].x = Math.min(Math.max(at[i].x, band.left + halfW), band.right - halfW);
+            at[i].y = Math.min(Math.max(at[i].y, band.top + halfH), band.bottom - halfH);
           }
-          at[i].x = Math.min(Math.max(at[i].x, band.left + halfW), band.right - halfW);
-          at[i].y = Math.min(Math.max(at[i].y, band.top + halfH), band.bottom - halfH);
         }
+      };
+
+      for (let turn = 0; turn < TURNS; turn++) {
+        settle(SETTLE);
+        tidy(NUDGES);
       }
+      // Settling has the last word on where they sit, and tidying the last
+      // word on what they are allowed to sit on.
+      settle(SETTLE);
+      tidy(NUDGES);
 
       // Last resort. A link with nowhere good to go can end up pressed
       // against the words after all that pushing, so any that is still on
@@ -259,7 +304,7 @@ const SearchPartyEgg = () => {
       // on — which is always somewhere, since it had ground to begin with.
       for (let i = 0; i < count; i++) {
         const stuck =
-          blocked.some((other) => clash(boxOf(at[i], CLEARANCE), other)) ||
+          blocked.some((other) => clash(boxOf(at[i], clearance), other)) ||
           at.some((one, j) => j !== i && clash(boxOf(at[i]), boxOf(one)));
         if (!stuck) continue;
         let best: number[] | null = null;
@@ -286,7 +331,24 @@ const SearchPartyEgg = () => {
 
     place();
     window.addEventListener("resize", place);
-    return () => window.removeEventListener("resize", place);
+    // The words are not all there at once: the guess at a mistyped address
+    // arrives after the page has been looked up, and a link dealt out before
+    // it turns up would be left sitting underneath it.
+    const main = document.querySelector("main");
+    let soon = 0;
+    const again = () => {
+      window.cancelAnimationFrame(soon);
+      soon = window.requestAnimationFrame(place);
+    };
+    // Watching for the line to turn up rather than for the page to change
+    // size: the page is as tall as the window whatever is written on it.
+    const watcher = main ? new MutationObserver(again) : null;
+    watcher?.observe(main as Node, { childList: true, subtree: true });
+    return () => {
+      window.removeEventListener("resize", place);
+      window.cancelAnimationFrame(soon);
+      watcher?.disconnect();
+    };
   }, [hiding, mounted]);
 
   // Someone who has not moved the glass for a while gets told what it is for.

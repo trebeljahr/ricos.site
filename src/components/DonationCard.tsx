@@ -219,7 +219,7 @@ export function DonationCard({ className }: DonationCardProps) {
             Keep this place alive
           </h2>
           <p className="mt-label mb-0 max-w-prose text-gray-700 dark:text-gray-200">
-            Monthly helps me plan ahead. A one-off is every bit as welcome.
+            Monthly helps me plan ahead. A one-off is just as welcome.
           </p>
 
           {showStripe && (

@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRecordEggFind } from "src/hooks/useEasterEgg";
@@ -195,30 +196,45 @@ const NeedleEgg = () => {
         const scale = 1 - clicks * SHRINK_PER_CLICK;
         const tilt = index % 2 ? 16 : -16;
         return (
-          <motion.button
+          // The button keeps its full size while the hay inside shrinks, so a
+          // quick run of clicks at the top of a bale still lands on it. Once the
+          // hay is gone, or the needle found, the empty box takes no clicks.
+          <button
             key={`${at.x}-${at.y}`}
             type="button"
             aria-label="Haystack"
             onClick={() => pull(index)}
-            className="absolute cursor-pointer touch-manipulation appearance-none border-0 bg-transparent p-0 leading-none"
-            style={{ left: at.x, top: at.y, width: SIZE, transformOrigin: "50% 100%" }}
-            animate={
-              burst[index]
-                ? reduceMotion
-                  ? { opacity: 0 }
-                  : { scale: [scale, scale + 0.3, 0], rotate: [0, tilt, tilt], opacity: [1, 1, 0] }
-                : { scale: gone ? 0 : scale, opacity: gone ? 0 : 1 }
-            }
-            transition={
-              reduceMotion
-                ? { duration: 0.2 }
-                : burst[index]
-                  ? { duration: 0.36, times: [0, 0.3, 1], ease: "easeOut" }
-                  : { type: "spring", stiffness: 420, damping: 16 }
-            }
+            className={clsx(
+              "absolute cursor-pointer touch-manipulation appearance-none border-0 bg-transparent p-0 leading-none",
+              (gone || found) && "pointer-events-none",
+            )}
+            style={{ left: at.x, top: at.y, width: SIZE }}
           >
-            <Haystack size={SIZE} />
-          </motion.button>
+            <motion.span
+              className="block"
+              style={{ transformOrigin: "50% 100%" }}
+              animate={
+                burst[index]
+                  ? reduceMotion
+                    ? { opacity: 0 }
+                    : {
+                        scale: [scale, scale + 0.3, 0],
+                        rotate: [0, tilt, tilt],
+                        opacity: [1, 1, 0],
+                      }
+                  : { scale: gone ? 0 : scale, opacity: gone ? 0 : 1 }
+              }
+              transition={
+                reduceMotion
+                  ? { duration: 0.2 }
+                  : burst[index]
+                    ? { duration: 0.36, times: [0, 0.3, 1], ease: "easeOut" }
+                    : { type: "spring", stiffness: 420, damping: 16 }
+              }
+            >
+              <Haystack size={SIZE} />
+            </motion.span>
+          </button>
         );
       })}
       {straws.map((straw) => (

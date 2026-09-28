@@ -26,7 +26,7 @@ import {
 } from "src/lib/donation";
 import useLocalStorageState from "use-local-storage-state";
 import { ExternalLink } from "./ExternalLink";
-import { SiPatreon, SiPaypal, SiWise } from "./Icons";
+import { SiBuymeacoffee, SiKofi, SiPatreon, SiPaypal, SiWise } from "./Icons";
 
 type DonationCardProps = {
   className?: string;
@@ -62,6 +62,8 @@ const doorLogos: Record<
 > = {
   PayPal: { Icon: SiPaypal, className: "bg-[#002991] text-white" },
   Wise: { Icon: SiWise, className: "bg-[#9FE870] text-[#163300]" },
+  "Ko-fi": { Icon: SiKofi, className: "bg-[#FF6433] text-white" },
+  "Buy Me a Coffee": { Icon: SiBuymeacoffee, className: "bg-[#FFDD00] text-black" },
   Patreon: { Icon: SiPatreon, className: "bg-black text-white dark:bg-white dark:text-black" },
 };
 
@@ -74,14 +76,14 @@ function OtherDoors() {
       <p className="m-0 text-sm font-semibold text-gray-600 dark:text-gray-300">
         Other ways to give
       </p>
-      <div className="mt-label flex flex-col gap-tight sm:flex-row sm:flex-wrap">
+      <div className="mt-label grid gap-tight sm:grid-cols-2">
         {otherDoors.map((door) => {
           const logo = doorLogos[door.name];
           return (
             <ExternalLink
               key={door.name}
               href={door.url}
-              className="group inline-flex min-h-14 items-center sm:flex-1 sm:basis-48 gap-label rounded-md border-2 border-gray-200 px-3 py-3 no-underline transition-colors hover:border-accent dark:border-gray-700"
+              className="group flex min-h-14 items-center sm:last:odd:col-span-2 gap-label rounded-md border-2 border-gray-200 px-3 py-3 no-underline transition-colors hover:border-accent dark:border-gray-700"
             >
               {logo && (
                 <span

@@ -92,8 +92,9 @@ function OtherDoors() {
   if (!hasOtherDoors) return null;
   const described = otherDoors.filter((door) => door.blurb);
   const platforms = otherDoors.filter((door) => !door.blurb);
+  // A group gap, not a stack gap, so it reads as its own section after Stripe.
   return (
-    <div className="mt-stack">
+    <div className="mt-group">
       <p className="m-0 text-sm font-semibold text-gray-600 dark:text-gray-300">
         Other ways to give
       </p>

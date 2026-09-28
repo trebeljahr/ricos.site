@@ -68,16 +68,20 @@ export default function DonatePage() {
           <h2>Other ways to help</h2>
           <ul>
             <li>
-              Send a piece to a friend who&apos;d enjoy it. That&apos;s still the best way anything
-              here travels.
+              Send a piece to somebody who'd enjoy it. Spreading the word is a huge help, and it
+              doesn't cost a thing.
             </li>
             <li>
               Reply to the newsletter. I read the replies, and some of my favorite conversations
               started from somebody who just wrote back.
             </li>
+            <li>
+              If you have a website or something cool you made, send it my way, I love seeing what
+              other people are up to and get inspired by it.
+            </li>
           </ul>
 
-          <p className="mt-sub">Thanks for being here and reading along.</p>
+          <p className="mt-sub">Either way, thanks for being here and reading along. 👋🏻</p>
         </article>
 
         <footer className="mx-auto mt-section max-w-prose">

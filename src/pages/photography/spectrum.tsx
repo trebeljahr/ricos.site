@@ -658,8 +658,10 @@ export default function PhotographySpectrumPage({ images, tints, marks }: Props)
                 style={{
                   // A ramp rather than a block. Each segment runs from the
                   // midpoint it shares with the band before it to the one it
-                  // shares with the band after, so neighbours meet at the
-                  // same colour and the eleven of them read as one gradient.
+                  // shares with the band after, flat in its own colour across
+                  // the middle and blended round the hue circle at the edges,
+                  // so neighbours meet at the same colour and the eleven of
+                  // them read as one gradient.
                   // Done per segment because a minimum width means they are
                   // not proportional, so no single gradient on the container
                   // could be told where the seams fall.

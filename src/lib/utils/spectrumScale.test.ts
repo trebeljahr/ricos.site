@@ -1,8 +1,10 @@
+import { COLOR_BUCKETS, parseHex, rgbToOklch } from "src/lib/colorBuckets.mjs";
 import {
   alongBand,
   bandAt,
-  mixHex,
+  mixOklch,
   positionInBand,
+  STRIP_CHROMA_BOOST,
   segmentGradient,
 } from "src/lib/utils/spectrumScale";
 import { describe, expect, it } from "vitest";
@@ -69,42 +71,111 @@ describe("bandAt", () => {
   });
 });
 
-describe("mixHex", () => {
+describe("mixOklch", () => {
+  const gold = { l: 0.7, c: 0.15, h: 84 };
+  const green = { l: 0.5, c: 0.15, h: 129 };
+
   it("returns the endpoints unchanged", () => {
-    expect(mixHex("#000000", "#ffffff", 0)).toBe("#000000");
-    expect(mixHex("#000000", "#ffffff", 1)).toBe("#ffffff");
+    expect(mixOklch(gold, green, 0)).toEqual(gold);
+    expect(mixOklch(gold, green, 1)).toEqual(green);
   });
 
-  it("blends per channel", () => {
-    expect(mixHex("#000000", "#ffffff", 0.5)).toBe("#808080");
-    expect(mixHex("#ff0000", "#0000ff", 0.5)).toBe("#800080");
+  it("walks the hue circle instead of cutting across it", () => {
+    // sRGB put this midpoint at an olive brown. Here the chroma holds.
+    const mid = mixOklch(gold, green, 0.5);
+    expect(mid.h).toBeCloseTo(106.5);
+    expect(mid.c).toBeCloseTo(0.15);
+  });
+
+  it("goes the short way round past 0°", () => {
+    const pink = { l: 0.6, c: 0.14, h: 348 };
+    const red = { l: 0.5, c: 0.17, h: 22 };
+    expect(mixOklch(pink, red, 0.5).h).toBeCloseTo(5);
+  });
+
+  it("keeps a colour's hue when blending it with a neutral", () => {
+    const pink = { l: 0.6, c: 0.14, h: 348 };
+    const white = { l: 0.93, c: 0, h: 80 };
+    const mid = mixOklch(pink, white, 0.5);
+    expect(mid.h).toBe(348);
+    expect(mid.c).toBeCloseTo(0.07);
   });
 
   it("clamps a fraction from outside the range", () => {
-    expect(mixHex("#102030", "#405060", -1)).toBe("#102030");
-    expect(mixHex("#102030", "#405060", 5)).toBe("#405060");
-  });
-
-  it("falls back to the first colour rather than emitting nonsense", () => {
-    expect(mixHex("rebeccapurple", "#ffffff", 0.5)).toBe("rebeccapurple");
-    expect(mixHex("#abc", "#ffffff", 0.5)).toBe("#abc");
+    expect(mixOklch(gold, green, -1)).toEqual(gold);
+    expect(mixOklch(gold, green, 5)).toEqual(green);
   });
 });
 
+/** The stops of a `segmentGradient` result, as `[colour, position]`. */
+const stopsOf = (gradient: string) =>
+  gradient
+    .replace(/^linear-gradient\(to right, /, "")
+    .replace(/\)$/, "")
+    .split(", ")
+    .map((stop) => {
+      const at = stop.lastIndexOf(" ");
+      return [stop.slice(0, at), stop.slice(at + 1)] as const;
+    });
+
+/** Parse an `oklch(L% C H)` stop back into numbers. */
+const oklchOf = (css: string) => {
+  const [l, c, h] = css.replace(/^oklch\(|\)$/g, "").split(" ");
+  return { l: Number.parseFloat(l) / 100, c: Number(c), h: Number(h) };
+};
+
+const swatch = (id: string) => COLOR_BUCKETS.find((bucket) => bucket.id === id)?.swatch ?? "";
+
 describe("segmentGradient", () => {
+  const [orange, gold, green] = ["orange", "gold", "green"].map(swatch);
+
   it("meets its neighbours at a shared colour", () => {
     // Gold between orange and green: the stop it ends on has to be the stop
     // green begins on, or the seam is visible.
-    const goldEnd = mixHex("#c9a227", "#4f7a3a", 0.5);
-    const greenStart = mixHex("#c9a227", "#4f7a3a", 0.5);
-    expect(goldEnd).toBe(greenStart);
-    expect(segmentGradient("#c9a227", "#c2662a", "#4f7a3a")).toBe(
-      `linear-gradient(to right, ${mixHex("#c2662a", "#c9a227", 0.5)}, #c9a227 50%, ${goldEnd})`,
-    );
+    const goldStops = stopsOf(segmentGradient(gold, orange, green));
+    const greenStops = stopsOf(segmentGradient(green, gold, null));
+    expect(goldStops.at(-1)?.[1]).toBe("100%");
+    expect(greenStops[0][1]).toBe("0%");
+    expect(goldStops.at(-1)?.[0]).toBe(greenStops[0][0]);
+  });
+
+  it("holds its own colour flat across the middle", () => {
+    const stops = stopsOf(segmentGradient(gold, orange, green));
+    const own = stops.find(([, at]) => at === "30%")?.[0];
+    expect(own).toBeDefined();
+    expect(stops.find(([, at]) => at === "70%")?.[0]).toBe(own);
   });
 
   it("holds its own colour at the ends of the strip", () => {
-    expect(segmentGradient("#a8322b", null, "#c2662a")).toContain("#a8322b, #a8322b 50%");
-    expect(segmentGradient("#2b2926", "#8c8c88", null)).toContain("#2b2926 50%, #2b2926)");
+    const first = stopsOf(segmentGradient(swatch("red"), null, orange));
+    expect(first[0][1]).toBe("0%");
+    expect(first[1]).toEqual([first[0][0], "70%"]);
+    const last = stopsOf(segmentGradient(swatch("black"), swatch("grey"), null));
+    expect(last.at(-1)?.[1]).toBe("100%");
+    expect(last.at(-2)).toEqual([last.at(-1)?.[0], "30%"]);
+  });
+
+  it("paints the band's own hue, more saturated than the swatch", () => {
+    const own = oklchOf(stopsOf(segmentGradient(gold, orange, green))[4][0]);
+    const plain = oklchOf(stopsOf(segmentGradient(gold, null, null))[0][0]);
+    expect(own).toEqual(plain);
+    const rgb = parseHex(gold);
+    if (!rgb) throw new Error("gold swatch is not a hex colour");
+    const measured = rgbToOklch(rgb.r, rgb.g, rgb.b);
+    expect(own.h).toBeCloseTo(measured.h, 0);
+    expect(own.c).toBeCloseTo(measured.c * STRIP_CHROMA_BOOST, 3);
+  });
+
+  it("fades pink into white without passing through another hue", () => {
+    const pink = oklchOf(stopsOf(segmentGradient(swatch("pink"), null, null))[0][0]);
+    const whiteStops = stopsOf(segmentGradient(swatch("white"), swatch("pink"), swatch("grey")));
+    for (const [css] of whiteStops) {
+      const stop = oklchOf(css);
+      if (stop.c > 0) expect(stop.h).toBeCloseTo(pink.h, 0);
+    }
+  });
+
+  it("returns a fill it cannot parse as it is", () => {
+    expect(segmentGradient("rebeccapurple", null, null)).toBe("rebeccapurple");
   });
 });

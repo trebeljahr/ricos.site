@@ -608,16 +608,18 @@ export default function PhotographySpectrumPage({ images, tints, marks }: Props)
             glass, and an opaque white band under the glass read as a slab
             cut out of it. The strip floats on the photographs instead, held
             off them by a white ring for the dark frames and a soft shadow
-            for the pale ones. The swatches themselves stay opaque, so tiles
-            passing behind never tint them, and the swatches are the one
-            thing here that has to stay trustworthy. Dark mode keeps a solid
+            for the pale ones. `px-3` pulls it in from the ribbon's edges, so
+            its rounded ends sit on the photographs rather than straddling
+            the line where they meet the page. The swatches stay opaque, so
+            tiles passing behind never tint them, and the swatches are the
+            one thing here that has to stay trustworthy. Dark mode keeps a solid
             backdrop, because the navbar there is solid gray-900 too and the
             two read as one header.
 
             `not-prose` because <body> is a prose container: without it the
             typography plugin puts list markers and margins on every child and
             the row stops being a row. */}
-        <div className="not-prose sticky top-15 z-20 mb-6 pt-3 pb-3 dark:bg-gray-900">
+        <div className="not-prose sticky top-15 z-20 mb-6 px-3 pt-3 pb-3 dark:bg-gray-900">
           {/* The pointer is handled here rather than on the segments, and
               captured on the way down, so a drag keeps scrolling when it
               leaves the strip and a press is handled once, as the drag's

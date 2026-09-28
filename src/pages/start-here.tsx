@@ -1,10 +1,10 @@
 import { Card, type CardCover } from "@components/Card";
-import { DottedTrail } from "@components/DottedTrail";
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header, { PageMain } from "@components/PostHeader";
+import { TrailMap } from "@components/TrailMap";
 import clsx from "clsx";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -80,37 +80,39 @@ export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Prop
         ]}
       />
       <PageMain>
-        <Header
-          breadcrumbs={{ path: "start-here" }}
-          title="Start Here"
-          subtitle="A few things that show what this site is about."
-        />
+        <TrailMap>
+          <Header
+            breadcrumbs={{ path: "start-here" }}
+            title="Start Here"
+            subtitle="A few things that show what this site is about."
+          />
 
-        {/* "isolate" keeps the decorative trail behind the two columns instead of
-            behind the page background. */}
-        <section className="relative isolate grid items-center gap-8 md:grid-cols-[2fr_3fr] md:gap-12">
-          <DottedTrail />
-          <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-gray-200 dark:bg-gray-800 md:aspect-4/5">
-            <ImageWithLoader
-              src={PORTRAIT.src}
-              alt={PORTRAIT.alt}
-              fill
-              sizes="(max-width: 768px) calc(100vw - 24px), 400px"
-              priority
-              className="object-cover"
-            />
-          </div>
-          <div className="flow-para [&_p]:text-lg md:[&_p]:text-xl">
-            <p>
-              Hey, I&apos;m Rico. I travel slowly, read a lot and make games and cool websites. This
-              website is where all of it ends up.
-            </p>
-            <p>
-              Over the years it grew into a lot of pages. You don&apos;t need to see all of them.
-              Scroll down for a small taste instead, and if you like it, stay in touch.
-            </p>
-          </div>
-        </section>
+          <section className="grid items-center gap-8 md:grid-cols-[2fr_3fr] md:gap-12">
+            <div
+              data-trail-photo
+              className="relative aspect-4/3 overflow-hidden rounded-2xl bg-gray-200 dark:bg-gray-800 md:aspect-4/5"
+            >
+              <ImageWithLoader
+                src={PORTRAIT.src}
+                alt={PORTRAIT.alt}
+                fill
+                sizes="(max-width: 768px) calc(100vw - 24px), 400px"
+                priority
+                className="object-cover"
+              />
+            </div>
+            <div className="flow-para [&_p]:text-lg md:[&_p]:text-xl">
+              <p>
+                Hey, I&apos;m Rico. I travel slowly, read a lot and make games and cool websites.
+                This website is where all of it ends up.
+              </p>
+              <p>
+                Over the years it grew into a lot of pages. You don&apos;t need to see all of them.
+                Scroll down for a small taste instead, and if you like it, stay in touch.
+              </p>
+            </div>
+          </section>
+        </TrailMap>
 
         <Section
           kicker="Photography"
@@ -252,7 +254,10 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
     title,
     href,
     note,
-    cover: { src: `/assets/pages/${name}.png`, alt: `Preview of the ${title} 3D scene` },
+    cover: {
+      src: `/assets/pages/${name}.png`,
+      alt: `Preview of the ${title} 3D scene`,
+    },
   }));
 
   return { props: { bestOfPhotos, demos, rabbitHoles: RABBIT_HOLES } };

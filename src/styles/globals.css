@@ -1200,57 +1200,77 @@ code {
   font-family: "Fira Code", monospace;
 }
 
-/* The dotted trail behind the intro of /start-here (src/components/DottedTrail.tsx).
-   Two mask layers, multiplied together:
-   1. a gradient that grows sideways over the wrapper, so the dots appear one
-      after another from left to right instead of fading in as a block. Its
-      soft end is the drawing front while it grows and, once it has stopped,
-      the fade that lets the trail leave the window instead of ending on a
-      hard last dot.
-   2. a static dip in the middle of the window, where the content column sits
-      at every width. The trail crosses behind the photo and the text there,
-      and at a third of its strength it stays out of the way of reading.
-   The mask is on the element and not inside the SVG because Chrome caches an
-   SVG <mask> and does not repaint the masked path while only the mask content
-   animates. Without the animation (reduced motion, no support) the growing
-   layer is already at full size, so the whole trail is simply there. */
-.trail-draw {
-  mask-image:
-    linear-gradient(to right, #000 66%, transparent 85%),
-    linear-gradient(
-      to right,
-      #000 0 8%,
-      rgba(0, 0, 0, 0.7) 24%,
-      rgba(0, 0, 0, 0.7) 76%,
-      #000 92% 100%
-    );
-  mask-composite: intersect;
-  mask-repeat: no-repeat;
-  mask-position:
-    left center,
-    center;
-  mask-size:
-    135% 100%,
-    100% 100%;
+/* The trail map at the top of /start-here (src/components/TrailMap.tsx).
+   Every dot and marker carries its own animation-delay, the moment the pen
+   passes it, so the trail draws itself along its route, loops included.
+   .trail-map-draw is only there for the first layout; without it, or with
+   reduced motion, the map is simply there. */
+.trail-dot,
+.trail-stamp,
+.trail-needle {
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
-@keyframes trail-draw {
+@keyframes trail-dot {
   from {
-    mask-size:
-      0% 100%,
-      100% 100%;
+    opacity: 0;
+    transform: scale(0.2);
   }
-  to {
-    mask-size:
-      135% 100%,
-      100% 100%;
+}
+
+@keyframes trail-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Pressed onto the map. */
+@keyframes trail-stamp {
+  from {
+    opacity: 0;
+    transform: scale(1.8) rotate(-20deg);
+  }
+}
+
+/* A compass needle finding north: overshoot, swing back, settle. */
+@keyframes trail-needle {
+  0% {
+    opacity: 0;
+    transform: rotate(-70deg);
+  }
+  15% {
+    opacity: 1;
+  }
+  32% {
+    transform: rotate(32deg);
+  }
+  52% {
+    transform: rotate(-15deg);
+  }
+  70% {
+    transform: rotate(7deg);
+  }
+  85% {
+    transform: rotate(-2.5deg);
+  }
+  100% {
+    transform: rotate(0deg);
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* Late and slow, so it never pulls attention off the text. */
-  .trail-draw {
-    animation: trail-draw 4.2s cubic-bezier(0.33, 0, 0.2, 1) 900ms both;
+  .trail-map-draw .trail-dot {
+    animation: trail-dot 450ms ease-out both;
+  }
+  .trail-map-draw .trail-fade {
+    animation: trail-fade 900ms ease-out both;
+  }
+  .trail-map-draw .trail-stamp {
+    animation: trail-stamp 350ms cubic-bezier(0.3, 0, 0.4, 1) both;
+  }
+  .trail-map-draw .trail-needle {
+    animation: trail-needle 2.8s ease-in-out both;
   }
 }
 

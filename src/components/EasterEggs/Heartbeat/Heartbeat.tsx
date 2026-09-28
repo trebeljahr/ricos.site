@@ -10,6 +10,7 @@ import {
 } from "react";
 import { useRecordEggFind } from "src/hooks/useEasterEgg";
 import { BASELINE, MONITOR_HEIGHT, startMonitor } from "./monitor";
+import { SOUND_PEAK_S, systole, thump, wake, warmUp } from "./sound";
 
 /** The pink of the fractal.garden heart. */
 const HEART_PINK = "#e8839b";
@@ -58,9 +59,10 @@ export const HeartMonitor = () => {
 /**
  * Easter egg: the heart in the byline. Clicking it switches on a heart
  * monitor, and the footer's top border becomes the trace, beating in time
- * with the heart. Every click winds the rate up, and a click can force a beat
- * of its own if the heart is ready for one. Left alone, the heart calms back
- * down to rest, and a few seconds after that the monitor switches off.
+ * with the heart, and each beat is heard as a lub-dub. Every click winds the
+ * rate up, and a click can force a beat of its own if the heart is ready for
+ * one. Left alone, the heart calms back down to rest, and a few seconds after
+ * that the monitor switches off.
  */
 export const Heart = () => {
   const { on, setOn, canvas } = useHeartbeat();
@@ -76,22 +78,33 @@ export const Heart = () => {
     if (!canvas) return;
     canvas.animate([{ opacity: 0 }, { opacity: 1 }], FADE_MS);
 
+    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const running = startMonitor(canvas, {
       color: HEART_PINK,
-      calm: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+      calm,
       // Lub-dub, harder the faster it goes, and over before the next beat.
+      // The heart swells with each of the two sounds, so it keeps time with
+      // what you hear as well as with the trace.
       onBeat: (effort, rr) => {
+        thump(effort, rr);
+        if (calm) return;
         const peak = 1.2 + 0.2 * effort;
+        const lub = SOUND_PEAK_S;
+        const dub = lub + systole(rr);
+        const end = dub + (dub - lub) / 2;
         heartRef.current?.animate(
-          [
-            { transform: "scale(1)" },
-            { transform: `scale(${peak})`, offset: 0.14 },
-            { transform: "scale(1)", offset: 0.28 },
-            { transform: `scale(${1 + (peak - 1) * 0.75})`, offset: 0.42 },
-            { transform: "scale(1)", offset: 0.56 },
-            { transform: "scale(1)" },
-          ],
-          { duration: Math.min(900, rr * 1000), easing: "ease-in-out" },
+          {
+            transform: [
+              "scale(1)",
+              `scale(${peak})`,
+              "scale(1)",
+              `scale(${1 + (peak - 1) * 0.75})`,
+              "scale(1)",
+            ],
+            offset: [0, lub / end, (lub + dub) / 2 / end, dub / end, 1],
+            easing: "ease-in-out",
+          },
+          end * 1000,
         );
       },
       onRest: () => {
@@ -114,6 +127,7 @@ export const Heart = () => {
   }, [canvas, setOn]);
 
   const click = () => {
+    wake();
     if (!found.current) {
       found.current = true;
       recordFind("heartbeat");
@@ -137,6 +151,8 @@ export const Heart = () => {
       type="button"
       // Stops a burst of clicks from selecting the byline.
       onMouseDown={(event) => event.preventDefault()}
+      onPointerEnter={warmUp}
+      onFocus={warmUp}
       onClick={click}
       className="inline cursor-pointer touch-manipulation appearance-none rounded-sm border-0 bg-transparent p-0 font-[inherit] leading-[inherit] text-inherit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
     >

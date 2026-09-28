@@ -52,7 +52,8 @@ function wave(s: number, { rr, paced }: Beat) {
 
 type MonitorOptions = {
   color: string;
-  /** Reduced motion: no sweep, the whole strip is redrawn in place instead. */
+  /** Reduced motion: no sweep, the whole strip is redrawn in place instead.
+      The beats still come, to be heard. */
   calm: boolean;
   /** A beat, with how hard it is pounding: 0 at rest, 1 flat out. */
   onBeat: (effort: number, rr: number) => void;
@@ -191,9 +192,11 @@ export function startMonitor(canvas: HTMLCanvasElement, options: MonitorOptions)
       still();
     }
 
-    if (!options.calm && width > 0) {
+    if (width > 0) {
       if (t - nextBeat > 1) nextBeat = t;
       while (nextBeat <= t) beat(nextBeat, true);
+    }
+    if (!options.calm && width > 0) {
       // Every pixel the sweep crossed this frame gets the trace at the moment
       // the sweep was over it.
       const from = head;
@@ -228,7 +231,6 @@ export function startMonitor(canvas: HTMLCanvasElement, options: MonitorOptions)
       lastClick = t;
       resting = false;
       bpm = Math.min(MAX_BPM, bpm + BPM_PER_CLICK);
-      if (options.calm) return;
       if (t - lastBeat > REFRACTORY_S) beat(t, false);
       else nextBeat = lastBeat + 60 / bpm;
     },

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <title>Hatchkit hatching egg favicon</title>
+  <defs>
+    <clipPath id="egg-clip">
+      <path d="M16 5.5C21.2 5.5 25 11.1 25 18.2C25 24 21.1 28 16 28C10.9 28 7 24 7 18.2C7 11.1 10.8 5.5 16 5.5Z"/>
+    </clipPath>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="#818cf8"/>
+  <path d="M16 5.5C21.2 5.5 25 11.1 25 18.2C25 24 21.1 28 16 28C10.9 28 7 24 7 18.2C7 11.1 10.8 5.5 16 5.5Z" fill="#ffffff"/>
+  <g clip-path="url(#egg-clip)">
+    <path d="M6.4 16.5L9.5 13.7L12.3 17.1L15 13.6L17.8 17L20.5 13.7L23.4 16.5L25.8 14.4" stroke="#0b0d12" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

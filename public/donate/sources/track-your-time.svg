@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Track Your Time">
+  <!-- Kept byte-for-byte in step with public/brand/mark-tile.svg, and with
+       every raster `pnpm run icons:brand` emits from it, so the browser tab,
+       the extension's toolbar button and the installed app all show one mark.
+
+       Next's file-convention favicon has to be a real file at this path, which
+       is why the tile is inlined rather than imported from public/brand.
+
+       The tile rather than the bare timer arc: a favicon sits on browser
+       chrome, where the arc's neutral track ring has no page background to
+       read against and simply disappears. -->
+  <rect width="64" height="64" rx="14" fill="#4F46E5"/>
+  <circle cx="32" cy="32" r="19" fill="none" stroke="#FFFFFF" stroke-opacity="0.32" stroke-width="7"/>
+  <path d="M32 13A19 19 0 1 1 15.55 41.5" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="32" cy="32" r="4.5" fill="#FFFFFF"/>
+</svg>

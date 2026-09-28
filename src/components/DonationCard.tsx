@@ -8,6 +8,7 @@ import {
   useReducedMotion,
   type Variants,
 } from "motion/react";
+import Image from "next/image";
 import Link from "next/link";
 import { type ReactNode, type SVGProps, useEffect, useId, useRef, useState } from "react";
 import {
@@ -43,7 +44,7 @@ type FullCardProps = DonationCardProps & {
 
 type ThanksProps = DonationCardProps & {
   // The project the donor came from, when it has a site to go back to.
-  backTo?: { name: string; href: string };
+  backTo?: { name: string; href: string; icon?: string };
 };
 
 // localStorage is only readable after hydration; until then every surface
@@ -849,9 +850,10 @@ export function DonationThanks({ className, backTo }: ThanksProps) {
         ref={ref}
         className="relative overflow-hidden rounded-lg border-4 border-gray-200 bg-white px-5 pt-8 pb-10 text-center dark:border-gray-700 dark:bg-gray-800"
       >
+        {/* In the project's colour when the donor came from one (.donation-brand). */}
         <div
           aria-hidden
-          className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-rose-400 via-pink-400 to-amber-300"
+          className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-rose-400 via-pink-400 to-amber-300 in-[.donation-brand]:bg-none in-[.donation-brand]:bg-accent"
         />
         <div
           aria-hidden
@@ -883,7 +885,17 @@ export function DonationThanks({ className, backTo }: ThanksProps) {
             </p>
             {backTo && (
               <p className="mt-stack mb-0">
-                <a href={backTo.href} className={stripButtonClass}>
+                <a href={backTo.href} className={clsx(stripButtonClass, "gap-label")}>
+                  {backTo.icon && (
+                    <Image
+                      src={backTo.icon}
+                      alt=""
+                      aria-hidden="true"
+                      width={24}
+                      height={24}
+                      className="size-6 rounded-md"
+                    />
+                  )}
                   Back to {backTo.name}
                 </a>
               </p>

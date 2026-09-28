@@ -1,10 +1,12 @@
 import { DonationCard, DonationThanks, useDonationSupportedAt } from "@components/DonationCard";
+import { DonationSourceHeader, donationBrandStyle } from "@components/DonationSourceHeader";
 import { ExternalLink } from "@components/ExternalLink";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
+import clsx from "clsx";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import {
@@ -49,8 +51,13 @@ export default function DonatePage() {
   const cameFrom =
     justDonated && isFreshSource(storedSource) ? getDonationSource(storedSource?.slug) : null;
   const backTo = cameFrom?.url
-    ? { name: cameFrom.name, href: supportedUrl(cameFrom.url) }
+    ? { name: cameFrom.name, href: supportedUrl(cameFrom.url), icon: cameFrom.brand?.icon }
     : undefined;
+
+  // The page wears the colour of the project the donor came from, before the
+  // donation and on the thanks after it.
+  const brand = (justDonated ? cameFrom : source)?.brand;
+  const brandStyle = brand ? donationBrandStyle(brand) : undefined;
 
   return (
     <Layout
@@ -74,7 +81,13 @@ export default function DonatePage() {
         ]}
       />
       <PageMain>
-        <article className="mx-auto max-w-prose prose md:prose-lg xl:prose-xl dark:prose-invert">
+        <article
+          className={clsx(
+            "mx-auto max-w-prose prose md:prose-lg xl:prose-xl dark:prose-invert",
+            brand && "donation-brand",
+          )}
+          style={brandStyle}
+        >
           <Header breadcrumbs={{ path: "donate" }} title="Donate" />
 
           {/* A donor coming back from Stripe lands at the top of the page, so the
@@ -83,6 +96,7 @@ export default function DonatePage() {
             <DonationThanks backTo={backTo} />
           ) : (
             <>
+              {source && <DonationSourceHeader source={source} className="mb-group" />}
               {source ? (
                 <p>
                   Thanks for coming over from {source.name}! If it was useful to you or made your

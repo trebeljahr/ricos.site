@@ -118,11 +118,29 @@ export function isInQuietPeriod(supportedAt: number | null, now = Date.now()) {
 // the thanks, offers the way back.
 export const FROM_QUERY_KEY = "from";
 
+// The project's own look, taken from its code, so the page feels like a step
+// on from the site the donor just left rather than a different place.
+export type DonationBrand = {
+  // The project's link/button colour, tuned where needed to read as text on
+  // the white card (accent) and on the dark card (accentDark).
+  accent: string;
+  accentDark: string;
+  // The project's square icon, under public/donate/sources/.
+  icon?: string;
+  // A tile behind an icon drawn on nothing, in the project's own page colour.
+  iconBackground?: string;
+};
+
 export type DonationSource = {
   slug: string;
   name: string;
   // Absolute URL of the project's site; without one the thanks has no way back.
   url?: string;
+  // One line on what the project is, from the /projects catalogue.
+  subtitle?: string;
+  // A screenshot of the project, from the /projects catalogue.
+  cover?: { src: string; alt: string };
+  brand?: DonationBrand;
 };
 
 // The tag on donations that start on ricos.site itself.

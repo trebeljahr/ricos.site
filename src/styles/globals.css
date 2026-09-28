@@ -312,6 +312,20 @@
   scroll-margin-top: 85px;
 }
 
+/*
+ * /donate?from=<slug> wears the project's colour (src/lib/donationSources.ts).
+ * The page sets --brand-accent and --brand-accent-dark inline, and rebinding
+ * the site accent here is enough: every link, hovered tile and focus ring on
+ * the page already reads --color-accent.
+ */
+.donation-brand {
+  --color-accent: var(--brand-accent);
+}
+
+.dark .donation-brand {
+  --color-accent: var(--brand-accent-dark);
+}
+
 .dark .callout-root {
   --callout-surface: var(--color-gray-900, #111827);
   --color-accent: color-mix(in oklab, var(--callout-accent) 78%, white);

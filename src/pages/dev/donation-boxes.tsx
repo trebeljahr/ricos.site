@@ -1,7 +1,10 @@
 import { DonationCard, DonationStrip, DonationThanks } from "@components/DonationCard";
+import { DonationSourceHeader, donationBrandStyle } from "@components/DonationSourceHeader";
 import Layout from "@components/Layout";
 import Header, { PageMain } from "@components/PostHeader";
+import clsx from "clsx";
 import { type ReactNode, useState } from "react";
+import { getDonationSource, SOURCE_BRANDS } from "src/lib/donationSources";
 
 // A dev-only gallery of every donation surface, so the boxes can be compared
 // side by side without hunting across /donate, a long post and the footer.
@@ -33,6 +36,30 @@ function Frame({ label, children }: FrameProps) {
         {label}
       </p>
       {children}
+    </div>
+  );
+}
+
+// Every project that links to /donate?from=<slug>, in its own colours, so the
+// whole set can be checked at once. Chemistry Sketcher has no brand of its own.
+const sourceSlugs = [...Object.keys(SOURCE_BRANDS), "chemistry-sketcher"];
+
+function SourceHeaders() {
+  return (
+    <div className="grid gap-stack">
+      {sourceSlugs.map((slug) => {
+        const source = getDonationSource(slug);
+        if (!source) return null;
+        return (
+          <div
+            key={slug}
+            className={clsx(source.brand && "donation-brand")}
+            style={source.brand ? donationBrandStyle(source.brand) : undefined}
+          >
+            <DonationSourceHeader source={source} />
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -96,6 +123,10 @@ export default function DonationBoxesDevPage() {
           >
             Replay thanks animation
           </button>
+
+          <Pair label="Source headers — /donate?from=<slug>">
+            <SourceHeaders />
+          </Pair>
 
           <Pair label="Footer line — every page">
             <FooterLine />

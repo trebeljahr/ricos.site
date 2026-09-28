@@ -7,6 +7,7 @@ import type { EmojiSprite } from "src/lib/sprites";
 import { EmojiButton } from "../EmojiButton";
 import { clampPageX, PageLayer, pageBox } from "../PageLayer";
 import { useEggRunner } from "../useEggRunner";
+import { PLANT_GAP } from "./plantGap";
 
 const CLICKS = 3;
 // One watering: the can pours while a day, or a night in dark mode, passes.
@@ -19,10 +20,11 @@ const SKY_HEIGHT = 40;
 const SKY_WIDTH = 400;
 // Clouds fade in and out at the sides instead of being cut off mid-card.
 const SKY_EDGE_FADE = "linear-gradient(to right, transparent, black 12%, black 88%, transparent)";
-// The sun or moon rises and sets on the bottom edge of the sky, the horizon,
-// moving across at an even pace.
+// The sun or moon fades in low on one side, arcs over the plant at an even
+// pace and fades out low on the other side, always whole inside the sky.
 const ARC_WIDTH = 140;
-const ARC_RISE = 36;
+const ARC_LOW = 30;
+const ARC_RISE = 15;
 const ARC_STEPS = 24;
 // The clouds scroll by as one layer, a little faster than the sun, so they
 // keep their spacing and never run into each other.
@@ -180,6 +182,7 @@ const SaplingEgg = () => {
       {/* Once grown, the tree is not watered again; clicks shake it instead. */}
       <EmojiButton
         label={grown ? "Tree" : "Seedling"}
+        className={PLANT_GAP}
         nudge={grown}
         onClick={() => {
           if (grown) shakeTree();
@@ -219,7 +222,7 @@ const SaplingEgg = () => {
       </EmojiButton>
       {sky && (
         <PageLayer>
-          {/* Clipped, so the sun sets below the horizon and nothing widens the page. */}
+          {/* Clipped, so a cloud leaving the sky never widens the page. */}
           <div
             aria-hidden="true"
             className="absolute overflow-hidden text-xl leading-none"
@@ -249,22 +252,21 @@ const DayPass = ({ day, sky, onDone }: { day: Day; sky: Sky; onDone: () => void 
   const rx = arcHalfWidth(sky);
   const duration = WATER_MS / 1000;
   const cloudOpacity = day.night ? 0.7 : 1;
-  // Starts just below the horizon; a sine keeps the climb and the descent smooth.
-  const low = SKY_HEIGHT + 12;
+  // A sine keeps the climb and the descent smooth.
   const heights = Array.from(
     { length: ARC_STEPS + 1 },
-    (_, i) => low - ARC_RISE * Math.sin((Math.PI * i) / ARC_STEPS),
+    (_, i) => ARC_LOW - ARC_RISE * Math.sin((Math.PI * i) / ARC_STEPS),
   );
   return (
     <>
       <motion.span
         className="absolute top-0 left-0 -mt-2.5 -ml-2.5"
-        initial={{ x: sky.plantX - rx, y: low, opacity: 0 }}
+        initial={{ x: sky.plantX - rx, y: ARC_LOW, opacity: 0 }}
         animate={{ x: sky.plantX + rx, y: heights, opacity: [0, 1, 1, 0] }}
         transition={{
           duration,
           ease: "linear",
-          opacity: { duration, times: [0, 0.06, 0.94, 1] },
+          opacity: { duration, times: [0, 0.3, 0.7, 1], ease: "easeInOut" },
         }}
         onAnimationComplete={onDone}
       >

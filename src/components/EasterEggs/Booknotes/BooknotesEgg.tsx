@@ -98,7 +98,9 @@ const BooknotesEgg = () => {
     };
   }, [isOpen]);
 
-  const registerClick = useEasterEgg("booknotes", { onTrigger: () => void showQuote() });
+  const registerClick = useEasterEgg("booknotes", {
+    onTrigger: () => void showQuote(),
+  });
 
   return (
     <>
@@ -127,10 +129,16 @@ const BooknotesEgg = () => {
         <div role="status" aria-live="polite">
           <AnimatePresence mode="wait">
             {bubble && (
+              // `not-prose`: <body> carries `prose`, whose blockquote wash, rule and
+              // quote mark sit outside every layer and would draw a second box in here.
               <motion.figure
                 key={bubble.key}
-                className="absolute m-0 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-base font-normal tracking-normal text-gray-900 shadow-lg dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                style={{ left: bubble.left, top: bubble.top, width: bubble.width }}
+                className="not-prose absolute m-0 rounded-2xl bg-stone-50 px-para pt-group pb-stack text-left font-normal tracking-normal shadow-lg ring-1 ring-black/5 dark:bg-slate-800 dark:ring-white/10"
+                style={{
+                  left: bubble.left,
+                  top: bubble.top,
+                  width: bubble.width,
+                }}
                 initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -18, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, transition: { duration: 0.2 } }}
@@ -140,14 +148,21 @@ const BooknotesEgg = () => {
               >
                 <span
                   aria-hidden="true"
-                  className="absolute -top-[7px] size-3 rotate-45 border-t border-l border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900"
+                  className="absolute -top-[6px] size-3 rotate-45 border-t border-l border-black/5 bg-stone-50 dark:border-white/10 dark:bg-slate-800"
                   style={{ left: bubble.tailX - 6 }}
                 />
-                <blockquote className="m-0 border-0 p-0 leading-snug">
-                  “{bubble.content}”
+                {/* The same paper, serif and hanging mark as the /quotes cards. */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute top-hair left-stack font-serif text-6xl leading-none text-teal-400/80 select-none"
+                >
+                  &ldquo;
+                </span>
+                <blockquote className="m-0 font-serif text-lg leading-relaxed text-zinc-800 dark:text-slate-200">
+                  {bubble.content}
                 </blockquote>
-                <figcaption className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  {bubble.author}
+                <figcaption className="mt-label text-xs font-semibold tracking-widest text-gray-600 uppercase dark:text-gray-400">
+                  — {bubble.author}
                 </figcaption>
               </motion.figure>
             )}

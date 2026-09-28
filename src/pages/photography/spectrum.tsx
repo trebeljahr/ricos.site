@@ -604,22 +604,23 @@ export default function PhotographySpectrumPage({ images, tints, marks }: Props)
             it, whose bottom edge measures 60px. z-20 keeps it over the ribbon
             and well under the navbar's z-999.
 
-            In light mode the row has no backdrop: the navbar above it is
-            glass, and an opaque white band under the glass read as a slab
-            cut out of it. The strip floats on the photographs instead, held
-            off them by a white ring for the dark frames and a soft shadow
-            for the pale ones. `px-3` pulls it in from the ribbon's edges, so
-            its rounded ends sit on the photographs rather than straddling
-            the line where they meet the page. The swatches stay opaque, so
-            tiles passing behind never tint them, and the swatches are the
-            one thing here that has to stay trustworthy. Dark mode keeps a solid
-            backdrop, because the navbar there is solid gray-900 too and the
-            two read as one header.
+            The row has no backdrop. In light mode the navbar above it is
+            glass, and an opaque band under the glass read as a slab cut out
+            of it; dark mode does the same so the two themes match. The
+            strip floats on the photographs instead, ringed in the page's
+            own colour and lifted by a shadow. In light mode the white ring
+            holds it off dark frames and the shadow off pale ones; in dark
+            mode the gray-900 ring does the pale frames and the strip's own
+            colours stand out against dark ones. `px-3` pulls it in from the
+            ribbon's edges, so its rounded ends sit on the photographs rather
+            than straddling the line where they meet the page. The swatches
+            stay opaque, so tiles passing behind never tint them, and the
+            swatches are the one thing here that has to stay trustworthy.
 
             `not-prose` because <body> is a prose container: without it the
             typography plugin puts list markers and margins on every child and
             the row stops being a row. */}
-        <div className="not-prose sticky top-15 z-20 mb-6 px-3 pt-3 pb-3 dark:bg-gray-900">
+        <div className="not-prose sticky top-15 z-20 mb-6 px-3 pt-3 pb-3">
           {/* The pointer is handled here rather than on the segments, and
               captured on the way down, so a drag keeps scrolling when it
               leaves the strip and a press is handled once, as the drag's
@@ -639,7 +640,7 @@ export default function PhotographySpectrumPage({ images, tints, marks }: Props)
             onPointerUp={endScrub}
             onPointerCancel={endScrub}
             onLostPointerCapture={endScrub}
-            className="relative flex h-7 w-full touch-none select-none overflow-hidden rounded-full shadow-[0_1px_6px_rgb(0_0_0/0.25)] ring-2 ring-white dark:shadow-none dark:ring-1 dark:ring-white/10"
+            className="relative flex h-7 w-full touch-none select-none overflow-hidden rounded-full shadow-[0_1px_6px_rgb(0_0_0/0.25)] ring-2 ring-white dark:shadow-[0_1px_8px_rgb(0_0_0/0.6)] dark:ring-gray-900"
           >
             {marks.map((mark, i) => (
               <button

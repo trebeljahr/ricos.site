@@ -17,6 +17,7 @@ import {
   hasOneTimeLink,
   hasOtherDoors,
   isInQuietPeriod,
+  manageDonationUrl,
   monthlyOptions,
   oneTimeUrl,
   otherDoors,
@@ -218,9 +219,7 @@ export function DonationCard({ className }: DonationCardProps) {
             Keep this place alive
           </h2>
           <p className="mt-label mb-0 max-w-prose text-gray-700 dark:text-gray-200">
-            This is a small labor of love, made because I like making useful and beautiful things
-            for the internet. If it made your day a little better, a donation is one way to say:
-            keep going.
+            Monthly helps me plan ahead. A one-off is every bit as welcome.
           </p>
 
           {showStripe && (
@@ -245,12 +244,11 @@ export function DonationCard({ className }: DonationCardProps) {
                               href={option.href ?? "#"}
                               className={clsx(tileClass, "min-h-24 justify-between px-4 py-3")}
                             >
-                              <span
-                                aria-hidden
-                                className="absolute top-2.5 right-3 text-sm transition-transform duration-500 motion-safe:group-hover:rotate-180"
-                              >
-                                🔁
-                              </span>
+                              {option.emoji && (
+                                <span aria-hidden className="absolute top-3 right-4 text-2xl">
+                                  {option.emoji}
+                                </span>
+                              )}
                               <span className="text-xl font-bold text-gray-900 dark:text-white">
                                 {option.label} / month
                               </span>
@@ -260,6 +258,21 @@ export function DonationCard({ className }: DonationCardProps) {
                             </ExternalLink>
                           </motion.div>
                         ))}
+                        {manageDonationUrl && (
+                          <motion.p
+                            variants={tileVariants}
+                            className="m-0 text-sm text-gray-600 sm:col-span-2 dark:text-gray-300"
+                          >
+                            Stop or change it any time on your own:{" "}
+                            <ExternalLink
+                              href={manageDonationUrl}
+                              className="font-semibold text-accent hover:underline"
+                            >
+                              manage your donation
+                            </ExternalLink>
+                            .
+                          </motion.p>
+                        )}
                       </motion.div>
                     ) : (
                       <motion.div
@@ -355,14 +368,16 @@ export function DonationStrip({ className }: DonationCardProps) {
   );
 }
 
-// The thanks moment, in order: the heading runs through thank-yous in other
-// languages while a heart draws itself; both land together, the heart beats
-// and throws out a ring of hearts and sparkles, a few more hearts float off,
-// and the note fades in. Under reduced motion it is all there, still.
-const THANKS_WORDS = ["Danke", "Gracias", "Merci", "Grazie", "Obrigado", "Arigatō", "Thank you"];
-const WORD_START_S = 0.15;
-const WORD_STEP_S = 0.17;
+// The thanks moment, in order: the heart draws its outline, then fills up from
+// the bottom while the heading runs through thank-yous in other languages,
+// each long enough to read. When "Thank you" lands the heart is full: it
+// beats and throws out a ring of hearts and sparkles, a few more hearts float
+// off, and the note fades in. Under reduced motion it is all there, still.
+const THANKS_WORDS = ["Danke", "Gracias", "Merci", "Obrigado", "Arigatō", "Thank you"];
+const WORD_START_S = 0.4;
+const WORD_STEP_S = 0.65;
 const LAND_S = WORD_START_S + WORD_STEP_S * (THANKS_WORDS.length - 1);
+const OUTLINE_S = 1.1;
 
 const HEART_PATH =
   "M24 41C24 41 6 30.5 6 17.5 6 11.5 10.5 7 16.2 7 19.7 7 22.6 8.9 24 11.8 25.4 8.9 28.3 7 31.8 7 37.5 7 42 11.5 42 17.5 42 30.5 24 41 24 41Z";
@@ -426,14 +441,14 @@ function ThanksWord({ play, still }: { play: boolean; still: boolean }) {
           initial={
             landed
               ? { opacity: 0, y: "0.3em", scale: 0.8, filter: "blur(6px)" }
-              : { opacity: 0, y: "0.4em", filter: "blur(6px)" }
+              : { opacity: 0, y: "0.35em", filter: "blur(4px)" }
           }
           animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-          exit={{ opacity: 0, y: "-0.4em", filter: "blur(6px)" }}
+          exit={{ opacity: 0, y: "-0.35em", filter: "blur(4px)", transition: { duration: 0.22 } }}
           transition={
             landed
-              ? { type: "spring", bounce: 0.5, duration: 0.6 }
-              : { duration: 0.16, ease: "easeOut" }
+              ? { type: "spring", bounce: 0.5, duration: 0.7 }
+              : { duration: 0.3, ease: "easeOut" }
           }
         >
           {THANKS_WORDS[current]}
@@ -445,6 +460,7 @@ function ThanksWord({ play, still }: { play: boolean; still: boolean }) {
 
 function BeatingHeart({ play, still }: { play: boolean; still: boolean }) {
   const gradientId = useSvgId("donation-heart");
+  const fillClipId = useSvgId("donation-heart-fill");
 
   return (
     <div aria-hidden className="relative mx-auto flex size-28 items-center justify-center">
@@ -524,13 +540,26 @@ function BeatingHeart({ play, still }: { play: boolean; still: boolean }) {
             <stop offset="0" className="text-rose-400" stopColor="currentColor" />
             <stop offset="1" className="text-pink-600" stopColor="currentColor" />
           </linearGradient>
+          {/* A rising rectangle that reveals the fill, like the heart filling up. */}
+          <clipPath id={fillClipId}>
+            <motion.rect
+              x="0"
+              width="48"
+              height="48"
+              initial={{ attrY: 48 }}
+              animate={play ? { attrY: 0 } : undefined}
+              transition={{
+                delay: OUTLINE_S - 0.2,
+                duration: LAND_S - OUTLINE_S + 0.2,
+                ease: "easeInOut",
+              }}
+            />
+          </clipPath>
         </defs>
-        <motion.path
+        <path
           d={HEART_PATH}
           fill={`url(#${gradientId})`}
-          initial={still ? false : { opacity: 0 }}
-          animate={play ? { opacity: 1 } : undefined}
-          transition={{ delay: 0.75, duration: 0.4 }}
+          clipPath={still ? undefined : `url(#${fillClipId})`}
         />
         {!still &&
           HEART_HALVES.map((half) => (
@@ -545,8 +574,8 @@ function BeatingHeart({ play, still }: { play: boolean; still: boolean }) {
               initial={{ pathLength: 0, opacity: 1 }}
               animate={play ? { pathLength: 1, opacity: 0 } : undefined}
               transition={{
-                pathLength: { duration: 0.9, ease: [0.65, 0, 0.35, 1] },
-                opacity: { delay: 1.1, duration: 0.3 },
+                pathLength: { duration: OUTLINE_S, ease: [0.65, 0, 0.35, 1] },
+                opacity: { delay: LAND_S, duration: 0.3 },
               }}
             />
           ))}
@@ -560,7 +589,7 @@ function BeatingHeart({ play, still }: { play: boolean; still: boolean }) {
           initial={still ? false : { opacity: 0 }}
           animate={play ? { opacity: 0.45 } : undefined}
           style={still ? { opacity: 0.45 } : undefined}
-          transition={{ delay: 0.95, duration: 0.4 }}
+          transition={{ delay: LAND_S, duration: 0.4 }}
         />
       </motion.svg>
     </div>
@@ -610,15 +639,30 @@ export function DonationThanks({ className }: DonationCardProps) {
             transition={{ delay: LAND_S + 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           >
             <p className="mx-auto mt-label mb-0 max-w-md text-gray-700 dark:text-gray-200">
-              Your donation went through. It keeps this place ad-free and gives me room for the next
-              thing. Stripe sends the receipt by email.
+              Your donation went through, and it means a lot. It buys me time to make the next
+              thing. Your receipt comes by email.
             </p>
             <p className="mx-auto mt-stack mb-0 max-w-md text-sm text-gray-600 dark:text-gray-300">
-              Monthly donations can be stopped at any time. Write me through the{" "}
-              <Link href="/imprint" className="text-accent hover:underline">
-                imprint
-              </Link>{" "}
-              page and I take care of it.
+              {manageDonationUrl ? (
+                <>
+                  Gave monthly? You can stop or change it any time on your own:{" "}
+                  <ExternalLink
+                    href={manageDonationUrl}
+                    className="font-semibold text-accent hover:underline"
+                  >
+                    manage your donation
+                  </ExternalLink>{" "}
+                  with the email you donated from.
+                </>
+              ) : (
+                <>
+                  Gave monthly and want to stop? Send me a line through the{" "}
+                  <Link href="/imprint" className="text-accent hover:underline">
+                    imprint
+                  </Link>{" "}
+                  page and I cancel it.
+                </>
+              )}
             </p>
             <p className="mt-para mb-0 font-serif text-lg italic text-gray-700 dark:text-gray-200">
               — Rico

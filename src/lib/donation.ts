@@ -8,6 +8,8 @@ export type DonationMode = "monthly" | "once";
 export type DonationOption = {
   label: string;
   note: string;
+  // A small, static picture of roughly what the amount buys.
+  emoji?: string;
   href?: string;
 };
 
@@ -17,21 +19,25 @@ export const monthlyOptions: DonationOption[] = [
   {
     label: "EUR 3",
     note: "Small monthly nudge.",
+    emoji: "🍪",
     href: process.env.NEXT_PUBLIC_STRIPE_DONATION_MONTHLY_3_URL,
   },
   {
     label: "EUR 5",
     note: "A coffee-ish amount.",
+    emoji: "☕",
     href: process.env.NEXT_PUBLIC_STRIPE_DONATION_MONTHLY_5_URL,
   },
   {
     label: "EUR 10",
     note: "Keeps the lights brighter.",
+    emoji: "🍕",
     href: process.env.NEXT_PUBLIC_STRIPE_DONATION_MONTHLY_10_URL,
   },
   {
     label: "EUR 25",
     note: "Patron saint mode.",
+    emoji: "😇",
     href: process.env.NEXT_PUBLIC_STRIPE_DONATION_MONTHLY_25_URL,
   },
 ];
@@ -40,6 +46,13 @@ export const monthlyOptions: DonationOption[] = [
 // choose what to pay"). No fixed tiles: the donor names the amount on Stripe's
 // page, with EUR 10 suggested and a EUR 1 floor.
 export const oneTimeUrl = process.env.NEXT_PUBLIC_STRIPE_DONATION_ONETIME_CUSTOM_URL;
+
+// Stripe's hosted customer portal (Dashboard → Settings → Billing → Customer
+// portal → "Activate link"). Donors log in with their email and a one-time
+// code, then cancel a monthly donation, change their card or download invoices
+// on their own. Unset until the link is activated; the thanks card then falls
+// back to asking by mail.
+export const manageDonationUrl = process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL;
 
 // Extra one-time doors for people who would rather not use a card on Stripe.
 // PayPal and Wise both let the sender choose any amount. Patreon is the only

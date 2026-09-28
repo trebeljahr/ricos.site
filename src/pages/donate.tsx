@@ -51,41 +51,33 @@ export default function DonatePage() {
           ) : (
             <>
               <p>
-                All things I make here are free: essays, photos, notes, weird Three.js demos, the
-                newsletter. I like it that way. No paywalls, no ads, no tracking circus. I want this
-                place to stay open and human.
+                Everything I make here is free: essays, photos, book notes, odd Three.js demos and
+                the newsletter. No paywalls, no ads, and I want to keep it that way.
               </p>
 
               <p>
-                No pressure, obviously. The whole point of this place is that you can wander around
-                without having to pay, ever. I hate ads, so there won&apos;t be any here either.
+                If you&apos;re a friend, or something here made your day a little better, you can
+                chip in. It buys me time for the next essay or strange little experiment.
               </p>
 
-              <p>
-                The ethos is to run this as a passion project. Something I love doing because I
-                think it provides a little value to the world. Donations are a way of feeding the
-                project without changing what it is. They let me keep the lights on, keep the ads
-                out, and make room for the next thing.
-              </p>
+              <p>No pressure, though. You&apos;re welcome here either way.</p>
 
               <DonationCard className="mt-group" />
             </>
           )}
 
           <h2>Other ways to help</h2>
-          <p>Money is nice, but it is not the only useful thing.</p>
           <ul>
             <li>
-              Send a piece to a friend who would actually enjoy it. That is still the best kind of
-              distribution.
+              Send a piece to a friend who&apos;d enjoy it. That&apos;s still the best way anything
+              here travels.
             </li>
             <li>
-              Reply to the newsletter. I read those, and some of my favorite conversations started
-              that way.
+              Reply to the newsletter. I read the replies, and some of my favorite conversations
+              started there.
             </li>
             <li>
-              If you run a publication, podcast, event, or just know a place where this work would
-              fit, reach out. Contact info is on the{" "}
+              Know a publication, podcast or event where my work would fit? Tell me through the{" "}
               <a href="/imprint" className="text-accent hover:underline">
                 imprint
               </a>{" "}

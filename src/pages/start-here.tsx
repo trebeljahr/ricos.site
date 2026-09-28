@@ -42,19 +42,22 @@ const MoreLink = ({ href, children }: { href: string; children: ReactNode }) => 
   </Link>
 );
 
+/** `trail` names the section and its heading for the trail map's rulers. */
 const Section = ({
+  trail,
   kicker,
   title,
   text,
   children,
 }: {
+  trail: string;
   kicker: string;
   title: string;
   text: ReactNode;
   children: ReactNode;
 }) => (
-  <section className="mt-region">
-    <div className="flow-label mb-group max-w-prose">
+  <section data-trail={trail} className="mt-region">
+    <div data-trail={`${trail}.head`} className="flow-label mb-group max-w-prose">
       <p className="text-sm font-semibold uppercase tracking-widest text-accent">{kicker}</p>
       <h2 className="text-3xl md:text-4xl">{title}</h2>
       <p className="text-lg text-gray-600 dark:text-gray-300">{text}</p>
@@ -89,7 +92,7 @@ export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Prop
 
           <section className="grid items-center gap-8 md:grid-cols-[2fr_3fr] md:gap-12">
             <div
-              data-trail-photo
+              data-trail="photo"
               className="relative aspect-4/3 overflow-hidden rounded-2xl bg-gray-200 dark:bg-gray-800 md:aspect-4/5"
             >
               <ImageWithLoader
@@ -101,7 +104,7 @@ export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Prop
                 className="object-cover"
               />
             </div>
-            <div className="flow-para [&_p]:text-lg md:[&_p]:text-xl">
+            <div data-trail="text" className="flow-para [&_p]:text-lg md:[&_p]:text-xl">
               <p>
                 Hey, I&apos;m Rico. I travel slowly, read a lot and make games and cool websites.
                 This website is where all of it ends up.
@@ -112,128 +115,135 @@ export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Prop
               </p>
             </div>
           </section>
-        </TrailMap>
 
-        <Section
-          kicker="Photography"
-          title="Photos from the road"
-          text="My favourite frames from every trip, collected in one gallery."
-        >
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2">
-            {bestOfPhotos.map((cover, index) => (
-              // Each photo is its own link and hover group, so only the one
-              // under the cursor zooms. "isolate" keeps the scaled image
-              // clipped to the rounded corners in Safari.
-              <Link
-                key={cover.src}
-                href="/photography/best-of"
-                aria-label={index === 0 ? "Open the best-of gallery" : undefined}
-                tabIndex={index === 0 ? undefined : -1}
-                className={clsx(
-                  "group relative isolate block overflow-hidden rounded-xl bg-gray-200 dark:bg-gray-800",
-                  index === 0
-                    ? "col-span-2 aspect-4/3 md:row-span-2 md:aspect-auto"
-                    : "aspect-square",
-                )}
-              >
-                <ImageWithLoader
-                  src={cover.src}
-                  alt={cover.alt}
-                  fill
-                  sizes={
+          <Section
+            trail="photos"
+            kicker="Photography"
+            title="Photos from the road"
+            text="My favourite frames from every trip, collected in one gallery."
+          >
+            <div
+              data-trail="photos.grid"
+              className="grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2"
+            >
+              {bestOfPhotos.map((cover, index) => (
+                // Each photo is its own link and hover group, so only the one
+                // under the cursor zooms. "isolate" keeps the scaled image
+                // clipped to the rounded corners in Safari.
+                <Link
+                  key={cover.src}
+                  href="/photography/best-of"
+                  aria-label={index === 0 ? "Open the best-of gallery" : undefined}
+                  tabIndex={index === 0 ? undefined : -1}
+                  className={clsx(
+                    "group relative isolate block overflow-hidden rounded-xl bg-gray-200 dark:bg-gray-800",
                     index === 0
-                      ? "(max-width: 768px) calc(100vw - 24px), 490px"
-                      : "(max-width: 768px) 50vw, 240px"
-                  }
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none"
+                      ? "col-span-2 aspect-4/3 md:row-span-2 md:aspect-auto"
+                      : "aspect-square",
+                  )}
+                >
+                  <ImageWithLoader
+                    src={cover.src}
+                    alt={cover.alt}
+                    fill
+                    sizes={
+                      index === 0
+                        ? "(max-width: 768px) calc(100vw - 24px), 490px"
+                        : "(max-width: 768px) 50vw, 240px"
+                    }
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none"
+                  />
+                </Link>
+              ))}
+            </div>
+            <MoreLink href="/photography/best-of">Open the best-of gallery</MoreLink>
+          </Section>
+
+          <Section
+            trail="scenes"
+            kicker="3D"
+            title="Scenes you can play with"
+            text="I build 3D scenes with shaders and Three.js. Both of these run right here in your browser."
+          >
+            <div data-trail="scenes.cards" className="grid gap-6 md:grid-cols-2">
+              {demos.map((tile) => (
+                <Card
+                  key={tile.href}
+                  link={tile.href}
+                  title={tile.title}
+                  excerpt={tile.note}
+                  cover={tile.cover}
+                  coverAspect="video"
+                  headingAs="h3"
+                  sizes="(max-width: 768px) calc(100vw - 24px), 490px"
                 />
-              </Link>
-            ))}
-          </div>
-          <MoreLink href="/photography/best-of">Open the best-of gallery</MoreLink>
-        </Section>
-
-        <Section
-          kicker="3D"
-          title="Scenes you can play with"
-          text="I build 3D scenes with shaders and Three.js. Both of these run right here in your browser."
-        >
-          <div className="grid gap-6 md:grid-cols-2">
-            {demos.map((tile) => (
-              <Card
-                key={tile.href}
-                link={tile.href}
-                title={tile.title}
-                excerpt={tile.note}
-                cover={tile.cover}
-                coverAspect="video"
-                headingAs="h3"
-                sizes="(max-width: 768px) calc(100vw - 24px), 490px"
-              />
-            ))}
-          </div>
-          <MoreLink href="/r3f">More in the 3D playground</MoreLink>
-        </Section>
-
-        <Section
-          kicker="Rabbit holes"
-          title="Small things I got a bit obsessed with"
-          text="Not everything here fits a category. These are my favourite odd ones."
-        >
-          <div className="grid gap-6 sm:grid-cols-3">
-            {rabbitHoles.map((tile) => (
-              <Card
-                key={tile.href}
-                link={tile.href}
-                title={tile.title}
-                excerpt={tile.note}
-                cover={tile.cover}
-                headingAs="h3"
-                sizes="(max-width: 640px) calc(100vw - 24px), 320px"
-              />
-            ))}
-          </div>
-        </Section>
-
-        <Section
-          kicker="Stay in touch"
-          title="If you liked any of this"
-          text="This is how you hear about the next thing."
-        >
-          <div className="grid gap-sub lg:grid-cols-[3fr_2fr]">
-            <div>
-              <NewsletterForm
-                heading={<h3 className="flush-top text-2xl">Get Live and Learn by email</h3>}
-                text={
-                  <p className="mb-para">
-                    One postcard every few weeks. A story from wherever I am, photos and a few
-                    things I found. No ads, and you can unsubscribe with one click.
-                  </p>
-                }
-              />
+              ))}
             </div>
-            <div>
-              <h3 className="flush-top text-2xl">Get to know me</h3>
-              <ul className="not-prose list-none space-y-stack p-0">
-                {[
-                  ["/now", "Now", "What I'm doing right now."],
-                  ["/principles", "Principles", "The rules I try to live by."],
-                  ["/timeline", "Timeline", "Everything on this site, newest first."],
-                  ["/rss.xml", "RSS feed", "For feed readers. Everything new, nothing else."],
-                ].map(([href, label, note]) => (
-                  <li key={href}>
-                    <Link href={href} className="group block text-inherit no-underline">
-                      <span className="inline-flex items-center gap-2 text-lg font-semibold text-accent group-hover:underline">
-                        {label} <Arrow />
-                      </span>
-                      <span className="block text-gray-600 dark:text-gray-300">{note}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+            <MoreLink href="/r3f">More in the 3D playground</MoreLink>
+          </Section>
+
+          <Section
+            trail="holes"
+            kicker="Rabbit holes"
+            title="Small things I got a bit obsessed with"
+            text="Not everything here fits a category. These are my favourite odd ones."
+          >
+            <div data-trail="holes.cards" className="grid gap-6 sm:grid-cols-3">
+              {rabbitHoles.map((tile) => (
+                <Card
+                  key={tile.href}
+                  link={tile.href}
+                  title={tile.title}
+                  excerpt={tile.note}
+                  cover={tile.cover}
+                  headingAs="h3"
+                  sizes="(max-width: 640px) calc(100vw - 24px), 320px"
+                />
+              ))}
             </div>
-          </div>
-        </Section>
+          </Section>
+
+          <Section
+            trail="touch"
+            kicker="Stay in touch"
+            title="If you liked any of this"
+            text="This is how you hear about the next thing."
+          >
+            <div data-trail="touch.grid" className="grid gap-sub lg:grid-cols-[3fr_2fr]">
+              <div>
+                <NewsletterForm
+                  heading={<h3 className="flush-top text-2xl">Get Live and Learn by email</h3>}
+                  text={
+                    <p className="mb-para">
+                      One postcard every few weeks. A story from wherever I am, photos and a few
+                      things I found. No ads, and you can unsubscribe with one click.
+                    </p>
+                  }
+                />
+              </div>
+              <div>
+                <h3 className="flush-top text-2xl">Get to know me</h3>
+                <ul className="not-prose list-none space-y-stack p-0">
+                  {[
+                    ["/now", "Now", "What I'm doing right now."],
+                    ["/principles", "Principles", "The rules I try to live by."],
+                    ["/timeline", "Timeline", "Everything on this site, newest first."],
+                    ["/rss.xml", "RSS feed", "For feed readers. Everything new, nothing else."],
+                  ].map(([href, label, note]) => (
+                    <li key={href}>
+                      <Link href={href} className="group block text-inherit no-underline">
+                        <span className="inline-flex items-center gap-2 text-lg font-semibold text-accent group-hover:underline">
+                          {label} <Arrow />
+                        </span>
+                        <span className="block text-gray-600 dark:text-gray-300">{note}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </Section>
+        </TrailMap>
       </PageMain>
     </Layout>
   );

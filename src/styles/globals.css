@@ -1200,13 +1200,11 @@ code {
   font-family: "Fira Code", monospace;
 }
 
-/* The trail map at the top of /start-here (src/components/TrailMap.tsx).
-   Every dot and marker carries its own animation-delay, the moment the pen
-   passes it, so the trail draws itself along its route, loops included.
-   .trail-map-draw is only there for the first layout; without it, or with
-   reduced motion, the map is simply there. */
+/* The trail map on /start-here (src/components/TrailMap). Every dot and
+   marker carries its own animation-delay, the moment the pen reaches it, so
+   the trail draws itself along its route, loops included, a stretch at a time
+   as it scrolls into view. With reduced motion each stretch is simply there. */
 .trail-dot,
-.trail-stamp,
 .trail-needle {
   transform-box: fill-box;
   transform-origin: center;
@@ -1222,14 +1220,6 @@ code {
 @keyframes trail-fade {
   from {
     opacity: 0;
-  }
-}
-
-/* Pressed onto the map. */
-@keyframes trail-stamp {
-  from {
-    opacity: 0;
-    transform: scale(1.8) rotate(-20deg);
   }
 }
 
@@ -1260,16 +1250,13 @@ code {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .trail-map-draw .trail-dot {
+  .trail-dot {
     animation: trail-dot 450ms ease-out both;
   }
-  .trail-map-draw .trail-fade {
+  .trail-fade {
     animation: trail-fade 900ms ease-out both;
   }
-  .trail-map-draw .trail-stamp {
-    animation: trail-stamp 350ms cubic-bezier(0.3, 0, 0.4, 1) both;
-  }
-  .trail-map-draw .trail-needle {
+  .trail-needle {
     animation: trail-needle 2.8s ease-in-out both;
   }
 }

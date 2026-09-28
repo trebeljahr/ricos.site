@@ -67,34 +67,45 @@ const doorLogos: Record<
   Patreon: { Icon: SiPatreon, className: "bg-black text-white dark:bg-white dark:text-black" },
 };
 
-// PayPal, Wise, Patreon: the doors that do not run through Stripe. Shown as a
-// visible row, not buried, but after the Stripe options.
+function DoorLogo({ name }: { name: string }) {
+  const logo = doorLogos[name];
+  if (!logo) return null;
+  return (
+    <span
+      className={clsx(
+        "flex size-10 shrink-0 items-center justify-center rounded-lg shadow-sm transition-transform duration-300 motion-safe:group-hover:-rotate-6 motion-safe:group-hover:scale-110",
+        logo.className,
+      )}
+    >
+      <logo.Icon className="size-5" />
+    </span>
+  );
+}
+
+const doorClass =
+  "group flex items-center rounded-md border-2 border-gray-200 no-underline transition-colors hover:border-accent dark:border-gray-700";
+
+// The doors that do not run through Stripe, after the Stripe options. PayPal
+// and Wise get a tile with a line on when to use them; the platforms people
+// already know sit together in one row, logo and name only.
 function OtherDoors() {
   if (!hasOtherDoors) return null;
+  const described = otherDoors.filter((door) => door.blurb);
+  const platforms = otherDoors.filter((door) => !door.blurb);
   return (
     <div className="mt-stack">
       <p className="m-0 text-sm font-semibold text-gray-600 dark:text-gray-300">
         Other ways to give
       </p>
-      <div className="mt-label grid gap-tight sm:grid-cols-2">
-        {otherDoors.map((door) => {
-          const logo = doorLogos[door.name];
-          return (
+      {described.length > 0 && (
+        <div className="mt-label grid gap-tight sm:grid-cols-2">
+          {described.map((door) => (
             <ExternalLink
               key={door.name}
               href={door.url}
-              className="group flex min-h-14 items-center sm:last:odd:col-span-2 gap-label rounded-md border-2 border-gray-200 px-3 py-3 no-underline transition-colors hover:border-accent dark:border-gray-700"
+              className={clsx(doorClass, "min-h-14 gap-label px-3 py-3 sm:last:odd:col-span-2")}
             >
-              {logo && (
-                <span
-                  className={clsx(
-                    "flex size-10 shrink-0 items-center justify-center rounded-lg shadow-sm transition-transform duration-300 motion-safe:group-hover:-rotate-6 motion-safe:group-hover:scale-110",
-                    logo.className,
-                  )}
-                >
-                  <logo.Icon className="size-5" />
-                </span>
-              )}
+              <DoorLogo name={door.name} />
               <span className="flex flex-col">
                 <span className="font-semibold text-gray-900 dark:text-white">{door.name}</span>
                 <span className="mt-hair text-sm text-gray-600 dark:text-gray-300">
@@ -102,9 +113,31 @@ function OtherDoors() {
                 </span>
               </span>
             </ExternalLink>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
+      {platforms.length > 0 && (
+        <div
+          className="mt-tight grid gap-tight"
+          style={{ gridTemplateColumns: `repeat(${platforms.length}, minmax(0, 1fr))` }}
+        >
+          {platforms.map((door) => (
+            <ExternalLink
+              key={door.name}
+              href={door.url}
+              className={clsx(
+                doorClass,
+                "flex-col justify-start gap-tight px-2 py-3 text-center sm:flex-row sm:gap-label sm:px-3 sm:text-left",
+              )}
+            >
+              <DoorLogo name={door.name} />
+              <span className="text-sm leading-tight font-semibold text-gray-900 sm:text-base dark:text-white">
+                {door.name}
+              </span>
+            </ExternalLink>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

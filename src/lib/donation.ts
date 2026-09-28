@@ -54,11 +54,18 @@ export const oneTimeUrl = process.env.NEXT_PUBLIC_STRIPE_DONATION_ONETIME_CUSTOM
 // back to asking by mail.
 export const manageDonationUrl = process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL;
 
+export type DonationDoor = {
+  name: string;
+  url: string;
+  // Doors with a blurb get a full tile; the rest share one row, logo and name.
+  blurb?: string;
+};
+
 // Extra doors for people who would rather not use a card on Stripe. PayPal and
-// Wise both let the sender choose any amount. Ko-fi and Buy Me a Coffee are
-// here for people who already have an account there. Patreon is the only
-// third-party monthly option, for people already on it.
-export const otherDoors = [
+// Wise both let the sender choose any amount. Ko-fi, Buy Me a Coffee and
+// Patreon (the only third-party monthly option) are for people who already
+// have an account there, so their name is enough.
+export const otherDoors: DonationDoor[] = [
   {
     name: "PayPal",
     url: "https://www.paypal.com/ncp/payment/2TV2FC34E2XGG",
@@ -72,17 +79,14 @@ export const otherDoors = [
   {
     name: "Ko-fi",
     url: "https://ko-fi.com/trebeljahr",
-    blurb: "One-time tip jar.",
   },
   {
     name: "Buy Me a Coffee",
     url: "https://buymeacoffee.com/trebeljahr",
-    blurb: "Same idea, different button.",
   },
   {
     name: "Patreon",
     url: "https://www.patreon.com/RicoTrebeljahr",
-    blurb: "Monthly patronage.",
   },
 ].filter((door) => door.url);
 

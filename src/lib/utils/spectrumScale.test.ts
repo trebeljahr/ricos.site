@@ -2,6 +2,8 @@ import { COLOR_BUCKETS, parseHex, rgbToOklch } from "src/lib/colorBuckets.mjs";
 import {
   alongBand,
   bandAt,
+  inGamut,
+  intoGamut,
   mixOklch,
   positionInBand,
   STRIP_CHROMA_BOOST,
@@ -139,31 +141,33 @@ describe("segmentGradient", () => {
     expect(goldStops.at(-1)?.[0]).toBe(greenStops[0][0]);
   });
 
-  it("holds its own colour flat across the middle", () => {
-    const stops = stopsOf(segmentGradient(gold, orange, green));
-    const own = stops.find(([, at]) => at === "30%")?.[0];
-    expect(own).toBeDefined();
-    expect(stops.find(([, at]) => at === "70%")?.[0]).toBe(own);
-  });
-
   it("holds its own colour at the ends of the strip", () => {
     const first = stopsOf(segmentGradient(swatch("red"), null, orange));
     expect(first[0][1]).toBe("0%");
-    expect(first[1]).toEqual([first[0][0], "70%"]);
+    expect(first[1]).toEqual([first[0][0], "50%"]);
     const last = stopsOf(segmentGradient(swatch("black"), swatch("grey"), null));
     expect(last.at(-1)?.[1]).toBe("100%");
-    expect(last.at(-2)).toEqual([last.at(-1)?.[0], "30%"]);
+    expect(last.at(-2)).toEqual([last.at(-1)?.[0], "50%"]);
   });
 
-  it("paints the band's own hue, more saturated than the swatch", () => {
-    const own = oklchOf(stopsOf(segmentGradient(gold, orange, green))[4][0]);
-    const plain = oklchOf(stopsOf(segmentGradient(gold, null, null))[0][0]);
-    expect(own).toEqual(plain);
+  it("paints the band's own hue, as saturated as the screen allows", () => {
     const rgb = parseHex(gold);
     if (!rgb) throw new Error("gold swatch is not a hex colour");
     const measured = rgbToOklch(rgb.r, rgb.g, rgb.b);
-    expect(own.h).toBeCloseTo(measured.h, 0);
-    expect(own.c).toBeCloseTo(measured.c * STRIP_CHROMA_BOOST, 3);
+    const own = (gamut: "srgb" | "p3") =>
+      oklchOf(
+        stopsOf(segmentGradient(gold, orange, green, gamut)).find(([, at]) => at === "50%")?.[0] ??
+          "",
+      );
+    for (const gamut of ["srgb", "p3"] as const) {
+      expect(own(gamut).h).toBeCloseTo(measured.h, 0);
+      expect(own(gamut).l).toBeCloseTo(measured.l, 3);
+    }
+    // Gold's swatch already sits on the edge of sRGB, so the boost only shows
+    // on a wide-gamut screen.
+    expect(own("srgb").c).toBeGreaterThanOrEqual(measured.c - 1e-3);
+    expect(own("p3").c).toBeGreaterThan(own("srgb").c);
+    expect(own("p3").c).toBeLessThanOrEqual(measured.c * STRIP_CHROMA_BOOST);
   });
 
   it("fades pink into white without passing through another hue", () => {
@@ -175,7 +179,61 @@ describe("segmentGradient", () => {
     }
   });
 
+  it("eases out of its own colour instead of leaving it at a corner", () => {
+    // The first step away from the centre is far smaller than a step at the
+    // seam, so the colour lingers there. A straight ramp made them equal.
+    const stops = stopsOf(segmentGradient(gold, orange, green)).map(([css, at]) => ({
+      ...oklchOf(css),
+      at,
+    }));
+    const centre = stops.findIndex(({ at }) => at === "50%");
+    const step = (a: { l: number }, b: { l: number }) => Math.abs(a.l - b.l);
+    const atSeam = step(stops[stops.length - 2], stops[stops.length - 1]);
+    expect(step(stops[centre], stops[centre + 1])).toBeLessThan(atSeam / 4);
+    expect(step(stops[centre - 1], stops[centre])).toBeLessThan(atSeam / 4);
+  });
+
+  it("keeps every stop inside the gamut it was built for", () => {
+    const fills = COLOR_BUCKETS.map((bucket) => bucket.swatch);
+    for (const gamut of ["srgb", "p3"] as const) {
+      fills.forEach((fill, i) => {
+        const gradient = segmentGradient(fill, fills[i - 1] ?? null, fills[i + 1] ?? null, gamut);
+        for (const [css] of stopsOf(gradient)) expect(inGamut(oklchOf(css), gamut)).toBe(true);
+      });
+    }
+  });
+
+  it("uses the extra room a wide-gamut screen has", () => {
+    const [teal, blue] = ["teal", "blue"].map(swatch);
+    const own = (gamut: "srgb" | "p3") =>
+      oklchOf(
+        stopsOf(segmentGradient(teal, green, blue, gamut)).find(([, at]) => at === "50%")?.[0] ??
+          "",
+      );
+    expect(own("p3").c).toBeGreaterThan(own("srgb").c);
+    expect(own("p3").h).toBeCloseTo(own("srgb").h, 0);
+  });
+
   it("returns a fill it cannot parse as it is", () => {
     expect(segmentGradient("rebeccapurple", null, null)).toBe("rebeccapurple");
+  });
+});
+
+describe("intoGamut", () => {
+  it("leaves a colour the screen can show alone", () => {
+    const grey = { l: 0.6, c: 0, h: 0 };
+    expect(intoGamut(grey, "srgb")).toEqual(grey);
+  });
+
+  it("lowers only the chroma of one it cannot", () => {
+    const tooGreen = { l: 0.6, c: 0.3, h: 140 };
+    const mapped = intoGamut(tooGreen, "srgb");
+    expect(inGamut(tooGreen, "srgb")).toBe(false);
+    expect(inGamut(mapped, "srgb")).toBe(true);
+    expect(mapped.l).toBe(tooGreen.l);
+    expect(mapped.h).toBe(tooGreen.h);
+    expect(mapped.c).toBeLessThan(tooGreen.c);
+    // Close to the edge, not far inside it.
+    expect(inGamut({ ...mapped, c: mapped.c + 0.005 }, "srgb")).toBe(false);
   });
 });

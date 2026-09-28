@@ -655,30 +655,44 @@ export default function PhotographySpectrumPage({ images, tints, marks }: Props)
                 title={`${mark.label} — ${formatCount(mark.count)} photographs`}
                 aria-label={`Jump to ${mark.label}, ${formatCount(mark.count)} photographs`}
                 aria-current={i === activeBand ? "true" : undefined}
-                style={{
-                  // A ramp rather than a block. Each segment runs from the
-                  // midpoint it shares with the band before it to the one it
-                  // shares with the band after, flat in its own colour across
-                  // the middle and blended round the hue circle at the edges,
-                  // so neighbours meet at the same colour and the eleven of
-                  // them read as one gradient.
-                  // Done per segment because a minimum width means they are
-                  // not proportional, so no single gradient on the container
-                  // could be told where the seams fall.
-                  background: segmentGradient(
-                    mark.fill,
-                    marks[i - 1]?.fill ?? null,
-                    marks[i + 1]?.fill ?? null,
-                  ),
-                  flexGrow: mark.count,
-                  flexBasis: 0,
-                }}
+                style={
+                  {
+                    // A ramp rather than a block. Each segment runs from the
+                    // midpoint it shares with the band before it to the one it
+                    // shares with the band after, its own colour at the centre
+                    // and eased round the hue circle to each edge, so
+                    // neighbours meet at the same colour and the eleven of
+                    // them read as one gradient.
+                    // Done per segment because a minimum width means they are
+                    // not proportional, so no single gradient on the container
+                    // could be told where the seams fall.
+                    //
+                    // Built twice, once kept inside sRGB and once inside Display
+                    // P3, and the class below picks by the screen: a wide-gamut
+                    // screen shows the richer one, and every other screen gets
+                    // colours it can show rather than clamped ones, which band.
+                    "--strip": segmentGradient(
+                      mark.fill,
+                      marks[i - 1]?.fill ?? null,
+                      marks[i + 1]?.fill ?? null,
+                    ),
+                    "--strip-p3": segmentGradient(
+                      mark.fill,
+                      marks[i - 1]?.fill ?? null,
+                      marks[i + 1]?.fill ?? null,
+                      "p3",
+                    ),
+                    flexGrow: mark.count,
+                    flexBasis: 0,
+                  } as CSSProperties
+                }
                 className={clsx(
                   // 28px, the smallest a segment can be and still take a
                   // press reliably. Under the 44px a tap target wants, which
                   // is the compromise a strip makes: 44px of height for a
                   // control that is 11 slivers wide is not a strip any more.
                   "block h-full min-w-7 cursor-pointer",
+                  "bg-[image:var(--strip)] [@media(color-gamut:p3)]:bg-[image:var(--strip-p3)]",
                   // The focus ring goes inside: the strip clips its own
                   // overflow, so an outset ring on a segment is invisible.
                   "focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-inset",

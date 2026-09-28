@@ -23,7 +23,9 @@ import {
   oneTimeUrl,
   otherDoors,
   quickMonthly,
+  SITE_REFERENCE,
   SUPPORTED_AT_STORAGE_KEY,
+  withReference,
 } from "src/lib/donation";
 import useLocalStorageState from "use-local-storage-state";
 import { ExternalLink } from "./ExternalLink";
@@ -31,6 +33,17 @@ import { SiBuymeacoffee, SiKofi, SiPatreon, SiPaypal, SiWise } from "./Icons";
 
 type DonationCardProps = {
   className?: string;
+};
+
+type FullCardProps = DonationCardProps & {
+  // Tags each Stripe payment with where the donor came from: a project slug
+  // from /donate?from=<slug>, or ricos.site itself.
+  reference?: string;
+};
+
+type ThanksProps = DonationCardProps & {
+  // The project the donor came from, when it has a site to go back to.
+  backTo?: { name: string; href: string };
 };
 
 // localStorage is only readable after hydration; until then every surface
@@ -233,7 +246,7 @@ const tileClass =
   "group relative flex h-full flex-col rounded-md border-2 border-gray-200 no-underline transition-[border-color,box-shadow,translate] duration-200 hover:border-accent hover:shadow-md motion-safe:hover:-translate-y-0.5 dark:border-gray-700 dark:hover:shadow-black/40";
 
 /** The full card. Lives on /donate only. */
-export function DonationCard({ className }: DonationCardProps) {
+export function DonationCard({ className, reference = SITE_REFERENCE }: FullCardProps) {
   const isMounted = useIsMounted();
   const [mode, setMode] = useState<DonationMode>(defaultDonationMode);
   const showStripe = isMounted && hasAnyStripeLinks;
@@ -278,7 +291,7 @@ export function DonationCard({ className }: DonationCardProps) {
                         {monthlyTiles.map((option) => (
                           <motion.div key={option.label} variants={tileVariants}>
                             <ExternalLink
-                              href={option.href ?? "#"}
+                              href={option.href ? withReference(option.href, reference) : "#"}
                               className={clsx(tileClass, "min-h-24 justify-between px-4 py-3")}
                             >
                               {option.emoji && (
@@ -321,7 +334,7 @@ export function DonationCard({ className }: DonationCardProps) {
                       >
                         <motion.div variants={tileVariants}>
                           <ExternalLink
-                            href={oneTimeUrl ?? "#"}
+                            href={oneTimeUrl ? withReference(oneTimeUrl, reference) : "#"}
                             className={clsx(tileClass, "min-h-20 justify-center px-5 py-4")}
                           >
                             <span className="text-xl font-bold text-gray-900 dark:text-white">
@@ -382,12 +395,18 @@ export function DonationStrip({ className }: DonationCardProps) {
         {isMounted && hasQuickLinks ? (
           <>
             {oneTimeUrl && (
-              <ExternalLink href={oneTimeUrl} className={stripButtonClass}>
+              <ExternalLink
+                href={withReference(oneTimeUrl, SITE_REFERENCE)}
+                className={stripButtonClass}
+              >
                 Donate once
               </ExternalLink>
             )}
             {quickMonthly.href && (
-              <ExternalLink href={quickMonthly.href} className={stripButtonClass}>
+              <ExternalLink
+                href={withReference(quickMonthly.href, SITE_REFERENCE)}
+                className={stripButtonClass}
+              >
                 {quickMonthly.label} / month
               </ExternalLink>
             )}
@@ -814,7 +833,7 @@ function BeatingHeart({ play, still }: { play: boolean; still: boolean }) {
 }
 
 /** Replaces the card on /donate after Stripe sends the donor back. */
-export function DonationThanks({ className }: DonationCardProps) {
+export function DonationThanks({ className, backTo }: ThanksProps) {
   const ref = useRef<HTMLDivElement>(null);
   // Wait until the card is actually on screen, so nobody misses the moment.
   const inView = useInView(ref, { once: true, amount: 0.5 });
@@ -862,6 +881,13 @@ export function DonationThanks({ className }: DonationCardProps) {
             <p className="mt-para mb-0 font-serif text-lg italic text-gray-700 dark:text-gray-200">
               — Rico
             </p>
+            {backTo && (
+              <p className="mt-stack mb-0">
+                <a href={backTo.href} className={stripButtonClass}>
+                  Back to {backTo.name}
+                </a>
+              </p>
+            )}
             {manageDonationUrl && (
               <p className="mt-stack mb-0 text-sm">
                 <ExternalLink

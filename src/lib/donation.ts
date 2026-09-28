@@ -111,3 +111,49 @@ export const QUIET_PERIOD_MS = 90 * 24 * 60 * 60 * 1000;
 export function isInQuietPeriod(supportedAt: number | null, now = Date.now()) {
   return supportedAt !== null && now - supportedAt < QUIET_PERIOD_MS;
 }
+
+// Every other project links its donate button here as /donate?from=<slug>,
+// with the slug from src/lib/projects.ts (see src/lib/donationSources.ts).
+// The page names the project, tags the Stripe payment with the slug and, after
+// the thanks, offers the way back.
+export const FROM_QUERY_KEY = "from";
+
+export type DonationSource = {
+  slug: string;
+  name: string;
+  // Absolute URL of the project's site; without one the thanks has no way back.
+  url?: string;
+};
+
+// The tag on donations that start on ricos.site itself.
+export const SITE_REFERENCE = "ricos-site";
+
+// Stripe Payment Links copy a client_reference_id from their URL onto the
+// payment, so one set of links still shows which project a donation came from.
+export function withReference(href: string, reference: string) {
+  const url = new URL(href);
+  url.searchParams.set("client_reference_id", reference);
+  return url.toString();
+}
+
+// Stripe's redirect back to /donate?thanks=1 cannot carry the slug, so the
+// page stores it on arrival and reads it on the thanks view. Old enough and it
+// no longer belongs to this donation.
+export const DONATION_SOURCE_STORAGE_KEY = "donation-source";
+export const SOURCE_TTL_MS = 6 * 60 * 60 * 1000;
+
+export type StoredDonationSource = { slug: string; at: number };
+
+export function isFreshSource(stored: StoredDonationSource | null, now = Date.now()) {
+  return stored !== null && now - stored.at < SOURCE_TTL_MS;
+}
+
+// The way back carries ?supported=1, so the project can quiet its own asks.
+// Its localStorage cannot see this site's, so it has to be told.
+export const SUPPORTED_QUERY_KEY = "supported";
+
+export function supportedUrl(projectUrl: string) {
+  const url = new URL(projectUrl);
+  url.searchParams.set(SUPPORTED_QUERY_KEY, "1");
+  return url.toString();
+}

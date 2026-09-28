@@ -82,6 +82,13 @@ export default function DonationBoxesDevPage() {
           <Pair label="Thanks state — /donate?thanks=1">
             <DonationThanks key={thanksRun} />
           </Pair>
+
+          <Pair label="Thanks state — donor came from a project (/donate?from=fractal-garden)">
+            <DonationThanks
+              key={thanksRun}
+              backTo={{ name: "Fractal Garden", href: "https://fractal.garden/?supported=1" }}
+            />
+          </Pair>
           <button
             type="button"
             className="mt-label rounded-md border-2 border-gray-200 px-4 py-2 text-sm font-semibold transition-colors hover:border-accent dark:border-gray-700"

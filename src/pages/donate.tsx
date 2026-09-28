@@ -7,7 +7,17 @@ import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { manageDonationUrl, THANKS_QUERY_KEY } from "src/lib/donation";
+import {
+  DONATION_SOURCE_STORAGE_KEY,
+  FROM_QUERY_KEY,
+  isFreshSource,
+  manageDonationUrl,
+  type StoredDonationSource,
+  supportedUrl,
+  THANKS_QUERY_KEY,
+} from "src/lib/donation";
+import { getDonationSource } from "src/lib/donationSources";
+import useLocalStorageState from "use-local-storage-state";
 
 export default function DonatePage() {
   // Stripe sends donors back here with ?thanks=1 (set per Payment Link in the
@@ -16,9 +26,31 @@ export default function DonatePage() {
   const justDonated = router.isReady && router.query[THANKS_QUERY_KEY] !== undefined;
   const [, setSupportedAt] = useDonationSupportedAt();
 
+  // Other projects link here as /donate?from=<slug>. An unknown slug reads as
+  // no slug, so the page falls back to the ricos.site copy.
+  const source = router.isReady ? getDonationSource(router.query[FROM_QUERY_KEY]) : null;
+  const sourceSlug = source?.slug;
+  const [storedSource, setStoredSource] = useLocalStorageState<StoredDonationSource | null>(
+    DONATION_SOURCE_STORAGE_KEY,
+    { defaultValue: null },
+  );
+
   useEffect(() => {
-    if (justDonated) setSupportedAt(Date.now());
-  }, [justDonated, setSupportedAt]);
+    if (!router.isReady) return;
+    if (justDonated) {
+      setSupportedAt(Date.now());
+      return;
+    }
+    // Every other visit overwrites the slug, so a donation that starts on
+    // ricos.site never offers a way back to a project seen earlier.
+    setStoredSource(sourceSlug ? { slug: sourceSlug, at: Date.now() } : null);
+  }, [router.isReady, justDonated, sourceSlug, setSupportedAt, setStoredSource]);
+
+  const cameFrom =
+    justDonated && isFreshSource(storedSource) ? getDonationSource(storedSource?.slug) : null;
+  const backTo = cameFrom?.url
+    ? { name: cameFrom.name, href: supportedUrl(cameFrom.url) }
+    : undefined;
 
   return (
     <Layout
@@ -48,21 +80,31 @@ export default function DonatePage() {
           {/* A donor coming back from Stripe lands at the top of the page, so the
               thanks goes first and the pitch they already answered steps aside. */}
           {justDonated ? (
-            <DonationThanks />
+            <DonationThanks backTo={backTo} />
           ) : (
             <>
-              <p>
-                Everything I make here is free and I want to keep it that way, but to do so I need
-                your help.
-              </p>
+              {source ? (
+                <p>
+                  Thanks for coming over from {source.name}! If it was useful to you or made your
+                  day a little better, consider supporting me and my work. It buys me time to keep
+                  improving it and to build the next thing.
+                </p>
+              ) : (
+                <>
+                  <p>
+                    Everything I make here is free and I want to keep it that way, but to do so I
+                    need your help.
+                  </p>
 
-              <p>
-                If something here made your day a little better, consider supporting me and my work.
-                It buys me time to work on the next essay or strange little experiment and would
-                mean the world to me.
-              </p>
+                  <p>
+                    If something here made your day a little better, consider supporting me and my
+                    work. It buys me time to work on the next essay or strange little experiment and
+                    would mean the world to me.
+                  </p>
+                </>
+              )}
 
-              <DonationCard className="mt-group" />
+              <DonationCard className="mt-group" reference={source?.slug} />
             </>
           )}
 

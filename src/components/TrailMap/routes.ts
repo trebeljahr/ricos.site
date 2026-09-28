@@ -265,7 +265,10 @@ export const WIDE_ROUTE: Route = {
   marks: [
     {
       kind: "compass",
+      // Set in from the corner so it reads as drawn on the map, not pinned to
+      // the window; the old corner spot stays as a fallback.
       spots: [
+        [1050, 95],
         [1140, 30],
         [900, 76],
       ],
@@ -417,7 +420,13 @@ export const NARROW_ROUTE: Route = {
     [LEFT, 5400],
   ],
   marks: [
-    { kind: "compass", spots: [[302, 46]] },
+    {
+      kind: "compass",
+      spots: [
+        [285, 60],
+        [302, 46],
+      ],
+    },
     { kind: "range", spots: [[193, 32]] },
     { kind: "peaks", spots: [[211, 196]] },
   ],

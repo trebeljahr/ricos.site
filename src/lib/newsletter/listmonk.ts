@@ -189,6 +189,23 @@ export async function confirmSubscription(email: string, listId = resolveListId(
   });
 }
 
+/**
+ * Mark subscribers `unsubscribed` on `listId` only. Their memberships on
+ * other lists (other projects on the shared instance) stay as they are,
+ * and a membership already `unsubscribed` stays so.
+ */
+export async function unsubscribeFromList(subscriberIds: number[], listId: number): Promise<void> {
+  if (subscriberIds.length === 0) return;
+  await listmonkFetch("/api/subscribers/lists", {
+    method: "PUT",
+    body: JSON.stringify({
+      ids: subscriberIds,
+      action: "unsubscribe",
+      target_list_ids: [listId],
+    }),
+  });
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Transactional send (confirmation email)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -228,6 +245,18 @@ export type ListmonkList = {
 export async function getList(listId: number): Promise<ListmonkList> {
   const res = await listmonkFetch<{ data: ListmonkList }>(`/api/lists/${listId}`);
   return res.data;
+}
+
+/** The production list (LISTMONK_LIVE_LIST_ID), for the Mailgun import and sync scripts. */
+export async function getLiveList(): Promise<ListmonkList> {
+  const list = await getList(
+    positiveId("LISTMONK_LIVE_LIST_ID", required("LISTMONK_LIVE_LIST_ID")),
+  );
+  // A test list gets test campaigns: real readers must never land on one.
+  if (list.name.endsWith("-test")) {
+    throw new Error(`LISTMONK_LIVE_LIST_ID points at test list "${list.name}"`);
+  }
+  return list;
 }
 
 /**

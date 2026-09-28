@@ -7,6 +7,7 @@ import {
   isConfirmedOnList,
   sendCampaign,
   sendTransactional,
+  unsubscribeFromList,
 } from "./listmonk";
 
 const subscriber = {
@@ -184,6 +185,27 @@ describe("confirmSubscription", () => {
       lists: [15],
       preconfirm_subscriptions: true,
     });
+  });
+});
+
+describe("unsubscribeFromList", () => {
+  it("unsubscribes the given subscribers from that one list", async () => {
+    const fetchMock = mockFetch();
+
+    await unsubscribeFromList([42, 43], 15);
+
+    expect(writes(fetchMock.mock.calls)).toEqual(["PUT /api/subscribers/lists"]);
+    expect(body(fetchMock.mock.calls[0])).toEqual({
+      ids: [42, 43],
+      action: "unsubscribe",
+      target_list_ids: [15],
+    });
+  });
+
+  it("sends nothing for an empty batch", async () => {
+    const fetchMock = mockFetch();
+    await unsubscribeFromList([], 15);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
 

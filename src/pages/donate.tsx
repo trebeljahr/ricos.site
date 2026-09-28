@@ -56,11 +56,9 @@ export default function DonatePage() {
               </p>
 
               <p>
-                If you&apos;re a friend, or something here made your day a little better, you can
-                chip in. It buys me time for the next essay or strange little experiment.
+                If something here made your day a little better, you can chip in. It buys me time
+                for the next essay or strange little experiment.
               </p>
-
-              <p>No pressure, though. You&apos;re welcome here either way.</p>
 
               <DonationCard className="mt-group" />
             </>

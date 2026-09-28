@@ -1,3 +1,15 @@
+/**
+ * Send the newest Live and Learn issue.
+ *
+ *   pnpm sendNewsletter                        → test list
+ *   pnpm sendNewsletter --dry-run              → render only, send nothing
+ *   NODE_ENV=production pnpm sendNewsletter    → live list
+ *
+ * NEWSLETTER_PROVIDER picks the backend. `mailgun` (default) mails the
+ * Mailgun list address. `listmonk` creates a ListMonk campaign on
+ * LISTMONK_TEST_LIST_ID or, in production, LISTMONK_LIVE_LIST_ID, and
+ * starts it; ListMonk then sends through SES.
+ */
 import slugify from "@sindresorhus/slugify";
 import "dotenv/config";
 import { readFile } from "node:fs/promises";
@@ -11,6 +23,9 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { newsletterListMail, sendEmail } from "src/lib/mailgun.js";
 import { nextImageUrl } from "src/lib/mapToImageProps.js";
+import { finalizeIssueBody, UNSUBSCRIBE_PLACEHOLDER } from "src/lib/newsletter/issueBody.js";
+import { escapeGoTemplate, getList, sendCampaign } from "src/lib/newsletter/listmonk.js";
+import { type NewsletterProvider, newsletterProvider } from "src/lib/newsletter/subscribe.js";
 import { baseUrl } from "src/lib/urlUtils.js";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
@@ -20,7 +35,54 @@ const number = sortedNewsletterNames[0].replace(".md", "");
 
 const HOST = baseUrl;
 
+const USAGE = "usage: pnpm sendNewsletter [--dry-run]";
+
+function listIdFromEnv(name: string): number {
+  const raw = process.env[name];
+  const id = Number(raw);
+  if (!raw || !Number.isInteger(id) || id <= 0) {
+    throw new Error(`Set ${name} to the ListMonk list id to send to.`);
+  }
+  return id;
+}
+
+/**
+ * Resolve the ListMonk list and refuse anything that is not clearly the
+ * intended one: the test list outside production, the live list in it,
+ * and never a single-opt-in list (ListMonk would mail unconfirmed members).
+ */
+async function resolveCampaignList(production: boolean) {
+  const listId = listIdFromEnv(production ? "LISTMONK_LIVE_LIST_ID" : "LISTMONK_TEST_LIST_ID");
+  const list = await getList(listId);
+  const isTestList = list.name.endsWith("-test");
+  if (production === isTestList) {
+    throw new Error(
+      `List ${list.id} "${list.name}" is ${isTestList ? "a test list" : "not a test list"}, ` +
+        `but NODE_ENV=${process.env.NODE_ENV ?? "(unset)"}. Check LISTMONK_${production ? "LIVE" : "TEST"}_LIST_ID.`,
+    );
+  }
+  if (list.optin !== "double") {
+    throw new Error(
+      `List ${list.id} "${list.name}" is ${list.optin} opt-in; make it double first.`,
+    );
+  }
+  return list;
+}
+
 async function main() {
+  const args = process.argv.slice(2);
+  const dryRun = args.includes("--dry-run");
+  const unknownArgs = args.filter((arg) => arg !== "--dry-run");
+  if (unknownArgs.length > 0) {
+    console.error(
+      `Unknown argument${unknownArgs.length === 1 ? "" : "s"}: ${unknownArgs.join(" ")}`,
+    );
+    console.error(USAGE);
+    process.exit(1);
+  }
+  const provider: NewsletterProvider = newsletterProvider();
+  const production = process.env.NODE_ENV === "production";
+
   const emailHandlebarsFile = await readFile(
     path.join(process.cwd(), "src", "content", "email-templates", "newsletter.hbs"),
     "utf-8",
@@ -164,15 +226,13 @@ async function main() {
     coverImageSrc: nextImageUrl(cover.src, 1080),
     coverImageAlt: cover.alt,
     webversion,
+    unsubscribeUrl: UNSUBSCRIBE_PLACEHOLDER,
   });
 
-  const data = {
-    from: "Rico Trebeljahr <rico@trebeljahr.com>",
-    to: newsletterListMail,
-    excerpt: excludeExcerpt ? "" : excerpt || defaultExcerpt,
-    subject: `🌱 ${title.trim()}`,
-    html: htmlEmail,
-    text: `
+  const subject = `🌱 ${title.trim()}`;
+  const html = finalizeIssueBody(htmlEmail, provider);
+  const text = finalizeIssueBody(
+    `
 🌱 ${realTitle.trim()}
 
 
@@ -184,15 +244,54 @@ You can read also [read this on the web](${webversion}).
 
 ${content}
 
-[Unsubscribe](%mailing_list_unsubscribe_url%)
+[Unsubscribe](${UNSUBSCRIBE_PLACEHOLDER})
 
 Thanks for reading plaintext emails. You're cool!
 `,
-  };
+    provider,
+  );
 
-  console.info(title.trim() + ":\n", `Sending newsletter ${number}...`);
-  await sendEmail(data);
+  console.info(`${title.trim()}: newsletter ${number}`);
+  console.info(`provider: ${provider}, NODE_ENV=${process.env.NODE_ENV ?? "(unset)"}`);
+
+  if (provider === "listmonk") {
+    const list = await resolveCampaignList(production);
+    const confirmed = list.subscriber_statuses?.confirmed ?? 0;
+    // ListMonk refreshes list counts every few minutes, so this can lag.
+    console.info(`target: ListMonk list ${list.id} "${list.name}", ~${confirmed} confirmed`);
+    if (dryRun) {
+      console.info(`dry run: nothing sent (html ${html.length} bytes, text ${text.length} bytes)`);
+      return;
+    }
+    const campaign = await sendCampaign({
+      listId: list.id,
+      name: production
+        ? `Live and Learn #${number}`
+        : `[TEST ${new Date().toISOString().slice(0, 16)}] Live and Learn #${number}`,
+      subject: escapeGoTemplate(production ? subject : `[TEST] ${subject}`),
+      html,
+      text,
+    });
+    console.info(`campaign ${campaign.id} started: ${campaign.url}`);
+    return;
+  }
+
+  console.info(`target: Mailgun list ${newsletterListMail}`);
+  if (dryRun) {
+    console.info(`dry run: nothing sent (html ${html.length} bytes, text ${text.length} bytes)`);
+    return;
+  }
+  await sendEmail({
+    from: "Rico Trebeljahr <rico@trebeljahr.com>",
+    to: newsletterListMail,
+    subject,
+    html,
+    text,
+  });
   console.info("Successfully sent email!");
 }
 
-main();
+main().catch((err) => {
+  console.error(err instanceof Error ? err.message : err);
+  process.exit(1);
+});

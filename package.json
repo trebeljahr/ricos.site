@@ -62,6 +62,7 @@
     "photographyColors": "tsx src/scripts/photographyColors.ts",
     "syncImageAlt": "tsx src/scripts/syncImageAltMetadata.ts",
     "sendNewsletter": "tsx src/scripts/sendNewsletter.ts",
+    "newsletter:import": "tsx src/scripts/newsletter/importFromMailgun.ts",
     "createRedirects": "tsx src/scripts/createRedirects.ts",
     "findIncompleteBooknotes": "tsx src/scripts/findIncompleteBooknotes.ts",
     "fixFolderPaths": "tsx src/scripts/aws/fixFileNames.ts",

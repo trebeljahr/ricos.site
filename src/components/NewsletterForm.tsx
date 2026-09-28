@@ -36,6 +36,7 @@ export const NewsletterForm = ({
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<{ message: string; invalidEmail: boolean } | null>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
+  const honeypotRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -62,7 +63,7 @@ export const NewsletterForm = ({
     try {
       const data = await fetchData("/api/signup", {
         method: "POST",
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, website: honeypotRef.current?.value ?? "" }),
         headers: headers,
       });
 
@@ -154,6 +155,17 @@ export const NewsletterForm = ({
           {text || defaultText}
 
           <form className="form flex flex-col justify-center" onSubmit={handleSubmit} noValidate>
+            {/* Honeypot: hidden from people and screen readers, filled by bots. */}
+            <div aria-hidden="true" className="absolute -left-[9999px] size-px overflow-hidden">
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                defaultValue=""
+                ref={honeypotRef}
+              />
+            </div>
             <div className="flex flex-col gap-stack sm:flex-row sm:items-center">
               <input
                 name="email"

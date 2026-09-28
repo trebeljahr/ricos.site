@@ -1,10 +1,18 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { confirmEmail } from "src/lib/emailUtils";
+import { readConfirmLink } from "src/lib/newsletter/confirmLink";
+import { confirmAddress } from "src/lib/newsletter/subscribe";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const confirmed = await confirmEmail(req.query.email, req.query.hash);
-    res.redirect(confirmed ? "/email-signup-success" : "/email-signup-error");
+    const link = await readConfirmLink(req.query);
+    if (!link.ok) {
+      console.info(
+        JSON.stringify({ scope: "newsletter.confirm", event: "rejected", reason: link.reason }),
+      );
+      return res.redirect("/email-signup-error");
+    }
+    await confirmAddress(link.email);
+    res.redirect("/email-signup-success");
   } catch (err) {
     console.error(err);
     res.redirect("/email-signup-error");

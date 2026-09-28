@@ -232,7 +232,7 @@ export const EggCounter = () => {
   if (found === 0) return null;
   return (
     <span>
-      <Link href="/eggs" className="hover:text-accent">
+      <Link href="/easter-eggs" className="hover:text-accent">
         {found}/{EASTER_EGG_IDS.length} easter eggs found
       </Link>{" "}
       {/* One bunny at a time: clicks while it is out make it lay an egg. */}

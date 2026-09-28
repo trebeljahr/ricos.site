@@ -86,6 +86,11 @@ export const STATIC_REDIRECTS = [
     destination: "/timeline",
     permanent: true,
   },
+  {
+    source: "/eggs",
+    destination: "/easter-eggs",
+    permanent: true,
+  },
 ];
 
 /**

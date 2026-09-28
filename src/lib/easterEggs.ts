@@ -6,15 +6,15 @@ export const EASTER_EGGS_CHANGED_EVENT = "easter-eggs:changed";
 
 export type EasterEgg = {
   id: string;
-  /** What the egg does, shown on /eggs once found. */
+  /** What the egg does, shown on /easter-eggs once found. */
   emoji: EmojiSprite;
-  /** Shown on /eggs once found. */
+  /** Shown on /easter-eggs once found. */
   name: string;
-  /** Where to look, shown on /eggs before it is found. */
+  /** Where to look, shown on /easter-eggs before it is found. */
   where: { hint: string; label: string; href: string };
 };
 
-/** Every egg on the site. The counter and /eggs show progress against this list. */
+/** Every egg on the site. The counter and /easter-eggs show progress against this list. */
 export const EASTER_EGGS = [
   {
     id: "waving-hand",

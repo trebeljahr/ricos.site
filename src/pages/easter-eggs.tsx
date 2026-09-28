@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { EASTER_EGGS, EASTER_EGGS_CHANGED_EVENT, getFoundEggs } from "src/lib/easterEggs";
 import { EASTER_EGG_SPRITES } from "src/lib/sprites";
 
-export default function EggsPage() {
+export default function EasterEggsPage() {
   // null until mounted: finds live in this browser's storage, so the server cannot know them.
   const [found, setFound] = useState<Set<string> | null>(null);
 
@@ -27,14 +27,14 @@ export default function EggsPage() {
     <Layout
       title="Easter eggs"
       description="A list of the hidden easter eggs on ricos.site and the ones you have found so far."
-      url="/eggs"
+      url="/easter-eggs"
       keywords={["easter eggs", "Rico Trebeljahr"]}
       noindex={true}
     >
       <PageMain>
         <article className="mx-auto max-w-prose">
           <Header
-            breadcrumbs={{ path: "eggs" }}
+            breadcrumbs={{ path: "easter-eggs" }}
             title="Easter eggs"
             subtitle={
               found

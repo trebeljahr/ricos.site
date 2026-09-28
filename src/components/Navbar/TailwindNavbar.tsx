@@ -34,6 +34,7 @@ export const RicosSiteBanner = ({ compact = false }: BannerProps) => {
           className="h-5 w-auto mr-1"
           src="/favicon/apple-touch-icon.png"
           alt=""
+          aria-hidden="true"
           width={32}
           height={32}
           unoptimized

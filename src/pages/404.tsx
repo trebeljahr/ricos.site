@@ -53,7 +53,7 @@ const Picture = ({ className = "", hidden = false }: { className?: string; hidde
       ? { "aria-hidden": true as const }
       : { role: "img", "aria-label": "this is not a page pipe meme joke" })}
   >
-    <img src="/not-found/pipe.png" alt="" className="block w-full" />
+    <img src="/not-found/pipe.png" alt="" aria-hidden="true" className="block w-full" />
     <div className="absolute inset-0 bg-gray-900/90 dark:bg-gray-100/90" style={WORDS} />
   </div>
 );

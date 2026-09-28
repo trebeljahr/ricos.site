@@ -18,6 +18,9 @@ export const Sprite = ({ name, alt = "", className }: SpriteProps) => (
   <img
     src={spriteSrc(name)}
     alt={alt}
+    // An unlabelled sprite is decoration: hide it outright, which is also how
+    // checkAlt tells it apart from a content image that lost its alt.
+    aria-hidden={alt ? undefined : true}
     width={160}
     height={160}
     draggable={false}

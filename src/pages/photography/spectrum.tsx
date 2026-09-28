@@ -812,7 +812,9 @@ export default function PhotographySpectrumPage({ images, tints, marks }: Props)
                         src={tile.src}
                         srcSet={tile.srcSet}
                         sizes={tile.sizes}
+                        // The button carries the label; the picture repeats it.
                         alt=""
+                        aria-hidden="true"
                         width={tile.width}
                         height={180}
                         loading="lazy"

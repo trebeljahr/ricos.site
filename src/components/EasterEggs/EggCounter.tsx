@@ -11,26 +11,12 @@ const known = new Set<string>(EASTER_EGG_IDS);
 const HOP_ACROSS_MS = 5000;
 const HOP_MS = 420;
 const BUNNY_PX = 30;
-// How long an egg stays behind the bunny before it is gone.
-const DROP_SHOWS_MS = 2400;
-const EGG_PX = 16;
-// Eggs laid on a click: a size up from the hop eggs, and they stay a little longer.
+// An egg laid on a click: its size, and how long it stays before it is gone.
 const LAID_PX = 22;
 const LAID_SHOWS_MS = 3000;
 // Spam clicks lay at most one egg per gap, and only so many can be out at once.
 const LAY_GAP_MS = 180;
 const MAX_LAID = 24;
-
-type Drop = {
-  id: number;
-  x: number;
-  lift: number;
-  size: number;
-  sprite: (typeof EASTER_EGG_SPRITES)[number];
-  tilt: number;
-  /** When the bunny's tail reaches `x`. */
-  at: number;
-};
 
 type Laid = {
   id: number;
@@ -91,47 +77,19 @@ const LaidEgg = ({
   );
 };
 
-/** Two or three painted eggs land behind the bunny on every hop, a little off the spot. */
-function planDrops(width: number, calm: boolean) {
-  const from = -BUNNY_PX - 18;
-  const to = width + BUNNY_PX + 18;
-  const duration = calm ? HOP_ACROSS_MS * 1.6 : HOP_ACROSS_MS;
-  const drops: Drop[] = [];
-  for (let at = HOP_MS; at < duration; at += HOP_MS) {
-    const tail = from + ((to - from) * at) / duration;
-    if (tail < 0 || tail > width) continue;
-    const eggs = Math.random() < 0.5 ? 2 : 3;
-    for (let i = 0; i < eggs; i++) {
-      drops.push({
-        id: drops.length,
-        x: tail - i * 16 + (Math.random() - 0.5) * 20,
-        lift: Math.random() * 8,
-        size: EGG_PX + Math.random() * 4,
-        sprite: pick(EASTER_EGG_SPRITES),
-        tilt: (Math.random() - 0.5) * 36,
-        at: at + i * 60,
-      });
-    }
-  }
-  return { from, to, duration, drops };
-}
-
 /**
- * The Easter bunny hops along the bottom of the screen once and leaves
- * painted eggs where it lands, which pop up and are gone again soon. Every
- * click on the footer egg while it hops makes it lay one more, through `layRef`.
+ * The Easter bunny hops along the bottom of the screen once. Every click on
+ * the footer egg while it hops makes it lay a painted egg, through `layRef`.
  */
 const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() => void> }) => {
   const outer = useRef<HTMLSpanElement>(null);
   const body = useRef<HTMLSpanElement>(null);
   const inner = useRef<HTMLSpanElement>(null);
-  const dropRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const lastLay = useRef(0);
   const nextLaid = useRef(0);
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
   const [calm] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  const [plan] = useState(() => planDrops(window.innerWidth, calm));
   const [crossed, setCrossed] = useState(false);
   const [laid, setLaid] = useState<Laid[]>([]);
 
@@ -180,7 +138,9 @@ const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() =>
   useEffect(() => {
     const el = outer.current;
     if (!el) return;
-    const { from, to, duration, drops } = plan;
+    const from = -BUNNY_PX - 18;
+    const to = window.innerWidth + BUNNY_PX + 18;
+    const duration = calm ? HOP_ACROSS_MS * 1.6 : HOP_ACROSS_MS;
     const across = el.animate(
       [{ transform: `translateX(${from}px)` }, { transform: `translateX(${to}px)` }],
       { duration, easing: "linear", fill: "forwards" },
@@ -196,55 +156,15 @@ const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() =>
           { duration: HOP_MS, iterations: Number.POSITIVE_INFINITY },
         );
 
-    const shown = drops.map((drop, i) => {
-      const rest = `rotate(${drop.tilt}deg) scale(1)`;
-      return dropRefs.current[i]?.animate(
-        calm
-          ? [
-              { opacity: 0 },
-              { opacity: 1, offset: 0.15 },
-              { opacity: 1, offset: 0.8 },
-              { opacity: 0 },
-            ]
-          : [
-              { opacity: 0, transform: "translateY(6px) scale(0.2)" },
-              {
-                opacity: 1,
-                transform: `translateY(-5px) rotate(${drop.tilt}deg) scale(1.15)`,
-                offset: 0.12,
-              },
-              { opacity: 1, transform: rest, offset: 0.22 },
-              { opacity: 1, transform: rest, offset: 0.85 },
-              { opacity: 0, transform: `translateY(4px) ${rest}` },
-            ],
-        { duration: DROP_SHOWS_MS, delay: drop.at, easing: "ease-out", fill: "both" },
-      );
-    });
-
-    Promise.all([across.finished, ...shown.map((a) => a?.finished)])
-      .then(() => setCrossed(true))
-      .catch(() => undefined);
+    across.finished.then(() => setCrossed(true)).catch(() => undefined);
     return () => {
       across.cancel();
       hops?.cancel();
-      for (const a of shown) a?.cancel();
     };
-  }, [plan, calm]);
+  }, [calm]);
 
   return (
     <>
-      {plan.drops.map((drop, i) => (
-        <span
-          key={drop.id}
-          ref={(el) => {
-            dropRefs.current[i] = el;
-          }}
-          className="absolute leading-none opacity-0"
-          style={{ left: drop.x - drop.size / 2, bottom: 8 + drop.lift, fontSize: drop.size }}
-        >
-          <Sprite name={drop.sprite} />
-        </span>
-      ))}
       {laid.map((egg) => (
         <LaidEgg key={egg.id} egg={egg} calm={calm} onDone={dropLaid} />
       ))}

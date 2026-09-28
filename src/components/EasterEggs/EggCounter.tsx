@@ -15,8 +15,13 @@ const BUNNY_PX = 30;
 const LAID_PX = 22;
 const LAID_SHOWS_MS = 3000;
 // Spam clicks lay at most one egg per gap, and only so many can be out at once.
+// The gap is jittered around LAY_GAP_MS, so clicking flat out does not lay
+// eggs like a metronome.
 const LAY_GAP_MS = 60;
 const MAX_LAID = 48;
+
+/** A random value between `min` and `max`. */
+const between = (min: number, max: number) => min + Math.random() * (max - min);
 
 type Laid = {
   id: number;
@@ -25,6 +30,11 @@ type Laid = {
   lift: number;
   sprite: (typeof EASTER_EGG_SPRITES)[number];
   tilt: number;
+  size: number;
+  /** How far above the ground line it lands, so the eggs do not sit in one row. */
+  rise: number;
+  /** A short wait before it pops, so fast clicks do not pop in lockstep. */
+  delay: number;
 };
 
 const pick = <T,>(items: readonly T[]) => items[Math.floor(Math.random() * items.length)];
@@ -52,15 +62,19 @@ const LaidEgg = ({
             { opacity: 0 },
           ]
         : [
-            { opacity: 0, transform: `translateY(${-egg.lift}px) scale(0.5)` },
-            { opacity: 1, transform: `translateY(${-egg.lift / 2}px) scale(0.9)`, offset: 0.05 },
+            { opacity: 0, transform: `translateY(${-egg.lift + egg.rise}px) scale(0.5)` },
+            {
+              opacity: 1,
+              transform: `translateY(${(-egg.lift + egg.rise) / 2}px) scale(0.9)`,
+              offset: 0.05,
+            },
             { opacity: 1, transform: `translateY(0) ${rest} scale(1.15, 0.85)`, offset: 0.1 },
             { opacity: 1, transform: `translateY(-5px) ${rest} scale(1)`, offset: 0.15 },
             { opacity: 1, transform: `translateY(0) ${rest} scale(1)`, offset: 0.2 },
             { opacity: 1, transform: `translateY(0) ${rest} scale(1)`, offset: 0.85 },
             { opacity: 0, transform: `translateY(4px) ${rest} scale(1)` },
           ],
-      { duration: LAID_SHOWS_MS, easing: "ease-out", fill: "both" },
+      { duration: LAID_SHOWS_MS, delay: egg.delay, easing: "ease-out", fill: "both" },
     );
     shown?.finished.then(() => onDone(egg.id)).catch(() => undefined);
     return () => shown?.cancel();
@@ -69,8 +83,8 @@ const LaidEgg = ({
   return (
     <span
       ref={ref}
-      className="absolute bottom-2 leading-none opacity-0"
-      style={{ left: egg.x - LAID_PX / 2, fontSize: LAID_PX }}
+      className="absolute leading-none opacity-0"
+      style={{ left: egg.x - egg.size / 2, bottom: 8 + egg.rise, fontSize: egg.size }}
     >
       <Sprite name={egg.sprite} />
     </span>
@@ -86,6 +100,7 @@ const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() =>
   const body = useRef<HTMLSpanElement>(null);
   const inner = useRef<HTMLSpanElement>(null);
   const lastLay = useRef(0);
+  const gap = useRef(LAY_GAP_MS);
   const nextLaid = useRef(0);
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
@@ -105,12 +120,14 @@ const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() =>
 
   layRef.current = () => {
     const now = performance.now();
-    if (crossed || now - lastLay.current < LAY_GAP_MS || !outer.current || !inner.current) return;
+    if (crossed || now - lastLay.current < gap.current || !outer.current || !inner.current) return;
     const bunny = outer.current.getBoundingClientRect();
-    // The tail end: the bunny is mirrored to face right, so that is its left edge.
-    const x = bunny.left + 6;
+    // Around the tail end, mostly behind it: the bunny is mirrored to face
+    // right, so the tail is its left edge.
+    const x = bunny.left + 6 + between(-14, 6);
     if (x < 0 || x > window.innerWidth) return;
     lastLay.current = now;
+    gap.current = LAY_GAP_MS * between(0.5, 1.8);
     const ground = (outer.current.parentElement?.getBoundingClientRect().bottom ?? 0) - 8;
     const lift = Math.max(0, ground - inner.current.getBoundingClientRect().bottom);
     setLaid((current) =>
@@ -123,7 +140,10 @@ const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() =>
               x,
               lift,
               sprite: pick(EASTER_EGG_SPRITES),
-              tilt: (Math.random() - 0.5) * 30,
+              tilt: between(-15, 15),
+              size: LAID_PX * between(0.85, 1.15),
+              rise: between(0, 6),
+              delay: between(0, 70),
             },
           ],
     );

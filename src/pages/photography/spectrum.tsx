@@ -601,16 +601,23 @@ export default function PhotographySpectrumPage({ images, tints, marks }: Props)
             Sticky, because it is the only navigation on a page this tall:
             parked at the top of the document it would be useful for one
             screen and useless for the rest. `top-15` clears the navbar above
-            it, whose bottom edge measures 60px. The backdrop is opaque rather
-            than blurred — tiles scrolling under a translucent bar drag their
-            colours through the swatches, and the swatches are the one thing
-            here that has to stay trustworthy. z-20 keeps it over the ribbon
+            it, whose bottom edge measures 60px. z-20 keeps it over the ribbon
             and well under the navbar's z-999.
+
+            In light mode the row has no backdrop: the navbar above it is
+            glass, and an opaque white band under the glass read as a slab
+            cut out of it. The strip floats on the photographs instead, held
+            off them by a white ring for the dark frames and a soft shadow
+            for the pale ones. The swatches themselves stay opaque, so tiles
+            passing behind never tint them, and the swatches are the one
+            thing here that has to stay trustworthy. Dark mode keeps a solid
+            backdrop, because the navbar there is solid gray-900 too and the
+            two read as one header.
 
             `not-prose` because <body> is a prose container: without it the
             typography plugin puts list markers and margins on every child and
             the row stops being a row. */}
-        <div className="not-prose sticky top-15 z-20 mb-6 bg-white pt-3 pb-3 dark:bg-gray-900">
+        <div className="not-prose sticky top-15 z-20 mb-6 pt-3 pb-3 dark:bg-gray-900">
           {/* The pointer is handled here rather than on the segments, and
               captured on the way down, so a drag keeps scrolling when it
               leaves the strip and a press is handled once, as the drag's
@@ -630,7 +637,7 @@ export default function PhotographySpectrumPage({ images, tints, marks }: Props)
             onPointerUp={endScrub}
             onPointerCancel={endScrub}
             onLostPointerCapture={endScrub}
-            className="relative flex h-7 w-full touch-none select-none overflow-hidden rounded-full ring-1 ring-black/10 dark:ring-white/10"
+            className="relative flex h-7 w-full touch-none select-none overflow-hidden rounded-full shadow-[0_1px_6px_rgb(0_0_0/0.25)] ring-2 ring-white dark:shadow-none dark:ring-1 dark:ring-white/10"
           >
             {marks.map((mark, i) => (
               <button

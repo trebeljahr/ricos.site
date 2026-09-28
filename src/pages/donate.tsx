@@ -44,28 +44,32 @@ export default function DonatePage() {
         <article className="mx-auto max-w-prose prose md:prose-lg xl:prose-xl dark:prose-invert">
           <Header breadcrumbs={{ path: "donate" }} title="Donate" />
 
-          <p>
-            All things I make here are free: essays, photos, notes, weird Three.js demos, the
-            newsletter. I like it that way. No paywalls, no ads, no tracking circus. I want this
-            place to stay open and human.
-          </p>
-
-          <p>
-            No pressure, obviously. The whole point of this place is that you can wander around
-            without having to pay, ever. I hate ads, so there won&apos;t be any here either.
-          </p>
-
-          <p>
-            The ethos is to run this as a passion project. Something I love doing because I think it
-            provides a little value to the world. Donations are a way of feeding the project without
-            changing what it is. They let me keep the lights on, keep the ads out, and make room for
-            the next thing.
-          </p>
-
+          {/* A donor coming back from Stripe lands at the top of the page, so the
+              thanks goes first and the pitch they already answered steps aside. */}
           {justDonated ? (
-            <DonationThanks className="mt-group" />
+            <DonationThanks />
           ) : (
-            <DonationCard className="mt-group" />
+            <>
+              <p>
+                All things I make here are free: essays, photos, notes, weird Three.js demos, the
+                newsletter. I like it that way. No paywalls, no ads, no tracking circus. I want this
+                place to stay open and human.
+              </p>
+
+              <p>
+                No pressure, obviously. The whole point of this place is that you can wander around
+                without having to pay, ever. I hate ads, so there won&apos;t be any here either.
+              </p>
+
+              <p>
+                The ethos is to run this as a passion project. Something I love doing because I
+                think it provides a little value to the world. Donations are a way of feeding the
+                project without changing what it is. They let me keep the lights on, keep the ads
+                out, and make room for the next thing.
+              </p>
+
+              <DonationCard className="mt-group" />
+            </>
           )}
 
           <h2>Other ways to help</h2>

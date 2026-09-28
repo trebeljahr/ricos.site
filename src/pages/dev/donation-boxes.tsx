@@ -1,7 +1,7 @@
 import { DonationCard, DonationStrip, DonationThanks } from "@components/DonationCard";
 import Layout from "@components/Layout";
 import Header, { PageMain } from "@components/PostHeader";
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 
 // A dev-only gallery of every donation surface, so the boxes can be compared
 // side by side without hunting across /donate, a long post and the footer.
@@ -47,6 +47,9 @@ function FooterLine() {
 }
 
 export default function DonationBoxesDevPage() {
+  // Bumping the key remounts both thanks cards, which replays the animation.
+  const [thanksRun, setThanksRun] = useState(0);
+
   return (
     <Layout
       title="Donation boxes (dev)"
@@ -77,8 +80,15 @@ export default function DonationBoxesDevPage() {
           </Pair>
 
           <Pair label="Thanks state — /donate?thanks=1">
-            <DonationThanks />
+            <DonationThanks key={thanksRun} />
           </Pair>
+          <button
+            type="button"
+            className="mt-label rounded-md border-2 border-gray-200 px-4 py-2 text-sm font-semibold transition-colors hover:border-accent dark:border-gray-700"
+            onClick={() => setThanksRun((run) => run + 1)}
+          >
+            Replay thanks animation
+          </button>
 
           <Pair label="Footer line — every page">
             <FooterLine />

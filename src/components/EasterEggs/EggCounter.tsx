@@ -95,36 +95,35 @@ const LaidEgg = ({
   );
 };
 
+/** Where the bunny was when it laid an egg. */
+type Spot = Pick<Laid, "x" | "lift">;
+
 /**
  * The Easter bunny hops along the bottom of the screen once. Every click on
  * the footer egg while it hops makes it lay a painted egg, through `layRef`.
  */
-const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() => void> }) => {
+const Bunny = ({
+  calm,
+  onCrossed,
+  onLay,
+  layRef,
+}: {
+  calm: boolean;
+  onCrossed: () => void;
+  onLay: (spot: Spot) => void;
+  layRef: RefObject<() => void>;
+}) => {
   const outer = useRef<HTMLSpanElement>(null);
   const body = useRef<HTMLSpanElement>(null);
   const inner = useRef<HTMLSpanElement>(null);
   const lastLay = useRef(0);
   const gap = useRef(LAY_GAP_MS);
-  const nextLaid = useRef(0);
-  const onDoneRef = useRef(onDone);
-  onDoneRef.current = onDone;
-  const [calm] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  const [crossed, setCrossed] = useState(false);
-  const [laid, setLaid] = useState<Laid[]>([]);
-
-  const dropLaid = useCallback(
-    (id: number) => setLaid((current) => current.filter((egg) => egg.id !== id)),
-    [],
-  );
-
-  // Gone once it has crossed and the last laid egg has faded.
-  useEffect(() => {
-    if (crossed && laid.length === 0) onDoneRef.current();
-  }, [crossed, laid.length]);
+  const onCrossedRef = useRef(onCrossed);
+  onCrossedRef.current = onCrossed;
 
   layRef.current = () => {
     const now = performance.now();
-    if (crossed || now - lastLay.current < gap.current || !outer.current || !inner.current) return;
+    if (now - lastLay.current < gap.current || !outer.current || !inner.current) return;
     const bunny = outer.current.getBoundingClientRect();
     // Right under the bunny, give or take a few pixels, so it drops out of it.
     const x = bunny.left + bunny.width / 2 + between(-3, 3);
@@ -132,23 +131,7 @@ const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() =>
     lastLay.current = now;
     gap.current = LAY_GAP_MS * between(0.5, 1.8);
     const ground = outer.current.parentElement?.getBoundingClientRect().bottom ?? 0;
-    const lift = Math.max(0, ground - inner.current.getBoundingClientRect().bottom);
-    setLaid((current) =>
-      current.length >= MAX_LAID
-        ? current
-        : [
-            ...current,
-            {
-              id: nextLaid.current++,
-              x,
-              lift,
-              sprite: pick(EASTER_EGG_SPRITES),
-              tilt: between(-15, 15),
-              size: LAID_PX * between(0.85, 1.15),
-              rise: between(0, 6),
-            },
-          ],
-    );
+    onLay({ x, lift: Math.max(0, ground - inner.current.getBoundingClientRect().bottom) });
     if (!calm) {
       body.current?.animate(
         [{ transform: "scale(1)" }, { transform: "scale(1.12, 0.84)" }, { transform: "scale(1)" }],
@@ -161,7 +144,9 @@ const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() =>
     const el = outer.current;
     if (!el) return;
     const from = -BUNNY_PX - 18;
-    const to = window.innerWidth + BUNNY_PX + 18;
+    // Its left edge on the screen's right edge: the moment it is out of sight,
+    // so the next click can send a new bunny straight away.
+    const to = window.innerWidth;
     const acrossMs = Math.max(HOP_ACROSS_MIN_MS, ((to - from) / HOP_PX_PER_S) * 1000);
     const duration = calm ? acrossMs * 1.6 : acrossMs;
     const across = el.animate(
@@ -179,7 +164,7 @@ const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() =>
           { duration: HOP_MS, iterations: Number.POSITIVE_INFINITY },
         );
 
-    across.finished.then(() => setCrossed(true)).catch(() => undefined);
+    across.finished.then(() => onCrossedRef.current()).catch(() => undefined);
     return () => {
       across.cancel();
       hops?.cancel();
@@ -187,27 +172,85 @@ const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() =>
   }, [calm]);
 
   return (
-    <>
+    // Flex all the way down, so the feet sit on the screen's bottom edge
+    // instead of a text baseline a few pixels above it.
+    <span ref={outer} className="absolute bottom-0 left-0 flex">
+      {/* Squashes when it lays, apart from the hop, which owns the inner span's scale. */}
+      <span ref={body} className="flex origin-bottom">
+        {/* The rabbit faces left; mirror it so it hops forward. The landing
+            squash pivots on the feet, so they stay on the ground. */}
+        <span
+          ref={inner}
+          className="flex origin-bottom"
+          style={{ fontSize: BUNNY_PX, scale: "-1 1" }}
+        >
+          <Sprite name="🐇" />
+        </span>
+      </span>
+    </span>
+  );
+};
+
+/**
+ * The strip along the bottom of the screen: the bunny while it hops, and the
+ * eggs it laid. The eggs outlive the bunny, so a new one can set off while the
+ * last one's eggs still fade. Empty once neither is left.
+ */
+const Meadow = ({
+  hopping,
+  onCrossed,
+  onEmpty,
+  layRef,
+}: {
+  hopping: boolean;
+  onCrossed: () => void;
+  onEmpty: () => void;
+  layRef: RefObject<() => void>;
+}) => {
+  const nextLaid = useRef(0);
+  const onEmptyRef = useRef(onEmpty);
+  onEmptyRef.current = onEmpty;
+  const [calm] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const [laid, setLaid] = useState<Laid[]>([]);
+
+  const lay = useCallback(
+    (spot: Spot) =>
+      setLaid((current) =>
+        current.length >= MAX_LAID
+          ? current
+          : [
+              ...current,
+              {
+                ...spot,
+                id: nextLaid.current++,
+                sprite: pick(EASTER_EGG_SPRITES),
+                tilt: between(-15, 15),
+                size: LAID_PX * between(0.85, 1.15),
+                rise: between(0, 6),
+              },
+            ],
+      ),
+    [],
+  );
+  const dropLaid = useCallback(
+    (id: number) => setLaid((current) => current.filter((egg) => egg.id !== id)),
+    [],
+  );
+
+  useEffect(() => {
+    if (!hopping && laid.length === 0) onEmptyRef.current();
+  }, [hopping, laid.length]);
+
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-50 h-20 overflow-hidden"
+    >
       {laid.map((egg) => (
         <LaidEgg key={egg.id} egg={egg} calm={calm} onDone={dropLaid} />
       ))}
-      {/* Flex all the way down, so the feet sit on the screen's bottom edge
-          instead of a text baseline a few pixels above it. */}
-      <span ref={outer} className="absolute bottom-0 left-0 flex">
-        {/* Squashes when it lays, apart from the hop, which owns the inner span's scale. */}
-        <span ref={body} className="flex origin-bottom">
-          {/* The rabbit faces left; mirror it so it hops forward. The landing
-              squash pivots on the feet, so they stay on the ground. */}
-          <span
-            ref={inner}
-            className="flex origin-bottom"
-            style={{ fontSize: BUNNY_PX, scale: "-1 1" }}
-          >
-            <Sprite name="🐇" />
-          </span>
-        </span>
-      </span>
-    </>
+      {hopping && <Bunny calm={calm} onCrossed={onCrossed} onLay={lay} layRef={layRef} />}
+    </div>
   );
 };
 
@@ -216,6 +259,7 @@ export const EggCounter = () => {
   const recordFind = useRecordEggFind();
   const [found, setFound] = useState(0);
   const [hopping, setHopping] = useState(false);
+  const [meadow, setMeadow] = useState(false);
   const lay = useRef<() => void>(() => undefined);
 
   useEffect(() => {
@@ -235,7 +279,8 @@ export const EggCounter = () => {
       <Link href="/easter-eggs" className="hover:text-accent">
         {found}/{EASTER_EGG_IDS.length} easter eggs found
       </Link>{" "}
-      {/* One bunny at a time: clicks while it is out make it lay an egg. */}
+      {/* One bunny at a time: clicks while it is out make it lay an egg. Once
+          it is off the screen, the next click sends a new one. */}
       <EmojiButton
         label="Easter egg"
         onClick={() => {
@@ -245,19 +290,20 @@ export const EggCounter = () => {
           }
           recordFind("easter-bunny");
           setHopping(true);
+          setMeadow(true);
         }}
       >
         {/* A size up from the footer text, so the paint on the shell reads. */}
         <Sprite name="easter-egg-green-blue" className="text-lg" />
       </EmojiButton>
-      {hopping &&
+      {meadow &&
         createPortal(
-          <div
-            aria-hidden="true"
-            className="pointer-events-none fixed inset-x-0 bottom-0 z-50 h-20 overflow-hidden"
-          >
-            <Bunny onDone={() => setHopping(false)} layRef={lay} />
-          </div>,
+          <Meadow
+            hopping={hopping}
+            onCrossed={() => setHopping(false)}
+            onEmpty={() => setMeadow(false)}
+            layRef={lay}
+          />,
           document.body,
         )}
     </span>

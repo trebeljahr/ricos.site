@@ -1,4 +1,5 @@
 import { DonationCard, DonationThanks, useDonationSupportedAt } from "@components/DonationCard";
+import { ExternalLink } from "@components/ExternalLink";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
@@ -6,7 +7,7 @@ import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { THANKS_QUERY_KEY } from "src/lib/donation";
+import { manageDonationUrl, THANKS_QUERY_KEY } from "src/lib/donation";
 
 export default function DonatePage() {
   // Stripe sends donors back here with ?thanks=1 (set per Payment Link in the
@@ -86,6 +87,14 @@ export default function DonatePage() {
 
         <footer className="mx-auto mt-section max-w-prose">
           <NewsletterForm />
+          {/* Always here, so a monthly donor can find the way out without hunting. */}
+          {manageDonationUrl && (
+            <p className="mt-group mb-0 text-center text-sm text-gray-600 dark:text-gray-400">
+              <ExternalLink href={manageDonationUrl} className="hover:text-accent">
+                Manage your donation
+              </ExternalLink>
+            </p>
+          )}
           <ToTopButton />
         </footer>
       </PageMain>

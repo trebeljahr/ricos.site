@@ -856,34 +856,22 @@ export function DonationThanks({ className }: DonationCardProps) {
             transition={{ delay: LAND_S + 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           >
             <p className="mx-auto mt-label mb-0 max-w-md text-gray-700 dark:text-gray-200">
-              Your donation went through, and it means a lot. It buys me time to make the next
+              Your donation went through, and it means a lot to me. It buys me time to make the next
               thing. Your receipt comes by email.
-            </p>
-            <p className="mx-auto mt-stack mb-0 max-w-md text-sm text-gray-600 dark:text-gray-300">
-              {manageDonationUrl ? (
-                <>
-                  Gave monthly? You can stop or change it any time on your own:{" "}
-                  <ExternalLink
-                    href={manageDonationUrl}
-                    className="font-semibold text-accent hover:underline"
-                  >
-                    manage your donation
-                  </ExternalLink>{" "}
-                  with the email you donated from.
-                </>
-              ) : (
-                <>
-                  Gave monthly and want to stop? Send me a line through the{" "}
-                  <Link href="/imprint" className="text-accent hover:underline">
-                    imprint
-                  </Link>{" "}
-                  page and I cancel it.
-                </>
-              )}
             </p>
             <p className="mt-para mb-0 font-serif text-lg italic text-gray-700 dark:text-gray-200">
               — Rico
             </p>
+            {manageDonationUrl && (
+              <p className="mt-stack mb-0 text-sm">
+                <ExternalLink
+                  href={manageDonationUrl}
+                  className="font-semibold text-accent hover:underline"
+                >
+                  Manage your donation
+                </ExternalLink>
+              </p>
+            )}
           </motion.div>
         </div>
       </div>

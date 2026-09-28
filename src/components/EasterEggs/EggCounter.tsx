@@ -8,8 +8,11 @@ import { EASTER_EGG_SPRITES } from "src/lib/sprites";
 import { EmojiButton } from "./EmojiButton";
 
 const known = new Set<string>(EASTER_EGG_IDS);
-const HOP_ACROSS_MS = 5000;
-const HOP_MS = 420;
+// The bunny crosses at a set speed, so a wide screen does not make it rush.
+// Narrow screens still get at least the minimum time on screen.
+const HOP_PX_PER_S = 220;
+const HOP_ACROSS_MIN_MS = 5000;
+const HOP_MS = 480;
 const BUNNY_PX = 30;
 // An egg laid on a click: its size, and how long it stays before it is gone.
 const LAID_PX = 22;
@@ -33,8 +36,6 @@ type Laid = {
   size: number;
   /** How far above the ground line it lands, so the eggs do not sit in one row. */
   rise: number;
-  /** A short wait before it pops, so fast clicks do not pop in lockstep. */
-  delay: number;
 };
 
 const pick = <T,>(items: readonly T[]) => items[Math.floor(Math.random() * items.length)];
@@ -57,12 +58,14 @@ const LaidEgg = ({
       calm
         ? [
             { opacity: 0 },
-            { opacity: 1, offset: 0.1 },
+            { opacity: 1, offset: 0.05 },
             { opacity: 1, offset: 0.85 },
             { opacity: 0 },
           ]
         : [
-            { opacity: 0, transform: `translateY(${-egg.lift + egg.rise}px) scale(0.5)` },
+            // Shown from the first frame: a fade-in would let the bunny hop
+            // on before the egg shows, so it would seem to appear behind it.
+            { opacity: 1, transform: `translateY(${-egg.lift + egg.rise}px) scale(0.6)` },
             {
               opacity: 1,
               transform: `translateY(${(-egg.lift + egg.rise) / 2}px) scale(0.9)`,
@@ -74,17 +77,18 @@ const LaidEgg = ({
             { opacity: 1, transform: `translateY(0) ${rest} scale(1)`, offset: 0.85 },
             { opacity: 0, transform: `translateY(4px) ${rest} scale(1)` },
           ],
-      { duration: LAID_SHOWS_MS, delay: egg.delay, easing: "ease-out", fill: "both" },
+      { duration: LAID_SHOWS_MS, easing: "ease-out", fill: "both" },
     );
     shown?.finished.then(() => onDone(egg.id)).catch(() => undefined);
     return () => shown?.cancel();
   }, [egg, calm, onDone]);
 
   return (
+    // Flex, so the sprite sits on the span's bottom edge instead of a text baseline.
     <span
       ref={ref}
-      className="absolute leading-none opacity-0"
-      style={{ left: egg.x - egg.size / 2, bottom: 8 + egg.rise, fontSize: egg.size }}
+      className="absolute flex opacity-0"
+      style={{ left: egg.x - egg.size / 2, bottom: egg.rise, fontSize: egg.size }}
     >
       <Sprite name={egg.sprite} />
     </span>
@@ -122,13 +126,12 @@ const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() =>
     const now = performance.now();
     if (crossed || now - lastLay.current < gap.current || !outer.current || !inner.current) return;
     const bunny = outer.current.getBoundingClientRect();
-    // Around the tail end, mostly behind it: the bunny is mirrored to face
-    // right, so the tail is its left edge.
-    const x = bunny.left + 6 + between(-14, 6);
+    // Right under the bunny, give or take a few pixels, so it drops out of it.
+    const x = bunny.left + bunny.width / 2 + between(-3, 3);
     if (x < 0 || x > window.innerWidth) return;
     lastLay.current = now;
     gap.current = LAY_GAP_MS * between(0.5, 1.8);
-    const ground = (outer.current.parentElement?.getBoundingClientRect().bottom ?? 0) - 8;
+    const ground = outer.current.parentElement?.getBoundingClientRect().bottom ?? 0;
     const lift = Math.max(0, ground - inner.current.getBoundingClientRect().bottom);
     setLaid((current) =>
       current.length >= MAX_LAID
@@ -143,7 +146,6 @@ const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() =>
               tilt: between(-15, 15),
               size: LAID_PX * between(0.85, 1.15),
               rise: between(0, 6),
-              delay: between(0, 70),
             },
           ],
     );
@@ -160,7 +162,8 @@ const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() =>
     if (!el) return;
     const from = -BUNNY_PX - 18;
     const to = window.innerWidth + BUNNY_PX + 18;
-    const duration = calm ? HOP_ACROSS_MS * 1.6 : HOP_ACROSS_MS;
+    const acrossMs = Math.max(HOP_ACROSS_MIN_MS, ((to - from) / HOP_PX_PER_S) * 1000);
+    const duration = calm ? acrossMs * 1.6 : acrossMs;
     const across = el.animate(
       [{ transform: `translateX(${from}px)` }, { transform: `translateX(${to}px)` }],
       { duration, easing: "linear", fill: "forwards" },
@@ -188,13 +191,16 @@ const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() =>
       {laid.map((egg) => (
         <LaidEgg key={egg.id} egg={egg} calm={calm} onDone={dropLaid} />
       ))}
-      <span ref={outer} className="absolute bottom-2 left-0">
+      {/* Flex all the way down, so the feet sit on the screen's bottom edge
+          instead of a text baseline a few pixels above it. */}
+      <span ref={outer} className="absolute bottom-0 left-0 flex">
         {/* Squashes when it lays, apart from the hop, which owns the inner span's scale. */}
-        <span ref={body} className="inline-block origin-bottom">
-          {/* The rabbit faces left; mirror it so it hops forward. */}
+        <span ref={body} className="flex origin-bottom">
+          {/* The rabbit faces left; mirror it so it hops forward. The landing
+              squash pivots on the feet, so they stay on the ground. */}
           <span
             ref={inner}
-            className="inline-block leading-none"
+            className="flex origin-bottom"
             style={{ fontSize: BUNNY_PX, scale: "-1 1" }}
           >
             <Sprite name="🐇" />

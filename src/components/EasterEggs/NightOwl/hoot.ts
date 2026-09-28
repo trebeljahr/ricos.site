@@ -1,116 +1,116 @@
+/**
+ * "Owl Hooting" by Lazy Chill Zone, from Pixabay (sound effect 223549),
+ * credited on /imprint. Downmixed to mono at 64 kbps. All four hoots stay in
+ * one file and play as clips cut from it: one small download, one decode.
+ */
+const SRC = "/sounds/owl-hoots.mp3";
+
+type Clip = { from: number; to: number };
+
+/** Where the hoots sit in the recording, in seconds, cut in the quiet between them. */
+const CLIPS = {
+  /** A soft pickup straight into a short, rising hoot: "h'HOO". */
+  double: { from: 0.12, to: 0.99 },
+  /** The same short hoot without the pickup. */
+  short: { from: 0.395, to: 0.99 },
+  /** A long hoot that sags as it goes. */
+  long: { from: 0.99, to: 2.2 },
+  /** The longest and steadiest. */
+  longest: { from: 2.25, to: 3.56 },
+} satisfies Record<string, Clip>;
+
+/**
+ * `call` is a full hoot, for the first poke and the lap round the footer,
+ * `hurried` a short one for the quick pokes in between, and `startled` the
+ * short one sped up, as the owl leaves.
+ */
+export type HootKind = "call" | "hurried" | "startled";
+
+const POOLS: Record<HootKind, Clip[]> = {
+  call: [CLIPS.double, CLIPS.long, CLIPS.longest],
+  hurried: [CLIPS.double, CLIPS.short],
+  startled: [CLIPS.double],
+};
+
+/** The recording peaks near full scale; a footer easter egg should not. */
+const LEVEL = 0.45;
+const FADE_IN = 0.012;
+const FADE_OUT = 0.08;
+const STARTLED_RATE = 1.3;
+
 let audio: AudioContext | null = null;
-let woods: ConvolverNode | null = null;
-let breath: AudioBuffer | null = null;
+let bytes: Promise<ArrayBuffer> | null = null;
+let recording: Promise<AudioBuffer> | null = null;
+let playing: { source: AudioBufferSourceNode; level: GainNode } | null = null;
+let last: Clip | null = null;
 
-/** A short, dark impulse response, so the owl sounds like it sits in a tree, not in the room. */
-function makeWoods(ctx: AudioContext) {
-  const length = Math.floor(ctx.sampleRate * 1.6);
-  const impulse = ctx.createBuffer(2, length, ctx.sampleRate);
-  for (let channel = 0; channel < 2; channel++) {
-    const data = impulse.getChannelData(channel);
-    for (let i = 0; i < length; i++) {
-      data[i] = (Math.random() * 2 - 1) * (1 - i / length) ** 3.4;
-    }
+/** Fetch the file before the first click (on hover or focus), so the first hoot is not late. */
+export function warmHoots() {
+  if (!bytes) {
+    bytes = fetch(SRC).then((response) => {
+      if (!response.ok) throw new Error(`${SRC}: ${response.status}`);
+      return response.arrayBuffer();
+    });
+    // Offline or blocked: forget the attempt, so the next one tries again.
+    bytes.catch(() => {
+      bytes = null;
+    });
   }
-  const convolver = ctx.createConvolver();
-  convolver.buffer = impulse;
-  return convolver;
+  return bytes;
 }
 
-/** One second of noise, reused for the breath under every note. */
-function makeBreath(ctx: AudioContext) {
-  const buffer = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-  return buffer;
+/** A random clip from the pool, never the one just played, so repeat clicks do not sound looped. */
+function pick(kind: HootKind) {
+  const pool = POOLS[kind];
+  const fresh = pool.length > 1 ? pool.filter((clip) => clip !== last) : pool;
+  const clip = fresh[Math.floor(Math.random() * fresh.length)];
+  last = clip;
+  return clip;
 }
 
-type Note = { at: number; length: number; pitch: number; level: number };
+function play(ctx: AudioContext, buffer: AudioBuffer, clip: Clip, rate: number) {
+  const now = ctx.currentTime;
 
-/** The great horned owl phrase: "hoo — h'hoo hoo — hoooo". */
-const CALL: Note[] = [
-  { at: 0, length: 0.32, pitch: 1, level: 0.75 },
-  { at: 0.5, length: 0.15, pitch: 1.07, level: 1 },
-  { at: 0.72, length: 0.16, pitch: 1, level: 0.9 },
-  { at: 1, length: 0.52, pitch: 0.93, level: 0.8 },
-];
-
-/** Shorter, higher, hurried: the owl has had enough. */
-const STARTLED: Note[] = [
-  { at: 0, length: 0.12, pitch: 1.2, level: 1 },
-  { at: 0.16, length: 0.11, pitch: 1.28, level: 0.95 },
-  { at: 0.31, length: 0.22, pitch: 1.14, level: 0.8 },
-];
-
-const BASE_HZ = 322;
-
-function playNote(ctx: AudioContext, out: AudioNode, note: Note, base: number, origin: number) {
-  const start = origin + note.at;
-  const end = start + note.length;
-  const hz = base * note.pitch;
-  const peak = 0.3 * note.level;
-  const attack = Math.min(0.08, note.length * 0.4);
-
-  // Soft at both ends, with a long tail: an owl never clicks on or off.
-  const envelope = ctx.createGain();
-  envelope.gain.setValueAtTime(0.0001, start);
-  envelope.gain.exponentialRampToValueAtTime(peak, start + attack);
-  envelope.gain.exponentialRampToValueAtTime(peak * 0.7, end - note.length * 0.2);
-  envelope.gain.exponentialRampToValueAtTime(0.0001, end + 0.16);
-  envelope.connect(out);
-
-  // The pitch lifts into the note and sags out of it.
-  const tone = ctx.createOscillator();
-  tone.type = "sine";
-  tone.frequency.setValueAtTime(hz * 0.94, start);
-  tone.frequency.exponentialRampToValueAtTime(hz, start + note.length * 0.3);
-  tone.frequency.exponentialRampToValueAtTime(hz * 0.9, end);
-
-  // A quiet octave above keeps the tone from sounding like a test signal.
-  const overtone = ctx.createOscillator();
-  overtone.type = "sine";
-  overtone.frequency.setValueAtTime(hz * 1.99, start);
-  overtone.frequency.exponentialRampToValueAtTime(hz * 1.8, end);
-  const overtoneLevel = ctx.createGain();
-  overtoneLevel.gain.value = 0.16;
-
-  const vibrato = ctx.createOscillator();
-  const vibratoDepth = ctx.createGain();
-  vibrato.frequency.value = 5.5 + Math.random() * 2;
-  vibratoDepth.gain.value = hz * 0.012;
-  vibrato.connect(vibratoDepth);
-  vibratoDepth.connect(tone.frequency);
-  vibratoDepth.connect(overtone.frequency);
-
-  // Air through the throat.
-  const air = ctx.createBufferSource();
-  air.buffer = breath;
-  air.loop = true;
-  const airBand = ctx.createBiquadFilter();
-  airBand.type = "bandpass";
-  airBand.frequency.value = hz * 2.2;
-  airBand.Q.value = 1.1;
-  const airLevel = ctx.createGain();
-  airLevel.gain.value = 0.06;
-
-  tone.connect(envelope);
-  overtone.connect(overtoneLevel).connect(envelope);
-  air.connect(airBand).connect(airLevel).connect(envelope);
-
-  for (const source of [tone, overtone, vibrato, air]) {
-    source.start(start);
-    source.stop(end + 0.25);
+  // One throat: a new hoot cuts the last one off instead of piling on top of it.
+  if (playing) {
+    const { gain } = playing.level;
+    gain.cancelScheduledValues(now);
+    gain.setValueAtTime(gain.value, now);
+    gain.linearRampToValueAtTime(0, now + FADE_OUT);
+    playing.source.stop(now + FADE_OUT);
   }
+
+  // Fade both cuts, so a clip never clicks on or off.
+  const length = clip.to - clip.from;
+  const end = now + length / rate;
+  const level = ctx.createGain();
+  level.gain.setValueAtTime(0, now);
+  level.gain.linearRampToValueAtTime(LEVEL, now + FADE_IN);
+  level.gain.setValueAtTime(LEVEL, end - FADE_OUT);
+  level.gain.linearRampToValueAtTime(0, end);
+  level.connect(ctx.destination);
+
+  // Playback rate moves pitch and speed together, like a slightly different owl.
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  source.playbackRate.value = rate;
+  source.connect(level);
+  source.start(now, clip.from, length);
+
+  const current = { source, level };
+  playing = current;
+  source.onended = () => {
+    level.disconnect();
+    if (playing === current) playing = null;
+  };
 }
 
 /**
- * A synthesized owl call, no audio file needed: breathy tones through a little
- * woodland reverb. `pitch` multiplies the whole phrase, and every call is
- * detuned a touch on its own, so repeat clicks never sound identical. The
- * startled variant is the short, high one the owl gives as it leaves.
- * Only ever called from a click.
+ * Hoot once. `rate` above 1 is higher and quicker. Call it straight from the
+ * click handler: the audio context has to start inside the user's gesture, or
+ * Safari keeps it silent.
  */
-export function hoot(pitch = 1, variant: "call" | "startled" = "call") {
+export function hoot(rate = 1, kind: HootKind = "call") {
   const AudioContextClass =
     window.AudioContext ??
     (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
@@ -118,26 +118,15 @@ export function hoot(pitch = 1, variant: "call" | "startled" = "call") {
   audio ??= new AudioContextClass();
   const ctx = audio;
   void ctx.resume();
-  breath ??= makeBreath(ctx);
-  woods ??= makeWoods(ctx);
 
-  // Owl hoots are dark: everything above the first few harmonics goes.
-  const body = ctx.createBiquadFilter();
-  body.type = "lowpass";
-  body.frequency.value = 1300;
-  body.Q.value = 0.8;
-
-  const master = ctx.createGain();
-  master.gain.value = 0.9;
-  body.connect(master);
-  master.connect(ctx.destination);
-
-  const distance = ctx.createGain();
-  distance.gain.value = 0.3;
-  master.connect(distance).connect(woods).connect(ctx.destination);
-
-  const base = BASE_HZ * pitch * (0.97 + Math.random() * 0.06);
-  const notes = variant === "startled" ? STARTLED : CALL;
-  const origin = ctx.currentTime + 0.02;
-  for (const note of notes) playNote(ctx, body, note, base, origin);
+  const clip = pick(kind);
+  recording ??= warmHoots().then((data) => ctx.decodeAudioData(data));
+  recording.then(
+    (buffer) => play(ctx, buffer, clip, kind === "startled" ? rate * STARTLED_RATE : rate),
+    () => {
+      // Decoding detaches the bytes, so a retry has to fetch them again.
+      bytes = null;
+      recording = null;
+    },
+  );
 }

@@ -117,6 +117,23 @@ export default function ImprintPage() {
             </a>
             .
           </p>
+          <p>
+            Owl sound effect by{" "}
+            <a
+              href="https://pixabay.com/users/lazychillzone-40482846/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=223549"
+              className="text-accent hover:underline"
+            >
+              Lazy Chill Zone
+            </a>{" "}
+            from{" "}
+            <a
+              href="https://pixabay.com/sound-effects/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=223549"
+              className="text-accent hover:underline"
+            >
+              Pixabay
+            </a>
+            .
+          </p>
         </article>
 
         <footer className="mx-auto mt-section max-w-prose">

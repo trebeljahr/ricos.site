@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRecordEggFind } from "src/hooks/useEasterEgg";
 import { EmojiButton } from "../EmojiButton";
 import { markOwlFlownAway, owlHasFlownAway } from "./flown";
+import { type HootKind, hoot, warmHoots } from "./hoot";
 
 const OWL_SIZE = 22;
 /** Clicks inside this window count towards the same visit. */
@@ -157,9 +158,19 @@ export const NightOwl = () => {
   const onClick = () => {
     const total = hoots + 1;
     const last = total >= CLICKS_TO_LEAVE;
-    void import("./hoot").then(({ hoot }) =>
-      hoot(0.9 + Math.random() * 0.25, last ? "startled" : "call"),
-    );
+    const now = Date.now();
+    clickTimes.current = [...clickTimes.current.filter((t) => now - t < SPREE_MS), now];
+    const spree = clickTimes.current.length;
+    // The more it is poked, the sharper and quicker it moves, and the higher it hoots.
+    const nerve = Math.min(1, (total - 1) / (CLICKS_TO_LEAVE - 1));
+
+    // A full hoot to open a spree and for the lap, short ones for the pokes in between.
+    const kind: HootKind = last
+      ? "startled"
+      : spree === 1 || spree >= CLICKS_TO_FLY
+        ? "call"
+        : "hurried";
+    hoot((0.94 + Math.random() * 0.12) * (1 + 0.12 * nerve), kind);
     // One find per visit: the owl can be clicked all night.
     if (!found.current) {
       found.current = true;
@@ -167,8 +178,6 @@ export const NightOwl = () => {
     }
     setHoots(total);
 
-    const now = Date.now();
-    clickTimes.current = [...clickTimes.current.filter((t) => now - t < SPREE_MS), now];
     const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (last) {
@@ -176,7 +185,7 @@ export const NightOwl = () => {
       window.setTimeout(leave, 200);
       return;
     }
-    if (clickTimes.current.length >= CLICKS_TO_FLY) {
+    if (spree >= CLICKS_TO_FLY) {
       clickTimes.current = [];
       if (calm) dropFeathers(1);
       else fly();
@@ -184,11 +193,9 @@ export const NightOwl = () => {
     }
     if (calm || flying.current) return;
 
-    // The more it is poked, the sharper and quicker it moves.
-    const nerve = Math.min(1, (total - 1) / (CLICKS_TO_LEAVE - 1));
     const head = headRef.current;
     // First click is a hoot bob; after that it looks around, left then right.
-    if (clickTimes.current.length === 1) {
+    if (spree === 1) {
       head?.animate(
         [
           { translate: "0 0", scale: "1 1", rotate: "0deg" },
@@ -240,7 +247,13 @@ export const NightOwl = () => {
       <span className={clsx(PAGE_COLUMN, "block text-right")}>
         <span className="relative inline-block translate-y-[3px]" style={{ fontSize: OWL_SIZE }}>
           {!gone && (
-            <span ref={flyerRef} className="pointer-events-auto inline-block">
+            // biome-ignore lint/a11y/noStaticElementInteractions: hover and focus only fetch the hoots early; the button inside takes the click.
+            <span
+              ref={flyerRef}
+              className="pointer-events-auto inline-block"
+              onPointerEnter={() => void warmHoots()}
+              onFocus={() => void warmHoots()}
+            >
               {/* The glyph is small, so the button takes clicks from a larger area around it. */}
               <EmojiButton
                 label="Owl"

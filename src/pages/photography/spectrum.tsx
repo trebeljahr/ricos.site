@@ -155,6 +155,17 @@ const ROW_SLACK = 2;
  */
 const TRAILING_MAX_STRETCH = 1.35;
 
+/**
+ * Hide a tile's photograph if it failed to load, so the tile shows its tint
+ * instead of the browser's broken-image icon. Also the image's ref, for one
+ * the server rendered that had already failed before React was listening.
+ * `complete` with no pixels is a failure; an image still loading, or lazily
+ * waiting to, is not `complete`.
+ */
+const hideIfBroken = (img: HTMLImageElement | null) => {
+  if (img?.complete && img.naturalWidth === 0) img.dataset.broken = "";
+};
+
 const clampRatio = (width: number, height: number) =>
   Math.min(RATIO_MAX, Math.max(RATIO_MIN, width / height));
 
@@ -332,7 +343,8 @@ export default function PhotographySpectrumPage({ images, tints, marks }: Props)
   /** True while the page moves faster than a tile could load; see
    *  GLIMPSE_MS. Tiles that have not loaded yet show their tint meanwhile. */
   const [hurrying, setHurrying] = useState(false);
-  /** Tiles whose photograph has arrived, which keep it while `hurrying`. */
+  /** Tiles whose photograph has arrived, which keep it while `hurrying`.
+   *  The rest have no <img> until the page slows down. */
   const loaded = useRef(new Set<string>());
 
   /** The band the marker is in, for `aria-current`. */
@@ -749,29 +761,41 @@ export default function PhotographySpectrumPage({ images, tints, marks }: Props)
                   className="h-[var(--ribbon-h)] min-w-0 shrink-0 grow-[var(--ar)] basis-[calc(var(--ribbon-h)*var(--ar))]"
                 >
                   <button
+                    // The id is on the button rather than the image, because
+                    // a tile passed at speed has no image: the lightbox finds
+                    // the tile by it to scroll to and to morph back into.
+                    id={tile.id}
                     type="button"
                     onClick={(event) => openModal(tile.index, event)}
                     aria-label={tile.label}
+                    // The photograph's own mean colour until it arrives, so a
+                    // fast pass through the sweep still reads as the sweep
+                    // rather than as grey boxes.
+                    style={{ backgroundColor: tile.tint }}
                     className="block h-full w-full cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                   >
-                    {/* biome-ignore lint/performance/noImgElement: next/image renders a wrapper span and a loader per tile; across the rows in the document that machinery costs more than the plain element, and every URL the loader would build is already available from nextImageUrl */}
-                    <img
-                      id={tile.id}
-                      src={show ? tile.src : undefined}
-                      srcSet={show ? tile.srcSet : undefined}
-                      sizes={tile.sizes}
-                      alt=""
-                      width={tile.width}
-                      height={180}
-                      loading="lazy"
-                      decoding="async"
-                      onLoad={() => loaded.current.add(tile.id)}
-                      // The photograph's own mean colour until it arrives,
-                      // so a fast pass through the sweep still reads as the
-                      // sweep rather than as grey boxes.
-                      style={{ backgroundColor: tile.tint }}
-                      className="h-full w-full object-cover"
-                    />
+                    {/* No <img> at all rather than one without a `src`. An
+                        image whose `src` is taken away mid-download, like one
+                        that fails, is drawn as the browser's broken-image
+                        icon in a grey frame, and with thirty tiles on screen
+                        that was a screenful of them on every fast pass. */}
+                    {show && (
+                      // biome-ignore lint/performance/noImgElement: next/image renders a wrapper span and a loader per tile; across the rows in the document that machinery costs more than the plain element, and every URL the loader would build is already available from nextImageUrl
+                      <img
+                        ref={hideIfBroken}
+                        src={tile.src}
+                        srcSet={tile.srcSet}
+                        sizes={tile.sizes}
+                        alt=""
+                        width={tile.width}
+                        height={180}
+                        loading="lazy"
+                        decoding="async"
+                        onLoad={() => loaded.current.add(tile.id)}
+                        onError={(event) => hideIfBroken(event.currentTarget)}
+                        className="h-full w-full object-cover data-broken:invisible"
+                      />
+                    )}
                   </button>
                 </li>
               );

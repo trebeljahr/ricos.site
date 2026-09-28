@@ -32,8 +32,8 @@ const OTHER_PAGES = [
  *                  disappears against a dark page
  */
 const WORDS = {
-  maskImage: "url(/static/404-words.png?v=3)",
-  WebkitMaskImage: "url(/static/404-words.png?v=3)",
+  maskImage: "url(/not-found/words.png)",
+  WebkitMaskImage: "url(/not-found/words.png)",
   maskRepeat: "no-repeat",
   WebkitMaskRepeat: "no-repeat",
   maskPosition: "center",
@@ -53,7 +53,7 @@ const Picture = ({ className = "", hidden = false }: { className?: string; hidde
       ? { "aria-hidden": true as const }
       : { role: "img", "aria-label": "this is not a page pipe meme joke" })}
   >
-    <img src="/static/404-pipe.png?v=3" alt="" className="block w-full" />
+    <img src="/not-found/pipe.png" alt="" className="block w-full" />
     <div className="absolute inset-0 bg-gray-900/90 dark:bg-gray-100/90" style={WORDS} />
   </div>
 );

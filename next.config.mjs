@@ -24,6 +24,9 @@ const shouldRunVelite = isBuild || (isDev && !veliteExternal && !process.env.VEL
 if (shouldRunVelite) {
   if (isDev) process.env.VELITE_STARTED = "1";
   const { build } = await import("velite");
+  // `clean` empties velite's asset dir, which defaults to public/static, so a
+  // production build deletes anything committed there while dev keeps it.
+  // Put hand-made public files anywhere else.
   await build({ watch: isDev, clean: !isDev, logLevel: "error" });
 
   const { generateR3fLinks, generateSearchIndexAndBacklinks, writeVeliteHmrStamp } = await import(

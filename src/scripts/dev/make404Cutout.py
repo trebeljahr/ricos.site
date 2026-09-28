@@ -5,8 +5,8 @@
 Reads src/content/Notes/assets/blog/404.jpg — a pipe painted on cream, with a
 flat border colour on all four corners — and writes:
 
-    public/static/404-pipe.png    the pipe, in the browns it was painted in
-    public/static/404-words.png   the handwriting, as a shape to stamp ink
+    public/not-found/pipe.png     the pipe, in the browns it was painted in
+    public/not-found/words.png    the handwriting, as a shape to stamp ink
                                   through, because the grey it was written in
                                   disappears against a dark page
 
@@ -40,7 +40,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[3]
 SOURCE = ROOT / "src/content/Notes/assets/blog/404.jpg"
-OUT = ROOT / "public/static"
+OUT = ROOT / "public/not-found"
 
 # The rows the pipe gives way to the handwriting, and where the handwriting
 # ends: below that is the painter's signature, which is not part of the joke.
@@ -134,9 +134,9 @@ def main():
     top, bottom = max(0, rows[0] - margin), min(height, rows[-1] + 1 + margin)
     left, right = max(0, cols[0] - margin), min(width, cols[-1] + 1 + margin)
 
-    Image.fromarray(pipe[top:bottom, left:right], "RGBA").save(OUT / "404-pipe.png", optimize=True)
-    Image.fromarray(words[top:bottom, left:right], "RGBA").save(OUT / "404-words.png", optimize=True)
-    print(f"wrote {OUT/'404-pipe.png'} and {OUT/'404-words.png'} at {right-left}x{bottom-top}")
+    Image.fromarray(pipe[top:bottom, left:right], "RGBA").save(OUT / "pipe.png", optimize=True)
+    Image.fromarray(words[top:bottom, left:right], "RGBA").save(OUT / "words.png", optimize=True)
+    print(f"wrote {OUT/'pipe.png'} and {OUT/'words.png'} at {right-left}x{bottom-top}")
 
 
 if __name__ == "__main__":

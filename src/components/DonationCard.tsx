@@ -3,6 +3,7 @@ import {
   AnimatePresence,
   MotionConfig,
   motion,
+  useAnimate,
   useInView,
   useReducedMotion,
   type Variants,
@@ -449,6 +450,48 @@ const floaters = [
   { x: -40, drift: 6, size: 10, color: "text-pink-300" },
 ];
 
+// Once the heart has finished its beats it can be squeezed: it squishes, spits
+// out a little burst and shifts to a new colour. Quick clicks build a combo
+// that makes each burst bigger.
+const COMBO_WINDOW_MS = 700;
+const MAX_COMBO = 6;
+const POP_MS = 900;
+const MAX_POPS = 6;
+
+type Pop = {
+  id: number;
+  particles: {
+    x: number;
+    y: number;
+    path: string;
+    color: string;
+    size: number;
+    rotate: number;
+  }[];
+};
+
+const randomBetween = (min: number, max: number) => min + Math.random() * (max - min);
+
+function makePop(id: number, combo: number): Pop {
+  const count = 6 + combo;
+  const reach = 56 + combo * 8;
+  return {
+    id,
+    particles: Array.from({ length: count }, (_, i) => {
+      const angle = (i / count) * Math.PI * 2 + randomBetween(-0.3, 0.3);
+      const distance = reach * randomBetween(0.7, 1);
+      return {
+        x: Math.cos(angle) * distance,
+        y: Math.sin(angle) * distance,
+        path: Math.random() < 0.6 ? HEART_PATH : SPARKLE_PATH,
+        color: burstColors[Math.floor(Math.random() * burstColors.length)],
+        size: randomBetween(8, 14),
+        rotate: randomBetween(-40, 40),
+      };
+    }),
+  };
+}
+
 function ThanksWord({ play, still }: { play: boolean; still: boolean }) {
   const last = THANKS_WORDS.length - 1;
   const [index, setIndex] = useState(0);
@@ -497,9 +540,67 @@ function ThanksWord({ play, still }: { play: boolean; still: boolean }) {
 function BeatingHeart({ play, still }: { play: boolean; still: boolean }) {
   const gradientId = useSvgId("donation-heart");
   const fillClipId = useSvgId("donation-heart-fill");
+  const [beatsDone, setBeatsDone] = useState(false);
+  const ready = still || beatsDone;
+  const [hue, setHue] = useState(0);
+  const [pops, setPops] = useState<Pop[]>([]);
+  const [squishScope, animateSquish] = useAnimate<HTMLSpanElement>();
+  const nextPop = useRef(0);
+  const combo = useRef({ count: 0, at: 0 });
+  const timers = useRef(new Set<number>());
+
+  useEffect(() => {
+    const pending = timers.current;
+    return () => {
+      for (const t of pending) window.clearTimeout(t);
+    };
+  }, []);
+
+  const squeeze = () => {
+    // A new colour on every click, always onward round the wheel so the
+    // transition never runs backwards.
+    setHue((current) => current + randomBetween(45, 105));
+    if (still) return;
+
+    const now = performance.now();
+    const last = combo.current;
+    const count = now - last.at < COMBO_WINDOW_MS ? Math.min(last.count + 1, MAX_COMBO) : 0;
+    combo.current = { count, at: now };
+
+    // Jelly squish, tilting left and right on alternate clicks.
+    const tilt = (count % 2 ? 1 : -1) * (8 + count * 2);
+    animateSquish(
+      squishScope.current,
+      {
+        scale: [1, 0.8, 1.25 + count * 0.02, 0.93, 1.05, 1],
+        rotate: [0, tilt, -tilt * 0.7, tilt * 0.3, 0, 0],
+      },
+      { duration: 0.6, ease: "easeOut" },
+    );
+
+    const id = nextPop.current++;
+    setPops((current) => [...current.slice(-(MAX_POPS - 1)), makePop(id, count)]);
+    const t = window.setTimeout(() => {
+      timers.current.delete(t);
+      setPops((current) => current.filter((pop) => pop.id !== id));
+    }, POP_MS);
+    timers.current.add(t);
+  };
 
   return (
-    <div aria-hidden className="relative mx-auto flex size-28 items-center justify-center">
+    <button
+      type="button"
+      aria-label="Squeeze the heart"
+      disabled={!ready}
+      onClick={squeeze}
+      // Stops a burst of clicks from selecting the text around the heart.
+      onMouseDown={(event) => event.preventDefault()}
+      className={clsx(
+        "relative mx-auto flex size-28 touch-manipulation select-none appearance-none items-center justify-center rounded-full border-0 bg-transparent p-0 transition-[filter,scale] duration-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+        ready && "motion-safe:hover:scale-105",
+      )}
+      style={{ filter: `hue-rotate(${hue}deg)` }}
+    >
       {play && (
         <motion.div
           className="absolute inset-4 rounded-full bg-rose-400/40 blur-2xl dark:bg-rose-500/30"
@@ -559,76 +660,107 @@ function BeatingHeart({ play, still }: { play: boolean; still: boolean }) {
           </motion.svg>
         ))}
 
-      <motion.svg
-        viewBox="0 0 48 48"
-        className="relative size-18 overflow-visible drop-shadow-[0_6px_14px_rgb(244_63_94/0.35)]"
-        animate={play ? { scale: [1, 1.18, 0.95, 1.1, 1] } : undefined}
-        transition={{
-          delay: LAND_S,
-          duration: 0.7,
-          times: [0, 0.2, 0.4, 0.6, 1],
-          repeat: 2,
-          repeatDelay: 0.9,
-        }}
-      >
-        <defs>
-          <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" className="text-rose-400" stopColor="currentColor" />
-            <stop offset="1" className="text-pink-600" stopColor="currentColor" />
-          </linearGradient>
-          {/* A rising rectangle that reveals the fill, like the heart filling up. */}
-          <clipPath id={fillClipId}>
-            <motion.rect
-              x="0"
-              width="48"
-              height="48"
-              initial={{ attrY: 48 }}
-              animate={play ? { attrY: 0 } : undefined}
-              transition={{
-                delay: OUTLINE_S - 0.2,
-                duration: LAND_S - OUTLINE_S + 0.2,
-                ease: "easeInOut",
-              }}
-            />
-          </clipPath>
-        </defs>
-        <path
-          d={HEART_PATH}
-          fill={`url(#${gradientId})`}
-          clipPath={still ? undefined : `url(#${fillClipId})`}
-        />
-        {!still &&
-          HEART_HALVES.map((half) => (
-            <motion.path
-              key={half}
-              d={half}
-              fill="none"
-              stroke={`url(#${gradientId})`}
-              strokeWidth={2.5}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              initial={{ pathLength: 0, opacity: 1 }}
-              animate={play ? { pathLength: 1, opacity: 0 } : undefined}
-              transition={{
-                pathLength: { duration: OUTLINE_S, ease: [0.65, 0, 0.35, 1] },
-                opacity: { delay: LAND_S, duration: 0.3 },
-              }}
-            />
-          ))}
-        <motion.ellipse
-          cx="15.5"
-          cy="15.5"
-          rx="4.2"
-          ry="2.6"
-          transform="rotate(-40 15.5 15.5)"
-          fill="white"
-          initial={still ? false : { opacity: 0 }}
-          animate={play ? { opacity: 0.45 } : undefined}
-          style={still ? { opacity: 0.45 } : undefined}
-          transition={{ delay: LAND_S, duration: 0.4 }}
-        />
-      </motion.svg>
-    </div>
+      {pops.map((pop) =>
+        pop.particles.map((particle, i) => (
+          <motion.svg
+            // biome-ignore lint/suspicious/noArrayIndexKey: fixed per pop, never reordered
+            key={`${pop.id}-${i}`}
+            viewBox="0 0 48 48"
+            width={particle.size}
+            height={particle.size}
+            className={clsx("pointer-events-none absolute", particle.color)}
+            style={{
+              left: `calc(50% - ${particle.size / 2}px)`,
+              top: `calc(50% - ${particle.size / 2}px)`,
+            }}
+            initial={{ x: 0, y: 0, scale: 0, opacity: 0 }}
+            animate={{
+              x: particle.x,
+              y: particle.y,
+              scale: [0, 1.15, 0.5],
+              opacity: [0, 1, 0],
+              rotate: particle.rotate,
+            }}
+            transition={{ duration: POP_MS / 1000, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <path d={particle.path} fill="currentColor" />
+          </motion.svg>
+        )),
+      )}
+
+      <span ref={squishScope} className="relative flex">
+        <motion.svg
+          viewBox="0 0 48 48"
+          className="size-18 overflow-visible drop-shadow-[0_6px_14px_rgb(244_63_94/0.35)]"
+          animate={play ? { scale: [1, 1.18, 0.95, 1.1, 1] } : undefined}
+          transition={{
+            delay: LAND_S,
+            duration: 0.7,
+            times: [0, 0.2, 0.4, 0.6, 1],
+            repeat: 2,
+            repeatDelay: 0.9,
+          }}
+          onAnimationComplete={() => setBeatsDone(true)}
+        >
+          <defs>
+            <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" className="text-rose-400" stopColor="currentColor" />
+              <stop offset="1" className="text-pink-600" stopColor="currentColor" />
+            </linearGradient>
+            {/* A rising rectangle that reveals the fill, like the heart filling up. */}
+            <clipPath id={fillClipId}>
+              <motion.rect
+                x="0"
+                width="48"
+                height="48"
+                initial={{ attrY: 48 }}
+                animate={play ? { attrY: 0 } : undefined}
+                transition={{
+                  delay: OUTLINE_S - 0.2,
+                  duration: LAND_S - OUTLINE_S + 0.2,
+                  ease: "easeInOut",
+                }}
+              />
+            </clipPath>
+          </defs>
+          <path
+            d={HEART_PATH}
+            fill={`url(#${gradientId})`}
+            clipPath={still ? undefined : `url(#${fillClipId})`}
+          />
+          {!still &&
+            HEART_HALVES.map((half) => (
+              <motion.path
+                key={half}
+                d={half}
+                fill="none"
+                stroke={`url(#${gradientId})`}
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={{ pathLength: 0, opacity: 1 }}
+                animate={play ? { pathLength: 1, opacity: 0 } : undefined}
+                transition={{
+                  pathLength: { duration: OUTLINE_S, ease: [0.65, 0, 0.35, 1] },
+                  opacity: { delay: LAND_S, duration: 0.3 },
+                }}
+              />
+            ))}
+          <motion.ellipse
+            cx="15.5"
+            cy="15.5"
+            rx="4.2"
+            ry="2.6"
+            transform="rotate(-40 15.5 15.5)"
+            fill="white"
+            initial={still ? false : { opacity: 0 }}
+            animate={play ? { opacity: 0.45 } : undefined}
+            style={still ? { opacity: 0.45 } : undefined}
+            transition={{ delay: LAND_S, duration: 0.4 }}
+          />
+        </motion.svg>
+      </span>
+    </button>
   );
 }
 

@@ -3,9 +3,10 @@ import { confirmEmail } from "src/lib/emailUtils";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    await confirmEmail(req, res);
-    res.redirect("/email-signup-success");
-  } catch (_err) {
+    const confirmed = await confirmEmail(req.query.email, req.query.hash);
+    res.redirect(confirmed ? "/email-signup-success" : "/email-signup-error");
+  } catch (err) {
+    console.error(err);
     res.redirect("/email-signup-error");
   }
 }

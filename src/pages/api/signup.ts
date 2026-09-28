@@ -25,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const HOST = process.env.NODE_ENV === "development" ? "http://localhost:3713" : baseUrl;
 
-    const confirmLink = `${HOST}/api/confirm-email?hash=${newMember.vars.hash}&email=${newMember.email}`;
+    const confirmLink = `${HOST}/api/confirm-email?hash=${newMember.vars.hash}&email=${encodeURIComponent(newMember.email)}`;
 
     const emailHandlebarsFile = await readFile(
       path.join(process.cwd(), "src", "content", "email-templates", "confirmSubscription.hbs"),

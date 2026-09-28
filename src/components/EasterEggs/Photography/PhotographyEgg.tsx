@@ -131,6 +131,7 @@ const PhotographyEgg = ({ photos }: { photos: EggPhoto[] }) => {
                 <Image
                   src={print.photo.image.src}
                   alt=""
+                  aria-hidden="true"
                   fill
                   sizes={`${POLAROID_WIDTH}px`}
                   loading="eager"

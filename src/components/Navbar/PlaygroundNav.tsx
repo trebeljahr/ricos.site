@@ -224,6 +224,7 @@ export function PlaygroundScenesPanel({ open, onClose, restoreFocus }: PanelProp
                             <ImageWithLoader
                               src={previewSrc(scene)}
                               alt=""
+                              aria-hidden="true"
                               width={320}
                               height={180}
                               sizes="200px"

@@ -794,7 +794,14 @@ function Source({ needle, page }: { needle: Needle; page?: NeedleMeta }) {
         // A remote favicon from an arbitrary host: next/image would need every
         // one of them in remotePatterns, and this page never ships to users.
         // biome-ignore lint/performance/noImgElement: dev-only, arbitrary hosts
-        <img src={page.favicon} alt="" width={16} height={16} className="h-4 w-4 rounded-sm" />
+        <img
+          src={page.favicon}
+          alt=""
+          aria-hidden="true"
+          width={16}
+          height={16}
+          className="h-4 w-4 rounded-sm"
+        />
       )}
       <span className="font-medium">{site}</span>
       {page?.author && <span className="text-gray-500">{page.author}</span>}
@@ -910,6 +917,7 @@ function Sheet({
                   <img
                     src={meta[needle.id]?.image}
                     alt=""
+                    aria-hidden="true"
                     className={clsx(
                       "h-12 w-20 rounded object-cover",
                       needle.dead && "opacity-40 grayscale",

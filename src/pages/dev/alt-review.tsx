@@ -519,6 +519,7 @@ function Thumb({ entry, sizes }: { entry: AltEntry; sizes: string }) {
     <Image
       src={`/${entry.key}`}
       alt=""
+      aria-hidden="true"
       fill
       sizes={sizes}
       onError={() => setFailed(true)}

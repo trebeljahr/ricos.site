@@ -1,0 +1,21 @@
+language js
+
+// Mirrors src/scripts/checkImageAlt.ts, which fails the build on any rendered
+// <img> with alt="" unless it is marked aria-hidden or role="presentation".
+// Catching it here means the pre-commit hook stops it, not a Vercel build.
+or {
+  `<$tag $attrs />`,
+  `<$tag $attrs>$_</$tag>`
+} where {
+  $attrs <: contains `alt=""`,
+  not $attrs <: contains or {
+    `aria-hidden="true"`,
+    `aria-hidden={true}`,
+    `aria-hidden`,
+    `role="presentation"`
+  },
+  register_diagnostic(
+    span=$tag,
+    message="An empty alt says this image is decoration. Add aria-hidden=true so the build check (checkAlt) agrees, or write a real alt if it carries content."
+  )
+}

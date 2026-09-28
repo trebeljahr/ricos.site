@@ -13,6 +13,10 @@
  * it sees whatever the pages actually emit no matter which render path produced
  * it. It runs in `postbuild`; without `.next` it skips instead of failing, so
  * `npm run checkAlt` on a cold tree is a no-op.
+ *
+ * The component half of this is also caught before a commit: the Biome plugin
+ * biome-plugins/decorative-image-alt.grit flags any JSX `alt=""` that is not
+ * also `aria-hidden`, which is the case that kept failing Vercel builds.
  */
 
 import { existsSync, readFileSync } from "node:fs";
@@ -42,6 +46,10 @@ const FILENAME_ALT = [
 ];
 
 type Finding = { page: string; kind: string; alt: string; src: string };
+
+/** Enough to act on; past this the log is noise again. */
+const MAX_LINES = 30;
+const EXAMPLES = 3;
 
 function describe(src: string): string {
   const decoded = src.replace(/&#x2F;/g, "/").replace(/&amp;/g, "&");
@@ -90,16 +98,62 @@ async function main() {
     return;
   }
 
-  console.error(`\n[checkImageAlt] ${findings.length} image(s) without usable alt text:\n`);
-  for (const { page, kind, alt, src } of findings) {
-    console.error(`  ${page}\n      ${kind}: ${alt ? `"${alt}"` : "(none)"}\n      ${src}`);
+  // Grouped, not one line per <img>: a shared component (the navbar logo, an
+  // emoji sprite) repeats on all ~500 pages, and one page can emit hundreds
+  // (every tile of /photography/spectrum). Either way it is a single fix, and
+  // printing each copy buried the content image that really needed one.
+  const label = ({ kind, alt }: Finding) => `${kind}${alt ? ` "${alt}"` : ""}`;
+  const pagesByImage = new Map<string, { finding: Finding; pages: Set<string> }>();
+  for (const finding of findings) {
+    const key = `${label(finding)}\0${finding.src}`;
+    const entry = pagesByImage.get(key) ?? { finding, pages: new Set<string>() };
+    entry.pages.add(finding.page);
+    pagesByImage.set(key, entry);
   }
+
+  const lines: { count: number; text: string }[] = [];
+  const byPage = new Map<string, Finding[]>();
+  for (const { finding, pages } of pagesByImage.values()) {
+    if (pages.size > 1) {
+      const examples = [...pages].slice(0, EXAMPLES).join(", ");
+      lines.push({
+        count: pages.size,
+        text: `${label(finding)}: ${finding.src}\n      on ${pages.size} pages, e.g. ${examples}`,
+      });
+      continue;
+    }
+    const key = `${finding.page}\0${finding.kind}`;
+    byPage.set(key, [...(byPage.get(key) ?? []), finding]);
+  }
+  for (const group of byPage.values()) {
+    const [{ page, kind }] = group;
+    const examples = group
+      .slice(0, EXAMPLES)
+      .map((f) => (f.alt ? `"${f.alt}" ${f.src}` : f.src))
+      .join("\n        ");
+    lines.push({
+      count: group.length,
+      text:
+        group.length === 1
+          ? `${label(group[0])}: ${group[0].src}\n      on ${page}`
+          : `${kind}: ${group.length} images on ${page}, e.g.\n        ${examples}`,
+    });
+  }
+  lines.sort((a, b) => b.count - a.count);
+
+  console.error(
+    `\n[checkImageAlt] ${findings.length} rendered image(s) without usable alt text, in ${lines.length} group(s):\n`,
+  );
+  for (const { text } of lines.slice(0, MAX_LINES)) console.error(`  ${text}`);
+  if (lines.length > MAX_LINES) console.error(`  …and ${lines.length - MAX_LINES} more groups`);
   console.error(
     "\nFix at the source, not at the render site:\n" +
       "  - cover images: set `cover.alt` in the entry's frontmatter\n" +
       "  - markdown images: write `![](...)` with an empty alt and let the description in\n" +
       "    src/content/Notes/_data/metadata.json apply — a junk alt in the markdown overrides it\n" +
-      "  - missing descriptions: add them to metadata.json via `npm run syncImageAlt`\n",
+      "  - missing descriptions: add them to metadata.json via `npm run syncImageAlt`\n" +
+      "  - decorative images (a logo inside a labelled button, an emoji sprite): keep\n" +
+      '    `alt=""` and add `aria-hidden="true"`\n',
   );
   process.exit(1);
 }

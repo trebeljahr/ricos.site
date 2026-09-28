@@ -110,6 +110,13 @@ export default function ImprintPage() {
             </a>
             .
           </p>
+          <p>
+            Emoji: Noto 3D by Google,{" "}
+            <a href="/sprites/LICENSE.txt" className="text-accent hover:underline">
+              SIL Open Font License 1.1
+            </a>
+            .
+          </p>
         </article>
 
         <footer className="mx-auto mt-section max-w-prose">

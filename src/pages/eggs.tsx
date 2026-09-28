@@ -73,9 +73,6 @@ export default function EggsPage() {
               );
             })}
           </ul>
-          <p className="mt-group text-sm text-gray-600 dark:text-gray-400">
-            Emoji: Noto 3D by Google, <a href="/sprites/LICENSE.txt">SIL Open Font License 1.1</a>.
-          </p>
         </article>
       </PageMain>
     </Layout>

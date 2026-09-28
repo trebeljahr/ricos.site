@@ -287,7 +287,7 @@ export const TrailMap = ({ children }: { children: ReactNode }) => {
       <div
         ref={mapRef}
         aria-hidden="true"
-        className="pointer-events-none absolute -top-8 -bottom-20 left-1/2 -z-10 w-screen -translate-x-1/2 text-gray-400/75 dark:text-gray-300/50"
+        className="pointer-events-none absolute -top-8 -bottom-20 left-1/2 -z-10 w-screen -translate-x-1/2 text-gray-400/55 dark:text-gray-300/35"
       >
         {state && layout && (
           <svg

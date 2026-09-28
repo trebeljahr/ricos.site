@@ -251,7 +251,7 @@ export function DonationCard({ className }: DonationCardProps) {
             id="donation-card-title"
             className="m-0 text-2xl font-bold text-gray-900 dark:text-white"
           >
-            Keep this place alive
+            Help keep this place alive
           </h2>
           <p className="mt-label mb-0 max-w-prose text-gray-700 dark:text-gray-200">
             Monthly helps me plan ahead. A one-off is just as welcome.

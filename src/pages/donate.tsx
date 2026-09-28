@@ -51,13 +51,14 @@ export default function DonatePage() {
           ) : (
             <>
               <p>
-                Everything I make here is free: essays, photos, book notes, odd Three.js demos and
-                the newsletter. No paywalls, no ads, and I want to keep it that way.
+                Everything I make here is free and I want to keep it that way, but to do so I need
+                your help.
               </p>
 
               <p>
-                If something here made your day a little better, you can chip in. It buys me time
-                for the next essay or strange little experiment.
+                If something here made your day a little better, consider supporting me and my work.
+                It buys me time to work on the next essay or strange little experiment and would
+                mean the world to me.
               </p>
 
               <DonationCard className="mt-group" />
@@ -72,18 +73,11 @@ export default function DonatePage() {
             </li>
             <li>
               Reply to the newsletter. I read the replies, and some of my favorite conversations
-              started there.
-            </li>
-            <li>
-              Know a publication, podcast or event where my work would fit? Tell me through the{" "}
-              <a href="/imprint" className="text-accent hover:underline">
-                imprint
-              </a>{" "}
-              page.
+              started from somebody who just wrote back.
             </li>
           </ul>
 
-          <p className="mt-sub">Thanks for being here and reading along. 🌱</p>
+          <p className="mt-sub">Thanks for being here and reading along.</p>
         </article>
 
         <footer className="mx-auto mt-section max-w-prose">

@@ -18,7 +18,7 @@ export type DonationOption = {
 export const monthlyOptions: DonationOption[] = [
   {
     label: "EUR 3",
-    note: "Small monthly nudge.",
+    note: "I can buy some cookies.",
     emoji: "🍪",
     href: process.env.NEXT_PUBLIC_STRIPE_DONATION_MONTHLY_3_URL,
   },
@@ -30,13 +30,13 @@ export const monthlyOptions: DonationOption[] = [
   },
   {
     label: "EUR 10",
-    note: "Keeps the lights brighter.",
+    note: "Did I say I love pizza?",
     emoji: "🍕",
     href: process.env.NEXT_PUBLIC_STRIPE_DONATION_MONTHLY_10_URL,
   },
   {
     label: "EUR 25",
-    note: "Patron saint mode.",
+    note: "Wow. Thanks.",
     emoji: "😇",
     href: process.env.NEXT_PUBLIC_STRIPE_DONATION_MONTHLY_25_URL,
   },

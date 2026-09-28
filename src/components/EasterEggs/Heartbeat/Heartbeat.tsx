@@ -66,17 +66,15 @@ export const Heart = () => {
   const { on, setOn, canvas } = useHeartbeat();
   const recordFind = useRecordEggFind();
   const heartRef = useRef<SVGSVGElement>(null);
-  const rateRef = useRef<HTMLSpanElement>(null);
   const monitor = useRef<ReturnType<typeof startMonitor> | null>(null);
   /** Clicks that came in before the monitor was up to take them. */
   const waiting = useRef(0);
-  const fading = useRef<Animation[]>([]);
+  const fading = useRef<Animation | null>(null);
   const found = useRef(false);
 
   useEffect(() => {
     if (!canvas) return;
-    const parts = [canvas, rateRef.current].filter((el): el is HTMLElement => el !== null);
-    for (const el of parts) el.animate([{ opacity: 0 }, { opacity: 1 }], FADE_MS);
+    canvas.animate([{ opacity: 0 }, { opacity: 1 }], FADE_MS);
 
     const running = startMonitor(canvas, {
       color: HEART_PINK,
@@ -96,17 +94,13 @@ export const Heart = () => {
           { duration: Math.min(900, rr * 1000), easing: "ease-in-out" },
         );
       },
-      onRate: (bpm) => {
-        if (rateRef.current) rateRef.current.textContent = `${bpm} bpm`;
-      },
       onRest: () => {
-        fading.current = parts.map((el) =>
-          el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FADE_MS, fill: "forwards" }),
-        );
+        fading.current = canvas.animate([{ opacity: 1 }, { opacity: 0 }], {
+          duration: FADE_MS,
+          fill: "forwards",
+        });
         // A click while it fades cancels the fade, and this never happens.
-        Promise.all(fading.current.map((fade) => fade.finished))
-          .then(() => setOn(false))
-          .catch(() => undefined);
+        fading.current.finished.then(() => setOn(false)).catch(() => undefined);
       },
     });
     monitor.current = running;
@@ -115,7 +109,7 @@ export const Heart = () => {
     return () => {
       running.stop();
       monitor.current = null;
-      fading.current = [];
+      fading.current = null;
     };
   }, [canvas, setOn]);
 
@@ -124,8 +118,8 @@ export const Heart = () => {
       found.current = true;
       recordFind("heartbeat");
     }
-    for (const fade of fading.current) fade.cancel();
-    fading.current = [];
+    fading.current?.cancel();
+    fading.current = null;
     if (monitor.current) monitor.current.click();
     else {
       waiting.current += 1;
@@ -139,38 +133,28 @@ export const Heart = () => {
   // </svg>: a space before it garbles the copied spacing. Heart path matches
   // fractal.garden.
   return (
-    <span className="relative">
-      <button
-        type="button"
-        // Stops a burst of clicks from selecting the byline.
-        onMouseDown={(event) => event.preventDefault()}
-        onClick={click}
-        className="inline cursor-pointer touch-manipulation appearance-none rounded-sm border-0 bg-transparent p-0 font-[inherit] leading-[inherit] text-inherit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
+    <button
+      type="button"
+      // Stops a burst of clicks from selecting the byline.
+      onMouseDown={(event) => event.preventDefault()}
+      onClick={click}
+      className="inline cursor-pointer touch-manipulation appearance-none rounded-sm border-0 bg-transparent p-0 font-[inherit] leading-[inherit] text-inherit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
+    >
+      <svg
+        ref={heartRef}
+        className={clsx(
+          "inline-block size-3.5 align-[-0.15em] fill-current",
+          // While the monitor is on, the monitor keeps the time.
+          !on && "animate-heartbeat motion-reduce:animate-none",
+        )}
+        style={{ color: HEART_PINK }}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
       >
-        <svg
-          ref={heartRef}
-          className={clsx(
-            "inline-block size-3.5 align-[-0.15em] fill-current",
-            // While the monitor is on, the monitor keeps the time.
-            !on && "animate-heartbeat motion-reduce:animate-none",
-          )}
-          style={{ color: HEART_PINK }}
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
-        </svg>
-        <span className="sr-only">love</span>
-      </button>
-      {on && (
-        <span
-          ref={rateRef}
-          aria-hidden="true"
-          className="pointer-events-none absolute bottom-full left-1/2 mb-0.5 -translate-x-1/2 select-none whitespace-nowrap font-mono text-[10px] leading-none"
-          style={{ color: HEART_PINK }}
-        />
-      )}
-    </span>
+        <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+      </svg>
+      <span className="sr-only">love</span>
+    </button>
   );
 };

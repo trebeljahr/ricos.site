@@ -56,7 +56,6 @@ type MonitorOptions = {
   calm: boolean;
   /** A beat, with how hard it is pounding: 0 at rest, 1 flat out. */
   onBeat: (effort: number, rr: number) => void;
-  onRate: (bpm: number) => void;
   /** Back at rest and left alone: time to switch the monitor off. */
   onRest: () => void;
 };
@@ -71,7 +70,8 @@ export function startMonitor(canvas: HTMLCanvasElement, options: MonitorOptions)
   const now = () => performance.now() / 1000;
 
   let bpm = REST_BPM;
-  let shownBpm = 0;
+  /** The rate the still strip was last drawn at, under reduced motion. */
+  let drawnBpm = 0;
   let lastClick = now();
   let lastBeat = Number.NEGATIVE_INFINITY;
   let nextBeat = now() + 60 / REST_BPM;
@@ -186,10 +186,9 @@ export function startMonitor(canvas: HTMLCanvasElement, options: MonitorOptions)
     if (t - lastClick > CALM_AFTER_S) {
       bpm = REST_BPM + (bpm - REST_BPM) * Math.exp(-dt / CALM_TAU_S);
     }
-    if (Math.round(bpm) !== shownBpm) {
-      shownBpm = Math.round(bpm);
-      options.onRate(shownBpm);
-      if (options.calm) still();
+    if (options.calm && Math.round(bpm) !== drawnBpm) {
+      drawnBpm = Math.round(bpm);
+      still();
     }
 
     if (!options.calm && width > 0) {

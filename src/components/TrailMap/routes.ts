@@ -39,6 +39,18 @@ export type Route = {
   marks: Mark[];
 };
 
+const LOOP = [
+  [0.9, -0.8],
+  [0.7, 0.6],
+  [0, 1],
+  [-0.8, 0.5],
+  [-0.9, -0.4],
+  [-0.3, -1],
+  [0.5, -0.8],
+  [1.1, -0.1],
+  [1.6, 0.8],
+] as const;
+
 /**
  * A loop like the one beside the subtitle: down one side, round underneath
  * and over the top, and out downwards across its own track, to the right
@@ -46,19 +58,15 @@ export type Route = {
  * bend in gently.
  */
 const loop = (cx: number, cy: number, r: number, side: 1 | -1): Point[] =>
-  (
-    [
-      [0.9, -0.8],
-      [0.7, 0.6],
-      [0, 1],
-      [-0.8, 0.5],
-      [-0.9, -0.4],
-      [-0.3, -1],
-      [0.5, -0.8],
-      [1.1, -0.1],
-      [1.6, 0.8],
-    ] as const
-  ).map(([x, y]) => [cx + side * x * r, cy + y * r]);
+  LOOP.map(([x, y]) => [cx + side * x * r, cy + y * r]);
+
+/**
+ * The same loop turned a quarter, for a trail that crosses the page: in low,
+ * up and back over the top, and out downwards across its own track, heading
+ * right (side 1) or left (side -1).
+ */
+const curl = (cx: number, cy: number, r: number, side: 1 | -1): Point[] =>
+  LOOP.map(([x, y]) => [cx + side * y * r, cy + x * r]);
 
 // Desktop (md+), traced at a 1449px window. In low from the left, up the
 // margin with a small loop beside the photo, over the title with a dip beside
@@ -334,9 +342,14 @@ export const WIDE_ROUTE: Route = {
   ],
 };
 
-// Mobile, traced at 375px. One column with no margins, so the trail zigzags
-// down the page: along a gap between two photos or cards, off the edge beside
-// the next one, and back in along the following gap.
+// Mobile, traced at 375px. One column with no margins, so the trail runs
+// under the photos and cards and shows in the space between them: in low from
+// the left, over the title, a loop by the subtitle and under the portrait.
+// Down the page, every wide gap between two sections gets a loop or a curl
+// round a peak, with sea, a river or marsh beside it. Between the gaps the
+// trail runs down the free right edge beside the headings, down the street
+// between the small photos, and under the cards, peeking out between them.
+// It leaves along the bottom after a last loop by the links.
 export const NARROW_ROUTE: Route = {
   column: 351,
   rulers: {
@@ -347,30 +360,37 @@ export const NARROW_ROUTE: Route = {
     "text.bottom": 743,
     "photos.top": 823,
     "photos.head.bottom": 959,
+    "photos.grid.top": 991,
     "photos.grid.0.bottom": 1254,
     "photos.grid.1.top": 1266,
     "photos.grid.1.bottom": 1436,
     "photos.grid.3.top": 1448,
-    "photos.grid.3.bottom": 1618,
-    "photos.bottom": 1669,
-    "scenes.top": 1749,
-    "scenes.head.bottom": 1949,
-    "scenes.cards.0.bottom": 2327,
+    "photos.grid.bottom": 1617,
+    "photos.2.top": 1641,
+    "photos.bottom": 1670,
+    "scenes.top": 1750,
+    "scenes.head.bottom": 1950,
+    "scenes.cards.top": 1982,
+    "scenes.cards.0.bottom": 2328,
     "scenes.cards.1.top": 2352,
-    "scenes.bottom": 2723,
-    "holes.top": 2804,
-    "holes.head.bottom": 2976,
-    "holes.cards.0.bottom": 3415,
-    "holes.cards.1.top": 3439,
-    "holes.cards.1.bottom": 3846,
-    "holes.cards.2.top": 3870,
-    "holes.bottom": 4303,
-    "touch.top": 4383,
-    "touch.head.bottom": 4491,
-    "touch.grid.0.bottom": 4985,
-    "touch.grid.1.top": 5025,
-    "touch.bottom": 5348,
-    end: 5428,
+    "scenes.cards.bottom": 2672,
+    "scenes.2.top": 2696,
+    "scenes.bottom": 2725,
+    "holes.top": 2805,
+    "holes.head.bottom": 2977,
+    "holes.cards.top": 3009,
+    "holes.cards.0.bottom": 3416,
+    "holes.cards.1.top": 3440,
+    "holes.cards.1.bottom": 3847,
+    "holes.cards.2.top": 3871,
+    "holes.bottom": 4304,
+    "touch.top": 4384,
+    "touch.head.bottom": 4492,
+    "touch.grid.top": 4524,
+    "touch.grid.0.bottom": 4986,
+    "touch.grid.1.top": 5026,
+    "touch.bottom": 5349,
+    end: 5429,
   },
   points: [
     [LEFT, 68],
@@ -389,61 +409,106 @@ export const NARROW_ROUTE: Route = {
     [239, 174],
     [281, 192],
     [316, 210],
-    [RIGHT, 223],
-    [RIGHT, 747],
-    [302, 767],
-    [218, 783],
-    [133, 772],
-    [49, 779],
-    [LEFT, 793],
-    // Along the gap under the big photo and down between the small ones.
-    [LEFT, 1230],
-    [40, 1260],
-    [105, 1260],
-    [145, 1267],
-    [167, 1290],
-    [175, 1330],
-    [176, 1442],
-    [176, 1560],
-    [180, 1612],
-    [215, 1638],
-    [280, 1655],
-    [RIGHT, 1680],
-    [RIGHT, 2300],
-    [320, 2340],
-    [180, 2340],
-    [30, 2340],
-    [LEFT, 2340],
-    [LEFT, 2715],
-    [60, 2748],
-    [200, 2752],
-    [310, 2762],
-    [RIGHT, 2775],
-    [RIGHT, 3390],
-    [320, 3427],
-    [180, 3427],
-    [30, 3427],
-    [LEFT, 3427],
-    [LEFT, 3825],
-    [30, 3858],
-    [180, 3858],
-    [320, 3858],
-    [RIGHT, 3858],
-    [RIGHT, 4310],
-    [310, 4340],
-    [150, 4345],
-    [30, 4350],
-    [LEFT, 4360],
-    [LEFT, 4975],
-    [30, 5005],
-    [180, 5005],
-    [320, 5005],
-    [RIGHT, 5005],
-    [RIGHT, 5360],
-    [300, 5385],
-    [150, 5395],
+    // Under the portrait, out at its bottom left corner.
+    [340, 245],
+    [320, 330],
+    [200, 420],
+    [60, 478],
+    [10, 505],
+    [LEFT, 520],
+    // Photography: a curl round a peak under the intro, down beside the
+    // heading, under the big photo and down the street between the small ones.
+    [LEFT, 762],
+    [20, 779],
+    [60, 800],
+    [92, 811],
+    ...curl(140, 783, 33, 1),
+    [215, 846],
+    [275, 849],
+    [315, 862],
+    [330, 885],
+    [333, 915],
+    [325, 950],
+    [305, 980],
+    [250, 1080],
+    [200, 1170],
+    [180, 1230],
+    [176, 1290],
+    [176, 1400],
+    [176, 1520],
+    [177, 1600],
+    [184, 1625],
+    [205, 1640],
+    [230, 1652],
+    [250, 1668],
+    // 3D: a wide loop round a range, down the right edge beside the heading,
+    // and under the cards, out between them on the left.
+    ...loop(226, 1722, 44, 1),
+    [318, 1785],
+    [322, 1800],
+    [328, 1835],
+    [330, 1870],
+    [332, 1920],
+    [325, 1965],
+    [300, 2040],
+    [200, 2180],
+    [100, 2290],
+    [65, 2340],
+    [80, 2420],
+    [180, 2530],
+    [280, 2640],
+    // Rabbit holes: out past the end of the link, a loop round a peak, down
+    // the right edge and under the cards, out between them on either side.
+    [300, 2685],
+    [292, 2708],
+    [277, 2722],
+    ...loop(228, 2769, 36, 1),
+    [312, 2824],
+    [332, 2850],
+    [338, 2890],
+    [342, 2935],
+    [335, 2985],
+    [300, 3060],
+    [180, 3200],
+    [80, 3330],
+    [55, 3428],
+    [75, 3520],
+    [190, 3650],
+    [280, 3790],
+    [295, 3859],
+    [270, 3960],
+    [190, 4100],
+    [120, 4230],
+    // Stay in touch: out from under the last card, a curl round a peak, off to
+    // the right and under the form.
+    [95, 4305],
+    [115, 4332],
+    [140, 4362],
+    ...curl(195, 4346, 33, 1),
+    [265, 4408],
+    [315, 4410],
+    [RIGHT, 4410],
+    [RIGHT, 4800],
+    [330, 4900],
+    [306, 4975],
+    [297, 4995],
+    // A loop round a peak by the links, down past them and out along the
+    // bottom.
+    ...loop(262, 5040, 36, 1),
+    [335, 5100],
+    [342, 5160],
+    [340, 5230],
+    [346, 5290],
+    [350, 5330],
+    [338, 5372],
+    [285, 5402],
+    [185, 5415],
+    [85, 5413],
+    [20, 5405],
     [LEFT, 5400],
   ],
+  // A peak or a range inside every loop, as on the wide map, and sea, a river
+  // and marsh in the open gaps beside them.
   marks: [
     {
       kind: "compass",
@@ -454,5 +519,15 @@ export const NARROW_ROUTE: Route = {
     },
     { kind: "range", spots: [[193, 32]] },
     { kind: "peaks", spots: [[211, 196]] },
+    { kind: "peaks", spots: [[140, 782]] },
+    { kind: "waves", spots: [[270, 785]] },
+    { kind: "range", spots: [[226, 1722]] },
+    { kind: "river", spots: [[105, 1715]] },
+    { kind: "peaks", spots: [[228, 2769]] },
+    { kind: "marsh", spots: [[95, 2767]] },
+    { kind: "peaks", spots: [[195, 4346]] },
+    { kind: "waves", spots: [[295, 4345]] },
+    { kind: "peaks", spots: [[262, 5040]] },
+    { kind: "range", spots: [[100, 5380]] },
   ],
 };

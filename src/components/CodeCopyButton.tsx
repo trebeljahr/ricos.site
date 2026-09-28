@@ -74,7 +74,6 @@ export const CopyButton = ({ handleClick }: CopyButtonProps) => {
     handleClick();
     setCopied(true);
     setCopies((count) => count + 1);
-    burst("up");
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setCopied(false), 3000);
   };
@@ -114,7 +113,14 @@ export const CopyButton = ({ handleClick }: CopyButtonProps) => {
         )}
       >
         <svg aria-hidden="true" viewBox="0 0 24 24" className="size-[1.1em]" fill="none">
+          {/* The glitter waits for the stroke to land. The hidden check also
+              draws once on mount, hence the `copies` guard. A copy that
+              remounts the check mid-draw cancels that draw, so a quick double
+              copy still throws one burst. */}
           <path
+            onAnimationEnd={() => {
+              if (copies > 0) burst("up");
+            }}
             key={copies}
             d="M5 12.5l4.5 4.5L19 7.5"
             stroke="currentColor"

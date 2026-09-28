@@ -15,8 +15,8 @@ const BUNNY_PX = 30;
 const LAID_PX = 22;
 const LAID_SHOWS_MS = 3000;
 // Spam clicks lay at most one egg per gap, and only so many can be out at once.
-const LAY_GAP_MS = 180;
-const MAX_LAID = 24;
+const LAY_GAP_MS = 60;
+const MAX_LAID = 48;
 
 type Laid = {
   id: number;

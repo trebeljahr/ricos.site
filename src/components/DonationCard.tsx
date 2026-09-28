@@ -450,46 +450,66 @@ const floaters = [
   { x: -40, drift: 6, size: 10, color: "text-pink-300" },
 ];
 
-// Once the heart has finished its beats it can be squeezed: it squishes, spits
-// out a little burst and shifts to a new colour. Quick clicks build a combo
-// that makes each burst bigger.
+// Once the heart has finished its beats it can be squeezed: it squishes, glows
+// warm, a few faint hearts drift up and sparkles twinkle out around it. Quick
+// clicks build a combo that makes each burst a little bigger.
 const COMBO_WINDOW_MS = 700;
 const MAX_COMBO = 6;
-const POP_MS = 900;
-const MAX_POPS = 6;
+const SPARKLE_S = 1.2;
+const FLOAT_S = 1.6;
+const MAX_DELAY_S = 0.3;
+const POP_MS = (FLOAT_S + MAX_DELAY_S) * 1000;
+const MAX_POPS = 5;
 
-type Pop = {
-  id: number;
-  particles: {
-    x: number;
-    y: number;
-    path: string;
-    color: string;
-    size: number;
-    rotate: number;
-  }[];
+// Soft yellows and teals, a little deeper on the light card so they still show.
+const sparkleColors = [
+  "text-amber-300 dark:text-amber-200",
+  "text-yellow-300 dark:text-yellow-200",
+  "text-teal-300 dark:text-teal-200",
+  "text-sky-300 dark:text-sky-200",
+];
+
+type PopParticle = {
+  kind: "heart" | "sparkle";
+  x: number;
+  y: number;
+  size: number;
+  rotate: number;
+  delay: number;
+  color: string;
 };
+
+type Pop = { id: number; particles: PopParticle[] };
 
 const randomBetween = (min: number, max: number) => min + Math.random() * (max - min);
 
 function makePop(id: number, combo: number): Pop {
-  const count = 6 + combo;
-  const reach = 56 + combo * 8;
-  return {
-    id,
-    particles: Array.from({ length: count }, (_, i) => {
-      const angle = (i / count) * Math.PI * 2 + randomBetween(-0.3, 0.3);
-      const distance = reach * randomBetween(0.7, 1);
-      return {
-        x: Math.cos(angle) * distance,
-        y: Math.sin(angle) * distance,
-        path: Math.random() < 0.6 ? HEART_PATH : SPARKLE_PATH,
-        color: burstColors[Math.floor(Math.random() * burstColors.length)],
-        size: randomBetween(8, 14),
-        rotate: randomBetween(-40, 40),
-      };
+  const sparkles = Array.from({ length: 10 + combo * 2 }, (): PopParticle => {
+    const angle = Math.random() * Math.PI * 2;
+    const distance = randomBetween(38, 62 + combo * 5);
+    return {
+      kind: "sparkle",
+      x: Math.cos(angle) * distance,
+      y: Math.sin(angle) * distance,
+      size: randomBetween(6, 13),
+      rotate: randomBetween(-90, 90),
+      delay: randomBetween(0, MAX_DELAY_S),
+      color: sparkleColors[Math.floor(Math.random() * sparkleColors.length)],
+    };
+  });
+  const hearts = Array.from(
+    { length: 3 + Math.floor(combo / 2) },
+    (): PopParticle => ({
+      kind: "heart",
+      x: randomBetween(-40, 40),
+      y: -randomBetween(60, 95),
+      size: randomBetween(9, 15),
+      rotate: randomBetween(-20, 20),
+      delay: randomBetween(0, MAX_DELAY_S * 0.6),
+      color: "text-pink-300",
     }),
-  };
+  );
+  return { id, particles: [...sparkles, ...hearts] };
 }
 
 function ThanksWord({ play, still }: { play: boolean; still: boolean }) {
@@ -542,9 +562,9 @@ function BeatingHeart({ play, still }: { play: boolean; still: boolean }) {
   const fillClipId = useSvgId("donation-heart-fill");
   const [beatsDone, setBeatsDone] = useState(false);
   const ready = still || beatsDone;
-  const [hue, setHue] = useState(0);
   const [pops, setPops] = useState<Pop[]>([]);
-  const [squishScope, animateSquish] = useAnimate<HTMLSpanElement>();
+  const [squishScope, animate] = useAnimate<HTMLSpanElement>();
+  const glowRef = useRef<HTMLSpanElement>(null);
   const nextPop = useRef(0);
   const combo = useRef({ count: 0, at: 0 });
   const timers = useRef(new Set<number>());
@@ -557,9 +577,14 @@ function BeatingHeart({ play, still }: { play: boolean; still: boolean }) {
   }, []);
 
   const squeeze = () => {
-    // A new colour on every click, always onward round the wheel so the
-    // transition never runs backwards.
-    setHue((current) => current + randomBetween(45, 105));
+    // A warm glow behind the heart. Under reduced motion that is all it does.
+    if (glowRef.current) {
+      animate(
+        glowRef.current,
+        still ? { opacity: [0, 1, 0] } : { opacity: [0, 1, 0], scale: [0.8, 1.3, 1.15] },
+        { duration: 1, ease: "easeOut" },
+      );
+    }
     if (still) return;
 
     const now = performance.now();
@@ -567,13 +592,13 @@ function BeatingHeart({ play, still }: { play: boolean; still: boolean }) {
     const count = now - last.at < COMBO_WINDOW_MS ? Math.min(last.count + 1, MAX_COMBO) : 0;
     combo.current = { count, at: now };
 
-    // Jelly squish, tilting left and right on alternate clicks.
-    const tilt = (count % 2 ? 1 : -1) * (8 + count * 2);
-    animateSquish(
+    // A soft squish, tilting left and right on alternate clicks.
+    const tilt = (count % 2 ? 1 : -1) * (4 + count);
+    animate(
       squishScope.current,
       {
-        scale: [1, 0.8, 1.25 + count * 0.02, 0.93, 1.05, 1],
-        rotate: [0, tilt, -tilt * 0.7, tilt * 0.3, 0, 0],
+        scale: [1, 0.88, 1.12 + count * 0.015, 0.97, 1.02, 1],
+        rotate: [0, tilt, -tilt * 0.6, tilt * 0.25, 0, 0],
       },
       { duration: 0.6, ease: "easeOut" },
     );
@@ -596,11 +621,15 @@ function BeatingHeart({ play, still }: { play: boolean; still: boolean }) {
       // Stops a burst of clicks from selecting the text around the heart.
       onMouseDown={(event) => event.preventDefault()}
       className={clsx(
-        "relative mx-auto flex size-28 touch-manipulation select-none appearance-none items-center justify-center rounded-full border-0 bg-transparent p-0 transition-[filter,scale] duration-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+        "relative mx-auto flex size-28 touch-manipulation select-none appearance-none items-center justify-center rounded-full border-0 bg-transparent p-0 transition-[scale] duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         ready && "motion-safe:hover:scale-105",
       )}
-      style={{ filter: `hue-rotate(${hue}deg)` }}
     >
+      <span
+        ref={glowRef}
+        aria-hidden
+        className="pointer-events-none absolute inset-5 rounded-full bg-pink-300/60 opacity-0 blur-xl dark:bg-pink-400/40"
+      />
       {play && (
         <motion.div
           className="absolute inset-4 rounded-full bg-rose-400/40 blur-2xl dark:bg-rose-500/30"
@@ -668,22 +697,42 @@ function BeatingHeart({ play, still }: { play: boolean; still: boolean }) {
             viewBox="0 0 48 48"
             width={particle.size}
             height={particle.size}
-            className={clsx("pointer-events-none absolute", particle.color)}
+            className={clsx(
+              "pointer-events-none absolute",
+              particle.color,
+              particle.kind === "sparkle" && "drop-shadow-[0_0_3px_currentColor]",
+            )}
             style={{
               left: `calc(50% - ${particle.size / 2}px)`,
               top: `calc(50% - ${particle.size / 2}px)`,
             }}
-            initial={{ x: 0, y: 0, scale: 0, opacity: 0 }}
-            animate={{
-              x: particle.x,
-              y: particle.y,
-              scale: [0, 1.15, 0.5],
-              opacity: [0, 1, 0],
-              rotate: particle.rotate,
-            }}
-            transition={{ duration: POP_MS / 1000, ease: [0.22, 1, 0.36, 1] }}
+            {...(particle.kind === "sparkle"
+              ? {
+                  // Twinkles on the spot while it drifts a little further out.
+                  initial: { x: particle.x * 0.45, y: particle.y * 0.45, scale: 0, opacity: 0 },
+                  animate: {
+                    x: particle.x,
+                    y: particle.y,
+                    scale: [0, 1.2, 0.7, 1.05, 0],
+                    opacity: [0, 1, 1, 1, 0],
+                    rotate: particle.rotate,
+                  },
+                  transition: { duration: SPARKLE_S, delay: particle.delay, ease: "easeOut" },
+                }
+              : {
+                  // Rises off the top of the heart with a slow sway, like warmth.
+                  initial: { x: 0, y: -12, scale: 0.3, opacity: 0 },
+                  animate: {
+                    x: [0, particle.x * 0.5, particle.x * 0.2, particle.x],
+                    y: particle.y,
+                    scale: [0.3, 1, 0.9],
+                    opacity: [0, 0.85, 0.85, 0],
+                    rotate: particle.rotate,
+                  },
+                  transition: { duration: FLOAT_S, delay: particle.delay, ease: "easeOut" },
+                })}
           >
-            <path d={particle.path} fill="currentColor" />
+            <path d={particle.kind === "sparkle" ? SPARKLE_PATH : HEART_PATH} fill="currentColor" />
           </motion.svg>
         )),
       )}

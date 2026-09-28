@@ -1,6 +1,6 @@
 import { Sprite } from "@components/Sprite";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRecordEggFind } from "src/hooks/useEasterEgg";
 import { EASTER_EGG_IDS, EASTER_EGGS_CHANGED_EVENT, getFoundEggs } from "src/lib/easterEggs";
@@ -14,6 +14,12 @@ const BUNNY_PX = 30;
 // How long an egg stays behind the bunny before it is gone.
 const DROP_SHOWS_MS = 2400;
 const EGG_PX = 16;
+// Eggs laid on a click: a size up from the hop eggs, and they stay a little longer.
+const LAID_PX = 22;
+const LAID_SHOWS_MS = 3000;
+// Spam clicks lay at most one egg per gap, and only so many can be out at once.
+const LAY_GAP_MS = 180;
+const MAX_LAID = 24;
 
 type Drop = {
   id: number;
@@ -26,7 +32,64 @@ type Drop = {
   at: number;
 };
 
+type Laid = {
+  id: number;
+  x: number;
+  /** How high the bunny was when it laid the egg, so the egg falls from there. */
+  lift: number;
+  sprite: (typeof EASTER_EGG_SPRITES)[number];
+  tilt: number;
+};
+
 const pick = <T,>(items: readonly T[]) => items[Math.floor(Math.random() * items.length)];
+
+/** An egg laid on a click: it drops from the bunny, bounces once, sits, and fades. */
+const LaidEgg = ({
+  egg,
+  calm,
+  onDone,
+}: {
+  egg: Laid;
+  calm: boolean;
+  onDone: (id: number) => void;
+}) => {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const rest = `rotate(${egg.tilt}deg)`;
+    const shown = ref.current?.animate(
+      calm
+        ? [
+            { opacity: 0 },
+            { opacity: 1, offset: 0.1 },
+            { opacity: 1, offset: 0.85 },
+            { opacity: 0 },
+          ]
+        : [
+            { opacity: 0, transform: `translateY(${-egg.lift}px) scale(0.5)` },
+            { opacity: 1, transform: `translateY(${-egg.lift / 2}px) scale(0.9)`, offset: 0.05 },
+            { opacity: 1, transform: `translateY(0) ${rest} scale(1.15, 0.85)`, offset: 0.1 },
+            { opacity: 1, transform: `translateY(-5px) ${rest} scale(1)`, offset: 0.15 },
+            { opacity: 1, transform: `translateY(0) ${rest} scale(1)`, offset: 0.2 },
+            { opacity: 1, transform: `translateY(0) ${rest} scale(1)`, offset: 0.85 },
+            { opacity: 0, transform: `translateY(4px) ${rest} scale(1)` },
+          ],
+      { duration: LAID_SHOWS_MS, easing: "ease-out", fill: "both" },
+    );
+    shown?.finished.then(() => onDone(egg.id)).catch(() => undefined);
+    return () => shown?.cancel();
+  }, [egg, calm, onDone]);
+
+  return (
+    <span
+      ref={ref}
+      className="absolute bottom-2 leading-none opacity-0"
+      style={{ left: egg.x - LAID_PX / 2, fontSize: LAID_PX }}
+    >
+      <Sprite name={egg.sprite} />
+    </span>
+  );
+};
 
 /** Two or three painted eggs land behind the bunny on every hop, a little off the spot. */
 function planDrops(width: number, calm: boolean) {
@@ -55,16 +118,64 @@ function planDrops(width: number, calm: boolean) {
 
 /**
  * The Easter bunny hops along the bottom of the screen once and leaves
- * painted eggs where it lands, which pop up and are gone again soon.
+ * painted eggs where it lands, which pop up and are gone again soon. Every
+ * click on the footer egg while it hops makes it lay one more, through `layRef`.
  */
-const Bunny = ({ onDone }: { onDone: () => void }) => {
+const Bunny = ({ onDone, layRef }: { onDone: () => void; layRef: RefObject<() => void> }) => {
   const outer = useRef<HTMLSpanElement>(null);
+  const body = useRef<HTMLSpanElement>(null);
   const inner = useRef<HTMLSpanElement>(null);
   const dropRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const lastLay = useRef(0);
+  const nextLaid = useRef(0);
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
   const [calm] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   const [plan] = useState(() => planDrops(window.innerWidth, calm));
+  const [crossed, setCrossed] = useState(false);
+  const [laid, setLaid] = useState<Laid[]>([]);
+
+  const dropLaid = useCallback(
+    (id: number) => setLaid((current) => current.filter((egg) => egg.id !== id)),
+    [],
+  );
+
+  // Gone once it has crossed and the last laid egg has faded.
+  useEffect(() => {
+    if (crossed && laid.length === 0) onDoneRef.current();
+  }, [crossed, laid.length]);
+
+  layRef.current = () => {
+    const now = performance.now();
+    if (crossed || now - lastLay.current < LAY_GAP_MS || !outer.current || !inner.current) return;
+    const bunny = outer.current.getBoundingClientRect();
+    // The tail end: the bunny is mirrored to face right, so that is its left edge.
+    const x = bunny.left + 6;
+    if (x < 0 || x > window.innerWidth) return;
+    lastLay.current = now;
+    const ground = (outer.current.parentElement?.getBoundingClientRect().bottom ?? 0) - 8;
+    const lift = Math.max(0, ground - inner.current.getBoundingClientRect().bottom);
+    setLaid((current) =>
+      current.length >= MAX_LAID
+        ? current
+        : [
+            ...current,
+            {
+              id: nextLaid.current++,
+              x,
+              lift,
+              sprite: pick(EASTER_EGG_SPRITES),
+              tilt: (Math.random() - 0.5) * 30,
+            },
+          ],
+    );
+    if (!calm) {
+      body.current?.animate(
+        [{ transform: "scale(1)" }, { transform: "scale(1.12, 0.84)" }, { transform: "scale(1)" }],
+        { duration: 220, easing: "ease-out" },
+      );
+    }
+  };
 
   useEffect(() => {
     const el = outer.current;
@@ -111,7 +222,7 @@ const Bunny = ({ onDone }: { onDone: () => void }) => {
     });
 
     Promise.all([across.finished, ...shown.map((a) => a?.finished)])
-      .then(() => onDoneRef.current())
+      .then(() => setCrossed(true))
       .catch(() => undefined);
     return () => {
       across.cancel();
@@ -134,14 +245,20 @@ const Bunny = ({ onDone }: { onDone: () => void }) => {
           <Sprite name={drop.sprite} />
         </span>
       ))}
+      {laid.map((egg) => (
+        <LaidEgg key={egg.id} egg={egg} calm={calm} onDone={dropLaid} />
+      ))}
       <span ref={outer} className="absolute bottom-2 left-0">
-        {/* The rabbit faces left; mirror it so it hops forward. */}
-        <span
-          ref={inner}
-          className="inline-block leading-none"
-          style={{ fontSize: BUNNY_PX, scale: "-1 1" }}
-        >
-          <Sprite name="🐇" />
+        {/* Squashes when it lays, apart from the hop, which owns the inner span's scale. */}
+        <span ref={body} className="inline-block origin-bottom">
+          {/* The rabbit faces left; mirror it so it hops forward. */}
+          <span
+            ref={inner}
+            className="inline-block leading-none"
+            style={{ fontSize: BUNNY_PX, scale: "-1 1" }}
+          >
+            <Sprite name="🐇" />
+          </span>
         </span>
       </span>
     </>
@@ -153,6 +270,7 @@ export const EggCounter = () => {
   const recordFind = useRecordEggFind();
   const [found, setFound] = useState(0);
   const [hopping, setHopping] = useState(false);
+  const lay = useRef<() => void>(() => undefined);
 
   useEffect(() => {
     const update = () => setFound(getFoundEggs().filter((id) => known.has(id)).length);
@@ -171,10 +289,14 @@ export const EggCounter = () => {
       <Link href="/eggs" className="hover:text-accent">
         {found}/{EASTER_EGG_IDS.length} easter eggs found
       </Link>{" "}
-      {/* One bunny at a time: clicks while it is still out only wiggle the egg. */}
+      {/* One bunny at a time: clicks while it is out make it lay an egg. */}
       <EmojiButton
         label="Easter egg"
         onClick={() => {
+          if (hopping) {
+            lay.current();
+            return;
+          }
           recordFind("easter-bunny");
           setHopping(true);
         }}
@@ -188,7 +310,7 @@ export const EggCounter = () => {
             aria-hidden="true"
             className="pointer-events-none fixed inset-x-0 bottom-0 z-50 h-20 overflow-hidden"
           >
-            <Bunny onDone={() => setHopping(false)} />
+            <Bunny onDone={() => setHopping(false)} layRef={lay} />
           </div>,
           document.body,
         )}

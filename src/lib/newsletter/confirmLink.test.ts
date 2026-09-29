@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   CONFIRM_TOKEN_TTL_MS,
   checkLegacyHash,
@@ -101,6 +101,19 @@ describe("signed tokens", () => {
     expect(confirmLink("reader@example.com")).toMatch(
       /^https:\/\/ricos-site-git-x\.vercel\.app\/api\/confirm-email\?token=/,
     );
+  });
+
+  it("points dev links at the port the dev server runs on", () => {
+    vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("PORT", "");
+    expect(confirmLink("reader@example.com")).toMatch(
+      /^http:\/\/localhost:3713\/api\/confirm-email/,
+    );
+    vi.stubEnv("PORT", "51234");
+    expect(confirmLink("reader@example.com")).toMatch(
+      /^http:\/\/localhost:51234\/api\/confirm-email/,
+    );
+    vi.unstubAllEnvs();
   });
 });
 

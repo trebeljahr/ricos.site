@@ -7,7 +7,9 @@
  * must be on that domain (see `SENDER_DOMAIN`).
  *
  *   - Subscribers and list memberships live in ListMonk. An address is
- *     written to ListMonk only once it confirms (see `confirmSubscription`).
+ *     written to ListMonk only once it confirms (see `confirmSubscription`),
+ *     or by the one-off Mailgun import to keep a bounce, complaint or
+ *     unsubscribe (see `createSuppressed`).
  *   - The double-opt-in email goes through `POST /api/tx` against the
  *     `ricos.site-tx` passthrough template (`{{ .Tx.Data.body | Safe }}`;
  *     tx bodies compile with html/template, so without `Safe` the HTML
@@ -43,6 +45,16 @@ function authHeader(): string {
   return `token ${required("LISTMONK_API_USER")}:${required("LISTMONK_API_TOKEN")}`;
 }
 
+export class ListmonkError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+    this.name = "ListmonkError";
+  }
+}
+
 async function listmonkFetch<T = unknown>(path: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(`${listmonkBaseUrl()}${path}`, {
     ...init,
@@ -55,7 +67,10 @@ async function listmonkFetch<T = unknown>(path: string, init: RequestInit = {}):
   });
   const text = await res.text();
   if (!res.ok) {
-    throw new Error(`listmonk ${init.method ?? "GET"} ${path}: ${res.status} ${text}`);
+    throw new ListmonkError(
+      `listmonk ${init.method ?? "GET"} ${path}: ${res.status} ${text}`,
+      res.status,
+    );
   }
   if (!text) return undefined as T;
   return JSON.parse(text) as T;
@@ -150,7 +165,11 @@ export async function isConfirmedOnList(email: string, listId = resolveListId())
 
 type CreateResp = { data: ListmonkSubscriber };
 
-async function createSubscriber(email: string, listIds: number[]): Promise<ListmonkSubscriber> {
+async function createSubscriber(
+  email: string,
+  listIds: number[],
+  status: "enabled" | "blocklisted" = "enabled",
+): Promise<ListmonkSubscriber> {
   const created = await listmonkFetch<CreateResp>("/api/subscribers", {
     method: "POST",
     body: JSON.stringify({
@@ -158,7 +177,8 @@ async function createSubscriber(email: string, listIds: number[]): Promise<Listm
       // ListMonk requires a non-empty name. The form only asks for the
       // address, so reuse it.
       name: email.toLowerCase(),
-      status: "enabled",
+      // `blocklisted` makes every membership in `listIds` `unsubscribed`.
+      status,
       lists: listIds,
       // Marks every list in `listIds` as `confirmed`, and stops ListMonk's
       // own opt-in email for them (with `false` it mails one per double
@@ -170,6 +190,28 @@ async function createSubscriber(email: string, listIds: number[]): Promise<Listm
 }
 
 /**
+ * Give subscribers a membership on `listId` with `status`, or set an
+ * existing one to it. Never mails: only creating a subscriber can send
+ * ListMonk's opt-in email.
+ */
+export async function addToList(
+  subscriberIds: number[],
+  listId: number,
+  status: SubscriptionStatus,
+): Promise<void> {
+  if (subscriberIds.length === 0) return;
+  await listmonkFetch("/api/subscribers/lists", {
+    method: "PUT",
+    body: JSON.stringify({
+      ids: subscriberIds,
+      action: "add",
+      target_list_ids: [listId],
+      status,
+    }),
+  });
+}
+
+/**
  * Add `email` to a list as `confirmed`. Only the confirm route (after the
  * link proved the reader owns the address) and the one-off Mailgun import
  * call this. Idempotent: an existing membership, whatever its status,
@@ -178,19 +220,47 @@ async function createSubscriber(email: string, listIds: number[]): Promise<Listm
  */
 export async function confirmSubscription(email: string, listId = resolveListId()): Promise<void> {
   const existing = await findSubscriber(email);
-  if (!existing) {
-    await createSubscriber(email, [listId]);
+  if (existing) {
+    await addToList([existing.id], listId, "confirmed");
     return;
   }
-  await listmonkFetch("/api/subscribers/lists", {
-    method: "PUT",
-    body: JSON.stringify({
-      ids: [existing.id],
-      action: "add",
-      target_list_ids: [listId],
-      status: "confirmed",
-    }),
-  });
+  try {
+    await createSubscriber(email, [listId]);
+  } catch (err) {
+    if (!(err instanceof ListmonkError && err.status === 409)) throw err;
+    // The address exists after all: a second click on the same link won
+    // the race, or it is on a list this API user cannot read.
+    const created = await findSubscriber(email);
+    if (!created) {
+      throw new Error(
+        "ListMonk has this address, but the API user cannot see it. Its role needs subscribers:get_all.",
+        { cause: err },
+      );
+    }
+    await addToList([created.id], listId, "confirmed");
+  }
+}
+
+/**
+ * Carry a Mailgun suppression over for an address ListMonk does not have,
+ * without mailing it: `blocklisted` (a hard bounce or a spam complaint)
+ * creates it blocklisted, `unsubscribed` creates it with an
+ * `unsubscribed` membership on `listId`. Only the one-off import calls this.
+ */
+export async function createSuppressed(
+  email: string,
+  listId: number,
+  mark: "blocklisted" | "unsubscribed",
+): Promise<void> {
+  if (mark === "blocklisted") {
+    await createSubscriber(email, [listId], "blocklisted");
+    return;
+  }
+  // Created on no list first, so the address is never confirmed on one,
+  // not even between two calls. If the second call fails, a re-run finds
+  // it listless and adds the membership.
+  const created = await createSubscriber(email, []);
+  await addToList([created.id], listId, "unsubscribed");
 }
 
 /**

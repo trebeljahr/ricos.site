@@ -7,7 +7,7 @@ import {
 } from "./mailgunAudience";
 
 /**
- * What `pnpm newsletter:import` does with each Mailgun reader, worked out
+ * What `pnpm newsletter:import` does with each Mailgun address, worked out
  * before anything is written so the dry run reports the exact outcome.
  *
  * Consent carries over as it stands, never upgraded:
@@ -16,9 +16,16 @@ import {
  *     imported, as `confirmed`. A `subscribed: no` member is either an
  *     unsubscribe or a signup that never confirmed; Mailgun cannot tell
  *     them apart, so neither goes to ListMonk.
+ *   - Every address on the domain's suppression lists, member or not, is
+ *     carried over as a suppression: a hard bounce or a spam complaint as
+ *     `blocklisted`, so a later signup gets no confirmation email and SES
+ *     never sees the address; an unsubscribe as an `unsubscribed`
+ *     membership on the live list.
  *   - ListMonk's own state wins over Mailgun's: a subscriber blocklisted
- *     or disabled on the shared instance, or `unsubscribed` from the live
- *     list, is left exactly as it is.
+ *     or disabled on the shared instance, or with any membership on the
+ *     live list, is left exactly as it is. A suppressed address that
+ *     another project already has is never blocklisted instance-wide,
+ *     only given an `unsubscribed` membership on the live list.
  */
 
 export type ImportOutcome =
@@ -53,7 +60,51 @@ export function importOutcome(
   return "add";
 }
 
+/** How a Mailgun suppression lands on ListMonk. */
+export type SuppressionMark = "blocklisted" | "unsubscribed";
+
+export function suppressionMark(kinds: Suppression[]): SuppressionMark {
+  return kinds.includes("bounces") || kinds.includes("complaints") ? "blocklisted" : "unsubscribed";
+}
+
+export type SuppressedOutcome =
+  /** Not on ListMonk: created with the mark (see `createSuppressed`). */
+  | "create"
+  /** On ListMonk for other projects only: given an `unsubscribed` membership on the live list. */
+  | "addUnsubscribed"
+  | "alreadyBlocklisted"
+  /** Has a membership on the live list: ListMonk's state is newer, left alone. */
+  | "keepMembership";
+
+export const SUPPRESSED_OUTCOMES: SuppressedOutcome[] = [
+  "create",
+  "addUnsubscribed",
+  "alreadyBlocklisted",
+  "keepMembership",
+];
+
+export function suppressedOutcome(
+  subscriber: ListmonkSubscriber | null,
+  listId: number,
+): SuppressedOutcome {
+  if (!subscriber) return "create";
+  if (subscriber.status === "blocklisted") return "alreadyBlocklisted";
+  if (subscriber.lists?.some((l) => l.id === listId)) return "keepMembership";
+  return "addUnsubscribed";
+}
+
 export type ImportEntry = { email: string; member: MailgunMember; outcome: ImportOutcome };
+
+export type SuppressedEntry = {
+  email: string;
+  kinds: Suppression[];
+  mark: SuppressionMark;
+  /** On the Mailgun list, in any state. */
+  member: boolean;
+  outcome: SuppressedOutcome;
+  /** The ListMonk subscriber, when there is one. */
+  subscriberId?: number;
+};
 
 export type ImportPlan = {
   /** Distinct addresses on the Mailgun list. */
@@ -61,10 +112,14 @@ export type ImportPlan = {
   subscribed: number;
   /** `subscribed: no`: unsubscribed, or never confirmed. Not imported. */
   notSubscribed: number;
-  /** Subscribed, but on a Mailgun suppression list. Not imported. */
-  suppressed: Record<Suppression, number>;
+  /** Subscribed, but on a suppression list: carried over as a suppression, not confirmed. */
+  subscribedSuppressed: number;
+  /** Distinct addresses on the domain's suppression lists, members or not. */
   suppressedTotal: number;
+  /** Suppressed addresses by list; an address can be on several. */
+  suppressed: Record<Suppression, number>;
   entries: ImportEntry[];
+  suppressedEntries: SuppressedEntry[];
 };
 
 export async function planImport({
@@ -86,29 +141,44 @@ export async function planImport({
   }
 
   const subscribed = [...byEmail].filter(([, m]) => m.subscribed);
+  const entries: ImportEntry[] = [];
+  let subscribedSuppressed = 0;
+  for (const [email, member] of subscribed.sort(([a], [b]) => a.localeCompare(b))) {
+    if (suppressions.has(email)) {
+      subscribedSuppressed++;
+      continue;
+    }
+    entries.push({ email, member, outcome: importOutcome(await lookup(email), listId) });
+  }
+
   const suppressed = Object.fromEntries(SUPPRESSIONS.map((kind) => [kind, 0])) as Record<
     Suppression,
     number
   >;
-  let suppressedTotal = 0;
-  const entries: ImportEntry[] = [];
-  for (const [email, member] of subscribed.sort(([a], [b]) => a.localeCompare(b))) {
-    const kinds = suppressions.get(email);
-    if (kinds) {
-      suppressedTotal++;
-      for (const kind of kinds) suppressed[kind]++;
-      continue;
-    }
-    entries.push({ email, member, outcome: importOutcome(await lookup(email), listId) });
+  const suppressedEntries: SuppressedEntry[] = [];
+  for (const [email, raw] of [...suppressions].sort(([a], [b]) => a.localeCompare(b))) {
+    const kinds = [...new Set(raw)];
+    for (const kind of kinds) suppressed[kind]++;
+    const subscriber = await lookup(email);
+    suppressedEntries.push({
+      email,
+      kinds,
+      mark: suppressionMark(kinds),
+      member: byEmail.has(email),
+      outcome: suppressedOutcome(subscriber, listId),
+      ...(subscriber ? { subscriberId: subscriber.id } : {}),
+    });
   }
 
   return {
     members: byEmail.size,
     subscribed: subscribed.length,
     notSubscribed: byEmail.size - subscribed.length,
+    subscribedSuppressed,
+    suppressedTotal: suppressions.size,
     suppressed,
-    suppressedTotal,
     entries,
+    suppressedEntries,
   };
 }
 
@@ -118,5 +188,17 @@ export function countOutcomes(entries: ImportEntry[]): Record<ImportOutcome, num
     number
   >;
   for (const { outcome } of entries) counts[outcome]++;
+  return counts;
+}
+
+export function countSuppressedOutcomes(
+  entries: SuppressedEntry[],
+  mark: SuppressionMark,
+): Record<SuppressedOutcome, number> {
+  const counts = Object.fromEntries(SUPPRESSED_OUTCOMES.map((o) => [o, 0])) as Record<
+    SuppressedOutcome,
+    number
+  >;
+  for (const entry of entries) if (entry.mark === mark) counts[entry.outcome]++;
   return counts;
 }

@@ -46,6 +46,7 @@ type FullCardProps = DonationCardProps & {
 type ThanksProps = DonationCardProps & {
   // The project the donor came from, when it has a site to go back to.
   backTo?: { name: string; href: string; icon?: string };
+  message?: string;
 };
 
 // localStorage is only readable after hydration; until then every surface
@@ -551,7 +552,9 @@ function ThanksWord({ play, still }: { play: boolean; still: boolean }) {
     return () => timers.forEach(window.clearTimeout);
   }, [play]);
 
-  const current = still ? last : index;
+  if (still) return <span aria-hidden>Thank you</span>;
+
+  const current = index;
   const landed = current === last;
 
   return (
@@ -841,12 +844,14 @@ function BeatingHeart({ play, still }: { play: boolean; still: boolean }) {
 }
 
 /** Replaces the card on /donate after Stripe sends the donor back. */
-export function DonationThanks({ className, backTo }: ThanksProps) {
+export function DonationThanks({ className, backTo, message }: ThanksProps) {
   const ref = useRef<HTMLDivElement>(null);
   // Wait until the card is actually on screen, so nobody misses the moment.
   const inView = useInView(ref, { once: true, amount: 0.5 });
-  const still = useReducedMotion() === true;
-  const play = inView && !still;
+  const isMounted = useIsMounted();
+  const reducedMotion = useReducedMotion();
+  const still = isMounted && reducedMotion === true;
+  const play = isMounted && inView && !still;
 
   return (
     <section
@@ -879,13 +884,19 @@ export function DonationThanks({ className, backTo }: ThanksProps) {
           </h2>
 
           <motion.div
+            key={still ? "still" : "animated"}
             initial={still ? false : { opacity: 0, y: 8 }}
-            animate={play ? { opacity: 1, y: 0 } : undefined}
-            transition={{ delay: LAND_S + 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            animate={play || still ? { opacity: 1, y: 0 } : undefined}
+            transition={
+              still
+                ? { duration: 0 }
+                : { delay: LAND_S + 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+            }
           >
             <p className="mx-auto mt-label mb-0 max-w-md donation-muted text-gray-700 dark:text-gray-200">
-              Your donation went through, and it means a lot to me. It buys me time to make the next
-              thing. Your receipt comes by email.
+              {message ??
+                "Your donation went through, and it means a lot to me. It buys me time to make the next thing."}{" "}
+              Your receipt comes by email.
             </p>
             <p className="mt-para mb-0 font-serif text-lg italic donation-muted text-gray-700 dark:text-gray-200">
               — Rico

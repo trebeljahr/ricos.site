@@ -8,3 +8,10 @@ Resized to 1400px wide and converted to WebP.
 mandelbrot.webp
 Source: Fractal Garden's public/assets/fractal-images/mandelbrot.jpg.
 Mandelbrot rendering from the project. Converted to WebP.
+
+hokusai-wave.webp — Katsushika Hokusai, The Great Wave off Kanagawa (1830).
+vermeer-pearl.webp — Johannes Vermeer, Girl with a Pearl Earring (1665).
+audubon-flamingo.webp — John James Audubon, American Flamingo (1838).
+All three works are public domain. Source originals: Collection of Beauty's
+assets/collection-of-beauty/ and assets/audubon-birds/, with catalogue metadata
+in src/data/artworks.json. Resized to 960px / 640px and converted to WebP.

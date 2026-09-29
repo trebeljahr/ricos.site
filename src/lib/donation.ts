@@ -160,7 +160,7 @@ export function withReference(href: string, reference: string) {
 export const DONATION_SOURCE_STORAGE_KEY = "donation-source";
 export const SOURCE_TTL_MS = 6 * 60 * 60 * 1000;
 
-export type StoredDonationSource = { slug: string; at: number };
+export type StoredDonationSource = { slug: string; at: number; returnTo?: string };
 
 export function isFreshSource(stored: StoredDonationSource | null, now = Date.now()) {
   return stored !== null && now - stored.at < SOURCE_TTL_MS;

@@ -41,9 +41,9 @@ describe("donation designs", () => {
 
   it("ships every custom visual locally", () => {
     for (const [slug, design] of Object.entries(DONATION_DESIGNS)) {
-      if (design.image) {
-        expect(existsSync(resolve("public", `.${design.image.src}`)), slug).toBe(true);
-        expect(design.image.alt.length).toBeGreaterThan(0);
+      for (const image of [...(design.image ? [design.image] : []), ...(design.artworks ?? [])]) {
+        expect(existsSync(resolve("public", `.${image.src}`)), slug).toBe(true);
+        expect(image.alt.length).toBeGreaterThan(0);
       }
     }
   });

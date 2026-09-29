@@ -14,15 +14,33 @@ import {
   FROM_QUERY_KEY,
   isFreshSource,
   manageDonationUrl,
+  SOURCE_TTL_MS,
   type StoredDonationSource,
   THANKS_QUERY_KEY,
 } from "src/lib/donation";
+import {
+  DONATION_SOURCE_COOKIE,
+  donationPath,
+  donationReturnForVisit,
+  donationSourceFromCookie,
+  RETURN_QUERY_KEY,
+  sourceFromReferrer,
+  validateDonationReturn,
+} from "src/lib/donationNavigation";
 import { getDonationSource } from "src/lib/donationSources";
 import useLocalStorageState from "use-local-storage-state";
 
-type DonatePageProps = { initialSourceSlug: string | null; initialThanks: boolean };
+export type DonatePageProps = {
+  initialSourceSlug: string | null;
+  initialThanks: boolean;
+  initialReturnTo: string | null;
+};
 
-export default function DonatePage({ initialSourceSlug, initialThanks }: DonatePageProps) {
+export default function DonatePage({
+  initialSourceSlug,
+  initialThanks,
+  initialReturnTo,
+}: DonatePageProps) {
   // Stripe sends donors back here with ?thanks=1 (set per Payment Link in the
   // dashboard). Remember the moment so the inline asks stay quiet for a while.
   const router = useRouter();
@@ -32,9 +50,14 @@ export default function DonatePage({ initialSourceSlug, initialThanks }: DonateP
   // Other projects link here as /donate?from=<slug>. An unknown slug reads as
   // no slug, so the page falls back to the ricos.site copy.
   const source = getDonationSource(
-    router.isReady ? router.query[FROM_QUERY_KEY] : initialSourceSlug,
+    router.isReady
+      ? (router.query.project ?? router.query[FROM_QUERY_KEY] ?? initialSourceSlug)
+      : initialSourceSlug,
   );
   const sourceSlug = source?.slug;
+  const returnCandidate =
+    (router.isReady ? router.query[RETURN_QUERY_KEY] : null) ?? initialReturnTo;
+  const validatedReturn = source ? validateDonationReturn(source, returnCandidate) : null;
   const [storedSource, setStoredSource] = useLocalStorageState<StoredDonationSource | null>(
     DONATION_SOURCE_STORAGE_KEY,
     { defaultValue: null },
@@ -46,17 +69,33 @@ export default function DonatePage({ initialSourceSlug, initialThanks }: DonateP
       setSupportedAt(Date.now());
       return;
     }
+    try {
+      // biome-ignore lint/suspicious/noDocumentCookie: Synchronous fallback supported in browsers without Cookie Store.
+      document.cookie = `${DONATION_SOURCE_COOKIE}=${sourceSlug ? encodeURIComponent(sourceSlug) : ""}; Path=/donate; Max-Age=${sourceSlug ? SOURCE_TTL_MS / 1000 : 0}; SameSite=Lax${window.location.protocol === "https:" ? "; Secure" : ""}`;
+    } catch {
+      // Storage restrictions must not prevent a donation or the return link.
+    }
     // Every other visit overwrites the slug, so a donation that starts on
     // ricos.site never offers a way back to a project seen earlier.
-    setStoredSource(sourceSlug ? { slug: sourceSlug, at: Date.now() } : null);
-  }, [router.isReady, justDonated, sourceSlug, setSupportedAt, setStoredSource]);
+    setStoredSource(
+      sourceSlug
+        ? { slug: sourceSlug, at: Date.now(), returnTo: validatedReturn ?? undefined }
+        : null,
+    );
+  }, [router.isReady, justDonated, sourceSlug, validatedReturn, setSupportedAt, setStoredSource]);
 
   const cameFrom = justDonated
     ? (source ?? (isFreshSource(storedSource) ? getDonationSource(storedSource?.slug) : null))
     : null;
   const activeSource = justDonated ? cameFrom : source;
   if (activeSource) {
-    return <ProjectDonationPage source={activeSource} justDonated={justDonated} />;
+    return (
+      <ProjectDonationPage
+        source={activeSource}
+        justDonated={justDonated}
+        returnTo={donationReturnForVisit(activeSource, returnCandidate, storedSource, justDonated)}
+      />
+    );
   }
 
   return (
@@ -143,9 +182,32 @@ export default function DonatePage({ initialSourceSlug, initialThanks }: DonateP
 
 // Resolve explicit referrals on the server so the first paint already belongs
 // to the project. Checkout returns without a slug recover it after hydration.
-export const getServerSideProps: GetServerSideProps<DonatePageProps> = async ({ query }) => ({
-  props: {
-    initialSourceSlug: getDonationSource(query[FROM_QUERY_KEY])?.slug ?? null,
-    initialThanks: query[THANKS_QUERY_KEY] !== undefined,
-  },
-});
+export const getServerSideProps: GetServerSideProps<DonatePageProps> = async ({ query, req }) => {
+  const source =
+    getDonationSource(query[FROM_QUERY_KEY]) ??
+    (query[THANKS_QUERY_KEY] !== undefined ? donationSourceFromCookie(req.headers.cookie) : null) ??
+    (query[FROM_QUERY_KEY] === undefined && query[THANKS_QUERY_KEY] === undefined
+      ? sourceFromReferrer(req.headers.referer)
+      : null);
+  if (source) {
+    const params = new URLSearchParams();
+    const returnTo =
+      validateDonationReturn(source, query[RETURN_QUERY_KEY]) ??
+      validateDonationReturn(source, req.headers.referer);
+    if (returnTo) params.set(RETURN_QUERY_KEY, returnTo);
+    if (query[THANKS_QUERY_KEY] !== undefined) params.set(THANKS_QUERY_KEY, "1");
+    return {
+      redirect: {
+        destination: `${donationPath(source.slug)}${params.size ? `?${params}` : ""}`,
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {
+      initialSourceSlug: null,
+      initialThanks: query[THANKS_QUERY_KEY] !== undefined,
+      initialReturnTo: null,
+    },
+  };
+};

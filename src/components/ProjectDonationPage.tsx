@@ -1,9 +1,10 @@
 import clsx from "clsx";
+import Head from "next/head";
 import Image from "next/image";
-import Link from "next/link";
 import type { CSSProperties } from "react";
 import { type DonationSource, manageDonationUrl, supportedUrl } from "src/lib/donation";
 import { getDonationDesign } from "src/lib/donationDesigns";
+import { donationPath } from "src/lib/donationNavigation";
 import { DonationCard, DonationThanks } from "./DonationCard";
 import { ExternalLink } from "./ExternalLink";
 import Layout from "./Layout";
@@ -12,16 +13,20 @@ import styles from "./ProjectDonationPage.module.css";
 export function ProjectDonationPage({
   source,
   justDonated,
+  returnTo,
 }: {
   source: DonationSource;
   justDonated: boolean;
+  returnTo: string;
 }) {
   const design = getDonationDesign(source);
+  const projectIcon =
+    source.brand?.icon ??
+    `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="${design.background}"/><text x="32" y="45" text-anchor="middle" font-family="sans-serif" font-size="42" fill="${design.accent}">${source.name[0]}</text></svg>`)}`;
   const visual = design.image ?? (source.cover ? { ...source.cover, caption: source.name } : null);
-  const backHref = source.url ?? (source.slug === "interactive-3d-demos" ? "/r3f" : "/projects");
   const backTo = {
-    name: source.url || source.slug === "interactive-3d-demos" ? source.name : "projects",
-    href: justDonated ? supportedUrl(new URL(backHref, "https://ricos.site").href) : backHref,
+    name: source.name,
+    href: justDonated ? supportedUrl(returnTo) : returnTo,
     icon: source.brand?.icon,
   };
   const theme = {
@@ -43,11 +48,20 @@ export function ProjectDonationPage({
   return (
     <Layout
       title={`${justDonated ? "Thank you" : "Support"} – ${source.name}`}
-      description={`Support Rico's work on ${source.name} and other independent projects.`}
-      url="donate"
+      description={design.invitation}
+      url={donationPath(source.slug)}
+      image={design.artworks?.[0]?.src ?? visual?.src}
+      imageAlt={design.artworks?.[0]?.alt ?? visual?.alt}
       keywords={["donate", "support", source.name, "Rico Trebeljahr"]}
       siteChrome={false}
     >
+      <Head>
+        <meta name="theme-color" content={design.background} />
+        <meta name="color-scheme" content={design.dark ? "dark" : "light"} />
+        <meta name="application-name" content={source.name} />
+        <meta property="og:site_name" content={source.name} />
+        <link rel="icon" sizes="any" href={projectIcon} />
+      </Head>
       <div
         className={clsx(styles.shell, styles[design.layout])}
         style={theme}
@@ -57,12 +71,15 @@ export function ProjectDonationPage({
           Skip to donation options
         </a>
         <header className={styles.header}>
-          <a href={backTo.href} className={styles.back}>
-            <span aria-hidden="true">←</span> Back to {backTo.name}
+          <a
+            href={backTo.href}
+            className={styles.back}
+            aria-label={`Go back to ${source.name}`}
+            title={`Return to ${source.name}`}
+          >
+            <span aria-hidden="true">←</span> Go back
           </a>
-          <Link href="/" className={styles.maker}>
-            An independent project by Rico
-          </Link>
+          <span className={styles.maker}>{source.name} · Support</span>
         </header>
 
         <main className={styles.main}>
@@ -75,43 +92,58 @@ export function ProjectDonationPage({
                 {justDonated ? "With your support" : "A little support for"}
               </p>
               <h1>{source.name}</h1>
-              <p className={styles.invitation}>
-                {justDonated
-                  ? "Thank you for giving me time to keep making things like this."
-                  : design.invitation}
-              </p>
+              <p className={styles.invitation}>{justDonated ? design.thanks : design.invitation}</p>
               {!justDonated && (
                 <a href="#project-donation" className={styles.jump}>
                   Make a donation <span aria-hidden="true">↗</span>
                 </a>
               )}
             </div>
-            {visual && (
-              <figure className={styles.visual}>
-                <div className={styles.imageFrame}>
-                  <Image
-                    src={visual.src}
-                    alt={visual.alt}
-                    fill
-                    priority
-                    sizes="(max-width: 900px) 100vw, 55vw"
-                    className={styles.image}
-                  />
-                </div>
-                <figcaption>{visual.caption}</figcaption>
-              </figure>
+            {design.artworks ? (
+              <section className={styles.artworks} aria-label="From the collection">
+                {design.artworks.map((artwork) => (
+                  <figure key={artwork.src} className={styles.artwork}>
+                    <div>
+                      <Image
+                        src={artwork.src}
+                        alt={artwork.alt}
+                        fill
+                        priority
+                        sizes="(max-width: 900px) 45vw, 28vw"
+                      />
+                    </div>
+                    <figcaption>{artwork.caption}</figcaption>
+                  </figure>
+                ))}
+              </section>
+            ) : (
+              visual && (
+                <figure className={styles.visual}>
+                  <div className={styles.imageFrame}>
+                    <Image
+                      src={visual.src}
+                      alt={visual.alt}
+                      fill
+                      priority
+                      sizes="(max-width: 900px) 100vw, 55vw"
+                      className={styles.image}
+                    />
+                  </div>
+                  <figcaption>{visual.caption}</figcaption>
+                </figure>
+              )
             )}
           </div>
 
           <div id="project-donation" className={styles.payment} tabIndex={-1}>
             {justDonated ? (
-              <DonationThanks backTo={backTo} />
+              <DonationThanks backTo={backTo} message={design.thanks} />
             ) : (
               <>
                 <DonationCard reference={source.slug} title={design.cardTitle} />
                 <p className={styles.personalNote}>
-                  I’m Rico, the person behind {source.name}. Your donation supports this project and
-                  my other independent work. Thank you.
+                  {design.purpose}{" "}
+                  <span className={styles.signature}>— Rico, creator of {source.name}</span>
                 </p>
               </>
             )}
@@ -119,18 +151,14 @@ export function ProjectDonationPage({
         </main>
 
         <footer className={styles.footer}>
-          <p>
-            {justDonated
-              ? "Glad to have you here."
-              : "Sharing the project with a friend helps, too."}
-          </p>
+          <p>{justDonated ? design.thanks : design.share}</p>
           <div>
             {manageDonationUrl && (
               <ExternalLink href={manageDonationUrl}>Manage your donation</ExternalLink>
             )}
-            <Link href="/">
-              Rico Trebeljahr <span aria-hidden="true">↗</span>
-            </Link>
+            <a href={backTo.href}>
+              Back to {source.name} <span aria-hidden="true">↗</span>
+            </a>
           </div>
         </footer>
       </div>

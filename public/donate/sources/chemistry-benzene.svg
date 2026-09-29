@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <rect width="960" height="540" fill="#f5f6fa"/>
+  <g stroke="#343b49" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M480 100 592 165 592 295 480 360 368 295 368 165Z"/>
+    <path d="M486 126 570 175 M570 285 486 334 M390 285V175"/>
+  </g>
+  <text x="480" y="434" text-anchor="middle" fill="#343b49" font-family="ui-monospace,monospace" font-size="24">Benzene</text>
+  <text x="480" y="467" text-anchor="middle" fill="#596171" font-family="ui-monospace,monospace" font-size="17">C₆H₆</text>
+</svg>

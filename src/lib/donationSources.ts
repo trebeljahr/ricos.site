@@ -9,6 +9,7 @@ const UNLISTED_SOURCES: DonationSource[] = [
   {
     slug: "chemistry-sketcher",
     name: "Chemistry Sketcher",
+    url: "https://chemistry.trebeljahr.com",
     subtitle: "Draw a molecule once, then export it for a paper in the form the figure needs.",
   },
 ];

@@ -40,6 +40,7 @@ type FullCardProps = DonationCardProps & {
   // Tags each Stripe payment with where the donor came from: a project slug
   // from /donate?from=<slug>, or ricos.site itself.
   reference?: string;
+  title?: string;
 };
 
 type ThanksProps = DonationCardProps & {
@@ -98,7 +99,7 @@ function DoorLogo({ name }: { name: string }) {
 }
 
 const doorClass =
-  "group flex items-center rounded-md border-2 border-gray-200 no-underline transition-colors hover:border-accent dark:border-gray-700";
+  "donation-option group flex items-center rounded-md border-2 border-gray-200 no-underline transition-colors hover:border-accent dark:border-gray-700";
 
 // The doors that do not run through Stripe, after the Stripe options. PayPal
 // and Wise get a tile with a line on when to use them; the platforms people
@@ -110,7 +111,7 @@ function OtherDoors() {
   // A subsection gap, so it reads as its own section after Stripe.
   return (
     <div className="mt-sub">
-      <p className="m-0 text-sm font-semibold text-gray-600 dark:text-gray-300">
+      <p className="m-0 text-sm font-semibold donation-muted text-gray-600 dark:text-gray-300">
         Other ways to give
       </p>
       {described.length > 0 && (
@@ -123,8 +124,10 @@ function OtherDoors() {
             >
               <DoorLogo name={door.name} />
               <span className="flex flex-col">
-                <span className="font-semibold text-gray-900 dark:text-white">{door.name}</span>
-                <span className="mt-hair text-sm text-gray-600 dark:text-gray-300">
+                <span className="font-semibold donation-ink text-gray-900 dark:text-white">
+                  {door.name}
+                </span>
+                <span className="mt-hair text-sm donation-muted text-gray-600 dark:text-gray-300">
                   {door.blurb}
                 </span>
               </span>
@@ -147,7 +150,7 @@ function OtherDoors() {
               )}
             >
               <DoorLogo name={door.name} />
-              <span className="text-sm leading-tight font-semibold text-gray-900 sm:text-base dark:text-white">
+              <span className="text-sm leading-tight font-semibold donation-ink text-gray-900 sm:text-base dark:text-white">
                 {door.name}
               </span>
             </ExternalLink>
@@ -174,7 +177,7 @@ function ModeToggle({
 }) {
   const pillId = useId();
   return (
-    <div className="mt-para inline-flex rounded-md border-2 border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-900">
+    <div className="donation-toggle mt-para inline-flex rounded-md border-2 border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-900">
       {modeLabels.map(([value, label]) => (
         <button
           key={value}
@@ -182,8 +185,8 @@ function ModeToggle({
           className={clsx(
             "relative min-w-24 rounded-sm px-4 py-2 text-sm font-semibold transition-colors",
             mode === value
-              ? "text-gray-900 dark:text-white"
-              : "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white",
+              ? "donation-ink text-gray-900 dark:text-white"
+              : "donation-muted text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white",
           )}
           aria-pressed={mode === value}
           onClick={() => onChange(value)}
@@ -192,7 +195,7 @@ function ModeToggle({
             <motion.span
               layoutId={pillId}
               aria-hidden
-              className="absolute inset-0 rounded-sm bg-white shadow-sm dark:bg-gray-700"
+              className="donation-selection absolute inset-0 rounded-sm bg-white shadow-sm dark:bg-gray-700"
               transition={{ type: "spring", bounce: 0.25, duration: 0.45 }}
             />
           )}
@@ -244,10 +247,14 @@ const tileVariants: Variants = {
 };
 
 const tileClass =
-  "group relative flex h-full flex-col rounded-md border-2 border-gray-200 no-underline transition-[border-color,box-shadow,translate] duration-200 hover:border-accent hover:shadow-md motion-safe:hover:-translate-y-0.5 dark:border-gray-700 dark:hover:shadow-black/40";
+  "donation-option group relative flex h-full flex-col rounded-md border-2 border-gray-200 no-underline transition-[border-color,box-shadow,translate] duration-200 hover:border-accent hover:shadow-md motion-safe:hover:-translate-y-0.5 dark:border-gray-700 dark:hover:shadow-black/40";
 
 /** The full card. Lives on /donate only. */
-export function DonationCard({ className, reference = SITE_REFERENCE }: FullCardProps) {
+export function DonationCard({
+  className,
+  reference = SITE_REFERENCE,
+  title = "Help keep this place alive",
+}: FullCardProps) {
   const isMounted = useIsMounted();
   const [mode, setMode] = useState<DonationMode>(defaultDonationMode);
   const showStripe = isMounted && hasAnyStripeLinks;
@@ -262,14 +269,14 @@ export function DonationCard({ className, reference = SITE_REFERENCE }: FullCard
         className={clsx("not-prose w-full", className)}
         aria-labelledby="donation-card-title"
       >
-        <div className="rounded-lg border-4 border-gray-200 bg-white px-5 py-10 dark:border-gray-700 dark:bg-gray-800">
+        <div className="donation-surface rounded-lg border-4 border-gray-200 bg-white px-5 py-10 dark:border-gray-700 dark:bg-gray-800">
           <h2
             id="donation-card-title"
-            className="m-0 text-2xl font-bold text-gray-900 dark:text-white"
+            className="m-0 text-2xl font-bold donation-ink text-gray-900 dark:text-white"
           >
-            Help keep this place alive
+            {title}
           </h2>
-          <p className="mt-label mb-0 max-w-prose text-gray-700 dark:text-gray-200">
+          <p className="mt-label mb-0 max-w-prose donation-muted text-gray-700 dark:text-gray-200">
             Monthly helps me plan ahead. A one-off is just as welcome.
           </p>
 
@@ -300,10 +307,10 @@ export function DonationCard({ className, reference = SITE_REFERENCE }: FullCard
                                   {option.emoji}
                                 </span>
                               )}
-                              <span className="text-xl font-bold text-gray-900 dark:text-white">
+                              <span className="text-xl font-bold donation-ink text-gray-900 dark:text-white">
                                 {option.label} / month
                               </span>
-                              <span className="mt-tight text-sm text-gray-600 group-hover:text-gray-800 dark:text-gray-300 dark:group-hover:text-gray-100">
+                              <span className="mt-tight text-sm donation-muted text-gray-600 group-hover:text-gray-800 dark:text-gray-300 dark:group-hover:text-gray-100">
                                 {option.note}
                               </span>
                             </ExternalLink>
@@ -312,7 +319,7 @@ export function DonationCard({ className, reference = SITE_REFERENCE }: FullCard
                         {manageDonationUrl && (
                           <motion.p
                             variants={tileVariants}
-                            className="m-0 text-sm text-gray-600 sm:col-span-2 dark:text-gray-300"
+                            className="m-0 text-sm donation-muted text-gray-600 sm:col-span-2 dark:text-gray-300"
                           >
                             Stop or change it any time on your own:{" "}
                             <ExternalLink
@@ -338,10 +345,10 @@ export function DonationCard({ className, reference = SITE_REFERENCE }: FullCard
                             href={oneTimeUrl ? withReference(oneTimeUrl, reference) : "#"}
                             className={clsx(tileClass, "min-h-20 justify-center px-5 py-4")}
                           >
-                            <span className="text-xl font-bold text-gray-900 dark:text-white">
+                            <span className="text-xl font-bold donation-ink text-gray-900 dark:text-white">
                               Donate any amount
                             </span>
-                            <span className="mt-tight text-sm text-gray-600 group-hover:text-gray-800 dark:text-gray-300 dark:group-hover:text-gray-100">
+                            <span className="mt-tight text-sm donation-muted text-gray-600 group-hover:text-gray-800 dark:text-gray-300 dark:group-hover:text-gray-100">
                               You choose on the next page. EUR 10 suggested, EUR 1 minimum.
                             </span>
                           </ExternalLink>
@@ -362,7 +369,7 @@ export function DonationCard({ className, reference = SITE_REFERENCE }: FullCard
 }
 
 const stripButtonClass =
-  "inline-flex items-center rounded-md border-2 border-gray-200 px-4 py-2 font-semibold text-gray-900 no-underline transition-colors hover:border-accent dark:border-gray-700 dark:text-white";
+  "donation-option inline-flex items-center rounded-md border-2 border-gray-200 px-4 py-2 font-semibold donation-ink text-gray-900 no-underline transition-colors hover:border-accent dark:border-gray-700 dark:text-white";
 
 /**
  * One sentence and two doors, for the end of a long post. The reader has
@@ -385,10 +392,10 @@ export function DonationStrip({ className }: DonationCardProps) {
         className,
       )}
     >
-      <p className="m-0 font-semibold text-gray-900 dark:text-white">
+      <p className="m-0 font-semibold donation-ink text-gray-900 dark:text-white">
         Free to read. Not free to make.
       </p>
-      <p className="mt-tight mb-0 max-w-prose text-gray-700 dark:text-gray-200">
+      <p className="mt-tight mb-0 max-w-prose donation-muted text-gray-700 dark:text-gray-200">
         If this piece was worth something to you, a small donation keeps the place ad-free and gives
         me room for the next one.
       </p>
@@ -848,16 +855,16 @@ export function DonationThanks({ className, backTo }: ThanksProps) {
     >
       <div
         ref={ref}
-        className="relative overflow-hidden rounded-lg border-4 border-gray-200 bg-white px-5 pt-8 pb-10 text-center dark:border-gray-700 dark:bg-gray-800"
+        className="relative overflow-hidden donation-surface rounded-lg border-4 border-gray-200 bg-white px-5 pt-8 pb-10 text-center dark:border-gray-700 dark:bg-gray-800"
       >
         {/* In the project's colour when the donor came from one (.donation-brand). */}
         <div
           aria-hidden
-          className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-rose-400 via-pink-400 to-amber-300 in-[.donation-brand]:bg-none in-[.donation-brand]:bg-accent"
+          className="donation-thanks-rule absolute inset-x-0 top-0 h-1 bg-linear-to-r from-rose-400 via-pink-400 to-amber-300 in-[.donation-brand]:bg-none in-[.donation-brand]:bg-accent"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-linear-to-b from-rose-50 to-transparent dark:from-rose-500/10"
+          className="donation-thanks-glow pointer-events-none absolute inset-x-0 top-0 h-56 bg-linear-to-b from-rose-50 to-transparent dark:from-rose-500/10"
         />
 
         <div className="relative">
@@ -865,7 +872,7 @@ export function DonationThanks({ className, backTo }: ThanksProps) {
 
           <h2
             id="donation-thanks-title"
-            className="mt-tight mb-0 text-3xl font-bold text-gray-900 dark:text-white"
+            className="mt-tight mb-0 text-3xl font-bold donation-ink text-gray-900 dark:text-white"
           >
             <span className="sr-only">Thank you</span>
             <ThanksWord play={play} still={still} />
@@ -876,11 +883,11 @@ export function DonationThanks({ className, backTo }: ThanksProps) {
             animate={play ? { opacity: 1, y: 0 } : undefined}
             transition={{ delay: LAND_S + 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           >
-            <p className="mx-auto mt-label mb-0 max-w-md text-gray-700 dark:text-gray-200">
+            <p className="mx-auto mt-label mb-0 max-w-md donation-muted text-gray-700 dark:text-gray-200">
               Your donation went through, and it means a lot to me. It buys me time to make the next
               thing. Your receipt comes by email.
             </p>
-            <p className="mt-para mb-0 font-serif text-lg italic text-gray-700 dark:text-gray-200">
+            <p className="mt-para mb-0 font-serif text-lg italic donation-muted text-gray-700 dark:text-gray-200">
               — Rico
             </p>
             {backTo && (

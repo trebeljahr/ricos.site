@@ -37,6 +37,8 @@ type Props = {
       up whatever room is left over, so the footer sits at the bottom of the
       window rather than partway up it with the background showing below. */
   fillViewport?: boolean;
+  /** Project donation pages provide their own navigation and footer. */
+  siteChrome?: boolean;
 };
 
 const Layout = ({
@@ -57,6 +59,7 @@ const Layout = ({
   noindex = false,
   hasMath = false,
   fillViewport = false,
+  siteChrome = true,
 }: Props) => {
   const properTitle = toTitleCase(title);
 
@@ -87,14 +90,15 @@ const Layout = ({
         ogType={ogType}
         articlePublishedTime={articlePublishedTime}
       />
-      {leftSmallNavbar ? (
-        <LeftSmallNavbar />
-      ) : (
-        <TailwindNavbar withProgressBar={withProgressBar} secondary={navbarSecondary} />
-      )}
+      {siteChrome &&
+        (leftSmallNavbar ? (
+          <LeftSmallNavbar />
+        ) : (
+          <TailwindNavbar withProgressBar={withProgressBar} secondary={navbarSecondary} />
+        ))}
 
       {children}
-      <SiteFooter />
+      {siteChrome && <SiteFooter />}
     </div>
   );
 };

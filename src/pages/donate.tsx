@@ -1,12 +1,12 @@
 import { DonationCard, DonationThanks, useDonationSupportedAt } from "@components/DonationCard";
-import { DonationSourceHeader, donationBrandStyle } from "@components/DonationSourceHeader";
 import { ExternalLink } from "@components/ExternalLink";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header, { PageMain } from "@components/PostHeader";
+import { ProjectDonationPage } from "@components/ProjectDonationPage";
 import { ToTopButton } from "@components/ToTopButton";
-import clsx from "clsx";
+import type { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import {
@@ -15,22 +15,25 @@ import {
   isFreshSource,
   manageDonationUrl,
   type StoredDonationSource,
-  supportedUrl,
   THANKS_QUERY_KEY,
 } from "src/lib/donation";
 import { getDonationSource } from "src/lib/donationSources";
 import useLocalStorageState from "use-local-storage-state";
 
-export default function DonatePage() {
+type DonatePageProps = { initialSourceSlug: string | null; initialThanks: boolean };
+
+export default function DonatePage({ initialSourceSlug, initialThanks }: DonatePageProps) {
   // Stripe sends donors back here with ?thanks=1 (set per Payment Link in the
   // dashboard). Remember the moment so the inline asks stay quiet for a while.
   const router = useRouter();
-  const justDonated = router.isReady && router.query[THANKS_QUERY_KEY] !== undefined;
+  const justDonated = router.isReady ? router.query[THANKS_QUERY_KEY] !== undefined : initialThanks;
   const [, setSupportedAt] = useDonationSupportedAt();
 
   // Other projects link here as /donate?from=<slug>. An unknown slug reads as
   // no slug, so the page falls back to the ricos.site copy.
-  const source = router.isReady ? getDonationSource(router.query[FROM_QUERY_KEY]) : null;
+  const source = getDonationSource(
+    router.isReady ? router.query[FROM_QUERY_KEY] : initialSourceSlug,
+  );
   const sourceSlug = source?.slug;
   const [storedSource, setStoredSource] = useLocalStorageState<StoredDonationSource | null>(
     DONATION_SOURCE_STORAGE_KEY,
@@ -48,16 +51,13 @@ export default function DonatePage() {
     setStoredSource(sourceSlug ? { slug: sourceSlug, at: Date.now() } : null);
   }, [router.isReady, justDonated, sourceSlug, setSupportedAt, setStoredSource]);
 
-  const cameFrom =
-    justDonated && isFreshSource(storedSource) ? getDonationSource(storedSource?.slug) : null;
-  const backTo = cameFrom?.url
-    ? { name: cameFrom.name, href: supportedUrl(cameFrom.url), icon: cameFrom.brand?.icon }
-    : undefined;
-
-  // The page wears the colour of the project the donor came from, before the
-  // donation and on the thanks after it.
-  const brand = (justDonated ? cameFrom : source)?.brand;
-  const brandStyle = brand ? donationBrandStyle(brand) : undefined;
+  const cameFrom = justDonated
+    ? (source ?? (isFreshSource(storedSource) ? getDonationSource(storedSource?.slug) : null))
+    : null;
+  const activeSource = justDonated ? cameFrom : source;
+  if (activeSource) {
+    return <ProjectDonationPage source={activeSource} justDonated={justDonated} />;
+  }
 
   return (
     <Layout
@@ -81,44 +81,27 @@ export default function DonatePage() {
         ]}
       />
       <PageMain>
-        <article
-          className={clsx(
-            "mx-auto max-w-prose prose md:prose-lg xl:prose-xl dark:prose-invert",
-            brand && "donation-brand",
-          )}
-          style={brandStyle}
-        >
+        <article className="mx-auto max-w-prose prose md:prose-lg xl:prose-xl dark:prose-invert">
           <Header breadcrumbs={{ path: "donate" }} title="Donate" />
 
           {/* A donor coming back from Stripe lands at the top of the page, so the
               thanks goes first and the pitch they already answered steps aside. */}
           {justDonated ? (
-            <DonationThanks backTo={backTo} />
+            <DonationThanks />
           ) : (
             <>
-              {source && <DonationSourceHeader source={source} className="mb-group" />}
-              {source ? (
-                <p>
-                  Thanks for coming over from {source.name}! If it was useful to you or made your
-                  day a little better, consider supporting me and my work. It buys me time to keep
-                  improving it and to build the next thing.
-                </p>
-              ) : (
-                <>
-                  <p>
-                    Everything I make here is free and I want to keep it that way, but to do so I
-                    need your help.
-                  </p>
+              <p>
+                Everything I make here is free and I want to keep it that way, but to do so I need
+                your help.
+              </p>
 
-                  <p>
-                    If something here made your day a little better, consider supporting me and my
-                    work. It buys me time to work on the next essay or strange little experiment and
-                    would mean the world to me.
-                  </p>
-                </>
-              )}
+              <p>
+                If something here made your day a little better, consider supporting me and my work.
+                It buys me time to work on the next essay or strange little experiment and would
+                mean the world to me.
+              </p>
 
-              <DonationCard className="mt-group" reference={source?.slug} />
+              <DonationCard className="mt-group" />
             </>
           )}
 
@@ -157,3 +140,12 @@ export default function DonatePage() {
     </Layout>
   );
 }
+
+// Resolve explicit referrals on the server so the first paint already belongs
+// to the project. Checkout returns without a slug recover it after hydration.
+export const getServerSideProps: GetServerSideProps<DonatePageProps> = async ({ query }) => ({
+  props: {
+    initialSourceSlug: getDonationSource(query[FROM_QUERY_KEY])?.slug ?? null,
+    initialThanks: query[THANKS_QUERY_KEY] !== undefined,
+  },
+});

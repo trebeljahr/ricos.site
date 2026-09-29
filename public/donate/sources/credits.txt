@@ -1,0 +1,10 @@
+Donation page visuals
+
+collection-museum.webp
+Source: Collection of Beauty's public/marketing/collection-of-beauty-museum-impressionism.jpg.
+Screenshot of the project's virtual museum, showing public-domain paintings.
+Resized to 1400px wide and converted to WebP.
+
+mandelbrot.webp
+Source: Fractal Garden's public/assets/fractal-images/mandelbrot.jpg.
+Mandelbrot rendering from the project. Converted to WebP.

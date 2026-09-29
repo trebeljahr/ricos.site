@@ -14,7 +14,7 @@ vi.mock("src/lib/mailgun", () => mailgun);
 
 const listmonk = vi.hoisted(() => ({
   confirmSubscription: vi.fn(async (_email: string) => {}),
-  ensureSubscriber: vi.fn(async (_email: string) => ({})),
+  findSubscriber: vi.fn(async (_email: string): Promise<{ status: string } | null> => null),
   isConfirmedOnList: vi.fn(async (_email: string) => false),
   sendTransactional: vi.fn(async (_params: unknown) => {}),
 }));
@@ -68,7 +68,7 @@ function call(
 beforeEach(() => {
   process.env.SALT = "test-salt";
   process.env.NEWSLETTER_TOKEN_SECRET = "test-token-secret";
-  process.env.NEWSLETTER_PROVIDER = "listmonk";
+  delete process.env.NEWSLETTER_PROVIDER;
   for (const mock of [...Object.values(mailgun), ...Object.values(listmonk)]) mock.mockClear();
   _resetRateLimit();
 });
@@ -77,8 +77,8 @@ describe("POST /api/signup", () => {
   it("sends the confirmation email for a valid address", async () => {
     const res = await call(signupHandler, { body: { email: " Reader@Example.com " } });
     expect(res.status).toBe(200);
-    expect(listmonk.ensureSubscriber).toHaveBeenCalledWith("reader@example.com");
     expect(listmonk.sendTransactional).toHaveBeenCalledTimes(1);
+    expect(listmonk.sendTransactional.mock.calls[0][0]).toMatchObject({ to: "reader@example.com" });
     expect(listmonk.confirmSubscription).not.toHaveBeenCalled();
   });
 
@@ -89,10 +89,17 @@ describe("POST /api/signup", () => {
     expect(listmonk.sendTransactional).not.toHaveBeenCalled();
   });
 
+  it("answers a blocklisted address like any other and mails nothing", async () => {
+    listmonk.findSubscriber.mockResolvedValueOnce({ status: "blocklisted" });
+    const res = await call(signupHandler, { body: { email: "reader@example.com" } });
+    expect(res.body).toEqual({ success: "Now check your mail to confirm your subscription!" });
+    expect(listmonk.sendTransactional).not.toHaveBeenCalled();
+  });
+
   it("rejects an invalid address", async () => {
     const res = await call(signupHandler, { body: { email: "not-an-address" } });
     expect(res.status).toBe(400);
-    expect(listmonk.ensureSubscriber).not.toHaveBeenCalled();
+    expect(listmonk.sendTransactional).not.toHaveBeenCalled();
   });
 
   it("answers a filled honeypot like a success and sends nothing", async () => {
@@ -100,7 +107,7 @@ describe("POST /api/signup", () => {
       body: { email: "bot@example.com", website: "http://spam.example" },
     });
     expect(res.status).toBe(200);
-    expect(listmonk.ensureSubscriber).not.toHaveBeenCalled();
+    expect(listmonk.findSubscriber).not.toHaveBeenCalled();
     expect(listmonk.sendTransactional).not.toHaveBeenCalled();
   });
 

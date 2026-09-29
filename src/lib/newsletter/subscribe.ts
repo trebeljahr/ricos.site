@@ -10,7 +10,7 @@ import {
 import { confirmLink, getLegacyHash, legacyConfirmLink } from "./confirmLink";
 import {
   confirmSubscription,
-  ensureSubscriber,
+  findSubscriber,
   isConfirmedOnList,
   sendTransactional,
 } from "./listmonk";
@@ -18,17 +18,18 @@ import {
 /**
  * Double opt-in for the Live and Learn newsletter.
  *
- * `NEWSLETTER_PROVIDER` picks the backend: `mailgun` (the default, what
- * production ran on until the move) or `listmonk`. Flipping it is the
- * cutover, and flipping it back is the rollback. Confirm links of both
- * formats work under either provider.
+ * ListMonk, sending through SES, is the backend. `NEWSLETTER_PROVIDER=mailgun`
+ * pins a deployment to Mailgun until the cutover: Vercel Production keeps
+ * it until SES has production access and the subscribers are imported, and
+ * removing it is the cutover. The Mailgun branches go once Mailgun is
+ * decommissioned. Confirm links of both formats work under either provider.
  */
-export type NewsletterProvider = "mailgun" | "listmonk";
+export type NewsletterProvider = "listmonk" | "mailgun";
 
 export function newsletterProvider(): NewsletterProvider {
   const raw = process.env.NEWSLETTER_PROVIDER?.trim().toLowerCase();
-  if (!raw || raw === "mailgun") return "mailgun";
-  if (raw === "listmonk") return "listmonk";
+  if (!raw || raw === "listmonk") return "listmonk";
+  if (raw === "mailgun") return "mailgun";
   throw new Error(`Unknown NEWSLETTER_PROVIDER: ${raw}`);
 }
 
@@ -73,11 +74,20 @@ async function renderConfirmEmail(link: string) {
   };
 }
 
+/**
+ * Mail the confirm link. A blocklisted address (a hard bounce, a spam
+ * complaint, or a reader who blocklisted themselves on the unsubscribe
+ * page) gets nothing, and the form answers as usual so it does not tell
+ * a stranger which addresses are blocklisted.
+ */
 export async function sendConfirmationEmail(email: string): Promise<void> {
   if (newsletterProvider() === "listmonk") {
-    // /api/tx only mails existing subscribers. The address stays off the
-    // list until the link is clicked (see listmonk.ts).
-    await ensureSubscriber(email);
+    if ((await findSubscriber(email))?.status === "blocklisted") {
+      console.info(
+        JSON.stringify({ scope: "newsletter.signup", event: "skipped", reason: "blocklisted" }),
+      );
+      return;
+    }
     const { subject, html } = await renderConfirmEmail(confirmLink(email));
     await sendTransactional({ to: email, subject, html });
     return;

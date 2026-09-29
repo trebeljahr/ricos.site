@@ -1,3 +1,8 @@
+/**
+ * The Mailgun newsletter backend, used only while a deployment is pinned
+ * with NEWSLETTER_PROVIDER=mailgun (see src/lib/newsletter/subscribe.ts).
+ * Delete this file when Mailgun is decommissioned.
+ */
 import "dotenv/config";
 import formData from "form-data";
 import Mailgun from "mailgun.js";
@@ -28,27 +33,6 @@ type EmailData = {
   text: string;
   html?: string;
 };
-
-export async function deleteDomain() {
-  const mg = createMgClient();
-  const _destroyedDomain = await mg.domains.destroy(
-    "sandboxf09111c8e9aa47da869eb96201663b74.mailgun.org",
-  );
-}
-
-export async function createNewMailingList() {
-  const mg = createMgClient();
-  const existingLists = await mg.lists.list();
-
-  if (existingLists.items.length !== 0) return;
-
-  const _newList = await mg.lists.create({
-    address: newsletterListMail,
-    name: "Trebeljahr's Newsletter List",
-    description: "Default Newsletter List for newsletter.trebeljahr.com",
-    access_level: "everyone",
-  });
-}
 
 export type Member = {
   email: string;
@@ -91,12 +75,5 @@ export async function activateEmailListMember(email: string) {
 export async function sendEmail(data: EmailData) {
   const mg = createMgClient();
 
-  await mg.messages.create(DOMAIN, data);
-}
-
-export async function sendToNewsletterList(data: EmailData) {
-  const mg = createMgClient();
-
-  data.to = newsletterListMail;
   await mg.messages.create(DOMAIN, data);
 }

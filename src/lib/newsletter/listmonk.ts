@@ -2,10 +2,12 @@
  * ListMonk HTTP API client for the Live and Learn newsletter.
  *
  * listmonk.trebeljahr.com is self-hosted, shared with Rico's other
- * projects, and delivers through Amazon SES SMTP.
+ * projects, and delivers through Amazon SES SMTP (eu-west-1). The only SES
+ * identity for this site is `mail.ricos.site`, so every sender address
+ * must be on that domain (see `SENDER_DOMAIN`).
  *
- *   - Subscribers and list memberships live in ListMonk. An address joins
- *     the list only once it confirms (see `confirmSubscription`).
+ *   - Subscribers and list memberships live in ListMonk. An address is
+ *     written to ListMonk only once it confirms (see `confirmSubscription`).
  *   - The double-opt-in email goes through `POST /api/tx` against the
  *     `ricos.site-tx` passthrough template (`{{ .Tx.Data.body | Safe }}`;
  *     tx bodies compile with html/template, so without `Safe` the HTML
@@ -63,8 +65,21 @@ export function resolveListId(): number {
   return positiveId("LISTMONK_LIST_ID", required("LISTMONK_LIST_ID"));
 }
 
-function resolveFromAddress(): string {
-  return required("LISTMONK_FROM");
+/** The SES identity ricos.site sends as. A sender on any other domain is rejected by SES. */
+export const SENDER_DOMAIN = "mail.ricos.site";
+
+/**
+ * LISTMONK_FROM, as `Name <noreply@mail.ricos.site>` or a bare address.
+ * ListMonk hands mail to SES after answering the API call, so an
+ * unverified sender would fail silently in its logs. Refuse it here.
+ */
+export function resolveFromAddress(): string {
+  const from = required("LISTMONK_FROM").trim();
+  const address = (from.match(/<([^<>]+)>\s*$/)?.[1] ?? from).trim().toLowerCase();
+  if (!address.endsWith(`@${SENDER_DOMAIN}`)) {
+    throw new Error(`LISTMONK_FROM must be an address @${SENDER_DOMAIN}, got "${from}"`);
+  }
+  return from;
 }
 
 function resolveEmailHeaders(): Array<Record<string, string>> {
@@ -121,9 +136,10 @@ export async function isConfirmedOnList(email: string, listId = resolveListId())
 // Double opt-in and list membership
 //
 // An address goes on the list only after the link in our confirmation
-// email is clicked, and then as `confirmed`. Until then it exists as a
-// subscriber with no lists, which is all `/api/tx` needs to deliver the
-// confirmation email.
+// email is clicked, and then as `confirmed`. Until then ListMonk holds
+// nothing for it: the confirmation email goes out in `/api/tx`'s
+// `external` mode (see `sendTransactional`), and the signed link carries
+// the pending signup.
 //
 // The lists are `optin: double`, so campaigns reach `confirmed` members
 // only. That is a second guard, not the mechanism: ListMonk sends its own
@@ -154,23 +170,11 @@ async function createSubscriber(email: string, listIds: number[]): Promise<Listm
 }
 
 /**
- * Make sure `email` exists as a ListMonk subscriber without adding it to
- * any list. Call this before sending the confirmation email.
- *
- * An existing subscriber is returned untouched. It may belong to other
- * projects' lists or be `unsubscribed` from ours, and submitting the form
- * again must not put it on our list before the confirm click.
- */
-export async function ensureSubscriber(email: string): Promise<ListmonkSubscriber> {
-  return (await findSubscriber(email)) ?? (await createSubscriber(email, []));
-}
-
-/**
  * Add `email` to a list as `confirmed`. Only the confirm route (after the
  * link proved the reader owns the address) and the one-off Mailgun import
  * call this. Idempotent: an existing membership, whatever its status,
- * becomes `confirmed`. A subscriber that went missing since the link was
- * sent is recreated.
+ * becomes `confirmed`. An address new to ListMonk is created on the list,
+ * preconfirmed.
  */
 export async function confirmSubscription(email: string, listId = resolveListId()): Promise<void> {
   const existing = await findSubscriber(email);
@@ -212,7 +216,14 @@ export async function unsubscribeFromList(subscriberIds: number[], listId: numbe
 
 export type SendTransactionalParams = { to: string; subject: string; html: string };
 
-/** The recipient must already exist as a subscriber: call `ensureSubscriber` first. */
+/**
+ * Send one email to any address, subscriber or not.
+ *
+ * `subscriber_mode: "external"` skips ListMonk's subscriber lookup. The
+ * default mode answers 400 for an address it does not know, which is
+ * everyone signing up for the first time. No mode checks the blocklist
+ * (ListMonk v6 `cmd/tx.go`), so the caller must.
+ */
 export async function sendTransactional(params: SendTransactionalParams): Promise<void> {
   const templateId = positiveId("LISTMONK_TX_TEMPLATE_ID", required("LISTMONK_TX_TEMPLATE_ID"));
   const headers = resolveEmailHeaders();
@@ -220,6 +231,7 @@ export async function sendTransactional(params: SendTransactionalParams): Promis
     method: "POST",
     body: JSON.stringify({
       subscriber_email: params.to.toLowerCase(),
+      subscriber_mode: "external",
       template_id: templateId,
       from_email: resolveFromAddress(),
       ...(headers.length > 0 ? { headers } : {}),

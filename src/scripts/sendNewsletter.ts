@@ -5,10 +5,10 @@
  *   pnpm sendNewsletter --dry-run              → render only, send nothing
  *   NODE_ENV=production pnpm sendNewsletter    → live list
  *
- * NEWSLETTER_PROVIDER picks the backend. `mailgun` (default) mails the
- * Mailgun list address. `listmonk` creates a ListMonk campaign on
- * LISTMONK_TEST_LIST_ID or, in production, LISTMONK_LIVE_LIST_ID, and
- * starts it; ListMonk then sends through SES.
+ * Creates a ListMonk campaign on LISTMONK_TEST_LIST_ID or, in production,
+ * LISTMONK_LIVE_LIST_ID, and starts it; ListMonk then sends through SES.
+ * Until the cutover, NEWSLETTER_PROVIDER=mailgun mails the Mailgun list
+ * address instead.
  */
 import slugify from "@sindresorhus/slugify";
 import "dotenv/config";
@@ -259,6 +259,14 @@ Thanks for reading plaintext emails. You're cool!
     const confirmed = list.subscriber_statuses?.confirmed ?? 0;
     // ListMonk refreshes list counts every few minutes, so this can lag.
     console.info(`target: ListMonk list ${list.id} "${list.name}", ~${confirmed} confirmed`);
+    // An empty live list means the Mailgun readers are not imported yet:
+    // the issue would reach nobody while they wait for it on Mailgun.
+    if (production && confirmed === 0) {
+      throw new Error(
+        `Live list ${list.id} "${list.name}" has no confirmed subscribers. ` +
+          "Import them first (pnpm newsletter:import), or send this issue with NEWSLETTER_PROVIDER=mailgun.",
+      );
+    }
     if (dryRun) {
       console.info(`dry run: nothing sent (html ${html.length} bytes, text ${text.length} bytes)`);
       return;

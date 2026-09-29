@@ -10,7 +10,7 @@ vi.mock("src/lib/mailgun", () => mailgun);
 
 const listmonk = vi.hoisted(() => ({
   confirmSubscription: vi.fn(async (_email: string) => {}),
-  ensureSubscriber: vi.fn(async (_email: string) => ({})),
+  findSubscriber: vi.fn(async (_email: string): Promise<{ status: string } | null> => null),
   isConfirmedOnList: vi.fn(async (_email: string) => false),
   sendTransactional: vi.fn(async (_params: { to: string; subject: string; html: string }) => {}),
 }));
@@ -46,10 +46,12 @@ afterEach(() => {
 });
 
 describe("newsletterProvider", () => {
-  it("stays on Mailgun until the cutover flag is set", () => {
-    expect(newsletterProvider()).toBe("mailgun");
+  it("is ListMonk unless a deployment is pinned to Mailgun", () => {
+    expect(newsletterProvider()).toBe("listmonk");
     process.env.NEWSLETTER_PROVIDER = " ListMonk ";
     expect(newsletterProvider()).toBe("listmonk");
+    process.env.NEWSLETTER_PROVIDER = "Mailgun";
+    expect(newsletterProvider()).toBe("mailgun");
     process.env.NEWSLETTER_PROVIDER = "sendgrid";
     expect(() => newsletterProvider()).toThrow(/Unknown NEWSLETTER_PROVIDER/);
   });
@@ -68,15 +70,11 @@ describe("normalizeEmail", () => {
   });
 });
 
-describe("with NEWSLETTER_PROVIDER=listmonk", () => {
-  beforeEach(() => {
-    process.env.NEWSLETTER_PROVIDER = "listmonk";
-  });
-
-  it("sends the confirmation email without adding the address to a list", async () => {
+describe("with the ListMonk default", () => {
+  it("sends the confirmation email without writing the address to ListMonk", async () => {
     await sendConfirmationEmail("reader@example.com");
 
-    expect(listmonk.ensureSubscriber).toHaveBeenCalledWith("reader@example.com");
+    expect(listmonk.findSubscriber).toHaveBeenCalledWith("reader@example.com");
     expect(listmonk.confirmSubscription).not.toHaveBeenCalled();
     expect(listmonk.sendTransactional).toHaveBeenCalledTimes(1);
     const { to, subject, html } = listmonk.sendTransactional.mock.calls[0][0];
@@ -87,6 +85,24 @@ describe("with NEWSLETTER_PROVIDER=listmonk", () => {
     );
     expect(mailgun.addNewMemberToEmailList).not.toHaveBeenCalled();
     expect(mailgun.sendEmail).not.toHaveBeenCalled();
+  });
+
+  it("still mails an existing subscriber, unsubscribed from our list or not", async () => {
+    listmonk.findSubscriber.mockResolvedValueOnce({ status: "enabled" });
+    await sendConfirmationEmail("reader@example.com");
+    expect(listmonk.sendTransactional).toHaveBeenCalledTimes(1);
+  });
+
+  it("sends nothing to a blocklisted address", async () => {
+    listmonk.findSubscriber.mockResolvedValueOnce({ status: "blocklisted" });
+    await expect(sendConfirmationEmail("reader@example.com")).resolves.toBeUndefined();
+    expect(listmonk.sendTransactional).not.toHaveBeenCalled();
+  });
+
+  it("fails rather than mail blind when the blocklist lookup fails", async () => {
+    listmonk.findSubscriber.mockRejectedValueOnce(new Error("down"));
+    await expect(sendConfirmationEmail("reader@example.com")).rejects.toThrow("down");
+    expect(listmonk.sendTransactional).not.toHaveBeenCalled();
   });
 
   it("confirms into ListMonk", async () => {
@@ -103,7 +119,11 @@ describe("with NEWSLETTER_PROVIDER=listmonk", () => {
   });
 });
 
-describe("with the Mailgun default", () => {
+describe("pinned with NEWSLETTER_PROVIDER=mailgun", () => {
+  beforeEach(() => {
+    process.env.NEWSLETTER_PROVIDER = "mailgun";
+  });
+
   it("keeps the Mailgun flow and its hash link", async () => {
     await sendConfirmationEmail("reader@example.com");
 
@@ -119,7 +139,7 @@ describe("with the Mailgun default", () => {
         /^https:\/\/ricos\.site\/api\/confirm-email\?hash=[0-9a-f]{64}&email=reader%40example\.com$/,
       ),
     );
-    expect(listmonk.ensureSubscriber).not.toHaveBeenCalled();
+    expect(listmonk.findSubscriber).not.toHaveBeenCalled();
     expect(listmonk.sendTransactional).not.toHaveBeenCalled();
   });
 

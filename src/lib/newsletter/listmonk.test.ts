@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   confirmSubscription,
-  ensureSubscriber,
   escapeGoTemplate,
   findSubscriber,
   isConfirmedOnList,
+  resolveFromAddress,
   sendCampaign,
   sendTransactional,
   unsubscribeFromList,
@@ -62,7 +62,7 @@ beforeEach(() => {
   process.env.LISTMONK_LIST_ID = "16";
   process.env.LISTMONK_TX_TEMPLATE_ID = "13";
   process.env.LISTMONK_CAMPAIGN_TEMPLATE_ID = "14";
-  process.env.LISTMONK_FROM = "Rico Trebeljahr <rico@example.com>";
+  process.env.LISTMONK_FROM = "Rico Trebeljahr <noreply@mail.ricos.site>";
   delete process.env.LISTMONK_REPLY_TO;
 });
 
@@ -124,36 +124,6 @@ describe("isConfirmedOnList", () => {
   });
 });
 
-describe("ensureSubscriber", () => {
-  it("creates a missing subscriber on no list", async () => {
-    const fetchMock = mockFetch(
-      jsonResponse({ data: { results: [], total: 0 } }),
-      jsonResponse({ data: { ...subscriber, lists: [] } }),
-    );
-
-    await ensureSubscriber("Reader@Example.com");
-
-    expect(writes(fetchMock.mock.calls)).toEqual(["POST /api/subscribers"]);
-    expect(body(fetchMock.mock.calls[1])).toMatchObject({
-      email: "reader@example.com",
-      lists: [],
-      preconfirm_subscriptions: true,
-    });
-  });
-
-  it("leaves an existing subscriber's lists alone", async () => {
-    // Unsubscribed from ours: submitting the form again must not re-add it.
-    const existing = {
-      ...subscriber,
-      lists: [{ ...subscriber.lists[0], subscription_status: "unsubscribed" as const }],
-    };
-    const fetchMock = mockFetch(jsonResponse({ data: { results: [existing], total: 1 } }));
-
-    await expect(ensureSubscriber("reader@example.com")).resolves.toEqual(existing);
-    expect(writes(fetchMock.mock.calls)).toEqual([]);
-  });
-});
-
 describe("confirmSubscription", () => {
   it("adds an existing subscriber to the list as confirmed", async () => {
     const fetchMock = mockFetch(
@@ -171,7 +141,7 @@ describe("confirmSubscription", () => {
     });
   });
 
-  it("recreates a missing subscriber on the list, preconfirmed", async () => {
+  it("creates an address new to ListMonk on the list, preconfirmed", async () => {
     const fetchMock = mockFetch(
       jsonResponse({ data: { results: [], total: 0 } }),
       jsonResponse({ data: subscriber }),
@@ -209,6 +179,27 @@ describe("unsubscribeFromList", () => {
   });
 });
 
+describe("resolveFromAddress", () => {
+  it("accepts a sender on the SES identity, with or without a display name", () => {
+    expect(resolveFromAddress()).toBe("Rico Trebeljahr <noreply@mail.ricos.site>");
+    process.env.LISTMONK_FROM = "NoReply@Mail.Ricos.Site";
+    expect(resolveFromAddress()).toBe("NoReply@Mail.Ricos.Site");
+  });
+
+  it("refuses any other domain, which SES would drop after ListMonk said OK", () => {
+    for (const from of [
+      "Rico Trebeljahr <rico@trebeljahr.com>",
+      "ricotrebeljahr@gmail.com",
+      "noreply@ricos.site",
+      "noreply@evilmail.ricos.site",
+      "Spoof <noreply@mail.ricos.site.example.com>",
+    ]) {
+      process.env.LISTMONK_FROM = from;
+      expect(() => resolveFromAddress(), from).toThrow(/must be an address @mail\.ricos\.site/);
+    }
+  });
+});
+
 describe("sendTransactional", () => {
   it("sends through the tx template with the configured sender", async () => {
     process.env.LISTMONK_REPLY_TO = "Rico <reply@example.com>";
@@ -219,8 +210,10 @@ describe("sendTransactional", () => {
     expect(writes(fetchMock.mock.calls)).toEqual(["POST /api/tx"]);
     expect(body(fetchMock.mock.calls[0])).toEqual({
       subscriber_email: "reader@example.com",
+      // Nobody signing up is a subscriber yet; the default mode answers 400.
+      subscriber_mode: "external",
       template_id: 13,
-      from_email: "Rico Trebeljahr <rico@example.com>",
+      from_email: "Rico Trebeljahr <noreply@mail.ricos.site>",
       headers: [{ "Reply-To": "Rico <reply@example.com>" }],
       data: { subject: "Confirm", body: "<p>Hi</p>" },
       content_type: "html",
@@ -249,6 +242,15 @@ describe("sendCampaign", () => {
       send_later: false,
     });
     expect(body(fetchMock.mock.calls[1])).toEqual({ status: "running" });
+  });
+
+  it("refuses a sender off the SES identity before creating anything", async () => {
+    process.env.LISTMONK_FROM = "Rico <ricotrebeljahr@gmail.com>";
+    const fetchMock = mockFetch();
+    await expect(
+      sendCampaign({ listId: 16, name: "n", subject: "s", html: "h", text: "t" }),
+    ).rejects.toThrow(/LISTMONK_FROM/);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("names the stranded draft when starting fails", async () => {

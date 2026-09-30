@@ -59,14 +59,12 @@ export default function Custom404() {
           with them, so the page says what it is while the picture is still
           something to find. The z-index is on the words alone: on the page
           itself it would take the picture up with them. */}
-      {/* Wider on the left than on the right: the strip beside the title is
-          where a few of the shorter links hide, and at the usual gutter there
-          is not the width for even the shortest of them. */}
-      <PageMain className="relative text-center md:flex md:max-w-none md:items-center md:gap-region md:pr-[5vw] md:pl-[16vw] md:text-left">
+      {/* Equal side gutters reserve space for the short framing links. */}
+      <PageMain className="relative text-center md:flex md:w-full md:max-w-none md:items-center md:justify-between md:gap-[4vw] md:px-[19vw] md:py-[6rem] md:text-left">
         {/* The column is only as solid as what is written in it: its box
             covers half the window, and left to itself it would take the
             pointer away from every link hiding behind it. */}
-        <div className="relative z-41 pointer-events-none [&>*]:pointer-events-auto [&>p:last-of-type]:mb-0 md:w-[46%]">
+        <div className="relative z-41 pointer-events-none [&>*]:pointer-events-auto [&>p:last-of-type]:mb-0 md:w-[55%]">
           <Picture className="mx-auto mb-group w-full md:hidden" />
           {/* The title without the site's usual page top: that carries a
               spacer where breadcrumbs would go, and on a page whose title is
@@ -87,7 +85,7 @@ export default function Custom404() {
             picture is 614x450, so the width that gives it is about 1.36 of
             the height. On a short window an unchecked picture fills the
             middle and leaves the links nowhere to go but the bottom. */}
-        <Picture className="hidden md:block md:w-[34%] md:max-w-[50vh]" hidden />
+        <Picture className="hidden md:block md:w-[38%] md:max-w-[42vh]" hidden />
       </PageMain>
     </Layout>
   );

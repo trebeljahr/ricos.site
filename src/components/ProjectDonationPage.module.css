@@ -98,15 +98,6 @@
   line-height: 1.7;
   color: var(--donation-muted);
 }
-.jump {
-  display: inline-flex;
-  align-items: center;
-  gap: 30px;
-  min-height: 44px;
-  margin-top: 22px;
-  font-size: 14px;
-  color: var(--color-accent);
-}
 .visual {
   margin: 38px 0 0;
   animation: arrive 850ms 100ms ease both;
@@ -123,31 +114,15 @@
 .visual:hover .image {
   transform: scale(1.025);
 }
-.visual figcaption {
-  margin-top: 12px;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  color: var(--donation-muted);
-}
 .payment {
   min-width: 0;
   scroll-margin-top: 24px;
   animation: arrive 700ms 120ms ease both;
 }
-.personalNote {
-  margin: 24px 8px 0;
-  max-width: 52ch;
-  color: var(--donation-muted);
-  font-size: 13px;
-  line-height: 1.8;
-}
 .footer {
   border-top: 1px solid var(--donation-border);
   color: var(--donation-muted);
   font-size: 12px;
-}
-.footer p {
-  margin: 0;
 }
 .footer > div {
   display: flex;
@@ -191,9 +166,6 @@
   border-radius: 5px;
   background: transparent;
   color: var(--donation-ink);
-}
-.shell :global(.donation-option) > span[aria-hidden] {
-  display: none;
 }
 .shell :global(.donation-thanks-rule) {
   background: var(--color-accent);
@@ -268,11 +240,6 @@
   opacity: 0.55;
   object-position: center 65%;
 }
-.immersive .visual figcaption {
-  position: absolute;
-  bottom: 0;
-  left: 180px;
-}
 .immersive .intro {
   padding-bottom: 48px;
   background: linear-gradient(var(--donation-bg) 55%, transparent);
@@ -341,10 +308,6 @@
   .immersive .visual {
     inset: 80px -64px -20px;
   }
-  .immersive .visual figcaption {
-    left: 64px;
-    bottom: 4px;
-  }
   .immersive .intro {
     padding-bottom: 24px;
   }
@@ -404,17 +367,6 @@
 .artwork:hover img {
   transform: scale(1.015);
 }
-.artwork figcaption {
-  margin-top: 10px;
-  font-size: 11px;
-  line-height: 1.6;
-  color: var(--donation-muted);
-}
-.signature {
-  display: block;
-  margin-top: 12px;
-  font-style: italic;
-}
 .gallery .payment {
   position: sticky;
   top: 24px;
@@ -427,9 +379,6 @@
   }
   .artwork:first-child {
     grid-column: auto;
-  }
-  .artwork figcaption {
-    font-size: 9px;
   }
   .gallery .payment {
     position: relative;

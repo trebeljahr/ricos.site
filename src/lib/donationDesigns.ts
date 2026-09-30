@@ -1,4 +1,4 @@
-import type { DonationSource } from "./donation";
+import type { DonationOption, DonationSource } from "./donation";
 
 export type DonationDesign = {
   layout: "gallery" | "immersive" | "studio";
@@ -12,12 +12,24 @@ export type DonationDesign = {
   headingFont?: "serif" | "mono";
   invitation: string;
   cardTitle: string;
-  purpose: string;
+  paymentOptions: Record<string, Pick<DonationOption, "note" | "emoji">>;
   thanks: string;
-  share: string;
-  artworks?: { src: string; alt: string; caption: string }[];
-  image?: { src: string; alt: string; caption: string };
+  artworks?: { src: string; alt: string }[];
+  image?: { src: string; alt: string };
 };
+
+type PaymentLabel = [emoji: string, note: string];
+
+function paymentOptions(
+  ...options: [PaymentLabel, PaymentLabel, PaymentLabel, PaymentLabel]
+): DonationDesign["paymentOptions"] {
+  return Object.fromEntries(
+    ["EUR 3", "EUR 5", "EUR 10", "EUR 25"].map((amount, index) => [
+      amount,
+      { emoji: options[index][0], note: options[index][1] },
+    ]),
+  );
+}
 
 const studio: DonationDesign = {
   layout: "studio",
@@ -30,9 +42,13 @@ const studio: DonationDesign = {
   dark: false,
   invitation: "If this project was useful to you, a donation gives me time to keep working on it.",
   cardTitle: "Support this project",
-  purpose: "Your donation gives me time to maintain and improve this project.",
+  paymentOptions: paymentOptions(
+    ["🍪", "A few cookies"],
+    ["☕", "A cup of coffee"],
+    ["🍕", "Pizza for a coding night"],
+    ["💛", "A very generous thank you"],
+  ),
   thanks: "Thank you for supporting this project.",
-  share: "Sharing the project with a friend helps, too.",
 };
 
 const night: DonationDesign = {
@@ -52,6 +68,12 @@ const night: DonationDesign = {
 export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   "collection-of-beauty": {
     ...studio,
+    paymentOptions: paymentOptions(
+      ["🎨", "A little colour"],
+      ["🖌️", "Another brushstroke"],
+      ["🖼️", "Room for more art"],
+      ["🏛️", "For the whole collection"],
+    ),
     layout: "gallery",
     background: "#f8f5ee",
     surface: "#fffdf8",
@@ -63,208 +85,250 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
     invitation:
       "More art to discover. More time to build the collection. Your support makes room for both.",
     cardTitle: "Keep the collection growing",
-    purpose:
-      "I find and catalogue public-domain art, check its details, and build new ways to explore it. Your donation gives me time for that work.",
     thanks:
       "Thank you for supporting the collection and the next work of art someone will discover here.",
-    share: "Send a favourite painting to someone you love.",
     artworks: [
       {
         src: "/donate/sources/hokusai-wave.webp",
         alt: "A great blue wave curls over fishing boats with Mount Fuji in the distance",
-        caption: "Katsushika Hokusai · The Great Wave off Kanagawa",
       },
       {
         src: "/donate/sources/vermeer-pearl.webp",
         alt: "Vermeer's portrait of a girl in a blue and gold headscarf with a pearl earring",
-        caption: "Johannes Vermeer · Girl with a Pearl Earring",
       },
       {
         src: "/donate/sources/audubon-flamingo.webp",
         alt: "Audubon's American flamingo bends its long neck toward the water",
-        caption: "John James Audubon · American Flamingo",
       },
     ],
     image: {
       src: "/donate/sources/collection-museum.webp",
       alt: "Paintings on the warm stone walls of the Collection of Beauty virtual museum",
-      caption: "Inside the museum · The Impressionist gallery",
     },
   },
   "fractal-garden": {
     ...night,
+    paymentOptions: paymentOptions(
+      ["🌱", "Plant a seed"],
+      ["🌿", "A little new growth"],
+      ["🌸", "Room to bloom"],
+      ["🌳", "Help the garden grow"],
+    ),
     invitation:
       "There is always more to explore. Your support gives me time to tend this garden of fractals.",
     cardTitle: "Help the garden grow",
-    purpose:
-      "I build the fractal explorers and write the explanations. Your donation gives me time for new fractals and better ways to explore them.",
     thanks:
       "Thank you for supporting more paths through the garden. There is plenty left to explore.",
-    share: "Found a pattern you love? Share it with a friend.",
     image: {
       src: "/donate/sources/mandelbrot.webp",
       alt: "The branching edge of the Mandelbrot set glows blue and gold",
-      caption: "The Mandelbrot set · A small window into infinity",
     },
   },
   "track-your-time": {
     ...studio,
+    paymentOptions: paymentOptions(
+      ["⏱️", "A moment of support"],
+      ["☕", "A well-timed coffee"],
+      ["🕰️", "Time for the next fix"],
+      ["💛", "For the hours ahead"],
+    ),
     accent: "#4f46e5",
     invitation:
       "Keep time on your side. Support the tracker you use to turn your work into invoices.",
     cardTitle: "Support Track Your Time",
-    purpose: "Your donation gives me time to improve time tracking, reports, and invoices.",
     thanks: "Thank you for supporting the next improvement to Track Your Time.",
-    share: "Know someone who tracks their hours? Send them Track Your Time.",
   },
   "sprite-tools": {
     ...night,
+    paymentOptions: paymentOptions(
+      ["👾", "A little pixel love"],
+      ["🎞️", "One more frame"],
+      ["🎮", "For the next game"],
+      ["🕹️", "For the whole sprite sheet"],
+    ),
     layout: "studio",
     accent: "#74d99b",
     headingFont: "mono",
     invitation:
       "More time making games. Less time preparing sprite sheets. Support the tools in between.",
     cardTitle: "Support sprite-tools",
-    purpose:
-      "I work on sprite-sheet previews and exports so your assets are ready for a game. Your donation gives me time for that work.",
     thanks: "Thank you for supporting the tools behind your next sprite.",
-    share: "Share sprite-tools with another game maker.",
   },
   conv3d: {
     ...night,
+    paymentOptions: paymentOptions(
+      ["🧊", "A little 3D love"],
+      ["🔺", "A few more polygons"],
+      ["🛠️", "For the next conversion"],
+      ["🌐", "More 3D on the web"],
+    ),
     layout: "studio",
     accent: "#5eead4",
     headingFont: "mono",
     invitation:
       "From a 3D model to something you can use on the web. Support the tools that get it there.",
     cardTitle: "Support conv3D",
-    purpose:
-      "Your donation gives me time to improve model conversion, smaller GLB files, and React component exports.",
     thanks: "Thank you for supporting the next improvement to conv3D.",
-    share: "Know someone working with 3D on the web? Send them conv3D.",
   },
   "gamedev-asset-library": {
     ...night,
+    paymentOptions: paymentOptions(
+      ["🧩", "One more piece"],
+      ["📦", "For the next asset pack"],
+      ["🎮", "For the next game"],
+      ["📚", "For the whole library"],
+    ),
     layout: "studio",
     accent: "#ffd84d",
     invitation: "Find the assets for your next game. Help keep the library useful.",
     cardTitle: "Support the asset library",
-    purpose:
-      "I catalogue asset packs, check licenses, and build previews. Your donation gives me time to maintain the library.",
     thanks: "Thank you for supporting the library and the games people make with it.",
-    share: "Share a useful asset pack with another game maker.",
   },
   hatchkit: {
     ...studio,
+    paymentOptions: paymentOptions(
+      ["🥚", "A small beginning"],
+      ["🐣", "Help an idea hatch"],
+      ["🛠️", "For the next build"],
+      ["🚀", "For the next launch"],
+    ),
     accent: "#4f46e5",
     headingFont: "mono",
     invitation:
       "More time for your app. Less time setting it up. Support the toolkit that gets you started.",
     cardTitle: "Support Hatchkit",
-    purpose:
-      "Your donation gives me time to maintain the scaffolding, deployment tools, and documentation.",
     thanks: "Thank you for supporting the toolkit behind the next app.",
-    share: "Share Hatchkit with someone starting a project.",
   },
   asteroids: {
     ...night,
+    paymentOptions: paymentOptions(
+      ["☄️", "A little space dust"],
+      ["🛰️", "Keep us in orbit"],
+      ["🚀", "Fuel for another round"],
+      ["🌌", "For the whole asteroid field"],
+    ),
     accent: "#8edfff",
     headingFont: "mono",
     invitation: "One more wave. One more close call. Help keep this little space shooter going.",
     cardTitle: "Support Asteroids",
-    purpose:
-      "Your donation gives me time to improve the controls and online matches, and fix the bugs between rounds.",
     thanks: "Thank you for supporting the next round. See you in the asteroid field.",
-    share: "Invite a friend for a round of Asteroids.",
   },
   "minecraft-clone": {
     ...night,
+    paymentOptions: paymentOptions(
+      ["🧱", "One more block"],
+      ["⛏️", "Dig a little deeper"],
+      ["🏡", "Room for another build"],
+      ["🌍", "For the whole world"],
+    ),
     accent: "#8acb83",
     headingFont: "mono",
     invitation: "A world of blocks, built one piece at a time. Help me keep working on it.",
     cardTitle: "Support this blocky world",
-    purpose: "Your donation gives me time to improve world generation, building, and performance.",
     thanks: "Thank you for supporting more places to explore and build.",
-    share: "Show a friend what you built.",
   },
   "online-chess": {
     ...studio,
+    paymentOptions: paymentOptions(
+      ["♟️", "A pawn of support"],
+      ["♞", "A thoughtful move"],
+      ["♜", "A solid defense"],
+      ["♛", "A grand gesture"],
+    ),
     background: "#f4efe6",
     accent: "#0f766e",
     headingFont: "serif",
     invitation: "A board, a friend, and the next move. Support this place to play.",
     cardTitle: "Support Online Chess",
-    purpose: "Your donation gives me time to maintain online games, clocks, and the lobby.",
     thanks: "Thank you for supporting the next game. Your board is waiting.",
-    share: "Invite a friend to a game of chess.",
   },
   tiao: {
     ...studio,
+    paymentOptions: paymentOptions(
+      ["🟤", "A piece of support"],
+      ["🎯", "For the next move"],
+      ["🤝", "For another match"],
+      ["🏆", "For many games to come"],
+    ),
     background: "#f5eee4",
     accent: "#8b482b",
     headingFont: "serif",
     invitation:
       "A small board. A good opponent. Plenty to think about. Support the next game of Tiao.",
     cardTitle: "Support Tiao",
-    purpose: "Your donation gives me time to improve online play and the computer opponent.",
     thanks: "Thank you for supporting Tiao. Enjoy your next game.",
-    share: "Teach a friend to play Tiao.",
   },
   "mesozoic-protocol": {
     ...night,
+    paymentOptions: paymentOptions(
+      ["🥚", "A little dino support"],
+      ["🦕", "For the next dinosaur"],
+      ["🛡️", "Hold the line"],
+      ["🦖", "A mighty contribution"],
+    ),
     accent: "#becb91",
     headingFont: "mono",
     invitation: "Hold the line against the next wave. Support the work behind Mesozoic Protocol.",
     cardTitle: "Support Mesozoic Protocol",
-    purpose:
-      "Your donation gives me time to work on the dinosaurs, defenses, and battles in the game.",
     thanks: "Thank you for supporting the next defense. See you on the field.",
-    share: "Send the demo to a friend who enjoys strategy games.",
   },
   "raptor-runner": {
     ...night,
+    paymentOptions: paymentOptions(
+      ["🐾", "A small step"],
+      ["🥚", "For the next hatchling"],
+      ["🦎", "Keep the raptor running"],
+      ["🦖", "A giant leap"],
+    ),
     accent: "#f0c391",
     headingFont: "mono",
     invitation: "Another run. Another near miss. Help this little raptor keep going.",
     cardTitle: "Support Raptor Runner",
-    purpose:
-      "Your donation gives me time to work on the levels, controls, and the small details along the way.",
     thanks: "Thank you for supporting Raptor Runner. Good luck on your next run.",
-    share: "Challenge a friend to beat your run.",
   },
   "quaternius-showcase": {
     ...studio,
+    paymentOptions: paymentOptions(
+      ["🧊", "A little model love"],
+      ["🔎", "A closer look"],
+      ["📦", "For the next preview"],
+      ["🗂️", "For the whole catalogue"],
+    ),
     accent: "#44694a",
     invitation: "Find a model. Take a closer look. Support a better way to browse the packs.",
     cardTitle: "Support the showcase",
-    purpose:
-      "Your donation supports my work on the viewer and catalogue. Quaternius creates the models.",
     thanks: "Thank you for supporting the showcase and its next improvement.",
-    share: "Share a model pack with someone making a game.",
   },
   "interactive-3d-demos": {
     ...night,
+    paymentOptions: paymentOptions(
+      ["💡", "A spark of an idea"],
+      ["🧪", "For another experiment"],
+      ["🌊", "Make a few ripples"],
+      ["✨", "For the next scene"],
+    ),
     accent: "#d3b4fa",
     invitation: "A place to play with light, water, and code. Support the next experiment.",
     cardTitle: "Support the experiments",
-    purpose: "Your donation gives me time to build and maintain these interactive 3D scenes.",
     thanks: "Thank you for making room for the next experiment.",
-    share: "Send a favourite scene to a curious friend.",
   },
   "chemistry-sketcher": {
     ...studio,
+    paymentOptions: paymentOptions(
+      ["⚛️", "A little atomic support"],
+      ["🔗", "Another bond"],
+      ["🧪", "For the next molecule"],
+      ["🔬", "For the whole workbench"],
+    ),
     image: {
       src: "/donate/sources/chemistry-benzene.svg",
       alt: "Skeletal diagram of benzene with alternating double bonds",
-      caption: "From a molecule to a figure",
     },
     accent: "#343b49",
     headingFont: "mono",
     invitation: "Draw a molecule. Make the figure you need. Support the tools on your workbench.",
     cardTitle: "Support Chemistry Sketcher",
-    purpose: "Your donation gives me time to improve molecule drawing and figure exports.",
     thanks: "Thank you for supporting Chemistry Sketcher and your next figure.",
-    share: "Share Chemistry Sketcher with someone who draws molecules.",
   },
 };
 

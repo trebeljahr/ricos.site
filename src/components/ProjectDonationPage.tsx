@@ -23,7 +23,7 @@ export function ProjectDonationPage({
   const projectIcon =
     source.brand?.icon ??
     `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="${design.background}"/><text x="32" y="45" text-anchor="middle" font-family="sans-serif" font-size="42" fill="${design.accent}">${source.name[0]}</text></svg>`)}`;
-  const visual = design.image ?? (source.cover ? { ...source.cover, caption: source.name } : null);
+  const visual = design.image ?? source.cover;
   const backTo = {
     name: source.name,
     href: justDonated ? supportedUrl(returnTo) : returnTo,
@@ -93,11 +93,6 @@ export function ProjectDonationPage({
               </p>
               <h1>{source.name}</h1>
               <p className={styles.invitation}>{justDonated ? design.thanks : design.invitation}</p>
-              {!justDonated && (
-                <a href="#project-donation" className={styles.jump}>
-                  Make a donation <span aria-hidden="true">↗</span>
-                </a>
-              )}
             </div>
             {design.artworks ? (
               <section className={styles.artworks} aria-label="From the collection">
@@ -112,7 +107,6 @@ export function ProjectDonationPage({
                         sizes="(max-width: 900px) 45vw, 28vw"
                       />
                     </div>
-                    <figcaption>{artwork.caption}</figcaption>
                   </figure>
                 ))}
               </section>
@@ -129,7 +123,6 @@ export function ProjectDonationPage({
                       className={styles.image}
                     />
                   </div>
-                  <figcaption>{visual.caption}</figcaption>
                 </figure>
               )
             )}
@@ -139,19 +132,20 @@ export function ProjectDonationPage({
             {justDonated ? (
               <DonationThanks backTo={backTo} message={design.thanks} />
             ) : (
-              <>
-                <DonationCard reference={source.slug} title={design.cardTitle} />
-                <p className={styles.personalNote}>
-                  {design.purpose}{" "}
-                  <span className={styles.signature}>— Rico, creator of {source.name}</span>
-                </p>
-              </>
+              <DonationCard
+                reference={source.slug}
+                title={design.cardTitle}
+                monthlyCopy={design.paymentOptions}
+                oneTimeCopy={{
+                  note: `A one-time gift to ${source.name}.`,
+                  emoji: design.paymentOptions["EUR 3"].emoji,
+                }}
+              />
             )}
           </div>
         </main>
 
         <footer className={styles.footer}>
-          <p>{justDonated ? design.thanks : design.share}</p>
           <div>
             {manageDonationUrl && (
               <ExternalLink href={manageDonationUrl}>Manage your donation</ExternalLink>

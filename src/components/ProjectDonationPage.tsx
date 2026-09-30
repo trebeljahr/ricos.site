@@ -132,15 +132,7 @@ export function ProjectDonationPage({
             {justDonated ? (
               <DonationThanks backTo={backTo} message={design.thanks} />
             ) : (
-              <DonationCard
-                reference={source.slug}
-                title={design.cardTitle}
-                monthlyCopy={design.paymentOptions}
-                oneTimeCopy={{
-                  note: `A one-time gift to ${source.name}.`,
-                  emoji: design.paymentOptions["EUR 3"].emoji,
-                }}
-              />
+              <DonationCard reference={source.slug} title={design.cardTitle} />
             )}
           </div>
         </main>

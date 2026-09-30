@@ -13,7 +13,6 @@ import Link from "next/link";
 import { type ReactNode, type SVGProps, useEffect, useId, useRef, useState } from "react";
 import {
   type DonationMode,
-  type DonationOption,
   defaultDonationMode,
   hasAnyStripeLinks,
   hasMonthlyLinks,
@@ -42,8 +41,6 @@ type FullCardProps = DonationCardProps & {
   // from /donate?from=<slug>, or ricos.site itself.
   reference?: string;
   title?: string;
-  monthlyCopy?: Record<string, Pick<DonationOption, "note" | "emoji">>;
-  oneTimeCopy?: Pick<DonationOption, "note" | "emoji">;
 };
 
 type ThanksProps = DonationCardProps & {
@@ -258,17 +255,13 @@ export function DonationCard({
   className,
   reference = SITE_REFERENCE,
   title = "Help keep this place alive",
-  monthlyCopy,
-  oneTimeCopy,
 }: FullCardProps) {
   const isMounted = useIsMounted();
   const [mode, setMode] = useState<DonationMode>(defaultDonationMode);
   const showStripe = isMounted && hasAnyStripeLinks;
   // The monthly/once toggle only earns its place when both exist.
   const showToggle = hasMonthlyLinks && hasOneTimeLink;
-  const monthlyTiles = monthlyOptions
-    .filter((option) => option.href)
-    .map((option) => ({ ...option, ...monthlyCopy?.[option.label] }));
+  const monthlyTiles = monthlyOptions.filter((option) => option.href);
   const showMonthly = showToggle ? mode === "monthly" : hasMonthlyLinks;
 
   return (
@@ -353,12 +346,6 @@ export function DonationCard({
                             href={oneTimeUrl ? withReference(oneTimeUrl, reference) : "#"}
                             className={clsx(tileClass, "min-h-20 justify-center px-5 py-4")}
                           >
-                            {oneTimeCopy && (
-                              <span className="mb-3 flex items-center gap-2 text-sm donation-muted">
-                                <span aria-hidden="true">{oneTimeCopy.emoji}</span>
-                                {oneTimeCopy.note}
-                              </span>
-                            )}
                             <span className="text-xl font-bold donation-ink text-gray-900 dark:text-white">
                               Donate any amount
                             </span>

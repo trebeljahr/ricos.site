@@ -1,4 +1,4 @@
-import type { DonationOption, DonationSource } from "./donation";
+import type { DonationSource } from "./donation";
 
 export type DonationDesign = {
   layout: "gallery" | "immersive" | "studio";
@@ -12,24 +12,10 @@ export type DonationDesign = {
   headingFont?: "serif" | "mono";
   invitation: string;
   cardTitle: string;
-  paymentOptions: Record<string, Pick<DonationOption, "note" | "emoji">>;
   thanks: string;
   artworks?: { src: string; alt: string }[];
   image?: { src: string; alt: string };
 };
-
-type PaymentLabel = [emoji: string, note: string];
-
-function paymentOptions(
-  ...options: [PaymentLabel, PaymentLabel, PaymentLabel, PaymentLabel]
-): DonationDesign["paymentOptions"] {
-  return Object.fromEntries(
-    ["EUR 3", "EUR 5", "EUR 10", "EUR 25"].map((amount, index) => [
-      amount,
-      { emoji: options[index][0], note: options[index][1] },
-    ]),
-  );
-}
 
 const studio: DonationDesign = {
   layout: "studio",
@@ -42,12 +28,6 @@ const studio: DonationDesign = {
   dark: false,
   invitation: "If this project was useful to you, a donation gives me time to keep working on it.",
   cardTitle: "Support this project",
-  paymentOptions: paymentOptions(
-    ["🍪", "A few cookies"],
-    ["☕", "A cup of coffee"],
-    ["🍕", "Pizza for a coding night"],
-    ["💛", "A very generous thank you"],
-  ),
   thanks: "Thank you for supporting this project.",
 };
 
@@ -68,12 +48,6 @@ const night: DonationDesign = {
 export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   "collection-of-beauty": {
     ...studio,
-    paymentOptions: paymentOptions(
-      ["🎨", "A little colour"],
-      ["🖌️", "Another brushstroke"],
-      ["🖼️", "Room for more art"],
-      ["🏛️", "For the whole collection"],
-    ),
     layout: "gallery",
     background: "#f8f5ee",
     surface: "#fffdf8",
@@ -108,12 +82,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   },
   "fractal-garden": {
     ...night,
-    paymentOptions: paymentOptions(
-      ["🌱", "Plant a seed"],
-      ["🌿", "A little new growth"],
-      ["🌸", "Room to bloom"],
-      ["🌳", "Help the garden grow"],
-    ),
     invitation:
       "There is always more to explore. Your support gives me time to tend this garden of fractals.",
     cardTitle: "Help the garden grow",
@@ -126,12 +94,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   },
   "track-your-time": {
     ...studio,
-    paymentOptions: paymentOptions(
-      ["⏱️", "A moment of support"],
-      ["☕", "A well-timed coffee"],
-      ["🕰️", "Time for the next fix"],
-      ["💛", "For the hours ahead"],
-    ),
     accent: "#4f46e5",
     invitation:
       "Keep time on your side. Support the tracker you use to turn your work into invoices.",
@@ -140,12 +102,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   },
   "sprite-tools": {
     ...night,
-    paymentOptions: paymentOptions(
-      ["👾", "A little pixel love"],
-      ["🎞️", "One more frame"],
-      ["🎮", "For the next game"],
-      ["🕹️", "For the whole sprite sheet"],
-    ),
     layout: "studio",
     accent: "#74d99b",
     headingFont: "mono",
@@ -156,12 +112,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   },
   conv3d: {
     ...night,
-    paymentOptions: paymentOptions(
-      ["🧊", "A little 3D love"],
-      ["🔺", "A few more polygons"],
-      ["🛠️", "For the next conversion"],
-      ["🌐", "More 3D on the web"],
-    ),
     layout: "studio",
     accent: "#5eead4",
     headingFont: "mono",
@@ -172,12 +122,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   },
   "gamedev-asset-library": {
     ...night,
-    paymentOptions: paymentOptions(
-      ["🧩", "One more piece"],
-      ["📦", "For the next asset pack"],
-      ["🎮", "For the next game"],
-      ["📚", "For the whole library"],
-    ),
     layout: "studio",
     accent: "#ffd84d",
     invitation: "Find the assets for your next game. Help keep the library useful.",
@@ -186,12 +130,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   },
   hatchkit: {
     ...studio,
-    paymentOptions: paymentOptions(
-      ["🥚", "A small beginning"],
-      ["🐣", "Help an idea hatch"],
-      ["🛠️", "For the next build"],
-      ["🚀", "For the next launch"],
-    ),
     accent: "#4f46e5",
     headingFont: "mono",
     invitation:
@@ -201,12 +139,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   },
   asteroids: {
     ...night,
-    paymentOptions: paymentOptions(
-      ["☄️", "A little space dust"],
-      ["🛰️", "Keep us in orbit"],
-      ["🚀", "Fuel for another round"],
-      ["🌌", "For the whole asteroid field"],
-    ),
     accent: "#8edfff",
     headingFont: "mono",
     invitation: "One more wave. One more close call. Help keep this little space shooter going.",
@@ -215,12 +147,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   },
   "minecraft-clone": {
     ...night,
-    paymentOptions: paymentOptions(
-      ["🧱", "One more block"],
-      ["⛏️", "Dig a little deeper"],
-      ["🏡", "Room for another build"],
-      ["🌍", "For the whole world"],
-    ),
     accent: "#8acb83",
     headingFont: "mono",
     invitation: "A world of blocks, built one piece at a time. Help me keep working on it.",
@@ -229,12 +155,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   },
   "online-chess": {
     ...studio,
-    paymentOptions: paymentOptions(
-      ["♟️", "A pawn of support"],
-      ["♞", "A thoughtful move"],
-      ["♜", "A solid defense"],
-      ["♛", "A grand gesture"],
-    ),
     background: "#f4efe6",
     accent: "#0f766e",
     headingFont: "serif",
@@ -244,12 +164,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   },
   tiao: {
     ...studio,
-    paymentOptions: paymentOptions(
-      ["🟤", "A piece of support"],
-      ["🎯", "For the next move"],
-      ["🤝", "For another match"],
-      ["🏆", "For many games to come"],
-    ),
     background: "#f5eee4",
     accent: "#8b482b",
     headingFont: "serif",
@@ -260,12 +174,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   },
   "mesozoic-protocol": {
     ...night,
-    paymentOptions: paymentOptions(
-      ["🥚", "A little dino support"],
-      ["🦕", "For the next dinosaur"],
-      ["🛡️", "Hold the line"],
-      ["🦖", "A mighty contribution"],
-    ),
     accent: "#becb91",
     headingFont: "mono",
     invitation: "Hold the line against the next wave. Support the work behind Mesozoic Protocol.",
@@ -274,12 +182,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   },
   "quaternius-showcase": {
     ...studio,
-    paymentOptions: paymentOptions(
-      ["🧊", "A little model love"],
-      ["🔎", "A closer look"],
-      ["📦", "For the next preview"],
-      ["🗂️", "For the whole catalogue"],
-    ),
     accent: "#44694a",
     invitation: "Find a model. Take a closer look. Support a better way to browse the packs.",
     cardTitle: "Support the showcase",
@@ -287,12 +189,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   },
   "interactive-3d-demos": {
     ...night,
-    paymentOptions: paymentOptions(
-      ["💡", "A spark of an idea"],
-      ["🧪", "For another experiment"],
-      ["🌊", "Make a few ripples"],
-      ["✨", "For the next scene"],
-    ),
     accent: "#d3b4fa",
     invitation: "A place to play with light, water, and code. Support the next experiment.",
     cardTitle: "Support the experiments",
@@ -300,12 +196,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
   },
   "chemistry-sketcher": {
     ...studio,
-    paymentOptions: paymentOptions(
-      ["⚛️", "A little atomic support"],
-      ["🔗", "Another bond"],
-      ["🧪", "For the next molecule"],
-      ["🔬", "For the whole workbench"],
-    ),
     image: {
       src: "/donate/sources/chemistry-benzene.svg",
       alt: "Skeletal diagram of benzene with alternating double bonds",

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { SOURCE_TTL_MS, supportedUrl } from "./donation";
 import {
   donationPath,
@@ -13,7 +13,32 @@ const beauty = getDonationSource("collection-of-beauty")!;
 const garden = getDonationSource("fractal-garden")!;
 const artwork = "https://collectionofbeauty.com/artwork/a-wave?colour=blue&sort=year#details";
 
+afterEach(() => vi.unstubAllEnvs());
+
 describe("project donation navigation", () => {
+  it("keeps local project return URLs in development only", () => {
+    const urls = [
+      "http://localhost:1111/explore?set=julia#view",
+      "http://127.0.0.1:51234/gallery?sort=year#painting",
+      "http://[::1]:51234/gallery",
+    ];
+    vi.stubEnv("NODE_ENV", "development");
+    for (const url of urls) {
+      expect(validateDonationReturn(garden, url)).toBe(url);
+      expect(donationReturnForVisit(garden, url, null, false)).toBe(url);
+      expect(sourceFromReferrer(url)).toBeNull();
+    }
+    for (const url of [
+      "http://localhost.evil.test:1111/",
+      "http://192.168.1.2:1111/",
+      "http://user@localhost:1111/",
+      "http://localhost:3713/donate/fractal-garden",
+    ])
+      expect(validateDonationReturn(garden, url)).toBeNull();
+    vi.stubEnv("NODE_ENV", "production");
+    for (const url of urls) expect(validateDonationReturn(garden, url)).toBeNull();
+  });
+
   it("restores only a recognized project from the checkout-return cookie", () => {
     expect(donationSourceFromCookie("theme=dark; donation-project=fractal-garden")?.slug).toBe(
       "fractal-garden",

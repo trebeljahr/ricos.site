@@ -27,7 +27,7 @@ import {
   sourceFromReferrer,
   validateDonationReturn,
 } from "src/lib/donationNavigation";
-import { getDonationSource } from "src/lib/donationSources";
+import { getDonationRedirect, getDonationSource } from "src/lib/donationSources";
 import useLocalStorageState from "use-local-storage-state";
 
 export type DonatePageProps = {
@@ -183,6 +183,8 @@ export default function DonatePage({
 // Resolve explicit referrals on the server so the first paint already belongs
 // to the project. Checkout returns without a slug recover it after hydration.
 export const getServerSideProps: GetServerSideProps<DonatePageProps> = async ({ query, req }) => {
+  const destination = getDonationRedirect(query[FROM_QUERY_KEY]);
+  if (destination) return { redirect: { destination, permanent: false } };
   const source =
     getDonationSource(query[FROM_QUERY_KEY]) ??
     (query[THANKS_QUERY_KEY] !== undefined ? donationSourceFromCookie(req.headers.cookie) : null) ??

@@ -19,6 +19,7 @@ describe("project donation navigation", () => {
       "fractal-garden",
     );
     expect(donationSourceFromCookie("donation-project=unknown")).toBeNull();
+    expect(donationSourceFromCookie("donation-project=raptor-runner")).toBeNull();
     expect(donationSourceFromCookie("donation-project=%invalid")).toBeNull();
     expect(donationSourceFromCookie(undefined)).toBeNull();
   });
@@ -77,6 +78,7 @@ describe("project donation navigation", () => {
   it("infers the source of legacy links from a matching referrer", () => {
     expect(sourceFromReferrer(artwork)?.slug).toBe(beauty.slug);
     expect(sourceFromReferrer("https://evil.test/")).toBeNull();
+    expect(sourceFromReferrer("https://raptorrunner.com/")).toBeNull();
     expect(sourceFromReferrer("https://ricos.site/posts/a-post")).toBeNull();
   });
 

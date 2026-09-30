@@ -25,7 +25,6 @@ export function validateDonationReturn(source: DonationSource, candidate: unknow
     const url = new URL(candidate, home);
     if (url.protocol !== "https:" || url.username || url.password) return null;
     const allowed = new Set([home.origin]);
-    if (source.slug === "raptor-runner") allowed.add("https://raptorrunner.com");
     if (!allowed.has(url.origin)) return null;
     // Never loop back into a donation page, including a stale same-site referrer.
     if (url.origin === SITE_ORIGIN && /^\/donate(?:\/|$)/.test(url.pathname)) return null;

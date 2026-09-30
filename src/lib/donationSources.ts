@@ -67,8 +67,15 @@ export const SOURCE_BRANDS: Record<string, DonationBrand> = {
   },
 };
 
+// Commercial projects use their store instead of the shared donation flow.
+export function getDonationRedirect(slug: unknown): string | null {
+  return slug === "raptor-runner"
+    ? "https://store.steampowered.com/app/5035590/Raptor_Runner/"
+    : null;
+}
+
 export function getDonationSource(slug: unknown): DonationSource | null {
-  if (typeof slug !== "string") return null;
+  if (typeof slug !== "string" || getDonationRedirect(slug)) return null;
   const brand = SOURCE_BRANDS[slug];
   const project = PROJECTS.find((entry) => entry.slug === slug);
   if (project) {

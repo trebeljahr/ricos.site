@@ -8,7 +8,7 @@ import {
   supportedUrl,
   withReference,
 } from "./donation";
-import { getDonationSource, SOURCE_BRANDS } from "./donationSources";
+import { getDonationRedirect, getDonationSource, SOURCE_BRANDS } from "./donationSources";
 import { PROJECTS } from "./projects";
 
 describe("getDonationSource", () => {
@@ -21,10 +21,19 @@ describe("getDonationSource", () => {
     });
   });
 
-  it("accepts every catalogue slug", () => {
-    for (const { slug } of PROJECTS) {
+  it("accepts catalogue projects that use donations", () => {
+    for (const { slug } of PROJECTS.filter((project) => project.slug !== "raptor-runner")) {
       expect(getDonationSource(slug)?.slug, slug).toBe(slug);
     }
+  });
+
+  it("routes Raptor Runner support to Steam instead of donations", () => {
+    expect(getDonationSource("raptor-runner")).toBeNull();
+    expect(getDonationRedirect("raptor-runner")).toBe(
+      "https://store.steampowered.com/app/5035590/Raptor_Runner/",
+    );
+    expect(getDonationRedirect("fractal-garden")).toBeNull();
+    expect(getDonationRedirect(["raptor-runner"])).toBeNull();
   });
 
   it("knows projects that are not on /projects yet", () => {

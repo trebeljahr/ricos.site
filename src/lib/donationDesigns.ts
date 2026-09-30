@@ -272,20 +272,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
     cardTitle: "Support Mesozoic Protocol",
     thanks: "Thank you for supporting the next defense. See you on the field.",
   },
-  "raptor-runner": {
-    ...night,
-    paymentOptions: paymentOptions(
-      ["🐾", "A small step"],
-      ["🥚", "For the next hatchling"],
-      ["🦎", "Keep the raptor running"],
-      ["🦖", "A giant leap"],
-    ),
-    accent: "#f0c391",
-    headingFont: "mono",
-    invitation: "Another run. Another near miss. Help this little raptor keep going.",
-    cardTitle: "Support Raptor Runner",
-    thanks: "Thank you for supporting Raptor Runner. Good luck on your next run.",
-  },
   "quaternius-showcase": {
     ...studio,
     paymentOptions: paymentOptions(

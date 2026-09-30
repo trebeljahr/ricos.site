@@ -7,7 +7,7 @@ type HomePageSectionProps = {
   title: ReactNode;
   cardGalleryProps: CardGalleryProps;
   description?: SectionDescription["content"];
-  linkElem?: JSX.Element;
+  linkElem?: React.JSX.Element;
   carousel?: boolean;
   // Inline description for sections without a Velite section description.
   children?: ReactNode;

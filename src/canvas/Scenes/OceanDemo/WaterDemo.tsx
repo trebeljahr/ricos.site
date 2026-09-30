@@ -60,7 +60,7 @@ export default function WaterDemo() {
       <ambientLight />
       <directionalLight position={[0, 10, 0]} intensity={1} />
 
-      <fogExp2 ref={fogRef} attach="fog" color="#0086ad" density={0.02} />
+      <fogExp2 ref={fogRef} attach="fog" args={["#0086ad", 0.02]} />
       <color ref={colorRef} attach="background" args={["#0086ad"]} />
       <OceanSurface position={[0, waterHeight, 0]} />
       <Terrain />

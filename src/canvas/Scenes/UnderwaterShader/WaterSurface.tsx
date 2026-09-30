@@ -100,7 +100,7 @@ const waterFragmentShader = /* glsl */ `
 `;
 
 export function WaterSurface({ position = [0, 0, 0] as [number, number, number], size = 500 }) {
-  const materialRef = useRef<CustomShaderMaterialType>();
+  const materialRef = useRef<CustomShaderMaterialType | undefined>(undefined);
 
   const uniforms = useMemo(
     () => ({

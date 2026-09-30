@@ -1,5 +1,5 @@
 import path from "node:path";
-import fs from "fs-extra";
+import fs from "node:fs/promises";
 import matter from "gray-matter";
 
 const markdownDirectory = path.join(process.cwd(), "src/content/Notes/booknotes");

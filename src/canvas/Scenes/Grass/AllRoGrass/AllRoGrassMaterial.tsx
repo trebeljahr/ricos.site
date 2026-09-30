@@ -19,7 +19,7 @@ export type GrassMaterialType = typeof GrassMaterial & Material & ShaderMaterial
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
-    grassMaterial: ReactThreeFiber.Node<GrassMaterialType, typeof GrassMaterial>;
+    grassMaterial: ReactThreeFiber.ThreeElement<typeof GrassMaterial>;
   }
 }
 

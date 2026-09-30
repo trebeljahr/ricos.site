@@ -2,10 +2,10 @@ import type { DataTexture } from "three";
 
 export function fillPositionTexture(texture: DataTexture, bounds: number) {
   const bounds_half = bounds / 2;
-  const data =
-    texture.image.data instanceof Uint8Array || texture.image.data instanceof Float32Array
-      ? texture.image.data
-      : new Float32Array(texture.source.data.buffer);
+  const data = texture.image.data;
+  if (!(data instanceof Uint8Array) && !(data instanceof Float32Array)) {
+    throw new TypeError("Particle textures require Uint8Array or Float32Array data");
+  }
 
   for (let k = 0, kl = data.length; k < kl; k += 4) {
     const x = Math.random() * bounds - bounds_half;
@@ -22,10 +22,10 @@ export function fillPositionTexture(texture: DataTexture, bounds: number) {
 }
 
 export function fillVelocityTexture(texture: DataTexture) {
-  const data =
-    texture.image.data instanceof Uint8Array || texture.image.data instanceof Float32Array
-      ? texture.image.data
-      : new Float32Array(texture.source.data.buffer);
+  const data = texture.image.data;
+  if (!(data instanceof Uint8Array) && !(data instanceof Float32Array)) {
+    throw new TypeError("Particle textures require Uint8Array or Float32Array data");
+  }
 
   for (let k = 0, kl = data.length; k < kl; k += 4) {
     const x = Math.random() - 0.5;

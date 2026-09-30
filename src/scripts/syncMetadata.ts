@@ -37,7 +37,7 @@ async function main() {
 
   // 2. Add missing entries (in S3 but not in metadata)
   const missingKeys = [...s3Keys].filter((key) => !metadata[key]);
-  console.log(`Found ${missingKeys.size || missingKeys.length} keys in S3 missing from metadata.`);
+  console.log(`Found ${missingKeys.length} keys in S3 missing from metadata.`);
 
   if (missingKeys.length > 0) {
     const progress = new SingleBar(

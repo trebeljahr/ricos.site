@@ -1,5 +1,5 @@
 import { useFBO } from "@react-three/drei";
-import { createPortal, extend, type Object3DNode, useFrame } from "@react-three/fiber";
+import { createPortal, extend, type ThreeElement, useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import {
   AdditiveBlending,
@@ -22,7 +22,7 @@ extend({ SimulationMaterial: SimulationMaterial });
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
-    simulationMaterial: Object3DNode<SimulationMaterial, typeof SimulationMaterial>;
+    simulationMaterial: ThreeElement<typeof SimulationMaterial>;
   }
 }
 
@@ -91,15 +91,11 @@ export const FBOParticles = () => {
           <bufferGeometry>
             <bufferAttribute
               attach="attributes-position"
-              count={positions.length / 3}
-              array={positions}
-              itemSize={3}
+              args={[positions, 3]}
             />
             <bufferAttribute
               attach="attributes-uv"
-              count={uvs.length / 2}
-              array={uvs}
-              itemSize={2}
+              args={[uvs, 2]}
             />
           </bufferGeometry>
         </mesh>,
@@ -109,9 +105,7 @@ export const FBOParticles = () => {
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
-            count={particlesPosition.length / 3}
-            array={particlesPosition}
-            itemSize={3}
+            args={[particlesPosition, 3]}
           />
         </bufferGeometry>
         <shaderMaterial

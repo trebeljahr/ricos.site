@@ -5,7 +5,6 @@ import {
   CameraHelper,
   type DirectionalLight,
   type FogExp2,
-  type Light,
   PCFSoftShadowMap,
   Vector3,
 } from "three";
@@ -83,14 +82,14 @@ export const MovingSkyLight = () => {
     <>
       <color attach="background" args={["#f9f1bd"]} />
       <ambientLight intensity={0.2} />
-      <fogExp2 ref={fogRef} attach="fog" color="#fbf2b9" density={0.01} />
+      <fogExp2 ref={fogRef} attach="fog" args={["#fbf2b9", 0.01]} />
       <directionalLight ref={dirLightRef} color="#fff0bd" />
     </>
   );
 };
 
-export default function useShadowHelper(ref: MutableRefObject<Light | undefined>) {
-  const helper = useRef<CameraHelper>();
+export default function useShadowHelper(ref: MutableRefObject<DirectionalLight | undefined>) {
+  const helper = useRef<CameraHelper | undefined>(undefined);
   const scene = useThree((state) => state.scene);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually

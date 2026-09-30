@@ -23,7 +23,8 @@ import {
 } from "src/lib/getImgWidthAndHeightDuringBuild";
 import { rehypeTocSpy } from "src/lib/rehypeTocSpy";
 import { remarkResolveRedirects } from "src/lib/remarkResolveRedirects";
-import type { Node, Pluggable } from "unified/lib";
+import type { Pluggable } from "unified";
+import type { Node } from "unist";
 import { SKIP, visit } from "unist-util-visit";
 import { defineConfig, s, type ZodMeta } from "velite";
 import seoMetadata from "./src/content/seo-metadata.json";
@@ -448,6 +449,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     seoOgImage: string;
     seoOgImageAlt: string;
     hasDemos: boolean;
+    hasMath: boolean;
   }
 > => {
   const remarkPlugins: Pluggable[] = [

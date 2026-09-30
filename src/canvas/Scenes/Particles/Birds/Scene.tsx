@@ -26,10 +26,10 @@ export function Birds({ amount = 1000 }) {
 
   const gpuCompute = useGpuCompute(textureWidth);
 
-  const velocityVariable = useRef<Variable>();
-  const positionVariable = useRef<Variable>();
-  const positionUniforms = useRef<Uniforms>();
-  const velocityUniforms = useRef<Uniforms>();
+  const velocityVariable = useRef<Variable | undefined>(undefined);
+  const positionVariable = useRef<Variable | undefined>(undefined);
+  const positionUniforms = useRef<Uniforms | undefined>(undefined);
+  const velocityUniforms = useRef<Uniforms | undefined>(undefined);
   const birdUniforms = useMemo<Uniforms>(
     () => ({
       color: { value: new Color(0xff2200) },

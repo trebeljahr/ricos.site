@@ -2,7 +2,6 @@
 // question — which published pieces belong to a theme or a tag — so they read
 // it from here rather than each keeping their own copy of the matching rules.
 
-import { byOnlyPublished } from "src/lib/utils/filters";
 import { canonicalizeTags, type Theme } from "./themesData";
 
 export type ItemCover = { src: string; alt: string; width: number; height: number } | null;
@@ -65,7 +64,7 @@ export async function loadThemeDocs(): Promise<RawDoc[]> {
     loadVeliteData("newsletters.json"),
     loadVeliteData("travelblogs.json"),
   ];
-  return buckets.flat().filter(byOnlyPublished);
+  return buckets.flat().filter((doc) => doc.published === true);
 }
 
 export function canonicalTagsByDoc(docs: RawDoc[]): Map<RawDoc, string[]> {

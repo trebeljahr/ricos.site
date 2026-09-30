@@ -1,5 +1,5 @@
 import { DataTexture, FloatType, RGBAFormat, ShaderMaterial } from "three";
-import { randFloatSpread } from "three/src/math/MathUtils";
+import { randFloatSpread } from "three/src/math/MathUtils.js";
 
 const getRandomData = (width: number, height: number) => {
   const length = width * height * 4;

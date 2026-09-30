@@ -10,7 +10,7 @@ import { SimpleGallery, SingleImage } from "./Galleries";
 import { TableOfContents } from "./TableOfContents";
 
 export const ImageRenderer = ({ src, alt }: ImgHTMLAttributes<HTMLImageElement>) => {
-  if (!src) return null;
+  if (typeof src !== "string" || !src) return null;
 
   // Strip embedded `/width: X /height: Y /` metadata but keep the rest as
   // an explicit alt if the author wrote one. Fall back to sidecar then

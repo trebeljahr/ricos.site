@@ -63,7 +63,7 @@ const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
       keywords: seo.keywords,
     }),
   };
-  const { addItem, _canAddItem, isOpen } = useInventory();
+  const { addItem, canAddItem: _canAddItem, isOpen } = useInventory();
 
   // Sample items that could be found in the game world
   const sampleItems = useMemo(

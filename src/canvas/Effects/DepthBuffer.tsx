@@ -1,11 +1,11 @@
-import { extend, type Node, useFrame, useThree } from "@react-three/fiber";
+import { extend, useFrame, useThree } from "@react-three/fiber";
 import vertexShader from "@shaders/depth2.vert";
 import fragmentShader from "@shaders/sampleDepthBuffer.frag";
 import { useEffect, useMemo, useRef } from "react";
 import { DepthTexture, LinearFilter, RGBAFormat, WebGLRenderTarget } from "three";
-import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
-import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
-import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 
 extend({ EffectComposer, ShaderPass, RenderPass });
 
@@ -22,8 +22,8 @@ const _shaderPassOptions = {
 };
 
 export const DepthBufferEffect = () => {
-  const composer = useRef<Node<EffectComposer, typeof EffectComposer>>(null!);
-  const ref = useRef<ShaderPass>();
+  const composer = useRef<EffectComposer>(null!);
+  const ref = useRef<ShaderPass | undefined>(undefined);
   const { gl, size, scene, camera } = useThree();
 
   const [target] = useMemo(() => {
@@ -58,7 +58,6 @@ export const DepthBufferEffect = () => {
   }, 1);
 
   return (
-    // @ts-expect-error: next-line
     <effectComposer ref={composer} args={[gl]}>
       {/* <renderPass attach='passes' scene={scene} camera={camera} /> */}
       {/* @ts-ignore: next-line */}

@@ -1,5 +1,7 @@
 import { useTexture } from "@react-three/drei";
-import type { MeshStandardMaterialProps } from "@react-three/fiber";
+import type { ThreeElements } from "@react-three/fiber";
+
+type MeshStandardMaterialProps = ThreeElements["meshStandardMaterial"];
 import { RepeatWrapping } from "three";
 
 export const SnowMaterial = (passedInProps: MeshStandardMaterialProps) => {

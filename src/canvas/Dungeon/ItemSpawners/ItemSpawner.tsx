@@ -15,7 +15,7 @@ export type Collectible<T> = {
   data: T;
 };
 
-export type SpawnerImplementation = <T>(props: SpawnerProps<T>) => JSX.Element;
+export type SpawnerImplementation = <T>(props: SpawnerProps<T>) => React.JSX.Element;
 
 type SpawnerProps<T> = GroupProps & {
   respawnTime?: number;
@@ -27,7 +27,7 @@ type ItemSpawnerType = <T>(
     Item: ComponentType<GroupProps>;
     data: T;
   },
-) => JSX.Element | null;
+) => React.JSX.Element | null;
 
 export const ItemSpawner: ItemSpawnerType = ({
   Item,

@@ -14,7 +14,7 @@ export const RigidBall = memo(({ position }: { position: Vector3 }) => {
 });
 
 export const RigidBallSpawner = () => {
-  const [items, setItems] = useState<JSX.Element[]>([]);
+  const [items, setItems] = useState<React.JSX.Element[]>([]);
   const { camera } = useThree();
   const nextId = useRef(0);
 

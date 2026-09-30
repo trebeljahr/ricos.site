@@ -72,7 +72,7 @@ const InProvider = () => {
       {inView ? (
         <>
           <Toolbar />
-          <PanelGroup direction="horizontal">
+          <PanelGroup orientation="horizontal">
             <Panel defaultSize={70}>
               <CodeEditor />
             </Panel>

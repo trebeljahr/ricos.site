@@ -30,7 +30,6 @@ export async function createSimplifiedGeometry(
   if (params.sparse) flags.push("Sparse");
   if (params.errorAbsolute) flags.push("ErrorAbsolute");
   if (params.prune) {
-    MeshoptSimplifier.useExperimentalFeatures = true;
     flags.push("Prune");
   }
 

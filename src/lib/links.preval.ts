@@ -1,6 +1,5 @@
 import { lstat, readdir } from "node:fs/promises";
 import path from "node:path";
-import preval from "next-plugin-preval";
 import { getShaderFileNames } from "./getShaderFileNames";
 import { turnKebabIntoTitleCase } from "./utils/turnKebapIntoTitleCase";
 
@@ -54,10 +53,3 @@ export async function getAllLinksForR3FDemos(): Promise<FoldersWithLinks> {
 }
 
 export type NavLinks = Record<string, { name: string; url: string }[]>;
-
-async function getData() {
-  const links = await getAllLinksForR3FDemos();
-  return { links };
-}
-
-export default preval(getData());

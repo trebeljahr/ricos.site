@@ -1,4 +1,4 @@
-import { extend, type Object3DNode, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { extend, type ThreeElement, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import { PlaneGeometry, RepeatWrapping, TextureLoader, Vector3 } from "three";
 import { Water } from "three-stdlib";
@@ -7,7 +7,7 @@ extend({ Water });
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
-    water: Object3DNode<Water, typeof Water>;
+    water: ThreeElement<typeof Water>;
   }
 }
 

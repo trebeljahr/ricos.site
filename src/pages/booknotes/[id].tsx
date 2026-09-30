@@ -48,11 +48,11 @@ type Props = {
   backlinks: BacklinkItem[];
 };
 
-const BooknoteComponent = ({ booknote }: Props) => {
+const BooknoteComponent = ({ booknote }: Pick<Props, "booknote">) => {
   return <MDXContent source={booknote.content} />;
 };
 
-const BooknotesWithDefault = ({ booknote }: Props) => {
+const BooknotesWithDefault = ({ booknote }: Pick<Props, "booknote">) => {
   if (!booknote?.content) {
     return (
       <div>

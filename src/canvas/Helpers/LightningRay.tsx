@@ -13,10 +13,7 @@ export type FixedLightningStrike = Object3D &
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
-    lightningStrikeGeometry: ReactThreeFiber.Node<
-      LightningStrike,
-      typeof LightningStrike & { rayParameters: RayParameters }
-    >;
+    lightningStrikeGeometry: ReactThreeFiber.ThreeElement<typeof LightningStrike>;
   }
 }
 

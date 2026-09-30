@@ -5,7 +5,7 @@ import { EffectComposer } from "@react-three/postprocessing";
 import { Physics, type RapierRigidBody, RigidBody } from "@react-three/rapier";
 import { type PropsWithChildren, useEffect, useRef } from "react";
 import { Color, type FogExp2, type Mesh, Vector3 } from "three";
-import { clamp, lerp } from "three/src/math/MathUtils";
+import { clamp, lerp } from "three/src/math/MathUtils.js";
 import { UnderwaterEffect } from "./UnderwaterEffect";
 import { WaterSurface } from "./WaterSurface";
 
@@ -242,7 +242,7 @@ export default function UnderwaterShaderDemo() {
       />
       <directionalLight position={[-20, 60, -10]} intensity={underwater ? 0.15 : 0.5} />
 
-      <fogExp2 ref={fogRef} attach="fog" color="#061a22" density={0.001} />
+      <fogExp2 ref={fogRef} attach="fog" args={["#061a22", 0.001]} />
       <color attach="background" args={["#87CEEB"]} />
 
       <WaterSurface position={[0, waterHeight, 0]} size={1000} />

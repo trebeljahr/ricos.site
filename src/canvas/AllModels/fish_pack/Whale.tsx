@@ -53,8 +53,8 @@ export const InstancedWhale = forwardRef(function Whale(
 
   return (
     <group {...props} ref={innerRef}>
-      <instancedMesh geometry={nodes.Whale_1.geometry} material={materials.Top} />
-      <instancedMesh geometry={nodes.Whale_2.geometry} material={materials.Bottom} />
+      <instancedMesh args={[nodes.Whale_1.geometry, materials.Top, 1]} />
+      <instancedMesh args={[nodes.Whale_2.geometry, materials.Bottom, 1]} />
     </group>
   );
 });

@@ -17,8 +17,6 @@ function Particles({ positions, colors }: { positions: Float32Array; colors: Flo
         <bufferAttribute usage={DynamicDrawUsage} attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
       <PointMaterial
-        emissive={new Color(colors[0], colors[1], colors[2])}
-        emissiveIntensity={1}
         transparent
         vertexColors
         size={2}

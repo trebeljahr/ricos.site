@@ -4,7 +4,7 @@ import { Tree1 } from "@r3f/AllModels/simple_nature_pack";
 import { CylinderCollider, InstancedRigidBodies, RigidBody } from "@react-three/rapier";
 import { useRef } from "react";
 import { Vector3, type Vector3Tuple } from "three";
-import { randFloat } from "three/src/math/MathUtils";
+import { randFloat } from "three/src/math/MathUtils.js";
 import { floorLevel } from "../Helpers/Obstacles";
 
 export const InstancedTreesWithPhysics = () => {

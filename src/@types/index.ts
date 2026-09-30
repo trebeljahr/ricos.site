@@ -2,6 +2,7 @@ import type { Material, Mesh } from "three";
 import type { GLTF } from "three-stdlib";
 
 export type ImageProps = {
+  alt?: string;
   width: number;
   height: number;
   src: string;

@@ -96,7 +96,7 @@ export const ChunkProvider = ({ children }: PropsWithChildren) => {
     renderedOnce.current = true;
   });
 
-  const workerRef = useRef<Worker>();
+  const workerRef = useRef<Worker | undefined>(undefined);
   const prevChunksRef = useRef(new Set<string>());
 
   useEffect(() => {

@@ -7,7 +7,6 @@ import {
   Color,
   type ColorRepresentation,
   DoubleSide,
-  type Material,
   type Mesh,
   Vector2,
   Vector4,
@@ -26,10 +25,7 @@ import { extend } from "@react-three/fiber";
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
-    healthBarMaterial: ReactThreeFiber.Node<
-      typeof HealthBarMaterial & Material,
-      typeof HealthBarMaterial
-    >;
+    healthBarMaterial: ReactThreeFiber.ThreeElement<typeof HealthBarMaterial>;
   }
 }
 
@@ -73,7 +69,7 @@ export const GenericHealthBar = ({
   rotation = [0, 0, 0],
   scale = [1, 1, 1],
   // biome-ignore lint/correctness/noUnusedVariables: kept for future use
-  _lowHealthThreshold = 0.2,
+  lowHealthThreshold: _lowHealthThreshold = 0.2,
   fillColor = "#15ff00",
   secondColor,
   bgColor = "#7f7e7e",

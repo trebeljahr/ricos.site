@@ -6,9 +6,7 @@
 import "dotenv/config";
 import formData from "form-data";
 import Mailgun from "mailgun.js";
-import type { CreateUpdateMailListMembers } from "mailgun.js/interfaces/mailListMembers";
 
-// @ts-expect-error:next-line
 const mailgun = new Mailgun(formData);
 
 const DOMAIN = "newsletter.trebeljahr.com";
@@ -68,8 +66,9 @@ export async function activateEmailListMember(email: string) {
   const mg = createMgClient();
 
   const _newMember = await mg.lists.members.updateMember(newsletterListMail, email, {
+    address: email,
     subscribed: "yes",
-  } as unknown as CreateUpdateMailListMembers);
+  });
 }
 
 export async function sendEmail(data: EmailData) {

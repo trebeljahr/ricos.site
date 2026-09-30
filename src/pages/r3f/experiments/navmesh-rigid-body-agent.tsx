@@ -135,13 +135,13 @@ const LightningAttack = () => {
   useFrame(() => {
     const enemy = enemyQuery.first;
     const player = playerQuery.first;
-    if (!enemy || !player) return;
+    if (!enemy?.rigidBody.group || !player?.rigidBody.group) return;
 
     if (enemy.hasReachedPlayer) {
       if (rayPositions === null) {
         setRayPositions({
-          sourceOffset: enemy.rigidBody.translation() as Vector3,
-          destOffset: player.rigidBody.translation() as Vector3,
+          sourceOffset: enemy.rigidBody.group.translation() as Vector3,
+          destOffset: player.rigidBody.group.translation() as Vector3,
         });
       }
     } else if (rayPositions !== null) {

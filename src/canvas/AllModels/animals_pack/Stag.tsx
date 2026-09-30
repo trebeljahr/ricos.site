@@ -23,7 +23,6 @@ type GLTFResult = GLTF & {
     IKFrontLegR: Bone;
   };
   materials: {
-    "Material.001": MeshStandardMaterial;
     "Material.003": MeshStandardMaterial;
     Material: MeshStandardMaterial;
     "Material.010": MeshStandardMaterial;

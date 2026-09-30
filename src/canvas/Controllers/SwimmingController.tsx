@@ -3,7 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { type RapierRigidBody, RigidBody } from "@react-three/rapier";
 import { type PropsWithChildren, useEffect, useRef } from "react";
 import { Vector3 } from "three";
-import { clamp, lerp } from "three/src/math/MathUtils";
+import { clamp, lerp } from "three/src/math/MathUtils.js";
 
 const SPEED = 5;
 const direction = new Vector3();

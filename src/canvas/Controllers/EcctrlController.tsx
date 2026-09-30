@@ -13,7 +13,7 @@ const animationSet = {
   jumpLand: "Jump_Land",
 };
 
-export type SimpleModelType = (props: JSX.IntrinsicElements["group"]) => JSX.Element;
+export type SimpleModelType = (props: JSX.IntrinsicElements["group"]) => React.JSX.Element;
 
 export type ForwardedRefModelType = ForwardRefExoticComponent<
   Omit<GroupProps, "ref"> & RefAttributes<Group>

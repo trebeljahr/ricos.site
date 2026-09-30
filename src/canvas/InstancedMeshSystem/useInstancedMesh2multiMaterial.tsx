@@ -1,5 +1,5 @@
 import { useGLTF } from "@react-three/drei";
-import { extend, type Object3DNode } from "@react-three/fiber";
+import { extend, type ThreeElement } from "@react-three/fiber";
 import { InstancedMesh2 } from "@three.ez/instanced-mesh";
 import type { GLTFResult } from "src/@types";
 import { Mesh, Object3D, Vector3 } from "three";
@@ -9,7 +9,7 @@ import { useInstancedMesh2 } from "./useInstancedMesh2";
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
-    instancedMesh2: Object3DNode<InstancedMesh2 & Object3D, typeof InstancedMesh2>;
+    instancedMesh2: ThreeElement<typeof InstancedMesh2>;
   }
 }
 

@@ -1,6 +1,6 @@
 import { shaderMaterial } from "@react-three/drei";
 import { extend, type ReactThreeFiber } from "@react-three/fiber";
-import { DoubleSide, type Material, type Texture } from "three";
+import { DoubleSide, type Texture } from "three";
 import grassFragmentShader from "./shaders/grassFragmentShader.glsl";
 import grassVertexShader from "./shaders/grassVertexShader.glsl";
 
@@ -30,9 +30,6 @@ extend({ StylizedGrassMaterial });
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
-    stylizedGrassMaterial: ReactThreeFiber.Node<
-      typeof StylizedGrassMaterial & Material,
-      typeof StylizedGrassMaterial
-    >;
+    stylizedGrassMaterial: ReactThreeFiber.ThreeElement<typeof StylizedGrassMaterial>;
   }
 }

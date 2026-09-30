@@ -17,7 +17,7 @@ export const ChunkPositionUpdater = ({
   const indicesPerChunk = useRef<Record<string, number[]>>({});
   const prevChunksRef = useRef<Set<string>>(new Set());
 
-  const workerRef = useRef<Worker>();
+  const workerRef = useRef<Worker | undefined>(undefined);
 
   useEffect(() => {
     workerRef.current = new Worker(new URL("../my-workers/noiseWorker.ts", import.meta.url));

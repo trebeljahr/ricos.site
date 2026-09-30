@@ -329,12 +329,12 @@ export function DonationCard({
                             variants={tileVariants}
                             className="m-0 text-sm donation-muted text-gray-600 sm:col-span-2 dark:text-gray-300"
                           >
-                            Stop or change it any time on your own:{" "}
+                            Change or cancel your monthly support at any time:{" "}
                             <ExternalLink
                               href={manageDonationUrl}
                               className="font-semibold text-accent hover:underline"
                             >
-                              manage your donation
+                              Manage monthly donation
                             </ExternalLink>
                             .
                           </motion.p>
@@ -937,7 +937,7 @@ export function DonationThanks({ className, backTo, message }: ThanksProps) {
                   href={manageDonationUrl}
                   className="font-semibold text-accent hover:underline"
                 >
-                  Manage your donation
+                  Manage monthly donation
                 </ExternalLink>
               </p>
             )}

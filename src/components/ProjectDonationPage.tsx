@@ -148,7 +148,7 @@ export function ProjectDonationPage({
         <footer className={styles.footer}>
           <div>
             {manageDonationUrl && (
-              <ExternalLink href={manageDonationUrl}>Manage your donation</ExternalLink>
+              <ExternalLink href={manageDonationUrl}>Manage monthly donation</ExternalLink>
             )}
             <a href={backTo.href}>
               Back to {source.name} <span aria-hidden="true">↗</span>

@@ -169,7 +169,7 @@ export default function DonatePage({
           {manageDonationUrl && (
             <p className="mt-group mb-0 text-center text-sm text-gray-600 dark:text-gray-400">
               <ExternalLink href={manageDonationUrl} className="hover:text-accent">
-                Manage your donation
+                Manage monthly donation
               </ExternalLink>
             </p>
           )}

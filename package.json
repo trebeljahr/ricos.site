@@ -122,7 +122,7 @@
     "meshoptimizer": "^1.0.1",
     "motion": "^12.38.0",
     "nanoid": "^5.1.7",
-    "next": "^16.2.1",
+    "next": "16.3.3",
     "next-plausible": "^4.0.0",
     "next-themes": "^0.4.6",
     "poisson-disk-sampling": "^2.3.1",
@@ -260,7 +260,7 @@
   "pnpm": {
     "patchedDependencies": {
       "velite@0.3.1": "patches/velite@0.3.1.patch",
-      "next@16.2.1": "patches/next@16.2.1.patch"
+      "next@16.3.3": "patches/next@16.3.3.patch"
     }
   },
   "packageManager": "pnpm@10.33.2"

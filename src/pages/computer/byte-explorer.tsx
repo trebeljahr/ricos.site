@@ -12,29 +12,24 @@ export default function ByteExplorerPage() {
       noindex
       fillViewport
     >
-      <main className="mx-auto w-full max-w-7xl px-4 pb-24 pt-8 sm:px-8 sm:pt-12">
+      <main className="mx-auto w-full max-w-6xl px-3 pb-16 pt-5 sm:px-6 sm:pt-8">
         <Link
           href="/computer"
           className="text-sm text-gray-500 hover:text-cyan-600 dark:hover:text-cyan-300"
         >
           ← All computer demos
         </Link>
-        <header className="mb-10 mt-12 sm:mb-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-500">
-            Experiment 01 / data representation
-          </p>
-          <h1 className="mt-4 text-4xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-6xl">
-            One byte, many meanings.
+        <header className="mb-4 mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <h1 className="m-0 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
+            One byte, many meanings
           </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-400">
-            Eight bits hold a value. An encoding rule gives it meaning.
+          <p className="m-0 text-sm text-gray-600 dark:text-gray-400">
+            Flip a switch. Change the reading.
           </p>
         </header>
         <ByteExplorer />
-        <p className="mt-6 max-w-3xl text-sm leading-6 text-gray-500 dark:text-gray-400">
-          Unicode is shown as a code point. UTF-8 can require multiple bytes, so a single byte does
-          not always represent a complete character. The E4M3 float here is a teaching format with
-          IEEE-style special values.
+        <p className="mt-4 max-w-3xl text-xs leading-5 text-gray-500 dark:text-gray-400">
+          Unicode shows a code point. UTF-8 characters may need more than one byte.
         </p>
       </main>
     </Layout>

@@ -33,3 +33,38 @@ export function rgb332(value: number): { red: number; green: number; blue: numbe
   const hex = `#${[red, green, blue].map((channel) => channel.toString(16).padStart(2, "0")).join("")}`;
   return { red, green, blue, hex };
 }
+
+/** xterm's 256-color indexed palette: 16 system colors, 6³ cube, 24 grays. */
+export function xtermColor(value: number): string {
+  const system = [
+    "#000000",
+    "#800000",
+    "#008000",
+    "#808000",
+    "#000080",
+    "#800080",
+    "#008080",
+    "#c0c0c0",
+    "#808080",
+    "#ff0000",
+    "#00ff00",
+    "#ffff00",
+    "#0000ff",
+    "#ff00ff",
+    "#00ffff",
+    "#ffffff",
+  ];
+  if (value < 16) return system[value];
+  if (value >= 232) {
+    const channel = 8 + (value - 232) * 10;
+    return `rgb(${channel}, ${channel}, ${channel})`;
+  }
+  const cube = value - 16;
+  const level = (step: number) => (step === 0 ? 0 : 55 + step * 40);
+  return `rgb(${level(Math.floor(cube / 36))}, ${level(Math.floor(cube / 6) % 6)}, ${level(cube % 6)})`;
+}
+
+/** One byte used only as hue; saturation and lightness are held constant. */
+export function hueColor(value: number): string {
+  return `hsl(${Math.round((value * 360) / 256)} 80% 50%)`;
+}

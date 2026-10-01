@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   asciiCharacter,
   byteBits,
@@ -19,35 +20,26 @@ const presets = [
   { label: "CLEAR", value: 0 },
 ];
 
-function Meter({ label, value, detail }: { label: string; value: string; detail?: string }) {
+function Meter({ label, value }: { label: string; value: string }) {
   return (
     <div className={styles.meter}>
       <dt>{label}</dt>
-      <dd title={detail}>{value}</dd>
+      <dd>{value}</dd>
     </div>
   );
 }
 
-function ColorCell({
-  label,
-  detail,
-  color,
-}: {
-  label: string;
-  detail: string;
-  color: string | null;
-}) {
+function ColorCell({ label, color }: { label: string; color: string | null }) {
   return (
     <div className={styles.colorCell}>
       <div
         className={styles.colorChip}
         style={{ backgroundColor: color ?? "transparent" }}
         role="img"
-        aria-label={`${label}: ${detail}`}
+        aria-label={`${label} color ${color ?? "unavailable"}`}
       />
       <div>
         <strong>{label}</strong>
-        <span>{detail}</span>
       </div>
     </div>
   );
@@ -56,6 +48,7 @@ function ColorCell({
 /** Portable demo: the panel can be placed in MDX without page-specific state. */
 export function ByteExplorer() {
   const [input, setInput] = useState("01000001");
+  const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
   const value = parseByteBits(input);
   const bits = value === null ? null : byteBits(value);
   const rgb = value === null ? null : rgb332(value);
@@ -73,6 +66,7 @@ export function ByteExplorer() {
     const next = bits.split("");
     next[index] = next[index] === "1" ? "0" : "1";
     setInput(next.join(""));
+    playSwitch();
   }
 
   return (
@@ -81,22 +75,27 @@ export function ByteExplorer() {
       <div className={`${styles.screw} ${styles.screwRight}`} aria-hidden="true" />
       <div className={styles.nameplate}>
         <div>
-          <span className={styles.serial}>ИНСТРУМЕНТ / 01</span>
+          <span className={styles.serial}>01 / 8 BIT</span>
           <strong>BYTE INTERPRETER</strong>
         </div>
-        <span className={styles.status}>
-          <i aria-hidden="true" /> SYSTEM READY
-        </span>
+        <button
+          type="button"
+          className={styles.soundButton}
+          onClick={toggleSound}
+          aria-pressed={soundEnabled}
+          aria-label={`Sound ${soundEnabled ? "on" : "off"}. Toggle sound.`}
+        >
+          <i aria-hidden="true" /> SOUND {soundEnabled ? "ON" : "OFF"}
+        </button>
       </div>
 
       <div className={styles.workbench}>
         <div className={styles.controls}>
           <div className={styles.sectionHead}>
-            <span>01 / INPUT REGISTER</span>
-            <span>8 BIT</span>
+            <span>INPUT</span>
           </div>
           <label className={styles.inputLabel} htmlFor="byte-bits">
-            BINARY INPUT
+            BINARY
           </label>
           <input
             id="byte-bits"
@@ -110,9 +109,7 @@ export function ByteExplorer() {
             className={styles.bitInput}
           />
           <p id="byte-help" className={styles.inputHelp}>
-            {value === null
-              ? "ENTER EIGHT 0s OR 1s · SPACES OK"
-              : "SET REGISTER WITH SWITCHES OR KEYBOARD"}
+            {value === null ? "ENTER EIGHT 0s OR 1s · SPACES OK" : ""}
           </p>
           <fieldset className={styles.switchBank} aria-label="Bit switches">
             {weights.map((weight, index) => (
@@ -128,7 +125,6 @@ export function ByteExplorer() {
                 >
                   <span className={styles.switchHandle} />
                 </button>
-                <span className={styles.bitNumber}>{bits?.[index] ?? "–"}</span>
               </div>
             ))}
           </fieldset>
@@ -137,7 +133,10 @@ export function ByteExplorer() {
               <button
                 key={preset.label}
                 type="button"
-                onClick={() => setInput(byteBits(preset.value))}
+                onClick={() => {
+                  setInput(byteBits(preset.value));
+                  playButton();
+                }}
               >
                 {preset.label}
               </button>
@@ -147,41 +146,34 @@ export function ByteExplorer() {
 
         <div className={styles.readout} aria-live="polite">
           <div className={styles.sectionHead}>
-            <span>02 / DATA DISPLAY</span>
-            <span>LIVE</span>
+            <span>READOUT</span>
           </div>
           <div className={styles.screen}>
             <div className={styles.screenTop}>
-              <span>BYTE VALUE</span>
-              <span>{value === null ? "INPUT ERROR" : "SIGNAL STABLE"}</span>
+              <span>UNSIGNED / DECIMAL</span>
+              {value === null && <span>INPUT ERROR</span>}
             </div>
-            <div className={styles.screenValue}>
-              {value === null ? "---" : value.toString().padStart(3, "0")}
-            </div>
+            <div className={styles.screenValue}>{value === null ? "---" : value.toString()}</div>
             <div className={styles.screenBottom}>
               <span>
                 HEX {value === null ? "--" : value.toString(16).padStart(2, "0").toUpperCase()}
               </span>
-              <span>BIN {bits ?? "--------"}</span>
             </div>
           </div>
           <dl className={styles.meters}>
+            <Meter label="SIGNED" value={value === null ? "—" : String(signedByte(value))} />
             <Meter
-              label="SIGNED / TWO'S COMPLEMENT"
-              value={value === null ? "—" : String(signedByte(value))}
-            />
-            <Meter
-              label="FIXED / Q4.4"
+              label="FIXED · Q4.4"
               value={value === null ? "—" : String(signedByte(value) / 16)}
             />
             <Meter
-              label="FLOAT / E4M3*"
+              label="FLOAT · E4M3"
               value={float === null ? "—" : Number.isNaN(float) ? "NaN" : String(float)}
             />
-            <Meter label="ASCII / PRINTABLE" value={value === null ? "—" : (ascii ?? "CTRL")} />
+            <Meter label="ASCII" value={value === null ? "—" : (ascii ?? "CONTROL")} />
             <Meter label="LATIN-1" value={latin1} />
             <Meter
-              label="UNICODE / CODE POINT"
+              label="UNICODE"
               value={
                 value === null ? "—" : `U+${value.toString(16).padStart(4, "0").toUpperCase()}`
               }
@@ -192,30 +184,17 @@ export function ByteExplorer() {
 
       <div className={styles.colorSection}>
         <div className={styles.sectionHead}>
-          <span>03 / COLOR DECODERS</span>
-          <span>ONE BYTE · FOUR RULES</span>
+          <span>COLOR</span>
         </div>
         <div className={styles.colors}>
-          <ColorCell label="RGB332" detail="3R · 3G · 2B" color={rgb?.hex ?? null} />
+          <ColorCell label="RGB332" color={rgb?.hex ?? null} />
           <ColorCell
             label="GRAYSCALE"
-            detail="8-BIT LUMA"
             color={value === null ? null : `rgb(${value}, ${value}, ${value})`}
           />
-          <ColorCell
-            label="INDEXED"
-            detail="XTERM-256 PALETTE"
-            color={value === null ? null : xtermColor(value)}
-          />
-          <ColorCell
-            label="HUE"
-            detail="FIXED SATURATION / LIGHTNESS"
-            color={value === null ? null : hueColor(value)}
-          />
+          <ColorCell label="INDEXED" color={value === null ? null : xtermColor(value)} />
+          <ColorCell label="HUE" color={value === null ? null : hueColor(value)} />
         </div>
-      </div>
-      <div className={styles.footnote}>
-        * E4M3 IS AN ILLUSTRATIVE IEEE-LIKE 8-BIT FLOAT. COLOR INDEX USES THE XTERM-256 PALETTE.
       </div>
     </section>
   );

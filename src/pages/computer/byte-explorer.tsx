@@ -29,7 +29,8 @@ export default function ByteExplorerPage() {
         </header>
         <ByteExplorer />
         <p className="mt-4 max-w-3xl text-xs leading-5 text-gray-500 dark:text-gray-400">
-          Unicode shows a code point. UTF-8 characters may need more than one byte.
+          Unicode shows a code point; UTF-8 characters may need more than one byte. E4M3 is an
+          illustrative 8-bit float. Indexed color uses the xterm-256 palette.
         </p>
         <Link
           href="/computer/four-byte-explorer"

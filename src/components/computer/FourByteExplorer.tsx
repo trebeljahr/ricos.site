@@ -1,22 +1,24 @@
 import { useState } from "react";
+import { usePanelSound } from "src/hooks/usePanelSound";
 import { formatFourBytes, fourByteReadings, parseFourBytes } from "src/lib/fourByteInterpretations";
 import panel from "./ByteExplorer.module.css";
 import styles from "./FourByteExplorer.module.css";
 
 const presets = [
-  { label: "EMOJI 😀", hex: "F0 9F 98 80" },
-  { label: "FLOAT 1.0", hex: "3F 80 00 00" },
-  { label: "RED RGBA", hex: "FF 00 00 FF" },
-  { label: "TEXT TEST", hex: "54 45 53 54" },
-  { label: "−1", hex: "FF FF FF FF" },
-];
+  { label: "EMOJI 😀", hex: "F0 9F 98 80", view: "text" },
+  { label: "FLOAT 1.0", hex: "3F 80 00 00", view: "float" },
+  { label: "RED RGBA", hex: "FF 00 00 FF", view: "color" },
+  { label: "TEXT TEST", hex: "54 45 53 54", view: "text" },
+  { label: "−1", hex: "FF FF FF FF", view: "signed" },
+] as const;
 
-function Result({ label, value, note }: { label: string; value: string; note: string }) {
+type DisplayView = (typeof presets)[number]["view"];
+
+function Result({ label, value }: { label: string; value: string }) {
   return (
     <div className={styles.result}>
       <dt>{label}</dt>
       <dd>{value}</dd>
-      <span>{note}</span>
     </div>
   );
 }
@@ -24,6 +26,8 @@ function Result({ label, value, note }: { label: string; value: string; note: st
 /** Four bytes, one big-endian 32-bit word. Usable in MDX articles. */
 export function FourByteExplorer() {
   const [input, setInput] = useState("F0 9F 98 80");
+  const [view, setView] = useState<DisplayView>("text");
+  const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
   const bytes = parseFourBytes(input);
   const reading = bytes ? fourByteReadings(bytes) : null;
 
@@ -32,6 +36,7 @@ export function FourByteExplorer() {
     const next = new Uint8Array(bytes);
     next[byteIndex] ^= 1 << (7 - bitIndex);
     setInput(formatFourBytes(next));
+    playSwitch();
   }
 
   const floatText = reading
@@ -53,6 +58,15 @@ export function FourByteExplorer() {
           })
           .join("") || "EMPTY"
     : "—";
+  const display = {
+    text: { label: "UTF-8 TEXT", value: utf8Text },
+    float: { label: "FLOAT32", value: floatText },
+    signed: { label: "SIGNED INT32", value: reading ? String(reading.signed) : "—" },
+    color: {
+      label: "RGBA / HEX",
+      value: bytes ? `#${formatFourBytes(bytes).replaceAll(" ", "")}` : "—",
+    },
+  }[view];
 
   return (
     <section className={panel.machine} aria-label="Four-byte interpretation instrument">
@@ -60,21 +74,26 @@ export function FourByteExplorer() {
       <div className={`${panel.screw} ${panel.screwRight}`} aria-hidden="true" />
       <div className={panel.nameplate}>
         <div>
-          <span className={panel.serial}>ИНСТРУМЕНТ / 02</span>
+          <span className={panel.serial}>02 / 32 BIT</span>
           <strong>32-BIT INTERPRETER</strong>
         </div>
-        <span className={panel.status}>
-          <i aria-hidden="true" /> SYSTEM READY
-        </span>
+        <button
+          type="button"
+          className={panel.soundButton}
+          onClick={toggleSound}
+          aria-pressed={soundEnabled}
+          aria-label={`Sound ${soundEnabled ? "on" : "off"}. Toggle sound.`}
+        >
+          <i aria-hidden="true" /> SOUND {soundEnabled ? "ON" : "OFF"}
+        </button>
       </div>
       <div className={styles.body}>
         <div className={styles.inputSide}>
           <div className={panel.sectionHead}>
-            <span>01 / FOUR-BYTE REGISTER</span>
-            <span>BIG-ENDIAN</span>
+            <span>INPUT · BIG-ENDIAN</span>
           </div>
           <label className={panel.inputLabel} htmlFor="four-byte-hex">
-            HEX INPUT · LEFT BYTE FIRST
+            HEX / FOUR BYTES
           </label>
           <input
             id="four-byte-hex"
@@ -87,7 +106,7 @@ export function FourByteExplorer() {
             aria-describedby="four-byte-help"
           />
           <p id="four-byte-help" className={panel.inputHelp}>
-            {bytes ? "FLIP A BIT OR LOAD A PRESET" : "ENTER EXACTLY EIGHT HEX DIGITS · SPACES OK"}
+            {bytes ? "" : "ENTER EIGHT HEX DIGITS · SPACES OK"}
           </p>
           <div className={styles.byteRows}>
             {[0, 1, 2, 3].map((byteIndex) => (
@@ -123,7 +142,15 @@ export function FourByteExplorer() {
           </div>
           <div className={panel.presetRow}>
             {presets.map((preset) => (
-              <button key={preset.label} type="button" onClick={() => setInput(preset.hex)}>
+              <button
+                key={preset.label}
+                type="button"
+                onClick={() => {
+                  setInput(preset.hex);
+                  setView(preset.view);
+                  playButton();
+                }}
+              >
                 {preset.label}
               </button>
             ))}
@@ -131,45 +158,29 @@ export function FourByteExplorer() {
         </div>
         <div className={styles.outputSide} aria-live="polite">
           <div className={panel.sectionHead}>
-            <span>02 / DECODED SIGNAL</span>
-            <span>LIVE</span>
+            <span>READOUT</span>
           </div>
           <div className={`${panel.screen} ${styles.screen}`}>
             <div className={panel.screenTop}>
-              <span>32-BIT WORD</span>
-              <span>{bytes ? "SIGNAL STABLE" : "INPUT ERROR"}</span>
+              <span>{display.label}</span>
+              {!bytes && <span>INPUT ERROR</span>}
             </div>
-            <div className={styles.screenHex}>{bytes ? formatFourBytes(bytes) : "-- -- -- --"}</div>
-            <div className={panel.screenBottom}>
-              <span>MOST SIGNIFICANT BYTE → LEAST SIGNIFICANT BYTE</span>
-            </div>
+            <div className={styles.screenText}>{display.value}</div>
           </div>
           <dl className={styles.results}>
             <Result
               label="UNSIGNED INT32"
               value={reading ? reading.unsigned.toLocaleString("en-US") : "—"}
-              note="0 to 4,294,967,295"
             />
             <Result
               label="SIGNED INT32"
               value={reading ? reading.signed.toLocaleString("en-US") : "—"}
-              note="Two's complement"
             />
-            <Result
-              label="IEEE 754 FLOAT32"
-              value={floatText}
-              note="1 sign · 8 exponent · 23 fraction bits"
-            />
-            <Result
-              label="UTF-8 TEXT"
-              value={utf8Text}
-              note="1–4 code points, if the sequence is valid"
-            />
+            <Result label="IEEE 754 FLOAT32" value={floatText} />
           </dl>
           <div className={styles.colorBlock}>
             <div className={panel.sectionHead}>
-              <span>03 / RGBA COLOR</span>
-              <span>8 BITS PER CHANNEL</span>
+              <span>RGBA COLOR</span>
             </div>
             <div className={styles.colorReadout}>
               <div
@@ -199,9 +210,6 @@ export function FourByteExplorer() {
             </div>
           </div>
         </div>
-      </div>
-      <div className={panel.footnote}>
-        ONE SET OF BITS · FOUR INTERPRETATIONS. FLOAT64 / DOUBLE REQUIRES EIGHT BYTES.
       </div>
     </section>
   );

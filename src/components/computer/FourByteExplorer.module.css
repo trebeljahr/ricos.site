@@ -1,0 +1,32 @@
+.body { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+.inputSide,.outputSide { min-width: 0; padding: 17px 22px 20px; }
+.inputSide { border-right: 2px solid #4b574e; }
+.hexInput { letter-spacing: .09em; font-size: clamp(20px,2.4vw,28px); }
+.byteRows { display: grid; gap: 7px; margin-top: 16px; }
+.byteRow { display: grid; grid-template-columns: 82px 1fr; align-items: center; min-width: 0; margin: 0; padding: 0; border: 0; }
+.byteRow legend { float: left; width: 82px; padding: 0; font-size: 9px; }
+.byteRow legend b { display: block; margin-top: 2px; font-size: 13px; }
+.bits { display: grid; grid-template-columns: repeat(8,minmax(0,1fr)); gap: 4px; min-width: 0; }
+.bitButton { height: 30px; padding: 0; border: 2px solid #465249; border-radius: 2px; background: linear-gradient(#d9ddca,#8e9b8d); box-shadow: inset 0 1px #fafae6, 0 2px 1px #3a473c; color: #27342c; font: 700 14px/1 ui-monospace,monospace; cursor: pointer; transition: transform .12s, background .12s; }
+.bitButton:hover { background: #e6ecd6; }
+.bitButton:active { transform: translateY(2px); }
+.bitButton:focus-visible { outline: 2px solid #dff9ae; outline-offset: 2px; }
+.bitButton:disabled { opacity: .45; cursor: not-allowed; }
+.bitOn { background: linear-gradient(#b8d591,#6f9461); box-shadow: inset 0 0 4px #417044, 0 2px 1px #3a473c; }
+.screen { margin-top: 14px; }
+.screenHex { overflow: hidden; padding: 9px 0; font-size: clamp(21px,2.5vw,32px); letter-spacing: .08em; white-space: nowrap; }
+.results { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 14px; margin: 14px 0 0; }
+.result { min-width: 0; padding: 9px 0; border-bottom: 1px solid #58655a; }
+.result dt { color: #36453a; font-size: 9px; }
+.result dd { overflow: hidden; margin: 4px 0 0; font-size: 18px; text-overflow: ellipsis; white-space: nowrap; }
+.result span { display: block; margin-top: 2px; color: #4d5a4f; font-size: 8px; }
+.colorBlock { margin-top: 18px; }
+.colorReadout { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
+.checker { flex: 0 0 70px; width: 70px; height: 58px; border: 3px solid #445046; background-color: #eee; background-image: linear-gradient(45deg,#bbb 25%,transparent 25%),linear-gradient(-45deg,#bbb 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#bbb 75%),linear-gradient(-45deg,transparent 75%,#bbb 75%); background-position: 0 0,0 8px,8px -8px,-8px 0; background-size: 16px 16px; }
+.checker div { width: 100%; height: 100%; }
+.channels { display: flex; flex-wrap: wrap; gap: 7px 11px; }
+.channels span { font-size: 11px; white-space: nowrap; }
+.channels b { color: #415044; }
+@media (max-width: 850px) { .body { grid-template-columns: 1fr; } .inputSide { border-right: 0; border-bottom: 2px solid #4b574e; } }
+@media (max-width: 640px) { .inputSide,.outputSide { padding-left: 14px; padding-right: 14px; } .byteRow { grid-template-columns: 60px 1fr; } .byteRow legend { width: 60px; font-size: 8px; } .results { grid-template-columns: 1fr; } .screenHex { font-size: 20px; } }
+@media (prefers-reduced-motion: reduce) { .bitButton { transition: none; } }

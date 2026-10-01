@@ -1,14 +1,14 @@
-import { ByteExplorer } from "@components/computer/ByteExplorer";
+import { FourByteExplorer } from "@components/computer/FourByteExplorer";
 import Layout from "@components/Layout";
 import Link from "next/link";
 
-export default function ByteExplorerPage() {
+export default function FourByteExplorerPage() {
   return (
     <Layout
-      title="One byte, many meanings"
-      description="Explore how eight bits can become numbers, text, or color."
+      title="Four bytes, many meanings"
+      description="Read 32 bits as a float, integer, UTF-8 text, or RGBA color."
       keywords={[]}
-      url="computer/byte-explorer"
+      url="computer/four-byte-explorer"
       noindex
       fillViewport
     >
@@ -21,22 +21,17 @@ export default function ByteExplorerPage() {
         </Link>
         <header className="mb-4 mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <h1 className="m-0 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
-            One byte, many meanings
+            Four bytes, many meanings
           </h1>
           <p className="m-0 text-sm text-gray-600 dark:text-gray-400">
-            Flip a switch. Change the reading.
+            Same 32 bits. Different rules.
           </p>
         </header>
-        <ByteExplorer />
+        <FourByteExplorer />
         <p className="mt-4 max-w-3xl text-xs leading-5 text-gray-500 dark:text-gray-400">
-          Unicode shows a code point. UTF-8 characters may need more than one byte.
+          Bytes are read left to right (big-endian). UTF-8 may use all four bytes for one emoji, or
+          one byte per ASCII letter. A double-precision float needs eight bytes.
         </p>
-        <Link
-          href="/computer/four-byte-explorer"
-          className="mt-8 block border-t border-gray-300 py-5 text-sm font-medium text-gray-800 hover:text-cyan-600 dark:border-gray-700 dark:text-gray-200 dark:hover:text-cyan-300"
-        >
-          Next: four bytes, many meanings →
-        </Link>
       </main>
     </Layout>
   );

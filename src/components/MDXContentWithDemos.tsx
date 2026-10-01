@@ -3,6 +3,7 @@ import { getMDXComponent } from "mdx-bundler/client";
 import { useMemo } from "react";
 import type { MDXResult } from "src/@types";
 import { ByteExplorer } from "./computer/ByteExplorer";
+import { FourByteExplorer } from "./computer/FourByteExplorer";
 import { AxisByAxis } from "./Demos/collisionDetection/AxisByAxis";
 import { DotProductDemo } from "./Demos/collisionDetection/DotProductDemo";
 import { EarClipping } from "./Demos/collisionDetection/EarClipping";
@@ -24,6 +25,7 @@ import { MarkdownRenderers } from "./MarkdownRenderers";
 
 const allComponents = {
   ByteExplorer,
+  FourByteExplorer,
   UnitVectorDemo,
   ProjectArrowDemo,
   ProjectionDemo,

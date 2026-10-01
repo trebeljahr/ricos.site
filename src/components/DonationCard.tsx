@@ -23,7 +23,6 @@ import {
   monthlyOptions,
   oneTimeUrl,
   otherDoors,
-  quickMonthly,
   SITE_REFERENCE,
   SUPPORTED_AT_STORAGE_KEY,
   withReference,
@@ -373,7 +372,7 @@ const stripButtonClass =
   "donation-option inline-flex items-center rounded-md border-2 border-gray-200 px-4 py-2 font-semibold donation-ink text-gray-900 no-underline transition-colors hover:border-accent dark:border-gray-700 dark:text-white";
 
 /**
- * One sentence and two doors, for the end of a long post. The reader has
+ * One sentence and a link to the donation page, for the end of a long post. The reader has
  * finished, so the ask is earned. Goes quiet for a while after a donation
  * (see /donate?thanks=1), and never appears on short pages.
  */
@@ -382,8 +381,6 @@ export function DonationStrip({ className }: DonationCardProps) {
   const [supportedAt] = useDonationSupportedAt();
 
   if (isMounted && isInQuietPeriod(supportedAt)) return null;
-
-  const hasQuickLinks = Boolean(oneTimeUrl || quickMonthly.href);
 
   return (
     <aside
@@ -401,33 +398,9 @@ export function DonationStrip({ className }: DonationCardProps) {
         me room for the next one.
       </p>
       <div className="mt-stack flex flex-wrap items-center gap-tight">
-        {isMounted && hasQuickLinks ? (
-          <>
-            {oneTimeUrl && (
-              <ExternalLink
-                href={withReference(oneTimeUrl, SITE_REFERENCE)}
-                className={stripButtonClass}
-              >
-                Donate once
-              </ExternalLink>
-            )}
-            {quickMonthly.href && (
-              <ExternalLink
-                href={withReference(quickMonthly.href, SITE_REFERENCE)}
-                className={stripButtonClass}
-              >
-                {quickMonthly.label} / month
-              </ExternalLink>
-            )}
-            <Link href="/donate" className="ml-tight text-sm hover:text-accent">
-              All options
-            </Link>
-          </>
-        ) : (
-          <Link href="/donate" className={stripButtonClass}>
-            Support this site
-          </Link>
-        )}
+        <Link href="/donate" className={stripButtonClass}>
+          Donate
+        </Link>
       </div>
     </aside>
   );

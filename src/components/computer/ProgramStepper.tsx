@@ -18,10 +18,8 @@ export function ProgramStepper() {
   const [step, setStep] = useState(0);
   const [hoveredLine, setHoveredLine] = useState<number | null>(null);
   const instructionListRef = useRef<HTMLOListElement>(null);
-  const loadedLines = useMemo(
-    () => loaded.split("\n").map((text, index) => ({ number: index + 1, text })),
-    [loaded],
-  );
+  const sourceMirrorRef = useRef<HTMLDivElement>(null);
+  const sourceLines = source.split("\n");
   const { soundEnabled, toggleSound, playButton, playSwitch } = usePanelSound();
   const compilation = useMemo(() => {
     try {
@@ -40,7 +38,7 @@ export function ProgramStepper() {
       ? null
       : (compilation.program?.instructions[Math.floor(state.activeAddress / 2)] ?? null);
   const changed = source !== loaded;
-  const highlightedLine = hoveredLine ?? active?.line ?? null;
+  const highlightedLine = changed ? null : (hoveredLine ?? active?.line ?? null);
   const hasCalls = compilation.program?.instructions.some(({ opcode }) => opcode === OPCODES.CALL);
   const setBitWeights = state
     ? BIT_WEIGHTS.filter((weight) => (state.accumulator & weight) !== 0)
@@ -88,7 +86,7 @@ export function ProgramStepper() {
       Number.parseFloat(style.paddingTop) +
       editor.scrollTop;
     const line = Math.floor(y / Number.parseFloat(style.lineHeight)) + 1;
-    setHoveredLine(Math.max(1, Math.min(loadedLines.length, line)));
+    setHoveredLine(line >= 1 && line <= sourceLines.length ? line : null);
   }
 
   return (
@@ -123,39 +121,41 @@ export function ProgramStepper() {
           <label className={styles.label} htmlFor="program-source">
             WRITE A PROGRAM
           </label>
-          <textarea
-            id="program-source"
-            spellCheck={false}
-            wrap="off"
-            value={source}
-            rows={Math.max(4, Math.min(12, source.split("\n").length))}
-            onChange={(event) => {
-              setSource(event.target.value);
-              setHoveredLine(null);
-            }}
-            onMouseMove={hoverEditorLine}
-            onMouseLeave={() => setHoveredLine(null)}
-            className={styles.sourceScreen}
-            aria-describedby="program-syntax"
-          />
-          <div className={styles.sourceLines}>
-            {loadedLines.map(({ number, text }) => (
-              <button
-                type="button"
-                key={number}
-                onMouseEnter={() => setHoveredLine(number)}
-                onMouseLeave={() => setHoveredLine(null)}
-                onFocus={() => setHoveredLine(number)}
-                onBlur={() => setHoveredLine(null)}
-                className={clsx(
-                  styles.sourceLine,
-                  highlightedLine === number && styles.activeSource,
-                )}
-                aria-label={`Highlight instructions for source line ${number}: ${text.trim() || "blank"}`}
-              >
-                <b>{String(number).padStart(2, "0")}</b> {text.trim() || "·"}
-              </button>
-            ))}
+          <div className={styles.sourceFrame}>
+            <div ref={sourceMirrorRef} className={styles.sourceMirror} aria-hidden="true">
+              {sourceLines.map((_, index) => (
+                <span
+                  // biome-ignore lint/suspicious/noArrayIndexKey: mirror rows have no state and represent line positions.
+                  key={index}
+                  className={clsx(
+                    styles.sourceMirrorLine,
+                    highlightedLine === index + 1 && styles.highlightedSourceLine,
+                  )}
+                >
+                  &nbsp;
+                </span>
+              ))}
+            </div>
+            <textarea
+              id="program-source"
+              spellCheck={false}
+              wrap="off"
+              value={source}
+              rows={Math.max(4, Math.min(12, sourceLines.length))}
+              onChange={(event) => {
+                setSource(event.target.value);
+                setHoveredLine(null);
+              }}
+              onMouseMove={hoverEditorLine}
+              onMouseLeave={() => setHoveredLine(null)}
+              onScroll={(event) => {
+                if (sourceMirrorRef.current) {
+                  sourceMirrorRef.current.scrollTop = event.currentTarget.scrollTop;
+                }
+              }}
+              className={styles.sourceScreen}
+              aria-describedby="program-syntax"
+            />
           </div>
           <div className={styles.controls}>
             <button type="button" onClick={compile} className={styles.primaryButton}>
@@ -229,7 +229,7 @@ export function ProgramStepper() {
                 ))}
               </ol>
               <p className={styles.hint}>
-                Each instruction is two bytes: opcode, then operand. Hover or focus a source line to
+                Each instruction is two bytes: opcode, then operand. Hover a line in the editor to
                 see its instructions. GEN is the compiler-added halt.
               </p>
               <details className={styles.isaDetails}>
@@ -371,9 +371,9 @@ export function ProgramStepper() {
                   </span>
                 </div>
                 <p className={styles.bitExplanation}>
-                  ACC is this CPU&apos;s eight-bit working register. Each box shows one stored bit: a 1
-                  adds the number above it, while a 0 adds nothing. The total is the ACC value shown
-                  above.
+                  ACC is this CPU&apos;s eight-bit working register. Each box shows one stored bit:
+                  a 1 adds the number above it, while a 0 adds nothing. The total is the ACC value
+                  shown above.
                 </p>
                 <p className={styles.bitPhysical}>
                   On a real chip, circuits represent these 0s and 1s with voltage ranges. This is a

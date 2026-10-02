@@ -3,15 +3,14 @@
 .workbench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; margin-top: 8px; padding: 0 0 13px; background: linear-gradient(#3c4a3f, #566457); }
 .inputSide, .outputSide { min-width: 0; padding: 18px 19px 20px; background: linear-gradient(145deg, #aab3a3, #939f91); box-shadow: inset 2px 2px 3px #dce3d3, inset -2px -2px 4px #536255; }
 .label { display: block; margin: 16px 0 7px; font-size: 11px; letter-spacing: .09em; }
-.sourceScreen, .phaseScreen, .outputScreen { border: 6px solid #3c5042; border-radius: 7px; background: repeating-linear-gradient(0deg, #c6eeaa08 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, #243c29, #122518); box-shadow: inset 0 4px 10px #0009, 0 2px 0 #dce5d4; color: #c9f2aa; text-shadow: 0 0 6px #a9e9878a; }
-.sourceScreen { display: block; width: 100%; min-height: 130px; resize: vertical; padding: 10px 12px; outline: none; font: 500 15px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .01em; }
-.sourceScreen:focus { border-color: #314638; box-shadow: inset 0 4px 10px #0009, 0 0 0 2px #c0e8a8; }
-.sourceLines { display: flex; flex-wrap: wrap; gap: 4px 9px; margin-top: 9px; min-height: 22px; }
-.sourceLine { padding: 3px 5px; border: 0; border-radius: 2px; background: transparent; color: #526456; font: inherit; font-size: 10px; text-align: left; white-space: nowrap; cursor: pointer; }
-.sourceLine:hover, .sourceLine:focus-visible { background: #d9ebc0; color: #28432f; outline: 1px solid #7c9871; }
-.sourceLine b { color: #395443; }
-.activeSource { background: #d9ebc0; box-shadow: inset 0 0 0 1px #7c9871; color: #28432f; }
-.activeSource b { color: #28432f; }
+.sourceFrame, .phaseScreen, .outputScreen { border: 6px solid #3c5042; border-radius: 7px; background: repeating-linear-gradient(0deg, #c6eeaa08 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, #243c29, #122518); box-shadow: inset 0 4px 10px #0009, 0 2px 0 #dce5d4; color: #c9f2aa; text-shadow: 0 0 6px #a9e9878a; }
+.sourceFrame { position: relative; }
+.sourceFrame:focus-within { border-color: #314638; box-shadow: inset 0 4px 10px #0009, 0 0 0 2px #c0e8a8; }
+.sourceScreen, .sourceMirror { font: 500 15px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .01em; }
+.sourceScreen { position: relative; display: block; width: 100%; min-height: 118px; resize: vertical; padding: 10px 12px; border: 0; background: transparent; color: #c9f2aa; text-shadow: 0 0 6px #a9e9878a; outline: none; }
+.sourceMirror { position: absolute; inset: 0; overflow: hidden; padding: 10px 12px; pointer-events: none; }
+.sourceMirrorLine { display: block; height: 1.55em; }
+.highlightedSourceLine { margin: 0 -6px; padding: 0 6px; background: #8bbd6540; box-shadow: inset 3px 0 #c7ed9b; }
 .controls, .transport { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 15px; }
 .button, .primaryButton { min-height: 34px; padding: 6px 10px; border: 2px solid #4a594d; border-radius: 4px; background: linear-gradient(#e3e5d4, #9ba898); box-shadow: inset 0 1px #f4f4e8, 0 3px 1px #485649; color: #243329; font: inherit; font-size: 11px; cursor: pointer; transition: transform .12s, box-shadow .12s, background .12s; }
 .primaryButton { background: linear-gradient(#d5e9bd, #9fbe83); border-color: #426043; color: #1e3e24; }
@@ -19,7 +18,7 @@
 .primaryButton:hover { background: linear-gradient(#e2f4cd, #b4d399); }
 .button:active, .primaryButton:active { transform: translateY(3px); box-shadow: inset 0 2px 4px #566352; }
 .button:disabled, .primaryButton:disabled { opacity: .42; cursor: not-allowed; transform: none; box-shadow: inset 0 1px #f4f4e8, 0 2px 1px #485649; }
-.button:focus-visible, .primaryButton:focus-visible, .sourceScreen:focus-visible, .timeline:focus-visible, .isaDetails summary:focus-visible { outline: 3px solid #e6ffb9; outline-offset: 3px; }
+.button:focus-visible, .primaryButton:focus-visible, .sourceFrame:focus-within, .timeline:focus-visible, .isaDetails summary:focus-visible { outline: 3px solid #e6ffb9; outline-offset: 3px; }
 .hint { margin: 10px 0 0; color: #415446; font-size: 10px; font-weight: 500; line-height: 1.45; letter-spacing: 0; }
 .hint strong { color: #6b392e; }
 .error { margin: 12px 0 0; padding: 9px; border: 1px solid #8a4c3c; background: #dfb8a4; color: #602d22; font-size: 11px; line-height: 1.45; }

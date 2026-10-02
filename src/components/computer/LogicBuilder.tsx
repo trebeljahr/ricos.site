@@ -3,6 +3,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   type Circuit,
   BLUEPRINTS,
+  BLUEPRINT_FAMILIES,
+  BLUEPRINT_RECIPES,
+  type BlueprintFamily,
   GATE_NAMES,
   type LogicGate,
   type GateType,
@@ -91,7 +94,7 @@ export function LogicBuilder() {
   const [selected, setSelected] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [circuitSearch, setCircuitSearch] = useState("");
-  const [circuitFamily, setCircuitFamily] = useState<"transistor" | "nand" | "examples">("transistor");
+  const [circuitFamily, setCircuitFamily] = useState<BlueprintFamily | "examples">("transistor");
   const [menu, setMenu] = useState<{
     x: number;
     y: number;
@@ -445,7 +448,7 @@ export function LogicBuilder() {
   );
   const library = circuitFamily === "examples" ? PRESETS : Object.fromEntries(
     Object.entries(BLUEPRINTS).filter(([name]) =>
-      name.endsWith(circuitFamily === "nand" ? "NAND gates" : "transistors"),
+      name.endsWith(`from ${BLUEPRINT_FAMILIES[circuitFamily].suffix}`),
     ),
   );
   const visibleCircuits = Object.values(library).filter((item) =>
@@ -913,11 +916,12 @@ export function LogicBuilder() {
           <h2>Circuitry library</h2>
           <p>Click to open a blueprint. Drag to add the full circuit. Gate blueprints also have black box parts.</p>
           <div className={styles.familyTabs} role="group" aria-label="Circuit construction">
-            <button type="button" aria-pressed={circuitFamily === "transistor"} onClick={() => setCircuitFamily("transistor")}>Transistors</button>
-            <button type="button" aria-pressed={circuitFamily === "nand"} onClick={() => setCircuitFamily("nand")}>NAND only</button>
+            {(Object.keys(BLUEPRINT_FAMILIES) as BlueprintFamily[]).map((family) => (
+              <button key={family} type="button" aria-pressed={circuitFamily === family} onClick={() => setCircuitFamily(family)}>{BLUEPRINT_FAMILIES[family].label}</button>
+            ))}
             <button type="button" aria-pressed={circuitFamily === "examples"} onClick={() => setCircuitFamily("examples")}>Examples</button>
           </div>
-          <p className={styles.libraryNote}>{circuitFamily === "transistor" ? "Ideal digital switches: input 1 controls the transistor; input 2 carries the source signal. Junction joins two paths." : circuitFamily === "nand" ? "NAND is universal: every gate below uses NAND gates alone." : "Open a larger example circuit to explore its wiring."}</p>
+          <p className={styles.libraryNote}>{circuitFamily === "examples" ? "Open a larger example circuit to explore its wiring." : BLUEPRINT_FAMILIES[circuitFamily].note}</p>
           <input
             className={styles.search}
             type="search"
@@ -935,6 +939,7 @@ export function LogicBuilder() {
                 }} onClick={() => load(preset)} title={`Open ${preset.name} blueprint`}>
                   {preset.name}<span>↗</span>
                 </button>
+                {circuitFamily !== "examples" && <span className={styles.recipe}>{BLUEPRINT_RECIPES[circuitFamily][preset.name.split(" ")[0].toLowerCase() as LogicGate]}</span>}
                 {circuitFamily !== "examples" && (
                   <button type="button" className={styles.blackBox} draggable onDragStart={(event) => {
                     event.dataTransfer.setData("application/x-logic-black-box", preset.name.split(" ")[0].toLowerCase());

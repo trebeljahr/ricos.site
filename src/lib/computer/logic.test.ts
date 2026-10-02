@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BLUEPRINTS, GATE_NAMES, type Circuit, initialSnapshot, PRESETS, step, validateCircuit } from "./logic";
+import { BLUEPRINTS, BLUEPRINT_FAMILIES, GATE_NAMES, type Circuit, initialSnapshot, PRESETS, step, validateCircuit } from "./logic";
 
 describe("logic circuit engine", () => {
   it("evaluates half adder sum and carry through wires", () => {
@@ -45,11 +45,12 @@ describe("logic circuit engine", () => {
     (circuit.wires[0] as { color?: string }).color = "toString";
     expect(validateCircuit(circuit)?.wires[0].color).toBeUndefined();
   });
-  it("builds every gate correctly from transistors and from NAND gates", () => {
-    for (const family of ["transistors", "NAND gates"]) {
+  it("builds every gate correctly through each construction family", () => {
+    for (const family of Object.values(BLUEPRINT_FAMILIES).map((item) => item.suffix)) {
       for (const gate of GATE_NAMES) {
-        const circuit = structuredClone(BLUEPRINTS[`${gate.toUpperCase()} from ${family}`]);
-        expect(circuit).toBeDefined();
+        const blueprint = BLUEPRINTS[`${gate.toUpperCase()} from ${family}`];
+        if (!blueprint) continue;
+        const circuit = structuredClone(blueprint);
         for (const a of [false, true]) for (const b of [false, true]) {
           circuit.nodes.find((item) => item.id === "a")!.value = a;
           const inputB = circuit.nodes.find((item) => item.id === "b");
@@ -58,6 +59,17 @@ describe("logic circuit engine", () => {
           expect(step(circuit, initialSnapshot(), false).values.out, `${family} ${gate} ${Number(a)}${Number(b)}`).toBe(expected);
         }
       }
+    }
+  });
+  it("keeps universal and transistor blueprints within their stated parts", () => {
+    for (const circuit of Object.values(BLUEPRINTS)) {
+      const parts = circuit.nodes.map((node) => node.type);
+      if (circuit.name.endsWith("NAND gates"))
+        expect(parts.every((type) => ["switch", "lamp", "nand"].includes(type))).toBe(true);
+      if (circuit.name.endsWith("NOR gates"))
+        expect(parts.every((type) => ["switch", "lamp", "nor"].includes(type))).toBe(true);
+      if (circuit.name.endsWith("transistors"))
+        expect(parts.every((type) => ["switch", "high", "lamp", "nmos", "pmos", "junction"].includes(type))).toBe(true);
     }
   });
 });

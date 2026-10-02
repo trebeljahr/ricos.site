@@ -267,7 +267,21 @@ export const PRESETS: Record<string, Circuit> = {
 
 export const GATE_NAMES = ["not", "and", "or", "nand", "nor", "xor"] as const;
 export type LogicGate = (typeof GATE_NAMES)[number];
-export type BlueprintFamily = "transistor" | "nand";
+export type BlueprintFamily = "transistor" | "transistor-alt" | "nand" | "nor" | "mixed";
+export const BLUEPRINT_FAMILIES: Record<BlueprintFamily, { label: string; suffix: string; note: string }> = {
+  transistor: { label: "Transistors", suffix: "transistors", note: "NMOS passes a high source when controlled by 1; PMOS passes it when controlled by 0. Junction joins paths." },
+  "transistor-alt": { label: "Transistor paths", suffix: "alternate transistors", note: "Alternate transistor networks reach the same outputs through inverted intermediate signals." },
+  nand: { label: "NAND only", suffix: "NAND gates", note: "NAND is universal: every gate here uses NAND gates alone." },
+  nor: { label: "NOR only", suffix: "NOR gates", note: "NOR is also universal: every gate here uses NOR gates alone." },
+  mixed: { label: "Mixed gates", suffix: "mixed gates", note: "These constructions combine familiar gates and show De Morgan's laws and sum of products." },
+};
+export const BLUEPRINT_RECIPES: Record<BlueprintFamily, Record<LogicGate, string>> = {
+  transistor: { not: "PMOS inverter", and: "NMOS pass path", or: "Parallel NMOS paths", nand: "Parallel PMOS paths", nor: "Series PMOS path", xor: "Two selective NMOS paths" },
+  "transistor-alt": { not: "", and: "Invert a transistor NAND", or: "Invert a transistor NOR", nand: "Invert an NMOS AND", nor: "Invert parallel NMOS paths", xor: "Invert an XNOR network" },
+  nand: { not: "A NAND A", and: "Invert A NAND B", or: "De Morgan: invert both inputs", nand: "One NAND", nor: "Invert NAND-built OR", xor: "Four NAND gates" },
+  nor: { not: "A NOR A", and: "De Morgan: invert both inputs", or: "Invert A NOR B", nand: "Invert NOR-built AND", nor: "One NOR", xor: "Five NOR gates" },
+  mixed: { not: "A XOR 1", and: "NOT(A NAND B)", or: "NOT(A NOR B)", nand: "NOT(A AND B)", nor: "NOT(A OR B)", xor: "(A AND NOT B) OR (NOT A AND B)" },
+};
 
 export function gateBlueprint(gate: LogicGate, family: BlueprintFamily): Circuit {
   const nodes: Node[] = [node("a", "switch", 40, 105, "A")];
@@ -280,22 +294,22 @@ export function gateBlueprint(gate: LogicGate, family: BlueprintFamily): Circuit
     const row = layers[level] ?? 0;
     layers[level] = row + 1;
     const id = `part-${nodes.length}`;
-    nodes.push(node(id, type, Math.min(635, 205 + (level - 1) * 145), 65 + row * 105, label));
+    nodes.push(node(id, type, Math.min(610, 205 + (level - 1) * 145), 65 + row * 105, label));
     inputs.forEach((from, input) => wires.push(wire(from, id, input)));
     depth[id] = level;
     return id;
   };
   let output: string;
-  if (family === "transistor") {
+  if (family === "transistor" || family === "transistor-alt") {
     nodes.push(node("vcc", "high", 40, 225, "HIGH"));
     depth.vcc = 0;
     const p = (control: string, source: string) => add("pmos", [control, source]);
     const n = (control: string, source: string) => add("nmos", [control, source]);
     const join = (left: string, right: string) => add("junction", [left, right]);
-    switch (gate) {
+    if (family === "transistor") switch (gate) {
       case "not": output = p("a", "vcc"); break;
       case "and": output = n("b", "a"); break;
-      case "or": output = p(p("b", p("a", "vcc")), "vcc"); break;
+      case "or": output = join(n("a", "vcc"), n("b", "vcc")); break;
       case "nand": output = join(p("a", "vcc"), p("b", "vcc")); break;
       case "nor": output = p("b", p("a", "vcc")); break;
       case "xor": {
@@ -304,8 +318,20 @@ export function gateBlueprint(gate: LogicGate, family: BlueprintFamily): Circuit
         output = join(n("a", notB), n("b", notA));
         break;
       }
+    } else switch (gate) {
+      case "not": output = p("a", "vcc"); break;
+      case "and": output = p(join(p("a", "vcc"), p("b", "vcc")), "vcc"); break;
+      case "or": output = p(p("b", p("a", "vcc")), "vcc"); break;
+      case "nand": output = p(n("b", "a"), "vcc"); break;
+      case "nor": output = p(join(n("a", "vcc"), n("b", "vcc")), "vcc"); break;
+      case "xor": {
+        const notA = p("a", "vcc");
+        const notB = p("b", "vcc");
+        output = p(join(n("a", "b"), n(notA, notB)), "vcc");
+        break;
+      }
     }
-  } else {
+  } else if (family === "nand") {
     const nand = (a: string, b: string) => add("nand", [a, b]);
     switch (gate) {
       case "not": output = nand("a", "a"); break;
@@ -323,17 +349,54 @@ export function gateBlueprint(gate: LogicGate, family: BlueprintFamily): Circuit
         break;
       }
     }
+  } else if (family === "nor") {
+    const nor = (a: string, b: string) => add("nor", [a, b]);
+    switch (gate) {
+      case "not": output = nor("a", "a"); break;
+      case "nor": output = nor("a", "b"); break;
+      case "or": { const ab = nor("a", "b"); output = nor(ab, ab); break; }
+      case "and": output = nor(nor("a", "a"), nor("b", "b")); break;
+      case "nand": {
+        const and = nor(nor("a", "a"), nor("b", "b"));
+        output = nor(and, and);
+        break;
+      }
+      case "xor": {
+        const ab = nor("a", "b");
+        output = nor(ab, nor(nor("a", ab), nor("b", ab)));
+        break;
+      }
+    }
+  } else {
+    const addNot = (a: string) => add("not", [a]);
+    switch (gate) {
+      case "not": {
+        nodes.push(node("vcc", "high", 40, 225, "HIGH"));
+        output = add("xor", ["a", "vcc"]);
+        break;
+      }
+      case "and": output = addNot(add("nand", ["a", "b"])); break;
+      case "or": output = addNot(add("nor", ["a", "b"])); break;
+      case "nand": output = addNot(add("and", ["a", "b"])); break;
+      case "nor": output = addNot(add("or", ["a", "b"])); break;
+      case "xor": {
+        const notA = addNot("a");
+        const notB = addNot("b");
+        output = add("or", [add("and", ["a", notB]), add("and", [notA, "b"])]);
+        break;
+      }
+    }
   }
   const last = nodes.find((item) => item.id === output)!;
   last.label = LABELS[gate];
   nodes.push(node("out", "lamp", 755, 220, "OUTPUT"));
   wires.push(wire(output, "out"));
-  return { name: `${LABELS[gate]} from ${family === "nand" ? "NAND gates" : "transistors"}`, nodes, wires };
+  return { name: `${LABELS[gate]} from ${BLUEPRINT_FAMILIES[family].suffix}`, nodes, wires };
 }
 
 export const BLUEPRINTS: Record<string, Circuit> = Object.fromEntries(
-  (["transistor", "nand"] as const).flatMap((family) =>
-    GATE_NAMES.map((gate) => {
+  (Object.keys(BLUEPRINT_FAMILIES) as BlueprintFamily[]).flatMap((family) =>
+    GATE_NAMES.filter((gate) => BLUEPRINT_RECIPES[family][gate]).map((gate) => {
       const circuit = gateBlueprint(gate, family);
       return [circuit.name, circuit] as const;
     }),

@@ -16,7 +16,7 @@ export default function ByteExplorerPage() {
         <ComputerDemoNav current="byte-explorer" />
         <header className="mb-4 mt-4">
           <h1 className="m-0 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
-            One byte, many meanings
+            BYTE INTERPRETER
           </h1>
         </header>
         <ByteExplorer />

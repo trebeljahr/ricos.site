@@ -16,7 +16,7 @@ export default function ProgramStepperPage() {
         <ComputerDemoNav current="program-stepper" />
         <header className="mb-4 mt-4">
           <h1 className="m-0 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
-            From source code to CPU steps
+            PROGRAM EXECUTION UNIT
           </h1>
         </header>
         <ProgramStepper />

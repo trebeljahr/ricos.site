@@ -16,7 +16,7 @@ export default function LogicBuilderPage() {
         <ComputerDemoNav current="logic-builder" />
         <header className="mb-5 mt-4">
           <h1 className="m-0 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
-            Logic circuit builder
+            DIGITAL LOGIC LAB
           </h1>
         </header>
         <LogicBuilder />

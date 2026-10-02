@@ -160,6 +160,7 @@
 }
 .presetRow button:hover { background: linear-gradient(#f1f3e6, #b7c5ae); }
 .presetRow button:active { transform: translateY(3px); box-shadow: inset 0 2px 4px #566352; }
+.presetSwatch { display: inline-block; width: 11px; height: 11px; margin-right: 5px; border: 1px solid #5b443f; vertical-align: -1px; }
 .screen {
   display: block;
   width: 100%;
@@ -196,6 +197,9 @@
 }
 .meter > span:first-child { color: #334537; font-size: 11px; }
 .meter strong { display: block; overflow: hidden; margin-top: 3px; font-size: 22px; text-overflow: ellipsis; white-space: nowrap; }
+.meter .meterWithDetail { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.meterWithDetail > span { overflow: hidden; text-overflow: ellipsis; }
+.meterWithDetail small { flex: 0 0 auto; font-size: 13px; }
 .editCue { position: absolute; top: 8px; right: 9px; opacity: .55; font-size: 9px; }
 .meter:hover, .colorCell:hover { filter: brightness(1.08); }
 .meter:focus-visible, .colorCell:focus-visible, .screen:focus-visible { outline: 2px solid #e1f9ba; outline-offset: 2px; }

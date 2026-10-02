@@ -8,7 +8,7 @@ export default function InstructionEncoderPage() {
       <main className="mx-auto w-full max-w-6xl px-3 pb-16 pt-5 sm:px-6 sm:pt-8">
         <ComputerDemoNav current="instruction-encoder" />
         <header className="mb-4 mt-4">
-          <h1 className="m-0 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">From instruction to bytes</h1>
+          <h1 className="m-0 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">INSTRUCTION ENCODER</h1>
         </header>
         <InstructionEncoder />
         <ComputerDemoNav current="instruction-encoder" bottom />

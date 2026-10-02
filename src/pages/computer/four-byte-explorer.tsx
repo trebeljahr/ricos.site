@@ -16,7 +16,7 @@ export default function FourByteExplorerPage() {
         <ComputerDemoNav current="four-byte-explorer" />
         <header className="mb-4 mt-4">
           <h1 className="m-0 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
-            Four bytes, many meanings
+            32-BIT INTERPRETER
           </h1>
         </header>
         <FourByteExplorer />

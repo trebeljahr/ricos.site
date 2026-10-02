@@ -23,9 +23,9 @@ import { PanelEditor } from "./PanelEditor";
 const weights = [128, 64, 32, 16, 8, 4, 2, 1];
 const presets = [
   { label: "LETTER A", value: 65 },
-  { label: "RED", value: 224 },
-  { label: "MAX", value: 255 },
-  { label: "CLEAR", value: 0 },
+  { label: "RED", value: 224, swatch: "#ff0000" },
+  { label: "ALL 1'S", value: 255 },
+  { label: "ALL 0'S", value: 0 },
 ];
 
 type ActiveEditor = { type: "reading"; kind: ByteReading } | { type: "color"; kind: ByteColor };
@@ -59,16 +59,27 @@ const editorHints: Record<ByteReading | ByteColor, string> = {
   hue: "Only hue is stored; saturation and lightness stay fixed.",
 };
 
-function Meter({ label, value, onEdit }: { label: string; value: string; onEdit: () => void }) {
+function unicodeDisplay(value: number): string {
+  if (value < 32 || (value >= 127 && value < 160)) return "CONTROL";
+  if (value === 32) return "SPACE";
+  if (value === 160) return "NBSP";
+  if (value === 173) return "SOFT HYPHEN";
+  return String.fromCharCode(value);
+}
+
+function Meter({ label, value, detail, onEdit }: { label: string; value: string; detail?: string; onEdit: () => void }) {
   return (
     <button
       type="button"
       className={styles.meter}
       onClick={onEdit}
-      aria-label={`Set ${label}. Current value ${value}`}
+      aria-label={`Set ${label}. Current value ${value}${detail ? ` ${detail}` : ""}`}
     >
       <span>{label}</span>
-      <strong>{value}</strong>
+      <strong className={detail ? styles.meterWithDetail : undefined}>
+        <span>{value}</span>
+        {detail && <small>{detail}</small>}
+      </strong>
       <span className={styles.editCue} aria-hidden="true">
         SET
       </span>
@@ -244,6 +255,9 @@ export function ByteExplorer() {
                   playButton();
                 }}
               >
+                {"swatch" in preset && (
+                  <span className={styles.presetSwatch} style={{ backgroundColor: preset.swatch }} aria-hidden="true" />
+                )}
                 {preset.label}
               </button>
             ))}
@@ -299,9 +313,8 @@ export function ByteExplorer() {
             />
             <Meter
               label="UNICODE"
-              value={
-                value === null ? "—" : `U+${value.toString(16).padStart(4, "0").toUpperCase()}`
-              }
+              value={value === null ? "—" : unicodeDisplay(value)}
+              detail={value === null ? undefined : `(U+${value.toString(16).padStart(4, "0").toUpperCase()})`}
               onEdit={() => openEditor({ type: "reading", kind: "unicode" })}
             />
           </div>

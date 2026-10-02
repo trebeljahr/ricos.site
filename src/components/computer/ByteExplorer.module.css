@@ -78,7 +78,7 @@
   outline: 2px solid #e1f9ba;
   outline-offset: 2px;
 }
-.workbench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; margin-top: 8px; padding: 0 0 13px; background: linear-gradient(#3c4a3f, #566457); }
+.workbench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 8px 0 0; background: linear-gradient(#3c4a3f, #566457); }
 .controls, .readout {
   min-width: 0;
   padding: 18px 19px 20px;
@@ -207,7 +207,6 @@
 @media (max-width: 850px) { .workbench { grid-template-columns: 1fr; } }
 @media (max-width: 640px) {
   .nameplate { align-items: flex-start; flex-direction: column; gap: 5px; padding-bottom: 9px; }
-  .workbench { padding-bottom: 8px; }
   .controls, .readout { padding: 13px 11px 16px; }
   .weight { font-size: 10px; }
   .colors { grid-template-columns: repeat(2, minmax(0, 1fr)); }

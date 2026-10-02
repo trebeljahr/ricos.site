@@ -127,7 +127,7 @@ export function ByteExplorer() {
     const next = bits.split("");
     next[index] = next[index] === "1" ? "0" : "1";
     setInput(next.join(""));
-    playSwitch();
+    playButton();
   }
 
   function openEditor(next: ActiveEditor) {
@@ -217,9 +217,9 @@ export function ByteExplorer() {
           <p id="byte-help" className={styles.inputHelp}>
             {value === null ? "ENTER EIGHT 0s OR 1s · SPACES OK" : ""}
           </p>
-          <fieldset className={styles.switchBank} aria-label="Bit switches">
+          <fieldset className={styles.bitBank} aria-label="Bit buttons">
             {weights.map((weight, index) => (
-              <div className={styles.switchUnit} key={weight}>
+              <div className={styles.bitUnit} key={weight}>
                 <span className={styles.weight}>{weight}</span>
                 <button
                   type="button"
@@ -227,9 +227,9 @@ export function ByteExplorer() {
                   onClick={() => toggleBit(index)}
                   aria-label={`Bit ${7 - index}: ${bits?.[index] ?? "unknown"}. Toggle bit.`}
                   aria-pressed={bits?.[index] === "1"}
-                  className={`${styles.switch} ${bits?.[index] === "1" ? styles.switchOn : ""}`}
+                  className={styles.bitButton}
                 >
-                  <span className={styles.switchHandle} />
+                  {bits?.[index] ?? "·"}
                 </button>
               </div>
             ))}

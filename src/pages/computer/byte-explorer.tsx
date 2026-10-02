@@ -24,7 +24,7 @@ export default function ByteExplorerPage() {
             One byte, many meanings
           </h1>
           <p className="m-0 text-sm text-gray-600 dark:text-gray-400">
-            Flip a switch. Change the reading.
+            Press a bit. Change the reading.
           </p>
         </header>
         <ByteExplorer />

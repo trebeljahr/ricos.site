@@ -6,7 +6,7 @@
 .byteRow legend { float: left; width: 78px; padding: 0; font-size: 11px; }
 .byteRow legend b { display: block; font-size: 17px; }
 .bits { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; min-width: 0; }
-.bitSwitch { --switch-height: 36px; --switch-handle-height: 12px; --switch-travel: 14px; width: 100%; min-width: 0; }
+.bitButtonCompact { width: 100%; min-width: 0; height: 36px; font-size: 16px; }
 .screen { margin-top: 15px; }
 .editableScreen { display: block; width: 100%; text-align: left; cursor: pointer; }
 .editableScreen:disabled { cursor: default; }
@@ -30,4 +30,4 @@
 .channels span { font-size: 14px; white-space: nowrap; }
 .channels b { color: #415044; }
 @media (max-width: 850px) { .body { grid-template-columns: 1fr; } }
-@media (max-width: 640px) { .body { padding: 0 8px 8px; } .inputSide, .outputSide { padding: 13px 11px 16px; } .byteRow { grid-template-columns: 56px 1fr; } .byteRow legend { width: 56px; font-size: 10px; } .byteRow legend b { font-size: 14px; } .bitSwitch { --switch-height: 33px; --switch-handle-height: 11px; --switch-travel: 12px; } .results { grid-template-columns: 1fr; } .screenText { font-size: 29px; } }
+@media (max-width: 640px) { .body { padding: 0 8px 8px; } .inputSide, .outputSide { padding: 13px 11px 16px; } .byteRow { grid-template-columns: 56px 1fr; } .byteRow legend { width: 56px; font-size: 10px; } .byteRow legend b { font-size: 14px; } .bitButtonCompact { height: 33px; font-size: 15px; } .results { grid-template-columns: 1fr; } .screenText { font-size: 29px; } }

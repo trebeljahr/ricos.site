@@ -45,7 +45,7 @@ export function FourByteExplorer() {
     const next = new Uint8Array(bytes);
     next[byteIndex] ^= 1 << (7 - bitIndex);
     setInput(formatFourBytes(next));
-    playSwitch();
+    playButton();
   }
 
   const floatText = reading
@@ -171,7 +171,7 @@ export function FourByteExplorer() {
               <fieldset
                 key={byteIndex}
                 className={styles.byteRow}
-                aria-label={`Byte ${byteIndex + 1} bit switches`}
+                aria-label={`Byte ${byteIndex + 1} bit buttons`}
               >
                 <legend>
                   BYTE {byteIndex + 1}{" "}
@@ -188,9 +188,9 @@ export function FourByteExplorer() {
                         onClick={() => flipBit(byteIndex, bitIndex)}
                         aria-label={`Byte ${byteIndex + 1}, bit ${position}: ${Number(on)}. Toggle bit.`}
                         aria-pressed={on}
-                        className={`${panel.switch} ${styles.bitSwitch} ${on ? panel.switchOn : ""}`}
+                        className={`${panel.bitButton} ${styles.bitButtonCompact}`}
                       >
-                        <span className={panel.switchHandle} aria-hidden="true" />
+                        {bytes ? Number(on) : "·"}
                       </button>
                     );
                   })}

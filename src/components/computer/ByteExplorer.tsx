@@ -177,7 +177,7 @@ export function ByteExplorer() {
                     : "";
 
   return (
-    <section className={styles.machine} aria-label="Byte interpretation instrument">
+    <section className={`not-prose ${styles.machine}`} aria-label="Byte interpretation instrument">
       <div className={styles.screw} aria-hidden="true" />
       <div className={`${styles.screw} ${styles.screwRight}`} aria-hidden="true" />
       <div className={styles.nameplate}>

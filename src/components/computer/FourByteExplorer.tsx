@@ -128,7 +128,10 @@ export function FourByteExplorer() {
             : "RGB uses three bytes; alpha uses the fourth.";
 
   return (
-    <section className={panel.machine} aria-label="Four-byte interpretation instrument">
+    <section
+      className={`not-prose ${panel.machine}`}
+      aria-label="Four-byte interpretation instrument"
+    >
       <div className={panel.screw} aria-hidden="true" />
       <div className={`${panel.screw} ${panel.screwRight}`} aria-hidden="true" />
       <div className={panel.nameplate}>

@@ -42,6 +42,9 @@ export function ProgramStepper() {
   const changed = source !== loaded;
   const highlightedLine = hoveredLine ?? active?.line ?? null;
   const hasCalls = compilation.program?.instructions.some(({ opcode }) => opcode === OPCODES.CALL);
+  const setBitWeights = state
+    ? BIT_WEIGHTS.filter((weight) => (state.accumulator & weight) !== 0)
+    : [];
 
   useEffect(() => {
     if (active?.address === undefined) return;
@@ -348,7 +351,7 @@ export function ProgramStepper() {
               </div>
               <div className={styles.bitSection}>
                 <div className={panel.sectionHead}>
-                  <span>ACCUMULATOR / EIGHT BITS</span>
+                  <span>ACC REGISTER / BITS TO VALUE</span>
                 </div>
                 <div className={styles.bitBank}>
                   {BIT_WEIGHTS.map((weight) => (
@@ -360,9 +363,21 @@ export function ProgramStepper() {
                     </div>
                   ))}
                 </div>
-                <p className={styles.hint}>
-                  Bits stand for voltage ranges held in a register. Current paths depend on the
-                  circuit.
+                <div className={styles.bitEquation}>
+                  <strong>{byteBits(state.accumulator)}</strong>
+                  <span>
+                    = {setBitWeights.length > 0 ? `${setBitWeights.join(" + ")} = ` : ""}
+                    {state.accumulator}
+                  </span>
+                </div>
+                <p className={styles.bitExplanation}>
+                  ACC is this CPU&apos;s eight-bit working register. Each box shows one stored bit: a 1
+                  adds the number above it, while a 0 adds nothing. The total is the ACC value shown
+                  above.
+                </p>
+                <p className={styles.bitPhysical}>
+                  On a real chip, circuits represent these 0s and 1s with voltage ranges. This is a
+                  diagram of the stored value, not an electrical measurement.
                 </p>
               </div>
             </>

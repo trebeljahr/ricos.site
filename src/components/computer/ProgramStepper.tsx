@@ -1,18 +1,27 @@
 import clsx from "clsx";
-import { useMemo, useState } from "react";
+import { type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
-import { compileProgram, hex, ISA, traceProgram } from "src/lib/computerStepper";
+import { byteBits, compileProgram, hex, ISA, OPCODES, traceProgram } from "src/lib/computerStepper";
 import panel from "./ByteExplorer.module.css";
 import styles from "./ProgramStepper.module.css";
 
 const EXAMPLE = "let x = 2;\nx = x + 3;\nprint(x);";
 const OVERFLOW = "let x = 255;\nx = x + 1;\nprint(x);";
+const LOOP = "let sum = 0;\nfor (let i = 0; i < 4; i++) {\n  sum = sum + i;\n}\nprint(sum);";
+const FUNCTION =
+  "fn bump(n) {\n  return n + 1;\n}\nlet x = 2;\nfor (let i = 0; i < 3; i++) {\n  x = bump(x);\n}\nprint(x);";
 const BIT_WEIGHTS = [128, 64, 32, 16, 8, 4, 2, 1];
 
 export function ProgramStepper() {
   const [source, setSource] = useState(EXAMPLE);
   const [loaded, setLoaded] = useState(EXAMPLE);
   const [step, setStep] = useState(0);
+  const [hoveredLine, setHoveredLine] = useState<number | null>(null);
+  const instructionListRef = useRef<HTMLOListElement>(null);
+  const loadedLines = useMemo(
+    () => loaded.split("\n").map((text, index) => ({ number: index + 1, text })),
+    [loaded],
+  );
   const { soundEnabled, toggleSound, playButton, playSwitch } = usePanelSound();
   const compilation = useMemo(() => {
     try {
@@ -31,10 +40,24 @@ export function ProgramStepper() {
       ? null
       : (compilation.program?.instructions[Math.floor(state.activeAddress / 2)] ?? null);
   const changed = source !== loaded;
+  const highlightedLine = hoveredLine ?? active?.line ?? null;
+  const hasCalls = compilation.program?.instructions.some(({ opcode }) => opcode === OPCODES.CALL);
+
+  useEffect(() => {
+    if (active?.address === undefined) return;
+    const list = instructionListRef.current;
+    const row = list?.querySelector<HTMLElement>(`[data-address="${active.address}"]`);
+    if (!list || !row) return;
+    const top = row.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop;
+    if (top < list.scrollTop || top + row.offsetHeight > list.scrollTop + list.clientHeight) {
+      list.scrollTop = Math.max(0, top - list.clientHeight / 3);
+    }
+  }, [active?.address]);
 
   function compile() {
     setLoaded(source);
     setStep(0);
+    setHoveredLine(null);
     playSwitch();
   }
 
@@ -42,12 +65,27 @@ export function ProgramStepper() {
     setSource(value);
     setLoaded(value);
     setStep(0);
+    setHoveredLine(null);
     playButton();
   }
 
   function moveStep(next: number) {
     setStep(next);
     playButton();
+  }
+
+  function hoverEditorLine(event: MouseEvent<HTMLTextAreaElement>) {
+    if (changed) return;
+    const editor = event.currentTarget;
+    const style = window.getComputedStyle(editor);
+    const y =
+      event.clientY -
+      editor.getBoundingClientRect().top -
+      Number.parseFloat(style.borderTopWidth) -
+      Number.parseFloat(style.paddingTop) +
+      editor.scrollTop;
+    const line = Math.floor(y / Number.parseFloat(style.lineHeight)) + 1;
+    setHoveredLine(Math.max(1, Math.min(loadedLines.length, line)));
   }
 
   return (
@@ -85,22 +123,35 @@ export function ProgramStepper() {
           <textarea
             id="program-source"
             spellCheck={false}
+            wrap="off"
             value={source}
-            onChange={(event) => setSource(event.target.value)}
+            rows={Math.max(4, Math.min(12, source.split("\n").length))}
+            onChange={(event) => {
+              setSource(event.target.value);
+              setHoveredLine(null);
+            }}
+            onMouseMove={hoverEditorLine}
+            onMouseLeave={() => setHoveredLine(null)}
             className={styles.sourceScreen}
             aria-describedby="program-syntax"
           />
           <div className={styles.sourceLines}>
-            {loaded.split("\n").map((line, index) => (
-              <span
-                key={`${index}:${line}`}
+            {loadedLines.map(({ number, text }) => (
+              <button
+                type="button"
+                key={number}
+                onMouseEnter={() => setHoveredLine(number)}
+                onMouseLeave={() => setHoveredLine(null)}
+                onFocus={() => setHoveredLine(number)}
+                onBlur={() => setHoveredLine(null)}
                 className={clsx(
                   styles.sourceLine,
-                  active?.line === index + 1 && styles.activeSource,
+                  highlightedLine === number && styles.activeSource,
                 )}
+                aria-label={`Highlight instructions for source line ${number}: ${text.trim() || "blank"}`}
               >
-                <b>{String(index + 1).padStart(2, "0")}</b> {line.trim() || "·"}
-              </span>
+                <b>{String(number).padStart(2, "0")}</b> {text.trim() || "·"}
+              </button>
             ))}
           </div>
           <div className={styles.controls}>
@@ -113,10 +164,17 @@ export function ProgramStepper() {
             <button type="button" onClick={() => preset(OVERFLOW)} className={styles.button}>
               OVERFLOW
             </button>
+            <button type="button" onClick={() => preset(LOOP)} className={styles.button}>
+              FOR LOOP
+            </button>
+            <button type="button" onClick={() => preset(FUNCTION)} className={styles.button}>
+              FUNCTION
+            </button>
           </div>
           <p id="program-syntax" className={styles.hint}>
             {changed ? <strong>EDIT NOT COMPILED · </strong> : null}
-            Use let, assignment, +, − and print(). One statement per line.
+            Hover source to trace its bytes. Use let, +, −, print(), for loops, and fn/return. One
+            statement per line; one function argument at most. No recursion.
           </p>
           {compilation.error && (
             <p role="alert" className={styles.error}>
@@ -132,30 +190,44 @@ export function ProgramStepper() {
               </div>
               <div className={styles.columnLabels} aria-hidden="true">
                 <span>ADDR</span>
-                <span>BYTES</span>
+                <span>HEX</span>
+                <span>BINARY / TWO BYTES</span>
                 <span>DECODED</span>
                 <span>LINE</span>
               </div>
-              <ol className={styles.instructionList} aria-label="Compiled instructions">
+              <ol
+                ref={instructionListRef}
+                className={styles.instructionList}
+                aria-label="Compiled instructions"
+              >
                 {compilation.program.instructions.map((instruction) => (
                   <li
                     key={instruction.address}
+                    data-address={instruction.address}
                     className={clsx(
                       styles.instruction,
                       active?.address === instruction.address && styles.activeInstruction,
+                      highlightedLine !== null &&
+                        highlightedLine > 0 &&
+                        instruction.line === highlightedLine &&
+                        styles.mappedInstruction,
                     )}
                   >
                     <span>{hex(instruction.address)}</span>
                     <strong>
                       {hex(instruction.opcode)} {hex(instruction.operand)}
                     </strong>
+                    <span className={styles.binary}>
+                      {byteBits(instruction.opcode)} {byteBits(instruction.operand)}
+                    </span>
                     <span className={styles.mnemonic}>{instruction.label}</span>
                     <span>{instruction.line ? `L${instruction.line}` : "GEN"}</span>
                   </li>
                 ))}
               </ol>
               <p className={styles.hint}>
-                Two bytes per instruction: opcode, then operand. GEN is the compiler-added halt.
+                Each instruction is two bytes: opcode, then operand. Hover or focus a source line to
+                see its instructions. GEN is the compiler-added halt.
               </p>
               <details className={styles.isaDetails}>
                 <summary>INSTRUCTION SET / VIEW KEY</summary>
@@ -233,6 +305,12 @@ export function ProgramStepper() {
                   </div>
                 ))}
               </div>
+              {hasCalls && (
+                <div className={styles.stackReadout}>
+                  <span>RETURN STACK / TOP AT RIGHT</span>
+                  <strong>{state.stack.length ? state.stack.map(hex).join(" → ") : "EMPTY"}</strong>
+                </div>
+              )}
               <div className={styles.lowerReadouts}>
                 <div>
                   <div className={panel.sectionHead}>

@@ -1,6 +1,6 @@
 .body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 8px 0 0; background: linear-gradient(#3c4a3f, #566457); }
 .inputSide, .outputSide { min-width: 0; padding: 18px 19px 20px; background: linear-gradient(145deg, #aab3a3, #939f91); box-shadow: inset 2px 2px 3px #dce3d3, inset -2px -2px 4px #536255; }
-.bitsInput { letter-spacing: .02em; font-size: clamp(12px, 1.5vw, 18px); font-variant-numeric: tabular-nums; }
+.hexInput { letter-spacing: .08em; font-size: clamp(22px, 2.4vw, 30px); }
 .endianHead { flex-wrap: wrap; }
 .endianToggle { display: flex; gap: 3px; flex-shrink: 0; }
 .endianToggle button { padding: 3px 6px; border: 1px solid #526353; border-radius: 3px; background: #aab5a5; color: #26362a; font: inherit; font-size: 10px; letter-spacing: .04em; cursor: pointer; }
@@ -13,12 +13,9 @@
 .byteRow legend b { display: block; font-size: 17px; }
 .bits { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; min-width: 0; }
 .bitButtonCompact { width: 100%; min-width: 0; height: 36px; font-size: 16px; }
-.screen { margin-top: 15px; }
-.editableScreen { display: block; width: 100%; text-align: left; cursor: pointer; }
-.editableScreen:disabled { cursor: default; }
-.editableScreen:focus-visible, .result:focus-visible, .colorReadout:focus-visible { outline: 3px solid #e6ffb9; outline-offset: 3px; }
-.screenCue { display: block; margin-top: 6px; font-size: 10px; letter-spacing: .12em; }
-.screenText { overflow: hidden; min-height: 53px; padding: 5px 0; font-size: clamp(27px, 3vw, 40px); letter-spacing: .03em; text-overflow: ellipsis; white-space: nowrap; }
+.screen { margin-top: 15px; cursor: default; }
+.result:focus-visible, .colorReadout:focus-visible { outline: 3px solid #e6ffb9; outline-offset: 3px; }
+.binaryScreenText { display: flex; flex-wrap: wrap; gap: 0 .6em; min-height: 53px; padding: 9px 0; font-size: clamp(14px, 1.5vw, 18px); line-height: 1.6; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
 .results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin: 14px 0 0; }
 .result { position: relative; min-width: 0; padding: 9px 11px; border: 1px solid #748273; border-radius: 4px; background: linear-gradient(#879587, #a5b1a1); box-shadow: inset 0 2px 4px #46574880, 0 2px 1px #536255; text-align: left; color: #25382b; cursor: pointer; }
 .result:hover, .colorReadout:hover { filter: brightness(1.07); }
@@ -36,4 +33,4 @@
 .channels span { font-size: 14px; white-space: nowrap; }
 .channels b { color: #415044; }
 @media (max-width: 850px) { .body { grid-template-columns: 1fr; } }
-@media (max-width: 640px) { .inputSide, .outputSide { padding: 13px 11px 16px; } .byteRow { grid-template-columns: 56px 1fr; } .byteRow legend { width: 56px; font-size: 10px; } .byteRow legend b { font-size: 14px; } .bitButtonCompact { height: 33px; font-size: 15px; } .results { grid-template-columns: 1fr; } .screenText { font-size: 29px; } }
+@media (max-width: 640px) { .inputSide, .outputSide { padding: 13px 11px 16px; } .byteRow { grid-template-columns: 56px 1fr; } .byteRow legend { width: 56px; font-size: 10px; } .byteRow legend b { font-size: 14px; } .bitButtonCompact { height: 33px; font-size: 15px; } .results { grid-template-columns: 1fr; } }

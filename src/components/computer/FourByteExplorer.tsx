@@ -1,30 +1,18 @@
 import { useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import { encodeFourByteReading, type FourByteReading } from "src/lib/fourByteEditing";
-import { formatFourBytes, fourByteReadings } from "src/lib/fourByteInterpretations";
+import { formatFourBytes, fourByteReadings, parseFourBytes } from "src/lib/fourByteInterpretations";
 import panel from "./ByteExplorer.module.css";
 import styles from "./FourByteExplorer.module.css";
 import { PanelEditor } from "./PanelEditor";
 
 const presets = [
-  { label: "EMOJI 😀", hex: "F0 9F 98 80", view: "text" },
-  { label: "FLOAT 1.0", hex: "3F 80 00 00", view: "float" },
-  { label: "RED RGBA", hex: "FF 00 00 FF", view: "color" },
-  { label: "TEXT TEST", hex: "54 45 53 54", view: "text" },
-  { label: "−1", hex: "FF FF FF FF", view: "signed" },
+  { label: "EMOJI 😀", hex: "F0 9F 98 80" },
+  { label: "FLOAT 1.0", hex: "3F 80 00 00" },
+  { label: "RED RGBA", hex: "FF 00 00 FF" },
+  { label: "TEXT TEST", hex: "54 45 53 54" },
+  { label: "−1", hex: "FF FF FF FF" },
 ] as const;
-
-type DisplayView = FourByteReading;
-
-function formatBits(bytes: Uint8Array): string {
-  return [...bytes].map((byte) => byte.toString(2).padStart(8, "0")).join(" ");
-}
-
-function parseBits(input: string): Uint8Array | null {
-  const bits = input.replace(/\s/g, "");
-  if (!/^[01]{32}$/.test(bits)) return null;
-  return new Uint8Array(bits.match(/.{8}/g)!.map((byte) => Number.parseInt(byte, 2)));
-}
 
 function Result({ label, value, onClick }: { label: string; value: string; onClick: () => void }) {
   return (
@@ -43,19 +31,18 @@ function Result({ label, value, onClick }: { label: string; value: string; onCli
 
 /** Four bytes, one 32-bit word. Usable in MDX articles. */
 export function FourByteExplorer() {
-  const [input, setInput] = useState("11110000 10011111 10011000 10000000");
+  const [input, setInput] = useState("F0 9F 98 80");
   const [littleEndian, setLittleEndian] = useState(false);
-  const [view, setView] = useState<DisplayView>("text");
   const [editor, setEditor] = useState<FourByteReading | null>(null);
   const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
-  const bytes = parseBits(input);
+  const bytes = parseFourBytes(input);
   const reading = bytes ? fourByteReadings(bytes, littleEndian) : null;
 
   function flipBit(byteIndex: number, bitIndex: number) {
     if (!bytes) return;
     const next = new Uint8Array(bytes);
     next[byteIndex] ^= 1 << (7 - bitIndex);
-    setInput(formatBits(next));
+    setInput(formatFourBytes(next));
     playButton();
   }
 
@@ -78,17 +65,6 @@ export function FourByteExplorer() {
           })
           .join("") || "EMPTY"
     : "—";
-  const display = {
-    unsigned: { label: "UNSIGNED INT32", value: reading ? String(reading.unsigned) : "—" },
-    text: { label: "UTF-8 TEXT", value: utf8Text },
-    float: { label: "FLOAT32", value: floatText },
-    signed: { label: "SIGNED INT32", value: reading ? String(reading.signed) : "—" },
-    color: {
-      label: "RGBA / HEX",
-      value: bytes ? `#${[...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("").toUpperCase()}` : "—",
-    },
-  }[view];
-
   function openEditor(kind: FourByteReading) {
     if (!reading || !bytes) return;
     setEditor(kind);
@@ -99,8 +75,7 @@ export function FourByteExplorer() {
     if (!editor) return null;
     const result = encodeFourByteReading(editor, value, alpha, littleEndian);
     if ("error" in result) return result.error;
-    setInput(formatBits(result.bytes));
-    setView(editor);
+    setInput(formatFourBytes(result.bytes));
     if (editor !== "color") playSwitch();
     return null;
   }
@@ -180,12 +155,12 @@ export function FourByteExplorer() {
               </button>
             </div>
           </div>
-          <label className={panel.inputLabel} htmlFor="four-byte-bits">
-            BITS / FOUR BYTES
+          <label className={panel.inputLabel} htmlFor="four-byte-hex">
+            HEX / FOUR BYTES
           </label>
           <input
-            id="four-byte-bits"
-            className={`${panel.bitInput} ${styles.bitsInput}`}
+            id="four-byte-hex"
+            className={`${panel.bitInput} ${styles.hexInput}`}
             value={input}
             onChange={(event) => setInput(event.target.value)}
             spellCheck={false}
@@ -194,7 +169,7 @@ export function FourByteExplorer() {
             aria-describedby="four-byte-help"
           />
           <p id="four-byte-help" className={panel.inputHelp}>
-            {bytes ? "" : "ENTER 32 BITS (0 OR 1) · SPACES OK"}
+            {bytes ? "" : "ENTER EIGHT HEX DIGITS · SPACES OK"}
           </p>
           <p className={styles.endianHint}>BYTE ORDER CHANGES INT32 + FLOAT32; TEXT + RGBA USE BYTES AS SHOWN.</p>
           <div className={styles.byteRows}>
@@ -235,8 +210,7 @@ export function FourByteExplorer() {
                 key={preset.label}
                 type="button"
                 onClick={() => {
-                  setInput(formatBits(new Uint8Array(preset.hex.split(" ").map((byte) => Number.parseInt(byte, 16)))));
-                  setView(preset.view);
+                  setInput(preset.hex);
                   playButton();
                 }}
               >
@@ -249,20 +223,19 @@ export function FourByteExplorer() {
           <div className={panel.sectionHead}>
             <span>READOUT</span>
           </div>
-          <button
-            type="button"
-            className={`${panel.screen} ${styles.screen} ${styles.editableScreen}`}
-            onClick={() => openEditor(view)}
-            disabled={!reading}
-            aria-label={`Set ${display.label}. Current value ${display.value}`}
-          >
+          <div className={`${panel.screen} ${styles.screen}`}>
             <div className={panel.screenTop}>
-              <span>{display.label}</span>
+              <span>BINARY / 32 BITS</span>
               {!bytes && <span>INPUT ERROR</span>}
             </div>
-            <div className={styles.screenText}>{display.value}</div>
-            <span className={styles.screenCue}>SET VALUE ↗</span>
-          </button>
+            <div className={styles.binaryScreenText} aria-label={bytes ? `Binary: ${[...bytes].map((byte) => byte.toString(2).padStart(8, "0")).join(" ")}` : "No valid binary value"}>
+              {bytes
+                ? [...bytes].map((byte, index) => (
+                    <span key={index}>{byte.toString(2).padStart(8, "0")}</span>
+                  ))
+                : "—"}
+            </div>
+          </div>
           <div className={styles.results}>
             <Result
               label="UNSIGNED INT32"

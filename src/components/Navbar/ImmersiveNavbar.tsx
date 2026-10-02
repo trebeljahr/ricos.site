@@ -9,7 +9,12 @@ import {
   useState,
 } from "react";
 import { flushSync } from "react-dom";
-import { PlaygroundCrumb, PlaygroundScenesButton, PlaygroundScenesPanel } from "./PlaygroundNav";
+import {
+  PlaygroundCrumb,
+  PlaygroundDemoArrows,
+  PlaygroundScenesButton,
+  PlaygroundScenesPanel,
+} from "./PlaygroundNav";
 import { MobileMenu, RicosSiteBanner, SiteNavControls, useSiteMenu } from "./TailwindNavbar";
 
 // Long enough to read the bar on arrival, short enough to stay out of the way.
@@ -220,6 +225,7 @@ export function ImmersiveNavbar() {
       onKeyDown={hideFromKeyboard}
       className="not-prose pointer-events-none fixed inset-x-0 top-0 z-1001 text-gray-900 dark:text-gray-100"
     >
+      {!scenesOpen && <PlaygroundDemoArrows currentPath={router.asPath} />}
       {/* Shadow on a wrapper: the clip on the surface itself would cut it off. */}
       <div aria-hidden className="absolute inset-0 drop-shadow-md">
         <div

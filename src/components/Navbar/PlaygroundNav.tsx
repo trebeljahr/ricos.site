@@ -1,6 +1,7 @@
 import { Card } from "@components/Card";
 import { FiChevronDown, FiX } from "@components/Icons";
 import { ImageWithLoader } from "@components/ImageWithLoader";
+import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -12,6 +13,22 @@ import data from "../../../.velite/r3f-links.json";
 type Scene = { name: string; url: string };
 
 const sections = Object.entries(data.links) as [string, Scene[]][];
+const orderedScenes = sections.flatMap(([, scenes]) => scenes);
+
+export function PlaygroundDemoArrows({ currentPath }: { currentPath: string }) {
+  const index = orderedScenes.findIndex(({ url }) => url === pathWithoutQuery(currentPath));
+  if (index < 0) return null;
+
+  return (
+    <div className="pointer-events-auto">
+      <NextAndPrevArrows
+        prevPost={orderedScenes[index - 1]?.url ?? null}
+        nextPost={orderedScenes[index + 1]?.url ?? null}
+        immediate
+      />
+    </div>
+  );
+}
 
 // Preview PNGs live flat under /assets/pages/ for most categories, but
 // controllers + dungeon scenes were organized under /assets/pages/r3f/.

@@ -25,10 +25,12 @@
 .steps button { flex: 1; padding: 9px 4px; border: 2px solid #4a594d; border-radius: 4px; background: linear-gradient(#e3e5d4,#9ba898); box-shadow: inset 0 1px #f4f4e8,0 3px 1px #485649; color: #243329; font: inherit; font-size: 10px; cursor: pointer; }
 .steps button.activeStep { background: linear-gradient(#c9e2a6,#83a978); }
 .steps button:focus-visible { outline: 2px solid #e1f9ba; outline-offset: 2px; }
-.readouts { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin-top: 18px; }
+.readouts { display: grid; grid-template-columns: repeat(4,1fr); gap: 7px; margin-top: 18px; }
 .readouts div { padding: 8px; border: 1px solid #748273; border-radius: 4px; background: linear-gradient(#879587,#a5b1a1); box-shadow: inset 0 2px 4px #46574880; }
 .readouts span { display: block; font-size: 10px; }
 .readouts strong { display: block; margin-top: 4px; font-size: 22px; }
 .explanation { min-height: 62px; margin: 18px 0 0; padding: 12px; border-left: 3px solid #385b34; background: #d1dbc8; font-size: 12px; line-height: 1.45; }
 @media (max-width: 900px) { .body { grid-template-columns: 1fr; } .control,.encoding,.cpu { min-height: 0; } .bytePair { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width: 580px) { .body { padding: 0 8px 8px; } .control,.encoding,.cpu { padding: 12px; } .bytePair { grid-template-columns: 1fr; } .steps { flex-wrap: wrap; } }
+
+.flags { margin: 10px 0 0; font-size: 10px; letter-spacing: .06em; }

@@ -75,7 +75,9 @@ export function InstructionEncoder() {
             <div><span>PC</span><strong>{snapshot.pc.toString().padStart(2, "0")}</strong></div>
             <div><span>IR</span><strong>{snapshot.ir === null ? "—" : hex(snapshot.ir)}</strong></div>
             <div><span>ACC</span><strong>{snapshot.accumulator}</strong></div>
+            <div><span>OUTPUT</span><strong>{snapshot.output.at(-1) ?? "—"}</strong></div>
           </div>
+          <p className={styles.flags}>ZERO {snapshot.zero ? "ON" : "OFF"} · CARRY {snapshot.carry ? "ON" : "OFF"}{snapshot.halted ? " · HALTED" : ""}</p>
           <p className={styles.explanation} aria-live="polite">{snapshot.explanation}</p>
           <p className={styles.hint}>The decoder is in the CPU. It interprets the opcode according to this toy machine&apos;s instruction set.</p>
         </section>

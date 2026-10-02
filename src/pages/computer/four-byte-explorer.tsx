@@ -14,19 +14,12 @@ export default function FourByteExplorerPage() {
     >
       <main className="mx-auto w-full max-w-6xl px-3 pb-16 pt-5 sm:px-6 sm:pt-8">
         <ComputerDemoNav current="four-byte-explorer" />
-        <header className="mb-4 mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <header className="mb-4 mt-4">
           <h1 className="m-0 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
             Four bytes, many meanings
           </h1>
-          <p className="m-0 text-sm text-gray-600 dark:text-gray-400">
-            Same 32 bits. Different rules.
-          </p>
         </header>
         <FourByteExplorer />
-        <p className="mt-4 max-w-3xl text-xs leading-5 text-gray-500 dark:text-gray-400">
-          Bytes are read left to right (big-endian). UTF-8 may use all four bytes for one emoji, or
-          one byte per ASCII letter. A double-precision float needs eight bytes.
-        </p>
         <ComputerDemoNav current="four-byte-explorer" bottom />
       </main>
     </Layout>

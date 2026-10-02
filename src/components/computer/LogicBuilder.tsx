@@ -12,6 +12,7 @@ import {
   step,
   validateCircuit,
 } from "../../lib/computer/logic";
+import { GateSymbol } from "./GateSymbol";
 import styles from "./LogicBuilder.module.css";
 
 const STORAGE = "ricos-computer-circuits-v1";
@@ -44,18 +45,29 @@ export function LogicBuilder() {
   const [tick, setTick] = useState(0);
   const [rate, setRate] = useState(2);
   const [pending, setPending] = useState<string | null>(null);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [search, setSearch] = useState("");
+  const [menu, setMenu] = useState<{
+    x: number;
+    y: number;
+    kind: "node" | "wire" | "board";
+    id?: string;
+  } | null>(null);
+  const [marquee, setMarquee] = useState<{
+    x: number;
+    y: number;
+    endX: number;
+    endY: number;
+  } | null>(null);
   const [saved, setSaved] = useState<Record<string, Circuit>>({});
   const [message, setMessage] = useState(
     "Click an output, then an input to draw a wire. Drag gates to move them.",
   );
   const [ready, setReady] = useState(false);
   const [drag, setDrag] = useState<{
-    id: string;
     x: number;
     y: number;
-    startX: number;
-    startY: number;
+    starts: Record<string, { x: number; y: number }>;
   } | null>(null);
   const board = useRef<HTMLDivElement>(null);
   const inputFile = useRef<HTMLInputElement>(null);
@@ -132,22 +144,25 @@ export function LogicBuilder() {
     circuitRef.current = copy;
     setCircuit(copy);
     setPending(null);
-    setSelected(null);
+    setSelected([]);
     resetRuntime();
     setMessage(`${copy.name} loaded.`);
   };
-  const addNode = (type: GateType) => {
+  const addNode = (type: GateType, position?: { x: number; y: number }) => {
     const index = circuit.nodes.length;
     const next: Node = {
       id: crypto.randomUUID(),
       type,
-      x: 110 + (index % 5) * 155,
-      y: 90 + (Math.floor(index / 5) % 5) * 90,
+      x: Math.max(0, Math.min(WIDTH - NODE_WIDTH, position?.x ?? 110 + (index % 5) * 155)),
+      y: Math.max(
+        0,
+        Math.min(HEIGHT - NODE_HEIGHT, position?.y ?? 90 + (Math.floor(index / 5) % 5) * 90),
+      ),
       label: LABELS[type],
       value: false,
     };
     setCircuit((current) => ({ ...current, nodes: [...current.nodes, next] }));
-    setSelected(next.id);
+    setSelected([next.id]);
     setPending(null);
   };
   const connect = (to: string, input: number) => {
@@ -169,15 +184,44 @@ export function LogicBuilder() {
     setPending(null);
     setMessage("Wire connected.");
   };
-  const removeNode = () => {
-    if (!selected) return;
+  const removeNodes = (ids = selected) => {
+    if (!ids.length) return;
+    const removed = new Set(ids);
     setCircuit((current) => ({
       ...current,
-      nodes: current.nodes.filter((node) => node.id !== selected),
-      wires: current.wires.filter((wire) => wire.from !== selected && wire.to !== selected),
+      nodes: current.nodes.filter((node) => !removed.has(node.id)),
+      wires: current.wires.filter((wire) => !removed.has(wire.from) && !removed.has(wire.to)),
     }));
-    setSelected(null);
+    setSelected([]);
+    setMenu(null);
   };
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenu(null);
+        setPending(null);
+        setSelected([]);
+      }
+      if (
+        (event.key === "Delete" || event.key === "Backspace") &&
+        selected.length &&
+        !(event.target instanceof HTMLInputElement) &&
+        !(event.target instanceof HTMLTextAreaElement)
+      ) {
+        event.preventDefault();
+        const removed = new Set(selected);
+        setCircuit((current) => ({
+          ...current,
+          nodes: current.nodes.filter((node) => !removed.has(node.id)),
+          wires: current.wires.filter((wire) => !removed.has(wire.from) && !removed.has(wire.to)),
+        }));
+        setSelected([]);
+        setMenu(null);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selected]);
   const save = () => {
     const name = window.prompt("Name this circuit", circuit.name)?.trim();
     if (!name) return;
@@ -205,30 +249,91 @@ export function LogicBuilder() {
       setMessage("Could not import that circuit JSON file.");
     }
   };
+  const boardPoint = (clientX: number, clientY: number) => {
+    const rect = board.current!.getBoundingClientRect();
+    return {
+      x: ((clientX - rect.left) * WIDTH) / rect.width,
+      y: ((clientY - rect.top) * HEIGHT) / rect.height,
+    };
+  };
   const pointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (marquee) {
+      const point = boardPoint(event.clientX, event.clientY);
+      setMarquee({ ...marquee, endX: point.x, endY: point.y });
+      return;
+    }
     const active = dragRef.current;
     if (!active || !board.current) return;
     const rect = board.current.getBoundingClientRect();
-    const x = Math.max(
-      0,
-      Math.min(
-        WIDTH - NODE_WIDTH,
-        active.startX + ((event.clientX - active.x) * WIDTH) / rect.width,
-      ),
+    const dx = ((event.clientX - active.x) * WIDTH) / rect.width;
+    const dy = ((event.clientY - active.y) * HEIGHT) / rect.height;
+    const starts = Object.values(active.starts);
+    const boundedX = Math.max(
+      -Math.min(...starts.map((p) => p.x)),
+      Math.min(WIDTH - NODE_WIDTH - Math.max(...starts.map((p) => p.x)), dx),
     );
-    const y = Math.max(
-      0,
-      Math.min(
-        HEIGHT - NODE_HEIGHT,
-        active.startY + ((event.clientY - active.y) * HEIGHT) / rect.height,
-      ),
+    const boundedY = Math.max(
+      -Math.min(...starts.map((p) => p.y)),
+      Math.min(HEIGHT - NODE_HEIGHT - Math.max(...starts.map((p) => p.y)), dy),
     );
     setCircuit((current) => ({
       ...current,
-      nodes: current.nodes.map((node) => (node.id === active.id ? { ...node, x, y } : node)),
+      nodes: current.nodes.map((node) =>
+        active.starts[node.id]
+          ? {
+              ...node,
+              x: active.starts[node.id].x + boundedX,
+              y: active.starts[node.id].y + boundedY,
+            }
+          : node,
+      ),
     }));
   };
-  const selectedNode = circuit.nodes.find((node) => node.id === selected);
+  const finishPointer = () => {
+    if (marquee) {
+      const left = Math.min(marquee.x, marquee.endX);
+      const right = Math.max(marquee.x, marquee.endX);
+      const top = Math.min(marquee.y, marquee.endY);
+      const bottom = Math.max(marquee.y, marquee.endY);
+      setSelected(
+        circuit.nodes
+          .filter(
+            (node) =>
+              node.x < right &&
+              node.x + NODE_WIDTH > left &&
+              node.y < bottom &&
+              node.y + NODE_HEIGHT > top,
+          )
+          .map((node) => node.id),
+      );
+      setMarquee(null);
+    }
+    setDrag(null);
+  };
+  const visibleParts = palette.filter((type) =>
+    `${type} ${LABELS[type]}`.toLowerCase().includes(search.toLowerCase().trim()),
+  );
+  const renderParts = () =>
+    visibleParts.map((type) => (
+      <button
+        type="button"
+        key={type}
+        draggable
+        onDragStart={(event) => {
+          event.dataTransfer.setData("application/x-logic-gate", type);
+          event.dataTransfer.effectAllowed = "copy";
+        }}
+        onClick={() => addNode(type)}
+        title={`Drag ${LABELS[type]} onto canvas or click to add`}
+      >
+        <span className={styles.partIcon}>
+          <GateSymbol type={type} />
+        </span>
+        <span>{LABELS[type]}</span>
+      </button>
+    ));
+  const selectedNode =
+    selected.length === 1 ? circuit.nodes.find((node) => node.id === selected[0]) : undefined;
   return (
     <div className={styles.shell}>
       <div className={styles.toolbar}>
@@ -270,24 +375,18 @@ export function LogicBuilder() {
       <div className={styles.layout}>
         <aside className={styles.sidebar} aria-label="Gate palette">
           <h2>Parts</h2>
-          <p>Click to add</p>
+          <p>Drag onto canvas or click to add</p>
+          <input
+            className={styles.search}
+            type="search"
+            placeholder="Search parts"
+            aria-label="Search parts"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
           <div className={styles.parts}>
-            {palette.map((type) => (
-              <button type="button" key={type} onClick={() => addNode(type)}>
-                <span className={styles.partIcon}>
-                  {type === "lamp"
-                    ? "◉"
-                    : type === "switch"
-                      ? "⏻"
-                      : type === "clock"
-                        ? "◷"
-                        : type === "pulse"
-                          ? "↟"
-                          : "▣"}
-                </span>
-                {LABELS[type]}
-              </button>
-            ))}
+            {renderParts()}
+            {visibleParts.length === 0 && <p>No matching parts</p>}
           </div>
           <div className={styles.sidebarFoot}>
             Wire output → input
@@ -302,11 +401,48 @@ export function LogicBuilder() {
             <div
               ref={board}
               className={styles.board}
+              role="application"
+              aria-label="Circuit canvas"
+              onKeyDown={(event) => {
+                if (event.key === "Escape") {
+                  setPending(null);
+                  setMenu(null);
+                }
+              }}
               onPointerMove={pointerMove}
-              onPointerUp={() => setDrag(null)}
-              onPointerCancel={() => setDrag(null)}
+              onPointerDown={(event) => {
+                if (
+                  event.button !== 0 ||
+                  (event.target as Element).closest(`.${styles.node}`) ||
+                  (event.target as Element).closest(`.${styles.wireHit}`)
+                )
+                  return;
+                event.currentTarget.setPointerCapture(event.pointerId);
+                const point = boardPoint(event.clientX, event.clientY);
+                setMarquee({ ...point, endX: point.x, endY: point.y });
+                setSelected([]);
+                setMenu(null);
+              }}
+              onPointerUp={finishPointer}
+              onPointerCancel={finishPointer}
+              onDragOver={(event) => {
+                event.preventDefault();
+                event.dataTransfer.dropEffect = "copy";
+              }}
+              onDrop={(event) => {
+                event.preventDefault();
+                const type = event.dataTransfer.getData("application/x-logic-gate") as GateType;
+                if (!palette.includes(type)) return;
+                const point = boardPoint(event.clientX, event.clientY);
+                addNode(type, { x: point.x - NODE_WIDTH / 2, y: point.y - NODE_HEIGHT / 2 });
+              }}
+              onContextMenu={(event) => {
+                event.preventDefault();
+                setMenu({ x: event.clientX, y: event.clientY, kind: "board" });
+              }}
               onClick={() => {
                 if (pending) setPending(null);
+                setMenu(null);
               }}
             >
               <svg
@@ -329,7 +465,28 @@ export function LogicBuilder() {
                       <path
                         d={d}
                         className={styles.wireHit}
-                        onClick={(event) => {
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Cut wire"
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === "Delete") {
+                            setCircuit((current) => ({
+                              ...current,
+                              wires: current.wires.filter((item) => item.id !== wire.id),
+                            }));
+                          }
+                        }}
+                        onContextMenu={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          setMenu({
+                            x: event.clientX,
+                            y: event.clientY,
+                            kind: "wire",
+                            id: wire.id,
+                          });
+                        }}
+                        onDoubleClick={(event) => {
                           event.stopPropagation();
                           setCircuit((current) => ({
                             ...current,
@@ -349,9 +506,17 @@ export function LogicBuilder() {
               {circuit.nodes.map((node) => (
                 <div
                   key={node.id}
+                  role="group"
+                  aria-label={`${node.label || LABELS[node.type]} part`}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.stopPropagation();
+                      setSelected([node.id]);
+                    }
+                  }}
                   className={clsx(
                     styles.node,
-                    selected === node.id && styles.selected,
+                    selected.includes(node.id) && styles.selected,
                     snapshot.values[node.id] && styles.active,
                   )}
                   style={{
@@ -361,23 +526,34 @@ export function LogicBuilder() {
                     height: `${(NODE_HEIGHT / HEIGHT) * 100}%`,
                   }}
                   onPointerDown={(event) => {
-                    if ((event.target as HTMLElement).closest("button")) return;
+                    if (event.button !== 0 || (event.target as HTMLElement).closest("button"))
+                      return;
                     event.currentTarget.setPointerCapture(event.pointerId);
+                    const ids = selected.includes(node.id) ? selected : [node.id];
                     setDrag({
-                      id: node.id,
                       x: event.clientX,
                       y: event.clientY,
-                      startX: node.x,
-                      startY: node.y,
+                      starts: Object.fromEntries(
+                        circuit.nodes
+                          .filter((item) => ids.includes(item.id))
+                          .map((item) => [item.id, { x: item.x, y: item.y }]),
+                      ),
                     });
-                    setSelected(node.id);
+                    setSelected(ids);
+                    setMenu(null);
+                  }}
+                  onContextMenu={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (!selected.includes(node.id)) setSelected([node.id]);
+                    setMenu({ x: event.clientX, y: event.clientY, kind: "node", id: node.id });
                   }}
                   onClick={(event) => event.stopPropagation()}
                 >
                   {Array.from({ length: INPUTS[node.type] }, (_, input) => (
                     <button
                       type="button"
-                      key={input}
+                      key={`${node.id}-input-${input}`}
                       className={styles.input}
                       style={{ top: `${((portY(node, input) - node.y) / NODE_HEIGHT) * 100}%` }}
                       onClick={() => connect(node.id, input)}
@@ -392,7 +568,9 @@ export function LogicBuilder() {
                     />
                   ))}
                   <div className={styles.nodeBody}>
-                    <span className={styles.nodeType}>{LABELS[node.type]}</span>
+                    <span className={styles.nodeSymbol}>
+                      <GateSymbol type={node.type} />
+                    </span>
                     <strong>{node.label || LABELS[node.type]}</strong>
                     {node.type === "switch" ? (
                       <button
@@ -438,6 +616,17 @@ export function LogicBuilder() {
                   )}
                 </div>
               ))}
+              {marquee && (
+                <div
+                  className={styles.marquee}
+                  style={{
+                    left: Math.min(marquee.x, marquee.endX),
+                    top: Math.min(marquee.y, marquee.endY),
+                    width: Math.abs(marquee.endX - marquee.x),
+                    height: Math.abs(marquee.endY - marquee.y),
+                  }}
+                />
+              )}
             </div>
           </div>
           <div className={styles.status}>
@@ -448,10 +637,26 @@ export function LogicBuilder() {
             </span>
             <span>
               {circuit.nodes.length} parts · {circuit.wires.length} wires
+              {selected.length ? ` · ${selected.length} selected` : ""}
             </span>
           </div>
         </div>
         <aside className={styles.inspector} aria-label="Circuit controls">
+          <h2>Parts library</h2>
+          <p>Drag from either side</p>
+          <input
+            className={styles.search}
+            type="search"
+            placeholder="Search parts"
+            aria-label="Search parts in right library"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+          <div className={styles.parts}>
+            {renderParts()}
+            {visibleParts.length === 0 && <p>No matching parts</p>}
+          </div>
+          <div className={styles.divider} />
           <h2>Circuits</h2>
           <p>Ready to explore</p>
           <div className={styles.presetList}>
@@ -523,21 +728,103 @@ export function LogicBuilder() {
                     setCircuit((current) => ({
                       ...current,
                       nodes: current.nodes.map((node) =>
-                        node.id === selected ? { ...node, label: event.target.value } : node,
+                        node.id === selected[0] ? { ...node, label: event.target.value } : node,
                       ),
                     }))
                   }
                 />
               </label>
-              <button type="button" onClick={removeNode}>
+              <button type="button" onClick={() => removeNodes()}>
                 Delete part
               </button>
             </div>
+          ) : selected.length > 1 ? (
+            <div className={styles.selectedPart}>
+              <strong>{selected.length} parts selected</strong>
+              <button type="button" onClick={() => removeNodes()}>
+                Delete selected parts
+              </button>
+            </div>
           ) : (
-            <p>Click a part to inspect it.</p>
+            <p>Click a part to inspect it. Drag a rectangle to select several.</p>
           )}
         </aside>
       </div>
+      {menu && (
+        <div
+          className={styles.contextMenu}
+          style={{
+            left: Math.min(menu.x, window.innerWidth - 190),
+            top: Math.min(menu.y, window.innerHeight - 160),
+          }}
+          role="menu"
+          onContextMenu={(event) => event.preventDefault()}
+        >
+          {menu.kind === "node" && (
+            <>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() =>
+                  removeNodes(selected.includes(menu.id || "") ? selected : [menu.id!])
+                }
+              >
+                Delete{" "}
+                {selected.length > 1 && selected.includes(menu.id || "")
+                  ? `${selected.length} parts`
+                  : "part"}
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setCircuit((current) => ({
+                    ...current,
+                    wires: current.wires.filter(
+                      (wire) => wire.from !== menu.id && wire.to !== menu.id,
+                    ),
+                  }));
+                  setMenu(null);
+                }}
+              >
+                Cut connected wires
+              </button>
+            </>
+          )}
+          {menu.kind === "wire" && (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setCircuit((current) => ({
+                  ...current,
+                  wires: current.wires.filter((wire) => wire.id !== menu.id),
+                }));
+                setMenu(null);
+              }}
+            >
+              Cut wire
+            </button>
+          )}
+          {menu.kind === "board" && (
+            <>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setSelected(circuit.nodes.map((node) => node.id));
+                  setMenu(null);
+                }}
+              >
+                Select all parts
+              </button>
+              <button type="button" role="menuitem" onClick={() => setMenu(null)}>
+                Close menu
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

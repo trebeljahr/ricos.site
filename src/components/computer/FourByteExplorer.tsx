@@ -188,9 +188,9 @@ export function FourByteExplorer() {
                         onClick={() => flipBit(byteIndex, bitIndex)}
                         aria-label={`Byte ${byteIndex + 1}, bit ${position}: ${Number(on)}. Toggle bit.`}
                         aria-pressed={on}
-                        className={`${styles.bitButton} ${on ? styles.bitOn : ""}`}
+                        className={`${panel.switch} ${styles.bitSwitch} ${on ? panel.switchOn : ""}`}
                       >
-                        {bytes ? Number(on) : "·"}
+                        <span className={panel.switchHandle} aria-hidden="true" />
                       </button>
                     );
                   })}

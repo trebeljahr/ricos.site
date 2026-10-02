@@ -124,7 +124,7 @@
 .switch {
   position: relative;
   width: min(100%, 42px);
-  height: 59px;
+  height: var(--switch-height, 59px);
   padding: 3px;
   border: 3px solid #435247;
   border-radius: 4px;
@@ -137,14 +137,14 @@
   left: 3px;
   right: 3px;
   bottom: 3px;
-  height: 24px;
+  height: var(--switch-handle-height, 24px);
   border: 1px solid #4f5a4d;
   border-radius: 2px;
   background: linear-gradient(#ebe9d0 0 12%, #989d88 26%, #d5d4bc 65%, #718070);
   box-shadow: 0 3px 4px #111a12;
   transition: transform .13s ease;
 }
-.switchOn .switchHandle { transform: translateY(-24px); }
+.switchOn .switchHandle { transform: translateY(calc(-1 * var(--switch-travel, 24px))); }
 .switch:disabled { cursor: not-allowed; opacity: .45; }
 .presetRow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 21px; }
 .presetRow button {

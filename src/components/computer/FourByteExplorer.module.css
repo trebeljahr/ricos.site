@@ -1,6 +1,12 @@
 .body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 8px 0 0; background: linear-gradient(#3c4a3f, #566457); }
 .inputSide, .outputSide { min-width: 0; padding: 18px 19px 20px; background: linear-gradient(145deg, #aab3a3, #939f91); box-shadow: inset 2px 2px 3px #dce3d3, inset -2px -2px 4px #536255; }
 .bitsInput { letter-spacing: .02em; font-size: clamp(12px, 1.5vw, 18px); font-variant-numeric: tabular-nums; }
+.endianHead { flex-wrap: wrap; }
+.endianToggle { display: flex; gap: 3px; flex-shrink: 0; }
+.endianToggle button { padding: 3px 6px; border: 1px solid #526353; border-radius: 3px; background: #aab5a5; color: #26362a; font: inherit; font-size: 10px; letter-spacing: .04em; cursor: pointer; }
+.endianToggle button[aria-pressed="true"] { background: #354d39; color: #d9f2c0; box-shadow: inset 0 2px 3px #14281a; }
+.endianToggle button:focus-visible { outline: 3px solid #e6ffb9; outline-offset: 2px; }
+.endianHint { margin: 0 0 10px; color: #354638; font-size: 10px; letter-spacing: .025em; }
 .byteRows { display: grid; gap: 9px; margin-top: 15px; }
 .byteRow { display: grid; grid-template-columns: 78px 1fr; align-items: center; min-width: 0; margin: 0; padding: 0; border: 0; }
 .byteRow legend { float: left; width: 78px; padding: 0; font-size: 11px; }

@@ -8,11 +8,11 @@ export function formatFourBytes(bytes: Uint8Array): string {
   return [...bytes].map((byte) => byte.toString(16).padStart(2, "0").toUpperCase()).join(" ");
 }
 
-export function fourByteReadings(bytes: Uint8Array) {
+export function fourByteReadings(bytes: Uint8Array, littleEndian = false) {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-  const unsigned = view.getUint32(0, false);
-  const signed = view.getInt32(0, false);
-  const float = view.getFloat32(0, false);
+  const unsigned = view.getUint32(0, littleEndian);
+  const signed = view.getInt32(0, littleEndian);
+  const float = view.getFloat32(0, littleEndian);
   let utf8: string | null;
   try {
     utf8 = new TextDecoder("utf-8", { fatal: true }).decode(bytes);

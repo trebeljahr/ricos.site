@@ -41,14 +41,15 @@ function Result({ label, value, onClick }: { label: string; value: string; onCli
   );
 }
 
-/** Four bytes, one big-endian 32-bit word. Usable in MDX articles. */
+/** Four bytes, one 32-bit word. Usable in MDX articles. */
 export function FourByteExplorer() {
   const [input, setInput] = useState("11110000 10011111 10011000 10000000");
+  const [littleEndian, setLittleEndian] = useState(false);
   const [view, setView] = useState<DisplayView>("text");
   const [editor, setEditor] = useState<FourByteReading | null>(null);
   const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
   const bytes = parseBits(input);
-  const reading = bytes ? fourByteReadings(bytes) : null;
+  const reading = bytes ? fourByteReadings(bytes, littleEndian) : null;
 
   function flipBit(byteIndex: number, bitIndex: number) {
     if (!bytes) return;
@@ -96,7 +97,7 @@ export function FourByteExplorer() {
 
   function applyEditor(value: string, alpha: number): string | null {
     if (!editor) return null;
-    const result = encodeFourByteReading(editor, value, alpha);
+    const result = encodeFourByteReading(editor, value, alpha, littleEndian);
     if ("error" in result) return result.error;
     setInput(formatBits(result.bytes));
     setView(editor);
@@ -160,8 +161,24 @@ export function FourByteExplorer() {
       </div>
       <div className={styles.body}>
         <div className={styles.inputSide}>
-          <div className={panel.sectionHead}>
-            <span>INPUT · BIG-ENDIAN</span>
+          <div className={`${panel.sectionHead} ${styles.endianHead}`}>
+            <span>INPUT · BYTE ORDER</span>
+            <div className={styles.endianToggle} role="group" aria-label="Byte order for numbers">
+              <button
+                type="button"
+                aria-pressed={!littleEndian}
+                onClick={() => { setLittleEndian(false); playSwitch(); }}
+              >
+                BIG ENDIAN
+              </button>
+              <button
+                type="button"
+                aria-pressed={littleEndian}
+                onClick={() => { setLittleEndian(true); playSwitch(); }}
+              >
+                LITTLE ENDIAN
+              </button>
+            </div>
           </div>
           <label className={panel.inputLabel} htmlFor="four-byte-bits">
             BITS / FOUR BYTES
@@ -179,6 +196,7 @@ export function FourByteExplorer() {
           <p id="four-byte-help" className={panel.inputHelp}>
             {bytes ? "" : "ENTER 32 BITS (0 OR 1) · SPACES OK"}
           </p>
+          <p className={styles.endianHint}>BYTE ORDER CHANGES INT32 + FLOAT32; TEXT + RGBA USE BYTES AS SHOWN.</p>
           <div className={styles.byteRows}>
             {[0, 1, 2, 3].map((byteIndex) => (
               <fieldset

@@ -3,6 +3,10 @@ export type GateType =
   | "clock"
   | "pulse"
   | "lamp"
+  | "high"
+  | "nmos"
+  | "pmos"
+  | "junction"
   | "not"
   | "and"
   | "or"
@@ -41,6 +45,10 @@ export const INPUTS: Record<GateType, number> = {
   clock: 0,
   pulse: 0,
   lamp: 1,
+  high: 0,
+  nmos: 2,
+  pmos: 2,
+  junction: 2,
   not: 1,
   and: 2,
   or: 2,
@@ -54,6 +62,10 @@ export const LABELS: Record<GateType, string> = {
   clock: "CLOCK",
   pulse: "PULSE",
   lamp: "LAMP",
+  high: "HIGH (1)",
+  nmos: "NMOS",
+  pmos: "PMOS",
+  junction: "JUNCTION",
   not: "NOT",
   and: "AND",
   or: "OR",
@@ -85,6 +97,7 @@ export function step(
     if (node.type === "switch") values[node.id] = Boolean(node.value);
     if (node.type === "clock") values[node.id] = clockHigh;
     if (node.type === "pulse") values[node.id] = Boolean(pulses[node.id]);
+    if (node.type === "high") values[node.id] = true;
     if (node.type === "dff") values[node.id] = Boolean(previous.memory[node.id]);
   }
   let unstable = false;
@@ -103,6 +116,15 @@ export function step(
         switch (node.type) {
           case "lamp":
             next = a;
+            break;
+          case "nmos":
+            next = a && b;
+            break;
+          case "pmos":
+            next = !a && b;
+            break;
+          case "junction":
+            next = a || b;
             break;
           case "not":
             next = !a;
@@ -242,6 +264,81 @@ export const PRESETS: Record<string, Circuit> = {
     wires: [wire("pulse", "invert"), wire("invert", "out")],
   },
 };
+
+export const GATE_NAMES = ["not", "and", "or", "nand", "nor", "xor"] as const;
+export type LogicGate = (typeof GATE_NAMES)[number];
+export type BlueprintFamily = "transistor" | "nand";
+
+export function gateBlueprint(gate: LogicGate, family: BlueprintFamily): Circuit {
+  const nodes: Node[] = [node("a", "switch", 40, 105, "A")];
+  if (gate !== "not") nodes.push(node("b", "switch", 40, 335, "B"));
+  const wires: Wire[] = [];
+  const depth: Record<string, number> = { a: 0, b: 0 };
+  const layers: Record<number, number> = {};
+  const add = (type: GateType, inputs: string[], label = LABELS[type]) => {
+    const level = Math.max(...inputs.map((id) => depth[id] ?? 0)) + 1;
+    const row = layers[level] ?? 0;
+    layers[level] = row + 1;
+    const id = `part-${nodes.length}`;
+    nodes.push(node(id, type, Math.min(635, 205 + (level - 1) * 145), 65 + row * 105, label));
+    inputs.forEach((from, input) => wires.push(wire(from, id, input)));
+    depth[id] = level;
+    return id;
+  };
+  let output: string;
+  if (family === "transistor") {
+    nodes.push(node("vcc", "high", 40, 225, "HIGH"));
+    depth.vcc = 0;
+    const p = (control: string, source: string) => add("pmos", [control, source]);
+    const n = (control: string, source: string) => add("nmos", [control, source]);
+    const join = (left: string, right: string) => add("junction", [left, right]);
+    switch (gate) {
+      case "not": output = p("a", "vcc"); break;
+      case "and": output = n("b", "a"); break;
+      case "or": output = p(p("b", p("a", "vcc")), "vcc"); break;
+      case "nand": output = join(p("a", "vcc"), p("b", "vcc")); break;
+      case "nor": output = p("b", p("a", "vcc")); break;
+      case "xor": {
+        const notA = p("a", "vcc");
+        const notB = p("b", "vcc");
+        output = join(n("a", notB), n("b", notA));
+        break;
+      }
+    }
+  } else {
+    const nand = (a: string, b: string) => add("nand", [a, b]);
+    switch (gate) {
+      case "not": output = nand("a", "a"); break;
+      case "nand": output = nand("a", "b"); break;
+      case "and": { const ab = nand("a", "b"); output = nand(ab, ab); break; }
+      case "or": output = nand(nand("a", "a"), nand("b", "b")); break;
+      case "nor": {
+        const or = nand(nand("a", "a"), nand("b", "b"));
+        output = nand(or, or);
+        break;
+      }
+      case "xor": {
+        const ab = nand("a", "b");
+        output = nand(nand("a", ab), nand("b", ab));
+        break;
+      }
+    }
+  }
+  const last = nodes.find((item) => item.id === output)!;
+  last.label = LABELS[gate];
+  nodes.push(node("out", "lamp", 755, 220, "OUTPUT"));
+  wires.push(wire(output, "out"));
+  return { name: `${LABELS[gate]} from ${family === "nand" ? "NAND gates" : "transistors"}`, nodes, wires };
+}
+
+export const BLUEPRINTS: Record<string, Circuit> = Object.fromEntries(
+  (["transistor", "nand"] as const).flatMap((family) =>
+    GATE_NAMES.map((gate) => {
+      const circuit = gateBlueprint(gate, family);
+      return [circuit.name, circuit] as const;
+    }),
+  ),
+);
 
 export function validateCircuit(value: unknown): Circuit | null {
   if (!value || typeof value !== "object") return null;

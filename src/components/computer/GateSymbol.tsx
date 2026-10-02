@@ -66,6 +66,14 @@ export function GateSymbol({ type }: { type: GateType }) {
           <path d="M9 28 L16 32 L9 36" />
         </>
       )}
+      {(type === "nmos" || type === "pmos") && (
+        <>
+          <path d="M32 5 V14 M32 28 V37 M20 14 V28 M25 14 V28 M25 16 H38 V26 H25 M8 21 H20" />
+          {type === "pmos" && <circle cx="22" cy="21" r="3" fill="#1a2440" />}
+        </>
+      )}
+      {type === "high" && <path d="M32 5 V34 M20 13 H44 M25 20 H39 M29 27 H35" />}
+      {type === "junction" && <path d="M8 10 H28 V21 H55 M8 32 H28 V21 M28 21 H29" />}
     </svg>
   );
 }

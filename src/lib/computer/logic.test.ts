@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type Circuit, initialSnapshot, PRESETS, step, validateCircuit } from "./logic";
+import { BLUEPRINTS, GATE_NAMES, type Circuit, initialSnapshot, PRESETS, step, validateCircuit } from "./logic";
 
 describe("logic circuit engine", () => {
   it("evaluates half adder sum and carry through wires", () => {
@@ -44,5 +44,20 @@ describe("logic circuit engine", () => {
     expect(validateCircuit(circuit)?.wires[0].color).toBe("violet");
     (circuit.wires[0] as { color?: string }).color = "toString";
     expect(validateCircuit(circuit)?.wires[0].color).toBeUndefined();
+  });
+  it("builds every gate correctly from transistors and from NAND gates", () => {
+    for (const family of ["transistors", "NAND gates"]) {
+      for (const gate of GATE_NAMES) {
+        const circuit = structuredClone(BLUEPRINTS[`${gate.toUpperCase()} from ${family}`]);
+        expect(circuit).toBeDefined();
+        for (const a of [false, true]) for (const b of [false, true]) {
+          circuit.nodes.find((item) => item.id === "a")!.value = a;
+          const inputB = circuit.nodes.find((item) => item.id === "b");
+          if (inputB) inputB.value = b;
+          const expected = { not: !a, and: a && b, or: a || b, nand: !(a && b), nor: !(a || b), xor: a !== b }[gate];
+          expect(step(circuit, initialSnapshot(), false).values.out, `${family} ${gate} ${Number(a)}${Number(b)}`).toBe(expected);
+        }
+      }
+    }
   });
 });

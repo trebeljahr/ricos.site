@@ -2,6 +2,9 @@ import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   type Circuit,
+  BLUEPRINTS,
+  GATE_NAMES,
+  type LogicGate,
   type GateType,
   INPUTS,
   initialSnapshot,
@@ -29,6 +32,10 @@ const partColors: Record<GateType, string> = {
   pulse: "#ff8f87",
   clock: "#b7a1ff",
   lamp: "#b9e976",
+  high: "#ffc76a",
+  nmos: "#69e2e0",
+  pmos: "#b7a1ff",
+  junction: "#7cb8ff",
   not: "#7cb8ff",
   and: "#69e2e0",
   or: "#69e2e0",
@@ -55,6 +62,10 @@ const palette: GateType[] = [
   "pulse",
   "clock",
   "lamp",
+  "high",
+  "nmos",
+  "pmos",
+  "junction",
   "not",
   "and",
   "or",
@@ -79,6 +90,8 @@ export function LogicBuilder() {
   const [selectedWire, setSelectedWire] = useState<string | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
   const [search, setSearch] = useState("");
+  const [circuitSearch, setCircuitSearch] = useState("");
+  const [circuitFamily, setCircuitFamily] = useState<"transistor" | "nand" | "examples">("transistor");
   const [menu, setMenu] = useState<{
     x: number;
     y: number;
@@ -201,6 +214,26 @@ export function LogicBuilder() {
     setCircuit((current) => ({ ...current, nodes: [...current.nodes, next] }));
     setSelected([next.id]);
     setPending(null);
+  };
+  const insertCircuit = (source: Circuit, position: { x: number; y: number }) => {
+    const minX = Math.min(...source.nodes.map((node) => node.x));
+    const minY = Math.min(...source.nodes.map((node) => node.y));
+    const width = Math.max(...source.nodes.map((node) => node.x)) - minX + NODE_WIDTH;
+    const height = Math.max(...source.nodes.map((node) => node.y)) - minY + NODE_HEIGHT;
+    const left = Math.max(0, Math.min(WIDTH - width, position.x - width / 2));
+    const top = Math.max(0, Math.min(HEIGHT - height, position.y - height / 2));
+    const ids = new Map(source.nodes.map((node) => [node.id, crypto.randomUUID()]));
+    setCircuit((current) => ({
+      ...current,
+      nodes: [...current.nodes, ...source.nodes.map((node) => ({
+        ...node, id: ids.get(node.id)!, x: left + node.x - minX, y: top + node.y - minY,
+      }))],
+      wires: [...current.wires, ...source.wires.map((wire) => ({
+        ...wire, id: crypto.randomUUID(), from: ids.get(wire.from)!, to: ids.get(wire.to)!,
+      }))],
+    }));
+    setSelected([...ids.values()]);
+    setMessage(`${source.name} added. Drag the selected circuit to move it.`);
   };
   const connect = (from: string | null, to: string, input: number) => {
     if (!from) {
@@ -410,6 +443,14 @@ export function LogicBuilder() {
   const visibleParts = palette.filter((type) =>
     `${type} ${LABELS[type]}`.toLowerCase().includes(search.toLowerCase().trim()),
   );
+  const library = circuitFamily === "examples" ? PRESETS : Object.fromEntries(
+    Object.entries(BLUEPRINTS).filter(([name]) =>
+      name.endsWith(circuitFamily === "nand" ? "NAND gates" : "transistors"),
+    ),
+  );
+  const visibleCircuits = Object.values(library).filter((item) =>
+    item.name.toLowerCase().includes(circuitSearch.toLowerCase().trim()),
+  );
   const renderParts = () =>
     visibleParts.map((type) => (
       <button
@@ -563,6 +604,17 @@ export function LogicBuilder() {
               }}
               onDrop={(event) => {
                 event.preventDefault();
+                const blueprint = event.dataTransfer.getData("application/x-logic-circuit");
+                if (blueprint && (BLUEPRINTS[blueprint] || PRESETS[blueprint])) {
+                  insertCircuit(BLUEPRINTS[blueprint] || PRESETS[blueprint], boardPoint(event.clientX, event.clientY));
+                  return;
+                }
+                const blackBox = event.dataTransfer.getData("application/x-logic-black-box") as LogicGate;
+                if (GATE_NAMES.includes(blackBox)) {
+                  const point = boardPoint(event.clientX, event.clientY);
+                  addNode(blackBox, { x: point.x - NODE_WIDTH / 2, y: point.y - NODE_HEIGHT / 2 });
+                  return;
+                }
                 const type = event.dataTransfer.getData("application/x-logic-gate") as GateType;
                 if (!palette.includes(type)) return;
                 const point = boardPoint(event.clientX, event.clientY);
@@ -766,7 +818,9 @@ export function LogicBuilder() {
                           ? input === 0
                             ? "D: data"
                             : "CLK: rising edge"
-                          : `Input ${input + 1}`
+                          : node.type === "nmos" || node.type === "pmos"
+                            ? input === 0 ? "Gate control" : "Source signal"
+                            : `Input ${input + 1}`
                       }
                     />
                   ))}
@@ -855,31 +909,41 @@ export function LogicBuilder() {
             </span>
           </div>
         </div>
-        <aside className={styles.inspector} aria-label="Circuit controls">
-          <h2>Parts library</h2>
-          <p>Drag from either side</p>
+        <aside className={styles.inspector} aria-label="Circuit library and controls">
+          <h2>Circuitry library</h2>
+          <p>Click to open a blueprint. Drag to add the full circuit. Gate blueprints also have black box parts.</p>
+          <div className={styles.familyTabs} role="group" aria-label="Circuit construction">
+            <button type="button" aria-pressed={circuitFamily === "transistor"} onClick={() => setCircuitFamily("transistor")}>Transistors</button>
+            <button type="button" aria-pressed={circuitFamily === "nand"} onClick={() => setCircuitFamily("nand")}>NAND only</button>
+            <button type="button" aria-pressed={circuitFamily === "examples"} onClick={() => setCircuitFamily("examples")}>Examples</button>
+          </div>
+          <p className={styles.libraryNote}>{circuitFamily === "transistor" ? "Ideal digital switches: input 1 controls the transistor; input 2 carries the source signal. Junction joins two paths." : circuitFamily === "nand" ? "NAND is universal: every gate below uses NAND gates alone." : "Open a larger example circuit to explore its wiring."}</p>
           <input
             className={styles.search}
             type="search"
-            placeholder="Search parts"
-            aria-label="Search parts in right library"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search circuits"
+            aria-label="Search circuits"
+            value={circuitSearch}
+            onChange={(event) => setCircuitSearch(event.target.value)}
           />
-          <div className={styles.parts}>
-            {renderParts()}
-            {visibleParts.length === 0 && <p>No matching parts</p>}
-          </div>
-          <div className={styles.divider} />
-          <h2>Circuits</h2>
-          <p>Ready to explore</p>
           <div className={styles.presetList}>
-            {Object.values(PRESETS).map((preset) => (
-              <button type="button" key={preset.name} onClick={() => load(preset)}>
-                {preset.name}
-                <span>↗</span>
-              </button>
+            {visibleCircuits.map((preset) => (
+              <div className={styles.circuitEntry} key={preset.name}>
+                <button type="button" draggable onDragStart={(event) => {
+                  event.dataTransfer.setData("application/x-logic-circuit", preset.name);
+                  event.dataTransfer.effectAllowed = "copy";
+                }} onClick={() => load(preset)} title={`Open ${preset.name} blueprint`}>
+                  {preset.name}<span>↗</span>
+                </button>
+                {circuitFamily !== "examples" && (
+                  <button type="button" className={styles.blackBox} draggable onDragStart={(event) => {
+                    event.dataTransfer.setData("application/x-logic-black-box", preset.name.split(" ")[0].toLowerCase());
+                    event.dataTransfer.effectAllowed = "copy";
+                  }} onClick={() => addNode(preset.name.split(" ")[0].toLowerCase() as LogicGate)} title="Add this gate as a black box">▣ Black box</button>
+                )}
+              </div>
             ))}
+            {visibleCircuits.length === 0 && <p>No matching circuits</p>}
           </div>
           <div className={styles.divider} />
           <h2>My circuits</h2>

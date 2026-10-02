@@ -1,5 +1,6 @@
 import Layout from "@components/Layout";
 import Link from "next/link";
+import { computerDemos } from "../../lib/computerDemos";
 
 export default function ComputerDemosIndex() {
   return (
@@ -22,89 +23,26 @@ export default function ComputerDemosIndex() {
           A local index of interactive experiments for the writing series.
         </p>
         <div className="mt-16 border-t border-gray-300 dark:border-gray-700">
-          <Link
-            href="/computer/byte-explorer"
-            className="group grid gap-4 border-b border-gray-300 py-8 transition-colors hover:text-cyan-600 dark:border-gray-700 dark:hover:text-cyan-300 sm:grid-cols-[4rem_1fr_auto] sm:items-center"
-          >
-            <span className="font-mono text-sm text-gray-500">01</span>
-            <span>
-              <strong className="block text-2xl font-semibold text-gray-950 group-hover:text-inherit dark:text-white">
-                One byte, many meanings
-              </strong>
-              <span className="mt-2 block text-sm text-gray-600 dark:text-gray-400">
-                Flip eight bits. Read them as numbers, text, and color.
+          {computerDemos.map((demo, index) => (
+            <Link
+              key={demo.slug}
+              href={`/computer/${demo.slug}`}
+              className="group grid gap-4 border-b border-gray-300 py-8 transition-colors hover:text-cyan-600 dark:border-gray-700 dark:hover:text-cyan-300 sm:grid-cols-[4rem_1fr_auto] sm:items-center"
+            >
+              <span className="font-mono text-sm text-gray-500">
+                {String(index + 1).padStart(2, "0")}
               </span>
-            </span>
-            <span className="text-2xl" aria-hidden="true">
-              ↗
-            </span>
-          </Link>
-          <Link
-            href="/computer/four-byte-explorer"
-            className="group grid gap-4 border-b border-gray-300 py-8 transition-colors hover:text-cyan-600 dark:border-gray-700 dark:hover:text-cyan-300 sm:grid-cols-[4rem_1fr_auto] sm:items-center"
-          >
-            <span className="font-mono text-sm text-gray-500">02</span>
-            <span>
-              <strong className="block text-2xl font-semibold text-gray-950 group-hover:text-inherit dark:text-white">
-                Four bytes, many meanings
-              </strong>
-              <span className="mt-2 block text-sm text-gray-600 dark:text-gray-400">
-                Read 32 bits as a float, integer, emoji, or RGBA color.
+              <span>
+                <strong className="block text-2xl font-semibold text-gray-950 group-hover:text-inherit dark:text-white">
+                  {demo.title}
+                </strong>
+                <span className="mt-2 block text-sm text-gray-600 dark:text-gray-400">
+                  {demo.summary}
+                </span>
               </span>
-            </span>
-            <span className="text-2xl" aria-hidden="true">
-              ↗
-            </span>
-          </Link>
-          <Link
-            href="/computer/logic-builder"
-            className="group grid gap-4 border-b border-gray-300 py-8 transition-colors hover:text-cyan-600 dark:border-gray-700 dark:hover:text-cyan-300 sm:grid-cols-[4rem_1fr_auto] sm:items-center"
-          >
-            <span className="font-mono text-sm text-gray-500">03</span>
-            <span>
-              <strong className="block text-2xl font-semibold text-gray-950 group-hover:text-inherit dark:text-white">
-                Build a logic circuit
-              </strong>
-              <span className="mt-2 block text-sm text-gray-600 dark:text-gray-400">
-                Wire gates, run a clock, and save your own circuits.
-              </span>
-            </span>
-            <span className="text-2xl" aria-hidden="true">
-              ↗
-            </span>
-          </Link>
-          <Link
-            href="/computer/instruction-encoder"
-            className="group grid gap-4 border-b border-gray-300 py-8 transition-colors hover:text-cyan-600 dark:border-gray-700 dark:hover:text-cyan-300 sm:grid-cols-[4rem_1fr_auto] sm:items-center"
-          >
-            <span className="font-mono text-sm text-gray-500">04</span>
-            <span>
-              <strong className="block text-2xl font-semibold text-gray-950 group-hover:text-inherit dark:text-white">
-                From instruction to bytes
-              </strong>
-              <span className="mt-2 block text-sm text-gray-600 dark:text-gray-400">
-                Choose an instruction. Watch its bytes get decoded by the toy CPU.
-              </span>
-            </span>
-            <span className="text-2xl" aria-hidden="true">↗</span>
-          </Link>
-          <Link
-            href="/computer/program-stepper"
-            className="group grid gap-4 border-b border-gray-300 py-8 transition-colors hover:text-cyan-600 dark:border-gray-700 dark:hover:text-cyan-300 sm:grid-cols-[4rem_1fr_auto] sm:items-center"
-          >
-            <span className="font-mono text-sm text-gray-500">05</span>
-            <span>
-              <strong className="block text-2xl font-semibold text-gray-950 group-hover:text-inherit dark:text-white">
-                From source code to CPU steps
-              </strong>
-              <span className="mt-2 block text-sm text-gray-600 dark:text-gray-400">
-                Compile a tiny program. Trace its bytes through a toy CPU, RAM, and output.
-              </span>
-            </span>
-            <span className="text-2xl" aria-hidden="true">
-              ↗
-            </span>
-          </Link>
+              <span className="text-2xl" aria-hidden="true">↗</span>
+            </Link>
+          ))}
         </div>
       </main>
     </Layout>

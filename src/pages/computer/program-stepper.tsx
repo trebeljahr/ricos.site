@@ -1,6 +1,6 @@
 import { ProgramStepper } from "@components/computer/ProgramStepper";
 import Layout from "@components/Layout";
-import Link from "next/link";
+import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
 
 export default function ProgramStepperPage() {
   return (
@@ -13,12 +13,7 @@ export default function ProgramStepperPage() {
       fillViewport
     >
       <main className="mx-auto w-full max-w-6xl px-3 pb-20 pt-5 sm:px-6 sm:pt-8">
-        <Link
-          href="/computer"
-          className="text-sm text-gray-500 hover:text-cyan-600 dark:hover:text-cyan-300"
-        >
-          ← All computer demos
-        </Link>
+        <ComputerDemoNav current="program-stepper" />
         <header className="mb-6 mt-7 max-w-3xl">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-cyan-500">
             The living CPU
@@ -37,6 +32,7 @@ export default function ProgramStepperPage() {
           instructions, and an 8-bit accumulator. Its compiler produces bytes, not physical
           currents. Real CPUs and operating systems add many layers.
         </p>
+        <ComputerDemoNav current="program-stepper" bottom />
       </main>
     </Layout>
   );

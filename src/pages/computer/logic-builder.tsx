@@ -1,6 +1,6 @@
 import { LogicBuilder } from "@components/computer/LogicBuilder";
 import Layout from "@components/Layout";
-import Link from "next/link";
+import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
 
 export default function LogicBuilderPage() {
   return (
@@ -13,12 +13,7 @@ export default function LogicBuilderPage() {
       fillViewport
     >
       <main className="mx-auto w-full max-w-[1600px] px-3 pb-16 pt-5 sm:px-6 sm:pt-8">
-        <Link
-          href="/computer"
-          className="text-sm text-gray-500 hover:text-cyan-600 dark:hover:text-cyan-300"
-        >
-          ← All computer demos
-        </Link>
+        <ComputerDemoNav current="logic-builder" />
         <header className="mb-5 mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-1">
           <h1 className="m-0 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
             Logic circuit builder
@@ -32,6 +27,7 @@ export default function LogicBuilderPage() {
           Each step is half a clock cycle. Gates settle within the step; flip-flops store data on a
           rising edge. Saved circuits stay in this browser. Export JSON for a portable copy.
         </p>
+        <ComputerDemoNav current="logic-builder" bottom />
       </main>
     </Layout>
   );

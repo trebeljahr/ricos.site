@@ -38,4 +38,11 @@ describe("logic circuit engine", () => {
     expect(validateCircuit(bad)).toBeNull();
     expect(validateCircuit(PRESETS["Half adder"] as Circuit)?.nodes).toHaveLength(6);
   });
+  it("preserves valid wire colors and discards invalid imported colors", () => {
+    const circuit = structuredClone(PRESETS["Half adder"]);
+    circuit.wires[0].color = "violet";
+    expect(validateCircuit(circuit)?.wires[0].color).toBe("violet");
+    (circuit.wires[0] as { color?: string }).color = "toString";
+    expect(validateCircuit(circuit)?.wires[0].color).toBeUndefined();
+  });
 });

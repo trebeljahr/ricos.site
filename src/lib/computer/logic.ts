@@ -18,7 +18,16 @@ export type Node = {
   label?: string;
   value?: boolean;
 };
-export type Wire = { id: string; from: string; to: string; input: number };
+export const WIRE_COLORS = {
+  cyan: "#69e2e0",
+  amber: "#ffc76a",
+  coral: "#ff8f87",
+  violet: "#b7a1ff",
+  blue: "#7cb8ff",
+  lime: "#b9e976",
+} as const;
+export type WireColor = keyof typeof WIRE_COLORS;
+export type Wire = { id: string; from: string; to: string; input: number; color?: WireColor };
 export type Circuit = { name: string; nodes: Node[]; wires: Wire[] };
 export type Snapshot = {
   values: Record<string, boolean>;
@@ -283,6 +292,15 @@ export function validateCircuit(value: unknown): Circuit | null {
       label: typeof n.label === "string" ? n.label.slice(0, 30) : undefined,
       value: Boolean(n.value),
     })),
-    wires: item.wires.map((w) => ({ id: w.id, from: w.from, to: w.to, input: w.input })),
+    wires: item.wires.map((w) => ({
+      id: w.id,
+      from: w.from,
+      to: w.to,
+      input: w.input,
+      color:
+        typeof w.color === "string" && Object.hasOwn(WIRE_COLORS, w.color)
+          ? (w.color as WireColor)
+          : undefined,
+    })),
   };
 }

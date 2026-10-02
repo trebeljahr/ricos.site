@@ -132,7 +132,7 @@ export function ByteExplorer() {
 
   function openEditor(next: ActiveEditor) {
     setEditor(next);
-    playButton();
+    if (next.type !== "color") playButton();
   }
 
   function applyEditor(text: string): string | null {
@@ -143,7 +143,7 @@ export function ByteExplorer() {
         : encodeByteColor(editor.kind, text);
     if ("error" in result) return result.error;
     setInput(byteBits(result.value));
-    playSwitch();
+    if (editor.type !== "color") playSwitch();
     return null;
   }
 
@@ -182,7 +182,6 @@ export function ByteExplorer() {
       <div className={`${styles.screw} ${styles.screwRight}`} aria-hidden="true" />
       <div className={styles.nameplate}>
         <div>
-          <span className={styles.serial}>01 / 8 BIT</span>
           <strong>BYTE INTERPRETER</strong>
         </div>
         <button

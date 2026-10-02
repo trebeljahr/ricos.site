@@ -81,7 +81,7 @@ export function FourByteExplorer() {
   function openEditor(kind: FourByteReading) {
     if (!reading || !bytes) return;
     setEditor(kind);
-    playButton();
+    if (kind !== "color") playButton();
   }
 
   function applyEditor(value: string, alpha: number): string | null {
@@ -90,7 +90,7 @@ export function FourByteExplorer() {
     if ("error" in result) return result.error;
     setInput(formatFourBytes(result.bytes));
     setView(editor);
-    playSwitch();
+    if (editor !== "color") playSwitch();
     return null;
   }
 
@@ -133,7 +133,6 @@ export function FourByteExplorer() {
       <div className={`${panel.screw} ${panel.screwRight}`} aria-hidden="true" />
       <div className={panel.nameplate}>
         <div>
-          <span className={panel.serial}>02 / 32 BIT</span>
           <strong>32-BIT INTERPRETER</strong>
         </div>
         <button

@@ -49,7 +49,6 @@
 }
 .nameplate div { display: flex; align-items: baseline; flex-wrap: wrap; gap: 12px; }
 .nameplate strong { font-size: 18px; letter-spacing: .08em; }
-.serial { color: #3b493e; font-size: 11px; }
 .soundButton {
   display: inline-flex;
   align-items: center;

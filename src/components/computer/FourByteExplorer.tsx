@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
+import { encodeFourByteReading, type FourByteReading } from "src/lib/fourByteEditing";
 import { formatFourBytes, fourByteReadings, parseFourBytes } from "src/lib/fourByteInterpretations";
 import panel from "./ByteExplorer.module.css";
 import styles from "./FourByteExplorer.module.css";
+import { PanelEditor } from "./PanelEditor";
 
 const presets = [
   { label: "EMOJI 😀", hex: "F0 9F 98 80", view: "text" },
@@ -12,14 +14,20 @@ const presets = [
   { label: "−1", hex: "FF FF FF FF", view: "signed" },
 ] as const;
 
-type DisplayView = (typeof presets)[number]["view"];
+type DisplayView = FourByteReading;
 
-function Result({ label, value }: { label: string; value: string }) {
+function Result({ label, value, onClick }: { label: string; value: string; onClick: () => void }) {
   return (
-    <div className={styles.result}>
-      <dt>{label}</dt>
-      <dd>{value}</dd>
-    </div>
+    <button
+      type="button"
+      className={styles.result}
+      onClick={onClick}
+      aria-label={`Set ${label}. Current value ${value}`}
+    >
+      <span>{label}</span>
+      <strong>{value}</strong>
+      <em>SET</em>
+    </button>
   );
 }
 
@@ -27,6 +35,7 @@ function Result({ label, value }: { label: string; value: string }) {
 export function FourByteExplorer() {
   const [input, setInput] = useState("F0 9F 98 80");
   const [view, setView] = useState<DisplayView>("text");
+  const [editor, setEditor] = useState<FourByteReading | null>(null);
   const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
   const bytes = parseFourBytes(input);
   const reading = bytes ? fourByteReadings(bytes) : null;
@@ -59,6 +68,7 @@ export function FourByteExplorer() {
           .join("") || "EMPTY"
     : "—";
   const display = {
+    unsigned: { label: "UNSIGNED INT32", value: reading ? String(reading.unsigned) : "—" },
     text: { label: "UTF-8 TEXT", value: utf8Text },
     float: { label: "FLOAT32", value: floatText },
     signed: { label: "SIGNED INT32", value: reading ? String(reading.signed) : "—" },
@@ -67,6 +77,55 @@ export function FourByteExplorer() {
       value: bytes ? `#${formatFourBytes(bytes).replaceAll(" ", "")}` : "—",
     },
   }[view];
+
+  function openEditor(kind: FourByteReading) {
+    if (!reading || !bytes) return;
+    setEditor(kind);
+    playButton();
+  }
+
+  function applyEditor(value: string, alpha: number): string | null {
+    if (!editor) return null;
+    const result = encodeFourByteReading(editor, value, alpha);
+    if ("error" in result) return result.error;
+    setInput(formatFourBytes(result.bytes));
+    setView(editor);
+    playSwitch();
+    return null;
+  }
+
+  const editorValue =
+    editor && reading && bytes
+      ? editor === "unsigned"
+        ? String(reading.unsigned)
+        : editor === "signed"
+          ? String(reading.signed)
+          : editor === "float"
+            ? floatText
+            : editor === "text"
+              ? (reading.utf8 ?? "")
+              : `#${[...bytes.slice(0, 3)].map((byte) => byte.toString(16).padStart(2, "0")).join("")}`
+      : "";
+  const editorTitle =
+    editor === "unsigned"
+      ? "UNSIGNED INT32"
+      : editor === "signed"
+        ? "SIGNED INT32"
+        : editor === "float"
+          ? "FLOAT32"
+          : editor === "text"
+            ? "UTF-8 TEXT"
+            : "RGBA COLOR";
+  const editorHint =
+    editor === "unsigned"
+      ? "0–4,294,967,295 · four bytes"
+      : editor === "signed"
+        ? "−2,147,483,648–2,147,483,647 · four bytes"
+        : editor === "float"
+          ? "Stored as IEEE 754 float32; decimals may round."
+          : editor === "text"
+            ? "Enter text that encodes to exactly four UTF-8 bytes."
+            : "RGB uses three bytes; alpha uses the fourth.";
 
   return (
     <section className={panel.machine} aria-label="Four-byte interpretation instrument">
@@ -160,38 +219,50 @@ export function FourByteExplorer() {
           <div className={panel.sectionHead}>
             <span>READOUT</span>
           </div>
-          <div className={`${panel.screen} ${styles.screen}`}>
+          <button
+            type="button"
+            className={`${panel.screen} ${styles.screen} ${styles.editableScreen}`}
+            onClick={() => openEditor(view)}
+            disabled={!reading}
+            aria-label={`Set ${display.label}. Current value ${display.value}`}
+          >
             <div className={panel.screenTop}>
               <span>{display.label}</span>
               {!bytes && <span>INPUT ERROR</span>}
             </div>
             <div className={styles.screenText}>{display.value}</div>
-          </div>
-          <dl className={styles.results}>
+            <span className={styles.screenCue}>SET VALUE ↗</span>
+          </button>
+          <div className={styles.results}>
             <Result
               label="UNSIGNED INT32"
               value={reading ? reading.unsigned.toLocaleString("en-US") : "—"}
+              onClick={() => openEditor("unsigned")}
             />
             <Result
               label="SIGNED INT32"
               value={reading ? reading.signed.toLocaleString("en-US") : "—"}
+              onClick={() => openEditor("signed")}
             />
-            <Result label="IEEE 754 FLOAT32" value={floatText} />
-          </dl>
+            <Result
+              label="IEEE 754 FLOAT32"
+              value={floatText}
+              onClick={() => openEditor("float")}
+            />
+            <Result label="UTF-8 TEXT" value={utf8Text} onClick={() => openEditor("text")} />
+          </div>
           <div className={styles.colorBlock}>
             <div className={panel.sectionHead}>
               <span>RGBA COLOR</span>
             </div>
-            <div className={styles.colorReadout}>
-              <div
-                className={styles.checker}
-                role="img"
-                aria-label={
-                  reading
-                    ? `RGBA color ${reading.red}, ${reading.green}, ${reading.blue}, ${reading.alpha}`
-                    : "No color"
-                }
-              >
+            <button
+              type="button"
+              className={styles.colorReadout}
+              onClick={() => openEditor("color")}
+              disabled={!reading}
+              aria-label="Set RGBA color"
+            >
+              <div className={styles.checker} aria-hidden="true">
                 <div
                   style={{
                     backgroundColor: reading
@@ -207,10 +278,24 @@ export function FourByteExplorer() {
                   </span>
                 ))}
               </div>
-            </div>
+              <span className={styles.colorCue}>SET COLOR ↗</span>
+            </button>
           </div>
         </div>
       </div>
+      {editor && bytes && reading && (
+        <PanelEditor
+          key={editor}
+          title={editorTitle}
+          kind={editor === "color" ? "color" : editor === "text" ? "text" : "number"}
+          initialValue={editorValue}
+          hint={editorHint}
+          represented={formatFourBytes(bytes)}
+          alpha={editor === "color" ? reading.alpha : undefined}
+          onApply={applyEditor}
+          onClose={() => setEditor(null)}
+        />
+      )}
     </section>
   );
 }

@@ -163,6 +163,12 @@
 .presetRow button:hover { background: linear-gradient(#f1f3e6, #b7c5ae); }
 .presetRow button:active { transform: translateY(3px); box-shadow: inset 0 2px 4px #566352; }
 .screen {
+  display: block;
+  width: 100%;
+  color: #1d4625;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   margin-top: 15px;
   padding: 14px 18px;
   border: 7px solid #415045;
@@ -176,6 +182,13 @@
 .screenValue { padding: 3px 0; font-size: clamp(48px, 6vw, 65px); line-height: 1; letter-spacing: .1em; }
 .meters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin: 14px 0 0; }
 .meter {
+  position: relative;
+  display: block;
+  width: 100%;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   min-width: 0;
   padding: 9px 11px;
   border: 1px solid #748273;
@@ -183,11 +196,14 @@
   background: linear-gradient(#879587, #a5b1a1);
   box-shadow: inset 0 2px 4px #46574880, 0 1px #dce2d5;
 }
-.meter dt { color: #334537; font-size: 11px; }
-.meter dd { overflow: hidden; margin: 3px 0 0; font-size: 22px; text-overflow: ellipsis; white-space: nowrap; }
+.meter > span:first-child { color: #334537; font-size: 11px; }
+.meter strong { display: block; overflow: hidden; margin-top: 3px; font-size: 22px; text-overflow: ellipsis; white-space: nowrap; }
+.editCue { position: absolute; top: 8px; right: 9px; opacity: .55; font-size: 9px; }
+.meter:hover, .colorCell:hover { filter: brightness(1.08); }
+.meter:focus-visible, .colorCell:focus-visible, .screen:focus-visible { outline: 2px solid #e1f9ba; outline-offset: 2px; }
 .colorSection { padding: 15px 20px 20px; border-top: 7px solid #425043; background: linear-gradient(#a8b1a1, #8f9c8d); box-shadow: inset 0 2px 2px #dbe4d3; }
 .colors { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; margin-top: 12px; }
-.colorCell { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 8px; border: 1px solid #647466; border-radius: 4px; background: linear-gradient(#839183, #a4b1a1); box-shadow: inset 0 3px 5px #3d4e4099, 0 1px #dbe3d4; }
+.colorCell { position: relative; display: flex; align-items: center; gap: 10px; min-width: 0; padding: 8px; border: 1px solid #647466; border-radius: 4px; background: linear-gradient(#839183, #a4b1a1); box-shadow: inset 0 3px 5px #3d4e4099, 0 1px #dbe3d4; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
 .colorChip { flex: 0 0 48px; width: 48px; height: 48px; border: 5px solid #3c4c3e; border-radius: 3px; box-shadow: inset 1px 2px 5px #0006, 1px 1px #e5eadf; }
 .colorCell strong { display: block; font-size: 12px; }
 @media (max-width: 850px) { .workbench { grid-template-columns: 1fr; } }

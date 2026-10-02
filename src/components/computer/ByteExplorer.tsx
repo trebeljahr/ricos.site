@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import {
+  type ByteColor,
+  type ByteReading,
+  byteColorHex,
+  encodeByteColor,
+  encodeByteReading,
+} from "src/lib/byteEditing";
+import {
   asciiCharacter,
   byteBits,
   float8E4M3,
@@ -11,6 +18,7 @@ import {
   xtermColor,
 } from "src/lib/byteInterpretations";
 import styles from "./ByteExplorer.module.css";
+import { PanelEditor } from "./PanelEditor";
 
 const weights = [128, 64, 32, 16, 8, 4, 2, 1];
 const presets = [
@@ -20,34 +28,87 @@ const presets = [
   { label: "CLEAR", value: 0 },
 ];
 
-function Meter({ label, value }: { label: string; value: string }) {
+type ActiveEditor = { type: "reading"; kind: ByteReading } | { type: "color"; kind: ByteColor };
+
+const readingLabels: Record<ByteReading, string> = {
+  unsigned: "Unsigned",
+  signed: "Signed",
+  fixed: "Fixed · Q4.4",
+  float: "Float · E4M3",
+  ascii: "ASCII",
+  latin1: "Latin-1",
+  unicode: "Unicode",
+};
+const colorLabels: Record<ByteColor, string> = {
+  rgb332: "RGB332",
+  grayscale: "Grayscale",
+  indexed: "Indexed",
+  hue: "Hue",
+};
+const editorHints: Record<ByteReading | ByteColor, string> = {
+  unsigned: "Whole number from 0 to 255.",
+  signed: "Whole number from −128 to 127.",
+  fixed: "Q4.4 rounds to steps of 1/16.",
+  float: "E4M3 rounds to the nearest available 8-bit float.",
+  ascii: "One printable ASCII character.",
+  latin1: "One Latin-1 character (U+0000–U+00FF).",
+  unicode: "One character or a code point like U+00E9. One byte only.",
+  rgb332: "Closest color with 3 red, 3 green, and 2 blue bits.",
+  grayscale: "The chosen color becomes its grayscale brightness.",
+  indexed: "Closest match in the 256-color terminal palette.",
+  hue: "Only hue is stored; saturation and lightness stay fixed.",
+};
+
+function Meter({ label, value, onEdit }: { label: string; value: string; onEdit: () => void }) {
   return (
-    <div className={styles.meter}>
-      <dt>{label}</dt>
-      <dd>{value}</dd>
-    </div>
+    <button
+      type="button"
+      className={styles.meter}
+      onClick={onEdit}
+      aria-label={`Set ${label}. Current value ${value}`}
+    >
+      <span>{label}</span>
+      <strong>{value}</strong>
+      <span className={styles.editCue} aria-hidden="true">
+        SET
+      </span>
+    </button>
   );
 }
 
-function ColorCell({ label, color }: { label: string; color: string | null }) {
+function ColorCell({
+  label,
+  color,
+  onEdit,
+}: {
+  label: string;
+  color: string | null;
+  onEdit: () => void;
+}) {
   return (
-    <div className={styles.colorCell}>
+    <button
+      type="button"
+      className={styles.colorCell}
+      onClick={onEdit}
+      aria-label={`Set ${label} color. Current color ${color ?? "unavailable"}`}
+    >
       <div
         className={styles.colorChip}
         style={{ backgroundColor: color ?? "transparent" }}
-        role="img"
-        aria-label={`${label} color ${color ?? "unavailable"}`}
+        aria-hidden="true"
       />
-      <div>
-        <strong>{label}</strong>
-      </div>
-    </div>
+      <strong>{label}</strong>
+      <span className={styles.editCue} aria-hidden="true">
+        SET
+      </span>
+    </button>
   );
 }
 
 /** Portable demo: the panel can be placed in MDX without page-specific state. */
 export function ByteExplorer() {
   const [input, setInput] = useState("01000001");
+  const [editor, setEditor] = useState<ActiveEditor | null>(null);
   const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
   const value = parseByteBits(input);
   const bits = value === null ? null : byteBits(value);
@@ -68,6 +129,52 @@ export function ByteExplorer() {
     setInput(next.join(""));
     playSwitch();
   }
+
+  function openEditor(next: ActiveEditor) {
+    setEditor(next);
+    playButton();
+  }
+
+  function applyEditor(text: string): string | null {
+    if (!editor) return null;
+    const result =
+      editor.type === "reading"
+        ? encodeByteReading(editor.kind, text)
+        : encodeByteColor(editor.kind, text);
+    if ("error" in result) return result.error;
+    setInput(byteBits(result.value));
+    playSwitch();
+    return null;
+  }
+
+  const editorValue =
+    editor?.type === "color"
+      ? byteColorHex(editor.kind, value ?? 0)
+      : editor?.kind === "unsigned"
+        ? String(value ?? "")
+        : editor?.kind === "signed"
+          ? value === null
+            ? ""
+            : String(signedByte(value))
+          : editor?.kind === "fixed"
+            ? value === null
+              ? ""
+              : String(signedByte(value) / 16)
+            : editor?.kind === "float"
+              ? float === null
+                ? ""
+                : String(float)
+              : editor?.kind === "ascii"
+                ? (ascii ?? "")
+                : editor?.kind === "latin1"
+                  ? value !== null && value >= 32 && (value < 127 || value >= 160)
+                    ? String.fromCharCode(value)
+                    : ""
+                  : editor?.kind === "unicode"
+                    ? value === null
+                      ? ""
+                      : `U+${value.toString(16).padStart(4, "0").toUpperCase()}`
+                    : "";
 
   return (
     <section className={styles.machine} aria-label="Byte interpretation instrument">
@@ -148,7 +255,12 @@ export function ByteExplorer() {
           <div className={styles.sectionHead}>
             <span>READOUT</span>
           </div>
-          <div className={styles.screen}>
+          <button
+            type="button"
+            className={styles.screen}
+            onClick={() => openEditor({ type: "reading", kind: "unsigned" })}
+            aria-label={`Set unsigned decimal value. Current value ${value ?? "invalid"}`}
+          >
             <div className={styles.screenTop}>
               <span>UNSIGNED / DECIMAL</span>
               {value === null && <span>INPUT ERROR</span>}
@@ -159,26 +271,41 @@ export function ByteExplorer() {
                 HEX {value === null ? "--" : value.toString(16).padStart(2, "0").toUpperCase()}
               </span>
             </div>
-          </div>
-          <dl className={styles.meters}>
-            <Meter label="SIGNED" value={value === null ? "—" : String(signedByte(value))} />
+          </button>
+          <div className={styles.meters}>
+            <Meter
+              label="SIGNED"
+              value={value === null ? "—" : String(signedByte(value))}
+              onEdit={() => openEditor({ type: "reading", kind: "signed" })}
+            />
             <Meter
               label="FIXED · Q4.4"
               value={value === null ? "—" : String(signedByte(value) / 16)}
+              onEdit={() => openEditor({ type: "reading", kind: "fixed" })}
             />
             <Meter
               label="FLOAT · E4M3"
               value={float === null ? "—" : Number.isNaN(float) ? "NaN" : String(float)}
+              onEdit={() => openEditor({ type: "reading", kind: "float" })}
             />
-            <Meter label="ASCII" value={value === null ? "—" : (ascii ?? "CONTROL")} />
-            <Meter label="LATIN-1" value={latin1} />
+            <Meter
+              label="ASCII"
+              value={value === null ? "—" : (ascii ?? "CONTROL")}
+              onEdit={() => openEditor({ type: "reading", kind: "ascii" })}
+            />
+            <Meter
+              label="LATIN-1"
+              value={latin1}
+              onEdit={() => openEditor({ type: "reading", kind: "latin1" })}
+            />
             <Meter
               label="UNICODE"
               value={
                 value === null ? "—" : `U+${value.toString(16).padStart(4, "0").toUpperCase()}`
               }
+              onEdit={() => openEditor({ type: "reading", kind: "unicode" })}
             />
-          </dl>
+          </div>
         </div>
       </div>
 
@@ -187,15 +314,50 @@ export function ByteExplorer() {
           <span>COLOR</span>
         </div>
         <div className={styles.colors}>
-          <ColorCell label="RGB332" color={rgb?.hex ?? null} />
+          <ColorCell
+            label="RGB332"
+            color={rgb?.hex ?? null}
+            onEdit={() => openEditor({ type: "color", kind: "rgb332" })}
+          />
           <ColorCell
             label="GRAYSCALE"
             color={value === null ? null : `rgb(${value}, ${value}, ${value})`}
+            onEdit={() => openEditor({ type: "color", kind: "grayscale" })}
           />
-          <ColorCell label="INDEXED" color={value === null ? null : xtermColor(value)} />
-          <ColorCell label="HUE" color={value === null ? null : hueColor(value)} />
+          <ColorCell
+            label="INDEXED"
+            color={value === null ? null : xtermColor(value)}
+            onEdit={() => openEditor({ type: "color", kind: "indexed" })}
+          />
+          <ColorCell
+            label="HUE"
+            color={value === null ? null : hueColor(value)}
+            onEdit={() => openEditor({ type: "color", kind: "hue" })}
+          />
         </div>
       </div>
+      {editor && (
+        <PanelEditor
+          key={`${editor.type}-${editor.kind}`}
+          title={editor.type === "reading" ? readingLabels[editor.kind] : colorLabels[editor.kind]}
+          kind={
+            editor.type === "color"
+              ? "color"
+              : ["ascii", "latin1", "unicode"].includes(editor.kind)
+                ? "text"
+                : "number"
+          }
+          initialValue={editorValue}
+          hint={editorHints[editor.kind]}
+          represented={
+            value === null
+              ? "INVALID"
+              : `${byteBits(value)} · 0x${value.toString(16).padStart(2, "0").toUpperCase()}`
+          }
+          onApply={(text) => applyEditor(text)}
+          onClose={() => setEditor(null)}
+        />
+      )}
     </section>
   );
 }

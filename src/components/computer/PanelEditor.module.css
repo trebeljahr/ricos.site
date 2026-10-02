@@ -1,0 +1,21 @@
+.dialog { width: min(420px, calc(100vw - 30px)); max-height: calc(100svh - 30px); margin: auto; padding: 5px; border: 4px solid #344539; border-radius: 9px; background: #859182; box-shadow: inset 0 1px #e1e7d6, 0 25px 75px #0009; color: #203025; font: 600 13px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.dialog::backdrop { background: #07130cb8; backdrop-filter: blur(3px); }
+.plate { padding: 16px; border: 1px solid #68786a; background: linear-gradient(145deg, #b5c0ad, #929f91); box-shadow: inset 2px 2px #e1e7d8, inset -3px -3px 4px #506152; }
+.heading { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+.heading span { display: block; font-size: 10px; letter-spacing: .12em; }
+.heading h2 { margin: 2px 0 0; font: 700 20px/1.2 ui-monospace, monospace; }
+.close { width: 28px; height: 28px; padding: 0; border: 1px solid #4a594c; border-radius: 2px; background: linear-gradient(#e5e9d9,#a7b3a2); box-shadow: 0 2px 1px #526054; color: #263629; font: 22px/1 ui-monospace, monospace; cursor: pointer; }
+.label { display: block; margin-top: 24px; font-size: 11px; letter-spacing: .08em; }
+.textInput { display: block; width: 100%; margin-top: 6px; padding: 10px 12px; border: 5px solid #3b5040; border-radius: 5px; outline: none; background: #182d1d; box-shadow: inset 0 4px 9px #0009; color: #c8f1aa; font: 500 23px/1.2 ui-monospace, monospace; }
+.textInput:focus, .colorInput:focus-visible, .apply:focus-visible, .close:focus-visible { outline: 2px solid #d9f7ad; outline-offset: 2px; }
+.colorInput { display: block; width: 100%; height: 76px; margin-top: 8px; padding: 5px; border: 5px solid #3b5040; border-radius: 5px; background: #263d2b; cursor: pointer; }
+.hexInput { display: block; width: 100%; margin-top: 8px; padding: 7px 10px; border: 3px solid #3b5040; border-radius: 4px; background: #182d1d; color: #c8f1aa; font: 600 18px/1.2 ui-monospace, monospace; }
+.hexInput:focus-visible { outline: 2px solid #d9f7ad; outline-offset: 2px; }
+.alphaLabel { display: grid; grid-template-columns: 1fr auto; gap: 5px; margin-top: 15px; font-size: 11px; }
+.alphaLabel input { grid-column: 1 / -1; width: 100%; accent-color: #536e46; }
+.hint { margin: 13px 0 0; color: #3f5142; font-size: 12px; }
+.represented { display: flex; justify-content: space-between; gap: 8px; margin: 14px 0 0; padding: 8px 10px; border: 1px solid #68776b; border-radius: 3px; background: #8c9a8b; box-shadow: inset 0 2px 3px #45574780; font-size: 11px; }
+.represented strong { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.error { margin: 10px 0 0; color: #7d261a; font-size: 12px; }
+.apply { width: 100%; margin-top: 17px; padding: 10px; border: 2px solid #405341; border-radius: 3px; background: linear-gradient(#e6ead8, #9eae9a); box-shadow: inset 0 1px #f5f7e9, 0 3px 1px #4b5d4c; color: #243327; font: inherit; cursor: pointer; }
+.apply:active { transform: translateY(2px); box-shadow: inset 0 2px 3px #536352; }

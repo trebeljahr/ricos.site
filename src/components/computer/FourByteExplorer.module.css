@@ -1,4 +1,4 @@
-.body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 0 14px 13px; background: linear-gradient(#3c4a3f, #566457); }
+.body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; margin-top: 8px; padding: 0 0 13px; background: linear-gradient(#3c4a3f, #566457); }
 .inputSide, .outputSide { min-width: 0; padding: 18px 19px 20px; background: linear-gradient(145deg, #aab3a3, #939f91); box-shadow: inset 2px 2px 3px #dce3d3, inset -2px -2px 4px #536255; }
 .hexInput { letter-spacing: .08em; font-size: clamp(22px, 2.4vw, 30px); }
 .byteRows { display: grid; gap: 9px; margin-top: 15px; }
@@ -30,4 +30,4 @@
 .channels span { font-size: 14px; white-space: nowrap; }
 .channels b { color: #415044; }
 @media (max-width: 850px) { .body { grid-template-columns: 1fr; } }
-@media (max-width: 640px) { .body { padding: 0 8px 8px; } .inputSide, .outputSide { padding: 13px 11px 16px; } .byteRow { grid-template-columns: 56px 1fr; } .byteRow legend { width: 56px; font-size: 10px; } .byteRow legend b { font-size: 14px; } .bitButtonCompact { height: 33px; font-size: 15px; } .results { grid-template-columns: 1fr; } .screenText { font-size: 29px; } }
+@media (max-width: 640px) { .body { padding-bottom: 8px; } .inputSide, .outputSide { padding: 13px 11px 16px; } .byteRow { grid-template-columns: 56px 1fr; } .byteRow legend { width: 56px; font-size: 10px; } .byteRow legend b { font-size: 14px; } .bitButtonCompact { height: 33px; font-size: 15px; } .results { grid-template-columns: 1fr; } .screenText { font-size: 29px; } }

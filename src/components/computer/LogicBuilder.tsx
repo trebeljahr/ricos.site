@@ -37,6 +37,8 @@ const WIDTH = 900;
 const HEIGHT = 520;
 const NODE_WIDTH = 132;
 const NODE_HEIGHT = 78;
+const MIN_ZOOM = 0.05;
+const MAX_ZOOM = 4;
 const wireColorNames = Object.keys(WIRE_COLORS) as WireColor[];
 const partColors: Record<GateType, string> = {
   switch: "#ffc76a",
@@ -112,7 +114,7 @@ const nodeHeight = (node: Node) =>
     ? Math.max(NODE_HEIGHT, 30 + Math.max(inputCount(node), outputCount(node)) * 25)
     : ["input4", "input8", "display4", "display8"].includes(node.type)
       ? Math.max(NODE_HEIGHT, 54 + Math.max(inputCount(node), outputCount(node)) * 24)
-    : NODE_HEIGHT;
+      : NODE_HEIGHT;
 const portY = (node: Node, input: number) =>
   node.y +
   (inputCount(node) === 1
@@ -160,14 +162,28 @@ export function LogicBuilder() {
     "Drag from an output to an input to wire. Click a wire to set its color.",
   );
   const [ready, setReady] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [panMode, setPanMode] = useState(false);
   const canvasWidth = Math.max(WIDTH, ...circuit.nodes.map((item) => item.x + NODE_WIDTH + 50));
-  const canvasHeight = Math.max(HEIGHT, ...circuit.nodes.map((item) => item.y + nodeHeight(item) + 50));
+  const canvasHeight = Math.max(
+    HEIGHT,
+    ...circuit.nodes.map((item) => item.y + nodeHeight(item) + 50),
+  );
   const [drag, setDrag] = useState<{
     x: number;
     y: number;
     starts: Record<string, { x: number; y: number }>;
   } | null>(null);
   const board = useRef<HTMLDivElement>(null);
+  const boardViewport = useRef<HTMLDivElement>(null);
+  const zoomRef = useRef(1);
+  const queuedScroll = useRef<{ left: number; top: number } | null>(null);
+  const zoomFrame = useRef<number | null>(null);
+  const spaceHeld = useRef(false);
+  const activePan = useRef<{ id: number; x: number; y: number } | null>(null);
+  const touchPointers = useRef(new Map<number, { x: number; y: number }>());
+  const pinch = useRef<{ distance: number; x: number; y: number } | null>(null);
+  const touchMoved = useRef(false);
   const inputFile = useRef<HTMLInputElement>(null);
   const circuitRef = useRef(circuit);
   const snapshotRef = useRef(snapshot);
@@ -179,6 +195,97 @@ export function LogicBuilder() {
   snapshotRef.current = snapshot;
   clockRef.current = clockHigh;
   dragRef.current = drag;
+
+  const zoomAt = useCallback(
+    (
+      requested: number,
+      anchorX: number,
+      anchorY: number,
+      destinationX = anchorX,
+      destinationY = anchorY,
+    ) => {
+      const viewport = boardViewport.current;
+      if (!viewport) return;
+      const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, requested));
+      const old = zoomRef.current;
+      const rect = viewport.getBoundingClientRect();
+      const left = queuedScroll.current?.left ?? viewport.scrollLeft;
+      const top = queuedScroll.current?.top ?? viewport.scrollTop;
+      const pointX = (anchorX - rect.left + left) / old;
+      const pointY = (anchorY - rect.top + top) / old;
+      const target = {
+        left: pointX * next - (destinationX - rect.left),
+        top: pointY * next - (destinationY - rect.top),
+      };
+      zoomRef.current = next;
+      setZoom(next);
+      queuedScroll.current = target;
+      if (zoomFrame.current !== null) cancelAnimationFrame(zoomFrame.current);
+      zoomFrame.current = requestAnimationFrame(() => {
+        viewport.scrollLeft = target.left;
+        viewport.scrollTop = target.top;
+        queuedScroll.current = null;
+        zoomFrame.current = null;
+      });
+    },
+    [],
+  );
+  const zoomFromCenter = (next: number) => {
+    const rect = boardViewport.current?.getBoundingClientRect();
+    if (!rect) return;
+    zoomAt(next, rect.left + rect.width / 2, rect.top + rect.height / 2);
+  };
+  const fitCanvas = () => {
+    const viewport = boardViewport.current;
+    if (!viewport) return;
+    const next = Math.max(
+      MIN_ZOOM,
+      Math.min(
+        MAX_ZOOM,
+        (viewport.clientWidth - 24) / canvasWidth,
+        (viewport.clientHeight - 24) / canvasHeight,
+      ),
+    );
+    zoomRef.current = next;
+    setZoom(next);
+    if (zoomFrame.current !== null) cancelAnimationFrame(zoomFrame.current);
+    zoomFrame.current = requestAnimationFrame(() => {
+      viewport.scrollLeft = 0;
+      viewport.scrollTop = 0;
+      queuedScroll.current = null;
+      zoomFrame.current = null;
+    });
+  };
+  useEffect(() => {
+    const viewport = boardViewport.current;
+    if (!viewport) return;
+    const onWheel = (event: WheelEvent) => {
+      if (!event.ctrlKey && !event.metaKey) return;
+      event.preventDefault();
+      zoomAt(zoomRef.current * Math.exp(-event.deltaY * 0.01), event.clientX, event.clientY);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.code === "Space" &&
+        !(event.target instanceof HTMLInputElement) &&
+        !(event.target instanceof HTMLTextAreaElement) &&
+        !(event.target instanceof HTMLButtonElement)
+      )
+        spaceHeld.current = true;
+    };
+    const onKeyUp = (event: KeyboardEvent) => {
+      if (event.code === "Space") spaceHeld.current = false;
+    };
+    viewport.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    return () => {
+      viewport.removeEventListener("wheel", onWheel);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      if (zoomFrame.current !== null) cancelAnimationFrame(zoomFrame.current);
+    };
+  }, [zoomAt]);
 
   useEffect(() => {
     try {
@@ -422,7 +529,7 @@ export function LogicBuilder() {
     setMessage("Wire connected.");
   };
   const startWire = (event: React.PointerEvent<HTMLButtonElement>, draft: WireDraft) => {
-    if (event.button !== 0) return;
+    if (event.button !== 0 || event.pointerType === "touch") return;
     event.stopPropagation();
     board.current?.setPointerCapture(event.pointerId);
     wireDraftRef.current = draft;
@@ -527,6 +634,95 @@ export function LogicBuilder() {
       load(next);
     } catch {
       setMessage("Could not import that circuit JSON file.");
+    }
+  };
+  const gestureDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "touch") {
+      touchPointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (touchPointers.current.size === 1) touchMoved.current = false;
+      if (touchPointers.current.size === 2) {
+        const [first, second] = [...touchPointers.current.values()];
+        pinch.current = {
+          distance: Math.hypot(first.x - second.x, first.y - second.y),
+          x: (first.x + second.x) / 2,
+          y: (first.y + second.y) / 2,
+        };
+        setMarquee(null);
+        setDrag(null);
+        wireDraftRef.current = null;
+        setWireDraft(null);
+      }
+      return;
+    }
+    if (event.button === 1 || (event.button === 0 && (panMode || spaceHeld.current))) {
+      event.preventDefault();
+      event.stopPropagation();
+      activePan.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
+      event.currentTarget.setPointerCapture(event.pointerId);
+      setMarquee(null);
+      setDrag(null);
+    }
+  };
+  const gestureMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const viewport = boardViewport.current;
+    if (!viewport) return;
+    const pan = activePan.current;
+    if (pan?.id === event.pointerId) {
+      event.preventDefault();
+      event.stopPropagation();
+      viewport.scrollLeft -= event.clientX - pan.x;
+      viewport.scrollTop -= event.clientY - pan.y;
+      pan.x = event.clientX;
+      pan.y = event.clientY;
+      return;
+    }
+    if (event.pointerType !== "touch") return;
+    event.stopPropagation();
+    const previous = touchPointers.current.get(event.pointerId);
+    if (!previous) return;
+    touchPointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (touchPointers.current.size === 2) {
+      const [first, second] = [...touchPointers.current.values()];
+      const current = {
+        distance: Math.hypot(first.x - second.x, first.y - second.y),
+        x: (first.x + second.x) / 2,
+        y: (first.y + second.y) / 2,
+      };
+      if (pinch.current?.distance)
+        zoomAt(
+          (zoomRef.current * current.distance) / pinch.current.distance,
+          pinch.current.x,
+          pinch.current.y,
+          current.x,
+          current.y,
+        );
+      pinch.current = current;
+      touchMoved.current = true;
+    } else {
+      const dx = event.clientX - previous.x;
+      const dy = event.clientY - previous.y;
+      if (Math.abs(dx) + Math.abs(dy) > 1) {
+        touchMoved.current = true;
+        viewport.scrollLeft -= dx;
+        viewport.scrollTop -= dy;
+      }
+    }
+  };
+  const gestureUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (activePan.current?.id === event.pointerId) {
+      event.stopPropagation();
+      activePan.current = null;
+      if (event.currentTarget.hasPointerCapture?.(event.pointerId))
+        event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    if (event.pointerType === "touch") {
+      event.stopPropagation();
+      touchPointers.current.delete(event.pointerId);
+      pinch.current = null;
+      if (touchPointers.current.size === 0)
+        window.setTimeout(() => {
+          touchMoved.current = false;
+        }, 350);
     }
   };
   const boardPoint = (clientX: number, clientY: number) => {
@@ -729,8 +925,22 @@ export function LogicBuilder() {
           </button>
           {hasTransistors && (
             <div className={styles.powerView} aria-label="Power connection display (visual only)">
-              <label><input type="checkbox" checked={showVdd} onChange={(event) => setShowVdd(event.target.checked)} /> Show VDD</label>
-              <label><input type="checkbox" checked={showGround} onChange={(event) => setShowGround(event.target.checked)} /> Show GND</label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showVdd}
+                  onChange={(event) => setShowVdd(event.target.checked)}
+                />{" "}
+                Show VDD
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showGround}
+                  onChange={(event) => setShowGround(event.target.checked)}
+                />{" "}
+                Show GND
+              </label>
             </div>
           )}
           <button
@@ -808,7 +1018,9 @@ export function LogicBuilder() {
                 title={`Drag ${example.name} black box onto canvas or click to add`}
                 style={{ "--part-accent": partColors.module } as React.CSSProperties}
               >
-                <span className={styles.partIcon}><GateSymbol type="module" /></span>
+                <span className={styles.partIcon}>
+                  <GateSymbol type="module" />
+                </span>
                 <span>{example.name}</span>
               </button>
             ))}
@@ -823,442 +1035,549 @@ export function LogicBuilder() {
           </div>
         </aside>
         <div className={styles.workspace}>
-          <div className={styles.boardScroll}>
+          <div className={styles.canvasControls} role="toolbar" aria-label="Canvas view controls">
+            <button
+              type="button"
+              onClick={() => zoomFromCenter(zoomRef.current / 1.25)}
+              aria-label="Zoom out"
+            >
+              −
+            </button>
+            <span aria-live="polite">{Math.round(zoom * 100)}%</span>
+            <button
+              type="button"
+              onClick={() => zoomFromCenter(zoomRef.current * 1.25)}
+              aria-label="Zoom in"
+            >
+              +
+            </button>
+            <button type="button" onClick={fitCanvas}>
+              Fit
+            </button>
+            <button type="button" onClick={() => zoomFromCenter(1)}>
+              100%
+            </button>
+            <button
+              type="button"
+              aria-pressed={panMode}
+              onClick={() => setPanMode((value) => !value)}
+            >
+              Pan
+            </button>
+            <small>
+              Drag empty space to select · Pan: Space+drag, middle drag, or touch · Pinch to zoom
+            </small>
+          </div>
+          <div
+            ref={boardViewport}
+            className={clsx(styles.boardScroll, panMode && styles.panMode)}
+            onPointerDownCapture={gestureDown}
+            onPointerMoveCapture={gestureMove}
+            onPointerUpCapture={gestureUp}
+            onPointerCancelCapture={gestureUp}
+            onClickCapture={(event) => {
+              if (touchMoved.current) {
+                event.preventDefault();
+                event.stopPropagation();
+                touchMoved.current = false;
+              }
+            }}
+          >
             <div
-              ref={board}
-              className={styles.board}
-              style={{ width: canvasWidth, height: canvasHeight }}
-              role="application"
-              aria-label="Circuit canvas"
-              onKeyDown={(event) => {
-                if (event.key === "Escape") {
-                  setPending(null);
-                  setWireDraft(null);
-                  wireDraftRef.current = null;
-                  setMenu(null);
-                }
-              }}
-              onPointerMove={pointerMove}
-              onPointerDown={(event) => {
-                if (
-                  event.button !== 0 ||
-                  (event.target as Element).closest(`.${styles.node}`) ||
-                  (event.target as Element).closest(`.${styles.wireHit}`)
-                )
-                  return;
-                event.currentTarget.setPointerCapture(event.pointerId);
-                const point = boardPoint(event.clientX, event.clientY);
-                setMarquee({ ...point, endX: point.x, endY: point.y });
-                setSelected([]);
-                setMenu(null);
-              }}
-              onPointerUp={finishPointer}
-              onPointerCancel={() => {
-                wireDraftRef.current = null;
-                setWireDraft(null);
-                setMarquee(null);
-                setDrag(null);
-                suppressBoardClick.current = false;
-              }}
-              onDragOver={(event) => {
-                event.preventDefault();
-                event.dataTransfer.dropEffect = "copy";
-              }}
-              onDrop={(event) => {
-                event.preventDefault();
-                const blueprint = event.dataTransfer.getData("application/x-logic-circuit");
-                if (blueprint && (BLUEPRINTS[blueprint] || PRESETS[blueprint])) {
-                  insertCircuit(
-                    BLUEPRINTS[blueprint] || PRESETS[blueprint],
-                    boardPoint(event.clientX, event.clientY),
-                  );
-                  return;
-                }
-                const moduleName = event.dataTransfer.getData("application/x-logic-module");
-                if (
-                  moduleName &&
-                  (BLUEPRINTS[moduleName] || PRESETS[moduleName] || saved[moduleName])
-                ) {
-                  const point = boardPoint(event.clientX, event.clientY);
-                  addModule(BLUEPRINTS[moduleName] || PRESETS[moduleName] || saved[moduleName], {
-                    x: point.x - NODE_WIDTH / 2,
-                    y: point.y - NODE_HEIGHT / 2,
-                  });
-                  return;
-                }
-                const type = event.dataTransfer.getData("application/x-logic-gate") as GateType;
-                if (!palette.includes(type)) return;
-                const point = boardPoint(event.clientX, event.clientY);
-                addNode(type, { x: point.x - NODE_WIDTH / 2, y: point.y - NODE_HEIGHT / 2 });
-              }}
-              onContextMenu={(event) => {
-                event.preventDefault();
-                setMenu({ x: event.clientX, y: event.clientY, kind: "board" });
-              }}
-              onClick={() => {
-                if (suppressBoardClick.current) {
-                  suppressBoardClick.current = false;
-                  return;
-                }
-                if (pending) setPending(null);
-                setMenu(null);
+              style={{
+                width: canvasWidth * zoom,
+                height: canvasHeight * zoom,
+                position: "relative",
               }}
             >
-              {circuit.groups?.map((group) => {
-                const parts = circuit.nodes.filter((item) => group.nodeIds.includes(item.id));
-                if (!parts.length) return null;
-                const left = Math.max(8, Math.min(...parts.map((item) => item.x)) - 20);
-                const top = Math.max(8, Math.min(...parts.map((item) => item.y)) - 28);
-                const right = Math.max(...parts.map((item) => item.x + NODE_WIDTH)) + 20;
-                const bottom = Math.max(...parts.map((item) => item.y + nodeHeight(item))) + 18;
-                return (
-                  <div
-                    key={group.id}
-                    className={styles.circuitGroup}
-                    style={{ left, top, width: right - left, height: bottom - top }}
-                    aria-label={`${group.label} circuit boundary`}
-                  >
-                    <span>{group.label}</span>
-                  </div>
-                );
-              })}
-              <svg
-                className={styles.wires}
-                viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
-                preserveAspectRatio="none"
-                aria-label="Circuit wires"
+              <div
+                ref={board}
+                className={styles.board}
+                style={{
+                  width: canvasWidth,
+                  height: canvasHeight,
+                  transform: `scale(${zoom})`,
+                  transformOrigin: "top left",
+                }}
+                role="application"
+                aria-label="Circuit canvas"
+                onKeyDown={(event) => {
+                  if (event.key === "Escape") {
+                    setPending(null);
+                    setWireDraft(null);
+                    wireDraftRef.current = null;
+                    setMenu(null);
+                  }
+                }}
+                onPointerMove={pointerMove}
+                onPointerDown={(event) => {
+                  if (
+                    event.pointerType === "touch" ||
+                    event.button !== 0 ||
+                    (event.target as Element).closest(`.${styles.node}`) ||
+                    (event.target as Element).closest(`.${styles.wireHit}`)
+                  )
+                    return;
+                  event.currentTarget.setPointerCapture(event.pointerId);
+                  const point = boardPoint(event.clientX, event.clientY);
+                  setMarquee({ ...point, endX: point.x, endY: point.y });
+                  setSelected([]);
+                  setMenu(null);
+                }}
+                onPointerUp={finishPointer}
+                onPointerCancel={() => {
+                  wireDraftRef.current = null;
+                  setWireDraft(null);
+                  setMarquee(null);
+                  setDrag(null);
+                  suppressBoardClick.current = false;
+                }}
+                onDragOver={(event) => {
+                  event.preventDefault();
+                  event.dataTransfer.dropEffect = "copy";
+                }}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  const blueprint = event.dataTransfer.getData("application/x-logic-circuit");
+                  if (blueprint && (BLUEPRINTS[blueprint] || PRESETS[blueprint])) {
+                    insertCircuit(
+                      BLUEPRINTS[blueprint] || PRESETS[blueprint],
+                      boardPoint(event.clientX, event.clientY),
+                    );
+                    return;
+                  }
+                  const moduleName = event.dataTransfer.getData("application/x-logic-module");
+                  if (
+                    moduleName &&
+                    (BLUEPRINTS[moduleName] || PRESETS[moduleName] || saved[moduleName])
+                  ) {
+                    const point = boardPoint(event.clientX, event.clientY);
+                    addModule(BLUEPRINTS[moduleName] || PRESETS[moduleName] || saved[moduleName], {
+                      x: point.x - NODE_WIDTH / 2,
+                      y: point.y - NODE_HEIGHT / 2,
+                    });
+                    return;
+                  }
+                  const type = event.dataTransfer.getData("application/x-logic-gate") as GateType;
+                  if (!palette.includes(type)) return;
+                  const point = boardPoint(event.clientX, event.clientY);
+                  addNode(type, { x: point.x - NODE_WIDTH / 2, y: point.y - NODE_HEIGHT / 2 });
+                }}
+                onContextMenu={(event) => {
+                  event.preventDefault();
+                  setMenu({ x: event.clientX, y: event.clientY, kind: "board" });
+                }}
+                onClick={() => {
+                  if (suppressBoardClick.current) {
+                    suppressBoardClick.current = false;
+                    return;
+                  }
+                  if (pending) setPending(null);
+                  setMenu(null);
+                }}
               >
-                {circuit.wires.map((wire, index) => {
-                  const from = circuit.nodes.find((node) => node.id === wire.from);
-                  const to = circuit.nodes.find((node) => node.id === wire.to);
-                  if (!from || !to) return null;
-                  if (hasTransistors && (!powerVisible(from) || !powerVisible(to))) return null;
-                  const x1 = from.x + NODE_WIDTH,
-                    y1 = outY(from, wire.output ?? 0),
-                    x2 = to.x,
-                    y2 = portY(to, wire.input);
-                  const d = tidyWiring
-                    ? wirePath(
-                        { x: x1, y: y1 },
-                        { x: x2, y: y2 },
-                        circuit.nodes
-                          .filter((node) => node.id !== from.id && node.id !== to.id)
-                          .map((node) => ({
-                            x: node.x,
-                            y: node.y,
-                            width: NODE_WIDTH,
-                            height: nodeHeight(node),
-                          })),
-                        ((index % 5) - 2) * 10,
-                      )
-                    : simpleWirePath({ x: x1, y: y1 }, { x: x2, y: y2 });
-                  const color = WIRE_COLORS[wire.color ?? defaultWireColor(wire.from)];
+                {circuit.groups?.map((group) => {
+                  const parts = circuit.nodes.filter((item) => group.nodeIds.includes(item.id));
+                  if (!parts.length) return null;
+                  const left = Math.max(8, Math.min(...parts.map((item) => item.x)) - 20);
+                  const top = Math.max(8, Math.min(...parts.map((item) => item.y)) - 28);
+                  const right = Math.max(...parts.map((item) => item.x + NODE_WIDTH)) + 20;
+                  const bottom = Math.max(...parts.map((item) => item.y + nodeHeight(item))) + 18;
                   return (
-                    <g key={wire.id} style={{ "--wire-color": color } as React.CSSProperties}>
-                      <path
-                        d={d}
-                        className={styles.wireHit}
-                        role="button"
-                        tabIndex={0}
-                        aria-label={`Select wire from ${from.label || LABELS[from.type]} ${outputLabel(from, wire.output ?? 0)} to ${to.label || LABELS[to.type]} ${inputLabel(to, wire.input)}`}
-                        onKeyDown={(event) => {
-                          if (event.key === "Enter") setSelectedWire(wire.id);
-                          if (event.key === "Delete") {
+                    <div
+                      key={group.id}
+                      className={styles.circuitGroup}
+                      style={{ left, top, width: right - left, height: bottom - top }}
+                      aria-label={`${group.label} circuit boundary`}
+                    >
+                      <span>{group.label}</span>
+                    </div>
+                  );
+                })}
+                <svg
+                  className={styles.wires}
+                  viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+                  preserveAspectRatio="none"
+                  aria-label="Circuit wires"
+                >
+                  {circuit.wires.map((wire, index) => {
+                    const from = circuit.nodes.find((node) => node.id === wire.from);
+                    const to = circuit.nodes.find((node) => node.id === wire.to);
+                    if (!from || !to) return null;
+                    if (hasTransistors && (!powerVisible(from) || !powerVisible(to))) return null;
+                    const x1 = from.x + NODE_WIDTH,
+                      y1 = outY(from, wire.output ?? 0),
+                      x2 = to.x,
+                      y2 = portY(to, wire.input);
+                    const d = tidyWiring
+                      ? wirePath(
+                          { x: x1, y: y1 },
+                          { x: x2, y: y2 },
+                          circuit.nodes
+                            .filter((node) => node.id !== from.id && node.id !== to.id)
+                            .map((node) => ({
+                              x: node.x,
+                              y: node.y,
+                              width: NODE_WIDTH,
+                              height: nodeHeight(node),
+                            })),
+                          ((index % 5) - 2) * 10,
+                        )
+                      : simpleWirePath({ x: x1, y: y1 }, { x: x2, y: y2 });
+                    const color = WIRE_COLORS[wire.color ?? defaultWireColor(wire.from)];
+                    return (
+                      <g key={wire.id} style={{ "--wire-color": color } as React.CSSProperties}>
+                        <path
+                          d={d}
+                          className={styles.wireHit}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`Select wire from ${from.label || LABELS[from.type]} ${outputLabel(from, wire.output ?? 0)} to ${to.label || LABELS[to.type]} ${inputLabel(to, wire.input)}`}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter") setSelectedWire(wire.id);
+                            if (event.key === "Delete") {
+                              setCircuit((current) => ({
+                                ...current,
+                                wires: current.wires.filter((item) => item.id !== wire.id),
+                              }));
+                            }
+                          }}
+                          onContextMenu={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            setSelectedWire(wire.id);
+                            setMenu({
+                              x: event.clientX,
+                              y: event.clientY,
+                              kind: "wire",
+                              id: wire.id,
+                            });
+                          }}
+                          onDoubleClick={(event) => {
+                            event.stopPropagation();
                             setCircuit((current) => ({
                               ...current,
                               wires: current.wires.filter((item) => item.id !== wire.id),
                             }));
+                            setMessage("Wire removed.");
+                            setSelectedWire(null);
+                          }}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setSelectedWire(wire.id);
+                            setSelected([]);
+                            setMenu(null);
+                          }}
+                        />
+                        <path
+                          d={d}
+                          className={clsx(
+                            styles.wire,
+                            (snapshot.outputs[wire.from]?.[wire.output ?? 0] ??
+                              snapshot.values[wire.from]) &&
+                              styles.live,
+                            selectedWire === wire.id && styles.wireSelected,
+                          )}
+                        />
+                      </g>
+                    );
+                  })}
+                  {previewStart && previewEnd && wireDraft && (
+                    <path
+                      d={
+                        tidyWiring
+                          ? wirePath(previewStart, previewEnd)
+                          : simpleWirePath(previewStart, previewEnd)
+                      }
+                      className={styles.wirePreview}
+                      style={
+                        {
+                          "--wire-color":
+                            WIRE_COLORS[
+                              wireDraft.from
+                                ? defaultWireColor(wireDraft.from)
+                                : draftTarget
+                                  ? defaultWireColor(draftTarget.id)
+                                  : "cyan"
+                            ],
+                        } as React.CSSProperties
+                      }
+                    />
+                  )}
+                </svg>
+                {circuit.nodes
+                  .filter((node) => !hasTransistors || powerVisible(node))
+                  .map((node) => (
+                    <div
+                      key={node.id}
+                      role="group"
+                      aria-label={`${node.label || LABELS[node.type]} part`}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          event.stopPropagation();
+                          setSelected([node.id]);
+                        }
+                      }}
+                      className={clsx(
+                        styles.node,
+                        selected.includes(node.id) && styles.selected,
+                        snapshot.values[node.id] && styles.active,
+                      )}
+                      style={
+                        {
+                          "--part-accent": partColors[node.type],
+                          left: `${(node.x / canvasWidth) * 100}%`,
+                          top: `${(node.y / canvasHeight) * 100}%`,
+                          width: `${(NODE_WIDTH / canvasWidth) * 100}%`,
+                          height: `${(nodeHeight(node) / canvasHeight) * 100}%`,
+                        } as React.CSSProperties
+                      }
+                      onPointerDown={(event) => {
+                        if (
+                          event.pointerType === "touch" ||
+                          event.button !== 0 ||
+                          (event.target as HTMLElement).closest("button")
+                        )
+                          return;
+                        event.currentTarget.setPointerCapture(event.pointerId);
+                        const ids = selected.includes(node.id) ? selected : [node.id];
+                        setDrag({
+                          x: event.clientX,
+                          y: event.clientY,
+                          starts: Object.fromEntries(
+                            circuit.nodes
+                              .filter((item) => ids.includes(item.id))
+                              .map((item) => [item.id, { x: item.x, y: item.y }]),
+                          ),
+                        });
+                        setSelected(ids);
+                        setSelectedWire(null);
+                        setMenu(null);
+                      }}
+                      onContextMenu={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        if (!selected.includes(node.id)) setSelected([node.id]);
+                        setMenu({ x: event.clientX, y: event.clientY, kind: "node", id: node.id });
+                      }}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        if ((event.nativeEvent as PointerEvent).pointerType === "touch")
+                          setSelected([node.id]);
+                      }}
+                      onDoubleClick={(event) => {
+                        event.stopPropagation();
+                        if (node.type === "module" && node.module)
+                          enterCircuit(node.module, node.label || node.module.name, node.id);
+                      }}
+                    >
+                      {Array.from({ length: inputCount(node) }, (_, input) => (
+                        <button
+                          type="button"
+                          key={`${node.id}-input-${input}`}
+                          className={styles.input}
+                          data-node-id={node.id}
+                          data-input={input}
+                          style={{
+                            top: `${((portY(node, input) - node.y) / nodeHeight(node)) * 100}%`,
+                          }}
+                          onPointerDown={(event) =>
+                            startWire(event, {
+                              to: node.id,
+                              input,
+                              x: node.x,
+                              y: portY(node, input),
+                              originX: node.x,
+                              originY: portY(node, input),
+                            })
                           }
-                        }}
-                        onContextMenu={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-                          setSelectedWire(wire.id);
-                          setMenu({
-                            x: event.clientX,
-                            y: event.clientY,
-                            kind: "wire",
-                            id: wire.id,
-                          });
-                        }}
-                        onDoubleClick={(event) => {
-                          event.stopPropagation();
-                          setCircuit((current) => ({
-                            ...current,
-                            wires: current.wires.filter((item) => item.id !== wire.id),
-                          }));
-                          setMessage("Wire removed.");
-                          setSelectedWire(null);
-                        }}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          setSelectedWire(wire.id);
-                          setSelected([]);
-                          setMenu(null);
-                        }}
-                      />
-                      <path
-                        d={d}
-                        className={clsx(
-                          styles.wire,
-                          (snapshot.outputs[wire.from]?.[wire.output ?? 0] ??
-                            snapshot.values[wire.from]) &&
-                            styles.live,
-                          selectedWire === wire.id && styles.wireSelected,
+                          onClick={(event) => {
+                            if (event.detail === 0)
+                              connect(pending?.from ?? null, node.id, input, pending?.output);
+                          }}
+                          data-wire-target={Boolean(
+                            wireDraft?.from &&
+                              draftTarget?.id === node.id &&
+                              draftTarget.input === input,
+                          )}
+                          aria-label={`Connect to ${node.label || LABELS[node.type]} ${inputLabel(node, input)}`}
+                          title={
+                            node.type === "module"
+                              ? inputLabel(node, input)
+                              : node.type === "dff"
+                                ? input === 0
+                                  ? "D: data"
+                                  : "CLK: rising edge"
+                                : node.type === "nmos" || node.type === "pmos"
+                                  ? input === 0
+                                    ? "Gate control"
+                                    : "Source signal"
+                                  : `Input ${input + 1}`
+                          }
+                        />
+                      ))}
+                      <div className={styles.nodeBody}>
+                        {!["input4", "input8", "display4", "display8", "lamp"].includes(
+                          node.type,
+                        ) && (
+                          <span className={styles.nodeSymbol}>
+                            <GateSymbol type={node.type} />
+                          </span>
                         )}
-                      />
-                    </g>
-                  );
-                })}
-                {previewStart && previewEnd && wireDraft && (
-                  <path
-                    d={
-                      tidyWiring
-                        ? wirePath(previewStart, previewEnd)
-                        : simpleWirePath(previewStart, previewEnd)
-                    }
-                    className={styles.wirePreview}
-                    style={
-                      {
-                        "--wire-color":
-                          WIRE_COLORS[
-                            wireDraft.from
-                              ? defaultWireColor(wireDraft.from)
-                              : draftTarget
-                                ? defaultWireColor(draftTarget.id)
-                                : "cyan"
-                          ],
-                      } as React.CSSProperties
-                    }
+                        <strong>{node.label || LABELS[node.type]}</strong>
+                        {node.type === "input4" || node.type === "input8" ? (
+                          <div
+                            className={styles.numberBits}
+                            aria-label={`${node.label || LABELS[node.type]} binary input`}
+                          >
+                            {Array.from({ length: node.type === "input4" ? 4 : 8 }, (_, index) => {
+                              const bit = (node.type === "input4" ? 4 : 8) - index - 1;
+                              const on = Boolean(((node.numberValue ?? 0) >> bit) & 1);
+                              return (
+                                <button
+                                  type="button"
+                                  key={bit}
+                                  aria-label={`Toggle bit ${bit} of ${node.label || LABELS[node.type]}`}
+                                  aria-pressed={on}
+                                  className={clsx(styles.numberBit, on && styles.numberBitOn)}
+                                  onClick={() =>
+                                    setCircuit((current) => ({
+                                      ...current,
+                                      nodes: current.nodes.map((item) =>
+                                        item.id === node.id
+                                          ? {
+                                              ...item,
+                                              numberValue: (item.numberValue ?? 0) ^ (1 << bit),
+                                            }
+                                          : item,
+                                      ),
+                                    }))
+                                  }
+                                >
+                                  {on ? "1" : "0"}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : node.type === "display4" || node.type === "display8" ? (
+                          <div
+                            className={styles.digitalScreen}
+                            aria-label={`${node.label || LABELS[node.type]} value`}
+                          >
+                            <span className={styles.decimalValue}>
+                              {(snapshot.outputs[node.id] ?? []).reduce(
+                                (value, bit, index) => value + (bit ? 2 ** index : 0),
+                                0,
+                              )}
+                            </span>
+                            <span className={styles.binaryValue}>
+                              {Array.from(
+                                { length: node.type === "display4" ? 4 : 8 },
+                                (_, index) =>
+                                  snapshot.outputs[node.id]?.[
+                                    (node.type === "display4" ? 4 : 8) - index - 1
+                                  ]
+                                    ? "1"
+                                    : "0",
+                              ).join("")}
+                            </span>
+                          </div>
+                        ) : node.type === "lamp" ? (
+                          <span
+                            className={clsx(styles.led, snapshot.values[node.id] && styles.ledOn)}
+                            role="img"
+                            aria-label={snapshot.values[node.id] ? "LED on" : "LED off"}
+                          />
+                        ) : node.type === "switch" ? (
+                          <button
+                            type="button"
+                            className={styles.toggle}
+                            onClick={() =>
+                              setCircuit((current) => ({
+                                ...current,
+                                nodes: current.nodes.map((item) =>
+                                  item.id === node.id ? { ...item, value: !item.value } : item,
+                                ),
+                              }))
+                            }
+                          >
+                            {node.value ? "ON" : "OFF"}
+                          </button>
+                        ) : node.type === "pulse" ? (
+                          <button
+                            type="button"
+                            className={styles.toggle}
+                            onClick={() => {
+                              advance({ [node.id]: true }, clockRef.current);
+                              window.setTimeout(() => advance({}, clockRef.current), 180);
+                            }}
+                          >
+                            SEND
+                          </button>
+                        ) : node.type === "module" ? (
+                          <span className={styles.moduleBits}>
+                            {moduleOutputs(node.module!)
+                              .map(
+                                (port, index) =>
+                                  `${port.label || `OUT ${index + 1}`}:${snapshot.outputs[node.id]?.[index] ? 1 : 0}`,
+                              )
+                              .join("  ")}
+                          </span>
+                        ) : (
+                          <span className={styles.bit}>{snapshot.values[node.id] ? "1" : "0"}</span>
+                        )}
+                      </div>
+                      {Array.from({ length: outputCount(node) }, (_, output) => (
+                        <button
+                          type="button"
+                          key={`${node.id}-output-${output}`}
+                          className={clsx(
+                            styles.output,
+                            pending?.from === node.id &&
+                              pending.output === output &&
+                              styles.pending,
+                          )}
+                          style={{
+                            top: `${((outY(node, output) - node.y) / nodeHeight(node)) * 100}%`,
+                          }}
+                          onPointerDown={(event) =>
+                            startWire(event, {
+                              from: node.id,
+                              output,
+                              x: node.x + NODE_WIDTH,
+                              y: outY(node, output),
+                              originX: node.x + NODE_WIDTH,
+                              originY: outY(node, output),
+                            })
+                          }
+                          onClick={(event) => {
+                            if (event.detail !== 0) return;
+                            setPending({ from: node.id, output });
+                            setMessage(`Choose an input for ${outputLabel(node, output)}.`);
+                          }}
+                          data-wire-target={Boolean(
+                            wireDraft?.to &&
+                              draftTarget?.id === node.id &&
+                              draftTarget.output === output,
+                          )}
+                          aria-label={`Wire from ${node.label || LABELS[node.type]} ${outputLabel(node, output)}`}
+                          title={outputLabel(node, output)}
+                        />
+                      ))}
+                    </div>
+                  ))}
+                {marquee && (
+                  <div
+                    className={styles.marquee}
+                    style={{
+                      left: Math.min(marquee.x, marquee.endX),
+                      top: Math.min(marquee.y, marquee.endY),
+                      width: Math.abs(marquee.endX - marquee.x),
+                      height: Math.abs(marquee.endY - marquee.y),
+                    }}
                   />
                 )}
-              </svg>
-              {circuit.nodes.filter((node) => !hasTransistors || powerVisible(node)).map((node) => (
-                <div
-                  key={node.id}
-                  role="group"
-                  aria-label={`${node.label || LABELS[node.type]} part`}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      event.stopPropagation();
-                      setSelected([node.id]);
-                    }
-                  }}
-                  className={clsx(
-                    styles.node,
-                    selected.includes(node.id) && styles.selected,
-                    snapshot.values[node.id] && styles.active,
-                  )}
-                  style={
-                    {
-                      "--part-accent": partColors[node.type],
-                      left: `${(node.x / canvasWidth) * 100}%`,
-                      top: `${(node.y / canvasHeight) * 100}%`,
-                      width: `${(NODE_WIDTH / canvasWidth) * 100}%`,
-                      height: `${(nodeHeight(node) / canvasHeight) * 100}%`,
-                    } as React.CSSProperties
-                  }
-                  onPointerDown={(event) => {
-                    if (event.button !== 0 || (event.target as HTMLElement).closest("button"))
-                      return;
-                    event.currentTarget.setPointerCapture(event.pointerId);
-                    const ids = selected.includes(node.id) ? selected : [node.id];
-                    setDrag({
-                      x: event.clientX,
-                      y: event.clientY,
-                      starts: Object.fromEntries(
-                        circuit.nodes
-                          .filter((item) => ids.includes(item.id))
-                          .map((item) => [item.id, { x: item.x, y: item.y }]),
-                      ),
-                    });
-                    setSelected(ids);
-                    setSelectedWire(null);
-                    setMenu(null);
-                  }}
-                  onContextMenu={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    if (!selected.includes(node.id)) setSelected([node.id]);
-                    setMenu({ x: event.clientX, y: event.clientY, kind: "node", id: node.id });
-                  }}
-                  onClick={(event) => event.stopPropagation()}
-                  onDoubleClick={(event) => {
-                    event.stopPropagation();
-                    if (node.type === "module" && node.module)
-                      enterCircuit(node.module, node.label || node.module.name, node.id);
-                  }}
-                >
-                  {Array.from({ length: inputCount(node) }, (_, input) => (
-                    <button
-                      type="button"
-                      key={`${node.id}-input-${input}`}
-                      className={styles.input}
-                      data-node-id={node.id}
-                      data-input={input}
-                      style={{
-                        top: `${((portY(node, input) - node.y) / nodeHeight(node)) * 100}%`,
-                      }}
-                      onPointerDown={(event) =>
-                        startWire(event, {
-                          to: node.id,
-                          input,
-                          x: node.x,
-                          y: portY(node, input),
-                          originX: node.x,
-                          originY: portY(node, input),
-                        })
-                      }
-                      onClick={(event) => {
-                        if (event.detail === 0)
-                          connect(pending?.from ?? null, node.id, input, pending?.output);
-                      }}
-                      data-wire-target={Boolean(
-                        wireDraft?.from &&
-                          draftTarget?.id === node.id &&
-                          draftTarget.input === input,
-                      )}
-                      aria-label={`Connect to ${node.label || LABELS[node.type]} ${inputLabel(node, input)}`}
-                      title={
-                        node.type === "module"
-                          ? inputLabel(node, input)
-                          : node.type === "dff"
-                            ? input === 0
-                              ? "D: data"
-                              : "CLK: rising edge"
-                            : node.type === "nmos" || node.type === "pmos"
-                              ? input === 0
-                                ? "Gate control"
-                                : "Source signal"
-                              : `Input ${input + 1}`
-                      }
-                    />
-                  ))}
-                  <div className={styles.nodeBody}>
-                    {!["input4", "input8", "display4", "display8", "lamp"].includes(node.type) && (
-                      <span className={styles.nodeSymbol}><GateSymbol type={node.type} /></span>
-                    )}
-                    <strong>{node.label || LABELS[node.type]}</strong>
-                    {(node.type === "input4" || node.type === "input8") ? (
-                      <div className={styles.numberBits} aria-label={`${node.label || LABELS[node.type]} binary input`}>
-                        {Array.from({ length: node.type === "input4" ? 4 : 8 }, (_, index) => {
-                          const bit = (node.type === "input4" ? 4 : 8) - index - 1;
-                          const on = Boolean(((node.numberValue ?? 0) >> bit) & 1);
-                          return <button
-                            type="button"
-                            key={bit}
-                            aria-label={`Toggle bit ${bit} of ${node.label || LABELS[node.type]}`}
-                            aria-pressed={on}
-                            className={clsx(styles.numberBit, on && styles.numberBitOn)}
-                            onClick={() => setCircuit((current) => ({
-                              ...current,
-                              nodes: current.nodes.map((item) => item.id === node.id
-                                ? { ...item, numberValue: (item.numberValue ?? 0) ^ (1 << bit) }
-                                : item),
-                            }))}
-                          >{on ? "1" : "0"}</button>;
-                        })}
-                      </div>
-                    ) : (node.type === "display4" || node.type === "display8") ? (
-                      <div className={styles.digitalScreen} aria-label={`${node.label || LABELS[node.type]} value`}>
-                        <span className={styles.decimalValue}>
-                          {(snapshot.outputs[node.id] ?? []).reduce((value, bit, index) => value + (bit ? 2 ** index : 0), 0)}
-                        </span>
-                        <span className={styles.binaryValue}>
-                          {Array.from({ length: node.type === "display4" ? 4 : 8 }, (_, index) =>
-                            snapshot.outputs[node.id]?.[(node.type === "display4" ? 4 : 8) - index - 1] ? "1" : "0"
-                          ).join("")}
-                        </span>
-                      </div>
-                    ) : node.type === "lamp" ? (
-                      <span className={clsx(styles.led, snapshot.values[node.id] && styles.ledOn)} role="img" aria-label={snapshot.values[node.id] ? "LED on" : "LED off"} />
-                    ) : node.type === "switch" ? (
-                      <button
-                        type="button"
-                        className={styles.toggle}
-                        onClick={() =>
-                          setCircuit((current) => ({
-                            ...current,
-                            nodes: current.nodes.map((item) =>
-                              item.id === node.id ? { ...item, value: !item.value } : item,
-                            ),
-                          }))
-                        }
-                      >
-                        {node.value ? "ON" : "OFF"}
-                      </button>
-                    ) : node.type === "pulse" ? (
-                      <button
-                        type="button"
-                        className={styles.toggle}
-                        onClick={() => {
-                          advance({ [node.id]: true }, clockRef.current);
-                          window.setTimeout(() => advance({}, clockRef.current), 180);
-                        }}
-                      >
-                        SEND
-                      </button>
-                    ) : node.type === "module" ? (
-                      <span className={styles.moduleBits}>
-                        {moduleOutputs(node.module!)
-                          .map(
-                            (port, index) =>
-                              `${port.label || `OUT ${index + 1}`}:${snapshot.outputs[node.id]?.[index] ? 1 : 0}`,
-                          )
-                          .join("  ")}
-                      </span>
-                    ) : (
-                      <span className={styles.bit}>{snapshot.values[node.id] ? "1" : "0"}</span>
-                    )}
-                  </div>
-                  {Array.from({ length: outputCount(node) }, (_, output) => (
-                    <button
-                      type="button"
-                      key={`${node.id}-output-${output}`}
-                      className={clsx(
-                        styles.output,
-                        pending?.from === node.id && pending.output === output && styles.pending,
-                      )}
-                      style={{
-                        top: `${((outY(node, output) - node.y) / nodeHeight(node)) * 100}%`,
-                      }}
-                      onPointerDown={(event) =>
-                        startWire(event, {
-                          from: node.id,
-                          output,
-                          x: node.x + NODE_WIDTH,
-                          y: outY(node, output),
-                          originX: node.x + NODE_WIDTH,
-                          originY: outY(node, output),
-                        })
-                      }
-                      onClick={(event) => {
-                        if (event.detail !== 0) return;
-                        setPending({ from: node.id, output });
-                        setMessage(`Choose an input for ${outputLabel(node, output)}.`);
-                      }}
-                      data-wire-target={Boolean(
-                        wireDraft?.to &&
-                          draftTarget?.id === node.id &&
-                          draftTarget.output === output,
-                      )}
-                      aria-label={`Wire from ${node.label || LABELS[node.type]} ${outputLabel(node, output)}`}
-                      title={outputLabel(node, output)}
-                    />
-                  ))}
-                </div>
-              ))}
-              {marquee && (
-                <div
-                  className={styles.marquee}
-                  style={{
-                    left: Math.min(marquee.x, marquee.endX),
-                    top: Math.min(marquee.y, marquee.endY),
-                    width: Math.abs(marquee.endX - marquee.x),
-                    height: Math.abs(marquee.endY - marquee.y),
-                  }}
-                />
-              )}
+              </div>
             </div>
           </div>
           <div className={styles.status}>

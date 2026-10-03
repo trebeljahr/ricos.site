@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LogicBuilder } from "./LogicBuilder";
 
 beforeEach(() => {
@@ -64,5 +64,95 @@ describe("circuit depth", () => {
     expect(screen.getAllByRole("group", { name: "SUM part" }).length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: "← Back" }));
     expect(screen.getByRole("group", { name: "Half adder part" })).toBeTruthy();
+  });
+
+  it("zooms with controls and pinch without starting multi-select", () => {
+    const { container } = render(<LogicBuilder />);
+    const board = screen.getByRole("application", { name: "Circuit canvas" });
+    const viewport = board.parentElement!.parentElement!;
+    vi.spyOn(board, "getBoundingClientRect").mockReturnValue({
+      left: 0,
+      top: 0,
+      right: 900,
+      bottom: 520,
+      width: 900,
+      height: 520,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    });
+    vi.spyOn(viewport, "getBoundingClientRect").mockReturnValue({
+      left: 0,
+      top: 0,
+      right: 900,
+      bottom: 520,
+      width: 900,
+      height: 520,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Zoom in" }));
+    expect(screen.getByText("125%")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "100%" }));
+    expect(screen.getByText("100%", { selector: "span" })).toBeTruthy();
+    fireEvent.wheel(viewport, {
+      ctrlKey: true,
+      deltaY: -Math.log(2) * 100,
+      clientX: 100,
+      clientY: 100,
+    });
+    expect(screen.getByText("200%")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "100%" }));
+
+    fireEvent.pointerDown(board, {
+      pointerId: 1,
+      pointerType: "touch",
+      clientX: 100,
+      clientY: 100,
+    });
+    fireEvent.pointerDown(board, {
+      pointerId: 2,
+      pointerType: "touch",
+      clientX: 200,
+      clientY: 100,
+    });
+    fireEvent.pointerMove(board, {
+      pointerId: 2,
+      pointerType: "touch",
+      clientX: 300,
+      clientY: 100,
+    });
+    expect(screen.getByText("200%")).toBeTruthy();
+    expect(container.querySelector('[class*="marquee"]')).toBeNull();
+    fireEvent.pointerUp(viewport, { pointerId: 1, pointerType: "touch" });
+    fireEvent.pointerUp(viewport, { pointerId: 2, pointerType: "touch" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Pan" }));
+    fireEvent.pointerDown(board, {
+      pointerId: 3,
+      pointerType: "mouse",
+      button: 0,
+      clientX: 50,
+      clientY: 50,
+    });
+    expect(container.querySelector('[class*="marquee"]')).toBeNull();
+    fireEvent.pointerUp(viewport, { pointerId: 3, pointerType: "mouse", button: 0 });
+    fireEvent.click(screen.getByRole("button", { name: "Pan" }));
+    fireEvent.pointerDown(board, {
+      pointerId: 4,
+      pointerType: "mouse",
+      button: 0,
+      clientX: 50,
+      clientY: 50,
+    });
+    expect(container.querySelector('[class*="marquee"]')).toBeTruthy();
+    fireEvent.pointerUp(board, {
+      pointerId: 4,
+      pointerType: "mouse",
+      button: 0,
+      clientX: 50,
+      clientY: 50,
+    });
   });
 });

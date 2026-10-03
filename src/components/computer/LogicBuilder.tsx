@@ -3254,21 +3254,27 @@ export function LogicBuilder() {
                   : LABELS[menuNode.type]}
               </strong>
               <label>
-                Represents
-                <input
-                  value={menuNode.label || ""}
-                  maxLength={30}
-                  onFocus={beginTransaction}
-                  onBlur={endTransaction}
-                  onChange={(event) =>
-                    setCircuit((current) => ({
-                      ...current,
-                      nodes: current.nodes.map((node) =>
-                        node.id === menuNode.id ? { ...node, label: event.target.value } : node,
-                      ),
-                    }))
-                  }
-                />
+                Label
+                <span className={styles.contextLabelInput}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M3 11.5V5a2 2 0 0 1 2-2h6.5a2 2 0 0 1 1.4.6l8.1 8.1a2 2 0 0 1 0 2.8l-6.5 6.5a2 2 0 0 1-2.8 0l-8.1-8.1a2 2 0 0 1-.6-1.4Z" />
+                    <circle cx="7.5" cy="7.5" r="1" />
+                  </svg>
+                  <input
+                    value={menuNode.label || ""}
+                    maxLength={30}
+                    onFocus={beginTransaction}
+                    onBlur={endTransaction}
+                    onChange={(event) =>
+                      setCircuit((current) => ({
+                        ...current,
+                        nodes: current.nodes.map((node) =>
+                          node.id === menuNode.id ? { ...node, label: event.target.value } : node,
+                        ),
+                      }))
+                    }
+                  />
+                </span>
               </label>
               {inputCount(menuNode) > 0 && <label>
                 Input side
@@ -3279,21 +3285,6 @@ export function LogicBuilder() {
                     ...current,
                     nodes: current.nodes.map((node) => node.id === menuNode.id
                       ? { ...node, inputSide: event.target.value as PortSide } : node),
-                  }))}
-                >
-                  {(["left", "top", "right", "bottom"] as const).map((side) =>
-                    <option key={side} value={side}>{side}</option>)}
-                </select>
-              </label>}
-              {outputCount(menuNode) > 0 && <label>
-                Output side
-                <select
-                  aria-label="Output side"
-                  value={outputSide(menuNode)}
-                  onChange={(event) => setCircuit((current) => ({
-                    ...current,
-                    nodes: current.nodes.map((node) => node.id === menuNode.id
-                      ? { ...node, outputSide: event.target.value as PortSide } : node),
                   }))}
                 >
                   {(["left", "top", "right", "bottom"] as const).map((side) =>

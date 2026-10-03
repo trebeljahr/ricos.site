@@ -218,3 +218,6 @@
 .portWirePreview,.inlineWires .portWirePreview{fill:none;stroke:#83e9d7;stroke-width:3;stroke-dasharray:7 5;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 .portWireInvalid,.inlineWires .portWireInvalid{stroke:#ff8f87}
 .inlinePortStatus{position:absolute;bottom:2px;left:14px;right:14px;z-index:5;color:#b9fff2;font-size:11px;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.contextLabelInput{display:flex;align-items:center;gap:7px}
+.contextLabelInput svg{width:16px;height:16px;flex:none}

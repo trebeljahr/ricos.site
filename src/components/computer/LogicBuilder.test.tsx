@@ -219,7 +219,7 @@ describe("circuit depth", () => {
     fireEvent.click(within(adder).getByRole("button", { name: "Refold box" }));
     expect(checkCounts()).toBe(folded);
   }, 20000);
-  it("defaults part ports to left and right and lets parts change sides", () => {
+  it("defaults part ports to left and right and lets parts rotate", () => {
     render(<LogicBuilder />);
     const parts = screen.getByLabelText("Gate palette");
     fireEvent.click(within(parts).getByRole("button", { name: "8-BIT INPUT" }));
@@ -231,7 +231,8 @@ describe("circuit depth", () => {
     expect(within(input).getByRole("button", { name: "Wire from 8-BIT INPUT Bit 0" })
       .parentElement?.style.left).toBe("100%");
     fireEvent.contextMenu(input, { clientX: 100, clientY: 100 });
-    fireEvent.change(screen.getByLabelText("Output side"), { target: { value: "bottom" } });
+    expect(screen.queryByLabelText("Output side")).toBeNull();
+    fireEvent.click(screen.getByRole("menuitem", { name: "Rotate right" }));
     expect(within(input).getByRole("button", { name: "Wire from 8-BIT INPUT Bit 0" })
       .parentElement?.style.top).toBe("100%");
 
@@ -256,7 +257,9 @@ describe("circuit depth", () => {
     fireEvent.contextMenu(part, { clientX: 100, clientY: 100 });
     expect(screen.queryByLabelText("Selection controls")).toBeNull();
     expect(within(screen.getByRole("menu")).getByText("XOR")).toBeTruthy();
-    fireEvent.change(screen.getByLabelText("Represents"), { target: { value: "Timer" } });
+    expect(within(screen.getByRole("menu")).queryByText("Represents")).toBeNull();
+    expect(within(screen.getByRole("menu")).queryByText("Output side")).toBeNull();
+    fireEvent.change(screen.getByLabelText("Label"), { target: { value: "Timer" } });
     expect(screen.getByRole("group", { name: "Timer — XOR part" })).toBeTruthy();
     fireEvent.pointerDown(screen.getByRole("application", { name: "Circuit canvas" }));
     expect(screen.queryByRole("menu")).toBeNull();

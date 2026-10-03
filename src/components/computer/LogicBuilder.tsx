@@ -29,12 +29,11 @@ import {
   WIRE_COLORS,
   type WireColor,
 } from "../../lib/computer/logic";
-import { buildImplementation, collectUnfoldableIds, storageCircuit } from "../../lib/computer/implementation";
+import { collectUnfoldableIds, storageCircuit } from "../../lib/computer/circuitHierarchy";
 import { MEMORY_HINTS } from "../../lib/computer/memoryCircuits";
 import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
 import { ActionIcon } from "./ActionIcon";
 import { GateSymbol } from "./GateSymbol";
-import { UnfoldedCanvas } from "./UnfoldedCanvas";
 import styles from "./LogicBuilder.module.css";
 
 const STORAGE = "ricos-computer-circuits-v1";
@@ -182,7 +181,7 @@ const orientedWirePath = (start: { x: number; y: number }, end: { x: number; y: 
   const entry = { x: end.x + to.x * 24, y: end.y + to.y * 24 };
   return `M ${start.x} ${start.y} L ${exit.x} ${exit.y} ${wirePath(exit, entry)} L ${end.x} ${end.y}`;
 };
-const portPoint = (node: Node, index: number, kind: "input" | "output") => {
+const portPoint = (node: DisplayNode, index: number, kind: "input" | "output") => {
   const side = kind === "input" ? inputSide(node) : outputSide(node);
   const sharedSide = inputSide(node) === outputSide(node);
   const count = sharedSide
@@ -193,20 +192,197 @@ const portPoint = (node: Node, index: number, kind: "input" | "output") => {
   const length = horizontal ? nodeWidth(node) : nodeHeight(node);
   const bitRow = ["input4", "input8", "display4", "display8"].includes(node.type);
   const orderedIndex = horizontal && bitRow ? count - portIndex - 1 : portIndex;
-  const edge = horizontal ? 16 : node.type === "module" ? 42 : 30;
+  const edge = horizontal ? 16 : node.displayHeight ? 110 : node.type === "module" ? 42 : 30;
   const offset = count === 1 ? length / 2 : edge + orderedIndex * ((length - edge - 24) / (count - 1));
   return {
     x: node.x + (horizontal ? offset : side === "left" ? 0 : nodeWidth(node)),
     y: node.y + (horizontal ? side === "top" ? 0 : nodeHeight(node) : offset),
   };
 };
-const portStyle = (node: Node, index: number, kind: "input" | "output") => {
+const portStyle = (node: DisplayNode, index: number, kind: "input" | "output") => {
   const point = portPoint(node, index, kind);
   return {
     left: `${((point.x - node.x) / nodeWidth(node)) * 100}%`,
     top: `${((point.y - node.y) / nodeHeight(node)) * 100}%`,
   };
 };
+
+type InlinePart = DisplayNode & { path: string; child?: InlineLayout; inner?: Circuit };
+type InlineLayout = { width: number; height: number; parts: InlinePart[]; inputs: Node[]; outputs: Node[] };
+
+const innerCircuit = (node: Node): Circuit | undefined => {
+  if (node.type === "module") return node.module;
+  if (GATE_NAMES.includes(node.type as LogicGate))
+    return gateBlueprint(node.type as LogicGate, "transistor");
+  if (node.type === "dff" && node.label?.startsWith("FLOATING GATE"))
+    return { name: "Floating gate", nodes: [
+      { id: "program", type: "switch", x: 0, y: 80, label: "PROGRAM" },
+      { id: "cell", type: "nmos", x: 220, y: 80, label: "FLOATING GATE" },
+      { id: "out", type: "lamp", x: 440, y: 80, label: "OUT" },
+    ], wires: [
+      { id: "program-cell", from: "program", to: "cell", input: 0 },
+      { id: "cell-out", from: "cell", to: "out", input: 0 },
+    ] };
+  if (node.type === "dff" || node.type === "srlatch" || node.type === "dlatch")
+    return storageCircuit(node.type);
+  if (node.type === "dramcell")
+    return { name: "DRAM cell", nodes: [
+      { id: "data", type: "switch", x: 0, y: 50, label: "DATA" },
+      { id: "write", type: "switch", x: 0, y: 200, label: "WRITE" },
+      { id: "access", type: "nmos", x: 230, y: 110, label: "ACCESS" },
+      { id: "storage", type: "junction", x: 450, y: 110, label: "STORAGE CAPACITOR" },
+      { id: "out", type: "lamp", x: 670, y: 110, label: "OUT" },
+    ], wires: [
+      { id: "data-access", from: "data", to: "access", input: 1 },
+      { id: "write-access", from: "write", to: "access", input: 0 },
+      { id: "access-storage", from: "access", to: "storage", input: 0 },
+      { id: "storage-out", from: "storage", to: "out", input: 0 },
+    ] };
+  return undefined;
+};
+
+const layoutInlineCircuit = (
+  circuit: Circuit, prefix: string, unfolded: ReadonlySet<string>, depth = 0,
+): InlineLayout => {
+  const inputs = moduleInputs(circuit);
+  const outputs = moduleOutputs(circuit);
+  const boundary = new Set([...inputs, ...outputs].map((node) => node.id));
+  const visible = circuit.nodes.filter((node) => !boundary.has(node.id));
+  const minX = Math.min(0, ...visible.map((node) => node.x));
+  const minY = Math.min(0, ...visible.map((node) => node.y));
+  const sizes = visible.map((node) => {
+    const path = `${prefix}${node.id}`;
+    const inner = unfolded.has(path) && depth < 6 ? innerCircuit(node) : undefined;
+    const child = inner ? layoutInlineCircuit(inner, `${path}/`, unfolded, depth + 1) : undefined;
+    return { node, path, inner, child,
+      width: Math.max(nodeWidth(node), child ? child.width + 20 : 0),
+      height: Math.max(nodeHeight(node), child ? child.height + 82 : 0) };
+  });
+  const parts: InlinePart[] = sizes.map((item) => {
+    let x = item.node.x - minX + 72;
+    let y = item.node.y - minY + 52;
+    for (const other of sizes) {
+      if (other === item || !other.child) continue;
+      if (item.node.x > other.node.x && item.node.y + nodeHeight(item.node) > other.node.y &&
+        item.node.y < other.node.y + other.height)
+        x += other.width - nodeWidth(other.node) + 32;
+      else if (item.node.y > other.node.y && item.node.x + nodeWidth(item.node) > other.node.x &&
+        item.node.x < other.node.x + other.width)
+        y += other.height - nodeHeight(other.node) + 32;
+    }
+    return { ...item.node, x, y, path: item.path, inner: item.inner, child: item.child,
+      displayWidth: item.width, displayHeight: item.height };
+  });
+  return {
+    width: Math.max(300, ...parts.map((part) => part.x + nodeWidth(part) + 72)),
+    height: Math.max(200, Math.max(inputs.length, outputs.length) * 60 + 140,
+      ...parts.map((part) => part.y + nodeHeight(part) + 70)),
+    parts, inputs, outputs,
+  };
+};
+
+type InlineCircuitProps = {
+  host: DisplayNode;
+  circuit: Circuit;
+  layout: InlineLayout;
+  unfolded: ReadonlySet<string>;
+  snapshot: Snapshot;
+  onToggle: (path: string) => void;
+  onExpandLevel: (path: string, circuit: Circuit) => void;
+  onRefoldLevel: (path: string) => void;
+  onEnter: (path: string) => void;
+  path: string;
+};
+
+function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
+  onExpandLevel, onRefoldLevel, onEnter, path }: InlineCircuitProps) {
+  const parts = new Map(layout.parts.map((part) => [part.id, part]));
+  const inputs = new Map(layout.inputs.map((part, index) => [part.id, index]));
+  const outputs = new Map(layout.outputs.map((part, index) => [part.id, index]));
+  const boundaryPoint = (index: number, kind: "input" | "output") => {
+    const point = portPoint({ ...host, x: 0, y: 0 }, index, kind);
+    return { x: point.x - 10, y: point.y - 72 };
+  };
+  const wirePoint = (id: string, port: number, kind: "input" | "output") => {
+    if (kind === "output" && inputs.has(id)) return boundaryPoint(inputs.get(id)!, "input");
+    if (kind === "input" && outputs.has(id)) return boundaryPoint(outputs.get(id)!, "output");
+    const part = parts.get(id);
+    return part ? portPoint(part, port, kind) : null;
+  };
+  const descendants = [...unfolded].filter((id) => id.startsWith(`${path}/`));
+  const canExpand = collectUnfoldableIds(circuit, `${path}/`)
+    .some((id) => !unfolded.has(id) && unfolded.has(id.slice(0, id.lastIndexOf("/"))));
+  return (
+    <div className={styles.inlineCircuit} aria-label={`${circuit.name} expanded circuit`}
+      onPointerDown={(event) => event.stopPropagation()}>
+      <div className={styles.inlineCircuitHeader}>
+        <strong>{host.label || circuit.name}</strong>
+        <button type="button" disabled={!canExpand} onClick={() => onExpandLevel(path, circuit)}>
+          <ActionIcon name="unfold" /> Unfold one level deeper
+        </button>
+        <button type="button" onClick={() => onRefoldLevel(path)}>
+          <ActionIcon name="fold" /> {descendants.length ? "Refold one level" : "Refold box"}
+        </button>
+      </div>
+      <div className={styles.inlineDiagram} style={{ width: layout.width, height: layout.height }}>
+        <svg className={styles.inlineWires} width={layout.width} height={layout.height}
+          aria-label={`${circuit.name} internal wires`}>
+          {circuit.wires.map((wire) => {
+            const from = wirePoint(wire.from, wire.output ?? 0, "output");
+            const to = wirePoint(wire.to, wire.input, "input");
+            return from && to ? <path key={wire.id} d={wirePath(from, to)} data-inline-wire={wire.id} /> : null;
+          })}
+        </svg>
+        {layout.parts.map((part) => (
+          <div key={part.id} className={clsx(styles.node, styles.inlinePart, part.child && styles.expandedNode)}
+            style={{ "--part-accent": partColors[part.type], left: part.x, top: part.y,
+              width: nodeWidth(part), height: nodeHeight(part) } as React.CSSProperties}
+            role="group" aria-label={`${part.label || LABELS[part.type]} — ${part.type === "module" ? part.module?.name : LABELS[part.type]} part`}>
+            {Array.from({ length: inputCount(part) }, (_, index) => (
+              <div key={`input-${index}`} className={styles.portRow} style={portStyle(part, index, "input")}>
+                <span className={styles.input} aria-hidden="true" />
+                {part.type === "module" && <span className={styles.inputPortLabel}>{inputLabel(part, index)}</span>}
+              </div>
+            ))}
+            {!part.child && <div className={clsx(styles.nodeBody, part.type === "module" && styles.moduleBody)}>
+              <div className={styles.nodeNameRow}>
+                {part.label && part.label !== (part.type === "module" ? part.module?.name : LABELS[part.type]) &&
+                  <span className={styles.nodeLabel}>{part.label}</span>}
+              </div>
+              <span className={styles.nodeSymbol}><GateSymbol type={part.type} circuitName={part.module?.name} /></span>
+              <strong className={styles.nodePartName}>{part.type === "module" ? part.module?.name : LABELS[part.type]}</strong>
+              {part.type === "module" ? <span className={styles.moduleBits}>
+                {moduleInputs(part.module!).length} IN · {moduleOutputs(part.module!).length} OUT
+              </span> : <span className={styles.bit}>{snapshot.values[part.id] ? "1" : "0"}</span>}
+            </div>}
+            {part.inner && <div className={styles.nodeActions}>
+              <button type="button" aria-label={`Fold ${part.label || LABELS[part.type]} in place`}
+                onClick={() => onToggle(part.path)}><ActionIcon name="fold" /></button>
+              {part.type === "module" && <button type="button" aria-label={`Enter ${part.label || part.module?.name}`}
+                onClick={() => onEnter(part.path)}>↗</button>}
+            </div>}
+            {!part.inner && innerCircuit(part) && <div className={styles.nodeActions}>
+              <button type="button" aria-label={`Unfold ${part.label || LABELS[part.type]} in place`}
+                onClick={() => onToggle(part.path)}><ActionIcon name="unfold" /></button>
+              {part.type === "module" && <button type="button" aria-label={`Enter ${part.label || part.module?.name}`}
+                onClick={() => onEnter(part.path)}>↗</button>}
+            </div>}
+            {part.child && part.inner && <InlineCircuit host={part} circuit={part.inner} layout={part.child}
+              unfolded={unfolded} snapshot={snapshot.modules[part.id] ?? initialSnapshot()}
+              onToggle={onToggle} onExpandLevel={onExpandLevel} onRefoldLevel={onRefoldLevel}
+              onEnter={onEnter} path={part.path} />}
+            {Array.from({ length: outputCount(part) }, (_, index) => (
+              <div key={`output-${index}`} className={styles.portRow} style={portStyle(part, index, "output")}>
+                {part.type === "module" && <span className={styles.outputPortLabel}>{outputLabel(part, index)}</span>}
+                <span className={styles.output} aria-hidden="true" />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function LogicBuilder() {
   const history = useHistoryState<BuilderDocument>(() => ({
@@ -316,22 +492,11 @@ export function LogicBuilder() {
   const [zoom, setZoom] = useState(1);
   const expandedDetails = useMemo(() => new Map(circuit.nodes.flatMap((node) => {
     if (!unfolded.has(node.id)) return [];
-    const inner = node.type === "module" ? node.module
-      : GATE_NAMES.includes(node.type as LogicGate) ? gateBlueprint(node.type as LogicGate, "transistor")
-      : node.type === "dff" && node.label?.startsWith("FLOATING GATE")
-        ? { name: "Floating gate", nodes: [{ ...node, x: 0, y: 0 }], wires: [] }
-      : node.type === "dff" || node.type === "srlatch" || node.type === "dlatch"
-        ? storageCircuit(node.type)
-      : node.type === "dramcell" ? { name: "DRAM cell", nodes: [{ ...node, x: 0, y: 0 }], wires: [] }
-      : undefined;
+    const inner = innerCircuit(node);
     if (!inner) return [];
-    const nested = new Set([...unfolded].filter((id) => id.startsWith(`${node.id}/`))
-      .map((id) => id.slice(node.id.length + 1)));
-    const forced = node.type === "dramcell" || (node.type === "dff" && node.label?.startsWith("FLOATING GATE"))
-      ? [node.id] : [];
-    const diagram = buildImplementation(inner, new Set([...nested, ...forced]));
-    return [[node.id, { inner, forced, diagram, width: Math.max(nodeWidth(node), diagram.width + 24),
-      height: Math.max(nodeHeight(node), diagram.height + 112) }]] as const;
+    const layout = layoutInlineCircuit(inner, `${node.id}/`, unfolded);
+    return [[node.id, { inner, layout, width: Math.max(nodeWidth(node), layout.width + 20),
+      height: Math.max(nodeHeight(node), layout.height + 82) }]] as const;
   })), [circuit.nodes, unfolded]);
   const displayNodes = useMemo<DisplayNode[]>(() => circuit.nodes.map((node) => {
     let x = node.x;
@@ -816,6 +981,25 @@ export function LogicBuilder() {
     } else next.add(id);
     return next;
   });
+  const expandOneLevel = (path: string, inner: Circuit) => {
+    const candidates = collectUnfoldableIds(inner, `${path}/`)
+      .filter((id) => !unfolded.has(id) && unfolded.has(id.slice(0, id.lastIndexOf("/"))));
+    const depth = Math.min(...candidates.map((id) => id.split("/").length));
+    if (Number.isFinite(depth)) setUnfolded((current) =>
+      new Set([...current, ...candidates.filter((id) => id.split("/").length === depth)]));
+  };
+  const refoldOneLevel = (path: string) => {
+    const descendants = [...unfolded].filter((id) => id.startsWith(`${path}/`));
+    if (!descendants.length) return toggleUnfolded(path);
+    const depth = Math.max(...descendants.map((id) => id.split("/").length));
+    setUnfolded((current) => new Set([...current].filter((id) =>
+      !descendants.includes(id) || id.split("/").length !== depth)));
+  };
+  const refoldCanvasLevel = () => {
+    if (!unfolded.size) return;
+    const depth = Math.max(...[...unfolded].map((id) => id.split("/").length));
+    setUnfolded((current) => new Set([...current].filter((id) => id.split("/").length !== depth)));
+  };
   const viewGate = (gate: LogicGate, family: BlueprintFamily, source?: Node) => {
     const next = gateBlueprint(gate, family);
     if (source) {
@@ -1395,6 +1579,9 @@ export function LogicBuilder() {
             .filter((node) => node.type === "module" || GATE_NAMES.includes(node.type as LogicGate))
             .map((node) => node.id)))}>
             <ActionIcon name="unfold" /> Unfold one level
+          </button>
+          <button type="button" disabled={!unfolded.size} onClick={refoldCanvasLevel}>
+            <ActionIcon name="fold" /> Refold one level
           </button>
           <div className={styles.toolGroup} role="group" aria-label="Edit circuit">
             <span className={styles.toolGroupLabel}>Edit</span>
@@ -2280,46 +2467,11 @@ export function LogicBuilder() {
                         </div>
                       )}
                       {expandedDetails.get(node.id) && (
-                        <div className={styles.inlineCircuit} onPointerDown={(event) => event.stopPropagation()}>
-                          <div className={styles.inlineCircuitHeader}>
-                            <strong>{node.label || node.module?.name || LABELS[node.type]}</strong>
-                            <button type="button" disabled={!collectUnfoldableIds(expandedDetails.get(node.id)!.inner, `${node.id}/`)
-                              .some((id) => !unfolded.has(id) && unfolded.has(id.slice(0, id.lastIndexOf("/"))))}
-                              onClick={() => {
-                              const inner = expandedDetails.get(node.id)!.inner;
-                              const candidates = collectUnfoldableIds(inner, `${node.id}/`)
-                                .filter((id) => !unfolded.has(id) && unfolded.has(id.slice(0, id.lastIndexOf("/"))));
-                              const depth = Math.min(...candidates.map((id) => id.split("/").length));
-                              if (Number.isFinite(depth)) setUnfolded((current) =>
-                                new Set([...current, ...candidates.filter((id) => id.split("/").length === depth)]));
-                            }}>Unfold one level deeper</button>
-                          </div>
-                          <UnfoldedCanvas circuit={expandedDetails.get(node.id)!.inner}
-                            embedded pathPrefix={`${node.id}/`} unfolded={unfolded}
-                            forcedExpanded={expandedDetails.get(node.id)!.forced}
-                            onToggle={toggleUnfolded} onUnfoldAll={() => {}} onFoldAll={() => {}}
-                            onEnter={enterModulePath} snapshot={snapshot}
-                            onToggleSwitch={() => {}} showVdd={showVdd} showGround={showGround}
-                            onVddChange={setShowVdd} onGroundChange={setShowGround} />
-                        </div>
-                      )}
-                      {node.type === "module" && expandedDetails.get(node.id) && (
-                        <svg className={styles.inlinePortLinks} width={nodeWidth(node)} height={nodeHeight(node)} aria-hidden="true">
-                          {moduleInputs(node.module!).map((port, index) => {
-                            const target = expandedDetails.get(node.id)!.diagram.nodes.find((part) => part.id === port.id);
-                            if (!target) return null;
-                            const start = portPoint(node, index, "input");
-                            const end = { x: target.x + 80, y: target.y + 104 };
-                            return <path key={`in-${port.id}`} d={wirePath({ x: start.x - node.x, y: start.y - node.y }, end)} />;
-                          })}
-                          {moduleOutputs(node.module!).map((port, index) => {
-                            const source = expandedDetails.get(node.id)!.diagram.nodes.find((part) => part.id === port.id);
-                            if (!source) return null;
-                            const end = portPoint(node, index, "output");
-                            return <path key={`out-${port.id}`} d={wirePath({ x: source.x + 150, y: source.y + 104 },
-                              { x: end.x - node.x, y: end.y - node.y })} />;
-                          })}
-                        </svg>
+                        <InlineCircuit host={node} circuit={expandedDetails.get(node.id)!.inner}
+                          layout={expandedDetails.get(node.id)!.layout} unfolded={unfolded}
+                          snapshot={snapshot.modules[node.id] ?? initialSnapshot()}
+                          onToggle={toggleUnfolded} onExpandLevel={expandOneLevel}
+                          onRefoldLevel={refoldOneLevel} onEnter={enterModulePath} path={node.id} />
                       )}
                       {Array.from({ length: outputCount(node) }, (_, output) => (
                         <div

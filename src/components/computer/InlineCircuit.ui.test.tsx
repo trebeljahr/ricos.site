@@ -26,13 +26,20 @@ describe("inline circuit unfolding", () => {
     fireEvent.click(within(adder).getByRole("button", { name: /Unfold .* in place/i }));
     expect(screen.getByRole("application", { name: "Circuit canvas" })).toBeTruthy();
     const expanded = screen.getByLabelText("8-bit full adder expanded circuit");
-    expect(within(expanded).getByRole("button", { name: "Unfold FULL ADDER 0" })).toBeTruthy();
-    fireEvent.click(within(adder).getByRole("button", { name: "Unfold one level deeper" }));
-    expect(within(expanded).getAllByRole("button", { name: "Unfold HALF ADDER 1" }).length).toBeGreaterThan(0);
-    fireEvent.click(within(adder).getByRole("button", { name: "Unfold one level deeper" }));
-    expect(within(expanded).getAllByRole("button", { name: "Unfold SUM XOR" }).length).toBeGreaterThan(0);
+    expect(within(expanded).getByRole("button", { name: "Unfold FULL ADDER 0 in place" })).toBeTruthy();
+    expect(within(expanded).queryByText("SWITCH")).toBeNull();
+    expect(within(expanded).queryByText("LAMP")).toBeNull();
+    expect(within(expanded).getByLabelText("8-bit full adder internal wires").querySelectorAll("[data-inline-wire]").length).toBeGreaterThan(0);
+    fireEvent.click(within(adder).getAllByRole("button", { name: "Unfold one level deeper" })[0]);
+    expect(within(expanded).getAllByRole("button", { name: "Unfold HALF ADDER 1 in place" }).length).toBeGreaterThan(0);
+    fireEvent.click(within(adder).getAllByRole("button", { name: "Unfold one level deeper" })[0]);
+    expect(within(expanded).getAllByRole("button", { name: "Unfold SUM XOR in place" }).length).toBeGreaterThan(0);
+    fireEvent.click(within(adder).getAllByRole("button", { name: "Refold one level" })[0]);
+    expect(within(expanded).queryAllByRole("button", { name: "Unfold SUM XOR in place" })).toHaveLength(0);
     fireEvent.click(screen.getByRole("button", { name: "Undo" }));
-    expect(within(expanded).getAllByRole("button", { name: "Unfold HALF ADDER 1" }).length).toBeGreaterThan(0);
+    expect(within(expanded).getAllByRole("button", { name: "Unfold SUM XOR in place" }).length).toBeGreaterThan(0);
+    fireEvent.click(screen.getAllByRole("button", { name: "Refold one level" })[0]);
+    expect(within(expanded).queryAllByRole("button", { name: "Unfold SUM XOR in place" })).toHaveLength(0);
   });
 });
 

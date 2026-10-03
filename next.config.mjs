@@ -1,4 +1,5 @@
 import bundleAnalyzer from "@next/bundle-analyzer";
+import { existsSync } from "node:fs";
 import { generateRedirects } from "./src/scripts/createRedirects.js";
 
 const isDev = process.argv.includes("dev") || process.env.NODE_ENV === "development";
@@ -22,6 +23,9 @@ if (isDev) {
 // .velite cache from an earlier Vercel build.
 const shouldRunVelite = isBuild || (isDev && !veliteExternal && !process.env.VELITE_STARTED);
 if (shouldRunVelite) {
+  if (!existsSync(new URL("./src/content/Notes/posts", import.meta.url))) {
+    throw new Error("Notes submodule is missing. Run `git submodule update --init src/content/Notes` before building.");
+  }
   if (isDev) process.env.VELITE_STARTED = "1";
   const { build } = await import("velite");
   // `clean` empties velite's asset dir, which defaults to public/static, so a

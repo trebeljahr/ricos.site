@@ -8,6 +8,15 @@ import newsletters from "../../.velite/newsletters.json";
 import posts from "../../.velite/posts.json";
 import travelblogs from "../../.velite/travelblogs.json";
 
+type RssContent = {
+  title: string;
+  date: string;
+  link: string;
+  cover: { src: string };
+  excerpt?: string;
+  contentType: string;
+};
+
 function buildImageUrl(coverSrc: string): string | undefined {
   const cloudfrontId = process.env.NEXT_PUBLIC_CLOUDFRONT_ID;
   if (!cloudfrontId) return undefined;
@@ -44,7 +53,7 @@ async function generateRssFeed() {
     },
   });
 
-  const allContent = [
+  const allContent: RssContent[] = [
     ...posts.filter(byOnlyPublished),
     ...newsletters.filter(byOnlyPublished),
     // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged

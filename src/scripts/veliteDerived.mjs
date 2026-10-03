@@ -72,11 +72,12 @@ const execFileAsync = promisify(execFile);
 // Search index and backlinks read the Velite JSON, so they run after it.
 // Both are independent of each other and run in parallel.
 export async function generateSearchIndexAndBacklinks() {
-  const tsx = resolve("node_modules/.bin/tsx");
   await Promise.all(
     ["src/scripts/generateSearchIndex.ts", "src/scripts/generateBacklinks.ts"].map((script) =>
-      execFileAsync(tsx, [script]).catch((error) => {
-        console.error(`  [velite] ${script} failed:`, error.stderr || error.message);
+      execFileAsync(process.execPath, ["--import", "tsx", script]).catch((error) => {
+        throw new Error(`  [velite] ${script} failed: ${error.stderr || error.message}`, {
+          cause: error,
+        });
       }),
     ),
   );

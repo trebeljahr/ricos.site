@@ -54,7 +54,7 @@ function memoryArray(kind: MemoryKind): Circuit {
   builder.add("a0", "switch", 30, 20, "ADDRESS 0");
   builder.add("a1", "switch", 30, 110, "ADDRESS 1");
   builder.add("read", "switch", 30, 200, "READ ENABLE");
-  builder.add("clock", "clock", 30, 290, "CLOCK");
+  if (kind !== "sram") builder.add("clock", "clock", 30, 290, "CLOCK");
   if (kind === "flash") {
     builder.add("program", "switch", 30, 380, "PROGRAM 0");
     builder.add("erase", "switch", 30, 470, "ERASE ALL TO 1");
@@ -119,7 +119,7 @@ function memoryArray(kind: MemoryKind): Circuit {
     builder.connect("erase", "not-erase");
   }
   for (let bit = 0; bit < 4; bit++) {
-    builder.add(`d${bit}`, "switch", 30, 700 + bit * 145, `DATA IN ${bit}`);
+    if (kind !== "flash") builder.add(`d${bit}`, "switch", 30, 700 + bit * 145, `DATA IN ${bit}`);
     const pair0 = builder.gate(`pair0-${bit}`, "or", 1720, 720 + bit * 145,
       `read-0-${bit}`, `read-1-${bit}`);
     const pair1 = builder.gate(`pair1-${bit}`, "or", 1720, 2300 + bit * 145,
@@ -137,4 +137,11 @@ export const MEMORY_PRESETS: Record<string, Circuit> = {
   "4 × 4 SRAM": memoryArray("sram"),
   "4 × 4 DRAM": memoryArray("dram"),
   "4 × 4 flash memory": memoryArray("flash"),
+};
+
+export const MEMORY_HINTS: Record<string, string> = {
+  "8-bit parallel register": "Set LOAD and data bits, then pulse CLOCK. Clear LOAD to hold the word.",
+  "4 × 4 SRAM": "Choose a row with ADDRESS, set DATA bits, and turn on WRITE. The selected row stores data while WRITE is on.",
+  "4 × 4 DRAM": "WRITE on a clock edge. REFRESH the selected row before four clock cycles pass or charged bits fade to 0.",
+  "4 × 4 flash memory": "PROGRAM sets the selected word to 0. ERASE resets every word to 1. Both act on a clock edge.",
 };

@@ -28,6 +28,7 @@ import {
   type WireColor,
 } from "../../lib/computer/logic";
 import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
+import { MEMORY_HINTS } from "../../lib/computer/memoryCircuits";
 import { GateSymbol } from "./GateSymbol";
 import { ImplementationView } from "./ImplementationView";
 import styles from "./LogicBuilder.module.css";
@@ -915,7 +916,7 @@ export function LogicBuilder() {
       ? PRESETS
       : circuitFamily === "storage"
         ? Object.fromEntries(Object.entries(PRESETS).filter(([name]) =>
-            /latch|flip-flop|register|counter/i.test(name),
+            /latch|flip-flop|register|counter|SRAM|DRAM|flash memory/i.test(name),
           ))
         : Object.fromEntries(
           Object.entries(BLUEPRINTS).filter(([name]) =>
@@ -1814,6 +1815,9 @@ export function LogicBuilder() {
                       ]
                     }
                   </span>
+                )}
+                {MEMORY_HINTS[preset.name] && (
+                  <span className={styles.recipe}>{MEMORY_HINTS[preset.name]}</span>
                 )}
                 <button
                   type="button"

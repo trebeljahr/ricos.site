@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { CircuitToolbar } from "./CircuitToolbar";
 import clsx from "clsx";
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { CircuitToolbar } from "./CircuitToolbar";
+import { ToolbarMenu } from "./ToolbarMenu";
 import { useHistoryState } from "../../hooks/useHistoryState";
 import { usePortWiring } from "../../hooks/usePortWiring";
 import { type PortRef, portLabelBank, wiringPorts } from "../../lib/computer/portWiring";
@@ -1051,7 +1052,6 @@ export function LogicBuilder() {
   const pinch = useRef<{ distance: number; x: number; y: number } | null>(null);
   const touchMoved = useRef(false);
   const inputFile = useRef<HTMLInputElement>(null);
-  const learningMenu = useRef<HTMLDetailsElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const circuitRef = useRef(circuit);
   const snapshotRef = useRef(snapshot);
@@ -1980,22 +1980,6 @@ export function LogicBuilder() {
   const visibleBlueprints = Object.values(BLUEPRINTS).filter((item) =>
     item.name.endsWith(`from ${BLUEPRINT_FAMILIES[circuitFamily].suffix}`),
   );
-  useEffect(() => {
-    const closeOnOutsideClick = (event: PointerEvent) => {
-      if (!learningMenu.current?.contains(event.target as globalThis.Node)) {
-        learningMenu.current?.removeAttribute("open");
-      }
-    };
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") learningMenu.current?.removeAttribute("open");
-    };
-    document.addEventListener("pointerdown", closeOnOutsideClick);
-    document.addEventListener("keydown", closeOnEscape);
-    return () => {
-      document.removeEventListener("pointerdown", closeOnOutsideClick);
-      document.removeEventListener("keydown", closeOnEscape);
-    };
-  }, []);
   const hasTransistors = circuit.nodes.some((item) => item.type === "nmos" || item.type === "pmos");
   const powerVisible = (node: Node) =>
     (node.type !== "high" || showVdd) && (node.type !== "ground" || showGround);
@@ -2043,7 +2027,6 @@ export function LogicBuilder() {
     <div className={styles.shell}>
       <CircuitToolbar
         hasClock={hasClock}
-        running={running}
         identity={
           <>
             <div className={styles.identity}>
@@ -2194,53 +2177,44 @@ export function LogicBuilder() {
         }
         learning={
           <>
-            <details className={styles.learningMenu} ref={learningMenu}>
-              <summary>
-                Learning{" "}
-                <svg aria-hidden="true" viewBox="0 0 12 12">
-                  <path d="m2 4 4 4 4-4" />
-                </svg>
-              </summary>
-              <div className={styles.learningPanel}>
-                <h2>Build from one kind of part</h2>
-                <p>Open a gate built from transistors, NAND, or NOR.</p>
-                <div className={styles.buildTabs} role="group" aria-label="Circuit construction">
-                  {(["transistor", "nand", "nor"] as const).map((family) => (
-                    <button
-                      key={family}
-                      type="button"
-                      aria-pressed={circuitFamily === family}
-                      onClick={() => setCircuitFamily(family)}
-                    >
-                      {BLUEPRINT_FAMILIES[family].label}
-                    </button>
-                  ))}
-                </div>
-                <div className={styles.learningList}>
-                  {visibleBlueprints.map((blueprint) => (
-                    <div className={styles.buildEntry} key={blueprint.name}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          load(blueprint);
-                          learningMenu.current?.removeAttribute("open");
-                        }}
-                        title={`Open ${blueprint.name} blueprint`}
-                      >
-                        {blueprint.name.split(" ")[0]} <span>↗</span>
-                      </button>
-                      <small>
-                        {
-                          BLUEPRINT_RECIPES[circuitFamily][
-                            blueprint.name.split(" ")[0].toLowerCase() as LogicGate
-                          ]
-                        }
-                      </small>
-                    </div>
-                  ))}
-                </div>
+            <ToolbarMenu label="Learning" panelClassName={styles.learningPanel}>
+              <h2>Build from one kind of part</h2>
+              <p>Open a gate built from transistors, NAND, or NOR.</p>
+              <div className={styles.buildTabs} role="group" aria-label="Circuit construction">
+                {(["transistor", "nand", "nor"] as const).map((family) => (
+                  <button
+                    key={family}
+                    type="button"
+                    aria-pressed={circuitFamily === family}
+                    onClick={() => setCircuitFamily(family)}
+                  >
+                    {BLUEPRINT_FAMILIES[family].label}
+                  </button>
+                ))}
               </div>
-            </details>
+              <div className={styles.learningList}>
+                {visibleBlueprints.map((blueprint) => (
+                  <div className={styles.buildEntry} key={blueprint.name}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        load(blueprint);
+                      }}
+                      title={`Open ${blueprint.name} blueprint`}
+                    >
+                      {blueprint.name.split(" ")[0]} <span>↗</span>
+                    </button>
+                    <small>
+                      {
+                        BLUEPRINT_RECIPES[circuitFamily][
+                          blueprint.name.split(" ")[0].toLowerCase() as LogicGate
+                        ]
+                      }
+                    </small>
+                  </div>
+                ))}
+              </div>
+            </ToolbarMenu>
           </>
         }
         history={

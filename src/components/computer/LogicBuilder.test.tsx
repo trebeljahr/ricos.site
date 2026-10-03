@@ -29,30 +29,6 @@ describe("circuit depth", () => {
     expect(viewport.scrollLeft).toBeGreaterThan(0);
     expect(screen.getByText(/^\d+%$/, { selector: "span" }).textContent).not.toBe("100%");
   });
-  it("switches toolbar layouts without replacing the circuit or losing undo", () => {
-    render(<LogicBuilder />);
-    const canvas = screen.getByRole("application", { name: "Circuit canvas" });
-    const name = screen.getByRole("textbox", { name: "Circuit name" }) as HTMLInputElement;
-    fireEvent.change(name, { target: { value: "Toolbar comparison" } });
-    fireEvent.blur(name);
-    const count = canvas.querySelectorAll('[role="group"]').length;
-    fireEvent.change(screen.getByLabelText("Toolbar layout"), { target: { value: "tabs" } });
-    expect(screen.getByRole("application", { name: "Circuit canvas" })).toBe(canvas);
-    expect(name.value).toBe("Toolbar comparison");
-    expect(canvas.querySelectorAll('[role="group"]').length).toBe(count);
-    expect(screen.queryByRole("tab", { name: "Simulate" })).toBeNull();
-    const build = screen.getByRole("tab", { name: "Build" });
-    fireEvent.keyDown(build, { key: "ArrowRight" });
-    expect(screen.getByRole("tab", { name: "View" }).getAttribute("aria-selected")).toBe("true");
-    expect(document.activeElement).toBe(screen.getByRole("tab", { name: "View" }));
-    expect(
-      within(screen.getByRole("tabpanel")).getByRole("button", { name: "Unfold all" }),
-    ).toBeTruthy();
-    fireEvent.change(screen.getByLabelText("Toolbar layout"), { target: { value: "menus" } });
-    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
-    expect(name.value).not.toBe("Toolbar comparison");
-    expect(localStorage.getItem("ricos-computer-toolbar-layout-v1")).toBe("menus");
-  });
   it("closes toolbar menus with Escape and outside clicks", () => {
     render(<LogicBuilder />);
     const view = screen.getByText("View", { selector: "summary" });
@@ -64,21 +40,6 @@ describe("circuit depth", () => {
     fireEvent.click(view);
     fireEvent.pointerDown(screen.getByRole("textbox", { name: "Circuit name" }));
     expect(view.parentElement?.hasAttribute("open")).toBe(false);
-  });
-  it("keeps Pause available when leaving the Simulate tab", () => {
-    render(<LogicBuilder />);
-    fireEvent.click(
-      within(screen.getByLabelText("Gate palette")).getByRole("button", {
-        name: "CLOCK",
-      }),
-    );
-    fireEvent.change(screen.getByLabelText("Toolbar layout"), { target: { value: "tabs" } });
-    fireEvent.click(screen.getByRole("tab", { name: "Simulate" }));
-    fireEvent.click(screen.getByRole("button", { name: "Run clock" }));
-    fireEvent.click(screen.getByRole("tab", { name: "View" }));
-    fireEvent.click(screen.getByRole("button", { name: "Pause" }));
-    fireEvent.click(screen.getByRole("tab", { name: "Simulate" }));
-    expect(screen.getByRole("button", { name: "Run clock" })).toBeTruthy();
   });
   it("keeps unfold controls together in View", () => {
     render(<LogicBuilder />);

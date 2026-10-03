@@ -235,6 +235,18 @@ describe("circuit depth", () => {
     fireEvent.keyDown(window, { key: "z", ctrlKey: true, shiftKey: true });
     expect(screen.getByRole("button", { name: "History example" })).toBeTruthy();
   });
+  it.each(["metaKey", "ctrlKey"])("selects all parts with %s+A without taking over text inputs", (modifier) => {
+    render(<LogicBuilder />);
+    const partCount = screen.getByRole("application", { name: "Circuit canvas" }).querySelectorAll('[role="group"][aria-label$=" part"]').length;
+    const shortcut = { key: "a", [modifier]: true };
+    const input = screen.getByRole("textbox", { name: "Circuit name" });
+    fireEvent.keyDown(input, shortcut);
+    expect(screen.queryByText(`${partCount} selected`, { exact: false })).toBeNull();
+    const event = new KeyboardEvent("keydown", { ...shortcut, bubbles: true, cancelable: true });
+    act(() => window.dispatchEvent(event));
+    expect(event.defaultPrevented).toBe(true);
+    expect(screen.getByText(`${partCount} selected`, { exact: false })).toBeTruthy();
+  });
   it("restores a cleared canvas", () => {
     render(<LogicBuilder />);
     const initialParts = screen.getAllByRole("group", { name: /part$/ }).length;

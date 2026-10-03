@@ -1593,6 +1593,13 @@ export function LogicBuilder() {
         event.target instanceof HTMLElement &&
         Boolean(event.target.closest("input, textarea, [contenteditable='true']"));
       if (editingText) return;
+      if ((event.metaKey || event.ctrlKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "a") {
+        event.preventDefault();
+        setSelected(circuit.nodes.map((node) => node.id));
+        setSelectedWires([]);
+        setMenu(null);
+        return;
+      }
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") {
         event.preventDefault();
         travel(event.shiftKey ? "redo" : "undo");

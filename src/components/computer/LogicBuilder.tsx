@@ -1864,6 +1864,60 @@ export function LogicBuilder() {
             }}
           />
         </div>
+        <div className={clsx(styles.toolGroup, styles.viewGroup)} role="group" aria-label="Circuit view">
+          <span className={styles.toolGroupLabel}>View</span>
+          <button type="button" onClick={() => setUnfolded(new Set(collectUnfoldableIds(circuit)))}>
+            <ActionIcon name="unfold" /> Unfold all
+          </button>
+          {hasTransistors && (
+            <div className={styles.powerView} aria-label="Power connection display (visual only)">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showVdd}
+                  onChange={(event) => setShowVdd(event.target.checked)}
+                />{" "}
+                Show VDD
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showGround}
+                  onChange={(event) => setShowGround(event.target.checked)}
+                />{" "}
+                Show GND
+              </label>
+            </div>
+          )}
+          <button
+            type="button"
+            aria-pressed={tidyWiring}
+            onClick={() => {
+              const next = !tidyWiring;
+              setTidyWiring(next);
+              setBusWiring(next);
+            }}
+          >
+            <ActionIcon name="wiring" /> {tidyWiring ? "Simple wiring" : "Clean up wiring"}
+          </button>
+          <button
+            type="button"
+            aria-pressed={busWiring}
+            title="Group connections from one output. Click a bus, then an input, to add a branch."
+            onClick={() => {
+              const next = !busWiring;
+              setBusWiring(next);
+              setTidyWiring(true);
+              setMessage(
+                next
+                  ? "Fan-out buses group wires from one output. Click a bus, then an input, to add a branch."
+                  : "Buses hidden. Clean wiring remains on.",
+              );
+            }}
+          >
+            <ActionIcon name="bus" /> {busWiring ? "Hide buses" : "Fan-out buses"}
+          </button>
+        </div>
         <div className={clsx(styles.toolGroup, styles.fileGroup)} role="group" aria-label="Circuit files">
           <span className={styles.toolGroupLabel}>File</span>
           <button
@@ -1984,60 +2038,6 @@ export function LogicBuilder() {
             </span>
           </div>
           </div>}
-          <div className={styles.toolGroup} role="group" aria-label="Circuit view">
-            <span className={styles.toolGroupLabel}>View</span>
-          <button type="button" onClick={() => setUnfolded(new Set(collectUnfoldableIds(circuit)))}>
-            <ActionIcon name="unfold" /> Unfold all
-          </button>
-          {hasTransistors && (
-            <div className={styles.powerView} aria-label="Power connection display (visual only)">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={showVdd}
-                  onChange={(event) => setShowVdd(event.target.checked)}
-                />{" "}
-                Show VDD
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={showGround}
-                  onChange={(event) => setShowGround(event.target.checked)}
-                />{" "}
-                Show GND
-              </label>
-            </div>
-          )}
-          <button
-            type="button"
-            aria-pressed={tidyWiring}
-            onClick={() => {
-              const next = !tidyWiring;
-              setTidyWiring(next);
-              setBusWiring(next);
-            }}
-          >
-            <ActionIcon name="wiring" /> {tidyWiring ? "Simple wiring" : "Clean up wiring"}
-          </button>
-          <button
-            type="button"
-            aria-pressed={busWiring}
-            title="Group connections from one output. Click a bus, then an input, to add a branch."
-            onClick={() => {
-              const next = !busWiring;
-              setBusWiring(next);
-              setTidyWiring(true);
-              setMessage(
-                next
-                  ? "Fan-out buses group wires from one output. Click a bus, then an input, to add a branch."
-                  : "Buses hidden. Clean wiring remains on.",
-              );
-            }}
-          >
-            <ActionIcon name="bus" /> {busWiring ? "Hide buses" : "Fan-out buses"}
-          </button>
-          </div>
         </div>
       </div>
       {viewPath.length > 0 && (

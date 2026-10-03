@@ -24,6 +24,31 @@ describe("circuit depth", () => {
     fireEvent.click(screen.getByRole("button", { name: "Wire bits 0–7 to A0–A7" }));
     expect(screen.getByText("Connected bits 0–7 to 8-bit full adder.")).toBeTruthy();
   });
+  it("saves a circuit from the toolbar and offers it as a black box in Parts", () => {
+    render(<LogicBuilder />);
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    const dialog = screen.getByRole("dialog", { name: "Save circuit" });
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "Name" }), {
+      target: { value: "My logic" },
+    });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Save circuit" }));
+    const parts = screen.getByLabelText("Gate palette");
+    fireEvent.click(within(parts).getByRole("button", { name: "My logic" }));
+    expect(screen.getByRole("group", { name: "My logic — My logic part" })).toBeTruthy();
+    expect(JSON.parse(localStorage.getItem("ricos-computer-circuits-v1") || "{}").saved["My logic"]).toBeTruthy();
+  });
+
+  it("asks before clearing the canvas and keeps it when cancelled", () => {
+    render(<LogicBuilder />);
+    const before = screen.getByRole("application", { name: "Circuit canvas" }).querySelectorAll('[role="group"]').length;
+    fireEvent.click(screen.getByRole("button", { name: "Clear canvas" }));
+    const dialog = screen.getByRole("dialog", { name: "Clear canvas?" });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
+    expect(screen.getByRole("application", { name: "Circuit canvas" }).querySelectorAll('[role="group"]').length).toBe(before);
+    fireEvent.click(screen.getByRole("button", { name: "Clear canvas" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "Clear canvas?" })).getByRole("button", { name: "Clear canvas" }));
+    expect(screen.getByText("0 parts · 0 wires")).toBeTruthy();
+  });
   it("places input and display ports on wide defaults and lets parts change sides", () => {
     render(<LogicBuilder />);
     const parts = screen.getByLabelText("Gate palette");
@@ -95,25 +120,25 @@ describe("circuit depth", () => {
     expect(screen.getByRole("group", { name: "4-BIT INPUT — 4-BIT INPUT part" })).toBeTruthy();
   });
   it("tracks saved-circuit changes and keyboard shortcuts", () => {
-    vi.spyOn(window, "prompt").mockReturnValueOnce("History example");
     render(<LogicBuilder />);
-    fireEvent.click(screen.getByRole("button", { name: "Save snapshot" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    const dialog = screen.getByRole("dialog", { name: "Save circuit" });
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "Name" }), { target: { value: "History example" } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Save circuit" }));
     expect(screen.getByRole("button", { name: "History example" })).toBeTruthy();
     fireEvent.keyDown(window, { key: "z", ctrlKey: true });
     expect(screen.queryByRole("button", { name: "History example" })).toBeNull();
     fireEvent.keyDown(window, { key: "z", ctrlKey: true, shiftKey: true });
     expect(screen.getByRole("button", { name: "History example" })).toBeTruthy();
-    vi.restoreAllMocks();
   });
   it("restores a cleared canvas", () => {
-    vi.spyOn(window, "confirm").mockReturnValueOnce(true);
     render(<LogicBuilder />);
     const initialParts = screen.getAllByRole("group", { name: /part$/ }).length;
     fireEvent.click(screen.getByRole("button", { name: "Clear canvas" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "Clear canvas?" })).getByRole("button", { name: "Clear canvas" }));
     expect(screen.queryAllByRole("group", { name: /part$/ })).toHaveLength(0);
     fireEvent.click(screen.getByRole("button", { name: "Undo" }));
     expect(screen.getAllByRole("group", { name: /part$/ })).toHaveLength(initialParts);
-    vi.restoreAllMocks();
   });
   it("starts with clean buses and restores them with Clean up wiring", () => {
     render(<LogicBuilder />);
@@ -166,7 +191,7 @@ describe("circuit depth", () => {
   it("shows construction labels as boundaries and drills through gate implementations", () => {
     render(<LogicBuilder />);
     fireEvent.click(screen.getByRole("button", { name: "NOR only" }));
-    fireEvent.click(screen.getByRole("button", { name: /NAND from NOR gates/ }));
+    fireEvent.click(screen.getByTitle("Open NAND from NOR gates blueprint"));
     expect(screen.getByLabelText("NAND from NOR gates circuit boundary")).toBeTruthy();
     expect(screen.getAllByRole("group", { name: "NOR — NOR part" })).toHaveLength(4);
 
@@ -191,10 +216,7 @@ describe("circuit depth", () => {
 
   it("opens a black box and returns to the parent circuit", () => {
     render(<LogicBuilder />);
-    fireEvent.click(screen.getByRole("button", { name: "Examples" }));
-    const row = screen.getByText("Half adder", { selector: "button" }).parentElement;
-    expect(row).toBeTruthy();
-    fireEvent.click(within(row as HTMLElement).getByRole("button", { name: /Black box/ }));
+    fireEvent.click(within(screen.getByLabelText("Gate palette")).getByRole("button", { name: "Half adder" }));
     fireEvent.click(screen.getByRole("button", { name: "Open internal wiring ↘" }));
     expect(screen.getByText("Level 2")).toBeTruthy();
     expect(screen.getAllByRole("group", { name: "SUM — LAMP part" }).length).toBeGreaterThan(0);
@@ -204,8 +226,7 @@ describe("circuit depth", () => {
 
   it("shows a counter bit's role and physical part", () => {
     render(<LogicBuilder />);
-    fireEvent.click(screen.getByRole("button", { name: "Examples" }));
-    fireEvent.click(screen.getByTitle("Open 8-bit binary counter blueprint"));
+    fireEvent.click(within(screen.getByLabelText("Gate palette")).getByRole("button", { name: "View 8-bit binary counter diagram" }));
     const bit = screen.getByRole("group", { name: "BIT0 — D FLIP-FLOP part" });
     expect(within(bit).getByText("BIT0")).toBeTruthy();
     expect(within(bit).getByText("D FLIP-FLOP")).toBeTruthy();

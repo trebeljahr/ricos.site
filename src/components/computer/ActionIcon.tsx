@@ -6,6 +6,9 @@ type ActionIconName =
   | "pause"
   | "step"
   | "reset"
+  | "save"
+  | "export"
+  | "import"
   | "clear"
   | "undo"
   | "redo"
@@ -43,6 +46,14 @@ export function ActionIcon({ name }: { name: ActionIconName }) {
         <path d="M4 4v7h7" />
       </>
     ),
+    save: (
+      <>
+        <path d="M4 3h13l3 3v15H4zM7 3v7h10V3M7 21v-8h10v8" />
+        <path d="M10 4v4h4" />
+      </>
+    ),
+    export: <path d="M12 15V3m-4 4 4-4 4 4M4 14v6h16v-6" />,
+    import: <path d="M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4" />,
     clear: (
       <>
         <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v5M14 11v5" />

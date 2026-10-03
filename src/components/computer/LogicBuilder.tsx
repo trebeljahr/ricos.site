@@ -217,10 +217,7 @@ export function LogicBuilder() {
   const [busSource, setBusSource] = useState("");
   const [editingLabel, setEditingLabel] = useState<{ id: string; value: string } | null>(null);
   const [search, setSearch] = useState("");
-  const [circuitSearch, setCircuitSearch] = useState("");
-  const [circuitFamily, setCircuitFamily] = useState<BlueprintFamily | "examples" | "storage">(
-    "transistor",
-  );
+  const [circuitFamily, setCircuitFamily] = useState<BlueprintFamily>("transistor");
   const [showVdd, setShowVdd] = useState(true);
   const [showGround, setShowGround] = useState(true);
   const [unfolded, setUnfolded] = useState<ReadonlySet<string>>(() => new Set());
@@ -287,6 +284,8 @@ export function LogicBuilder() {
     resetRuntime();
     setMessage(direction === "undo" ? "Undid change." : "Redid change.");
   };
+  const [dialog, setDialog] = useState<"save" | "clear" | null>(null);
+  const [saveName, setSaveName] = useState("");
   const [message, setMessage] = useState(
     "Drag from an output to an input to wire. Click a wire to set its color.",
   );
@@ -368,6 +367,7 @@ export function LogicBuilder() {
   const pinch = useRef<{ distance: number; x: number; y: number } | null>(null);
   const touchMoved = useRef(false);
   const inputFile = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const circuitRef = useRef(circuit);
   const snapshotRef = useRef(snapshot);
   const clockRef = useRef(clockHigh);
@@ -549,6 +549,9 @@ export function LogicBuilder() {
       setMessage("Browser storage is full. Export this circuit to keep it.");
     }
   }, [circuit, saved, ready, viewPath]);
+  useEffect(() => {
+    if (dialog) dialogRef.current?.querySelector<HTMLElement>("input, button")?.focus();
+  }, [dialog]);
 
   const advance = useCallback((pulseIds: Record<string, boolean> = {}, forcedClock?: boolean) => {
     const high = forcedClock ?? !clockRef.current;
@@ -581,7 +584,7 @@ export function LogicBuilder() {
   };
   const clearCanvas = () => {
     if (!circuit.nodes.length && !circuit.wires.length) return;
-    if (!window.confirm(`Clear all ${circuit.nodes.length} parts and ${circuit.wires.length} wires from this canvas?`)) return;
+    setDialog(null);
     const empty = { ...circuit, nodes: [], wires: [] };
     circuitRef.current = empty;
     setCircuit(empty);
@@ -964,11 +967,12 @@ export function LogicBuilder() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [selected, circuit, saved, viewPath]);
   const save = () => {
-    const name = window.prompt("Name this circuit", circuit.name)?.trim();
+    const name = saveName.trim();
     if (!name) return;
     const next = { ...circuit, name: name.slice(0, 80) };
     publish({ ...history.current(), circuit: next, saved: { ...saved, [next.name]: clone(next) } });
     setMessage(`Saved “${next.name}” in this browser.`);
+    setDialog(null);
   };
   const exportCircuit = () => {
     const blob = new Blob([JSON.stringify(circuit, null, 2)], { type: "application/json" });
@@ -1195,22 +1199,12 @@ export function LogicBuilder() {
   const visibleExamples = Object.values(PRESETS).filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase().trim()),
   );
-  const library =
-    circuitFamily === "examples"
-      ? PRESETS
-      : circuitFamily === "storage"
-        ? Object.fromEntries(
-            Object.entries(PRESETS).filter(([name]) =>
-              /latch|flip-flop|register|counter|SRAM|DRAM|flash memory/i.test(name),
-            ),
-          )
-        : Object.fromEntries(
-            Object.entries(BLUEPRINTS).filter(([name]) =>
-              name.endsWith(`from ${BLUEPRINT_FAMILIES[circuitFamily].suffix}`),
-            ),
-          );
-  const visibleCircuits = Object.values(library).filter((item) =>
-    item.name.toLowerCase().includes(circuitSearch.toLowerCase().trim()),
+  const visibleSaved = Object.values(saved).filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase().trim()),
+  );
+  const visibleBlueprints = Object.values(BLUEPRINTS).filter((item) =>
+    item.name.endsWith(`from ${BLUEPRINT_FAMILIES[circuitFamily].suffix}`) &&
+    item.name.toLowerCase().includes(search.toLowerCase().trim()),
   );
   const hasTransistors = circuit.nodes.some((item) => item.type === "nmos" || item.type === "pmos");
   const powerVisible = (node: Node) =>
@@ -1300,8 +1294,30 @@ export function LogicBuilder() {
           </button>
           <button
             type="button"
+            className={styles.saveAction}
+            onClick={() => {
+              setSaveName(circuit.name);
+              setDialog("save");
+            }}
+          >
+            <ActionIcon name="save" /> Save
+          </button>
+          <button type="button" onClick={exportCircuit}><ActionIcon name="export" /> Export JSON</button>
+          <button type="button" onClick={() => inputFile.current?.click()}><ActionIcon name="import" /> Import JSON</button>
+          <input
+            ref={inputFile}
+            type="file"
+            accept=".json,application/json"
+            hidden
+            onChange={(event) => {
+              void importCircuit(event.target.files?.[0]);
+              event.target.value = "";
+            }}
+          />
+          <button
+            type="button"
             className={styles.clearCanvas}
-            onClick={clearCanvas}
+            onClick={() => setDialog("clear")}
             disabled={circuit.nodes.length === 0 && circuit.wires.length === 0}
           >
             <ActionIcon name="clear" /> Clear canvas
@@ -1387,7 +1403,7 @@ export function LogicBuilder() {
           <small>Level {viewPath.length + 1}</small>
         </nav>
       )}
-      <div className={styles.layout}>
+      <div className={clsx(styles.layout, (selectedWireData || selected.length > 0) && styles.layoutWithInspector)}>
         <aside className={styles.sidebar} aria-label="Gate palette">
           <h2>Parts</h2>
           <p>Drag onto canvas or click to add</p>
@@ -1400,30 +1416,83 @@ export function LogicBuilder() {
             onChange={(event) => setSearch(event.target.value)}
           />
           <div className={styles.parts}>
-            {renderParts()}
-            {visibleExamples.map((example) => (
-              <button
-                type="button"
-                key={example.name}
-                draggable
-                onDragStart={(event) => {
-                  event.dataTransfer.setData("application/x-logic-module", example.name);
-                  event.dataTransfer.effectAllowed = "copy";
-                }}
-                onClick={() => addModule(example)}
-                title={
-                  circuitHints[example.name] ||
-                  `Drag ${example.name} black box onto canvas or click to add`
-                }
-                style={{ "--part-accent": partColors.module } as React.CSSProperties}
-              >
-                <span className={styles.partIcon}>
-                  <GateSymbol type="module" circuitName={example.name} />
-                </span>
-                <span>{example.name}</span>
-              </button>
+            {visibleSaved.length > 0 && <h3 className={styles.partsSection}>Saved circuits</h3>}
+            {visibleSaved.map((item) => (
+              <div className={styles.savedPart} key={item.name}>
+                <button
+                  type="button"
+                  draggable
+                  onDragStart={(event) => {
+                    event.dataTransfer.setData("application/x-logic-module", `saved:${item.name}`);
+                    event.dataTransfer.effectAllowed = "copy";
+                  }}
+                  onClick={() => addModule(item)}
+                  title={`Add ${item.name} as a black box`}
+                  style={{ "--part-accent": partColors.module } as React.CSSProperties}
+                >
+                  <span className={styles.partIcon}>
+                    <GateSymbol type="module" circuitName={item.name} />
+                  </span>
+                  <span>{item.name}</span>
+                </button>
+                <button type="button" className={styles.savedOpen} onClick={() => load(item)} aria-label={`Open ${item.name}`} title="Open circuit">↗</button>
+                <button
+                  type="button"
+                  className={styles.savedDelete}
+                  aria-label={`Delete ${item.name}`}
+                  title="Delete saved circuit"
+                  onClick={() => setSaved((current) => {
+                    const next = { ...current };
+                    delete next[item.name];
+                    return next;
+                  })}
+                >×</button>
+              </div>
             ))}
-            {visibleParts.length === 0 && visibleExamples.length === 0 && <p>No matching parts</p>}
+            <h3 className={styles.partsSection}>Build from one kind of part</h3>
+            <div className={styles.buildTabs} role="group" aria-label="Circuit construction">
+              {(["transistor", "nand", "nor"] as const).map((family) => (
+                <button key={family} type="button" aria-pressed={circuitFamily === family} onClick={() => setCircuitFamily(family)}>
+                  {BLUEPRINT_FAMILIES[family].label}
+                </button>
+              ))}
+            </div>
+            {visibleBlueprints.map((blueprint) => (
+              <div className={styles.buildEntry} key={blueprint.name}>
+                <button type="button" onClick={() => load(blueprint)} title={`Open ${blueprint.name} blueprint`}>
+                  {blueprint.name.split(" ")[0]} <span>↗</span>
+                </button>
+                <small>{BLUEPRINT_RECIPES[circuitFamily][blueprint.name.split(" ")[0].toLowerCase() as LogicGate]}</small>
+              </div>
+            ))}
+            <h3 className={styles.partsSection}>Parts</h3>
+            {renderParts()}
+            <h3 className={styles.partsSection}>Examples and storage</h3>
+            {visibleExamples.map((example) => (
+              <div className={styles.savedPart} key={example.name}>
+                <button
+                  type="button"
+                  draggable
+                  onDragStart={(event) => {
+                    event.dataTransfer.setData("application/x-logic-module", example.name);
+                    event.dataTransfer.effectAllowed = "copy";
+                  }}
+                  onClick={() => addModule(example)}
+                  title={
+                    circuitHints[example.name] ||
+                    `Drag ${example.name} black box onto canvas or click to add`
+                  }
+                  style={{ "--part-accent": partColors.module } as React.CSSProperties}
+                >
+                  <span className={styles.partIcon}>
+                    <GateSymbol type="module" circuitName={example.name} />
+                  </span>
+                  <span>{example.name}</span>
+                </button>
+                <button type="button" className={styles.savedOpen} onClick={() => load(example)} aria-label={`View ${example.name} diagram`} title="View diagram">↗</button>
+              </div>
+            ))}
+            {visibleParts.length === 0 && visibleExamples.length === 0 && visibleSaved.length === 0 && <p>No matching parts</p>}
           </div>
           <div className={styles.sidebarFoot}>
             Wire output → input
@@ -1565,12 +1634,12 @@ export function LogicBuilder() {
                     return;
                   }
                   const moduleName = event.dataTransfer.getData("application/x-logic-module");
-                  if (
-                    moduleName &&
-                    (BLUEPRINTS[moduleName] || PRESETS[moduleName] || saved[moduleName])
-                  ) {
+                  const moduleSource = moduleName.startsWith("saved:")
+                    ? saved[moduleName.slice(6)]
+                    : BLUEPRINTS[moduleName] || PRESETS[moduleName];
+                  if (moduleSource) {
                     const point = boardPoint(event.clientX, event.clientY);
-                    addModule(BLUEPRINTS[moduleName] || PRESETS[moduleName] || saved[moduleName], {
+                    addModule(moduleSource, {
                       x: point.x - MODULE_WIDTH / 2,
                       y: point.y - NODE_HEIGHT / 2,
                     });
@@ -2155,158 +2224,7 @@ export function LogicBuilder() {
             </span>
           </div>
         </div>
-        <aside className={styles.inspector} aria-label="Circuit library and controls">
-          <h2>Circuitry library</h2>
-          <p>
-            Click to open a blueprint. Drag to add the full circuit. Use Black box to place an
-            expandable part, including storage circuits.
-          </p>
-          <div className={styles.familyTabs} role="group" aria-label="Circuit construction">
-            {(Object.keys(BLUEPRINT_FAMILIES) as BlueprintFamily[]).map((family) => (
-              <button
-                key={family}
-                type="button"
-                aria-pressed={circuitFamily === family}
-                onClick={() => setCircuitFamily(family)}
-              >
-                {BLUEPRINT_FAMILIES[family].label}
-              </button>
-            ))}
-            <button
-              type="button"
-              aria-pressed={circuitFamily === "examples"}
-              onClick={() => setCircuitFamily("examples")}
-            >
-              Examples
-            </button>
-            <button
-              type="button"
-              aria-pressed={circuitFamily === "storage"}
-              onClick={() => setCircuitFamily("storage")}
-            >
-              Storage
-            </button>
-          </div>
-          <p className={styles.libraryNote}>
-            {circuitFamily === "examples"
-              ? "Open a larger example circuit to explore its wiring."
-              : circuitFamily === "storage"
-                ? "Place a storage black box, then double-click it to inspect and edit its circuit."
-                : BLUEPRINT_FAMILIES[circuitFamily].note}
-          </p>
-          <input
-            className={styles.search}
-            type="search"
-            placeholder="Search circuits"
-            aria-label="Search circuits"
-            value={circuitSearch}
-            onChange={(event) => setCircuitSearch(event.target.value)}
-          />
-          <div className={styles.presetList}>
-            {visibleCircuits.map((preset) => (
-              <div className={styles.circuitEntry} key={preset.name}>
-                <button
-                  type="button"
-                  draggable
-                  onDragStart={(event) => {
-                    event.dataTransfer.setData("application/x-logic-circuit", preset.name);
-                    event.dataTransfer.effectAllowed = "copy";
-                  }}
-                  onClick={() => load(preset)}
-                  title={`Open ${preset.name} blueprint`}
-                >
-                  {preset.name}
-                  <span>↗</span>
-                </button>
-                {circuitFamily !== "examples" && circuitFamily !== "storage" && (
-                  <span className={styles.recipe}>
-                    {
-                      BLUEPRINT_RECIPES[circuitFamily][
-                        preset.name.split(" ")[0].toLowerCase() as LogicGate
-                      ]
-                    }
-                  </span>
-                )}
-                {MEMORY_HINTS[preset.name] && (
-                  <span className={styles.recipe}>{MEMORY_HINTS[preset.name]}</span>
-                )}
-                <button
-                  type="button"
-                  className={styles.blackBox}
-                  draggable
-                  onDragStart={(event) => {
-                    event.dataTransfer.setData("application/x-logic-module", preset.name);
-                    event.dataTransfer.effectAllowed = "copy";
-                  }}
-                  onClick={() => addModule(preset)}
-                  title={`Add ${preset.name} as a black box`}
-                >
-                  ▣ Black box
-                </button>
-              </div>
-            ))}
-            {visibleCircuits.length === 0 && <p>No matching circuits</p>}
-          </div>
-          <div className={styles.divider} />
-          <h2>My circuits</h2>
-          <div className={styles.actions}>
-            <button type="button" onClick={save}>
-              Save snapshot
-            </button>
-            <button type="button" onClick={exportCircuit}>
-              Export JSON
-            </button>
-            <button type="button" onClick={() => inputFile.current?.click()}>
-              Import JSON
-            </button>
-            <input
-              ref={inputFile}
-              type="file"
-              accept=".json,application/json"
-              hidden
-              onChange={(event) => {
-                void importCircuit(event.target.files?.[0]);
-                event.target.value = "";
-              }}
-            />
-          </div>
-          {Object.values(saved).length > 0 && (
-            <div className={styles.savedList}>
-              {Object.values(saved).map((item) => (
-                <div key={item.name}>
-                  <button type="button" onClick={() => load(item)}>
-                    {item.name}
-                  </button>
-                  <button
-                    type="button"
-                    draggable
-                    onDragStart={(event) => {
-                      event.dataTransfer.setData("application/x-logic-module", item.name);
-                      event.dataTransfer.effectAllowed = "copy";
-                    }}
-                    onClick={() => addModule(item)}
-                    title={`Add ${item.name} as a black box`}
-                  >
-                    ▣
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={`Delete ${item.name}`}
-                    onClick={() =>
-                      setSaved((current) => {
-                        const next = { ...current };
-                        delete next[item.name];
-                        return next;
-                      })
-                    }
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-          <div className={styles.divider} />
+        {(selectedWireData || selected.length > 0) && <aside className={styles.inspector} aria-label="Selection controls">
           <h2>Selected wire</h2>
           {selectedWireData ? (
             <div className={styles.wireInspector}>
@@ -2484,7 +2402,7 @@ export function LogicBuilder() {
                   blueprintGate(selectedNode.module!) !== null)) && (
                 <div className={styles.resolutionChoices}>
                   <span>Explore implementation</span>
-                  {(Object.keys(BLUEPRINT_FAMILIES) as BlueprintFamily[]).map((family) => {
+                  {(["transistor", "nand", "nor"] as const).map((family) => {
                     const gate =
                       selectedNode.type === "module"
                         ? blueprintGate(selectedNode.module!)!
@@ -2515,8 +2433,65 @@ export function LogicBuilder() {
           ) : (
             <p>Click a part to inspect it. Drag a rectangle to select several.</p>
           )}
-        </aside>
+        </aside>}
       </div>
+      {dialog && (
+        <div className={styles.dialogBackdrop} onMouseDown={(event) => {
+          if (event.target === event.currentTarget) setDialog(null);
+        }}>
+          <div
+            ref={dialogRef}
+            className={styles.dialog}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="circuit-dialog-title"
+            onKeyDown={(event) => {
+              if (event.key === "Escape") setDialog(null);
+              if (event.key === "Tab") {
+                const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>("button:not(:disabled), input"));
+                const first = controls[0];
+                const last = controls[controls.length - 1];
+                if (event.shiftKey && document.activeElement === first) {
+                  event.preventDefault();
+                  last?.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                  event.preventDefault();
+                  first?.focus();
+                }
+              }
+            }}
+          >
+            {dialog === "save" ? (
+              <form onSubmit={(event) => { event.preventDefault(); save(); }}>
+                <h2 id="circuit-dialog-title">Save circuit</h2>
+                <p>Saved circuits appear in Parts and can be placed as black boxes.</p>
+                <label htmlFor="saved-circuit-name">Name</label>
+                <input
+                  id="saved-circuit-name"
+                  required
+                  maxLength={80}
+                  value={saveName}
+                  onChange={(event) => setSaveName(event.target.value)}
+                />
+                {saved[saveName.trim()] && <p className={styles.dialogWarning}>Saving will replace the existing circuit with this name.</p>}
+                <div className={styles.dialogActions}>
+                  <button type="button" onClick={() => setDialog(null)}>Cancel</button>
+                  <button type="submit" className={styles.dialogPrimary} disabled={!saveName.trim()}>Save circuit</button>
+                </div>
+              </form>
+            ) : (
+              <div>
+                <h2 id="circuit-dialog-title">Clear canvas?</h2>
+                <p>Remove {circuit.nodes.length} parts and {circuit.wires.length} wires from this canvas?</p>
+                <div className={styles.dialogActions}>
+                  <button type="button" onClick={() => setDialog(null)}>Cancel</button>
+                  <button type="button" className={styles.dialogDanger} onClick={clearCanvas}>Clear canvas</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       {menu && (
         <div
           className={styles.contextMenu}

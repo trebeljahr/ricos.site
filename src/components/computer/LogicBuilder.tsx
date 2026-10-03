@@ -1,6 +1,7 @@
 import Link from "next/link";
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useHistoryState } from "../../hooks/useHistoryState";
 import {
   BLUEPRINT_FAMILIES,
   BLUEPRINT_RECIPES,
@@ -132,6 +133,7 @@ const palette: GateType[] = [
 ];
 const clone = (circuit: Circuit): Circuit => JSON.parse(JSON.stringify(circuit));
 type ViewLevel = { parent: Circuit; snapshot: Snapshot; via: string; moduleId?: string };
+type BuilderDocument = { circuit: Circuit; saved: Record<string, Circuit>; viewPath: ViewLevel[] };
 const withUpdatedModule = (parent: Circuit, moduleId: string, inner: Circuit): Circuit => ({
   ...parent,
   nodes: parent.nodes.map((item) =>
@@ -188,8 +190,12 @@ const portStyle = (node: Node, index: number, kind: "input" | "output") => {
 };
 
 export function LogicBuilder() {
-  const [circuit, setCircuit] = useState<Circuit>(() => clone(PRESETS["Half adder"]));
-  const [viewPath, setViewPath] = useState<ViewLevel[]>([]);
+  const history = useHistoryState<BuilderDocument>(() => ({
+    circuit: clone(PRESETS["Half adder"]),
+    saved: {},
+    viewPath: [],
+  }));
+  const { circuit, saved, viewPath } = history.state;
   const [snapshot, setSnapshot] = useState<Snapshot>(initialSnapshot);
   const [clockHigh, setClockHigh] = useState(false);
   const [running, setRunning] = useState(false);
@@ -222,7 +228,43 @@ export function LogicBuilder() {
     endX: number;
     endY: number;
   } | null>(null);
-  const [saved, setSaved] = useState<Record<string, Circuit>>({});
+  const publish = (next: BuilderDocument, track = true) => {
+    if (track) history.update(() => next);
+    else history.replace(() => next);
+  };
+  const setCircuit = (change: Circuit | ((current: Circuit) => Circuit)) => {
+    history.update((current) => ({
+      ...current,
+      circuit: typeof change === "function" ? change(current.circuit) : change,
+    }));
+  };
+  const setSaved = (
+    change:
+      | Record<string, Circuit>
+      | ((current: Record<string, Circuit>) => Record<string, Circuit>),
+  ) => {
+    history.update((current) => ({
+      ...current,
+      saved: typeof change === "function" ? change(current.saved) : change,
+    }));
+  };
+  const beginTransaction = history.begin;
+  const endTransaction = history.end;
+  const travel = (direction: "undo" | "redo") => {
+    if (!history.travel(direction)) return;
+    const next = history.current();
+    setRunning(false);
+    setSelected([]);
+    setSelectedWire(null);
+    setEditingLabel(null);
+    setPending(null);
+    setWireDraft(null);
+    wireDraftRef.current = null;
+    setMenu(null);
+    circuitRef.current = next.circuit;
+    resetRuntime();
+    setMessage(direction === "undo" ? "Undid change." : "Redid change.");
+  };
   const [message, setMessage] = useState(
     "Drag from an output to an input to wire. Click a wire to set its color.",
   );
@@ -440,19 +482,20 @@ export function LogicBuilder() {
       if (raw) {
         const parsed = JSON.parse(raw) as { current?: unknown; saved?: Record<string, unknown> };
         const restored = validateCircuit(parsed.current);
-        if (restored) setCircuit(restored);
+        if (restored) history.replace((current) => ({ ...current, circuit: restored }));
         if (parsed.saved && typeof parsed.saved === "object") {
           const valid: Record<string, Circuit> = {};
           for (const [name, value] of Object.entries(parsed.saved)) {
             const item = validateCircuit(value);
             if (item) valid[name] = item;
           }
-          setSaved(valid);
+          history.replace((current) => ({ ...current, saved: valid }));
         }
       }
     } catch {
       setMessage("Saved circuits could not be loaded. Starter circuit is ready.");
     }
+    history.reset(history.current());
     setReady(true);
   }, []);
   useEffect(() => {
@@ -517,9 +560,8 @@ export function LogicBuilder() {
   };
   const load = (next: Circuit) => {
     const copy = clone(next);
-    setViewPath([]);
     circuitRef.current = copy;
-    setCircuit(copy);
+    publish({ ...history.current(), circuit: copy, viewPath: [] });
     setPending(null);
     setWireDraft(null);
     wireDraftRef.current = null;
@@ -530,10 +572,10 @@ export function LogicBuilder() {
   };
   const enterCircuit = (next: Circuit, via: string, moduleId?: string) => {
     const parentSnapshot = snapshotRef.current;
-    setViewPath((current) => [
-      ...current,
+    const nextPath = [
+      ...viewPath,
       { parent: clone(circuit), snapshot: parentSnapshot, via, moduleId },
-    ]);
+    ];
     const copy = clone(next);
     if (moduleId) {
       moduleInputs(copy).forEach((input, port) => {
@@ -547,7 +589,7 @@ export function LogicBuilder() {
       });
     }
     circuitRef.current = copy;
-    setCircuit(copy);
+    publish({ ...history.current(), circuit: copy, viewPath: nextPath }, false);
     setRunning(false);
     setSelected([]);
     setSelectedWire(null);
@@ -567,9 +609,8 @@ export function LogicBuilder() {
     const parent = level.moduleId
       ? withUpdatedModule(level.parent, level.moduleId, circuit)
       : level.parent;
-    setViewPath((current) => current.slice(0, -1));
     circuitRef.current = parent;
-    setCircuit(parent);
+    publish({ ...history.current(), circuit: parent, viewPath: viewPath.slice(0, -1) }, false);
     setRunning(false);
     setSelected(level.moduleId ? [level.moduleId] : []);
     setSelectedWire(null);
@@ -761,6 +802,20 @@ export function LogicBuilder() {
   };
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      const editingText =
+        event.target instanceof HTMLElement &&
+        Boolean(event.target.closest("input, textarea, [contenteditable='true']"));
+      if (editingText) return;
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") {
+        event.preventDefault();
+        travel(event.shiftKey ? "redo" : "undo");
+        return;
+      }
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "y") {
+        event.preventDefault();
+        travel("redo");
+        return;
+      }
       if (event.key === "Escape") {
         setMenu(null);
         setPending(null);
@@ -793,13 +848,12 @@ export function LogicBuilder() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selected]);
+  }, [selected, circuit, saved, viewPath]);
   const save = () => {
     const name = window.prompt("Name this circuit", circuit.name)?.trim();
     if (!name) return;
     const next = { ...circuit, name: name.slice(0, 80) };
-    setCircuit(next);
-    setSaved((current) => ({ ...current, [next.name]: clone(next) }));
+    publish({ ...history.current(), circuit: next, saved: { ...saved, [next.name]: clone(next) } });
     setMessage(`Saved “${next.name}” in this browser.`);
   };
   const exportCircuit = () => {
@@ -833,6 +887,7 @@ export function LogicBuilder() {
           y: (first.y + second.y) / 2,
         };
         setMarquee(null);
+        if (dragRef.current) endTransaction();
         setDrag(null);
         wireDraftRef.current = null;
         setWireDraft(null);
@@ -845,6 +900,7 @@ export function LogicBuilder() {
       activePan.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
       event.currentTarget.setPointerCapture(event.pointerId);
       setMarquee(null);
+      if (dragRef.current) endTransaction();
       setDrag(null);
     }
   };
@@ -1016,6 +1072,7 @@ export function LogicBuilder() {
       );
       setMarquee(null);
     }
+    if (dragRef.current) endTransaction();
     setDrag(null);
   };
   const visibleParts = palette.filter((type) =>
@@ -1151,6 +1208,24 @@ export function LogicBuilder() {
             disabled={circuit.nodes.length === 0 && circuit.wires.length === 0}
           >
             Clear canvas
+          </button>
+          <button
+            type="button"
+            onClick={() => travel("undo")}
+            disabled={!history.canUndo}
+            aria-label="Undo"
+            title="Undo (⌘/Ctrl+Z)"
+          >
+            Undo
+          </button>
+          <button
+            type="button"
+            onClick={() => travel("redo")}
+            disabled={!history.canRedo}
+            aria-label="Redo"
+            title="Redo (⌘/Ctrl+Shift+Z)"
+          >
+            Redo
           </button>
           <button
             type="button"
@@ -1348,6 +1423,7 @@ export function LogicBuilder() {
                 }}
                 onPointerUp={finishPointer}
                 onPointerCancel={() => {
+                  if (dragRef.current) endTransaction();
                   wireDraftRef.current = null;
                   setWireDraft(null);
                   setMarquee(null);
@@ -1612,6 +1688,7 @@ export function LogicBuilder() {
                           return;
                         event.currentTarget.setPointerCapture(event.pointerId);
                         const ids = selected.includes(node.id) ? selected : [node.id];
+                        beginTransaction();
                         setDrag({
                           x: event.clientX,
                           y: event.clientY,
@@ -2172,6 +2249,8 @@ export function LogicBuilder() {
                 <input
                   value={selectedNode.label || ""}
                   maxLength={30}
+                  onFocus={beginTransaction}
+                  onBlur={endTransaction}
                   onChange={(event) =>
                     setCircuit((current) => ({
                       ...current,

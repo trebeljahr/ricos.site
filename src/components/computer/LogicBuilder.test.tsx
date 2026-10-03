@@ -62,6 +62,45 @@ describe("circuit depth", () => {
     expect(within(lamp).getByRole("img", { name: "LED off" })).toBeTruthy();
     expect(within(lamp).getByText("0")).toBeTruthy();
   });
+  it("undoes and redoes part and input edits", () => {
+    render(<LogicBuilder />);
+    const parts = screen.getByLabelText("Gate palette");
+    fireEvent.click(within(parts).getByRole("button", { name: "4-BIT INPUT" }));
+    let input = screen.getByRole("group", { name: "4-BIT INPUT — 4-BIT INPUT part" });
+    fireEvent.click(within(input).getByRole("button", { name: "Toggle bit 2 of 4-BIT INPUT" }));
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    input = screen.getByRole("group", { name: "4-BIT INPUT — 4-BIT INPUT part" });
+    expect(
+      within(input)
+        .getByRole("button", { name: "Toggle bit 2 of 4-BIT INPUT" })
+        .getAttribute("aria-pressed"),
+    ).toBe("false");
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    expect(screen.queryByRole("group", { name: "4-BIT INPUT — 4-BIT INPUT part" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Redo" }));
+    expect(screen.getByRole("group", { name: "4-BIT INPUT — 4-BIT INPUT part" })).toBeTruthy();
+  });
+  it("tracks saved-circuit changes and keyboard shortcuts", () => {
+    vi.spyOn(window, "prompt").mockReturnValueOnce("History example");
+    render(<LogicBuilder />);
+    fireEvent.click(screen.getByRole("button", { name: "Save snapshot" }));
+    expect(screen.getByRole("button", { name: "History example" })).toBeTruthy();
+    fireEvent.keyDown(window, { key: "z", ctrlKey: true });
+    expect(screen.queryByRole("button", { name: "History example" })).toBeNull();
+    fireEvent.keyDown(window, { key: "z", ctrlKey: true, shiftKey: true });
+    expect(screen.getByRole("button", { name: "History example" })).toBeTruthy();
+    vi.restoreAllMocks();
+  });
+  it("restores a cleared canvas", () => {
+    vi.spyOn(window, "confirm").mockReturnValueOnce(true);
+    render(<LogicBuilder />);
+    const initialParts = screen.getAllByRole("group", { name: /part$/ }).length;
+    fireEvent.click(screen.getByRole("button", { name: "Clear canvas" }));
+    expect(screen.queryAllByRole("group", { name: /part$/ })).toHaveLength(0);
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    expect(screen.getAllByRole("group", { name: /part$/ })).toHaveLength(initialParts);
+    vi.restoreAllMocks();
+  });
   it("starts with clean buses and restores them with Clean up wiring", () => {
     render(<LogicBuilder />);
     expect(screen.getByRole("button", { name: "Hide buses" }).getAttribute("aria-pressed")).toBe(

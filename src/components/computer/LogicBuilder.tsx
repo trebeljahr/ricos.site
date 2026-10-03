@@ -1282,7 +1282,7 @@ export function LogicBuilder() {
         </div>
         <div className={styles.transport}>
           <details className={styles.learningMenu} ref={learningMenu}>
-            <summary>Learning <span aria-hidden="true" /></summary>
+            <summary>Learning <svg aria-hidden="true" viewBox="0 0 12 12"><path d="m2 4 4 4 4-4" /></svg></summary>
             <div className={styles.learningPanel}>
               <h2>Build from one kind of part</h2>
               <p>Open a gate built from transistors, NAND, or NOR.</p>

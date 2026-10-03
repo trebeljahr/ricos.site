@@ -122,8 +122,8 @@
 .learningMenu summary{list-style:none;display:flex;align-items:center;gap:9px;color:#e8e1ff;background:#303456;border:1px solid #7c74ab;border-radius:6px;padding:8px 11px;font-size:12px;font-weight:700;cursor:pointer}
 .learningMenu summary::-webkit-details-marker{display:none}
 .learningMenu summary:hover,.learningMenu[open] summary{border-color:#b7a1ff;background:#403d68}
-.learningMenu summary span{display:block;width:6px;height:6px;margin:0 1px 3px 0;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);transform-origin:center;transition:transform .15s}
-.learningMenu[open] summary span{transform:rotate(225deg)}
+.learningMenu summary svg{display:block;flex:none;width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transform:rotate(0deg);transform-origin:center;transition:transform .15s}
+.learningMenu[open] summary svg{transform:rotate(180deg)}
 .learningPanel{position:absolute;top:calc(100% + 10px);left:0;z-index:100;width:min(340px,calc(100vw - 32px));box-sizing:border-box;max-height:min(690px,calc(100svh - 115px));display:flex;flex-direction:column;padding:18px;background:#1d2948;border:1px solid #6978a4;border-radius:9px;box-shadow:0 18px 42px #050b19a8}
 .learningPanel h2{margin:0;color:#f4f1ff;font-size:14px}
 .learningPanel p{margin:5px 0 12px;color:#aebbd3;font-size:11px;line-height:1.4}

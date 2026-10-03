@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { wirePath } from "./wireRouting";
+import { simpleWirePath, wirePath } from "./wireRouting";
 
 describe("wire routing", () => {
+  it("draws a simple curve by default, including backward connections", () => {
+    expect(simpleWirePath({ x: 0, y: 20 }, { x: 200, y: 160 })).toBe(
+      "M 0 20 C 100 20 100 160 200 160",
+    );
+    expect(simpleWirePath({ x: 200, y: 20 }, { x: 0, y: 160 })).toMatch(/^M 200 20 C /);
+  });
   it("uses a clear lane around a part between connectors", () => {
     const path = wirePath({ x: 0, y: 20 }, { x: 200, y: 160 }, [
       { x: 80, y: 45, width: 50, height: 75 },

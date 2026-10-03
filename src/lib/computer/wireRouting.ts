@@ -1,6 +1,11 @@
 type Point = { x: number; y: number };
 type Obstacle = { x: number; y: number; width: number; height: number };
 
+export function simpleWirePath(start: Point, end: Point) {
+  const bend = Math.max(36, Math.min(120, Math.abs(end.x - start.x) / 2));
+  return `M ${start.x} ${start.y} C ${start.x + bend} ${start.y} ${end.x - bend} ${end.y} ${end.x} ${end.y}`;
+}
+
 function roundedPath(points: Point[]) {
   let path = `M ${points[0].x} ${points[0].y}`;
   for (let i = 1; i < points.length - 1; i++) {

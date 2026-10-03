@@ -27,7 +27,7 @@ import {
   WIRE_COLORS,
   type WireColor,
 } from "../../lib/computer/logic";
-import { wirePath } from "../../lib/computer/wireRouting";
+import { simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
 import { GateSymbol } from "./GateSymbol";
 import styles from "./LogicBuilder.module.css";
 
@@ -124,6 +124,7 @@ export function LogicBuilder() {
   const [pending, setPending] = useState<{ from: string; output: number } | null>(null);
   const [wireDraft, setWireDraft] = useState<WireDraft | null>(null);
   const [selectedWire, setSelectedWire] = useState<string | null>(null);
+  const [tidyWiring, setTidyWiring] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [circuitSearch, setCircuitSearch] = useState("");
@@ -698,6 +699,13 @@ export function LogicBuilder() {
           <button type="button" onClick={resetRuntime}>
             Reset
           </button>
+          <button
+            type="button"
+            aria-pressed={tidyWiring}
+            onClick={() => setTidyWiring((value) => !value)}
+          >
+            {tidyWiring ? "Simple wiring" : "Clean up wiring"}
+          </button>
           <label className={styles.rate}>
             Speed{" "}
             <select value={rate} onChange={(event) => setRate(Number(event.target.value))}>
@@ -864,19 +872,21 @@ export function LogicBuilder() {
                     y1 = outY(from, wire.output ?? 0),
                     x2 = to.x,
                     y2 = portY(to, wire.input);
-                  const d = wirePath(
-                    { x: x1, y: y1 },
-                    { x: x2, y: y2 },
-                    circuit.nodes
-                      .filter((node) => node.id !== from.id && node.id !== to.id)
-                      .map((node) => ({
-                        x: node.x,
-                        y: node.y,
-                        width: NODE_WIDTH,
-                        height: nodeHeight(node),
-                      })),
-                    ((index % 5) - 2) * 10,
-                  );
+                  const d = tidyWiring
+                    ? wirePath(
+                        { x: x1, y: y1 },
+                        { x: x2, y: y2 },
+                        circuit.nodes
+                          .filter((node) => node.id !== from.id && node.id !== to.id)
+                          .map((node) => ({
+                            x: node.x,
+                            y: node.y,
+                            width: NODE_WIDTH,
+                            height: nodeHeight(node),
+                          })),
+                        ((index % 5) - 2) * 10,
+                      )
+                    : simpleWirePath({ x: x1, y: y1 }, { x: x2, y: y2 });
                   const color = WIRE_COLORS[wire.color ?? defaultWireColor(wire.from)];
                   return (
                     <g key={wire.id} style={{ "--wire-color": color } as React.CSSProperties}>
@@ -937,7 +947,11 @@ export function LogicBuilder() {
                 })}
                 {previewStart && previewEnd && wireDraft && (
                   <path
-                    d={wirePath(previewStart, previewEnd)}
+                    d={
+                      tidyWiring
+                        ? wirePath(previewStart, previewEnd)
+                        : simpleWirePath(previewStart, previewEnd)
+                    }
                     className={styles.wirePreview}
                     style={
                       {

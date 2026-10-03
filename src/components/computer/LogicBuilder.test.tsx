@@ -45,7 +45,7 @@ describe("circuit depth", () => {
     render(<LogicBuilder />);
     fireEvent.click(screen.getByText("View", { selector: "summary" }));
     const view = screen.getByRole("group", { name: "Circuit view" });
-    for (const name of ["Unfold one level", "Refold one level", "Unfold all", "Simple wiring", "Hide buses"]) {
+    for (const name of ["Unfold one level", "Refold one level", "Unfold all"]) {
       expect(within(view).getByRole("button", { name })).toBeTruthy();
     }
     expect(within(screen.getByRole("group", { name: "Learning tools" })).getByText("Learning")).toBeTruthy();
@@ -87,6 +87,7 @@ describe("circuit depth", () => {
   });
   it("saves a circuit from the toolbar and offers it as a black box in Parts", () => {
     render(<LogicBuilder />);
+    fireEvent.click(screen.getByText("File", { selector: "summary" }));
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
     const dialog = screen.getByRole("dialog", { name: "Save circuit" });
     fireEvent.change(within(dialog).getByRole("textbox", { name: "Name" }), {
@@ -151,6 +152,7 @@ describe("circuit depth", () => {
 
   it.each(["board", "viewport"])("drops saved circuits onto the %s", (target) => {
     render(<LogicBuilder />);
+    fireEvent.click(screen.getByText("File", { selector: "summary" }));
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
     const dialog = screen.getByRole("dialog", { name: "Save circuit" });
     fireEvent.change(within(dialog).getByRole("textbox", { name: "Name" }), {
@@ -313,6 +315,7 @@ describe("circuit depth", () => {
   });
   it("tracks saved-circuit changes and keyboard shortcuts", () => {
     render(<LogicBuilder />);
+    fireEvent.click(screen.getByText("File", { selector: "summary" }));
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
     const dialog = screen.getByRole("dialog", { name: "Save circuit" });
     fireEvent.change(within(dialog).getByRole("textbox", { name: "Name" }), { target: { value: "History example" } });
@@ -345,20 +348,29 @@ describe("circuit depth", () => {
     fireEvent.click(screen.getByRole("button", { name: "Undo" }));
     expect(screen.getAllByRole("group", { name: /part$/ })).toHaveLength(initialParts);
   });
-  it("starts with clean buses and restores them with Clean up wiring", () => {
+  it("shows current routing and bus settings and keeps their states consistent", () => {
     render(<LogicBuilder />);
     fireEvent.click(screen.getByText("View", { selector: "summary" }));
-    expect(screen.getByRole("button", { name: "Hide buses" }).getAttribute("aria-pressed")).toBe(
-      "true",
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Simple wiring" }));
-    expect(screen.getByRole("button", { name: "Fan-out buses" }).getAttribute("aria-pressed")).toBe(
-      "false",
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Clean up wiring" }));
-    expect(screen.getByRole("button", { name: "Hide buses" }).getAttribute("aria-pressed")).toBe(
-      "true",
-    );
+    const paths = screen.getByRole("switch", { name: "Wire paths" }) as HTMLInputElement;
+    const buses = screen.getByRole("switch", { name: "Fan-out buses" }) as HTMLInputElement;
+    expect(paths.checked).toBe(true);
+    expect(buses.checked).toBe(true);
+    fireEvent.click(paths);
+    expect(paths.checked).toBe(false);
+    expect(buses.checked).toBe(false);
+    expect(screen.queryByRole("button", { name: "Add branch from A bus" })).toBeNull();
+    fireEvent.click(buses);
+    expect(paths.checked).toBe(true);
+    expect(buses.checked).toBe(true);
+    expect(screen.getByRole("button", { name: "Add branch from A bus" })).toBeTruthy();
+    fireEvent.click(buses);
+    expect(paths.checked).toBe(true);
+    expect(buses.checked).toBe(false);
+    // Choosing routed paths must not silently enable bus grouping again.
+    fireEvent.click(paths);
+    fireEvent.click(paths);
+    expect(paths.checked).toBe(true);
+    expect(buses.checked).toBe(false);
   });
   it("shows named sockets and a distinct ALU symbol", () => {
     render(<LogicBuilder />);

@@ -57,6 +57,7 @@ export function CircuitToolbar(props: CircuitToolbarProps) {
         <nav className={styles.menuBar} aria-label="Circuit commands">
           <ToolbarMenu label="File">
             <div role="group" aria-label="Circuit files" className={styles.menuActions}>
+              {props.save}
               {props.files}
             </div>
             <div className={styles.menuDivider} />
@@ -85,7 +86,6 @@ export function CircuitToolbar(props: CircuitToolbarProps) {
             </ToolbarMenu>
           </div>
         )}
-        <div className={styles.headerEnd}>{props.save}</div>
       </div>
     </section>
   );

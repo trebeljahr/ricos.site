@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { CircuitToolbar } from "./CircuitToolbar";
 import { ToolbarMenu } from "./ToolbarMenu";
+import { ToolbarSwitch } from "./ToolbarSwitch";
 import { useHistoryState } from "../../hooks/useHistoryState";
 import { usePortWiring } from "../../hooks/usePortWiring";
 import { type PortRef, portLabelBank, wiringPorts } from "../../lib/computer/portWiring";
@@ -2142,34 +2143,30 @@ export function LogicBuilder() {
                 </label>
               </div>
             )}
-            <button
-              type="button"
-              aria-pressed={tidyWiring}
-              onClick={() => {
-                const next = !tidyWiring;
-                setTidyWiring(next);
-                setBusWiring(next);
+            <ToolbarSwitch
+              label="Wire paths"
+              offLabel="Simple"
+              onLabel="Routed"
+              checked={tidyWiring}
+              onChange={(routed) => {
+                setTidyWiring(routed);
+                if (!routed) setBusWiring(false);
               }}
-            >
-              <ActionIcon name="wiring" /> {tidyWiring ? "Simple wiring" : "Clean up wiring"}
-            </button>
-            <button
-              type="button"
-              aria-pressed={busWiring}
-              title="Group connections from one output. Click a bus, then an input, to add a branch."
-              onClick={() => {
-                const next = !busWiring;
-                setBusWiring(next);
-                setTidyWiring(true);
-                setMessage(
-                  next
-                    ? "Fan-out buses group wires from one output. Click a bus, then an input, to add a branch."
-                    : "Buses hidden. Clean wiring remains on.",
-                );
+            />
+            <ToolbarSwitch
+              label="Fan-out buses"
+              offLabel="Hidden"
+              onLabel="Shown"
+              checked={busWiring}
+              description="Shared branches use routed paths."
+              onChange={(shown) => {
+                setBusWiring(shown);
+                if (shown) setTidyWiring(true);
+                setMessage(shown
+                  ? "Fan-out buses group wires from one output. Click a bus, then an input, to add a branch."
+                  : "Fan-out buses hidden.");
               }}
-            >
-              <ActionIcon name="bus" /> {busWiring ? "Hide buses" : "Fan-out buses"}
-            </button>
+            />
           </>
         }
         files={
@@ -2196,7 +2193,6 @@ export function LogicBuilder() {
           <>
             <button
               type="button"
-              data-action="save"
               onClick={() => {
                 setSaveName(circuit.name);
                 setDialog("save");

@@ -532,10 +532,12 @@ export function LogicBuilder() {
       };
     };
     const onWheel = (event: WheelEvent) => {
-      if (!event.ctrlKey && !event.metaKey) return;
       event.preventDefault();
       const anchor = gestureAnchor(event);
-      zoomAt(zoomRef.current * Math.exp(-event.deltaY * 0.01), anchor.x, anchor.y);
+      const pixels = event.deltaY * (event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 :
+        event.deltaMode === WheelEvent.DOM_DELTA_PAGE ? viewport.clientHeight : 1);
+      zoomAt(zoomRef.current * Math.exp(-pixels * (event.ctrlKey || event.metaKey ? 0.01 : 0.0015)),
+        anchor.x, anchor.y);
     };
     const onGestureStart = (event: Event) => {
       event.preventDefault();
@@ -565,7 +567,7 @@ export function LogicBuilder() {
     const onKeyUp = (event: KeyboardEvent) => {
       if (event.code === "Space") spaceHeld.current = false;
     };
-    workspaceElement.addEventListener("wheel", onWheel, { capture: true, passive: false });
+    viewport.addEventListener("wheel", onWheel, { capture: true, passive: false });
     workspaceElement.addEventListener("gesturestart", onGestureStart, {
       capture: true,
       passive: false,
@@ -582,7 +584,7 @@ export function LogicBuilder() {
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     return () => {
-      workspaceElement.removeEventListener("wheel", onWheel, true);
+      viewport.removeEventListener("wheel", onWheel, true);
       workspaceElement.removeEventListener("gesturestart", onGestureStart, true);
       workspaceElement.removeEventListener("gesturechange", onGestureChange, true);
       workspaceElement.removeEventListener("gestureend", onGestureEnd, true);
@@ -1089,9 +1091,11 @@ export function LogicBuilder() {
       }
       return;
     }
-    const emptyCanvas = !(event.target as Element).closest(`.${styles.node}, .${styles.wireHit}`);
-    if (event.button === 1 || (event.button === 0 &&
-        (spaceHeld.current || (emptyCanvas && !event.shiftKey && !selectMode)))) {
+    const emptyCanvas = !(event.target as Element).closest(
+      `.${styles.node}, .${styles.wireHit}, .${styles.busHit}, button, input, [role="button"]`,
+    );
+    if (emptyCanvas && (event.button === 1 || (event.button === 0 &&
+        (spaceHeld.current || (!event.shiftKey && !selectMode))))) {
       event.preventDefault();
       event.stopPropagation();
       activePan.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
@@ -1648,7 +1652,7 @@ export function LogicBuilder() {
               Select
             </button>
             <small>
-              Drag empty space to pan · Shift+drag to select · Pinch to zoom
+              Drag empty space to pan · Shift+drag to select · Scroll or pinch to zoom
             </small>
           </div>
           <div
@@ -1703,8 +1707,9 @@ export function LogicBuilder() {
                     event.button !== 0 ||
                     spaceHeld.current ||
                     (!event.shiftKey && !selectMode) ||
-                    (event.target as Element).closest(`.${styles.node}`) ||
-                    (event.target as Element).closest(`.${styles.wireHit}`)
+                    (event.target as Element).closest(
+                      `.${styles.node}, .${styles.wireHit}, .${styles.busHit}, button, input, [role="button"]`,
+                    )
                   )
                     return;
                   event.currentTarget.setPointerCapture(event.pointerId);

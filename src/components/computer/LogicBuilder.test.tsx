@@ -361,11 +361,11 @@ describe("circuit depth", () => {
     const wheel = new WheelEvent("wheel", {
       bubbles: true,
       cancelable: true,
-      ctrlKey: true,
-      deltaY: 20,
+      deltaY: -120,
     });
     act(() => viewport.dispatchEvent(wheel));
     expect(wheel.defaultPrevented).toBe(true);
+    expect(screen.getByText("120%")).toBeTruthy();
 
     const start = new Event("gesturestart", { bubbles: true, cancelable: true });
     act(() => viewport.dispatchEvent(start));
@@ -374,10 +374,66 @@ describe("circuit depth", () => {
     Object.defineProperty(change, "scale", { value: 1.4 });
     act(() => viewport.dispatchEvent(change));
     expect(change.defaultPrevented).toBe(true);
-    expect(screen.getByText("115%")).toBeTruthy();
+    expect(screen.getByText("168%")).toBeTruthy();
 
     const outside = new WheelEvent("wheel", { bubbles: true, cancelable: true, ctrlKey: true });
     container.parentElement!.dispatchEvent(outside);
     expect(outside.defaultPrevented).toBe(false);
+    const toolbarWheel = new WheelEvent("wheel", { bubbles: true, cancelable: true,
+      deltaY: -120 });
+    screen.getByRole("toolbar", { name: "Canvas view controls" }).dispatchEvent(toolbarWheel);
+    expect(toolbarWheel.defaultPrevented).toBe(false);
+    expect(screen.getByText("168%")).toBeTruthy();
+  });
+
+  it("extends the canvas during panning and leaves part dragging intact", () => {
+    render(<LogicBuilder />);
+    const board = screen.getByRole("application", { name: "Circuit canvas" });
+    const viewport = board.parentElement!.parentElement!;
+    const initialWidth = Number.parseFloat(board.style.width);
+    Object.defineProperty(viewport, "clientWidth", { configurable: true, value: 400 });
+    Object.defineProperty(viewport, "clientHeight", { configurable: true, value: 300 });
+    vi.spyOn(board, "getBoundingClientRect").mockImplementation(() => ({
+      left: 0, top: 0, right: Number.parseFloat(board.style.width),
+      bottom: Number.parseFloat(board.style.height),
+      width: Number.parseFloat(board.style.width),
+      height: Number.parseFloat(board.style.height),
+      x: 0, y: 0, toJSON: () => ({}),
+    }));
+    const part = screen.getAllByRole("group", { name: / part$/ })[0];
+    const firstLeft = part.style.left;
+
+    fireEvent.pointerDown(part, { pointerId: 10, pointerType: "mouse", button: 0,
+      clientX: 100, clientY: 100 });
+    fireEvent.pointerMove(part, { pointerId: 10, pointerType: "mouse",
+      clientX: 140, clientY: 100 });
+    expect(part.style.left).not.toBe(firstLeft);
+    expect(viewport.scrollLeft).toBe(0);
+    fireEvent.pointerUp(board, { pointerId: 10, pointerType: "mouse", button: 0 });
+
+    fireEvent.pointerDown(board, { pointerId: 11, pointerType: "mouse", button: 0,
+      clientX: 300, clientY: 150 });
+    for (let x = 0; x >= -900; x -= 300)
+      fireEvent.pointerMove(viewport, { pointerId: 11, pointerType: "mouse",
+        clientX: x, clientY: 150 });
+    expect(viewport.scrollLeft).toBeGreaterThan(900);
+    fireEvent.pointerMove(viewport, { pointerId: 11, pointerType: "mouse",
+      clientX: 1700, clientY: 900 });
+    fireEvent.scroll(viewport);
+    expect(Number.parseFloat(board.style.width)).toBeGreaterThan(initialWidth);
+    fireEvent.pointerUp(viewport, { pointerId: 11, pointerType: "mouse", button: 0 });
+
+    fireEvent.pointerDown(board, { pointerId: 12, pointerType: "mouse", button: 0,
+      shiftKey: true, clientX: 50, clientY: 60 });
+    const marquee = board.querySelector('[class*="marquee"]') as HTMLElement;
+    expect(marquee.style.left).toBe("50px");
+    expect(marquee.style.top).toBe("60px");
+    fireEvent.pointerUp(board, { pointerId: 12, pointerType: "mouse", button: 0,
+      clientX: 50, clientY: 60 });
+
+    const count = screen.getAllByRole("group", { name: /SWITCH part$/ }).length;
+    fireEvent.drop(board, { clientX: 200, clientY: 200,
+      dataTransfer: { getData: (type: string) => type === "application/x-logic-gate" ? "switch" : "" } });
+    expect(screen.getAllByRole("group", { name: /SWITCH part$/ })).toHaveLength(count + 1);
   });
 });

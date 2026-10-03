@@ -261,6 +261,24 @@ const innerCircuit = (node: Node): Circuit | undefined => {
   return undefined;
 };
 
+const editInlineCircuit = (root: Circuit, path: string, edit: (inner: Circuit) => Circuit): Circuit => {
+  const segments = path.split("/");
+  const update = (circuit: Circuit, index: number): Circuit => ({
+    ...circuit,
+    nodes: circuit.nodes.map((node) => {
+      if (node.id !== segments[index]) return node;
+      const source = innerCircuit(node);
+      if (!source) return node;
+      const changed = index === segments.length - 1 ? edit(source) : update(source, index + 1);
+      if (changed === source) return node;
+      const name = changed.name.startsWith("Modified ") ? changed.name : `Modified ${changed.name}`;
+      return { ...node, type: "module" as const, module: { ...changed, name },
+        label: node.label?.startsWith("Modified ") ? node.label : `Modified ${node.label || source.name}` };
+    }),
+  });
+  return update(root, 0);
+};
+
 const layoutInlineCircuit = (
   circuit: Circuit, prefix: string, unfolded: ReadonlySet<string>, depth = 0,
 ): InlineLayout => {
@@ -311,11 +329,22 @@ type InlineCircuitProps = {
   onExpandLevel: (path: string, circuit: Circuit) => void;
   onRefoldLevel: (path: string) => void;
   onEnter: (path: string) => void;
+  onEdit: (path: string, edit: (inner: Circuit) => Circuit) => void;
+  onActivate: (path: string) => void;
+  activePath: string | null;
+  zoom: number;
   path: string;
 };
 
 function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
-  onExpandLevel, onRefoldLevel, onEnter, path }: InlineCircuitProps) {
+  onExpandLevel, onRefoldLevel, onEnter, onEdit, onActivate, activePath, zoom, path }: InlineCircuitProps) {
+  const [selectedPart, setSelectedPart] = useState<string | null>(null);
+  const [selectedWire, setSelectedWire] = useState<string | null>(null);
+  const [pendingInnerWire, setPendingInnerWire] = useState<{ from: string; output: number } | null>(null);
+  const [editingPart, setEditingPart] = useState<string | null>(null);
+  const [draftLabel, setDraftLabel] = useState("");
+  const dragStart = useRef<{ id: string; x: number; y: number } | null>(null);
+  const wireStart = useRef<{ from: string; output: number; x: number; y: number } | null>(null);
   const parts = new Map(layout.parts.map((part) => [part.id, part]));
   const inputs = new Map(layout.inputs.map((part, index) => [part.id, index]));
   const outputs = new Map(layout.outputs.map((part, index) => [part.id, index]));
@@ -332,9 +361,97 @@ function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
   const descendants = [...unfolded].filter((id) => id.startsWith(`${path}/`));
   const canExpand = collectUnfoldableIds(circuit, `${path}/`)
     .some((id) => !unfolded.has(id) && unfolded.has(id.slice(0, id.lastIndexOf("/"))));
+  const connectInner = (to: string, input: number) => {
+    if (!pendingInnerWire || pendingInnerWire.from === to) return;
+    onEdit(path, (inner) => ({ ...inner, wires: [
+      ...inner.wires.filter((wire) => wire.to !== to || wire.input !== input),
+      { id: crypto.randomUUID(), from: pendingInnerWire.from, output: pendingInnerWire.output,
+        to, input, color: "cyan" },
+    ] }));
+    setPendingInnerWire(null);
+  };
+  const beginWire = (event: React.PointerEvent<HTMLButtonElement>, from: string, output: number) => {
+    event.stopPropagation();
+    onActivate(path);
+    setPendingInnerWire({ from, output });
+    wireStart.current = { from, output, x: event.clientX, y: event.clientY };
+    event.currentTarget.parentElement?.closest(`.${styles.inlineDiagram}`)?.setPointerCapture(event.pointerId);
+  };
+  const finishWire = (event: React.PointerEvent<HTMLDivElement>) => {
+    const start = wireStart.current;
+    wireStart.current = null;
+    if (!start || Math.hypot(event.clientX - start.x, event.clientY - start.y) < 8) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const point = { x: (event.clientX - rect.left) / zoom, y: (event.clientY - rect.top) / zoom };
+    const targets = [
+      ...layout.parts.flatMap((part) => Array.from({ length: inputCount(part) }, (_, input) =>
+        ({ id: part.id, input, point: portPoint(part, input, "input") }))),
+      ...layout.outputs.map((port, input) => ({ id: port.id, input: 0,
+        point: boundaryPoint(input, "output") })),
+    ];
+    const nearest = targets.filter((target) => target.id !== start.from)
+      .sort((a, b) => Math.hypot(a.point.x - point.x, a.point.y - point.y) -
+        Math.hypot(b.point.x - point.x, b.point.y - point.y))[0];
+    if (nearest && Math.hypot(nearest.point.x - point.x, nearest.point.y - point.y) < 35) {
+      onEdit(path, (inner) => ({ ...inner, wires: [
+        ...inner.wires.filter((wire) => wire.to !== nearest.id || wire.input !== nearest.input),
+        { id: crypto.randomUUID(), from: start.from, output: start.output,
+          to: nearest.id, input: nearest.input, color: "cyan" },
+      ] }));
+      setPendingInnerWire(null);
+    }
+  };
+  const addInner = (type: GateType) => {
+    if (type === "module") return;
+    if (circuit.nodes.length >= 300) return;
+    if (type === "switch" && layout.inputs.length >= 24) return;
+    if (type === "lamp" && layout.outputs.length >= 24) return;
+    const id = crypto.randomUUID();
+    onEdit(path, (inner) => ({ ...inner, nodes: [...inner.nodes, { id, type,
+      x: Math.max(120, ...inner.nodes.map((node) => node.x)) + 180,
+      y: 80 + (inner.nodes.length % 5) * 105,
+      label: type === "switch" ? `IN ${moduleInputs(inner).length + 1}` :
+        type === "lamp" ? `OUT ${moduleOutputs(inner).length + 1}` : LABELS[type] }] }));
+    setSelectedPart(id);
+  };
+  const removeSelected = () => {
+    if (!selectedPart && !selectedWire) return;
+    if (selectedPart && layout.outputs.length === 1 && layout.outputs[0].id === selectedPart) return;
+    onEdit(path, (inner) => ({ ...inner,
+      nodes: selectedPart ? inner.nodes.filter((node) => node.id !== selectedPart) : inner.nodes,
+      wires: inner.wires.filter((wire) => wire.id !== selectedWire &&
+        wire.from !== selectedPart && wire.to !== selectedPart),
+    }));
+    setSelectedPart(null);
+    setSelectedWire(null);
+  };
+  const beginLabel = (part: Node) => {
+    setEditingPart(part.id);
+    setDraftLabel(part.label || "");
+  };
+  const saveLabel = () => {
+    if (!editingPart) return;
+    onEdit(path, (inner) => ({ ...inner, nodes: inner.nodes.map((node) =>
+      node.id === editingPart ? { ...node, label: draftLabel.trim() || undefined } : node) }));
+    setEditingPart(null);
+  };
   return (
-    <div className={styles.inlineCircuit} aria-label={`${circuit.name} expanded circuit`}
-      onPointerDown={(event) => event.stopPropagation()}>
+    <div className={clsx(styles.inlineCircuit, activePath === path && styles.activeInlineCircuit)}
+      data-inline-path={path}
+      aria-label={`${circuit.name} expanded circuit`}
+      tabIndex={0}
+      onPointerDown={(event) => { event.stopPropagation(); onActivate(path); }}
+      onClick={(event) => { event.stopPropagation(); onActivate(path); }}
+      onFocusCapture={() => onActivate(path)}
+      onKeyDown={(event) => {
+        if (activePath !== path || event.target instanceof HTMLElement &&
+          event.target.closest("input,select,textarea")) return;
+        if (event.key === "Delete" || event.key === "Backspace") {
+          event.preventDefault();
+          event.stopPropagation();
+          removeSelected();
+        }
+      }}>
       <div className={styles.inlineCircuitHeader}>
         <strong>{host.label || circuit.name}</strong>
         <button type="button" disabled={!canExpand} onClick={() => onExpandLevel(path, circuit)}>
@@ -343,31 +460,101 @@ function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
         <button type="button" onClick={() => onRefoldLevel(path)}>
           <ActionIcon name="fold" /> {descendants.length ? "Refold one level" : "Refold box"}
         </button>
+        <select aria-label={`Add part inside ${host.label || circuit.name}`} defaultValue=""
+          onChange={(event) => { addInner(event.target.value as GateType); event.target.value = ""; }}>
+          <option value="" disabled>Add part</option>
+          {Object.entries(LABELS).filter(([type]) => type !== "module").map(([type, name]) =>
+            <option key={type} value={type}>{name}</option>)}
+        </select>
+        <button type="button" disabled={layout.inputs.length >= 24}
+          onClick={() => addInner("switch")}>Add input</button>
+        <button type="button" disabled={layout.outputs.length >= 24}
+          onClick={() => addInner("lamp")}>Add output</button>
+        <button type="button" disabled={!selectedPart && !selectedWire} onClick={removeSelected}>Delete selected</button>
+        <button type="button" disabled={!selectedPart}
+          onClick={() => { const part = circuit.nodes.find((node) => node.id === selectedPart);
+            if (part) beginLabel(part); }}>Rename selected</button>
+        {editingPart && [...layout.inputs, ...layout.outputs].some((port) => port.id === editingPart) &&
+          <input aria-label="Edit boundary port label" value={draftLabel} autoFocus
+            onChange={(event) => setDraftLabel(event.target.value)} onBlur={saveLabel}
+            onKeyDown={(event) => { if (event.key === "Enter") event.currentTarget.blur();
+              if (event.key === "Escape") setEditingPart(null); }} />}
       </div>
-      <div className={styles.inlineDiagram} style={{ width: layout.width, height: layout.height }}>
+      <div className={styles.inlineDiagram} style={{ width: layout.width, height: layout.height }}
+        onPointerUp={finishWire} onPointerCancel={() => { wireStart.current = null; }}>
         <svg className={styles.inlineWires} width={layout.width} height={layout.height}
           aria-label={`${circuit.name} internal wires`}>
           {circuit.wires.map((wire) => {
             const from = wirePoint(wire.from, wire.output ?? 0, "output");
             const to = wirePoint(wire.to, wire.input, "input");
-            return from && to ? <path key={wire.id} d={wirePath(from, to)} data-inline-wire={wire.id} /> : null;
+            return from && to ? <path key={wire.id} d={wirePath(from, to)} data-inline-wire={wire.id}
+              className={selectedWire === wire.id ? styles.inlineSelectedWire : undefined}
+              onClick={(event) => { event.stopPropagation(); setSelectedWire(wire.id); setSelectedPart(null); }} /> : null;
           })}
         </svg>
+        {layout.inputs.map((port, index) => {
+          const point = boundaryPoint(index, "input");
+          return <button key={port.id} type="button" className={styles.inlineBoundaryPort}
+            style={{ left: point.x + 24, top: point.y }}
+            aria-label={`Wire from input ${port.label || index + 1}`}
+            onPointerDown={(event) => beginWire(event, port.id, 0)}
+            onClick={() => { setPendingInnerWire({ from: port.id, output: 0 }); setSelectedPart(port.id); }}>
+            {port.label || `IN ${index + 1}`}
+          </button>;
+        })}
+        {layout.outputs.map((port, index) => {
+          const point = boundaryPoint(index, "output");
+          return <button key={port.id} type="button" className={styles.inlineBoundaryPort}
+            style={{ left: point.x - 24, top: point.y }}
+            aria-label={`Wire to output ${port.label || index + 1}`}
+            onClick={() => { connectInner(port.id, 0); setSelectedPart(port.id); }}>
+            {port.label || `OUT ${index + 1}`}
+          </button>;
+        })}
         {layout.parts.map((part) => (
-          <div key={part.id} className={clsx(styles.node, styles.inlinePart, part.child && styles.expandedNode)}
+          <div key={part.id} className={clsx(styles.node, styles.inlinePart, part.child && styles.expandedNode,
+            selectedPart === part.id && styles.inlineSelectedPart)}
             style={{ "--part-accent": partColors[part.type], left: part.x, top: part.y,
               width: nodeWidth(part), height: nodeHeight(part) } as React.CSSProperties}
-            role="group" aria-label={`${part.label || LABELS[part.type]} — ${part.type === "module" ? part.module?.name : LABELS[part.type]} part`}>
+            role="group" aria-label={`${part.label || LABELS[part.type]} — ${part.type === "module" ? part.module?.name : LABELS[part.type]} part`}
+            onPointerDown={(event) => {
+              if (event.target instanceof HTMLElement && event.target.closest("button,input,select")) return;
+              event.stopPropagation();
+              onActivate(path);
+              event.currentTarget.closest<HTMLDivElement>("[data-inline-path]")?.focus();
+              setSelectedPart(part.id);
+              setSelectedWire(null);
+              dragStart.current = { id: part.id, x: event.clientX, y: event.clientY };
+              event.currentTarget.setPointerCapture(event.pointerId);
+            }}
+            onPointerUp={(event) => {
+              if (dragStart.current?.id !== part.id) return;
+              const dx = (event.clientX - dragStart.current.x) / zoom;
+              const dy = (event.clientY - dragStart.current.y) / zoom;
+              dragStart.current = null;
+              if (Math.abs(dx) + Math.abs(dy) < 3) return;
+              onEdit(path, (inner) => ({ ...inner, nodes: inner.nodes.map((node) =>
+                node.id === part.id ? { ...node, x: node.x + dx, y: node.y + dy } : node) }));
+            }}>
             {Array.from({ length: inputCount(part) }, (_, index) => (
               <div key={`input-${index}`} className={styles.portRow} style={portStyle(part, index, "input")}>
-                <span className={styles.input} aria-hidden="true" />
+                <button type="button" className={styles.input}
+                  aria-label={`Wire to ${part.label || LABELS[part.type]} ${inputLabel(part, index)}`}
+                  onClick={() => connectInner(part.id, index)} />
                 {part.type === "module" && <span className={styles.inputPortLabel}>{inputLabel(part, index)}</span>}
               </div>
             ))}
             {!part.child && <div className={clsx(styles.nodeBody, part.type === "module" && styles.moduleBody)}>
               <div className={styles.nodeNameRow}>
-                {part.label && part.label !== (part.type === "module" ? part.module?.name : LABELS[part.type]) &&
-                  <span className={styles.nodeLabel}>{part.label}</span>}
+                {editingPart === part.id ? <input aria-label={`Label for ${part.label || LABELS[part.type]}`}
+                  value={draftLabel} autoFocus onChange={(event) => setDraftLabel(event.target.value)}
+                  onBlur={saveLabel} onKeyDown={(event) => {
+                    if (event.key === "Enter") event.currentTarget.blur();
+                    if (event.key === "Escape") setEditingPart(null);
+                  }} /> : <button type="button" className={styles.editName}
+                    aria-label={`Edit ${part.label || LABELS[part.type]} label`}
+                    onClick={() => beginLabel(part)}>✎</button>}
+                {part.label && <span className={styles.nodeLabel} onDoubleClick={() => beginLabel(part)}>{part.label}</span>}
               </div>
               <span className={styles.nodeSymbol}><GateSymbol type={part.type} circuitName={part.module?.name} /></span>
               <strong className={styles.nodePartName}>{part.type === "module" ? part.module?.name : LABELS[part.type]}</strong>
@@ -390,11 +577,15 @@ function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
             {part.child && part.inner && <InlineCircuit host={part} circuit={part.inner} layout={part.child}
               unfolded={unfolded} snapshot={snapshot.modules[part.id] ?? initialSnapshot()}
               onToggle={onToggle} onExpandLevel={onExpandLevel} onRefoldLevel={onRefoldLevel}
-              onEnter={onEnter} path={part.path} />}
+              onEnter={onEnter} onEdit={onEdit} onActivate={onActivate} activePath={activePath}
+              zoom={zoom} path={part.path} />}
             {Array.from({ length: outputCount(part) }, (_, index) => (
               <div key={`output-${index}`} className={styles.portRow} style={portStyle(part, index, "output")}>
                 {part.type === "module" && <span className={styles.outputPortLabel}>{outputLabel(part, index)}</span>}
-                <span className={styles.output} aria-hidden="true" />
+                <button type="button" className={styles.output}
+                  aria-label={`Wire from ${part.label || LABELS[part.type]} ${outputLabel(part, index)}`}
+                  onPointerDown={(event) => beginWire(event, part.id, index)}
+                  onClick={() => setPendingInnerWire({ from: part.id, output: index })} />
               </div>
             ))}
           </div>
@@ -431,6 +622,7 @@ export function LogicBuilder() {
   const [tidyWiring, setTidyWiring] = useState(true);
   const [busWiring, setBusWiring] = useState(true);
   const [selected, setSelected] = useState<string[]>([]);
+  const [activeInlinePath, setActiveInlinePath] = useState<string | null>(null);
   const [busSource, setBusSource] = useState("");
   const [editingLabel, setEditingLabel] = useState<{ id: string; value: string } | null>(null);
   const [search, setSearch] = useState("");
@@ -484,6 +676,11 @@ export function LogicBuilder() {
       ...current,
       circuit: typeof change === "function" ? change(current.circuit) : change,
     }));
+  };
+  const updateInline = (path: string, edit: (inner: Circuit) => Circuit) => {
+    setCircuit((current) => editInlineCircuit(current, path, edit));
+    setSelected([]);
+    setMessage("Expanded circuit updated.");
   };
   const setSaved = (
     change:
@@ -1097,7 +1294,20 @@ export function LogicBuilder() {
     }
     enterCircuit(next, source?.label || LABELS[gate]);
   };
-  const addNode = (type: GateType, position?: { x: number; y: number }) => {
+  const addNode = (type: GateType, position?: { x: number; y: number }, inlineTarget?: string | null) => {
+    const inlinePath = inlineTarget === undefined ? activeInlinePath : inlineTarget;
+    if (inlinePath) {
+      const id = crypto.randomUUID();
+      updateInline(inlinePath, (inner) => {
+        if (inner.nodes.length >= 300 || type === "switch" && moduleInputs(inner).length >= 24 ||
+          type === "lamp" && moduleOutputs(inner).length >= 24) return inner;
+        return { ...inner, nodes: [...inner.nodes, {
+          id, type, x: Math.max(100, ...inner.nodes.map((node) => node.x)) + 160,
+          y: 80 + (inner.nodes.length % 5) * 105, value: false,
+        }] };
+      });
+      return;
+    }
     const index = circuit.nodes.length;
     const next: Node = {
       id: crypto.randomUUID(),
@@ -1111,13 +1321,22 @@ export function LogicBuilder() {
     setSelected([next.id]);
     setPending(null);
   };
-  const addModule = (source: Circuit, position?: { x: number; y: number }) => {
+  const addModule = (source: Circuit, position?: { x: number; y: number }, inlineTarget?: string | null) => {
     if (
       !moduleOutputs(source).length ||
       moduleInputs(source).length > 24 ||
       moduleOutputs(source).length > 24
     ) {
       setMessage("This circuit needs 1–24 outputs and at most 24 inputs to become a black box.");
+      return;
+    }
+    const inlinePath = inlineTarget === undefined ? activeInlinePath : inlineTarget;
+    if (inlinePath) {
+      updateInline(inlinePath, (inner) => inner.nodes.length >= 300 ? inner : ({ ...inner, nodes: [...inner.nodes, {
+        id: crypto.randomUUID(), type: "module", module: clone(source),
+        x: Math.max(100, ...inner.nodes.map((node) => node.x)) + 240,
+        y: 80 + (inner.nodes.length % 5) * 105,
+      }] }));
       return;
     }
     const index = circuit.nodes.length;
@@ -1133,7 +1352,25 @@ export function LogicBuilder() {
     setSelected([next.id]);
     setMessage(`${source.name} added as a black box.`);
   };
-  const insertCircuit = (source: Circuit, position: { x: number; y: number }) => {
+  const insertCircuit = (source: Circuit, position: { x: number; y: number }, inlinePath?: string | null) => {
+    if (inlinePath) {
+      updateInline(inlinePath, (inner) => {
+        if (inner.nodes.length + source.nodes.length > 300 ||
+          moduleInputs(inner).length + moduleInputs(source).length > 24 ||
+          moduleOutputs(inner).length + moduleOutputs(source).length > 24) return inner;
+        const ids = new Map(source.nodes.map((node) => [node.id, crypto.randomUUID()]));
+        const left = Math.max(100, ...inner.nodes.map((node) => node.x)) + 180;
+        const minX = Math.min(...source.nodes.map((node) => node.x));
+        const minY = Math.min(...source.nodes.map((node) => node.y));
+        return { ...inner,
+          nodes: [...inner.nodes, ...source.nodes.map((node) => ({ ...node,
+            id: ids.get(node.id)!, x: left + node.x - minX, y: 80 + node.y - minY }))],
+          wires: [...inner.wires, ...source.wires.map((wire) => ({ ...wire,
+            id: crypto.randomUUID(), from: ids.get(wire.from)!, to: ids.get(wire.to)! }))],
+        };
+      });
+      return;
+    }
     const minX = Math.min(...source.nodes.map((node) => node.x));
     const minY = Math.min(...source.nodes.map((node) => node.y));
     const width = Math.max(...source.nodes.map((node) => node.x)) - minX + NODE_WIDTH;
@@ -2009,11 +2246,14 @@ export function LogicBuilder() {
                 }}
                 onDrop={(event) => {
                   event.preventDefault();
+                  const inlinePath = (event.target as Element).closest("[data-inline-path]")
+                    ?.getAttribute("data-inline-path") ?? null;
                   const blueprint = event.dataTransfer.getData("application/x-logic-circuit");
                   if (blueprint && (BLUEPRINTS[blueprint] || PRESETS[blueprint])) {
                     insertCircuit(
                       BLUEPRINTS[blueprint] || PRESETS[blueprint],
                       boardPoint(event.clientX, event.clientY),
+                      inlinePath,
                     );
                     return;
                   }
@@ -2026,13 +2266,13 @@ export function LogicBuilder() {
                     addModule(moduleSource, {
                       x: point.x - MODULE_WIDTH / 2,
                       y: point.y - NODE_HEIGHT / 2,
-                    });
+                    }, inlinePath);
                     return;
                   }
                   const type = event.dataTransfer.getData("application/x-logic-gate") as GateType;
                   if (!palette.includes(type)) return;
                   const point = boardPoint(event.clientX, event.clientY);
-                  addNode(type, { x: point.x - NODE_WIDTH / 2, y: point.y - NODE_HEIGHT / 2 });
+                  addNode(type, { x: point.x - NODE_WIDTH / 2, y: point.y - NODE_HEIGHT / 2 }, inlinePath);
                 }}
                 onContextMenu={(event) => {
                   event.preventDefault();
@@ -2044,6 +2284,7 @@ export function LogicBuilder() {
                     return;
                   }
                   if (pending) setPending(null);
+                  setActiveInlinePath(null);
                   setMenu(null);
                 }}
               >
@@ -2552,7 +2793,9 @@ export function LogicBuilder() {
                           layout={expandedDetails.get(node.id)!.layout} unfolded={unfolded}
                           snapshot={snapshot.modules[node.id] ?? initialSnapshot()}
                           onToggle={toggleUnfolded} onExpandLevel={expandOneLevel}
-                          onRefoldLevel={refoldOneLevel} onEnter={enterModulePath} path={node.id} />
+                          onRefoldLevel={refoldOneLevel} onEnter={enterModulePath}
+                          onEdit={updateInline} onActivate={setActiveInlinePath}
+                          activePath={activeInlinePath} zoom={zoom} path={node.id} />
                       )}
                       {Array.from({ length: outputCount(node) }, (_, output) => (
                         <div

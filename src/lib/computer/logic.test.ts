@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   BLUEPRINT_FAMILIES,
   BLUEPRINTS,
+  blueprintGate,
   type Circuit,
   GATE_NAMES,
   initialSnapshot,
@@ -251,5 +252,21 @@ describe("logic circuit engine", () => {
     expect(count("NAND", "CMOS transistors", "nmos")).toBe(2);
     expect(count("NOR", "CMOS transistors", "pmos")).toBe(2);
     expect(count("NOR", "CMOS transistors", "nmos")).toBe(2);
+  });
+  it("keeps circuit boundaries separate from functional gate parts", () => {
+    const circuit = BLUEPRINTS["NAND from NOR gates"];
+    expect(blueprintGate(circuit)).toBe("nand");
+    expect(circuit.groups).toHaveLength(1);
+    expect(circuit.groups![0].label).toBe(circuit.name);
+    expect(circuit.groups![0].nodeIds).toHaveLength(4);
+    expect(
+      circuit.groups![0].nodeIds.every(
+        (id) => circuit.nodes.find((node) => node.id === id)?.type === "nor",
+      ),
+    ).toBe(true);
+    expect(validateCircuit(circuit)?.groups).toEqual(circuit.groups);
+    const invalid = structuredClone(circuit);
+    invalid.groups![0].nodeIds.push("missing");
+    expect(validateCircuit(invalid)).toBeNull();
   });
 });

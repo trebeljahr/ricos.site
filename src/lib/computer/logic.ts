@@ -43,7 +43,8 @@ export type Wire = {
   output?: number;
   color?: WireColor;
 };
-export type Circuit = { name: string; nodes: Node[]; wires: Wire[] };
+export type CircuitGroup = { id: string; label: string; nodeIds: string[] };
+export type Circuit = { name: string; nodes: Node[]; wires: Wire[]; groups?: CircuitGroup[] };
 export type Snapshot = {
   values: Record<string, boolean>;
   memory: Record<string, boolean>;
@@ -579,7 +580,27 @@ export function gateBlueprint(gate: LogicGate, family: BlueprintFamily): Circuit
     ),
   );
   wires.push(wire(output, "out"));
-  return { name: `${LABELS[gate]} from ${BLUEPRINT_FAMILIES[family].suffix}`, nodes, wires };
+  const name = `${LABELS[gate]} from ${BLUEPRINT_FAMILIES[family].suffix}`;
+  return {
+    name,
+    nodes,
+    wires,
+    groups: [
+      {
+        id: "construction",
+        label: name,
+        nodeIds: nodes
+          .filter((item) => !["switch", "lamp"].includes(item.type))
+          .map((item) => item.id),
+      },
+    ],
+  };
+}
+
+export function blueprintGate(circuit: Circuit): LogicGate | null {
+  const [name, separator] = circuit.name.split(" ");
+  const gate = name.toLowerCase() as LogicGate;
+  return separator === "from" && GATE_NAMES.includes(gate) ? gate : null;
 }
 
 export const BLUEPRINTS: Record<string, Circuit> = Object.fromEntries(
@@ -618,6 +639,24 @@ export function validateCircuit(value: unknown, depth = 0): Circuit | null {
     return null;
   const ids = new Set(item.nodes.map((n) => n.id));
   if (ids.size !== item.nodes.length) return null;
+  if (
+    item.groups !== undefined &&
+    (!Array.isArray(item.groups) ||
+      item.groups.length > 100 ||
+      !item.groups.every(
+        (group) =>
+          group &&
+          typeof group.id === "string" &&
+          group.id.length < 100 &&
+          typeof group.label === "string" &&
+          group.label.length <= 80 &&
+          Array.isArray(group.nodeIds) &&
+          group.nodeIds.length <= 300 &&
+          group.nodeIds.every((id) => typeof id === "string" && ids.has(id)),
+      ) ||
+      new Set(item.groups.map((group) => group.id)).size !== item.groups.length)
+  )
+    return null;
   const validatedModules = new Map<string, Circuit>();
   for (const n of item.nodes) {
     if (n.type !== "module") continue;
@@ -675,6 +714,11 @@ export function validateCircuit(value: unknown, depth = 0): Circuit | null {
         typeof w.color === "string" && Object.hasOwn(WIRE_COLORS, w.color)
           ? (w.color as WireColor)
           : undefined,
+    })),
+    groups: item.groups?.map((group) => ({
+      id: group.id,
+      label: group.label,
+      nodeIds: [...group.nodeIds],
     })),
   };
 }

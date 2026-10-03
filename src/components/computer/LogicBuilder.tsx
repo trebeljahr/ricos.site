@@ -5,8 +5,11 @@ import {
   BLUEPRINT_RECIPES,
   BLUEPRINTS,
   type BlueprintFamily,
+  blueprintGate,
   type Circuit,
+  GATE_NAMES,
   type GateType,
+  gateBlueprint,
   initialSnapshot,
   inputCount,
   inputLabel,
@@ -88,6 +91,13 @@ const palette: GateType[] = [
   "dff",
 ];
 const clone = (circuit: Circuit): Circuit => JSON.parse(JSON.stringify(circuit));
+type ViewLevel = { parent: Circuit; via: string; moduleId?: string };
+const withUpdatedModule = (parent: Circuit, moduleId: string, inner: Circuit): Circuit => ({
+  ...parent,
+  nodes: parent.nodes.map((item) =>
+    item.id === moduleId ? { ...item, module: clone(inner) } : item,
+  ),
+});
 const nodeHeight = (node: Node) =>
   node.type === "module"
     ? Math.max(NODE_HEIGHT, 30 + Math.max(inputCount(node), outputCount(node)) * 25)
@@ -105,6 +115,7 @@ const outY = (node: Node, output: number) =>
 
 export function LogicBuilder() {
   const [circuit, setCircuit] = useState<Circuit>(() => clone(PRESETS["Half adder"]));
+  const [viewPath, setViewPath] = useState<ViewLevel[]>([]);
   const [snapshot, setSnapshot] = useState<Snapshot>(initialSnapshot);
   const [clockHigh, setClockHigh] = useState(false);
   const [running, setRunning] = useState(false);
@@ -178,11 +189,16 @@ export function LogicBuilder() {
   useEffect(() => {
     if (!ready) return;
     try {
-      localStorage.setItem(STORAGE, JSON.stringify({ current: circuit, saved }));
+      const root = viewPath.reduceRight(
+        (inner, level) =>
+          level.moduleId ? withUpdatedModule(level.parent, level.moduleId, inner) : level.parent,
+        circuit,
+      );
+      localStorage.setItem(STORAGE, JSON.stringify({ current: root, saved }));
     } catch {
       setMessage("Browser storage is full. Export this circuit to keep it.");
     }
-  }, [circuit, saved, ready]);
+  }, [circuit, saved, ready, viewPath]);
 
   const advance = useCallback((pulseIds: Record<string, boolean> = {}, forcedClock?: boolean) => {
     const high = forcedClock ?? !clockRef.current;
@@ -215,6 +231,7 @@ export function LogicBuilder() {
   };
   const load = (next: Circuit) => {
     const copy = clone(next);
+    setViewPath([]);
     circuitRef.current = copy;
     setCircuit(copy);
     setPending(null);
@@ -224,6 +241,62 @@ export function LogicBuilder() {
     setSelected([]);
     resetRuntime();
     setMessage(`${copy.name} loaded.`);
+  };
+  const enterCircuit = (next: Circuit, via: string, moduleId?: string) => {
+    setViewPath((current) => [...current, { parent: clone(circuit), via, moduleId }]);
+    const copy = clone(next);
+    if (moduleId) {
+      moduleInputs(copy).forEach((input, port) => {
+        const incoming = circuit.wires.find((wire) => wire.to === moduleId && wire.input === port);
+        input.value = incoming
+          ? Boolean(
+              snapshot.outputs[incoming.from]?.[incoming.output ?? 0] ??
+                snapshot.values[incoming.from],
+            )
+          : false;
+      });
+    }
+    circuitRef.current = copy;
+    setCircuit(copy);
+    setSelected([]);
+    setSelectedWire(null);
+    setPending(null);
+    resetRuntime();
+    setMessage(`Inside ${via}. Use Back to return.`);
+  };
+  const goBack = () => {
+    const level = viewPath.at(-1);
+    if (!level) return;
+    const parent = level.moduleId
+      ? withUpdatedModule(level.parent, level.moduleId, circuit)
+      : level.parent;
+    setViewPath((current) => current.slice(0, -1));
+    circuitRef.current = parent;
+    setCircuit(parent);
+    setSelected(level.moduleId ? [level.moduleId] : []);
+    setSelectedWire(null);
+    setPending(null);
+    resetRuntime();
+    setMessage(`Back to ${parent.name}.`);
+  };
+  const viewGate = (gate: LogicGate, family: BlueprintFamily, source?: Node) => {
+    const next = gateBlueprint(gate, family);
+    if (source) {
+      for (const [port, id] of ["a", "b"].entries()) {
+        const inputWire = circuit.wires.find(
+          (wire) => wire.to === source.id && wire.input === port,
+        );
+        const inputNode = next.nodes.find((item) => item.id === id);
+        if (inputNode)
+          inputNode.value = inputWire
+            ? Boolean(
+                snapshot.outputs[inputWire.from]?.[inputWire.output ?? 0] ??
+                  snapshot.values[inputWire.from],
+              )
+            : false;
+      }
+    }
+    enterCircuit(next, source?.label || LABELS[gate]);
   };
   const addNode = (type: GateType, position?: { x: number; y: number }) => {
     const index = circuit.nodes.length;
@@ -299,6 +372,14 @@ export function LogicBuilder() {
           to: ids.get(wire.to)!,
         })),
       ],
+      groups: [
+        ...(current.groups ?? []),
+        ...(source.groups ?? []).map((group) => ({
+          ...group,
+          id: crypto.randomUUID(),
+          nodeIds: group.nodeIds.map((id) => ids.get(id)!),
+        })),
+      ],
     }));
     setSelected([...ids.values()]);
     setMessage(`${source.name} added. Drag the selected circuit to move it.`);
@@ -360,6 +441,12 @@ export function LogicBuilder() {
       ...current,
       nodes: current.nodes.filter((node) => !removed.has(node.id)),
       wires: current.wires.filter((wire) => !removed.has(wire.from) && !removed.has(wire.to)),
+      groups: current.groups
+        ?.map((group) => ({
+          ...group,
+          nodeIds: group.nodeIds.filter((id) => !removed.has(id)),
+        }))
+        .filter((group) => group.nodeIds.length),
     }));
     setSelected([]);
     setMenu(null);
@@ -385,6 +472,12 @@ export function LogicBuilder() {
           ...current,
           nodes: current.nodes.filter((node) => !removed.has(node.id)),
           wires: current.wires.filter((wire) => !removed.has(wire.from) && !removed.has(wire.to)),
+          groups: current.groups
+            ?.map((group) => ({
+              ...group,
+              nodeIds: group.nodeIds.filter((id) => !removed.has(id)),
+            }))
+            .filter((group) => group.nodeIds.length),
         }));
         setSelected([]);
         setMenu(null);
@@ -622,6 +715,17 @@ export function LogicBuilder() {
           </span>
         </div>
       </div>
+      {viewPath.length > 0 && (
+        <nav className={styles.viewPath} aria-label="Circuit depth">
+          <button type="button" onClick={goBack}>
+            ← Back
+          </button>
+          <span>
+            {viewPath.map((level) => level.parent.name).join(" / ")} / {circuit.name}
+          </span>
+          <small>Level {viewPath.length + 1}</small>
+        </nav>
+      )}
       <div className={styles.layout}>
         <aside className={styles.sidebar} aria-label="Gate palette">
           <h2>Parts</h2>
@@ -728,6 +832,24 @@ export function LogicBuilder() {
                 setMenu(null);
               }}
             >
+              {circuit.groups?.map((group) => {
+                const parts = circuit.nodes.filter((item) => group.nodeIds.includes(item.id));
+                if (!parts.length) return null;
+                const left = Math.max(8, Math.min(...parts.map((item) => item.x)) - 20);
+                const top = Math.max(8, Math.min(...parts.map((item) => item.y)) - 28);
+                const right = Math.max(...parts.map((item) => item.x + NODE_WIDTH)) + 20;
+                const bottom = Math.max(...parts.map((item) => item.y + nodeHeight(item))) + 18;
+                return (
+                  <div
+                    key={group.id}
+                    className={styles.circuitGroup}
+                    style={{ left, top, width: right - left, height: bottom - top }}
+                    aria-label={`${group.label} circuit boundary`}
+                  >
+                    <span>{group.label}</span>
+                  </div>
+                );
+              })}
               <svg
                 className={styles.wires}
                 viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
@@ -882,6 +1004,11 @@ export function LogicBuilder() {
                     setMenu({ x: event.clientX, y: event.clientY, kind: "node", id: node.id });
                   }}
                   onClick={(event) => event.stopPropagation()}
+                  onDoubleClick={(event) => {
+                    event.stopPropagation();
+                    if (node.type === "module" && node.module)
+                      enterCircuit(node.module, node.label || node.module.name, node.id);
+                  }}
                 >
                   {Array.from({ length: inputCount(node) }, (_, input) => (
                     <button
@@ -1255,6 +1382,18 @@ export function LogicBuilder() {
               </label>
               {selectedNode.type === "module" && (
                 <div className={styles.modulePorts}>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      enterCircuit(
+                        selectedNode.module!,
+                        selectedNode.label || selectedNode.module!.name,
+                        selectedNode.id,
+                      )
+                    }
+                  >
+                    Open internal wiring ↘
+                  </button>
                   <span>Inputs</span>
                   {moduleInputs(selectedNode.module!).map((port, index) => (
                     <small key={port.id}>
@@ -1268,6 +1407,28 @@ export function LogicBuilder() {
                       {snapshot.outputs[selectedNode.id]?.[index] ? 1 : 0}
                     </small>
                   ))}
+                </div>
+              )}
+              {(GATE_NAMES.includes(selectedNode.type as LogicGate) ||
+                (selectedNode.type === "module" &&
+                  blueprintGate(selectedNode.module!) !== null)) && (
+                <div className={styles.resolutionChoices}>
+                  <span>Explore implementation</span>
+                  {(Object.keys(BLUEPRINT_FAMILIES) as BlueprintFamily[]).map((family) => {
+                    const gate =
+                      selectedNode.type === "module"
+                        ? blueprintGate(selectedNode.module!)!
+                        : (selectedNode.type as LogicGate);
+                    return (
+                      <button
+                        key={family}
+                        type="button"
+                        onClick={() => viewGate(gate, family, selectedNode)}
+                      >
+                        {BLUEPRINT_FAMILIES[family].label} ↘
+                      </button>
+                    );
+                  })}
                 </div>
               )}
               <button type="button" onClick={() => removeNodes()}>

@@ -1727,6 +1727,12 @@ export function LogicBuilder() {
               <option value={10}>10 Hz</option>
             </select>
           </label>
+          <div className={styles.metrics} aria-label="Clock status">
+            <span>Cycle {Math.floor(tick / 2)}</span>
+            <span className={clsx(styles.clock, clockHigh && styles.on)}>
+              CLK {clockHigh ? "1" : "0"}
+            </span>
+          </div>
           </div>}
           <div className={styles.toolGroup} role="group" aria-label="Circuit view">
             <span className={styles.toolGroupLabel}>View</span>
@@ -1783,12 +1789,6 @@ export function LogicBuilder() {
           </button>
           </div>
         </div>
-        {hasClock && <div className={styles.metrics}>
-          <span>Cycle {Math.floor(tick / 2)}</span>
-          <span className={clsx(styles.clock, clockHigh && styles.on)}>
-            CLK {clockHigh ? "1" : "0"}
-          </span>
-        </div>}
       </div>
       {viewPath.length > 0 && (
         <nav className={styles.viewPath} aria-label="Circuit depth">

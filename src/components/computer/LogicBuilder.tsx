@@ -1563,6 +1563,7 @@ export function LogicBuilder() {
                         styles.node,
                         selected.includes(node.id) && styles.selected,
                         snapshot.values[node.id] && styles.active,
+                        node.type === "lamp" && snapshot.values[node.id] && styles.lampLit,
                       )}
                       style={
                         {

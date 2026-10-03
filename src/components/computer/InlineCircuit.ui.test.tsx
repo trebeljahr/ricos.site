@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, createEvent, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { initialSnapshot, moduleInputs, moduleOutputs, step, validateCircuit } from "../../lib/computer/logic";
+import { initialSnapshot, moduleInputs, moduleOutputs, PRESETS, step, validateCircuit } from "../../lib/computer/logic";
 import { LogicBuilder } from "./LogicBuilder";
 
 beforeEach(() => {
@@ -18,6 +18,139 @@ beforeEach(() => {
 afterEach(() => { cleanup(); localStorage.clear(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe("inline circuit unfolding", () => {
+  const setupViewport = () => {
+    const frames: FrameRequestCallback[] = [];
+    vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
+      frames.push(callback);
+      return frames.length;
+    });
+    render(<LogicBuilder />);
+    act(() => { frames.splice(0).forEach((frame) => frame(0)); });
+    const board = screen.getByRole("application", { name: "Circuit canvas" });
+    const viewport = board.parentElement!.parentElement!;
+    Object.defineProperties(viewport, {
+      clientWidth: { configurable: true, value: 900 },
+      clientHeight: { configurable: true, value: 520 },
+    });
+    vi.spyOn(viewport, "getBoundingClientRect").mockReturnValue({
+      left: 0, top: 0, width: 900, height: 520,
+    } as DOMRect);
+    const camera = () => {
+      const [left, top, width] = board.querySelector("svg[viewBox]")!
+        .getAttribute("viewBox")!.split(" ").map(Number);
+      const scale = Number(board.style.transform.slice(6, -1));
+      const zoom = parseFloat(board.style.width) / width * scale;
+      return { zoom, left: viewport.scrollLeft + left * zoom, top: viewport.scrollTop + top * zoom };
+    };
+    const expectCamera = (expected: ReturnType<typeof camera>) => {
+      const actual = camera();
+      expect(actual.zoom).toBeCloseTo(expected.zoom, 8);
+      expect(actual.left).toBeCloseTo(expected.left, 6);
+      expect(actual.top).toBeCloseTo(expected.top, 6);
+    };
+    return { board, viewport, camera, expectCamera };
+  };
+
+  it("remembers both explored views and restores wire paths through fold, undo, and redo", () => {
+    const { board, viewport, camera, expectCamera } = setupViewport();
+    fireEvent.click(screen.getByRole("button", { name: "Zoom in" }));
+    viewport.scrollLeft += 210;
+    viewport.scrollTop += 85;
+    const folded = camera();
+    const wirePaths = () => [...board.querySelectorAll(":scope > svg path[d]")]
+      .map((wire) => wire.getAttribute("d"));
+    const foldedWires = wirePaths();
+    const stored = localStorage.getItem("ricos-computer-circuits-v1");
+    fireEvent.click(screen.getByRole("button", { name: "Unfold SUM in place" }));
+    expect(camera().zoom).toBeLessThan(folded.zoom);
+    const expanded = screen.getByLabelText(/XOR.*expanded circuit/).parentElement!;
+    const width = parseFloat(board.querySelector("svg[viewBox]")!.getAttribute("viewBox")!.split(" ")[2]);
+    const height = parseFloat(board.querySelector("svg[viewBox]")!.getAttribute("viewBox")!.split(" ")[3]);
+    const left = parseFloat(expanded.style.left) / 100 * width * camera().zoom - viewport.scrollLeft;
+    const top = parseFloat(expanded.style.top) / 100 * height * camera().zoom - viewport.scrollTop;
+    expect(left).toBeGreaterThanOrEqual(39.99);
+    expect(top).toBeGreaterThanOrEqual(39.99);
+    expect(left + parseFloat(expanded.style.width) / 100 * width * camera().zoom).toBeLessThanOrEqual(860.01);
+    expect(top + parseFloat(expanded.style.height) / 100 * height * camera().zoom).toBeLessThanOrEqual(480.01);
+    expect(wirePaths()).not.toEqual(foldedWires);
+    fireEvent.click(screen.getByRole("button", { name: "Zoom in" }));
+    viewport.scrollLeft += 125;
+    viewport.scrollTop -= 35;
+    const explored = camera();
+    const expandedWires = wirePaths();
+    fireEvent.click(screen.getByRole("button", { name: "Refold box" }));
+    expectCamera(folded);
+    expect(wirePaths()).toEqual(foldedWires);
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    expectCamera(explored);
+    expect(wirePaths()).toEqual(expandedWires);
+    fireEvent.click(screen.getByRole("button", { name: "Redo" }));
+    expectCamera(folded);
+    fireEvent.click(screen.getByRole("button", { name: "Unfold SUM in place" }));
+    expectCamera(explored);
+    expect(localStorage.getItem("ricos-computer-circuits-v1")).toBe(stored);
+  });
+
+  it("restores nested exploration level by level, including camera changes after editing", () => {
+    const { viewport, camera, expectCamera } = setupViewport();
+    fireEvent.click(within(screen.getByLabelText("Gate palette")).getByRole("button", { name: "Half adder" }));
+    fireEvent.click(screen.getByRole("button", { name: "Unfold CIRCUIT in place" }));
+    const outer = screen.getByLabelText("Half adder expanded circuit");
+    viewport.scrollLeft += 75;
+    const overview = camera();
+    fireEvent.click(within(outer).getByRole("button", { name: "Unfold SUM in place" }));
+    viewport.scrollTop += 90;
+    fireEvent.click(screen.getByRole("button", { name: "Zoom in" }));
+    const detail = camera();
+    // Runtime input changes create a new circuit object without losing view history.
+    fireEvent.click(within(screen.getByRole("group", { name: "A — SWITCH part" }))
+      .getByRole("button", { name: "OFF" }));
+    fireEvent.click(within(outer).getByRole("button", { name: "Refold one level" }));
+    expectCamera(overview);
+    fireEvent.click(within(outer).getByRole("button", { name: "Unfold SUM in place" }));
+    expectCamera(detail);
+  });
+
+  it("restores the prior camera after toolbar unfold and refold", () => {
+    const { viewport, camera, expectCamera } = setupViewport();
+    viewport.scrollLeft += 320;
+    viewport.scrollTop += 110;
+    const before = camera();
+    fireEvent.click(screen.getByText("View", { selector: "summary" }));
+    fireEvent.click(screen.getByRole("button", { name: "Unfold one level" }));
+    const expanded = camera();
+    expect(expanded.zoom).toBeLessThan(before.zoom);
+    const viewMenu = screen.getByText("View", { selector: "summary" }).parentElement!;
+    fireEvent.click(within(viewMenu).getByRole("button", { name: "Refold one level" }));
+    expectCamera(before);
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    expectCamera(expanded);
+  });
+
+  it("keeps a distant box visible when folding also changes the canvas origin", () => {
+    localStorage.setItem("ricos-computer-circuits-v1", JSON.stringify({ current: {
+      ...PRESETS["Half adder"],
+      nodes: PRESETS["Half adder"].nodes.map((node) => node.type === "xor"
+        ? { ...node, x: 20000, y: 15000 } : node),
+    } }));
+    const { board, viewport, camera, expectCamera } = setupViewport();
+    viewport.scrollLeft += 19800;
+    viewport.scrollTop += 14800;
+    const before = camera();
+    fireEvent.click(screen.getByRole("button", { name: "Unfold SUM in place" }));
+    const expanded = screen.getByLabelText(/XOR.*expanded circuit/).parentElement!;
+    const [, , width, height] = board.querySelector("svg[viewBox]")!
+      .getAttribute("viewBox")!.split(" ").map(Number);
+    const left = parseFloat(expanded.style.left) / 100 * width * camera().zoom - viewport.scrollLeft;
+    const top = parseFloat(expanded.style.top) / 100 * height * camera().zoom - viewport.scrollTop;
+    expect(left).toBeGreaterThanOrEqual(39.99);
+    expect(left).toBeLessThan(900);
+    expect(top).toBeGreaterThanOrEqual(39.99);
+    expect(top).toBeLessThan(520);
+    fireEvent.click(screen.getByRole("button", { name: "Refold box" }));
+    expectCamera(before);
+  });
+
   it("keeps the board and records fold and unfold in history", () => {
     render(<LogicBuilder />);
     const board = screen.getByRole("application", { name: "Circuit canvas" });

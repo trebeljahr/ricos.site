@@ -36,6 +36,8 @@ import {
 } from "../../lib/computer/logic";
 import { collectUnfoldableIds, storageCircuit } from "../../lib/computer/circuitHierarchy";
 import { layoutCircuit } from "../../lib/computer/circuitLayout";
+import { spaceExpandedNodes } from "../../lib/computer/expandedLayout";
+import { type FoldBox, type ViewportState, foldFocus, followFold } from "../../lib/computer/foldViewport";
 import { nodeWidth, nodeHeight, type DisplayNode as GeometryNode } from "../../lib/computer/nodeGeometry";
 import { MEMORY_HINTS } from "../../lib/computer/memoryCircuits";
 import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
@@ -173,8 +175,7 @@ const palette: GateType[] = [
   "dlatch",
 ];
 const clone = (circuit: Circuit): Circuit => JSON.parse(JSON.stringify(circuit));
-type ViewportState = { zoom: number; left: number; top: number };
-type ViewLevel = { parent: Circuit; snapshot: Snapshot; via: string; moduleId?: string; unfolded: string[]; viewport?: ViewportState; unfoldedViewport?: ViewportState };
+type ViewLevel = { parent: Circuit; snapshot: Snapshot; via: string; moduleId?: string; unfolded: string[]; viewport?: ViewportState };
 type BuilderDocument = { circuit: Circuit; saved: Record<string, Circuit>; viewPath: ViewLevel[]; unfolded: string[] };
 const withUpdatedModule = (parent: Circuit, moduleId: string, inner: Circuit): Circuit => ({
   ...parent,
@@ -337,23 +338,12 @@ const layoutInlineCircuit = (
       width: Math.max(nodeWidth(node), child ? child.width + INLINE_X * 2 : 0),
       height: Math.max(nodeHeight(node), child ? child.height + INLINE_Y + 12 : 148) };
   });
-  const parts: InlinePart[] = [];
-  for (const item of [...sizes].sort((a, b) => a.node.y - b.node.y || a.node.x - b.node.x)) {
-    let x = item.node.x - minX + 72;
-    let y = item.node.y - minY + 52;
-    // Push overlapping siblings clear of the complete expanded bounds, including
-    // secondary collisions caused by an earlier displacement.
-    let collision: InlinePart | undefined;
-    while ((collision = parts.find((other) => x < other.x + nodeWidth(other) + 28 &&
-      x + item.width + 28 > other.x && y < other.y + nodeHeight(other) + 28 &&
-      y + item.height + 28 > other.y))) {
-      const original = visible.find((node) => node.id === collision!.id)!;
-      if (item.node.x >= original.x + nodeWidth(original)) x = collision.x + nodeWidth(collision) + 28;
-      else y = collision.y + nodeHeight(collision) + 28;
-    }
-    parts.push({ ...item.node, x, y, path: item.path, inner: item.inner, child: item.child,
-      expandable: isUnfoldable(item.node), expanded: Boolean(item.child), displayWidth: item.width, displayHeight: item.height });
-  }
+  const parts = spaceExpandedNodes<InlinePart>(sizes.map((item) => ({
+    ...item.node, x: item.node.x - minX + 72, y: item.node.y - minY + 52,
+    path: item.path, inner: item.inner, child: item.child,
+    expandable: isUnfoldable(item.node), expanded: Boolean(item.child),
+    displayWidth: item.width, displayHeight: item.height,
+  })), visible);
   return {
     width: Math.max(560, ...parts.map((part) => part.x + nodeWidth(part) + 72)),
     height: Math.max(200, Math.max(inputs.length, outputs.length) * 60 + 140,
@@ -797,7 +787,7 @@ export function LogicBuilder() {
   const [circuitFamily, setCircuitFamily] = useState<BlueprintFamily>("transistor");
   const [showVdd, setShowVdd] = useState(true);
   const [showGround, setShowGround] = useState(true);
-  const [unfoldedRestore, setUnfoldedRestore] = useState<ViewportState | undefined>();
+  const foldTarget = useRef<string | null>(null);
   const setUnfolded = (change: ReadonlySet<string> | ((current: ReadonlySet<string>) => ReadonlySet<string>)) =>
     history.update((current) => ({ ...current, unfolded: [...(typeof change === "function"
       ? change(new Set(current.unfolded ?? [])) : change)] }));
@@ -906,21 +896,24 @@ export function LogicBuilder() {
     for (const { inner, layout } of expandedDetails.values()) addExpanded(inner, layout);
     return counts;
   }, [circuit.nodes.length, circuit.wires.length, expandedDetails]);
-  const displayNodes = useMemo<DisplayNode[]>(() => circuit.nodes.map((node) => {
-    let x = node.x;
-    let y = node.y;
-    for (const source of circuit.nodes) {
-      if (source.id === node.id) continue;
-      const detail = expandedDetails.get(source.id);
-      if (!detail) continue;
-      if (node.x >= source.x + nodeWidth(source) && node.y + nodeHeight(node) > source.y && node.y < source.y + detail.height)
-        x += detail.width - nodeWidth(source) + 36;
-      else if (node.y >= source.y + nodeHeight(source) && node.x + nodeWidth(node) > source.x && node.x < source.x + detail.width)
-        y += detail.height - nodeHeight(source) + 36;
-    }
-    const detail = expandedDetails.get(node.id);
-    return { ...node, x, y, expanded: Boolean(detail), displayWidth: detail?.width, displayHeight: detail?.height };
-  }), [circuit.nodes, expandedDetails]);
+  const displayNodes = useMemo<DisplayNode[]>(() => {
+    const nodes = circuit.nodes.map((node) => {
+      const detail = expandedDetails.get(node.id);
+      return { ...node, expanded: Boolean(detail), displayWidth: detail?.width, displayHeight: detail?.height };
+    });
+    return expandedDetails.size ? spaceExpandedNodes(nodes, circuit.nodes, 36) : nodes;
+  }, [circuit.nodes, expandedDetails]);
+  const foldBoxes = useMemo(() => {
+    const boxes = new Map<string, FoldBox>();
+    const add = (node: DisplayNode, path: string, x: number, y: number, child?: InlineLayout) => {
+      boxes.set(path, { x, y, width: nodeWidth(node), height: nodeHeight(node) });
+      for (const part of child?.parts ?? [])
+        add(part, part.path, x + INLINE_X + part.x, y + INLINE_Y + part.y, part.child);
+    };
+    for (const node of displayNodes)
+      add(node, node.id, node.x, node.y, expandedDetails.get(node.id)?.layout);
+    return boxes;
+  }, [displayNodes, expandedDetails]);
   const [selectMode, setSelectMode] = useState(false);
   const [bounds, setBounds] = useState({ left: -2000, top: -2000, right: 3000, bottom: 2500 });
   const boundsRef = useRef(bounds);
@@ -988,12 +981,14 @@ export function LogicBuilder() {
   const boardViewport = useRef<HTMLDivElement>(null);
   const workspace = useRef<HTMLDivElement>(null);
   const zoomRef = useRef(1);
-  const captureViewport = (): ViewportState => ({
+  const captureViewport = useCallback((): ViewportState => ({
     zoom: zoomRef.current,
-    left: (boardViewport.current?.scrollLeft ?? 0) + bounds.left * zoomRef.current,
-    top: (boardViewport.current?.scrollTop ?? 0) + bounds.top * zoomRef.current,
-  });
-  const restoreViewport = (state?: ViewportState) => {
+    left: (queuedScroll.current?.left ?? boardViewport.current?.scrollLeft ?? 0) +
+      (queuedScroll.current?.bounds.left ?? boundsRef.current.left) * zoomRef.current,
+    top: (queuedScroll.current?.top ?? boardViewport.current?.scrollTop ?? 0) +
+      (queuedScroll.current?.bounds.top ?? boundsRef.current.top) * zoomRef.current,
+  }), []);
+  const restoreViewport = useCallback((state?: ViewportState) => {
     const next = state ?? { zoom: 1, left: 0, top: 0 };
     const viewport = boardViewport.current;
     const width = viewport?.clientWidth || 900;
@@ -1006,10 +1001,10 @@ export function LogicBuilder() {
     };
     zoomRef.current = next.zoom;
     boundsRef.current = framed;
-    queuedScroll.current = target;
+    queuedScroll.current = { ...target, bounds: framed };
     setZoom(next.zoom);
     setBounds(framed);
-  };
+  }, []);
   useLayoutEffect(() => {
     const previous = previousBounds.current;
     const viewport = boardViewport.current;
@@ -1017,8 +1012,10 @@ export function LogicBuilder() {
       // Apply the camera only after React has rendered its new bounds and scale.
       // An animation frame can run before that commit and compensate twice.
       if (queuedScroll.current) {
-        viewport.scrollLeft = queuedScroll.current.left;
-        viewport.scrollTop = queuedScroll.current.top;
+        viewport.scrollLeft = queuedScroll.current.left +
+          (queuedScroll.current.bounds.left - bounds.left) * zoomRef.current;
+        viewport.scrollTop = queuedScroll.current.top +
+          (queuedScroll.current.bounds.top - bounds.top) * zoomRef.current;
         queuedScroll.current = null;
       } else if (previous !== bounds) {
         viewport.scrollLeft += (previous.left - bounds.left) * zoomRef.current;
@@ -1028,6 +1025,35 @@ export function LogicBuilder() {
     if (viewport) syncGrid(viewport, zoomRef.current, bounds);
     previousBounds.current = bounds;
   }, [bounds, zoom]);
+  const foldKey = JSON.stringify([...unfolded].sort());
+  const foldViews = useRef(new Map<string, ViewportState>());
+  const previousFold = useRef({ viewPath, foldKey, unfolded, boxes: foldBoxes });
+  useLayoutEffect(() => {
+    const previous = previousFold.current;
+    previousFold.current = { viewPath, foldKey, unfolded, boxes: foldBoxes };
+    if (previous.viewPath !== viewPath) {
+      foldViews.current.clear();
+      foldTarget.current = null;
+      return;
+    }
+    if (previous.foldKey === foldKey) return;
+    const camera = captureViewport();
+    const views = foldViews.current;
+    views.set(previous.foldKey, camera);
+    const remembered = views.get(foldKey);
+    const viewport = boardViewport.current;
+    const size = { width: viewport?.clientWidth || 900, height: viewport?.clientHeight || 520 };
+    const changed = [...new Set([...previous.unfolded, ...unfolded])]
+      .filter((path) => previous.unfolded.has(path) !== unfolded.has(path));
+    const target = foldTarget.current ?? foldFocus(previous.boxes, foldBoxes, changed, camera, size);
+    foldTarget.current = null;
+    const before = target ? previous.boxes.get(target) : undefined;
+    const after = target ? foldBoxes.get(target) : undefined;
+    if (remembered) restoreViewport(remembered);
+    else if (before && after) restoreViewport(followFold(camera, before, after, size));
+    // Camera history is transient and bounded; circuit undo history stays unchanged.
+    if (views.size > 64) views.delete(views.keys().next().value!);
+  }, [viewPath, foldKey, unfolded, foldBoxes, captureViewport, restoreViewport]);
   const recenterCanvas = () => {
     const viewport = boardViewport.current;
     if (!viewport || queuedScroll.current) return;
@@ -1048,7 +1074,7 @@ export function LogicBuilder() {
       } : current;
     });
   };
-  const queuedScroll = useRef<{ left: number; top: number } | null>(null);
+  const queuedScroll = useRef<{ left: number; top: number; bounds: { left: number; top: number } } | null>(null);
   const spaceHeld = useRef(false);
   const activePan = useRef<{ id: number; x: number; y: number } | null>(null);
   const touchPointers = useRef(new Map<number, { x: number; y: number }>());
@@ -1082,8 +1108,9 @@ export function LogicBuilder() {
       const rect = viewport.getBoundingClientRect();
       const left = queuedScroll.current?.left ?? viewport.scrollLeft;
       const top = queuedScroll.current?.top ?? viewport.scrollTop;
-      const pointX = boundsRef.current.left + (anchorX - rect.left + left) / old;
-      const pointY = boundsRef.current.top + (anchorY - rect.top + top) / old;
+      const origin = queuedScroll.current?.bounds ?? boundsRef.current;
+      const pointX = origin.left + (anchorX - rect.left + left) / old;
+      const pointY = origin.top + (anchorY - rect.top + top) / old;
       const visibleLeft = pointX - (destinationX - rect.left) / next;
       const visibleTop = pointY - (destinationY - rect.top) / next;
       const framed = frameBounds(visibleLeft, visibleTop, next,
@@ -1095,7 +1122,7 @@ export function LogicBuilder() {
       };
       zoomRef.current = next;
       boundsRef.current = framed;
-      queuedScroll.current = target;
+      queuedScroll.current = { ...target, bounds: framed };
       setZoom(next);
       setBounds(framed);
     },
@@ -1127,7 +1154,7 @@ export function LogicBuilder() {
     };
     zoomRef.current = next;
     boundsRef.current = framed;
-    queuedScroll.current = target;
+    queuedScroll.current = { ...target, bounds: framed };
     setZoom(next);
     setBounds(framed);
   }, [displayNodes, routes.bounds]);
@@ -1321,7 +1348,6 @@ export function LogicBuilder() {
       ...viewPath,
       { parent: clone(circuit), snapshot: parentSnapshot, via, moduleId, unfolded: [...unfolded], viewport: captureViewport() },
     ];
-    setUnfoldedRestore(undefined);
     restoreViewport();
     const copy = clone(next);
     if (moduleId) {
@@ -1370,7 +1396,6 @@ export function LogicBuilder() {
         : level.snapshot;
     }
     const level = viewPath[depth];
-    setUnfoldedRestore(level.unfoldedViewport);
     restoreViewport(level.viewport);
     circuitRef.current = parent;
     publish({ ...history.current(), circuit: parent, viewPath: viewPath.slice(0, depth), unfolded: [...childUnfolded] }, false);
@@ -1384,7 +1409,7 @@ export function LogicBuilder() {
     setMessage(`Back to ${parent.name}.`);
   };
   const goBack = () => returnToDepth(viewPath.length - 1);
-  const enterModulePath = (path: string, unfoldedViewport?: ViewportState) => {
+  const enterModulePath = (path: string) => {
     let source = circuit;
     let innerSnapshot = snapshotRef.current;
     const levels: ViewLevel[] = [];
@@ -1397,12 +1422,10 @@ export function LogicBuilder() {
         via: part.label || part.module.name, moduleId: part.id,
         unfolded: [...unfolded].filter((entry) => entry.startsWith(parentPrefix))
           .map((entry) => entry.slice(parentPrefix.length)),
-        viewport: index === 0 ? captureViewport() : undefined,
-        unfoldedViewport: index === 0 ? unfoldedViewport : undefined });
+        viewport: index === 0 ? captureViewport() : undefined });
       source = part.module;
       innerSnapshot = innerSnapshot.modules[id] ?? initialSnapshot();
     }
-    setUnfoldedRestore(undefined);
     restoreViewport();
     const copy = clone(source);
     pendingFit.current = true;
@@ -1420,19 +1443,26 @@ export function LogicBuilder() {
     setSnapshot(next);
     setMessage(`Inside ${copy.name}. Use Back to return.`);
   };
-  const toggleUnfolded = (id: string) => setUnfolded((current) => {
-    const next = new Set(current);
-    if (next.has(id)) {
-      for (const entry of next)
-        if (entry === id || entry.startsWith(`${id}/`)) next.delete(entry);
-    } else next.add(id);
-    return next;
-  });
+  const toggleUnfolded = (id: string) => {
+    foldTarget.current = id;
+    setUnfolded((current) => {
+      const next = new Set(current);
+      if (next.has(id)) {
+        for (const entry of next)
+          if (entry === id || entry.startsWith(`${id}/`)) next.delete(entry);
+      } else next.add(id);
+      return next;
+    });
+  };
   const expandOneLevel = (path: string, inner: Circuit) => {
     const candidates = nextInlineLevel(inner, `${path}/`, unfolded);
-    if (candidates.length) setUnfolded((current) => new Set([...current, ...candidates]));
+    if (candidates.length) {
+      foldTarget.current = path;
+      setUnfolded((current) => new Set([...current, ...candidates]));
+    }
   };
   const refoldOneLevel = (path: string) => {
+    foldTarget.current = path;
     const descendants = [...unfolded].filter((id) => id.startsWith(`${path}/`));
     if (!descendants.length) return toggleUnfolded(path);
     const depth = Math.max(...descendants.map((id) => id.split("/").length));

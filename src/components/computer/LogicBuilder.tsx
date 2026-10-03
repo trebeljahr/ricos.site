@@ -1311,7 +1311,7 @@ export function LogicBuilder() {
                     <div
                       key={node.id}
                       role="group"
-                      aria-label={`${node.label || LABELS[node.type]} part`}
+                      aria-label={`${node.label || LABELS[node.type]} — ${node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]} part`}
                       onKeyDown={(event) => {
                         if (event.key === "Enter") {
                           event.stopPropagation();
@@ -1425,6 +1425,12 @@ export function LogicBuilder() {
                           </span>
                         )}
                         <strong>{node.label || LABELS[node.type]}</strong>
+                        <span
+                          className={styles.nodeType}
+                          title={node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]}
+                        >
+                          {node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]}
+                        </span>
                         {node.type === "input4" || node.type === "input8" ? (
                           <div
                             className={styles.numberBits}
@@ -1795,9 +1801,9 @@ export function LogicBuilder() {
           <h2>Selected part</h2>
           {selectedNode ? (
             <div className={styles.selectedPart}>
-              <strong>{LABELS[selectedNode.type]}</strong>
+              <strong>{selectedNode.type === "module" ? selectedNode.module?.name || "Module" : LABELS[selectedNode.type]}</strong>
               <label>
-                Name
+                Represents
                 <input
                   value={selectedNode.label || ""}
                   maxLength={30}

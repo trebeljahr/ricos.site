@@ -14,17 +14,17 @@ describe("circuit depth", () => {
     render(<LogicBuilder />);
     const parts = screen.getByLabelText("Gate palette");
     fireEvent.click(within(parts).getByRole("button", { name: "Half adder" }));
-    expect(screen.getByRole("group", { name: "Half adder part" })).toBeTruthy();
+    expect(screen.getByRole("group", { name: "Half adder — Half adder part" })).toBeTruthy();
 
     fireEvent.click(within(parts).getByRole("button", { name: "4-BIT INPUT" }));
-    const input = screen.getByRole("group", { name: "4-BIT INPUT part" });
+    const input = screen.getByRole("group", { name: "4-BIT INPUT — 4-BIT INPUT part" });
     const bit = within(input).getByRole("button", { name: "Toggle bit 2 of 4-BIT INPUT" });
     fireEvent.click(bit);
     expect(bit.getAttribute("aria-pressed")).toBe("true");
     expect(bit.textContent).toBe("1");
 
     fireEvent.click(within(parts).getByRole("button", { name: "8-BIT DISPLAY" }));
-    const display = screen.getByRole("group", { name: "8-BIT DISPLAY part" });
+    const display = screen.getByRole("group", { name: "8-BIT DISPLAY — 8-BIT DISPLAY part" });
     expect(within(display).getByLabelText("8-BIT DISPLAY value").textContent).toContain("00000000");
   });
   it("shows construction labels as boundaries and drills through gate implementations", () => {
@@ -32,16 +32,16 @@ describe("circuit depth", () => {
     fireEvent.click(screen.getByRole("button", { name: "NOR only" }));
     fireEvent.click(screen.getByRole("button", { name: /NAND from NOR gates/ }));
     expect(screen.getByLabelText("NAND from NOR gates circuit boundary")).toBeTruthy();
-    expect(screen.getAllByRole("group", { name: "NOR part" })).toHaveLength(4);
+    expect(screen.getAllByRole("group", { name: "NOR — NOR part" })).toHaveLength(4);
 
-    fireEvent.pointerDown(screen.getAllByRole("group", { name: "NOR part" })[0], {
+    fireEvent.pointerDown(screen.getAllByRole("group", { name: "NOR — NOR part" })[0], {
       button: 0,
       pointerId: 1,
     });
     fireEvent.click(screen.getByRole("button", { name: "NAND only ↘" }));
     expect(screen.getByText("Level 2")).toBeTruthy();
     expect(screen.getByLabelText("NOR from NAND gates circuit boundary")).toBeTruthy();
-    fireEvent.pointerDown(screen.getAllByRole("group", { name: "NAND part" })[0], {
+    fireEvent.pointerDown(screen.getAllByRole("group", { name: "NAND — NAND part" })[0], {
       button: 0,
       pointerId: 2,
     });
@@ -61,9 +61,18 @@ describe("circuit depth", () => {
     fireEvent.click(within(row as HTMLElement).getByRole("button", { name: /Black box/ }));
     fireEvent.click(screen.getByRole("button", { name: "Open internal wiring ↘" }));
     expect(screen.getByText("Level 2")).toBeTruthy();
-    expect(screen.getAllByRole("group", { name: "SUM part" }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("group", { name: "SUM — LAMP part" }).length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: "← Back" }));
-    expect(screen.getByRole("group", { name: "Half adder part" })).toBeTruthy();
+    expect(screen.getByRole("group", { name: "Half adder — Half adder part" })).toBeTruthy();
+  });
+
+  it("shows a counter bit's role and physical part", () => {
+    render(<LogicBuilder />);
+    fireEvent.click(screen.getByRole("button", { name: "Examples" }));
+    fireEvent.click(screen.getByTitle("Open 8-bit binary counter blueprint"));
+    const bit = screen.getByRole("group", { name: "BIT0 — D FLIP-FLOP part" });
+    expect(within(bit).getByText("BIT0")).toBeTruthy();
+    expect(within(bit).getByText("D FLIP-FLOP")).toBeTruthy();
   });
 
   it("zooms with controls and pinch without starting multi-select", () => {

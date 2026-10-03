@@ -147,10 +147,12 @@
 .moduleBody .nodeNameRow,.moduleBody .nodePartName{min-width:0}
 .nodeBody:has(.digitalScreen){gap:6px}
 /* Task groups keep edit, simulation, view, and file actions together. */
-.toolbar{align-items:center;gap:18px;padding:11px 18px;flex-wrap:wrap}
-.identity{min-width:165px}
-.transport{gap:10px 16px;align-items:stretch}
-.toolGroup{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:5px 12px 5px 0;border-right:1px solid #465879}
+.toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"identity metrics" "transport transport";align-items:center;column-gap:18px;row-gap:10px;padding:11px 18px}
+.identity{grid-area:identity;min-width:0}
+.metrics{grid-area:metrics;justify-self:end;margin-left:0}
+.transport{grid-area:transport;min-width:0;width:100%;gap:8px 14px;align-items:center}
+.learningMenu{align-self:center}
+.toolGroup{display:flex;align-items:center;align-content:center;gap:6px;flex-wrap:wrap;flex:none;padding:5px 12px 5px 0;border-right:1px solid #465879}
 .toolGroup:last-child{border-right:0}
 .toolGroupLabel{display:block;width:100%;color:#aebbd3;font-size:10px;font-weight:750;letter-spacing:.08em;text-transform:uppercase}
 .toolGroup button{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:6px 8px}
@@ -158,4 +160,4 @@
 .layout{grid-template-columns:264px minmax(0,1fr)}
 .layoutWithInspector{grid-template-columns:264px minmax(0,1fr) 205px}
 @media(max-width:1100px){.layout{grid-template-columns:228px minmax(0,1fr)}.layoutWithInspector{grid-template-columns:228px minmax(0,1fr) 180px}}
-@media(max-width:650px){.layout,.layoutWithInspector{display:flex;flex-direction:column}.toolbar{align-items:flex-start}.toolGroup{border-right:0;border-bottom:1px solid #465879;padding-bottom:9px}}
+@media(max-width:650px){.layout,.layoutWithInspector{display:flex;flex-direction:column}.transport{align-items:flex-start}.toolGroup{border-right:0;border-bottom:1px solid #465879;padding-bottom:9px}}

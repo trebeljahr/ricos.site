@@ -1,3 +1,5 @@
+import { MEMORY_PRESETS } from "./memoryCircuits";
+
 export type GateType =
   | "switch"
   | "clock"
@@ -22,6 +24,7 @@ export type GateType =
   | "dff"
   | "srlatch"
   | "dlatch"
+  | "dramcell"
   | "module";
 export type Node = {
   id: string;
@@ -55,6 +58,7 @@ export type Circuit = { name: string; nodes: Node[]; wires: Wire[]; groups?: Cir
 export type Snapshot = {
   values: Record<string, boolean>;
   memory: Record<string, boolean>;
+  age?: Record<string, number>;
   lastClock: Record<string, boolean>;
   outputs: Record<string, boolean[]>;
   modules: Record<string, Snapshot>;
@@ -85,6 +89,7 @@ export const INPUTS: Record<GateType, number> = {
   dff: 2,
   srlatch: 2,
   dlatch: 2,
+  dramcell: 2,
   module: 0,
 };
 export const LABELS: Record<GateType, string> = {
@@ -111,6 +116,7 @@ export const LABELS: Record<GateType, string> = {
   dff: "D FLIP-FLOP",
   srlatch: "SR LATCH",
   dlatch: "D LATCH",
+  dramcell: "DRAM CAPACITOR",
   module: "CIRCUIT",
 };
 export const moduleInputs = (circuit: Circuit) =>
@@ -135,6 +141,7 @@ export const outputLabel = (node: Node, index: number) =>
 export const initialSnapshot = (): Snapshot => ({
   values: {},
   memory: {},
+  age: {},
   lastClock: {},
   outputs: {},
   modules: {},
@@ -170,9 +177,8 @@ export function step(
       const bits = node.type === "input4" ? 4 : 8;
       outputs[node.id] = Array.from({ length: bits }, (_, bit) => Boolean(((node.numberValue ?? 0) >> bit) & 1));
     }
-    if (node.type === "dff") values[node.id] = Boolean(previous.memory[node.id]);
-    if (node.type === "srlatch") values[node.id] = Boolean(previous.memory[node.id]);
-    if (node.type === "dlatch") values[node.id] = Boolean(previous.memory[node.id]);
+    if (["dff", "srlatch", "dlatch", "dramcell"].includes(node.type))
+      values[node.id] = Boolean(previous.memory[node.id]);
   }
   let unstable = false;
   const inputs = (node: Node) =>
@@ -260,11 +266,18 @@ export function step(
   };
   settle();
   const memory = { ...previous.memory };
+  const age = { ...previous.age };
   const lastClock = { ...previous.lastClock };
   for (const node of circuit.nodes) {
-    if (node.type !== "dff") continue;
+    if (node.type !== "dff" && node.type !== "dramcell") continue;
     const [data, clock] = inputs(node);
-    if (clock && !previous.lastClock[node.id]) memory[node.id] = data;
+    if (clock && !previous.lastClock[node.id]) {
+      memory[node.id] = data;
+      if (node.type === "dramcell") age[node.id] = 0;
+    } else if (node.type === "dramcell" && clockHigh && !previous.lastClock.__dramTick) {
+      age[node.id] = (previous.age?.[node.id] ?? 0) + 1;
+      if (age[node.id] >= 4) memory[node.id] = false;
+    }
     lastClock[node.id] = clock;
   }
   for (const node of circuit.nodes) {
@@ -279,11 +292,12 @@ export function step(
     const [data, enable] = inputs(node);
     if (enable) memory[node.id] = data;
   }
+  lastClock.__dramTick = clockHigh;
   for (const node of circuit.nodes)
-    if (node.type === "dff" || node.type === "srlatch" || node.type === "dlatch")
+    if (["dff", "srlatch", "dlatch", "dramcell"].includes(node.type))
       values[node.id] = Boolean(memory[node.id]);
   settle();
-  return { values, memory, lastClock, outputs, modules, unstable };
+  return { values, memory, age, lastClock, outputs, modules, unstable };
 }
 
 const node = (
@@ -641,6 +655,7 @@ export const PRESETS: Record<string, Circuit> = {
         return [circuit.name, circuit];
       }),
   ),
+  ...MEMORY_PRESETS,
 };
 
 export const GATE_NAMES = ["not", "and", "or", "nand", "nor", "xor", "xnor"] as const;

@@ -64,6 +64,7 @@ const partColors: Record<GateType, string> = {
   dff: "#b9e976",
   srlatch: "#b9e976",
   dlatch: "#b9e976",
+  dramcell: "#7cb8ff",
   module: "#ffc76a",
 };
 type WireDraft = {
@@ -104,7 +105,7 @@ const palette: GateType[] = [
   "dlatch",
 ];
 const clone = (circuit: Circuit): Circuit => JSON.parse(JSON.stringify(circuit));
-type ViewLevel = { parent: Circuit; via: string; moduleId?: string };
+type ViewLevel = { parent: Circuit; snapshot: Snapshot; via: string; moduleId?: string };
 const withUpdatedModule = (parent: Circuit, moduleId: string, inner: Circuit): Circuit => ({
   ...parent,
   nodes: parent.nodes.map((item) =>
@@ -434,7 +435,8 @@ export function LogicBuilder() {
     setMessage(`${copy.name} loaded.`);
   };
   const enterCircuit = (next: Circuit, via: string, moduleId?: string) => {
-    setViewPath((current) => [...current, { parent: clone(circuit), via, moduleId }]);
+    const parentSnapshot = snapshotRef.current;
+    setViewPath((current) => [...current, { parent: clone(circuit), snapshot: parentSnapshot, via, moduleId }]);
     const copy = clone(next);
     if (moduleId) {
       moduleInputs(copy).forEach((input, port) => {
@@ -449,10 +451,13 @@ export function LogicBuilder() {
     }
     circuitRef.current = copy;
     setCircuit(copy);
+    setRunning(false);
     setSelected([]);
     setSelectedWire(null);
     setPending(null);
-    resetRuntime();
+    const inner = step(copy, moduleId ? parentSnapshot.modules[moduleId] ?? initialSnapshot() : initialSnapshot(), clockRef.current);
+    snapshotRef.current = inner;
+    setSnapshot(inner);
     setMessage(`Inside ${via}. Use Back to return.`);
   };
   const goBack = () => {
@@ -464,10 +469,16 @@ export function LogicBuilder() {
     setViewPath((current) => current.slice(0, -1));
     circuitRef.current = parent;
     setCircuit(parent);
+    setRunning(false);
     setSelected(level.moduleId ? [level.moduleId] : []);
     setSelectedWire(null);
     setPending(null);
-    resetRuntime();
+    const parentSnapshot = level.moduleId
+      ? { ...level.snapshot, modules: { ...level.snapshot.modules, [level.moduleId]: snapshotRef.current } }
+      : level.snapshot;
+    const restored = step(parent, parentSnapshot, clockRef.current);
+    snapshotRef.current = restored;
+    setSnapshot(restored);
     setMessage(`Back to ${parent.name}.`);
   };
   const viewGate = (gate: LogicGate, family: BlueprintFamily, source?: Node) => {

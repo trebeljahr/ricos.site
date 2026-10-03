@@ -1,20 +1,20 @@
 import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  type Circuit,
-  BLUEPRINTS,
   BLUEPRINT_FAMILIES,
   BLUEPRINT_RECIPES,
+  BLUEPRINTS,
   type BlueprintFamily,
-  type LogicGate,
+  type Circuit,
   type GateType,
+  initialSnapshot,
   inputCount,
   inputLabel,
-  initialSnapshot,
   LABELS,
-  type Node,
+  type LogicGate,
   moduleInputs,
   moduleOutputs,
+  type Node,
   outputCount,
   outputLabel,
   PRESETS,
@@ -40,6 +40,7 @@ const partColors: Record<GateType, string> = {
   clock: "#b7a1ff",
   lamp: "#b9e976",
   high: "#ffc76a",
+  ground: "#7cb8ff",
   nmos: "#69e2e0",
   pmos: "#b7a1ff",
   junction: "#7cb8ff",
@@ -47,6 +48,7 @@ const partColors: Record<GateType, string> = {
   and: "#69e2e0",
   or: "#69e2e0",
   xor: "#b7a1ff",
+  xnor: "#b7a1ff",
   nand: "#ff8f87",
   nor: "#ff8f87",
   dff: "#b9e976",
@@ -72,6 +74,7 @@ const palette: GateType[] = [
   "clock",
   "lamp",
   "high",
+  "ground",
   "nmos",
   "pmos",
   "junction",
@@ -79,17 +82,26 @@ const palette: GateType[] = [
   "and",
   "or",
   "xor",
+  "xnor",
   "nand",
   "nor",
   "dff",
 ];
 const clone = (circuit: Circuit): Circuit => JSON.parse(JSON.stringify(circuit));
 const nodeHeight = (node: Node) =>
-  node.type === "module" ? Math.max(NODE_HEIGHT, 30 + Math.max(inputCount(node), outputCount(node)) * 25) : NODE_HEIGHT;
+  node.type === "module"
+    ? Math.max(NODE_HEIGHT, 30 + Math.max(inputCount(node), outputCount(node)) * 25)
+    : NODE_HEIGHT;
 const portY = (node: Node, input: number) =>
-  node.y + (inputCount(node) === 1 ? nodeHeight(node) / 2 : 16 + input * ((nodeHeight(node) - 32) / Math.max(1, inputCount(node) - 1)));
+  node.y +
+  (inputCount(node) === 1
+    ? nodeHeight(node) / 2
+    : 16 + input * ((nodeHeight(node) - 32) / Math.max(1, inputCount(node) - 1)));
 const outY = (node: Node, output: number) =>
-  node.y + (outputCount(node) === 1 ? nodeHeight(node) / 2 : 16 + output * ((nodeHeight(node) - 32) / Math.max(1, outputCount(node) - 1)));
+  node.y +
+  (outputCount(node) === 1
+    ? nodeHeight(node) / 2
+    : 16 + output * ((nodeHeight(node) - 32) / Math.max(1, outputCount(node) - 1)));
 
 export function LogicBuilder() {
   const [circuit, setCircuit] = useState<Circuit>(() => clone(PRESETS["Half adder"]));
@@ -122,6 +134,8 @@ export function LogicBuilder() {
     "Drag from an output to an input to wire. Click a wire to set its color.",
   );
   const [ready, setReady] = useState(false);
+  const canvasWidth = Math.max(WIDTH, ...circuit.nodes.map((item) => item.x + NODE_WIDTH + 50));
+  const canvasHeight = Math.max(HEIGHT, ...circuit.nodes.map((item) => item.y + NODE_HEIGHT + 50));
   const [drag, setDrag] = useState<{
     x: number;
     y: number;
@@ -216,10 +230,10 @@ export function LogicBuilder() {
     const next: Node = {
       id: crypto.randomUUID(),
       type,
-      x: Math.max(0, Math.min(WIDTH - NODE_WIDTH, position?.x ?? 110 + (index % 5) * 155)),
+      x: Math.max(0, Math.min(canvasWidth - NODE_WIDTH, position?.x ?? 110 + (index % 5) * 155)),
       y: Math.max(
         0,
-        Math.min(HEIGHT - NODE_HEIGHT, position?.y ?? 90 + (Math.floor(index / 5) % 5) * 90),
+        Math.min(canvasHeight - NODE_HEIGHT, position?.y ?? 90 + (Math.floor(index / 5) % 5) * 90),
       ),
       label: LABELS[type],
       value: false,
@@ -229,17 +243,30 @@ export function LogicBuilder() {
     setPending(null);
   };
   const addModule = (source: Circuit, position?: { x: number; y: number }) => {
-    if (!moduleOutputs(source).length || moduleInputs(source).length > 8 || moduleOutputs(source).length > 8) {
+    if (
+      !moduleOutputs(source).length ||
+      moduleInputs(source).length > 8 ||
+      moduleOutputs(source).length > 8
+    ) {
       setMessage("This circuit needs 1–8 outputs and at most 8 inputs to become a black box.");
       return;
     }
     const index = circuit.nodes.length;
     const next: Node = {
-      id: crypto.randomUUID(), type: "module", module: clone(source), label: source.name,
-      x: Math.max(0, Math.min(WIDTH - NODE_WIDTH, position?.x ?? 110 + (index % 5) * 155)),
+      id: crypto.randomUUID(),
+      type: "module",
+      module: clone(source),
+      label: source.name,
+      x: Math.max(0, Math.min(canvasWidth - NODE_WIDTH, position?.x ?? 110 + (index % 5) * 155)),
       y: 0,
     };
-    next.y = Math.max(0, Math.min(HEIGHT - nodeHeight(next), position?.y ?? 90 + (Math.floor(index / 5) % 5) * 90));
+    next.y = Math.max(
+      0,
+      Math.min(
+        canvasHeight - nodeHeight(next),
+        position?.y ?? 90 + (Math.floor(index / 5) % 5) * 90,
+      ),
+    );
     setCircuit((current) => ({ ...current, nodes: [...current.nodes, next] }));
     setSelected([next.id]);
     setMessage(`${source.name} added as a black box.`);
@@ -249,17 +276,29 @@ export function LogicBuilder() {
     const minY = Math.min(...source.nodes.map((node) => node.y));
     const width = Math.max(...source.nodes.map((node) => node.x)) - minX + NODE_WIDTH;
     const height = Math.max(...source.nodes.map((node) => node.y + nodeHeight(node))) - minY;
-    const left = Math.max(0, Math.min(WIDTH - width, position.x - width / 2));
-    const top = Math.max(0, Math.min(HEIGHT - height, position.y - height / 2));
+    const left = Math.max(0, Math.min(canvasWidth - width, position.x - width / 2));
+    const top = Math.max(0, Math.min(canvasHeight - height, position.y - height / 2));
     const ids = new Map(source.nodes.map((node) => [node.id, crypto.randomUUID()]));
     setCircuit((current) => ({
       ...current,
-      nodes: [...current.nodes, ...source.nodes.map((node) => ({
-        ...node, id: ids.get(node.id)!, x: left + node.x - minX, y: top + node.y - minY,
-      }))],
-      wires: [...current.wires, ...source.wires.map((wire) => ({
-        ...wire, id: crypto.randomUUID(), from: ids.get(wire.from)!, to: ids.get(wire.to)!,
-      }))],
+      nodes: [
+        ...current.nodes,
+        ...source.nodes.map((node) => ({
+          ...node,
+          id: ids.get(node.id)!,
+          x: left + node.x - minX,
+          y: top + node.y - minY,
+        })),
+      ],
+      wires: [
+        ...current.wires,
+        ...source.wires.map((wire) => ({
+          ...wire,
+          id: crypto.randomUUID(),
+          from: ids.get(wire.from)!,
+          to: ids.get(wire.to)!,
+        })),
+      ],
     }));
     setSelected([...ids.values()]);
     setMessage(`${source.name} added. Drag the selected circuit to move it.`);
@@ -384,8 +423,8 @@ export function LogicBuilder() {
   const boardPoint = (clientX: number, clientY: number) => {
     const rect = board.current!.getBoundingClientRect();
     return {
-      x: ((clientX - rect.left) * WIDTH) / rect.width,
-      y: ((clientY - rect.top) * HEIGHT) / rect.height,
+      x: ((clientX - rect.left) * canvasWidth) / rect.width,
+      y: ((clientY - rect.top) * canvasHeight) / rect.height,
     };
   };
   const pointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -404,18 +443,25 @@ export function LogicBuilder() {
     const active = dragRef.current;
     if (!active || !board.current) return;
     const rect = board.current.getBoundingClientRect();
-    const dx = ((event.clientX - active.x) * WIDTH) / rect.width;
-    const dy = ((event.clientY - active.y) * HEIGHT) / rect.height;
+    const dx = ((event.clientX - active.x) * canvasWidth) / rect.width;
+    const dy = ((event.clientY - active.y) * canvasHeight) / rect.height;
     const starts = Object.values(active.starts);
     const boundedX = Math.max(
       -Math.min(...starts.map((p) => p.x)),
-      Math.min(WIDTH - NODE_WIDTH - Math.max(...starts.map((p) => p.x)), dx),
+      Math.min(canvasWidth - NODE_WIDTH - Math.max(...starts.map((p) => p.x)), dx),
     );
     const boundedY = Math.max(
       -Math.min(...starts.map((p) => p.y)),
-      Math.min(HEIGHT - Math.max(...Object.entries(active.starts).map(([id, point]) =>
-        point.y + nodeHeight(circuitRef.current.nodes.find((node) => node.id === id)!),
-      )), dy),
+      Math.min(
+        canvasHeight -
+          Math.max(
+            ...Object.entries(active.starts).map(
+              ([id, point]) =>
+                point.y + nodeHeight(circuitRef.current.nodes.find((node) => node.id === id)!),
+            ),
+          ),
+        dy,
+      ),
     );
     setCircuit((current) => ({
       ...current,
@@ -438,11 +484,13 @@ export function LogicBuilder() {
       const connector = moved ? nearestConnector(point, draft) : null;
       if (draft.from && connector?.input !== undefined)
         connect(draft.from, connector.id, connector.input, draft.output);
-      else if (draft.to && connector) connect(connector.id, draft.to, draft.input!, connector.output);
+      else if (draft.to && connector)
+        connect(connector.id, draft.to, draft.input!, connector.output);
       else if (!moved && draft.from) {
         setPending({ from: draft.from, output: draft.output ?? 0 });
         setMessage("Drag to an input, or click one to connect.");
-      } else if (!moved && draft.to) connect(pending?.from ?? null, draft.to, draft.input!, pending?.output);
+      } else if (!moved && draft.to)
+        connect(pending?.from ?? null, draft.to, draft.input!, pending?.output);
       else setMessage("Wire cancelled. Drop on a compatible connector.");
       wireDraftRef.current = null;
       setWireDraft(null);
@@ -474,11 +522,14 @@ export function LogicBuilder() {
   const visibleParts = palette.filter((type) =>
     `${type} ${LABELS[type]}`.toLowerCase().includes(search.toLowerCase().trim()),
   );
-  const library = circuitFamily === "examples" ? PRESETS : Object.fromEntries(
-    Object.entries(BLUEPRINTS).filter(([name]) =>
-      name.endsWith(`from ${BLUEPRINT_FAMILIES[circuitFamily].suffix}`),
-    ),
-  );
+  const library =
+    circuitFamily === "examples"
+      ? PRESETS
+      : Object.fromEntries(
+          Object.entries(BLUEPRINTS).filter(([name]) =>
+            name.endsWith(`from ${BLUEPRINT_FAMILIES[circuitFamily].suffix}`),
+          ),
+        );
   const visibleCircuits = Object.values(library).filter((item) =>
     item.name.toLowerCase().includes(circuitSearch.toLowerCase().trim()),
   );
@@ -515,7 +566,10 @@ export function LogicBuilder() {
     : draftTarget && wireDraft?.to
       ? {
           x: circuit.nodes.find((node) => node.id === draftTarget.id)!.x + NODE_WIDTH,
-          y: outY(circuit.nodes.find((node) => node.id === draftTarget.id)!, draftTarget.output ?? 0),
+          y: outY(
+            circuit.nodes.find((node) => node.id === draftTarget.id)!,
+            draftTarget.output ?? 0,
+          ),
         }
       : wireDraft
         ? { x: wireDraft.x, y: wireDraft.y }
@@ -597,6 +651,7 @@ export function LogicBuilder() {
             <div
               ref={board}
               className={styles.board}
+              style={{ width: canvasWidth, height: canvasHeight }}
               role="application"
               aria-label="Circuit canvas"
               onKeyDown={(event) => {
@@ -637,13 +692,22 @@ export function LogicBuilder() {
                 event.preventDefault();
                 const blueprint = event.dataTransfer.getData("application/x-logic-circuit");
                 if (blueprint && (BLUEPRINTS[blueprint] || PRESETS[blueprint])) {
-                  insertCircuit(BLUEPRINTS[blueprint] || PRESETS[blueprint], boardPoint(event.clientX, event.clientY));
+                  insertCircuit(
+                    BLUEPRINTS[blueprint] || PRESETS[blueprint],
+                    boardPoint(event.clientX, event.clientY),
+                  );
                   return;
                 }
                 const moduleName = event.dataTransfer.getData("application/x-logic-module");
-                if (moduleName && (BLUEPRINTS[moduleName] || PRESETS[moduleName] || saved[moduleName])) {
+                if (
+                  moduleName &&
+                  (BLUEPRINTS[moduleName] || PRESETS[moduleName] || saved[moduleName])
+                ) {
                   const point = boardPoint(event.clientX, event.clientY);
-                  addModule(BLUEPRINTS[moduleName] || PRESETS[moduleName] || saved[moduleName], { x: point.x - NODE_WIDTH / 2, y: point.y - NODE_HEIGHT / 2 });
+                  addModule(BLUEPRINTS[moduleName] || PRESETS[moduleName] || saved[moduleName], {
+                    x: point.x - NODE_WIDTH / 2,
+                    y: point.y - NODE_HEIGHT / 2,
+                  });
                   return;
                 }
                 const type = event.dataTransfer.getData("application/x-logic-gate") as GateType;
@@ -666,7 +730,7 @@ export function LogicBuilder() {
             >
               <svg
                 className={styles.wires}
-                viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+                viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
                 preserveAspectRatio="none"
                 aria-label="Circuit wires"
               >
@@ -740,7 +804,9 @@ export function LogicBuilder() {
                         d={d}
                         className={clsx(
                           styles.wire,
-                          (snapshot.outputs[wire.from]?.[wire.output ?? 0] ?? snapshot.values[wire.from]) && styles.live,
+                          (snapshot.outputs[wire.from]?.[wire.output ?? 0] ??
+                            snapshot.values[wire.from]) &&
+                            styles.live,
                           selectedWire === wire.id && styles.wireSelected,
                         )}
                       />
@@ -785,10 +851,10 @@ export function LogicBuilder() {
                   style={
                     {
                       "--part-accent": partColors[node.type],
-                      left: `${(node.x / WIDTH) * 100}%`,
-                      top: `${(node.y / HEIGHT) * 100}%`,
-                      width: `${(NODE_WIDTH / WIDTH) * 100}%`,
-                      height: `${(nodeHeight(node) / HEIGHT) * 100}%`,
+                      left: `${(node.x / canvasWidth) * 100}%`,
+                      top: `${(node.y / canvasHeight) * 100}%`,
+                      width: `${(NODE_WIDTH / canvasWidth) * 100}%`,
+                      height: `${(nodeHeight(node) / canvasHeight) * 100}%`,
                     } as React.CSSProperties
                   }
                   onPointerDown={(event) => {
@@ -824,7 +890,9 @@ export function LogicBuilder() {
                       className={styles.input}
                       data-node-id={node.id}
                       data-input={input}
-                      style={{ top: `${((portY(node, input) - node.y) / nodeHeight(node)) * 100}%` }}
+                      style={{
+                        top: `${((portY(node, input) - node.y) / nodeHeight(node)) * 100}%`,
+                      }}
                       onPointerDown={(event) =>
                         startWire(event, {
                           to: node.id,
@@ -836,7 +904,8 @@ export function LogicBuilder() {
                         })
                       }
                       onClick={(event) => {
-                        if (event.detail === 0) connect(pending?.from ?? null, node.id, input, pending?.output);
+                        if (event.detail === 0)
+                          connect(pending?.from ?? null, node.id, input, pending?.output);
                       }}
                       data-wire-target={Boolean(
                         wireDraft?.from &&
@@ -845,14 +914,17 @@ export function LogicBuilder() {
                       )}
                       aria-label={`Connect to ${node.label || LABELS[node.type]} ${inputLabel(node, input)}`}
                       title={
-                        node.type === "module" ? inputLabel(node, input)
-                        : node.type === "dff"
-                          ? input === 0
-                            ? "D: data"
-                            : "CLK: rising edge"
-                          : node.type === "nmos" || node.type === "pmos"
-                            ? input === 0 ? "Gate control" : "Source signal"
-                            : `Input ${input + 1}`
+                        node.type === "module"
+                          ? inputLabel(node, input)
+                          : node.type === "dff"
+                            ? input === 0
+                              ? "D: data"
+                              : "CLK: rising edge"
+                            : node.type === "nmos" || node.type === "pmos"
+                              ? input === 0
+                                ? "Gate control"
+                                : "Source signal"
+                              : `Input ${input + 1}`
                       }
                     />
                   ))}
@@ -888,7 +960,14 @@ export function LogicBuilder() {
                         SEND
                       </button>
                     ) : node.type === "module" ? (
-                      <span className={styles.moduleBits}>{moduleOutputs(node.module!).map((port, index) => `${port.label || `OUT ${index + 1}`}:${snapshot.outputs[node.id]?.[index] ? 1 : 0}`).join("  ")}</span>
+                      <span className={styles.moduleBits}>
+                        {moduleOutputs(node.module!)
+                          .map(
+                            (port, index) =>
+                              `${port.label || `OUT ${index + 1}`}:${snapshot.outputs[node.id]?.[index] ? 1 : 0}`,
+                          )
+                          .join("  ")}
+                      </span>
                     ) : (
                       <span className={styles.bit}>{snapshot.values[node.id] ? "1" : "0"}</span>
                     )}
@@ -897,8 +976,13 @@ export function LogicBuilder() {
                     <button
                       type="button"
                       key={`${node.id}-output-${output}`}
-                      className={clsx(styles.output, pending?.from === node.id && pending.output === output && styles.pending)}
-                      style={{ top: `${((outY(node, output) - node.y) / nodeHeight(node)) * 100}%` }}
+                      className={clsx(
+                        styles.output,
+                        pending?.from === node.id && pending.output === output && styles.pending,
+                      )}
+                      style={{
+                        top: `${((outY(node, output) - node.y) / nodeHeight(node)) * 100}%`,
+                      }}
                       onPointerDown={(event) =>
                         startWire(event, {
                           from: node.id,
@@ -914,7 +998,11 @@ export function LogicBuilder() {
                         setPending({ from: node.id, output });
                         setMessage(`Choose an input for ${outputLabel(node, output)}.`);
                       }}
-                      data-wire-target={Boolean(wireDraft?.to && draftTarget?.id === node.id && draftTarget.output === output)}
+                      data-wire-target={Boolean(
+                        wireDraft?.to &&
+                          draftTarget?.id === node.id &&
+                          draftTarget.output === output,
+                      )}
                       aria-label={`Wire from ${node.label || LABELS[node.type]} ${outputLabel(node, output)}`}
                       title={outputLabel(node, output)}
                     />
@@ -948,14 +1036,34 @@ export function LogicBuilder() {
         </div>
         <aside className={styles.inspector} aria-label="Circuit library and controls">
           <h2>Circuitry library</h2>
-          <p>Click to open a blueprint. Drag to add the full circuit. Gate blueprints also have black box parts.</p>
+          <p>
+            Click to open a blueprint. Drag to add the full circuit. Gate blueprints also have black
+            box parts.
+          </p>
           <div className={styles.familyTabs} role="group" aria-label="Circuit construction">
             {(Object.keys(BLUEPRINT_FAMILIES) as BlueprintFamily[]).map((family) => (
-              <button key={family} type="button" aria-pressed={circuitFamily === family} onClick={() => setCircuitFamily(family)}>{BLUEPRINT_FAMILIES[family].label}</button>
+              <button
+                key={family}
+                type="button"
+                aria-pressed={circuitFamily === family}
+                onClick={() => setCircuitFamily(family)}
+              >
+                {BLUEPRINT_FAMILIES[family].label}
+              </button>
             ))}
-            <button type="button" aria-pressed={circuitFamily === "examples"} onClick={() => setCircuitFamily("examples")}>Examples</button>
+            <button
+              type="button"
+              aria-pressed={circuitFamily === "examples"}
+              onClick={() => setCircuitFamily("examples")}
+            >
+              Examples
+            </button>
           </div>
-          <p className={styles.libraryNote}>{circuitFamily === "examples" ? "Open a larger example circuit to explore its wiring." : BLUEPRINT_FAMILIES[circuitFamily].note}</p>
+          <p className={styles.libraryNote}>
+            {circuitFamily === "examples"
+              ? "Open a larger example circuit to explore its wiring."
+              : BLUEPRINT_FAMILIES[circuitFamily].note}
+          </p>
           <input
             className={styles.search}
             type="search"
@@ -967,17 +1075,41 @@ export function LogicBuilder() {
           <div className={styles.presetList}>
             {visibleCircuits.map((preset) => (
               <div className={styles.circuitEntry} key={preset.name}>
-                <button type="button" draggable onDragStart={(event) => {
-                  event.dataTransfer.setData("application/x-logic-circuit", preset.name);
-                  event.dataTransfer.effectAllowed = "copy";
-                }} onClick={() => load(preset)} title={`Open ${preset.name} blueprint`}>
-                  {preset.name}<span>↗</span>
+                <button
+                  type="button"
+                  draggable
+                  onDragStart={(event) => {
+                    event.dataTransfer.setData("application/x-logic-circuit", preset.name);
+                    event.dataTransfer.effectAllowed = "copy";
+                  }}
+                  onClick={() => load(preset)}
+                  title={`Open ${preset.name} blueprint`}
+                >
+                  {preset.name}
+                  <span>↗</span>
                 </button>
-                {circuitFamily !== "examples" && <span className={styles.recipe}>{BLUEPRINT_RECIPES[circuitFamily][preset.name.split(" ")[0].toLowerCase() as LogicGate]}</span>}
-                <button type="button" className={styles.blackBox} draggable onDragStart={(event) => {
+                {circuitFamily !== "examples" && (
+                  <span className={styles.recipe}>
+                    {
+                      BLUEPRINT_RECIPES[circuitFamily][
+                        preset.name.split(" ")[0].toLowerCase() as LogicGate
+                      ]
+                    }
+                  </span>
+                )}
+                <button
+                  type="button"
+                  className={styles.blackBox}
+                  draggable
+                  onDragStart={(event) => {
                     event.dataTransfer.setData("application/x-logic-module", preset.name);
                     event.dataTransfer.effectAllowed = "copy";
-                  }} onClick={() => addModule(preset)} title={`Add ${preset.name} as a black box`}>▣ Black box</button>
+                  }}
+                  onClick={() => addModule(preset)}
+                  title={`Add ${preset.name} as a black box`}
+                >
+                  ▣ Black box
+                </button>
               </div>
             ))}
             {visibleCircuits.length === 0 && <p>No matching circuits</p>}
@@ -1012,10 +1144,18 @@ export function LogicBuilder() {
                   <button type="button" onClick={() => load(item)}>
                     {item.name}
                   </button>
-                  <button type="button" draggable onDragStart={(event) => {
-                    event.dataTransfer.setData("application/x-logic-module", item.name);
-                    event.dataTransfer.effectAllowed = "copy";
-                  }} onClick={() => addModule(item)} title={`Add ${item.name} as a black box`}>▣</button>
+                  <button
+                    type="button"
+                    draggable
+                    onDragStart={(event) => {
+                      event.dataTransfer.setData("application/x-logic-module", item.name);
+                      event.dataTransfer.effectAllowed = "copy";
+                    }}
+                    onClick={() => addModule(item)}
+                    title={`Add ${item.name} as a black box`}
+                  >
+                    ▣
+                  </button>
                   <button
                     type="button"
                     aria-label={`Delete ${item.name}`}
@@ -1039,9 +1179,18 @@ export function LogicBuilder() {
             <div className={styles.wireInspector}>
               <p>
                 {circuit.nodes.find((node) => node.id === selectedWireData.from)?.label || "Output"}
-                {" · "}{outputLabel(circuit.nodes.find((node) => node.id === selectedWireData.from)!, selectedWireData.output ?? 0)}
-                {" → "}{circuit.nodes.find((node) => node.id === selectedWireData.to)?.label || "Input"}
-                {" · "}{inputLabel(circuit.nodes.find((node) => node.id === selectedWireData.to)!, selectedWireData.input)}
+                {" · "}
+                {outputLabel(
+                  circuit.nodes.find((node) => node.id === selectedWireData.from)!,
+                  selectedWireData.output ?? 0,
+                )}
+                {" → "}
+                {circuit.nodes.find((node) => node.id === selectedWireData.to)?.label || "Input"}
+                {" · "}
+                {inputLabel(
+                  circuit.nodes.find((node) => node.id === selectedWireData.to)!,
+                  selectedWireData.input,
+                )}
               </p>
               <span>Signal color</span>
               <div className={styles.colorSwatches}>
@@ -1107,9 +1256,18 @@ export function LogicBuilder() {
               {selectedNode.type === "module" && (
                 <div className={styles.modulePorts}>
                   <span>Inputs</span>
-                  {moduleInputs(selectedNode.module!).map((port, index) => <small key={port.id}>{index + 1}. {port.label || `Input ${index + 1}`}</small>)}
+                  {moduleInputs(selectedNode.module!).map((port, index) => (
+                    <small key={port.id}>
+                      {index + 1}. {port.label || `Input ${index + 1}`}
+                    </small>
+                  ))}
                   <span>Outputs</span>
-                  {moduleOutputs(selectedNode.module!).map((port, index) => <small key={port.id}>{index + 1}. {port.label || `Output ${index + 1}`} = {snapshot.outputs[selectedNode.id]?.[index] ? 1 : 0}</small>)}
+                  {moduleOutputs(selectedNode.module!).map((port, index) => (
+                    <small key={port.id}>
+                      {index + 1}. {port.label || `Output ${index + 1}`} ={" "}
+                      {snapshot.outputs[selectedNode.id]?.[index] ? 1 : 0}
+                    </small>
+                  ))}
                 </div>
               )}
               <button type="button" onClick={() => removeNodes()}>

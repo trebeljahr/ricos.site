@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { BLUEPRINTS, BLUEPRINT_FAMILIES, GATE_NAMES, type Circuit, initialSnapshot, PRESETS, step, validateCircuit } from "./logic";
+import {
+  BLUEPRINT_FAMILIES,
+  BLUEPRINTS,
+  type Circuit,
+  GATE_NAMES,
+  initialSnapshot,
+  PRESETS,
+  step,
+  validateCircuit,
+} from "./logic";
 
 describe("logic circuit engine", () => {
   it("evaluates half adder sum and carry through wires", () => {
@@ -51,13 +60,25 @@ describe("logic circuit engine", () => {
         const blueprint = BLUEPRINTS[`${gate.toUpperCase()} from ${family}`];
         if (!blueprint) continue;
         const circuit = structuredClone(blueprint);
-        for (const a of [false, true]) for (const b of [false, true]) {
-          circuit.nodes.find((item) => item.id === "a")!.value = a;
-          const inputB = circuit.nodes.find((item) => item.id === "b");
-          if (inputB) inputB.value = b;
-          const expected = { not: !a, and: a && b, or: a || b, nand: !(a && b), nor: !(a || b), xor: a !== b }[gate];
-          expect(step(circuit, initialSnapshot(), false).values.out, `${family} ${gate} ${Number(a)}${Number(b)}`).toBe(expected);
-        }
+        for (const a of [false, true])
+          for (const b of [false, true]) {
+            circuit.nodes.find((item) => item.id === "a")!.value = a;
+            const inputB = circuit.nodes.find((item) => item.id === "b");
+            if (inputB) inputB.value = b;
+            const expected = {
+              not: !a,
+              and: a && b,
+              or: a || b,
+              nand: !(a && b),
+              nor: !(a || b),
+              xor: a !== b,
+              xnor: a === b,
+            }[gate];
+            expect(
+              step(circuit, initialSnapshot(), false).values.out,
+              `${family} ${gate} ${Number(a)}${Number(b)}`,
+            ).toBe(expected);
+          }
       }
     }
   });
@@ -68,8 +89,20 @@ describe("logic circuit engine", () => {
         expect(parts.every((type) => ["switch", "lamp", "nand"].includes(type))).toBe(true);
       if (circuit.name.endsWith("NOR gates"))
         expect(parts.every((type) => ["switch", "lamp", "nor"].includes(type))).toBe(true);
-      if (circuit.name.endsWith("transistors"))
-        expect(parts.every((type) => ["switch", "high", "lamp", "nmos", "pmos", "junction"].includes(type))).toBe(true);
+      if (circuit.name.endsWith("CMOS transistors")) {
+        expect(
+          parts.every((type) =>
+            ["switch", "high", "ground", "lamp", "nmos", "pmos", "junction"].includes(type),
+          ),
+        ).toBe(true);
+        expect(parts.filter((type) => type === "pmos").length).toBe(
+          parts.filter((type) => type === "nmos").length,
+        );
+      }
+      for (const part of circuit.nodes.filter((item) =>
+        ["nand", "nor", "and", "or", "xor", "xnor"].includes(item.type),
+      ))
+        expect(part.label).toBe(part.type.toUpperCase());
     }
   });
   it("routes two outputs from a half-adder black box independently", () => {
@@ -89,13 +122,16 @@ describe("logic circuit engine", () => {
         { id: "box-carry", from: "box", output: 1, to: "carry", input: 0 },
       ],
     };
-    for (const a of [false, true]) for (const b of [false, true]) {
-      circuit.nodes[0].value = a;
-      circuit.nodes[1].value = b;
-      const values = step(circuit, initialSnapshot(), false).values;
-      expect([values.sum, values.carry]).toEqual([a !== b, a && b]);
-    }
-    expect(validateCircuit(circuit)?.nodes.find((node) => node.id === "box")?.module?.name).toBe("Half adder");
+    for (const a of [false, true])
+      for (const b of [false, true]) {
+        circuit.nodes[0].value = a;
+        circuit.nodes[1].value = b;
+        const values = step(circuit, initialSnapshot(), false).values;
+        expect([values.sum, values.carry]).toEqual([a !== b, a && b]);
+      }
+    expect(validateCircuit(circuit)?.nodes.find((node) => node.id === "box")?.module?.name).toBe(
+      "Half adder",
+    );
     circuit.wires[3].output = 2;
     expect(validateCircuit(circuit)).toBeNull();
   });
@@ -132,7 +168,12 @@ describe("logic circuit engine", () => {
     const circuit: Circuit = {
       name: "Full-adder box",
       nodes: [
-        ...["a", "b", "cin"].map((id, index) => ({ id, type: "switch" as const, x: 0, y: index * 100 })),
+        ...["a", "b", "cin"].map((id, index) => ({
+          id,
+          type: "switch" as const,
+          x: 0,
+          y: index * 100,
+        })),
         { id: "box", type: "module", module: PRESETS["Full adder"], x: 250, y: 100 },
         { id: "sum", type: "lamp", x: 500, y: 0 },
         { id: "carry", type: "lamp", x: 500, y: 100 },
@@ -144,14 +185,16 @@ describe("logic circuit engine", () => {
       ],
     };
     expect(validateCircuit(JSON.parse(JSON.stringify(circuit)))).not.toBeNull();
-    for (const a of [false, true]) for (const b of [false, true]) for (const cin of [false, true]) {
-      circuit.nodes[0].value = a;
-      circuit.nodes[1].value = b;
-      circuit.nodes[2].value = cin;
-      const values = step(circuit, initialSnapshot(), false).values;
-      const total = Number(a) + Number(b) + Number(cin);
-      expect([values.sum, values.carry]).toEqual([total % 2 === 1, total >= 2]);
-    }
+    for (const a of [false, true])
+      for (const b of [false, true])
+        for (const cin of [false, true]) {
+          circuit.nodes[0].value = a;
+          circuit.nodes[1].value = b;
+          circuit.nodes[2].value = cin;
+          const values = step(circuit, initialSnapshot(), false).values;
+          const total = Number(a) + Number(b) + Number(cin);
+          expect([values.sum, values.carry]).toEqual([total % 2 === 1, total >= 2]);
+        }
   });
   it("maps a pulse source to a black-box input", () => {
     const circuit: Circuit = {
@@ -169,5 +212,44 @@ describe("logic circuit engine", () => {
     expect(step(circuit, initialSnapshot(), false).values.out).toBe(true);
     circuit.nodes[0].value = true;
     expect(step(circuit, initialSnapshot(), false).values.out).toBe(false);
+  });
+  it("uses the expected universal-gate counts and complementary CMOS paths", () => {
+    const count = (gate: string, family: string, part: string) =>
+      BLUEPRINTS[`${gate} from ${family}`].nodes.filter((item) => item.type === part).length;
+    expect(
+      ["NOT", "AND", "OR", "NAND", "NOR", "XOR", "XNOR"].map((gate) =>
+        count(gate, "NAND gates", "nand"),
+      ),
+    ).toEqual([1, 2, 3, 1, 4, 4, 5]);
+    expect(
+      ["NOT", "AND", "OR", "NAND", "NOR", "XOR", "XNOR"].map((gate) =>
+        count(gate, "NOR gates", "nor"),
+      ),
+    ).toEqual([1, 3, 2, 4, 1, 5, 4]);
+    for (const gate of ["NOT", "NAND", "NOR", "AND", "OR", "XOR", "XNOR"]) {
+      const circuit = BLUEPRINTS[`${gate} from CMOS transistors`];
+      expect(circuit.nodes.some((item) => item.type === "high")).toBe(true);
+      expect(circuit.nodes.some((item) => item.type === "ground")).toBe(true);
+      expect(
+        circuit.wires.some(
+          (item) =>
+            item.from === "vcc" &&
+            circuit.nodes.find((node) => node.id === item.to)?.type === "pmos",
+        ),
+      ).toBe(true);
+      expect(
+        circuit.wires.some(
+          (item) =>
+            item.from === "gnd" &&
+            circuit.nodes.find((node) => node.id === item.to)?.type === "nmos",
+        ),
+      ).toBe(true);
+    }
+    expect(count("NOT", "CMOS transistors", "pmos")).toBe(1);
+    expect(count("NOT", "CMOS transistors", "nmos")).toBe(1);
+    expect(count("NAND", "CMOS transistors", "pmos")).toBe(2);
+    expect(count("NAND", "CMOS transistors", "nmos")).toBe(2);
+    expect(count("NOR", "CMOS transistors", "pmos")).toBe(2);
+    expect(count("NOR", "CMOS transistors", "nmos")).toBe(2);
   });
 });

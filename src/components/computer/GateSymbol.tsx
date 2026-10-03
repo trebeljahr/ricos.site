@@ -1,8 +1,8 @@
 import type { GateType } from "../../lib/computer/logic";
 
 export function GateSymbol({ type }: { type: GateType }) {
-  const gate = type === "nand" ? "and" : type === "nor" ? "or" : type;
-  const bubble = type === "nand" || type === "nor" || type === "not";
+  const gate = type === "nand" ? "and" : type === "nor" ? "or" : type === "xnor" ? "xor" : type;
+  const bubble = type === "nand" || type === "nor" || type === "not" || type === "xnor";
   return (
     <svg
       viewBox="0 0 64 42"
@@ -15,7 +15,7 @@ export function GateSymbol({ type }: { type: GateType }) {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      {(["and", "or", "xor", "not", "nand", "nor"] as GateType[]).includes(type) && (
+      {(["and", "or", "xor", "xnor", "not", "nand", "nor"] as GateType[]).includes(type) && (
         <>
           {gate === "and" && <path d="M13 5 H30 C50 5 50 37 30 37 H13 Z" />}
           {gate === "or" && <path d="M12 5 Q25 21 12 37 Q34 37 49 21 Q34 5 12 5 Z" />}
@@ -73,7 +73,13 @@ export function GateSymbol({ type }: { type: GateType }) {
         </>
       )}
       {type === "high" && <path d="M32 5 V34 M20 13 H44 M25 20 H39 M29 27 H35" />}
-      {type === "module" && <><rect x="10" y="5" width="44" height="32" rx="3" /><path d="M5 15 H10 M5 27 H10 M54 15 H59 M54 27 H59" /></>}
+      {type === "module" && (
+        <>
+          <rect x="10" y="5" width="44" height="32" rx="3" />
+          <path d="M5 15 H10 M5 27 H10 M54 15 H59 M54 27 H59" />
+        </>
+      )}
+      {type === "ground" && <path d="M32 5 V16 M16 16 H48 M21 23 H43 M27 30 H37" />}
       {type === "junction" && <path d="M8 10 H28 V21 H55 M8 32 H28 V21 M28 21 H29" />}
     </svg>
   );

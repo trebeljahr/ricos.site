@@ -10,6 +10,25 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("circuit depth", () => {
+  it("fits a complex example when its Parts detail icon opens it", () => {
+    render(<LogicBuilder />);
+    const board = screen.getByRole("application", { name: "Circuit canvas" });
+    const viewport = board.parentElement!.parentElement!;
+    Object.defineProperties(viewport, {
+      clientWidth: { configurable: true, value: 1200 },
+      clientHeight: { configurable: true, value: 700 },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "View 8-bit ALU diagram" }));
+    expect((screen.getByRole("textbox", { name: "Circuit name" }) as HTMLInputElement).value).toBe("8-bit ALU");
+    const slices = Array.from({ length: 8 }, (_, bit) =>
+      screen.getByRole("group", { name: `ALU SLICE ${bit} — 1-bit ALU slice part` }));
+    expect(new Set(slices.map((node) => node.style.top)).size).toBe(1);
+    for (let bit = 1; bit < slices.length; bit++)
+      expect(Number.parseFloat(slices[bit].style.left)).toBeGreaterThan(
+        Number.parseFloat(slices[bit - 1].style.left));
+    expect(viewport.scrollLeft).toBeGreaterThan(0);
+    expect(screen.getByText(/^\d+%$/, { selector: "span" }).textContent).not.toBe("100%");
+  });
   it("keeps unfold controls together in View", () => {
     render(<LogicBuilder />);
     const view = screen.getByRole("group", { name: "Circuit view" });

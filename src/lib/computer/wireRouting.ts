@@ -115,6 +115,7 @@ function routePoints(
   end: Point,
   obstacles: Omit<RoutingObstacle, "id">[],
   occupied: Segment[],
+  terminals: Omit<RoutingObstacle, "id">[] = [],
 ) {
   const gap = end.x - start.x;
   const candidates: Point[][] = [];
@@ -145,7 +146,7 @@ function routePoints(
   // Detour lanes can also rescue forward wires blocked by a part.
   const right = start.x + 28;
   const left = end.x - 28;
-  const nearby = obstacles.filter(
+  const nearby = [...obstacles, ...terminals].filter(
     (box) =>
       box.x < Math.max(start.x, end.x) + 60 &&
       box.x + box.width > Math.min(start.x, end.x) - 60 &&
@@ -175,7 +176,7 @@ function routePoints(
       0,
     );
     const score =
-      obstacleHits(points, obstacles) * 100000 +
+      (obstacleHits(points, obstacles) + obstacleHits(points.slice(1, -1), terminals)) * 100000 +
       wireOverlap(points, occupied) * 12 +
       length +
       (points.length - 2) * 8;
@@ -212,6 +213,7 @@ export function routeCircuitWires(
   const paths: Record<string, string> = {};
   const buses: RoutedBus[] = [];
   const occupied: Segment[] = [];
+  const routedPoints: Point[] = [];
   const bundled = new Set<string>();
   if (withBuses) {
     const groups = new Map<string, RoutingWire[]>();
@@ -263,6 +265,7 @@ export function routeCircuitWires(
       if (bestX === null || bestHits > 0) continue;
       const top = Math.min(start.y, ...group.map((wire) => wire.end.y));
       const bottom = Math.max(start.y, ...group.map((wire) => wire.end.y));
+      routedPoints.push(start, { x: bestX, y: top }, { x: bestX, y: bottom }, ...group.map((wire) => wire.end));
       const trunk = [start, { x: bestX, y: start.y }];
       // Two subpaths meet at the junction. No vertical retrace or loop.
       const path = `M ${start.x} ${start.y} L ${bestX} ${start.y} M ${bestX} ${top} L ${bestX} ${bottom}`;
@@ -290,7 +293,11 @@ export function routeCircuitWires(
   for (const wire of wires) {
     if (bundled.has(wire.id)) continue;
     const relevant = obstacles.filter((box) => box.id !== wire.from && box.id !== wire.to);
-    const points = routePoints(wire.start, wire.end, relevant, occupied);
+    // Only the connector stubs may touch their own components. Feedback must
+    // travel outside both bodies, even when the endpoints sit at similar heights.
+    const terminals = obstacles.filter((box) => box.id === wire.from || box.id === wire.to);
+    const points = routePoints(wire.start, wire.end, relevant, occupied, terminals);
+    routedPoints.push(...points);
     for (const bus of buses) {
       for (const { a, b } of segments(points)) {
         if (
@@ -315,5 +322,20 @@ export function routeCircuitWires(
     paths[wire.id] = roundedPath(points);
     occupied.push(...segments(points));
   }
-  return { paths, buses };
+  const bounds = routedPoints.length ? {
+    left: Math.min(...routedPoints.map((point) => point.x)),
+    top: Math.min(...routedPoints.map((point) => point.y)),
+    right: Math.max(...routedPoints.map((point) => point.x)),
+    bottom: Math.max(...routedPoints.map((point) => point.y)),
+  } : undefined;
+  for (const bus of buses) {
+    const seen = new Set<string>();
+    bus.crossings = bus.crossings.filter((point) => {
+      const key = `${point.x}:${point.y}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+  return { paths, buses, bounds };
 }

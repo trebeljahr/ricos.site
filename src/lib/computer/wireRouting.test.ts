@@ -34,6 +34,20 @@ describe("wire routing", () => {
     );
     expect(xCoordinates.every((x) => x >= 100 && x <= 140)).toBe(true);
   });
+  it("keeps a feedback lane outside both endpoint bodies", () => {
+    const { paths } = routeCircuitWires([
+      { id: "feedback", from: "q", to: "next", output: 0,
+        start: { x: 532, y: 158 }, end: { x: 160, y: 158 } },
+    ], [
+      { id: "q", x: 400, y: 100, width: 132, height: 116 },
+      { id: "next", x: 160, y: 100, width: 132, height: 116 },
+    ]);
+    // Previously the return lane ran at y=130, straight through both bodies.
+    const points = [...paths.feedback.matchAll(/(?:M|L|Q) (-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?)/g)]
+      .map((match) => ({ x: Number(match[1]), y: Number(match[2]) }));
+    expect(points.some((point) => point.y <= 72 || point.y >= 244)).toBe(true);
+    expect(points.every((point) => !(point.x > 160 && point.x < 532 && point.y > 100 && point.y < 216))).toBe(true);
+  });
   it("separates parallel wires onto adjacent lanes", () => {
     const wires = ["a", "b"].map((id) => ({
       id,

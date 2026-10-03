@@ -7,13 +7,13 @@ import { type PortRef, portLabelBank, wiringPorts } from "../../lib/computer/por
 import {
   BLUEPRINT_FAMILIES,
   BLUEPRINT_RECIPES,
-  BLUEPRINTS,
+  BLUEPRINTS as sourceBlueprints,
   type BlueprintFamily,
   blueprintGate,
   type Circuit,
   GATE_NAMES,
   type GateType,
-  gateBlueprint,
+  gateBlueprint as sourceGateBlueprint,
   initialSnapshot,
   inputCount,
   inputLabel,
@@ -24,7 +24,7 @@ import {
   type Node,
   outputCount,
   outputLabel,
-  PRESETS,
+  PRESETS as sourcePresets,
   type Snapshot,
   step,
   validateCircuit,
@@ -32,6 +32,8 @@ import {
   type WireColor,
 } from "../../lib/computer/logic";
 import { collectUnfoldableIds, storageCircuit } from "../../lib/computer/circuitHierarchy";
+import { layoutCircuit } from "../../lib/computer/circuitLayout";
+import { nodeWidth, nodeHeight, type DisplayNode } from "../../lib/computer/nodeGeometry";
 import { MEMORY_HINTS } from "../../lib/computer/memoryCircuits";
 import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
 import { ActionIcon } from "./ActionIcon";
@@ -42,12 +44,11 @@ const STORAGE = "ricos-computer-circuits-v1";
 const WIDTH = 900;
 const HEIGHT = 520;
 const NODE_WIDTH = 132;
+const NODE_HEIGHT = 116;
 const MODULE_WIDTH = 300;
-type DisplayNode = Node & { displayWidth?: number; displayHeight?: number };
-const nodeWidth = (node: DisplayNode) => node.displayWidth ?? (
-  node.type === "module" ? MODULE_WIDTH :
-  ["input8", "display8"].includes(node.type) ? 212 :
-  ["input4", "display4"].includes(node.type) ? 156 : NODE_WIDTH);
+const PRESETS = Object.fromEntries(Object.entries(sourcePresets).map(([name, circuit]) => [name, layoutCircuit(circuit)]));
+const BLUEPRINTS = Object.fromEntries(Object.entries(sourceBlueprints).map(([name, circuit]) => [name, layoutCircuit(circuit)]));
+const gateBlueprint = (gate: LogicGate, family: BlueprintFamily) => layoutCircuit(sourceGateBlueprint(gate, family));
 const circuitHints: Record<string, string> = {
   ...MEMORY_HINTS,
   "8-bit half adder": "Adds A and B bit by bit. Each bit has SUM and CARRY outputs.",
@@ -62,7 +63,6 @@ const circuitHints: Record<string, string> = {
   "8-bit binary counter":
     "On each clock edge, the 8-bit value increases by one. Q0 is the least significant bit.",
 };
-const NODE_HEIGHT = 116;
 const MIN_ZOOM = 1e-9;
 const MAX_ZOOM = 1e9;
 const GRID_BASE_STEP = 20;
@@ -178,21 +178,6 @@ const withUpdatedModule = (parent: Circuit, moduleId: string, inner: Circuit): C
     item.id === moduleId ? { ...item, module: clone(inner) } : item,
   ),
 });
-const nodeHeight = (node: DisplayNode) => node.displayHeight ?? (
-  node.type === "module"
-    ? Math.max(
-        NODE_HEIGHT,
-        92 + (
-          inputSide(node) === outputSide(node) && ["left", "right"].includes(inputSide(node))
-            ? inputCount(node) + outputCount(node)
-            : Math.max(inputCount(node), outputCount(node))
-        ) * 25,
-      )
-    : ["input4", "input8", "display4", "display8"].includes(node.type)
-      ? Math.max(node.type.startsWith("display") ? 142 : NODE_HEIGHT, 92 + Math.max(inputCount(node), outputCount(node)) * 24)
-      : ["lamp", "switch", "pulse"].includes(node.type)
-        ? 126
-      : NODE_HEIGHT);
 type PortSide = NonNullable<Node["inputSide"]>;
 const portSides: PortSide[] = ["top", "right", "bottom", "left"];
 const rotatedSide = (side: PortSide, direction: -1 | 1): PortSide =>
@@ -256,7 +241,7 @@ const innerCircuit = (node: Node): Circuit | undefined => {
       { id: "cell-out", from: "cell", to: "out", input: 0 },
     ] };
   if (node.type === "dff" || node.type === "srlatch" || node.type === "dlatch")
-    return storageCircuit(node.type);
+    return layoutCircuit(storageCircuit(node.type));
   if (node.type === "dramcell")
     return { name: "DRAM cell", nodes: [
       { id: "data", type: "switch", x: 0, y: 50, label: "DATA" },
@@ -1011,13 +996,14 @@ export function LogicBuilder() {
     if (!rect) return;
     zoomAt(next, rect.left + rect.width / 2, rect.top + rect.height / 2);
   };
-  const fitCanvas = () => {
+  const pendingFit = useRef(false);
+  const fitCanvas = useCallback(() => {
     const viewport = boardViewport.current;
-    if (!viewport) return;
-    const left = Math.min(0, ...displayNodes.map((node) => node.x)) - 40;
-    const top = Math.min(0, ...displayNodes.map((node) => node.y)) - 40;
-    const right = Math.max(WIDTH, ...displayNodes.map((node) => node.x + nodeWidth(node))) + 40;
-    const bottom = Math.max(HEIGHT, ...displayNodes.map((node) => node.y + nodeHeight(node))) + 40;
+    if (!viewport?.clientWidth || !viewport.clientHeight) return;
+    const left = Math.min(0, routes.bounds?.left ?? 0, ...displayNodes.map((node) => node.x)) - 40;
+    const top = Math.min(0, routes.bounds?.top ?? 0, ...displayNodes.map((node) => node.y)) - 40;
+    const right = Math.max(WIDTH, routes.bounds?.right ?? 0, ...displayNodes.map((node) => node.x + nodeWidth(node))) + 40;
+    const bottom = Math.max(HEIGHT, routes.bounds?.bottom ?? 0, ...displayNodes.map((node) => node.y + nodeHeight(node))) + 40;
     const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM,
       (viewport.clientWidth - 24) / (right - left),
       (viewport.clientHeight - 24) / (bottom - top)));
@@ -1034,7 +1020,12 @@ export function LogicBuilder() {
     queuedScroll.current = target;
     setZoom(next);
     setBounds(framed);
-  };
+  }, [displayNodes, routes.bounds]);
+  useLayoutEffect(() => {
+    if (!pendingFit.current) return;
+    pendingFit.current = false;
+    fitCanvas();
+  }, [fitCanvas]);
   useEffect(() => {
     const viewport = boardViewport.current;
     const workspaceElement = workspace.current;
@@ -1200,6 +1191,7 @@ export function LogicBuilder() {
   };
   const load = (next: Circuit) => {
     portWiring.clear();
+    pendingFit.current = true;
     const copy = clone(next);
     circuitRef.current = copy;
     publish({ ...history.current(), circuit: copy, viewPath: [], unfolded: [] });
@@ -1213,6 +1205,7 @@ export function LogicBuilder() {
   };
   const enterCircuit = (next: Circuit, via: string, moduleId?: string) => {
     portWiring.clear();
+    pendingFit.current = true;
     const parentSnapshot = snapshotRef.current;
     const nextPath = [
       ...viewPath,
@@ -1302,6 +1295,7 @@ export function LogicBuilder() {
     setUnfoldedRestore(undefined);
     restoreViewport();
     const copy = clone(source);
+    pendingFit.current = true;
     moduleInputs(copy).forEach((input) => { input.value = Boolean(innerSnapshot.values[input.id]); });
     circuitRef.current = copy;
     publish({ ...history.current(), circuit: copy, viewPath: [...viewPath, ...levels],

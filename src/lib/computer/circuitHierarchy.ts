@@ -38,6 +38,15 @@ function dffCircuit(): Circuit {
     y: 0,
     label: id.replaceAll("-", " ").toUpperCase(),
   }));
+  const positions: Record<string, [number, number]> = {
+    data: [40, 80], clock: [40, 520],
+    "not-data": [280, 300], "not-clock": [280, 520],
+    "master-set": [520, 80], "master-reset": [520, 300],
+    "master-q": [760, 80], "master-qbar": [760, 300],
+    "slave-set": [1000, 80], "slave-reset": [1000, 300],
+    q: [1240, 80], qbar: [1240, 300], out: [1480, 80],
+  };
+  for (const node of nodes) [node.x, node.y] = positions[node.id];
   const wires: Wire[] = [];
   const link = (from: string, to: string, input = 0) =>
     wires.push({
@@ -130,4 +139,3 @@ export function collectUnfoldableIds(circuit: Circuit, prefix = ""): string[] {
     return GATE_NAMES.includes(item.type as LogicGate) || item.type === "dramcell" ? [id] : [];
   });
 }
-

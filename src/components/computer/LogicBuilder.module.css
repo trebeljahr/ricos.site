@@ -36,12 +36,13 @@
 .canvasControls{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 10px;background:#1b2742;border-bottom:1px solid #455677;color:#dce8f8}.canvasControls button{min-width:29px;padding:4px 7px;border:1px solid #607899;border-radius:4px;background:#2a3b5e;color:#e8f2ff;font-size:11px;font-weight:700;cursor:pointer}.canvasControls button:hover,.canvasControls button[aria-pressed="true"]{border-color:#b7a1ff;background:#465784}.canvasControls span{min-width:39px;text-align:center;font:700 11px ui-monospace,monospace}.canvasControls small{margin-left:auto;color:#aebfdb;font-size:10px}.boardScroll{min-width:0;max-width:100%;touch-action:none;overscroll-behavior:contain}.panMode,.panMode .board,.panMode .node{cursor:grab}.panMode:active,.panMode:active .board,.panMode:active .node{cursor:grabbing}
 
 .nodeType{max-width:100%;overflow:hidden;text-overflow:ellipsis}
-.nodeNameRow{display:flex;align-items:center;justify-content:center;max-width:100%;min-height:16px}
+.nodeNameRow{position:absolute;top:5px;right:5px;left:5px;z-index:4;display:flex;align-items:center;justify-content:flex-end;gap:3px;min-height:16px;pointer-events:none}
 .nodePartName,.nodeLabel{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.nodeLabel{color:#b8c9df;font-size:10px;font-weight:650;cursor:text}
-.node .editName{position:absolute;top:5px;right:5px;z-index:4;border:0;background:transparent;color:#b8c9df;padding:0 3px;font-size:14px;line-height:16px;cursor:pointer}
+.nodeLabel{color:#b8c9df;font-size:10px;font-weight:650;cursor:text;pointer-events:auto}
+.node .editName{flex:none;display:grid;place-items:center;width:20px;height:18px;border:0;background:transparent;color:#b8c9df;padding:1px;cursor:pointer;pointer-events:auto}
+.node .editName svg{width:15px;height:15px}
 .node .editName:hover,.node .editName:focus-visible{color:#fff;outline:1px solid #b8c9df;border-radius:3px}
-.nodeNameInput{min-width:0;width:90px;max-width:100%;box-sizing:border-box;padding:1px 3px;border:1px solid #b8c9df;border-radius:3px;background:#17233d;color:#fff;font:700 10px ui-sans-serif,system-ui,sans-serif}
+.nodeNameInput{min-width:0;width:90px;max-width:100%;box-sizing:border-box;padding:1px 3px;border:1px solid #b8c9df;border-radius:3px;background:#17233d;color:#fff;font:700 10px ui-sans-serif,system-ui,sans-serif;pointer-events:auto}
 .lampState{display:flex;align-items:center;gap:6px}
 .lampState .led{width:27px;height:27px;box-sizing:border-box}
 .nodeBody:has(.lampState) .nodeSymbol{height:22px}

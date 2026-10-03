@@ -1696,15 +1696,62 @@ export function LogicBuilder() {
                           )}
                         </div>
                       ))}
-                      {editingLabel?.id !== node.id && (
-                        <button
-                          type="button"
-                          className={styles.editName}
-                          aria-label={`Edit ${node.label || LABELS[node.type]} label`}
-                          title="Edit label"
-                          onClick={() => setEditingLabel({ id: node.id, value: node.label || "" })}
-                        >✎</button>
-                      )}
+                      <div className={styles.nodeNameRow} onPointerDown={(event) => event.stopPropagation()}>
+                        {editingLabel?.id === node.id ? (
+                          <input
+                            autoFocus
+                            className={styles.nodeNameInput}
+                            aria-label="Part label"
+                            maxLength={30}
+                            value={editingLabel.value}
+                            onChange={(event) => setEditingLabel({ id: node.id, value: event.target.value })}
+                            onBlur={() => {
+                              setCircuit((current) => ({
+                                ...current,
+                                nodes: current.nodes.map((item) =>
+                                  item.id === node.id ? { ...item, label: editingLabel.value.trim() } : item,
+                                ),
+                              }));
+                              setEditingLabel(null);
+                            }}
+                            onKeyDown={(event) => {
+                              event.stopPropagation();
+                              if (event.key === "Enter") event.currentTarget.blur();
+                              if (event.key === "Escape") setEditingLabel(null);
+                            }}
+                          />
+                        ) : (
+                          <>
+                            {node.label && node.label !== (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]) && (
+                              <span
+                                className={styles.nodeLabel}
+                                title="Double-click to edit label"
+                                onDoubleClick={(event) => {
+                                  event.stopPropagation();
+                                  setEditingLabel({ id: node.id, value: node.label || "" });
+                                }}
+                              >{node.label}</span>
+                            )}
+                            <button
+                              type="button"
+                              className={styles.editName}
+                              aria-label={`Edit ${node.label || LABELS[node.type]} label`}
+                              title="Edit label"
+                              onClick={() => setEditingLabel({
+                                id: node.id,
+                                value: node.label === (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type])
+                                  ? ""
+                                  : node.label || "",
+                              })}
+                            >
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <path d="M3 11.5V5a2 2 0 0 1 2-2h6.5a2 2 0 0 1 1.4.6l8.1 8.1a2 2 0 0 1 0 2.8l-6.5 6.5a2 2 0 0 1-2.8 0l-8.1-8.1a2 2 0 0 1-.6-1.4Z" />
+                                <circle cx="7.5" cy="7.5" r="1" />
+                              </svg>
+                            </button>
+                          </>
+                        )}
+                      </div>
                       <div
                         className={clsx(
                           styles.nodeBody,
@@ -1721,41 +1768,6 @@ export function LogicBuilder() {
                         <strong className={styles.nodePartName}>
                           {node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]}
                         </strong>
-                        {(editingLabel?.id === node.id || (node.label && node.label !== (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]))) && <div className={styles.nodeNameRow}>
-                          {editingLabel?.id === node.id ? (
-                            <input
-                              autoFocus
-                              className={styles.nodeNameInput}
-                              aria-label="Part label"
-                              maxLength={30}
-                              value={editingLabel.value}
-                              onChange={(event) => setEditingLabel({ id: node.id, value: event.target.value })}
-                              onBlur={() => {
-                                setCircuit((current) => ({
-                                  ...current,
-                                  nodes: current.nodes.map((item) =>
-                                    item.id === node.id ? { ...item, label: editingLabel.value.trim() } : item,
-                                  ),
-                                }));
-                                setEditingLabel(null);
-                              }}
-                              onKeyDown={(event) => {
-                                event.stopPropagation();
-                                if (event.key === "Enter") event.currentTarget.blur();
-                                if (event.key === "Escape") setEditingLabel(null);
-                              }}
-                            />
-                          ) : node.label ? (
-                            <span
-                              className={styles.nodeLabel}
-                              title="Double-click to edit label"
-                              onDoubleClick={(event) => {
-                                event.stopPropagation();
-                                setEditingLabel({ id: node.id, value: node.label || "" });
-                              }}
-                            >{node.label}</span>
-                          ) : null}
-                        </div>}
                         {node.type === "input4" || node.type === "input8" ? (
                           <div
                             className={styles.numberBits}

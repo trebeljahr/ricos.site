@@ -32,6 +32,7 @@ import {
 import { collectUnfoldableIds } from "../../lib/computer/implementation";
 import { MEMORY_HINTS } from "../../lib/computer/memoryCircuits";
 import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
+import { ActionIcon } from "./ActionIcon";
 import { GateSymbol } from "./GateSymbol";
 import { UnfoldedCanvas } from "./UnfoldedCanvas";
 import styles from "./LogicBuilder.module.css";
@@ -1232,7 +1233,7 @@ export function LogicBuilder() {
         </div>
         <div className={styles.transport}>
           <button type="button" onClick={() => setUnfolded(new Set(collectUnfoldableIds(circuit)))}>
-            Unfold all
+            <ActionIcon name="unfold" /> Unfold all
           </button>
           {hasTransistors && (
             <div className={styles.powerView} aria-label="Power connection display (visual only)">
@@ -1259,13 +1260,13 @@ export function LogicBuilder() {
             onClick={() => setRunning((value) => !value)}
             className={styles.primary}
           >
-            {running ? "Pause" : "Run clock"}
+            <ActionIcon name={running ? "pause" : "play"} /> {running ? "Pause" : "Run clock"}
           </button>
           <button type="button" onClick={() => advance()} disabled={running}>
-            Step ½ cycle
+            <ActionIcon name="step" /> Step ½ cycle
           </button>
           <button type="button" onClick={resetRuntime}>
-            Reset
+            <ActionIcon name="reset" /> Reset
           </button>
           <button
             type="button"
@@ -1273,7 +1274,7 @@ export function LogicBuilder() {
             onClick={clearCanvas}
             disabled={circuit.nodes.length === 0 && circuit.wires.length === 0}
           >
-            Clear canvas
+            <ActionIcon name="clear" /> Clear canvas
           </button>
           <button
             type="button"
@@ -1282,7 +1283,7 @@ export function LogicBuilder() {
             aria-label="Undo"
             title="Undo (⌘/Ctrl+Z)"
           >
-            Undo
+            <ActionIcon name="undo" /> Undo
           </button>
           <button
             type="button"
@@ -1291,7 +1292,7 @@ export function LogicBuilder() {
             aria-label="Redo"
             title="Redo (⌘/Ctrl+Shift+Z)"
           >
-            Redo
+            <ActionIcon name="redo" /> Redo
           </button>
           <button
             type="button"
@@ -1302,7 +1303,7 @@ export function LogicBuilder() {
               setBusWiring(next);
             }}
           >
-            {tidyWiring ? "Simple wiring" : "Clean up wiring"}
+            <ActionIcon name="wiring" /> {tidyWiring ? "Simple wiring" : "Clean up wiring"}
           </button>
           <button
             type="button"
@@ -1319,7 +1320,7 @@ export function LogicBuilder() {
               );
             }}
           >
-            {busWiring ? "Hide buses" : "Fan-out buses"}
+            <ActionIcon name="bus" /> {busWiring ? "Hide buses" : "Fan-out buses"}
           </button>
           <label className={styles.rate}>
             Speed{" "}
@@ -2463,14 +2464,14 @@ export function LogicBuilder() {
                 </div>
               )}
               <button type="button" onClick={() => removeNodes()}>
-                Delete part
+                <ActionIcon name="delete" /> Delete part
               </button>
             </div>
           ) : selected.length > 1 ? (
             <div className={styles.selectedPart}>
               <strong>{selected.length} parts selected</strong>
               <button type="button" onClick={() => removeNodes()}>
-                Delete selected parts
+                <ActionIcon name="delete" /> Delete selected parts
               </button>
             </div>
           ) : (
@@ -2491,10 +2492,10 @@ export function LogicBuilder() {
           {menu.kind === "node" && (
             <>
               <button type="button" role="menuitem" onClick={() => rotatePart(menu.id!, -1)}>
-                Rotate left
+                <ActionIcon name="rotateLeft" /> Rotate left
               </button>
               <button type="button" role="menuitem" onClick={() => rotatePart(menu.id!, 1)}>
-                Rotate right
+                <ActionIcon name="rotateRight" /> Rotate right
               </button>
               <button
                 type="button"
@@ -2503,7 +2504,7 @@ export function LogicBuilder() {
                   removeNodes(selected.includes(menu.id || "") ? selected : [menu.id!])
                 }
               >
-                Delete{" "}
+                <ActionIcon name="delete" /> Delete{" "}
                 {selected.length > 1 && selected.includes(menu.id || "")
                   ? `${selected.length} parts`
                   : "part"}
@@ -2521,7 +2522,7 @@ export function LogicBuilder() {
                   setMenu(null);
                 }}
               >
-                Cut connected wires
+                <ActionIcon name="cut" /> Cut connected wires
               </button>
             </>
           )}
@@ -2561,7 +2562,7 @@ export function LogicBuilder() {
                   setMenu(null);
                 }}
               >
-                Cut wire
+                <ActionIcon name="cut" /> Cut wire
               </button>
             </>
           )}
@@ -2575,10 +2576,10 @@ export function LogicBuilder() {
                   setMenu(null);
                 }}
               >
-                Select all parts
+                <ActionIcon name="selectAll" /> Select all parts
               </button>
               <button type="button" role="menuitem" onClick={() => setMenu(null)}>
-                Close menu
+                <ActionIcon name="close" /> Close menu
               </button>
             </>
           )}

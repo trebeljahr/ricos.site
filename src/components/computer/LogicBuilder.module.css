@@ -168,7 +168,7 @@
 .toolGroupLabel{display:block;width:100%;color:#aebbd3;font-size:10px;font-weight:750;letter-spacing:.08em;text-transform:uppercase}
 .toolGroup button{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:6px 8px}
 .toolGroup button svg{flex:none}
-.toolbar .toolGroup button,.learningMenu summary{box-sizing:border-box;min-height:36px}
+.toolbar .toolGroup button,.learningMenu summary{box-sizing:border-box;height:36px}
 .viewGroup,.fileGroup,.learningGroup,.editGroup,.simulateGroup{max-width:100%}
 .learningMenu{align-self:auto}
 .metrics{margin-left:6px}

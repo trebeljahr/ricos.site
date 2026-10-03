@@ -447,6 +447,15 @@ export function LogicBuilder() {
     kind: "node" | "wire" | "board";
     id?: string;
   } | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!menu) return;
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      if (!menuRef.current?.contains(event.target as globalThis.Node)) setMenu(null);
+    };
+    document.addEventListener("pointerdown", closeOnOutsidePointer, true);
+    return () => document.removeEventListener("pointerdown", closeOnOutsidePointer, true);
+  }, [menu]);
   const rotatePart = (id: string, direction: -1 | 1) => {
     setCircuit((current) => ({
       ...current,
@@ -1566,8 +1575,9 @@ export function LogicBuilder() {
         <span>{LABELS[type]}</span>
       </button>
     ));
-  const selectedNode =
-    selected.length === 1 ? circuit.nodes.find((node) => node.id === selected[0]) : undefined;
+  const menuNode = menu?.kind === "node"
+    ? circuit.nodes.find((node) => node.id === menu.id)
+    : undefined;
   const selectedWireData = circuit.wires.filter((wire) => selectedWires.includes(wire.id));
   const draftTarget = wireDraft ? nearestConnector(wireDraft, wireDraft) : null;
   const draftStart = wireDraft?.from
@@ -1811,7 +1821,7 @@ export function LogicBuilder() {
           <small>Level {viewPath.length + 1}</small>
         </nav>
       )}
-      <div className={clsx(styles.layout, (selectedWireData.length > 0 || selected.length > 0) && styles.layoutWithInspector)}>
+      <div className={styles.layout}>
         <aside className={styles.sidebar} aria-label="Gate palette">
           <h2>Parts</h2>
           <p>Drag onto canvas or click to add</p>
@@ -2155,7 +2165,7 @@ export function LogicBuilder() {
                           onContextMenu={(event) => {
                             event.preventDefault();
                             event.stopPropagation();
-                            setSelectedWires([wire.id]);
+                            setSelectedWires((current) => current.includes(wire.id) ? current : [wire.id]);
                             setMenu({
                               x: event.clientX,
                               y: event.clientY,
@@ -2621,202 +2631,6 @@ export function LogicBuilder() {
             </span>
           </div>
         </div>
-        {(selectedWireData.length > 0 || selected.length > 0) && <aside className={styles.inspector} aria-label="Selection controls">
-          <h2>Selected wires</h2>
-          {selectedWireData.length ? (
-            <div className={styles.wireInspector}>
-              <p>{selectedWireData.length} wire{selectedWireData.length === 1 ? "" : "s"} selected. Shift-click or Command/Ctrl-click to add or remove wires.</p>
-              <span>Signal color</span>
-              <div className={styles.colorSwatches}>
-                {wireColorNames.map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    className={clsx(
-                      styles.colorSwatch,
-                      selectedWireData.every((wire) =>
-                        (wire.color ?? defaultWireColor(wire.from, circuit.nodes)) === color,
-                      ) && styles.colorSelected,
-                    )}
-                    style={{ backgroundColor: WIRE_COLORS[color] }}
-                    aria-label={`Color selected wires ${color}`}
-                    title={color}
-                    onClick={() =>
-                      setCircuit((current) => ({
-                        ...current,
-                        wires: current.wires.map((wire) =>
-                          selectedWires.includes(wire.id) ? { ...wire, color } : wire,
-                        ),
-                      }))
-                    }
-                  />
-                ))}
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setCircuit((current) => ({
-                    ...current,
-                    wires: current.wires.filter((wire) => !selectedWires.includes(wire.id)),
-                  }));
-                  setSelectedWires([]);
-                }}
-              >
-                Cut selected wires
-              </button>
-            </div>
-          ) : (
-            <p>Click a wire to set its color. Shift-click to select more.</p>
-          )}
-          <div className={styles.divider} />
-          <h2>Selected part</h2>
-          {selectedNode ? (
-            <div className={styles.selectedPart}>
-              <strong>
-                {selectedNode.type === "module"
-                  ? selectedNode.module?.name || "Module"
-                  : LABELS[selectedNode.type]}
-              </strong>
-              <label>
-                Represents
-                <input
-                  value={selectedNode.label || ""}
-                  maxLength={30}
-                  onFocus={beginTransaction}
-                  onBlur={endTransaction}
-                  onChange={(event) =>
-                    setCircuit((current) => ({
-                      ...current,
-                      nodes: current.nodes.map((node) =>
-                        node.id === selected[0] ? { ...node, label: event.target.value } : node,
-                      ),
-                    }))
-                  }
-                />
-              </label>
-              {inputCount(selectedNode) > 0 && <label>
-                Input side
-                <select
-                  aria-label="Input side"
-                  value={inputSide(selectedNode)}
-                  onChange={(event) => setCircuit((current) => ({
-                    ...current,
-                    nodes: current.nodes.map((node) => node.id === selectedNode.id
-                      ? { ...node, inputSide: event.target.value as PortSide } : node),
-                  }))}
-                >
-                  {(["left", "top", "right", "bottom"] as const).map((side) =>
-                    <option key={side} value={side}>{side}</option>)}
-                </select>
-              </label>}
-              {outputCount(selectedNode) > 0 && <label>
-                Output side
-                <select
-                  aria-label="Output side"
-                  value={outputSide(selectedNode)}
-                  onChange={(event) => setCircuit((current) => ({
-                    ...current,
-                    nodes: current.nodes.map((node) => node.id === selectedNode.id
-                      ? { ...node, outputSide: event.target.value as PortSide } : node),
-                  }))}
-                >
-                  {(["left", "top", "right", "bottom"] as const).map((side) =>
-                    <option key={side} value={side}>{side}</option>)}
-                </select>
-              </label>}
-              {selectedNode.type === "module" && (
-                <div className={styles.modulePorts}>
-                  {circuitHints[selectedNode.module!.name] && (
-                    <p>{circuitHints[selectedNode.module!.name]}</p>
-                  )}
-                  {circuit.nodes.some((node) => node.id !== selectedNode.id && outputCount(node) === 8) &&
-                    ["A", "B"].some((prefix) => moduleInputs(selectedNode.module!).some((port) => port.label === `${prefix}0`)) && (
-                    <div className={styles.bulkWiring}>
-                      <span>Wire 8 bits at once</span>
-                      <select aria-label="8-bit source" value={busSource}
-                        onChange={(event) => setBusSource(event.target.value)}>
-                        <option value="">Choose 8-bit source</option>
-                        {circuit.nodes.filter((node) => node.id !== selectedNode.id && outputCount(node) === 8)
-                          .map((node) => <option key={node.id} value={node.id}>
-                            {node.label || node.module?.name || LABELS[node.type]}
-                          </option>)}
-                      </select>
-                      {["A", "B"].map((prefix) => {
-                        const ports = moduleInputs(selectedNode.module!);
-                        const start = ports.findIndex((port) => port.label === `${prefix}0`);
-                        if (start < 0 || !Array.from({ length: 8 }, (_, bit) =>
-                          ports[start + bit]?.label === `${prefix}${bit}`).every(Boolean)) return null;
-                        return <button key={prefix} type="button" disabled={!busSource}
-                          onClick={() => connectEightBits(busSource, selectedNode.id, start)}>
-                          Wire bits 0–7 to {prefix}0–{prefix}7
-                        </button>;
-                      })}
-                    </div>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() =>
-                      enterCircuit(
-                        selectedNode.module!,
-                        selectedNode.label || selectedNode.module!.name,
-                        selectedNode.id,
-                      )
-                    }
-                  >
-                    Open internal wiring ↘
-                  </button>
-                  <span>Inputs</span>
-                  {moduleInputs(selectedNode.module!).map((port, index) => (
-                    <small key={port.id}>
-                      {index + 1}. {port.label || `Input ${index + 1}`}
-                    </small>
-                  ))}
-                  <span>Outputs</span>
-                  {moduleOutputs(selectedNode.module!).map((port, index) => (
-                    <small key={port.id}>
-                      {index + 1}. {port.label || `Output ${index + 1}`} ={" "}
-                      {snapshot.outputs[selectedNode.id]?.[index] ? 1 : 0}
-                    </small>
-                  ))}
-                </div>
-              )}
-              {(GATE_NAMES.includes(selectedNode.type as LogicGate) ||
-                (selectedNode.type === "module" &&
-                  blueprintGate(selectedNode.module!) !== null)) && (
-                <div className={styles.resolutionChoices}>
-                  <span>Explore implementation</span>
-                  {(["transistor", "nand", "nor"] as const).map((family) => {
-                    const gate =
-                      selectedNode.type === "module"
-                        ? blueprintGate(selectedNode.module!)!
-                        : (selectedNode.type as LogicGate);
-                    return (
-                      <button
-                        key={family}
-                        type="button"
-                        onClick={() => viewGate(gate, family, selectedNode)}
-                      >
-                        {BLUEPRINT_FAMILIES[family].label} ↘
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-              <button type="button" onClick={() => removeNodes()}>
-                <ActionIcon name="delete" /> Delete part
-              </button>
-            </div>
-          ) : selected.length > 1 ? (
-            <div className={styles.selectedPart}>
-              <strong>{selected.length} parts selected</strong>
-              <button type="button" onClick={() => removeNodes()}>
-                <ActionIcon name="delete" /> Delete selected parts
-              </button>
-            </div>
-          ) : (
-            <p>Click a part to inspect it. Drag a rectangle to select several.</p>
-          )}
-        </aside>}
       </div>
       {dialog && (
         <div className={styles.dialogBackdrop} onMouseDown={(event) => {
@@ -2877,16 +2691,153 @@ export function LogicBuilder() {
       )}
       {menu && (
         <div
+          ref={menuRef}
           className={styles.contextMenu}
           style={{
-            left: Math.min(menu.x, window.innerWidth - 190),
-            top: Math.max(0, Math.min(menu.y, window.innerHeight - 220)),
+            left: Math.max(8, Math.min(menu.x, window.innerWidth - 280)),
+            top: Math.max(8, Math.min(menu.y, window.innerHeight - 360)),
+            maxHeight: "calc(100vh - 16px)",
+            overflowY: "auto",
           }}
           role="menu"
           onContextMenu={(event) => event.preventDefault()}
         >
           {menu.kind === "node" && (
             <>
+              {menuNode && (
+            <div className={styles.contextDetails}>
+              <strong>
+                {menuNode.type === "module"
+                  ? menuNode.module?.name || "Module"
+                  : LABELS[menuNode.type]}
+              </strong>
+              <label>
+                Represents
+                <input
+                  value={menuNode.label || ""}
+                  maxLength={30}
+                  onFocus={beginTransaction}
+                  onBlur={endTransaction}
+                  onChange={(event) =>
+                    setCircuit((current) => ({
+                      ...current,
+                      nodes: current.nodes.map((node) =>
+                        node.id === menuNode.id ? { ...node, label: event.target.value } : node,
+                      ),
+                    }))
+                  }
+                />
+              </label>
+              {inputCount(menuNode) > 0 && <label>
+                Input side
+                <select
+                  aria-label="Input side"
+                  value={inputSide(menuNode)}
+                  onChange={(event) => setCircuit((current) => ({
+                    ...current,
+                    nodes: current.nodes.map((node) => node.id === menuNode.id
+                      ? { ...node, inputSide: event.target.value as PortSide } : node),
+                  }))}
+                >
+                  {(["left", "top", "right", "bottom"] as const).map((side) =>
+                    <option key={side} value={side}>{side}</option>)}
+                </select>
+              </label>}
+              {outputCount(menuNode) > 0 && <label>
+                Output side
+                <select
+                  aria-label="Output side"
+                  value={outputSide(menuNode)}
+                  onChange={(event) => setCircuit((current) => ({
+                    ...current,
+                    nodes: current.nodes.map((node) => node.id === menuNode.id
+                      ? { ...node, outputSide: event.target.value as PortSide } : node),
+                  }))}
+                >
+                  {(["left", "top", "right", "bottom"] as const).map((side) =>
+                    <option key={side} value={side}>{side}</option>)}
+                </select>
+              </label>}
+              {menuNode.type === "module" && (
+                <div className={styles.modulePorts}>
+                  {circuitHints[menuNode.module!.name] && (
+                    <p>{circuitHints[menuNode.module!.name]}</p>
+                  )}
+                  {circuit.nodes.some((node) => node.id !== menuNode.id && outputCount(node) === 8) &&
+                    ["A", "B"].some((prefix) => moduleInputs(menuNode.module!).some((port) => port.label === `${prefix}0`)) && (
+                    <div className={styles.bulkWiring}>
+                      <span>Wire 8 bits at once</span>
+                      <select aria-label="8-bit source" value={busSource}
+                        onChange={(event) => setBusSource(event.target.value)}>
+                        <option value="">Choose 8-bit source</option>
+                        {circuit.nodes.filter((node) => node.id !== menuNode.id && outputCount(node) === 8)
+                          .map((node) => <option key={node.id} value={node.id}>
+                            {node.label || node.module?.name || LABELS[node.type]}
+                          </option>)}
+                      </select>
+                      {["A", "B"].map((prefix) => {
+                        const ports = moduleInputs(menuNode.module!);
+                        const start = ports.findIndex((port) => port.label === `${prefix}0`);
+                        if (start < 0 || !Array.from({ length: 8 }, (_, bit) =>
+                          ports[start + bit]?.label === `${prefix}${bit}`).every(Boolean)) return null;
+                        return <button key={prefix} type="button" disabled={!busSource}
+                          onClick={() => connectEightBits(busSource, menuNode.id, start)}>
+                          Wire bits 0–7 to {prefix}0–{prefix}7
+                        </button>;
+                      })}
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      enterCircuit(
+                        menuNode.module!,
+                        menuNode.label || menuNode.module!.name,
+                        menuNode.id,
+                      )
+                    }
+                  >
+                    Open internal wiring ↘
+                  </button>
+                  <span>Inputs</span>
+                  {moduleInputs(menuNode.module!).map((port, index) => (
+                    <small key={port.id}>
+                      {index + 1}. {port.label || `Input ${index + 1}`}
+                    </small>
+                  ))}
+                  <span>Outputs</span>
+                  {moduleOutputs(menuNode.module!).map((port, index) => (
+                    <small key={port.id}>
+                      {index + 1}. {port.label || `Output ${index + 1}`} ={" "}
+                      {snapshot.outputs[menuNode.id]?.[index] ? 1 : 0}
+                    </small>
+                  ))}
+                </div>
+              )}
+              {(GATE_NAMES.includes(menuNode.type as LogicGate) ||
+                (menuNode.type === "module" &&
+                  blueprintGate(menuNode.module!) !== null)) && (
+                <div className={styles.resolutionChoices}>
+                  <span>Explore implementation</span>
+                  {(["transistor", "nand", "nor"] as const).map((family) => {
+                    const gate =
+                      menuNode.type === "module"
+                        ? blueprintGate(menuNode.module!)!
+                        : (menuNode.type as LogicGate);
+                    return (
+                      <button
+                        key={family}
+                        type="button"
+                        onClick={() => viewGate(gate, family, menuNode)}
+                      >
+                        {BLUEPRINT_FAMILIES[family].label} ↘
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+              )}
               <button type="button" role="menuitem" onClick={() => rotatePart(menu.id!, -1)}>
                 <ActionIcon name="rotateLeft" /> Rotate left
               </button>
@@ -2924,7 +2875,7 @@ export function LogicBuilder() {
           )}
           {menu.kind === "wire" && (
             <>
-              <span className={styles.contextLabel}>Color wire</span>
+              <span className={styles.contextLabel}>Color {selectedWireData.length > 1 && selectedWires.includes(menu.id || "") ? `${selectedWireData.length} wires` : "wire"}</span>
               <div className={styles.contextColors} aria-label="Wire color">
                 {wireColorNames.map((color) => (
                   <button
@@ -2938,7 +2889,9 @@ export function LogicBuilder() {
                       setCircuit((current) => ({
                         ...current,
                         wires: current.wires.map((wire) =>
-                          wire.id === menu.id ? { ...wire, color } : wire,
+                          (selectedWireData.length > 1 && selectedWires.includes(menu.id || "")
+                            ? selectedWires.includes(wire.id) : wire.id === menu.id)
+                            ? { ...wire, color } : wire,
                         ),
                       }));
                       setMenu(null);
@@ -2952,13 +2905,14 @@ export function LogicBuilder() {
                 onClick={() => {
                   setCircuit((current) => ({
                     ...current,
-                    wires: current.wires.filter((wire) => wire.id !== menu.id),
+                    wires: current.wires.filter((wire) => !(selectedWireData.length > 1 && selectedWires.includes(menu.id || "")
+                      ? selectedWires.includes(wire.id) : wire.id === menu.id)),
                   }));
                   setSelectedWires([]);
                   setMenu(null);
                 }}
               >
-                <ActionIcon name="cut" /> Cut wire
+                <ActionIcon name="cut" /> Cut {selectedWireData.length > 1 && selectedWires.includes(menu.id || "") ? "selected wires" : "wire"}
               </button>
             </>
           )}

@@ -37,7 +37,7 @@ describe("circuit depth", () => {
     fireEvent.click(within(parts).getByRole("button", { name: "8-BIT INPUT" }));
     fireEvent.click(within(parts).getByRole("button", { name: "8-bit full adder" }));
     const adder = screen.getByRole("group", { name: /8-bit full adder.*part/i });
-    fireEvent.click(adder);
+    fireEvent.contextMenu(adder, { clientX: 100, clientY: 100 });
     const source = screen.getByLabelText("8-bit source") as HTMLSelectElement;
     fireEvent.change(screen.getByLabelText("8-bit source"), {
       target: { value: source.options[1].value },
@@ -81,6 +81,7 @@ describe("circuit depth", () => {
     );
     expect(within(input).getByRole("button", { name: "Wire from 8-BIT INPUT Bit 0" })
       .parentElement?.style.left).toBe("100%");
+    fireEvent.contextMenu(input, { clientX: 100, clientY: 100 });
     fireEvent.change(screen.getByLabelText("Output side"), { target: { value: "bottom" } });
     expect(within(input).getByRole("button", { name: "Wire from 8-BIT INPUT Bit 0" })
       .parentElement?.style.top).toBe("100%");
@@ -89,6 +90,7 @@ describe("circuit depth", () => {
     const display = screen.getByRole("group", { name: "8-BIT DISPLAY — 8-BIT DISPLAY part" });
     expect(within(display).getByRole("button", { name: "Connect to 8-BIT DISPLAY Bit 0" })
       .parentElement?.style.left).toBe("0%");
+    fireEvent.contextMenu(display, { clientX: 100, clientY: 100 });
     fireEvent.change(screen.getByLabelText("Input side"), { target: { value: "top" } });
     expect(within(display).getByRole("button", { name: "Connect to 8-BIT DISPLAY Bit 0" })
       .parentElement?.style.top).toBe("0%");
@@ -98,6 +100,17 @@ describe("circuit depth", () => {
     const switchPart = switches[switches.length - 1];
     expect(within(switchPart).getByRole("button", { name: "Wire from SWITCH Output" })
       .parentElement?.style.left).toBe("100%");
+  });
+  it("edits a part from its context menu and closes on an outside pointer down", () => {
+    render(<LogicBuilder />);
+    const part = screen.getByRole("group", { name: "SUM — XOR part" });
+    fireEvent.contextMenu(part, { clientX: 100, clientY: 100 });
+    expect(screen.queryByLabelText("Selection controls")).toBeNull();
+    expect(within(screen.getByRole("menu")).getByText("XOR")).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Represents"), { target: { value: "Timer" } });
+    expect(screen.getByRole("group", { name: "Timer — XOR part" })).toBeTruthy();
+    fireEvent.pointerDown(screen.getByRole("application", { name: "Circuit canvas" }));
+    expect(screen.queryByRole("menu")).toBeNull();
   });
   it("starts new parts unnamed and edits or clears a name inline", () => {
     render(<LogicBuilder />);
@@ -196,6 +209,7 @@ describe("circuit depth", () => {
     expect(within(alu).getByText("CARRY IN")).toBeTruthy();
     expect(within(alu).getByText("OUT0")).toBeTruthy();
     expect(within(alu).getByText("CARRY OUT")).toBeTruthy();
+    fireEvent.contextMenu(alu, { clientX: 100, clientY: 100 });
     expect(screen.getByText(/00 AND, 01 OR, 10 XOR, 11 ADD/)).toBeTruthy();
   });
   it("adds example black boxes from Parts and toggles number input bits", () => {
@@ -225,17 +239,11 @@ describe("circuit depth", () => {
     expect(screen.getByLabelText("NAND from NOR gates circuit boundary")).toBeTruthy();
     expect(screen.getAllByRole("group", { name: "NOR — NOR part" })).toHaveLength(4);
 
-    fireEvent.pointerDown(screen.getAllByRole("group", { name: "NOR — NOR part" })[0], {
-      button: 0,
-      pointerId: 1,
-    });
+    fireEvent.contextMenu(screen.getAllByRole("group", { name: "NOR — NOR part" })[0], { clientX: 100, clientY: 100 });
     fireEvent.click(screen.getByRole("button", { name: "NAND only ↘" }));
     expect(screen.getByText("Level 2")).toBeTruthy();
     expect(screen.getByLabelText("NOR from NAND gates circuit boundary")).toBeTruthy();
-    fireEvent.pointerDown(screen.getAllByRole("group", { name: "NAND — NAND part" })[0], {
-      button: 0,
-      pointerId: 2,
-    });
+    fireEvent.contextMenu(screen.getAllByRole("group", { name: "NAND — NAND part" })[0], { clientX: 100, clientY: 100 });
     fireEvent.click(screen.getByRole("button", { name: "CMOS transistors ↘" }));
     expect(screen.getByText("Level 3")).toBeTruthy();
     expect(screen.getByLabelText("NAND from CMOS transistors circuit boundary")).toBeTruthy();
@@ -247,6 +255,7 @@ describe("circuit depth", () => {
   it("opens a black box and returns to the parent circuit", () => {
     render(<LogicBuilder />);
     fireEvent.click(within(screen.getByLabelText("Gate palette")).getByRole("button", { name: "Half adder" }));
+    fireEvent.contextMenu(screen.getByRole("group", { name: "Half adder — Half adder part" }), { clientX: 100, clientY: 100 });
     fireEvent.click(screen.getByRole("button", { name: "Open internal wiring ↘" }));
     expect(screen.getByText("Level 2")).toBeTruthy();
     expect(screen.getAllByRole("group", { name: "SUM — LAMP part" }).length).toBeGreaterThan(0);

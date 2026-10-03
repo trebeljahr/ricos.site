@@ -205,7 +205,7 @@ describe("circuit depth", () => {
     expect(checkCounts()).toBeGreaterThan(expanded);
     fireEvent.click(within(adder).getAllByRole("button", { name: "Refold one level" })[0]);
     expect(checkCounts()).toBe(expanded);
-    fireEvent.click(within(adder).getByRole("button", { name: /Fold .* in place/ }));
+    fireEvent.click(within(adder).getByRole("button", { name: "Refold box" }));
     expect(checkCounts()).toBe(folded);
   }, 20000);
   it("defaults part ports to left and right and lets parts change sides", () => {

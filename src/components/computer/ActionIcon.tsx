@@ -2,14 +2,12 @@ import {
   ArrowDownIcon,
   ArrowUpIcon,
   ArchiveIcon,
-  Component1Icon,
   CounterClockwiseClockIcon,
   Cross1Icon,
   CursorArrowIcon,
   EnterFullScreenIcon,
   ExitFullScreenIcon,
   Link2Icon,
-  LoopIcon,
   LayersIcon,
   PauseIcon,
   PlayIcon,
@@ -35,7 +33,7 @@ type ActionIconName =
   | "selectAll" | "close";
 
 const icons = {
-  unfold: LoopIcon,
+  unfold: EnterFullScreenIcon,
   fold: ExitFullScreenIcon,
   play: PlayIcon,
   pause: PauseIcon,

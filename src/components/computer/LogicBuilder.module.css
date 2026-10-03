@@ -26,9 +26,35 @@
 .resolutionChoices{display:grid;gap:5px;border-top:1px solid #485a7a;padding-top:10px}.resolutionChoices span{font-size:10px;font-weight:700;color:#cfc2ff;text-transform:uppercase}.selectedPart .resolutionChoices button,.selectedPart .modulePorts button{color:#dbe8ff;border-color:#607b9f;text-align:left}.selectedPart .resolutionChoices button:hover,.selectedPart .modulePorts button:hover{border-color:#b7a1ff;background:#35476c}
 .powerView{display:flex;gap:10px;align-items:center;color:#b9c9d2;font-size:11px}.powerView label{display:flex;gap:4px;align-items:center;white-space:nowrap;cursor:pointer}.powerView input{accent-color:#72e3d5}
 .nodeActions{position:absolute;top:3px;right:4px;z-index:3;display:flex;gap:2px}.nodeActions button{border:1px solid #718595;border-radius:3px;background:#273a49;color:#aef2e4;cursor:pointer;font-size:10px;line-height:1;padding:2px 4px}.nodeActions button:hover{background:#385a62;color:#fff}
-.expandedNode{overflow:visible;border-color:#e2b971;cursor:default}.expandedNode:before{right:8px}.inlineCircuit{position:absolute;inset:30px 10px 10px;overflow:visible;border-top:1px solid #e2b97155;cursor:default}.inlineCircuitHeader{display:flex;align-items:center;justify-content:flex-start;gap:12px;height:42px;padding:0 8px;color:#f4dfa9;font-size:14px}.inlineCircuitHeader button{display:inline-flex;align-items:center;gap:5px;border:1px solid #8e789c;border-radius:4px;background:#344466;color:#e8dcff;padding:5px 9px;cursor:pointer;font-size:11px}.inlineCircuitHeader button:hover{background:#465982}.inlineCircuitHeader button:disabled{opacity:.45;cursor:default}
-.inlineDiagram{position:relative}.inlineWires{position:absolute;inset:0;overflow:visible;pointer-events:none;z-index:0}.inlineWires path{fill:none;stroke:#69e2e0;stroke-width:3;opacity:.72}.inlinePart{z-index:1;cursor:default}.inlinePart:active{cursor:default}.inlinePart .input,.inlinePart .output{cursor:default}.inlinePart .nodeBody{min-width:0}
-.activeInlineCircuit{border-top-color:#83e9d7}.inlineCircuitHeader{overflow-x:auto;white-space:nowrap}.inlineCircuitHeader strong{flex:none}.inlineCircuitHeader button,.inlineCircuitHeader select{flex:none}.inlineCircuitHeader select{border:1px solid #8e789c;border-radius:4px;background:#344466;color:#e8dcff;padding:5px;font-size:11px}.inlinePart{cursor:grab}.inlinePart:active{cursor:grabbing}.inlineSelectedPart{outline:2px solid #83e9d7;outline-offset:2px}.inlineWires path{pointer-events:stroke;cursor:pointer}.inlineWires .inlineSelectedWire{stroke:#ffd18a;stroke-width:6;opacity:1}.inlineBoundaryPort{position:absolute;z-index:4;transform:translate(-50%,-50%);border:1px solid #79dfd7;border-radius:4px;background:#263b55;color:#d7fff7;padding:2px 4px;font-size:9px;cursor:pointer}.inlineBoundaryPort:hover{background:#385b6d}.inlinePart .nodeBody input{max-width:95%;font-size:11px}
+.node.expandedNode,.node.expandedNode.active,.node.expandedNode:hover{overflow:visible;isolation:isolate;border-color:#a4adb999;background:rgba(150,158,170,.07);box-shadow:none;cursor:default}
+.node.expandedNode:before{display:none}
+.inlineCircuit{position:absolute;inset:8px 12px 12px;overflow:visible;cursor:default;outline:none}
+.inlineCircuitHeader{display:flex;align-items:center;gap:10px;height:48px;box-sizing:border-box;padding:0 8px 8px;border-bottom:1px solid #a4adb933;color:#dce3ed;font-size:13px}
+.inlineCircuitHeader strong{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.inlineCircuitHeader button{display:inline-flex;flex:none;align-items:center;gap:5px;height:28px;border:1px solid #8395ab66;border-radius:4px;background:#202e4177;color:#d9e8f2;padding:4px 7px;cursor:pointer;font-size:10px;white-space:nowrap}
+.inlineCircuitHeader button:hover{background:#465982}.inlineCircuitHeader button:disabled{opacity:.4;cursor:default}
+.activeInlineCircuit>.inlineCircuitHeader{border-bottom-color:#83e9d766}
+.inlineDiagram{position:relative}
+.inlineWires{position:absolute;inset:0;overflow:visible;pointer-events:none;z-index:0}
+.inlineWires .wire{pointer-events:none;filter:none;stroke-width:2.5;opacity:.8}
+.inlineWires .wireSelected{stroke-width:4;opacity:1}
+.inlineWires .wireHit{stroke:transparent;stroke-width:14}
+.inlineWires .wirePreview{filter:none}
+.inlinePart{z-index:1;isolation:isolate;cursor:grab}
+.inlinePart:active{cursor:grabbing}
+.inlinePart .input,.inlinePart .output{cursor:crosshair}
+.inlinePart .input.pending{background:#84eddb;border-color:#fff;box-shadow:0 0 0 5px #84eddb44}
+.inlinePart .nodeBody.inlinePartBody{padding-top:30px;padding-bottom:10px;gap:5px}
+.inlinePart .nodeBody.inlinePartBody.moduleBody{padding-left:98px;padding-right:98px}
+.inlinePartBody.moduleBody .nodeNameRow{position:static;width:100%;max-width:100%}
+.inlinePart .nodeActions{top:5px;right:6px;z-index:5;gap:4px}
+.inlinePart .nodeActions button{display:grid;place-items:center;width:22px;height:22px;padding:2px}
+.inlineSelectedPart{outline:2px solid #83e9d7;outline-offset:2px}
+.inlineDragging{z-index:10;will-change:transform;transition:none}
+.inlineBoundaryPort{position:absolute;z-index:4;transform:translate(-50%,-50%)}
+.inlineBoundaryButton{max-width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid #79dfd766;border-radius:4px;background:#202e41b3;color:#d7fff7;padding:3px 5px;font:700 9px ui-monospace,monospace;cursor:crosshair}
+.inlineBoundaryButton:hover,.inlineBoundaryButton.pending{background:#385b6d;border-color:#ffe08a}
+.inlineContextMenu{position:absolute;z-index:50;width:170px}
 .viewPath ol{display:flex;align-items:center;gap:5px;min-width:0;overflow-x:auto;margin:0;padding:0;list-style:none}.viewPath li{display:flex;align-items:center;gap:5px;white-space:nowrap}.viewPath li+li:before{content:"/";color:#8fa2c2}.viewPath li button{padding:4px 7px;background:transparent;border-color:transparent;color:#c5d5f0}.viewPath li button:hover{background:#314565;border-color:#7590b4}.viewPath [aria-current="page"]{color:#fff;font-weight:700}
 .numberBits{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:3px;width:100%}
 .numberBit{width:20px;height:21px;border:1px solid #64789b;border-radius:3px;background:#15223c;color:#8091b4;font:700 13px ui-monospace,monospace;cursor:pointer}
@@ -194,9 +220,9 @@
 .board{background:transparent}
 
 /* Port selection is separate from part selection and wire editing. */
-.inlineBoundaryPort[data-wire-target="true"]{background:#ffe08a;border-color:#fff;color:#172337;box-shadow:0 0 0 6px #ffc76a55,0 0 20px #ffc76a88}
-.input[data-port-selected="true"],.output[data-port-selected="true"],.inlineBoundaryPort[data-port-selected="true"]{background:#83e9d7;border-color:#e5fffa;box-shadow:0 0 0 5px #83e9d755}
-.input[data-port-invalid="true"],.output[data-port-invalid="true"],.inlineBoundaryPort[data-port-invalid="true"]{background:#b84451;border-color:#ffb9b5;box-shadow:0 0 0 5px #ff8f8755}
+.inlineBoundaryButton[data-wire-target="true"]{background:#ffe08a;border-color:#fff;color:#172337;box-shadow:0 0 0 6px #ffc76a55,0 0 20px #ffc76a88}
+.input[data-port-selected="true"],.output[data-port-selected="true"],.inlineBoundaryButton[data-port-selected="true"]{background:#83e9d7;border-color:#e5fffa;box-shadow:0 0 0 5px #83e9d755}
+.input[data-port-invalid="true"],.output[data-port-invalid="true"],.inlineBoundaryButton[data-port-invalid="true"]{background:#b84451;border-color:#ffb9b5;box-shadow:0 0 0 5px #ff8f8755}
 .portWirePreview,.inlineWires .portWirePreview{fill:none;stroke:#83e9d7;stroke-width:3;stroke-dasharray:7 5;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 .portWireInvalid,.inlineWires .portWireInvalid{stroke:#ff8f87}
-.inlinePortStatus{position:absolute;top:44px;left:14px;right:14px;z-index:5;color:#b9fff2;font-size:11px;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inlinePortStatus{position:absolute;bottom:2px;left:14px;right:14px;z-index:5;color:#b9fff2;font-size:11px;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

@@ -362,6 +362,44 @@ describe("circuit depth", () => {
     fireEvent.pointerUp(board, { pointerId: 5, pointerType: "mouse", button: 0, clientX: 50, clientY: 50 });
   });
 
+  it("keeps the point under the cursor fixed across batched wheel zooms", () => {
+    render(<LogicBuilder />);
+    const board = screen.getByRole("application", { name: "Circuit canvas" });
+    const viewport = board.parentElement!.parentElement!;
+    Object.defineProperties(viewport, {
+      clientWidth: { configurable: true, value: 900 },
+      clientHeight: { configurable: true, value: 520 },
+    });
+    vi.spyOn(viewport, "getBoundingClientRect").mockReturnValue({
+      left: 0, top: 0, right: 900, bottom: 520, width: 900, height: 520,
+      x: 0, y: 0, toJSON: () => ({}),
+    });
+    const frames: FrameRequestCallback[] = [];
+    const animationFrame = vi.spyOn(window, "requestAnimationFrame")
+      .mockImplementation((callback) => { frames.push(callback); return frames.length; });
+    const pointAt = (x: number, y: number, scale: number) => {
+      const [left, top] = (board.querySelector("svg[viewBox]") as SVGSVGElement)
+        .getAttribute("viewBox")!.split(" ").map(Number);
+      return { x: left + (viewport.scrollLeft + x) / scale,
+        y: top + (viewport.scrollTop + y) / scale };
+    };
+    const anchor = { x: 120, y: 80 };
+    const before = pointAt(anchor.x, anchor.y, 1);
+    act(() => {
+      for (let index = 0; index < 2; index++) {
+        viewport.dispatchEvent(new WheelEvent("wheel", {
+          bubbles: true, cancelable: true, clientX: anchor.x, clientY: anchor.y,
+          deltaY: -Math.log(2) * 100, ctrlKey: true,
+        }));
+      }
+    });
+    act(() => { frames.forEach((frame) => frame(0)); });
+    expect(screen.getByText("400%")).toBeTruthy();
+    expect(pointAt(anchor.x, anchor.y, 4).x).toBeCloseTo(before.x);
+    expect(pointAt(anchor.x, anchor.y, 4).y).toBeCloseTo(before.y);
+    animationFrame.mockRestore();
+  });
+
   it("contains scaled board overflow and consumes native browser zoom gestures", () => {
     const { container } = render(<LogicBuilder />);
     const board = screen.getByRole("application", { name: "Circuit canvas" });

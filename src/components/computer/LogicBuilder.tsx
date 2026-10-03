@@ -535,6 +535,8 @@ export function LogicBuilder() {
   }), [circuit.nodes, expandedDetails]);
   const [selectMode, setSelectMode] = useState(false);
   const [bounds, setBounds] = useState({ left: -2000, top: -2000, right: 3000, bottom: 2500 });
+  const boundsRef = useRef(bounds);
+  boundsRef.current = bounds;
   const canvasWidth = bounds.right - bounds.left;
   const canvasHeight = bounds.bottom - bounds.top;
   const renderScale = Math.max(0.02, Math.min(zoom, 16));
@@ -698,8 +700,8 @@ export function LogicBuilder() {
       const rect = viewport.getBoundingClientRect();
       const left = queuedScroll.current?.left ?? viewport.scrollLeft;
       const top = queuedScroll.current?.top ?? viewport.scrollTop;
-      const pointX = bounds.left + (anchorX - rect.left + left) / old;
-      const pointY = bounds.top + (anchorY - rect.top + top) / old;
+      const pointX = boundsRef.current.left + (anchorX - rect.left + left) / old;
+      const pointY = boundsRef.current.top + (anchorY - rect.top + top) / old;
       const visibleLeft = pointX - (destinationX - rect.left) / next;
       const visibleTop = pointY - (destinationY - rect.top) / next;
       const framed = frameBounds(visibleLeft, visibleTop, next,
@@ -710,6 +712,7 @@ export function LogicBuilder() {
         top: (visibleTop - framed.top) * next,
       };
       zoomRef.current = next;
+      boundsRef.current = framed;
       queuedScroll.current = target;
       setZoom(next);
       setBounds(framed);

@@ -16,17 +16,19 @@ describe("circuit depth", () => {
     fireEvent.click(within(parts).getByRole("button", { name: "SWITCH" }));
     const switches = screen.getAllByRole("group", { name: "SWITCH — SWITCH part" });
     const part = switches[switches.length - 1];
-    expect(within(part).queryByText("SWITCH")).toBeNull();
-    fireEvent.click(within(part).getByRole("button", { name: "Edit SWITCH name" }));
-    const field = within(part).getByRole("textbox", { name: "Part name" });
+    expect(within(part).getByText("SWITCH")).toBeTruthy();
+    fireEvent.click(within(part).getByRole("button", { name: "Edit SWITCH label" }));
+    const field = within(part).getByRole("textbox", { name: "Part label" });
     fireEvent.change(field, { target: { value: "Main power" } });
     fireEvent.keyDown(field, { key: "Enter" });
     expect(within(part).getByText("Main power")).toBeTruthy();
+    expect(within(part).getByText("SWITCH")).toBeTruthy();
     fireEvent.doubleClick(within(part).getByText("Main power"));
-    const renamed = within(part).getByRole("textbox", { name: "Part name" });
+    const renamed = within(part).getByRole("textbox", { name: "Part label" });
     fireEvent.change(renamed, { target: { value: "" } });
     fireEvent.keyDown(renamed, { key: "Enter" });
     expect(within(part).queryByText("Main power")).toBeNull();
+    expect(within(part).getByText("SWITCH")).toBeTruthy();
   });
   it("shows a lamp symbol and binary state", () => {
     render(<LogicBuilder />);

@@ -1667,6 +1667,15 @@ export function LogicBuilder() {
                           )}
                         </div>
                       ))}
+                      {editingLabel?.id !== node.id && (
+                        <button
+                          type="button"
+                          className={styles.editName}
+                          aria-label={`Edit ${node.label || LABELS[node.type]} label`}
+                          title="Edit label"
+                          onClick={() => setEditingLabel({ id: node.id, value: node.label || "" })}
+                        >✎</button>
+                      )}
                       <div
                         className={clsx(
                           styles.nodeBody,
@@ -1680,12 +1689,15 @@ export function LogicBuilder() {
                             <GateSymbol type={node.type} circuitName={node.module?.name} />
                           </span>
                         )}
-                        <div className={styles.nodeNameRow}>
+                        <strong className={styles.nodePartName}>
+                          {node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]}
+                        </strong>
+                        {(editingLabel?.id === node.id || (node.label && node.label !== (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]))) && <div className={styles.nodeNameRow}>
                           {editingLabel?.id === node.id ? (
                             <input
                               autoFocus
                               className={styles.nodeNameInput}
-                              aria-label="Part name"
+                              aria-label="Part label"
                               maxLength={30}
                               value={editingLabel.value}
                               onChange={(event) => setEditingLabel({ id: node.id, value: event.target.value })}
@@ -1705,29 +1717,16 @@ export function LogicBuilder() {
                               }}
                             />
                           ) : node.label ? (
-                            <strong
-                              title="Double-click to edit name"
+                            <span
+                              className={styles.nodeLabel}
+                              title="Double-click to edit label"
                               onDoubleClick={(event) => {
                                 event.stopPropagation();
                                 setEditingLabel({ id: node.id, value: node.label || "" });
                               }}
-                            >{node.label}</strong>
+                            >{node.label}</span>
                           ) : null}
-                          {editingLabel?.id !== node.id && (
-                            <button
-                              type="button"
-                              className={styles.editName}
-                              aria-label={`Edit ${node.label || LABELS[node.type]} name`}
-                              title="Edit name"
-                              onClick={() => setEditingLabel({ id: node.id, value: node.label || "" })}
-                            >✎</button>
-                          )}
-                        </div>
-                        {node.label && node.label !== (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]) && (
-                          <span className={styles.nodeType}>
-                            {node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]}
-                          </span>
-                        )}
+                        </div>}
                         {node.type === "input4" || node.type === "input8" ? (
                           <div
                             className={styles.numberBits}

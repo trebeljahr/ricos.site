@@ -1,10 +1,11 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { buildImplementation, collectUnfoldableIds } from "../../lib/computer/implementation";
 import { type Circuit, LABELS, type Snapshot } from "../../lib/computer/logic";
 import styles from "./UnfoldedCanvas.module.css";
 
 const NODE_WIDTH = 140;
 const NODE_HEIGHT = 64;
+type ViewportState = { zoom: number; left: number; top: number };
 
 type Props = {
   circuit: Circuit;
@@ -12,7 +13,8 @@ type Props = {
   onToggle: (id: string) => void;
   onUnfoldAll: (ids: string[]) => void;
   onFoldAll: () => void;
-  onEnter: (path: string) => void;
+  onEnter: (path: string, view: ViewportState) => void;
+  restoreView?: ViewportState;
   snapshot: Snapshot;
   onToggleSwitch: (id: string) => void;
   showVdd: boolean;
@@ -28,6 +30,7 @@ export function UnfoldedCanvas({
   onUnfoldAll,
   onFoldAll,
   onEnter,
+  restoreView,
   snapshot,
   onToggleSwitch,
   showVdd,
@@ -39,6 +42,21 @@ export function UnfoldedCanvas({
   const [zoom, setZoom] = useState(0.45);
   const [selected, setSelected] = useState<string | null>(null);
   const scroll = useRef<HTMLDivElement>(null);
+  const enter = (path: string) => onEnter(path, {
+    zoom,
+    left: scroll.current?.scrollLeft ?? 0,
+    top: scroll.current?.scrollTop ?? 0,
+  });
+  useEffect(() => {
+    if (!restoreView) return;
+    setZoom(restoreView.zoom);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (scroll.current) {
+        scroll.current.scrollLeft = restoreView.left;
+        scroll.current.scrollTop = restoreView.top;
+      }
+    }));
+  }, [restoreView]);
   const nodes = useMemo(() => new Map(diagram.nodes.map((node) => [node.id, node])), [diagram]);
   const boxes = useMemo(() => new Map(diagram.boxes.map((box) => [box.id, box])), [diagram]);
   const groups = useMemo(
@@ -184,11 +202,11 @@ export function UnfoldedCanvas({
                       role="button"
                       tabIndex={0}
                       aria-label={`Enter ${boxes.get(id)!.label}`}
-                      onClick={() => onEnter(id)}
+                      onClick={() => enter(id)}
                       onKeyDown={(event) => {
                         if (event.key === "Enter" || event.key === " ") {
                           event.preventDefault();
-                          onEnter(id);
+                          enter(id);
                         }
                       }}
                     >
@@ -310,11 +328,11 @@ export function UnfoldedCanvas({
                             role="button"
                             tabIndex={0}
                             aria-label={`Enter ${box.label}`}
-                            onClick={() => onEnter(box.id)}
+                            onClick={() => enter(box.id)}
                             onKeyDown={(event) => {
                               if (event.key === "Enter" || event.key === " ") {
                                 event.preventDefault();
-                                onEnter(box.id);
+                                enter(box.id);
                               }
                             }}
                           >

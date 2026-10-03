@@ -24,8 +24,11 @@ describe("inline circuit unfolding", () => {
     fireEvent.click(screen.getByRole("button", { name: "Unfold FULL ADDER" }));
     expect(screen.getByRole("button", { name: "Unfold HALF ADDER 1" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Enter FULL ADDER" }));
-    expect(screen.getByText("1-bit full adder")).toBeTruthy();
+    expect(screen.getByRole("navigation", { name: "Circuit depth" }).querySelector('[aria-current="page"]')?.textContent).toBe("1-bit full adder");
     fireEvent.click(screen.getByRole("button", { name: /Back/ }));
+    expect(screen.getByRole("button", { name: "Fold FULL ADDER" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Enter FULL ADDER" }));
+    fireEvent.click(screen.getByRole("button", { name: "Return to 8-bit ALU" }));
     expect(screen.getByRole("button", { name: "Fold FULL ADDER" })).toBeTruthy();
   });
 });

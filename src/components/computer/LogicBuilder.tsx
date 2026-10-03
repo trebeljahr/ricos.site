@@ -134,7 +134,8 @@ const palette: GateType[] = [
   "dlatch",
 ];
 const clone = (circuit: Circuit): Circuit => JSON.parse(JSON.stringify(circuit));
-type ViewLevel = { parent: Circuit; snapshot: Snapshot; via: string; moduleId?: string; unfolded: string[] };
+type ViewportState = { zoom: number; left: number; top: number };
+type ViewLevel = { parent: Circuit; snapshot: Snapshot; via: string; moduleId?: string; unfolded: string[]; viewport?: ViewportState; unfoldedViewport?: ViewportState };
 type BuilderDocument = { circuit: Circuit; saved: Record<string, Circuit>; viewPath: ViewLevel[] };
 const withUpdatedModule = (parent: Circuit, moduleId: string, inner: Circuit): Circuit => ({
   ...parent,
@@ -144,7 +145,7 @@ const withUpdatedModule = (parent: Circuit, moduleId: string, inner: Circuit): C
 });
 const nodeHeight = (node: Node) =>
   node.type === "module"
-    ? Math.max(NODE_HEIGHT, 30 + Math.max(inputCount(node), outputCount(node)) * 25)
+    ? Math.max(NODE_HEIGHT, 72 + Math.max(inputCount(node), outputCount(node)) * 25)
     : ["input4", "input8", "display4", "display8"].includes(node.type)
       ? Math.max(NODE_HEIGHT, 54 + Math.max(inputCount(node), outputCount(node)) * 24)
       : ["lamp", "switch", "pulse"].includes(node.type)
@@ -180,7 +181,8 @@ const portPoint = (node: Node, index: number, kind: "input" | "output") => {
   const length = horizontal ? nodeWidth(node) : nodeHeight(node);
   const bitRow = ["input4", "input8", "display4", "display8"].includes(node.type);
   const orderedIndex = horizontal && bitRow ? count - index - 1 : index;
-  const offset = count === 1 ? length / 2 : 16 + orderedIndex * ((length - 32) / (count - 1));
+  const edge = node.type === "module" && !horizontal ? 42 : 16;
+  const offset = count === 1 ? length / 2 : edge + orderedIndex * ((length - edge - 24) / (count - 1));
   return {
     x: node.x + (horizontal ? offset : side === "left" ? 0 : nodeWidth(node)),
     y: node.y + (horizontal ? side === "top" ? 0 : nodeHeight(node) : offset),
@@ -222,6 +224,7 @@ export function LogicBuilder() {
   const [showVdd, setShowVdd] = useState(true);
   const [showGround, setShowGround] = useState(true);
   const [unfolded, setUnfolded] = useState<ReadonlySet<string>>(() => new Set());
+  const [unfoldedRestore, setUnfoldedRestore] = useState<ViewportState | undefined>();
   const [menu, setMenu] = useState<{
     x: number;
     y: number;
@@ -341,6 +344,22 @@ export function LogicBuilder() {
   const boardViewport = useRef<HTMLDivElement>(null);
   const workspace = useRef<HTMLDivElement>(null);
   const zoomRef = useRef(1);
+  const captureViewport = (): ViewportState => ({
+    zoom: zoomRef.current,
+    left: boardViewport.current?.scrollLeft ?? 0,
+    top: boardViewport.current?.scrollTop ?? 0,
+  });
+  const restoreViewport = (state?: ViewportState) => {
+    const next = state ?? { zoom: 1, left: 0, top: 0 };
+    zoomRef.current = next.zoom;
+    setZoom(next.zoom);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (boardViewport.current) {
+        boardViewport.current.scrollLeft = next.left;
+        boardViewport.current.scrollTop = next.top;
+      }
+    }));
+  };
   const queuedScroll = useRef<{ left: number; top: number } | null>(null);
   const zoomFrame = useRef<number | null>(null);
   const spaceHeld = useRef(false);
@@ -594,9 +613,11 @@ export function LogicBuilder() {
     const parentSnapshot = snapshotRef.current;
     const nextPath = [
       ...viewPath,
-      { parent: clone(circuit), snapshot: parentSnapshot, via, moduleId, unfolded: [...unfolded] },
+      { parent: clone(circuit), snapshot: parentSnapshot, via, moduleId, unfolded: [...unfolded], viewport: captureViewport() },
     ];
     setUnfolded(new Set());
+    setUnfoldedRestore(undefined);
+    restoreViewport();
     const copy = clone(next);
     if (moduleId) {
       moduleInputs(copy).forEach((input, port) => {
@@ -624,37 +645,42 @@ export function LogicBuilder() {
     setSnapshot(inner);
     setMessage(`Inside ${via}. Use Back to return.`);
   };
-  const goBack = () => {
-    const level = viewPath.at(-1);
-    if (!level) return;
-    const parent = level.moduleId
-      ? withUpdatedModule(level.parent, level.moduleId, circuit)
-      : level.parent;
-    const restoredUnfolded = new Set(level.unfolded ?? []);
-    if (level.moduleId) {
-      for (const id of restoredUnfolded)
-        if (id.startsWith(`${level.moduleId}/`)) restoredUnfolded.delete(id);
-      for (const id of unfolded) restoredUnfolded.add(`${level.moduleId}/${id}`);
+  const returnToDepth = (depth: number) => {
+    if (depth < 0 || depth >= viewPath.length) return;
+    let parent = circuit;
+    let childSnapshot = snapshotRef.current;
+    let childUnfolded = new Set(unfolded);
+    for (let index = viewPath.length - 1; index >= depth; index--) {
+      const level = viewPath[index];
+      parent = level.moduleId ? withUpdatedModule(level.parent, level.moduleId, parent) : level.parent;
+      const restored = new Set(level.unfolded ?? []);
+      if (level.moduleId) {
+        for (const id of restored)
+          if (id.startsWith(`${level.moduleId}/`)) restored.delete(id);
+        for (const id of childUnfolded) restored.add(`${level.moduleId}/${id}`);
+      }
+      childUnfolded = restored;
+      childSnapshot = level.moduleId
+        ? { ...level.snapshot, modules: { ...level.snapshot.modules, [level.moduleId]: childSnapshot } }
+        : level.snapshot;
     }
-    setUnfolded(restoredUnfolded);
+    const level = viewPath[depth];
+    setUnfolded(childUnfolded);
+    setUnfoldedRestore(level.unfoldedViewport);
+    restoreViewport(level.viewport);
     circuitRef.current = parent;
-    publish({ ...history.current(), circuit: parent, viewPath: viewPath.slice(0, -1) }, false);
+    publish({ ...history.current(), circuit: parent, viewPath: viewPath.slice(0, depth) }, false);
     setRunning(false);
     setSelected(level.moduleId ? [level.moduleId] : []);
     setSelectedWire(null);
     setPending(null);
-    const parentSnapshot = level.moduleId
-      ? {
-          ...level.snapshot,
-          modules: { ...level.snapshot.modules, [level.moduleId]: snapshotRef.current },
-        }
-      : level.snapshot;
-    const restored = step(parent, parentSnapshot, clockRef.current);
+    const restored = step(parent, childSnapshot, clockRef.current);
     snapshotRef.current = restored;
     setSnapshot(restored);
     setMessage(`Back to ${parent.name}.`);
   };
-  const enterModulePath = (path: string) => {
+  const goBack = () => returnToDepth(viewPath.length - 1);
+  const enterModulePath = (path: string, unfoldedViewport?: ViewportState) => {
     let source = circuit;
     let innerSnapshot = snapshotRef.current;
     const levels: ViewLevel[] = [];
@@ -666,12 +692,16 @@ export function LogicBuilder() {
       levels.push({ parent: clone(source), snapshot: innerSnapshot,
         via: part.label || part.module.name, moduleId: part.id,
         unfolded: [...unfolded].filter((entry) => entry.startsWith(parentPrefix))
-          .map((entry) => entry.slice(parentPrefix.length)) });
+          .map((entry) => entry.slice(parentPrefix.length)),
+        viewport: index === 0 ? captureViewport() : undefined,
+        unfoldedViewport: index === 0 ? unfoldedViewport : undefined });
       source = part.module;
       innerSnapshot = innerSnapshot.modules[id] ?? initialSnapshot();
     }
     setUnfolded(new Set([...unfolded].filter((entry) => entry.startsWith(`${path}/`))
       .map((entry) => entry.slice(path.length + 1))));
+    setUnfoldedRestore(undefined);
+    restoreViewport();
     const copy = clone(source);
     moduleInputs(copy).forEach((input) => { input.value = Boolean(innerSnapshot.values[input.id]); });
     circuitRef.current = copy;
@@ -1344,9 +1374,16 @@ export function LogicBuilder() {
           <button type="button" onClick={goBack}>
             ← Back
           </button>
-          <span>
-            {viewPath.map((level) => level.parent.name).join(" / ")} / {circuit.name}
-          </span>
+          <ol>
+            {viewPath.map((level, index) => (
+              <li key={`${index}-${level.moduleId ?? level.via}`}>
+                <button type="button" onClick={() => returnToDepth(index)} aria-label={`Return to ${level.parent.name}`}>
+                  {level.parent.name}
+                </button>
+              </li>
+            ))}
+            <li aria-current="page">{circuit.name}</li>
+          </ol>
           <small>Level {viewPath.length + 1}</small>
         </nav>
       )}
@@ -1448,6 +1485,7 @@ export function LogicBuilder() {
           >
             {unfolded.size > 0 && (
               <UnfoldedCanvas circuit={circuit} unfolded={unfolded}
+                restoreView={unfoldedRestore}
                 onToggle={toggleUnfolded}
                 onUnfoldAll={(ids) => setUnfolded(new Set(ids))}
                 onFoldAll={() => setUnfolded(new Set())}

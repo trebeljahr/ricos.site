@@ -67,6 +67,35 @@ describe("circuit depth", () => {
     expect(JSON.parse(localStorage.getItem("ricos-computer-circuits-v1") || "{}").saved["My logic"]).toBeTruthy();
   });
 
+  it.each(["board", "viewport"])("drops saved circuits onto the %s", (target) => {
+    render(<LogicBuilder />);
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    const dialog = screen.getByRole("dialog", { name: "Save circuit" });
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "Name" }), {
+      target: { value: "Dropped logic" },
+    });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Save circuit" }));
+    const data = new Map<string, string>();
+    const dataTransfer = {
+      setData: (type: string, value: string) => data.set(type, value),
+      getData: (type: string) => data.get(type) ?? "",
+      effectAllowed: "none",
+      dropEffect: "none",
+    };
+    fireEvent.dragStart(within(screen.getByLabelText("Gate palette")).getByRole("button", { name: "Dropped logic" }), { dataTransfer });
+    const board = screen.getByRole("application", { name: "Circuit canvas" });
+    vi.spyOn(board, "getBoundingClientRect").mockReturnValue({
+      x: 0, y: 0, left: 0, top: 0, right: 5000, bottom: 4500,
+      width: 5000, height: 4500, toJSON: () => ({}),
+    });
+    const destination = target === "board" ? board : board.parentElement!.parentElement!;
+    fireEvent.dragOver(destination, { dataTransfer });
+    expect(dataTransfer.dropEffect).toBe("copy");
+    fireEvent.drop(destination, { dataTransfer, clientX: 2400, clientY: 2300 });
+    expect(screen.getAllByRole("group", { name: "Dropped logic — Dropped logic part" })).toHaveLength(1);
+    expect(screen.getByText("Dropped logic added as a black box.")).toBeTruthy();
+  });
+
   it("asks before clearing the canvas and keeps it when cancelled", () => {
     render(<LogicBuilder />);
     const before = screen.getByRole("application", { name: "Circuit canvas" }).querySelectorAll('[role="group"]').length;

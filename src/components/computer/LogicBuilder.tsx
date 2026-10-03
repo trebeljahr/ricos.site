@@ -2166,6 +2166,40 @@ export function LogicBuilder() {
           </div>
           <div
             ref={boardViewport}
+            onDragOver={(event) => {
+              event.preventDefault();
+              event.dataTransfer.dropEffect = "copy";
+            }}
+            onDrop={(event) => {
+              event.preventDefault();
+              const inlinePath = (event.target as Element).closest("[data-inline-path]")
+                ?.getAttribute("data-inline-path") ?? null;
+              const blueprint = event.dataTransfer.getData("application/x-logic-circuit");
+              if (blueprint && (BLUEPRINTS[blueprint] || PRESETS[blueprint])) {
+                insertCircuit(
+                  BLUEPRINTS[blueprint] || PRESETS[blueprint],
+                  boardPoint(event.clientX, event.clientY),
+                  inlinePath,
+                );
+                return;
+              }
+              const moduleName = event.dataTransfer.getData("application/x-logic-module");
+              const moduleSource = moduleName.startsWith("saved:")
+                ? saved[moduleName.slice(6)]
+                : BLUEPRINTS[moduleName] || PRESETS[moduleName];
+              if (moduleSource) {
+                const point = boardPoint(event.clientX, event.clientY);
+                addModule(moduleSource, {
+                  x: point.x - MODULE_WIDTH / 2,
+                  y: point.y - NODE_HEIGHT / 2,
+                }, inlinePath);
+                return;
+              }
+              const type = event.dataTransfer.getData("application/x-logic-gate") as GateType;
+              if (!palette.includes(type)) return;
+              const point = boardPoint(event.clientX, event.clientY);
+              addNode(type, { x: point.x - NODE_WIDTH / 2, y: point.y - NODE_HEIGHT / 2 }, inlinePath);
+            }}
             onScroll={recenterCanvas}
             className={clsx(styles.boardScroll, !selectMode && styles.panMode)}
             onPointerDownCapture={gestureDown}
@@ -2234,40 +2268,6 @@ export function LogicBuilder() {
                   setMarquee(null);
                   setDrag(null);
                   suppressBoardClick.current = false;
-                }}
-                onDragOver={(event) => {
-                  event.preventDefault();
-                  event.dataTransfer.dropEffect = "copy";
-                }}
-                onDrop={(event) => {
-                  event.preventDefault();
-                  const inlinePath = (event.target as Element).closest("[data-inline-path]")
-                    ?.getAttribute("data-inline-path") ?? null;
-                  const blueprint = event.dataTransfer.getData("application/x-logic-circuit");
-                  if (blueprint && (BLUEPRINTS[blueprint] || PRESETS[blueprint])) {
-                    insertCircuit(
-                      BLUEPRINTS[blueprint] || PRESETS[blueprint],
-                      boardPoint(event.clientX, event.clientY),
-                      inlinePath,
-                    );
-                    return;
-                  }
-                  const moduleName = event.dataTransfer.getData("application/x-logic-module");
-                  const moduleSource = moduleName.startsWith("saved:")
-                    ? saved[moduleName.slice(6)]
-                    : BLUEPRINTS[moduleName] || PRESETS[moduleName];
-                  if (moduleSource) {
-                    const point = boardPoint(event.clientX, event.clientY);
-                    addModule(moduleSource, {
-                      x: point.x - MODULE_WIDTH / 2,
-                      y: point.y - NODE_HEIGHT / 2,
-                    }, inlinePath);
-                    return;
-                  }
-                  const type = event.dataTransfer.getData("application/x-logic-gate") as GateType;
-                  if (!palette.includes(type)) return;
-                  const point = boardPoint(event.clientX, event.clientY);
-                  addNode(type, { x: point.x - NODE_WIDTH / 2, y: point.y - NODE_HEIGHT / 2 }, inlinePath);
                 }}
                 onContextMenu={(event) => {
                   event.preventDefault();

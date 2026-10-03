@@ -84,10 +84,12 @@ const palette: GateType[] = [
   "dff",
 ];
 const clone = (circuit: Circuit): Circuit => JSON.parse(JSON.stringify(circuit));
+const nodeHeight = (node: Node) =>
+  node.type === "module" ? Math.max(NODE_HEIGHT, 30 + Math.max(inputCount(node), outputCount(node)) * 25) : NODE_HEIGHT;
 const portY = (node: Node, input: number) =>
-  node.y + (inputCount(node) === 1 ? NODE_HEIGHT / 2 : 15 + input * (48 / Math.max(1, inputCount(node) - 1)));
+  node.y + (inputCount(node) === 1 ? nodeHeight(node) / 2 : 16 + input * ((nodeHeight(node) - 32) / Math.max(1, inputCount(node) - 1)));
 const outY = (node: Node, output: number) =>
-  node.y + (outputCount(node) === 1 ? NODE_HEIGHT / 2 : 15 + output * (48 / Math.max(1, outputCount(node) - 1)));
+  node.y + (outputCount(node) === 1 ? nodeHeight(node) / 2 : 16 + output * ((nodeHeight(node) - 32) / Math.max(1, outputCount(node) - 1)));
 
 export function LogicBuilder() {
   const [circuit, setCircuit] = useState<Circuit>(() => clone(PRESETS["Half adder"]));
@@ -235,8 +237,9 @@ export function LogicBuilder() {
     const next: Node = {
       id: crypto.randomUUID(), type: "module", module: clone(source), label: source.name,
       x: Math.max(0, Math.min(WIDTH - NODE_WIDTH, position?.x ?? 110 + (index % 5) * 155)),
-      y: Math.max(0, Math.min(HEIGHT - NODE_HEIGHT, position?.y ?? 90 + (Math.floor(index / 5) % 5) * 90)),
+      y: 0,
     };
+    next.y = Math.max(0, Math.min(HEIGHT - nodeHeight(next), position?.y ?? 90 + (Math.floor(index / 5) % 5) * 90));
     setCircuit((current) => ({ ...current, nodes: [...current.nodes, next] }));
     setSelected([next.id]);
     setMessage(`${source.name} added as a black box.`);
@@ -245,7 +248,7 @@ export function LogicBuilder() {
     const minX = Math.min(...source.nodes.map((node) => node.x));
     const minY = Math.min(...source.nodes.map((node) => node.y));
     const width = Math.max(...source.nodes.map((node) => node.x)) - minX + NODE_WIDTH;
-    const height = Math.max(...source.nodes.map((node) => node.y)) - minY + NODE_HEIGHT;
+    const height = Math.max(...source.nodes.map((node) => node.y + nodeHeight(node))) - minY;
     const left = Math.max(0, Math.min(WIDTH - width, position.x - width / 2));
     const top = Math.max(0, Math.min(HEIGHT - height, position.y - height / 2));
     const ids = new Map(source.nodes.map((node) => [node.id, crypto.randomUUID()]));
@@ -410,7 +413,9 @@ export function LogicBuilder() {
     );
     const boundedY = Math.max(
       -Math.min(...starts.map((p) => p.y)),
-      Math.min(HEIGHT - NODE_HEIGHT - Math.max(...starts.map((p) => p.y)), dy),
+      Math.min(HEIGHT - Math.max(...Object.entries(active.starts).map(([id, point]) =>
+        point.y + nodeHeight(circuitRef.current.nodes.find((node) => node.id === id)!),
+      )), dy),
     );
     setCircuit((current) => ({
       ...current,
@@ -458,7 +463,7 @@ export function LogicBuilder() {
               node.x < right &&
               node.x + NODE_WIDTH > left &&
               node.y < bottom &&
-              node.y + NODE_HEIGHT > top,
+              node.y + nodeHeight(node) > top,
           )
           .map((node) => node.id),
       );
@@ -682,7 +687,7 @@ export function LogicBuilder() {
                         x: node.x,
                         y: node.y,
                         width: NODE_WIDTH,
-                        height: NODE_HEIGHT,
+                        height: nodeHeight(node),
                       })),
                     ((index % 5) - 2) * 10,
                   );
@@ -783,7 +788,7 @@ export function LogicBuilder() {
                       left: `${(node.x / WIDTH) * 100}%`,
                       top: `${(node.y / HEIGHT) * 100}%`,
                       width: `${(NODE_WIDTH / WIDTH) * 100}%`,
-                      height: `${(NODE_HEIGHT / HEIGHT) * 100}%`,
+                      height: `${(nodeHeight(node) / HEIGHT) * 100}%`,
                     } as React.CSSProperties
                   }
                   onPointerDown={(event) => {
@@ -819,7 +824,7 @@ export function LogicBuilder() {
                       className={styles.input}
                       data-node-id={node.id}
                       data-input={input}
-                      style={{ top: `${((portY(node, input) - node.y) / NODE_HEIGHT) * 100}%` }}
+                      style={{ top: `${((portY(node, input) - node.y) / nodeHeight(node)) * 100}%` }}
                       onPointerDown={(event) =>
                         startWire(event, {
                           to: node.id,
@@ -893,7 +898,7 @@ export function LogicBuilder() {
                       type="button"
                       key={`${node.id}-output-${output}`}
                       className={clsx(styles.output, pending?.from === node.id && pending.output === output && styles.pending)}
-                      style={{ top: `${((outY(node, output) - node.y) / NODE_HEIGHT) * 100}%` }}
+                      style={{ top: `${((outY(node, output) - node.y) / nodeHeight(node)) * 100}%` }}
                       onPointerDown={(event) =>
                         startWire(event, {
                           from: node.id,

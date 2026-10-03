@@ -10,6 +10,23 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("circuit depth", () => {
+  it("extends the canvas when panning toward its edge", () => {
+    render(<LogicBuilder />);
+    const board = screen.getByRole("application", { name: "Circuit canvas" }) as HTMLDivElement;
+    const viewport = board.parentElement!.parentElement!;
+    Object.defineProperties(viewport, {
+      clientWidth: { configurable: true, value: 800 },
+      clientHeight: { configurable: true, value: 600 },
+      scrollWidth: { configurable: true, value: 5000 },
+      scrollHeight: { configurable: true, value: 4500 },
+    });
+    expect(board.style.width).toBe("5000px");
+    viewport.scrollLeft = 0;
+    viewport.scrollTop = 2000;
+    fireEvent.scroll(viewport);
+    expect(board.style.width).toBe("7000px");
+    expect(viewport.scrollLeft).toBe(2000);
+  });
   it("wires an 8-bit source to each full-adder operand in one action", () => {
     render(<LogicBuilder />);
     const parts = screen.getByLabelText("Gate palette");

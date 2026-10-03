@@ -1,6 +1,6 @@
 import Link from "next/link";
 import clsx from "clsx";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useHistoryState } from "../../hooks/useHistoryState";
 import {
   BLUEPRINT_FAMILIES,
@@ -292,14 +292,24 @@ export function LogicBuilder() {
   const [ready, setReady] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [selectMode, setSelectMode] = useState(false);
-  const canvasWidth = Math.max(
-    WIDTH,
-    ...circuit.nodes.map((item) => item.x + nodeWidth(item) + 50),
-  );
-  const canvasHeight = Math.max(
-    HEIGHT,
-    ...circuit.nodes.map((item) => item.y + nodeHeight(item) + 50),
-  );
+  const [bounds, setBounds] = useState({ left: -2000, top: -2000, right: 3000, bottom: 2500 });
+  const canvasWidth = bounds.right - bounds.left;
+  const canvasHeight = bounds.bottom - bounds.top;
+  const previousBounds = useRef(bounds);
+  useEffect(() => {
+    if (!circuit.nodes.length) return;
+    const left = Math.min(...circuit.nodes.map((node) => node.x)) - 300;
+    const top = Math.min(...circuit.nodes.map((node) => node.y)) - 300;
+    const right = Math.max(...circuit.nodes.map((node) => node.x + nodeWidth(node))) + 300;
+    const bottom = Math.max(...circuit.nodes.map((node) => node.y + nodeHeight(node))) + 300;
+    setBounds((current) => left >= current.left && top >= current.top &&
+      right <= current.right && bottom <= current.bottom ? current : {
+        left: Math.min(current.left, left),
+        top: Math.min(current.top, top),
+        right: Math.max(current.right, right),
+        bottom: Math.max(current.bottom, bottom),
+      });
+  }, [circuit.nodes]);
   const routes = useMemo(
     () =>
       routeCircuitWires(
@@ -345,8 +355,8 @@ export function LogicBuilder() {
   const zoomRef = useRef(1);
   const captureViewport = (): ViewportState => ({
     zoom: zoomRef.current,
-    left: boardViewport.current?.scrollLeft ?? 0,
-    top: boardViewport.current?.scrollTop ?? 0,
+    left: (boardViewport.current?.scrollLeft ?? 0) + bounds.left * zoomRef.current,
+    top: (boardViewport.current?.scrollTop ?? 0) + bounds.top * zoomRef.current,
   });
   const restoreViewport = (state?: ViewportState) => {
     const next = state ?? { zoom: 1, left: 0, top: 0 };
@@ -354,9 +364,30 @@ export function LogicBuilder() {
     setZoom(next.zoom);
     requestAnimationFrame(() => requestAnimationFrame(() => {
       if (boardViewport.current) {
-        boardViewport.current.scrollLeft = next.left;
-        boardViewport.current.scrollTop = next.top;
+        boardViewport.current.scrollLeft = next.left - bounds.left * next.zoom;
+        boardViewport.current.scrollTop = next.top - bounds.top * next.zoom;
       }
+    }));
+  };
+  useLayoutEffect(() => {
+    const previous = previousBounds.current;
+    const viewport = boardViewport.current;
+    if (viewport && previous !== bounds) {
+      viewport.scrollLeft += (previous.left - bounds.left) * zoomRef.current;
+      viewport.scrollTop += (previous.top - bounds.top) * zoomRef.current;
+    }
+    previousBounds.current = bounds;
+  }, [bounds]);
+  const growCanvas = () => {
+    const viewport = boardViewport.current;
+    if (!viewport || unfolded.size) return;
+    const margin = 500;
+    const step = 2000;
+    setBounds((current) => ({
+      left: viewport.scrollLeft < margin ? current.left - step : current.left,
+      top: viewport.scrollTop < margin ? current.top - step : current.top,
+      right: viewport.scrollWidth - viewport.clientWidth - viewport.scrollLeft < margin ? current.right + step : current.right,
+      bottom: viewport.scrollHeight - viewport.clientHeight - viewport.scrollTop < margin ? current.bottom + step : current.bottom,
     }));
   };
   const queuedScroll = useRef<{ left: number; top: number } | null>(null);
@@ -422,20 +453,20 @@ export function LogicBuilder() {
   const fitCanvas = () => {
     const viewport = boardViewport.current;
     if (!viewport) return;
-    const next = Math.max(
-      MIN_ZOOM,
-      Math.min(
-        MAX_ZOOM,
-        (viewport.clientWidth - 24) / canvasWidth,
-        (viewport.clientHeight - 24) / canvasHeight,
-      ),
-    );
+    const left = Math.min(0, ...circuit.nodes.map((node) => node.x)) - 40;
+    const top = Math.min(0, ...circuit.nodes.map((node) => node.y)) - 40;
+    const right = Math.max(WIDTH, ...circuit.nodes.map((node) => node.x + nodeWidth(node))) + 40;
+    const bottom = Math.max(HEIGHT, ...circuit.nodes.map((node) => node.y + nodeHeight(node))) + 40;
+    const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM,
+      (viewport.clientWidth - 24) / (right - left),
+      (viewport.clientHeight - 24) / (bottom - top)));
+
     zoomRef.current = next;
     setZoom(next);
     if (zoomFrame.current !== null) cancelAnimationFrame(zoomFrame.current);
     zoomFrame.current = requestAnimationFrame(() => {
-      viewport.scrollLeft = 0;
-      viewport.scrollTop = 0;
+      viewport.scrollLeft = (left - bounds.left) * next - (viewport.clientWidth - (right - left) * next) / 2;
+      viewport.scrollTop = (top - bounds.top) * next - (viewport.clientHeight - (bottom - top) * next) / 2;
       queuedScroll.current = null;
       zoomFrame.current = null;
     });
@@ -516,6 +547,7 @@ export function LogicBuilder() {
   }, [zoomAt]);
 
   useEffect(() => {
+    requestAnimationFrame(() => restoreViewport());
     try {
       const raw = localStorage.getItem(STORAGE);
       if (raw) {
@@ -749,11 +781,8 @@ export function LogicBuilder() {
     const next: Node = {
       id: crypto.randomUUID(),
       type,
-      x: Math.max(0, Math.min(canvasWidth - NODE_WIDTH, position?.x ?? 110 + (index % 5) * 155)),
-      y: Math.max(
-        0,
-        Math.min(canvasHeight - NODE_HEIGHT, position?.y ?? 90 + (Math.floor(index / 5) % 5) * 90),
-      ),
+      x: position?.x ?? 110 + (index % 5) * 155,
+      y: position?.y ?? 90 + (Math.floor(index / 5) % 5) * 90,
       value: false,
       ...(type === "input4" || type === "input8" ? { numberValue: 0 } : {}),
     };
@@ -775,16 +804,10 @@ export function LogicBuilder() {
       id: crypto.randomUUID(),
       type: "module",
       module: clone(source),
-      x: Math.max(0, Math.min(canvasWidth - MODULE_WIDTH, position?.x ?? 70 + (index % 3) * 270)),
+      x: position?.x ?? 70 + (index % 3) * 270,
       y: 0,
     };
-    next.y = Math.max(
-      0,
-      Math.min(
-        canvasHeight - nodeHeight(next),
-        position?.y ?? 90 + (Math.floor(index / 3) % 5) * 90,
-      ),
-    );
+    next.y = position?.y ?? 90 + (Math.floor(index / 3) % 5) * 90;
     setCircuit((current) => ({ ...current, nodes: [...current.nodes, next] }));
     setSelected([next.id]);
     setMessage(`${source.name} added as a black box.`);
@@ -794,8 +817,8 @@ export function LogicBuilder() {
     const minY = Math.min(...source.nodes.map((node) => node.y));
     const width = Math.max(...source.nodes.map((node) => node.x)) - minX + NODE_WIDTH;
     const height = Math.max(...source.nodes.map((node) => node.y + nodeHeight(node))) - minY;
-    const left = Math.max(0, Math.min(canvasWidth - width, position.x - width / 2));
-    const top = Math.max(0, Math.min(canvasHeight - height, position.y - height / 2));
+    const left = position.x - width / 2;
+    const top = position.y - height / 2;
     const ids = new Map(source.nodes.map((node) => [node.id, crypto.randomUUID()]));
     setCircuit((current) => ({
       ...current,
@@ -1097,8 +1120,8 @@ export function LogicBuilder() {
   const boardPoint = (clientX: number, clientY: number) => {
     const rect = board.current!.getBoundingClientRect();
     return {
-      x: ((clientX - rect.left) * canvasWidth) / rect.width,
-      y: ((clientY - rect.top) * canvasHeight) / rect.height,
+      x: bounds.left + ((clientX - rect.left) * canvasWidth) / rect.width,
+      y: bounds.top + ((clientY - rect.top) * canvasHeight) / rect.height,
     };
   };
   const pointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -1119,33 +1142,8 @@ export function LogicBuilder() {
     const rect = board.current.getBoundingClientRect();
     const dx = ((event.clientX - active.x) * canvasWidth) / rect.width;
     const dy = ((event.clientY - active.y) * canvasHeight) / rect.height;
-    const starts = Object.values(active.starts);
-    const boundedX = Math.max(
-      -Math.min(...starts.map((p) => p.x)),
-      Math.min(
-        canvasWidth -
-          Math.max(
-            ...Object.entries(active.starts).map(
-              ([id, point]) =>
-                point.x + nodeWidth(circuitRef.current.nodes.find((node) => node.id === id)!),
-            ),
-          ),
-        dx,
-      ),
-    );
-    const boundedY = Math.max(
-      -Math.min(...starts.map((p) => p.y)),
-      Math.min(
-        canvasHeight -
-          Math.max(
-            ...Object.entries(active.starts).map(
-              ([id, point]) =>
-                point.y + nodeHeight(circuitRef.current.nodes.find((node) => node.id === id)!),
-            ),
-          ),
-        dy,
-      ),
-    );
+    const boundedX = dx;
+    const boundedY = dy;
     setCircuit((current) => ({
       ...current,
       nodes: current.nodes.map((node) =>
@@ -1305,64 +1303,8 @@ export function LogicBuilder() {
               </div>
             </div>
           </details>
-          <button type="button" onClick={() => setUnfolded(new Set(collectUnfoldableIds(circuit)))}>
-            <ActionIcon name="unfold" /> Unfold all
-          </button>
-          {hasTransistors && (
-            <div className={styles.powerView} aria-label="Power connection display (visual only)">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={showVdd}
-                  onChange={(event) => setShowVdd(event.target.checked)}
-                />{" "}
-                Show VDD
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={showGround}
-                  onChange={(event) => setShowGround(event.target.checked)}
-                />{" "}
-                Show GND
-              </label>
-            </div>
-          )}
-          <button
-            type="button"
-            onClick={() => setRunning((value) => !value)}
-            className={styles.primary}
-          >
-            <ActionIcon name={running ? "pause" : "play"} /> {running ? "Pause" : "Run clock"}
-          </button>
-          <button type="button" onClick={() => advance()} disabled={running}>
-            <ActionIcon name="step" /> Step ½ cycle
-          </button>
-          <button type="button" onClick={resetRuntime}>
-            <ActionIcon name="reset" /> Reset
-          </button>
-          <button
-            type="button"
-            className={styles.saveAction}
-            onClick={() => {
-              setSaveName(circuit.name);
-              setDialog("save");
-            }}
-          >
-            <ActionIcon name="save" /> Save
-          </button>
-          <button type="button" onClick={exportCircuit}><ActionIcon name="export" /> Export JSON</button>
-          <button type="button" onClick={() => inputFile.current?.click()}><ActionIcon name="import" /> Import JSON</button>
-          <input
-            ref={inputFile}
-            type="file"
-            accept=".json,application/json"
-            hidden
-            onChange={(event) => {
-              void importCircuit(event.target.files?.[0]);
-              event.target.value = "";
-            }}
-          />
+          <div className={styles.toolGroup} role="group" aria-label="Edit circuit">
+            <span className={styles.toolGroupLabel}>Edit</span>
           <button
             type="button"
             className={styles.clearCanvas}
@@ -1389,6 +1331,57 @@ export function LogicBuilder() {
           >
             <ActionIcon name="redo" /> Redo
           </button>
+          </div>
+          <div className={styles.toolGroup} role="group" aria-label="Simulation">
+            <span className={styles.toolGroupLabel}>Simulate</span>
+          <button
+            type="button"
+            onClick={() => setRunning((value) => !value)}
+            className={styles.primary}
+          >
+            <ActionIcon name={running ? "pause" : "play"} /> {running ? "Pause" : "Run clock"}
+          </button>
+          <button type="button" onClick={() => advance()} disabled={running}>
+            <ActionIcon name="step" /> Step ½ cycle
+          </button>
+          <button type="button" onClick={resetRuntime}>
+            <ActionIcon name="reset" /> Reset
+          </button>
+          <label className={styles.rate}>
+            Speed{" "}
+            <select value={rate} onChange={(event) => setRate(Number(event.target.value))}>
+              <option value={1}>1 Hz</option>
+              <option value={2}>2 Hz</option>
+              <option value={5}>5 Hz</option>
+              <option value={10}>10 Hz</option>
+            </select>
+          </label>
+          </div>
+          <div className={styles.toolGroup} role="group" aria-label="Circuit view">
+            <span className={styles.toolGroupLabel}>View</span>
+          <button type="button" onClick={() => setUnfolded(new Set(collectUnfoldableIds(circuit)))}>
+            <ActionIcon name="unfold" /> Unfold all
+          </button>
+          {hasTransistors && (
+            <div className={styles.powerView} aria-label="Power connection display (visual only)">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showVdd}
+                  onChange={(event) => setShowVdd(event.target.checked)}
+                />{" "}
+                Show VDD
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showGround}
+                  onChange={(event) => setShowGround(event.target.checked)}
+                />{" "}
+                Show GND
+              </label>
+            </div>
+          )}
           <button
             type="button"
             aria-pressed={tidyWiring}
@@ -1417,15 +1410,32 @@ export function LogicBuilder() {
           >
             <ActionIcon name="bus" /> {busWiring ? "Hide buses" : "Fan-out buses"}
           </button>
-          <label className={styles.rate}>
-            Speed{" "}
-            <select value={rate} onChange={(event) => setRate(Number(event.target.value))}>
-              <option value={1}>1 Hz</option>
-              <option value={2}>2 Hz</option>
-              <option value={5}>5 Hz</option>
-              <option value={10}>10 Hz</option>
-            </select>
-          </label>
+          </div>
+          <div className={styles.toolGroup} role="group" aria-label="Circuit files">
+            <span className={styles.toolGroupLabel}>File</span>
+          <button
+            type="button"
+            className={styles.saveAction}
+            onClick={() => {
+              setSaveName(circuit.name);
+              setDialog("save");
+            }}
+          >
+            <ActionIcon name="save" /> Save
+          </button>
+          <button type="button" onClick={exportCircuit}><ActionIcon name="export" /> Export JSON</button>
+          <button type="button" onClick={() => inputFile.current?.click()}><ActionIcon name="import" /> Import JSON</button>
+          <input
+            ref={inputFile}
+            type="file"
+            accept=".json,application/json"
+            hidden
+            onChange={(event) => {
+              void importCircuit(event.target.files?.[0]);
+              event.target.value = "";
+            }}
+          />
+          </div>
         </div>
         <div className={styles.metrics}>
           <span>Cycle {Math.floor(tick / 2)}</span>
@@ -1572,6 +1582,7 @@ export function LogicBuilder() {
           </div>
           <div
             ref={boardViewport}
+            onScroll={growCanvas}
             className={clsx(styles.boardScroll, !selectMode && !unfolded.size && styles.panMode)}
             onPointerDownCapture={unfolded.size ? undefined : gestureDown}
             onPointerMoveCapture={unfolded.size ? undefined : gestureMove}
@@ -1612,6 +1623,7 @@ export function LogicBuilder() {
                 ref={board}
                 className={styles.board}
                 style={{
+                  backgroundPosition: `${-bounds.left}px ${-bounds.top}px`,
                   width: canvasWidth,
                   height: canvasHeight,
                   position: "absolute",
@@ -1709,7 +1721,7 @@ export function LogicBuilder() {
                     <div
                       key={group.id}
                       className={styles.circuitGroup}
-                      style={{ left, top, width: right - left, height: bottom - top }}
+                      style={{ left: left - bounds.left, top: top - bounds.top, width: right - left, height: bottom - top }}
                       aria-label={`${group.label} circuit boundary`}
                     >
                       <span>{group.label}</span>
@@ -1718,7 +1730,7 @@ export function LogicBuilder() {
                 })}
                 <svg
                   className={styles.wires}
-                  viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+                  viewBox={`${bounds.left} ${bounds.top} ${canvasWidth} ${canvasHeight}`}
                   preserveAspectRatio="none"
                   aria-label="Circuit wires"
                 >
@@ -1907,8 +1919,8 @@ export function LogicBuilder() {
                       style={
                         {
                           "--part-accent": partColors[node.type],
-                          left: `${(node.x / canvasWidth) * 100}%`,
-                          top: `${(node.y / canvasHeight) * 100}%`,
+                          left: `${((node.x - bounds.left) / canvasWidth) * 100}%`,
+                          top: `${((node.y - bounds.top) / canvasHeight) * 100}%`,
                           width: `${(nodeWidth(node) / canvasWidth) * 100}%`,
                           height: `${(nodeHeight(node) / canvasHeight) * 100}%`,
                         } as React.CSSProperties
@@ -2247,8 +2259,8 @@ export function LogicBuilder() {
                   <div
                     className={styles.marquee}
                     style={{
-                      left: Math.min(marquee.x, marquee.endX),
-                      top: Math.min(marquee.y, marquee.endY),
+                      left: Math.min(marquee.x, marquee.endX) - bounds.left,
+                      top: Math.min(marquee.y, marquee.endY) - bounds.top,
                       width: Math.abs(marquee.endX - marquee.x),
                       height: Math.abs(marquee.endY - marquee.y),
                     }}

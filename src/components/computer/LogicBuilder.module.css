@@ -62,3 +62,16 @@
 .moduleBody .nodeType{max-width:72px;overflow:hidden;text-overflow:ellipsis}
 .moduleBody .moduleBits{font-size:8px}
 .toolbar .clearCanvas{color:#ffb9b5;background:#382b43;border-color:#805468}.toolbar .clearCanvas:hover:not(:disabled){background:#553449;border-color:#ffaaa1;color:#ffe2df}
+
+/* Keep the lab within the viewport; each panel owns its own overflow. */
+.shell{display:flex;flex-direction:column;width:100%;height:100%;border:0;border-radius:0}
+.toolbar{flex:none}
+.layout{flex:1;min-height:0;grid-template-rows:minmax(0,1fr)}
+.sidebar{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.sidebar .parts{flex:1;min-height:0;overflow-y:auto;align-content:start;overscroll-behavior:contain}
+.sidebarFoot{flex:none}
+.workspace{min-height:0}
+.boardScroll{min-height:0}
+.inspector{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+@media(max-width:1100px){.layout{grid-template-columns:150px minmax(0,1fr) 180px}.inspector{grid-column:auto;border-top:0;border-left:1px solid #344250;display:block}.inspector .divider{display:block}}
+@media(max-width:650px){.layout{display:flex;flex-direction:column}.sidebar{flex:0 0 170px;border-right:0;border-bottom:1px solid #344250}.sidebar .parts{grid-template-columns:repeat(3,minmax(0,1fr))}.workspace{flex:1;min-height:0}.inspector{flex:0 0 140px;overflow-y:auto;border-left:0;border-top:1px solid #344250}.boardScroll{min-height:0}}

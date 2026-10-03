@@ -1,6 +1,5 @@
 import { LogicBuilder } from "@components/computer/LogicBuilder";
 import Layout from "@components/Layout";
-import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
 
 export default function LogicBuilderPage() {
   return (
@@ -10,17 +9,10 @@ export default function LogicBuilderPage() {
       keywords={[]}
       url="computer/logic-builder"
       noindex
-      fillViewport
+      siteChrome={false}
     >
-      <main className="mx-auto w-full max-w-[1600px] px-3 pb-16 pt-5 sm:px-6 sm:pt-8">
-        <ComputerDemoNav current="logic-builder" />
-        <header className="mb-5 mt-4">
-          <h1 className="m-0 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
-            DIGITAL LOGIC LAB
-          </h1>
-        </header>
+      <main className="h-svh w-full overflow-hidden">
         <LogicBuilder />
-        <ComputerDemoNav current="logic-builder" bottom />
       </main>
     </Layout>
   );

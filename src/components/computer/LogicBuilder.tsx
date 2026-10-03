@@ -1,3 +1,4 @@
+import Link from "next/link";
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -1097,7 +1098,7 @@ export function LogicBuilder() {
     <div className={styles.shell}>
       <div className={styles.toolbar}>
         <div className={styles.identity}>
-          <span className={styles.eyebrow}>DIGITAL LOGIC LAB</span>
+          <Link className={styles.eyebrow} href="/computer">← ALL COMPUTER DEMOS</Link>
           <strong>{circuit.name}</strong>
         </div>
         <div className={styles.transport}>

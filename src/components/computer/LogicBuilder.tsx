@@ -210,7 +210,7 @@ export function LogicBuilder() {
   const [rate, setRate] = useState(2);
   const [pending, setPending] = useState<{ from: string; output: number } | null>(null);
   const [wireDraft, setWireDraft] = useState<WireDraft | null>(null);
-  const [selectedWire, setSelectedWire] = useState<string | null>(null);
+  const [selectedWires, setSelectedWires] = useState<string[]>([]);
   const [tidyWiring, setTidyWiring] = useState(true);
   const [busWiring, setBusWiring] = useState(true);
   const [selected, setSelected] = useState<string[]>([]);
@@ -274,7 +274,7 @@ export function LogicBuilder() {
     const next = history.current();
     setRunning(false);
     setSelected([]);
-    setSelectedWire(null);
+    setSelectedWires([]);
     setEditingLabel(null);
     setPending(null);
     setWireDraft(null);
@@ -591,7 +591,7 @@ export function LogicBuilder() {
     setPending(null);
     setWireDraft(null);
     wireDraftRef.current = null;
-    setSelectedWire(null);
+    setSelectedWires([]);
     setSelected([]);
     setMarquee(null);
     setDrag(null);
@@ -607,7 +607,7 @@ export function LogicBuilder() {
     setPending(null);
     setWireDraft(null);
     wireDraftRef.current = null;
-    setSelectedWire(null);
+    setSelectedWires([]);
     setSelected([]);
     resetRuntime();
     setMessage(`${copy.name} loaded.`);
@@ -637,7 +637,7 @@ export function LogicBuilder() {
     publish({ ...history.current(), circuit: copy, viewPath: nextPath }, false);
     setRunning(false);
     setSelected([]);
-    setSelectedWire(null);
+    setSelectedWires([]);
     setPending(null);
     const inner = step(
       copy,
@@ -675,7 +675,7 @@ export function LogicBuilder() {
     publish({ ...history.current(), circuit: parent, viewPath: viewPath.slice(0, depth) }, false);
     setRunning(false);
     setSelected(level.moduleId ? [level.moduleId] : []);
-    setSelectedWire(null);
+    setSelectedWires([]);
     setPending(null);
     const restored = step(parent, childSnapshot, clockRef.current);
     snapshotRef.current = restored;
@@ -711,7 +711,7 @@ export function LogicBuilder() {
     publish({ ...history.current(), circuit: copy, viewPath: [...viewPath, ...levels] }, false);
     setRunning(false);
     setSelected([]);
-    setSelectedWire(null);
+    setSelectedWires([]);
     setPending(null);
     const next = step(copy, innerSnapshot, clockRef.current);
     snapshotRef.current = next;
@@ -939,10 +939,11 @@ export function LogicBuilder() {
         setWireDraft(null);
         wireDraftRef.current = null;
         setSelected([]);
+        setSelectedWires([]);
       }
       if (
         (event.key === "Delete" || event.key === "Backspace") &&
-        selected.length &&
+        (selected.length || selectedWires.length) &&
         !(event.target instanceof HTMLInputElement) &&
         !(event.target instanceof HTMLTextAreaElement)
       ) {
@@ -951,7 +952,12 @@ export function LogicBuilder() {
         setCircuit((current) => ({
           ...current,
           nodes: current.nodes.filter((node) => !removed.has(node.id)),
-          wires: current.wires.filter((wire) => !removed.has(wire.from) && !removed.has(wire.to)),
+          wires: current.wires.filter(
+            (wire) =>
+              !removed.has(wire.from) &&
+              !removed.has(wire.to) &&
+              !selectedWires.includes(wire.id),
+          ),
           groups: current.groups
             ?.map((group) => ({
               ...group,
@@ -960,12 +966,13 @@ export function LogicBuilder() {
             .filter((group) => group.nodeIds.length),
         }));
         setSelected([]);
+        setSelectedWires([]);
         setMenu(null);
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selected, circuit, saved, viewPath]);
+  }, [selected, selectedWires, circuit, saved, viewPath]);
   const save = () => {
     const name = saveName.trim();
     if (!name) return;
@@ -1231,7 +1238,7 @@ export function LogicBuilder() {
     ));
   const selectedNode =
     selected.length === 1 ? circuit.nodes.find((node) => node.id === selected[0]) : undefined;
-  const selectedWireData = circuit.wires.find((wire) => wire.id === selectedWire);
+  const selectedWireData = circuit.wires.filter((wire) => selectedWires.includes(wire.id));
   const draftTarget = wireDraft ? nearestConnector(wireDraft, wireDraft) : null;
   const draftStart = wireDraft?.from
     ? circuit.nodes.find((node) => node.id === wireDraft.from)
@@ -1403,7 +1410,7 @@ export function LogicBuilder() {
           <small>Level {viewPath.length + 1}</small>
         </nav>
       )}
-      <div className={clsx(styles.layout, (selectedWireData || selected.length > 0) && styles.layoutWithInspector)}>
+      <div className={clsx(styles.layout, (selectedWireData.length > 0 || selected.length > 0) && styles.layoutWithInspector)}>
         <aside className={styles.sidebar} aria-label="Gate palette">
           <h2>Parts</h2>
           <p>Drag onto canvas or click to add</p>
@@ -1761,20 +1768,24 @@ export function LogicBuilder() {
                           className={styles.wireHit}
                           role="button"
                           tabIndex={0}
+                          aria-pressed={selectedWires.includes(wire.id)}
                           aria-label={`Select wire from ${from.label || LABELS[from.type]} ${outputLabel(from, wire.output ?? 0)} to ${to.label || LABELS[to.type]} ${inputLabel(to, wire.input)}`}
                           onKeyDown={(event) => {
-                            if (event.key === "Enter") setSelectedWire(wire.id);
-                            if (event.key === "Delete") {
-                              setCircuit((current) => ({
-                                ...current,
-                                wires: current.wires.filter((item) => item.id !== wire.id),
-                              }));
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              setSelectedWires((current) =>
+                                event.shiftKey || event.metaKey || event.ctrlKey
+                                  ? current.includes(wire.id)
+                                    ? current.filter((id) => id !== wire.id)
+                                    : [...current, wire.id]
+                                  : [wire.id],
+                              );
                             }
                           }}
                           onContextMenu={(event) => {
                             event.preventDefault();
                             event.stopPropagation();
-                            setSelectedWire(wire.id);
+                            setSelectedWires([wire.id]);
                             setMenu({
                               x: event.clientX,
                               y: event.clientY,
@@ -1789,11 +1800,17 @@ export function LogicBuilder() {
                               wires: current.wires.filter((item) => item.id !== wire.id),
                             }));
                             setMessage("Wire removed.");
-                            setSelectedWire(null);
+                            setSelectedWires((current) => current.filter((id) => id !== wire.id));
                           }}
                           onClick={(event) => {
                             event.stopPropagation();
-                            setSelectedWire(wire.id);
+                            setSelectedWires((current) =>
+                              event.shiftKey || event.metaKey || event.ctrlKey
+                                ? current.includes(wire.id)
+                                  ? current.filter((id) => id !== wire.id)
+                                  : [...current, wire.id]
+                                : [wire.id],
+                            );
                             setSelected([]);
                             setMenu(null);
                           }}
@@ -1805,7 +1822,7 @@ export function LogicBuilder() {
                             (snapshot.outputs[wire.from]?.[wire.output ?? 0] ??
                               snapshot.values[wire.from]) &&
                               styles.live,
-                            selectedWire === wire.id && styles.wireSelected,
+                            selectedWires.includes(wire.id) && styles.wireSelected,
                           )}
                         />
                       </g>
@@ -1888,7 +1905,7 @@ export function LogicBuilder() {
                           ),
                         });
                         setSelected(ids);
-                        setSelectedWire(null);
+                        setSelectedWires([]);
                         setMenu(null);
                       }}
                       onContextMenu={(event) => {
@@ -2224,25 +2241,11 @@ export function LogicBuilder() {
             </span>
           </div>
         </div>
-        {(selectedWireData || selected.length > 0) && <aside className={styles.inspector} aria-label="Selection controls">
-          <h2>Selected wire</h2>
-          {selectedWireData ? (
+        {(selectedWireData.length > 0 || selected.length > 0) && <aside className={styles.inspector} aria-label="Selection controls">
+          <h2>Selected wires</h2>
+          {selectedWireData.length ? (
             <div className={styles.wireInspector}>
-              <p>
-                {circuit.nodes.find((node) => node.id === selectedWireData.from)?.label || "Output"}
-                {" · "}
-                {outputLabel(
-                  circuit.nodes.find((node) => node.id === selectedWireData.from)!,
-                  selectedWireData.output ?? 0,
-                )}
-                {" → "}
-                {circuit.nodes.find((node) => node.id === selectedWireData.to)?.label || "Input"}
-                {" · "}
-                {inputLabel(
-                  circuit.nodes.find((node) => node.id === selectedWireData.to)!,
-                  selectedWireData.input,
-                )}
-              </p>
+              <p>{selectedWireData.length} wire{selectedWireData.length === 1 ? "" : "s"} selected. Shift-click or Command/Ctrl-click to add or remove wires.</p>
               <span>Signal color</span>
               <div className={styles.colorSwatches}>
                 {wireColorNames.map((color) => (
@@ -2251,18 +2254,18 @@ export function LogicBuilder() {
                     type="button"
                     className={clsx(
                       styles.colorSwatch,
-                      (selectedWireData.color ??
-                        defaultWireColor(selectedWireData.from, circuit.nodes)) === color &&
-                        styles.colorSelected,
+                      selectedWireData.every((wire) =>
+                        (wire.color ?? defaultWireColor(wire.from, circuit.nodes)) === color,
+                      ) && styles.colorSelected,
                     )}
                     style={{ backgroundColor: WIRE_COLORS[color] }}
-                    aria-label={`Color wire ${color}`}
+                    aria-label={`Color selected wires ${color}`}
                     title={color}
                     onClick={() =>
                       setCircuit((current) => ({
                         ...current,
                         wires: current.wires.map((wire) =>
-                          wire.id === selectedWire ? { ...wire, color } : wire,
+                          selectedWires.includes(wire.id) ? { ...wire, color } : wire,
                         ),
                       }))
                     }
@@ -2274,16 +2277,16 @@ export function LogicBuilder() {
                 onClick={() => {
                   setCircuit((current) => ({
                     ...current,
-                    wires: current.wires.filter((wire) => wire.id !== selectedWire),
+                    wires: current.wires.filter((wire) => !selectedWires.includes(wire.id)),
                   }));
-                  setSelectedWire(null);
+                  setSelectedWires([]);
                 }}
               >
-                Cut wire
+                Cut selected wires
               </button>
             </div>
           ) : (
-            <p>Click a wire to set its color.</p>
+            <p>Click a wire to set its color. Shift-click to select more.</p>
           )}
           <div className={styles.divider} />
           <h2>Selected part</h2>
@@ -2571,7 +2574,7 @@ export function LogicBuilder() {
                     ...current,
                     wires: current.wires.filter((wire) => wire.id !== menu.id),
                   }));
-                  setSelectedWire(null);
+                  setSelectedWires([]);
                   setMenu(null);
                 }}
               >

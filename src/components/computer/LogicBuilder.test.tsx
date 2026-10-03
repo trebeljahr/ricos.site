@@ -10,6 +10,20 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("circuit depth", () => {
+  it("wires an 8-bit source to each full-adder operand in one action", () => {
+    render(<LogicBuilder />);
+    const parts = screen.getByLabelText("Gate palette");
+    fireEvent.click(within(parts).getByRole("button", { name: "8-BIT INPUT" }));
+    fireEvent.click(within(parts).getByRole("button", { name: "8-bit full adder" }));
+    const adder = screen.getByRole("group", { name: /8-bit full adder.*part/i });
+    fireEvent.click(adder);
+    const source = screen.getByLabelText("8-bit source") as HTMLSelectElement;
+    fireEvent.change(screen.getByLabelText("8-bit source"), {
+      target: { value: source.options[1].value },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Wire bits 0–7 to A0–A7" }));
+    expect(screen.getByText("Connected bits 0–7 to 8-bit full adder.")).toBeTruthy();
+  });
   it("places input and display ports on wide defaults and lets parts change sides", () => {
     render(<LogicBuilder />);
     const parts = screen.getByLabelText("Gate palette");

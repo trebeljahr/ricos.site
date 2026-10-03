@@ -6,6 +6,7 @@ import {
   type Circuit,
   GATE_NAMES,
   initialSnapshot,
+  moduleInputs,
   type Node,
   PRESETS,
   step,
@@ -121,6 +122,12 @@ describe("logic circuit engine", () => {
     }
   });
   it("evaluates the 8-bit arithmetic, mux, and ALU examples", () => {
+    for (const name of ["8-bit half adder", "8-bit full adder", "8-bit ALU"]) {
+      expect(moduleInputs(PRESETS[name]).map((port) => port.label).slice(0, 16)).toEqual([
+        ...Array.from({ length: 8 }, (_, bit) => `A${bit}`),
+        ...Array.from({ length: 8 }, (_, bit) => `B${bit}`),
+      ]);
+    }
     const run = (name: string, a: number, b: number, control: Record<string, boolean> = {}) => {
       const circuit = PRESETS[name];
       expect(validateCircuit(circuit), name).not.toBeNull();

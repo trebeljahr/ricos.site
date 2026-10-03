@@ -530,6 +530,15 @@ function modularBusCircuit(kind: "half" | "full" | "alu"): Circuit {
       link(box, `carry${bit}`, 0, 1);
     }
   }
+  // Module ports follow node order. Keep each operand's bits together.
+  const inputs = circuit.nodes.filter((item) => item.type === "switch");
+  const otherNodes = circuit.nodes.filter((item) => item.type !== "switch");
+  circuit.nodes = [
+    ...Array.from({ length: 8 }, (_, bit) => inputs.find((item) => item.id === `a${bit}`)!),
+    ...Array.from({ length: 8 }, (_, bit) => inputs.find((item) => item.id === `b${bit}`)!),
+    ...inputs.filter((item) => !/^([ab][0-7])$/.test(item.id)),
+    ...otherNodes,
+  ];
   if (kind !== "half") {
     add("cout", "lamp", 850, 30, "CARRY OUT");
     link(carry, "cout", 0, 1);

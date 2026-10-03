@@ -211,6 +211,7 @@ export function LogicBuilder() {
   const [tidyWiring, setTidyWiring] = useState(true);
   const [busWiring, setBusWiring] = useState(true);
   const [selected, setSelected] = useState<string[]>([]);
+  const [busSource, setBusSource] = useState("");
   const [editingLabel, setEditingLabel] = useState<{ id: string; value: string } | null>(null);
   const [search, setSearch] = useState("");
   const [circuitSearch, setCircuitSearch] = useState("");
@@ -814,6 +815,25 @@ export function LogicBuilder() {
     }));
     setPending(null);
     setMessage("Wire connected.");
+  };
+  const connectEightBits = (sourceId: string, targetId: string, startInput: number) => {
+    const source = circuit.nodes.find((item) => item.id === sourceId);
+    const target = circuit.nodes.find((item) => item.id === targetId);
+    if (!source || !target || sourceId === targetId || outputCount(source) !== 8 ||
+        startInput + 8 > inputCount(target)) return;
+    setCircuit((current) => ({
+      ...current,
+      wires: [
+        ...current.wires.filter((wire) => wire.to !== targetId ||
+          wire.input < startInput || wire.input >= startInput + 8),
+        ...Array.from({ length: 8 }, (_, bit) => ({
+          id: crypto.randomUUID(), from: sourceId, to: targetId,
+          input: startInput + bit, output: bit,
+          color: defaultWireColor(sourceId, current.nodes),
+        })),
+      ],
+    }));
+    setMessage(`Connected bits 0–7 to ${target.label || target.module?.name || LABELS[target.type]}.`);
   };
   const startWire = (event: React.PointerEvent<HTMLButtonElement>, draft: WireDraft) => {
     if (event.button !== 0 || event.pointerType === "touch") return;
@@ -2368,6 +2388,30 @@ export function LogicBuilder() {
                 <div className={styles.modulePorts}>
                   {circuitHints[selectedNode.module!.name] && (
                     <p>{circuitHints[selectedNode.module!.name]}</p>
+                  )}
+                  {circuit.nodes.some((node) => node.id !== selectedNode.id && outputCount(node) === 8) &&
+                    ["A", "B"].some((prefix) => moduleInputs(selectedNode.module!).some((port) => port.label === `${prefix}0`)) && (
+                    <div className={styles.bulkWiring}>
+                      <span>Wire 8 bits at once</span>
+                      <select aria-label="8-bit source" value={busSource}
+                        onChange={(event) => setBusSource(event.target.value)}>
+                        <option value="">Choose 8-bit source</option>
+                        {circuit.nodes.filter((node) => node.id !== selectedNode.id && outputCount(node) === 8)
+                          .map((node) => <option key={node.id} value={node.id}>
+                            {node.label || node.module?.name || LABELS[node.type]}
+                          </option>)}
+                      </select>
+                      {["A", "B"].map((prefix) => {
+                        const ports = moduleInputs(selectedNode.module!);
+                        const start = ports.findIndex((port) => port.label === `${prefix}0`);
+                        if (start < 0 || !Array.from({ length: 8 }, (_, bit) =>
+                          ports[start + bit]?.label === `${prefix}${bit}`).every(Boolean)) return null;
+                        return <button key={prefix} type="button" disabled={!busSource}
+                          onClick={() => connectEightBits(busSource, selectedNode.id, start)}>
+                          Wire bits 0–7 to {prefix}0–{prefix}7
+                        </button>;
+                      })}
+                    </div>
                   )}
                   <button
                     type="button"

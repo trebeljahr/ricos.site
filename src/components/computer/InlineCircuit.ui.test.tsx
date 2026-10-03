@@ -123,11 +123,12 @@ describe("circuit toolbar", () => {
     expect(screen.queryByText("CLK 0")).toBeNull();
     fireEvent.click(screen.getByTitle("Drag CLOCK onto canvas or click to add"));
     expect(screen.getByRole("group", { name: "Simulation" })).toBeTruthy();
-    const simulation = screen.getByRole("group", { name: "Simulation" });
-    expect(within(simulation).getByText("Cycle 0")).toBeTruthy();
-    expect(within(simulation).getByText("CLK 0")).toBeTruthy();
+    const status = screen.getByLabelText("Clock status");
+    expect(within(status).getByText("Cycle 0")).toBeTruthy();
+    expect(within(status).getByText("CLK 0")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Undo" }));
     expect(screen.queryByRole("group", { name: "Simulation" })).toBeNull();
+    expect(screen.queryByLabelText("Clock status")).toBeNull();
   });
 
   it("renames the sketch from the toolbar", () => {

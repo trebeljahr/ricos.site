@@ -2,6 +2,8 @@ import Link from "next/link";
 import clsx from "clsx";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useHistoryState } from "../../hooks/useHistoryState";
+import { usePortWiring } from "../../hooks/usePortWiring";
+import { type PortRef, portLabelBank, wiringPorts } from "../../lib/computer/portWiring";
 import {
   BLUEPRINT_FAMILIES,
   BLUEPRINT_RECIPES,
@@ -124,6 +126,16 @@ type WireDraft = {
   originX: number;
   originY: number;
 };
+function PortWirePreview({ wiring }: { wiring: ReturnType<typeof usePortWiring> }) {
+  return <g data-port-preview={wiring.previews.length || undefined}>
+    {wiring.previews.map(({ from, to }, index) => <path key={index}
+      d={wirePath(from, to)}
+      className={clsx(styles.portWirePreview, wiring.invalid && styles.portWireInvalid)} />)}
+  </g>;
+}
+const draftPort = (draft: WireDraft): PortRef => draft.from
+  ? { nodeId: draft.from, kind: "output", index: draft.output ?? 0 }
+  : { nodeId: draft.to!, kind: "input", index: draft.input ?? 0 };
 const defaultWireColor = (id: string, nodes: Node[]): WireColor =>
   wireColorNames[
     Math.max(
@@ -358,6 +370,38 @@ function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
     const part = parts.get(id);
     return part ? portPoint(part, port, kind) : null;
   };
+  const diagram = useRef<HTMLDivElement>(null);
+  const [portMessage, setPortMessage] = useState("");
+  const inlinePorts = [
+    ...layout.inputs.map((port, index) => ({ nodeId: port.id, kind: "output" as const, index: 0,
+      ...boundaryPoint(index, "input"), x: boundaryPoint(index, "input").x + 24,
+      bank: `boundary-input-${portLabelBank(port.label || "IN")}`, label: port.label || `IN ${index + 1}` })),
+    ...wiringPorts(layout.parts, portPoint),
+    ...layout.outputs.map((port, index) => ({ nodeId: port.id, kind: "input" as const, index: 0,
+      ...boundaryPoint(index, "output"), x: boundaryPoint(index, "output").x - 24,
+      bank: `boundary-output-${portLabelBank(port.label || "OUT")}`, label: port.label || `OUT ${index + 1}` })),
+  ];
+  const portWiring = usePortWiring({
+    ports: inlinePorts, wires: circuit.wires, zoom,
+    toPoint: (x, y) => {
+      const rect = diagram.current!.getBoundingClientRect();
+      return { x: (x - rect.left) / zoom, y: (y - rect.top) / zoom };
+    },
+    onStart: () => { onActivate(path); setSelectedPart(null); setSelectedWire(null);
+      setPendingInnerWire(null); wireStart.current = null; dragStart.current = null; },
+    onConnect: (connections) => onEdit(path, (inner) => ({ ...inner, wires: [
+      ...inner.wires, ...connections.map((connection) => ({ ...connection, id: crypto.randomUUID(), color: "cyan" as const })),
+    ] })),
+    onMessage: setPortMessage,
+  });
+  const portAttributes = (ref: PortRef) => ({
+    "aria-pressed": portWiring.isSelected(ref),
+    "data-port-selected": portWiring.isSelected(ref),
+    "data-wire-target": portWiring.isTarget(ref),
+    "data-port-invalid": portWiring.invalid && portWiring.isTarget(ref),
+  });
+  const clearPortSelection = portWiring.clear;
+  useEffect(() => { if (activePath !== path) clearPortSelection(); }, [activePath, path, clearPortSelection]);
   const descendants = [...unfolded].filter((id) => id.startsWith(`${path}/`));
   const canExpand = collectUnfoldableIds(circuit, `${path}/`)
     .some((id) => !unfolded.has(id) && unfolded.has(id.slice(0, id.lastIndexOf("/"))));
@@ -371,6 +415,7 @@ function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
     setPendingInnerWire(null);
   };
   const beginWire = (event: React.PointerEvent<HTMLButtonElement>, from: string, output: number) => {
+    if (portWiring.pointerDown(event, { nodeId: from, kind: "output", index: output })) return;
     event.stopPropagation();
     onActivate(path);
     setPendingInnerWire({ from, output });
@@ -480,10 +525,19 @@ function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
             onKeyDown={(event) => { if (event.key === "Enter") event.currentTarget.blur();
               if (event.key === "Escape") setEditingPart(null); }} />}
       </div>
-      <div className={styles.inlineDiagram} style={{ width: layout.width, height: layout.height }}
-        onPointerUp={finishWire} onPointerCancel={() => { wireStart.current = null; }}>
+      {portMessage && <div className={styles.inlinePortStatus} role="status">{portMessage}</div>}
+      <div ref={diagram} data-port-surface={path} className={styles.inlineDiagram}
+        style={{ width: layout.width, height: layout.height }}
+        onClick={(event) => {
+          if (portWiring.consumeClick()) return;
+          if (event.target === event.currentTarget) portWiring.clear();
+        }}
+        onPointerMove={(event) => { portWiring.pointerMove(event); }}
+        onPointerUp={(event) => { if (!portWiring.pointerUp(event)) finishWire(event); }}
+        onPointerCancel={() => { wireStart.current = null; portWiring.clear(); }}>
         <svg className={styles.inlineWires} width={layout.width} height={layout.height}
           aria-label={`${circuit.name} internal wires`}>
+          <PortWirePreview wiring={portWiring} />
           {circuit.wires.map((wire) => {
             const from = wirePoint(wire.from, wire.output ?? 0, "output");
             const to = wirePoint(wire.to, wire.input, "input");
@@ -497,8 +551,12 @@ function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
           return <button key={port.id} type="button" className={styles.inlineBoundaryPort}
             style={{ left: point.x + 24, top: point.y }}
             aria-label={`Wire from input ${port.label || index + 1}`}
+            {...portAttributes({ nodeId: port.id, kind: "output", index: 0 })}
             onPointerDown={(event) => beginWire(event, port.id, 0)}
-            onClick={() => { setPendingInnerWire({ from: port.id, output: 0 }); setSelectedPart(port.id); }}>
+            onClick={(event) => {
+              if (portWiring.click(event, { nodeId: port.id, kind: "output", index: 0 })) return;
+              setPendingInnerWire({ from: port.id, output: 0 }); setSelectedPart(port.id);
+            }}>
             {port.label || `IN ${index + 1}`}
           </button>;
         })}
@@ -507,7 +565,12 @@ function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
           return <button key={port.id} type="button" className={styles.inlineBoundaryPort}
             style={{ left: point.x - 24, top: point.y }}
             aria-label={`Wire to output ${port.label || index + 1}`}
-            onClick={() => { connectInner(port.id, 0); setSelectedPart(port.id); }}>
+            {...portAttributes({ nodeId: port.id, kind: "input", index: 0 })}
+            onPointerDown={(event) => { portWiring.pointerDown(event, { nodeId: port.id, kind: "input", index: 0 }); }}
+            onClick={(event) => {
+              if (portWiring.click(event, { nodeId: port.id, kind: "input", index: 0 })) return;
+              connectInner(port.id, 0); setSelectedPart(port.id);
+            }}>
             {port.label || `OUT ${index + 1}`}
           </button>;
         })}
@@ -522,6 +585,7 @@ function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
               event.stopPropagation();
               onActivate(path);
               event.currentTarget.closest<HTMLDivElement>("[data-inline-path]")?.focus();
+              portWiring.clear();
               setSelectedPart(part.id);
               setSelectedWire(null);
               dragStart.current = { id: part.id, x: event.clientX, y: event.clientY };
@@ -540,7 +604,11 @@ function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
               <div key={`input-${index}`} className={styles.portRow} style={portStyle(part, index, "input")}>
                 <button type="button" className={styles.input}
                   aria-label={`Wire to ${part.label || LABELS[part.type]} ${inputLabel(part, index)}`}
-                  onClick={() => connectInner(part.id, index)} />
+                  {...portAttributes({ nodeId: part.id, kind: "input", index })}
+                  onPointerDown={(event) => { portWiring.pointerDown(event, { nodeId: part.id, kind: "input", index }); }}
+                  onClick={(event) => {
+                    if (!portWiring.click(event, { nodeId: part.id, kind: "input", index })) connectInner(part.id, index);
+                  }} />
                 {part.type === "module" && <span className={styles.inputPortLabel}>{inputLabel(part, index)}</span>}
               </div>
             ))}
@@ -584,8 +652,12 @@ function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
                 {part.type === "module" && <span className={styles.outputPortLabel}>{outputLabel(part, index)}</span>}
                 <button type="button" className={styles.output}
                   aria-label={`Wire from ${part.label || LABELS[part.type]} ${outputLabel(part, index)}`}
+                  {...portAttributes({ nodeId: part.id, kind: "output", index })}
                   onPointerDown={(event) => beginWire(event, part.id, index)}
-                  onClick={() => setPendingInnerWire({ from: part.id, output: index })} />
+                  onClick={(event) => {
+                    if (!portWiring.click(event, { nodeId: part.id, kind: "output", index }))
+                      setPendingInnerWire({ from: part.id, output: index });
+                  }} />
               </div>
             ))}
           </div>
@@ -695,6 +767,8 @@ export function LogicBuilder() {
   const beginTransaction = history.begin;
   const endTransaction = history.end;
   const travel = (direction: "undo" | "redo") => {
+    portWiring.clear();
+    setActiveInlinePath(null);
     if (!history.travel(direction)) return;
     const next = history.current();
     setRunning(false);
@@ -712,7 +786,7 @@ export function LogicBuilder() {
   const [dialog, setDialog] = useState<"save" | "clear" | null>(null);
   const [saveName, setSaveName] = useState("");
   const [message, setMessage] = useState(
-    "Drag from an output to an input to wire. Click a wire to set its color.",
+    "Shift-click or Shift-drag across ports to select them. Drag a selected port to connect multiple wires.",
   );
   const [ready, setReady] = useState(false);
   const [zoom, setZoom] = useState(1);
@@ -1107,6 +1181,7 @@ export function LogicBuilder() {
     setSnapshot(next);
   };
   const clearCanvas = () => {
+    portWiring.clear();
     if (!circuit.nodes.length && !circuit.wires.length) return;
     setDialog(null);
     const empty = { ...circuit, nodes: [], wires: [] };
@@ -1124,6 +1199,7 @@ export function LogicBuilder() {
     setMessage("Canvas cleared.");
   };
   const load = (next: Circuit) => {
+    portWiring.clear();
     const copy = clone(next);
     circuitRef.current = copy;
     publish({ ...history.current(), circuit: copy, viewPath: [], unfolded: [] });
@@ -1136,6 +1212,7 @@ export function LogicBuilder() {
     setMessage(`${copy.name} loaded.`);
   };
   const enterCircuit = (next: Circuit, via: string, moduleId?: string) => {
+    portWiring.clear();
     const parentSnapshot = snapshotRef.current;
     const nextPath = [
       ...viewPath,
@@ -1442,7 +1519,27 @@ export function LogicBuilder() {
     }));
     setMessage(`Connected bits 0–7 to ${target.label || target.module?.name || LABELS[target.type]}.`);
   };
+  const availablePorts = useMemo(() => wiringPorts(displayNodes.filter((node) =>
+    (showVdd || node.type !== "high") && (showGround || node.type !== "ground")), portPoint),
+    [displayNodes, showVdd, showGround]);
+  const portWiring = usePortWiring({
+    ports: availablePorts, wires: circuit.wires, zoom,
+    toPoint: (x, y) => boardPoint(x, y),
+    onStart: () => {
+      setSelected([]); setSelectedWires([]); setMenu(null); setPending(null);
+      setWireDraft(null); wireDraftRef.current = null; setActiveInlinePath(null);
+    },
+    onConnect: (connections) => setCircuit((current) => ({ ...current, wires: [
+      ...current.wires, ...connections.map((connection) => ({ ...connection, id: crypto.randomUUID(),
+        color: current.wires.find((wire) => wire.from === connection.from)?.color ??
+          defaultWireColor(connection.from, current.nodes) })),
+    ] })),
+    onMessage: setMessage,
+  });
+  const clearPortSelection = portWiring.clear;
+  useEffect(() => { if (activeInlinePath) clearPortSelection(); }, [activeInlinePath, clearPortSelection]);
   const startWire = (event: React.PointerEvent<HTMLButtonElement>, draft: WireDraft) => {
+    if (portWiring.pointerDown(event, draftPort(draft))) return;
     if (event.button !== 0 || event.pointerType === "touch") return;
     event.stopPropagation();
     board.current?.setPointerCapture(event.pointerId);
@@ -1453,7 +1550,7 @@ export function LogicBuilder() {
   };
   const nearestConnector = (point: { x: number; y: number }, draft: WireDraft) => {
     let best: { id: string; input?: number; output?: number; distance: number } | null = null;
-    for (const node of circuitRef.current.nodes) {
+    for (const node of displayNodes) {
       if (draft.from && node.id !== draft.from) {
         for (let input = 0; input < inputCount(node); input++) {
           const port = portPoint(node, input, "input");
@@ -1676,6 +1773,7 @@ export function LogicBuilder() {
     };
   };
   const pointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (portWiring.pointerMove(event)) return;
     if (wireDraftRef.current) {
       const point = boardPoint(event.clientX, event.clientY);
       const next = { ...wireDraftRef.current, ...point };
@@ -1709,6 +1807,7 @@ export function LogicBuilder() {
     }));
   };
   const finishPointer = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (portWiring.pointerUp(event)) return;
     const draft = wireDraftRef.current;
     if (draft) {
       const point = boardPoint(event.clientX, event.clientY);
@@ -2161,7 +2260,7 @@ export function LogicBuilder() {
               Select
             </button>
             <small>
-              Drag empty space to pan · Shift+drag to select · Scroll or pinch to zoom
+              Shift-click or Shift-drag ports to select · Drag selected ports to wire · Scroll to zoom
             </small>
           </div>
           <div
@@ -2224,6 +2323,7 @@ export function LogicBuilder() {
             >
               <div
                 ref={board}
+                data-port-surface="main"
                 className={styles.board}
                 style={{
                   width: canvasWidth * boardRatio,
@@ -2255,6 +2355,7 @@ export function LogicBuilder() {
                   )
                     return;
                   event.currentTarget.setPointerCapture(event.pointerId);
+                  portWiring.clear();
                   const point = boardPoint(event.clientX, event.clientY);
                   setMarquee({ ...point, endX: point.x, endY: point.y });
                   setSelected([]);
@@ -2262,6 +2363,7 @@ export function LogicBuilder() {
                 }}
                 onPointerUp={finishPointer}
                 onPointerCancel={() => {
+                  portWiring.clear();
                   if (dragRef.current) endTransaction();
                   wireDraftRef.current = null;
                   setWireDraft(null);
@@ -2274,6 +2376,8 @@ export function LogicBuilder() {
                   setMenu({ x: event.clientX, y: event.clientY, kind: "board" });
                 }}
                 onClick={() => {
+                  if (portWiring.consumeClick()) return;
+                  portWiring.clear();
                   if (suppressBoardClick.current) {
                     suppressBoardClick.current = false;
                     return;
@@ -2444,6 +2548,7 @@ export function LogicBuilder() {
                       </g>
                     );
                   })}
+                  <PortWirePreview wiring={portWiring} />
                   {previewStart && previewEnd && wireDraft && (
                     <path
                       d={
@@ -2481,7 +2586,7 @@ export function LogicBuilder() {
                       role="group"
                       aria-label={`${node.label || (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type])} — ${node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]} part`}
                       onKeyDown={(event) => {
-                        if (event.key === "Enter") {
+                        if (event.key === "Enter" && event.target === event.currentTarget) {
                           event.stopPropagation();
                           setSelected([node.id]);
                         }
@@ -2510,6 +2615,7 @@ export function LogicBuilder() {
                           (event.target as HTMLElement).closest("button, input")
                         )
                           return;
+                        portWiring.clear();
                         event.currentTarget.setPointerCapture(event.pointerId);
                         const ids = selected.includes(node.id) ? selected : [node.id];
                         beginTransaction();
@@ -2556,6 +2662,9 @@ export function LogicBuilder() {
                             className={styles.input}
                             data-node-id={node.id}
                             data-input={input}
+                            aria-pressed={portWiring.isSelected({ nodeId: node.id, kind: "input", index: input })}
+                            data-port-selected={portWiring.isSelected({ nodeId: node.id, kind: "input", index: input })}
+                            data-port-invalid={portWiring.invalid && portWiring.isTarget({ nodeId: node.id, kind: "input", index: input })}
                             style={{ top: 0 }}
                             onPointerDown={(event) =>
                               startWire(event, {
@@ -2567,11 +2676,12 @@ export function LogicBuilder() {
                               })
                             }
                             onClick={(event) => {
+                              if (portWiring.click(event, { nodeId: node.id, kind: "input", index: input })) return;
                               if (event.detail === 0)
                                 connect(pending?.from ?? null, node.id, input, pending?.output);
                             }}
                             data-wire-target={Boolean(
-                              wireDraft?.from &&
+                              portWiring.isTarget({ nodeId: node.id, kind: "input", index: input }) || wireDraft?.from &&
                                 draftTarget?.id === node.id &&
                                 draftTarget.input === input,
                             )}
@@ -2817,6 +2927,9 @@ export function LogicBuilder() {
                                 styles.pending,
                             )}
                             style={{ top: 0 }}
+                            aria-pressed={portWiring.isSelected({ nodeId: node.id, kind: "output", index: output })}
+                            data-port-selected={portWiring.isSelected({ nodeId: node.id, kind: "output", index: output })}
+                            data-port-invalid={portWiring.invalid && portWiring.isTarget({ nodeId: node.id, kind: "output", index: output })}
                             onPointerDown={(event) =>
                               startWire(event, {
                                 from: node.id,
@@ -2827,12 +2940,13 @@ export function LogicBuilder() {
                               })
                             }
                             onClick={(event) => {
+                              if (portWiring.click(event, { nodeId: node.id, kind: "output", index: output })) return;
                               if (event.detail !== 0) return;
                               setPending({ from: node.id, output });
                               setMessage(`Choose an input for ${outputLabel(node, output)}.`);
                             }}
                             data-wire-target={Boolean(
-                              wireDraft?.to &&
+                              portWiring.isTarget({ nodeId: node.id, kind: "output", index: output }) || wireDraft?.to &&
                                 draftTarget?.id === node.id &&
                                 draftTarget.output === output,
                             )}
@@ -2866,6 +2980,7 @@ export function LogicBuilder() {
             <span>
               {canvasCounts.parts} parts · {canvasCounts.wires} wires
               {selected.length ? ` · ${selected.length} selected` : ""}
+              {portWiring.selected.length ? ` · ${portWiring.selected.length} ports selected` : ""}
             </span>
           </div>
         </div>

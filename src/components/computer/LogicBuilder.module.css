@@ -192,3 +192,11 @@
 .portOnLeft .outputPortLabel{right:auto;left:15px;text-align:left}
 .boardScroll{background-color:#111b2e;background-image:radial-gradient(circle,#8298c153 0 1px,transparent 1.4px)}
 .board{background:transparent}
+
+/* Port selection is separate from part selection and wire editing. */
+.inlineBoundaryPort[data-wire-target="true"]{background:#ffe08a;border-color:#fff;color:#172337;box-shadow:0 0 0 6px #ffc76a55,0 0 20px #ffc76a88}
+.input[data-port-selected="true"],.output[data-port-selected="true"],.inlineBoundaryPort[data-port-selected="true"]{background:#83e9d7;border-color:#e5fffa;box-shadow:0 0 0 5px #83e9d755}
+.input[data-port-invalid="true"],.output[data-port-invalid="true"],.inlineBoundaryPort[data-port-invalid="true"]{background:#b84451;border-color:#ffb9b5;box-shadow:0 0 0 5px #ff8f8755}
+.portWirePreview,.inlineWires .portWirePreview{fill:none;stroke:#83e9d7;stroke-width:3;stroke-dasharray:7 5;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.portWireInvalid,.inlineWires .portWireInvalid{stroke:#ff8f87}
+.inlinePortStatus{position:absolute;top:44px;left:14px;right:14px;z-index:5;color:#b9fff2;font-size:11px;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CircuitToolbar } from "./CircuitToolbar";
 import clsx from "clsx";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useHistoryState } from "../../hooks/useHistoryState";
@@ -1925,216 +1926,279 @@ export function LogicBuilder() {
       : wireDraft ? { x: wireDraft.x, y: wireDraft.y } : null;
   return (
     <div className={styles.shell}>
-      <div className={styles.toolbar}>
-        <div className={styles.toolbarTop}>
-        <div className={styles.identity}>
-          <Link className={styles.eyebrow} href="/computer">← ALL COMPUTER DEMOS</Link>
-          <input
-            className={styles.circuitName}
-            aria-label="Circuit name"
-            title="Rename circuit"
-            value={nameDraft}
-            maxLength={80}
-            onChange={(event) => setNameDraft(event.target.value)}
-            onBlur={() => {
-              if (cancelNameEdit.current) {
-                cancelNameEdit.current = false;
-                setNameDraft(circuit.name);
-                return;
-              }
-              const name = nameDraft.trim();
-              if (name && name !== circuit.name) setCircuit((current) => ({ ...current, name }));
-              else setNameDraft(circuit.name);
-            }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") event.currentTarget.blur();
-              if (event.key === "Escape") {
-                cancelNameEdit.current = true;
-                setNameDraft(circuit.name);
-                event.currentTarget.blur();
-              }
-            }}
-          />
-        </div>
-        <div className={clsx(styles.toolGroup, styles.viewGroup)} role="group" aria-label="Circuit view">
-          <span className={styles.toolGroupLabel}>View</span>
-          <button type="button" onClick={() => setUnfolded(new Set(circuit.nodes
-            .filter((node) => node.type === "module" || GATE_NAMES.includes(node.type as LogicGate))
-            .map((node) => node.id)))}>
-            <ActionIcon name="unfold" /> Unfold one level
-          </button>
-          <button type="button" disabled={!unfolded.size} onClick={refoldCanvasLevel}>
-            <ActionIcon name="fold" /> Refold one level
-          </button>
-          <button type="button" onClick={() => setUnfolded(new Set(collectUnfoldableIds(circuit)))}>
-            <ActionIcon name="unfold" /> Unfold all
-          </button>
-          {hasTransistors && (
-            <div className={styles.powerView} aria-label="Power connection display (visual only)">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={showVdd}
-                  onChange={(event) => setShowVdd(event.target.checked)}
-                />{" "}
-                Show VDD
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={showGround}
-                  onChange={(event) => setShowGround(event.target.checked)}
-                />{" "}
-                Show GND
-              </label>
+      <CircuitToolbar
+        hasClock={hasClock}
+        running={running}
+        identity={
+          <>
+            <div className={styles.identity}>
+              <Link className={styles.eyebrow} href="/computer">
+                ← ALL COMPUTER DEMOS
+              </Link>
+              <input
+                className={styles.circuitName}
+                aria-label="Circuit name"
+                title="Rename circuit"
+                value={nameDraft}
+                maxLength={80}
+                onChange={(event) => setNameDraft(event.target.value)}
+                onBlur={() => {
+                  if (cancelNameEdit.current) {
+                    cancelNameEdit.current = false;
+                    setNameDraft(circuit.name);
+                    return;
+                  }
+                  const name = nameDraft.trim();
+                  if (name && name !== circuit.name)
+                    setCircuit((current) => ({ ...current, name }));
+                  else setNameDraft(circuit.name);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") event.currentTarget.blur();
+                  if (event.key === "Escape") {
+                    cancelNameEdit.current = true;
+                    setNameDraft(circuit.name);
+                    event.currentTarget.blur();
+                  }
+                }}
+              />
             </div>
-          )}
-          <button
-            type="button"
-            aria-pressed={tidyWiring}
-            onClick={() => {
-              const next = !tidyWiring;
-              setTidyWiring(next);
-              setBusWiring(next);
-            }}
-          >
-            <ActionIcon name="wiring" /> {tidyWiring ? "Simple wiring" : "Clean up wiring"}
-          </button>
-          <button
-            type="button"
-            aria-pressed={busWiring}
-            title="Group connections from one output. Click a bus, then an input, to add a branch."
-            onClick={() => {
-              const next = !busWiring;
-              setBusWiring(next);
-              setTidyWiring(true);
-              setMessage(
-                next
-                  ? "Fan-out buses group wires from one output. Click a bus, then an input, to add a branch."
-                  : "Buses hidden. Clean wiring remains on.",
-              );
-            }}
-          >
-            <ActionIcon name="bus" /> {busWiring ? "Hide buses" : "Fan-out buses"}
-          </button>
-        </div>
-        <div className={clsx(styles.toolGroup, styles.fileGroup)} role="group" aria-label="Circuit files">
-          <span className={styles.toolGroupLabel}>File</span>
-          <button
-            type="button"
-            className={styles.saveAction}
-            onClick={() => {
-              setSaveName(circuit.name);
-              setDialog("save");
-            }}
-          >
-            <ActionIcon name="save" /> Save
-          </button>
-          <button type="button" onClick={exportCircuit}><ActionIcon name="export" /> Export JSON</button>
-          <button type="button" onClick={() => inputFile.current?.click()}><ActionIcon name="import" /> Import JSON</button>
-          <input
-            ref={inputFile}
-            type="file"
-            accept=".json,application/json"
-            hidden
-            onChange={(event) => {
-              void importCircuit(event.target.files?.[0]);
-              event.target.value = "";
-            }}
-          />
-        </div>
-        </div>
-        <div className={styles.transport}>
-          <div className={clsx(styles.toolGroup, styles.learningGroup)} role="group" aria-label="Learning tools">
-            <span className={styles.toolGroupLabel}>Learn</span>
-          <details className={styles.learningMenu} ref={learningMenu}>
-            <summary>Learning <svg aria-hidden="true" viewBox="0 0 12 12"><path d="m2 4 4 4 4-4" /></svg></summary>
-            <div className={styles.learningPanel}>
-              <h2>Build from one kind of part</h2>
-              <p>Open a gate built from transistors, NAND, or NOR.</p>
-              <div className={styles.buildTabs} role="group" aria-label="Circuit construction">
-                {(["transistor", "nand", "nor"] as const).map((family) => (
-                  <button key={family} type="button" aria-pressed={circuitFamily === family} onClick={() => setCircuitFamily(family)}>
-                    {BLUEPRINT_FAMILIES[family].label}
-                  </button>
-                ))}
+          </>
+        }
+        view={
+          <>
+            <button
+              type="button"
+              onClick={() =>
+                setUnfolded(
+                  new Set(
+                    circuit.nodes
+                      .filter(
+                        (node) =>
+                          node.type === "module" || GATE_NAMES.includes(node.type as LogicGate),
+                      )
+                      .map((node) => node.id),
+                  ),
+                )
+              }
+            >
+              <ActionIcon name="unfold" /> Unfold one level
+            </button>
+            <button type="button" disabled={!unfolded.size} onClick={refoldCanvasLevel}>
+              <ActionIcon name="fold" /> Refold one level
+            </button>
+            <button
+              type="button"
+              onClick={() => setUnfolded(new Set(collectUnfoldableIds(circuit)))}
+            >
+              <ActionIcon name="unfold" /> Unfold all
+            </button>
+            {hasTransistors && (
+              <div className={styles.powerView} aria-label="Power connection display (visual only)">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={showVdd}
+                    onChange={(event) => setShowVdd(event.target.checked)}
+                  />{" "}
+                  Show VDD
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={showGround}
+                    onChange={(event) => setShowGround(event.target.checked)}
+                  />{" "}
+                  Show GND
+                </label>
               </div>
-              <div className={styles.learningList}>
-                {visibleBlueprints.map((blueprint) => (
-                  <div className={styles.buildEntry} key={blueprint.name}>
-                    <button type="button" onClick={() => { load(blueprint); learningMenu.current?.removeAttribute("open"); }} title={`Open ${blueprint.name} blueprint`}>
-                      {blueprint.name.split(" ")[0]} <span>↗</span>
+            )}
+            <button
+              type="button"
+              aria-pressed={tidyWiring}
+              onClick={() => {
+                const next = !tidyWiring;
+                setTidyWiring(next);
+                setBusWiring(next);
+              }}
+            >
+              <ActionIcon name="wiring" /> {tidyWiring ? "Simple wiring" : "Clean up wiring"}
+            </button>
+            <button
+              type="button"
+              aria-pressed={busWiring}
+              title="Group connections from one output. Click a bus, then an input, to add a branch."
+              onClick={() => {
+                const next = !busWiring;
+                setBusWiring(next);
+                setTidyWiring(true);
+                setMessage(
+                  next
+                    ? "Fan-out buses group wires from one output. Click a bus, then an input, to add a branch."
+                    : "Buses hidden. Clean wiring remains on.",
+                );
+              }}
+            >
+              <ActionIcon name="bus" /> {busWiring ? "Hide buses" : "Fan-out buses"}
+            </button>
+          </>
+        }
+        files={
+          <>
+            <button type="button" onClick={exportCircuit}>
+              <ActionIcon name="export" /> Export JSON
+            </button>
+            <button type="button" onClick={() => inputFile.current?.click()}>
+              <ActionIcon name="import" /> Import JSON
+            </button>
+            <input
+              ref={inputFile}
+              type="file"
+              accept=".json,application/json"
+              hidden
+              onChange={(event) => {
+                void importCircuit(event.target.files?.[0]);
+                event.target.value = "";
+              }}
+            />
+          </>
+        }
+        save={
+          <>
+            <button
+              type="button"
+              data-action="save"
+              onClick={() => {
+                setSaveName(circuit.name);
+                setDialog("save");
+              }}
+            >
+              <ActionIcon name="save" /> Save
+            </button>
+          </>
+        }
+        learning={
+          <>
+            <details className={styles.learningMenu} ref={learningMenu}>
+              <summary>
+                Learning{" "}
+                <svg aria-hidden="true" viewBox="0 0 12 12">
+                  <path d="m2 4 4 4 4-4" />
+                </svg>
+              </summary>
+              <div className={styles.learningPanel}>
+                <h2>Build from one kind of part</h2>
+                <p>Open a gate built from transistors, NAND, or NOR.</p>
+                <div className={styles.buildTabs} role="group" aria-label="Circuit construction">
+                  {(["transistor", "nand", "nor"] as const).map((family) => (
+                    <button
+                      key={family}
+                      type="button"
+                      aria-pressed={circuitFamily === family}
+                      onClick={() => setCircuitFamily(family)}
+                    >
+                      {BLUEPRINT_FAMILIES[family].label}
                     </button>
-                    <small>{BLUEPRINT_RECIPES[circuitFamily][blueprint.name.split(" ")[0].toLowerCase() as LogicGate]}</small>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                <div className={styles.learningList}>
+                  {visibleBlueprints.map((blueprint) => (
+                    <div className={styles.buildEntry} key={blueprint.name}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          load(blueprint);
+                          learningMenu.current?.removeAttribute("open");
+                        }}
+                        title={`Open ${blueprint.name} blueprint`}
+                      >
+                        {blueprint.name.split(" ")[0]} <span>↗</span>
+                      </button>
+                      <small>
+                        {
+                          BLUEPRINT_RECIPES[circuitFamily][
+                            blueprint.name.split(" ")[0].toLowerCase() as LogicGate
+                          ]
+                        }
+                      </small>
+                    </div>
+                  ))}
+                </div>
               </div>
-
+            </details>
+          </>
+        }
+        history={
+          <>
+            <button
+              type="button"
+              onClick={() => travel("undo")}
+              disabled={!history.canUndo}
+              aria-label="Undo"
+              title="Undo (⌘/Ctrl+Z)"
+            >
+              <ActionIcon name="undo" /> Undo
+            </button>
+            <button
+              type="button"
+              onClick={() => travel("redo")}
+              disabled={!history.canRedo}
+              aria-label="Redo"
+              title="Redo (⌘/Ctrl+Shift+Z)"
+            >
+              <ActionIcon name="redo" /> Redo
+            </button>
+          </>
+        }
+        clear={
+          <>
+            <button
+              type="button"
+              data-tone="danger"
+              onClick={() => setDialog("clear")}
+              disabled={circuit.nodes.length === 0 && circuit.wires.length === 0}
+            >
+              <ActionIcon name="clear" /> Clear canvas
+            </button>
+          </>
+        }
+        playback={
+          <>
+            <button type="button" onClick={() => setRunning((value) => !value)} data-tone="primary">
+              <ActionIcon name={running ? "pause" : "play"} /> {running ? "Pause" : "Run clock"}
+            </button>
+            <button type="button" onClick={() => advance()} disabled={running}>
+              <ActionIcon name="step" /> Step ½ cycle
+            </button>
+          </>
+        }
+        clockSettings={
+          <>
+            <button type="button" onClick={resetRuntime}>
+              <ActionIcon name="reset" /> Reset
+            </button>
+            <label className={styles.rate}>
+              Speed{" "}
+              <select value={rate} onChange={(event) => setRate(Number(event.target.value))}>
+                <option value={1}>1 Hz</option>
+                <option value={2}>2 Hz</option>
+                <option value={5}>5 Hz</option>
+                <option value={10}>10 Hz</option>
+              </select>
+            </label>
+          </>
+        }
+        clockStatus={
+          <>
+            <div className={styles.metrics} aria-label="Clock status">
+              <span>Cycle {Math.floor(tick / 2)}</span>
+              <span className={clsx(styles.clock, clockHigh && styles.on)}>
+                CLK {clockHigh ? "1" : "0"}
+              </span>
             </div>
-          </details>
-          </div>
-          <div className={clsx(styles.toolGroup, styles.editGroup)} role="group" aria-label="Edit circuit">
-            <span className={styles.toolGroupLabel}>Edit</span>
-          <button
-            type="button"
-            className={styles.clearCanvas}
-            onClick={() => setDialog("clear")}
-            disabled={circuit.nodes.length === 0 && circuit.wires.length === 0}
-          >
-            <ActionIcon name="clear" /> Clear canvas
-          </button>
-          <button
-            type="button"
-            onClick={() => travel("undo")}
-            disabled={!history.canUndo}
-            aria-label="Undo"
-            title="Undo (⌘/Ctrl+Z)"
-          >
-            <ActionIcon name="undo" /> Undo
-          </button>
-          <button
-            type="button"
-            onClick={() => travel("redo")}
-            disabled={!history.canRedo}
-            aria-label="Redo"
-            title="Redo (⌘/Ctrl+Shift+Z)"
-          >
-            <ActionIcon name="redo" /> Redo
-          </button>
-          </div>
-          {hasClock && <div className={clsx(styles.toolGroup, styles.simulateGroup)} role="group" aria-label="Simulation">
-            <span className={styles.toolGroupLabel}>Simulate</span>
-          <button
-            type="button"
-            onClick={() => setRunning((value) => !value)}
-            className={styles.primary}
-          >
-            <ActionIcon name={running ? "pause" : "play"} /> {running ? "Pause" : "Run clock"}
-          </button>
-          <button type="button" onClick={() => advance()} disabled={running}>
-            <ActionIcon name="step" /> Step ½ cycle
-          </button>
-          <button type="button" onClick={resetRuntime}>
-            <ActionIcon name="reset" /> Reset
-          </button>
-          <label className={styles.rate}>
-            Speed{" "}
-            <select value={rate} onChange={(event) => setRate(Number(event.target.value))}>
-              <option value={1}>1 Hz</option>
-              <option value={2}>2 Hz</option>
-              <option value={5}>5 Hz</option>
-              <option value={10}>10 Hz</option>
-            </select>
-          </label>
-          </div>}
-          {hasClock && <div className={styles.metrics} aria-label="Clock status">
-            <span>Cycle {Math.floor(tick / 2)}</span>
-            <span className={clsx(styles.clock, clockHigh && styles.on)}>
-              CLK {clockHigh ? "1" : "0"}
-            </span>
-          </div>}
-        </div>
-      </div>
+          </>
+        }
+      />
       {viewPath.length > 0 && (
         <nav className={styles.viewPath} aria-label="Circuit depth">
           <button type="button" onClick={goBack}>

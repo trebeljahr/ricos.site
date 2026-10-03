@@ -1,0 +1,58 @@
+.root{position:relative;z-index:20;flex:none;min-width:0;color:#e3eaf4;background:#192237;border-bottom:1px solid #36445f;font-family:ui-sans-serif,system-ui,sans-serif}
+.headerRow{display:flex;align-items:center;gap:12px;min-height:64px;padding:9px 16px;box-sizing:border-box;flex-wrap:wrap}
+.identitySlot{flex:0 1 210px;min-width:150px;margin-right:4px}
+.identitySlot>div{min-width:0;flex:none}
+.identitySlot a{font-size:9px;letter-spacing:.08em;color:#96a8c6;text-decoration:none}
+.identitySlot a:hover{color:#dbe8ff}
+.identitySlot input{font-size:16px;line-height:22px;padding:2px 4px;margin-top:2px}
+.root button,.root select,.root details>summary{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:32px;padding:6px 9px;border:1px solid transparent;border-radius:5px;background:transparent;color:#c8d4e5;font:600 12px/18px ui-sans-serif,system-ui,sans-serif;white-space:nowrap;cursor:pointer;transition:background .12s,border-color .12s,color .12s}
+.root button:hover:not(:disabled),.root details>summary:hover,.root details[open]>summary{background:#2b3850;color:#f2f6ff}
+.root button:disabled{opacity:.32;cursor:default}
+.root button:focus-visible,.root summary:focus-visible,.root select:focus-visible{outline:2px solid #86ded5;outline-offset:2px}
+.root button svg{flex:none;width:16px;height:16px}
+.root button[data-tone="primary"]{background:#8eeae0;color:#142f32;border-color:#8eeae0}
+.root button[data-tone="primary"]:hover{background:#b3fff4}
+.root button[data-tone="danger"]{color:#e9a9ac}
+.root button[data-tone="danger"]:hover{background:#4a303e;color:#ffcbcb}
+.root button[data-action="save"]{border-color:#4d657e;color:#e6f2ff}
+.root button[data-action="save"]:hover{border-color:#93b8cc;background:#2b3850}
+.root select{background:#202c43;border-color:#3d4d67;padding-right:7px;max-width:100%}
+.menuBar,.inlineActions,.playback,.history{display:flex;align-items:center;gap:4px;min-width:0}
+.menuBar{gap:1px}
+.playback,.history{padding-left:12px;border-left:1px solid #36445f}
+.history button{font-size:0;gap:0;width:32px;padding:7px}
+.headerEnd{display:flex;align-items:center;gap:14px;margin-left:auto}
+.layoutChoice{display:flex;align-items:center;gap:7px;padding-left:14px;border-left:1px solid #36445f;color:#91a1b9;font-size:10px}
+.layoutChoice select{font-size:11px;color:#b4c4dc;min-height:28px;padding:3px 5px}
+.menu{position:relative;flex:none}
+.menu summary{list-style:none}
+.root summary::-webkit-details-marker{display:none}
+.chevron{font-size:12px;opacity:.65;margin-left:2px}
+.menuPanel{position:absolute;top:calc(100% + 8px);left:0;z-index:100;min-width:235px;max-width:calc(100vw - 32px);padding:6px;border:1px solid #465774;border-radius:8px;background:#202c43;box-shadow:0 14px 36px #05091670;animation:menuIn .12s ease-out}
+.menuActions{display:flex;flex-direction:column;gap:2px}
+.menuPanel button{width:100%;justify-content:flex-start;min-height:35px;padding:7px 9px}
+.menuPanel button[aria-pressed="true"]:after{content:"✓";margin-left:auto;color:#8eeae0}
+.menuPanel input[hidden]{display:none}
+.menuDivider{height:1px;background:#3b4960;margin:6px 3px}
+.clockSettings{display:flex;flex-direction:column;gap:10px;align-items:stretch}
+.clockSettings>label{justify-content:space-between;padding:0 9px}
+.clockSettings>div{margin:0;padding:0 9px 5px}
+.root details>summary{height:32px}
+.root details>summary svg{width:10px;height:10px}
+.taskRow{display:flex;align-items:center;gap:18px;padding:0 16px 10px;min-height:44px;box-sizing:border-box}
+.tabs{display:flex;flex:none;align-items:center;gap:2px;padding:3px;border:1px solid #36445f;border-radius:7px;background:#121c2e}
+.root .tabs button{min-height:28px;padding:4px 12px;color:#9eafc7;font-size:11px}
+.root .tabs button[aria-selected="true"]{color:#e7f5f4;background:#34465a}
+.taskPanel,.taskPanel .inlineActions{display:flex;align-items:center;gap:6px;min-width:0;flex-wrap:wrap}
+.taskPanel button[aria-pressed="true"]{background:#263f49;border-color:#41676c;color:#b9f2e8}
+.taskPanel>div[aria-label="Learning tools"]{flex:none}
+.separator{height:22px;width:1px;flex:none;background:#36445f;margin:0 5px}
+.root [aria-label="Clock status"]{font-size:11px;color:#93a5bf;gap:9px;margin-left:10px;white-space:nowrap}
+.root [aria-label="Clock status"]>span:last-child{background:#25364c;padding:6px;border-radius:4px}
+@keyframes menuIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1150px){.headerRow{gap:8px}.identitySlot{flex-basis:175px}.layoutChoice>span{display:none}.headerEnd{gap:8px}.layoutChoice{padding-left:8px}.playback{padding-left:8px}}
+@media(max-width:900px){.headerRow{gap:8px}.identitySlot{flex:1 1 180px}.headerEnd{margin-left:0}.root[data-layout="menus"] .menuBar{order:3}.root[data-layout="menus"] .history{order:4}.root[data-layout="menus"] .playback{order:5}.taskRow{align-items:flex-start;flex-direction:column;gap:8px}.taskPanel{width:100%}}
+@media(max-width:520px){.headerRow{padding:8px 10px}.identitySlot{flex-basis:130px;min-width:100px}.headerEnd{gap:4px}.layoutChoice{padding-left:5px}.layoutChoice select{max-width:132px;font-size:10px}.root button[data-action="save"]{padding:6px}.taskRow{padding:0 10px 9px}.root .tabs button{padding:4px 10px}.menuPanel{min-width:215px}.playback{flex-wrap:wrap}.taskPanel .inlineActions{gap:4px}}
+@media(prefers-reduced-motion:reduce){.root button,.root select,.root details>summary{transition:none}.menuPanel{animation:none}}
+
+@media(max-width:900px){.root details{position:static}.root details>div{left:10px;top:100%;max-width:calc(100vw - 24px);max-height:60svh;overflow-y:auto}}

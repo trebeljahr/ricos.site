@@ -150,6 +150,9 @@ const nodeHeight = (node: Node) =>
         ? 100
       : NODE_HEIGHT;
 type PortSide = NonNullable<Node["inputSide"]>;
+const portSides: PortSide[] = ["top", "right", "bottom", "left"];
+const rotatedSide = (side: PortSide, direction: -1 | 1): PortSide =>
+  portSides[(portSides.indexOf(side) + direction + portSides.length) % portSides.length];
 const inputSide = (node: Node): PortSide => node.inputSide ??
   (["display4", "display8"].includes(node.type) ? "top" : "left");
 const outputSide = (node: Node): PortSide => node.outputSide ??
@@ -223,6 +226,19 @@ export function LogicBuilder() {
     kind: "node" | "wire" | "board";
     id?: string;
   } | null>(null);
+  const rotatePart = (id: string, direction: -1 | 1) => {
+    setCircuit((current) => ({
+      ...current,
+      nodes: current.nodes.map((node) => node.id === id
+        ? {
+            ...node,
+            inputSide: rotatedSide(inputSide(node), direction),
+            outputSide: rotatedSide(outputSide(node), direction),
+          }
+        : node),
+    }));
+    setMenu(null);
+  };
   const [marquee, setMarquee] = useState<{
     x: number;
     y: number;
@@ -2423,13 +2439,19 @@ export function LogicBuilder() {
           className={styles.contextMenu}
           style={{
             left: Math.min(menu.x, window.innerWidth - 190),
-            top: Math.min(menu.y, window.innerHeight - 160),
+            top: Math.max(0, Math.min(menu.y, window.innerHeight - 220)),
           }}
           role="menu"
           onContextMenu={(event) => event.preventDefault()}
         >
           {menu.kind === "node" && (
             <>
+              <button type="button" role="menuitem" onClick={() => rotatePart(menu.id!, -1)}>
+                Rotate left
+              </button>
+              <button type="button" role="menuitem" onClick={() => rotatePart(menu.id!, 1)}>
+                Rotate right
+              </button>
               <button
                 type="button"
                 role="menuitem"

@@ -60,7 +60,7 @@ const circuitHints: Record<string, string> = {
   "8-bit binary counter":
     "On each clock edge, the 8-bit value increases by one. Q0 is the least significant bit.",
 };
-const NODE_HEIGHT = 78;
+const NODE_HEIGHT = 116;
 const MIN_ZOOM = 0.05;
 const MAX_ZOOM = 4;
 const wireColorNames = Object.keys(WIRE_COLORS) as WireColor[];
@@ -145,11 +145,11 @@ const withUpdatedModule = (parent: Circuit, moduleId: string, inner: Circuit): C
 });
 const nodeHeight = (node: Node) =>
   node.type === "module"
-    ? Math.max(NODE_HEIGHT, 72 + Math.max(inputCount(node), outputCount(node)) * 25)
+    ? Math.max(NODE_HEIGHT, 92 + Math.max(inputCount(node), outputCount(node)) * 25)
     : ["input4", "input8", "display4", "display8"].includes(node.type)
-      ? Math.max(NODE_HEIGHT, 54 + Math.max(inputCount(node), outputCount(node)) * 24)
+      ? Math.max(node.type.startsWith("display") ? 142 : NODE_HEIGHT, 92 + Math.max(inputCount(node), outputCount(node)) * 24)
       : ["lamp", "switch", "pulse"].includes(node.type)
-        ? 100
+        ? 126
       : NODE_HEIGHT;
 type PortSide = NonNullable<Node["inputSide"]>;
 const portSides: PortSide[] = ["top", "right", "bottom", "left"];
@@ -2013,13 +2013,6 @@ export function LogicBuilder() {
                           node.type === "module" && styles.moduleBody,
                         )}
                       >
-                        {!["input4", "input8", "display4", "display8"].includes(
-                          node.type,
-                        ) && (
-                          <span className={styles.nodeSymbol}>
-                            <GateSymbol type={node.type} circuitName={node.module?.name} />
-                          </span>
-                        )}
                         <div className={styles.nodeNameRow} onPointerDown={(event) => event.stopPropagation()}>
                           {editingLabel?.id === node.id ? (
                             <input
@@ -2076,6 +2069,13 @@ export function LogicBuilder() {
                             </>
                           )}
                         </div>
+                        {!["input4", "input8", "display4", "display8"].includes(
+                          node.type,
+                        ) && (
+                          <span className={styles.nodeSymbol}>
+                            <GateSymbol type={node.type} circuitName={node.module?.name} />
+                          </span>
+                        )}
                         <strong className={styles.nodePartName}>
                           {node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]}
                         </strong>

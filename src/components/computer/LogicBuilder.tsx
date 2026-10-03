@@ -291,7 +291,7 @@ export function LogicBuilder() {
   );
   const [ready, setReady] = useState(false);
   const [zoom, setZoom] = useState(1);
-  const [panMode, setPanMode] = useState(false);
+  const [selectMode, setSelectMode] = useState(false);
   const canvasWidth = Math.max(
     WIDTH,
     ...circuit.nodes.map((item) => item.x + nodeWidth(item) + 50),
@@ -1020,7 +1020,9 @@ export function LogicBuilder() {
       }
       return;
     }
-    if (event.button === 1 || (event.button === 0 && (panMode || spaceHeld.current))) {
+    const emptyCanvas = !(event.target as Element).closest(`.${styles.node}, .${styles.wireHit}`);
+    if (event.button === 1 || (event.button === 0 &&
+        (spaceHeld.current || (emptyCanvas && !event.shiftKey && !selectMode)))) {
       event.preventDefault();
       event.stopPropagation();
       activePan.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
@@ -1559,18 +1561,18 @@ export function LogicBuilder() {
             </button>
             <button
               type="button"
-              aria-pressed={panMode}
-              onClick={() => setPanMode((value) => !value)}
+              aria-pressed={selectMode}
+              onClick={() => setSelectMode((value) => !value)}
             >
-              Pan
+              Select
             </button>
             <small>
-              Drag empty space to select · Pan: Space+drag, middle drag, or touch · Pinch to zoom
+              Drag empty space to pan · Shift+drag to select · Pinch to zoom
             </small>
           </div>
           <div
             ref={boardViewport}
-            className={clsx(styles.boardScroll, panMode && !unfolded.size && styles.panMode)}
+            className={clsx(styles.boardScroll, !selectMode && !unfolded.size && styles.panMode)}
             onPointerDownCapture={unfolded.size ? undefined : gestureDown}
             onPointerMoveCapture={unfolded.size ? undefined : gestureMove}
             onPointerUpCapture={unfolded.size ? undefined : gestureUp}
@@ -1631,6 +1633,8 @@ export function LogicBuilder() {
                   if (
                     event.pointerType === "touch" ||
                     event.button !== 0 ||
+                    spaceHeld.current ||
+                    (!event.shiftKey && !selectMode) ||
                     (event.target as Element).closest(`.${styles.node}`) ||
                     (event.target as Element).closest(`.${styles.wireHit}`)
                   )

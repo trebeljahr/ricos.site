@@ -297,7 +297,6 @@ describe("circuit depth", () => {
     fireEvent.pointerUp(viewport, { pointerId: 1, pointerType: "touch" });
     fireEvent.pointerUp(viewport, { pointerId: 2, pointerType: "touch" });
 
-    fireEvent.click(screen.getByRole("button", { name: "Pan" }));
     fireEvent.pointerDown(board, {
       pointerId: 3,
       pointerType: "mouse",
@@ -306,23 +305,32 @@ describe("circuit depth", () => {
       clientY: 50,
     });
     expect(container.querySelector('[class*="marquee"]')).toBeNull();
+    fireEvent.pointerMove(viewport, { pointerId: 3, pointerType: "mouse", clientX: 30, clientY: 40 });
+    expect(viewport.scrollLeft).toBe(20);
+    expect(viewport.scrollTop).toBe(10);
     fireEvent.pointerUp(viewport, { pointerId: 3, pointerType: "mouse", button: 0 });
-    fireEvent.click(screen.getByRole("button", { name: "Pan" }));
     fireEvent.pointerDown(board, {
       pointerId: 4,
+      pointerType: "mouse",
+      button: 0,
+      shiftKey: true,
+      clientX: 50,
+      clientY: 50,
+    });
+    expect(container.querySelector('[class*="marquee"]')).toBeTruthy();
+    expect(viewport.scrollLeft).toBe(20);
+    fireEvent.pointerUp(board, { pointerId: 4, pointerType: "mouse", button: 0, clientX: 50, clientY: 50 });
+
+    fireEvent.click(screen.getByRole("button", { name: "Select" }));
+    fireEvent.pointerDown(board, {
+      pointerId: 5,
       pointerType: "mouse",
       button: 0,
       clientX: 50,
       clientY: 50,
     });
     expect(container.querySelector('[class*="marquee"]')).toBeTruthy();
-    fireEvent.pointerUp(board, {
-      pointerId: 4,
-      pointerType: "mouse",
-      button: 0,
-      clientX: 50,
-      clientY: 50,
-    });
+    fireEvent.pointerUp(board, { pointerId: 5, pointerType: "mouse", button: 0, clientX: 50, clientY: 50 });
   });
 
   it("contains scaled board overflow and consumes native browser zoom gestures", () => {

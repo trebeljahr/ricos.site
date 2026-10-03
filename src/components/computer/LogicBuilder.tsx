@@ -343,7 +343,8 @@ const layoutInlineCircuit = (
     path: item.path, inner: item.inner, child: item.child,
     expandable: isUnfoldable(item.node), expanded: Boolean(item.child),
     displayWidth: item.width, displayHeight: item.height,
-  })), visible);
+  })), visible.map((node) => ({ ...node, displayHeight: Math.max(nodeHeight(node), 148) })),
+    28, circuit.wires, portPoint);
   return {
     width: Math.max(560, ...parts.map((part) => part.x + nodeWidth(part) + 72)),
     height: Math.max(200, Math.max(inputs.length, outputs.length) * 60 + 140,
@@ -916,8 +917,8 @@ export function LogicBuilder() {
       const detail = expandedDetails.get(node.id);
       return { ...node, expanded: Boolean(detail), displayWidth: detail?.width, displayHeight: detail?.height };
     });
-    return expandedDetails.size ? spaceExpandedNodes(nodes, circuit.nodes, 36) : nodes;
-  }, [circuit.nodes, expandedDetails]);
+    return expandedDetails.size ? spaceExpandedNodes(nodes, circuit.nodes, 36, circuit.wires, portPoint) : nodes;
+  }, [circuit.nodes, circuit.wires, expandedDetails]);
   const foldBoxes = useMemo(() => {
     const boxes = new Map<string, FoldBox>();
     const add = (node: DisplayNode, path: string, x: number, y: number, child?: InlineLayout) => {

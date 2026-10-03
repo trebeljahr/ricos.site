@@ -156,28 +156,28 @@
 .moduleBody .nodePartName{display:-webkit-box;overflow:hidden;white-space:normal;overflow-wrap:anywhere;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-height:14px}
 .moduleBody .moduleBits{font-size:9px;white-space:nowrap}
 .nodeBody:has(.digitalScreen){gap:6px}
-/* Task groups keep edit, simulation, view, and file actions together. */
-.toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"identity view file" "transport transport transport";align-items:center;column-gap:18px;row-gap:10px;padding:11px 18px}
-.identity{grid-area:identity;min-width:0}
+/* Toolbar groups share a label baseline and keep the canvas as the visual focus. */
+.toolbar{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:11px 18px}
+.toolbarTop{display:flex;align-items:center;gap:24px;min-width:0;padding-bottom:10px;border-bottom:1px solid #46587980}
+.identity{flex:1;min-width:0}
 .circuitName{width:100%;min-width:0;padding:2px 4px;margin-left:-4px;color:#e7edf3;background:transparent;border:1px solid transparent;border-radius:4px;font:700 19px/1.5 ui-sans-serif,system-ui,sans-serif;text-overflow:ellipsis}
 .circuitName:hover{border-color:#465879}
 .circuitName:focus{outline:2px solid #8eeae8;outline-offset:1px;background:#263743}
-.metrics{margin-left:6px}
-.transport{grid-area:transport;min-width:0;width:100%;gap:8px 14px;align-items:center}
-.learningMenu{align-self:center}
-.toolGroup{display:flex;align-items:center;align-content:center;gap:6px;flex-wrap:wrap;flex:none;padding:5px 12px 5px 0;border-right:1px solid #465879}
-.toolGroup:last-child{border-right:0}
+.transport{display:flex;align-items:stretch;justify-content:space-between;flex-wrap:wrap;gap:12px 24px;min-width:0;width:100%}
+.toolGroup{display:flex;align-items:center;align-content:flex-start;gap:6px;flex-wrap:wrap;flex:none;min-width:0;padding:0;border:0}
 .toolGroupLabel{display:block;width:100%;color:#aebbd3;font-size:10px;font-weight:750;letter-spacing:.08em;text-transform:uppercase}
 .toolGroup button{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:6px 8px}
 .toolGroup button svg{flex:none}
-.viewGroup{grid-area:view;justify-self:end}
-.fileGroup{grid-area:file;justify-self:end;border:0}
+.toolbar .toolGroup button,.learningMenu summary{box-sizing:border-box;min-height:36px}
+.viewGroup,.fileGroup,.learningGroup,.editGroup,.simulateGroup{max-width:100%}
+.learningMenu{align-self:auto}
+.metrics{margin-left:6px}
+.rate select{min-height:36px}
 .layout{grid-template-columns:264px minmax(0,1fr)}
 .layoutWithInspector{grid-template-columns:264px minmax(0,1fr) 205px}
 @media(max-width:1100px){.layout{grid-template-columns:228px minmax(0,1fr)}.layoutWithInspector{grid-template-columns:228px minmax(0,1fr) 180px}}
-@media(max-width:1050px){.toolbar{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"identity identity" "view file" "transport transport"}.viewGroup{justify-self:start}.fileGroup{justify-self:end}}
-@media(max-width:820px){.toolbar{grid-template-areas:"identity identity" "view view" "file file" "transport transport"}.fileGroup{justify-self:start}.viewGroup{border-right:0}}
-@media(max-width:650px){.toolbar{grid-template-columns:minmax(0,1fr);grid-template-areas:"identity" "view" "file" "transport"}.fileGroup{justify-self:start;padding-bottom:9px;border-bottom:1px solid #465879}.viewGroup{border-right:0;border-bottom:1px solid #465879;padding-bottom:9px}.layout,.layoutWithInspector{display:flex;flex-direction:column}.transport{align-items:flex-start}.transport .toolGroup{border-right:0;border-bottom:1px solid #465879;padding-bottom:9px}}
+@media(max-width:1300px){.toolbarTop{flex-wrap:wrap}.identity{flex-basis:100%}}
+@media(max-width:650px){.toolbarTop{align-items:flex-start;gap:12px}.transport{justify-content:flex-start}.layout,.layoutWithInspector{display:flex;flex-direction:column}}
 .contextMenu{width:260px;box-sizing:border-box}
 .contextDetails{display:grid;gap:9px;padding:8px 9px 12px;border-bottom:1px solid #536581;margin-bottom:5px;font-size:12px}
 .contextDetails>strong{font-size:13px;color:#f4f1ff}

@@ -10,6 +10,14 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("circuit depth", () => {
+  it("keeps unfold controls together in View", () => {
+    render(<LogicBuilder />);
+    const view = screen.getByRole("group", { name: "Circuit view" });
+    for (const name of ["Unfold one level", "Refold one level", "Unfold all", "Simple wiring", "Hide buses"]) {
+      expect(within(view).getByRole("button", { name })).toBeTruthy();
+    }
+    expect(within(screen.getByRole("group", { name: "Learning tools" })).getByText("Learning")).toBeTruthy();
+  });
   it("recenters the canvas when panning toward its edge", () => {
     render(<LogicBuilder />);
     const board = screen.getByRole("application", { name: "Circuit canvas" }) as HTMLDivElement;

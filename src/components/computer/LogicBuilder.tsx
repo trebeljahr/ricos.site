@@ -1814,6 +1814,7 @@ export function LogicBuilder() {
   return (
     <div className={styles.shell}>
       <div className={styles.toolbar}>
+        <div className={styles.toolbarTop}>
         <div className={styles.identity}>
           <Link className={styles.eyebrow} href="/computer">← ALL COMPUTER DEMOS</Link>
           <input
@@ -1845,6 +1846,14 @@ export function LogicBuilder() {
         </div>
         <div className={clsx(styles.toolGroup, styles.viewGroup)} role="group" aria-label="Circuit view">
           <span className={styles.toolGroupLabel}>View</span>
+          <button type="button" onClick={() => setUnfolded(new Set(circuit.nodes
+            .filter((node) => node.type === "module" || GATE_NAMES.includes(node.type as LogicGate))
+            .map((node) => node.id)))}>
+            <ActionIcon name="unfold" /> Unfold one level
+          </button>
+          <button type="button" disabled={!unfolded.size} onClick={refoldCanvasLevel}>
+            <ActionIcon name="fold" /> Refold one level
+          </button>
           <button type="button" onClick={() => setUnfolded(new Set(collectUnfoldableIds(circuit)))}>
             <ActionIcon name="unfold" /> Unfold all
           </button>
@@ -1922,8 +1931,10 @@ export function LogicBuilder() {
             }}
           />
         </div>
+        </div>
         <div className={styles.transport}>
-
+          <div className={clsx(styles.toolGroup, styles.learningGroup)} role="group" aria-label="Learning tools">
+            <span className={styles.toolGroupLabel}>Learn</span>
           <details className={styles.learningMenu} ref={learningMenu}>
             <summary>Learning <svg aria-hidden="true" viewBox="0 0 12 12"><path d="m2 4 4 4 4-4" /></svg></summary>
             <div className={styles.learningPanel}>
@@ -1949,15 +1960,8 @@ export function LogicBuilder() {
 
             </div>
           </details>
-          <button type="button" onClick={() => setUnfolded(new Set(circuit.nodes
-            .filter((node) => node.type === "module" || GATE_NAMES.includes(node.type as LogicGate))
-            .map((node) => node.id)))}>
-            <ActionIcon name="unfold" /> Unfold one level
-          </button>
-          <button type="button" disabled={!unfolded.size} onClick={refoldCanvasLevel}>
-            <ActionIcon name="fold" /> Refold one level
-          </button>
-          <div className={styles.toolGroup} role="group" aria-label="Edit circuit">
+          </div>
+          <div className={clsx(styles.toolGroup, styles.editGroup)} role="group" aria-label="Edit circuit">
             <span className={styles.toolGroupLabel}>Edit</span>
           <button
             type="button"
@@ -1986,7 +1990,7 @@ export function LogicBuilder() {
             <ActionIcon name="redo" /> Redo
           </button>
           </div>
-          {hasClock && <div className={styles.toolGroup} role="group" aria-label="Simulation">
+          {hasClock && <div className={clsx(styles.toolGroup, styles.simulateGroup)} role="group" aria-label="Simulation">
             <span className={styles.toolGroupLabel}>Simulate</span>
           <button
             type="button"

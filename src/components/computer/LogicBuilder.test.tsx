@@ -78,6 +78,33 @@ describe("circuit depth", () => {
     fireEvent.click(within(screen.getByRole("dialog", { name: "Clear canvas?" })).getByRole("button", { name: "Clear canvas" }));
     expect(screen.getByText("0 parts · 0 wires")).toBeTruthy();
   });
+  it("counts visible nested parts and internal wires when clearing an unfolded canvas", () => {
+    render(<LogicBuilder />);
+    fireEvent.click(within(screen.getByLabelText("Gate palette")).getByRole("button", { name: "8-bit full adder" }));
+    const adder = screen.getByRole("group", { name: /8-bit full adder.*part/i });
+    const checkCounts = () => {
+      const canvas = screen.getByRole("application", { name: "Circuit canvas" });
+      const parts = within(canvas).getAllByRole("group", { name: / part$/ }).length;
+      const wires = canvas.querySelectorAll('[data-inline-wire]').length
+        + within(canvas).getAllByRole("button", { name: /^Select wire from / }).length;
+      expect(screen.getByText(`${parts} parts · ${wires} wires`, { exact: false })).toBeTruthy();
+      fireEvent.click(screen.getByRole("button", { name: "Clear canvas" }));
+      const dialog = screen.getByRole("dialog", { name: "Clear canvas?" });
+      expect(within(dialog).getByText(`Remove ${parts} parts and ${wires} wires from this canvas?`)).toBeTruthy();
+      fireEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
+      return parts;
+    };
+    const folded = checkCounts();
+    fireEvent.click(within(adder).getByRole("button", { name: /Unfold .* in place/ }));
+    const expanded = checkCounts();
+    expect(expanded).toBeGreaterThan(folded);
+    fireEvent.click(within(adder).getByRole("button", { name: "Unfold one level deeper" }));
+    expect(checkCounts()).toBeGreaterThan(expanded);
+    fireEvent.click(within(adder).getAllByRole("button", { name: "Refold one level" })[0]);
+    expect(checkCounts()).toBe(expanded);
+    fireEvent.click(within(adder).getByRole("button", { name: /Fold .* in place/ }));
+    expect(checkCounts()).toBe(folded);
+  }, 20000);
   it("defaults part ports to left and right and lets parts change sides", () => {
     render(<LogicBuilder />);
     const parts = screen.getByLabelText("Gate palette");

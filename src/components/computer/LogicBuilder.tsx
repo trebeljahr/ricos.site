@@ -724,6 +724,18 @@ export function LogicBuilder() {
     return [[node.id, { inner, layout, width: Math.max(nodeWidth(node), layout.width + 20),
       height: Math.max(nodeHeight(node), layout.height + 82) }]] as const;
   })), [circuit.nodes, unfolded]);
+  const canvasCounts = useMemo(() => {
+    const counts = { parts: circuit.nodes.length, wires: circuit.wires.length };
+    const addExpanded = (inner: Circuit, layout: InlineLayout) => {
+      counts.parts += layout.parts.length;
+      counts.wires += inner.wires.length;
+      for (const part of layout.parts) {
+        if (part.inner && part.child) addExpanded(part.inner, part.child);
+      }
+    };
+    for (const { inner, layout } of expandedDetails.values()) addExpanded(inner, layout);
+    return counts;
+  }, [circuit.nodes.length, circuit.wires.length, expandedDetails]);
   const displayNodes = useMemo<DisplayNode[]>(() => circuit.nodes.map((node) => {
     let x = node.x;
     let y = node.y;
@@ -2852,7 +2864,7 @@ export function LogicBuilder() {
                 : message}
             </span>
             <span>
-              {circuit.nodes.length} parts · {circuit.wires.length} wires
+              {canvasCounts.parts} parts · {canvasCounts.wires} wires
               {selected.length ? ` · ${selected.length} selected` : ""}
             </span>
           </div>
@@ -2905,7 +2917,7 @@ export function LogicBuilder() {
             ) : (
               <div>
                 <h2 id="circuit-dialog-title">Clear canvas?</h2>
-                <p>Remove {circuit.nodes.length} parts and {circuit.wires.length} wires from this canvas?</p>
+                <p>Remove {canvasCounts.parts} parts and {canvasCounts.wires} wires from this canvas?</p>
                 <div className={styles.dialogActions}>
                   <button type="button" onClick={() => setDialog(null)}>Cancel</button>
                   <button type="button" className={styles.dialogDanger} onClick={clearCanvas}>Clear canvas</button>

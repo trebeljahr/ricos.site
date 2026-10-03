@@ -657,7 +657,13 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
         data-origin-x={layout.originX} data-origin-y={layout.originY}
         onClick={(event) => {
           if (portWiring.consumeClick()) return;
-          if (event.target === event.currentTarget) portWiring.clear();
+          const part = (event.target as Element).closest(`.${styles.inlinePart}, .${styles.wireHit}, button, input, [role="button"]`);
+          if (!part || !event.currentTarget.contains(part)) {
+            portWiring.clear();
+            setSelectedPart(null);
+            setSelectedWire(null);
+            setMenu(null);
+          }
         }}
         style={{ width: layout.width, height: layout.height }}>
         <svg className={styles.inlineWires} width={layout.width} height={layout.height}
@@ -1893,6 +1899,7 @@ export function LogicBuilder() {
       event.preventDefault();
       event.stopPropagation();
       activePan.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
+      suppressBoardClick.current = false;
       event.currentTarget.setPointerCapture(event.pointerId);
       setMarquee(null);
       if (dragRef.current) endTransaction();
@@ -1904,6 +1911,8 @@ export function LogicBuilder() {
     if (!viewport) return;
     const pan = activePan.current;
     if (pan?.id === event.pointerId) {
+      if (event.clientX !== pan.x || event.clientY !== pan.y)
+        suppressBoardClick.current = true;
       event.preventDefault();
       event.stopPropagation();
       viewport.scrollLeft -= event.clientX - pan.x;
@@ -2043,6 +2052,7 @@ export function LogicBuilder() {
           .map((node) => node.id),
       );
       setMarquee(null);
+      suppressBoardClick.current = true;
     }
     if (dragRef.current) endTransaction();
     setDrag(null);
@@ -2539,6 +2549,20 @@ export function LogicBuilder() {
             onPointerMoveCapture={gestureMove}
             onPointerUpCapture={gestureUp}
             onPointerCancelCapture={gestureUp}
+            onClick={(event) => {
+              if ((event.target as Element).closest(`.${styles.node}, .${styles.wireHit}, .${styles.busHit}, button, input, [role="button"]`)) return;
+              if (portWiring.consumeClick()) return;
+              portWiring.clear();
+              if (suppressBoardClick.current) {
+                suppressBoardClick.current = false;
+                return;
+              }
+              setSelected([]);
+              setSelectedWires([]);
+              setPending(null);
+              setActiveInlinePath(null);
+              setMenu(null);
+            }}
             onClickCapture={(event) => {
               if (touchMoved.current) {
                 event.preventDefault();
@@ -2593,6 +2617,7 @@ export function LogicBuilder() {
                   const point = boardPoint(event.clientX, event.clientY);
                   setMarquee({ ...point, endX: point.x, endY: point.y });
                   setSelected([]);
+                  setSelectedWires([]);
                   setMenu(null);
                 }}
                 onPointerUp={finishPointer}
@@ -2608,17 +2633,6 @@ export function LogicBuilder() {
                 onContextMenu={(event) => {
                   event.preventDefault();
                   setMenu({ x: event.clientX, y: event.clientY, kind: "board" });
-                }}
-                onClick={() => {
-                  if (portWiring.consumeClick()) return;
-                  portWiring.clear();
-                  if (suppressBoardClick.current) {
-                    suppressBoardClick.current = false;
-                    return;
-                  }
-                  if (pending) setPending(null);
-                  setActiveInlinePath(null);
-                  setMenu(null);
                 }}
               >
                 {circuit.groups?.map((group) => {

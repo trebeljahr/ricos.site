@@ -10,6 +10,35 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("circuit depth", () => {
+  it("clears internal wire selection on empty expanded-circuit space", () => {
+    render(<LogicBuilder />);
+    fireEvent.click(within(screen.getByLabelText("Gate palette")).getByRole("button", { name: "8-bit full adder" }));
+    const adder = screen.getByRole("group", { name: /8-bit full adder.*part/i });
+    fireEvent.click(within(adder).getByRole("button", { name: /Unfold .* in place/ }));
+    const wire = within(adder).getAllByRole("button", { name: /^Select internal wire/ })[0];
+    const visibleWire = wire.nextElementSibling!;
+    fireEvent.click(wire);
+    expect(visibleWire.getAttribute("class")).toContain("wireSelected");
+    fireEvent.click(wire.closest("svg")!);
+    expect(visibleWire.getAttribute("class")).not.toContain("wireSelected");
+  });
+  it("clears part and wire selection when clicking empty canvas or viewport space", () => {
+    render(<LogicBuilder />);
+    const board = screen.getByRole("application", { name: "Circuit canvas" });
+    const part = within(board).getAllByRole("group", { name: / part$/ })[0];
+    fireEvent.keyDown(part, { key: "Enter" });
+    expect(part.className).toContain("selected");
+    fireEvent.click(board);
+    expect(part.className).not.toContain("selected");
+    const wire = within(board).getAllByRole("button", { name: /^Select wire from/ })[0];
+    fireEvent.click(wire);
+    expect(wire.getAttribute("aria-pressed")).toBe("true");
+    fireEvent.click(board);
+    expect(wire.getAttribute("aria-pressed")).toBe("false");
+    fireEvent.click(wire);
+    fireEvent.click(board.parentElement!.parentElement!);
+    expect(wire.getAttribute("aria-pressed")).toBe("false");
+  });
   it("fits a complex example when its Parts detail icon opens it", () => {
     render(<LogicBuilder />);
     const board = screen.getByRole("application", { name: "Circuit canvas" });

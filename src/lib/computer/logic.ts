@@ -254,6 +254,78 @@ const wire = (from: string, to: string, input = 0): Wire => ({
   to,
   input,
 });
+
+function busCircuit(kind: "half" | "full" | "mux" | "alu"): Circuit {
+  const names = {
+    half: "8-bit half adder",
+    full: "8-bit full adder",
+    mux: "8-bit 2:1 multiplexer",
+    alu: "8-bit ALU",
+  };
+  const circuit: Circuit = { name: names[kind], nodes: [], wires: [] };
+  const add = (id: string, type: GateType, x: number, y: number, label?: string) => {
+    circuit.nodes.push(node(id, type, x, y, label));
+    return id;
+  };
+  const connect = (from: string, to: string, input = 0) => {
+    circuit.wires.push(wire(from, to, input));
+  };
+  const gate = (id: string, type: GateType, x: number, y: number, a: string, b: string) => {
+    add(id, type, x, y);
+    connect(a, id);
+    connect(b, id, 1);
+    return id;
+  };
+  const mux = (id: string, x: number, y: number, a: string, b: string, select: string, inverse: string) => {
+    const low = gate(`${id}-low`, "and", x, y, a, inverse);
+    const high = gate(`${id}-high`, "and", x, y + 65, b, select);
+    return gate(id, "or", x + 170, y + 30, low, high);
+  };
+  if (kind === "mux" || kind === "alu") {
+    const selects = kind === "mux" ? ["select"] : ["op0", "op1"];
+    selects.forEach((id, index) => add(id, "switch", 40 + index * 150, 30, id.toUpperCase()));
+    selects.forEach((id, index) => {
+      const inverse = add(`not-${id}`, "not", 330 + index * 150, 30, `NOT ${id.toUpperCase()}`);
+      connect(id, inverse);
+    });
+  }
+  if (kind === "full" || kind === "alu") add("cin", "switch", 40, kind === "alu" ? 120 : 30, "CARRY IN");
+  let carry = "cin";
+  for (let bit = 0; bit < 8; bit++) {
+    const y = 240 + bit * (kind === "alu" ? 310 : 190);
+    const a = add(`a${bit}`, "switch", 40, y, `A${bit}`);
+    const b = add(`b${bit}`, "switch", 40, y + 75, `B${bit}`);
+    let result: string;
+    if (kind === "mux") {
+      result = mux(`mux${bit}`, 480, y, a, b, "select", "not-select");
+    } else {
+      const xor = gate(`xor${bit}`, "xor", 290, y, a, b);
+      const and = gate(`and${bit}`, "and", 290, y + 80, a, b);
+      if (kind === "half") {
+        result = xor;
+        const lamp = add(`carry${bit}`, "lamp", 850, y + 80, `CARRY${bit}`);
+        connect(and, lamp);
+      } else {
+        result = gate(`sum${bit}`, "xor", 510, y, xor, carry);
+        const carryPart = gate(`carry-part${bit}`, "and", 510, y + 80, xor, carry);
+        carry = gate(`carry-out${bit}`, "or", 730, y + 80, and, carryPart);
+      }
+      if (kind === "alu") {
+        const or = gate(`or${bit}`, "or", 290, y + 160, a, b);
+        const first = mux(`select-low${bit}`, 960, y, and, or, "op0", "not-op0");
+        const second = mux(`select-high${bit}`, 960, y + 155, xor, result, "op0", "not-op0");
+        result = mux(`result${bit}`, 1320, y + 60, first, second, "op1", "not-op1");
+      }
+    }
+    const output = add(`out${bit}`, "lamp", kind === "alu" ? 1700 : 850, y, `OUT${bit}`);
+    connect(result, output);
+  }
+  if (kind === "full" || kind === "alu") {
+    const output = add("cout", "lamp", kind === "alu" ? 1700 : 1030, 120, "CARRY OUT");
+    connect(carry, output);
+  }
+  return circuit;
+}
 export const PRESETS: Record<string, Circuit> = {
   "Half adder": {
     name: "Half adder",
@@ -332,6 +404,10 @@ export const PRESETS: Record<string, Circuit> = {
     ],
     wires: [wire("pulse", "invert"), wire("invert", "out")],
   },
+  "8-bit half adder": busCircuit("half"),
+  "8-bit full adder": busCircuit("full"),
+  "8-bit 2:1 multiplexer": busCircuit("mux"),
+  "8-bit ALU": busCircuit("alu"),
 };
 
 export const GATE_NAMES = ["not", "and", "or", "nand", "nor", "xor", "xnor"] as const;

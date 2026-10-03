@@ -12,6 +12,44 @@ import {
 } from "./logic";
 
 describe("logic circuit engine", () => {
+  it("evaluates the 8-bit arithmetic, mux, and ALU examples", () => {
+    const run = (name: string, a: number, b: number, control: Record<string, boolean> = {}) => {
+      const circuit = PRESETS[name];
+      expect(validateCircuit(circuit), name).not.toBeNull();
+      const overrides: Record<string, boolean> = { ...control };
+      for (let bit = 0; bit < 8; bit++) {
+        overrides[`a${bit}`] = Boolean(a & (1 << bit));
+        overrides[`b${bit}`] = Boolean(b & (1 << bit));
+      }
+      const state = step(circuit, initialSnapshot(), false, {}, overrides);
+      expect(state.unstable, name).toBe(false);
+      const output = Array.from({ length: 8 }, (_, bit) => Number(state.values[`out${bit}`]));
+      return {
+        value: output.reduce((value, bit, index) => value | (bit << index), 0),
+        carry: Boolean(state.values.cout),
+        carries: Array.from({ length: 8 }, (_, bit) => Boolean(state.values[`carry${bit}`])),
+      };
+    };
+    for (const [a, b] of [[0, 0], [1, 1], [0x55, 0xaa], [0xff, 1], [0xff, 0xff]]) {
+      expect(run("8-bit half adder", a, b)).toMatchObject({
+        value: a ^ b,
+        carries: Array.from({ length: 8 }, (_, bit) => Boolean((a & b) & (1 << bit))),
+      });
+      for (const cin of [false, true]) {
+        const sum = a + b + Number(cin);
+        expect(run("8-bit full adder", a, b, { cin })).toMatchObject({
+          value: sum & 0xff,
+          carry: sum > 0xff,
+        });
+      }
+      expect(run("8-bit 2:1 multiplexer", a, b).value).toBe(a);
+      expect(run("8-bit 2:1 multiplexer", a, b, { select: true }).value).toBe(b);
+      for (let op = 0; op < 4; op++) {
+        expect(run("8-bit ALU", a, b, { op0: Boolean(op & 1), op1: Boolean(op & 2) }).value)
+          .toBe([a & b, a | b, a ^ b, (a + b) & 0xff][op]);
+      }
+    }
+  });
   it("evaluates half adder sum and carry through wires", () => {
     const circuit = structuredClone(PRESETS["Half adder"]);
     const read = (a: boolean, b: boolean) => {

@@ -2,7 +2,76 @@ import { describe, expect, it } from "vitest";
 import { inputCount, PRESETS } from "./logic";
 import { routeCircuitWires, simpleWirePath, wirePath } from "./wireRouting";
 
+// Recover the orthogonal skeleton, including the unrounded corner of each Q.
+function routeGeometry(path: string) {
+  const points = [...path.matchAll(/[MLQ] ([^MLQ]+)/g)].flatMap((match) => {
+    const numbers = match[1].trim().split(/\s+/).map(Number);
+    return Array.from({ length: numbers.length / 2 }, (_, i) => ({
+      x: numbers[i * 2],
+      y: numbers[i * 2 + 1],
+    }));
+  });
+  return points.slice(1).map((b, index) => ({ a: points[index], b }));
+}
+
+function routeLength(path: string) {
+  return routeGeometry(path).reduce((sum, { a, b }) => sum + Math.hypot(b.x - a.x, b.y - a.y), 0);
+}
+
+function routeClearance(first: string, second: string) {
+  const intervalGap = (a: number, b: number, c: number, d: number) =>
+    Math.max(0, Math.min(a, b) - Math.max(c, d), Math.min(c, d) - Math.max(a, b));
+  let clearance = Infinity;
+  for (const { a, b } of routeGeometry(first)) {
+    for (const { a: c, b: d } of routeGeometry(second)) {
+      clearance = Math.min(
+        clearance,
+        Math.hypot(intervalGap(a.x, b.x, c.x, d.x), intervalGap(a.y, b.y, c.y, d.y)),
+      );
+    }
+  }
+  return clearance;
+}
+
 describe("wire routing", () => {
+  it.each([
+    { offset: -136, gap: 308, pitch: 52, count: 8 },
+    { offset: 136, gap: 308, pitch: 52, count: 8 },
+    { offset: -100, gap: 132, pitch: 12, count: 8 },
+    { offset: 100, gap: 132, pitch: 12, count: 8 },
+    { offset: -400, gap: 400, pitch: 20, count: 24 },
+    { offset: 400, gap: 400, pitch: 20, count: 24 },
+  ])("keeps a $count-wire stack short and separated ($offset offset, $gap gap)", ({
+    offset,
+    gap,
+    pitch,
+    count,
+  }) => {
+    const wires = Array.from({ length: count }, (_, index) => ({
+      id: String(index),
+      from: "input",
+      to: "display",
+      output: index,
+      start: { x: 522, y: 394 + index * pitch },
+      end: { x: 522 + gap, y: 394 + index * pitch + offset },
+    }));
+    for (const withBuses of [false, true]) {
+      const { paths } = routeCircuitWires(wires, [], withBuses);
+      for (const wire of wires) {
+        expect(routeLength(paths[wire.id])).toBeCloseTo(gap + Math.abs(offset));
+        for (const other of wires) {
+          if (other.id !== wire.id)
+            expect(routeClearance(paths[wire.id], paths[other.id])).toBeGreaterThanOrEqual(
+              12 - 1e-8,
+            );
+        }
+      }
+      expect(routeCircuitWires([...wires].reverse(), [], withBuses).paths).toEqual(paths);
+      const shuffled = [...wires.filter((_, i) => i % 2), ...wires.filter((_, i) => !(i % 2))];
+      expect(routeCircuitWires(shuffled, [], withBuses).paths).toEqual(paths);
+    }
+  });
+
   it("draws a simple curve by default, including backward connections", () => {
     expect(simpleWirePath({ x: 0, y: 20 }, { x: 200, y: 160 })).toBe(
       "M 0 20 C 100 20 100 160 200 160",

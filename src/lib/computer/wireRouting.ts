@@ -84,7 +84,7 @@ function obstacleHits(points: Point[], obstacles: Omit<RoutingObstacle, "id">[])
   return hits;
 }
 
-function wireOverlap(points: Point[], occupied: Segment[]) {
+function wireConflictCost(points: Point[], occupied: Segment[]) {
   let cost = 0;
   for (const segment of segments(points)) {
     for (const other of occupied) {
@@ -105,6 +105,29 @@ function wireOverlap(points: Point[], occupied: Segment[]) {
           if (shared > 0) cost += shared * (12 - distance);
         }
       }
+      // Fan-out wires may share a terminal. Charge for the shared run above,
+      // but do not count that unavoidable junction as a crossing at each bend.
+      const sharedTerminal = [points[0], points[points.length - 1]].some(
+        (point) =>
+          [segment.a, segment.b].some((end) => end.x === point.x && end.y === point.y) &&
+          [other.a, other.b].some((end) => end.x === point.x && end.y === point.y),
+      );
+      if (sharedTerminal) continue;
+      // Perpendicular crossings and near misses matter too, including touches
+      // at bends. Parallel overlap alone allows a lane to cut through a stack.
+      const gapX = Math.max(
+        0,
+        Math.min(segment.a.x, segment.b.x) - Math.max(other.a.x, other.b.x),
+        Math.min(other.a.x, other.b.x) - Math.max(segment.a.x, segment.b.x),
+      );
+      const gapY = Math.max(
+        0,
+        Math.min(segment.a.y, segment.b.y) - Math.max(other.a.y, other.b.y),
+        Math.min(other.a.y, other.b.y) - Math.max(segment.a.y, segment.b.y),
+      );
+      const distance = Math.hypot(gapX, gapY);
+      if (distance < 12) cost += (12 - distance) * 12;
+      if (distance === 0) cost += 200;
     }
   }
   return cost;
@@ -123,11 +146,20 @@ function routePoints(
     const left = start.x + Math.min(24, gap / 2);
     const right = end.x - Math.min(24, gap / 2);
     const step = Math.max(12, (right - left) / 20);
+    const lanes = new Set([left, right]);
     for (let x = left; x <= right; x += step) {
+      lanes.add(x);
+    }
+    // Include exact clearance lanes; a coarse grid can miss available space.
+    for (const { a, b } of occupied) {
+      if (a.x !== b.x) continue;
+      for (const x of [a.x - 12, a.x + 12]) {
+        if (left <= x && x <= right) lanes.add(x);
+      }
+    }
+    for (const x of [...lanes].sort((a, b) => a - b)) {
       candidates.push([start, { x, y: start.y }, { x, y: end.y }, end]);
     }
-    if (candidates.at(-1)?.[1].x !== right)
-      candidates.push([start, { x: right, y: start.y }, { x: right, y: end.y }, end]);
     if (gap >= 72) {
       for (const offset of [-24, -12, 12, 24]) {
         const laneY = (start.y + end.y) / 2 + offset;
@@ -177,10 +209,10 @@ function routePoints(
     );
     const score =
       (obstacleHits(points, obstacles) + obstacleHits(points.slice(1, -1), terminals)) * 100000 +
-      wireOverlap(points, occupied) * 12 +
+      wireConflictCost(points, occupied) * 12 +
       length +
       (points.length - 2) * 8;
-    if (score < bestScore) {
+    if (score < bestScore - 1e-7) {
       best = points;
       bestScore = score;
     }
@@ -215,9 +247,24 @@ export function routeCircuitWires(
   const occupied: Segment[] = [];
   const routedPoints: Point[] = [];
   const bundled = new Set<string>();
+  // Route the outside of each fan first: top to bottom for upward wires,
+  // bottom to top for downward wires. Creation order can trap later wires
+  // behind an earlier bend, even when a shortest, crossing-free fan exists.
+  const orderedWires = [...wires].sort((a, b) => {
+    const directionA = Math.sign(a.end.y - a.start.y);
+    const directionB = Math.sign(b.end.y - b.start.y);
+    return (
+      directionA - directionB ||
+      a.start.x - b.start.x ||
+      (a.start.y - b.start.y) * (directionA > 0 ? -1 : 1) ||
+      a.end.x - b.end.x ||
+      a.end.y - b.end.y ||
+      a.id.localeCompare(b.id)
+    );
+  });
   if (withBuses) {
     const groups = new Map<string, RoutingWire[]>();
-    for (const wire of wires) {
+    for (const wire of orderedWires) {
       if (wire.end.x - wire.start.x < 64) continue;
       const key = `${wire.from}:${wire.output}`;
       groups.set(key, [...(groups.get(key) ?? []), wire]);
@@ -253,8 +300,8 @@ export function routeCircuitWires(
           );
         const score =
           hits * 10000000 +
-          wireOverlap(trunk, occupied) * 12 +
-          branches.reduce((sum, points) => sum + wireOverlap(points, occupied) * 12, 0) +
+          wireConflictCost(trunk, occupied) * 12 +
+          branches.reduce((sum, points) => sum + wireConflictCost(points, occupied) * 12, 0) +
           Math.abs(x - (start.x + 36));
         if (score < bestScore) {
           bestX = x;
@@ -290,7 +337,7 @@ export function routeCircuitWires(
       }
     }
   }
-  for (const wire of wires) {
+  for (const wire of orderedWires) {
     if (bundled.has(wire.id)) continue;
     const relevant = obstacles.filter((box) => box.id !== wire.from && box.id !== wire.to);
     // Only the connector stubs may touch their own components. Feedback must

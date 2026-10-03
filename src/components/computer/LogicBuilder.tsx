@@ -29,6 +29,7 @@ import {
 } from "../../lib/computer/logic";
 import { simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
 import { GateSymbol } from "./GateSymbol";
+import { ImplementationView } from "./ImplementationView";
 import styles from "./LogicBuilder.module.css";
 
 const STORAGE = "ricos-computer-circuits-v1";
@@ -141,6 +142,7 @@ export function LogicBuilder() {
   const [circuitFamily, setCircuitFamily] = useState<BlueprintFamily | "examples">("transistor");
   const [showVdd, setShowVdd] = useState(true);
   const [showGround, setShowGround] = useState(true);
+  const [implementationMode, setImplementationMode] = useState(false);
   const [menu, setMenu] = useState<{
     x: number;
     y: number;
@@ -697,6 +699,17 @@ export function LogicBuilder() {
       : wireDraft
         ? { x: wireDraft.x, y: wireDraft.y }
         : null;
+  if (implementationMode)
+    return (
+      <ImplementationView
+        circuit={circuit}
+        onClose={() => setImplementationMode(false)}
+        showVdd={showVdd}
+        showGround={showGround}
+        onVddChange={setShowVdd}
+        onGroundChange={setShowGround}
+      />
+    );
   return (
     <div className={styles.shell}>
       <div className={styles.toolbar}>
@@ -705,6 +718,15 @@ export function LogicBuilder() {
           <strong>{circuit.name}</strong>
         </div>
         <div className={styles.transport}>
+          <button
+            type="button"
+            onClick={() => {
+              setRunning(false);
+              setImplementationMode(true);
+            }}
+          >
+            Full CMOS diagram
+          </button>
           {hasTransistors && (
             <div className={styles.powerView} aria-label="Power connection display (visual only)">
               <label><input type="checkbox" checked={showVdd} onChange={(event) => setShowVdd(event.target.checked)} /> Show VDD</label>

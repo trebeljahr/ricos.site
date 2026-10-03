@@ -190,8 +190,11 @@ describe("circuit depth", () => {
   });
   it("shows construction labels as boundaries and drills through gate implementations", () => {
     render(<LogicBuilder />);
+    expect(within(screen.getByLabelText("Gate palette")).queryByRole("button", { name: "NOR only" })).toBeNull();
+    fireEvent.click(screen.getByText("Learning"));
     fireEvent.click(screen.getByRole("button", { name: "NOR only" }));
     fireEvent.click(screen.getByTitle("Open NAND from NOR gates blueprint"));
+    expect(screen.getByText("Learning").closest("details")?.open).toBe(false);
     expect(screen.getByLabelText("NAND from NOR gates circuit boundary")).toBeTruthy();
     expect(screen.getAllByRole("group", { name: "NOR — NOR part" })).toHaveLength(4);
 

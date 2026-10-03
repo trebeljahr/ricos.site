@@ -367,6 +367,7 @@ export function LogicBuilder() {
   const pinch = useRef<{ distance: number; x: number; y: number } | null>(null);
   const touchMoved = useRef(false);
   const inputFile = useRef<HTMLInputElement>(null);
+  const learningMenu = useRef<HTMLDetailsElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const circuitRef = useRef(circuit);
   const snapshotRef = useRef(snapshot);
@@ -1210,9 +1211,24 @@ export function LogicBuilder() {
     item.name.toLowerCase().includes(search.toLowerCase().trim()),
   );
   const visibleBlueprints = Object.values(BLUEPRINTS).filter((item) =>
-    item.name.endsWith(`from ${BLUEPRINT_FAMILIES[circuitFamily].suffix}`) &&
-    item.name.toLowerCase().includes(search.toLowerCase().trim()),
+    item.name.endsWith(`from ${BLUEPRINT_FAMILIES[circuitFamily].suffix}`),
   );
+  useEffect(() => {
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (!learningMenu.current?.contains(event.target as globalThis.Node)) {
+        learningMenu.current?.removeAttribute("open");
+      }
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") learningMenu.current?.removeAttribute("open");
+    };
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
   const hasTransistors = circuit.nodes.some((item) => item.type === "nmos" || item.type === "pmos");
   const powerVisible = (node: Node) =>
     (node.type !== "high" || showVdd) && (node.type !== "ground" || showGround);
@@ -1263,6 +1279,30 @@ export function LogicBuilder() {
           <strong>{circuit.name}</strong>
         </div>
         <div className={styles.transport}>
+          <details className={styles.learningMenu} ref={learningMenu}>
+            <summary>Learning <span aria-hidden="true">⌄</span></summary>
+            <div className={styles.learningPanel}>
+              <h2>Build from one kind of part</h2>
+              <p>Open a gate built from transistors, NAND, or NOR.</p>
+              <div className={styles.buildTabs} role="group" aria-label="Circuit construction">
+                {(["transistor", "nand", "nor"] as const).map((family) => (
+                  <button key={family} type="button" aria-pressed={circuitFamily === family} onClick={() => setCircuitFamily(family)}>
+                    {BLUEPRINT_FAMILIES[family].label}
+                  </button>
+                ))}
+              </div>
+              <div className={styles.learningList}>
+                {visibleBlueprints.map((blueprint) => (
+                  <div className={styles.buildEntry} key={blueprint.name}>
+                    <button type="button" onClick={() => { load(blueprint); learningMenu.current?.removeAttribute("open"); }} title={`Open ${blueprint.name} blueprint`}>
+                      {blueprint.name.split(" ")[0]} <span>↗</span>
+                    </button>
+                    <small>{BLUEPRINT_RECIPES[circuitFamily][blueprint.name.split(" ")[0].toLowerCase() as LogicGate]}</small>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </details>
           <button type="button" onClick={() => setUnfolded(new Set(collectUnfoldableIds(circuit)))}>
             <ActionIcon name="unfold" /> Unfold all
           </button>
@@ -1454,22 +1494,6 @@ export function LogicBuilder() {
                     return next;
                   })}
                 >×</button>
-              </div>
-            ))}
-            <h3 className={styles.partsSection}>Build from one kind of part</h3>
-            <div className={styles.buildTabs} role="group" aria-label="Circuit construction">
-              {(["transistor", "nand", "nor"] as const).map((family) => (
-                <button key={family} type="button" aria-pressed={circuitFamily === family} onClick={() => setCircuitFamily(family)}>
-                  {BLUEPRINT_FAMILIES[family].label}
-                </button>
-              ))}
-            </div>
-            {visibleBlueprints.map((blueprint) => (
-              <div className={styles.buildEntry} key={blueprint.name}>
-                <button type="button" onClick={() => load(blueprint)} title={`Open ${blueprint.name} blueprint`}>
-                  {blueprint.name.split(" ")[0]} <span>↗</span>
-                </button>
-                <small>{BLUEPRINT_RECIPES[circuitFamily][blueprint.name.split(" ")[0].toLowerCase() as LogicGate]}</small>
               </div>
             ))}
             <h3 className={styles.partsSection}>Parts</h3>

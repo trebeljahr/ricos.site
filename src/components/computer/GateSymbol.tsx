@@ -73,6 +73,7 @@ export function GateSymbol({ type }: { type: GateType }) {
         </>
       )}
       {type === "high" && <path d="M32 5 V34 M20 13 H44 M25 20 H39 M29 27 H35" />}
+      {type === "module" && <><rect x="10" y="5" width="44" height="32" rx="3" /><path d="M5 15 H10 M5 27 H10 M54 15 H59 M54 27 H59" /></>}
       {type === "junction" && <path d="M8 10 H28 V21 H55 M8 32 H28 V21 M28 21 H29" />}
     </svg>
   );

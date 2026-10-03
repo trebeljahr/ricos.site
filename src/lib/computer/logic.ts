@@ -13,7 +13,8 @@ export type GateType =
   | "xor"
   | "nand"
   | "nor"
-  | "dff";
+  | "dff"
+  | "module";
 export type Node = {
   id: string;
   type: GateType;
@@ -21,6 +22,7 @@ export type Node = {
   y: number;
   label?: string;
   value?: boolean;
+  module?: Circuit;
 };
 export const WIRE_COLORS = {
   cyan: "#69e2e0",
@@ -31,12 +33,14 @@ export const WIRE_COLORS = {
   lime: "#b9e976",
 } as const;
 export type WireColor = keyof typeof WIRE_COLORS;
-export type Wire = { id: string; from: string; to: string; input: number; color?: WireColor };
+export type Wire = { id: string; from: string; to: string; input: number; output?: number; color?: WireColor };
 export type Circuit = { name: string; nodes: Node[]; wires: Wire[] };
 export type Snapshot = {
   values: Record<string, boolean>;
   memory: Record<string, boolean>;
   lastClock: Record<string, boolean>;
+  outputs: Record<string, boolean[]>;
+  modules: Record<string, Snapshot>;
   unstable: boolean;
 };
 
@@ -56,6 +60,7 @@ export const INPUTS: Record<GateType, number> = {
   nand: 2,
   nor: 2,
   dff: 2,
+  module: 0,
 };
 export const LABELS: Record<GateType, string> = {
   switch: "SWITCH",
@@ -73,11 +78,26 @@ export const LABELS: Record<GateType, string> = {
   nand: "NAND",
   nor: "NOR",
   dff: "D FLIP-FLOP",
+  module: "CIRCUIT",
 };
+export const moduleInputs = (circuit: Circuit) =>
+  circuit.nodes.filter((node) => ["switch", "clock", "pulse"].includes(node.type));
+export const moduleOutputs = (circuit: Circuit) =>
+  circuit.nodes.filter((node) => node.type === "lamp");
+export const inputCount = (node: Node) =>
+  node.type === "module" ? moduleInputs(node.module!).length : INPUTS[node.type];
+export const outputCount = (node: Node) =>
+  node.type === "module" ? moduleOutputs(node.module!).length : node.type === "lamp" ? 0 : 1;
+export const inputLabel = (node: Node, index: number) =>
+  node.type === "module" ? moduleInputs(node.module!)[index]?.label || `Input ${index + 1}` : `Input ${index + 1}`;
+export const outputLabel = (node: Node, index: number) =>
+  node.type === "module" ? moduleOutputs(node.module!)[index]?.label || `Output ${index + 1}` : "Output";
 export const initialSnapshot = (): Snapshot => ({
   values: {},
   memory: {},
   lastClock: {},
+  outputs: {},
+  modules: {},
   unstable: false,
 });
 
@@ -86,34 +106,60 @@ export function step(
   previous: Snapshot,
   clockHigh: boolean,
   pulses: Record<string, boolean> = {},
+  overrides: Record<string, boolean> = {},
+  depth = 0,
 ): Snapshot {
   const nodes = new Map(circuit.nodes.map((node) => [node.id, node]));
   const wires = circuit.wires.filter(
     (wire) =>
-      nodes.has(wire.from) && nodes.has(wire.to) && wire.input < INPUTS[nodes.get(wire.to)!.type],
+      nodes.has(wire.from) && nodes.has(wire.to) &&
+      wire.input < inputCount(nodes.get(wire.to)!) &&
+      (wire.output ?? 0) < outputCount(nodes.get(wire.from)!),
   );
   const values: Record<string, boolean> = { ...previous.values };
+  const outputs: Record<string, boolean[]> = { ...previous.outputs };
+  const modules: Record<string, Snapshot> = { ...previous.modules };
   for (const node of circuit.nodes) {
-    if (node.type === "switch") values[node.id] = Boolean(node.value);
-    if (node.type === "clock") values[node.id] = clockHigh;
-    if (node.type === "pulse") values[node.id] = Boolean(pulses[node.id]);
+    if (node.type === "switch") values[node.id] = overrides[node.id] ?? Boolean(node.value);
+    if (node.type === "clock") values[node.id] = overrides[node.id] ?? clockHigh;
+    if (node.type === "pulse") values[node.id] = overrides[node.id] ?? Boolean(pulses[node.id]);
     if (node.type === "high") values[node.id] = true;
     if (node.type === "dff") values[node.id] = Boolean(previous.memory[node.id]);
   }
   let unstable = false;
-  const inputs = (id: string) =>
-    [0, 1].map((port) => {
-      const wire = wires.find((candidate) => candidate.to === id && candidate.input === port);
-      return wire ? Boolean(values[wire.from]) : false;
+  const inputs = (node: Node) =>
+    Array.from({ length: inputCount(node) }, (_, port) => {
+      const wire = wires.find((candidate) => candidate.to === node.id && candidate.input === port);
+      return wire ? Boolean(outputs[wire.from]?.[wire.output ?? 0] ?? values[wire.from]) : false;
     });
   // Combinational gates settle within one tick. A feedback loop that does not settle is flagged.
   const settle = () => {
     for (let pass = 0; pass <= circuit.nodes.length; pass++) {
       let changed = false;
       for (const node of circuit.nodes) {
-        const [a, b] = inputs(node.id);
+        const signals = inputs(node);
+        const [a, b] = signals;
         let next: boolean;
         switch (node.type) {
+          case "module": {
+            if (depth >= 4 || !node.module) continue;
+            const innerInputs = moduleInputs(node.module);
+            const inner = step(
+              node.module,
+              previous.modules[node.id] ?? initialSnapshot(),
+              clockHigh,
+              {},
+              Object.fromEntries(innerInputs.map((port, index) => [port.id, signals[index]])),
+              depth + 1,
+            );
+            modules[node.id] = inner;
+            const bits = moduleOutputs(node.module).map((port) => Boolean(inner.values[port.id]));
+            if (bits.some((bit, index) => bit !== outputs[node.id]?.[index])) changed = true;
+            outputs[node.id] = bits;
+            next = bits[0] ?? false;
+            if (inner.unstable) unstable = true;
+            break;
+          }
           case "lamp":
             next = a;
             break;
@@ -161,14 +207,14 @@ export function step(
   const lastClock = { ...previous.lastClock };
   for (const node of circuit.nodes) {
     if (node.type !== "dff") continue;
-    const [data, clock] = inputs(node.id);
+    const [data, clock] = inputs(node);
     if (clock && !previous.lastClock[node.id]) memory[node.id] = data;
     lastClock[node.id] = clock;
   }
   for (const node of circuit.nodes)
     if (node.type === "dff") values[node.id] = Boolean(memory[node.id]);
   settle();
-  return { values, memory, lastClock, unstable };
+  return { values, memory, lastClock, outputs, modules, unstable };
 }
 
 const node = (
@@ -403,7 +449,7 @@ export const BLUEPRINTS: Record<string, Circuit> = Object.fromEntries(
   ),
 );
 
-export function validateCircuit(value: unknown): Circuit | null {
+export function validateCircuit(value: unknown, depth = 0): Circuit | null {
   if (!value || typeof value !== "object") return null;
   const item = value as Partial<Circuit>;
   if (
@@ -411,7 +457,7 @@ export function validateCircuit(value: unknown): Circuit | null {
     !Array.isArray(item.nodes) ||
     !Array.isArray(item.wires) ||
     item.nodes.length > 300 ||
-    item.wires.length > 800
+    item.wires.length > 800 || depth > 3
   )
     return null;
   const types = Object.keys(INPUTS);
@@ -429,6 +475,14 @@ export function validateCircuit(value: unknown): Circuit | null {
     return null;
   const ids = new Set(item.nodes.map((n) => n.id));
   if (ids.size !== item.nodes.length) return null;
+  const validatedModules = new Map<string, Circuit>();
+  for (const n of item.nodes) {
+    if (n.type !== "module") continue;
+    const inner = validateCircuit(n.module, depth + 1);
+    if (!inner || moduleInputs(inner).length > 8 || moduleOutputs(inner).length < 1 || moduleOutputs(inner).length > 8)
+      return null;
+    validatedModules.set(n.id, inner);
+  }
   if (
     !item.wires.every(
       (w) =>
@@ -438,7 +492,15 @@ export function validateCircuit(value: unknown): Circuit | null {
         ids.has(w.to) &&
         Number.isInteger(w.input) &&
         w.input >= 0 &&
-        w.input < INPUTS[item.nodes!.find((n) => n.id === w.to)!.type],
+        w.input < inputCount({
+          ...item.nodes!.find((n) => n.id === w.to)!,
+          module: validatedModules.get(w.to),
+        }) &&
+        (w.output === undefined || (Number.isInteger(w.output) && w.output >= 0)) &&
+        (w.output ?? 0) < outputCount({
+          ...item.nodes!.find((n) => n.id === w.from)!,
+          module: validatedModules.get(w.from),
+        }),
     )
   )
     return null;
@@ -451,12 +513,14 @@ export function validateCircuit(value: unknown): Circuit | null {
       y: n.y,
       label: typeof n.label === "string" ? n.label.slice(0, 30) : undefined,
       value: Boolean(n.value),
+      module: validatedModules.get(n.id),
     })),
     wires: item.wires.map((w) => ({
       id: w.id,
       from: w.from,
       to: w.to,
       input: w.input,
+      output: w.output,
       color:
         typeof w.color === "string" && Object.hasOwn(WIRE_COLORS, w.color)
           ? (w.color as WireColor)

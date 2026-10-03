@@ -6,13 +6,17 @@ import {
   BLUEPRINT_FAMILIES,
   BLUEPRINT_RECIPES,
   type BlueprintFamily,
-  GATE_NAMES,
   type LogicGate,
   type GateType,
-  INPUTS,
+  inputCount,
+  inputLabel,
   initialSnapshot,
   LABELS,
   type Node,
+  moduleInputs,
+  moduleOutputs,
+  outputCount,
+  outputLabel,
   PRESETS,
   type Snapshot,
   step,
@@ -46,9 +50,11 @@ const partColors: Record<GateType, string> = {
   nand: "#ff8f87",
   nor: "#ff8f87",
   dff: "#b9e976",
+  module: "#ffc76a",
 };
 type WireDraft = {
   from?: string;
+  output?: number;
   to?: string;
   input?: number;
   x: number;
@@ -79,7 +85,9 @@ const palette: GateType[] = [
 ];
 const clone = (circuit: Circuit): Circuit => JSON.parse(JSON.stringify(circuit));
 const portY = (node: Node, input: number) =>
-  node.y + (INPUTS[node.type] === 2 ? (input === 0 ? 24 : 54) : NODE_HEIGHT / 2);
+  node.y + (inputCount(node) === 1 ? NODE_HEIGHT / 2 : 15 + input * (48 / Math.max(1, inputCount(node) - 1)));
+const outY = (node: Node, output: number) =>
+  node.y + (outputCount(node) === 1 ? NODE_HEIGHT / 2 : 15 + output * (48 / Math.max(1, outputCount(node) - 1)));
 
 export function LogicBuilder() {
   const [circuit, setCircuit] = useState<Circuit>(() => clone(PRESETS["Half adder"]));
@@ -88,7 +96,7 @@ export function LogicBuilder() {
   const [running, setRunning] = useState(false);
   const [tick, setTick] = useState(0);
   const [rate, setRate] = useState(2);
-  const [pending, setPending] = useState<string | null>(null);
+  const [pending, setPending] = useState<{ from: string; output: number } | null>(null);
   const [wireDraft, setWireDraft] = useState<WireDraft | null>(null);
   const [selectedWire, setSelectedWire] = useState<string | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
@@ -218,6 +226,21 @@ export function LogicBuilder() {
     setSelected([next.id]);
     setPending(null);
   };
+  const addModule = (source: Circuit, position?: { x: number; y: number }) => {
+    if (!moduleOutputs(source).length || moduleInputs(source).length > 8 || moduleOutputs(source).length > 8) {
+      setMessage("This circuit needs 1–8 outputs and at most 8 inputs to become a black box.");
+      return;
+    }
+    const index = circuit.nodes.length;
+    const next: Node = {
+      id: crypto.randomUUID(), type: "module", module: clone(source), label: source.name,
+      x: Math.max(0, Math.min(WIDTH - NODE_WIDTH, position?.x ?? 110 + (index % 5) * 155)),
+      y: Math.max(0, Math.min(HEIGHT - NODE_HEIGHT, position?.y ?? 90 + (Math.floor(index / 5) % 5) * 90)),
+    };
+    setCircuit((current) => ({ ...current, nodes: [...current.nodes, next] }));
+    setSelected([next.id]);
+    setMessage(`${source.name} added as a black box.`);
+  };
   const insertCircuit = (source: Circuit, position: { x: number; y: number }) => {
     const minX = Math.min(...source.nodes.map((node) => node.x));
     const minY = Math.min(...source.nodes.map((node) => node.y));
@@ -238,7 +261,7 @@ export function LogicBuilder() {
     setSelected([...ids.values()]);
     setMessage(`${source.name} added. Drag the selected circuit to move it.`);
   };
-  const connect = (from: string | null, to: string, input: number) => {
+  const connect = (from: string | null, to: string, input: number, output = 0) => {
     if (!from) {
       setMessage("Choose an output first.");
       return;
@@ -253,7 +276,7 @@ export function LogicBuilder() {
       ...current,
       wires: [
         ...current.wires.filter((wire) => !(wire.to === to && wire.input === input)),
-        { id: crypto.randomUUID(), from, to, input, color: sourceColor },
+        { id: crypto.randomUUID(), from, to, input, output, color: sourceColor },
       ],
     }));
     setPending(null);
@@ -269,21 +292,21 @@ export function LogicBuilder() {
     setMenu(null);
   };
   const nearestConnector = (point: { x: number; y: number }, draft: WireDraft) => {
-    let best: { id: string; input?: number; distance: number } | null = null;
+    let best: { id: string; input?: number; output?: number; distance: number } | null = null;
     for (const node of circuitRef.current.nodes) {
       if (draft.from && node.id !== draft.from) {
-        for (let input = 0; input < INPUTS[node.type]; input++) {
+        for (let input = 0; input < inputCount(node); input++) {
           const distance = Math.hypot(point.x - node.x, point.y - portY(node, input));
           if (distance < 20 && (!best || distance < best.distance))
             best = { id: node.id, input, distance };
         }
       }
-      if (draft.to && node.id !== draft.to && node.type !== "lamp") {
-        const distance = Math.hypot(
-          point.x - node.x - NODE_WIDTH,
-          point.y - node.y - NODE_HEIGHT / 2,
-        );
-        if (distance < 20 && (!best || distance < best.distance)) best = { id: node.id, distance };
+      if (draft.to && node.id !== draft.to) {
+        for (let output = 0; output < outputCount(node); output++) {
+          const distance = Math.hypot(point.x - node.x - NODE_WIDTH, point.y - outY(node, output));
+          if (distance < 20 && (!best || distance < best.distance))
+            best = { id: node.id, output, distance };
+        }
       }
     }
     return best;
@@ -409,12 +432,12 @@ export function LogicBuilder() {
       const moved = Math.hypot(point.x - draft.originX, point.y - draft.originY) > 8;
       const connector = moved ? nearestConnector(point, draft) : null;
       if (draft.from && connector?.input !== undefined)
-        connect(draft.from, connector.id, connector.input);
-      else if (draft.to && connector) connect(connector.id, draft.to, draft.input!);
+        connect(draft.from, connector.id, connector.input, draft.output);
+      else if (draft.to && connector) connect(connector.id, draft.to, draft.input!, connector.output);
       else if (!moved && draft.from) {
-        setPending(draft.from);
+        setPending({ from: draft.from, output: draft.output ?? 0 });
         setMessage("Drag to an input, or click one to connect.");
-      } else if (!moved && draft.to) connect(pending, draft.to, draft.input!);
+      } else if (!moved && draft.to) connect(pending?.from ?? null, draft.to, draft.input!, pending?.output);
       else setMessage("Wire cancelled. Drop on a compatible connector.");
       wireDraftRef.current = null;
       setWireDraft(null);
@@ -483,11 +506,11 @@ export function LogicBuilder() {
     : null;
   const draftEnd = wireDraft?.to ? circuit.nodes.find((node) => node.id === wireDraft.to) : null;
   const previewStart = draftStart
-    ? { x: draftStart.x + NODE_WIDTH, y: draftStart.y + NODE_HEIGHT / 2 }
+    ? { x: draftStart.x + NODE_WIDTH, y: outY(draftStart, wireDraft!.output ?? 0) }
     : draftTarget && wireDraft?.to
       ? {
           x: circuit.nodes.find((node) => node.id === draftTarget.id)!.x + NODE_WIDTH,
-          y: circuit.nodes.find((node) => node.id === draftTarget.id)!.y + NODE_HEIGHT / 2,
+          y: outY(circuit.nodes.find((node) => node.id === draftTarget.id)!, draftTarget.output ?? 0),
         }
       : wireDraft
         ? { x: wireDraft.x, y: wireDraft.y }
@@ -612,10 +635,10 @@ export function LogicBuilder() {
                   insertCircuit(BLUEPRINTS[blueprint] || PRESETS[blueprint], boardPoint(event.clientX, event.clientY));
                   return;
                 }
-                const blackBox = event.dataTransfer.getData("application/x-logic-black-box") as LogicGate;
-                if (GATE_NAMES.includes(blackBox)) {
+                const moduleName = event.dataTransfer.getData("application/x-logic-module");
+                if (moduleName && (BLUEPRINTS[moduleName] || PRESETS[moduleName] || saved[moduleName])) {
                   const point = boardPoint(event.clientX, event.clientY);
-                  addNode(blackBox, { x: point.x - NODE_WIDTH / 2, y: point.y - NODE_HEIGHT / 2 });
+                  addModule(BLUEPRINTS[moduleName] || PRESETS[moduleName] || saved[moduleName], { x: point.x - NODE_WIDTH / 2, y: point.y - NODE_HEIGHT / 2 });
                   return;
                 }
                 const type = event.dataTransfer.getData("application/x-logic-gate") as GateType;
@@ -647,7 +670,7 @@ export function LogicBuilder() {
                   const to = circuit.nodes.find((node) => node.id === wire.to);
                   if (!from || !to) return null;
                   const x1 = from.x + NODE_WIDTH,
-                    y1 = from.y + NODE_HEIGHT / 2,
+                    y1 = outY(from, wire.output ?? 0),
                     x2 = to.x,
                     y2 = portY(to, wire.input);
                   const d = wirePath(
@@ -671,7 +694,7 @@ export function LogicBuilder() {
                         className={styles.wireHit}
                         role="button"
                         tabIndex={0}
-                        aria-label={`Select wire from ${from.label || LABELS[from.type]} to ${to.label || LABELS[to.type]}`}
+                        aria-label={`Select wire from ${from.label || LABELS[from.type]} ${outputLabel(from, wire.output ?? 0)} to ${to.label || LABELS[to.type]} ${inputLabel(to, wire.input)}`}
                         onKeyDown={(event) => {
                           if (event.key === "Enter") setSelectedWire(wire.id);
                           if (event.key === "Delete") {
@@ -712,7 +735,7 @@ export function LogicBuilder() {
                         d={d}
                         className={clsx(
                           styles.wire,
-                          snapshot.values[wire.from] && styles.live,
+                          (snapshot.outputs[wire.from]?.[wire.output ?? 0] ?? snapshot.values[wire.from]) && styles.live,
                           selectedWire === wire.id && styles.wireSelected,
                         )}
                       />
@@ -789,7 +812,7 @@ export function LogicBuilder() {
                   }}
                   onClick={(event) => event.stopPropagation()}
                 >
-                  {Array.from({ length: INPUTS[node.type] }, (_, input) => (
+                  {Array.from({ length: inputCount(node) }, (_, input) => (
                     <button
                       type="button"
                       key={`${node.id}-input-${input}`}
@@ -808,16 +831,17 @@ export function LogicBuilder() {
                         })
                       }
                       onClick={(event) => {
-                        if (event.detail === 0) connect(pending, node.id, input);
+                        if (event.detail === 0) connect(pending?.from ?? null, node.id, input, pending?.output);
                       }}
                       data-wire-target={Boolean(
                         wireDraft?.from &&
                           draftTarget?.id === node.id &&
                           draftTarget.input === input,
                       )}
-                      aria-label={`Connect to ${node.label || LABELS[node.type]} input ${input + 1}`}
+                      aria-label={`Connect to ${node.label || LABELS[node.type]} ${inputLabel(node, input)}`}
                       title={
-                        node.type === "dff"
+                        node.type === "module" ? inputLabel(node, input)
+                        : node.type === "dff"
                           ? input === 0
                             ? "D: data"
                             : "CLK: rising edge"
@@ -858,33 +882,38 @@ export function LogicBuilder() {
                       >
                         SEND
                       </button>
+                    ) : node.type === "module" ? (
+                      <span className={styles.moduleBits}>{moduleOutputs(node.module!).map((port, index) => `${port.label || `OUT ${index + 1}`}:${snapshot.outputs[node.id]?.[index] ? 1 : 0}`).join("  ")}</span>
                     ) : (
                       <span className={styles.bit}>{snapshot.values[node.id] ? "1" : "0"}</span>
                     )}
                   </div>
-                  {node.type !== "lamp" && (
+                  {Array.from({ length: outputCount(node) }, (_, output) => (
                     <button
                       type="button"
-                      className={clsx(styles.output, pending === node.id && styles.pending)}
+                      key={`${node.id}-output-${output}`}
+                      className={clsx(styles.output, pending?.from === node.id && pending.output === output && styles.pending)}
+                      style={{ top: `${((outY(node, output) - node.y) / NODE_HEIGHT) * 100}%` }}
                       onPointerDown={(event) =>
                         startWire(event, {
                           from: node.id,
+                          output,
                           x: node.x + NODE_WIDTH,
-                          y: node.y + NODE_HEIGHT / 2,
+                          y: outY(node, output),
                           originX: node.x + NODE_WIDTH,
-                          originY: node.y + NODE_HEIGHT / 2,
+                          originY: outY(node, output),
                         })
                       }
                       onClick={(event) => {
                         if (event.detail !== 0) return;
-                        setPending(node.id);
-                        setMessage(`Choose an input for ${node.label || LABELS[node.type]}.`);
+                        setPending({ from: node.id, output });
+                        setMessage(`Choose an input for ${outputLabel(node, output)}.`);
                       }}
-                      data-wire-target={Boolean(wireDraft?.to && draftTarget?.id === node.id)}
-                      aria-label={`Wire from ${node.label || LABELS[node.type]} output`}
-                      title="Output"
+                      data-wire-target={Boolean(wireDraft?.to && draftTarget?.id === node.id && draftTarget.output === output)}
+                      aria-label={`Wire from ${node.label || LABELS[node.type]} ${outputLabel(node, output)}`}
+                      title={outputLabel(node, output)}
                     />
-                  )}
+                  ))}
                 </div>
               ))}
               {marquee && (
@@ -940,12 +969,10 @@ export function LogicBuilder() {
                   {preset.name}<span>↗</span>
                 </button>
                 {circuitFamily !== "examples" && <span className={styles.recipe}>{BLUEPRINT_RECIPES[circuitFamily][preset.name.split(" ")[0].toLowerCase() as LogicGate]}</span>}
-                {circuitFamily !== "examples" && (
-                  <button type="button" className={styles.blackBox} draggable onDragStart={(event) => {
-                    event.dataTransfer.setData("application/x-logic-black-box", preset.name.split(" ")[0].toLowerCase());
+                <button type="button" className={styles.blackBox} draggable onDragStart={(event) => {
+                    event.dataTransfer.setData("application/x-logic-module", preset.name);
                     event.dataTransfer.effectAllowed = "copy";
-                  }} onClick={() => addNode(preset.name.split(" ")[0].toLowerCase() as LogicGate)} title="Add this gate as a black box">▣ Black box</button>
-                )}
+                  }} onClick={() => addModule(preset)} title={`Add ${preset.name} as a black box`}>▣ Black box</button>
               </div>
             ))}
             {visibleCircuits.length === 0 && <p>No matching circuits</p>}
@@ -980,6 +1007,10 @@ export function LogicBuilder() {
                   <button type="button" onClick={() => load(item)}>
                     {item.name}
                   </button>
+                  <button type="button" draggable onDragStart={(event) => {
+                    event.dataTransfer.setData("application/x-logic-module", item.name);
+                    event.dataTransfer.effectAllowed = "copy";
+                  }} onClick={() => addModule(item)} title={`Add ${item.name} as a black box`}>▣</button>
                   <button
                     type="button"
                     aria-label={`Delete ${item.name}`}
@@ -1002,8 +1033,10 @@ export function LogicBuilder() {
           {selectedWireData ? (
             <div className={styles.wireInspector}>
               <p>
-                {circuit.nodes.find((node) => node.id === selectedWireData.from)?.label || "Output"}{" "}
-                → {circuit.nodes.find((node) => node.id === selectedWireData.to)?.label || "Input"}
+                {circuit.nodes.find((node) => node.id === selectedWireData.from)?.label || "Output"}
+                {" · "}{outputLabel(circuit.nodes.find((node) => node.id === selectedWireData.from)!, selectedWireData.output ?? 0)}
+                {" → "}{circuit.nodes.find((node) => node.id === selectedWireData.to)?.label || "Input"}
+                {" · "}{inputLabel(circuit.nodes.find((node) => node.id === selectedWireData.to)!, selectedWireData.input)}
               </p>
               <span>Signal color</span>
               <div className={styles.colorSwatches}>
@@ -1066,6 +1099,14 @@ export function LogicBuilder() {
                   }
                 />
               </label>
+              {selectedNode.type === "module" && (
+                <div className={styles.modulePorts}>
+                  <span>Inputs</span>
+                  {moduleInputs(selectedNode.module!).map((port, index) => <small key={port.id}>{index + 1}. {port.label || `Input ${index + 1}`}</small>)}
+                  <span>Outputs</span>
+                  {moduleOutputs(selectedNode.module!).map((port, index) => <small key={port.id}>{index + 1}. {port.label || `Output ${index + 1}`} = {snapshot.outputs[selectedNode.id]?.[index] ? 1 : 0}</small>)}
+                </div>
+              )}
               <button type="button" onClick={() => removeNodes()}>
                 Delete part
               </button>

@@ -72,4 +72,102 @@ describe("logic circuit engine", () => {
         expect(parts.every((type) => ["switch", "high", "lamp", "nmos", "pmos", "junction"].includes(type))).toBe(true);
     }
   });
+  it("routes two outputs from a half-adder black box independently", () => {
+    const circuit: Circuit = {
+      name: "Black box half adder",
+      nodes: [
+        { id: "a", type: "switch", x: 0, y: 0 },
+        { id: "b", type: "switch", x: 0, y: 100 },
+        { id: "box", type: "module", module: PRESETS["Half adder"], x: 250, y: 50 },
+        { id: "sum", type: "lamp", x: 500, y: 0 },
+        { id: "carry", type: "lamp", x: 500, y: 100 },
+      ],
+      wires: [
+        { id: "a-box", from: "a", to: "box", input: 0 },
+        { id: "b-box", from: "b", to: "box", input: 1 },
+        { id: "box-sum", from: "box", output: 0, to: "sum", input: 0 },
+        { id: "box-carry", from: "box", output: 1, to: "carry", input: 0 },
+      ],
+    };
+    for (const a of [false, true]) for (const b of [false, true]) {
+      circuit.nodes[0].value = a;
+      circuit.nodes[1].value = b;
+      const values = step(circuit, initialSnapshot(), false).values;
+      expect([values.sum, values.carry]).toEqual([a !== b, a && b]);
+    }
+    expect(validateCircuit(circuit)?.nodes.find((node) => node.id === "box")?.module?.name).toBe("Half adder");
+    circuit.wires[3].output = 2;
+    expect(validateCircuit(circuit)).toBeNull();
+  });
+  it("preserves clocked memory inside a black box", () => {
+    const circuit: Circuit = {
+      name: "Memory box",
+      nodes: [
+        { id: "data", type: "switch", x: 0, y: 0, value: true },
+        { id: "clock", type: "switch", x: 0, y: 100, value: false },
+        { id: "box", type: "module", module: PRESETS["Clocked memory"], x: 250, y: 50 },
+        { id: "out", type: "lamp", x: 500, y: 50 },
+      ],
+      wires: [
+        { id: "data-box", from: "data", to: "box", input: 0 },
+        { id: "clock-box", from: "clock", to: "box", input: 1 },
+        { id: "box-out", from: "box", to: "out", input: 0 },
+      ],
+    };
+    let state = step(circuit, initialSnapshot(), false);
+    expect(state.values.out).toBe(false);
+    circuit.nodes[1].value = true;
+    state = step(circuit, state, false);
+    expect(state.values.out).toBe(true);
+    circuit.nodes[0].value = false;
+    state = step(circuit, state, false);
+    expect(state.values.out).toBe(true);
+    circuit.nodes[1].value = false;
+    state = step(circuit, state, false);
+    circuit.nodes[1].value = true;
+    state = step(circuit, state, false);
+    expect(state.values.out).toBe(false);
+  });
+  it("exposes all three full-adder inputs and both outputs", () => {
+    const circuit: Circuit = {
+      name: "Full-adder box",
+      nodes: [
+        ...["a", "b", "cin"].map((id, index) => ({ id, type: "switch" as const, x: 0, y: index * 100 })),
+        { id: "box", type: "module", module: PRESETS["Full adder"], x: 250, y: 100 },
+        { id: "sum", type: "lamp", x: 500, y: 0 },
+        { id: "carry", type: "lamp", x: 500, y: 100 },
+      ],
+      wires: [
+        ...["a", "b", "cin"].map((from, input) => ({ id: `${from}-box`, from, to: "box", input })),
+        { id: "box-sum", from: "box", output: 0, to: "sum", input: 0 },
+        { id: "box-carry", from: "box", output: 1, to: "carry", input: 0 },
+      ],
+    };
+    expect(validateCircuit(JSON.parse(JSON.stringify(circuit)))).not.toBeNull();
+    for (const a of [false, true]) for (const b of [false, true]) for (const cin of [false, true]) {
+      circuit.nodes[0].value = a;
+      circuit.nodes[1].value = b;
+      circuit.nodes[2].value = cin;
+      const values = step(circuit, initialSnapshot(), false).values;
+      const total = Number(a) + Number(b) + Number(cin);
+      expect([values.sum, values.carry]).toEqual([total % 2 === 1, total >= 2]);
+    }
+  });
+  it("maps a pulse source to a black-box input", () => {
+    const circuit: Circuit = {
+      name: "Pulse box",
+      nodes: [
+        { id: "trigger", type: "switch", x: 0, y: 0, value: false },
+        { id: "box", type: "module", module: PRESETS["Pulse path"], x: 200, y: 0 },
+        { id: "out", type: "lamp", x: 400, y: 0 },
+      ],
+      wires: [
+        { id: "in", from: "trigger", to: "box", input: 0 },
+        { id: "out", from: "box", to: "out", input: 0 },
+      ],
+    };
+    expect(step(circuit, initialSnapshot(), false).values.out).toBe(true);
+    circuit.nodes[0].value = true;
+    expect(step(circuit, initialSnapshot(), false).values.out).toBe(false);
+  });
 });

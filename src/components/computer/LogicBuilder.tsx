@@ -2014,12 +2014,12 @@ export function LogicBuilder() {
               <option value={10}>10 Hz</option>
             </select>
           </label>
-          <div className={styles.metrics} aria-label="Clock status">
+          </div>}
+          {hasClock && <div className={styles.metrics} aria-label="Clock status">
             <span>Cycle {Math.floor(tick / 2)}</span>
             <span className={clsx(styles.clock, clockHigh && styles.on)}>
               CLK {clockHigh ? "1" : "0"}
             </span>
-          </div>
           </div>}
         </div>
       </div>

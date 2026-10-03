@@ -652,13 +652,12 @@ export function LogicBuilder() {
       source = part.module;
       innerSnapshot = innerSnapshot.modules[id] ?? initialSnapshot();
     }
-    setViewPath((current) => [...current, ...levels]);
     setUnfolded(new Set([...unfolded].filter((entry) => entry.startsWith(`${path}/`))
       .map((entry) => entry.slice(path.length + 1))));
     const copy = clone(source);
     moduleInputs(copy).forEach((input) => { input.value = Boolean(innerSnapshot.values[input.id]); });
     circuitRef.current = copy;
-    setCircuit(copy);
+    publish({ ...history.current(), circuit: copy, viewPath: [...viewPath, ...levels] }, false);
     setRunning(false);
     setSelected([]);
     setSelectedWire(null);

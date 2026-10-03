@@ -144,12 +144,16 @@
 /* The name, symbol, part type, and state share one centered stack. */
 .nodeBody{box-sizing:border-box;width:100%;min-width:0;gap:4px;padding:9px 14px}
 .nodeNameRow{flex:none;min-height:20px;max-width:100%}
+.nodeLabel{min-width:0}
 .nodeSymbol{display:grid;place-items:center;flex:none;height:30px;line-height:0}
 .nodeSymbol svg{display:block}
 .nodePartName{flex:none;line-height:1.3;text-align:center}
 .node .bit,.node .toggle,.moduleBits,.numberBits,.digitalScreen,.lampState{flex:none}
-.moduleBody{box-sizing:border-box;width:100%;padding-left:83px;padding-right:83px}
+.moduleBody{box-sizing:border-box;width:100%;padding-left:98px;padding-right:98px}
 .moduleBody .nodeNameRow,.moduleBody .nodePartName{min-width:0}
+.moduleBody .nodeNameRow{position:absolute;top:10px;left:18px;right:72px;width:auto;max-width:none;justify-content:center}
+.moduleBody .nodePartName{display:-webkit-box;overflow:hidden;white-space:normal;overflow-wrap:anywhere;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-height:14px}
+.moduleBody .moduleBits{font-size:9px;white-space:nowrap}
 .nodeBody:has(.digitalScreen){gap:6px}
 /* Task groups keep edit, simulation, view, and file actions together. */
 .toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"identity metrics" "transport transport";align-items:center;column-gap:18px;row-gap:10px;padding:11px 18px}
@@ -169,3 +173,8 @@
 .layoutWithInspector{grid-template-columns:264px minmax(0,1fr) 205px}
 @media(max-width:1100px){.layout{grid-template-columns:228px minmax(0,1fr)}.layoutWithInspector{grid-template-columns:228px minmax(0,1fr) 180px}}
 @media(max-width:650px){.layout,.layoutWithInspector{display:flex;flex-direction:column}.transport{align-items:flex-start}.toolGroup{border-right:0;border-bottom:1px solid #465879;padding-bottom:9px}}
+.node.topPorts:has(.moduleBody) .nodeActions{top:10px;right:18px}
+.node.topPorts:not(:has(.moduleBody)) .nodeActions{top:24px;right:20px}
+.node.topPorts:not(:has(.moduleBody)) .nodeNameRow{box-sizing:border-box;padding-right:28px}
+.portOnRight .inputPortLabel{left:auto;right:15px;text-align:right}
+.portOnLeft .outputPortLabel{right:auto;left:15px;text-align:left}

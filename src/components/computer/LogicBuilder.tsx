@@ -41,7 +41,7 @@ const STORAGE = "ricos-computer-circuits-v1";
 const WIDTH = 900;
 const HEIGHT = 520;
 const NODE_WIDTH = 132;
-const MODULE_WIDTH = 236;
+const MODULE_WIDTH = 300;
 type DisplayNode = Node & { displayWidth?: number; displayHeight?: number };
 const nodeWidth = (node: DisplayNode) => node.displayWidth ?? (
   node.type === "module" ? MODULE_WIDTH :
@@ -146,7 +146,14 @@ const withUpdatedModule = (parent: Circuit, moduleId: string, inner: Circuit): C
 });
 const nodeHeight = (node: DisplayNode) => node.displayHeight ?? (
   node.type === "module"
-    ? Math.max(NODE_HEIGHT, 92 + Math.max(inputCount(node), outputCount(node)) * 25)
+    ? Math.max(
+        NODE_HEIGHT,
+        92 + (
+          inputSide(node) === outputSide(node) && ["left", "right"].includes(inputSide(node))
+            ? inputCount(node) + outputCount(node)
+            : Math.max(inputCount(node), outputCount(node))
+        ) * 25,
+      )
     : ["input4", "input8", "display4", "display8"].includes(node.type)
       ? Math.max(node.type.startsWith("display") ? 142 : NODE_HEIGHT, 92 + Math.max(inputCount(node), outputCount(node)) * 24)
       : ["lamp", "switch", "pulse"].includes(node.type)
@@ -177,12 +184,16 @@ const orientedWirePath = (start: { x: number; y: number }, end: { x: number; y: 
 };
 const portPoint = (node: Node, index: number, kind: "input" | "output") => {
   const side = kind === "input" ? inputSide(node) : outputSide(node);
-  const count = kind === "input" ? inputCount(node) : outputCount(node);
+  const sharedSide = inputSide(node) === outputSide(node);
+  const count = sharedSide
+    ? inputCount(node) + outputCount(node)
+    : kind === "input" ? inputCount(node) : outputCount(node);
+  const portIndex = sharedSide && kind === "output" ? inputCount(node) + index : index;
   const horizontal = side === "top" || side === "bottom";
   const length = horizontal ? nodeWidth(node) : nodeHeight(node);
   const bitRow = ["input4", "input8", "display4", "display8"].includes(node.type);
-  const orderedIndex = horizontal && bitRow ? count - index - 1 : index;
-  const edge = node.type === "module" && !horizontal ? 42 : 16;
+  const orderedIndex = horizontal && bitRow ? count - portIndex - 1 : portIndex;
+  const edge = horizontal ? 16 : node.type === "module" ? 42 : 30;
   const offset = count === 1 ? length / 2 : edge + orderedIndex * ((length - edge - 24) / (count - 1));
   return {
     x: node.x + (horizontal ? offset : side === "left" ? 0 : nodeWidth(node)),
@@ -1977,6 +1988,7 @@ export function LogicBuilder() {
                         selected.includes(node.id) && styles.selected,
                         snapshot.values[node.id] && styles.active,
                         node.type === "lamp" && snapshot.values[node.id] && styles.lampLit,
+                        (inputSide(node) === "top" || outputSide(node) === "top") && styles.topPorts,
                       )}
                       style={
                         {
@@ -2030,7 +2042,7 @@ export function LogicBuilder() {
                       {Array.from({ length: inputCount(node) }, (_, input) => (
                         <div
                           key={`${node.id}-input-${input}`}
-                          className={styles.portRow}
+                          className={clsx(styles.portRow, inputSide(node) === "right" && styles.portOnRight)}
                           style={{
                             ...portStyle(node, input, "input"),
                           }}
@@ -2074,7 +2086,7 @@ export function LogicBuilder() {
                                     : `Input ${input + 1}`
                             }
                           />
-                          {node.type === "module" && (
+                          {node.type === "module" && ["left", "right"].includes(inputSide(node)) && (
                             <span className={styles.inputPortLabel} title={inputLabel(node, input)}>
                               {inputLabel(node, input)}
                             </span>
@@ -2312,12 +2324,12 @@ export function LogicBuilder() {
                       {Array.from({ length: outputCount(node) }, (_, output) => (
                         <div
                           key={`${node.id}-output-${output}`}
-                          className={styles.portRow}
+                          className={clsx(styles.portRow, outputSide(node) === "left" && styles.portOnLeft)}
                           style={{
                             ...portStyle(node, output, "output"),
                           }}
                         >
-                          {node.type === "module" && (
+                          {node.type === "module" && ["left", "right"].includes(outputSide(node)) && (
                             <span
                               className={styles.outputPortLabel}
                               title={outputLabel(node, output)}

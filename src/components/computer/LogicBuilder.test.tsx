@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LogicBuilder } from "./LogicBuilder";
 
@@ -163,5 +163,31 @@ describe("circuit depth", () => {
       clientX: 50,
       clientY: 50,
     });
+  });
+
+  it("contains scaled board overflow and consumes native browser zoom gestures", () => {
+    const { container } = render(<LogicBuilder />);
+    const board = screen.getByRole("application", { name: "Circuit canvas" });
+    const spacer = board.parentElement as HTMLElement;
+    const viewport = spacer.parentElement as HTMLElement;
+    expect(spacer.style.overflow).toBe("hidden");
+    expect(board.style.position).toBe("absolute");
+
+    const wheel = new WheelEvent("wheel", { bubbles: true, cancelable: true, ctrlKey: true, deltaY: 20 });
+    act(() => viewport.dispatchEvent(wheel));
+    expect(wheel.defaultPrevented).toBe(true);
+
+    const start = new Event("gesturestart", { bubbles: true, cancelable: true });
+    act(() => viewport.dispatchEvent(start));
+    expect(start.defaultPrevented).toBe(true);
+    const change = new Event("gesturechange", { bubbles: true, cancelable: true });
+    Object.defineProperty(change, "scale", { value: 1.4 });
+    act(() => viewport.dispatchEvent(change));
+    expect(change.defaultPrevented).toBe(true);
+    expect(screen.getByText("115%")).toBeTruthy();
+
+    const outside = new WheelEvent("wheel", { bubbles: true, cancelable: true, ctrlKey: true });
+    container.parentElement!.dispatchEvent(outside);
+    expect(outside.defaultPrevented).toBe(false);
   });
 });

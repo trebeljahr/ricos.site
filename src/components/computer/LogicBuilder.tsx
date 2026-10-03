@@ -180,6 +180,7 @@ export function LogicBuilder() {
   } | null>(null);
   const board = useRef<HTMLDivElement>(null);
   const boardViewport = useRef<HTMLDivElement>(null);
+  const workspace = useRef<HTMLDivElement>(null);
   const zoomRef = useRef(1);
   const queuedScroll = useRef<{ left: number; top: number } | null>(null);
   const zoomFrame = useRef<number | null>(null);
@@ -262,11 +263,38 @@ export function LogicBuilder() {
   };
   useEffect(() => {
     const viewport = boardViewport.current;
-    if (!viewport) return;
+    const workspaceElement = workspace.current;
+    if (!viewport || !workspaceElement) return;
+    let gestureScale = 1;
+    const gestureAnchor = (event: Event) => {
+      const rect = viewport.getBoundingClientRect();
+      const point = event as Event & { clientX?: number; clientY?: number };
+      return {
+        x: Number.isFinite(point.clientX) ? point.clientX! : rect.left + rect.width / 2,
+        y: Number.isFinite(point.clientY) ? point.clientY! : rect.top + rect.height / 2,
+      };
+    };
     const onWheel = (event: WheelEvent) => {
       if (!event.ctrlKey && !event.metaKey) return;
       event.preventDefault();
-      zoomAt(zoomRef.current * Math.exp(-event.deltaY * 0.01), event.clientX, event.clientY);
+      const anchor = gestureAnchor(event);
+      zoomAt(zoomRef.current * Math.exp(-event.deltaY * 0.01), anchor.x, anchor.y);
+    };
+    const onGestureStart = (event: Event) => {
+      event.preventDefault();
+      gestureScale = 1;
+    };
+    const onGestureChange = (event: Event) => {
+      event.preventDefault();
+      const scale = (event as Event & { scale?: number }).scale;
+      if (!scale || !Number.isFinite(scale)) return;
+      const anchor = gestureAnchor(event);
+      zoomAt(zoomRef.current * (scale / gestureScale), anchor.x, anchor.y);
+      gestureScale = scale;
+    };
+    const onGestureEnd = (event: Event) => event.preventDefault();
+    const onTouchMove = (event: TouchEvent) => {
+      if (event.touches.length > 1) event.preventDefault();
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (
@@ -280,11 +308,19 @@ export function LogicBuilder() {
     const onKeyUp = (event: KeyboardEvent) => {
       if (event.code === "Space") spaceHeld.current = false;
     };
-    viewport.addEventListener("wheel", onWheel, { passive: false });
+    workspaceElement.addEventListener("wheel", onWheel, { capture: true, passive: false });
+    workspaceElement.addEventListener("gesturestart", onGestureStart, { capture: true, passive: false });
+    workspaceElement.addEventListener("gesturechange", onGestureChange, { capture: true, passive: false });
+    workspaceElement.addEventListener("gestureend", onGestureEnd, { capture: true, passive: false });
+    viewport.addEventListener("touchmove", onTouchMove, { passive: false });
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     return () => {
-      viewport.removeEventListener("wheel", onWheel);
+      workspaceElement.removeEventListener("wheel", onWheel, true);
+      workspaceElement.removeEventListener("gesturestart", onGestureStart, true);
+      workspaceElement.removeEventListener("gesturechange", onGestureChange, true);
+      workspaceElement.removeEventListener("gestureend", onGestureEnd, true);
+      viewport.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
       if (zoomFrame.current !== null) cancelAnimationFrame(zoomFrame.current);
@@ -1042,7 +1078,7 @@ export function LogicBuilder() {
             Unwired inputs read 0
           </div>
         </aside>
-        <div className={styles.workspace}>
+        <div ref={workspace} className={styles.workspace}>
           <div className={styles.canvasControls} role="toolbar" aria-label="Canvas view controls">
             <button
               type="button"
@@ -1096,6 +1132,7 @@ export function LogicBuilder() {
                 width: canvasWidth * zoom,
                 height: canvasHeight * zoom,
                 position: "relative",
+                overflow: "hidden",
               }}
             >
               <div
@@ -1104,6 +1141,7 @@ export function LogicBuilder() {
                 style={{
                   width: canvasWidth,
                   height: canvasHeight,
+                  position: "absolute",
                   transform: `scale(${zoom})`,
                   transformOrigin: "top left",
                 }}

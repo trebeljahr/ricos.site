@@ -1,7 +1,8 @@
-.view{display:flex;flex-direction:column;min-height:650px;height:min(88vh,1000px);background:#101820;color:#e7edf3;border:1px solid #35414d;border-radius:12px;overflow:hidden;font-family:ui-sans-serif,system-ui,sans-serif}
+.view{display:flex;flex-direction:column;min-height:520px;height:100%;background:#101820;color:#e7edf3;overflow:hidden;font-family:ui-sans-serif,system-ui,sans-serif}
 .toolbar{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:14px 20px;background:#17232d;border-bottom:1px solid #344250}
 .toolbar button{background:#263743;color:#d7e4eb;border:1px solid #46606a;border-radius:6px;padding:8px 11px;cursor:pointer}
 .toolbar div{display:flex;flex-direction:column;gap:3px}.toolbar strong{font-size:16px}.toolbar span{color:#a9b8c2;font-size:11px}
+.toolbar small{color:#9fb5c0;font-size:10px}
 .toolbar label{display:flex;gap:8px;align-items:center;font-size:12px;color:#b9c9d2}.toolbar .zoom{margin-left:auto}.toolbar input{accent-color:#72e3d5}.toolbar select{max-width:240px;background:#263743;color:#d7e4eb;border:1px solid #46606a;border-radius:5px;padding:6px}
 .note{margin:0;padding:9px 20px;color:#b6c8d2;font-size:11px;line-height:1.5;background:#1b2932}
 .scroll{overflow:auto;flex:1;background-color:#101a22;background-image:radial-gradient(#3b5158 1px,transparent 1px);background-size:20px 20px}
@@ -9,3 +10,4 @@
 .wires path{fill:none;stroke-width:2;opacity:.65}.wires path.highlight{stroke:#ffdf83;stroke-width:4;opacity:1}.wires path.dim{opacity:.12}
 .nodes g{cursor:pointer}.nodes rect{stroke:#7f96a7;stroke-width:1.5}.nodes g:hover rect,.nodes g.selected rect{stroke:#ffdf83;stroke-width:3}
 .nodes text{fill:#e7edf3;font-size:12px;font-weight:700;text-anchor:middle;pointer-events:none}.nodes text.id{fill:#a9bac7;font-size:10px;font-weight:400}
+.nodes text.action,.groups text.action{fill:#8be8d6;cursor:pointer;pointer-events:auto;font-size:12px;font-weight:800;text-anchor:middle}.nodes text.action:hover,.groups text.action:hover{fill:#fff;text-decoration:underline}

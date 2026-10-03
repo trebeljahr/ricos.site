@@ -128,18 +128,27 @@ export const moduleOutputs = (circuit: Circuit) =>
 export const inputCount = (node: Node) =>
   node.type === "module" ? moduleInputs(node.module!).length : INPUTS[node.type];
 export const outputCount = (node: Node) =>
-  node.type === "module" ? moduleOutputs(node.module!).length :
-  node.type === "lamp" || node.type === "display4" || node.type === "display8" ? 0 :
-  node.type === "input4" ? 4 : node.type === "input8" ? 8 : 1;
+  node.type === "module"
+    ? moduleOutputs(node.module!).length
+    : node.type === "lamp" || node.type === "display4" || node.type === "display8"
+      ? 0
+      : node.type === "input4"
+        ? 4
+        : node.type === "input8"
+          ? 8
+          : 1;
 export const inputLabel = (node: Node, index: number) =>
   node.type === "module"
     ? moduleInputs(node.module!)[index]?.label || `Input ${index + 1}`
-    : node.type === "display4" || node.type === "display8" ? `Bit ${index}`
-    : `Input ${index + 1}`;
+    : node.type === "display4" || node.type === "display8"
+      ? `Bit ${index}`
+      : `Input ${index + 1}`;
 export const outputLabel = (node: Node, index: number) =>
   node.type === "module"
     ? moduleOutputs(node.module!)[index]?.label || `Output ${index + 1}`
-    : node.type === "input4" || node.type === "input8" ? `Bit ${index}` : "Output";
+    : node.type === "input4" || node.type === "input8"
+      ? `Bit ${index}`
+      : "Output";
 export const initialSnapshot = (): Snapshot => ({
   values: {},
   memory: {},
@@ -177,7 +186,9 @@ export function step(
     if (node.type === "ground") values[node.id] = false;
     if (node.type === "input4" || node.type === "input8") {
       const bits = node.type === "input4" ? 4 : 8;
-      outputs[node.id] = Array.from({ length: bits }, (_, bit) => Boolean(((node.numberValue ?? 0) >> bit) & 1));
+      outputs[node.id] = Array.from({ length: bits }, (_, bit) =>
+        Boolean(((node.numberValue ?? 0) >> bit) & 1),
+      );
     }
     if (["dff", "srlatch", "dlatch", "dramcell"].includes(node.type))
       values[node.id] = Boolean(previous.memory[node.id]);
@@ -198,7 +209,7 @@ export function step(
         let next: boolean;
         switch (node.type) {
           case "module": {
-            if (depth >= 4 || !node.module) continue;
+            if (depth >= 6 || !node.module) continue;
             const innerInputs = moduleInputs(node.module);
             const inner = step(
               node.module,
@@ -317,14 +328,8 @@ const wire = (from: string, to: string, input = 0): Wire => ({
   input,
 });
 
-function busCircuit(kind: "half" | "full" | "mux" | "alu"): Circuit {
-  const names = {
-    half: "8-bit half adder",
-    full: "8-bit full adder",
-    mux: "8-bit 2:1 multiplexer",
-    alu: "8-bit ALU",
-  };
-  const circuit: Circuit = { name: names[kind], nodes: [], wires: [] };
+function multiplexerCircuit(): Circuit {
+  const circuit: Circuit = { name: "8-bit 2:1 multiplexer", nodes: [], wires: [] };
   const add = (id: string, type: GateType, x: number, y: number, label?: string) => {
     circuit.nodes.push(node(id, type, x, y, label));
     return id;
@@ -338,53 +343,196 @@ function busCircuit(kind: "half" | "full" | "mux" | "alu"): Circuit {
     connect(b, id, 1);
     return id;
   };
-  const mux = (id: string, x: number, y: number, a: string, b: string, select: string, inverse: string) => {
+  const mux = (
+    id: string,
+    x: number,
+    y: number,
+    a: string,
+    b: string,
+    select: string,
+    inverse: string,
+  ) => {
     const low = gate(`${id}-low`, "and", x, y, a, inverse);
     const high = gate(`${id}-high`, "and", x, y + 65, b, select);
     return gate(id, "or", x + 170, y + 30, low, high);
   };
-  if (kind === "mux" || kind === "alu") {
-    const selects = kind === "mux" ? ["select"] : ["op0", "op1"];
-    selects.forEach((id, index) => add(id, "switch", 40 + index * 150, 30, id.toUpperCase()));
-    selects.forEach((id, index) => {
-      const inverse = add(`not-${id}`, "not", 330 + index * 150, 30, `NOT ${id.toUpperCase()}`);
-      connect(id, inverse);
-    });
-  }
-  if (kind === "full" || kind === "alu") add("cin", "switch", 40, kind === "alu" ? 120 : 30, "CARRY IN");
-  let carry = "cin";
+  add("select", "switch", 40, 30, "SELECT");
+  add("not-select", "not", 330, 30, "NOT SELECT");
+  connect("select", "not-select");
   for (let bit = 0; bit < 8; bit++) {
-    const y = 240 + bit * (kind === "alu" ? 310 : 190);
+    const y = 240 + bit * 190;
     const a = add(`a${bit}`, "switch", 40, y, `A${bit}`);
     const b = add(`b${bit}`, "switch", 40, y + 75, `B${bit}`);
-    let result: string;
-    if (kind === "mux") {
-      result = mux(`mux${bit}`, 480, y, a, b, "select", "not-select");
-    } else {
-      const xor = gate(`xor${bit}`, "xor", 290, y, a, b);
-      const and = gate(`and${bit}`, "and", 290, y + 80, a, b);
-      if (kind === "half") {
-        result = xor;
-        const lamp = add(`carry${bit}`, "lamp", 850, y + 80, `CARRY${bit}`);
-        connect(and, lamp);
-      } else {
-        result = gate(`sum${bit}`, "xor", 510, y, xor, carry);
-        const carryPart = gate(`carry-part${bit}`, "and", 510, y + 80, xor, carry);
-        carry = gate(`carry-out${bit}`, "or", 730, y + 80, and, carryPart);
-      }
-      if (kind === "alu") {
-        const or = gate(`or${bit}`, "or", 290, y + 160, a, b);
-        const first = mux(`select-low${bit}`, 960, y, and, or, "op0", "not-op0");
-        const second = mux(`select-high${bit}`, 960, y + 155, xor, result, "op0", "not-op0");
-        result = mux(`result${bit}`, 1320, y + 60, first, second, "op1", "not-op1");
-      }
-    }
-    const output = add(`out${bit}`, "lamp", kind === "alu" ? 1700 : 850, y, `OUT${bit}`);
+    const result = mux(`mux${bit}`, 480, y, a, b, "select", "not-select");
+    const output = add(`out${bit}`, "lamp", 850, y, `OUT${bit}`);
     connect(result, output);
   }
-  if (kind === "full" || kind === "alu") {
-    const output = add("cout", "lamp", kind === "alu" ? 1700 : 1030, 120, "CARRY OUT");
-    connect(carry, output);
+  return circuit;
+}
+
+function halfAdderBlock(): Circuit {
+  return {
+    name: "1-bit half adder",
+    nodes: [
+      node("a", "switch", 40, 80, "A"),
+      node("b", "switch", 40, 200, "B"),
+      node("xor", "xor", 260, 70, "SUM XOR"),
+      node("and", "and", 260, 220, "CARRY AND"),
+      node("sum", "lamp", 500, 70, "SUM"),
+      node("carry", "lamp", 500, 220, "CARRY"),
+    ],
+    wires: [
+      wire("a", "xor"),
+      wire("b", "xor", 1),
+      wire("a", "and"),
+      wire("b", "and", 1),
+      wire("xor", "sum"),
+      wire("and", "carry"),
+    ],
+  };
+}
+
+function fullAdderBlock(): Circuit {
+  const half = halfAdderBlock();
+  const nodes: Node[] = [
+    node("a", "switch", 40, 70, "A"),
+    node("b", "switch", 40, 170, "B"),
+    node("cin", "switch", 40, 300, "CARRY IN"),
+    { id: "half1", type: "module", module: half, x: 250, y: 90, label: "HALF ADDER 1" },
+    { id: "half2", type: "module", module: half, x: 470, y: 90, label: "HALF ADDER 2" },
+    node("carry-or", "or", 690, 260, "CARRY OR"),
+    node("sum", "lamp", 900, 90, "SUM"),
+    node("carry", "lamp", 900, 260, "CARRY"),
+  ];
+  const wires: Wire[] = [];
+  const link = (from: string, to: string, input = 0, output = 0) =>
+    wires.push({ id: `${from}-${to}-${input}`, from, to, input, output });
+  link("a", "half1");
+  link("b", "half1", 1);
+  link("half1", "half2");
+  link("cin", "half2", 1);
+  link("half1", "carry-or", 0, 1);
+  link("half2", "carry-or", 1, 1);
+  link("half2", "sum");
+  link("carry-or", "carry");
+  return { name: "1-bit full adder", nodes, wires };
+}
+
+function aluSliceBlock(): Circuit {
+  const full = fullAdderBlock();
+  const circuit: Circuit = {
+    name: "1-bit ALU slice",
+    nodes: [
+      node("a", "switch", 40, 70, "A"),
+      node("b", "switch", 40, 160, "B"),
+      node("cin", "switch", 40, 250, "CARRY IN"),
+      node("op0", "switch", 40, 340, "OP0"),
+      node("op1", "switch", 40, 430, "OP1"),
+      { id: "adder", type: "module", module: full, x: 260, y: 100, label: "FULL ADDER" },
+    ],
+    wires: [],
+  };
+  const add = (id: string, type: GateType, x: number, y: number, label?: string) => {
+    circuit.nodes.push(node(id, type, x, y, label));
+    return id;
+  };
+  const link = (from: string, to: string, input = 0, output = 0) =>
+    circuit.wires.push({ id: `${from}-${to}-${input}`, from, to, input, output });
+  link("a", "adder");
+  link("b", "adder", 1);
+  link("cin", "adder", 2);
+  const gate = (
+    id: string,
+    type: GateType,
+    x: number,
+    y: number,
+    a: string,
+    b: string,
+    bOutput = 0,
+  ) => {
+    add(id, type, x, y);
+    link(a, id);
+    link(b, id, 1, bOutput);
+    return id;
+  };
+  const not0 = add("not-op0", "not", 260, 390);
+  link("op0", not0);
+  const not1 = add("not-op1", "not", 260, 480);
+  link("op1", not1);
+  const and = gate("and", "and", 470, 300, "a", "b");
+  const or = gate("or", "or", 470, 390, "a", "b");
+  const xor = gate("xor", "xor", 470, 480, "a", "b");
+  const lo0 = gate("lo0", "and", 690, 300, and, not0);
+  const lo1 = gate("lo1", "and", 690, 390, or, "op0");
+  const low = gate("low", "or", 890, 340, lo0, lo1);
+  const hi0 = gate("hi0", "and", 690, 500, xor, not0);
+  add("hi1", "and", 690, 590);
+  link("adder", "hi1", 0, 0);
+  link("op0", "hi1", 1);
+  const high = gate("high", "or", 890, 540, hi0, "hi1");
+  const result0 = gate("result0", "and", 1090, 340, low, not1);
+  const result1 = gate("result1", "and", 1090, 540, high, "op1");
+  const result = gate("result", "or", 1280, 440, result0, result1);
+  add("out", "lamp", 1470, 440, "RESULT");
+  link(result, "out");
+  add("cout", "lamp", 1470, 140, "CARRY OUT");
+  link("adder", "cout", 0, 1);
+  return circuit;
+}
+
+function modularBusCircuit(kind: "half" | "full" | "alu"): Circuit {
+  const block =
+    kind === "half" ? halfAdderBlock() : kind === "full" ? fullAdderBlock() : aluSliceBlock();
+  const name =
+    kind === "half" ? "8-bit half adder" : kind === "full" ? "8-bit full adder" : "8-bit ALU";
+  const circuit: Circuit = { name, nodes: [], wires: [] };
+  const add = (id: string, type: GateType, x: number, y: number, label?: string) => {
+    circuit.nodes.push(node(id, type, x, y, label));
+    return id;
+  };
+  const link = (from: string, to: string, input = 0, output = 0) =>
+    circuit.wires.push({ id: `${from}-${to}-${input}`, from, to, input, output });
+  if (kind !== "half") add("cin", "switch", 40, 30, "CARRY IN");
+  if (kind === "alu") {
+    add("op0", "switch", 230, 30, "OP0");
+    add("op1", "switch", 420, 30, "OP1");
+  }
+  let carry = "cin";
+  let carryOutput = 0;
+  for (let bit = 0; bit < 8; bit++) {
+    const y = 220 + bit * 190;
+    const a = add(`a${bit}`, "switch", 40, y, `A${bit}`);
+    const b = add(`b${bit}`, "switch", 40, y + 80, `B${bit}`);
+    const box = `bit${bit}`;
+    circuit.nodes.push({
+      id: box,
+      type: "module",
+      module: block,
+      x: 330,
+      y,
+      label: kind === "alu" ? `ALU SLICE ${bit}` : `${kind.toUpperCase()} ADDER ${bit}`,
+    });
+    link(a, box);
+    link(b, box, 1);
+    if (kind !== "half") {
+      link(carry, box, 2, carryOutput);
+      carry = box;
+      carryOutput = 1;
+    }
+    if (kind === "alu") {
+      link("op0", box, 3);
+      link("op1", box, 4);
+    }
+    add(`out${bit}`, "lamp", 850, y, `OUT${bit}`);
+    link(box, `out${bit}`);
+    if (kind === "half") {
+      add(`carry${bit}`, "lamp", 850, y + 80, `CARRY${bit}`);
+      link(box, `carry${bit}`, 0, 1);
+    }
+  }
+  if (kind !== "half") {
+    add("cout", "lamp", 850, 30, "CARRY OUT");
+    link(carry, "cout", 0, 1);
   }
   return circuit;
 }
@@ -413,13 +561,29 @@ function comparisonCircuit(): Circuit {
     const bitGreater = gate(`bit-gt${bit}`, "and", 440, y, a, notB);
     const bitLess = gate(`bit-lt${bit}`, "and", 440, y + 90, notA, b);
     const same = gate(`same${bit}`, "xnor", 440, y + 180, a, b);
-    greater = gate(`gt${bit}`, "or", 800, y, bitGreater,
-      gate(`prior-gt${bit}`, "and", 620, y, same, greater));
-    less = gate(`lt${bit}`, "or", 800, y + 90, bitLess,
-      gate(`prior-lt${bit}`, "and", 620, y + 90, same, less));
+    greater = gate(
+      `gt${bit}`,
+      "or",
+      800,
+      y,
+      bitGreater,
+      gate(`prior-gt${bit}`, "and", 620, y, same, greater),
+    );
+    less = gate(
+      `lt${bit}`,
+      "or",
+      800,
+      y + 90,
+      bitLess,
+      gate(`prior-lt${bit}`, "and", 620, y + 90, same, less),
+    );
     equal = gate(`eq${bit}`, "and", 620, y + 180, same, equal);
   }
-  for (const [id, source, y] of [["greater", greater, 250], ["equal", equal, 350], ["less", less, 450]] as const) {
+  for (const [id, source, y] of [
+    ["greater", greater, 250],
+    ["equal", equal, 350],
+    ["less", less, 450],
+  ] as const) {
     add(id, "lamp", 1040, y, id.toUpperCase());
     circuit.wires.push(wire(source, id));
   }
@@ -643,10 +807,10 @@ export const PRESETS: Record<string, Circuit> = {
     ],
     wires: [wire("pulse", "invert"), wire("invert", "out")],
   },
-  "8-bit half adder": busCircuit("half"),
-  "8-bit full adder": busCircuit("full"),
-  "8-bit 2:1 multiplexer": busCircuit("mux"),
-  "8-bit ALU": busCircuit("alu"),
+  "8-bit half adder": modularBusCircuit("half"),
+  "8-bit full adder": modularBusCircuit("full"),
+  "8-bit 2:1 multiplexer": multiplexerCircuit(),
+  "8-bit ALU": modularBusCircuit("alu"),
   "8-bit magnitude comparator": comparisonCircuit(),
   "8-bit shift register": registerCircuit("shift"),
   "8-bit binary counter": registerCircuit("counter"),
@@ -938,7 +1102,11 @@ export const BLUEPRINTS: Record<string, Circuit> = Object.fromEntries(
   ),
 );
 
-export function validateCircuit(value: unknown, depth = 0): Circuit | null {
+export function validateCircuit(
+  value: unknown,
+  depth = 0,
+  budget = { remaining: 3000 },
+): Circuit | null {
   if (!value || typeof value !== "object") return null;
   const item = value as Partial<Circuit>;
   if (
@@ -947,9 +1115,11 @@ export function validateCircuit(value: unknown, depth = 0): Circuit | null {
     !Array.isArray(item.wires) ||
     item.nodes.length > 300 ||
     item.wires.length > 800 ||
-    depth > 3
+    depth > 5 ||
+    budget.remaining < item.nodes.length
   )
     return null;
+  budget.remaining -= item.nodes.length;
   const types = Object.keys(INPUTS);
   if (
     !item.nodes.every(
@@ -986,14 +1156,19 @@ export function validateCircuit(value: unknown, depth = 0): Circuit | null {
   )
     return null;
   const validatedModules = new Map<string, Circuit>();
-  if (!item.nodes.every((n) =>
-    n.numberValue === undefined ||
-    (Number.isInteger(n.numberValue) && n.numberValue >= 0 &&
-      n.numberValue < (n.type === "input4" ? 16 : n.type === "input8" ? 256 : 1))
-  )) return null;
+  if (
+    !item.nodes.every(
+      (n) =>
+        n.numberValue === undefined ||
+        (Number.isInteger(n.numberValue) &&
+          n.numberValue >= 0 &&
+          n.numberValue < (n.type === "input4" ? 16 : n.type === "input8" ? 256 : 1)),
+    )
+  )
+    return null;
   for (const n of item.nodes) {
     if (n.type !== "module") continue;
-    const inner = validateCircuit(n.module, depth + 1);
+    const inner = validateCircuit(n.module, depth + 1, budget);
     if (
       !inner ||
       moduleInputs(inner).length > 24 ||

@@ -29,10 +29,11 @@ import {
   WIRE_COLORS,
   type WireColor,
 } from "../../lib/computer/logic";
+import { collectUnfoldableIds } from "../../lib/computer/implementation";
 import { MEMORY_HINTS } from "../../lib/computer/memoryCircuits";
 import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
 import { GateSymbol } from "./GateSymbol";
-import { ImplementationView } from "./ImplementationView";
+import { UnfoldedCanvas } from "./UnfoldedCanvas";
 import styles from "./LogicBuilder.module.css";
 
 const STORAGE = "ricos-computer-circuits-v1";
@@ -132,7 +133,7 @@ const palette: GateType[] = [
   "dlatch",
 ];
 const clone = (circuit: Circuit): Circuit => JSON.parse(JSON.stringify(circuit));
-type ViewLevel = { parent: Circuit; snapshot: Snapshot; via: string; moduleId?: string };
+type ViewLevel = { parent: Circuit; snapshot: Snapshot; via: string; moduleId?: string; unfolded: string[] };
 type BuilderDocument = { circuit: Circuit; saved: Record<string, Circuit>; viewPath: ViewLevel[] };
 const withUpdatedModule = (parent: Circuit, moduleId: string, inner: Circuit): Circuit => ({
   ...parent,
@@ -215,7 +216,7 @@ export function LogicBuilder() {
   );
   const [showVdd, setShowVdd] = useState(true);
   const [showGround, setShowGround] = useState(true);
-  const [implementationMode, setImplementationMode] = useState(false);
+  const [unfolded, setUnfolded] = useState<ReadonlySet<string>>(() => new Set());
   const [menu, setMenu] = useState<{
     x: number;
     y: number;
@@ -560,6 +561,7 @@ export function LogicBuilder() {
   };
   const load = (next: Circuit) => {
     const copy = clone(next);
+    setUnfolded(new Set());
     circuitRef.current = copy;
     publish({ ...history.current(), circuit: copy, viewPath: [] });
     setPending(null);
@@ -574,8 +576,9 @@ export function LogicBuilder() {
     const parentSnapshot = snapshotRef.current;
     const nextPath = [
       ...viewPath,
-      { parent: clone(circuit), snapshot: parentSnapshot, via, moduleId },
+      { parent: clone(circuit), snapshot: parentSnapshot, via, moduleId, unfolded: [...unfolded] },
     ];
+    setUnfolded(new Set());
     const copy = clone(next);
     if (moduleId) {
       moduleInputs(copy).forEach((input, port) => {
@@ -609,6 +612,13 @@ export function LogicBuilder() {
     const parent = level.moduleId
       ? withUpdatedModule(level.parent, level.moduleId, circuit)
       : level.parent;
+    const restoredUnfolded = new Set(level.unfolded ?? []);
+    if (level.moduleId) {
+      for (const id of restoredUnfolded)
+        if (id.startsWith(`${level.moduleId}/`)) restoredUnfolded.delete(id);
+      for (const id of unfolded) restoredUnfolded.add(`${level.moduleId}/${id}`);
+    }
+    setUnfolded(restoredUnfolded);
     circuitRef.current = parent;
     publish({ ...history.current(), circuit: parent, viewPath: viewPath.slice(0, -1) }, false);
     setRunning(false);
@@ -626,6 +636,44 @@ export function LogicBuilder() {
     setSnapshot(restored);
     setMessage(`Back to ${parent.name}.`);
   };
+  const enterModulePath = (path: string) => {
+    let source = circuit;
+    let innerSnapshot = snapshotRef.current;
+    const levels: ViewLevel[] = [];
+    const segments = path.split("/");
+    for (const [index, id] of segments.entries()) {
+      const part = source.nodes.find((item) => item.id === id && item.type === "module");
+      if (!part?.module) return;
+      const parentPrefix = index ? `${segments.slice(0, index).join("/")}/` : "";
+      levels.push({ parent: clone(source), snapshot: innerSnapshot,
+        via: part.label || part.module.name, moduleId: part.id,
+        unfolded: [...unfolded].filter((entry) => entry.startsWith(parentPrefix))
+          .map((entry) => entry.slice(parentPrefix.length)) });
+      source = part.module;
+      innerSnapshot = innerSnapshot.modules[id] ?? initialSnapshot();
+    }
+    setViewPath((current) => [...current, ...levels]);
+    setUnfolded(new Set([...unfolded].filter((entry) => entry.startsWith(`${path}/`))
+      .map((entry) => entry.slice(path.length + 1))));
+    const copy = clone(source);
+    moduleInputs(copy).forEach((input) => { input.value = Boolean(innerSnapshot.values[input.id]); });
+    circuitRef.current = copy;
+    setCircuit(copy);
+    setRunning(false);
+    setSelected([]);
+    setSelectedWire(null);
+    setPending(null);
+    const next = step(copy, innerSnapshot, clockRef.current);
+    snapshotRef.current = next;
+    setSnapshot(next);
+    setMessage(`Inside ${copy.name}. Use Back to return.`);
+  };
+  const toggleUnfolded = (id: string) => setUnfolded((current) => {
+    const next = new Set(current);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    return next;
+  });
   const viewGate = (gate: LogicGate, family: BlueprintFamily, source?: Node) => {
     const next = gateBlueprint(gate, family);
     if (source) {
@@ -1140,17 +1188,6 @@ export function LogicBuilder() {
     : targetNode && draftTarget?.input !== undefined
       ? portPoint(targetNode, draftTarget.input, "input")
       : wireDraft ? { x: wireDraft.x, y: wireDraft.y } : null;
-  if (implementationMode)
-    return (
-      <ImplementationView
-        circuit={circuit}
-        onClose={() => setImplementationMode(false)}
-        showVdd={showVdd}
-        showGround={showGround}
-        onVddChange={setShowVdd}
-        onGroundChange={setShowGround}
-      />
-    );
   return (
     <div className={styles.shell}>
       <div className={styles.toolbar}>
@@ -1159,14 +1196,8 @@ export function LogicBuilder() {
           <strong>{circuit.name}</strong>
         </div>
         <div className={styles.transport}>
-          <button
-            type="button"
-            onClick={() => {
-              setRunning(false);
-              setImplementationMode(true);
-            }}
-          >
-            Full CMOS diagram
+          <button type="button" onClick={() => setUnfolded(new Set(collectUnfoldableIds(circuit)))}>
+            Unfold all
           </button>
           {hasTransistors && (
             <div className={styles.powerView} aria-label="Power connection display (visual only)">
@@ -1330,7 +1361,8 @@ export function LogicBuilder() {
           </div>
         </aside>
         <div ref={workspace} className={styles.workspace}>
-          <div className={styles.canvasControls} role="toolbar" aria-label="Canvas view controls">
+          <div className={styles.canvasControls} role="toolbar" aria-label="Canvas view controls"
+            style={{ display: unfolded.size ? "none" : undefined }}>
             <button
               type="button"
               onClick={() => zoomFromCenter(zoomRef.current / 1.25)}
@@ -1365,11 +1397,11 @@ export function LogicBuilder() {
           </div>
           <div
             ref={boardViewport}
-            className={clsx(styles.boardScroll, panMode && styles.panMode)}
-            onPointerDownCapture={gestureDown}
-            onPointerMoveCapture={gestureMove}
-            onPointerUpCapture={gestureUp}
-            onPointerCancelCapture={gestureUp}
+            className={clsx(styles.boardScroll, panMode && !unfolded.size && styles.panMode)}
+            onPointerDownCapture={unfolded.size ? undefined : gestureDown}
+            onPointerMoveCapture={unfolded.size ? undefined : gestureMove}
+            onPointerUpCapture={unfolded.size ? undefined : gestureUp}
+            onPointerCancelCapture={unfolded.size ? undefined : gestureUp}
             onClickCapture={(event) => {
               if (touchMoved.current) {
                 event.preventDefault();
@@ -1378,12 +1410,26 @@ export function LogicBuilder() {
               }
             }}
           >
+            {unfolded.size > 0 && (
+              <UnfoldedCanvas circuit={circuit} unfolded={unfolded}
+                onToggle={toggleUnfolded}
+                onUnfoldAll={(ids) => setUnfolded(new Set(ids))}
+                onFoldAll={() => setUnfolded(new Set())}
+                onEnter={enterModulePath}
+                snapshot={snapshot}
+                onToggleSwitch={(id) => setCircuit((current) => ({ ...current,
+                  nodes: current.nodes.map((item) => item.id === id ? { ...item, value: !item.value } : item),
+                }))}
+                showVdd={showVdd} showGround={showGround}
+                onVddChange={setShowVdd} onGroundChange={setShowGround} />
+            )}
             <div
               style={{
                 width: canvasWidth * zoom,
                 height: canvasHeight * zoom,
                 position: "relative",
                 overflow: "hidden",
+                display: unfolded.size ? "none" : undefined,
               }}
             >
               <div
@@ -1946,6 +1992,18 @@ export function LogicBuilder() {
                           <span className={styles.bit}>{snapshot.values[node.id] ? "1" : "0"}</span>
                         )}
                       </div>
+                      {(node.type === "module" || node.type === "dff" || GATE_NAMES.includes(node.type as LogicGate)) && (
+                        <div className={styles.nodeActions}>
+                          <button type="button" title={`Unfold ${node.label || LABELS[node.type]} in place`}
+                            aria-label={`Unfold ${node.label || LABELS[node.type]} in place`}
+                            onClick={(event) => { event.stopPropagation(); toggleUnfolded(node.id); }}>▣</button>
+                          {node.type === "module" && node.module && (
+                            <button type="button" title={`Enter ${node.label || node.module.name}`}
+                              aria-label={`Enter ${node.label || node.module.name}`}
+                              onClick={(event) => { event.stopPropagation(); enterCircuit(node.module!, node.label || node.module!.name, node.id); }}>↗</button>
+                          )}
+                        </div>
+                      )}
                       {Array.from({ length: outputCount(node) }, (_, output) => (
                         <div
                           key={`${node.id}-output-${output}`}

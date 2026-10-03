@@ -1,17 +1,22 @@
 import {
   type Circuit,
   type CircuitGroup,
+  type GateType,
   GATE_NAMES,
   gateBlueprint,
   type LogicGate,
   type Node,
   type Wire,
+  inputCount,
   moduleInputs,
   moduleOutputs,
+  outputCount,
 } from "./logic";
 
 type Endpoint = { to: string; input: number };
-type Entry = { inputs: Endpoint[][]; outputs: string[]; nodeIds: string[] };
+type Source = { id: string; output: number };
+type Entry = { inputs: Endpoint[][]; outputs: Source[]; nodeIds: string[] };
+export type UnfoldableBox = { id: string; label: string; type: GateType; expanded: boolean };
 export type Implementation = {
   nodes: Node[];
   wires: Wire[];
@@ -19,12 +24,14 @@ export type Implementation = {
   width: number;
   height: number;
   transistorCount: number;
+  boxes: UnfoldableBox[];
 };
 
-const COLUMNS = 3;
-const CELL_WIDTH = 1600;
-const CELL_HEIGHT = 560;
 const SCALE = 0.65;
+const PART_WIDTH = 140;
+const PART_HEIGHT = 64;
+const COLUMN_GAP = 90;
+const ROW_GAP = 75;
 
 function dffCircuit(): Circuit {
   const names = [
@@ -94,22 +101,107 @@ function dffCircuit(): Circuit {
   return { name: "Positive-edge master-slave D flip-flop", nodes, wires };
 }
 
-/** Builds a read-only CMOS netlist. Every combinational gate ends at transistor switches. */
-export function buildImplementation(circuit: Circuit): Implementation {
+export function collectUnfoldableIds(circuit: Circuit, prefix = ""): string[] {
+  return circuit.nodes.flatMap((item) => {
+    const id = `${prefix}${item.id}`;
+    if (item.type === "module" && item.module)
+      return [id, ...collectUnfoldableIds(item.module, `${id}/`)];
+    if (item.type === "dff") return [id, ...collectUnfoldableIds(dffCircuit(), `${id}/`)];
+    return GATE_NAMES.includes(item.type as LogicGate) ? [id] : [];
+  });
+}
+
+/** Builds the visible graph. Passing no set unfolds every box down to CMOS transistors. */
+export function buildImplementation(
+  circuit: Circuit,
+  expanded?: ReadonlySet<string>,
+): Implementation {
   const nodes: Node[] = [];
   const wires: Wire[] = [];
   const groups: CircuitGroup[] = [];
-  let cell = 0;
+  const boxes: UnfoldableBox[] = [];
+  const layoutCache = new Map<
+    string,
+    {
+      positions: Map<string, { x: number; y: number }>;
+      width: number;
+      height: number;
+    }
+  >();
   let wireId = 0;
   const link = (from: string, to: string, input = 0, output = 0) => {
     wires.push({ id: `schematic-wire-${wireId++}`, from, to, input, output });
   };
-  const position = () => {
-    const index = cell++;
-    return {
-      x: 60 + (index % COLUMNS) * CELL_WIDTH,
-      y: 80 + Math.floor(index / COLUMNS) * CELL_HEIGHT,
+  const layout = (
+    source: Circuit,
+    prefix: string,
+  ): {
+    positions: Map<string, { x: number; y: number }>;
+    width: number;
+    height: number;
+  } => {
+    const cached = layoutCache.get(prefix);
+    if (cached) return cached;
+    const xs = [...new Set(source.nodes.map((item) => item.x))].sort((a, b) => a - b);
+    const ys = [...new Set(source.nodes.map((item) => item.y))].sort((a, b) => a - b);
+    const sizes = new Map(
+      source.nodes.map((item) => {
+        const id = `${prefix}${item.id}`;
+        if (!(expanded?.has(id) ?? true))
+          return [item.id, { width: PART_WIDTH, height: PART_HEIGHT }] as const;
+        if (GATE_NAMES.includes(item.type as LogicGate)) {
+          const parts = gateBlueprint(item.type as LogicGate, "transistor").nodes;
+          return [
+            item.id,
+            {
+              width: Math.max(...parts.map((part) => part.x)) * SCALE + PART_WIDTH + 30,
+              height: Math.max(...parts.map((part) => part.y)) * SCALE + PART_HEIGHT + 45,
+            },
+          ] as const;
+        }
+        if (item.type === "module" && item.module) {
+          const inner = layout(item.module, `${id}/`);
+          return [item.id, { width: inner.width + 40, height: inner.height + 65 }] as const;
+        }
+        if (item.type === "dff") {
+          const inner = layout(dffCircuit(), `${id}/`);
+          return [item.id, { width: inner.width + 40, height: inner.height + 65 }] as const;
+        }
+        return [item.id, { width: PART_WIDTH, height: PART_HEIGHT }] as const;
+      }),
+    );
+    const columns = xs.map((x) =>
+      Math.max(
+        ...source.nodes.filter((item) => item.x === x).map((item) => sizes.get(item.id)!.width),
+      ),
+    );
+    const rows = ys.map((y) =>
+      Math.max(
+        ...source.nodes.filter((item) => item.y === y).map((item) => sizes.get(item.id)!.height),
+      ),
+    );
+    const xOffsets = columns.map((_, index) =>
+      columns.slice(0, index).reduce((sum, width) => sum + width + COLUMN_GAP, 0),
+    );
+    const yOffsets = rows.map((_, index) =>
+      rows.slice(0, index).reduce((sum, height) => sum + height + ROW_GAP, 0),
+    );
+    const positions = new Map(
+      source.nodes.map((item) => [
+        item.id,
+        {
+          x: xOffsets[xs.indexOf(item.x)],
+          y: yOffsets[ys.indexOf(item.y)],
+        },
+      ]),
+    );
+    const result = {
+      positions,
+      width: columns.reduce((sum, width) => sum + width + COLUMN_GAP, 0),
+      height: rows.reduce((sum, height) => sum + height + ROW_GAP, 0),
     };
+    layoutCache.set(prefix, result);
+    return result;
   };
 
   const expand = (
@@ -117,14 +209,29 @@ export function buildImplementation(circuit: Circuit): Implementation {
     prefix: string,
     nested: boolean,
     depth: number,
+    baseX: number,
+    baseY: number,
   ): Map<string, Entry> => {
     const entries = new Map<string, Entry>();
+    const placement = layout(source, prefix).positions;
     if (depth > 5) throw new Error("Circuit nesting exceeds the implementation view limit.");
     for (const item of source.nodes) {
       const id = `${prefix}${item.id}`;
-      if (GATE_NAMES.includes(item.type as LogicGate)) {
+      const at = placement.get(item.id)!;
+      const origin = { x: baseX + at.x, y: baseY + at.y };
+      const expandable =
+        GATE_NAMES.includes(item.type as LogicGate) ||
+        item.type === "dff" ||
+        item.type === "module";
+      if (expandable)
+        boxes.push({
+          id,
+          label: item.label || item.module?.name || item.type.toUpperCase(),
+          type: item.type,
+          expanded: expanded?.has(id) ?? true,
+        });
+      if (GATE_NAMES.includes(item.type as LogicGate) && (expanded?.has(id) ?? true)) {
         const blueprint = gateBlueprint(item.type as LogicGate, "transistor");
-        const origin = position();
         const mapId = (part: string) => `${id}/${part}`;
         const internal = blueprint.nodes.filter(
           (part) => part.id !== "a" && part.id !== "b" && part.id !== "out",
@@ -151,16 +258,20 @@ export function buildImplementation(circuit: Circuit): Implementation {
             })),
         );
         const output = blueprint.wires.find((edge) => edge.to === "out")!;
-        entries.set(item.id, { inputs, outputs: [mapId(output.from)], nodeIds: ids });
+        entries.set(item.id, {
+          inputs,
+          outputs: [{ id: mapId(output.from), output: 0 }],
+          nodeIds: ids,
+        });
         groups.push({
           id: `${id}/group`,
           label: `${item.label || item.type.toUpperCase()} · CMOS ${item.type.toUpperCase()}`,
           nodeIds: ids,
         });
-      } else if (item.type === "module" || item.type === "dff") {
+      } else if ((item.type === "module" || item.type === "dff") && (expanded?.has(id) ?? true)) {
         const inner = item.type === "module" ? item.module : dffCircuit();
         if (!inner) continue;
-        const innerEntries = expand(inner, `${id}/`, true, depth + 1);
+        const innerEntries = expand(inner, `${id}/`, true, depth + 1, origin.x + 20, origin.y + 45);
         const inputPorts = item.type === "module" ? moduleInputs(inner) : inner.nodes.slice(0, 2);
         const outputPorts =
           item.type === "module"
@@ -169,7 +280,9 @@ export function buildImplementation(circuit: Circuit): Implementation {
         const ids = [...innerEntries.values()].flatMap((entry) => entry.nodeIds);
         entries.set(item.id, {
           inputs: inputPorts.map((port) => innerEntries.get(port.id)?.inputs[0] ?? []),
-          outputs: outputPorts.map((port) => innerEntries.get(port.id)?.outputs[0] ?? ""),
+          outputs: outputPorts.map(
+            (port) => innerEntries.get(port.id)?.outputs[0] ?? { id: "", output: 0 },
+          ),
           nodeIds: ids,
         });
         groups.push({
@@ -181,29 +294,23 @@ export function buildImplementation(circuit: Circuit): Implementation {
           nodeIds: ids,
         });
       } else {
-        const origin = position();
         const port = nested && ["switch", "clock", "pulse", "lamp"].includes(item.type);
         nodes.push({
           ...item,
           id,
           type: port ? "junction" : item.type,
-          x: origin.x + 420,
-          y: origin.y + 320,
+          x: origin.x,
+          y: origin.y,
         });
         entries.set(item.id, {
           inputs:
-            item.type === "lamp" || (nested && ["switch", "clock", "pulse"].includes(item.type))
+            nested && ["switch", "clock", "pulse"].includes(item.type)
               ? [[{ to: id, input: 0 }]]
-              : Array.from(
-                  {
-                    length:
-                      item.type === "nmos" || item.type === "pmos" || item.type === "junction"
-                        ? 2
-                        : 0,
-                  },
-                  (_, input) => [{ to: id, input }],
-                ),
-          outputs: item.type === "lamp" && !nested ? [] : [id],
+              : Array.from({ length: inputCount(item) }, (_, input) => [{ to: id, input }]),
+          outputs: Array.from({ length: port ? 1 : outputCount(item) }, (_, output) => ({
+            id,
+            output,
+          })),
           nodeIds: [id],
         });
       }
@@ -211,7 +318,8 @@ export function buildImplementation(circuit: Circuit): Implementation {
     for (const edge of source.wires) {
       const from = entries.get(edge.from)?.outputs[edge.output ?? 0];
       const targets = entries.get(edge.to)?.inputs[edge.input] ?? [];
-      if (from) for (const target of targets) link(from, target.to, target.input);
+      if (from?.id)
+        for (const target of targets) link(from.id, target.to, target.input, from.output);
     }
     for (const group of source.groups ?? []) {
       groups.push({
@@ -222,13 +330,15 @@ export function buildImplementation(circuit: Circuit): Implementation {
     }
     return entries;
   };
-  expand(circuit, "", false, 0);
+  const root = layout(circuit, "");
+  expand(circuit, "", false, 0, 50, 70);
   return {
     nodes,
     wires,
     groups,
-    width: COLUMNS * CELL_WIDTH + 80,
-    height: Math.ceil(cell / COLUMNS) * CELL_HEIGHT + 80,
+    width: root.width + 100,
+    height: root.height + 140,
     transistorCount: nodes.filter((item) => item.type === "nmos" || item.type === "pmos").length,
+    boxes,
   };
 }

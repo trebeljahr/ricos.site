@@ -1,27 +1,64 @@
 import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { ImplementationView } from "../../components/computer/ImplementationView";
+import { UnfoldedCanvas } from "../../components/computer/UnfoldedCanvas";
+import { LogicBuilder } from "../../components/computer/LogicBuilder";
 import { BLUEPRINTS, type Circuit, initialSnapshot, PRESETS, step } from "./logic";
-import { buildImplementation } from "./implementation";
+import { buildImplementation, collectUnfoldableIds } from "./implementation";
 
-describe("full CMOS implementation", () => {
-  it("renders the complete diagram with navigation and labeled groups", () => {
+describe("hierarchical circuit unfolding", () => {
+  it("offers unfolding on the normal circuit board", () => {
+    const markup = renderToStaticMarkup(createElement(LogicBuilder));
+    expect(markup).toContain("Unfold SUM");
+    expect(markup).not.toContain("Full CMOS diagram");
+  });
+  it("renders the unfolded circuit on the canvas with per-box controls", () => {
     const markup = renderToStaticMarkup(
-      createElement(ImplementationView, {
+      createElement(UnfoldedCanvas, {
         circuit: PRESETS["8-bit ALU"],
-        onClose: () => {},
+        unfolded: new Set(collectUnfoldableIds(PRESETS["8-bit ALU"])),
+        onToggle: () => {},
+        onUnfoldAll: () => {},
+        onFoldAll: () => {},
+        onEnter: () => {},
+        snapshot: initialSnapshot(),
+        onToggleSwitch: () => {},
         showVdd: true,
         showGround: true,
         onVddChange: () => {},
         onGroundChange: () => {},
       }),
     );
-    expect(markup).toContain("full implementation");
+    expect(markup).toContain("Unfold all");
     expect(markup).toContain("Jump to group");
     expect(markup).toContain("CMOS XOR");
     expect(markup).toContain("PMOS");
     expect(markup).toContain("NMOS");
+  });
+  it("unfolds an ALU one level at a time", () => {
+    const circuit = PRESETS["8-bit ALU"];
+    const first = buildImplementation(circuit, new Set(["bit0"]));
+    expect(first.nodes.some((node) => node.id === "bit0/adder" && node.type === "module")).toBe(
+      true,
+    );
+    expect(first.nodes.some((node) => node.id === "bit1" && node.type === "module")).toBe(true);
+    const second = buildImplementation(circuit, new Set(["bit0", "bit0/adder"]));
+    expect(
+      second.nodes.some((node) => node.id === "bit0/adder/half1" && node.type === "module"),
+    ).toBe(true);
+    const third = buildImplementation(circuit, new Set(["bit0", "bit0/adder", "bit0/adder/half1"]));
+    expect(
+      third.nodes.some((node) => node.id === "bit0/adder/half1/xor" && node.type === "xor"),
+    ).toBe(true);
+    const fourth = buildImplementation(
+      circuit,
+      new Set(["bit0", "bit0/adder", "bit0/adder/half1", "bit0/adder/half1/xor"]),
+    );
+    expect(
+      fourth.nodes.some(
+        (node) => node.id.startsWith("bit0/adder/half1/xor/") && node.type === "pmos",
+      ),
+    ).toBe(true);
   });
   it("expands every example and gate blueprint to transistor-level parts", () => {
     for (const circuit of [...Object.values(PRESETS), ...Object.values(BLUEPRINTS)]) {

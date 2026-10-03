@@ -69,9 +69,20 @@ describe("hierarchical circuit unfolding", () => {
       expect(
         diagram.nodes.every(
           (node) =>
-            !["not", "and", "or", "xor", "xnor", "nand", "nor", "dff", "module"].includes(
-              node.type,
-            ),
+            ![
+              "not",
+              "and",
+              "or",
+              "xor",
+              "xnor",
+              "nand",
+              "nor",
+              "dff",
+              "srlatch",
+              "dlatch",
+              "dramcell",
+              "module",
+            ].includes(node.type),
         ),
         circuit.name,
       ).toBe(true);
@@ -81,6 +92,16 @@ describe("hierarchical circuit unfolding", () => {
       ).toBe(true);
       expect(diagram.groups.length, circuit.name).toBeGreaterThan(0);
     }
+  });
+
+  it("reveals storage cells within the same recursive diagram", () => {
+    const dram = buildImplementation(PRESETS["4 × 4 DRAM"]);
+    expect(dram.nodes.some((node) => node.schematicKind === "capacitor")).toBe(true);
+    const sram = buildImplementation(PRESETS["4 × 4 SRAM"]);
+    expect(sram.nodes.some((node) => node.type === "pmos")).toBe(true);
+    expect(sram.nodes.some((node) => node.type === "dlatch")).toBe(false);
+    const flash = buildImplementation(PRESETS["4 × 4 flash memory"]);
+    expect(flash.nodes.some((node) => node.schematicKind === "floating-gate")).toBe(true);
   });
 
   it("retains the external wiring of a half adder", () => {
@@ -113,7 +134,7 @@ describe("hierarchical circuit unfolding", () => {
       ],
     };
     const diagram = buildImplementation(circuit);
-    expect(diagram.groups.some((group) => group.label.includes("master–slave NAND"))).toBe(true);
+    expect(diagram.groups.some((group) => group.label.includes("master-slave D flip-flop"))).toBe(true);
     expect(diagram.groups.some((group) => group.label === "Clocked memory")).toBe(true);
     expect(diagram.nodes.some((node) => node.type === "dff" || node.type === "module")).toBe(false);
     expect(diagram.wires.some((wire) => wire.from === "data" && wire.to === "box/data")).toBe(true);

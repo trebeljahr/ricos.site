@@ -275,9 +275,13 @@ export function UnfoldedCanvas({
                       onClick={() => setSelected(selected === node.id ? null : node.id)}
                     />
                     <text x={NODE_WIDTH / 2} y={20}>
-                      {node.label && !["pmos", "nmos", "junction"].includes(node.type)
-                        ? node.label.slice(0, 19)
-                        : LABELS[node.type]}
+                      {node.schematicKind === "capacitor"
+                        ? "CAPACITOR"
+                        : node.schematicKind === "floating-gate"
+                          ? "FLOATING GATE MOS"
+                          : node.label && !["pmos", "nmos", "junction"].includes(node.type)
+                            ? node.label.slice(0, 19)
+                            : LABELS[node.type]}
                     </text>
                     {box ? (
                       <>

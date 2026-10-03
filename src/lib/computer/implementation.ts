@@ -16,9 +16,10 @@ import {
 type Endpoint = { to: string; input: number };
 type Source = { id: string; output: number };
 type Entry = { inputs: Endpoint[][]; outputs: Source[]; nodeIds: string[] };
+type SchematicNode = Node & { schematicKind?: "capacitor" | "floating-gate" };
 export type UnfoldableBox = { id: string; label: string; type: GateType; expanded: boolean };
 export type Implementation = {
-  nodes: Node[];
+  nodes: SchematicNode[];
   wires: Wire[];
   groups: CircuitGroup[];
   width: number;
@@ -101,13 +102,66 @@ function dffCircuit(): Circuit {
   return { name: "Positive-edge master-slave D flip-flop", nodes, wires };
 }
 
+function srLatchCircuit(): Circuit {
+  const nodes: Node[] = [
+    { id: "set", type: "switch", x: 30, y: 70, label: "SET" },
+    { id: "reset", type: "switch", x: 30, y: 210, label: "RESET" },
+    { id: "q", type: "nor", x: 260, y: 70, label: "Q NOR" },
+    { id: "qbar", type: "nor", x: 260, y: 210, label: "NOT Q NOR" },
+    { id: "out", type: "lamp", x: 500, y: 70, label: "Q" },
+  ];
+  const wires: Wire[] = [
+    { id: "reset-q", from: "reset", to: "q", input: 0 },
+    { id: "qbar-q", from: "qbar", to: "q", input: 1 },
+    { id: "set-qbar", from: "set", to: "qbar", input: 0 },
+    { id: "q-qbar", from: "q", to: "qbar", input: 1 },
+    { id: "q-out", from: "q", to: "out", input: 0 },
+  ];
+  return { name: "Cross-coupled NOR SR latch", nodes, wires };
+}
+
+function dLatchCircuit(): Circuit {
+  const nodes: Node[] = [
+    { id: "data", type: "switch", x: 30, y: 70, label: "DATA" },
+    { id: "enable", type: "switch", x: 30, y: 210, label: "ENABLE" },
+    { id: "not-data", type: "not", x: 240, y: 170, label: "NOT DATA" },
+    { id: "set", type: "and", x: 450, y: 70, label: "SET PATH" },
+    { id: "reset", type: "and", x: 450, y: 210, label: "RESET PATH" },
+    { id: "core", type: "srlatch", x: 680, y: 110, label: "SR CORE" },
+    { id: "out", type: "lamp", x: 920, y: 110, label: "Q" },
+  ];
+  const wires: Wire[] = [
+    { id: "data-not", from: "data", to: "not-data", input: 0 },
+    { id: "data-set", from: "data", to: "set", input: 0 },
+    { id: "enable-set", from: "enable", to: "set", input: 1 },
+    { id: "not-reset", from: "not-data", to: "reset", input: 0 },
+    { id: "enable-reset", from: "enable", to: "reset", input: 1 },
+    { id: "set-core", from: "set", to: "core", input: 0 },
+    { id: "reset-core", from: "reset", to: "core", input: 1 },
+    { id: "core-out", from: "core", to: "out", input: 0 },
+  ];
+  return { name: "Gated D latch", nodes, wires };
+}
+
+const storageCircuit = (type: "dff" | "srlatch" | "dlatch") =>
+  type === "dff" ? dffCircuit() : type === "srlatch" ? srLatchCircuit() : dLatchCircuit();
+
 export function collectUnfoldableIds(circuit: Circuit, prefix = ""): string[] {
   return circuit.nodes.flatMap((item) => {
     const id = `${prefix}${item.id}`;
     if (item.type === "module" && item.module)
       return [id, ...collectUnfoldableIds(item.module, `${id}/`)];
-    if (item.type === "dff") return [id, ...collectUnfoldableIds(dffCircuit(), `${id}/`)];
-    return GATE_NAMES.includes(item.type as LogicGate) ? [id] : [];
+    if (["dff", "srlatch", "dlatch"].includes(item.type)) {
+      if (item.type === "dff" && item.label?.startsWith("FLOATING GATE")) return [id];
+      return [
+        id,
+        ...collectUnfoldableIds(
+          storageCircuit(item.type as "dff" | "srlatch" | "dlatch"),
+          `${id}/`,
+        ),
+      ];
+    }
+    return GATE_NAMES.includes(item.type as LogicGate) || item.type === "dramcell" ? [id] : [];
   });
 }
 
@@ -116,7 +170,7 @@ export function buildImplementation(
   circuit: Circuit,
   expanded?: ReadonlySet<string>,
 ): Implementation {
-  const nodes: Node[] = [];
+  const nodes: SchematicNode[] = [];
   const wires: Wire[] = [];
   const groups: CircuitGroup[] = [];
   const boxes: UnfoldableBox[] = [];
@@ -163,10 +217,18 @@ export function buildImplementation(
           const inner = layout(item.module, `${id}/`);
           return [item.id, { width: inner.width + 40, height: inner.height + 65 }] as const;
         }
-        if (item.type === "dff") {
-          const inner = layout(dffCircuit(), `${id}/`);
+        if (
+          ["dff", "srlatch", "dlatch"].includes(item.type) &&
+          !(item.type === "dff" && item.label?.startsWith("FLOATING GATE"))
+        ) {
+          const inner = layout(storageCircuit(item.type as "dff" | "srlatch" | "dlatch"), `${id}/`);
           return [item.id, { width: inner.width + 40, height: inner.height + 65 }] as const;
         }
+        if (
+          item.type === "dramcell" ||
+          (item.type === "dff" && item.label?.startsWith("FLOATING GATE"))
+        )
+          return [item.id, { width: 420, height: 230 }] as const;
         return [item.id, { width: PART_WIDTH, height: PART_HEIGHT }] as const;
       }),
     );
@@ -222,6 +284,9 @@ export function buildImplementation(
       const expandable =
         GATE_NAMES.includes(item.type as LogicGate) ||
         item.type === "dff" ||
+        item.type === "srlatch" ||
+        item.type === "dlatch" ||
+        item.type === "dramcell" ||
         item.type === "module";
       if (expandable)
         boxes.push({
@@ -268,8 +333,15 @@ export function buildImplementation(
           label: `${item.label || item.type.toUpperCase()} · CMOS ${item.type.toUpperCase()}`,
           nodeIds: ids,
         });
-      } else if ((item.type === "module" || item.type === "dff") && (expanded?.has(id) ?? true)) {
-        const inner = item.type === "module" ? item.module : dffCircuit();
+      } else if (
+        (item.type === "module" || ["dff", "srlatch", "dlatch"].includes(item.type)) &&
+        (expanded?.has(id) ?? true) &&
+        !(item.type === "dff" && item.label?.startsWith("FLOATING GATE"))
+      ) {
+        const inner =
+          item.type === "module"
+            ? item.module
+            : storageCircuit(item.type as "dff" | "srlatch" | "dlatch");
         if (!inner) continue;
         const innerEntries = expand(inner, `${id}/`, true, depth + 1, origin.x + 20, origin.y + 45);
         const inputPorts = item.type === "module" ? moduleInputs(inner) : inner.nodes.slice(0, 2);
@@ -288,10 +360,48 @@ export function buildImplementation(
         groups.push({
           id: `${id}/group`,
           label:
-            item.type === "dff"
-              ? `${item.label || "D flip-flop"} · master–slave NAND`
-              : item.label || inner.name,
+            item.type === "module"
+              ? item.label || inner.name
+              : `${item.label || inner.name} · ${inner.name}`,
           nodeIds: ids,
+        });
+      } else if (
+        (item.type === "dramcell" ||
+          (item.type === "dff" && item.label?.startsWith("FLOATING GATE"))) &&
+        (expanded?.has(id) ?? true)
+      ) {
+        const access = `${id}/access`;
+        const storage = `${id}/storage`;
+        const flash = item.type === "dff";
+        nodes.push({
+          id: access,
+          type: "nmos",
+          x: origin.x + 40,
+          y: origin.y + 85,
+          label: flash ? "FLOATING-GATE MOS" : "ACCESS NMOS",
+          schematicKind: flash ? "floating-gate" : undefined,
+        });
+        if (!flash)
+          nodes.push({
+            id: storage,
+            type: "junction",
+            x: origin.x + 250,
+            y: origin.y + 85,
+            label: "STORAGE CAPACITOR",
+            schematicKind: "capacitor",
+          });
+        if (!flash) link(access, storage);
+        entries.set(item.id, {
+          inputs: [[{ to: access, input: 1 }], [{ to: access, input: 0 }]],
+          outputs: [{ id: flash ? access : storage, output: 0 }],
+          nodeIds: flash ? [access] : [access, storage],
+        });
+        groups.push({
+          id: `${id}/group`,
+          label: flash
+            ? `${item.label || "Flash cell"} · floating-gate MOS`
+            : `${item.label || "DRAM cell"} · 1T1C`,
+          nodeIds: flash ? [access] : [access, storage],
         });
       } else {
         const port = nested && ["switch", "clock", "pulse", "lamp"].includes(item.type);

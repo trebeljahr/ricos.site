@@ -1992,7 +1992,7 @@ export function LogicBuilder() {
                           <span className={styles.bit}>{snapshot.values[node.id] ? "1" : "0"}</span>
                         )}
                       </div>
-                      {(node.type === "module" || node.type === "dff" || GATE_NAMES.includes(node.type as LogicGate)) && (
+                      {(node.type === "module" || ["dff", "srlatch", "dlatch", "dramcell"].includes(node.type) || GATE_NAMES.includes(node.type as LogicGate)) && (
                         <div className={styles.nodeActions}>
                           <button type="button" title={`Unfold ${node.label || LABELS[node.type]} in place`}
                             aria-label={`Unfold ${node.label || LABELS[node.type]} in place`}

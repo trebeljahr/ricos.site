@@ -35,3 +35,26 @@ describe("inline circuit unfolding", () => {
     expect(within(expanded).getAllByRole("button", { name: "Unfold HALF ADDER 1" }).length).toBeGreaterThan(0);
   });
 });
+
+describe("circuit toolbar", () => {
+  it("shows clock controls only while the sketch contains a clock", () => {
+    render(<LogicBuilder />);
+    expect(screen.queryByRole("group", { name: "Simulation" })).toBeNull();
+    expect(screen.queryByText("CLK 0")).toBeNull();
+    fireEvent.click(screen.getByTitle("Drag CLOCK onto canvas or click to add"));
+    expect(screen.getByRole("group", { name: "Simulation" })).toBeTruthy();
+    expect(screen.getByText("CLK 0")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    expect(screen.queryByRole("group", { name: "Simulation" })).toBeNull();
+  });
+
+  it("renames the sketch from the toolbar", () => {
+    render(<LogicBuilder />);
+    const name = screen.getByRole("textbox", { name: "Circuit name" }) as HTMLInputElement;
+    fireEvent.change(name, { target: { value: "My test circuit" } });
+    fireEvent.blur(name);
+    expect(name.value).toBe("My test circuit");
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    expect(name.value).toBe("Half adder");
+  });
+});

@@ -206,9 +206,16 @@ export function LogicBuilder() {
   }));
   const { circuit, saved, viewPath } = history.state;
   const unfolded = useMemo(() => new Set(history.state.unfolded ?? []), [history.state.unfolded]);
+  const [nameDraft, setNameDraft] = useState(circuit.name);
+  const cancelNameEdit = useRef(false);
   const [snapshot, setSnapshot] = useState<Snapshot>(initialSnapshot);
   const [clockHigh, setClockHigh] = useState(false);
   const [running, setRunning] = useState(false);
+  const hasClock = circuit.nodes.some((node) => node.type === "clock");
+  useEffect(() => setNameDraft(circuit.name), [circuit.name]);
+  useEffect(() => {
+    if (!hasClock) setRunning(false);
+  }, [hasClock]);
   const [tick, setTick] = useState(0);
   const [rate, setRate] = useState(2);
   const [pending, setPending] = useState<{ from: string; output: number } | null>(null);
@@ -1315,7 +1322,32 @@ export function LogicBuilder() {
       <div className={styles.toolbar}>
         <div className={styles.identity}>
           <Link className={styles.eyebrow} href="/computer">← ALL COMPUTER DEMOS</Link>
-          <strong>{circuit.name}</strong>
+          <input
+            className={styles.circuitName}
+            aria-label="Circuit name"
+            title="Rename circuit"
+            value={nameDraft}
+            maxLength={80}
+            onChange={(event) => setNameDraft(event.target.value)}
+            onBlur={() => {
+              if (cancelNameEdit.current) {
+                cancelNameEdit.current = false;
+                setNameDraft(circuit.name);
+                return;
+              }
+              const name = nameDraft.trim();
+              if (name && name !== circuit.name) setCircuit((current) => ({ ...current, name }));
+              else setNameDraft(circuit.name);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") event.currentTarget.blur();
+              if (event.key === "Escape") {
+                cancelNameEdit.current = true;
+                setNameDraft(circuit.name);
+                event.currentTarget.blur();
+              }
+            }}
+          />
         </div>
         <div className={styles.transport}>
 
@@ -1378,7 +1410,7 @@ export function LogicBuilder() {
             <ActionIcon name="redo" /> Redo
           </button>
           </div>
-          <div className={styles.toolGroup} role="group" aria-label="Simulation">
+          {hasClock && <div className={styles.toolGroup} role="group" aria-label="Simulation">
             <span className={styles.toolGroupLabel}>Simulate</span>
           <button
             type="button"
@@ -1402,7 +1434,7 @@ export function LogicBuilder() {
               <option value={10}>10 Hz</option>
             </select>
           </label>
-          </div>
+          </div>}
           <div className={styles.toolGroup} role="group" aria-label="Circuit view">
             <span className={styles.toolGroupLabel}>View</span>
           <button type="button" onClick={() => setUnfolded(new Set(collectUnfoldableIds(circuit)))}>
@@ -1483,12 +1515,12 @@ export function LogicBuilder() {
           />
           </div>
         </div>
-        <div className={styles.metrics}>
+        {hasClock && <div className={styles.metrics}>
           <span>Cycle {Math.floor(tick / 2)}</span>
           <span className={clsx(styles.clock, clockHigh && styles.on)}>
             CLK {clockHigh ? "1" : "0"}
           </span>
-        </div>
+        </div>}
       </div>
       {viewPath.length > 0 && (
         <nav className={styles.viewPath} aria-label="Circuit depth">

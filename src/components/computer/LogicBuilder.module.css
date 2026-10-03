@@ -154,6 +154,9 @@
 /* Task groups keep edit, simulation, view, and file actions together. */
 .toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"identity metrics" "transport transport";align-items:center;column-gap:18px;row-gap:10px;padding:11px 18px}
 .identity{grid-area:identity;min-width:0}
+.circuitName{width:100%;min-width:0;padding:2px 4px;margin-left:-4px;color:#e7edf3;background:transparent;border:1px solid transparent;border-radius:4px;font:700 19px/1.5 ui-sans-serif,system-ui,sans-serif;text-overflow:ellipsis}
+.circuitName:hover{border-color:#465879}
+.circuitName:focus{outline:2px solid #8eeae8;outline-offset:1px;background:#263743}
 .metrics{grid-area:metrics;justify-self:end;margin-left:0}
 .transport{grid-area:transport;min-width:0;width:100%;gap:8px 14px;align-items:center}
 .learningMenu{align-self:center}

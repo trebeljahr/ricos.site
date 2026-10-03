@@ -73,8 +73,9 @@ export function GateSymbol({ type, circuitName }: { type: GateType; circuitName?
       )}
       {type === "lamp" && (
         <>
-          <circle cx="32" cy="21" r="14" fill="#ad242c" stroke="#ff817b" />
-          <circle cx="27" cy="15" r="5" fill="#ffd3c4" stroke="none" opacity=".85" />
+          <path d="M5 21 H17 M47 21 H59" />
+          <circle cx="32" cy="21" r="15" />
+          <path d="M21 10 L43 32 M43 10 L21 32" />
         </>
       )}
       {(type === "input4" || type === "input8") && (

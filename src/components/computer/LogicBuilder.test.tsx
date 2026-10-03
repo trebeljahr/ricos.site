@@ -10,6 +10,33 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("circuit depth", () => {
+  it("starts new parts unnamed and edits or clears a name inline", () => {
+    render(<LogicBuilder />);
+    const parts = screen.getByLabelText("Gate palette");
+    fireEvent.click(within(parts).getByRole("button", { name: "SWITCH" }));
+    const switches = screen.getAllByRole("group", { name: "SWITCH — SWITCH part" });
+    const part = switches[switches.length - 1];
+    expect(within(part).queryByText("SWITCH")).toBeNull();
+    fireEvent.click(within(part).getByRole("button", { name: "Edit SWITCH name" }));
+    const field = within(part).getByRole("textbox", { name: "Part name" });
+    fireEvent.change(field, { target: { value: "Main power" } });
+    fireEvent.keyDown(field, { key: "Enter" });
+    expect(within(part).getByText("Main power")).toBeTruthy();
+    fireEvent.doubleClick(within(part).getByText("Main power"));
+    const renamed = within(part).getByRole("textbox", { name: "Part name" });
+    fireEvent.change(renamed, { target: { value: "" } });
+    fireEvent.keyDown(renamed, { key: "Enter" });
+    expect(within(part).queryByText("Main power")).toBeNull();
+  });
+  it("shows a lamp symbol and binary state", () => {
+    render(<LogicBuilder />);
+    fireEvent.click(within(screen.getByLabelText("Gate palette")).getByRole("button", { name: "LAMP" }));
+    const lamps = screen.getAllByRole("group", { name: "LAMP — LAMP part" });
+    const lamp = lamps[lamps.length - 1];
+    expect(lamp.querySelector("svg path[d='M21 10 L43 32 M43 10 L21 32']")).toBeTruthy();
+    expect(within(lamp).getByRole("img", { name: "LED off" })).toBeTruthy();
+    expect(within(lamp).getByText("0")).toBeTruthy();
+  });
   it("starts with clean buses and restores them with Clean up wiring", () => {
     render(<LogicBuilder />);
     expect(screen.getByRole("button", { name: "Hide buses" }).getAttribute("aria-pressed")).toBe(

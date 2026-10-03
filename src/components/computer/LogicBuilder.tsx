@@ -139,6 +139,8 @@ const nodeHeight = (node: Node) =>
     ? Math.max(NODE_HEIGHT, 30 + Math.max(inputCount(node), outputCount(node)) * 25)
     : ["input4", "input8", "display4", "display8"].includes(node.type)
       ? Math.max(NODE_HEIGHT, 54 + Math.max(inputCount(node), outputCount(node)) * 24)
+      : node.type === "switch" && node.label
+        ? 96
       : NODE_HEIGHT;
 const portY = (node: Node, input: number) =>
   node.y +
@@ -165,6 +167,7 @@ export function LogicBuilder() {
   const [tidyWiring, setTidyWiring] = useState(true);
   const [busWiring, setBusWiring] = useState(true);
   const [selected, setSelected] = useState<string[]>([]);
+  const [editingLabel, setEditingLabel] = useState<{ id: string; value: string } | null>(null);
   const [search, setSearch] = useState("");
   const [circuitSearch, setCircuitSearch] = useState("");
   const [circuitFamily, setCircuitFamily] = useState<BlueprintFamily | "examples" | "storage">(
@@ -556,7 +559,6 @@ export function LogicBuilder() {
         0,
         Math.min(canvasHeight - NODE_HEIGHT, position?.y ?? 90 + (Math.floor(index / 5) % 5) * 90),
       ),
-      label: LABELS[type],
       value: false,
       ...(type === "input4" || type === "input8" ? { numberValue: 0 } : {}),
     };
@@ -578,7 +580,6 @@ export function LogicBuilder() {
       id: crypto.randomUUID(),
       type: "module",
       module: clone(source),
-      label: source.name,
       x: Math.max(0, Math.min(canvasWidth - MODULE_WIDTH, position?.x ?? 70 + (index % 3) * 270)),
       y: 0,
     };
@@ -1526,7 +1527,7 @@ export function LogicBuilder() {
                     <div
                       key={node.id}
                       role="group"
-                      aria-label={`${node.label || LABELS[node.type]} — ${node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]} part`}
+                      aria-label={`${node.label || (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type])} — ${node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]} part`}
                       onKeyDown={(event) => {
                         if (event.key === "Enter") {
                           event.stopPropagation();
@@ -1551,7 +1552,7 @@ export function LogicBuilder() {
                         if (
                           event.pointerType === "touch" ||
                           event.button !== 0 ||
-                          (event.target as HTMLElement).closest("button")
+                          (event.target as HTMLElement).closest("button, input")
                         )
                           return;
                         event.currentTarget.setPointerCapture(event.pointerId);
@@ -1647,26 +1648,61 @@ export function LogicBuilder() {
                           node.type === "module" && styles.moduleBody,
                         )}
                       >
-                        {!["input4", "input8", "display4", "display8", "lamp"].includes(
+                        {!["input4", "input8", "display4", "display8"].includes(
                           node.type,
                         ) && (
                           <span className={styles.nodeSymbol}>
                             <GateSymbol type={node.type} circuitName={node.module?.name} />
                           </span>
                         )}
-                        <strong>{node.label || LABELS[node.type]}</strong>
-                        <span
-                          className={styles.nodeType}
-                          title={
-                            node.type === "module"
-                              ? node.module?.name || "Module"
-                              : LABELS[node.type]
-                          }
-                        >
-                          {node.type === "module"
-                            ? node.module?.name || "Module"
-                            : LABELS[node.type]}
-                        </span>
+                        <div className={styles.nodeNameRow}>
+                          {editingLabel?.id === node.id ? (
+                            <input
+                              autoFocus
+                              className={styles.nodeNameInput}
+                              aria-label="Part name"
+                              maxLength={30}
+                              value={editingLabel.value}
+                              onChange={(event) => setEditingLabel({ id: node.id, value: event.target.value })}
+                              onBlur={() => {
+                                setCircuit((current) => ({
+                                  ...current,
+                                  nodes: current.nodes.map((item) =>
+                                    item.id === node.id ? { ...item, label: editingLabel.value.trim() } : item,
+                                  ),
+                                }));
+                                setEditingLabel(null);
+                              }}
+                              onKeyDown={(event) => {
+                                event.stopPropagation();
+                                if (event.key === "Enter") event.currentTarget.blur();
+                                if (event.key === "Escape") setEditingLabel(null);
+                              }}
+                            />
+                          ) : node.label ? (
+                            <strong
+                              title="Double-click to edit name"
+                              onDoubleClick={(event) => {
+                                event.stopPropagation();
+                                setEditingLabel({ id: node.id, value: node.label || "" });
+                              }}
+                            >{node.label}</strong>
+                          ) : null}
+                          {editingLabel?.id !== node.id && (
+                            <button
+                              type="button"
+                              className={styles.editName}
+                              aria-label={`Edit ${node.label || LABELS[node.type]} name`}
+                              title="Edit name"
+                              onClick={() => setEditingLabel({ id: node.id, value: node.label || "" })}
+                            >✎</button>
+                          )}
+                        </div>
+                        {node.label && node.label !== (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]) && (
+                          <span className={styles.nodeType}>
+                            {node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]}
+                          </span>
+                        )}
                         {node.type === "input4" || node.type === "input8" ? (
                           <div
                             className={styles.numberBits}
@@ -1725,11 +1761,14 @@ export function LogicBuilder() {
                             </span>
                           </div>
                         ) : node.type === "lamp" ? (
-                          <span
-                            className={clsx(styles.led, snapshot.values[node.id] && styles.ledOn)}
-                            role="img"
-                            aria-label={snapshot.values[node.id] ? "LED on" : "LED off"}
-                          />
+                          <span className={styles.lampState}>
+                            <span
+                              className={clsx(styles.led, snapshot.values[node.id] && styles.ledOn)}
+                              role="img"
+                              aria-label={snapshot.values[node.id] ? "LED on" : "LED off"}
+                            />
+                            <span className={styles.bit}>{snapshot.values[node.id] ? "1" : "0"}</span>
+                          </span>
                         ) : node.type === "switch" ? (
                           <button
                             type="button"

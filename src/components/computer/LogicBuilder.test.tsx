@@ -243,7 +243,8 @@ describe("circuit depth", () => {
     expect(within(display).getByRole("button", { name: "Connect to 8-BIT DISPLAY Bit 0" })
       .parentElement?.style.left).toBe("0%");
     fireEvent.contextMenu(display, { clientX: 100, clientY: 100 });
-    fireEvent.change(screen.getByLabelText("Input side"), { target: { value: "top" } });
+    expect(screen.queryByLabelText("Input side")).toBeNull();
+    fireEvent.click(screen.getByRole("menuitem", { name: "Rotate right" }));
     expect(within(display).getByRole("button", { name: "Connect to 8-BIT DISPLAY Bit 0" })
       .parentElement?.style.top).toBe("0%");
 
@@ -434,7 +435,10 @@ describe("circuit depth", () => {
     render(<LogicBuilder />);
     fireEvent.click(within(screen.getByLabelText("Gate palette")).getByRole("button", { name: "Half adder" }));
     fireEvent.contextMenu(screen.getByRole("group", { name: "Half adder — Half adder part" }), { clientX: 100, clientY: 100 });
-    fireEvent.click(screen.getByRole("button", { name: "Open internal wiring ↘" }));
+    expect(within(screen.getByRole("menu")).queryByText("Inputs")).toBeNull();
+    expect(within(screen.getByRole("menu")).queryByText("Outputs")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Open internal wiring ↘" })).toBeNull();
+    fireEvent.doubleClick(screen.getByRole("group", { name: "Half adder — Half adder part" }));
     expect(screen.getByText("Level 2")).toBeTruthy();
     expect(screen.getAllByRole("group", { name: "SUM — LAMP part" }).length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: "← Back" }));

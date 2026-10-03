@@ -1,6 +1,7 @@
 import Link from "next/link";
 import clsx from "clsx";
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { ViewportContextMenu } from "./ViewportContextMenu";
 import { CircuitToolbar } from "./CircuitToolbar";
 import { ToolbarMenu } from "./ToolbarMenu";
 import { ToolbarSwitch } from "./ToolbarSwitch";
@@ -592,10 +593,8 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
   };
   const contextMenu = (event: React.MouseEvent, selection: { part?: Node; wire?: string }) => {
     event.preventDefault(); event.stopPropagation(); activate();
-    const rect = root.current!.getBoundingClientRect();
-    const scale = rect.width / (nodeWidth(host) - INLINE_X * 2) || zoom;
     setSelectedPart(selection.part?.id ?? null); setSelectedWire(selection.wire ?? null);
-    setMenu({ x: (event.clientX - rect.left) / scale, y: (event.clientY - rect.top) / scale, ...selection });
+    setMenu({ x: event.clientX, y: event.clientY, ...selection });
   };
   const labelInput = (part: Node) => <input className={styles.nodeNameInput}
     aria-label={`Label for ${part.label || LABELS[part.type]}`} value={draftLabel} autoFocus
@@ -753,15 +752,15 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
         ))}
       </div>
       {portMessage && <div className={styles.inlinePortStatus} role="status">{portMessage}</div>}
-      {menu && <div className={clsx(styles.contextMenu, styles.inlineContextMenu)} role="menu"
-        aria-label="Expanded circuit actions" style={{ left: menu.x, top: menu.y }}
+      {menu && <ViewportContextMenu x={menu.x} y={menu.y}
+        aria-label="Expanded circuit actions"
         onPointerDown={(event) => event.stopPropagation()}>
         {menu.part && <button role="menuitem" type="button" onClick={() => beginLabel(menu.part!)}>Rename part</button>}
         <button role="menuitem" type="button"
           onClick={() => removeSelected(menu.part?.id ?? null, menu.wire ?? null)}>
           <ActionIcon name="delete" /> Delete {menu.wire ? "wire" : "part"}
         </button>
-      </div>}
+      </ViewportContextMenu>}
     </div>
   );
 });
@@ -3276,18 +3275,7 @@ export function LogicBuilder() {
         </div>
       )}
       {menu && (
-        <div
-          ref={menuRef}
-          className={styles.contextMenu}
-          style={{
-            left: Math.max(8, Math.min(menu.x, window.innerWidth - 280)),
-            top: Math.max(8, Math.min(menu.y, window.innerHeight - 360)),
-            maxHeight: "calc(100vh - 16px)",
-            overflowY: "auto",
-          }}
-          role="menu"
-          onContextMenu={(event) => event.preventDefault()}
-        >
+        <ViewportContextMenu menuRef={menuRef} x={menu.x} y={menu.y}>
           {menu.kind === "node" && (
             <>
               {menuNode && (
@@ -3320,21 +3308,6 @@ export function LogicBuilder() {
                   />
                 </span>
               </label>
-              {inputCount(menuNode) > 0 && <label>
-                Input side
-                <select
-                  aria-label="Input side"
-                  value={inputSide(menuNode)}
-                  onChange={(event) => setCircuit((current) => ({
-                    ...current,
-                    nodes: current.nodes.map((node) => node.id === menuNode.id
-                      ? { ...node, inputSide: event.target.value as PortSide } : node),
-                  }))}
-                >
-                  {(["left", "top", "right", "bottom"] as const).map((side) =>
-                    <option key={side} value={side}>{side}</option>)}
-                </select>
-              </label>}
               {menuNode.type === "module" && (
                 <div className={styles.modulePorts}>
                   {circuitHints[menuNode.module!.name] && (
@@ -3364,31 +3337,6 @@ export function LogicBuilder() {
                       })}
                     </div>
                   )}
-                  <button
-                    type="button"
-                    onClick={() =>
-                      enterCircuit(
-                        menuNode.module!,
-                        menuNode.label || menuNode.module!.name,
-                        menuNode.id,
-                      )
-                    }
-                  >
-                    Open internal wiring ↘
-                  </button>
-                  <span>Inputs</span>
-                  {moduleInputs(menuNode.module!).map((port, index) => (
-                    <small key={port.id}>
-                      {index + 1}. {port.label || `Input ${index + 1}`}
-                    </small>
-                  ))}
-                  <span>Outputs</span>
-                  {moduleOutputs(menuNode.module!).map((port, index) => (
-                    <small key={port.id}>
-                      {index + 1}. {port.label || `Output ${index + 1}`} ={" "}
-                      {snapshot.outputs[menuNode.id]?.[index] ? 1 : 0}
-                    </small>
-                  ))}
                 </div>
               )}
               {(GATE_NAMES.includes(menuNode.type as LogicGate) ||
@@ -3510,7 +3458,7 @@ export function LogicBuilder() {
               </button>
             </>
           )}
-        </div>
+        </ViewportContextMenu>
       )}
     </div>
   );

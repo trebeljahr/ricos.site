@@ -326,6 +326,77 @@ function busCircuit(kind: "half" | "full" | "mux" | "alu"): Circuit {
   }
   return circuit;
 }
+
+function comparisonCircuit(): Circuit {
+  const circuit: Circuit = { name: "8-bit magnitude comparator", nodes: [], wires: [] };
+  const add = (id: string, type: GateType, x: number, y: number, label?: string) => {
+    circuit.nodes.push(node(id, type, x, y, label));
+    return id;
+  };
+  const gate = (id: string, type: GateType, x: number, y: number, a: string, b: string) => {
+    add(id, type, x, y);
+    circuit.wires.push(wire(a, id), wire(b, id, 1));
+    return id;
+  };
+  let greater = add("zero-gt", "ground", 40, 30, "FALSE");
+  let less = greater;
+  let equal = add("one-eq", "high", 40, 120, "TRUE");
+  for (let bit = 0; bit < 8; bit++) {
+    const y = 250 + bit * 260;
+    const a = add(`a${bit}`, "switch", 40, y, `A${bit}`);
+    const b = add(`b${bit}`, "switch", 40, y + 80, `B${bit}`);
+    const notA = add(`not-a${bit}`, "not", 240, y + 80);
+    const notB = add(`not-b${bit}`, "not", 240, y);
+    circuit.wires.push(wire(a, notA), wire(b, notB));
+    const bitGreater = gate(`bit-gt${bit}`, "and", 440, y, a, notB);
+    const bitLess = gate(`bit-lt${bit}`, "and", 440, y + 90, notA, b);
+    const same = gate(`same${bit}`, "xnor", 440, y + 180, a, b);
+    greater = gate(`gt${bit}`, "or", 800, y, bitGreater,
+      gate(`prior-gt${bit}`, "and", 620, y, same, greater));
+    less = gate(`lt${bit}`, "or", 800, y + 90, bitLess,
+      gate(`prior-lt${bit}`, "and", 620, y + 90, same, less));
+    equal = gate(`eq${bit}`, "and", 620, y + 180, same, equal);
+  }
+  for (const [id, source, y] of [["greater", greater, 250], ["equal", equal, 350], ["less", less, 450]] as const) {
+    add(id, "lamp", 1040, y, id.toUpperCase());
+    circuit.wires.push(wire(source, id));
+  }
+  return circuit;
+}
+
+function registerCircuit(kind: "shift" | "counter"): Circuit {
+  const circuit: Circuit = {
+    name: kind === "shift" ? "8-bit shift register" : "8-bit binary counter",
+    nodes: [node("clock", "clock", 40, 30, "CLOCK")],
+    wires: [],
+  };
+  let previous = kind === "shift" ? "data" : "one";
+  if (kind === "shift") circuit.nodes.push(node("data", "switch", 40, 130, "SERIAL IN"));
+  else circuit.nodes.push(node("one", "high", 40, 130, "TRUE"));
+  for (let bit = 0; bit < 8; bit++) {
+    const y = 260 + bit * 160;
+    const flip = `bit${bit}`;
+    circuit.nodes.push(node(flip, "dff", 530, y, `BIT${bit}`));
+    circuit.wires.push(wire("clock", flip, 1));
+    if (kind === "shift") circuit.wires.push(wire(previous, flip));
+    else {
+      const xor = `xor${bit}`;
+      circuit.nodes.push(node(xor, "xor", 310, y, "TOGGLE"));
+      circuit.wires.push(wire(flip, xor), wire(previous, xor, 1), wire(xor, flip));
+      if (bit < 7) {
+        const carry = `carry${bit}`;
+        circuit.nodes.push(node(carry, "and", 760, y + 70, "CARRY"));
+        circuit.wires.push(wire(flip, carry), wire(previous, carry, 1));
+        previous = carry;
+      }
+    }
+    const output = `out${bit}`;
+    circuit.nodes.push(node(output, "lamp", 1000, y, `Q${bit}`));
+    circuit.wires.push(wire(flip, output));
+    if (kind === "shift") previous = flip;
+  }
+  return circuit;
+}
 export const PRESETS: Record<string, Circuit> = {
   "Half adder": {
     name: "Half adder",
@@ -408,6 +479,9 @@ export const PRESETS: Record<string, Circuit> = {
   "8-bit full adder": busCircuit("full"),
   "8-bit 2:1 multiplexer": busCircuit("mux"),
   "8-bit ALU": busCircuit("alu"),
+  "8-bit magnitude comparator": comparisonCircuit(),
+  "8-bit shift register": registerCircuit("shift"),
+  "8-bit binary counter": registerCircuit("counter"),
 };
 
 export const GATE_NAMES = ["not", "and", "or", "nand", "nor", "xor", "xnor"] as const;

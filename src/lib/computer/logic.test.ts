@@ -12,6 +12,46 @@ import {
 } from "./logic";
 
 describe("logic circuit engine", () => {
+  it("compares two 8-bit values", () => {
+    const circuit = PRESETS["8-bit magnitude comparator"];
+    expect(validateCircuit(circuit)).not.toBeNull();
+    for (const [a, b] of [[0, 0], [1, 2], [2, 1], [127, 128], [255, 255], [255, 0]]) {
+      const overrides: Record<string, boolean> = {};
+      for (let bit = 0; bit < 8; bit++) {
+        overrides[`a${bit}`] = Boolean(a & (1 << bit));
+        overrides[`b${bit}`] = Boolean(b & (1 << bit));
+      }
+      const state = step(circuit, initialSnapshot(), false, {}, overrides);
+      expect(state.unstable).toBe(false);
+      expect([state.values.less, state.values.equal, state.values.greater]).toEqual([
+        a < b, a === b, a > b,
+      ]);
+    }
+  });
+  it("shifts serial input on rising edges", () => {
+    const circuit = PRESETS["8-bit shift register"];
+    expect(validateCircuit(circuit)).not.toBeNull();
+    let state = initialSnapshot();
+    for (const data of [true, false, true, true]) {
+      state = step(circuit, state, false, {}, { data });
+      state = step(circuit, state, true, {}, { data });
+    }
+    expect(Array.from({ length: 8 }, (_, bit) => Boolean(state.values[`out${bit}`]))).toEqual([
+      true, true, false, true, false, false, false, false,
+    ]);
+  });
+  it("counts once per rising edge and wraps after 255", () => {
+    const circuit = PRESETS["8-bit binary counter"];
+    expect(validateCircuit(circuit)).not.toBeNull();
+    let state = initialSnapshot();
+    for (let count = 1; count <= 256; count++) {
+      state = step(circuit, state, false);
+      state = step(circuit, state, true);
+      const value = Array.from({ length: 8 }, (_, bit) => Number(state.values[`out${bit}`]))
+        .reduce((number, bit, index) => number | (bit << index), 0);
+      expect(value).toBe(count & 0xff);
+    }
+  });
   it("evaluates the 8-bit arithmetic, mux, and ALU examples", () => {
     const run = (name: string, a: number, b: number, control: Record<string, boolean> = {}) => {
       const circuit = PRESETS[name];

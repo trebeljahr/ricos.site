@@ -129,6 +129,8 @@ export function LogicBuilder() {
   const [search, setSearch] = useState("");
   const [circuitSearch, setCircuitSearch] = useState("");
   const [circuitFamily, setCircuitFamily] = useState<BlueprintFamily | "examples">("transistor");
+  const [showVdd, setShowVdd] = useState(true);
+  const [showGround, setShowGround] = useState(true);
   const [menu, setMenu] = useState<{
     x: number;
     y: number;
@@ -627,6 +629,9 @@ export function LogicBuilder() {
   const visibleCircuits = Object.values(library).filter((item) =>
     item.name.toLowerCase().includes(circuitSearch.toLowerCase().trim()),
   );
+  const hasTransistors = circuit.nodes.some((item) => item.type === "nmos" || item.type === "pmos");
+  const powerVisible = (node: Node) =>
+    (node.type !== "high" || showVdd) && (node.type !== "ground" || showGround);
   const renderParts = () =>
     visibleParts.map((type) => (
       <button
@@ -686,6 +691,12 @@ export function LogicBuilder() {
           <strong>{circuit.name}</strong>
         </div>
         <div className={styles.transport}>
+          {hasTransistors && (
+            <div className={styles.powerView} aria-label="Power connection display (visual only)">
+              <label><input type="checkbox" checked={showVdd} onChange={(event) => setShowVdd(event.target.checked)} /> Show VDD</label>
+              <label><input type="checkbox" checked={showGround} onChange={(event) => setShowGround(event.target.checked)} /> Show GND</label>
+            </div>
+          )}
           <button
             type="button"
             onClick={() => setRunning((value) => !value)}
@@ -868,6 +879,7 @@ export function LogicBuilder() {
                   const from = circuit.nodes.find((node) => node.id === wire.from);
                   const to = circuit.nodes.find((node) => node.id === wire.to);
                   if (!from || !to) return null;
+                  if (hasTransistors && (!powerVisible(from) || !powerVisible(to))) return null;
                   const x1 = from.x + NODE_WIDTH,
                     y1 = outY(from, wire.output ?? 0),
                     x2 = to.x,
@@ -968,7 +980,7 @@ export function LogicBuilder() {
                   />
                 )}
               </svg>
-              {circuit.nodes.map((node) => (
+              {circuit.nodes.filter((node) => !hasTransistors || powerVisible(node)).map((node) => (
                 <div
                   key={node.id}
                   role="group"

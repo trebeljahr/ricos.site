@@ -129,6 +129,7 @@
 .learningPanel p{margin:5px 0 12px;color:#aebbd3;font-size:11px;line-height:1.4}
 .learningPanel .buildTabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:0 0 8px}
 .learningPanel .buildTabs button{justify-content:center;min-width:0;padding:7px 4px;font-size:10px}
+.learningPanel .buildTabs button[aria-pressed="true"]{background:#b7a1ff;border-color:#b7a1ff;color:#17203b}
 .learningList{min-height:0;overflow-y:auto;overscroll-behavior:contain}
 .learningPanel .buildEntry{padding:7px 4px 9px}
 .learningPanel .buildEntry button{display:flex;justify-content:space-between;width:100%;padding:3px 2px;border:0;background:transparent;color:#e7edf3;text-align:left;font-size:12px;cursor:pointer}

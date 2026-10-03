@@ -27,8 +27,8 @@ import {
   WIRE_COLORS,
   type WireColor,
 } from "../../lib/computer/logic";
-import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
 import { MEMORY_HINTS } from "../../lib/computer/memoryCircuits";
+import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
 import { GateSymbol } from "./GateSymbol";
 import { ImplementationView } from "./ImplementationView";
 import styles from "./LogicBuilder.module.css";
@@ -40,6 +40,7 @@ const NODE_WIDTH = 132;
 const MODULE_WIDTH = 236;
 const nodeWidth = (node: Node) => (node.type === "module" ? MODULE_WIDTH : NODE_WIDTH);
 const circuitHints: Record<string, string> = {
+  ...MEMORY_HINTS,
   "8-bit half adder": "Adds A and B bit by bit. Each bit has SUM and CARRY outputs.",
   "8-bit full adder":
     "Adds A, B, and CARRY IN. OUT0–OUT7 form the sum; CARRY OUT is the final carry.",
@@ -94,7 +95,12 @@ type WireDraft = {
   originY: number;
 };
 const defaultWireColor = (id: string, nodes: Node[]): WireColor =>
-  wireColorNames[Math.max(0, nodes.findIndex((node) => node.id === id)) % wireColorNames.length];
+  wireColorNames[
+    Math.max(
+      0,
+      nodes.findIndex((node) => node.id === id),
+    ) % wireColorNames.length
+  ];
 const palette: GateType[] = [
   "switch",
   "pulse",
@@ -466,7 +472,10 @@ export function LogicBuilder() {
   };
   const enterCircuit = (next: Circuit, via: string, moduleId?: string) => {
     const parentSnapshot = snapshotRef.current;
-    setViewPath((current) => [...current, { parent: clone(circuit), snapshot: parentSnapshot, via, moduleId }]);
+    setViewPath((current) => [
+      ...current,
+      { parent: clone(circuit), snapshot: parentSnapshot, via, moduleId },
+    ]);
     const copy = clone(next);
     if (moduleId) {
       moduleInputs(copy).forEach((input, port) => {
@@ -485,7 +494,11 @@ export function LogicBuilder() {
     setSelected([]);
     setSelectedWire(null);
     setPending(null);
-    const inner = step(copy, moduleId ? parentSnapshot.modules[moduleId] ?? initialSnapshot() : initialSnapshot(), clockRef.current);
+    const inner = step(
+      copy,
+      moduleId ? (parentSnapshot.modules[moduleId] ?? initialSnapshot()) : initialSnapshot(),
+      clockRef.current,
+    );
     snapshotRef.current = inner;
     setSnapshot(inner);
     setMessage(`Inside ${via}. Use Back to return.`);
@@ -504,7 +517,10 @@ export function LogicBuilder() {
     setSelectedWire(null);
     setPending(null);
     const parentSnapshot = level.moduleId
-      ? { ...level.snapshot, modules: { ...level.snapshot.modules, [level.moduleId]: snapshotRef.current } }
+      ? {
+          ...level.snapshot,
+          modules: { ...level.snapshot.modules, [level.moduleId]: snapshotRef.current },
+        }
       : level.snapshot;
     const restored = step(parent, parentSnapshot, clockRef.current);
     snapshotRef.current = restored;
@@ -627,7 +643,8 @@ export function LogicBuilder() {
       return;
     }
     const sourceColor =
-      circuit.wires.find((wire) => wire.from === from)?.color ?? defaultWireColor(from, circuit.nodes);
+      circuit.wires.find((wire) => wire.from === from)?.color ??
+      defaultWireColor(from, circuit.nodes);
     setCircuit((current) => ({
       ...current,
       wires: [
@@ -956,9 +973,11 @@ export function LogicBuilder() {
     circuitFamily === "examples"
       ? PRESETS
       : circuitFamily === "storage"
-        ? Object.fromEntries(Object.entries(PRESETS).filter(([name]) =>
-            /latch|flip-flop|register|counter|SRAM|DRAM|flash memory/i.test(name),
-          ))
+        ? Object.fromEntries(
+            Object.entries(PRESETS).filter(([name]) =>
+              /latch|flip-flop|register|counter|SRAM|DRAM|flash memory/i.test(name),
+            ),
+          )
         : Object.fromEntries(
             Object.entries(BLUEPRINTS).filter(([name]) =>
               name.endsWith(`from ${BLUEPRINT_FAMILIES[circuitFamily].suffix}`),
@@ -1354,55 +1373,58 @@ export function LogicBuilder() {
                   preserveAspectRatio="none"
                   aria-label="Circuit wires"
                 >
-                {busWiring &&
-                  routes.buses.map((bus) => {
-                    const from = circuit.nodes.find((node) => node.id === bus.from);
-                    const color = WIRE_COLORS[defaultWireColor(bus.from, circuit.nodes)];
-                    const live =
-                      snapshot.outputs[bus.from]?.[bus.output] ?? snapshot.values[bus.from];
-                    return (
-                      <g key={bus.key} style={{ "--wire-color": color } as React.CSSProperties}>
-                        <path
-                          d={bus.path}
-                          className={styles.busHit}
-                          role="button"
-                          tabIndex={0}
-                          aria-label={`Add branch from ${from?.label || "output"} bus`}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            setPending({ from: bus.from, output: bus.output });
-                            setMessage("Bus selected. Click an input to add a branch.");
-                          }}
-                          onKeyDown={(event) => {
-                            if (event.key === "Enter" || event.key === " ") {
-                              event.preventDefault();
+                  {busWiring &&
+                    routes.buses.map((bus) => {
+                      const from = circuit.nodes.find((node) => node.id === bus.from);
+                      const color = WIRE_COLORS[defaultWireColor(bus.from, circuit.nodes)];
+                      const live =
+                        snapshot.outputs[bus.from]?.[bus.output] ?? snapshot.values[bus.from];
+                      return (
+                        <g key={bus.key} style={{ "--wire-color": color } as React.CSSProperties}>
+                          <path
+                            d={bus.path}
+                            className={styles.busHit}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`Add branch from ${from?.label || "output"} bus`}
+                            onClick={(event) => {
+                              event.stopPropagation();
                               setPending({ from: bus.from, output: bus.output });
                               setMessage("Bus selected. Click an input to add a branch.");
-                            }
-                          }}
-                        />
-                        <path d={bus.path} className={clsx(styles.busWire, live && styles.live)} />
-                        {bus.crossings.map((crossing) => (
-                          <circle
-                            key={`${crossing.x}:${crossing.y}`}
-                            cx={crossing.x}
-                            cy={crossing.y}
-                            r={7}
-                            className={styles.busCrossing}
+                            }}
+                            onKeyDown={(event) => {
+                              if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                setPending({ from: bus.from, output: bus.output });
+                                setMessage("Bus selected. Click an input to add a branch.");
+                              }
+                            }}
                           />
-                        ))}
-                        {bus.taps.map((tap) => (
-                          <circle
-                            key={tap.wireId}
-                            cx={tap.x}
-                            cy={tap.y}
-                            r={4}
-                            className={styles.busTap}
+                          <path
+                            d={bus.path}
+                            className={clsx(styles.busWire, live && styles.live)}
                           />
-                        ))}
-                      </g>
-                    );
-                  })}
+                          {bus.crossings.map((crossing) => (
+                            <circle
+                              key={`${crossing.x}:${crossing.y}`}
+                              cx={crossing.x}
+                              cy={crossing.y}
+                              r={7}
+                              className={styles.busCrossing}
+                            />
+                          ))}
+                          {bus.taps.map((tap) => (
+                            <circle
+                              key={tap.wireId}
+                              cx={tap.x}
+                              cy={tap.y}
+                              r={4}
+                              className={styles.busTap}
+                            />
+                          ))}
+                        </g>
+                      );
+                    })}
                   {circuit.wires.map((wire) => {
                     const from = circuit.nodes.find((node) => node.id === wire.from);
                     const to = circuit.nodes.find((node) => node.id === wire.to);
@@ -1416,7 +1438,8 @@ export function LogicBuilder() {
                       tidyWiring || busWiring || x2 <= x1
                         ? routes.paths[wire.id]
                         : simpleWirePath({ x: x1, y: y1 }, { x: x2, y: y2 });
-                    const color = WIRE_COLORS[wire.color ?? defaultWireColor(wire.from, circuit.nodes)];
+                    const color =
+                      WIRE_COLORS[wire.color ?? defaultWireColor(wire.from, circuit.nodes)];
                     return (
                       <g key={wire.id} style={{ "--wire-color": color } as React.CSSProperties}>
                         <path
@@ -1998,8 +2021,9 @@ export function LogicBuilder() {
                     type="button"
                     className={clsx(
                       styles.colorSwatch,
-                      (selectedWireData.color ?? defaultWireColor(selectedWireData.from, circuit.nodes)) ===
-                        color && styles.colorSelected,
+                      (selectedWireData.color ??
+                        defaultWireColor(selectedWireData.from, circuit.nodes)) === color &&
+                        styles.colorSelected,
                     )}
                     style={{ backgroundColor: WIRE_COLORS[color] }}
                     aria-label={`Color wire ${color}`}

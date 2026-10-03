@@ -1583,13 +1583,6 @@ export function LogicBuilder() {
             ))}
             {visibleParts.length === 0 && visibleExamples.length === 0 && visibleSaved.length === 0 && <p>No matching parts</p>}
           </div>
-          <div className={styles.sidebarFoot}>
-            Wire output → input
-            <br />
-            One wire per input
-            <br />
-            Unwired inputs read 0
-          </div>
         </aside>
         <div ref={workspace} className={styles.workspace}>
           <div className={styles.canvasControls} role="toolbar" aria-label="Canvas view controls"

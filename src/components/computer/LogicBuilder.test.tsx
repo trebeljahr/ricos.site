@@ -99,6 +99,56 @@ describe("circuit depth", () => {
     expect(JSON.parse(localStorage.getItem("ricos-computer-circuits-v1") || "{}").saved["My logic"]).toBeTruthy();
   });
 
+  it("places a clicked saved black box in the current viewport", () => {
+    const saved = { name: "Visible box", nodes: [{ id: "out", type: "lamp", x: 0, y: 0 }], wires: [] };
+    localStorage.setItem("ricos-computer-circuits-v1", JSON.stringify({ saved: { "Visible box": saved } }));
+    render(<LogicBuilder />);
+    const board = screen.getByRole("application", { name: "Circuit canvas" });
+    const viewport = board.parentElement!.parentElement!;
+    Object.defineProperties(viewport, {
+      clientWidth: { configurable: true, value: 900 },
+      clientHeight: { configurable: true, value: 520 },
+    });
+    viewport.scrollLeft = 5000;
+    viewport.scrollTop = 4000;
+    fireEvent.click(within(screen.getByLabelText("Gate palette")).getByRole("button", { name: "Visible box" }));
+    const added = JSON.parse(localStorage.getItem("ricos-computer-circuits-v1")!).current.nodes.at(-1);
+    expect(added.x).toBe(3300);
+    expect(added.y).toBe(2201.5);
+  });
+
+  it.each(["click", "drop"])("inserts saved circuits without lamp outputs by %s", (method) => {
+    const saved = { name: "Loose gates", nodes: [
+      { id: "a", type: "switch", x: 10, y: 20 },
+      { id: "b", type: "not", x: 200, y: 20 },
+    ], wires: [{ id: "wire", from: "a", to: "b", input: 0 }],
+    groups: [{ id: "group", label: "Pair", nodeIds: ["a", "b"] }] };
+    localStorage.setItem("ricos-computer-circuits-v1", JSON.stringify({ saved: { "Loose gates": saved } }));
+    render(<LogicBuilder />);
+    const before = JSON.parse(localStorage.getItem("ricos-computer-circuits-v1")!).current;
+    const part = within(screen.getByLabelText("Gate palette")).getByRole("button", { name: "Loose gates" });
+    if (method === "click") fireEvent.click(part);
+    else {
+      const board = screen.getByRole("application", { name: "Circuit canvas" });
+      vi.spyOn(board, "getBoundingClientRect").mockReturnValue({
+        x: 0, y: 0, left: 0, top: 0, right: 5000, bottom: 4500,
+        width: 5000, height: 4500, toJSON: () => ({}),
+      });
+      fireEvent.drop(board, { clientX: 2400, clientY: 2300,
+        dataTransfer: { getData: (type: string) => type === "application/x-logic-module" ? "saved:Loose gates" : "" } });
+    }
+    const current = JSON.parse(localStorage.getItem("ricos-computer-circuits-v1")!).current;
+    expect(current.nodes.slice(0, before.nodes.length)).toEqual(before.nodes);
+    const added = current.nodes.slice(before.nodes.length);
+    expect(added).toHaveLength(2);
+    expect(added.map((node: { id: string }) => node.id)).not.toEqual(["a", "b"]);
+    expect(current.wires.at(-1)).toMatchObject({ from: added[0].id, to: added[1].id });
+    expect(current.groups.at(-1).nodeIds).toEqual(added.map((node: { id: string }) => node.id));
+    expect(screen.getByText("Loose gates added. Drag the selected circuit to move it.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    expect(JSON.parse(localStorage.getItem("ricos-computer-circuits-v1")!).current.nodes).toEqual(before.nodes);
+  });
+
   it.each(["board", "viewport"])("drops saved circuits onto the %s", (target) => {
     render(<LogicBuilder />);
     fireEvent.click(screen.getByRole("button", { name: "Save" }));

@@ -1498,6 +1498,33 @@ export function LogicBuilder() {
     setSelected([next.id]);
     setPending(null);
   };
+  const insertionCenter = () => {
+    const viewport = boardViewport.current;
+    const camera = captureViewport();
+    return {
+      x: (camera.left + (viewport?.clientWidth || 900) / 2) / camera.zoom,
+      y: (camera.top + (viewport?.clientHeight || 520) / 2) / camera.zoom,
+    };
+  };
+  const addSavedCircuit = (source: Circuit, position?: { x: number; y: number }, inlineTarget?: string | null) => {
+    if (!source.nodes.length) {
+      setMessage("This saved circuit is empty. Add parts before inserting it.");
+      return;
+    }
+    if (!moduleOutputs(source).length || moduleInputs(source).length > 24 || moduleOutputs(source).length > 24) {
+      insertCircuit(source, position ?? insertionCenter(),
+        inlineTarget === undefined ? activeInlinePath : inlineTarget);
+      return;
+    }
+    const inlinePath = inlineTarget === undefined ? activeInlinePath : inlineTarget;
+    if (inlinePath && !position) {
+      addModule(source, undefined, inlinePath);
+      return;
+    }
+    const center = position ?? insertionCenter();
+    addModule(source, { x: center.x - MODULE_WIDTH / 2,
+      y: center.y - nodeHeight({ id: "", type: "module", module: source, x: 0, y: 0 }) / 2 }, inlineTarget);
+  };
   const addModule = (source: Circuit, position?: { x: number; y: number }, inlineTarget?: string | null) => {
     if (
       !moduleOutputs(source).length ||
@@ -1530,6 +1557,7 @@ export function LogicBuilder() {
     setMessage(`${source.name} added as a black box.`);
   };
   const insertCircuit = (source: Circuit, position: { x: number; y: number }, inlinePath?: string | null) => {
+    if (!source.nodes.length) return;
     if (inlinePath) {
       updateInline(inlinePath, (inner) => {
         if (inner.nodes.length + source.nodes.length > 300 ||
@@ -1545,6 +1573,9 @@ export function LogicBuilder() {
             id: ids.get(node.id)!, x: left + node.x - minX, y: top + node.y - minY }))],
           wires: [...inner.wires, ...source.wires.map((wire) => ({ ...wire,
             id: crypto.randomUUID(), from: ids.get(wire.from)!, to: ids.get(wire.to)! }))],
+          groups: [...(inner.groups ?? []), ...(source.groups ?? []).map((group) => ({
+            ...group, id: crypto.randomUUID(), nodeIds: group.nodeIds.map((id) => ids.get(id)!),
+          }))],
         };
       });
       return;
@@ -2329,8 +2360,8 @@ export function LogicBuilder() {
                     event.dataTransfer.setData("application/x-logic-module", `saved:${item.name}`);
                     event.dataTransfer.effectAllowed = "copy";
                   }}
-                  onClick={() => addModule(item)}
-                  title={`Add ${item.name} as a black box`}
+                  onClick={() => addSavedCircuit(item)}
+                  title={`Add ${item.name} to canvas`}
                   style={{ "--part-accent": partColors.module } as React.CSSProperties}
                 >
                   <span className={styles.partIcon}>
@@ -2448,7 +2479,8 @@ export function LogicBuilder() {
                 ? saved[moduleName.slice(6)]
                 : BLUEPRINTS[moduleName] || PRESETS[moduleName];
               if (moduleSource) {
-                addModule(moduleSource, {
+                if (moduleName.startsWith("saved:")) addSavedCircuit(moduleSource, point, inlinePath);
+                else addModule(moduleSource, {
                   x: point.x - MODULE_WIDTH / 2,
                   y: point.y - nodeHeight({ id: "drop", type: "module", module: moduleSource, x: 0, y: 0 }) / 2,
                 }, inlinePath);

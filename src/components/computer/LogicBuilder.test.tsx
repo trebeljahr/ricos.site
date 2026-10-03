@@ -10,7 +10,7 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("circuit depth", () => {
-  it("extends the canvas when panning toward its edge", () => {
+  it("recenters the canvas when panning toward its edge", () => {
     render(<LogicBuilder />);
     const board = screen.getByRole("application", { name: "Circuit canvas" }) as HTMLDivElement;
     const viewport = board.parentElement!.parentElement!;
@@ -24,8 +24,12 @@ describe("circuit depth", () => {
     viewport.scrollLeft = 0;
     viewport.scrollTop = 2000;
     fireEvent.scroll(viewport);
-    expect(board.style.width).toBe("7000px");
-    expect(viewport.scrollLeft).toBe(2000);
+    expect(board.style.width).toBe("5000px");
+    expect(viewport.scrollLeft).toBe(1600);
+    const dotPosition = viewport.style.backgroundPosition;
+    viewport.scrollLeft += 5;
+    fireEvent.scroll(viewport);
+    expect(viewport.style.backgroundPosition).not.toBe(dotPosition);
   });
   it("wires an 8-bit source to each full-adder operand in one action", () => {
     render(<LogicBuilder />);
@@ -322,9 +326,11 @@ describe("circuit depth", () => {
       clientY: 50,
     });
     expect(container.querySelector('[class*="marquee"]')).toBeNull();
+    const beforePanLeft = viewport.scrollLeft;
+    const beforePanTop = viewport.scrollTop;
     fireEvent.pointerMove(viewport, { pointerId: 3, pointerType: "mouse", clientX: 30, clientY: 40 });
-    expect(viewport.scrollLeft).toBe(20);
-    expect(viewport.scrollTop).toBe(10);
+    expect(viewport.scrollLeft).toBe(beforePanLeft + 20);
+    expect(viewport.scrollTop).toBe(beforePanTop + 10);
     fireEvent.pointerUp(viewport, { pointerId: 3, pointerType: "mouse", button: 0 });
     fireEvent.pointerDown(board, {
       pointerId: 4,
@@ -335,7 +341,7 @@ describe("circuit depth", () => {
       clientY: 50,
     });
     expect(container.querySelector('[class*="marquee"]')).toBeTruthy();
-    expect(viewport.scrollLeft).toBe(20);
+    expect(viewport.scrollLeft).toBe(beforePanLeft + 20);
     fireEvent.pointerUp(board, { pointerId: 4, pointerType: "mouse", button: 0, clientX: 50, clientY: 50 });
 
     fireEvent.click(screen.getByRole("button", { name: "Select" }));
@@ -386,7 +392,36 @@ describe("circuit depth", () => {
     expect(screen.getByText("168%")).toBeTruthy();
   });
 
-  it("extends the canvas during panning and leaves part dragging intact", () => {
+  it("keeps dots readable while zooming beyond the old limits", () => {
+    render(<LogicBuilder />);
+    const board = screen.getByRole("application", { name: "Circuit canvas" });
+    const viewport = board.parentElement!.parentElement!;
+    Object.defineProperties(viewport, {
+      clientWidth: { configurable: true, value: 800 },
+      clientHeight: { configurable: true, value: 500 },
+    });
+    vi.spyOn(viewport, "getBoundingClientRect").mockReturnValue({
+      left: 0, top: 0, right: 800, bottom: 500, width: 800, height: 500,
+      x: 0, y: 0, toJSON: () => ({}),
+    });
+    const zoomLabel = screen.getByText("100%", { selector: "span" });
+    fireEvent.wheel(viewport, { deltaY: 3000, clientX: 400, clientY: 250 });
+    expect(Number.parseFloat(zoomLabel.textContent!)).toBeLessThan(5);
+    expect(Number.parseFloat(viewport.style.backgroundSize)).toBeGreaterThanOrEqual(14);
+    expect(Number.parseFloat(viewport.style.backgroundSize)).toBeLessThanOrEqual(29);
+    fireEvent.wheel(viewport, { deltaY: -6000, clientX: 400, clientY: 250 });
+    expect(Number.parseFloat(zoomLabel.textContent!.replaceAll(",", ""))).toBeGreaterThan(400);
+    expect(Number.parseFloat(viewport.style.backgroundSize)).toBeGreaterThanOrEqual(14);
+    expect(Number.parseFloat(viewport.style.backgroundSize)).toBeLessThanOrEqual(29);
+    fireEvent.wheel(viewport, { deltaY: 15000, clientX: 400, clientY: 250 });
+    expect(Number.isFinite(Number.parseFloat(board.style.width))).toBe(true);
+    expect(Number.parseFloat(viewport.style.backgroundSize)).toBeGreaterThanOrEqual(14);
+    fireEvent.wheel(viewport, { deltaY: -30000, clientX: 400, clientY: 250 });
+    expect(Number.isFinite(Number.parseFloat(board.style.width))).toBe(true);
+    expect(Number.parseFloat(viewport.style.backgroundSize)).toBeLessThanOrEqual(29);
+  });
+
+  it("pans repeatedly while leaving part dragging intact", () => {
     render(<LogicBuilder />);
     const board = screen.getByRole("application", { name: "Circuit canvas" });
     const viewport = board.parentElement!.parentElement!;
@@ -420,7 +455,7 @@ describe("circuit depth", () => {
     fireEvent.pointerMove(viewport, { pointerId: 11, pointerType: "mouse",
       clientX: 1700, clientY: 900 });
     fireEvent.scroll(viewport);
-    expect(Number.parseFloat(board.style.width)).toBeGreaterThan(initialWidth);
+    expect(Number.parseFloat(board.style.width)).toBe(initialWidth);
     fireEvent.pointerUp(viewport, { pointerId: 11, pointerType: "mouse", button: 0 });
 
     fireEvent.pointerDown(board, { pointerId: 12, pointerType: "mouse", button: 0,

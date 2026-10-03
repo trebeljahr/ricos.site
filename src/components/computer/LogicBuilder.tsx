@@ -61,8 +61,31 @@ const circuitHints: Record<string, string> = {
     "On each clock edge, the 8-bit value increases by one. Q0 is the least significant bit.",
 };
 const NODE_HEIGHT = 116;
-const MIN_ZOOM = 0.05;
-const MAX_ZOOM = 4;
+const MIN_ZOOM = 1e-9;
+const MAX_ZOOM = 1e9;
+const GRID_BASE_STEP = 20;
+const gridSpacing = (zoom: number) =>
+  GRID_BASE_STEP * 2 ** Math.round(Math.log2(1 / zoom)) * zoom;
+const syncGrid = (viewport: HTMLDivElement, zoom: number,
+  bounds: { left: number; top: number }) => {
+  const spacing = gridSpacing(zoom);
+  const phase = (origin: number, scroll: number) =>
+    (((-origin % (spacing / zoom)) * zoom - scroll - spacing / 2) % spacing + spacing) % spacing;
+  viewport.style.backgroundSize = `${spacing}px ${spacing}px`;
+  viewport.style.backgroundPosition =
+    `${phase(bounds.left, viewport.scrollLeft)}px ${phase(bounds.top, viewport.scrollTop)}px`;
+};
+const formatZoom = (zoom: number) => {
+  const percent = zoom * 100;
+  if (percent < 0.01 || percent >= 1e6) return `${percent.toExponential(1)}%`;
+  return `${Number(percent.toFixed(percent < 1 ? 2 : 0)).toLocaleString("en-US")}%`;
+};
+const frameBounds = (left: number, top: number, zoom: number, width: number, height: number) => ({
+  left: left - (2 * width) / zoom,
+  top: top - (2 * height) / zoom,
+  right: left + (3 * width) / zoom,
+  bottom: top + (3 * height) / zoom,
+});
 const wireColorNames = Object.keys(WIRE_COLORS) as WireColor[];
 const partColors: Record<GateType, string> = {
   switch: "#ffc76a",
@@ -517,6 +540,8 @@ export function LogicBuilder() {
   const [bounds, setBounds] = useState({ left: -2000, top: -2000, right: 3000, bottom: 2500 });
   const canvasWidth = bounds.right - bounds.left;
   const canvasHeight = bounds.bottom - bounds.top;
+  const renderScale = Math.max(0.02, Math.min(zoom, 16));
+  const boardRatio = zoom / renderScale;
   const previousBounds = useRef(bounds);
   useEffect(() => {
     if (!displayNodes.length) return;
@@ -583,35 +608,62 @@ export function LogicBuilder() {
   });
   const restoreViewport = (state?: ViewportState) => {
     const next = state ?? { zoom: 1, left: 0, top: 0 };
+    const viewport = boardViewport.current;
+    const width = viewport?.clientWidth || 900;
+    const height = viewport?.clientHeight || 520;
+    const framed = frameBounds(next.left / next.zoom, next.top / next.zoom,
+      next.zoom, width, height);
+    const target = {
+      left: (next.left / next.zoom - framed.left) * next.zoom,
+      top: (next.top / next.zoom - framed.top) * next.zoom,
+    };
     zoomRef.current = next.zoom;
+    queuedScroll.current = target;
     setZoom(next.zoom);
+    setBounds(framed);
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (boardViewport.current) {
-        boardViewport.current.scrollLeft = next.left - bounds.left * next.zoom;
-        boardViewport.current.scrollTop = next.top - bounds.top * next.zoom;
+      if (viewport) {
+        viewport.scrollLeft = target.left;
+        viewport.scrollTop = target.top;
+        syncGrid(viewport, next.zoom, framed);
       }
+      queuedScroll.current = null;
     }));
   };
   useLayoutEffect(() => {
     const previous = previousBounds.current;
     const viewport = boardViewport.current;
     if (viewport && previous !== bounds) {
-      viewport.scrollLeft += (previous.left - bounds.left) * zoomRef.current;
-      viewport.scrollTop += (previous.top - bounds.top) * zoomRef.current;
+      if (queuedScroll.current) {
+        viewport.scrollLeft = queuedScroll.current.left;
+        viewport.scrollTop = queuedScroll.current.top;
+      } else {
+        viewport.scrollLeft += (previous.left - bounds.left) * zoomRef.current;
+        viewport.scrollTop += (previous.top - bounds.top) * zoomRef.current;
+      }
     }
+    if (viewport) syncGrid(viewport, zoomRef.current, bounds);
     previousBounds.current = bounds;
-  }, [bounds]);
-  const growCanvas = () => {
+  }, [bounds, zoom]);
+  const recenterCanvas = () => {
     const viewport = boardViewport.current;
     if (!viewport) return;
-    const margin = 500;
-    const step = 2000;
-    setBounds((current) => ({
-      left: viewport.scrollLeft < margin ? current.left - step : current.left,
-      top: viewport.scrollTop < margin ? current.top - step : current.top,
-      right: viewport.scrollWidth - viewport.clientWidth - viewport.scrollLeft < margin ? current.right + step : current.right,
-      bottom: viewport.scrollHeight - viewport.clientHeight - viewport.scrollTop < margin ? current.bottom + step : current.bottom,
-    }));
+    syncGrid(viewport, zoomRef.current, bounds);
+    const margin = Math.min(500, viewport.clientWidth / 2, viewport.clientHeight / 2);
+    const stepX = (2 * viewport.clientWidth) / zoomRef.current;
+    const stepY = (2 * viewport.clientHeight) / zoomRef.current;
+    setBounds((current) => {
+      const shiftX = viewport.scrollLeft < margin ? -stepX :
+        viewport.scrollWidth - viewport.clientWidth - viewport.scrollLeft < margin ? stepX : 0;
+      const shiftY = viewport.scrollTop < margin ? -stepY :
+        viewport.scrollHeight - viewport.clientHeight - viewport.scrollTop < margin ? stepY : 0;
+      return shiftX || shiftY ? {
+        left: current.left + shiftX,
+        top: current.top + shiftY,
+        right: current.right + shiftX,
+        bottom: current.bottom + shiftY,
+      } : current;
+    });
   };
   const queuedScroll = useRef<{ left: number; top: number } | null>(null);
   const zoomFrame = useRef<number | null>(null);
@@ -649,24 +701,31 @@ export function LogicBuilder() {
       const rect = viewport.getBoundingClientRect();
       const left = queuedScroll.current?.left ?? viewport.scrollLeft;
       const top = queuedScroll.current?.top ?? viewport.scrollTop;
-      const pointX = (anchorX - rect.left + left) / old;
-      const pointY = (anchorY - rect.top + top) / old;
+      const pointX = bounds.left + (anchorX - rect.left + left) / old;
+      const pointY = bounds.top + (anchorY - rect.top + top) / old;
+      const visibleLeft = pointX - (destinationX - rect.left) / next;
+      const visibleTop = pointY - (destinationY - rect.top) / next;
+      const framed = frameBounds(visibleLeft, visibleTop, next,
+        viewport.clientWidth || rect.width || 900,
+        viewport.clientHeight || rect.height || 520);
       const target = {
-        left: pointX * next - (destinationX - rect.left),
-        top: pointY * next - (destinationY - rect.top),
+        left: (visibleLeft - framed.left) * next,
+        top: (visibleTop - framed.top) * next,
       };
       zoomRef.current = next;
-      setZoom(next);
       queuedScroll.current = target;
+      setZoom(next);
+      setBounds(framed);
       if (zoomFrame.current !== null) cancelAnimationFrame(zoomFrame.current);
       zoomFrame.current = requestAnimationFrame(() => {
         viewport.scrollLeft = target.left;
         viewport.scrollTop = target.top;
+        syncGrid(viewport, next, framed);
         queuedScroll.current = null;
         zoomFrame.current = null;
       });
     },
-    [],
+    [bounds],
   );
   const zoomFromCenter = (next: number) => {
     const rect = boardViewport.current?.getBoundingClientRect();
@@ -683,13 +742,23 @@ export function LogicBuilder() {
     const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM,
       (viewport.clientWidth - 24) / (right - left),
       (viewport.clientHeight - 24) / (bottom - top)));
-
+    const visibleLeft = left - (viewport.clientWidth / next - (right - left)) / 2;
+    const visibleTop = top - (viewport.clientHeight / next - (bottom - top)) / 2;
+    const framed = frameBounds(visibleLeft, visibleTop, next,
+      viewport.clientWidth, viewport.clientHeight);
+    const target = {
+      left: (visibleLeft - framed.left) * next,
+      top: (visibleTop - framed.top) * next,
+    };
     zoomRef.current = next;
+    queuedScroll.current = target;
     setZoom(next);
+    setBounds(framed);
     if (zoomFrame.current !== null) cancelAnimationFrame(zoomFrame.current);
     zoomFrame.current = requestAnimationFrame(() => {
-      viewport.scrollLeft = (left - bounds.left) * next - (viewport.clientWidth - (right - left) * next) / 2;
-      viewport.scrollTop = (top - bounds.top) * next - (viewport.clientHeight - (bottom - top) * next) / 2;
+      viewport.scrollLeft = target.left;
+      viewport.scrollTop = target.top;
+      syncGrid(viewport, next, framed);
       queuedScroll.current = null;
       zoomFrame.current = null;
     });
@@ -1828,7 +1897,7 @@ export function LogicBuilder() {
             >
               −
             </button>
-            <span aria-live="polite">{Math.round(zoom * 100)}%</span>
+            <span aria-live="polite">{formatZoom(zoom)}</span>
             <button
               type="button"
               onClick={() => zoomFromCenter(zoomRef.current * 1.25)}
@@ -1855,7 +1924,7 @@ export function LogicBuilder() {
           </div>
           <div
             ref={boardViewport}
-            onScroll={growCanvas}
+            onScroll={recenterCanvas}
             className={clsx(styles.boardScroll, !selectMode && styles.panMode)}
             onPointerDownCapture={gestureDown}
             onPointerMoveCapture={gestureMove}
@@ -1881,11 +1950,10 @@ export function LogicBuilder() {
                 ref={board}
                 className={styles.board}
                 style={{
-                  backgroundPosition: `${-bounds.left}px ${-bounds.top}px`,
-                  width: canvasWidth,
-                  height: canvasHeight,
+                  width: canvasWidth * boardRatio,
+                  height: canvasHeight * boardRatio,
                   position: "absolute",
-                  transform: `scale(${zoom})`,
+                  transform: `scale(${renderScale})`,
                   transformOrigin: "top left",
                 }}
                 role="application"
@@ -1980,7 +2048,10 @@ export function LogicBuilder() {
                     <div
                       key={group.id}
                       className={styles.circuitGroup}
-                      style={{ left: left - bounds.left, top: top - bounds.top, width: right - left, height: bottom - top }}
+                      style={{ left: (left - bounds.left) * boardRatio,
+                        top: (top - bounds.top) * boardRatio,
+                        width: (right - left) * boardRatio,
+                        height: (bottom - top) * boardRatio }}
                       aria-label={`${group.label} circuit boundary`}
                     >
                       <span>{group.label}</span>
@@ -2528,10 +2599,10 @@ export function LogicBuilder() {
                   <div
                     className={styles.marquee}
                     style={{
-                      left: Math.min(marquee.x, marquee.endX) - bounds.left,
-                      top: Math.min(marquee.y, marquee.endY) - bounds.top,
-                      width: Math.abs(marquee.endX - marquee.x),
-                      height: Math.abs(marquee.endY - marquee.y),
+                      left: (Math.min(marquee.x, marquee.endX) - bounds.left) * boardRatio,
+                      top: (Math.min(marquee.y, marquee.endY) - bounds.top) * boardRatio,
+                      width: Math.abs(marquee.endX - marquee.x) * boardRatio,
+                      height: Math.abs(marquee.endY - marquee.y) * boardRatio,
                     }}
                   />
                 )}

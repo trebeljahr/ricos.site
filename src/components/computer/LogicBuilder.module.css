@@ -178,3 +178,5 @@
 .node.topPorts:not(:has(.moduleBody)) .nodeNameRow{box-sizing:border-box;padding-right:28px}
 .portOnRight .inputPortLabel{left:auto;right:15px;text-align:right}
 .portOnLeft .outputPortLabel{right:auto;left:15px;text-align:left}
+.boardScroll{background-color:#111b2e;background-image:radial-gradient(circle,#8298c153 0 1px,transparent 1.4px)}
+.board{background:transparent}

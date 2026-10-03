@@ -10,6 +10,20 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("circuit depth", () => {
+  it("starts with clean buses and restores them with Clean up wiring", () => {
+    render(<LogicBuilder />);
+    expect(screen.getByRole("button", { name: "Hide buses" }).getAttribute("aria-pressed")).toBe(
+      "true",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Simple wiring" }));
+    expect(screen.getByRole("button", { name: "Fan-out buses" }).getAttribute("aria-pressed")).toBe(
+      "false",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Clean up wiring" }));
+    expect(screen.getByRole("button", { name: "Hide buses" }).getAttribute("aria-pressed")).toBe(
+      "true",
+    );
+  });
   it("adds example black boxes from Parts and toggles number input bits", () => {
     render(<LogicBuilder />);
     const parts = screen.getByLabelText("Gate palette");

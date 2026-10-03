@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BLUEPRINT_FAMILIES,
   BLUEPRINT_RECIPES,
@@ -27,7 +27,7 @@ import {
   WIRE_COLORS,
   type WireColor,
 } from "../../lib/computer/logic";
-import { simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
+import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
 import { GateSymbol } from "./GateSymbol";
 import { ImplementationView } from "./ImplementationView";
 import styles from "./LogicBuilder.module.css";
@@ -76,10 +76,8 @@ type WireDraft = {
   originX: number;
   originY: number;
 };
-const defaultWireColor = (id: string): WireColor =>
-  wireColorNames[
-    [...id].reduce((sum, char) => sum + char.charCodeAt(0), 0) % wireColorNames.length
-  ];
+const defaultWireColor = (id: string, nodes: Node[]): WireColor =>
+  wireColorNames[Math.max(0, nodes.findIndex((node) => node.id === id)) % wireColorNames.length];
 const palette: GateType[] = [
   "switch",
   "pulse",
@@ -141,7 +139,8 @@ export function LogicBuilder() {
   const [pending, setPending] = useState<{ from: string; output: number } | null>(null);
   const [wireDraft, setWireDraft] = useState<WireDraft | null>(null);
   const [selectedWire, setSelectedWire] = useState<string | null>(null);
-  const [tidyWiring, setTidyWiring] = useState(false);
+  const [tidyWiring, setTidyWiring] = useState(true);
+  const [busWiring, setBusWiring] = useState(true);
   const [selected, setSelected] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [circuitSearch, setCircuitSearch] = useState("");
@@ -172,6 +171,36 @@ export function LogicBuilder() {
   const canvasHeight = Math.max(
     HEIGHT,
     ...circuit.nodes.map((item) => item.y + nodeHeight(item) + 50),
+  );
+  const routes = useMemo(
+    () =>
+      routeCircuitWires(
+        circuit.wires.flatMap((wire) => {
+          const from = circuit.nodes.find((node) => node.id === wire.from);
+          const to = circuit.nodes.find((node) => node.id === wire.to);
+          return from && to
+            ? [
+                {
+                  id: wire.id,
+                  from: wire.from,
+                  to: wire.to,
+                  output: wire.output ?? 0,
+                  start: { x: from.x + NODE_WIDTH, y: outY(from, wire.output ?? 0) },
+                  end: { x: to.x, y: portY(to, wire.input) },
+                },
+              ]
+            : [];
+        }),
+        circuit.nodes.map((node) => ({
+          id: node.id,
+          x: node.x,
+          y: node.y,
+          width: NODE_WIDTH,
+          height: nodeHeight(node),
+        })),
+        busWiring,
+      ),
+    [circuit.nodes, circuit.wires, busWiring],
   );
   const [drag, setDrag] = useState<{
     x: number;
@@ -557,7 +586,7 @@ export function LogicBuilder() {
       return;
     }
     const sourceColor =
-      circuit.wires.find((wire) => wire.from === from)?.color ?? defaultWireColor(from);
+      circuit.wires.find((wire) => wire.from === from)?.color ?? defaultWireColor(from, circuit.nodes);
     setCircuit((current) => ({
       ...current,
       wires: [
@@ -1003,9 +1032,30 @@ export function LogicBuilder() {
           <button
             type="button"
             aria-pressed={tidyWiring}
-            onClick={() => setTidyWiring((value) => !value)}
+            onClick={() => {
+              const next = !tidyWiring;
+              setTidyWiring(next);
+              setBusWiring(next);
+            }}
           >
             {tidyWiring ? "Simple wiring" : "Clean up wiring"}
+          </button>
+          <button
+            type="button"
+            aria-pressed={busWiring}
+            title="Group connections from one output. Click a bus, then an input, to add a branch."
+            onClick={() => {
+              const next = !busWiring;
+              setBusWiring(next);
+              setTidyWiring(true);
+              setMessage(
+                next
+                  ? "Fan-out buses group wires from one output. Click a bus, then an input, to add a branch."
+                  : "Buses hidden. Clean wiring remains on.",
+              );
+            }}
+          >
+            {busWiring ? "Hide buses" : "Fan-out buses"}
           </button>
           <label className={styles.rate}>
             Speed{" "}
@@ -1246,7 +1296,56 @@ export function LogicBuilder() {
                   preserveAspectRatio="none"
                   aria-label="Circuit wires"
                 >
-                  {circuit.wires.map((wire, index) => {
+                {busWiring &&
+                  routes.buses.map((bus) => {
+                    const from = circuit.nodes.find((node) => node.id === bus.from);
+                    const color = WIRE_COLORS[defaultWireColor(bus.from, circuit.nodes)];
+                    const live =
+                      snapshot.outputs[bus.from]?.[bus.output] ?? snapshot.values[bus.from];
+                    return (
+                      <g key={bus.key} style={{ "--wire-color": color } as React.CSSProperties}>
+                        <path
+                          d={bus.path}
+                          className={styles.busHit}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`Add branch from ${from?.label || "output"} bus`}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setPending({ from: bus.from, output: bus.output });
+                            setMessage("Bus selected. Click an input to add a branch.");
+                          }}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              setPending({ from: bus.from, output: bus.output });
+                              setMessage("Bus selected. Click an input to add a branch.");
+                            }
+                          }}
+                        />
+                        <path d={bus.path} className={clsx(styles.busWire, live && styles.live)} />
+                        {bus.crossings.map((crossing) => (
+                          <circle
+                            key={`${crossing.x}:${crossing.y}`}
+                            cx={crossing.x}
+                            cy={crossing.y}
+                            r={7}
+                            className={styles.busCrossing}
+                          />
+                        ))}
+                        {bus.taps.map((tap) => (
+                          <circle
+                            key={tap.wireId}
+                            cx={tap.x}
+                            cy={tap.y}
+                            r={4}
+                            className={styles.busTap}
+                          />
+                        ))}
+                      </g>
+                    );
+                  })}
+                  {circuit.wires.map((wire) => {
                     const from = circuit.nodes.find((node) => node.id === wire.from);
                     const to = circuit.nodes.find((node) => node.id === wire.to);
                     if (!from || !to) return null;
@@ -1255,22 +1354,11 @@ export function LogicBuilder() {
                       y1 = outY(from, wire.output ?? 0),
                       x2 = to.x,
                       y2 = portY(to, wire.input);
-                    const d = tidyWiring
-                      ? wirePath(
-                          { x: x1, y: y1 },
-                          { x: x2, y: y2 },
-                          circuit.nodes
-                            .filter((node) => node.id !== from.id && node.id !== to.id)
-                            .map((node) => ({
-                              x: node.x,
-                              y: node.y,
-                              width: NODE_WIDTH,
-                              height: nodeHeight(node),
-                            })),
-                          ((index % 5) - 2) * 10,
-                        )
-                      : simpleWirePath({ x: x1, y: y1 }, { x: x2, y: y2 });
-                    const color = WIRE_COLORS[wire.color ?? defaultWireColor(wire.from)];
+                    const d =
+                      tidyWiring || busWiring || x2 <= x1
+                        ? routes.paths[wire.id]
+                        : simpleWirePath({ x: x1, y: y1 }, { x: x2, y: y2 });
+                    const color = WIRE_COLORS[wire.color ?? defaultWireColor(wire.from, circuit.nodes)];
                     return (
                       <g key={wire.id} style={{ "--wire-color": color } as React.CSSProperties}>
                         <path
@@ -1331,7 +1419,7 @@ export function LogicBuilder() {
                   {previewStart && previewEnd && wireDraft && (
                     <path
                       d={
-                        tidyWiring
+                        tidyWiring || previewEnd.x <= previewStart.x
                           ? wirePath(previewStart, previewEnd)
                           : simpleWirePath(previewStart, previewEnd)
                       }
@@ -1341,9 +1429,9 @@ export function LogicBuilder() {
                           "--wire-color":
                             WIRE_COLORS[
                               wireDraft.from
-                                ? defaultWireColor(wireDraft.from)
+                                ? defaultWireColor(wireDraft.from, circuit.nodes)
                                 : draftTarget
-                                  ? defaultWireColor(draftTarget.id)
+                                  ? defaultWireColor(draftTarget.id, circuit.nodes)
                                   : "cyan"
                             ],
                         } as React.CSSProperties
@@ -1819,7 +1907,7 @@ export function LogicBuilder() {
                     type="button"
                     className={clsx(
                       styles.colorSwatch,
-                      (selectedWireData.color ?? defaultWireColor(selectedWireData.from)) ===
+                      (selectedWireData.color ?? defaultWireColor(selectedWireData.from, circuit.nodes)) ===
                         color && styles.colorSelected,
                     )}
                     style={{ backgroundColor: WIRE_COLORS[color] }}

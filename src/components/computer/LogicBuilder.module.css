@@ -36,3 +36,6 @@
 .canvasControls{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 10px;background:#1b2742;border-bottom:1px solid #455677;color:#dce8f8}.canvasControls button{min-width:29px;padding:4px 7px;border:1px solid #607899;border-radius:4px;background:#2a3b5e;color:#e8f2ff;font-size:11px;font-weight:700;cursor:pointer}.canvasControls button:hover,.canvasControls button[aria-pressed="true"]{border-color:#b7a1ff;background:#465784}.canvasControls span{min-width:39px;text-align:center;font:700 11px ui-monospace,monospace}.canvasControls small{margin-left:auto;color:#aebfdb;font-size:10px}.boardScroll{min-width:0;max-width:100%;touch-action:none;overscroll-behavior:contain}.panMode,.panMode .board,.panMode .node{cursor:grab}.panMode:active,.panMode:active .board,.panMode:active .node{cursor:grabbing}
 
 .nodeType{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+
+.busHit{fill:none;stroke:transparent;stroke-width:20;pointer-events:stroke;cursor:crosshair}.busWire{fill:none;stroke:var(--wire-color);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;opacity:.8;pointer-events:none}.busWire.live{opacity:1;filter:drop-shadow(0 0 6px var(--wire-color))}.busTap{fill:#17233a;stroke:var(--wire-color);stroke-width:2;pointer-events:none}
+.busCrossing{fill:#111b2e;pointer-events:none}

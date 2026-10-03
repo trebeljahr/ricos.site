@@ -156,7 +156,7 @@
 .moduleBody .moduleBits{font-size:9px;white-space:nowrap}
 .nodeBody:has(.digitalScreen){gap:6px}
 /* Task groups keep edit, simulation, view, and file actions together. */
-.toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"identity metrics" "transport transport";align-items:center;column-gap:18px;row-gap:10px;padding:11px 18px}
+.toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"identity file metrics" "transport transport transport";align-items:center;column-gap:18px;row-gap:10px;padding:11px 18px}
 .identity{grid-area:identity;min-width:0}
 .circuitName{width:100%;min-width:0;padding:2px 4px;margin-left:-4px;color:#e7edf3;background:transparent;border:1px solid transparent;border-radius:4px;font:700 19px/1.5 ui-sans-serif,system-ui,sans-serif;text-overflow:ellipsis}
 .circuitName:hover{border-color:#465879}
@@ -169,10 +169,12 @@
 .toolGroupLabel{display:block;width:100%;color:#aebbd3;font-size:10px;font-weight:750;letter-spacing:.08em;text-transform:uppercase}
 .toolGroup button{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:6px 8px}
 .toolGroup button svg{flex:none}
+.fileGroup{grid-area:file;justify-self:end;flex-wrap:nowrap;padding:0;border:0}
+.fileGroup .toolGroupLabel{width:auto;margin-right:4px}
 .layout{grid-template-columns:264px minmax(0,1fr)}
 .layoutWithInspector{grid-template-columns:264px minmax(0,1fr) 205px}
 @media(max-width:1100px){.layout{grid-template-columns:228px minmax(0,1fr)}.layoutWithInspector{grid-template-columns:228px minmax(0,1fr) 180px}}
-@media(max-width:650px){.layout,.layoutWithInspector{display:flex;flex-direction:column}.transport{align-items:flex-start}.toolGroup{border-right:0;border-bottom:1px solid #465879;padding-bottom:9px}}
+@media(max-width:650px){.toolbar{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"identity metrics" "file file" "transport transport"}.fileGroup{justify-self:start;flex-wrap:wrap;gap:6px;padding-bottom:9px;border-bottom:1px solid #465879}.fileGroup .toolGroupLabel{width:100%}.layout,.layoutWithInspector{display:flex;flex-direction:column}.transport{align-items:flex-start}.transport .toolGroup{border-right:0;border-bottom:1px solid #465879;padding-bottom:9px}}
 .node.topPorts:has(.moduleBody) .nodeActions{top:10px;right:18px}
 .node.topPorts:not(:has(.moduleBody)) .nodeActions{top:24px;right:20px}
 .node.topPorts:not(:has(.moduleBody)) .nodeNameRow{box-sizing:border-box;padding-right:28px}

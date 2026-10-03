@@ -1614,6 +1614,31 @@ export function LogicBuilder() {
             }}
           />
         </div>
+        <div className={clsx(styles.toolGroup, styles.fileGroup)} role="group" aria-label="Circuit files">
+          <span className={styles.toolGroupLabel}>File</span>
+          <button
+            type="button"
+            className={styles.saveAction}
+            onClick={() => {
+              setSaveName(circuit.name);
+              setDialog("save");
+            }}
+          >
+            <ActionIcon name="save" /> Save
+          </button>
+          <button type="button" onClick={exportCircuit}><ActionIcon name="export" /> Export JSON</button>
+          <button type="button" onClick={() => inputFile.current?.click()}><ActionIcon name="import" /> Import JSON</button>
+          <input
+            ref={inputFile}
+            type="file"
+            accept=".json,application/json"
+            hidden
+            onChange={(event) => {
+              void importCircuit(event.target.files?.[0]);
+              event.target.value = "";
+            }}
+          />
+        </div>
         <div className={styles.transport}>
 
           <details className={styles.learningMenu} ref={learningMenu}>
@@ -1756,31 +1781,6 @@ export function LogicBuilder() {
           >
             <ActionIcon name="bus" /> {busWiring ? "Hide buses" : "Fan-out buses"}
           </button>
-          </div>
-          <div className={styles.toolGroup} role="group" aria-label="Circuit files">
-            <span className={styles.toolGroupLabel}>File</span>
-          <button
-            type="button"
-            className={styles.saveAction}
-            onClick={() => {
-              setSaveName(circuit.name);
-              setDialog("save");
-            }}
-          >
-            <ActionIcon name="save" /> Save
-          </button>
-          <button type="button" onClick={exportCircuit}><ActionIcon name="export" /> Export JSON</button>
-          <button type="button" onClick={() => inputFile.current?.click()}><ActionIcon name="import" /> Import JSON</button>
-          <input
-            ref={inputFile}
-            type="file"
-            accept=".json,application/json"
-            hidden
-            onChange={(event) => {
-              void importCircuit(event.target.files?.[0]);
-              event.target.value = "";
-            }}
-          />
           </div>
         </div>
         {hasClock && <div className={styles.metrics}>

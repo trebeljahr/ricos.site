@@ -62,6 +62,8 @@ const partColors: Record<GateType, string> = {
   nand: "#ff8f87",
   nor: "#ff8f87",
   dff: "#b9e976",
+  srlatch: "#b9e976",
+  dlatch: "#b9e976",
   module: "#ffc76a",
 };
 type WireDraft = {
@@ -100,6 +102,8 @@ const palette: GateType[] = [
   "nand",
   "nor",
   "dff",
+  "srlatch",
+  "dlatch",
 ];
 const clone = (circuit: Circuit): Circuit => JSON.parse(JSON.stringify(circuit));
 type ViewLevel = { parent: Circuit; via: string; moduleId?: string };
@@ -141,7 +145,7 @@ export function LogicBuilder() {
   const [selected, setSelected] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [circuitSearch, setCircuitSearch] = useState("");
-  const [circuitFamily, setCircuitFamily] = useState<BlueprintFamily | "examples">("transistor");
+  const [circuitFamily, setCircuitFamily] = useState<BlueprintFamily | "examples" | "storage">("transistor");
   const [showVdd, setShowVdd] = useState(true);
   const [showGround, setShowGround] = useState(true);
   const [implementationMode, setImplementationMode] = useState(false);
@@ -833,7 +837,11 @@ export function LogicBuilder() {
   const library =
     circuitFamily === "examples"
       ? PRESETS
-      : Object.fromEntries(
+      : circuitFamily === "storage"
+        ? Object.fromEntries(Object.entries(PRESETS).filter(([name]) =>
+            /latch|flip-flop|register|counter/i.test(name),
+          ))
+        : Object.fromEntries(
           Object.entries(BLUEPRINTS).filter(([name]) =>
             name.endsWith(`from ${BLUEPRINT_FAMILIES[circuitFamily].suffix}`),
           ),
@@ -1601,8 +1609,8 @@ export function LogicBuilder() {
         <aside className={styles.inspector} aria-label="Circuit library and controls">
           <h2>Circuitry library</h2>
           <p>
-            Click to open a blueprint. Drag to add the full circuit. Gate blueprints also have black
-            box parts.
+            Click to open a blueprint. Drag to add the full circuit. Use Black box to place an
+            expandable part, including storage circuits.
           </p>
           <div className={styles.familyTabs} role="group" aria-label="Circuit construction">
             {(Object.keys(BLUEPRINT_FAMILIES) as BlueprintFamily[]).map((family) => (
@@ -1622,11 +1630,20 @@ export function LogicBuilder() {
             >
               Examples
             </button>
+            <button
+              type="button"
+              aria-pressed={circuitFamily === "storage"}
+              onClick={() => setCircuitFamily("storage")}
+            >
+              Storage
+            </button>
           </div>
           <p className={styles.libraryNote}>
             {circuitFamily === "examples"
               ? "Open a larger example circuit to explore its wiring."
-              : BLUEPRINT_FAMILIES[circuitFamily].note}
+              : circuitFamily === "storage"
+                ? "Place a storage black box, then double-click it to inspect and edit its circuit."
+                : BLUEPRINT_FAMILIES[circuitFamily].note}
           </p>
           <input
             className={styles.search}
@@ -1652,7 +1669,7 @@ export function LogicBuilder() {
                   {preset.name}
                   <span>↗</span>
                 </button>
-                {circuitFamily !== "examples" && (
+                {circuitFamily !== "examples" && circuitFamily !== "storage" && (
                   <span className={styles.recipe}>
                     {
                       BLUEPRINT_RECIPES[circuitFamily][

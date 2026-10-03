@@ -61,7 +61,7 @@ export function GateSymbol({ type }: { type: GateType }) {
           <text x="32" y="27" textAnchor="middle" stroke="none" fill="currentColor" fontSize="19" fontFamily="monospace">{type === "display4" ? "15" : "255"}</text>
         </>
       )}
-      {type === "dff" && (
+      {(type === "dff" || type === "srlatch" || type === "dlatch") && (
         <>
           <rect x="9" y="4" width="46" height="34" rx="2" />
           <text
@@ -73,9 +73,9 @@ export function GateSymbol({ type }: { type: GateType }) {
             fontSize="16"
             fontWeight="700"
           >
-            D
+            {type === "srlatch" ? "SR" : "D"}
           </text>
-          <path d="M9 28 L16 32 L9 36" />
+          {type === "dff" && <path d="M9 28 L16 32 L9 36" />}
         </>
       )}
       {(type === "nmos" || type === "pmos") && (

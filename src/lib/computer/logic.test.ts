@@ -37,6 +37,38 @@ describe("logic circuit engine", () => {
       expect(validateCircuit(circuit), example.name).not.toBeNull();
     }
   });
+  it("keeps storage blueprints valid and interactive as black boxes", () => {
+    for (const name of ["SR latch", "Gated SR latch", "D latch", "JK latch", "T latch", "D flip-flop", "SR flip-flop", "JK flip-flop", "T flip-flop", "8-bit shift register", "8-bit binary counter"]) {
+      const inner = PRESETS[name];
+      expect(validateCircuit(inner), name).not.toBeNull();
+      const box: Circuit = {
+        name: `${name} box`,
+        nodes: [{ id: "box", type: "module", x: 100, y: 100, module: inner }],
+        wires: [],
+      };
+      expect(validateCircuit(box), name).not.toBeNull();
+    }
+  });
+  it("holds latches and samples flip-flops at the right time", () => {
+    let latch = initialSnapshot();
+    const d = PRESETS["D latch"];
+    latch = step(d, latch, false, {}, { d: true, control: false });
+    expect(latch.values.q).toBe(false);
+    latch = step(d, latch, false, {}, { d: true, control: true });
+    expect(latch.values.q).toBe(true);
+    latch = step(d, latch, false, {}, { d: false, control: false });
+    expect(latch.values.q).toBe(true);
+    let flip = initialSnapshot();
+    const t = PRESETS["T flip-flop"];
+    flip = step(t, flip, false, {}, { t: true });
+    flip = step(t, flip, true, {}, { t: true });
+    expect(flip.values.q).toBe(true);
+    flip = step(t, flip, true, {}, { t: true });
+    expect(flip.values.q).toBe(true);
+    flip = step(t, flip, false, {}, { t: true });
+    flip = step(t, flip, true, {}, { t: true });
+    expect(flip.values.q).toBe(false);
+  });
   it("compares two 8-bit values", () => {
     const circuit = PRESETS["8-bit magnitude comparator"];
     expect(validateCircuit(circuit)).not.toBeNull();

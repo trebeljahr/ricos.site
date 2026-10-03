@@ -20,6 +20,8 @@ export type GateType =
   | "nand"
   | "nor"
   | "dff"
+  | "srlatch"
+  | "dlatch"
   | "module";
 export type Node = {
   id: string;
@@ -81,6 +83,8 @@ export const INPUTS: Record<GateType, number> = {
   nand: 2,
   nor: 2,
   dff: 2,
+  srlatch: 2,
+  dlatch: 2,
   module: 0,
 };
 export const LABELS: Record<GateType, string> = {
@@ -105,6 +109,8 @@ export const LABELS: Record<GateType, string> = {
   nand: "NAND",
   nor: "NOR",
   dff: "D FLIP-FLOP",
+  srlatch: "SR LATCH",
+  dlatch: "D LATCH",
   module: "CIRCUIT",
 };
 export const moduleInputs = (circuit: Circuit) =>
@@ -165,6 +171,8 @@ export function step(
       outputs[node.id] = Array.from({ length: bits }, (_, bit) => Boolean(((node.numberValue ?? 0) >> bit) & 1));
     }
     if (node.type === "dff") values[node.id] = Boolean(previous.memory[node.id]);
+    if (node.type === "srlatch") values[node.id] = Boolean(previous.memory[node.id]);
+    if (node.type === "dlatch") values[node.id] = Boolean(previous.memory[node.id]);
   }
   let unstable = false;
   const inputs = (node: Node) =>
@@ -259,8 +267,21 @@ export function step(
     if (clock && !previous.lastClock[node.id]) memory[node.id] = data;
     lastClock[node.id] = clock;
   }
+  for (const node of circuit.nodes) {
+    if (node.type !== "srlatch") continue;
+    const [set, reset] = inputs(node);
+    if (set && reset) unstable = true;
+    else if (set) memory[node.id] = true;
+    else if (reset) memory[node.id] = false;
+  }
+  for (const node of circuit.nodes) {
+    if (node.type !== "dlatch") continue;
+    const [data, enable] = inputs(node);
+    if (enable) memory[node.id] = data;
+  }
   for (const node of circuit.nodes)
-    if (node.type === "dff") values[node.id] = Boolean(memory[node.id]);
+    if (node.type === "dff" || node.type === "srlatch" || node.type === "dlatch")
+      values[node.id] = Boolean(memory[node.id]);
   settle();
   return { values, memory, lastClock, outputs, modules, unstable };
 }
@@ -422,6 +443,112 @@ function registerCircuit(kind: "shift" | "counter"): Circuit {
   }
   return circuit;
 }
+
+type StorageKind = "sr-latch" | "gated-sr-latch" | "d-latch" | "jk-latch" | "t-latch" | "d-flip-flop" | "sr-flip-flop" | "jk-flip-flop" | "t-flip-flop";
+
+function storageCircuit(kind: StorageKind): Circuit {
+  const names: Record<StorageKind, string> = {
+    "sr-latch": "SR latch",
+    "gated-sr-latch": "Gated SR latch",
+    "d-latch": "D latch",
+    "jk-latch": "JK latch",
+    "t-latch": "T latch",
+    "d-flip-flop": "D flip-flop",
+    "sr-flip-flop": "SR flip-flop",
+    "jk-flip-flop": "JK flip-flop",
+    "t-flip-flop": "T flip-flop",
+  };
+  const circuit: Circuit = { name: names[kind], nodes: [], wires: [] };
+  const add = (id: string, type: GateType, x: number, y: number, label: string) => {
+    circuit.nodes.push(node(id, type, x, y, label));
+    return id;
+  };
+  const connect = (from: string, to: string, input = 0) => circuit.wires.push(wire(from, to, input));
+  const isLatch = kind.endsWith("latch");
+  const clockName = isLatch ? "ENABLE" : "CLOCK";
+  const core = kind === "sr-latch" || kind === "gated-sr-latch" || kind === "d-latch" ? "srlatch" : kind === "jk-latch" || kind === "t-latch" ? "dlatch" : "dff";
+  add("core", core, 570, 195, core === "srlatch" ? "SET / RESET" : core === "dlatch" ? "LEVEL STORAGE" : "EDGE STORAGE");
+  add("q", "lamp", 810, 170, "Q");
+  add("notQ", "not", 770, 310, "INVERT Q");
+  add("qbar", "lamp", 960, 310, "Q̅");
+  connect("core", "q");
+  connect("core", "notQ");
+  connect("notQ", "qbar");
+
+  if (kind === "sr-latch" || kind === "gated-sr-latch" || kind === "sr-flip-flop") {
+    add("s", "switch", 40, 80, "SET");
+    add("r", "switch", 40, 300, "RESET");
+    if (kind === "sr-latch") {
+      connect("s", "core");
+      connect("r", "core", 1);
+    } else {
+      add("control", isLatch ? "switch" : "clock", 40, 440, clockName);
+      if (kind === "gated-sr-latch") {
+        add("setGate", "and", 300, 90, "SET WHEN ENABLED");
+        add("resetGate", "and", 300, 310, "RESET WHEN ENABLED");
+        connect("s", "setGate");
+        connect("control", "setGate", 1);
+        connect("r", "resetGate");
+        connect("control", "resetGate", 1);
+        connect("setGate", "core");
+        connect("resetGate", "core", 1);
+      } else {
+        add("notR", "not", 245, 310, "NOT RESET");
+        add("hold", "and", 385, 310, "KEEP Q");
+        add("next", "or", 440, 120, "NEXT STATE");
+        connect("r", "notR");
+        connect("core", "hold");
+        connect("notR", "hold", 1);
+        connect("s", "next");
+        connect("hold", "next", 1);
+        connect("next", "core");
+        connect("control", "core", 1);
+      }
+    }
+  } else {
+    add("control", isLatch ? "switch" : "clock", 40, 430, clockName);
+    if (kind !== "d-latch") connect("control", "core", 1);
+    if (kind === "d-latch") {
+      add("d", "switch", 40, 100, "DATA");
+      add("notD", "not", 210, 280, "NOT DATA");
+      add("setGate", "and", 365, 100, "SET WHEN ENABLED");
+      add("resetGate", "and", 365, 300, "RESET WHEN ENABLED");
+      connect("d", "notD");
+      connect("d", "setGate");
+      connect("control", "setGate", 1);
+      connect("notD", "resetGate");
+      connect("control", "resetGate", 1);
+      connect("setGate", "core");
+      connect("resetGate", "core", 1);
+    } else if (kind === "d-flip-flop") {
+      add("d", "switch", 40, 100, "DATA");
+      connect("d", "core");
+    } else if (kind === "t-latch" || kind === "t-flip-flop") {
+      add("t", "switch", 40, 100, "TOGGLE");
+      add("next", "xor", 320, 150, "Q XOR T");
+      connect("core", "next");
+      connect("t", "next", 1);
+      connect("next", "core");
+    } else {
+      add("j", "switch", 40, 80, "J");
+      add("k", "switch", 40, 280, "K");
+      add("notK", "not", 205, 280, "NOT K");
+      add("set", "and", 330, 80, "J AND NOT Q");
+      add("hold", "and", 330, 290, "Q AND NOT K");
+      add("next", "or", 465, 175, "NEXT STATE");
+      connect("k", "notK");
+      connect("j", "set");
+      connect("notQ", "set", 1);
+      connect("core", "hold");
+      connect("notK", "hold", 1);
+      connect("set", "next");
+      connect("hold", "next", 1);
+      connect("next", "core");
+    }
+  }
+  return circuit;
+}
+
 export const PRESETS: Record<string, Circuit> = {
   "Half adder": {
     name: "Half adder",
@@ -507,6 +634,13 @@ export const PRESETS: Record<string, Circuit> = {
   "8-bit magnitude comparator": comparisonCircuit(),
   "8-bit shift register": registerCircuit("shift"),
   "8-bit binary counter": registerCircuit("counter"),
+  ...Object.fromEntries(
+    (["sr-latch", "gated-sr-latch", "d-latch", "jk-latch", "t-latch", "d-flip-flop", "sr-flip-flop", "jk-flip-flop", "t-flip-flop"] as StorageKind[])
+      .map((kind) => {
+        const circuit = storageCircuit(kind);
+        return [circuit.name, circuit];
+      }),
+  ),
 };
 
 export const GATE_NAMES = ["not", "and", "or", "nand", "nor", "xor", "xnor"] as const;

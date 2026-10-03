@@ -146,8 +146,8 @@ const nodeHeight = (node: Node) =>
     ? Math.max(NODE_HEIGHT, 30 + Math.max(inputCount(node), outputCount(node)) * 25)
     : ["input4", "input8", "display4", "display8"].includes(node.type)
       ? Math.max(NODE_HEIGHT, 54 + Math.max(inputCount(node), outputCount(node)) * 24)
-      : node.type === "switch" && node.label
-        ? 96
+      : ["lamp", "switch", "pulse"].includes(node.type)
+        ? 100
       : NODE_HEIGHT;
 type PortSide = NonNullable<Node["inputSide"]>;
 const inputSide = (node: Node): PortSide => node.inputSide ??

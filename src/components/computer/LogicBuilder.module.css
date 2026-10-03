@@ -39,6 +39,7 @@
 .nodeType{max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .nodeNameRow{z-index:4;display:flex;align-items:center;justify-content:center;gap:3px;width:100%;min-height:18px;pointer-events:none}
 .nodePartName,.nodeLabel{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nodePartName{flex-shrink:0}
 .nodeLabel{color:#b8c9df;font-size:10px;font-weight:650;cursor:text;pointer-events:auto}
 .node .editName{flex:none;display:grid;place-items:center;width:20px;height:18px;border:0;background:transparent;color:#b8c9df;padding:1px;cursor:pointer;pointer-events:auto}
 .node .editName svg{width:15px;height:15px}

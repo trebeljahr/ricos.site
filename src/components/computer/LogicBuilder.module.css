@@ -56,3 +56,4 @@
 .moduleBody{width:72px;margin:auto;padding-left:0;padding-right:0}
 .moduleBody .nodeType{max-width:72px;overflow:hidden;text-overflow:ellipsis}
 .moduleBody .moduleBits{font-size:8px}
+.toolbar .clearCanvas{color:#ffb9b5;background:#382b43;border-color:#805468}.toolbar .clearCanvas:hover:not(:disabled){background:#553449;border-color:#ffaaa1;color:#ffe2df}

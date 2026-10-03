@@ -460,6 +460,23 @@ export function LogicBuilder() {
     snapshotRef.current = next;
     setSnapshot(next);
   };
+  const clearCanvas = () => {
+    if (!circuit.nodes.length && !circuit.wires.length) return;
+    if (!window.confirm(`Clear all ${circuit.nodes.length} parts and ${circuit.wires.length} wires from this canvas?`)) return;
+    const empty = { ...circuit, nodes: [], wires: [] };
+    circuitRef.current = empty;
+    setCircuit(empty);
+    setPending(null);
+    setWireDraft(null);
+    wireDraftRef.current = null;
+    setSelectedWire(null);
+    setSelected([]);
+    setMarquee(null);
+    setDrag(null);
+    setMenu(null);
+    resetRuntime();
+    setMessage("Canvas cleared.");
+  };
   const load = (next: Circuit) => {
     const copy = clone(next);
     setViewPath([]);
@@ -1103,6 +1120,14 @@ export function LogicBuilder() {
           </button>
           <button type="button" onClick={resetRuntime}>
             Reset
+          </button>
+          <button
+            type="button"
+            className={styles.clearCanvas}
+            onClick={clearCanvas}
+            disabled={circuit.nodes.length === 0 && circuit.wires.length === 0}
+          >
+            Clear canvas
           </button>
           <button
             type="button"

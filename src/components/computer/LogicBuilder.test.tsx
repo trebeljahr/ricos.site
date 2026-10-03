@@ -24,6 +24,23 @@ describe("circuit depth", () => {
       "true",
     );
   });
+  it("shows named sockets and a distinct ALU symbol", () => {
+    render(<LogicBuilder />);
+    const parts = screen.getByLabelText("Gate palette");
+    const aluPart = within(parts).getByRole("button", { name: "8-bit ALU" });
+    expect(aluPart.querySelector("svg")?.textContent).toBe("ALU");
+    expect(
+      within(parts).getByRole("button", { name: "8-bit binary counter" }).querySelector("svg")
+        ?.textContent,
+    ).toBe("CTR");
+    fireEvent.click(aluPart);
+    const alu = screen.getByRole("group", { name: "8-bit ALU — 8-bit ALU part" });
+    expect(within(alu).getByText("OP0")).toBeTruthy();
+    expect(within(alu).getByText("CARRY IN")).toBeTruthy();
+    expect(within(alu).getByText("OUT0")).toBeTruthy();
+    expect(within(alu).getByText("CARRY OUT")).toBeTruthy();
+    expect(screen.getByText(/00 AND, 01 OR, 10 XOR, 11 ADD/)).toBeTruthy();
+  });
   it("adds example black boxes from Parts and toggles number input bits", () => {
     render(<LogicBuilder />);
     const parts = screen.getByLabelText("Gate palette");
@@ -187,7 +204,12 @@ describe("circuit depth", () => {
     expect(spacer.style.overflow).toBe("hidden");
     expect(board.style.position).toBe("absolute");
 
-    const wheel = new WheelEvent("wheel", { bubbles: true, cancelable: true, ctrlKey: true, deltaY: 20 });
+    const wheel = new WheelEvent("wheel", {
+      bubbles: true,
+      cancelable: true,
+      ctrlKey: true,
+      deltaY: 20,
+    });
     act(() => viewport.dispatchEvent(wheel));
     expect(wheel.defaultPrevented).toBe(true);
 

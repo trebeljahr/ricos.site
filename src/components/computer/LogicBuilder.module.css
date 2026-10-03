@@ -39,3 +39,11 @@
 
 .busHit{fill:none;stroke:transparent;stroke-width:20;pointer-events:stroke;cursor:crosshair}.busWire{fill:none;stroke:var(--wire-color);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;opacity:.8;pointer-events:none}.busWire.live{opacity:1;filter:drop-shadow(0 0 6px var(--wire-color))}.busTap{fill:#17233a;stroke:var(--wire-color);stroke-width:2;pointer-events:none}
 .busCrossing{fill:#111b2e;pointer-events:none}
+.portRow{position:absolute;left:0;right:0;height:0;z-index:3;pointer-events:none}
+.portRow .input,.portRow .output{top:0;pointer-events:auto}
+.inputPortLabel,.outputPortLabel{position:absolute;top:0;transform:translateY(-50%);max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#f2d49b;font:700 10px ui-monospace,SFMono-Regular,monospace;line-height:16px;pointer-events:none}
+.inputPortLabel{left:15px;text-align:left}
+.outputPortLabel{right:15px;text-align:right}
+.moduleBody{width:72px;margin:auto;padding-left:0;padding-right:0}
+.moduleBody .nodeType{max-width:72px;overflow:hidden;text-overflow:ellipsis}
+.moduleBody .moduleBits{font-size:8px}

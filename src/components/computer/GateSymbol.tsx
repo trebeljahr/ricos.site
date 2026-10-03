@@ -1,6 +1,34 @@
 import type { GateType } from "../../lib/computer/logic";
 
-export function GateSymbol({ type }: { type: GateType }) {
+const moduleMarks: Record<string, string> = {
+  "Half adder": "HA",
+  "Full adder": "FA",
+  "Clocked memory": "MEM",
+  "NAND gate demo": "ND",
+  "Pulse path": "PLS",
+  "8-bit half adder": "8HA",
+  "8-bit full adder": "8FA",
+  "8-bit 2:1 multiplexer": "MUX",
+  "8-bit ALU": "ALU",
+  "8-bit magnitude comparator": "CMP",
+  "8-bit shift register": "SHR",
+  "8-bit binary counter": "CTR",
+  "8-bit parallel register": "REG",
+  "4 × 4 SRAM": "SRA",
+  "4 × 4 DRAM": "DRA",
+  "4 × 4 flash memory": "FLS",
+  "SR latch": "SR",
+  "Gated SR latch": "GSR",
+  "D latch": "DL",
+  "JK latch": "JKL",
+  "T latch": "TL",
+  "D flip-flop": "DFF",
+  "SR flip-flop": "SRF",
+  "JK flip-flop": "JKF",
+  "T flip-flop": "TFF",
+};
+
+export function GateSymbol({ type, circuitName }: { type: GateType; circuitName?: string }) {
   const gate = type === "nand" ? "and" : type === "nor" ? "or" : type === "xnor" ? "xor" : type;
   const bubble = type === "nand" || type === "nor" || type === "not" || type === "xnor";
   return (
@@ -52,13 +80,33 @@ export function GateSymbol({ type }: { type: GateType }) {
       {(type === "input4" || type === "input8") && (
         <>
           <rect x="4" y="7" width="56" height="28" rx="4" />
-          <text x="32" y="26" textAnchor="middle" stroke="none" fill="currentColor" fontSize="14" fontFamily="monospace">{type === "input4" ? "0101" : "10101010"}</text>
+          <text
+            x="32"
+            y="26"
+            textAnchor="middle"
+            stroke="none"
+            fill="currentColor"
+            fontSize="14"
+            fontFamily="monospace"
+          >
+            {type === "input4" ? "0101" : "10101010"}
+          </text>
         </>
       )}
       {(type === "display4" || type === "display8") && (
         <>
           <rect x="4" y="5" width="56" height="32" rx="4" />
-          <text x="32" y="27" textAnchor="middle" stroke="none" fill="currentColor" fontSize="19" fontFamily="monospace">{type === "display4" ? "15" : "255"}</text>
+          <text
+            x="32"
+            y="27"
+            textAnchor="middle"
+            stroke="none"
+            fill="currentColor"
+            fontSize="19"
+            fontFamily="monospace"
+          >
+            {type === "display4" ? "15" : "255"}
+          </text>
         </>
       )}
       {(type === "dff" || type === "srlatch" || type === "dlatch" || type === "dramcell") && (
@@ -89,6 +137,24 @@ export function GateSymbol({ type }: { type: GateType }) {
         <>
           <rect x="10" y="5" width="44" height="32" rx="3" />
           <path d="M5 15 H10 M5 27 H10 M54 15 H59 M54 27 H59" />
+          {circuitName && (
+            <text
+              x="32"
+              y="26"
+              textAnchor="middle"
+              stroke="none"
+              fill="currentColor"
+              fontSize={moduleMarks[circuitName]?.length === 3 ? "12" : "15"}
+              fontWeight="800"
+              fontFamily="ui-monospace, monospace"
+            >
+              {moduleMarks[circuitName] ||
+                circuitName
+                  .replace(/[^A-Za-z0-9]/g, "")
+                  .slice(0, 3)
+                  .toUpperCase()}
+            </text>
+          )}
         </>
       )}
       {type === "ground" && <path d="M32 5 V16 M16 16 H48 M21 23 H43 M27 30 H37" />}

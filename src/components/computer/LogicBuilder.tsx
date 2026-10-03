@@ -37,6 +37,21 @@ const STORAGE = "ricos-computer-circuits-v1";
 const WIDTH = 900;
 const HEIGHT = 520;
 const NODE_WIDTH = 132;
+const MODULE_WIDTH = 236;
+const nodeWidth = (node: Node) => (node.type === "module" ? MODULE_WIDTH : NODE_WIDTH);
+const circuitHints: Record<string, string> = {
+  "8-bit half adder": "Adds A and B bit by bit. Each bit has SUM and CARRY outputs.",
+  "8-bit full adder":
+    "Adds A, B, and CARRY IN. OUT0–OUT7 form the sum; CARRY OUT is the final carry.",
+  "8-bit 2:1 multiplexer": "SELECT chooses each output bit: 0 takes A, 1 takes B.",
+  "8-bit ALU":
+    "A and B are 8-bit inputs. OP1 OP0: 00 AND, 01 OR, 10 XOR, 11 ADD. CARRY IN feeds ADD; CARRY OUT reports its final carry. OUT0 is the least significant result bit.",
+  "8-bit magnitude comparator": "Compares A and B. GREATER, EQUAL, and LESS indicate the result.",
+  "8-bit shift register":
+    "On each clock edge, SERIAL IN enters bit 0 and stored bits shift toward bit 7.",
+  "8-bit binary counter":
+    "On each clock edge, the 8-bit value increases by one. Q0 is the least significant bit.",
+};
 const NODE_HEIGHT = 78;
 const MIN_ZOOM = 0.05;
 const MAX_ZOOM = 4;
@@ -146,7 +161,9 @@ export function LogicBuilder() {
   const [selected, setSelected] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [circuitSearch, setCircuitSearch] = useState("");
-  const [circuitFamily, setCircuitFamily] = useState<BlueprintFamily | "examples" | "storage">("transistor");
+  const [circuitFamily, setCircuitFamily] = useState<BlueprintFamily | "examples" | "storage">(
+    "transistor",
+  );
   const [showVdd, setShowVdd] = useState(true);
   const [showGround, setShowGround] = useState(true);
   const [implementationMode, setImplementationMode] = useState(false);
@@ -169,7 +186,10 @@ export function LogicBuilder() {
   const [ready, setReady] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [panMode, setPanMode] = useState(false);
-  const canvasWidth = Math.max(WIDTH, ...circuit.nodes.map((item) => item.x + NODE_WIDTH + 50));
+  const canvasWidth = Math.max(
+    WIDTH,
+    ...circuit.nodes.map((item) => item.x + nodeWidth(item) + 50),
+  );
   const canvasHeight = Math.max(
     HEIGHT,
     ...circuit.nodes.map((item) => item.y + nodeHeight(item) + 50),
@@ -187,7 +207,7 @@ export function LogicBuilder() {
                   from: wire.from,
                   to: wire.to,
                   output: wire.output ?? 0,
-                  start: { x: from.x + NODE_WIDTH, y: outY(from, wire.output ?? 0) },
+                  start: { x: from.x + nodeWidth(from), y: outY(from, wire.output ?? 0) },
                   end: { x: to.x, y: portY(to, wire.input) },
                 },
               ]
@@ -197,7 +217,7 @@ export function LogicBuilder() {
           id: node.id,
           x: node.x,
           y: node.y,
-          width: NODE_WIDTH,
+          width: nodeWidth(node),
           height: nodeHeight(node),
         })),
         busWiring,
@@ -340,9 +360,18 @@ export function LogicBuilder() {
       if (event.code === "Space") spaceHeld.current = false;
     };
     workspaceElement.addEventListener("wheel", onWheel, { capture: true, passive: false });
-    workspaceElement.addEventListener("gesturestart", onGestureStart, { capture: true, passive: false });
-    workspaceElement.addEventListener("gesturechange", onGestureChange, { capture: true, passive: false });
-    workspaceElement.addEventListener("gestureend", onGestureEnd, { capture: true, passive: false });
+    workspaceElement.addEventListener("gesturestart", onGestureStart, {
+      capture: true,
+      passive: false,
+    });
+    workspaceElement.addEventListener("gesturechange", onGestureChange, {
+      capture: true,
+      passive: false,
+    });
+    workspaceElement.addEventListener("gestureend", onGestureEnd, {
+      capture: true,
+      passive: false,
+    });
     viewport.addEventListener("touchmove", onTouchMove, { passive: false });
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
@@ -534,14 +563,14 @@ export function LogicBuilder() {
       type: "module",
       module: clone(source),
       label: source.name,
-      x: Math.max(0, Math.min(canvasWidth - NODE_WIDTH, position?.x ?? 110 + (index % 5) * 155)),
+      x: Math.max(0, Math.min(canvasWidth - MODULE_WIDTH, position?.x ?? 70 + (index % 3) * 270)),
       y: 0,
     };
     next.y = Math.max(
       0,
       Math.min(
         canvasHeight - nodeHeight(next),
-        position?.y ?? 90 + (Math.floor(index / 5) % 5) * 90,
+        position?.y ?? 90 + (Math.floor(index / 3) % 5) * 90,
       ),
     );
     setCircuit((current) => ({ ...current, nodes: [...current.nodes, next] }));
@@ -630,7 +659,10 @@ export function LogicBuilder() {
       }
       if (draft.to && node.id !== draft.to) {
         for (let output = 0; output < outputCount(node); output++) {
-          const distance = Math.hypot(point.x - node.x - NODE_WIDTH, point.y - outY(node, output));
+          const distance = Math.hypot(
+            point.x - node.x - nodeWidth(node),
+            point.y - outY(node, output),
+          );
           if (distance < 20 && (!best || distance < best.distance))
             best = { id: node.id, output, distance };
         }
@@ -834,7 +866,16 @@ export function LogicBuilder() {
     const starts = Object.values(active.starts);
     const boundedX = Math.max(
       -Math.min(...starts.map((p) => p.x)),
-      Math.min(canvasWidth - NODE_WIDTH - Math.max(...starts.map((p) => p.x)), dx),
+      Math.min(
+        canvasWidth -
+          Math.max(
+            ...Object.entries(active.starts).map(
+              ([id, point]) =>
+                point.x + nodeWidth(circuitRef.current.nodes.find((node) => node.id === id)!),
+            ),
+          ),
+        dx,
+      ),
     );
     const boundedY = Math.max(
       -Math.min(...starts.map((p) => p.y)),
@@ -895,7 +936,7 @@ export function LogicBuilder() {
           .filter(
             (node) =>
               node.x < right &&
-              node.x + NODE_WIDTH > left &&
+              node.x + nodeWidth(node) > left &&
               node.y < bottom &&
               node.y + nodeHeight(node) > top,
           )
@@ -919,10 +960,10 @@ export function LogicBuilder() {
             /latch|flip-flop|register|counter|SRAM|DRAM|flash memory/i.test(name),
           ))
         : Object.fromEntries(
-          Object.entries(BLUEPRINTS).filter(([name]) =>
-            name.endsWith(`from ${BLUEPRINT_FAMILIES[circuitFamily].suffix}`),
-          ),
-        );
+            Object.entries(BLUEPRINTS).filter(([name]) =>
+              name.endsWith(`from ${BLUEPRINT_FAMILIES[circuitFamily].suffix}`),
+            ),
+          );
   const visibleCircuits = Object.values(library).filter((item) =>
     item.name.toLowerCase().includes(circuitSearch.toLowerCase().trim()),
   );
@@ -958,10 +999,12 @@ export function LogicBuilder() {
     : null;
   const draftEnd = wireDraft?.to ? circuit.nodes.find((node) => node.id === wireDraft.to) : null;
   const previewStart = draftStart
-    ? { x: draftStart.x + NODE_WIDTH, y: outY(draftStart, wireDraft!.output ?? 0) }
+    ? { x: draftStart.x + nodeWidth(draftStart), y: outY(draftStart, wireDraft!.output ?? 0) }
     : draftTarget && wireDraft?.to
       ? {
-          x: circuit.nodes.find((node) => node.id === draftTarget.id)!.x + NODE_WIDTH,
+          x:
+            circuit.nodes.find((node) => node.id === draftTarget.id)!.x +
+            nodeWidth(circuit.nodes.find((node) => node.id === draftTarget.id)!),
           y: outY(
             circuit.nodes.find((node) => node.id === draftTarget.id)!,
             draftTarget.output ?? 0,
@@ -1121,11 +1164,14 @@ export function LogicBuilder() {
                   event.dataTransfer.effectAllowed = "copy";
                 }}
                 onClick={() => addModule(example)}
-                title={`Drag ${example.name} black box onto canvas or click to add`}
+                title={
+                  circuitHints[example.name] ||
+                  `Drag ${example.name} black box onto canvas or click to add`
+                }
                 style={{ "--part-accent": partColors.module } as React.CSSProperties}
               >
                 <span className={styles.partIcon}>
-                  <GateSymbol type="module" />
+                  <GateSymbol type="module" circuitName={example.name} />
                 </span>
                 <span>{example.name}</span>
               </button>
@@ -1261,7 +1307,7 @@ export function LogicBuilder() {
                   ) {
                     const point = boardPoint(event.clientX, event.clientY);
                     addModule(BLUEPRINTS[moduleName] || PRESETS[moduleName] || saved[moduleName], {
-                      x: point.x - NODE_WIDTH / 2,
+                      x: point.x - MODULE_WIDTH / 2,
                       y: point.y - NODE_HEIGHT / 2,
                     });
                     return;
@@ -1289,7 +1335,7 @@ export function LogicBuilder() {
                   if (!parts.length) return null;
                   const left = Math.max(8, Math.min(...parts.map((item) => item.x)) - 20);
                   const top = Math.max(8, Math.min(...parts.map((item) => item.y)) - 28);
-                  const right = Math.max(...parts.map((item) => item.x + NODE_WIDTH)) + 20;
+                  const right = Math.max(...parts.map((item) => item.x + nodeWidth(item))) + 20;
                   const bottom = Math.max(...parts.map((item) => item.y + nodeHeight(item))) + 18;
                   return (
                     <div
@@ -1362,7 +1408,7 @@ export function LogicBuilder() {
                     const to = circuit.nodes.find((node) => node.id === wire.to);
                     if (!from || !to) return null;
                     if (hasTransistors && (!powerVisible(from) || !powerVisible(to))) return null;
-                    const x1 = from.x + NODE_WIDTH,
+                    const x1 = from.x + nodeWidth(from),
                       y1 = outY(from, wire.output ?? 0),
                       x2 = to.x,
                       y2 = portY(to, wire.input);
@@ -1474,7 +1520,7 @@ export function LogicBuilder() {
                           "--part-accent": partColors[node.type],
                           left: `${(node.x / canvasWidth) * 100}%`,
                           top: `${(node.y / canvasHeight) * 100}%`,
-                          width: `${(NODE_WIDTH / canvasWidth) * 100}%`,
+                          width: `${(nodeWidth(node) / canvasWidth) * 100}%`,
                           height: `${(nodeHeight(node) / canvasHeight) * 100}%`,
                         } as React.CSSProperties
                       }
@@ -1518,64 +1564,85 @@ export function LogicBuilder() {
                       }}
                     >
                       {Array.from({ length: inputCount(node) }, (_, input) => (
-                        <button
-                          type="button"
+                        <div
                           key={`${node.id}-input-${input}`}
-                          className={styles.input}
-                          data-node-id={node.id}
-                          data-input={input}
+                          className={styles.portRow}
                           style={{
                             top: `${((portY(node, input) - node.y) / nodeHeight(node)) * 100}%`,
                           }}
-                          onPointerDown={(event) =>
-                            startWire(event, {
-                              to: node.id,
-                              input,
-                              x: node.x,
-                              y: portY(node, input),
-                              originX: node.x,
-                              originY: portY(node, input),
-                            })
-                          }
-                          onClick={(event) => {
-                            if (event.detail === 0)
-                              connect(pending?.from ?? null, node.id, input, pending?.output);
-                          }}
-                          data-wire-target={Boolean(
-                            wireDraft?.from &&
-                              draftTarget?.id === node.id &&
-                              draftTarget.input === input,
-                          )}
-                          aria-label={`Connect to ${node.label || LABELS[node.type]} ${inputLabel(node, input)}`}
-                          title={
-                            node.type === "module"
-                              ? inputLabel(node, input)
-                              : node.type === "dff"
-                                ? input === 0
-                                  ? "D: data"
-                                  : "CLK: rising edge"
-                                : node.type === "nmos" || node.type === "pmos"
+                        >
+                          <button
+                            type="button"
+                            className={styles.input}
+                            data-node-id={node.id}
+                            data-input={input}
+                            style={{ top: 0 }}
+                            onPointerDown={(event) =>
+                              startWire(event, {
+                                to: node.id,
+                                input,
+                                x: node.x,
+                                y: portY(node, input),
+                                originX: node.x,
+                                originY: portY(node, input),
+                              })
+                            }
+                            onClick={(event) => {
+                              if (event.detail === 0)
+                                connect(pending?.from ?? null, node.id, input, pending?.output);
+                            }}
+                            data-wire-target={Boolean(
+                              wireDraft?.from &&
+                                draftTarget?.id === node.id &&
+                                draftTarget.input === input,
+                            )}
+                            aria-label={`Connect to ${node.label || LABELS[node.type]} ${inputLabel(node, input)}`}
+                            title={
+                              node.type === "module"
+                                ? inputLabel(node, input)
+                                : node.type === "dff"
                                   ? input === 0
-                                    ? "Gate control"
-                                    : "Source signal"
-                                  : `Input ${input + 1}`
-                          }
-                        />
+                                    ? "D: data"
+                                    : "CLK: rising edge"
+                                  : node.type === "nmos" || node.type === "pmos"
+                                    ? input === 0
+                                      ? "Gate control"
+                                      : "Source signal"
+                                    : `Input ${input + 1}`
+                            }
+                          />
+                          {node.type === "module" && (
+                            <span className={styles.inputPortLabel} title={inputLabel(node, input)}>
+                              {inputLabel(node, input)}
+                            </span>
+                          )}
+                        </div>
                       ))}
-                      <div className={styles.nodeBody}>
+                      <div
+                        className={clsx(
+                          styles.nodeBody,
+                          node.type === "module" && styles.moduleBody,
+                        )}
+                      >
                         {!["input4", "input8", "display4", "display8", "lamp"].includes(
                           node.type,
                         ) && (
                           <span className={styles.nodeSymbol}>
-                            <GateSymbol type={node.type} />
+                            <GateSymbol type={node.type} circuitName={node.module?.name} />
                           </span>
                         )}
                         <strong>{node.label || LABELS[node.type]}</strong>
                         <span
                           className={styles.nodeType}
-                          title={node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]}
+                          title={
+                            node.type === "module"
+                              ? node.module?.name || "Module"
+                              : LABELS[node.type]
+                          }
                         >
-                          {node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]}
+                          {node.type === "module"
+                            ? node.module?.name || "Module"
+                            : LABELS[node.type]}
                         </span>
                         {node.type === "input4" || node.type === "input8" ? (
                           <div
@@ -1668,53 +1735,62 @@ export function LogicBuilder() {
                           </button>
                         ) : node.type === "module" ? (
                           <span className={styles.moduleBits}>
-                            {moduleOutputs(node.module!)
-                              .map(
-                                (port, index) =>
-                                  `${port.label || `OUT ${index + 1}`}:${snapshot.outputs[node.id]?.[index] ? 1 : 0}`,
-                              )
-                              .join("  ")}
+                            {moduleInputs(node.module!).length} IN ·{" "}
+                            {moduleOutputs(node.module!).length} OUT
                           </span>
                         ) : (
                           <span className={styles.bit}>{snapshot.values[node.id] ? "1" : "0"}</span>
                         )}
                       </div>
                       {Array.from({ length: outputCount(node) }, (_, output) => (
-                        <button
-                          type="button"
+                        <div
                           key={`${node.id}-output-${output}`}
-                          className={clsx(
-                            styles.output,
-                            pending?.from === node.id &&
-                              pending.output === output &&
-                              styles.pending,
-                          )}
+                          className={styles.portRow}
                           style={{
                             top: `${((outY(node, output) - node.y) / nodeHeight(node)) * 100}%`,
                           }}
-                          onPointerDown={(event) =>
-                            startWire(event, {
-                              from: node.id,
-                              output,
-                              x: node.x + NODE_WIDTH,
-                              y: outY(node, output),
-                              originX: node.x + NODE_WIDTH,
-                              originY: outY(node, output),
-                            })
-                          }
-                          onClick={(event) => {
-                            if (event.detail !== 0) return;
-                            setPending({ from: node.id, output });
-                            setMessage(`Choose an input for ${outputLabel(node, output)}.`);
-                          }}
-                          data-wire-target={Boolean(
-                            wireDraft?.to &&
-                              draftTarget?.id === node.id &&
-                              draftTarget.output === output,
+                        >
+                          {node.type === "module" && (
+                            <span
+                              className={styles.outputPortLabel}
+                              title={outputLabel(node, output)}
+                            >
+                              {outputLabel(node, output)}
+                            </span>
                           )}
-                          aria-label={`Wire from ${node.label || LABELS[node.type]} ${outputLabel(node, output)}`}
-                          title={outputLabel(node, output)}
-                        />
+                          <button
+                            type="button"
+                            className={clsx(
+                              styles.output,
+                              pending?.from === node.id &&
+                                pending.output === output &&
+                                styles.pending,
+                            )}
+                            style={{ top: 0 }}
+                            onPointerDown={(event) =>
+                              startWire(event, {
+                                from: node.id,
+                                output,
+                                x: node.x + nodeWidth(node),
+                                y: outY(node, output),
+                                originX: node.x + nodeWidth(node),
+                                originY: outY(node, output),
+                              })
+                            }
+                            onClick={(event) => {
+                              if (event.detail !== 0) return;
+                              setPending({ from: node.id, output });
+                              setMessage(`Choose an input for ${outputLabel(node, output)}.`);
+                            }}
+                            data-wire-target={Boolean(
+                              wireDraft?.to &&
+                                draftTarget?.id === node.id &&
+                                draftTarget.output === output,
+                            )}
+                            aria-label={`Wire from ${node.label || LABELS[node.type]} ${outputLabel(node, output)}`}
+                            title={outputLabel(node, output)}
+                          />
+                        </div>
                       ))}
                     </div>
                   ))}
@@ -1959,7 +2035,11 @@ export function LogicBuilder() {
           <h2>Selected part</h2>
           {selectedNode ? (
             <div className={styles.selectedPart}>
-              <strong>{selectedNode.type === "module" ? selectedNode.module?.name || "Module" : LABELS[selectedNode.type]}</strong>
+              <strong>
+                {selectedNode.type === "module"
+                  ? selectedNode.module?.name || "Module"
+                  : LABELS[selectedNode.type]}
+              </strong>
               <label>
                 Represents
                 <input
@@ -1977,6 +2057,9 @@ export function LogicBuilder() {
               </label>
               {selectedNode.type === "module" && (
                 <div className={styles.modulePorts}>
+                  {circuitHints[selectedNode.module!.name] && (
+                    <p>{circuitHints[selectedNode.module!.name]}</p>
+                  )}
                   <button
                     type="button"
                     onClick={() =>
